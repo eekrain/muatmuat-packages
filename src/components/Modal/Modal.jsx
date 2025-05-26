@@ -1,0 +1,187 @@
+// Modal.js
+"use client";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
+import { createPortal } from "react-dom";
+import ImageComponent from "@/components/ImageComponent/ImageComponent";
+import IconComponent from "@/components/IconComponent/IconComponent";
+
+/**
+ * @typedef {Object} ModalContextType
+ * @property {() => void} open - Function to open the modal.
+ * @property {() => void} close - Function to close the modal.
+ * @property {boolean} isOpen - Whether the modal is currently open.
+ */
+
+const ModalContext = createContext(undefined);
+
+/**
+ * @returns {ModalContextType}
+ */
+export const useModal = () => {
+  const context = useContext(ModalContext);
+  if (!context) {
+    throw new Error("useModal must be used within a Modal component");
+  }
+  return context;
+};
+
+/**
+ * @typedef {Object} ModalRootProps
+ * @property {React.ReactNode} children
+ * @property {boolean} [open]
+ * @property {(open: boolean) => void} [onOpenChange]
+ * @property {boolean} [closeOnOutsideClick=true]
+ */
+
+/**
+ * @param {ModalRootProps} props
+ */
+export const Modal = ({
+  children,
+  open: controlledOpen,
+  onOpenChange,
+  closeOnOutsideClick = true,
+}) => {
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const dialogRef = useRef(null);
+
+  const isControlled = controlledOpen !== undefined;
+  const isOpen = isControlled ? controlledOpen : uncontrolledOpen;
+
+  const open = useCallback(() => {
+    if (isControlled) {
+      onOpenChange?.(true);
+    } else {
+      setUncontrolledOpen(true);
+    }
+  }, [isControlled, onOpenChange]);
+
+  const close = useCallback(() => {
+    if (isControlled) {
+      onOpenChange?.(false);
+    } else {
+      setUncontrolledOpen(false);
+    }
+  }, [isControlled, onOpenChange]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && isOpen) {
+        close();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, close]);
+
+  const handleClickOutside = useCallback(
+    (e) => {
+      if (
+        closeOnOutsideClick &&
+        dialogRef.current &&
+        !dialogRef.current.contains(e.target)
+      ) {
+        close();
+      }
+    },
+    [closeOnOutsideClick, close]
+  );
+
+  return (
+    <ModalContext.Provider value={{ open, close, isOpen, handleClickOutside }}>
+      {children}
+    </ModalContext.Provider>
+  );
+};
+
+/**
+ * @param {{ children: React.ReactNode }} props
+ */
+export const ModalTrigger = ({ children }) => {
+  const { open } = useModal();
+
+  return (
+    <div
+      onClick={open}
+      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+    >
+      {children}
+    </div>
+  );
+};
+
+/**
+ * @param {{ children: React.ReactNode, className?: string }} props
+ */
+export const ModalHeader = ({ children, className, type = "muattrans", size = "small" }) => {
+  const widths = {
+    big: 454,
+    small: 386
+  }
+  return (
+    <div className="rounded-t-xl overflow-hidden">
+      <ImageComponent
+        src={`/img/${type}-header-${size}.png`}
+        width={widths[size] || widths.small}
+        height={70}
+      />
+    </div>
+  );
+};
+
+/**
+ * @param {{ children: React.ReactNode, className?: string }} props
+ */
+export const ModalContent = ({ children, className, type = "muattrans" }) => {
+  const { close, isOpen, handleClickOutside } = useModal();
+  const dialogRef = useRef(null);
+  const baseClass = "";
+
+  const iconClassnames = {
+    muatmuat: "icon-fill-primary-700",
+    muatparts: "icon-fill-muat-parts-non-800",
+    muattrans: "icon-fill-muat-trans-secondary-900",
+  }
+
+  if (!isOpen || typeof window === "undefined") {
+    return null;
+  }
+
+  return createPortal(
+    <div
+      className="fixed inset-0 bg-neutral-900/30 bg-opacity-50 flex items-center justify-center z-50"
+      onMouseDown={handleClickOutside}
+    >
+      <div
+        ref={dialogRef}
+        className="bg-neutral-50 rounded-xl relative"
+      >
+        <button className="absolute right-2 top-2 bg-neutral-50 rounded-full flex items-center justify-center" onClick={close}>
+          <IconComponent
+            classname={iconClassnames[type] || iconClassnames.muattrans}
+            src="/icons/close20.svg"
+            width={20}
+            height={20}
+          />
+        </button>
+        <div className={className ?? baseClass}>{children}</div>
+      </div>
+    </div>,
+    document.body
+  );
+};
+
+/**
+ * @param {{ children: React.ReactNode, className?: string }} props
+ */
+export const ModalFooter = ({ children, className }) => {
+  const baseClass = "border-t px-6 py-4 bg-gray-50 rounded-b-2xl";
+  return <div className={className ?? baseClass}>{children}</div>;
+};

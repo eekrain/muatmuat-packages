@@ -1,0 +1,29 @@
+.floating_button_container {
+    transition: right 0.3s ease-out;
+}
+
+.modal_apps_az_header {
+    display: flex;
+    background-position: center;
+    background-size: cover;
+    height: 70px;
+    width: 100%;
+    /* FIX BUG Pengecekan Ronda Muatparts LB-0265 */
+    background-image: url('../Modals/assets/header-small.png');
+}
+
+.modal_apps_az {
+    width: 296px;
+    padding: 24px 16px;
+    background-color: #FFFFFF;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    box-shadow: 0px 2px 20px 0px #00000040;
+}
+
+.icon_silang_red {
+    path {
+        stroke: #C22716;
+        fill: #C22716;
+    }
+}
