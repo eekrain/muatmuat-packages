@@ -5,12 +5,16 @@ import React, {
   createContext,
   useCallback,
   useContext,
-  useState,
   useEffect,
   useRef,
+  useState,
 } from "react";
+
 import { createPortal } from "react-dom";
+
 import IconComponent from "@/components/IconComponent/IconComponent";
+
+// BottomSheet.jsx
 
 /**
  * @typedef {Object} BottomSheetContextType
@@ -24,7 +28,9 @@ const BottomSheetContext = createContext(undefined);
 export const useBottomSheet = () => {
   const context = useContext(BottomSheetContext);
   if (!context) {
-    throw new Error("useBottomSheet must be used within a BottomSheet component");
+    throw new Error(
+      "useBottomSheet must be used within a BottomSheet component"
+    );
   }
   return context;
 };
@@ -89,7 +95,9 @@ export const BottomSheet = ({
   );
 
   return (
-    <BottomSheetContext.Provider value={{ open, close, isOpen, handleClickOutside }}>
+    <BottomSheetContext.Provider
+      value={{ open, close, isOpen, handleClickOutside }}
+    >
       {children}
     </BottomSheetContext.Provider>
   );
@@ -100,7 +108,7 @@ export const BottomSheetTrigger = ({ children }) => {
   return (
     <button
       onClick={open}
-      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+      className="rounded bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
     >
       {children}
     </button>
@@ -148,15 +156,15 @@ export const BottomSheetContent = ({ children, className }) => {
     if (!dragging) return;
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
     const deltaY = clientY - startY;
-    
+
     if (deltaY < 0) {
       setTranslateY(0); // Don't allow drag up
       setShouldClose(false);
       return;
     }
-    
+
     setTranslateY(deltaY);
-    
+
     // Calculate velocity
     const now = Date.now();
     const timeDelta = now - lastTimeRef.current;
@@ -165,14 +173,18 @@ export const BottomSheetContent = ({ children, className }) => {
     }
     lastYRef.current = clientY;
     lastTimeRef.current = now;
-    
+
     // Enhanced threshold calculation - more sensitive to "near bottom"
     const sheetHeight = sheetRef.current?.offsetHeight || 0;
     const viewportHeight = window.innerHeight;
-    
+
     // Close threshold: 150px, 30% of sheet height, or 20% of viewport height (whichever is larger)
-    const closeThreshold = Math.max(150, sheetHeight * 0.3, viewportHeight * 0.2);
-    
+    const closeThreshold = Math.max(
+      150,
+      sheetHeight * 0.3,
+      viewportHeight * 0.2
+    );
+
     // Set visual feedback when approaching close threshold
     setShouldClose(deltaY > closeThreshold * 0.7);
   };
@@ -180,23 +192,27 @@ export const BottomSheetContent = ({ children, className }) => {
   const onDragEnd = () => {
     setDragging(false);
     setShouldClose(false);
-    
+
     // Enhanced threshold calculation
     const sheetHeight = sheetRef.current?.offsetHeight || 0;
     const viewportHeight = window.innerHeight;
-    
+
     // Multiple conditions for closing:
     // 1. Distance threshold (more generous)
-    const distanceThreshold = Math.max(150, sheetHeight * 0.3, viewportHeight * 0.2);
-    
+    const distanceThreshold = Math.max(
+      150,
+      sheetHeight * 0.3,
+      viewportHeight * 0.2
+    );
+
     // 2. Velocity threshold (more sensitive)
     const velocityThreshold = 0.8;
-    
+
     // 3. Near bottom threshold (if dragged more than 60% of viewport height)
     const nearBottomThreshold = viewportHeight * 0.6;
-    
+
     if (
-      translateY > distanceThreshold || 
+      translateY > distanceThreshold ||
       velocity > velocityThreshold ||
       translateY > nearBottomThreshold
     ) {
@@ -218,13 +234,13 @@ export const BottomSheetContent = ({ children, className }) => {
     if (!dragging) return;
     const move = (e) => onDragMove(e);
     const up = () => onDragEnd();
-    
+
     const options = { passive: false };
     window.addEventListener("touchmove", move, options);
     window.addEventListener("touchend", up);
     window.addEventListener("mousemove", move);
     window.addEventListener("mouseup", up);
-    
+
     return () => {
       window.removeEventListener("touchmove", move);
       window.removeEventListener("touchend", up);
@@ -236,11 +252,14 @@ export const BottomSheetContent = ({ children, className }) => {
   if (!isOpen || typeof window === "undefined") return null;
 
   // Calculate opacity for backdrop fade effect when dragging
-  const backdropOpacity = Math.max(0.1, 1 - (translateY / (window.innerHeight * 0.5)));
+  const backdropOpacity = Math.max(
+    0.1,
+    1 - translateY / (window.innerHeight * 0.5)
+  );
 
   return createPortal(
     <div
-      className="fixed inset-0 bg-neutral-900/30 bg-opacity-40 flex flex-col justify-end items-center z-50 transition-opacity duration-200"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-end bg-neutral-900/30 bg-opacity-40 transition-opacity duration-200"
       style={{
         backgroundColor: `rgba(38, 38, 38, ${0.3 * backdropOpacity})`,
       }}
@@ -251,9 +270,13 @@ export const BottomSheetContent = ({ children, className }) => {
         className={className ?? baseClass}
         style={{
           transform: `translateY(${translateY}px)`,
-          transition: dragging ? "none" : "transform 0.3s cubic-bezier(0.4,0,0.2,1)",
+          transition: dragging
+            ? "none"
+            : "transform 0.3s cubic-bezier(0.4,0,0.2,1)",
           touchAction: "none",
-          opacity: dragging ? Math.max(0.3, 1 - (translateY / (window.innerHeight * 0.4))) : 1,
+          opacity: dragging
+            ? Math.max(0.3, 1 - translateY / (window.innerHeight * 0.4))
+            : 1,
         }}
         onTouchStart={onDragStart}
         onTouchMove={(e) => dragging && e.preventDefault()}
@@ -261,9 +284,9 @@ export const BottomSheetContent = ({ children, className }) => {
         onMouseDown={onDragStart}
       >
         {/* Enhanced drag handle with visual feedback */}
-        <div className="flex justify-center pt-2 pb-4 cursor-grab active:cursor-grabbing select-none">
-          <div 
-            className={`w-[38px] h-1.5 rounded-sm transition-colors duration-200 bg-[#DDDDDD]`} 
+        <div className="flex cursor-grab select-none justify-center pb-4 pt-2 active:cursor-grabbing">
+          <div
+            className={`h-1.5 w-[38px] rounded-sm bg-[#DDDDDD] transition-colors duration-200`}
           />
         </div>
         {children}
@@ -278,7 +301,10 @@ export const BottomSheetHeader = ({ className, title }) => {
   const baseClass = "flex justify-between items-center px-4";
   return (
     <div className={className ?? baseClass}>
-      <button onClick={close} className="size-[24px] flex items-center justify-between">
+      <button
+        onClick={close}
+        className="flex size-[24px] items-center justify-between"
+      >
         <IconComponent
           // classname={iconClassnames[type] || iconClassnames.muattrans}
           src="/icons/close24.svg"
@@ -286,8 +312,8 @@ export const BottomSheetHeader = ({ className, title }) => {
           height={24}
         />
       </button>
-      <span className="font-bold text-[14px] leading-[15.4px]">{title}</span>
-      <div className="size-[24px]"/>
+      <span className="text-[14px] font-bold leading-[15.4px]">{title}</span>
+      <div className="size-[24px]" />
     </div>
   );
 };
