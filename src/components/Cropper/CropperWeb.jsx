@@ -1,12 +1,15 @@
 "use client";
+
 import React, { useEffect, useRef } from "react";
 
+import "cropperjs/dist/cropper.css";
 //cropper
 import Cropper from "react-cropper";
-import "cropperjs/dist/cropper.css";
-import "./cropper_az.css";
+
 import IconComponent from "../IconComponent/IconComponent";
 import styles from "./CropperWeb.module.scss";
+import "./cropper_az.css";
+
 // LB - 0513, LB - 0514, LB - 0515, LB - 0516
 // 25. 03 - QC Plan - Web - Pengecekan Ronda Muatparts - Tahap 2
 // import { useTranslation } from "@/context/TranslationProvider";
@@ -108,16 +111,16 @@ export default function CropperWeb({
           ref={modalRef}
           className={`${
             isCircle ? "modal-cropper-circle" : ""
-          } px-6 py-9 w-[424px] bg-white rounded-xl`}
+          } w-[424px] rounded-xl bg-white px-6 py-9`}
         >
-          <div className="bg-white flex flex-col gap-[18px] items-center mb-6">
-            <span className="font-bold text-[16px] leading-[19.2px] text-1b1b">
+          <div className="mb-6 flex flex-col items-center gap-[18px] bg-white">
+            <span className="text-[16px] font-bold leading-[19.2px] text-1b1b">
               {title}
             </span>
-            <div className="w-[386px] h-[386px] relative">
-              <div className="bg-white flex flex-col absolute right-2 bottom-2 border border-[#E2E2E2] rounded-lg z-[100] w-10 h-20">
+            <div className="relative h-[386px] w-[386px]">
+              <div className="absolute bottom-2 right-2 z-[100] flex h-20 w-10 flex-col rounded-lg border border-[#E2E2E2] bg-white">
                 <div
-                  className="h-1/2 cursor-pointer flex justify-center items-center"
+                  className="flex h-1/2 cursor-pointer items-center justify-center"
                   onClick={zoomIn}
                 >
                   <IconComponent
@@ -128,7 +131,7 @@ export default function CropperWeb({
                   />
                 </div>
                 <div
-                  className="h-1/2 cursor-pointer flex justify-center items-center"
+                  className="flex h-1/2 cursor-pointer items-center justify-center"
                   onClick={zoomOut}
                 >
                   <IconComponent
@@ -157,13 +160,13 @@ export default function CropperWeb({
               <div className="img-preview" />
             </div>
           </div>
-          <div className="flex items-center justify-between w-full">
+          <div className="flex w-full items-center justify-between">
             <button
               type="button"
               onClick={cancelCrop}
-              className="rounded-full bg-white border border-[#176CF7] px-3 min-w-[112px] h-8 flex items-center justify-center outline-none"
+              className="flex h-8 min-w-[112px] items-center justify-center rounded-full border border-[#176CF7] bg-white px-3 outline-none"
             >
-              <span className="font-semibold text-[14px] leading-[16.8px] text-[#176CF7]">
+              <span className="text-[14px] font-semibold leading-[16.8px] text-[#176CF7]">
                 {/* {t("buttonCancel")} */}
                 Batal
               </span>
@@ -171,10 +174,10 @@ export default function CropperWeb({
             <button
               type="button"
               onClick={getCropData}
-              className="rounded-full bg-[#176CF7] px-3 min-w-[112px] h-8 flex items-center justify-center outline-none"
+              className="flex h-8 min-w-[112px] items-center justify-center rounded-full bg-[#176CF7] px-3 outline-none"
               autoFocus
             >
-              <span className="font-semibold text-[14px] leading-[16.8px] text-neutral-50">
+              <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-50">
                 {/* {t("labelSimpanNav")} */}
                 Simpan
               </span>

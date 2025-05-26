@@ -1,9 +1,5 @@
 const ResponsiveLayout = ({ children }) => {
-    return (
-        <>
-            {children}
-        </>
-    )
-}
+  return <>{children}</>;
+};
 
-export default ResponsiveLayout
+export default ResponsiveLayout;

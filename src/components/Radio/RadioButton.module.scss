@@ -1,40 +1,40 @@
-.container_radio{
+.container_radio {
   position: relative;
   font-size: 12px;
   color: var(--neutral-900);
   font-weight: demi;
 
   input {
-      position: absolute;
-      opacity: 0;
-      cursor: pointer;
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
   }
 
-  input:disabled{
-      cursor: no-drop;
+  input:disabled {
+    cursor: no-drop;
   }
 
-  input:checked:disabled{
-      cursor: no-drop;
+  input:checked:disabled {
+    cursor: no-drop;
   }
 
-  .radio_primary{
-      top: 0;
-      left: 0;
-      height: 16px;
-      width: 16px;
-      border-radius: 50%;
-      border: 1px solid var(--neutral-600);
-      transition: all 0.3s ease-in-out;
+  .radio_primary {
+    top: 0;
+    left: 0;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    border: 1px solid var(--neutral-600);
+    transition: all 0.3s ease-in-out;
   }
 
   .radio_primary:after {
-      top: calc(50% - 4px);
-      left: 4px;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--primary-700);
+    top: calc(50% - 4px);
+    left: 4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--primary-700);
   }
 }
 
@@ -77,7 +77,6 @@
   position: absolute;
   display: none;
 }
-
 
 // Pertama definisikan parent wrapper yang membungkus kedua radio button
 .radio_group {

@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
-import style from "./Checkbox.module.scss";
+import React, { useEffect, useRef, useState } from "react";
+
 import PropTypes from "prop-types";
+
+import style from "./Checkbox.module.scss";
 
 const Checkbox = ({
   onChange = () => {},
@@ -20,8 +22,8 @@ const Checkbox = ({
   const checkedRef = useRef(null);
 
   useEffect(() => {
-    setChecked(checked)
-  }, [checked])
+    setChecked(checked);
+  }, [checked]);
 
   const checkedClick = () => {
     if (disabled) {
@@ -33,12 +35,12 @@ const Checkbox = ({
     });
     setChecked(!checkedState);
   };
-  useEffect(()=>{
-    setChecked(checked)
-  },[checked])
+  useEffect(() => {
+    setChecked(checked);
+  }, [checked]);
   return (
     <div
-      className={`${style.container_checkbox} flex gap-[8px] items-center ${classname}`}
+      className={`${style.container_checkbox} flex items-center gap-[8px] ${classname}`}
       onClick={checkedClick}
     >
       <input
@@ -52,7 +54,7 @@ const Checkbox = ({
         {...props}
       />
       <span className={`relative ${style.checkbox_primary}`}></span>
-      <span className="select-none sm:text-[12px] font-medium">
+      <span className="select-none font-medium sm:text-[12px]">
         {children ? children : label}
       </span>
     </div>

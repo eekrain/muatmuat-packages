@@ -1,9 +1,5 @@
 const DesktopLayout = ({ children }) => {
-    return (
-        <div>
-            {children}
-        </div>
-    )
-}
+  return <div>{children}</div>;
+};
 
-export default DesktopLayout
+export default DesktopLayout;

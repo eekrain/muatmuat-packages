@@ -1,18 +1,20 @@
 "use client";
+
 import React, { useRef, useState } from "react";
 
+import "cropperjs/dist/cropper.css";
 //cropper
 import Cropper, { ReactCropperElement } from "react-cropper";
-import "cropperjs/dist/cropper.css";
-import "./cropper_az.css";
-import style from "./CropperResponsive.module.scss";
 
-import IconComponent from "../IconComponent/IconComponent";
 // 24. THP 2 - MOD001 - MP - 015 - QC Plan - Web - MuatParts - Seller - Paket 039 A - Profil Seller - LB - 0066
 // syntax fix CropperPreviewResponsive -> CropperReviewResponsive by fariz (tidak bisa build - biar cepat. kalau salah bisa direvert)
 // LBM - ganti nama
 // import CropperPreviewResponsive from "./CropperPreviewResponsive";
 import { useHeader } from "@/common/ResponsiveContext";
+
+import IconComponent from "../IconComponent/IconComponent";
+import style from "./CropperResponsive.module.scss";
+import "./cropper_az.css";
 
 export default function CropperResponsive({
   imageSource = "",
@@ -27,11 +29,11 @@ export default function CropperResponsive({
   uploadOptions,
   isShowPreview,
   setIsShowPreview,
-  fileType
+  fileType,
 }) {
   const cropperRef = useRef(null);
   const [previewImage, setPreviewImage] = useState(null);
-  const defaultRatioRef = useRef(null)
+  const defaultRatioRef = useRef(null);
   const { setAppBar } = useHeader();
 
   const getCropData = () => {
@@ -68,10 +70,11 @@ export default function CropperResponsive({
 
   const handleZoom = (event) => {
     const oldRatio = event.detail.oldRatio;
-    const newDefaultRatio = defaultRatioRef.current !== null ? defaultRatioRef.current : oldRatio;
+    const newDefaultRatio =
+      defaultRatioRef.current !== null ? defaultRatioRef.current : oldRatio;
     const ratio = event.detail.ratio;
     const isZoomingIn = ratio > oldRatio;
-    defaultRatioRef.current = newDefaultRatio
+    defaultRatioRef.current = newDefaultRatio;
     // Only prevent zooming in beyond 2x the default ratio
     if (isZoomingIn && ratio > newDefaultRatio * 2) {
       event.preventDefault();
@@ -106,10 +109,10 @@ export default function CropperResponsive({
   return (
     <>
       <div
-        className={`fixed top-0 left-0 w-full h-screen z-[102] bg-[#20242F]`}
+        className={"fixed left-0 top-0 z-[102] h-screen w-full bg-[#20242F]"}
       >
-        <div className="flex flex-row justify-between p-4 pt-3 items-center">
-          <div className="flex flex-row gap-x-3 items-center">
+        <div className="flex flex-row items-center justify-between p-4 pt-3">
+          <div className="flex flex-row items-center gap-x-3">
             {/* <button
                             onClick={() => setIsOpen(false)}
                         > */}
@@ -120,7 +123,7 @@ export default function CropperResponsive({
               onclick={cancelCrop}
             />
             {/* </button> */}
-            <span className="font-medium text-[16px] leading-[19.2px] text-white">
+            <span className="text-[16px] font-medium leading-[19.2px] text-white">
               Cropper
             </span>
           </div>
@@ -133,9 +136,7 @@ export default function CropperResponsive({
         </div>
         <div className="flex min-h-[600px]">
           <div
-            className={`w-full aspect-square m-auto
-                            ${isCircle ? "modal-cropper-circle" : ""}
-                        `}
+            className={`m-auto aspect-square w-full ${isCircle ? "modal-cropper-circle" : ""} `}
           >
             {/* <div className="bg-[white] flex flex-col absolute right-[8px] bottom-[7.5px] border-[#E2E2E2] border-[1px] rounded-[12px] z-[100] h-[80px]">
                             <div className="h-1/2 text-[25px] cursor-pointer text-[black] flex justify-center items-center" onClick={zoomIn}>
