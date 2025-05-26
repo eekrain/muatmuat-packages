@@ -1,10 +1,12 @@
 import localFont from "next/font/local";
-import "./globals.scss";
+
 import MainLayout from "@/layout/MainLayout/MainLayout";
 
+import "./globals.scss";
+
 export const metadata = {
-  title: 'MuatTrans Shiipper',
-  description: 'MuatTrans Shiipper',
+  title: "MuatTrans Shiipper",
+  description: "MuatTrans Shiipper",
 };
 
 const Avenir = localFont({

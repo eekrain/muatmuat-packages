@@ -1,11 +1,14 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import styles from "./ImageUploader.module.scss";
+import { useEffect, useRef, useState } from "react";
+
+import toast from "@/store/zustand/toast";
+
 import CropperImage from "../Cropper/Cropper";
 import IconComponent from "../IconComponent/IconComponent";
 import ImageComponent from "../ImageComponent/ImageComponent";
-import toast from "@/store/zustand/toast";
+import styles from "./ImageUploader.module.scss";
+
 // import { useTranslation } from "@/context/TranslationProvider";
 
 function base64ToFile(base64String, filename, mimeType) {
@@ -45,7 +48,7 @@ export default function ImageUploaderWeb({
   isLoading, //loading status
   acceptedFormats = [".jpg", ".jpeg", ".png"], // format of image that can be uploaded
 }) {
-  console.log("value",value)
+  console.log("value", value);
   const imageRef = useRef(null);
   const [image, setImage] = useState(null); //set image source for cropper
   const [isOpen, setIsOpen] = useState(false); //open cropper modal
@@ -116,7 +119,7 @@ export default function ImageUploaderWeb({
       setShowToast(true);
       setDataToast({
         type: "error",
-        message: `Format file tidak sesuai ketentuan`,
+        message: "Format file tidak sesuai ketentuan",
       });
       setError(true);
       imageRef.current.value = null;
@@ -144,7 +147,7 @@ export default function ImageUploaderWeb({
           setShowToast(true);
           setDataToast({
             type: "error",
-            message: `Gagal mengunggah gambar`,
+            message: "Gagal mengunggah gambar",
           });
           setError(true);
           imageRef.current.value = null;
@@ -167,7 +170,7 @@ export default function ImageUploaderWeb({
           setShowToast(true);
           setDataToast({
             type: "error",
-            message: `Gagal mengunggah gambar`,
+            message: "Gagal mengunggah gambar",
           });
           setError(true);
           imageRef.current.value = null;
@@ -233,11 +236,11 @@ export default function ImageUploaderWeb({
           error || isNull ? styles.ImageUploaderError : styles.ImageUploader
         } ${!error && image ? styles.borderImage : styles.borderDashed} ${
           error && styles.ImageUploaderNull
-        } relative flex gap-y-3 items-end group hover:!border-primary-700 size-[72px] ${className}`}
+        } group relative flex size-[72px] items-end gap-y-3 hover:!border-primary-700 ${className}`}
         style={
           !error && base64Image && !isLoading
             ? { backgroundImage: `url(${base64Image})` }
-            : { backgroundImage: `none` }
+            : { backgroundImage: "none" }
         }
         onClick={() => {
           if (!isLoading) {
@@ -268,7 +271,7 @@ export default function ImageUploaderWeb({
               <>
                 <IconComponent size="small" src="/icons/add_image.svg" />
                 {isBig ? (
-                  <span className="text-neutral-900 font-semibold text-[12px] leading-[14.4px] group-hover:text-primary-700">
+                  <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900 group-hover:text-primary-700">
                     {renderUploadText}
                   </span>
                 ) : null}
@@ -277,12 +280,12 @@ export default function ImageUploaderWeb({
             {error && (
               <>
                 <IconComponent
-                  classname={`icon-error-400`}
+                  classname={"icon-error-400"}
                   size="small"
                   src="/icons/restart.svg"
                 />
                 {isBig ? (
-                  <span className="text-error-400 font-semibold text-[12px] leading-[14.4px] group-hover:text-primary-700">
+                  <span className="text-[12px] font-semibold leading-[14.4px] text-error-400 group-hover:text-primary-700">
                     {renderErrorText}
                   </span>
                 ) : null}
@@ -290,7 +293,7 @@ export default function ImageUploaderWeb({
             )}
             {base64Image && !error && (
               <button
-                className={`absolute bg-[#FFFFFF] flex justify-center items-center rounded-[24px] top-[4px] right-[4px] ${
+                className={`absolute right-[4px] top-[4px] flex items-center justify-center rounded-[24px] bg-[#FFFFFF] ${
                   isBig ? "size-5" : "size-4"
                 }`}
                 onClick={removeImage}
@@ -299,7 +302,7 @@ export default function ImageUploaderWeb({
               </button>
             )}
             {isBig && isMain && base64Image && !error && (
-              <div className="bg-success-50 text-success-400 text-[12px] px-2 font-semibold flex items-center justify-center p-[7px] rounded-md h-[24px] absolute bottom-[8px] left-[8px]">
+              <div className="absolute bottom-[8px] left-[8px] flex h-[24px] items-center justify-center rounded-md bg-success-50 p-[7px] px-2 text-[12px] font-semibold text-success-400">
                 {/* {t("labelGambarUtama")} */}
                 Gambar Utama
               </div>

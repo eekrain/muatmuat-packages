@@ -1,16 +1,19 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { modal } from "@/store/zustand/modal";
-import Button from "../Button/Button";
-import CropperImage from "../Cropper/Cropper";
-import { useSWRConfig } from "swr";
-import SWRHandler from "@/services/useSWRHook";
-import toast from "@/store/zustand/toast";
-import Bottomsheet from "../Bottomsheet/Bottomsheet";
+import { useEffect, useRef, useState } from "react";
+
 import { Camera, PencilLine, Upload } from "lucide-react";
+import { useSWRConfig } from "swr";
+
 import { useHeader } from "@/common/ResponsiveContext";
 import { useTranslation } from "@/context/TranslationProvider";
+import SWRHandler from "@/services/useSWRHook";
+import { modal } from "@/store/zustand/modal";
+import toast from "@/store/zustand/toast";
+
+import Bottomsheet from "../Bottomsheet/Bottomsheet";
+import Button from "../Button/Button";
+import CropperImage from "../Cropper/Cropper";
 
 const api = process.env.NEXT_PUBLIC_GLOBAL_API;
 
@@ -35,7 +38,7 @@ const ImageUploaderRegisterResponsive = ({
   const { mutate } = useSWRConfig();
   const { useSWRMutateHook } = SWRHandler;
   const { trigger: setPhoto } = useSWRMutateHook(
-    api + "v1/register/seller/logo",
+    `${api}v1/register/seller/logo`,
     "POST"
   );
 
@@ -292,7 +295,7 @@ const ImageUploaderRegisterResponsive = ({
       formData.append("file", file);
 
       const response = await setPhoto(formData);
-      mutate(api + "v1/register/seller/logo");
+      mutate(`${api}v1/register/seller/logo`);
       setResultCrops(response.data.Data.url);
       value(response.data.Data.url);
       setModalOpen(false);
@@ -394,14 +397,14 @@ const ImageUploaderRegisterResponsive = ({
     setTitleBottomsheet(" -");
     setShowBottomsheet(true);
     setDataBottomsheet(
-      <div className="flex justify-evenly items-center">
+      <div className="flex items-center justify-evenly">
         {uploadOptions.map((option, index) => (
           <div
             key={index}
-            className="flex flex-col gap-3 items-center cursor-pointer"
+            className="flex cursor-pointer flex-col items-center gap-3"
             onClick={option.onClick}
           >
-            <div className="w-16 h-16 rounded-full bg-primary-700 flex items-center justify-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-700">
               {index === 0 ? (
                 <Camera size={24} color="white" />
               ) : (
@@ -419,8 +422,8 @@ const ImageUploaderRegisterResponsive = ({
 
   const handleDelete = () => {
     setModalContent(
-      <div className="py-9 px-6">
-        <span className="font-medium text-sm block text-center mb-6 text-neutral-900">
+      <div className="px-6 py-9">
+        <span className="mb-6 block text-center text-sm font-medium text-neutral-900">
           {t("titleDeleteImage")}
         </span>
         <div className="flex justify-center gap-2">
@@ -475,7 +478,7 @@ const ImageUploaderRegisterResponsive = ({
         muted
       />
       {isProfil ? (
-        <div className="w-[94px] h-[94px] border-8 border-white rounded-full relative bg-white">
+        <div className="relative h-[94px] w-[94px] rounded-full border-8 border-white bg-white">
           {/* LB - 0130, 25.03 */}
           <img
             src={`${
@@ -484,11 +487,11 @@ const ImageUploaderRegisterResponsive = ({
                 : "https://azlogistik.s3.ap-southeast-3.amazonaws.com/dev/file-1736414569172.webp"
             }`}
             alt="Profile"
-            className="w-full h-full object-cover rounded-full bg-white"
+            className="h-full w-full rounded-full bg-white object-cover"
           />
           <div
             onClick={handleUbah}
-            className="absolute top-12 -right-4 rounded-full bg-white border border-primary-700 w-[35px] h-[35px] flex justify-center items-center"
+            className="absolute -right-4 top-12 flex h-[35px] w-[35px] items-center justify-center rounded-full border border-primary-700 bg-white"
           >
             <PencilLine size={12} className="text-primary-700" />
           </div>
@@ -521,7 +524,7 @@ const ImageUploaderRegisterResponsive = ({
               {resultCrops ? t("labelUbahBtn") : t("labelUnggahResp")}
             </Button>
           </div>
-          <span className="w-full text-center font-medium text-xs text-neutral-600 leading-[14.4px]">
+          <span className="w-full text-center text-xs font-medium leading-[14.4px] text-neutral-600">
             {t("labelMaximum10")}
           </span>
         </div>

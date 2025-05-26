@@ -1,7 +1,10 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
-import style from "./TextArea.module.scss";
+
 import PropTypes from "prop-types";
+
+import style from "./TextArea.module.scss";
 
 const TextArea = ({
   name,
@@ -35,9 +38,9 @@ const TextArea = ({
 
   useEffect(() => {
     // for add null checking only
-    setCharCount(value?.length)
+    setCharCount(value?.length);
     // LBM, pengecekan value title null
-  }, [value?.length])
+  }, [value?.length]);
 
   return (
     <div
@@ -49,16 +52,15 @@ const TextArea = ({
       }}
     >
       <div
-        className={`flex w-full p-12 gap-[8px] ${
+        className={`flex w-full gap-[8px] p-12 ${
           disabled && style.input_disabled
-        } ${style.input_style}
-            ${
-              status == "error"
-                ? style.border_red
-                : status == "success"
-                ? style.border_success
-                : ""
-            }`}
+        } ${style.input_style} ${
+          status == "error"
+            ? style.border_red
+            : status == "success"
+              ? style.border_success
+              : ""
+        }`}
       >
         <textarea
           onChange={handleChange}
@@ -67,23 +69,22 @@ const TextArea = ({
           type={type}
           name={name}
           placeholder={placeholder}
-          className={`grow ${style.input} ${classInput} text-[12px] leading-[14.4px] font-medium text-neutral-900 sm:text-[14px] sm:leading-[15.4px] sm:font-semibold placeholder:text-neutral-600`}
+          className={`grow ${style.input} ${classInput} text-[12px] font-medium leading-[14.4px] text-neutral-900 placeholder:text-neutral-600 sm:text-[14px] sm:font-semibold sm:leading-[15.4px]`}
           disabled={disabled}
-          style={{ resize: resize,minHeight:height?height:'80px' }}
+          style={{ resize: resize, minHeight: height ? height : "80px" }}
           maxLength={maxLength}
           value={value}
         />
       </div>
       {
         <div
-          className={`flex justify-between ${style.supportive_text}
-                ${
-                  status == "error"
-                    ? style.text_danger
-                    : status == "success"
-                    ? style.text_success
-                    : ""
-                }`}
+          className={`flex justify-between ${style.supportive_text} ${
+            status == "error"
+              ? style.text_danger
+              : status == "success"
+                ? style.text_success
+                : ""
+          }`}
         >
           {(supportiveText.title || supportiveText.desc) && (
             <>
@@ -118,5 +119,5 @@ TextArea.propTypes = {
   resize: PropTypes.string,
   maxLength: PropTypes.number,
   hasCharCount: PropTypes.bool,
-  height:PropTypes.number
+  height: PropTypes.number,
 };

@@ -16,6 +16,12 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 
 // BottomSheet.jsx
 
+// BottomSheet.jsx
+
+// BottomSheet.jsx
+
+// BottomSheet.jsx
+
 /**
  * @typedef {Object} BottomSheetContextType
  * @property {() => void} open - Function to open the sheet.
@@ -286,7 +292,9 @@ export const BottomSheetContent = ({ children, className }) => {
         {/* Enhanced drag handle with visual feedback */}
         <div className="flex cursor-grab select-none justify-center pb-4 pt-2 active:cursor-grabbing">
           <div
-            className={`h-1.5 w-[38px] rounded-sm bg-[#DDDDDD] transition-colors duration-200`}
+            className={
+              "h-1.5 w-[38px] rounded-sm bg-[#DDDDDD] transition-colors duration-200"
+            }
           />
         </div>
         {children}

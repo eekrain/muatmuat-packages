@@ -1,7 +1,9 @@
 import React from "react";
-import style from "./Button.module.scss";
-import IconComponent from "../IconComponent/IconComponent";
+
 import PropTypes from "prop-types";
+
+import IconComponent from "../IconComponent/IconComponent";
+import style from "./Button.module.scss";
 
 const Button = ({
   color = "primary",
@@ -42,11 +44,31 @@ const Button = ({
       disabled={disabled}
       className={`${Class} ${style[`btn_${type}_${color}`]} ${disabledProp} ${
         style.btn
-      } flex justify-center items-center gap-[4px] min-w-[112px] max-w-fit transition-colors leading-[16.8px] text-[14px] px-[24px] py-[11px] rounded-[24px] !font-semibold`}
+      } flex min-w-[112px] max-w-fit items-center justify-center gap-[4px] rounded-[24px] px-[24px] py-[11px] text-[14px] !font-semibold leading-[16.8px] transition-colors`}
     >
-     {typeof iconLeft==='string' ? <IconComponent loader={false} src={iconLeft} height={16} width={16} classname={disabled ? style['fill_disabled'] : colorIcon }/>:iconLeft}
-        {children}
-      {typeof iconRight==='string' ? <IconComponent loader={false} src={iconRight} height={16} width={16} classname={disabled ? style['fill_disabled'] : colorIcon}/>:iconRight}
+      {typeof iconLeft === "string" ? (
+        <IconComponent
+          loader={false}
+          src={iconLeft}
+          height={16}
+          width={16}
+          classname={disabled ? style["fill_disabled"] : colorIcon}
+        />
+      ) : (
+        iconLeft
+      )}
+      {children}
+      {typeof iconRight === "string" ? (
+        <IconComponent
+          loader={false}
+          src={iconRight}
+          height={16}
+          width={16}
+          classname={disabled ? style["fill_disabled"] : colorIcon}
+        />
+      ) : (
+        iconRight
+      )}
     </button>
   );
 };

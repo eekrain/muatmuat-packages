@@ -1,12 +1,14 @@
 "use client";
 
 import { useRef, useState } from "react";
-import styles from "./ImageUploader.module.scss";
+
+import { useTranslation } from "@/context/TranslationProvider";
+import toast from "@/store/zustand/toast";
+
 import CropperImage from "../Cropper/Cropper";
 import IconComponent from "../IconComponent/IconComponent";
-import toast from "@/store/zustand/toast";
 import ImageComponent from "../ImageComponent/ImageComponent";
-import { useTranslation } from "@/context/TranslationProvider";
+import styles from "./ImageUploader.module.scss";
 
 function base64ToFile(base64String, filename, mimeType) {
   // Decode base64 string to binary data
@@ -150,7 +152,7 @@ export default function ImageUploaderResponsive({
       setShowToast(true);
       setDataToast({
         type: "error",
-        message: `Format file tidak sesuai ketentuan`,
+        message: "Format file tidak sesuai ketentuan",
       });
       setError(true);
       cameraRef.current.value = null;
@@ -180,7 +182,7 @@ export default function ImageUploaderResponsive({
           setShowToast(true);
           setDataToast({
             type: "error",
-            message: `Gagal mengunggah gambar`,
+            message: "Gagal mengunggah gambar",
           });
           setError(true);
           cameraRef.current.value = null;
@@ -205,7 +207,7 @@ export default function ImageUploaderResponsive({
           setShowToast(true);
           setDataToast({
             type: "error",
-            message: `Gagal mengunggah gambar`,
+            message: "Gagal mengunggah gambar",
           });
           setError(true);
           cameraRef.current.value = null;
@@ -267,14 +269,14 @@ export default function ImageUploaderResponsive({
     setDataBottomsheet(
       <div className="flex justify-around">
         {uploadOptions.map((option, key) => (
-          <div className="flex flex-col gap-y-4 items-center" key={key}>
+          <div className="flex flex-col items-center gap-y-4" key={key}>
             <div
-              className="p-5 bg-primary-700 cursor-pointer rounded-[50px] size-16"
+              className="size-16 cursor-pointer rounded-[50px] bg-primary-700 p-5"
               onClick={option.onClick}
             >
               <IconComponent src={option.src} size="medium" />
             </div>
-            <span className="font-semibold text-[16px] leading-[19.2px]">
+            <span className="text-[16px] font-semibold leading-[19.2px]">
               {option.title}
             </span>
           </div>
@@ -303,11 +305,11 @@ export default function ImageUploaderResponsive({
           error || isNull ? styles.ImageUploaderError : styles.ImageUploader
         } ${!error && image ? styles.borderImage : styles.borderDashed} ${
           error && styles.ImageUploaderNull
-        } relative flex gap-y-3 items-end group hover:!border-primary-700 size-[72px] ${className}`}
+        } group relative flex size-[72px] items-end gap-y-3 hover:!border-primary-700 ${className}`}
         style={
           !error && base64Image && !isLoading
             ? { backgroundImage: `url(${base64Image})` }
-            : { backgroundImage: `none` }
+            : { backgroundImage: "none" }
         }
         onClick={handleOpenFileUploadBottomsheet}
       >
@@ -341,7 +343,7 @@ export default function ImageUploaderResponsive({
             {!error && !base64Image && (
               <>
                 <IconComponent size="small" src="/icons/add_image.svg" />
-                <span className="text-black font-medium text-[12px] leading-[13.2px] group-hover:text-primary-700">
+                <span className="text-[12px] font-medium leading-[13.2px] text-black group-hover:text-primary-700">
                   {uploadText}
                 </span>
               </>
@@ -349,18 +351,18 @@ export default function ImageUploaderResponsive({
             {error && (
               <>
                 <IconComponent
-                  classname={`icon-error-400`}
+                  classname={"icon-error-400"}
                   size="small"
                   src="/icons/restart.svg"
                 />
-                <span className="text-[#EE4343] font-medium text-[12px] leading-[13.2px] group-hover:text-primary-700">
+                <span className="text-[12px] font-medium leading-[13.2px] text-[#EE4343] group-hover:text-primary-700">
                   {errorText}
                 </span>
               </>
             )}
             {base64Image && !error && (
               <button
-                className={`absolute bg-[#FFFFFF] flex justify-center items-center rounded-[24px] top-[4px] right-[4px] ${
+                className={`absolute right-[4px] top-[4px] flex items-center justify-center rounded-[24px] bg-[#FFFFFF] ${
                   isBig ? "size-5" : "size-4"
                 }`}
                 onClick={removeImage}
@@ -369,7 +371,7 @@ export default function ImageUploaderResponsive({
               </button>
             )}
             {isMain && base64Image && !error && (
-              <div className="bg-success-50 text-success-400 text-[14px] font-semibold leading-[15.4px] flex items-center justify-center px-[8.5px] rounded-md h-6 absolute bottom-[4px] left-[6px]">
+              <div className="absolute bottom-[4px] left-[6px] flex h-6 items-center justify-center rounded-md bg-success-50 px-[8.5px] text-[14px] font-semibold leading-[15.4px] text-success-400">
                 Utama
               </div>
             )}

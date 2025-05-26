@@ -1,7 +1,11 @@
-"use client"
+"use client";
+
 import { useEffect, useState } from "react";
+
 import PropTypes from "prop-types";
+
 import style from "./ToogleButton.module.scss";
+
 const ToogleButton = ({
   textActive,
   textInactive,
@@ -20,20 +24,20 @@ const ToogleButton = ({
     disabled & getValue
       ? style.disabled_active_primary
       : disabled & !getValue
-      ? style.disabled_inactive_primary
-      : "";
+        ? style.disabled_inactive_primary
+        : "";
   useEffect(() => {
     setValue(value);
   }, [value]);
 
   return (
     <div
-      className={`${styleDisabled} flex items-center gap-2 w-fit`}
+      className={`${styleDisabled} flex w-fit items-center gap-2`}
       {...props}
     >
       <button
         style={{ backgroundColor: getValue ? "#176CF7" : "#434343" }}
-        className={style.main + ` ${getValue ? style[type] : style.inactive}`}
+        className={`${style.main} ${getValue ? style[type] : style.inactive}`}
         onClick={handleValue}
         disabled={disabled}
       >
@@ -45,7 +49,7 @@ const ToogleButton = ({
         ></span>
       </button>
       {!!(textActive || textInactive) && (
-        <span className={style.text + " capitalize select-none"}>
+        <span className={`${style.text} select-none capitalize`}>
           {getValue ? textActive : textInactive}
         </span>
       )}

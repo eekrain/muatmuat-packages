@@ -1,5 +1,7 @@
 import React, { useRef, useState } from "react";
+
 import PropTypes from "prop-types";
+
 import style from "./RadioButton.module.scss";
 
 const RadioButton = ({
@@ -31,7 +33,7 @@ const RadioButton = ({
 
   return (
     <div
-      className={`${style.container_radio} ${classname} cursor-pointer flex gap-[8px] items-center`}
+      className={`${style.container_radio} ${classname} flex cursor-pointer items-center gap-[8px]`}
       onClick={checkedClick}
     >
       <input
@@ -48,15 +50,15 @@ const RadioButton = ({
       <span
         className={`${style.radio_primary} ${classnameRound} ${
           isLabelMissing
-            ? `after:top-[4px] sm:after:!top-[5px]`
-            : `after:top-[5px]`
+            ? "after:top-[4px] sm:after:!top-[5px]"
+            : "after:top-[5px]"
         } select-none`}
       ></span>
       {children ? (
         children
       ) : (
         <span
-          className={`text-xs text-neutral-900 font-medium ${classnameLabel}`}
+          className={`text-xs font-medium text-neutral-900 ${classnameLabel}`}
         >
           {label}
         </span>

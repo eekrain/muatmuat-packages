@@ -1,6 +1,8 @@
 import React from "react";
-import SVG from "react-inlinesvg";
+
 import PropTypes from "prop-types";
+import SVG from "react-inlinesvg";
+
 import style from "./IconComponent.module.scss";
 
 const sizes = {
@@ -37,7 +39,7 @@ function IconComponent({
           loader={
             loader && (
               <span
-                className={`animate-pulse rounded-sm`}
+                className={"animate-pulse rounded-sm"}
                 style={{
                   background: "gray",
                   width: `${sizes[size] ? sizes[size] : width}px`,
@@ -66,7 +68,7 @@ function IconComponent({
       loader={
         loader && (
           <span
-            className={`animate-pulse rounded-sm`}
+            className={"animate-pulse rounded-sm"}
             style={{
               background: "gray",
               width: `${sizes[size] ? sizes[size] : width}px`,
@@ -76,7 +78,11 @@ function IconComponent({
           ></span>
         )
       }
-      src={typeof src === "string" ? process.env.NEXT_PUBLIC_ASSET_REVERSE+src : process.env.NEXT_PUBLIC_ASSET_REVERSE+src.src}
+      src={
+        typeof src === "string"
+          ? process.env.NEXT_PUBLIC_ASSET_REVERSE + src
+          : process.env.NEXT_PUBLIC_ASSET_REVERSE + src.src
+      }
       title={title}
       width={sizes[size] ? sizes[size] : width}
       height={sizes[size] ? sizes[size] : height}
@@ -89,7 +95,14 @@ export default IconComponent;
 
 IconComponent.propTypes = {
   src: PropTypes.string.isRequired,
-  color: PropTypes.oneOf(["primary", "secondary", "default", "danger", 'white', 'gray']),
+  color: PropTypes.oneOf([
+    "primary",
+    "secondary",
+    "default",
+    "danger",
+    "white",
+    "gray",
+  ]),
   size: PropTypes.oneOf(["small", "medium", "large"]),
   title: PropTypes.string,
   height: PropTypes.number,

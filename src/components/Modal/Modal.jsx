@@ -1,16 +1,25 @@
 // Modal.js
 "use client";
+
 import React, {
   createContext,
   useCallback,
   useContext,
-  useState,
   useEffect,
   useRef,
+  useState,
 } from "react";
+
 import { createPortal } from "react-dom";
-import ImageComponent from "@/components/ImageComponent/ImageComponent";
+
 import IconComponent from "@/components/IconComponent/IconComponent";
+import ImageComponent from "@/components/ImageComponent/ImageComponent";
+
+// Modal.js
+
+// Modal.js
+
+// Modal.js
 
 /**
  * @typedef {Object} ModalContextType
@@ -110,7 +119,7 @@ export const ModalTrigger = ({ children }) => {
   return (
     <div
       onClick={open}
-      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+      className="rounded bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
     >
       {children}
     </div>
@@ -120,13 +129,18 @@ export const ModalTrigger = ({ children }) => {
 /**
  * @param {{ children: React.ReactNode, className?: string }} props
  */
-export const ModalHeader = ({ children, className, type = "muattrans", size = "small" }) => {
+export const ModalHeader = ({
+  children,
+  className,
+  type = "muattrans",
+  size = "small",
+}) => {
   const widths = {
     big: 454,
-    small: 386
-  }
+    small: 386,
+  };
   return (
-    <div className="rounded-t-xl overflow-hidden">
+    <div className="overflow-hidden rounded-t-xl">
       <ImageComponent
         src={`/img/${type}-header-${size}.png`}
         width={widths[size] || widths.small}
@@ -148,7 +162,7 @@ export const ModalContent = ({ children, className, type = "muattrans" }) => {
     muatmuat: "icon-fill-primary-700",
     muatparts: "icon-fill-muat-parts-non-800",
     muattrans: "icon-fill-muat-trans-secondary-900",
-  }
+  };
 
   if (!isOpen || typeof window === "undefined") {
     return null;
@@ -156,14 +170,14 @@ export const ModalContent = ({ children, className, type = "muattrans" }) => {
 
   return createPortal(
     <div
-      className="fixed inset-0 bg-neutral-900/30 bg-opacity-50 flex items-center justify-center z-50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/30 bg-opacity-50"
       onMouseDown={handleClickOutside}
     >
-      <div
-        ref={dialogRef}
-        className="bg-neutral-50 rounded-xl relative"
-      >
-        <button className="absolute right-2 top-2 bg-neutral-50 rounded-full flex items-center justify-center" onClick={close}>
+      <div ref={dialogRef} className="relative rounded-xl bg-neutral-50">
+        <button
+          className="absolute right-2 top-2 flex items-center justify-center rounded-full bg-neutral-50"
+          onClick={close}
+        >
           <IconComponent
             classname={iconClassnames[type] || iconClassnames.muattrans}
             src="/icons/close20.svg"

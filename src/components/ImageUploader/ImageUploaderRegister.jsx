@@ -1,13 +1,16 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+
+import { useSWRConfig } from "swr";
+
+import { useTranslation } from "@/context/TranslationProvider";
+import SWRHandler from "@/services/useSWRHook";
 import { modal } from "@/store/zustand/modal";
+import toast from "@/store/zustand/toast";
+
 import Button from "../Button/Button";
 import CropperImage from "../Cropper/Cropper";
-import { useSWRConfig } from "swr";
-import SWRHandler from "@/services/useSWRHook";
-import toast from "@/store/zustand/toast";
-import { useTranslation } from "@/context/TranslationProvider";
 
 const api = process.env.NEXT_PUBLIC_GLOBAL_API;
 
@@ -48,8 +51,8 @@ const ImageUploaderRegister = ({
 
   const handleDelete = () => {
     setModalContent(
-      <div className="py-9 px-6">
-        <span className="font-medium text-sm block text-center mb-6 text-neutral-900">
+      <div className="px-6 py-9">
+        <span className="mb-6 block text-center text-sm font-medium text-neutral-900">
           {t("labelConfirmationDeletePhoto")}
         </span>
         <div className="flex justify-center gap-2">
@@ -98,7 +101,7 @@ const ImageUploaderRegister = ({
         />
         {/* LB - 0340, 25.03 */}
         <span
-          className="text-primary-700 text-[10px] font-semibold cursor-pointer"
+          className="cursor-pointer text-[10px] font-semibold text-primary-700"
           onClick={handleUbah}
         >
           {/* {t("buttonChangeFile")} */}
@@ -112,7 +115,7 @@ const ImageUploaderRegister = ({
       {resultCrops &&
       resultCrops !==
         "https://azlogistik.s3.ap-southeast-3.amazonaws.com/dev/file-1736414569172.webp" ? (
-        <div className="relative group">
+        <div className="group relative">
           {/* LB - 0130, 25.03 */}
           <img
             src={`${
@@ -124,13 +127,13 @@ const ImageUploaderRegister = ({
             className="size-[72px] rounded-full bg-white"
           />
           <div
-            className={`absolute inset-0 rounded-full bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-200 items-center justify-center ${
+            className={`absolute inset-0 items-center justify-center rounded-full bg-black/80 opacity-0 transition-opacity duration-200 group-hover:opacity-100 ${
               disableDelete ? "hidden" : "flex"
             }`}
           >
             <button
               onClick={handleDelete}
-              className="text-white p-2 rounded-full flex items-center justify-center flex-col gap-1"
+              className="flex flex-col items-center justify-center gap-1 rounded-full p-2 text-white"
             >
               <svg
                 width="16"
@@ -171,7 +174,7 @@ const ImageUploaderRegister = ({
           ? t("buttonChange")
           : t("buttonUpload")}
       </Button>
-      <span className="w-[107px] font-medium text-xs text-neutral-600 leading-[14.4px]">
+      <span className="w-[107px] text-xs font-medium leading-[14.4px] text-neutral-600">
         {t("labelUploadPhotoRegister")}
       </span>
     </div>
@@ -186,7 +189,7 @@ const UnggahFoto = ({ resultCrop }) => {
   const { mutate } = useSWRConfig();
   const { useSWRMutateHook } = SWRHandler;
   const { trigger: setPhoto } = useSWRMutateHook(
-    api + "v1/register/seller/logo",
+    `${api}v1/register/seller/logo`,
     "POST"
   );
 
@@ -205,7 +208,7 @@ const UnggahFoto = ({ resultCrop }) => {
 
       await setPhoto(formData)
         .then((response) => {
-          mutate(api + "v1/register/seller/logo");
+          mutate(`${api}v1/register/seller/logo`);
           resultCrop(response.data.Data.url);
           setModalOpen(false);
         })
@@ -225,12 +228,12 @@ const UnggahFoto = ({ resultCrop }) => {
   };
 
   return (
-    <div className="py-9 px-16">
-      <span className="text-neutral-900 font-bold text-sm mx-auto text-center block mb-6">
+    <div className="px-16 py-9">
+      <span className="mx-auto mb-6 block text-center text-sm font-bold text-neutral-900">
         {t("buttonUploadLogo")}
       </span>
       <ImageUploadHandler onResult={handleImageResult} />
-      <span className="text-xs font-medium text-[#868686] block mt-2">
+      <span className="mt-2 block text-xs font-medium text-[#868686]">
         {t("labelUploadPhotoRegister")}
       </span>
     </div>
@@ -363,7 +366,7 @@ export const ImageUploadHandler = ({ onResult }) => {
       />
 
       <div
-        className="w-[416px] h-[128px] rounded-md border-dashed flex justify-center items-center border border-primary-700 cursor-pointer"
+        className="flex h-[128px] w-[416px] cursor-pointer items-center justify-center rounded-md border border-dashed border-primary-700"
         onClick={() => fileRef.current.click()}
       >
         <span className="text-xs font-medium text-neutral-900">
