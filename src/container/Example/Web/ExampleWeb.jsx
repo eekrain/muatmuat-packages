@@ -6,6 +6,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import ToogleButton from "@/components/ToogleButton/ToogleButton";
 
+import ExampleSwr from "./ExampleSwr";
 import ExampleTimeline from "./ExampleTimeline";
 
 const ExampleWeb = () => {
@@ -30,6 +31,7 @@ const ExampleWeb = () => {
       [courierName]: !prev[courierName],
     }));
   };
+
   return (
     <div className="flex flex-col gap-y-3 p-4">
       <div className="itmes-center flex gap-x-2">
@@ -131,6 +133,10 @@ const ExampleWeb = () => {
 
       <div className="mt-4">
         <ExampleTimeline />
+      </div>
+
+      <div className="mt-4">
+        <ExampleSwr />
       </div>
     </div>
   );
