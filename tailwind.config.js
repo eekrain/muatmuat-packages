@@ -4,11 +4,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "1b1b": "#1b1b1b",
-        "muted-foreground": "#7B7B7B",
+        background: "#ffffff",
+        foreground: "#171717",
+
         neutral: {
           50: "#ffffff",
-          100: "#f8f8f8",
+          100: "#f5f5f5",
           200: "#f1f1f1",
           300: "#d9d9d9",
           400: "#c4c4c4",
@@ -18,6 +19,7 @@ module.exports = {
           800: "#434343",
           900: "#000000",
         },
+
         success: {
           50: "#e3f5ed",
           100: "#bae6d1",
@@ -30,7 +32,7 @@ module.exports = {
           800: "#007c47",
           900: "#005d31",
         },
-        // Warning
+
         warning: {
           50: "#fffde6",
           100: "#fff9c1",
@@ -39,10 +41,11 @@ module.exports = {
           400: "#ffeb47",
           500: "#fee61a",
           600: "#ffd920",
-          700: "#FFA700",
+          700: "#ffa700",
           800: "#fe900f",
           900: "#fe700d",
         },
+
         error: {
           50: "#ffe9ed",
           100: "#ffc9ce",
@@ -55,6 +58,7 @@ module.exports = {
           800: "#c50018",
           900: "#b5000b",
         },
+
         primary: {
           50: "#e2f2ff",
           100: "#b9ddff",
@@ -67,6 +71,7 @@ module.exports = {
           800: "#1257c6",
           900: "#0c377c",
         },
+
         secondary: {
           50: "#fff8e1",
           100: "#ffecb4",
@@ -79,6 +84,7 @@ module.exports = {
           800: "#fe900f",
           900: "#fe700d",
         },
+
         "buyer-seller": {
           50: "#e8ebf7",
           100: "#c4cdeb",
@@ -91,6 +97,7 @@ module.exports = {
           800: "#163e99",
           900: "#176cf7",
         },
+
         "muat-parts-member": {
           50: "#f6e6e8",
           100: "#eac0c3",
@@ -103,6 +110,7 @@ module.exports = {
           800: "#86090c",
           900: "#770000",
         },
+
         "muat-parts-non": {
           50: "#ffeaec",
           100: "#ffcccd",
@@ -115,6 +123,7 @@ module.exports = {
           800: "#c22716",
           900: "#b31b06",
         },
+
         "muat-trans": {
           50: "#f8f8f0",
           100: "#f0f0e8",
@@ -127,9 +136,31 @@ module.exports = {
           800: "#36362f",
           900: "#770000",
         },
-        popover: {
-          DEFAULT: " 0 0% 100%",
-          foreground: "0 0% 3.9%",
+
+        "muat-trans-primary": {
+          50: "#fffbeb",
+          100: "#fff5c6",
+          200: "#ffe988",
+          300: "#ffd84a",
+          400: "#ffc217",
+          500: "#f9a307",
+          600: "#dd7b02",
+          700: "#b75606",
+          800: "#94410c",
+          900: "#7a360d",
+        },
+
+        "muat-trans-secondary": {
+          50: "#ede8e6",
+          100: "#dad1cc",
+          200: "#c8bbb3",
+          300: "#b5a49a",
+          400: "#a38d81",
+          500: "#907667",
+          600: "#7e5f4e",
+          700: "#6b4935",
+          800: "#59321b",
+          900: "#461b02",
         },
       },
       boxShadow: {

@@ -1,10 +1,10 @@
 "use client";
 
+import Toast from "@/components/Toast/Toast";
 import useDevice from "@/hooks/use-device";
 
+import DesktopLayout from "../DesktopLayout/DesktopLayout";
 import ResponsiveLayout from "../ResponsiveLayout/ResponsiveLayout";
-
-// import DesktopLayout from "./desktop/DesktopLayout";
 
 const MainLayout = ({ children }) => {
   const { isMobile, mounted } = useDevice();
@@ -13,12 +13,18 @@ const MainLayout = ({ children }) => {
     return null;
   }
   if (isMobile) {
-    return <ResponsiveLayout>{children}</ResponsiveLayout>;
+    return (
+      <ResponsiveLayout>
+        {children}
+        <Toast />
+      </ResponsiveLayout>
+    );
   }
   return (
-    // <DesktopLayout>
-    <main className="min-h-[calc(100vh-60px)]">{children}</main>
-    // {/* </DesktopLayout> */}
+    <DesktopLayout>
+      <main className="min-h-[calc(100vh-60px)]">{children}</main>
+      <Toast />
+    </DesktopLayout>
   );
 };
 

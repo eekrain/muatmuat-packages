@@ -223,6 +223,11 @@ input::-webkit-inner-spin-button {
     fill: var(--neutral-50);
   }
 }
+.icon-stroke-muat-trans-primary-400 {
+  path {
+    stroke: var(--muat-trans-primary-400);
+  }
+}
 .icon-fill-muat-trans-secondary-900 {
   path {
     fill: var(--muat-trans-secondary-900);
