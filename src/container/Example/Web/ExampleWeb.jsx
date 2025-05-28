@@ -6,6 +6,8 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import ToogleButton from "@/components/ToogleButton/ToogleButton";
 
+import ExampleTimeline from "./ExampleTimeline";
+
 const ExampleWeb = () => {
   const [courierStatus, setCourierStatus] = useState({
     ambilLangsung: false,
@@ -126,6 +128,10 @@ const ExampleWeb = () => {
           </div>
         </ModalContent>
       </Modal>
+
+      <div className="mt-4">
+        <ExampleTimeline />
+      </div>
     </div>
   );
 };
