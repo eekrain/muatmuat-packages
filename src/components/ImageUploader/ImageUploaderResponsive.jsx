@@ -2,8 +2,13 @@
 
 import { useRef, useState } from "react";
 
+import {
+  BottomSheet,
+  BottomSheetContent,
+  BottomSheetHeader,
+} from "@/components/Bottomsheet/Bottomsheet";
 import { useTranslation } from "@/context/TranslationProvider";
-import toast from "@/store/zustand/toast";
+import { toast } from "@/lib/toast";
 
 import CropperImage from "../Cropper/Cropper";
 import IconComponent from "../IconComponent/IconComponent";
@@ -47,13 +52,6 @@ export default function ImageUploaderResponsive({
   isLoading,
   acceptedFormats = [".jpg", ".jpeg", ".png"], // format of image that can be uploaded
 }) {
-  const {
-    setShowBottomsheet,
-    setTitleBottomsheet,
-    setDataBottomsheet,
-    setShowToast,
-    setDataToast,
-  } = toast();
   const cameraRef = useRef(null);
   const fileRef = useRef(null);
   const [image, setImage] = useState(null); //set image source for cropper
@@ -63,6 +61,7 @@ export default function ImageUploaderResponsive({
   const [imageFiles, setImageFiles] = useState(null);
   const base64Image = value;
   const [error, setError] = useState(false);
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   // LB - 0652 - 25. 03 - QC Plan - Web - Pengecekan Ronda Muatparts - Tahap 2
   const { t } = useTranslation();
 
@@ -115,19 +114,11 @@ export default function ImageUploaderResponsive({
 
     // Check file size
     if (file.size > maxSize * 1024 * 1024) {
-      // setError({
-      //   status: true,
-      //   message: `Ukuran file melebihi ${maxSize}MB`,
-      // });
-      setShowToast(true);
-      setDataToast({
-        type: "error",
-        message: `${t("messageFileExceed")} ${maxSize}MB`,
-      });
+      toast.error(`${t("messageFileExceed")} ${maxSize}MB`);
       setError(true);
       cameraRef.current.value = null;
       fileRef.current.value = null;
-      setShowBottomsheet(false);
+      setIsBottomSheetOpen(false);
       return;
     }
 
@@ -145,19 +136,11 @@ export default function ImageUploaderResponsive({
 
     // Check if file type is accepted
     if (!acceptedMimeTypes.includes(file.type)) {
-      // setError({
-      //   status: true,
-      //   message: `Format file tidak sesuai ketentuan`,
-      // });
-      setShowToast(true);
-      setDataToast({
-        type: "error",
-        message: "Format file tidak sesuai ketentuan",
-      });
+      toast.error("Format file tidak sesuai ketentuan");
       setError(true);
       cameraRef.current.value = null;
       fileRef.current.value = null;
-      setShowBottomsheet(false);
+      setIsBottomSheetOpen(false);
       return;
     }
 
@@ -175,19 +158,11 @@ export default function ImageUploaderResponsive({
         const headerArray = new Uint8Array(headerReader.result);
         const expectedMagicNumbers = magicNumbers[file.type];
         if (!expectedMagicNumbers) {
-          // setError({
-          //   status: true,
-          //   message: `Gagal mengunggah gambar`,
-          // });
-          setShowToast(true);
-          setDataToast({
-            type: "error",
-            message: "Gagal mengunggah gambar",
-          });
+          toast.error("Gagal mengunggah gambar");
           setError(true);
           cameraRef.current.value = null;
           fileRef.current.value = null;
-          setShowBottomsheet(false);
+          setIsBottomSheetOpen(false);
           return;
         }
 
@@ -200,19 +175,11 @@ export default function ImageUploaderResponsive({
         }
 
         if (!matches) {
-          // setError({
-          //   status: true,
-          //   message: `Gagal mengunggah gambar`,
-          // });
-          setShowToast(true);
-          setDataToast({
-            type: "error",
-            message: "Gagal mengunggah gambar",
-          });
+          toast.error("Gagal mengunggah gambar");
           setError(true);
           cameraRef.current.value = null;
           fileRef.current.value = null;
-          setShowBottomsheet(false);
+          setIsBottomSheetOpen(false);
           return;
         }
 
@@ -222,7 +189,7 @@ export default function ImageUploaderResponsive({
           setImage(fullReader.result);
           setIsOpen(true);
           setError(false);
-          setShowBottomsheet(false);
+          setIsBottomSheetOpen(false);
         };
         fullReader.readAsDataURL(file);
       }
@@ -238,7 +205,6 @@ export default function ImageUploaderResponsive({
     onFinishCrop(file);
     if (value) {
       setCropData(value);
-      // getImage(value);
       onUpload(value);
       onError(false);
       cameraRef.current.value = null;
@@ -264,42 +230,50 @@ export default function ImageUploaderResponsive({
   };
 
   const handleOpenFileUploadBottomsheet = () => {
-    setShowBottomsheet(true);
-    setTitleBottomsheet(" -");
-    setDataBottomsheet(
-      <div className="flex justify-around">
-        {uploadOptions.map((option, key) => (
-          <div className="flex flex-col items-center gap-y-4" key={key}>
-            <div
-              className="size-16 cursor-pointer rounded-[50px] bg-primary-700 p-5"
-              onClick={option.onClick}
-            >
-              <IconComponent src={option.src} size="medium" />
-            </div>
-            <span className="text-[16px] font-semibold leading-[19.2px]">
-              {option.title}
-            </span>
-          </div>
-        ))}
-      </div>
-    );
+    setIsBottomSheetOpen(true);
   };
 
   const uploadOptions = [
     {
       src: "/icons/camera.svg",
       title: "Ambil Foto",
-      onClick: () => cameraRef.current.click(),
+      onClick: () => {
+        setIsBottomSheetOpen(false);
+        cameraRef.current.click();
+      },
     },
     {
       src: "/icons/Upload.svg",
       title: "Unggah File",
-      onClick: () => fileRef.current.click(),
+      onClick: () => {
+        setIsBottomSheetOpen(false);
+        fileRef.current.click();
+      },
     },
   ];
 
   return (
     <>
+      <BottomSheet open={isBottomSheetOpen} onOpenChange={setIsBottomSheetOpen}>
+        <BottomSheetContent>
+          <BottomSheetHeader title="Pilih Sumber Foto" />
+          <div className="flex justify-around py-4">
+            {uploadOptions.map((option, key) => (
+              <div className="flex flex-col items-center gap-y-4" key={key}>
+                <div
+                  className="size-16 cursor-pointer rounded-[50px] bg-primary-700 p-5"
+                  onClick={option.onClick}
+                >
+                  <IconComponent src={option.src} size="medium" />
+                </div>
+                <span className="text-[16px] font-semibold leading-[19.2px]">
+                  {option.title}
+                </span>
+              </div>
+            ))}
+          </div>
+        </BottomSheetContent>
+      </BottomSheet>
       <div
         className={`${
           error || isNull ? styles.ImageUploaderError : styles.ImageUploader

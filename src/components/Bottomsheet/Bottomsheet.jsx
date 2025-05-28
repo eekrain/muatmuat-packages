@@ -22,6 +22,8 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 
 // BottomSheet.jsx
 
+// BottomSheet.jsx
+
 /**
  * @typedef {Object} BottomSheetContextType
  * @property {() => void} open - Function to open the sheet.
@@ -329,4 +331,9 @@ export const BottomSheetHeader = ({ className, title }) => {
 export const BottomSheetFooter = ({ children, className }) => {
   const baseClass = "border-t px-6 py-4 bg-gray-50 rounded-b-2xl";
   return <div className={className ?? baseClass}>{children}</div>;
+};
+
+export const BottomSheetClose = ({ children }) => {
+  const { close } = useBottomSheet();
+  return <button onClick={close}>{children}</button>;
 };

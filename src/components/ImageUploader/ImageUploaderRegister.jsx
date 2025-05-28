@@ -5,9 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import { useSWRConfig } from "swr";
 
 import { useTranslation } from "@/context/TranslationProvider";
+import { toast } from "@/lib/toast";
 import SWRHandler from "@/services/useSWRHook";
 import { modal } from "@/store/zustand/modal";
-import toast from "@/store/zustand/toast";
 
 import Button from "../Button/Button";
 import CropperImage from "../Cropper/Cropper";
@@ -185,7 +185,6 @@ export default ImageUploaderRegister;
 
 const UnggahFoto = ({ resultCrop }) => {
   const { setModalOpen } = modal();
-  const { setShowToast, setDataToast } = toast();
   const { mutate } = useSWRConfig();
   const { useSWRMutateHook } = SWRHandler;
   const { trigger: setPhoto } = useSWRMutateHook(
@@ -197,8 +196,7 @@ const UnggahFoto = ({ resultCrop }) => {
 
   const handleImageResult = async ({ result, error }) => {
     if (error) {
-      setShowToast(true);
-      setDataToast({ type: "error", message: error });
+      toast.error(error);
       return;
     }
 

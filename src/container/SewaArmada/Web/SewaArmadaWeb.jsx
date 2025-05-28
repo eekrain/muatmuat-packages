@@ -12,7 +12,6 @@ import Input from "@/components/Input/Input";
 import RadioButton from "@/components/Radio/RadioButton";
 // import SWRHandler from "@/services/useSWRHook";
 import { useSewaArmadaStore } from "@/store/sewaArmada";
-import toast from "@/store/toast";
 
 import BannerCarousel from "./BannerCarousel/BannerCarousel";
 import FirstTimer from "./FirstTimer/FirstTimer";
@@ -24,7 +23,6 @@ export default function SewaArmadaWeb() {
 
   // SWR Hooks
   // const { useSWRHook, useSWRMutateHook } = SWRHandler;
-  const { setShowToast, setDataToast } = toast();
   const [openControlled, setOpenControlled] = useState(false);
 
   // Menggunakan state dari zustand
@@ -97,14 +95,10 @@ export default function SewaArmadaWeb() {
   //       }
   //     } catch (error) {
   //       console.error("Error fetching cargo categories:", error);
-  //       setShowToast(true);
-  //       setDataToast({
-  //         type: "error",
-  //         message: "Gagal memuat kategori muatan",
-  //       });
+  //       toast.error("Gagal memuat kategori muatan");
   //     }
   //   },
-  //   [cargoTypes, setShowToast, setDataToast]
+  //   [cargoTypes, toast, setDataToast]
   // );
 
   // useEffect(() => {

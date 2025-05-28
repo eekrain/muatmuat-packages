@@ -1,10 +1,24 @@
 import { create } from "zustand";
 
-const toast = create((set) => ({
-  showToast: false,
-  setShowToast: (value) => set({ showToast: value }),
-  dataToast: { type: "", message: "" },
-  setDataToast: (value) => set({ dataToast: value }),
-}));
+export const useToastStore = create(
+  /** @returns {ToastState} */ (set, get) => ({
+    dataToast: [],
+    position: "bottom-right",
+    addToast: (toast) => {
+      const id = Math.random().toString(36).substr(2, 9);
+      set((state) => ({
+        dataToast: [...state.dataToast, { ...toast, id }],
+      }));
 
-export default toast;
+      setTimeout(() => {
+        set((state) => ({
+          dataToast: state.dataToast.filter((t) => t.id !== id),
+        }));
+      }, toast.duration || 5000);
+    },
+    removeToast: (id) =>
+      set((state) => ({
+        dataToast: state.dataToast.filter((t) => t.id !== id),
+      })),
+  })
+);

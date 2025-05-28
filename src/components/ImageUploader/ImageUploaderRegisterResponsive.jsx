@@ -6,12 +6,16 @@ import { Camera, PencilLine, Upload } from "lucide-react";
 import { useSWRConfig } from "swr";
 
 import { useHeader } from "@/common/ResponsiveContext";
+import {
+  BottomSheet,
+  BottomSheetContent,
+  BottomSheetHeader,
+} from "@/components/Bottomsheet/Bottomsheet";
 import { useTranslation } from "@/context/TranslationProvider";
+import { toast } from "@/lib/toast";
 import SWRHandler from "@/services/useSWRHook";
 import { modal } from "@/store/zustand/modal";
-import toast from "@/store/zustand/toast";
 
-import Bottomsheet from "../Bottomsheet/Bottomsheet";
 import Button from "../Button/Button";
 import CropperImage from "../Cropper/Cropper";
 
@@ -22,16 +26,8 @@ const ImageUploaderRegisterResponsive = ({
   defaultValue,
   isProfil = false,
   previewTitle,
-  // 24. THP 2 - MOD001 - MP - 015 - QC Plan - Web - MuatParts - Seller - Paket 039 A - Profil Seller - LB - 0066
   previewDescription,
 }) => {
-  const {
-    setShowBottomsheet,
-    setDataBottomsheet,
-    setTitleBottomsheet,
-    setShowToast,
-    setDataToast,
-  } = toast();
   const { t } = useTranslation();
   const { setModalOpen, setModalConfig, setModalContent } = modal();
   const { setAppBar } = useHeader();
@@ -49,15 +45,11 @@ const ImageUploaderRegisterResponsive = ({
   const [image, setImage] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isShowPreview, setIsShowPreview] = useState(false);
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const fileRef = useRef(null);
   const cameraRef = useRef(null);
 
   useEffect(() => {
-    setShowBottomsheet(false);
-  }, []);
-
-  useEffect(() => {
-    // LB - 0623 - 25. 03 - QC Plan - Web - Pengecekan Ronda Muatparts - Tahap 2
     if (defaultValue && hasInitValue.current === false) {
       setResultCrops(defaultValue);
       hasInitValue.current = true;
@@ -110,10 +102,9 @@ const ImageUploaderRegisterResponsive = ({
     return { isValid: true, error: "" };
   };
 
-  // LB - 0445, 25.03
   const validateImageIntegrity = (fileDataUrl) => {
     return new Promise((resolve) => {
-      const img = new Image();
+      const img = new window.Image();
 
       img.onload = () => {
         if (img.width > 0 && img.height > 0) {
@@ -137,15 +128,13 @@ const ImageUploaderRegisterResponsive = ({
     });
   };
 
-  // LB - 0445, 25.03
   const handleFileInput = async (e, isCamera = false) => {
     const file = e.target.files[0];
     if (!file) return;
 
     const validation = validateFile(file);
     if (!validation.isValid) {
-      setShowToast(true);
-      setDataToast({ type: "error", message: validation.error });
+      toast.error(validation.error);
       if (isCamera) {
         cameraRef.current.value = null;
       } else {
@@ -160,8 +149,7 @@ const ImageUploaderRegisterResponsive = ({
         const imageIntegrityCheck = await validateImageIntegrity(reader.result);
 
         if (!imageIntegrityCheck.isValid) {
-          setShowToast(true);
-          setDataToast({ type: "error", message: imageIntegrityCheck.error });
+          toast.error(imageIntegrityCheck.error);
 
           if (isCamera) {
             cameraRef.current.value = null;
@@ -173,15 +161,11 @@ const ImageUploaderRegisterResponsive = ({
 
         setImage(reader.result);
         setIsOpen(true);
-        setShowBottomsheet(false);
         setIsShowPreview(false);
+        setIsBottomSheetOpen(false);
       } catch (error) {
         console.error("Error validating image:", error);
-        setShowToast(true);
-        setDataToast({
-          type: "error",
-          message: t("labelFailedProcessPhoto"),
-        });
+        toast.error(t("labelFailedProcessPhoto"));
 
         if (isCamera) {
           cameraRef.current.value = null;
@@ -192,11 +176,7 @@ const ImageUploaderRegisterResponsive = ({
     };
 
     reader.onerror = () => {
-      setShowToast(true);
-      setDataToast({
-        type: "error",
-        message: t("labelFailedReadImage"),
-      });
+      toast.error(t("labelFailedReadImage"));
 
       if (isCamera) {
         cameraRef.current.value = null;
@@ -215,8 +195,7 @@ const ImageUploaderRegisterResponsive = ({
 
   const handleCropComplete = async (croppedDataUrl) => {
     if (!croppedDataUrl) {
-      setShowToast(true);
-      setDataToast({ type: "error", message: t("labelFailedProcessPhoto") });
+      toast.error(t("labelFailedProcessPhoto"));
       return;
     }
 
@@ -248,7 +227,7 @@ const ImageUploaderRegisterResponsive = ({
       if (blob.size > 1024 * 1024) {
         // If larger than 1MB
         const canvas = document.createElement("canvas");
-        const img = new Image();
+        const img = new window.Image();
 
         await new Promise((resolve) => {
           img.onload = () => {
@@ -306,118 +285,46 @@ const ImageUploaderRegisterResponsive = ({
       if (cameraRef.current) cameraRef.current.value = null;
     } catch (error) {
       console.error("Error processing upload:", error);
-      setShowToast(true);
-      setDataToast({
-        type: "error",
-        message: error.response?.data?.message || t("labelFailedProcessPhoto"),
-      });
+      toast.error(
+        error.response?.data?.message || t("labelFailedProcessPhoto")
+      );
     }
   };
-
-  // const handleCropComplete = async (croppedDataUrl) => {
-  //   if (!croppedDataUrl) {
-  //     setShowToast(true);
-  //     setDataToast({ type: "error", message: "Gagal memproses gambar" });
-  //     return;
-  //   }
-
-  //   try {
-  //     const base64Response = await fetch(croppedDataUrl);
-  //     const blob = await base64Response.blob();
-  //     const file = new File([blob], "photo.jpg", { type: "image/jpeg" });
-
-  //     const formData = new FormData();
-  //     formData.append("file", file);
-
-  //     await setPhoto(formData)
-  //       .then((response) => {
-  //         mutate(api + "v1/register/seller/logo");
-  //         setResultCrops(response.data.Data.url);
-  //         setModalOpen(false);
-  //       })
-  //       .catch((err) => {
-  //         console.error("Upload error:", err);
-  //         setShowToast(true);
-  //         setDataToast({ type: "error", message: "Gagal memproses foto" });
-  //       });
-
-  //     setImage(null);
-  //     fileRef.current.value = null;
-  //     if (cameraRef.current) cameraRef.current.value = null;
-  //   } catch (error) {
-  //     console.error("Error processing upload:", error);
-  //     setShowToast(true);
-  //     setDataToast({ type: "error", message: "Gagal memproses foto" });
-  //   }
-  // };
 
   const handleClose = () => {
     setImage(null);
     fileRef.current.value = null;
     if (cameraRef.current) cameraRef.current.value = null;
-    setShowBottomsheet(false);
+    setIsBottomSheetOpen(false);
   };
 
-  // LB - 0456 dan LB - 0457, 25.03
   const handleResetAndShowOptions = () => {
     setIsShowPreview(false);
-    // setIsOpen(false);
     setImage(null);
     handleUbah();
   };
 
-  // LB - 0456 dan LB - 0457, 25.03
   const uploadOptions = [
     {
       src: "/icons/camera.svg",
       title: t("labelAmbilFoto"),
       onClick: () => {
-        setShowBottomsheet(false);
-        // setIsShowPreview(false);
+        setIsBottomSheetOpen(false);
         cameraRef.current.click();
       },
     },
     {
       src: "/icons/Upload.svg",
       title: t("labelUnggahFile"),
-      onClick: (e) => {
-        // e.stopPropagation();
-        setShowBottomsheet(false);
+      onClick: () => {
+        setIsBottomSheetOpen(false);
         fileRef.current.click();
-        // setAppBar({
-        //   title: "",
-        //   appBarType: "",
-        // });
-        // setIsShowPreview(false);
       },
     },
   ];
 
   const handleUbah = () => {
-    setTitleBottomsheet(" -");
-    setShowBottomsheet(true);
-    setDataBottomsheet(
-      <div className="flex items-center justify-evenly">
-        {uploadOptions.map((option, index) => (
-          <div
-            key={index}
-            className="flex cursor-pointer flex-col items-center gap-3"
-            onClick={option.onClick}
-          >
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-700">
-              {index === 0 ? (
-                <Camera size={24} color="white" />
-              ) : (
-                <Upload size={24} color="white" />
-              )}
-            </div>
-            <span className="text-sm font-semibold text-neutral-900">
-              {option.title}
-            </span>
-          </div>
-        ))}
-      </div>
-    );
+    setIsBottomSheetOpen(true);
   };
 
   const handleDelete = () => {
@@ -457,7 +364,33 @@ const ImageUploaderRegisterResponsive = ({
 
   return (
     <>
-      <Bottomsheet />
+      <BottomSheet open={isBottomSheetOpen} onOpenChange={setIsBottomSheetOpen}>
+        <BottomSheetContent>
+          <BottomSheetHeader
+            title={t("labelPilihSumberFoto") || "Pilih Sumber Foto"}
+          />
+          <div className="flex items-center justify-evenly py-4">
+            {uploadOptions.map((option, index) => (
+              <div
+                key={index}
+                className="flex cursor-pointer flex-col items-center gap-3"
+                onClick={option.onClick}
+              >
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-700">
+                  {index === 0 ? (
+                    <Camera size={24} color="white" />
+                  ) : (
+                    <Upload size={24} color="white" />
+                  )}
+                </div>
+                <span className="text-sm font-semibold text-neutral-900">
+                  {option.title}
+                </span>
+              </div>
+            ))}
+          </div>
+        </BottomSheetContent>
+      </BottomSheet>
       <input
         type="file"
         accept="image/jpeg,image/jpg,image/png"
@@ -479,7 +412,6 @@ const ImageUploaderRegisterResponsive = ({
       />
       {isProfil ? (
         <div className="relative h-[94px] w-[94px] rounded-full border-8 border-white bg-white">
-          {/* LB - 0130, 25.03 */}
           <img
             src={`${
               resultCrops
@@ -498,7 +430,6 @@ const ImageUploaderRegisterResponsive = ({
         </div>
       ) : (
         <div className="flex flex-col items-center gap-4">
-          {/* LB - 0130, 25.03 */}
           <img
             src={`${
               resultCrops
@@ -542,7 +473,6 @@ const ImageUploaderRegisterResponsive = ({
         setIsShowPreview={setIsShowPreview}
         uploadOptions={uploadOptions}
         previewTitle={previewTitle}
-        // 24. THP 2 - MOD001 - MP - 015 - QC Plan - Web - MuatParts - Seller - Paket 039 A - Profil Seller - LB - 0066
         previewDescription={previewDescription}
         onChangeImage={handleResetAndShowOptions}
       />
