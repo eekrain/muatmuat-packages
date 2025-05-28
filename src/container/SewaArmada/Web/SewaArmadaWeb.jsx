@@ -1,13 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 import Card from "@/components/Card/Card";
 import Checkbox from "@/components/Checkbox/Checkbox";
 import FloatingButton from "@/components/FloatingButton/FloatingButton";
 import IconComponent from "@/components/IconComponent/IconComponent";
-// import ImageUploader from "@/components/ImageUploader/ImageUploader";
+import ImageUploader from "@/components/ImageUploader/ImageUploader";
 import Input from "@/components/Input/Input";
 import RadioButton from "@/components/Radio/RadioButton";
 // import SWRHandler from "@/services/useSWRHook";
@@ -438,20 +438,20 @@ export default function SewaArmadaWeb() {
                   </label>
                   <div className="flex-1">
                     <div className="flex flex-wrap gap-4">
-                      {/* {[...Array(4)].map((_, index) => (
-                        <Fragment>
+                      {[...Array(4)].map((_, key) => (
+                        <Fragment key={key}>
                           <ImageUploader
-                            getImage={handleImageUpload(index)}
+                            getImage={handleImageUpload(key)}
                             uploadText={
-                              index === 0 ? "Foto Utama" : `Foto ${index + 1}`
+                              key === 0 ? "Foto Utama" : `Foto ${key + 1}`
                             }
-                            isMain={index === 0}
+                            isMain={key === 0}
                             maxSize={10}
-                            className="size-[124px]"
+                            className="!size-[124px]"
                             value={fotoMuatan[0]}
                           />
                         </Fragment>
-                      ))} */}
+                      ))}
                       <p className="w-full text-xs font-medium text-neutral-600">
                         Maksimal unggah 4 foto muatan dengan format
                         .jpg/.jpeg/.png, besar file maks. 10MB

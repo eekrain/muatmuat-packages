@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import toast from "@/store/zustand/toast";
+import toast from "@/store/toast";
 
 import CropperImage from "../Cropper/Cropper";
 import IconComponent from "../IconComponent/IconComponent";

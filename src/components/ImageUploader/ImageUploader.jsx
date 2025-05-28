@@ -1,7 +1,6 @@
 "use client";
 
-import viewport from "@/store/zustand/common";
-
+// import viewport from "@/store/zustand/common";
 import ImageUploaderWeb from "./ImageUploaderWeb";
 
 // import ImageUploaderResponsive from "./ImageUploaderResponsive";
@@ -9,7 +8,7 @@ import ImageUploaderWeb from "./ImageUploaderWeb";
 // import axios from "axios";
 
 const ImageUploader = (props) => {
-  const { isMobile } = viewport();
+  // const { isMobile } = viewport();
   // const { useSWRMutateHook } = SWRHandler;
   // const {
   //   data: dataUploadPhoto,
