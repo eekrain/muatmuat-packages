@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import responsiveLayoutZustand from "@/store/responsiveLayout";
 
 export const HeaderResponsiveContainer = ({
@@ -60,7 +61,7 @@ export const HeaderResponsiveDefault = () => {
             screen === "default" ? router.back() : setScreen("default")
           }
         />
-        <IconComponent src="/icons/muattrans.svg" width={120} height={24} />
+        <ImageComponent src="/icons/muattrans.svg" width={120} height={24} />
       </div>
       <div className="flex items-center gap-x-3">
         {menuIcons.map((menuIcon, key) => (

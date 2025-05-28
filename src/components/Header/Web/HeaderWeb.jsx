@@ -54,7 +54,7 @@ const HeaderWeb = () => {
   return (
     <header className="fixed z-[20] flex h-[60px] w-full items-center justify-between bg-muat-trans-primary-400 px-10 text-neutral-900">
       <div className="flex items-center gap-x-6">
-        <ImageComponent src="/icons/muatparts.svg" width={136} height={36} />
+        <ImageComponent src="/icons/muattrans.svg" width={136} height={27} />
         <div className="flex items-center gap-x-1">
           <IconComponent src="/icons/mobile.svg" />
           <span className="text-[12px] font-semibold leading-[12px]">
