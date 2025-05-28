@@ -25,6 +25,10 @@ import ImageComponent from "@/components/ImageComponent/ImageComponent";
 
 // Modal.js
 
+// Modal.js
+
+// Modal.js
+
 /**
  * @typedef {Object} ModalContextType
  * @property {() => void} open - Function to open the modal.

@@ -1,14 +1,11 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 import "cropperjs/dist/cropper.css";
 //cropper
-import Cropper, { ReactCropperElement } from "react-cropper";
+import Cropper from "react-cropper";
 
-// 24. THP 2 - MOD001 - MP - 015 - QC Plan - Web - MuatParts - Seller - Paket 039 A - Profil Seller - LB - 0066
-// syntax fix CropperPreviewResponsive -> CropperReviewResponsive by fariz (tidak bisa build - biar cepat. kalau salah bisa direvert)
-// LBM - ganti nama
 // import CropperPreviewResponsive from "./CropperPreviewResponsive";
 import { useHeader } from "@/common/ResponsiveContext";
 

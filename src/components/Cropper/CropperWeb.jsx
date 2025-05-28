@@ -1,18 +1,14 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
-import "cropperjs/dist/cropper.css";
 //cropper
+import "cropperjs/dist/cropper.css";
 import Cropper from "react-cropper";
 
 import IconComponent from "../IconComponent/IconComponent";
 import styles from "./CropperWeb.module.scss";
 import "./cropper_az.css";
-
-// LB - 0513, LB - 0514, LB - 0515, LB - 0516
-// 25. 03 - QC Plan - Web - Pengecekan Ronda Muatparts - Tahap 2
-// import { useTranslation } from "@/context/TranslationProvider";
 
 export default function CropperWeb({
   imageSource = "",
@@ -114,7 +110,7 @@ export default function CropperWeb({
           } w-[424px] rounded-xl bg-white px-6 py-9`}
         >
           <div className="mb-6 flex flex-col items-center gap-[18px] bg-white">
-            <span className="text-[16px] font-bold leading-[19.2px] text-1b1b">
+            <span className="text-1b1b text-[16px] font-bold leading-[19.2px]">
               {title}
             </span>
             <div className="relative h-[386px] w-[386px]">

@@ -10,7 +10,7 @@ import { Fragment, useState } from "react";
 
 import { Dialog, DialogPanel } from "@headlessui/react";
 
-import IconComponent from "@/components/ui/IconComponent/IconComponent";
+import IconComponent from "@/components/IconComponent/IconComponent";
 
 import Button from "../Button/Button";
 import ImageComponent from "../ImageComponent/ImageComponent";

@@ -6,7 +6,7 @@ function ImageComponent({
   src = "",
   width = 100,
   height = 100,
-  alt,
+  alt = "alt",
   className,
   ...props
 }) {
