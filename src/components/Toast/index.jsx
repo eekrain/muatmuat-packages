@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import PropTypes from "prop-types";
 import { createPortal } from "react-dom";
@@ -9,6 +9,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { useToastStore } from "@/store/toastStore";
 
 const Toaster = ({ className }) => {
+  const [mounted, setMounted] = useState(false);
   const { dataToast, removeToast } = useToastStore();
 
   useEffect(() => {
@@ -16,6 +17,12 @@ const Toaster = ({ className }) => {
       dataToast.forEach((toast) => clearTimeout(toast._timeout));
     };
   }, [dataToast]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
 
   return createPortal(
     <div className="bg-blue fixed bottom-0 right-0 z-[9999999999] flex flex-col items-end gap-2 sm:bottom-20 sm:left-0 sm:right-0 sm:mx-4">

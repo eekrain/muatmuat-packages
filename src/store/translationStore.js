@@ -78,7 +78,7 @@ const createTranslationSlice = (set, get) => ({
   // State
   translation: {},
   listLanguages: [],
-
+  isTranslationsReady: false,
   // Actions grouped in an actions object
   actions: {
     setListLanguages: (listLanguages) => set({ listLanguages }),
@@ -103,11 +103,12 @@ const createTranslationSlice = (set, get) => ({
         }
         const data = await response.json();
         console.log("🚀 ~ updateTranslations: ~ data:", data);
-        set({ translation: data });
+        set({ translation: data, isTranslationsReady: true });
       } catch (error) {
         console.error(
           `Error fetching ${languageUrl} translations: ${error.message}`
         );
+        set({ translation: {}, isTranslationsReady: true });
       }
     },
   },

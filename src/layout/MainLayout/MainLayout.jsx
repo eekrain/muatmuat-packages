@@ -11,25 +11,27 @@ import { useInitTranslation, useTranslation } from "@/hooks/use-translation";
 import DesktopLayout from "../DesktopLayout/DesktopLayout";
 import ResponsiveLayout from "../ResponsiveLayout/ResponsiveLayout";
 
-function MainLayoutContent({ children }) {
-  const { isMobile, mounted } = useDevice();
-  const { isTranslationsReady } = useTranslation();
-
+const Script = () => {
   useInitAuthentication();
+  return <></>;
+};
+
+const MainLayout = ({ children }) => {
+  const { isMobile, mounted } = useDevice();
+  const isTranslationsReady = useTranslation(
+    (state) => state.isTranslationsReady
+  );
   useInitTranslation();
 
-  if (!isTranslationsReady) {
-    return <Loading />;
-  }
-
-  if (!mounted) {
-    return null;
-  }
+  if (!mounted) return null;
 
   if (isMobile) {
     return (
       <ResponsiveLayout>
-        {children}
+        <Suspense fallback={<Loading />}>
+          <Script />
+          {isTranslationsReady ? children : <Loading />}
+        </Suspense>
         <Toaster />
       </ResponsiveLayout>
     );
@@ -37,17 +39,14 @@ function MainLayoutContent({ children }) {
 
   return (
     <DesktopLayout>
-      <main className="min-h-[calc(100vh-60px)]">{children}</main>
+      <main className="min-h-[calc(100vh-60px)]">
+        <Suspense fallback={<Loading />}>
+          <Script />
+          {isTranslationsReady ? children : <Loading />}
+        </Suspense>
+      </main>
       <Toaster />
     </DesktopLayout>
-  );
-}
-
-const MainLayout = ({ children }) => {
-  return (
-    <Suspense fallback={<Loading />}>
-      <MainLayoutContent>{children}</MainLayoutContent>
-    </Suspense>
   );
 };
 

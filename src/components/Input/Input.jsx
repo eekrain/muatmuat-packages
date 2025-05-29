@@ -31,7 +31,7 @@ const Input = forwardRef(
   ) => {
     return (
       <div
-        className={`inputClassName flex flex-col gap-y-2 ${className}`}
+        className={`inputClassName flex w-full flex-col gap-y-2 ${className}`}
         style={{
           width: width.width,
           maxWidth: width.maxWidth,

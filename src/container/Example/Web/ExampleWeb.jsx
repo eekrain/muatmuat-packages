@@ -154,6 +154,8 @@ const ExampleWeb = () => {
       <div className="mt-4">
         <ExampleSwr />
       </div>
+
+      <Link href="/sewaarmada">Sewa Armada</Link>
     </div>
   );
 };

@@ -10,12 +10,15 @@ import {
 
 export const useTranslation = () => {
   const translation = useTranslationStore((state) => state.translation);
+  const isTranslationsReady = useTranslationStore(
+    (state) => state.isTranslationsReady
+  );
 
   return {
     t: (key) => {
       return translation[key] || key;
     },
-    isTranslationsReady: Object.keys(translation).length > 0,
+    isTranslationsReady,
   };
 };
 
