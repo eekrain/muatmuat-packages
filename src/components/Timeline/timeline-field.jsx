@@ -101,7 +101,7 @@ export const TimelineField = ({
               width={20}
               height={20}
               src="/icons/plus-square24.svg"
-              classname="-mt-[2px] text-[#176CF7]"
+              className="-mt-[2px] text-[#176CF7]"
               size="medium"
             />
             <span>Tambah Lokasi</span>

@@ -53,7 +53,7 @@ const FloatingButtonResponsive = () => {
               onClick={() => setIsShow((prevState) => !prevState)}
             >
               <IconComponent
-                classname={isShow ? "rotate-[270deg]" : "rotate-[90deg]"}
+                className={isShow ? "rotate-[270deg]" : "rotate-[90deg]"}
                 height={14}
                 width={14}
                 src="/icons/arrow-blue-down.svg"
@@ -65,7 +65,7 @@ const FloatingButtonResponsive = () => {
       {isOpen && (
         <div className="flex flex-col gap-y-[13px]">
           <Button
-            Class="!self-end min-w-[208px] !px-2.5 flex items-center h-[44px]"
+            className="flex h-[44px] min-w-[208px] items-center !self-end !px-2.5"
             onClick={() => setIsModalOpen(true)}
           >
             <div className="flex w-full flex-row gap-x-2.5">
@@ -81,7 +81,7 @@ const FloatingButtonResponsive = () => {
             </div>
           </Button>
           <Button
-            Class="!self-end !min-w-[208px] !px-2.5 flex items-center h-[44px]"
+            className="flex h-[44px] !min-w-[208px] items-center !self-end !px-2.5"
             onClick={() => router.push(`${process.env.NEXT_PUBLIC_FAQ_WEB}`)}
           >
             <div className="flex w-full flex-row gap-x-2.5">
@@ -104,7 +104,7 @@ const FloatingButtonResponsive = () => {
               src="/icons/silang.svg"
               height={16}
               width={16}
-              classname="stroke-primary-700 cursor-pointer"
+              className="cursor-pointer stroke-primary-700"
             />
           </div>
         </div>
@@ -125,7 +125,7 @@ const FloatingButtonResponsive = () => {
                 onClick={() => setIsModalOpen(false)}
               >
                 <IconComponent
-                  classname={`${styles.icon_silang_red}`}
+                  className={`${styles.icon_silang_red}`}
                   src="/icons/silang.svg"
                   width={10}
                   height={10}
@@ -158,7 +158,7 @@ const FloatingButtonResponsive = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Button Class="mt-2 py-[7px] px-[15px]">
+                  <Button className="mt-2 px-[15px] py-[7px]">
                     <div className="flex flex-row gap-x-2">
                       <ImageComponent
                         className="h-5 w-5 self-center"

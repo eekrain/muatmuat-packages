@@ -53,7 +53,7 @@ export const HeaderResponsiveDefault = () => {
     <div className="flex w-full items-center justify-between self-center">
       <div className="flex items-center gap-x-3">
         <IconComponent
-          classname="bg-muat-trans-secondary-900 rounded-xl icon-stroke-muat-trans-primary-400"
+          className="icon-stroke-muat-trans-primary-400 rounded-xl bg-muat-trans-secondary-900"
           src="/icons/chevron-left24.svg"
           width={24}
           height={24}
@@ -76,7 +76,7 @@ export const HeaderResponsiveDefault = () => {
               </div>
             ) : null}
             <IconComponent
-              classname="icon-fill-muat-trans-secondary-900"
+              className="icon-fill-muat-trans-secondary-900"
               src={menuIcon.src}
               width={24}
               height={24}

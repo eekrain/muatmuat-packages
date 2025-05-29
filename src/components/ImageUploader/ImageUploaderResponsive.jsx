@@ -325,7 +325,7 @@ export default function ImageUploaderResponsive({
             {error && (
               <>
                 <IconComponent
-                  classname={"icon-error-400"}
+                  className={"icon-error-400"}
                   size="small"
                   src="/icons/restart.svg"
                 />

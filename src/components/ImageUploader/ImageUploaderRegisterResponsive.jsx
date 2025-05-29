@@ -335,14 +335,14 @@ const ImageUploaderRegisterResponsive = ({
         </span>
         <div className="flex justify-center gap-2">
           <Button
-            Class="!h-7 !text-xs !font-semibold"
+            className="!h-7 !text-xs !font-semibold"
             color="primary_secondary"
             onClick={() => setModalOpen(false)}
           >
             {t("buttonNo")}
           </Button>
           <Button
-            Class="!h-7 !font-semibold"
+            className="!h-7 !font-semibold"
             onClick={() => {
               setResultCrops("");
               setModalOpen(false);
@@ -444,14 +444,17 @@ const ImageUploaderRegisterResponsive = ({
             {resultCrops && (
               <Button
                 onClick={handleDelete}
-                Class="!h-7 !text-xs !font-semibold"
+                className="!h-7 !text-xs !font-semibold"
                 color="primary_secondary"
               >
                 {t("labelHapus")}
               </Button>
             )}
 
-            <Button onClick={handleUbah} Class="!h-7 !text-xs !font-semibold">
+            <Button
+              onClick={handleUbah}
+              className="!h-7 !text-xs !font-semibold"
+            >
               {resultCrops ? t("labelUbahBtn") : t("labelUnggahResp")}
             </Button>
           </div>

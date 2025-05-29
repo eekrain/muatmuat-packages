@@ -163,6 +163,10 @@ module.exports = {
           900: "#461b02",
         },
       },
+      width: {
+        "modal-small": "386px",
+        "modal-big": "454px",
+      },
       boxShadow: {
         button: "0 -4px 6px rgba(0, 0, 0, 0.1)",
         "button-container": "0 -8px 8px rgba(0, 0, 0, 0.05)",

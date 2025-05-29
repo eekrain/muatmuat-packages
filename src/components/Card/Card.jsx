@@ -8,11 +8,11 @@ import style from "./Card.module.scss";
 // props classname, valuenya berupa string jika anda ingin menambah custom class pada cardnya ("flex flex-col justify-between")
 // props children, valuenya berupa tag elemen html yang akan dirender di dalam cardnya. disini anda juga dapat mengisi fungsi export dari CardContent/CardFooter/CardHeader/lainnya ("<span>Data card</span>") / (<><CardHeader></CardHeader><CardContent></CardContent><CardFooter></CardFooter></>)
 
-const Card = ({ classname, keys, children }) => {
+const Card = ({ className, keys, children }) => {
   return (
     <div
       key={keys}
-      className={`h-full w-full rounded-md border border-neutral-600 bg-white text-neutral-900 ${style.shadowmuat} ${classname}`}
+      className={`h-full w-full rounded-md border border-neutral-600 bg-white text-neutral-900 ${style.shadowmuat} ${className}`}
     >
       {children}
     </div>
@@ -23,9 +23,9 @@ export default Card;
 
 // props classname, valuenya berupa string jika anda ingin menambah custom class pada cardnya ("flex flex-col justify-between")
 // props children, valuenya berupa tag elemen html yang akan dirender di dalam cardnya. disini anda juga dapat mengisi fungsi export dari  komponen lainnya ("<span>Data card</span>") / (<div><Badges>Tolak</Badges><Button>Detail</Button></div>)
-export const CardHeader = ({ classname, children }) => {
+export const CardHeader = ({ className, children }) => {
   return (
-    <header className={`border-b border-neutral-600 px-8 py-5 ${classname}`}>
+    <header className={`border-b border-neutral-600 px-8 py-5 ${className}`}>
       {children}
     </header>
   );
@@ -34,13 +34,13 @@ export const CardHeader = ({ classname, children }) => {
 // terdapat CardContent meski main card memiliki props children yang hampir sama fungsinya seperti CardContent, yang membedakan yakni disini value padding sudah disamakan dengan figma untuk menyelaraskan isi konten pada card nantinya
 // props classname, valuenya berupa string jika anda ingin menambah custom class pada cardnya ("flex flex-col justify-between")
 // props children, valuenya berupa tag elemen html yang akan dirender di dalam cardnya. disini anda juga dapat mengisi fungsi export dari komponen lainnya ("<span>Data card</span>") / (<div><Badges>Tolak</Badges><Button>Detail</Button></div>)
-export const CardContent = ({ classname, children }) => {
-  return <div className={`px-8 py-5 ${classname}`}>{children}</div>;
+export const CardContent = ({ className, children }) => {
+  return <div className={`px-8 py-5 ${className}`}>{children}</div>;
 };
 
 // props classname, valuenya berupa string jika anda ingin menambah custom class pada cardnya ("flex flex-col justify-between")
 // props children, valuenya berupa tag elemen html yang akan dirender di dalam cardnya. disini anda juga dapat mengisi fungsi export dari komponen lainnya ("<span>Data card</span>") / (<div><Badges>Tolak</Badges><Button>Detail</Button></div>)
-export const CardFooter = ({ classname, children }) => {
+export const CardFooter = ({ className, children }) => {
   return (
     <footer className={`border-t border-neutral-600 px-8 py-5 ${classname}`}>
       {children}
@@ -53,9 +53,9 @@ export const CardFooter = ({ classname, children }) => {
 // props icon, harus diisi base url icon string ("../../icons/amandemen-tender.svg")
 // props title, harus diisi value string ("Destinasi")
 // props value, harus diisi value string ("Surabaya")
-export const ListContent = ({ icon, title, value, classname }) => {
+export const ListContent = ({ icon, title, value, className }) => {
   return (
-    <div className={`flex flex-col gap-2 ${classname}`}>
+    <div className={`flex flex-col gap-2 ${className}`}>
       <div className="sm flex gap-2">
         <IconComponent src={icon} />
         <span className="text-xs font-medium text-neutral-600">{title}</span>
@@ -66,16 +66,16 @@ export const ListContent = ({ icon, title, value, classname }) => {
 };
 
 Card.propTypes = {
-  classname: propTypes.string,
+  className: propTypes.string,
 };
 CardHeader.propTypes = {
-  classname: propTypes.string,
+  className: propTypes.string,
 };
 CardContent.propTypes = {
-  classname: propTypes.string,
+  className: propTypes.string,
 };
 CardFooter.propTypes = {
-  classname: propTypes.string,
+  className: propTypes.string,
 };
 ListContent.propTypes = {
   icon: propTypes.any.isRequired,

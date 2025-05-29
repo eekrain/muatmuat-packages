@@ -120,7 +120,7 @@ export default function CropperWeb({
                   onClick={zoomIn}
                 >
                   <IconComponent
-                    classname={styles.icon_zoom}
+                    className={styles.icon_zoom}
                     src="/icons/zoom_plus.svg"
                     width={20}
                     height={20}
@@ -131,7 +131,7 @@ export default function CropperWeb({
                   onClick={zoomOut}
                 >
                   <IconComponent
-                    classname={styles.icon_zoom}
+                    className={styles.icon_zoom}
                     src="/icons/zoom_minus.svg"
                     width={20}
                     height={20}

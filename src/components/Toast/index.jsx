@@ -6,9 +6,9 @@ import PropTypes from "prop-types";
 import { createPortal } from "react-dom";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { useToastStore } from "@/store/toast";
+import { useToastStore } from "@/store/toastStore";
 
-const Toaster = ({ classname }) => {
+const Toaster = ({ className }) => {
   const { dataToast, removeToast } = useToastStore();
 
   useEffect(() => {
@@ -26,7 +26,7 @@ const Toaster = ({ classname }) => {
             toast.type === "success"
               ? "border-success-400 bg-success-50"
               : "border-error-400 bg-error-50"
-          } ${classname}`}
+          } ${className}`}
         >
           <div className="flex w-[380px] items-center gap-3 pr-2">
             <div className="flex-shrink-0">
@@ -48,7 +48,7 @@ const Toaster = ({ classname }) => {
             src="/icons/toast-close.svg"
             height={20}
             width={20}
-            classname="flex-shrink-0 cursor-pointer"
+            className="flex-shrink-0 cursor-pointer"
             onclick={() => removeToast(toast.id)}
           />
         </div>
@@ -59,7 +59,7 @@ const Toaster = ({ classname }) => {
 };
 
 Toaster.propTypes = {
-  classname: PropTypes.string,
+  className: PropTypes.string,
 };
 
 export default Toaster;
