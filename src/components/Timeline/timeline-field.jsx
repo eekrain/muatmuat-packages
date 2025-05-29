@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { cn } from "@/lib/cn";
+
 import { TimelineContainer, TimelineContentAddress, TimelineItem } from ".";
 import IconComponent from "../IconComponent/IconComponent";
 
@@ -20,6 +22,7 @@ export const TimelineField = ({
   maxLocation = 5,
   onAddLocation,
   onDeleteLocation,
+  className,
 }) => {
   const [internalValues, setInternalValues] = useState(
     values.length > 0 ? values : [null]
@@ -52,7 +55,7 @@ export const TimelineField = ({
   };
 
   return (
-    <div className="rounded-xl border border-[#7B7B7B] p-3">
+    <div className={cn("rounded-xl border border-[#7B7B7B] p-3", className)}>
       <TimelineContainer>
         {internalValues.map((value, index) => (
           <TimelineItem
