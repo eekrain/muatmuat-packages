@@ -1,6 +1,7 @@
 import xior from "xior";
 
 import { useAuthStore } from "@/store/auth/authStore";
+import { useUserStore } from "@/store/auth/userStore";
 
 export const createAxios = (baseURL) => {
   const fetcher = xior.create({
@@ -41,6 +42,7 @@ export const createAxios = (baseURL) => {
         // Handle other HTTP error codes (4xx, 5xx other than 503)
         if (error.response.status === 401 || error.response.status === 403) {
           useAuthStore.getState().logout();
+          useUserStore.getState().removeUser();
           if (window) {
             window.location.replace("/");
           }
