@@ -32,7 +32,6 @@ const LanguageDropdown = () => {
       </span>
       <IconComponent
         width={16}
-        color="white"
         loader={false}
         className={`-mt-[2px] ${open && "rotate-180"}`}
         src="/icons/chevron-down.svg"
