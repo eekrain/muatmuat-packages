@@ -52,7 +52,7 @@ const FloatingButton = () => {
               onClick={() => setIsShow((prevState) => !prevState)}
             >
               <IconComponent
-                classname={isShow ? "rotate-[270deg]" : "rotate-[90deg]"}
+                className={isShow ? "rotate-[270deg]" : "rotate-[90deg]"}
                 height={14}
                 width={14}
                 src="/icons/arrow-blue-down.svg"
@@ -108,7 +108,7 @@ const FloatingButton = () => {
               src="/icons/silang.svg"
               height={16}
               width={16}
-              classname="stroke-primary-700 cursor-pointer"
+              className="cursor-pointer stroke-primary-700"
             />
           </div>
         </div>
@@ -179,7 +179,7 @@ const FloatingButton = () => {
                 onClick={() => setIsModalOpen(false)}
               >
                 <IconComponent
-                  classname={`${styles.icon_silang_red}`}
+                  className={`${styles.icon_silang_red}`}
                   src="/icons/silang.svg"
                   width={10}
                   height={10}
@@ -187,7 +187,44 @@ const FloatingButton = () => {
               </button>
             </div>
             <div className={styles.modal_apps_az}>
-              
+              <div className="flex flex-col items-center p-1">
+                <span className="text-center text-[17px] font-bold leading-[25.5px] text-[#1b1b1b]">
+                  Hubungi Kami
+                </span>
+                <span className="mt-6 text-center text-[14px] font-medium leading-[21px] text-[#1b1b1b]">
+                  Jika Anda membutuhkan bantuan dapat menghubungi nomor dibawah
+                  ini
+                </span>
+                <div className="mt-2 flex flex-row text-center text-[14px] font-medium leading-[21px] text-primary-700">
+                  <ImageComponent
+                    className="h-5 w-5 self-center"
+                    src="/img/hubungi-kami-blue.png"
+                    height={20}
+                    width={20}
+                  />
+                  <span>+62 811-3886-7000</span>
+                </div>
+                <span className="mt-3 text-center text-[14px] font-medium leading-[21px] text-[#1b1b1b]">
+                  atau klik tombol dibawah ini
+                </span>
+                <Link
+                  href={"https://wa.me/+6281138867000?"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button className="mt-2 px-[15px] py-[7px]">
+                    <div className="flex flex-row gap-x-2">
+                      <ImageComponent
+                        className="h-5 w-5 self-center"
+                        src="/img/whatsapp.png"
+                        height={20}
+                        width={20}
+                      />
+                      <span className="self-center">Whatsapp</span>
+                    </div>
+                  </Button>
+                </Link>
+              </div>
             </div>
           </DialogPanel>
         </div>

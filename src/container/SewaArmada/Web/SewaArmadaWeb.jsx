@@ -13,9 +13,12 @@ import Input from "@/components/Input/Input";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import RadioButton from "@/components/Radio/RadioButton";
 import TextArea from "@/components/TextArea/TextArea";
+import { TimelineField } from "@/components/Timeline/timeline-field";
 import Tooltip from "@/components/Tooltip/Tooltip";
+import { fakeAddress } from "@/container/Example/Web/mockdata";
+import { cn } from "@/lib/cn";
 // import SWRHandler from "@/services/useSWRHook";
-import { useSewaArmadaStore } from "@/store/sewaArmada";
+import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 import { getNowTimezone } from "@/utils/dateTime";
 
 import BannerCarousel from "./BannerCarousel/BannerCarousel";
@@ -118,6 +121,31 @@ export default function SewaArmadaWeb() {
       // useArmadaInstanStore.getState().resetForm();
     };
   }, []);
+  const [muatValues, setMuatValues] = useState([]);
+
+  const handleAddMuatLocation = () => {
+    setMuatValues([
+      ...muatValues,
+      fakeAddress[Math.floor(Math.random() * fakeAddress.length)],
+    ]);
+  };
+
+  const handleDeleteMuatLocation = (index) => {
+    setMuatValues(muatValues.filter((_, i) => i !== index));
+  };
+
+  const [bongkarValues, setBongkarValues] = useState([]);
+
+  const handleAddBongkarLocation = () => {
+    setBongkarValues([
+      ...bongkarValues,
+      fakeAddress[Math.floor(Math.random() * fakeAddress.length)],
+    ]);
+  };
+
+  const handleDeleteBongkarLocation = (index) => {
+    setBongkarValues(bongkarValues.filter((_, i) => i !== index));
+  };
 
   // API Calls dengan SWR
   // const { data: cargoTypesData, error: cargoTypesError } = useSWRHook(
@@ -195,12 +223,17 @@ export default function SewaArmadaWeb() {
           <WelcomeCard />
           <div className="flex w-full max-w-[1200px] gap-4">
             {/* Form Container */}
-            <Card classname="flex-1 p-8 flex flex-col gap-6 shadow-md border-none">
+            <Card className="flex flex-1 flex-col gap-6 border-none p-8 shadow-md">
               {/* Service Type Selection */}
               <div className="flex justify-center gap-3">
                 {/* Instan Card - Active */}
                 <div
-                  className={`h-[136px] w-[385px] ${rentalType === "instan" ? "border-[#FFC217] bg-[#FFF5C6]" : "border-neutral-400 bg-white"} flex cursor-pointer flex-col items-center justify-center gap-y-3 rounded-xl border p-6 hover:border-[#FFC217]`}
+                  className={cn(
+                    "flex h-[136px] w-[385px] cursor-pointer flex-col items-center justify-center gap-y-3 rounded-xl border p-6 hover:border-[#FFC217]",
+                    rentalType === "instan"
+                      ? "border-[#FFC217] bg-[#FFF5C6]"
+                      : "border-neutral-400 bg-white"
+                  )}
                   onClick={() => setRentalType("instan")}
                 >
                   <div className="relative h-8 w-8">
@@ -220,13 +253,18 @@ export default function SewaArmadaWeb() {
 
                 {/* Terjadwal Card - Inactive */}
                 <div
-                  className={`h-[136px] w-[385px] ${rentalType === "terjadwal" ? "border-[#FFC217] bg-[#FFF5C6]" : "border-neutral-400 bg-white"} flex cursor-pointer flex-col items-center justify-center gap-y-3 rounded-xl border p-6 hover:border-[#FFC217]`}
+                  className={cn(
+                    "flex h-[136px] w-[385px] cursor-pointer flex-col items-center justify-center gap-y-3 rounded-xl border p-6 hover:border-[#FFC217]",
+                    rentalType === "terjadwal"
+                      ? "border-[#FFC217] bg-[#FFF5C6]"
+                      : "border-neutral-400 bg-white"
+                  )}
                   onClick={() => setRentalType("terjadwal")}
                 >
                   <div className="relative h-8 w-8">
                     <Image
                       src="/icons/muattrans-terjadwal32.svg"
-                      alt="Instan"
+                      alt="Terjadwal"
                       width={32}
                       height={32}
                     />
@@ -311,27 +349,16 @@ export default function SewaArmadaWeb() {
                   <label className="flex w-[174px] items-center text-xs font-medium text-neutral-600">
                     Lokasi Muat*
                   </label>
-                  <div className="flex flex-1 flex-col gap-3 rounded-md border border-neutral-600 p-3">
-                    <div className="flex items-center gap-2">
-                      <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#FFC217]">
-                        <div className="h-1.5 w-1.5 rounded-full bg-[#461B02]"></div>
-                      </div>
-                      <span className="text-xs font-medium text-neutral-600">
-                        Masukkan Lokasi Muat
-                      </span>
-                    </div>
-                    <div className="h-px w-full bg-neutral-400"></div>
-                    <div className="flex items-center justify-center gap-2 text-primary-700">
-                      <IconComponent
-                        src="/icons/plus-square20.svg"
-                        width={20}
-                        height={20}
-                      />
-                      <span className="text-xs font-semibold">
-                        Tambah Lokasi Muat
-                      </span>
-                    </div>
-                  </div>
+
+                  <TimelineField
+                    className="flex-1"
+                    variant="muat"
+                    // Only accept array string address
+                    // You need to map the value that will be rendered, in case the state is an array of object
+                    values={muatValues.map((value) => value.address)}
+                    onAddLocation={handleAddMuatLocation}
+                    onDeleteLocation={handleDeleteMuatLocation}
+                  />
                 </div>
 
                 {/* Lokasi Bongkar */}
@@ -339,27 +366,15 @@ export default function SewaArmadaWeb() {
                   <label className="flex w-[174px] items-center text-xs font-medium text-neutral-600">
                     Lokasi Bongkar*
                   </label>
-                  <div className="flex flex-1 flex-col gap-3 rounded-md border border-neutral-600 p-3">
-                    <div className="flex items-center gap-2">
-                      <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#461B02]">
-                        <div className="h-1.5 w-1.5 rounded-full bg-white"></div>
-                      </div>
-                      <span className="text-xs font-medium text-neutral-600">
-                        Masukkan Lokasi Bongkar
-                      </span>
-                    </div>
-                    <div className="h-px w-full bg-neutral-400"></div>
-                    <div className="flex items-center justify-center gap-2 text-primary-700">
-                      <IconComponent
-                        src="/icons/plus-square20.svg"
-                        width={20}
-                        height={20}
-                      />
-                      <span className="text-xs font-semibold">
-                        Tambah Lokasi Bongkar
-                      </span>
-                    </div>
-                  </div>
+                  <TimelineField
+                    className="flex-1"
+                    variant="bongkar"
+                    // Only accept array string address
+                    // You need to map the value that will be rendered, in case the state is an array of object
+                    values={bongkarValues.map((value) => value.address)}
+                    onAddLocation={handleAddBongkarLocation}
+                    onDeleteLocation={handleDeleteBongkarLocation}
+                  />
                 </div>
 
                 {/* Tipe Muatan */}
@@ -600,7 +615,7 @@ export default function SewaArmadaWeb() {
                         src="/icons/chevron-down.svg"
                         width={16}
                         height={16}
-                        classname="ml-auto"
+                        className="ml-auto"
                       />
                     </div>
                     <div className="flex h-8 flex-1 cursor-pointer items-center rounded-md border border-neutral-600 bg-neutral-200 px-3">
@@ -616,7 +631,7 @@ export default function SewaArmadaWeb() {
                         src="/icons/chevron-down.svg"
                         width={16}
                         height={16}
-                        classname="ml-auto"
+                        className="ml-auto"
                       />
                     </div>
                   </div>
@@ -643,7 +658,7 @@ export default function SewaArmadaWeb() {
                       src="/icons/chevron-right.svg"
                       width={16}
                       height={16}
-                      classname="icon-gray"
+                      className="icon-gray"
                     />
                   </div>
                 </div> */}
@@ -741,7 +756,7 @@ export default function SewaArmadaWeb() {
             </Card>
 
             {/* Summary Panel */}
-            <Card classname="w-[338px] bg-white p-5 flex flex-col gap-6 rounded-xl shadow-md py-6 border-none">
+            <Card className="flex w-[338px] flex-col gap-6 rounded-xl border-none bg-white p-5 py-6 shadow-md">
               <h3 className="text-base font-bold text-black">
                 Ringkasan Transaksi
               </h3>
@@ -762,7 +777,7 @@ export default function SewaArmadaWeb() {
                   src="/icons/chevron-right.svg"
                   width={16}
                   height={16}
-                  classname="ml-auto"
+                  className="ml-auto"
                 />
               </div>
 

@@ -18,7 +18,7 @@ function IconComponent({
   width = 16,
   loader = true,
   rotate = 0,
-  classname,
+  className,
   onclick,
   ref,
 }) {
@@ -55,7 +55,7 @@ function IconComponent({
           title={title}
           width={sizes[size] ? sizes[size] : width}
           height={sizes[size] ? sizes[size] : height}
-          className={`${classname} ${style[color]}`}
+          className={`${className} ${style[color]}`}
         />
       </button>
     );
@@ -84,7 +84,7 @@ function IconComponent({
       title={title}
       width={sizes[size] ? sizes[size] : width}
       height={sizes[size] ? sizes[size] : height}
-      className={`${classname} ${style[color]}`}
+      className={`${className} ${style[color]}`}
     />
   );
 }
@@ -110,6 +110,6 @@ IconComponent.propTypes = {
     PropTypes.oneOf([0, 45, 90, 135, 180, 225, 270, 315, 360]),
     PropTypes.number,
   ]),
-  classname: PropTypes.string,
+  className: PropTypes.string,
   onclick: PropTypes.func,
 };

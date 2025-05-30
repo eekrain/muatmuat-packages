@@ -13,9 +13,9 @@ const RadioButton = ({
   value,
   disabled,
   children,
-  classname,
-  classnameRound,
-  classnameLabel,
+  className,
+  classNameRound,
+  classNameLabel,
   ...props
 }) => {
   const radioRef = useRef(null);
@@ -33,7 +33,7 @@ const RadioButton = ({
 
   return (
     <div
-      className={`${style.container_radio} ${classname} flex cursor-pointer items-center gap-[8px]`}
+      className={`${style.container_radio} ${className} flex cursor-pointer items-center gap-[8px]`}
       onClick={checkedClick}
     >
       <input
@@ -48,7 +48,7 @@ const RadioButton = ({
       />
       {/* LB - 0242 - 25.03 */}
       <span
-        className={`${style.radio_primary} ${classnameRound} ${
+        className={`${style.radio_primary} ${classNameRound} ${
           isLabelMissing
             ? "after:top-[4px] max-[600px]:after:!top-[5px]"
             : "after:top-[5px]"
@@ -58,7 +58,7 @@ const RadioButton = ({
         children
       ) : (
         <span
-          className={`text-xs font-medium text-neutral-900 ${classnameLabel}`}
+          className={`text-xs font-medium text-neutral-900 ${classNameLabel}`}
         >
           {label}
         </span>

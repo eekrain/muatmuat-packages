@@ -114,7 +114,7 @@ export default function CropperResponsive({
                             onClick={() => setIsOpen(false)}
                         > */}
             <IconComponent
-              classname={style.close_btn_icon}
+              className={style.close_btn_icon}
               src="/icons/silang.svg"
               size="medium"
               onclick={cancelCrop}
@@ -125,7 +125,7 @@ export default function CropperResponsive({
             </span>
           </div>
           <IconComponent
-            // classname={style.close_btn_icon}
+            // className={style.close_btn_icon}
             src="/icons/check_white.svg"
             size="medium"
             onclick={getCropData}

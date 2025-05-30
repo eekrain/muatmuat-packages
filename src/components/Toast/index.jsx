@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import PropTypes from "prop-types";
 import { createPortal } from "react-dom";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { useToastStore } from "@/store/toast";
+import { useToastStore } from "@/store/toastStore";
 
-const Toaster = ({ classname }) => {
+const Toaster = ({ className }) => {
+  const [mounted, setMounted] = useState(false);
   const { dataToast, removeToast } = useToastStore();
 
   useEffect(() => {
@@ -16,6 +17,12 @@ const Toaster = ({ classname }) => {
       dataToast.forEach((toast) => clearTimeout(toast._timeout));
     };
   }, [dataToast]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
 
   return createPortal(
     <div className="bg-blue fixed bottom-0 right-0 z-[9999999999] flex flex-col items-end gap-2 sm:bottom-20 sm:left-0 sm:right-0 sm:mx-4">
@@ -26,7 +33,7 @@ const Toaster = ({ classname }) => {
             toast.type === "success"
               ? "border-success-400 bg-success-50"
               : "border-error-400 bg-error-50"
-          } ${classname}`}
+          } ${className}`}
         >
           <div className="flex w-[380px] items-center gap-3 pr-2">
             <div className="flex-shrink-0">
@@ -48,7 +55,7 @@ const Toaster = ({ classname }) => {
             src="/icons/toast-close.svg"
             height={20}
             width={20}
-            classname="flex-shrink-0 cursor-pointer"
+            className="flex-shrink-0 cursor-pointer"
             onclick={() => removeToast(toast.id)}
           />
         </div>
@@ -59,7 +66,7 @@ const Toaster = ({ classname }) => {
 };
 
 Toaster.propTypes = {
-  classname: PropTypes.string,
+  className: PropTypes.string,
 };
 
 export default Toaster;

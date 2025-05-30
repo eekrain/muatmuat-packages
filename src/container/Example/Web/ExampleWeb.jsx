@@ -80,7 +80,7 @@ const ExampleWeb = () => {
       <Modal
         open={openControlled}
         onOpenChange={setOpenControlled}
-        closeOnOutsideClick={false}
+        closeOnOutsideClick
       >
         <ModalContent>
           <ModalHeader size="big" />
@@ -128,7 +128,7 @@ const ExampleWeb = () => {
                 <Button
                   color="primary_secondary"
                   onClick={() => setOpenControlled(false)}
-                  Class="min-w-[132px] h-8"
+                  className="h-8 min-w-[132px]"
                   type="muatparts"
                 >
                   Kembali
@@ -136,7 +136,7 @@ const ExampleWeb = () => {
                 <Button
                   color="primary"
                   onClick={() => setOpenControlled(false)}
-                  Class="min-w-[151px] h-8"
+                  className="h-8 min-w-[151px]"
                   type="muatparts"
                 >
                   Pesan Sekarang
@@ -154,6 +154,8 @@ const ExampleWeb = () => {
       <div className="mt-4">
         <ExampleSwr />
       </div>
+
+      <Link href="/sewaarmada">Sewa Armada</Link>
     </div>
   );
 };

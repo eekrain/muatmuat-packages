@@ -1,4 +1,3 @@
-// BottomSheet.jsx
 "use client";
 
 import React, {
@@ -13,18 +12,6 @@ import React, {
 import { createPortal } from "react-dom";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
-
-// BottomSheet.jsx
-
-// BottomSheet.jsx
-
-// BottomSheet.jsx
-
-// BottomSheet.jsx
-
-// BottomSheet.jsx
-
-// BottomSheet.jsx
 
 /**
  * @typedef {Object} BottomSheetContextType
@@ -318,7 +305,7 @@ export const BottomSheetHeader = ({ className, title }) => {
         className="flex size-[24px] items-center justify-between"
       >
         <IconComponent
-          // classname={iconClassnames[type] || iconClassnames.muattrans}
+          // className={iconClassnames[type] || iconClassnames.muattrans}
           src="/icons/close24.svg"
           width={24}
           height={24}

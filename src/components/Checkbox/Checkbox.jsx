@@ -13,7 +13,7 @@ const Checkbox = ({
   disabled,
   children,
   key,
-  classname,
+  className,
   checked = false,
   ...props
 }) => {
@@ -40,7 +40,7 @@ const Checkbox = ({
   }, [checked]);
   return (
     <div
-      className={`${style.container_checkbox} flex items-center gap-[8px] ${classname}`}
+      className={`${style.container_checkbox} flex items-center gap-[8px] ${className}`}
       onClick={checkedClick}
     >
       <input

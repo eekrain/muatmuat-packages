@@ -1,5 +1,5 @@
 // lib/toast.ts
-import { useToastStore } from "@/store/toast";
+import { useToastStore } from "@/store/toastStore";
 
 /**
  * Global toast utility

@@ -23,7 +23,7 @@ const Input = forwardRef(
       changeEvent = () => {},
       focusEvent = () => {},
       blurEvent = () => {},
-      classname,
+      className,
       classInput,
       ...props
     },
@@ -31,7 +31,7 @@ const Input = forwardRef(
   ) => {
     return (
       <div
-        className={`flex flex-col gap-y-2 ${classname} inputClassName`}
+        className={`inputClassName flex w-full flex-col gap-y-2 ${className}`}
         style={{
           width: width.width,
           maxWidth: width.maxWidth,
@@ -55,7 +55,7 @@ const Input = forwardRef(
                   src={{ src: icon.left }}
                   height={16}
                   width={16}
-                  classname={`${status == "error" ? style.icon_danger : status == "success" ? style.icon_success : ""}`}
+                  className={`${status == "error" ? style.icon_danger : status == "success" ? style.icon_success : ""}`}
                 />
               ) : (
                 icon.left
@@ -87,7 +87,7 @@ const Input = forwardRef(
                   src={{ src: icon.right }}
                   height={16}
                   width={16}
-                  classname={`${status == "error" ? style.icon_danger : status == "success" ? style.icon_success : ""}`}
+                  className={`${status == "error" ? style.icon_danger : status == "success" ? style.icon_success : ""}`}
                 />
               ) : (
                 icon.right
@@ -125,7 +125,7 @@ Input.propTypes = {
   placeholder: PropTypes.string,
   type: PropTypes.oneOf(["text", "number", "email", "password"]),
   name: PropTypes.string,
-  classname: PropTypes.string,
+  className: PropTypes.string,
   disabled: PropTypes.bool,
   status: PropTypes.oneOf(["success", "error"]),
   icon: PropTypes.object,
