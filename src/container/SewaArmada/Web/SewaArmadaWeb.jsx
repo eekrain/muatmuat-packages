@@ -10,7 +10,6 @@ import DatetimePicker from "@/components/DatetimePicker/DatetimePicker";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageUploader from "@/components/ImageUploader/ImageUploader";
 import Input from "@/components/Input/Input";
-import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import RadioButton from "@/components/Radio/RadioButton";
 import TextArea from "@/components/TextArea/TextArea";
 import { TimelineField } from "@/components/Timeline/timeline-field";
@@ -23,6 +22,7 @@ import { getNowTimezone } from "@/utils/dateTime";
 
 import BannerCarousel from "./BannerCarousel/BannerCarousel";
 import FirstTimer from "./FirstTimer/FirstTimer";
+import FleetOrderConfirmationModal from "./FleetOrderConfirmationModal/FleetOrderConfirmationModal";
 import WelcomeCard from "./WelcomeCard/WelcomeCard";
 
 const FormLabel = ({ size = "big", title, required = false }) => (
@@ -202,13 +202,20 @@ export default function SewaArmadaWeb() {
   // Handler untuk upload foto muatan
   const handleImageUpload = (index, img) => setFotoMuatan(index, img);
 
-  const handleOrderFleet = () => {
+  const handleValidateFleetOrder = () => {
     const isValidForm = validateForm();
     if (isValidForm) {
       setIsModalConfirmationOpen(true);
     }
   };
 
+  const handleOrderFleet = () => {
+    // logic sewa armada
+    setIsModalConfirmationOpen(false);
+    console.log("SEWA ARMADA");
+  };
+  console.log("start", startDate);
+  console.log("Enn", endDate);
   return (
     <main className="flex min-h-screen flex-col items-center gap-6 bg-neutral-50 px-10 py-8">
       {/* Carousel Banner */}
@@ -285,36 +292,43 @@ export default function SewaArmadaWeb() {
                 <div className="flex flex-col gap-y-3.5">
                   <div className="flex gap-x-8">
                     <FormLabel title="Waktu Muat" required />
-                    <div className="flex flex-col gap-y-[14px]">
-                      <div className="flex items-center gap-x-2">
-                        <DatetimePicker
-                          datetimeValue={startDate}
-                          onApply={(date) => {
-                            handleDateChange("start", date);
-                          }}
-                          placeholder="Pilih Tanggal & Waktu Muat"
-                          // disabled={mode === "edit" && promoStatus === "Aktif"}
-                          // status={errors.startDate ? "error" : null}
-                          className="w-[271px]"
-                          minDate={getNowTimezone(timezone)}
-                        />
-                        {showRangeOption ? (
-                          <>
-                            <span className="text-[12px] font-medium leading-[14.4px]">
-                              s/d
-                            </span>
-                            <DatetimePicker
-                              datetimeValue={endDate}
-                              onApply={(date) => {
-                                handleDateChange("end", date);
-                              }}
-                              placeholder="Pilih Tanggal & Waktu Muat"
-                              disabled={!startDate}
-                              // status={errors.startDate ? "error" : null}
-                              className="w-[271px]"
-                              minDate={getNowTimezone(timezone)}
-                            />
-                          </>
+                    <div className="flex flex-col gap-y-3.5">
+                      <div className="flex flex-col gap-y-2">
+                        <div className="flex items-center gap-x-2">
+                          <DatetimePicker
+                            datetimeValue={startDate}
+                            onApply={(date) => {
+                              handleDateChange("start", date);
+                            }}
+                            placeholder="Pilih Tanggal & Waktu Muat"
+                            status={errors.startDate ? "error" : null}
+                            className="w-[271px]"
+                            minDate={getNowTimezone(timezone)}
+                          />
+                          {showRangeOption ? (
+                            <>
+                              <span className="text-[12px] font-medium leading-[14.4px]">
+                                s/d
+                              </span>
+                              <DatetimePicker
+                                datetimeValue={endDate}
+                                onApply={(date) => {
+                                  handleDateChange("end", date);
+                                }}
+                                placeholder="Pilih Tanggal & Waktu Muat"
+                                disabled={!startDate}
+                                status={errors.endDate ? "error" : null}
+                                className="w-[271px]"
+                                minDate={getNowTimezone(timezone)}
+                              />
+                            </>
+                          ) : null}
+                        </div>
+                        {errors.startDate || errors.endDate ? (
+                          <div className="flex items-center gap-x-[34px] text-[12px] font-medium leading-[14.4px] text-error-400">
+                            <div className="w-[271px]">{errors.startDate}</div>
+                            <div className="w-[271px]">{errors.endDate}</div>
+                          </div>
                         ) : null}
                       </div>
                     </div>
@@ -598,13 +612,13 @@ export default function SewaArmadaWeb() {
 
                 {/* Jenis Armada */}
                 <div className="flex gap-8">
-                  <label className="flex w-[174px] items-center text-xs font-medium text-neutral-600">
+                  <label className="flex w-[174px] items-center text-[12px] font-medium leading-[14.4px] text-neutral-600">
                     Jenis Armada*
                   </label>
                   <div className="flex flex-1 gap-3.5">
                     <div className="flex h-8 flex-1 cursor-pointer items-center rounded-md border border-neutral-600 bg-neutral-200 px-3">
                       <IconComponent
-                        src="/icons/truck-icon.svg"
+                        src="/icons/carrier16.svg"
                         width={16}
                         height={16}
                       />
@@ -612,7 +626,7 @@ export default function SewaArmadaWeb() {
                         Pilih Jenis Carrier
                       </span>
                       <IconComponent
-                        src="/icons/chevron-down.svg"
+                        src="/icons/chevron-right.svg"
                         width={16}
                         height={16}
                         className="ml-auto"
@@ -620,7 +634,7 @@ export default function SewaArmadaWeb() {
                     </div>
                     <div className="flex h-8 flex-1 cursor-pointer items-center rounded-md border border-neutral-600 bg-neutral-200 px-3">
                       <IconComponent
-                        src="/icons/delivery-truck.svg"
+                        src="/icons/truck16.svg"
                         width={16}
                         height={16}
                       />
@@ -628,7 +642,7 @@ export default function SewaArmadaWeb() {
                         Pilih Jenis Truk
                       </span>
                       <IconComponent
-                        src="/icons/chevron-down.svg"
+                        src="/icons/chevron-right.svg"
                         width={16}
                         height={16}
                         className="ml-auto"
@@ -794,7 +808,7 @@ export default function SewaArmadaWeb() {
                 </div>
                 <Button
                   color="primary"
-                  onClick={handleOrderFleet}
+                  onClick={handleValidateFleetOrder}
                   type="muatparts"
                 >
                   Lanjut Pembayaran
@@ -802,74 +816,11 @@ export default function SewaArmadaWeb() {
               </div>
             </Card>
           </div>
-          <Modal
-            open={isModalConfirmationOpen}
-            onOpenChange={setIsModalConfirmationOpen}
-            closeOnOutsideClick={false}
-          >
-            <ModalContent>
-              <ModalHeader size="big" />
-              <div className="px-6 py-9">
-                <div className="flex w-[406px] max-w-[510px] flex-col items-center justify-center gap-6">
-                  {/* Judul Modal */}
-                  <h2 className="w-full text-center text-[16px] font-bold leading-[19.2px] text-neutral-900">
-                    Informasi
-                  </h2>
-
-                  {/* Box Peringatan */}
-                  <div className="flex w-full flex-row items-center gap-2.5 rounded-md bg-warning-100 p-6">
-                    <div className="flex items-center">
-                      <IconComponent
-                        src="/icons/warning24.svg"
-                        height={24}
-                        width={24}
-                      />
-                    </div>
-                    <p className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                      Jika ada kendala pada persiapan atau perjalanan ke lokasi
-                      muat, pengiriman mungkin tidak bisa dilanjutkan. Kami akan
-                      tetap berusaha memberikan solusi terbaik.
-                    </p>
-                  </div>
-
-                  {/* Text Konfirmasi */}
-                  <p className="w-full text-center text-[14px] font-medium leading-[16.8px] text-neutral-900">
-                    Apakah kamu yakin data yang kamu isi sudah benar? <br />
-                    Pastikan semua informasi telah diperiksa sebelum
-                    melanjutkan.
-                  </p>
-
-                  {/* Text Syarat dan Ketentuan */}
-                  <p className="w-[320px] text-center text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                    *Dengan memesan jasa angkut ini, kamu telah menyetujui{" "}
-                    {/* <Link href="/syarat-ketentuan"> */}
-                    <span className="text-primary-700">
-                      Syarat dan Ketentuan Muatrans
-                    </span>
-                    {/* </Link> */}
-                  </p>
-
-                  {/* Container Tombol */}
-                  <div className="flex flex-row justify-center gap-2">
-                    <Button
-                      color="primary_secondary"
-                      onClick={() => setIsModalConfirmationOpen(false)}
-                      type="muatparts"
-                    >
-                      Kembali
-                    </Button>
-                    <Button
-                      color="primary"
-                      onClick={() => setIsModalConfirmationOpen(false)}
-                      type="muatparts"
-                    >
-                      Pesan Sekarang
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </ModalContent>
-          </Modal>
+          <FleetOrderConfirmationModal
+            isModalConfirmationOpen={isModalConfirmationOpen}
+            setIsModalConfirmationOpen={setIsModalConfirmationOpen}
+            onOrderFleet={handleOrderFleet}
+          />
         </>
       )}
     </main>

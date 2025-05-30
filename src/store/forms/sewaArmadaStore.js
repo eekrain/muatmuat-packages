@@ -124,9 +124,34 @@ export const useSewaArmadaStore = create((set, get) => ({
     }),
 
   validateForm: () => {
-    const { fotoMuatan, deskripsi } = get();
+    const { startDate, endDate, showRangeOption, fotoMuatan, deskripsi } =
+      get();
     const newErrors = {};
     const isValidFotoMuatan = fotoMuatan.some((item) => item !== null);
+
+    if (!startDate) {
+      newErrors.startDate = "Tanggal & waktu muat wajib diisi";
+    }
+
+    if (startDate && showRangeOption) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      // Difference in milliseconds
+      const diffMs = end - start;
+
+      // Convert milliseconds to hours
+      const diffHours = diffMs / (1000 * 60 * 60);
+
+      // 8 hours in milliseconds
+      const eightHoursMs = 8 * 60 * 60 * 1000;
+      if (!endDate) {
+        newErrors.endDate = "Tanggal & waktu muat wajib diisi";
+      } else if (diffHours < 1) {
+        newErrors.endDate = "Rentang waktu minimal 1 jam";
+      } else if (diffMs > eightHoursMs) {
+        newErrors.endDate = "Rentang waktu maksimal 8 jam";
+      }
+    }
 
     if (!isValidFotoMuatan) {
       newErrors.fotoMuatan = "Mohon upload foto muatan";

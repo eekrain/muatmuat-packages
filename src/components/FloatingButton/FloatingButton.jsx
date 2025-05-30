@@ -12,6 +12,7 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
+import { useAuthStore } from "@/store/auth/authStore";
 
 import styles from "./FloatingButton.module.scss";
 
@@ -21,8 +22,7 @@ const FloatingButton = () => {
   const [isShow, setIsShow] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const isLoggedIn = authZustand?.getState()?.accessToken;
-  const isLoggedIn = true;
+  const isLoggedIn = useAuthStore((state) => state.accessToken);
 
   const handleClickFloatingButton = () => {
     if (isLoggedIn) {

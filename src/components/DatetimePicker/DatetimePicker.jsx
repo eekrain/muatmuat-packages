@@ -20,6 +20,8 @@ import { id } from "date-fns/locale/id";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+import { cn } from "@/lib/cn";
+
 import ImageComponent from "../ImageComponent/ImageComponent";
 import style from "./DatetimePicker.module.scss";
 
@@ -264,7 +266,7 @@ const DatetimePicker = ({
   );
   const [dropdownPosition, setDropdownPosition] = useState({});
   const pickerRef = useRef(null);
-  console.log("start", selectedDate, new Date());
+  // console.log("start", selectedDate, new Date());
   registerLocale("id", id);
 
   // """Keep existing useEffect hooks for click outside and positioning"""
@@ -400,7 +402,13 @@ const DatetimePicker = ({
           }
         }}
       >
-        <div className="flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 px-3 hover:cursor-pointer hover:border-primary-700">
+        <div
+          className={cn(
+            "flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 px-3 hover:cursor-pointer",
+            status === "error" ? "border-error-400" : "",
+            "hover:border-primary-700"
+          )}
+        >
           <ImageComponent src="/icons/calendar16.svg" width={16} height={16} />
           <span
             className={`text-[12px] font-medium leading-[14.4px] ${datetimeValue ? "text-neutral-900" : "text-neutral-600"}`}
@@ -411,7 +419,7 @@ const DatetimePicker = ({
       </div>
       {isPickerOpen && (
         <div
-          className="absolute z-10 w-fit max-w-[calc(100dvw-32px)] rounded-lg border border-[#E5E7F0] bg-white shadow-lg"
+          className="absolute z-[9] w-fit max-w-[calc(100dvw-32px)] rounded-lg border border-[#E5E7F0] bg-white shadow-lg"
           style={dropdownPosition}
         >
           {/* MP 22: LB - 0166 */}
