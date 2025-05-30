@@ -57,14 +57,14 @@ const ImageUploaderRegister = ({
         </span>
         <div className="flex justify-center gap-2">
           <Button
-            Class="!h-7 !text-xs !font-semibold"
+            className="!h-7 !text-xs !font-semibold"
             color="primary_secondary"
             onClick={() => setModalOpen(false)}
           >
             {t("labelNo")}
           </Button>
           <Button
-            Class="!h-7 !text-xs !font-semibold"
+            className="!h-7 !text-xs !font-semibold"
             onClick={() => {
               setResultCrops("");
               value("");
@@ -167,7 +167,7 @@ const ImageUploaderRegister = ({
         </>
       )}
 
-      <Button onClick={handleUbah} Class="!h-[32px] !pt-3">
+      <Button onClick={handleUbah} className="!h-[32px] !pt-3">
         {resultCrops &&
         resultCrops !==
           "https://azlogistik.s3.ap-southeast-3.amazonaws.com/dev/file-1736414569172.webp"

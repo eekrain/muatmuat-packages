@@ -4,62 +4,43 @@ import { useRouter } from "next/navigation";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
-import responsiveLayoutZustand from "@/store/responsiveLayout";
-
-export const HeaderResponsiveContainer = ({
-  children,
-  className,
-  type = "muattrans",
-}) => {
-  const backgroundClassnames = {
-    muatmuat: "bg-neutral-50",
-    muatparts: "bg-muat-parts-non-800",
-    muattrans: "bg-muat-trans-primary-400",
-  };
-  const backgroundClassname = backgroundClassnames[type] || "";
-  return (
-    <div
-      className={`${backgroundClassname} fixed left-0 top-0 w-full ${className}`}
-    >
-      {children}
-    </div>
-  );
-};
+import { useResponsiveLayout } from "@/store/responsiveLayout";
 
 export const HeaderResponsiveDefault = () => {
-  const { screen, setScreen } = responsiveLayoutZustand();
   const router = useRouter();
+
+  const screen = useResponsiveLayout((state) => state.screen);
+  const defaultScreenState = useResponsiveLayout((state) => state.default);
   const menuIcons = [
     {
       src: "/icons/manajemen-notifikasi24.svg",
       count: 2,
-      onClick: () => alert("dalam konstruksi"),
+      onClick: defaultScreenState.header.onClickNotificationButton,
     },
     {
       src: "/icons/chat24.svg",
       count: 99,
-      onClick: () => alert("dalam konstruksi"),
+      onClick: defaultScreenState.header.onClickChatButton,
     },
     ...(screen === "default"
       ? [
           {
             src: "/icons/burger-menu24.svg",
-            onClick: () => setScreen("menu"),
+            onClick: defaultScreenState.header.onClickMenuButton,
           },
         ]
       : []),
   ];
+
   return (
     <div className="flex w-full items-center justify-between self-center">
       <div className="flex items-center gap-x-3">
         <IconComponent
-          classname="bg-muat-trans-secondary-900 rounded-xl icon-stroke-muat-trans-primary-400"
+          className="icon-stroke-muat-trans-primary-400 rounded-xl bg-muat-trans-secondary-900"
           src="/icons/chevron-left24.svg"
           width={24}
           height={24}
-          onclick={() =>
-            screen === "default" ? router.back() : setScreen("default")
-          }
+          onclick={defaultScreenState.header.onClickBackButton}
         />
         <ImageComponent src="/icons/muattrans.svg" width={120} height={24} />
       </div>
@@ -76,7 +57,7 @@ export const HeaderResponsiveDefault = () => {
               </div>
             ) : null}
             <IconComponent
-              classname="icon-fill-muat-trans-secondary-900"
+              className="icon-fill-muat-trans-secondary-900"
               src={menuIcon.src}
               width={24}
               height={24}

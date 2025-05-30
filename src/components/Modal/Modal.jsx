@@ -1,4 +1,3 @@
-// Modal.js
 "use client";
 
 import React, {
@@ -14,20 +13,7 @@ import { createPortal } from "react-dom";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
-
-// Modal.js
-
-// Modal.js
-
-// Modal.js
-
-// Modal.js
-
-// Modal.js
-
-// Modal.js
-
-// Modal.js
+import { cn } from "@/lib/cn";
 
 /**
  * @typedef {Object} ModalContextType
@@ -64,7 +50,7 @@ export const Modal = ({
   children,
   open: controlledOpen,
   onOpenChange,
-  closeOnOutsideClick = true,
+  closeOnOutsideClick = false,
 }) => {
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   const dialogRef = useRef(null);
@@ -137,6 +123,55 @@ export const ModalTrigger = ({ children }) => {
 /**
  * @param {{ children: React.ReactNode, className?: string }} props
  */
+export const ModalContent = ({
+  size = "small",
+  type = "muattrans",
+  children,
+  className,
+}) => {
+  const { close, isOpen, handleClickOutside } = useModal();
+  const dialogRef = useRef(null);
+  const baseClass = "";
+
+  const iconClassnames = {
+    muatmuat: "icon-fill-primary-700",
+    muatparts: "icon-fill-muat-parts-non-800",
+    muattrans: "icon-fill-muat-trans-secondary-900",
+  };
+
+  if (!isOpen || typeof window === "undefined") {
+    return null;
+  }
+
+  return createPortal(
+    <div
+      className={cn(
+        "fixed inset-0 z-50 flex items-center justify-center bg-black/25"
+      )}
+      onMouseDown={handleClickOutside}
+    >
+      <div ref={dialogRef} className="relative rounded-xl bg-neutral-50">
+        <button
+          className="absolute right-2 top-2 flex items-center justify-center rounded-full bg-neutral-50"
+          onClick={close}
+        >
+          <IconComponent
+            className={iconClassnames[type] || iconClassnames.muattrans}
+            src="/icons/close20.svg"
+            width={20}
+            height={20}
+          />
+        </button>
+        <div className={className ?? baseClass}>{children}</div>
+      </div>
+    </div>,
+    document.body
+  );
+};
+
+/**
+ * @param {{ children: React.ReactNode, className?: string }} props
+ */
 export const ModalHeader = ({
   children,
   className,
@@ -155,48 +190,6 @@ export const ModalHeader = ({
         height={70}
       />
     </div>
-  );
-};
-
-/**
- * @param {{ children: React.ReactNode, className?: string }} props
- */
-export const ModalContent = ({ children, className, type = "muattrans" }) => {
-  const { close, isOpen, handleClickOutside } = useModal();
-  const dialogRef = useRef(null);
-  const baseClass = "";
-
-  const iconClassnames = {
-    muatmuat: "icon-fill-primary-700",
-    muatparts: "icon-fill-muat-parts-non-800",
-    muattrans: "icon-fill-muat-trans-secondary-900",
-  };
-
-  if (!isOpen || typeof window === "undefined") {
-    return null;
-  }
-
-  return createPortal(
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-900/30 bg-opacity-50"
-      onMouseDown={handleClickOutside}
-    >
-      <div ref={dialogRef} className="relative rounded-xl bg-neutral-50">
-        <button
-          className="absolute right-2 top-2 flex items-center justify-center rounded-full bg-neutral-50"
-          onClick={close}
-        >
-          <IconComponent
-            classname={iconClassnames[type] || iconClassnames.muattrans}
-            src="/icons/close20.svg"
-            width={20}
-            height={20}
-          />
-        </button>
-        <div className={className ?? baseClass}>{children}</div>
-      </div>
-    </div>,
-    document.body
   );
 };
 

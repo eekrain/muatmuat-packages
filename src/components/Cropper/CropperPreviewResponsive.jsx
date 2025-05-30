@@ -47,7 +47,7 @@ const CropperPreviewResponsive = ({
           </div>
         </div>
         <Button
-          Class="h-10 px-6 mt-6"
+          className="mt-6 h-10 px-6"
           color="primary_secondary"
           onClick={handleEditImage}
         >
@@ -60,7 +60,7 @@ const CropperPreviewResponsive = ({
       </div>
       <div className="shadow-muat fixed bottom-0 left-0 w-full bg-neutral-50 px-4 py-3">
         <Button
-          Class="h-8 w-full max-w-full"
+          className="h-8 w-full max-w-full"
           color="primary"
           onClick={onConfirm}
         >

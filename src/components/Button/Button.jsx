@@ -1,5 +1,7 @@
 import PropTypes from "prop-types";
 
+import { cn } from "@/lib/cn";
+
 import IconComponent from "../IconComponent/IconComponent";
 import style from "./Button.module.scss";
 
@@ -8,7 +10,7 @@ const Button = ({
   children = "Button",
   name,
   onClick,
-  Class = "",
+  className,
   iconLeft = null,
   iconRight = null,
   disabled = false,
@@ -40,9 +42,11 @@ const Button = ({
       name={name}
       onClick={onClick}
       disabled={disabled}
-      className={`${Class} ${style[`btn_${type}_${color}`]} ${disabledProp} ${
-        style.btn
-      } flex min-w-[112px] max-w-fit items-center justify-center gap-[4px] rounded-[24px] px-[24px] py-[11px] text-[14px] !font-semibold leading-[16.8px] transition-colors`}
+      className={cn(
+        "flex min-w-[112px] max-w-fit items-center justify-center gap-[4px] rounded-[24px] px-[24px] py-[11px] text-[14px] !font-semibold leading-[16.8px] transition-colors",
+        `${disabledProp} ${style.btn}`,
+        className ? className : style[`btn_${type}_${color}`]
+      )}
     >
       {typeof iconLeft === "string" ? (
         <IconComponent
@@ -50,7 +54,7 @@ const Button = ({
           src={iconLeft}
           height={16}
           width={16}
-          classname={disabled ? style["fill_disabled"] : colorIcon}
+          className={disabled ? style["fill_disabled"] : colorIcon}
         />
       ) : (
         iconLeft
@@ -62,7 +66,7 @@ const Button = ({
           src={iconRight}
           height={16}
           width={16}
-          classname={disabled ? style["fill_disabled"] : colorIcon}
+          className={disabled ? style["fill_disabled"] : colorIcon}
         />
       ) : (
         iconRight

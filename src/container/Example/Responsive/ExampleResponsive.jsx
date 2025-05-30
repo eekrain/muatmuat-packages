@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useState } from "react";
 
 import {
@@ -9,7 +10,9 @@ import {
 import Button from "@/components/Button/Button";
 import ToogleButton from "@/components/ToogleButton/ToogleButton";
 
-const ExampleResponsive = () => {
+const RESPONSIVE_LINKS = ["/example", "/example/mobile-searchbar"];
+
+const ExampleResponsive = ({ searchValue = "" }) => {
   const [courierStatus, setCourierStatus] = useState({
     ambilLangsung: false,
     kurirToko: false,
@@ -83,6 +86,23 @@ const ExampleResponsive = () => {
             </div>
           </BottomSheetContent>
         </BottomSheet>
+      </div>
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold">Search Value</h1>
+        {searchValue}
+      </div>
+
+      <div>
+        <h1 className="text-2xl font-bold">Links</h1>
+        {RESPONSIVE_LINKS.map((link) => (
+          <Link
+            key={link}
+            href={link}
+            className="block text-blue-500 underline"
+          >
+            {link}
+          </Link>
+        ))}
       </div>
     </div>
   );

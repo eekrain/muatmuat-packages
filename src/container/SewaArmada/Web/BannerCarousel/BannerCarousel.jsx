@@ -1,7 +1,8 @@
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
+import { cn } from "@/lib/cn";
 
 const BannerCarousel = ({
   banners,
@@ -9,15 +10,16 @@ const BannerCarousel = ({
   showControls = true,
   showIndicators = true,
 }) => {
+  const [isHovered, setIsHovered] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const autoplayTimerRef = useRef(null);
 
   const totalBanners = banners.length;
 
-  // Handle navigation
-  const goToNext = () => {
+  // Stable callback for goToNext
+  const goToNext = useCallback(() => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % totalBanners);
-  };
+  }, [totalBanners]);
 
   const goToPrev = () => {
     setCurrentIndex(
@@ -29,7 +31,7 @@ const BannerCarousel = ({
     setCurrentIndex(index);
   };
 
-  // Setup autoplay
+  // Setup autoplay (best practice)
   useEffect(() => {
     if (autoplaySpeed > 0) {
       autoplayTimerRef.current = setInterval(goToNext, autoplaySpeed);
@@ -37,21 +39,25 @@ const BannerCarousel = ({
     return () => {
       if (autoplayTimerRef.current) {
         clearInterval(autoplayTimerRef.current);
+        autoplayTimerRef.current = null;
       }
     };
-  }, [autoplaySpeed, currentIndex]);
+  }, [autoplaySpeed, goToNext]);
 
   // Pause on hover
   const handleMouseEnter = () => {
     if (autoplayTimerRef.current) {
       clearInterval(autoplayTimerRef.current);
+      autoplayTimerRef.current = null;
     }
+    setIsHovered(true);
   };
 
   const handleMouseLeave = () => {
-    if (autoplaySpeed > 0) {
+    if (autoplaySpeed > 0 && !autoplayTimerRef.current) {
       autoplayTimerRef.current = setInterval(goToNext, autoplaySpeed);
     }
+    setIsHovered(false);
   };
 
   return (
@@ -62,10 +68,13 @@ const BannerCarousel = ({
     >
       <div className="relative mx-auto h-[250px] w-[1000px] overflow-hidden rounded-xl">
         {banners.map((banner, index) => (
-          <div
+          <a
             key={banner.id}
-            className={`absolute left-0 top-0 h-full w-full transition-opacity duration-500 ${
-              index === currentIndex ? "z-10 opacity-100" : "z-0 opacity-0"
+            href={banner.linkUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`absolute left-0 top-0 h-full w-full cursor-pointer transition-opacity duration-500 ${
+              index === currentIndex ? "z-0 opacity-100" : "-z-10 opacity-0"
             }`}
           >
             <Image
@@ -73,26 +82,23 @@ const BannerCarousel = ({
               alt={banner.altText || "Banner image"}
               fill
               sizes="1000px"
-              style={{
-                objectFit: "cover",
-                borderRadius: "12px",
-              }}
+              className="rounded-xl object-cover"
               priority={index === 0}
             />
-          </div>
+          </a>
         ))}
       </div>
 
       {/* Navigation Controls */}
       {showControls && (
-        <div className="absolute bottom-[42%] left-0 right-0 top-[42%] flex justify-between">
-          {/* <IconComponent
-            src="/icons/chevron-left40.svg"
-            width={40}
-            height={40}
-          /> */}
+        <div
+          className={cn(
+            "pointer-events-none absolute bottom-[42%] left-0 right-0 top-[42%] flex justify-between transition-opacity duration-500",
+            !isHovered && "opacity-0"
+          )}
+        >
           <button
-            className="z-10 flex size-[40px] items-center justify-center rounded-full bg-white shadow-lg"
+            className="pointer-events-auto z-10 flex size-[40px] items-center justify-center rounded-full bg-white shadow-lg"
             onClick={goToPrev}
           >
             <ImageComponent
@@ -101,16 +107,9 @@ const BannerCarousel = ({
               height={16}
             />
           </button>
-          {/* <button
-            onClick={goToPrev}
-            className="w-[40px] h-[40px] bg-white rounded-full shadow-lg flex items-center justify-center z-10"
-            aria-label="Previous banner"
-          >
-            <IconComponent src="/icons/chevron-left40.svg" width={40} height={40} />
-          </button> */}
           <button
             onClick={goToNext}
-            className="z-10 flex h-[40px] w-[40px] items-center justify-center rounded-full bg-white shadow-lg"
+            className="pointer-events-auto z-10 flex h-[40px] w-[40px] items-center justify-center rounded-full bg-white shadow-lg"
             aria-label="Next banner"
           >
             <ImageComponent
@@ -124,15 +123,15 @@ const BannerCarousel = ({
 
       {/* Indicator Dots */}
       {showIndicators && (
-        <div className="absolute bottom-[16px] left-1/2 flex -translate-x-1/2 transform gap-[8px]">
-          {banners.map((_, index) => (
+        <div className="absolute bottom-1 left-1/2 flex -translate-x-1/2 transform gap-[8px] p-3">
+          {banners.map((banner, index) => (
             <button
-              key={index}
+              key={banner.id}
               onClick={() => goToSlide(index)}
               className={`h-[8px] ${
                 index === currentIndex
                   ? "w-[32px] rounded-[14px] bg-white"
-                  : "w-[8px] rounded-full bg-white opacity-50"
+                  : "w-[8px] rounded-full bg-white"
               }`}
               aria-label={`Go to banner ${index + 1}`}
             />
