@@ -854,7 +854,6 @@ export default function SewaArmadaWeb() {
                     <Button
                       color="primary_secondary"
                       onClick={() => setIsModalConfirmationOpen(false)}
-                      Class="min-w-[132px] h-8"
                       type="muatparts"
                     >
                       Kembali
@@ -862,7 +861,6 @@ export default function SewaArmadaWeb() {
                     <Button
                       color="primary"
                       onClick={() => setIsModalConfirmationOpen(false)}
-                      Class="min-w-[151px] h-8"
                       type="muatparts"
                     >
                       Pesan Sekarang

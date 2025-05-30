@@ -147,7 +147,7 @@ const FloatingButton = () => {
                 rel="noopener noreferrer"
                 className="mt-2"
               >
-                <Button Class="mt-2 py-[7px] px-[15px]" type="muatparts">
+                <Button type="muatparts">
                   <div className="flex flex-row gap-x-2">
                     <ImageComponent
                       className="h-5 w-5 self-center"

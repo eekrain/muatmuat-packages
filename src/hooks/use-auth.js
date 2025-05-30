@@ -15,7 +15,7 @@ export const useInitAuthentication = () => {
 
   useEffect(() => {
     if (refreshToken && accessToken && !hasInitAuth.current) {
-      useAuthStore.setToken({ refreshToken, accessToken });
+      useAuthStore.getState().setToken({ refreshToken, accessToken });
 
       // Remove tokens from URL
       const params = new URLSearchParams(searchParams.toString());
