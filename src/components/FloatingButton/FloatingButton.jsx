@@ -8,15 +8,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Fragment, useState } from "react";
 
-import { Dialog, DialogPanel } from "@headlessui/react";
-
+import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import ImageComponent from "@/components/ImageComponent/ImageComponent";
+import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 
-import Button from "../Button/Button";
-import ImageComponent from "../ImageComponent/ImageComponent";
 import styles from "./FloatingButton.module.scss";
 
-const FloatingButtonResponsive = () => {
+const FloatingButton = () => {
   // const { isMobile } = viewport();
   const router = useRouter();
   const [isShow, setIsShow] = useState(false);
@@ -35,7 +34,7 @@ const FloatingButtonResponsive = () => {
 
   return (
     <div
-      className={`fixed z-[101] lg:right-[40px] ${isShow ? "max-[600px]:right-[15px]" : "max-[600px]:right-[-38px]"} bottom-[61px] max-[600px]:bottom-[99px] ${styles.floating_button_container}`}
+      className={`fixed z-[50] lg:right-[40px] ${isShow ? "max-[600px]:right-[15px]" : "max-[600px]:right-[-38px]"} bottom-[61px] max-[600px]:bottom-[99px] ${styles.floating_button_container}`}
     >
       {!isOpen && (
         <Fragment>
@@ -65,8 +64,12 @@ const FloatingButtonResponsive = () => {
       {isOpen && (
         <div className="flex flex-col gap-y-[13px]">
           <Button
-            Class="!self-end min-w-[208px] !px-2.5 flex items-center h-[44px]"
-            onClick={() => setIsModalOpen(true)}
+            className="!h-[44px] !px-2.5"
+            onClick={() => {
+              setIsModalOpen(true);
+              setIsOpen(false);
+            }}
+            type="muatparts"
           >
             <div className="flex w-full flex-row gap-x-2.5">
               <ImageComponent
@@ -81,8 +84,9 @@ const FloatingButtonResponsive = () => {
             </div>
           </Button>
           <Button
-            Class="!self-end !min-w-[208px] !px-2.5 flex items-center h-[44px]"
+            className="!h-[44px] !px-2.5"
             onClick={() => router.push(`${process.env.NEXT_PUBLIC_FAQ_WEB}`)}
+            type="muatparts"
           >
             <div className="flex w-full flex-row gap-x-2.5">
               <ImageComponent
@@ -109,7 +113,57 @@ const FloatingButtonResponsive = () => {
           </div>
         </div>
       )}
-      <Dialog
+      <Modal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        closeOnOutsideClick={false}
+      >
+        <ModalContent>
+          <ModalHeader />
+          <div className="w-[386px] px-6 py-9">
+            <div className="flex flex-col items-center">
+              <span className="text-center text-[17px] font-bold leading-[25.5px] text-[#1b1b1b]">
+                Hubungi Kami
+              </span>
+              <span className="mt-6 text-center text-[14px] font-medium leading-[21px] text-[#1b1b1b]">
+                Jika Anda membutuhkan bantuan dapat menghubungi nomor dibawah
+                ini
+              </span>
+              <div className="mt-2 flex flex-row text-center text-[14px] font-medium leading-[21px] text-primary-700">
+                <ImageComponent
+                  className="h-5 w-5 self-center"
+                  src="/img/hubungi-kami-blue.png"
+                  height={20}
+                  width={20}
+                />
+                <span>+62 811-3886-7000</span>
+              </div>
+              <span className="mt-3 text-center text-[14px] font-medium leading-[21px] text-[#1b1b1b]">
+                atau klik tombol dibawah ini
+              </span>
+              <Link
+                href={"https://wa.me/+6281138867000?"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2"
+              >
+                <Button Class="mt-2 py-[7px] px-[15px]" type="muatparts">
+                  <div className="flex flex-row gap-x-2">
+                    <ImageComponent
+                      className="h-5 w-5 self-center"
+                      src="/img/whatsapp.png"
+                      height={20}
+                      width={20}
+                    />
+                    <span className="self-center">Whatsapp</span>
+                  </div>
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </ModalContent>
+      </Modal>
+      {/* <Dialog
         open={isModalOpen}
         onClose={() => {}}
         transition
@@ -133,50 +187,13 @@ const FloatingButtonResponsive = () => {
               </button>
             </div>
             <div className={styles.modal_apps_az}>
-              <div className="flex flex-col items-center p-1">
-                <span className="text-center text-[17px] font-bold leading-[25.5px] text-[#1b1b1b]">
-                  Hubungi Kami
-                </span>
-                <span className="mt-6 text-center text-[14px] font-medium leading-[21px] text-[#1b1b1b]">
-                  Jika Anda membutuhkan bantuan dapat menghubungi nomor dibawah
-                  ini
-                </span>
-                <div className="mt-2 flex flex-row text-center text-[14px] font-medium leading-[21px] text-primary-700">
-                  <ImageComponent
-                    className="h-5 w-5 self-center"
-                    src="/img/hubungi-kami-blue.png"
-                    height={20}
-                    width={20}
-                  />
-                  <span>+62 811-3886-7000</span>
-                </div>
-                <span className="mt-3 text-center text-[14px] font-medium leading-[21px] text-[#1b1b1b]">
-                  atau klik tombol dibawah ini
-                </span>
-                <Link
-                  href={"https://wa.me/+6281138867000?"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Button Class="mt-2 py-[7px] px-[15px]">
-                    <div className="flex flex-row gap-x-2">
-                      <ImageComponent
-                        className="h-5 w-5 self-center"
-                        src="/img/whatsapp.png"
-                        height={20}
-                        width={20}
-                      />
-                      <span className="self-center">Whatsapp</span>
-                    </div>
-                  </Button>
-                </Link>
-              </div>
+              
             </div>
           </DialogPanel>
         </div>
-      </Dialog>
+      </Dialog> */}
     </div>
   );
 };
 
-export default FloatingButtonResponsive;
+export default FloatingButton;

@@ -1,7 +1,7 @@
 // store/SewaArmada.js
 import { create } from "zustand";
 
-export const useSewaArmadaStore = create((set) => ({
+export const useSewaArmadaStore = create((set, get) => ({
   // Layanan Type
   rentalType: "",
   setRentalType: (value) => set({ rentalType: value }),
@@ -28,11 +28,11 @@ export const useSewaArmadaStore = create((set) => ({
     })),
 
   // Tipe Muatan
-  tipeMuatan: "",
+  tipeMuatan: "bahan-mentah",
   setTipeMuatan: (value) => set({ tipeMuatan: value }),
 
   // Jenis Muatan
-  jenisMuatan: "",
+  jenisMuatan: "padat",
   setJenisMuatan: (value) => set({ jenisMuatan: value }),
 
   // Informasi Muatan
@@ -98,6 +98,9 @@ export const useSewaArmadaStore = create((set) => ({
   isCompany: false,
   setIsCompany: (value) => set({ isCompany: value }),
 
+  errors: {},
+  setErrors: (value) => set({ errors: value }),
+
   // Reset Form
   resetForm: () =>
     set({
@@ -106,8 +109,8 @@ export const useSewaArmadaStore = create((set) => ({
       endDate: null,
       showRangeOption: false,
       lokasi: { muat: "", bongkar: "" },
-      tipeMuatan: "",
-      jenisMuatan: "",
+      tipeMuatan: "bahan-mentah",
+      jenisMuatan: "padat",
       informasiMuatan: "",
       fotoMuatan: [null, null, null, null],
       deskripsi: "",
@@ -119,4 +122,25 @@ export const useSewaArmadaStore = create((set) => ({
       noDO: "",
       isCompany: false,
     }),
+
+  validateForm: () => {
+    const { fotoMuatan, deskripsi } = get();
+    const newErrors = {};
+    const isValidFotoMuatan = fotoMuatan.some((item) => item !== null);
+
+    if (!isValidFotoMuatan) {
+      newErrors.fotoMuatan = "Mohon upload foto muatan";
+    }
+
+    if (!deskripsi) {
+      newErrors.deskripsi = "Deskripsi Muatan wajib diisi";
+    } else if (deskripsi.length < 3) {
+      newErrors.deskripsi = "Deskripsi Muatan minimal 3 karakter";
+    }
+
+    set({ errors: newErrors });
+
+    // Return true if newErrors is empty, false otherwise
+    return Object.keys(newErrors).length === 0;
+  },
 }));

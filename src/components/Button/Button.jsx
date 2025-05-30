@@ -8,7 +8,7 @@ const Button = ({
   children = "Button",
   name,
   onClick,
-  Class = "",
+  className = "",
   iconLeft = null,
   iconRight = null,
   disabled = false,
@@ -40,9 +40,9 @@ const Button = ({
       name={name}
       onClick={onClick}
       disabled={disabled}
-      className={`${Class} ${style[`btn_${type}_${color}`]} ${disabledProp} ${
+      className={`${className} ${style[`btn_${type}_${color}`]} ${disabledProp} ${
         style.btn
-      } flex min-w-[112px] max-w-fit items-center justify-center gap-[4px] rounded-[24px] px-[24px] py-[11px] text-[14px] !font-semibold leading-[16.8px] transition-colors`}
+      } flex h-10 items-center justify-center gap-[4px] rounded-[24px] px-[24px] text-[14px] !font-semibold leading-[16.8px] transition-colors lg:h-8`}
     >
       {typeof iconLeft === "string" ? (
         <IconComponent
@@ -83,7 +83,7 @@ Button.propTypes = {
   ]),
   name: PropTypes.string,
   onClick: PropTypes.func.isRequired,
-  Class: PropTypes.string,
+  className: PropTypes.string,
   iconLeft: PropTypes.string,
   iconRight: PropTypes.string,
   disabled: PropTypes.bool,

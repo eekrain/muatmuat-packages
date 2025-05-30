@@ -3,13 +3,14 @@
 import Image from "next/image";
 import { Fragment, useEffect, useState } from "react";
 
+import Button from "@/components/Button/Button";
 import Card from "@/components/Card/Card";
 import Checkbox from "@/components/Checkbox/Checkbox";
 import DatetimePicker from "@/components/DatetimePicker/DatetimePicker";
-import FloatingButton from "@/components/FloatingButton/FloatingButton";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageUploader from "@/components/ImageUploader/ImageUploader";
 import Input from "@/components/Input/Input";
+import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import RadioButton from "@/components/Radio/RadioButton";
 import TextArea from "@/components/TextArea/TextArea";
 import Tooltip from "@/components/Tooltip/Tooltip";
@@ -30,12 +31,33 @@ const FormLabel = ({ size = "big", title, required = false }) => (
 );
 
 export default function SewaArmadaWeb() {
+  const banners = [
+    {
+      id: 1,
+      imageUrl: "/img/truck-banner.png",
+      altText: "Promo Muatrans",
+      linkUrl: "/promo/1",
+    },
+    {
+      id: 2,
+      imageUrl: "/img/truck-banner2.png",
+      altText: "Layanan Pengiriman",
+      linkUrl: "/services",
+    },
+    {
+      id: 3,
+      imageUrl: "/img/truck-banner3.png",
+      altText: "Download Aplikasi",
+      linkUrl: "/download",
+    },
+  ];
   // API Base URL
   const baseUrl = process.env.NEXT_PUBLIC_GLOBAL_API || "";
 
   // SWR Hooks
   // const { useSWRHook, useSWRMutateHook } = SWRHandler;
   const [openControlled, setOpenControlled] = useState(false);
+  const [isModalConfirmationOpen, setIsModalConfirmationOpen] = useState(false);
 
   // Menggunakan state dari zustand
   const {
@@ -70,6 +92,8 @@ export default function SewaArmadaWeb() {
     setNoDO,
     fotoMuatan,
     setFotoMuatan,
+    errors,
+    validateForm,
   } = useSewaArmadaStore();
 
   const [timezone, setTimezone] = useState({
@@ -86,6 +110,14 @@ export default function SewaArmadaWeb() {
   const [cargoTypes, setCargoTypes] = useState([]);
   const [cargoCategories, setCargoCategories] = useState([]);
   const [loadingCargoTypes, setLoadingCargoTypes] = useState(false);
+
+  // Clean up zustand state saat unmount
+  useEffect(() => {
+    return () => {
+      // Optional: reset form saat keluar dari halaman
+      // useArmadaInstanStore.getState().resetForm();
+    };
+  }, []);
 
   // API Calls dengan SWR
   // const { data: cargoTypesData, error: cargoTypesError } = useSWRHook(
@@ -142,34 +174,12 @@ export default function SewaArmadaWeb() {
   // Handler untuk upload foto muatan
   const handleImageUpload = (index, img) => setFotoMuatan(index, img);
 
-  const banners = [
-    {
-      id: 1,
-      imageUrl: "/img/truck-banner.png",
-      altText: "Promo Muatrans",
-      linkUrl: "/promo/1",
-    },
-    {
-      id: 2,
-      imageUrl: "/img/truck-banner2.png",
-      altText: "Layanan Pengiriman",
-      linkUrl: "/services",
-    },
-    {
-      id: 3,
-      imageUrl: "/img/truck-banner3.png",
-      altText: "Download Aplikasi",
-      linkUrl: "/download",
-    },
-  ];
-
-  // Clean up zustand state saat unmount
-  useEffect(() => {
-    return () => {
-      // Optional: reset form saat keluar dari halaman
-      // useArmadaInstanStore.getState().resetForm();
-    };
-  }, []);
+  const handleOrderFleet = () => {
+    const isValidForm = validateForm();
+    if (isValidForm) {
+      setIsModalConfirmationOpen(true);
+    }
+  };
 
   return (
     <main className="flex min-h-screen flex-col items-center gap-6 bg-neutral-50 px-10 py-8">
@@ -369,46 +379,37 @@ export default function SewaArmadaWeb() {
                       <div className="w-[250px]">
                         <RadioButton
                           name="tipe-muatan"
-                          label="Padat"
-                          checked={tipeMuatan === "padat"}
-                          onClick={() => setTipeMuatan("padat")}
-                          value="padat"
+                          label="Bahan Mentah"
+                          checked={tipeMuatan === "bahan-mentah"}
+                          onClick={() => setTipeMuatan("bahan-mentah")}
+                          value="bahan-mentah"
                         />
                       </div>
                       <div className="w-[250px]">
                         <RadioButton
                           name="tipe-muatan"
-                          label="Cair"
-                          checked={tipeMuatan === "cair"}
-                          onClick={() => setTipeMuatan("cair")}
-                          value="cair"
+                          label="Barang Jadi"
+                          checked={tipeMuatan === "barang-jadi"}
+                          onClick={() => setTipeMuatan("barang-jadi")}
+                          value="barang-jadi"
                         />
                       </div>
                       <div className="w-[250px]">
                         <RadioButton
                           name="tipe-muatan"
-                          label="Curah"
-                          checked={tipeMuatan === "curah"}
-                          onClick={() => setTipeMuatan("curah")}
-                          value="curah"
+                          label="Barang Setengah Jadi"
+                          checked={tipeMuatan === "barang-setengah-jadi"}
+                          onClick={() => setTipeMuatan("barang-setengah-jadi")}
+                          value="barang-setengah-jadi"
                         />
                       </div>
                       <div className="w-[250px]">
                         <RadioButton
                           name="tipe-muatan"
-                          label="Kendaraan"
-                          checked={tipeMuatan === "kendaraan"}
-                          onClick={() => setTipeMuatan("kendaraan")}
-                          value="kendaraan"
-                        />
-                      </div>
-                      <div className="w-[250px]">
-                        <RadioButton
-                          name="tipe-muatan"
-                          label="Container"
-                          checked={tipeMuatan === "container"}
-                          onClick={() => setTipeMuatan("container")}
-                          value="container"
+                          label="Lainnya"
+                          checked={tipeMuatan === "lainnya"}
+                          onClick={() => setTipeMuatan("lainnya")}
+                          value="lainnya"
                         />
                       </div>
                     </>
@@ -546,6 +547,7 @@ export default function SewaArmadaWeb() {
                             maxSize={10}
                             className="!size-[124px]"
                             value={fotoMuatan[key]}
+                            isNull={errors.fotoMuatan}
                           />
                         </Fragment>
                       ))}
@@ -564,12 +566,16 @@ export default function SewaArmadaWeb() {
                     <TextArea
                       maxLength={500}
                       hasCharCount
+                      supportiveText={{
+                        title: errors.deskripsi,
+                      }}
                       resize="none"
                       placeholder={
                         "Lengkapi deskripsi informasi muatan Anda dengan rincian spesifik terkait barang yang dikirim, seperti bahan, penggunaan, atau karakteristik unik lainnya."
                       }
                       value={deskripsi}
                       changeEvent={(e) => setDeskripsi(e.target.value)}
+                      status={errors.deskripsi ? "error" : ""}
                       // classInput={"!text-[#1b1b1b]"}
                     />
                   </div>
@@ -760,19 +766,99 @@ export default function SewaArmadaWeb() {
                 />
               </div>
 
-              <div className="flex items-center justify-between">
-                <span className="text-base font-bold text-black">Total</span>
-                <span className="text-base font-bold text-black">
-                  Rp{bantuanTambahan ? "105.000" : "0"}
-                </span>
+              <div className="flex flex-col gap-y-4">
+                <div className="flex flex-col gap-y-6">
+                  <div className="flex items-center justify-between">
+                    <span className="text-base font-bold text-black">
+                      Total
+                    </span>
+                    <span className="text-base font-bold text-black">
+                      Rp{bantuanTambahan ? "105.000" : "0"}
+                    </span>
+                  </div>
+                </div>
+                <Button
+                  color="primary"
+                  onClick={handleOrderFleet}
+                  type="muatparts"
+                >
+                  Lanjut Pembayaran
+                </Button>
               </div>
             </Card>
           </div>
+          <Modal
+            open={isModalConfirmationOpen}
+            onOpenChange={setIsModalConfirmationOpen}
+            closeOnOutsideClick={false}
+          >
+            <ModalContent>
+              <ModalHeader size="big" />
+              <div className="px-6 py-9">
+                <div className="flex w-[406px] max-w-[510px] flex-col items-center justify-center gap-6">
+                  {/* Judul Modal */}
+                  <h2 className="w-full text-center text-[16px] font-bold leading-[19.2px] text-neutral-900">
+                    Informasi
+                  </h2>
+
+                  {/* Box Peringatan */}
+                  <div className="flex w-full flex-row items-center gap-2.5 rounded-md bg-warning-100 p-6">
+                    <div className="flex items-center">
+                      <IconComponent
+                        src="/icons/warning24.svg"
+                        height={24}
+                        width={24}
+                      />
+                    </div>
+                    <p className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                      Jika ada kendala pada persiapan atau perjalanan ke lokasi
+                      muat, pengiriman mungkin tidak bisa dilanjutkan. Kami akan
+                      tetap berusaha memberikan solusi terbaik.
+                    </p>
+                  </div>
+
+                  {/* Text Konfirmasi */}
+                  <p className="w-full text-center text-[14px] font-medium leading-[16.8px] text-neutral-900">
+                    Apakah kamu yakin data yang kamu isi sudah benar? <br />
+                    Pastikan semua informasi telah diperiksa sebelum
+                    melanjutkan.
+                  </p>
+
+                  {/* Text Syarat dan Ketentuan */}
+                  <p className="w-[320px] text-center text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                    *Dengan memesan jasa angkut ini, kamu telah menyetujui{" "}
+                    {/* <Link href="/syarat-ketentuan"> */}
+                    <span className="text-primary-700">
+                      Syarat dan Ketentuan Muatrans
+                    </span>
+                    {/* </Link> */}
+                  </p>
+
+                  {/* Container Tombol */}
+                  <div className="flex flex-row justify-center gap-2">
+                    <Button
+                      color="primary_secondary"
+                      onClick={() => setIsModalConfirmationOpen(false)}
+                      Class="min-w-[132px] h-8"
+                      type="muatparts"
+                    >
+                      Kembali
+                    </Button>
+                    <Button
+                      color="primary"
+                      onClick={() => setIsModalConfirmationOpen(false)}
+                      Class="min-w-[151px] h-8"
+                      type="muatparts"
+                    >
+                      Pesan Sekarang
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </ModalContent>
+          </Modal>
         </>
       )}
-
-      {/* Floating Button */}
-      <FloatingButton />
     </main>
   );
 }

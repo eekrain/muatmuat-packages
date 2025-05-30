@@ -5,8 +5,8 @@ import MainLayout from "@/layout/MainLayout/MainLayout";
 import "./globals.scss";
 
 export const metadata = {
-  title: "MuatTrans Shiipper",
-  description: "MuatTrans Shiipper",
+  title: "MuatTrans Shipper",
+  description: "MuatTrans Shipper",
 };
 
 const Avenir = localFont({
