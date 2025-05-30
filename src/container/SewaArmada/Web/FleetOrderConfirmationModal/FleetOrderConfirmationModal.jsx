@@ -2,17 +2,9 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 
-const FleetOrderConfirmationModal = ({
-  isModalConfirmationOpen,
-  setIsModalConfirmationOpen,
-  onOrderFleet,
-}) => {
+const FleetOrderConfirmationModal = ({ isOpen, setIsOpen, onOrderFleet }) => {
   return (
-    <Modal
-      open={isModalConfirmationOpen}
-      onOpenChange={setIsModalConfirmationOpen}
-      closeOnOutsideClick={false}
-    >
+    <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick={false}>
       <ModalContent>
         <ModalHeader size="big" />
         <div className="px-6 py-9">

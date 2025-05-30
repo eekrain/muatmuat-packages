@@ -21,6 +21,7 @@ import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 import { getNowTimezone } from "@/utils/dateTime";
 
 import BannerCarousel from "./BannerCarousel/BannerCarousel";
+import FilterModal from "./FilterModal/FilterModal";
 import FirstTimer from "./FirstTimer/FirstTimer";
 import FleetOrderConfirmationModal from "./FleetOrderConfirmationModal/FleetOrderConfirmationModal";
 import WelcomeCard from "./WelcomeCard/WelcomeCard";
@@ -83,6 +84,10 @@ export default function SewaArmadaWeb() {
     setJenisMuatan,
     deskripsi,
     setDeskripsi,
+    jenisCarrier,
+    setJenisCarrier,
+    jenisTruk,
+    setJenisTruk,
     useAsuransi,
     setUseAsuransi,
     kirimBuktiFisik,
@@ -108,6 +113,10 @@ export default function SewaArmadaWeb() {
   const [isAsuransiModalOpen, setIsAsuransiModalOpen] = useState(false);
   const [isInformasiMuatanModalOpen, setIsInformasiMuatanModalOpen] =
     useState(false);
+
+  // State untuk jenis armada
+  const [isArmadaPopupOpen, setIsArmadaPopupOpen] = useState(false);
+  const [type, setType] = useState(""); // carrier or truck
 
   // State untuk menyimpan data dari API
   const [cargoTypes, setCargoTypes] = useState([]);
@@ -202,6 +211,16 @@ export default function SewaArmadaWeb() {
   // Handler untuk upload foto muatan
   const handleImageUpload = (index, img) => setFotoMuatan(index, img);
 
+  const handleSelectArmada = (value) => {
+    console.log("type", type);
+    if (type === "carrier") {
+      setJenisCarrier(value);
+    }
+    if (type === "truck") {
+      setJenisTruk(value);
+    }
+  };
+  console.log("jen", jenisCarrier, jenisTruk);
   const handleValidateFleetOrder = () => {
     const isValidForm = validateForm();
     if (isValidForm) {
@@ -212,10 +231,8 @@ export default function SewaArmadaWeb() {
   const handleOrderFleet = () => {
     // logic sewa armada
     setIsModalConfirmationOpen(false);
-    console.log("SEWA ARMADA");
   };
-  console.log("start", startDate);
-  console.log("Enn", endDate);
+
   return (
     <main className="flex min-h-screen flex-col items-center gap-6 bg-neutral-50 px-10 py-8">
       {/* Carousel Banner */}
@@ -616,14 +633,20 @@ export default function SewaArmadaWeb() {
                     Jenis Armada*
                   </label>
                   <div className="flex flex-1 gap-3.5">
-                    <div className="flex h-8 flex-1 cursor-pointer items-center rounded-md border border-neutral-600 bg-neutral-200 px-3">
+                    <div
+                      className="flex h-8 flex-1 cursor-pointer items-center rounded-md border border-neutral-600 px-3"
+                      onClick={() => {
+                        setIsArmadaPopupOpen(true);
+                        setType("carrier");
+                      }}
+                    >
                       <IconComponent
                         src="/icons/carrier16.svg"
                         width={16}
                         height={16}
                       />
                       <span className="ml-2 text-xs font-medium text-neutral-600">
-                        Pilih Jenis Carrier
+                        {jenisCarrier || "Pilih Jenis Carrier"}
                       </span>
                       <IconComponent
                         src="/icons/chevron-right.svg"
@@ -632,7 +655,13 @@ export default function SewaArmadaWeb() {
                         className="ml-auto"
                       />
                     </div>
-                    <div className="flex h-8 flex-1 cursor-pointer items-center rounded-md border border-neutral-600 bg-neutral-200 px-3">
+                    <div
+                      className={`flex h-8 flex-1 items-center rounded-md border border-neutral-600 px-3 ${jenisCarrier ? "cursor-pointer bg-neutral-50" : "cursor-not-allowed bg-neutral-200"}`}
+                      onClick={() => {
+                        setIsArmadaPopupOpen(true);
+                        setType("truck");
+                      }}
+                    >
                       <IconComponent
                         src="/icons/truck16.svg"
                         width={16}
@@ -817,9 +846,15 @@ export default function SewaArmadaWeb() {
             </Card>
           </div>
           <FleetOrderConfirmationModal
-            isModalConfirmationOpen={isModalConfirmationOpen}
-            setIsModalConfirmationOpen={setIsModalConfirmationOpen}
+            isOpen={isModalConfirmationOpen}
+            setIsOpen={setIsModalConfirmationOpen}
             onOrderFleet={handleOrderFleet}
+          />
+          <FilterModal
+            isOpen={isArmadaPopupOpen}
+            setIsOpen={setIsArmadaPopupOpen}
+            onSelectArmada={handleSelectArmada}
+            type={type}
           />
         </>
       )}
