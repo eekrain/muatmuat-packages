@@ -48,7 +48,7 @@ export default function ImageUploaderWeb({
   isLoading, //loading status
   acceptedFormats = [".jpg", ".jpeg", ".png"], // format of image that can be uploaded
 }) {
-  console.log("value", value);
+  // console.log("value", value);
   const imageRef = useRef(null);
   const [image, setImage] = useState(null); //set image source for cropper
   const [isOpen, setIsOpen] = useState(false); //open cropper modal
@@ -90,7 +90,7 @@ export default function ImageUploaderWeb({
       setShowToast(true);
       setDataToast({
         type: "error",
-        message: `asdf ${maxSize}MB`,
+        message: `Ukuran file melebihi ${maxSize}MB`,
       });
       setError(true);
       imageRef.current.value = null;
@@ -256,7 +256,7 @@ export default function ImageUploaderWeb({
           className="hidden"
         />
         {isLoading ? (
-          <div>
+          <>
             <ImageComponent
               className={styles.rotate_image}
               src="/img/loader.png"
@@ -264,7 +264,10 @@ export default function ImageUploaderWeb({
               width={20}
               height={20}
             />
-          </div>
+            <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+              Mengunggah...
+            </span>
+          </>
         ) : (
           <>
             {!error && !base64Image && (
@@ -281,8 +284,8 @@ export default function ImageUploaderWeb({
               <>
                 <IconComponent
                   classname={"icon-error-400"}
-                  size="small"
-                  src="/icons/restart.svg"
+                  size="medium"
+                  src="/icons/restart24.svg"
                 />
                 {isBig ? (
                   <span className="text-[12px] font-semibold leading-[14.4px] text-error-400 group-hover:text-primary-700">
@@ -298,7 +301,11 @@ export default function ImageUploaderWeb({
                 }`}
                 onClick={removeImage}
               >
-                <IconComponent height={12} width={12} src="/icons/silang.svg" />
+                <IconComponent
+                  height={12}
+                  width={12}
+                  src="/icons/silang12.svg"
+                />
               </button>
             )}
             {isBig && isMain && base64Image && !error && (

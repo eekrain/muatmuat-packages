@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import PropTypes from "prop-types";
 
@@ -69,7 +69,7 @@ const TextArea = ({
           type={type}
           name={name}
           placeholder={placeholder}
-          className={`grow ${style.input} ${classInput} text-[12px] font-medium leading-[14.4px] text-neutral-900 placeholder:text-neutral-600 sm:text-[14px] sm:font-semibold sm:leading-[15.4px]`}
+          className={`grow ${style.input} ${classInput} text-[14px] font-semibold leading-[15.4px] text-neutral-900 placeholder:text-neutral-600 lg:text-[12px] lg:font-medium lg:leading-[14.4px]`}
           disabled={disabled}
           style={{ resize: resize, minHeight: height ? height : "80px" }}
           maxLength={maxLength}

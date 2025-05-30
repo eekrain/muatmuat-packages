@@ -54,7 +54,7 @@ const Checkbox = ({
         {...props}
       />
       <span className={`relative ${style.checkbox_primary}`}></span>
-      <span className="select-none font-medium sm:text-[12px]">
+      <span className="select-none font-medium max-[600px]:text-[12px]">
         {children ? children : label}
       </span>
     </div>

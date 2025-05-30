@@ -10,7 +10,7 @@ import ImageComponent from "@/components/ImageComponent/ImageComponent";
  * Header komponen untuk Muatparts Seller Dashboard
  * Berdasarkan gambar header yang disediakan
  */
-const HeaderWeb = () => {
+const HeaderWeb = ({ type = "muattrans" }) => {
   // State untuk dropdown
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -18,6 +18,13 @@ const HeaderWeb = () => {
   // Referensi untuk dropdown yang akan di-close ketika user klik di luar
   const languageRef = useRef(null);
   const profileRef = useRef(null);
+
+  const iconClassnames = {
+    muatmuat: "icon-fill-primary-700",
+    muatparts: "icon-fill-muat-parts-non-800",
+    muattrans: "icon-fill-muat-trans-secondary-900",
+  };
+  const iconClassname = iconClassnames[type] || iconClassnames.muattrans;
 
   // Handle click outside untuk menutup dropdown
   useEffect(() => {
@@ -37,10 +44,10 @@ const HeaderWeb = () => {
   }, []);
 
   const menuNotifications = [
-    {
-      src: "/icons/orders.svg",
-      count: 32,
-    },
+    // {
+    //   src: "/icons/orders.svg",
+    //   count: 32,
+    // },
     {
       src: "/icons/messages.svg",
       count: 4,
@@ -56,7 +63,10 @@ const HeaderWeb = () => {
       <div className="flex items-center gap-x-6">
         <ImageComponent src="/icons/muattrans.svg" width={136} height={27} />
         <div className="flex items-center gap-x-1">
-          <IconComponent src="/icons/mobile.svg" />
+          <IconComponent
+            classname="icon-stroke-neutral-900"
+            src="/icons/mobile.svg"
+          />
           <span className="text-[12px] font-semibold leading-[12px]">
             Download muatmuat
           </span>
@@ -78,12 +88,16 @@ const HeaderWeb = () => {
           <div className="flex items-center gap-x-3 pr-3">
             {menuNotifications.map((menu, key) => (
               <div className="relative" key={key}>
-                <div className="absolute bottom-3 left-3 flex h-3.5 items-center rounded-[30px] border-[1.5px] border-neutral-50 bg-buyer-seller-900 px-1.5">
+                <div className="absolute bottom-3 left-3 flex h-3.5 items-center rounded-[30px] border-[1.5px] border-muat-trans-secondary-900 bg-buyer-seller-900 px-1.5">
                   <span className="text-[8px] font-medium leading-[8px]">
                     {menu.count}
                   </span>
                 </div>
-                <IconComponent src={menu.src} size="medium" />
+                <IconComponent
+                  classname={iconClassname}
+                  src={menu.src}
+                  size="medium"
+                />
               </div>
             ))}
           </div>

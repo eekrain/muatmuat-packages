@@ -7,8 +7,10 @@ export const useSewaArmadaStore = create((set) => ({
   setRentalType: (value) => set({ rentalType: value }),
 
   // Waktu Muat
-  waktuMuat: "",
-  setWaktuMuat: (value) => set({ waktuMuat: value }),
+  startDate: null,
+  setStartDate: (value) => set({ startDate: value }),
+  endDate: null,
+  setEndDate: (value) => set({ endDate: value }),
 
   // Rentang Waktu
   showRangeOption: false,
@@ -41,9 +43,31 @@ export const useSewaArmadaStore = create((set) => ({
   fotoMuatan: [null, null, null, null],
   setFotoMuatan: (index, value) =>
     set((state) => {
-      const updated = [...state.fotoMuatan]; // copy array
-      updated[index] = value; // update by index
-      return { fotoMuatan: updated }; // return new state
+      let updated = [...state.fotoMuatan]; // copy array
+
+      if (value == null) {
+        // Delete the value at index
+        updated[index] = null;
+
+        // Collapse all items leftward after the deleted index
+        updated = updated
+          .filter((item) => item != null) // remove all nulls
+          .concat(new Array(state.fotoMuatan.length).fill(null)) // ensure same length
+          .slice(0, state.fotoMuatan.length); // trim to original length
+      } else {
+        // Try to find the first empty slot before the index
+        const emptyIndex = updated.findIndex(
+          (item, i) => item == null && i < index
+        );
+
+        if (emptyIndex !== -1) {
+          updated[emptyIndex] = value;
+        } else {
+          updated[index] = value;
+        }
+      }
+
+      return { fotoMuatan: updated };
     }),
 
   // Deskripsi Muatan
@@ -78,7 +102,8 @@ export const useSewaArmadaStore = create((set) => ({
   resetForm: () =>
     set({
       rentalType: "",
-      waktuMuat: "",
+      startDate: null,
+      endDate: null,
       showRangeOption: false,
       lokasi: { muat: "", bongkar: "" },
       tipeMuatan: "",

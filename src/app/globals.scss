@@ -207,11 +207,6 @@ input::-webkit-inner-spin-button {
     fill: var(--muat-parts-non-800);
   }
 }
-.icon-fill-muat-trans-secondary-900 {
-  path {
-    fill: var(--muat-trans-secondary-900);
-  }
-}
 
 .icon-white {
   path {
@@ -223,6 +218,13 @@ input::-webkit-inner-spin-button {
     fill: var(--neutral-50);
   }
 }
+
+.icon-stroke-neutral-900 {
+  path {
+    stroke: var(--neutral-900);
+  }
+}
+
 .icon-stroke-muat-trans-primary-400 {
   path {
     stroke: var(--muat-trans-primary-400);

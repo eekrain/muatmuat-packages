@@ -39,14 +39,14 @@ export const TopToast = ({
   // Using portal to render toast in the body ensuring they are not affected by any parent stacking context
   return createPortal(
     <div
-      className={`fixed bottom-[75px] right-[25px] z-[9999999999] transition-all duration-500 ease-in-out sm:bottom-20 sm:left-0 sm:right-0 sm:mx-4 ${showToast ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none translate-y-10 opacity-0"} ${showToast ? "sm:translate-y-0" : "sm:translate-y-full"} flex items-center justify-between rounded-lg border p-3 text-neutral-900 ${
+      className={`fixed bottom-[75px] right-[25px] z-[9999999999] transition-all duration-500 ease-in-out max-[600px]:bottom-20 max-[600px]:left-0 max-[600px]:right-0 max-[600px]:mx-4 ${showToast ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none translate-y-10 opacity-0"} ${showToast ? "max-[600px]:translate-y-0" : "max-[600px]:translate-y-full"} flex items-center justify-between rounded-lg border p-3 text-neutral-900 ${
         dataToast.type === "success"
           ? "border-[#27CF23] bg-[#ECFAE5] text-[#27CF23]"
           : "border-[#F71717] bg-[#FDD1D1] text-[#F71717]"
       } ${classname} `}
     >
       {/* Content Container */}
-      <div className="flex w-[380px] items-center gap-x-2 pr-2 sm:w-full">
+      <div className="flex w-[380px] items-center gap-x-2 pr-2 max-[600px]:w-full">
         {/* Icon */}
         <IconComponent
           src={
@@ -100,14 +100,14 @@ const Toast = ({ classname, children = "Toast", onclick, iconSrc }) => {
   // Using portal to render toast in the body ensuring they are not affected by any parent stacking context
   return createPortal(
     <div
-      className={`fixed bottom-[75px] right-[25px] z-[9999999999] transition-all duration-500 ease-in-out sm:bottom-20 sm:left-0 sm:right-0 sm:mx-4 ${showToast ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none translate-y-10 opacity-0"} ${showToast ? "sm:translate-y-0" : "sm:translate-y-full"} flex items-center justify-between rounded-lg border px-4 py-3 text-sm font-semibold text-neutral-900 ${
+      className={`fixed bottom-[75px] right-[25px] z-[9999999999] transition-all duration-500 ease-in-out max-[600px]:bottom-20 max-[600px]:left-0 max-[600px]:right-0 max-[600px]:mx-4 ${showToast ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none translate-y-10 opacity-0"} ${showToast ? "max-[600px]:translate-y-0" : "max-[600px]:translate-y-full"} flex items-center justify-between rounded-lg border px-4 py-3 text-sm font-semibold text-neutral-900 ${
         dataToast.type === "success"
           ? "border-success-400 bg-success-50"
           : "border-error-400 bg-error-50"
       } ${classname} `}
     >
       {/* Content Container */}
-      <div className="flex w-[380px] items-center gap-3 pr-2 sm:w-full">
+      <div className=":w-full flex items-center gap-3 pr-2 lg:w-[380px]">
         {/* Icon */}
         <div className="flex-shrink-0">
           <IconComponent

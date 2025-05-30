@@ -35,7 +35,7 @@ const FloatingButtonResponsive = () => {
 
   return (
     <div
-      className={`fixed z-[101] lg:right-[40px] ${isShow ? "sm:right-[15px]" : "sm:right-[-38px]"} bottom-[61px] sm:bottom-[99px] ${styles.floating_button_container}`}
+      className={`fixed z-[101] lg:right-[40px] ${isShow ? "max-[600px]:right-[15px]" : "max-[600px]:right-[-38px]"} bottom-[61px] max-[600px]:bottom-[99px] ${styles.floating_button_container}`}
     >
       {!isOpen && (
         <Fragment>

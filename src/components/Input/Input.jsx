@@ -1,6 +1,6 @@
 "use client";
 
-import React, { forwardRef, useState } from "react";
+import { forwardRef } from "react";
 
 import isEmpty from "lodash/isEmpty";
 import PropTypes from "prop-types";

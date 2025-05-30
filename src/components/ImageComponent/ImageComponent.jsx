@@ -14,7 +14,7 @@ function ImageComponent({
     ? src
     : process.env.NEXT_PUBLIC_ASSET_REVERSE +
       (src.startsWith("/") ? src : `/${src}`);
-  console.log("source", source);
+  // console.log("source", source);
   return (
     <Image
       src={source}

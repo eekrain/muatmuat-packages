@@ -12,7 +12,6 @@ function ExampleSwr() {
     "/posts",
     "POST"
   );
-
   return (
     <div>
       {isLoading ? (

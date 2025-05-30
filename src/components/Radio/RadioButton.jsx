@@ -50,7 +50,7 @@ const RadioButton = ({
       <span
         className={`${style.radio_primary} ${classnameRound} ${
           isLabelMissing
-            ? "after:top-[4px] sm:after:!top-[5px]"
+            ? "after:top-[4px] max-[600px]:after:!top-[5px]"
             : "after:top-[5px]"
         } select-none`}
       ></span>

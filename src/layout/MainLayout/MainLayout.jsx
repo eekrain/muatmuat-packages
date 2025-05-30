@@ -22,7 +22,7 @@ const MainLayout = ({ children }) => {
   }
   return (
     <DesktopLayout>
-      <main className="min-h-[calc(100vh-60px)]">{children}</main>
+      <div className="min-h-[calc(100vh-62px)]">{children}</div>
       <Toast />
     </DesktopLayout>
   );

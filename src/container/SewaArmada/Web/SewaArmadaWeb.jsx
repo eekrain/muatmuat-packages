@@ -5,18 +5,30 @@ import { Fragment, useEffect, useState } from "react";
 
 import Card from "@/components/Card/Card";
 import Checkbox from "@/components/Checkbox/Checkbox";
+import DatetimePicker from "@/components/DatetimePicker/DatetimePicker";
 import FloatingButton from "@/components/FloatingButton/FloatingButton";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageUploader from "@/components/ImageUploader/ImageUploader";
 import Input from "@/components/Input/Input";
 import RadioButton from "@/components/Radio/RadioButton";
+import TextArea from "@/components/TextArea/TextArea";
+import Tooltip from "@/components/Tooltip/Tooltip";
 // import SWRHandler from "@/services/useSWRHook";
 import { useSewaArmadaStore } from "@/store/sewaArmada";
 import toast from "@/store/toast";
+import { getNowTimezone } from "@/utils/dateTime";
 
 import BannerCarousel from "./BannerCarousel/BannerCarousel";
 import FirstTimer from "./FirstTimer/FirstTimer";
 import WelcomeCard from "./WelcomeCard/WelcomeCard";
+
+const FormLabel = ({ size = "big", title, required = false }) => (
+  <div className={`flex items-center ${size === "big" ? "h-8" : "h-4"}`}>
+    <label className="w-[174px] text-[12px] font-medium leading-[14.4px] text-neutral-600">
+      {`${title}${required ? "*" : " (Opsional)"}`}
+    </label>
+  </div>
+);
 
 export default function SewaArmadaWeb() {
   // API Base URL
@@ -31,8 +43,12 @@ export default function SewaArmadaWeb() {
   const {
     rentalType,
     setRentalType,
-    waktuMuat,
-    setWaktuMuat,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+    // waktuMuat,
+    // setWaktuMuat,
     showRangeOption,
     setShowRangeOption,
     lokasi,
@@ -57,6 +73,11 @@ export default function SewaArmadaWeb() {
     fotoMuatan,
     setFotoMuatan,
   } = useSewaArmadaStore();
+
+  const [timezone, setTimezone] = useState({
+    id: "Asia/Jakarta",
+    offset: "+07:00",
+  });
 
   // State untuk carousel
   const [isAsuransiModalOpen, setIsAsuransiModalOpen] = useState(false);
@@ -113,13 +134,19 @@ export default function SewaArmadaWeb() {
   //   }
   // }, [tipeMuatan, fetchCargoCategories]);
 
-  // Handler untuk upload foto muatan
-  const handleImageUpload = async (index) => async (img) => {
-    if (!img) {
-      setFotoMuatan(index, null);
-      return;
+  const handleDateChange = (field, value) => {
+    const newDate = new Date(value);
+    newDate.setSeconds(0, 0);
+
+    if (field === "start") {
+      setStartDate(newDate);
+    } else {
+      setEndDate(newDate);
     }
   };
+
+  // Handler untuk upload foto muatan
+  const handleImageUpload = (index, img) => setFotoMuatan(index, img);
 
   const banners = [
     {
@@ -213,22 +240,46 @@ export default function SewaArmadaWeb() {
               {/* Form Fields */}
               <div className="flex flex-col gap-6">
                 {/* Waktu Muat */}
-                <div className="flex gap-8">
-                  <label className="flex w-[174px] items-center text-xs font-medium text-neutral-600">
-                    Waktu Muat*
-                  </label>
-                  <div className="flex flex-col gap-y-[14px]">
-                    <div className="flex flex-row items-center">
-                      <Input
-                        type="text"
-                        placeholder="Pilih Tanggal & Waktu Muat"
-                        icon={{ left: "/icons/calendar.svg" }}
-                        width={{ width: "271px" }}
-                        value={waktuMuat}
-                        changeEvent={(e) => setWaktuMuat(e.target.value)}
-                      />
+                <div className="flex flex-col gap-y-3.5">
+                  <div className="flex gap-x-8">
+                    <FormLabel title="Waktu Muat" required />
+                    <div className="flex flex-col gap-y-[14px]">
+                      <div className="flex items-center gap-x-2">
+                        <DatetimePicker
+                          datetimeValue={startDate}
+                          onApply={(date) => {
+                            handleDateChange("start", date);
+                          }}
+                          placeholder="Pilih Tanggal & Waktu Muat"
+                          // disabled={mode === "edit" && promoStatus === "Aktif"}
+                          // status={errors.startDate ? "error" : null}
+                          className="w-[271px]"
+                          minDate={getNowTimezone(timezone)}
+                        />
+                        {showRangeOption ? (
+                          <>
+                            <span className="text-[12px] font-medium leading-[14.4px]">
+                              s/d
+                            </span>
+                            <DatetimePicker
+                              datetimeValue={endDate}
+                              onApply={(date) => {
+                                handleDateChange("end", date);
+                              }}
+                              placeholder="Pilih Tanggal & Waktu Muat"
+                              disabled={!startDate}
+                              // status={errors.startDate ? "error" : null}
+                              className="w-[271px]"
+                              minDate={getNowTimezone(timezone)}
+                            />
+                          </>
+                        ) : null}
+                      </div>
                     </div>
+                  </div>
 
+                  <div className="flex items-center gap-x-8">
+                    <div className="w-[174px]" />
                     <div className="flex flex-row items-center gap-x-1">
                       <Checkbox
                         label="Dengan Rentang Waktu"
@@ -236,11 +287,17 @@ export default function SewaArmadaWeb() {
                         checked={showRangeOption}
                         onChange={(e) => setShowRangeOption(e.checked)}
                       />
-                      <IconComponent
-                        src="/icons/info16.svg"
-                        width={16}
-                        height={16}
-                      />
+                      <Tooltip
+                        classname="!-ml-4 text-[14px] leading-[16.8px]"
+                        text="Jika kamu memilih opsi ini, kamu dapat menentukan pukul mulai dan pukul akhir untuk penjemputan muatan. "
+                        position="top"
+                      >
+                        <IconComponent
+                          src="/icons/info16.svg"
+                          width={16}
+                          height={16}
+                        />
+                      </Tooltip>
                     </div>
                   </div>
                 </div>
@@ -314,7 +371,54 @@ export default function SewaArmadaWeb() {
                     />
                   </div>
                   <div className="flex flex-1 flex-wrap gap-3">
-                    {loadingCargoTypes ? (
+                    <>
+                      <div className="w-[250px]">
+                        <RadioButton
+                          name="tipe-muatan"
+                          label="Padat"
+                          checked={tipeMuatan === "padat"}
+                          onClick={() => setTipeMuatan("padat")}
+                          value="padat"
+                        />
+                      </div>
+                      <div className="w-[250px]">
+                        <RadioButton
+                          name="tipe-muatan"
+                          label="Cair"
+                          checked={tipeMuatan === "cair"}
+                          onClick={() => setTipeMuatan("cair")}
+                          value="cair"
+                        />
+                      </div>
+                      <div className="w-[250px]">
+                        <RadioButton
+                          name="tipe-muatan"
+                          label="Curah"
+                          checked={tipeMuatan === "curah"}
+                          onClick={() => setTipeMuatan("curah")}
+                          value="curah"
+                        />
+                      </div>
+                      <div className="w-[250px]">
+                        <RadioButton
+                          name="tipe-muatan"
+                          label="Kendaraan"
+                          checked={tipeMuatan === "kendaraan"}
+                          onClick={() => setTipeMuatan("kendaraan")}
+                          value="kendaraan"
+                        />
+                      </div>
+                      <div className="w-[250px]">
+                        <RadioButton
+                          name="tipe-muatan"
+                          label="Container"
+                          checked={tipeMuatan === "container"}
+                          onClick={() => setTipeMuatan("container")}
+                          value="container"
+                        />
+                      </div>
+                    </>
+                    {/* {loadingCargoTypes ? (
                       <div className="flex w-full items-center justify-center">
                         <span>Memuat data...</span>
                       </div>
@@ -330,7 +434,7 @@ export default function SewaArmadaWeb() {
                           />
                         </div>
                       ))
-                    )}
+                    )} */}
                   </div>
                 </div>
 
@@ -441,14 +545,13 @@ export default function SewaArmadaWeb() {
                       {[...Array(4)].map((_, key) => (
                         <Fragment key={key}>
                           <ImageUploader
-                            getImage={handleImageUpload(key)}
+                            getImage={(value) => handleImageUpload(key, value)}
                             uploadText={
                               key === 0 ? "Foto Utama" : `Foto ${key + 1}`
                             }
-                            isMain={key === 0}
                             maxSize={10}
                             className="!size-[124px]"
-                            value={fotoMuatan[0]}
+                            value={fotoMuatan[key]}
                           />
                         </Fragment>
                       ))}
@@ -462,21 +565,19 @@ export default function SewaArmadaWeb() {
 
                 {/* Deskripsi Muatan */}
                 <div className="flex gap-8">
-                  <label className="flex w-[174px] items-center text-xs font-medium text-neutral-600">
-                    Deskripsi Muatan*
-                  </label>
+                  <FormLabel title="Deskripsi Muatan" required />
                   <div className="flex flex-1 flex-col gap-2">
-                    <div className="relative h-20 w-full rounded-md border border-neutral-600 p-3">
-                      <textarea
-                        placeholder="Lengkapi deskripsi informasi muatan Anda dengan rincian spesifik terkait barang yang dikirim, seperti bahan, penggunaan, atau karakteristik unik lainnya."
-                        className="h-full w-full resize-none text-xs font-medium text-black outline-none"
-                        value={deskripsi}
-                        onChange={(e) => setDeskripsi(e.target.value)}
-                      ></textarea>
-                      <span className="absolute bottom-1 right-3 text-xs font-medium text-neutral-600">
-                        {deskripsi?.length || 0}/500
-                      </span>
-                    </div>
+                    <TextArea
+                      maxLength={500}
+                      hasCharCount
+                      resize="none"
+                      placeholder={
+                        "Lengkapi deskripsi informasi muatan Anda dengan rincian spesifik terkait barang yang dikirim, seperti bahan, penggunaan, atau karakteristik unik lainnya."
+                      }
+                      value={deskripsi}
+                      changeEvent={(e) => setDeskripsi(e.target.value)}
+                      // classInput={"!text-[#1b1b1b]"}
+                    />
                   </div>
                 </div>
 
@@ -522,10 +623,8 @@ export default function SewaArmadaWeb() {
                 </div>
 
                 {/* Asuransi Barang */}
-                <div className="flex gap-8">
-                  <label className="flex w-[174px] items-center text-xs font-medium text-neutral-600">
-                    Asuransi Barang (Opsional)
-                  </label>
+                {/* <div className="flex gap-8">
+                  <FormLabel title="Asuransi Barang" />
                   <div
                     className="flex h-[32px] flex-1 cursor-pointer items-center justify-between rounded-md border border-neutral-600 bg-white px-3"
                     onClick={() => setIsAsuransiModalOpen(true)}
@@ -547,14 +646,12 @@ export default function SewaArmadaWeb() {
                       classname="icon-gray"
                     />
                   </div>
-                </div>
+                </div> */}
 
                 {/* Layanan Tambahan */}
                 <div className="flex h-[44px] w-[782px] flex-row items-start gap-[32px]">
                   {/* Label Bagian */}
-                  <div className="flex h-[16px] w-[174px] items-center text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                    Layanan Tambahan (Opsional)
-                  </div>
+                  <FormLabel size="small" title="Layanan Tambahan" />
 
                   {/* Container Opsi Layanan */}
                   <div className="flex-grow-1 flex h-[44px] w-[576px] flex-col gap-[12px]">
