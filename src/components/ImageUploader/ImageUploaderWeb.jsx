@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import toast from "@/store/toast";
+import { toast } from "@/lib/toast";
 
 import CropperImage from "../Cropper/Cropper";
 import IconComponent from "../IconComponent/IconComponent";
@@ -55,8 +55,6 @@ export default function ImageUploaderWeb({
   const base64Image = value;
   const [imageFiles, setImageFiles] = useState(null);
   const [error, setError] = useState(false);
-  const { setShowToast, setDataToast } = toast();
-  // LB - 0652 - 25. 03 - QC Plan - Web - Pengecekan Ronda Muatparts - Tahap 2
   // const { t } = useTranslation();
 
   const [renderUploadText, setRenderUploadText] = useState(uploadText);
@@ -83,15 +81,7 @@ export default function ImageUploaderWeb({
     file = files[0];
 
     if (file.size > maxSize * 1024 * 1024) {
-      // setError({
-      //   status: true,
-      //   message: `Ukuran file melebihi ${maxSize}MB`,
-      // })
-      setShowToast(true);
-      setDataToast({
-        type: "error",
-        message: `Ukuran file melebihi ${maxSize}MB`,
-      });
+      toast.error(`Ukuran file melebihi ${maxSize}MB`);
       setError(true);
       imageRef.current.value = null;
       return;
@@ -116,11 +106,7 @@ export default function ImageUploaderWeb({
       //   status: true,
       //   message: `Format file tidak sesuai ketentuan`,
       // })
-      setShowToast(true);
-      setDataToast({
-        type: "error",
-        message: "Format file tidak sesuai ketentuan",
-      });
+      toast.error("Format file tidak sesuai ketentuan");
       setError(true);
       imageRef.current.value = null;
       return;
@@ -140,15 +126,7 @@ export default function ImageUploaderWeb({
         const headerArray = new Uint8Array(headerReader.result);
         const expectedMagicNumbers = magicNumbers[file.type];
         if (!expectedMagicNumbers) {
-          // setError({
-          //   status: true,
-          //   message: `Gagal mengunggah gambar`,
-          // });
-          setShowToast(true);
-          setDataToast({
-            type: "error",
-            message: "Gagal mengunggah gambar",
-          });
+          toast.error("Gagal mengunggah gambar");
           setError(true);
           imageRef.current.value = null;
           return;
@@ -163,15 +141,7 @@ export default function ImageUploaderWeb({
         }
 
         if (!matches) {
-          // setError({
-          //   status: true,
-          //   message: `Gagal mengunggah gambar`,
-          // });
-          setShowToast(true);
-          setDataToast({
-            type: "error",
-            message: "Gagal mengunggah gambar",
-          });
+          toast.error("Gagal mengunggah gambar");
           setError(true);
           imageRef.current.value = null;
           return;

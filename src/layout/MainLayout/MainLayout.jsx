@@ -1,6 +1,6 @@
 "use client";
 
-import Toast from "@/components/Toast/Toast";
+import Toaster from "@/components/Toast";
 import useDevice from "@/hooks/use-device";
 
 import DesktopLayout from "../DesktopLayout/DesktopLayout";
@@ -16,14 +16,14 @@ const MainLayout = ({ children }) => {
     return (
       <ResponsiveLayout>
         {children}
-        <Toast />
+        <Toaster />
       </ResponsiveLayout>
     );
   }
   return (
     <DesktopLayout>
       <div className="min-h-[calc(100vh-62px)]">{children}</div>
-      <Toast />
+      <Toaster />
     </DesktopLayout>
   );
 };

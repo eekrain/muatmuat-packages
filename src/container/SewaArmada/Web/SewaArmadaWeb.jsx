@@ -15,7 +15,6 @@ import TextArea from "@/components/TextArea/TextArea";
 import Tooltip from "@/components/Tooltip/Tooltip";
 // import SWRHandler from "@/services/useSWRHook";
 import { useSewaArmadaStore } from "@/store/sewaArmada";
-import toast from "@/store/toast";
 import { getNowTimezone } from "@/utils/dateTime";
 
 import BannerCarousel from "./BannerCarousel/BannerCarousel";
@@ -36,7 +35,6 @@ export default function SewaArmadaWeb() {
 
   // SWR Hooks
   // const { useSWRHook, useSWRMutateHook } = SWRHandler;
-  const { setShowToast, setDataToast } = toast();
   const [openControlled, setOpenControlled] = useState(false);
 
   // Menggunakan state dari zustand
@@ -118,14 +116,10 @@ export default function SewaArmadaWeb() {
   //       }
   //     } catch (error) {
   //       console.error("Error fetching cargo categories:", error);
-  //       setShowToast(true);
-  //       setDataToast({
-  //         type: "error",
-  //         message: "Gagal memuat kategori muatan",
-  //       });
+  //       toast.error("Gagal memuat kategori muatan");
   //     }
   //   },
-  //   [cargoTypes, setShowToast, setDataToast]
+  //   [cargoTypes, toast, setDataToast]
   // );
 
   // useEffect(() => {

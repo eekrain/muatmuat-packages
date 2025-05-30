@@ -5,6 +5,7 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import ToogleButton from "@/components/ToogleButton/ToogleButton";
+import { toast } from "@/lib/toast";
 
 import ExampleSwr from "./ExampleSwr";
 import ExampleTimeline from "./ExampleTimeline";
@@ -53,6 +54,21 @@ const ExampleWeb = () => {
         </Button>
         <Button color="warning" type="muattrans">
           Warning
+        </Button>
+
+        <Button
+          color="primary"
+          type="muattrans"
+          onClick={() => toast.success("Toast Success")}
+        >
+          Toast Success
+        </Button>
+        <Button
+          color="error"
+          type="muattrans"
+          onClick={() => toast.error("Toast Error")}
+        >
+          Toast Error
         </Button>
       </div>
       <div>

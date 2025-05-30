@@ -1,11 +1,15 @@
 import Image from "next/image";
+import { useState } from "react";
 
+import {
+  BottomSheet,
+  BottomSheetContent,
+  BottomSheetHeader,
+} from "@/components/Bottomsheet/Bottomsheet";
 import HeaderMobile from "@/container/HeaderMobile/HeaderMobile";
-import toast from "@/store/zustand/toast";
 
 import Button from "../Button/Button";
 import IconComponent from "../IconComponent/IconComponent";
-import Toast from "../Toast/Toast";
 
 const CropperPreviewResponsive = ({
   src,
@@ -17,35 +21,12 @@ const CropperPreviewResponsive = ({
   // 24. THP 2 - MOD001 - MP - 015 - QC Plan - Web - MuatParts - Seller - Paket 039 A - Profil Seller - LB - 0066
   description = "Max. size foto 10MB",
 }) => {
-  const { setShowBottomsheet, setTitleBottomsheet, setDataBottomsheet } =
-    toast();
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
 
-  const handleEditImage = () => {
-    setShowBottomsheet(true);
-    setTitleBottomsheet(" -");
-    setDataBottomsheet(
-      <div className="flex justify-around">
-        {uploadOptions.map((option, key) => (
-          <div className="flex flex-col items-center gap-y-4" key={key}>
-            <div
-              className="size-16 cursor-pointer rounded-[50px] bg-primary-700 p-5"
-              onClick={option.onClick}
-            >
-              <IconComponent src={option.src} size="medium" />
-            </div>
-            <span className="text-[16px] font-semibold leading-[19.2px]">
-              {option.title}
-            </span>
-          </div>
-        ))}
-      </div>
-    );
-  };
+  const handleEditImage = () => setIsBottomSheetOpen(true);
 
   return (
     <div className="fixed left-0 top-0 z-[102] h-screen w-full bg-white">
-      {/* LB - 0447, 25.03 */}
-      <Toast />
       <HeaderMobile
         onBack={() => {
           onCancelCrop();
@@ -86,6 +67,29 @@ const CropperPreviewResponsive = ({
           Simpan Foto
         </Button>
       </div>
+      <BottomSheet open={isBottomSheetOpen} onOpenChange={setIsBottomSheetOpen}>
+        <BottomSheetContent>
+          <BottomSheetHeader title="Pilih Sumber Foto" />
+          <div className="flex justify-around py-4">
+            {uploadOptions.map((option, key) => (
+              <div className="flex flex-col items-center gap-y-4" key={key}>
+                <div
+                  className="size-16 cursor-pointer rounded-[50px] bg-primary-700 p-5"
+                  onClick={() => {
+                    option.onClick();
+                    setIsBottomSheetOpen(false);
+                  }}
+                >
+                  <IconComponent src={option.src} size="medium" />
+                </div>
+                <span className="text-[16px] font-semibold leading-[19.2px]">
+                  {option.title}
+                </span>
+              </div>
+            ))}
+          </div>
+        </BottomSheetContent>
+      </BottomSheet>
     </div>
   );
 };
