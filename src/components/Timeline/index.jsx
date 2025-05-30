@@ -23,9 +23,9 @@ export const bulletVariants = cva(
     variants: {
       variant: {
         "bullet-inactive":
-          "top-1 size-[12px] border-[4px] border-[#461B02] bg-white",
+          "top-1 size-[16px] border-[4px] border-[#461B02] bg-white",
         "bullet-active":
-          "top-1 size-[12px] border-[4px] border-[#FFC217] bg-[#461B02]",
+          "top-1 size-[16px] border-[4px] border-[#FFC217] bg-[#461B02]",
         "number-muat": "top-0 size-4 bg-[#FFC217] text-[#461B02]",
         "number-bongkar": "top-0 size-4 bg-[#461B02] text-white",
         "field-muat": "top-[2px] size-4 bg-[#FFC217] text-[#461B02]",
