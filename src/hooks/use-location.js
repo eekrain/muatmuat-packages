@@ -7,11 +7,12 @@ import {
 } from "react";
 
 import {
+  normalizeAutoCompleteLocation,
   normalizeDistrictData,
+  normalizeLocationByLatLong,
   normalizePostalCodeData,
+  normalizeUserSavedLocation,
 } from "@/lib/normalizers";
-import { normalizeLocationByLatLong } from "@/lib/normalizers/normalizeLocationByLatLong";
-import { normalizeUserSavedLocation } from "@/lib/normalizers/normalizeUserSavedLocation";
 import axios from "@/services/axios";
 
 import { useDebounceCallback } from "./use-debounce-callback";
@@ -80,6 +81,7 @@ export const useLocation = ({
         // Use the autocomplete normalizer for fallback
         const messageData = res.data?.Data?.Message?.Data;
         const tempLoc = normalizeAutoCompleteLocation(location, messageData);
+
         setCoordinates(tempLoc.coordinates);
         setTempLocation(tempLoc);
         setIsModalPostalCodeOpen(true);
