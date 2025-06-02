@@ -63,6 +63,75 @@ export default function SewaArmadaWeb() {
       linkUrl: "/download",
     },
   ];
+
+  const carrierData = {
+    recommended: [
+      {
+        id: 1,
+        title: "Towing Car",
+        image: "/img/recommended1.png",
+      },
+    ],
+    notRecommended: [
+      {
+        id: 2,
+        title: "Flat Bed",
+        image: "/img/recommended1.png",
+      },
+      {
+        id: 3,
+        title: "Trailer Container",
+        image: "/img/recommended1.png",
+      },
+      {
+        id: 4,
+        title: "Trailer Reefer",
+        image: "/img/recommended2.png",
+      },
+    ],
+  };
+  const truckData = {
+    recommended: [
+      {
+        id: 1,
+        title: "Colt Diesel Engkel",
+        image: "/img/recommended1.png",
+        cost: 200000,
+        capacity: "2,5 Ton",
+        dimension: "5,7 m x 2,2 m x 2,3 m",
+      },
+    ],
+    notRecommended: [
+      {
+        id: 2,
+        title: "Flat Bed",
+        image: "/img/recommended1.png",
+        cost: 200000,
+        capacity: "2,5 Ton",
+        dimension: "5,7 m x 2,2 m x 2,3 m",
+      },
+      {
+        id: 3,
+        title: "Trailer Container",
+        image: "/img/recommended1.png",
+        cost: 200000,
+        capacity: "2,5 Ton",
+        dimension: "5,7 m x 2,2 m x 2,3 m",
+      },
+      {
+        id: 4,
+        title: "Trailer Reefer",
+        image: "/img/recommended2.png",
+        cost: 200000,
+        capacity: "2,5 Ton",
+        dimension: "5,7 m x 2,2 m x 2,3 m",
+      },
+    ],
+  };
+  const armadaData = {
+    carrier: carrierData,
+    truck: truckData,
+  };
   // API Base URL
   const baseUrl = process.env.NEXT_PUBLIC_GLOBAL_API || "";
 
@@ -844,22 +913,25 @@ export default function SewaArmadaWeb() {
               </div>
             </Card>
           </div>
-          <FleetOrderConfirmationModal
-            isOpen={isModalConfirmationOpen}
-            setIsOpen={setIsModalConfirmationOpen}
-            onOrderFleet={handleOrderFleet}
-          />
-          <FilterModal
-            isOpen={isArmadaPopupOpen}
-            setIsOpen={setIsArmadaPopupOpen}
-            onSelectArmada={handleSelectArmada}
-            type={type}
-          />
         </>
       )}
 
       {/* Floating Button */}
       <FloatingButton />
+
+      <FleetOrderConfirmationModal
+        isOpen={isModalConfirmationOpen}
+        setIsOpen={setIsModalConfirmationOpen}
+        onOrderFleet={handleOrderFleet}
+      />
+
+      <FilterModal
+        data={armadaData[type] || armadaData.carrier}
+        isOpen={isArmadaPopupOpen}
+        setIsOpen={setIsArmadaPopupOpen}
+        onSelectArmada={handleSelectArmada}
+        type={type}
+      />
 
       <LocationModalFormWeb
         open={lokasiModalConfig.isOpen}

@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import Input from "@/components/Input/Input";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 
@@ -61,41 +62,36 @@ const WarningBadge = ({ icon, message }) => {
   );
 };
 
+const ArmadaImage = ({ src }) => {
+  return (
+    <>
+      <div className="relative size-[68px] rounded bg-neutral-50">
+        <ImageComponent className="w-full" src={src} width={100} height={100} />
+        <div className="absolute right-2 top-2 flex size-[20px] items-center justify-center rounded-full bg-white p-0.5">
+          <IconComponent src="/icons/zoom12.svg" width={12} height={12} />
+        </div>
+      </div>
+    </>
+  );
+};
+
 // Carrier Item Component
-const CarrierItem = ({ title, image, isRecommended, onClick }) => {
-  const imageSize = "w-[68px] h-[68px]";
-  const containerHeight = "h-[92px]";
+const CarrierItem = ({ title, image, onClick }) => {
   const textWidth = "w-[348px]";
 
   return (
     <div
-      className={`flex w-[424px] flex-row items-center justify-end gap-2 py-3 ${containerHeight} cursor-pointer border-b border-neutral-400 transition-colors hover:bg-neutral-100`}
+      className={
+        "flex h-[92px] w-[424px] cursor-pointer flex-row items-center justify-end gap-x-2 border-b border-neutral-400 py-3 transition-colors hover:bg-neutral-100"
+      }
       onClick={() => onClick && onClick(title)}
     >
-      <div className={`${imageSize} relative rounded bg-neutral-50`}>
-        <img
-          src={image}
-          alt={title}
-          className="h-full w-full rounded object-cover"
-        />
-        <div className="absolute right-2 top-2 flex size-[20px] items-center justify-center rounded-full bg-white p-0.5">
-          <IconComponent src="/icons/zoom12.svg" width={12} height={12} />
-        </div>
-
-        {/* Expand Icon Overlay */}
-        {/* {isRecommended ? (
-          <div className="absolute right-2 top-2 flex size-[20px] items-center justify-center rounded-full bg-white p-0.5">
-            <IconComponent src="/icons/zoom12.svg" width={12} height={12} />
-          </div>
-        ) : isFirst ? (
-          <div className="absolute right-2 top-2 flex size-[20px] items-center justify-center rounded-full bg-black/60 p-0.5">
-            <IconComponent src="/icons/zoom12.svg" width={12} height={12} />
-          </div>
-        ) : null} */}
-      </div>
+      <ArmadaImage src={image} />
 
       <span
-        className={`flex flex-1 items-center text-[12px] font-bold leading-[14.4px] text-neutral-900 ${textWidth}`}
+        className={
+          "flex w-[348px] flex-1 items-center text-[12px] font-bold leading-[14.4px] text-neutral-900"
+        }
       >
         {title}
       </span>
@@ -123,12 +119,11 @@ const SectionHeader = ({ title, showInfoIcon = false }) => {
 };
 
 // Main Popup Component
-const FilterModal = ({ isOpen, setIsOpen, onSelectArmada, type }) => {
+const FilterModal = ({ data, isOpen, setIsOpen, onSelectArmada, type }) => {
   const [search, setSearch] = useState("");
 
   const handleCarrierSelect = (title) => {
     if (onSelectArmada) {
-      console.log("title", title);
       onSelectArmada(title);
     }
     setIsOpen(false);
@@ -150,24 +145,23 @@ const FilterModal = ({ isOpen, setIsOpen, onSelectArmada, type }) => {
   };
   const recommendedTitle = recommendedTitles[type] || recommendedTitles.carrier;
 
-  const filteredData = [
-    ...RECOMMENDED_CARRIERS,
-    ...NOT_RECOMMENDED_CARRIERS,
-  ].filter((data) => data.title.toLowerCase().includes(search.toLowerCase()));
+  const filteredData = [...data.recommended, ...data.notRecommended].filter(
+    (data) => data.title.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick={false}>
-      <ModalContent>
-        <div className="px-6 py-9">
-          {/* Header */}
-          <div className="mb-4 text-center">
-            <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
-              {modalTitle}
-            </h1>
-          </div>
+    <>
+      <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick={false}>
+        <ModalContent>
+          <div className="flex flex-col gap-y-4 px-6 py-9">
+            {/* Header */}
+            <div className="text-center">
+              <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
+                {modalTitle}
+              </h1>
+            </div>
 
-          {/* Search Field */}
-          <div className="mb-4">
+            {/* Search Field */}
             <Input
               placeholder="Cari Jenis Carrier"
               icon={{
@@ -185,72 +179,68 @@ const FilterModal = ({ isOpen, setIsOpen, onSelectArmada, type }) => {
               value={search}
               onChange={handleSearchChange}
             />
-          </div>
 
-          <div className="mr-[-15px] max-h-[320px] overflow-y-auto pr-2.5">
-            {/* Rekomendasi Section */}
-            {search.length < 3 ? (
-              <>
-                <div className="mb-6">
-                  <SectionHeader title={recommendedTitle} showInfoIcon={true} />
+            <div className="mr-[-15px] max-h-[320px] overflow-y-auto pr-2.5">
+              {/* Rekomendasi Section */}
+              {search.length < 3 ? (
+                <>
+                  <div className="mb-6">
+                    <SectionHeader
+                      title={recommendedTitle}
+                      showInfoIcon={true}
+                    />
 
-                  <div className="mt-4">
-                    {RECOMMENDED_CARRIERS.map((carrier) => (
+                    {data.recommended.map((carrier) => (
                       <CarrierItem
                         key={carrier.id}
                         title={carrier.title}
                         image={carrier.image}
-                        isRecommended={carrier.isRecommended}
                         size={carrier.size}
                         onClick={handleCarrierSelect}
                       />
                     ))}
                   </div>
-                </div>
 
-                {/* Tidak Direkomendasikan Section */}
-                <div>
-                  <SectionHeader title="Tidak Direkomendasikan" />
+                  {/* Tidak Direkomendasikan Section */}
+                  <div>
+                    <SectionHeader title="Tidak Direkomendasikan" />
 
-                  <WarningBadge
-                    icon="/icons/warning14.svg"
-                    message="Pilihan carrier di bawah ini berisiko melebihi batas dimensi atau tidak sesuai dengan informasi muatan"
-                  />
+                    <WarningBadge
+                      icon="/icons/warning14.svg"
+                      message="Pilihan carrier di bawah ini berisiko melebihi batas dimensi atau tidak sesuai dengan informasi muatan"
+                    />
 
-                  <div className="mt-4">
-                    {NOT_RECOMMENDED_CARRIERS.map((carrier) => (
+                    {data.notRecommended.map((carrier) => (
                       <CarrierItem
                         key={carrier.id}
                         title={carrier.title}
                         image={carrier.image}
-                        isRecommended={carrier.isRecommended}
                         isFirst={carrier.isFirst}
                         size={carrier.size}
                         onClick={handleCarrierSelect}
                       />
                     ))}
                   </div>
+                </>
+              ) : (
+                <div className="mt-4">
+                  {filteredData.map((carrier) => (
+                    <CarrierItem
+                      key={carrier.id}
+                      title={carrier.title}
+                      image={carrier.image}
+                      isFirst={carrier.isFirst}
+                      size={carrier.size}
+                      onClick={handleCarrierSelect}
+                    />
+                  ))}
                 </div>
-              </>
-            ) : (
-              <div className="mt-4">
-                {filteredData.map((carrier) => (
-                  <CarrierItem
-                    key={carrier.id}
-                    title={carrier.title}
-                    image={carrier.image}
-                    isRecommended={carrier.isRecommended}
-                    isFirst={carrier.isFirst}
-                    size={carrier.size}
-                    onClick={handleCarrierSelect}
-                  />
-                ))}
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
-      </ModalContent>
-    </Modal>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 
