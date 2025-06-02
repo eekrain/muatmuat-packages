@@ -61,7 +61,7 @@ ToogleButton.propTypes = {
   textActive: PropTypes.string,
   textInactive: PropTypes.string,
   type: PropTypes.oneOf(["primary", "secondary"]),
-  onclick: PropTypes.func,
+  onClick: PropTypes.func,
   value: PropTypes.bool,
   disabled: PropTypes.bool,
 };

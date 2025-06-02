@@ -1,7 +1,6 @@
 import xior from "xior";
 
 import { useAuthStore } from "@/store/auth/authStore";
-import { useUserStore } from "@/store/auth/userStore";
 
 export const createAxios = (baseURL) => {
   const fetcher = xior.create({
@@ -12,7 +11,7 @@ export const createAxios = (baseURL) => {
   // Request interceptor
   fetcher.interceptors.request.use(
     (config) => {
-      const token = useAuthStore.getState().token;
+      const token = useAuthStore.getState();
       config.headers.Authorization = `Bearer ${token?.accessToken}`;
       config.headers.refreshToken = token?.refreshToken;
       return config;
@@ -44,7 +43,9 @@ export const createAxios = (baseURL) => {
           useAuthStore.getState().logout();
           useUserStore.getState().removeUser();
           if (window) {
-            window.location.replace("/");
+            window.location.replace(
+              `${process.env.NEXT_PUBLIC_INTERNAL_WEB}login`
+            );
           }
           return new Promise(() => {}); // Prevent further error propagation.
         }

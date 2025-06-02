@@ -1,171 +1,110 @@
 // store/SewaArmada.js
 import { create } from "zustand";
 
-export const useSewaArmadaStore = create((set, get) => ({
-  // Layanan Type
+import { zustandDevtools } from "@/lib/utils";
+
+const defaultValues = {
   rentalType: "",
-  setRentalType: (value) => set({ rentalType: value }),
-
-  // Waktu Muat
   startDate: null,
-  setStartDate: (value) => set({ startDate: value }),
   endDate: null,
-  setEndDate: (value) => set({ endDate: value }),
-
-  // Rentang Waktu
   showRangeOption: false,
-  setShowRangeOption: (value) => set({ showRangeOption: value }),
-
-  // Lokasi
-  lokasi: { muat: "", bongkar: "" },
-  setLokasiMuat: (value) =>
-    set((state) => ({
-      lokasi: { ...state.lokasi, muat: value },
-    })),
-  setLokasiBongkar: (value) =>
-    set((state) => ({
-      lokasi: { ...state.lokasi, bongkar: value },
-    })),
-
-  // Tipe Muatan
+  lokasiMuat: [],
+  lokasiBongkar: [],
   tipeMuatan: "bahan-mentah",
-  setTipeMuatan: (value) => set({ tipeMuatan: value }),
-
-  // Jenis Muatan
   jenisMuatan: "padat",
-  setJenisMuatan: (value) => set({ jenisMuatan: value }),
-
-  // Informasi Muatan
   informasiMuatan: "",
-  setInformasiMuatan: (value) => set({ informasiMuatan: value }),
-
-  // Lampiran/Foto Muatan
   fotoMuatan: [null, null, null, null],
-  setFotoMuatan: (index, value) =>
-    set((state) => {
-      let updated = [...state.fotoMuatan]; // copy array
+  deskripsi: "",
+  jenisCarrier: "",
+  jenisTruk: "",
+  useAsuransi: true,
+  kirimBuktiFisik: false,
+  bantuanTambahan: false,
+  noDO: "",
+  isCompany: false,
+};
 
-      if (value == null) {
-        // Delete the value at index
-        updated[index] = null;
-
-        // Collapse all items leftward after the deleted index
-        updated = updated
-          .filter((item) => item != null) // remove all nulls
-          .concat(new Array(state.fotoMuatan.length).fill(null)) // ensure same length
-          .slice(0, state.fotoMuatan.length); // trim to original length
-      } else {
-        // Try to find the first empty slot before the index
-        const emptyIndex = updated.findIndex(
-          (item, i) => item == null && i < index
-        );
-
-        if (emptyIndex !== -1) {
-          updated[emptyIndex] = value;
+export const useSewaArmadaStore = create(
+  zustandDevtools((set, get) => ({
+    formValues: defaultValues,
+    formErrors: {},
+    setField: (field, value) =>
+      set((state) => ({
+        formValues: { ...state.formValues, [field]: value },
+        formErrors: { ...state.formErrors, [field]: undefined },
+      })),
+    setError: (field, error) =>
+      set((state) => ({
+        formErrors: { ...state.formErrors, [field]: error },
+      })),
+    setFotoMuatan: (index, value) =>
+      set((state) => {
+        let updated = [...state.values.fotoMuatan];
+        if (value == null) {
+          updated[index] = null;
+          updated = updated
+            .filter((item) => item != null)
+            .concat(new Array(state.formValues.fotoMuatan.length).fill(null))
+            .slice(0, state.formValues.fotoMuatan.length);
         } else {
-          updated[index] = value;
+          const emptyIndex = updated.findIndex(
+            (item, i) => item == null && i < index
+          );
+          if (emptyIndex !== -1) {
+            updated[emptyIndex] = value;
+          } else {
+            updated[index] = value;
+          }
+        }
+        return { formValues: { ...state.formValues, fotoMuatan: updated } };
+      }),
+    addLokasi: (field, value) =>
+      set((state) => ({
+        formValues: {
+          ...state.formValues,
+          [field]: [...state.formValues[field], value],
+        },
+      })),
+    removeLokasi: (field, index) =>
+      set((state) => ({
+        formValues: {
+          ...state.formValues,
+          [field]: state.formValues[field].filter((_, i) => i !== index),
+        },
+      })),
+    reset: () => set({ formValues: defaultValues, formErrors: defaultErrors }),
+    validateForm: () => {
+      const { startDate, endDate, showRangeOption, fotoMuatan, deskripsi } =
+        get().formValues;
+      const newErrors = {};
+      const isValidFotoMuatan = fotoMuatan.some((item) => item !== null);
+      if (!startDate) {
+        newErrors.startDate = "Tanggal & waktu muat wajib diisi";
+      }
+      if (startDate && showRangeOption) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const diffMs = end - start;
+        const diffHours = diffMs / (1000 * 60 * 60);
+        const eightHoursMs = 8 * 60 * 60 * 1000;
+        if (!endDate) {
+          newErrors.endDate = "Tanggal & waktu muat wajib diisi";
+        } else if (diffHours < 1) {
+          newErrors.endDate = "Rentang waktu minimal 1 jam";
+        } else if (diffMs > eightHoursMs) {
+          newErrors.endDate = "Rentang waktu maksimal 8 jam";
         }
       }
-
-      return { fotoMuatan: updated };
-    }),
-
-  // Deskripsi Muatan
-  deskripsi: "",
-  setDeskripsi: (value) => set({ deskripsi: value }),
-
-  // Jenis Armada
-  jenisCarrier: "",
-  setJenisCarrier: (value) => set({ jenisCarrier: value }),
-  jenisTruk: "",
-  setJenisTruk: (value) => set({ jenisTruk: value }),
-
-  // Asuransi Barang
-  useAsuransi: true,
-  setUseAsuransi: (value) => set({ useAsuransi: value }),
-
-  // Layanan Tambahan
-  kirimBuktiFisik: false,
-  setKirimBuktiFisik: (value) => set({ kirimBuktiFisik: value }),
-  bantuanTambahan: false,
-  setBantuanTambahan: (value) => set({ bantuanTambahan: value }),
-
-  // No Delivery Order
-  noDO: "",
-  setNoDO: (value) => set({ noDO: value }),
-
-  // Tipe Pemesan
-  isCompany: false,
-  setIsCompany: (value) => set({ isCompany: value }),
-
-  errors: {},
-  setErrors: (value) => set({ errors: value }),
-
-  // Reset Form
-  resetForm: () =>
-    set({
-      rentalType: "",
-      startDate: null,
-      endDate: null,
-      showRangeOption: false,
-      lokasi: { muat: "", bongkar: "" },
-      tipeMuatan: "bahan-mentah",
-      jenisMuatan: "padat",
-      informasiMuatan: "",
-      fotoMuatan: [null, null, null, null],
-      deskripsi: "",
-      jenisCarrier: "",
-      jenisTruk: "",
-      useAsuransi: true,
-      kirimBuktiFisik: false,
-      bantuanTambahan: false,
-      noDO: "",
-      isCompany: false,
-    }),
-
-  validateForm: () => {
-    const { startDate, endDate, showRangeOption, fotoMuatan, deskripsi } =
-      get();
-    const newErrors = {};
-    const isValidFotoMuatan = fotoMuatan.some((item) => item !== null);
-
-    if (!startDate) {
-      newErrors.startDate = "Tanggal & waktu muat wajib diisi";
-    }
-
-    if (startDate && showRangeOption) {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      // Difference in milliseconds
-      const diffMs = end - start;
-
-      // Convert milliseconds to hours
-      const diffHours = diffMs / (1000 * 60 * 60);
-
-      // 8 hours in milliseconds
-      const eightHoursMs = 8 * 60 * 60 * 1000;
-      if (!endDate) {
-        newErrors.endDate = "Tanggal & waktu muat wajib diisi";
-      } else if (diffHours < 1) {
-        newErrors.endDate = "Rentang waktu minimal 1 jam";
-      } else if (diffMs > eightHoursMs) {
-        newErrors.endDate = "Rentang waktu maksimal 8 jam";
+      if (!isValidFotoMuatan) {
+        newErrors.fotoMuatan = "Mohon upload foto muatan";
       }
-    }
-
-    if (!isValidFotoMuatan) {
-      newErrors.fotoMuatan = "Mohon upload foto muatan";
-    }
-
-    if (!deskripsi) {
-      newErrors.deskripsi = "Deskripsi Muatan wajib diisi";
-    } else if (deskripsi.length < 3) {
-      newErrors.deskripsi = "Deskripsi Muatan minimal 3 karakter";
-    }
-
-    set({ errors: newErrors });
-
-    // Return true if newErrors is empty, false otherwise
-    return Object.keys(newErrors).length === 0;
-  },
-}));
+      if (!deskripsi) {
+        newErrors.deskripsi = "Deskripsi Muatan wajib diisi";
+      } else if (deskripsi.length < 3) {
+        newErrors.deskripsi = "Deskripsi Muatan minimal 3 karakter";
+      }
+      set({ formErrors: newErrors });
+      return Object.keys(newErrors).length === 0;
+    },
+  }))
+);

@@ -7,14 +7,15 @@ import Button from "@/components/Button/Button";
 import Card from "@/components/Card/Card";
 import Checkbox from "@/components/Checkbox/Checkbox";
 import DatetimePicker from "@/components/DatetimePicker/DatetimePicker";
+import FloatingButton from "@/components/FloatingButton/FloatingButton";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageUploader from "@/components/ImageUploader/ImageUploader";
 import Input from "@/components/Input/Input";
+import { LocationModalFormWeb } from "@/components/LocationManagement/LocationModalFormWeb";
 import RadioButton from "@/components/Radio/RadioButton";
 import TextArea from "@/components/TextArea/TextArea";
 import { TimelineField } from "@/components/Timeline/timeline-field";
 import Tooltip from "@/components/Tooltip/Tooltip";
-import { fakeAddress } from "@/container/Example/Web/mockdata";
 import { cn } from "@/lib/cn";
 // import SWRHandler from "@/services/useSWRHook";
 import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
@@ -33,6 +34,13 @@ const FormLabel = ({ size = "big", title, required = false }) => (
     </label>
   </div>
 );
+
+const defaultModalConfig = {
+  isOpen: false,
+  formMode: "muat",
+  onSubmit: () => {},
+  allSelectedLocations: [],
+};
 
 export default function SewaArmadaWeb() {
   const banners = [
@@ -65,42 +73,12 @@ export default function SewaArmadaWeb() {
 
   // Menggunakan state dari zustand
   const {
-    rentalType,
-    setRentalType,
-    startDate,
-    setStartDate,
-    endDate,
-    setEndDate,
-    // waktuMuat,
-    // setWaktuMuat,
-    showRangeOption,
-    setShowRangeOption,
-    lokasi,
-    setLokasiMuat,
-    setLokasiBongkar,
-    tipeMuatan,
-    setTipeMuatan,
-    jenisMuatan,
-    setJenisMuatan,
-    deskripsi,
-    setDeskripsi,
-    jenisCarrier,
-    setJenisCarrier,
-    jenisTruk,
-    setJenisTruk,
-    useAsuransi,
-    setUseAsuransi,
-    kirimBuktiFisik,
-    setKirimBuktiFisik,
-    bantuanTambahan,
-    setBantuanTambahan,
-    isCompany,
-    setIsCompany,
-    noDO,
-    setNoDO,
-    fotoMuatan,
+    formValues,
+    formErrors,
+    setField,
     setFotoMuatan,
-    errors,
+    addLokasi,
+    removeLokasi,
     validateForm,
   } = useSewaArmadaStore();
 
@@ -130,30 +108,38 @@ export default function SewaArmadaWeb() {
       // useArmadaInstanStore.getState().resetForm();
     };
   }, []);
-  const [muatValues, setMuatValues] = useState([]);
+
+  const [lokasiModalConfig, setLokasiModalConfig] =
+    useState(defaultModalConfig);
 
   const handleAddMuatLocation = () => {
-    setMuatValues([
-      ...muatValues,
-      fakeAddress[Math.floor(Math.random() * fakeAddress.length)],
-    ]);
+    setLokasiModalConfig({
+      isOpen: true,
+      formMode: "muat",
+      onSubmit: (data) => {
+        addLokasi("lokasiMuat", data);
+        setLokasiModalConfig(defaultModalConfig);
+      },
+      allSelectedLocations: formValues.lokasiMuat,
+    });
   };
-
   const handleDeleteMuatLocation = (index) => {
-    setMuatValues(muatValues.filter((_, i) => i !== index));
+    removeLokasi("lokasiMuat", index);
   };
-
-  const [bongkarValues, setBongkarValues] = useState([]);
 
   const handleAddBongkarLocation = () => {
-    setBongkarValues([
-      ...bongkarValues,
-      fakeAddress[Math.floor(Math.random() * fakeAddress.length)],
-    ]);
+    setLokasiModalConfig({
+      isOpen: true,
+      formMode: "bongkar",
+      onSubmit: (data) => {
+        addLokasi("lokasiBongkar", data);
+        setLokasiModalConfig(defaultModalConfig);
+      },
+      allSelectedLocations: formValues.lokasiBongkar,
+    });
   };
-
   const handleDeleteBongkarLocation = (index) => {
-    setBongkarValues(bongkarValues.filter((_, i) => i !== index));
+    removeLokasi("lokasiBongkar", index);
   };
 
   // API Calls dengan SWR
@@ -200,27 +186,22 @@ export default function SewaArmadaWeb() {
   const handleDateChange = (field, value) => {
     const newDate = new Date(value);
     newDate.setSeconds(0, 0);
-
-    if (field === "start") {
-      setStartDate(newDate);
-    } else {
-      setEndDate(newDate);
-    }
+    setField(field === "start" ? "startDate" : "endDate", newDate);
   };
 
   // Handler untuk upload foto muatan
   const handleImageUpload = (index, img) => setFotoMuatan(index, img);
 
   const handleSelectArmada = (value) => {
-    console.log("type", type);
+    // console.log("type", type);
     if (type === "carrier") {
-      setJenisCarrier(value);
+      setField("jenisCarrier", value);
     }
     if (type === "truck") {
-      setJenisTruk(value);
+      setField("jenisTruk", value);
     }
   };
-  console.log("jen", jenisCarrier, jenisTruk);
+  // console.log("jen", jenisCarrier, jenisTruk);
   const handleValidateFleetOrder = () => {
     const isValidForm = validateForm();
     if (isValidForm) {
@@ -239,8 +220,8 @@ export default function SewaArmadaWeb() {
       <BannerCarousel banners={banners} />
 
       {/* Main Content */}
-      {rentalType === "" ? (
-        <FirstTimer setRentalType={setRentalType} />
+      {formValues.rentalType === "" ? (
+        <FirstTimer setRentalType={(v) => setField("rentalType", v)} />
       ) : (
         <>
           {/* Welcome Section */}
@@ -254,11 +235,11 @@ export default function SewaArmadaWeb() {
                 <div
                   className={cn(
                     "flex h-[136px] w-[385px] cursor-pointer flex-col items-center justify-center gap-y-3 rounded-xl border p-6 hover:border-[#FFC217]",
-                    rentalType === "instan"
+                    formValues.rentalType === "instan"
                       ? "border-[#FFC217] bg-[#FFF5C6]"
                       : "border-neutral-400 bg-white"
                   )}
-                  onClick={() => setRentalType("instan")}
+                  onClick={() => setField("rentalType", "instan")}
                 >
                   <div className="relative h-8 w-8">
                     <Image
@@ -279,11 +260,11 @@ export default function SewaArmadaWeb() {
                 <div
                   className={cn(
                     "flex h-[136px] w-[385px] cursor-pointer flex-col items-center justify-center gap-y-3 rounded-xl border p-6 hover:border-[#FFC217]",
-                    rentalType === "terjadwal"
+                    formValues.rentalType === "terjadwal"
                       ? "border-[#FFC217] bg-[#FFF5C6]"
                       : "border-neutral-400 bg-white"
                   )}
-                  onClick={() => setRentalType("terjadwal")}
+                  onClick={() => setField("rentalType", "terjadwal")}
                 >
                   <div className="relative h-8 w-8">
                     <Image
@@ -313,38 +294,40 @@ export default function SewaArmadaWeb() {
                       <div className="flex flex-col gap-y-2">
                         <div className="flex items-center gap-x-2">
                           <DatetimePicker
-                            datetimeValue={startDate}
-                            onApply={(date) => {
-                              handleDateChange("start", date);
-                            }}
+                            datetimeValue={formValues.startDate}
+                            onApply={(date) => handleDateChange("start", date)}
                             placeholder="Pilih Tanggal & Waktu Muat"
-                            status={errors.startDate ? "error" : null}
+                            status={formErrors.startDate ? "error" : null}
                             className="w-[271px]"
                             minDate={getNowTimezone(timezone)}
                           />
-                          {showRangeOption ? (
+                          {formValues.showRangeOption ? (
                             <>
                               <span className="text-[12px] font-medium leading-[14.4px]">
                                 s/d
                               </span>
                               <DatetimePicker
-                                datetimeValue={endDate}
-                                onApply={(date) => {
-                                  handleDateChange("end", date);
-                                }}
+                                datetimeValue={formValues.endDate}
+                                onApply={(date) =>
+                                  handleDateChange("end", date)
+                                }
                                 placeholder="Pilih Tanggal & Waktu Muat"
-                                disabled={!startDate}
-                                status={errors.endDate ? "error" : null}
+                                disabled={!formValues.startDate}
+                                status={formErrors.endDate ? "error" : null}
                                 className="w-[271px]"
                                 minDate={getNowTimezone(timezone)}
                               />
                             </>
                           ) : null}
                         </div>
-                        {errors.startDate || errors.endDate ? (
+                        {formErrors.startDate || formErrors.endDate ? (
                           <div className="flex items-center gap-x-[34px] text-[12px] font-medium leading-[14.4px] text-error-400">
-                            <div className="w-[271px]">{errors.startDate}</div>
-                            <div className="w-[271px]">{errors.endDate}</div>
+                            <div className="w-[271px]">
+                              {formErrors.startDate}
+                            </div>
+                            <div className="w-[271px]">
+                              {formErrors.endDate}
+                            </div>
                           </div>
                         ) : null}
                       </div>
@@ -357,11 +340,11 @@ export default function SewaArmadaWeb() {
                       <Checkbox
                         label="Dengan Rentang Waktu"
                         value="rentang_waktu"
-                        checked={showRangeOption}
-                        onChange={(e) => setShowRangeOption(e.checked)}
+                        checked={formValues.showRangeOption}
+                        onChange={(e) => setField("showRangeOption", e.checked)}
                       />
                       <Tooltip
-                        classname="!-ml-4 text-[14px] leading-[16.8px]"
+                        className="!-ml-4 text-[14px] leading-[16.8px]"
                         text="Jika kamu memilih opsi ini, kamu dapat menentukan pukul mulai dan pukul akhir untuk penjemputan muatan. "
                         position="top"
                       >
@@ -386,7 +369,11 @@ export default function SewaArmadaWeb() {
                     variant="muat"
                     // Only accept array string address
                     // You need to map the value that will be rendered, in case the state is an array of object
-                    values={muatValues.map((value) => value.address)}
+                    values={
+                      formValues.lokasiMuat?.map(
+                        (item) => item.dataLokasi.location.name
+                      ) || []
+                    }
                     onAddLocation={handleAddMuatLocation}
                     onDeleteLocation={handleDeleteMuatLocation}
                   />
@@ -402,7 +389,11 @@ export default function SewaArmadaWeb() {
                     variant="bongkar"
                     // Only accept array string address
                     // You need to map the value that will be rendered, in case the state is an array of object
-                    values={bongkarValues.map((value) => value.address)}
+                    values={
+                      formValues.lokasiBongkar?.map(
+                        (item) => item.dataLokasi.location.name
+                      ) || []
+                    }
                     onAddLocation={handleAddBongkarLocation}
                     onDeleteLocation={handleDeleteBongkarLocation}
                   />
@@ -426,8 +417,8 @@ export default function SewaArmadaWeb() {
                         <RadioButton
                           name="tipe-muatan"
                           label="Bahan Mentah"
-                          checked={tipeMuatan === "bahan-mentah"}
-                          onClick={() => setTipeMuatan("bahan-mentah")}
+                          checked={formValues.tipeMuatan === "bahan-mentah"}
+                          onClick={() => setField("tipeMuatan", "bahan-mentah")}
                           value="bahan-mentah"
                         />
                       </div>
@@ -435,8 +426,8 @@ export default function SewaArmadaWeb() {
                         <RadioButton
                           name="tipe-muatan"
                           label="Barang Jadi"
-                          checked={tipeMuatan === "barang-jadi"}
-                          onClick={() => setTipeMuatan("barang-jadi")}
+                          checked={formValues.tipeMuatan === "barang-jadi"}
+                          onClick={() => setField("tipeMuatan", "barang-jadi")}
                           value="barang-jadi"
                         />
                       </div>
@@ -444,8 +435,12 @@ export default function SewaArmadaWeb() {
                         <RadioButton
                           name="tipe-muatan"
                           label="Barang Setengah Jadi"
-                          checked={tipeMuatan === "barang-setengah-jadi"}
-                          onClick={() => setTipeMuatan("barang-setengah-jadi")}
+                          checked={
+                            formValues.tipeMuatan === "barang-setengah-jadi"
+                          }
+                          onClick={() =>
+                            setField("tipeMuatan", "barang-setengah-jadi")
+                          }
                           value="barang-setengah-jadi"
                         />
                       </div>
@@ -453,8 +448,8 @@ export default function SewaArmadaWeb() {
                         <RadioButton
                           name="tipe-muatan"
                           label="Lainnya"
-                          checked={tipeMuatan === "lainnya"}
-                          onClick={() => setTipeMuatan("lainnya")}
+                          checked={formValues.tipeMuatan === "lainnya"}
+                          onClick={() => setField("tipeMuatan", "lainnya")}
                           value="lainnya"
                         />
                       </div>
@@ -498,8 +493,8 @@ export default function SewaArmadaWeb() {
                           <RadioButton
                             name="jenis-muatan"
                             label={category.name}
-                            checked={jenisMuatan === category.id}
-                            onClick={() => setJenisMuatan(category.id)}
+                            checked={formValues.jenisMuatan === category.id}
+                            onClick={() => setField("jenisMuatan", category.id)}
                             value={category.id}
                           />
                         </div>
@@ -510,8 +505,8 @@ export default function SewaArmadaWeb() {
                           <RadioButton
                             name="jenis-muatan"
                             label="Padat"
-                            checked={jenisMuatan === "padat"}
-                            onClick={() => setJenisMuatan("padat")}
+                            checked={formValues.jenisMuatan === "padat"}
+                            onClick={() => setField("jenisMuatan", "padat")}
                             value="padat"
                           />
                         </div>
@@ -519,8 +514,8 @@ export default function SewaArmadaWeb() {
                           <RadioButton
                             name="jenis-muatan"
                             label="Cair"
-                            checked={jenisMuatan === "cair"}
-                            onClick={() => setJenisMuatan("cair")}
+                            checked={formValues.jenisMuatan === "cair"}
+                            onClick={() => setField("jenisMuatan", "cair")}
                             value="cair"
                           />
                         </div>
@@ -528,8 +523,8 @@ export default function SewaArmadaWeb() {
                           <RadioButton
                             name="jenis-muatan"
                             label="Curah"
-                            checked={jenisMuatan === "curah"}
-                            onClick={() => setJenisMuatan("curah")}
+                            checked={formValues.jenisMuatan === "curah"}
+                            onClick={() => setField("jenisMuatan", "curah")}
                             value="curah"
                           />
                         </div>
@@ -537,8 +532,8 @@ export default function SewaArmadaWeb() {
                           <RadioButton
                             name="jenis-muatan"
                             label="Kendaraan"
-                            checked={jenisMuatan === "kendaraan"}
-                            onClick={() => setJenisMuatan("kendaraan")}
+                            checked={formValues.jenisMuatan === "kendaraan"}
+                            onClick={() => setField("jenisMuatan", "kendaraan")}
                             value="kendaraan"
                           />
                         </div>
@@ -546,8 +541,8 @@ export default function SewaArmadaWeb() {
                           <RadioButton
                             name="jenis-muatan"
                             label="Container"
-                            checked={jenisMuatan === "container"}
-                            onClick={() => setJenisMuatan("container")}
+                            checked={formValues.jenisMuatan === "container"}
+                            onClick={() => setField("jenisMuatan", "container")}
                             value="container"
                           />
                         </div>
@@ -592,8 +587,8 @@ export default function SewaArmadaWeb() {
                             }
                             maxSize={10}
                             className="!size-[124px]"
-                            value={fotoMuatan[key]}
-                            isNull={errors.fotoMuatan}
+                            value={formValues.fotoMuatan[key]}
+                            isNull={formErrors.fotoMuatan}
                           />
                         </Fragment>
                       ))}
@@ -613,15 +608,15 @@ export default function SewaArmadaWeb() {
                       maxLength={500}
                       hasCharCount
                       supportiveText={{
-                        title: errors.deskripsi,
+                        title: formErrors.deskripsi,
                       }}
                       resize="none"
                       placeholder={
                         "Lengkapi deskripsi informasi muatan Anda dengan rincian spesifik terkait barang yang dikirim, seperti bahan, penggunaan, atau karakteristik unik lainnya."
                       }
-                      value={deskripsi}
-                      changeEvent={(e) => setDeskripsi(e.target.value)}
-                      status={errors.deskripsi ? "error" : ""}
+                      value={formValues.deskripsi}
+                      onChange={(e) => setField("deskripsi", e.target.value)}
+                      status={formErrors.deskripsi ? "error" : ""}
                       // classInput={"!text-[#1b1b1b]"}
                     />
                   </div>
@@ -646,7 +641,7 @@ export default function SewaArmadaWeb() {
                         height={16}
                       />
                       <span className="ml-2 text-xs font-medium text-neutral-600">
-                        {jenisCarrier || "Pilih Jenis Carrier"}
+                        {formValues.jenisCarrier || "Pilih Jenis Carrier"}
                       </span>
                       <IconComponent
                         src="/icons/chevron-right.svg"
@@ -656,7 +651,7 @@ export default function SewaArmadaWeb() {
                       />
                     </div>
                     <div
-                      className={`flex h-8 flex-1 items-center rounded-md border border-neutral-600 px-3 ${jenisCarrier ? "cursor-pointer bg-neutral-50" : "cursor-not-allowed bg-neutral-200"}`}
+                      className={`flex h-8 flex-1 items-center rounded-md border border-neutral-600 px-3 ${formValues.jenisCarrier ? "cursor-pointer bg-neutral-50" : "cursor-not-allowed bg-neutral-200"}`}
                       onClick={() => {
                         setIsArmadaPopupOpen(true);
                         setType("truck");
@@ -718,9 +713,11 @@ export default function SewaArmadaWeb() {
                       {/* Container Checkbox dan Label */}
                       <div className="flex h-[16px] flex-row items-center gap-[4px]">
                         <Checkbox
-                          onChange={(e) => setKirimBuktiFisik(e.checked)}
+                          onChange={(e) =>
+                            setField("kirimBuktiFisik", e.checked)
+                          }
                           label="Kirim Bukti Fisik Penerimaan Barang"
-                          checked={kirimBuktiFisik}
+                          checked={formValues.kirimBuktiFisik}
                           value="kirim_bukti_fisik"
                         />
                         <IconComponent
@@ -741,9 +738,11 @@ export default function SewaArmadaWeb() {
                       {/* Container Checkbox dan Label */}
                       <div className="flex h-[16px] flex-row items-center gap-[4px]">
                         <Checkbox
-                          onChange={(e) => setBantuanTambahan(e.checked)}
+                          onChange={(e) =>
+                            setField("bantuanTambahan", e.checked)
+                          }
                           label="Bantuan Tambahan"
-                          checked={bantuanTambahan}
+                          checked={formValues.bantuanTambahan}
                           value="bantuan_tambahan"
                         />
                         <IconComponent
@@ -770,8 +769,8 @@ export default function SewaArmadaWeb() {
                     <Input
                       type="text"
                       placeholder="Masukkan No. Delivery Order (DO)"
-                      changeEvent={(e) => setNoDO(e.target.value)}
-                      value={noDO}
+                      onChange={(e) => setField("noDO", e.target.value)}
+                      value={formValues.noDO}
                     />
                   </div>
                 </div>
@@ -783,9 +782,9 @@ export default function SewaArmadaWeb() {
                   </label>
                   <div className="flex h-[16px] flex-row items-center gap-[4px]">
                     <Checkbox
-                      onChange={(e) => setIsCompany(e.checked)}
+                      onChange={(e) => setField("isCompany", e.checked)}
                       label="Centang jika kamu adalah suatu perusahaan/badan usaha"
-                      checked={isCompany}
+                      checked={formValues.isCompany}
                       value="is_company"
                     />
                     <IconComponent
@@ -831,7 +830,7 @@ export default function SewaArmadaWeb() {
                       Total
                     </span>
                     <span className="text-base font-bold text-black">
-                      Rp{bantuanTambahan ? "105.000" : "0"}
+                      Rp{formValues.bantuanTambahan ? "105.000" : "0"}
                     </span>
                   </div>
                 </div>
@@ -858,6 +857,17 @@ export default function SewaArmadaWeb() {
           />
         </>
       )}
+
+      {/* Floating Button */}
+      <FloatingButton />
+
+      <LocationModalFormWeb
+        open={lokasiModalConfig.isOpen}
+        formMode={lokasiModalConfig.formMode}
+        onSubmit={lokasiModalConfig.onSubmit}
+        onOpenChange={() => setLokasiModalConfig(defaultModalConfig)}
+        allSelectedLocations={lokasiModalConfig.allSelectedLocations}
+      />
     </main>
   );
 }

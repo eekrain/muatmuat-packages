@@ -40,7 +40,7 @@ export const HeaderResponsiveDefault = () => {
           src="/icons/chevron-left24.svg"
           width={24}
           height={24}
-          onclick={defaultScreenState.header.onClickBackButton}
+          onClick={defaultScreenState.header.onClickBackButton}
         />
         <ImageComponent src="/icons/muattrans.svg" width={120} height={24} />
       </div>

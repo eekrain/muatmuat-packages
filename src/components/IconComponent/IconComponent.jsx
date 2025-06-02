@@ -19,18 +19,18 @@ function IconComponent({
   loader = true,
   rotate = 0,
   className,
-  onclick,
+  onClick,
   ref,
 }) {
   // interactive element,
-  if (onclick)
+  if (onClick)
     return (
       <button
         style={{
           width: `${sizes[size] ? sizes[size] : width}px`,
           height: `${sizes[size] ? sizes[size] : height}px`,
         }}
-        onClick={onclick}
+        onClick={onClick}
       >
         <SVG
           cacheRequests
@@ -111,5 +111,5 @@ IconComponent.propTypes = {
     PropTypes.number,
   ]),
   className: PropTypes.string,
-  onclick: PropTypes.func,
+  onClick: PropTypes.func,
 };

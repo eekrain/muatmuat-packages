@@ -253,7 +253,7 @@ export default function ImageUploaderWeb({
             {error && (
               <>
                 <IconComponent
-                  classname={"icon-error-400"}
+                  className={"icon-error-400"}
                   size="medium"
                   src="/icons/restart24.svg"
                 />

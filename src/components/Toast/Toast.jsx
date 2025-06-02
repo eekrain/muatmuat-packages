@@ -10,9 +10,9 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import toast from "@/store/toast";
 
 export const TopToast = ({
-  classname,
+  className,
   children = "Toast",
-  onclick,
+  onClick,
   iconSrc,
   showToast,
   setShowToast,
@@ -33,7 +33,7 @@ export const TopToast = ({
       }, 6000);
       return () => clearTimeout(timer);
     }
-  }, [showToast, onclick]);
+  }, [showToast, onClick]);
 
   // 25. 11 - QC Plan - Web - Ronda Live Mei - LB - 0072
   // Using portal to render toast in the body ensuring they are not affected by any parent stacking context
@@ -43,7 +43,7 @@ export const TopToast = ({
         dataToast.type === "success"
           ? "border-[#27CF23] bg-[#ECFAE5] text-[#27CF23]"
           : "border-[#F71717] bg-[#FDD1D1] text-[#F71717]"
-      } ${classname} `}
+      } ${className} `}
     >
       {/* Content Container */}
       <div className="flex w-[380px] items-center gap-x-2 pr-2 max-[600px]:w-full">
@@ -70,15 +70,15 @@ export const TopToast = ({
         src="/icons/silang.svg"
         height={14}
         width={14}
-        classname="flex-shrink-0 cursor-pointer"
-        onclick={() => (onclick ? onclick() : setShowToast(false))}
+        className="flex-shrink-0 cursor-pointer"
+        onClick={() => (onClick ? onClick() : setShowToast(false))}
       />
     </div>,
     typeof window !== "undefined" ? document.body : undefined
   );
 };
 
-const Toast = ({ classname, children = "Toast", onclick, iconSrc }) => {
+const Toast = ({ className, children = "Toast", onClick, iconSrc }) => {
   const { showToast, setShowToast, dataToast } = toast();
   const pathname = usePathname();
 
@@ -89,7 +89,7 @@ const Toast = ({ classname, children = "Toast", onclick, iconSrc }) => {
       }, 6000);
       return () => clearTimeout(timer);
     }
-  }, [showToast, onclick]);
+  }, [showToast, onClick]);
 
   useEffect(() => {
     if (showToast) {
@@ -104,7 +104,7 @@ const Toast = ({ classname, children = "Toast", onclick, iconSrc }) => {
         dataToast.type === "success"
           ? "border-success-400 bg-success-50"
           : "border-error-400 bg-error-50"
-      } ${classname} `}
+      } ${className} `}
     >
       {/* Content Container */}
       <div className=":w-full flex items-center gap-3 pr-2 lg:w-[380px]">
@@ -133,8 +133,8 @@ const Toast = ({ classname, children = "Toast", onclick, iconSrc }) => {
         src="/icons/silang.svg"
         height={20}
         width={20}
-        classname="flex-shrink-0 cursor-pointer"
-        onclick={() => (onclick ? onclick() : setShowToast(false))}
+        className="flex-shrink-0 cursor-pointer"
+        onClick={() => (onClick ? onClick() : setShowToast(false))}
       />
     </div>,
     typeof window !== "undefined" ? document.body : undefined
@@ -142,9 +142,9 @@ const Toast = ({ classname, children = "Toast", onclick, iconSrc }) => {
 };
 
 Toast.propTypes = {
-  classname: PropTypes.string,
+  className: PropTypes.string,
   children: PropTypes.string,
-  onclick: PropTypes.func,
+  onClick: PropTypes.func,
   iconSrc: PropTypes.string,
 };
 

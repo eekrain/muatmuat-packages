@@ -17,8 +17,8 @@ const TextArea = ({
   width = { width: "", maxWidth: "", minWidth: "" },
   ref = null,
   resize = "",
-  changeEvent = () => {},
-  blurEvent = () => {},
+  onChange = () => {},
+  onBlur = () => {},
   maxLength = null,
   hasCharCount = true,
   height,
@@ -28,12 +28,12 @@ const TextArea = ({
 
   const handleChange = (e) => {
     setCharCount(e.target.value.length);
-    changeEvent(e);
+    onChange(e);
   };
 
   const handleBlur = (e) => {
     setCharCount(e.target.value.length);
-    blurEvent(e);
+    onBlur(e);
   };
 
   useEffect(() => {

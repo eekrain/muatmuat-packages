@@ -41,7 +41,7 @@ const ImageUploaderRegister = ({
   const handleUbah = () => {
     setModalContent(<UnggahFoto resultCrop={setResultCrops} />);
     setModalConfig({
-      classname: "!w-[550px] !rounded-[12px]",
+      className: "!w-[550px] !rounded-[12px]",
       withHeader: true,
       withClose: true,
       headerBg: "/img/headermodal386.svg",
@@ -77,7 +77,7 @@ const ImageUploaderRegister = ({
       </div>
     );
     setModalConfig({
-      classname: "!w-[386px]",
+      className: "!w-[386px]",
       withHeader: true,
       withClose: true,
       headerBg: "/img/headermodal386.svg",

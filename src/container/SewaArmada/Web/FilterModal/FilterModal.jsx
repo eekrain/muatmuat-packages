@@ -52,7 +52,7 @@ const WarningBadge = ({ icon, message }) => {
         src={icon}
         width={14}
         height={14}
-        classname="icon-warning-900"
+        className="icon-warning-900"
       />
       <span className="flex-1 text-[12px] font-semibold leading-[14.4px] text-neutral-900">
         {message}
@@ -115,7 +115,7 @@ const SectionHeader = ({ title, showInfoIcon = false }) => {
           src="/icons/info-circle.svg"
           width={24}
           height={24}
-          classname="icon-gray"
+          className="icon-gray"
         />
       )}
     </div>
@@ -177,13 +177,13 @@ const FilterModal = ({ isOpen, setIsOpen, onSelectArmada, type }) => {
                     src="/icons/silang.svg"
                     height={16}
                     width={16}
-                    onclick={() => setSearch("")}
+                    onClick={() => setSearch("")}
                   />
                 ) : null,
               }}
               width={{ width: "424px" }}
               value={search}
-              changeEvent={handleSearchChange}
+              onChange={handleSearchChange}
             />
           </div>
 

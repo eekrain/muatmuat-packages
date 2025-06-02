@@ -5,7 +5,7 @@ import style from "./Card.module.scss";
 
 // componen card terdiri dari beberapa fungsi yang dapat di export di childrennya, seperti header/content/footer (depends sesuai kebutuhan)
 // componen main card mempunyai 2 props yang dapat di isi yakni:
-// props classname, valuenya berupa string jika anda ingin menambah custom class pada cardnya ("flex flex-col justify-between")
+// props className, valuenya berupa string jika anda ingin menambah custom class pada cardnya ("flex flex-col justify-between")
 // props children, valuenya berupa tag elemen html yang akan dirender di dalam cardnya. disini anda juga dapat mengisi fungsi export dari CardContent/CardFooter/CardHeader/lainnya ("<span>Data card</span>") / (<><CardHeader></CardHeader><CardContent></CardContent><CardFooter></CardFooter></>)
 
 const Card = ({ className, keys, children }) => {
@@ -21,7 +21,7 @@ const Card = ({ className, keys, children }) => {
 
 export default Card;
 
-// props classname, valuenya berupa string jika anda ingin menambah custom class pada cardnya ("flex flex-col justify-between")
+// props className, valuenya berupa string jika anda ingin menambah custom class pada cardnya ("flex flex-col justify-between")
 // props children, valuenya berupa tag elemen html yang akan dirender di dalam cardnya. disini anda juga dapat mengisi fungsi export dari  komponen lainnya ("<span>Data card</span>") / (<div><Badges>Tolak</Badges><Button>Detail</Button></div>)
 export const CardHeader = ({ className, children }) => {
   return (
@@ -32,17 +32,17 @@ export const CardHeader = ({ className, children }) => {
 };
 
 // terdapat CardContent meski main card memiliki props children yang hampir sama fungsinya seperti CardContent, yang membedakan yakni disini value padding sudah disamakan dengan figma untuk menyelaraskan isi konten pada card nantinya
-// props classname, valuenya berupa string jika anda ingin menambah custom class pada cardnya ("flex flex-col justify-between")
+// props className, valuenya berupa string jika anda ingin menambah custom class pada cardnya ("flex flex-col justify-between")
 // props children, valuenya berupa tag elemen html yang akan dirender di dalam cardnya. disini anda juga dapat mengisi fungsi export dari komponen lainnya ("<span>Data card</span>") / (<div><Badges>Tolak</Badges><Button>Detail</Button></div>)
 export const CardContent = ({ className, children }) => {
   return <div className={`px-8 py-5 ${className}`}>{children}</div>;
 };
 
-// props classname, valuenya berupa string jika anda ingin menambah custom class pada cardnya ("flex flex-col justify-between")
+// props className, valuenya berupa string jika anda ingin menambah custom class pada cardnya ("flex flex-col justify-between")
 // props children, valuenya berupa tag elemen html yang akan dirender di dalam cardnya. disini anda juga dapat mengisi fungsi export dari komponen lainnya ("<span>Data card</span>") / (<div><Badges>Tolak</Badges><Button>Detail</Button></div>)
 export const CardFooter = ({ className, children }) => {
   return (
-    <footer className={`border-t border-neutral-600 px-8 py-5 ${classname}`}>
+    <footer className={`border-t border-neutral-600 px-8 py-5 ${className}`}>
       {children}
     </footer>
   );

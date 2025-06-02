@@ -19,14 +19,14 @@ export const HeaderResponsiveSearchBar = () => {
           src="/icons/chevron-left24.svg"
           width={24}
           height={24}
-          onclick={searchBarState.header.onClickBackButton}
+          onClick={searchBarState.header.onClickBackButton}
         />
 
         <div className="w-full">
           <Input
             type="text"
             value={searchValue}
-            changeEvent={(e) => {
+            onChange={(e) => {
               setSearchValue(e.target.value);
               searchBarState.header.onSearchValueChange(e.target.value);
             }}

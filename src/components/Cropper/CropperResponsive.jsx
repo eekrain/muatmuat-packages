@@ -117,7 +117,7 @@ export default function CropperResponsive({
               className={style.close_btn_icon}
               src="/icons/silang.svg"
               size="medium"
-              onclick={cancelCrop}
+              onClick={cancelCrop}
             />
             {/* </button> */}
             <span className="text-[16px] font-medium leading-[19.2px] text-white">
@@ -128,7 +128,7 @@ export default function CropperResponsive({
             // className={style.close_btn_icon}
             src="/icons/check_white.svg"
             size="medium"
-            onclick={getCropData}
+            onClick={getCropData}
           />
         </div>
         <div className="flex min-h-[600px]">

@@ -98,6 +98,7 @@ const ExampleWeb = () => {
                     src="/icons/warning24.svg"
                     height={24}
                     width={24}
+                    className="text-[#FF7A00]"
                   />
                 </div>
                 <p className="text-[12px] font-medium leading-[14.4px] text-neutral-900">

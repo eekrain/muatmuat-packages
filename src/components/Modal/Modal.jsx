@@ -51,6 +51,7 @@ export const Modal = ({
   open: controlledOpen,
   onOpenChange,
   closeOnOutsideClick = false,
+  withCloseButton = true,
 }) => {
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   const dialogRef = useRef(null);
@@ -84,6 +85,17 @@ export const Modal = ({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, close]);
 
+  // Prevent background scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isOpen]);
+
   const handleClickOutside = useCallback(
     (e) => {
       if (
@@ -98,7 +110,9 @@ export const Modal = ({
   );
 
   return (
-    <ModalContext.Provider value={{ open, close, isOpen, handleClickOutside }}>
+    <ModalContext.Provider
+      value={{ open, close, isOpen, handleClickOutside, withCloseButton }}
+    >
       {children}
     </ModalContext.Provider>
   );
@@ -129,7 +143,7 @@ export const ModalContent = ({
   children,
   className,
 }) => {
-  const { close, isOpen, handleClickOutside } = useModal();
+  const { close, isOpen, handleClickOutside, withCloseButton } = useModal();
   const dialogRef = useRef(null);
   const baseClass = "";
 
@@ -151,17 +165,19 @@ export const ModalContent = ({
       onMouseDown={handleClickOutside}
     >
       <div ref={dialogRef} className="relative rounded-xl bg-neutral-50">
-        <button
-          className="absolute right-2 top-2 flex items-center justify-center rounded-full bg-neutral-50"
-          onClick={close}
-        >
-          <IconComponent
-            className={iconClassnames[type] || iconClassnames.muattrans}
-            src="/icons/close20.svg"
-            width={20}
-            height={20}
-          />
-        </button>
+        {withCloseButton && (
+          <button
+            className="absolute right-2 top-2 z-[99999] flex cursor-pointer items-center justify-center rounded-full bg-neutral-50"
+            onClick={close}
+          >
+            <IconComponent
+              className={iconClassnames[type] || iconClassnames.muattrans}
+              src="/icons/close20.svg"
+              width={20}
+              height={20}
+            />
+          </button>
+        )}
         <div className={className ?? baseClass}>{children}</div>
       </div>
     </div>,

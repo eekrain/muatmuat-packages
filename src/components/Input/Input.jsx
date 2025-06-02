@@ -20,9 +20,6 @@ const Input = forwardRef(
       text = { left: "", right: "" },
       supportiveText = { title: "", desc: "" },
       width = { width: "", maxWidth: "", minWidth: "" },
-      changeEvent = () => {},
-      focusEvent = () => {},
-      blurEvent = () => {},
       className,
       classInput,
       ...props
@@ -47,7 +44,7 @@ const Input = forwardRef(
                 : ""
           } bg-neutral-50`}
         >
-          {!isEmpty(icon.left) ? (
+          {icon.left ? (
             <div className="mr-2 flex items-center">
               {typeof icon.left === "string" ? (
                 <IconComponent
@@ -70,12 +67,9 @@ const Input = forwardRef(
           <input
             {...props}
             type={type}
-            onChange={changeEvent}
             ref={ref}
             name={name}
             placeholder={placeholder}
-            onFocus={focusEvent}
-            onBlur={blurEvent}
             className={`w-full min-w-[0px] ${style.input} ${classInput} text-[12px] font-medium leading-[14.4px] text-neutral-900 placeholder:text-neutral-600 max-[600px]:text-[14px] max-[600px]:font-semibold max-[600px]:leading-[15.4px]`}
             disabled={disabled}
           />

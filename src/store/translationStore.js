@@ -86,10 +86,10 @@ const createTranslationSlice = (set, get) => ({
     updateTranslations: async (languageUrl) => {
       if (!languageUrl) return console.error("Locale is not defined");
 
-      // const envProd = process.env.NEXT_PUBLIC_ENVIRONMENT;
-      // const s3url = process.env.NEXT_PUBLIC_S3_URL;
-      // const url = `${s3url}content-general/locales/${envProd}/${languageUrl}/common.json`;
-      const url = `https://azlogistik-rc.s3.ap-southeast-3.amazonaws.com/content-general/locales/rc/${languageUrl}/common.json`;
+      const envProd = process.env.NEXT_PUBLIC_ENVIRONMENT;
+      const s3url = process.env.NEXT_PUBLIC_S3_URL;
+      const url = `${s3url}content-general/locales/${envProd}/${languageUrl}/common.json`;
+
       try {
         const response = await fetch(url, {
           headers: {
@@ -102,7 +102,6 @@ const createTranslationSlice = (set, get) => ({
           throw new Error(`Failed to fetch ${languageUrl} translations`);
         }
         const data = await response.json();
-        console.log("🚀 ~ updateTranslations: ~ data:", data);
         set({ translation: data, isTranslationsReady: true });
       } catch (error) {
         console.error(

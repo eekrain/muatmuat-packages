@@ -4,7 +4,7 @@ import IconComponent from "../IconComponent/IconComponent";
 import style from "./Tooltip.module.scss";
 
 const Tooltip = ({
-  classname,
+  className,
   text,
   children,
   title,
@@ -31,14 +31,14 @@ const Tooltip = ({
                   src={{ src: "/icons/info.svg" }}
                   height={16}
                   width={16}
-                  classname={style.fill_black}
+                  className={style.fill_black}
                 />
               )}
             </div>
             <div className="flex flex-col gap-[8px]">
               {title && <div className={`${style.title}`}>{title}</div>}
               {text && (
-                <div className={`${style.text} ${classname}`}>{text}</div>
+                <div className={`${style.text} ${className}`}>{text}</div>
               )}
             </div>
           </div>

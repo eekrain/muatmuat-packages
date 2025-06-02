@@ -56,7 +56,7 @@ const Toaster = ({ className }) => {
             height={20}
             width={20}
             className="flex-shrink-0 cursor-pointer"
-            onclick={() => removeToast(toast.id)}
+            onClick={() => removeToast(toast.id)}
           />
         </div>
       ))}

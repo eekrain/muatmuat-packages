@@ -355,7 +355,7 @@ const ImageUploaderRegisterResponsive = ({
       </div>
     );
     setModalConfig({
-      classname: "!w-[386px]",
+      className: "!w-[386px]",
       withHeader: false,
       withClose: true,
     });
