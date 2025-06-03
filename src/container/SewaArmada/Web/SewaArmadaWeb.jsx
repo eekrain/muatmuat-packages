@@ -25,6 +25,8 @@ import BannerCarousel from "./BannerCarousel/BannerCarousel";
 import FilterModal from "./FilterModal/FilterModal";
 import FirstTimer from "./FirstTimer/FirstTimer";
 import FleetOrderConfirmationModal from "./FleetOrderConfirmationModal/FleetOrderConfirmationModal";
+import SelectedTruck from "./SelectedTruck/SelectedTruck";
+import TruckImageModal from "./TruckImageModal/TruckImageModal";
 import WelcomeCard from "./WelcomeCard/WelcomeCard";
 
 const FormLabel = ({ size = "big", title, required = false }) => (
@@ -69,24 +71,24 @@ export default function SewaArmadaWeb() {
       {
         id: 1,
         title: "Towing Car",
-        image: "/img/recommended1.png",
+        src: "/img/recommended1.png",
       },
     ],
     notRecommended: [
       {
         id: 2,
         title: "Flat Bed",
-        image: "/img/recommended1.png",
+        src: "/img/recommended1.png",
       },
       {
         id: 3,
         title: "Trailer Container",
-        image: "/img/recommended1.png",
+        src: "/img/recommended1.png",
       },
       {
         id: 4,
         title: "Trailer Reefer",
-        image: "/img/recommended2.png",
+        src: "/img/recommended2.png",
       },
     ],
   };
@@ -95,7 +97,7 @@ export default function SewaArmadaWeb() {
       {
         id: 1,
         title: "Colt Diesel Engkel",
-        image: "/img/recommended1.png",
+        src: "/img/recommended1.png",
         cost: 200000,
         capacity: "2,5 Ton",
         dimension: "5,7 m x 2,2 m x 2,3 m",
@@ -105,7 +107,7 @@ export default function SewaArmadaWeb() {
       {
         id: 2,
         title: "Flat Bed",
-        image: "/img/recommended1.png",
+        src: "/img/recommended1.png",
         cost: 200000,
         capacity: "2,5 Ton",
         dimension: "5,7 m x 2,2 m x 2,3 m",
@@ -113,7 +115,7 @@ export default function SewaArmadaWeb() {
       {
         id: 3,
         title: "Trailer Container",
-        image: "/img/recommended1.png",
+        src: "/img/recommended1.png",
         cost: 200000,
         capacity: "2,5 Ton",
         dimension: "5,7 m x 2,2 m x 2,3 m",
@@ -121,7 +123,7 @@ export default function SewaArmadaWeb() {
       {
         id: 4,
         title: "Trailer Reefer",
-        image: "/img/recommended2.png",
+        src: "/img/recommended2.png",
         cost: 200000,
         capacity: "2,5 Ton",
         dimension: "5,7 m x 2,2 m x 2,3 m",
@@ -150,7 +152,7 @@ export default function SewaArmadaWeb() {
     removeLokasi,
     validateForm,
   } = useSewaArmadaStore();
-
+  console.log("form", formValues);
   const [timezone, setTimezone] = useState({
     id: "Asia/Jakarta",
     offset: "+07:00",
@@ -164,6 +166,8 @@ export default function SewaArmadaWeb() {
   // State untuk jenis armada
   const [isArmadaPopupOpen, setIsArmadaPopupOpen] = useState(false);
   const [type, setType] = useState(""); // carrier or truck
+  const [isTruckImageModalOpen, setIsTruckImageModalOpen] = useState(false);
+  const [selectedImageSrc, setSelectedImageSrc] = useState("");
 
   // State untuk menyimpan data dari API
   const [cargoTypes, setCargoTypes] = useState([]);
@@ -262,7 +266,6 @@ export default function SewaArmadaWeb() {
   const handleImageUpload = (index, img) => setFotoMuatan(index, img);
 
   const handleSelectArmada = (value) => {
-    // console.log("type", type);
     if (type === "carrier") {
       setField("jenisCarrier", value);
     }
@@ -270,6 +273,12 @@ export default function SewaArmadaWeb() {
       setField("jenisTruk", value);
     }
   };
+
+  const handleSelectImage = (src) => {
+    setSelectedImageSrc(src);
+    setIsTruckImageModalOpen(true);
+  };
+
   // console.log("jen", jenisCarrier, jenisTruk);
   const handleValidateFleetOrder = () => {
     const isValidForm = validateForm();
@@ -696,51 +705,61 @@ export default function SewaArmadaWeb() {
                   <label className="flex w-[174px] items-center text-[12px] font-medium leading-[14.4px] text-neutral-600">
                     Jenis Armada*
                   </label>
-                  <div className="flex flex-1 gap-3.5">
-                    <div
-                      className="flex h-8 flex-1 cursor-pointer items-center rounded-md border border-neutral-600 px-3"
-                      onClick={() => {
-                        setIsArmadaPopupOpen(true);
-                        setType("carrier");
-                      }}
-                    >
-                      <IconComponent
-                        src="/icons/carrier16.svg"
-                        width={16}
-                        height={16}
-                      />
-                      <span className="ml-2 text-xs font-medium text-neutral-600">
-                        {formValues.jenisCarrier || "Pilih Jenis Carrier"}
-                      </span>
-                      <IconComponent
-                        src="/icons/chevron-right.svg"
-                        width={16}
-                        height={16}
-                        className="ml-auto"
-                      />
+                  <div className="flex flex-1 flex-col gap-y-3.5">
+                    <div className="flex items-center gap-x-3.5">
+                      <button
+                        className="flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 px-3"
+                        onClick={() => {
+                          setIsArmadaPopupOpen(true);
+                          setType("carrier");
+                        }}
+                      >
+                        <IconComponent
+                          src="/icons/carrier16.svg"
+                          width={16}
+                          height={16}
+                        />
+                        <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                          {formValues.jenisCarrier?.title ||
+                            "Pilih Jenis Carrier"}
+                        </span>
+                        <IconComponent
+                          src="/icons/chevron-right.svg"
+                          width={16}
+                          height={16}
+                          className="ml-auto"
+                        />
+                      </button>
+                      <button
+                        className={`flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 px-3 ${formValues.jenisCarrier ? "bg-neutral-50" : "cursor-not-allowed bg-neutral-200"}`}
+                        disabled={!formValues.jenisCarrier}
+                        onClick={() => {
+                          setIsArmadaPopupOpen(true);
+                          setType("truck");
+                        }}
+                      >
+                        <IconComponent
+                          src="/icons/truck16.svg"
+                          width={16}
+                          height={16}
+                        />
+                        <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                          {formValues.jenisTruk?.title || "Pilih Jenis Truck"}
+                        </span>
+                        <IconComponent
+                          src="/icons/chevron-right.svg"
+                          width={16}
+                          height={16}
+                          className="ml-auto"
+                        />
+                      </button>
                     </div>
-                    <div
-                      className={`flex h-8 flex-1 items-center rounded-md border border-neutral-600 px-3 ${formValues.jenisCarrier ? "cursor-pointer bg-neutral-50" : "cursor-not-allowed bg-neutral-200"}`}
-                      onClick={() => {
-                        setIsArmadaPopupOpen(true);
-                        setType("truck");
-                      }}
-                    >
-                      <IconComponent
-                        src="/icons/truck16.svg"
-                        width={16}
-                        height={16}
+                    {formValues.jenisTruk ? (
+                      <SelectedTruck
+                        {...formValues.jenisTruk}
+                        onSelectImage={handleSelectImage}
                       />
-                      <span className="ml-2 text-xs font-medium text-neutral-600">
-                        Pilih Jenis Truk
-                      </span>
-                      <IconComponent
-                        src="/icons/chevron-right.svg"
-                        width={16}
-                        height={16}
-                        className="ml-auto"
-                      />
-                    </div>
+                    ) : null}
                   </div>
                 </div>
 
@@ -931,6 +950,12 @@ export default function SewaArmadaWeb() {
         setIsOpen={setIsArmadaPopupOpen}
         onSelectArmada={handleSelectArmada}
         type={type}
+      />
+
+      <TruckImageModal
+        isOpen={isTruckImageModalOpen}
+        setIsOpen={setIsTruckImageModalOpen}
+        src={selectedImageSrc}
       />
 
       <LocationModalFormWeb
