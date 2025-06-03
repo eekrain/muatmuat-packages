@@ -8,32 +8,33 @@ import {
 } from "@/components/Bottomsheet/Bottomsheet";
 import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Checkbox/Checkbox";
+import DatetimePicker from "@/components/DatetimePicker/DatetimePicker";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import Input from "@/components/Input/Input";
 import RadioButton from "@/components/Radio/RadioButton";
+import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
+import { getNowTimezone } from "@/utils/dateTime";
 
 const WaktuMuatBottomsheet = () => {
-  const [shippingType, setShippingType] = useState("instan");
-  const [startDate, setStartDate] = useState("03 Okt 2024 18:00 WIB");
-  const [endDate, setEndDate] = useState("04 Okt 2024 08:00 WIB");
-  const [withTimeRange, setWithTimeRange] = useState(true);
+  const timezone = {
+    id: "Asia/Jakarta",
+    offset: "+07:00",
+  };
+  const { formValues, setField, orderType, setOrderType } =
+    useSewaArmadaStore();
+  const [formErrors, setFormErrors] = useState({});
 
-  const handleShippingTypeChange = (data) => {
-    setShippingType(data.value);
+  const handleDateChange = (field, value) => {
+    const newDate = new Date(value);
+    newDate.setSeconds(0, 0);
+    setField(field === "start" ? "startDate" : "endDate", newDate);
   };
 
-  const handleTimeRangeChange = (data) => {
-    setWithTimeRange(data.checked);
+  const handleOrderTypeChange = (data) => {
+    setOrderType(data.value);
   };
 
   const handleSubmit = () => {
-    const formData = {
-      shippingType,
-      startDate,
-      endDate,
-      withTimeRange,
-    };
-    console.log("Form submitted:", formData);
+    console.log("Form submitted:");
     // Handle form submission logic here
   };
   return (
@@ -52,10 +53,10 @@ const WaktuMuatBottomsheet = () => {
             {/* Opsi Instan */}
             <div className="flex flex-col gap-y-3">
               <RadioButton
-                name="shipping_type"
+                name="order_type"
                 value="instan"
-                checked={shippingType === "instan"}
-                onClick={handleShippingTypeChange}
+                checked={orderType === "instan"}
+                onClick={handleOrderTypeChange}
                 label="Instan"
               />
               <p className="pl-6 text-[12px] font-medium leading-[14.4px] text-neutral-600">
@@ -67,10 +68,10 @@ const WaktuMuatBottomsheet = () => {
             {/* Opsi Terjadwal */}
             <div className="flex flex-col gap-y-3">
               <RadioButton
-                name="shipping_type"
+                name="order_type"
                 value="terjadwal"
-                checked={shippingType === "terjadwal"}
-                onClick={handleShippingTypeChange}
+                checked={orderType === "terjadwal"}
+                onClick={handleOrderTypeChange}
                 label="Terjadwal"
               />
               <p className="pl-6 text-[12px] font-medium leading-[14.4px] text-neutral-600">
@@ -86,36 +87,43 @@ const WaktuMuatBottomsheet = () => {
           {/* Section Pemilihan Tanggal */}
           <div className="flex flex-col gap-y-3">
             {/* Field Tanggal Mulai */}
-            <Input
-              type="text"
-              value={startDate}
-              changeEvent={(e) => setStartDate(e.target.value)}
-              icon={{ left: "/icons/calendar.svg" }}
-              classInput="font-semibold text-[14px] text-neutral-900 cursor-pointer"
+            <DatetimePicker
+              datetimeValue={formValues.startDate}
+              onApply={(date) => handleDateChange("start", date)}
+              placeholder="Pilih Tanggal & Waktu Muat"
+              status={formErrors.startDate ? "error" : null}
+              className="w-full"
+              minDate={getNowTimezone(timezone)}
             />
 
-            {/* Label "Sampai dengan" */}
-            <span className="text-[12px] font-semibold leading-[13.2px] text-neutral-600">
-              Sampai dengan
-            </span>
+            {formValues.showRangeOption ? (
+              <>
+                {/* Label "Sampai dengan" */}
+                <span className="text-[12px] font-semibold leading-[13.2px] text-neutral-600">
+                  Sampai dengan
+                </span>
 
-            {/* Field Tanggal Akhir */}
-            <Input
-              type="text"
-              value={endDate}
-              changeEvent={(e) => setEndDate(e.target.value)}
-              icon={{ left: "/icons/calendar.svg" }}
-              classInput="font-semibold text-[14px] text-neutral-900 cursor-pointer"
-            />
+                {/* Field Tanggal Akhir */}
+                <DatetimePicker
+                  datetimeValue={formValues.endDate}
+                  onApply={(date) => handleDateChange("end", date)}
+                  placeholder="Pilih Tanggal & Waktu Muat"
+                  disabled={!formValues.startDate}
+                  status={formErrors.endDate ? "error" : null}
+                  className="w-full"
+                  minDate={getNowTimezone(timezone)}
+                />
+              </>
+            ) : null}
           </div>
 
           {/* Section Rentang Waktu */}
           <div className="flex flex-col gap-y-3">
             <Checkbox
               label="Dengan Rentang Waktu"
-              checked={withTimeRange}
-              onChange={handleTimeRangeChange}
-              className="mb-0"
+              value="rentang_waktu"
+              checked={formValues.showRangeOption}
+              onChange={(e) => setField("showRangeOption", e.checked)}
             />
             <p className="pl-6 text-[12px] font-medium leading-[14.4px] text-neutral-600">
               Jika kamu memilih opsi ini, kamu dapat menentukan pukul mulai dan

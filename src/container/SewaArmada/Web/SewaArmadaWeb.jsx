@@ -151,12 +151,14 @@ export default function SewaArmadaWeb() {
     addLokasi,
     removeLokasi,
     validateForm,
+    orderType,
+    setOrderType,
   } = useSewaArmadaStore();
   console.log("form", formValues);
-  const [timezone, setTimezone] = useState({
+  const timezone = {
     id: "Asia/Jakarta",
     offset: "+07:00",
-  });
+  };
 
   // State untuk carousel
   const [isAsuransiModalOpen, setIsAsuransiModalOpen] = useState(false);
@@ -298,8 +300,8 @@ export default function SewaArmadaWeb() {
       <BannerCarousel banners={banners} />
 
       {/* Main Content */}
-      {formValues.rentalType === "" ? (
-        <FirstTimer setRentalType={(v) => setField("rentalType", v)} />
+      {orderType === "" ? (
+        <FirstTimer />
       ) : (
         <>
           {/* Welcome Section */}
@@ -313,11 +315,11 @@ export default function SewaArmadaWeb() {
                 <div
                   className={cn(
                     "flex h-[136px] w-[385px] cursor-pointer flex-col items-center justify-center gap-y-3 rounded-xl border p-6 hover:border-[#FFC217]",
-                    formValues.rentalType === "instan"
+                    orderType === "instan"
                       ? "border-[#FFC217] bg-[#FFF5C6]"
                       : "border-neutral-400 bg-white"
                   )}
-                  onClick={() => setField("rentalType", "instan")}
+                  onClick={() => setOrderType("instan")}
                 >
                   <div className="relative h-8 w-8">
                     <Image
@@ -338,11 +340,11 @@ export default function SewaArmadaWeb() {
                 <div
                   className={cn(
                     "flex h-[136px] w-[385px] cursor-pointer flex-col items-center justify-center gap-y-3 rounded-xl border p-6 hover:border-[#FFC217]",
-                    formValues.rentalType === "terjadwal"
+                    orderType === "terjadwal"
                       ? "border-[#FFC217] bg-[#FFF5C6]"
                       : "border-neutral-400 bg-white"
                   )}
-                  onClick={() => setField("rentalType", "terjadwal")}
+                  onClick={() => setOrderType("terjadwal")}
                 >
                   <div className="relative h-8 w-8">
                     <Image
