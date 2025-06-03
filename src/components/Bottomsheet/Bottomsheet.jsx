@@ -100,13 +100,12 @@ export const BottomSheet = ({
   );
 };
 
-export const BottomSheetTrigger = ({ children }) => {
+export const BottomSheetTrigger = ({ children, className }) => {
+  const baseClass =
+    "rounded bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700";
   const { open } = useBottomSheet();
   return (
-    <button
-      onClick={open}
-      className="rounded bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-    >
+    <button onClick={open} className={className ?? baseClass}>
       {children}
     </button>
   );
