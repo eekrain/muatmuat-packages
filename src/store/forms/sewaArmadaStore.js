@@ -40,7 +40,7 @@ export const useSewaArmadaStore = create(
       })),
     setFotoMuatan: (index, value) =>
       set((state) => {
-        let updated = [...state.values.fotoMuatan];
+        let updated = [...state.formValues.fotoMuatan];
         if (value == null) {
           updated[index] = null;
           updated = updated
