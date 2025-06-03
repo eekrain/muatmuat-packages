@@ -1,9 +1,23 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { Calendar, Package, Plus, Shield, Truck } from "lucide-react";
+import { Package, Plus, Shield, Truck } from "lucide-react";
 
+import IconComponent from "@/components/IconComponent/IconComponent";
 import { useResponsiveLayoutActions } from "@/store/responsiveLayout";
+
+const FormLabel = ({ title, required = true }) => {
+  return (
+    <div className="flex items-center gap-x-1 font-bold text-neutral-900">
+      <span className="text-[14px] leading-[15.4px]">
+        {`${title}${required ? "*" : ""}`}
+      </span>
+      {!required ? (
+        <span className="text-[10px] leading-[10px]">{"(Opsional)"}</span>
+      ) : null}
+    </div>
+  );
+};
 
 const SewaArmadaResponsive = () => {
   const router = useRouter();
@@ -44,9 +58,9 @@ const SewaArmadaResponsive = () => {
   const [bannerIndex, setBannerIndex] = useState(0);
 
   return (
-    <div className="mx-auto mt-[62px] min-h-screen w-full bg-neutral-100">
+    <div className="mt-[62px] min-h-screen w-full bg-neutral-100">
       {/* Banner Section */}
-      <div className="relative h-[144px] w-full overflow-hidden bg-gradient-to-r from-blue-500 to-purple-600">
+      <div className="h-[144px] w-full overflow-hidden bg-gradient-to-r from-blue-500 to-purple-600">
         <div className="inset-0 bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500">
           <div className="flex h-full items-center justify-center">
             <div className="p-4 text-center text-white">
@@ -83,26 +97,16 @@ const SewaArmadaResponsive = () => {
 
       {/* Form Section */}
       <div className="bg-white px-4 py-5">
-        <div className="space-y-6">
+        <div className="flex flex-col gap-y-6">
           {/* Waktu Muat Field */}
-          <div className="space-y-4">
-            <label className="block text-[14px] font-semibold leading-[15.4px] text-neutral-900">
-              Waktu Muat*
-            </label>
-            <div className="relative">
-              <div className="flex h-8 w-full items-center gap-2 rounded-md border border-neutral-600 bg-neutral-50 px-3 py-2">
-                <Calendar className="h-4 w-4 text-neutral-700" />
-                <input
-                  type="text"
-                  placeholder="Pilih Tanggal & Waktu Muat"
-                  className="flex-1 bg-transparent text-[14px] font-semibold text-neutral-600 outline-none placeholder:text-neutral-600"
-                  value={formData.waktuMuat}
-                  onChange={(e) =>
-                    setFormData({ ...formData, waktuMuat: e.target.value })
-                  }
-                />
-              </div>
-            </div>
+          <div className="flex flex-col gap-y-4">
+            <FormLabel title="Waktu Muat" />
+            <button className="flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 bg-neutral-50 px-3">
+              <IconComponent src="/icons/calendar16.svg" />
+              <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-600">
+                Pilih Tanggal & Waktu Muat
+              </span>
+            </button>
           </div>
 
           {/* Lokasi Muat Field */}
