@@ -11,7 +11,7 @@ const defaultValues = {
   lokasiBongkar: [],
   tipeMuatan: "bahan-mentah",
   jenisMuatan: "padat",
-  informasiMuatan: "",
+  informasiMuatan: [],
   fotoMuatan: [null, null, null, null],
   deskripsi: "",
   jenisCarrier: null,

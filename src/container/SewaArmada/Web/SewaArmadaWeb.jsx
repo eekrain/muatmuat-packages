@@ -15,7 +15,7 @@ import { LocationModalFormWeb } from "@/components/LocationManagement/LocationMo
 import RadioButton from "@/components/Radio/RadioButton";
 import TextArea from "@/components/TextArea/TextArea";
 import { TimelineField } from "@/components/Timeline/timeline-field";
-import Tooltip from "@/components/Tooltip/Tooltip";
+import { InfoTooltip } from "@/components/Tooltip/Tooltip";
 import { cn } from "@/lib/cn";
 // import SWRHandler from "@/services/useSWRHook";
 import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
@@ -25,6 +25,8 @@ import BannerCarousel from "./BannerCarousel/BannerCarousel";
 import FilterModal from "./FilterModal/FilterModal";
 import FirstTimer from "./FirstTimer/FirstTimer";
 import FleetOrderConfirmationModal from "./FleetOrderConfirmationModal/FleetOrderConfirmationModal";
+import { InformasiMuatanModal } from "./InformasiMuatan";
+import { InformasiMuatanTable } from "./InformasiMuatan/InformasiMuatanTable";
 import SelectedTruck from "./SelectedTruck/SelectedTruck";
 import TruckImageModal from "./TruckImageModal/TruckImageModal";
 import WelcomeCard from "./WelcomeCard/WelcomeCard";
@@ -162,8 +164,15 @@ export default function SewaArmadaWeb() {
 
   // State untuk carousel
   const [isAsuransiModalOpen, setIsAsuransiModalOpen] = useState(false);
+
+  const informasiMuatan = useSewaArmadaStore(
+    (state) => state.formValues.informasiMuatan
+  );
   const [isInformasiMuatanModalOpen, setIsInformasiMuatanModalOpen] =
     useState(false);
+  const handleSaveInformasiMuatan = (data) => {
+    setField("informasiMuatan", data);
+  };
 
   // State untuk jenis armada
   const [isArmadaPopupOpen, setIsArmadaPopupOpen] = useState(false);
@@ -423,17 +432,13 @@ export default function SewaArmadaWeb() {
                         checked={formValues.showRangeOption}
                         onChange={(e) => setField("showRangeOption", e.checked)}
                       />
-                      <Tooltip
-                        className="!-ml-4 text-[14px] leading-[16.8px]"
-                        text="Jika kamu memilih opsi ini, kamu dapat menentukan pukul mulai dan pukul akhir untuk penjemputan muatan. "
-                        position="top"
-                      >
+                      <InfoTooltip content="Jika kamu memilih opsi ini, kamu dapat menentukan pukul mulai dan pukul akhir untuk penjemputan muatan.">
                         <IconComponent
                           src="/icons/info16.svg"
                           width={16}
                           height={16}
                         />
-                      </Tooltip>
+                      </InfoTooltip>
                     </div>
                   </div>
                 </div>
@@ -636,19 +641,26 @@ export default function SewaArmadaWeb() {
                   <label className="flex w-[174px] items-center text-xs font-medium text-neutral-600">
                     Informasi Muatan*
                   </label>
-                  <div
-                    className="flex h-8 flex-1 cursor-pointer items-center rounded-md border border-neutral-600 bg-neutral-200 px-3"
-                    onClick={() => setIsInformasiMuatanModalOpen(true)}
-                  >
-                    <IconComponent
-                      src="/icons/lock.svg"
-                      width={16}
-                      height={16}
+                  {informasiMuatan.length > 0 ? (
+                    <InformasiMuatanTable
+                      informasiMuatan={informasiMuatan}
+                      onClickUpdate={() => setIsInformasiMuatanModalOpen(true)}
                     />
-                    <span className="ml-2 text-xs font-medium text-neutral-600">
-                      Isi informasi ini setelah mengisi jenis armada
-                    </span>
-                  </div>
+                  ) : (
+                    <div
+                      className="flex h-8 flex-1 cursor-pointer items-center rounded-md border border-neutral-600 bg-neutral-200 px-3"
+                      onClick={() => setIsInformasiMuatanModalOpen(true)}
+                    >
+                      <IconComponent
+                        src="/icons/lock.svg"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="ml-2 text-xs font-medium text-neutral-600">
+                        Isi informasi ini setelah mengisi jenis armada
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Lampiran/Foto Muatan */}
@@ -966,6 +978,14 @@ export default function SewaArmadaWeb() {
         onSubmit={lokasiModalConfig.onSubmit}
         onOpenChange={() => setLokasiModalConfig(defaultModalConfig)}
         allSelectedLocations={lokasiModalConfig.allSelectedLocations}
+      />
+
+      <InformasiMuatanModal
+        open={isInformasiMuatanModalOpen}
+        onOpenChange={setIsInformasiMuatanModalOpen}
+        maxInformasiMuatan={5}
+        onSaveInformasiMuatan={handleSaveInformasiMuatan}
+        defaultValues={informasiMuatan}
       />
     </main>
   );
