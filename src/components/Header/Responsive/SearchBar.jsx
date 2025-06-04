@@ -4,12 +4,12 @@ import { useState } from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Input from "@/components/Input/Input";
-import { useResponsiveLayout } from "@/store/responsiveLayout";
+import { useResponsiveRouter } from "@/store/responsiveRouter";
 
 export const HeaderResponsiveSearchBar = () => {
   const [searchValue, setSearchValue] = useState("");
 
-  const searchBarState = useResponsiveLayout((state) => state.searchBar);
+  const searchBarState = useResponsiveRouter((state) => state.searchBar);
 
   return (
     <div className="flex w-full items-center justify-between self-center">

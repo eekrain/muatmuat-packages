@@ -5,10 +5,12 @@ import { Package, Plus, Truck } from "lucide-react";
 
 import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 import { useSewaArmadaResponsiveStore } from "@/store/responsive/sewaArmadaResponsiveStore";
-import { useResponsiveLayoutActions } from "@/store/responsiveLayout";
 
-import InformasiMuatanScreen from "./InformasiMuatanScreen/InformasiMuatanScreen";
+import { useResponsiveRouterActions } from "@/store/responsiveRouter";
 import WaktuMuat from "./WaktuMuat/WaktuMuat";
+
+import BannerCarousel from "../shared/BannerCarousel";
+import { ModalFirstTimer } from "./ModalFirstTimer";
 
 const FormLabel = ({ title, required = true }) => {
   return (
@@ -23,15 +25,37 @@ const FormLabel = ({ title, required = true }) => {
   );
 };
 
+const banners = [
+  {
+    id: 1,
+    imageUrl: "/img/truck-banner.png",
+    altText: "Promo Muatrans",
+    linkUrl: "/promo/1",
+  },
+  {
+    id: 2,
+    imageUrl: "/img/truck-banner2.png",
+    altText: "Layanan Pengiriman",
+    linkUrl: "/services",
+  },
+  {
+    id: 3,
+    imageUrl: "/img/truck-banner3.png",
+    altText: "Download Aplikasi",
+    linkUrl: "/download",
+  },
+];
+
 const SewaArmadaResponsive = () => {
   const router = useRouter();
 
-  const { setDefaultScreen } = useResponsiveLayoutActions();
   const { setOrderType } = useSewaArmadaStore();
   const { screen, setScreen } = useSewaArmadaResponsiveStore();
+  const { replaceScreen, pushScreen, popScreen } = useResponsiveRouterActions();
 
   useEffect(() => {
-    setDefaultScreen({
+    replaceScreen({
+      screen: "default",
       header: {
         onClickBackButton: () => {
           router.back();
@@ -43,7 +67,21 @@ const SewaArmadaResponsive = () => {
           alert("implement redirect notification");
         },
         onClickMenuButton: () => {
-          alert("implement redirect menu");
+          pushScreen({
+            screen: "menu",
+            header: {
+              onClickBackButton: () => {
+                // mundur ke screen sebelumnya
+                popScreen();
+              },
+              onClickChatButton: () => {
+                alert("implement redirect chat");
+              },
+              onClickNotificationButton: () => {
+                alert("implement redirect notification");
+              },
+            },
+          });
         },
       },
     });
@@ -65,45 +103,27 @@ const SewaArmadaResponsive = () => {
     layananTambahan: "",
   });
 
-  if (screen === "informasiMuatan") {
-    return <InformasiMuatanScreen />;
-  }
-
   return (
     <>
       <div className="mt-[62px] min-h-screen w-full bg-neutral-100">
-        {/* Banner Section */}
-        <div className="h-[144px] w-full overflow-hidden bg-gradient-to-r from-blue-500 to-purple-600">
-          <div className="inset-0 bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500">
-            <div className="flex h-full items-center justify-center">
-              <div className="p-4 text-center text-white">
-                <h1 className="mb-2 text-xl font-bold">
-                  Cara Mudah Cari Barang
-                </h1>
-                <p className="text-sm">Daftar dan Mulai Sekarang!</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Pagination Dots */}
-          <div className="bottom-[10px] left-1/2 flex -translate-x-1/2 transform gap-2">
-            <div className="h-2 w-8 rounded-full bg-white"></div>
-            <div className="h-2 w-2 rounded-full bg-white opacity-50"></div>
-            <div className="h-2 w-2 rounded-full bg-white opacity-50"></div>
-          </div>
-        </div>
+        <BannerCarousel banners={banners} showControls={false} />
 
         {/* Brand Section */}
-        <div className="flex h-[61px] w-full items-center justify-between bg-gradient-to-r from-neutral-300 via-neutral-200 to-neutral-300 px-4 py-3">
+        <div className="flex h-[61px] w-full items-center justify-between gap-[29px] bg-gradient-to-r from-neutral-300 via-neutral-200 to-neutral-300 px-4 py-3">
           <div className="flex-1">
             <h2 className="text-[16px] font-semibold leading-[17.6px] text-[#461B02]">
               Ayo kirim muatan kamu dengan muatrans!
             </h2>
           </div>
-          <div className="flex flex-col items-end gap-1">
-            <div className="flex h-4 w-20 items-center justify-center rounded bg-gradient-to-r from-blue-600 to-yellow-500 text-xs font-bold text-white">
+          <div className="flex w-[123px] flex-col items-end gap-1">
+            <img
+              src="/icons/muattrans.svg"
+              alt="muatrans"
+              className="h-4 w-20"
+            />
+            {/* <div className="flex h-4 w-20 items-center justify-center rounded bg-gradient-to-r from-blue-600 to-yellow-500 text-xs font-bold text-white">
               muatrans
-            </div>
+            </div> */}
             <p className="text-right text-[10px] font-semibold leading-[10px] text-[#461B02]">
               Cargo Land Transportation Company
             </p>
@@ -329,6 +349,8 @@ const SewaArmadaResponsive = () => {
           </div>
         </div>
       </div>
+
+      <ModalFirstTimer />
     </>
   );
 };

@@ -6,11 +6,11 @@ import { useEffect, useState } from "react";
 import ExampleResponsive from "@/container/Example/Responsive/ExampleResponsive";
 import ExampleWeb from "@/container/Example/Web/ExampleWeb";
 import useDevice from "@/hooks/use-device";
-import { useResponsiveLayoutActions } from "@/store/responsiveLayout";
+import { useResponsiveRouterActions } from "@/store/responsiveRouter";
 
 const ExampleMobileSearchBar = () => {
   const router = useRouter();
-  const { setSearchBarScreen } = useResponsiveLayoutActions();
+  const { setSearchBarScreen } = useResponsiveRouterActions();
   const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {

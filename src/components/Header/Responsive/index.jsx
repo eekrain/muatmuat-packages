@@ -13,7 +13,7 @@ export const HeaderResponsiveContainer = ({
   const backgroundClassname = backgroundClassnames[type] || "";
   return (
     <div
-      className={`${backgroundClassname} fixed left-0 top-0 z-[1] w-full ${className}`}
+      className={`${backgroundClassname} fixed left-0 top-0 z-10 w-full ${className}`}
     >
       {children}
     </div>
@@ -22,3 +22,4 @@ export const HeaderResponsiveContainer = ({
 
 export * from "./Default";
 export * from "./SearchBar";
+

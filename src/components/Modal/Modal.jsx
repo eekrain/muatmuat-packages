@@ -111,7 +111,14 @@ export const Modal = ({
 
   return (
     <ModalContext.Provider
-      value={{ open, close, isOpen, handleClickOutside, withCloseButton }}
+      value={{
+        open,
+        close,
+        isOpen,
+        handleClickOutside,
+        withCloseButton,
+        dialogRef,
+      }}
     >
       {children}
     </ModalContext.Provider>
@@ -143,8 +150,8 @@ export const ModalContent = ({
   children,
   className,
 }) => {
-  const { close, isOpen, handleClickOutside, withCloseButton } = useModal();
-  const dialogRef = useRef(null);
+  const { close, isOpen, handleClickOutside, withCloseButton, dialogRef } =
+    useModal();
   const baseClass = "";
 
   const iconClassnames = {

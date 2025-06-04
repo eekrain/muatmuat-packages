@@ -21,7 +21,7 @@ import { cn } from "@/lib/cn";
 import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 import { getNowTimezone } from "@/utils/dateTime";
 
-import BannerCarousel from "./BannerCarousel/BannerCarousel";
+import BannerCarousel from "../shared/BannerCarousel";
 import FilterModal from "./FilterModal/FilterModal";
 import FirstTimer from "./FirstTimer/FirstTimer";
 import FleetOrderConfirmationModal from "./FleetOrderConfirmationModal/FleetOrderConfirmationModal";

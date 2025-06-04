@@ -5,10 +5,10 @@ import { useEffect } from "react";
 import ExampleResponsive from "@/container/Example/Responsive/ExampleResponsive";
 import ExampleWeb from "@/container/Example/Web/ExampleWeb";
 import useDevice from "@/hooks/use-device";
-import { useResponsiveLayoutActions } from "@/store/responsiveLayout";
+import { useResponsiveRouterActions } from "@/store/responsiveRouter";
 
 const ExampleResponsiveDefault = () => {
-  const { resetScreen } = useResponsiveLayoutActions();
+  const { resetScreen } = useResponsiveRouterActions();
 
   useEffect(() => {
     resetScreen({});
