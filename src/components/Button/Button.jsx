@@ -43,11 +43,12 @@ const Button = ({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        "h:10 flex items-center justify-center gap-[4px] rounded-[24px] px-[24px] py-[11px] text-[14px] !font-semibold leading-[16.8px] transition-colors lg:h-8",
+        "h:10 flex items-center justify-center gap-[4px] rounded-[24px] px-[24px] py-[12px] text-[14px] !font-semibold leading-[16.8px] transition-colors lg:h-8",
         `${disabledProp} ${style.btn}`,
         className,
         style[`btn_${type}_${color}`]
       )}
+      type="submit"
     >
       {typeof iconLeft === "string" ? (
         <IconComponent

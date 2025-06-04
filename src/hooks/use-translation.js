@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import axios from "@/services/axios";
 import {
@@ -14,10 +14,15 @@ export const useTranslation = () => {
     (state) => state.isTranslationsReady
   );
 
-  return {
-    t: (key) => {
+  const t = useCallback(
+    (key) => {
       return translation[key] || key;
     },
+    [translation]
+  );
+
+  return {
+    t,
     isTranslationsReady,
   };
 };

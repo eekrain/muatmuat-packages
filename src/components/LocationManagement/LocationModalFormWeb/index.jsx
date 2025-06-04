@@ -1,5 +1,7 @@
 //  dependencies:
 // npm install zustand react-google-maps/api
+import { useEffect, useRef } from "react";
+
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { useLocation } from "@/hooks/use-location";
 import { cn } from "@/lib/cn";
@@ -16,6 +18,8 @@ export const LocationModalFormWeb = ({
   onSubmit = () => {},
   onOpenChange = () => {},
   allSelectedLocations = [],
+  defaultValues,
+  index,
 }) => {
   const {
     formValues,
@@ -23,8 +27,9 @@ export const LocationModalFormWeb = ({
     setField,
     setLocationCoordinatesOnly,
     validateForm,
-    resetForm,
+    reset,
   } = useLocationFormStore();
+  const hasInit = useRef(false);
 
   const {
     locationAutoCompleteResult,
@@ -63,30 +68,41 @@ export const LocationModalFormWeb = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const isFormValid = validateForm(allSelectedLocations, formMode);
+    const isFormValid = validateForm(formMode, allSelectedLocations, index);
     if (!isFormValid) return;
 
     onSubmit(formValues);
-
-    resetForm();
     setSearchLocationAutoComplete("");
     setSearchLocationByPostalCode("");
+    onOpenChange(false);
   };
+
+  useEffect(() => {
+    if (open && !hasInit.current) {
+      // This is for the first time the modal is opened
+      if (defaultValues) {
+        // If there is default values, set the search location auto complete and postal code, and reset the form with the default values
+        setSearchLocationAutoComplete(defaultValues.dataLokasi.location.name);
+        setSearchLocationByPostalCode(
+          defaultValues.dataLokasi.postalCode?.value
+        );
+        reset(defaultValues);
+      }
+      hasInit.current = true;
+    } else if (!open && hasInit.current) {
+      // This is for handling when the modal is closed
+      // Reset the form and the search location auto complete and postal code
+      reset();
+      setSearchLocationAutoComplete("");
+      setSearchLocationByPostalCode("");
+      hasInit.current = false;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, defaultValues]);
 
   return (
     <>
-      <Modal
-        open={open}
-        onOpenChange={(open) => {
-          onOpenChange(open);
-          if (!open) {
-            resetForm();
-            setSearchLocationAutoComplete("");
-            setSearchLocationByPostalCode("");
-          }
-        }}
-        closeOnOutsideClick
-      >
+      <Modal open={open} onOpenChange={onOpenChange} closeOnOutsideClick>
         <ModalContent>
           <div className="h-[420px] w-[919px]">
             <div className="flex h-full w-full flex-row items-center gap-4 p-4">

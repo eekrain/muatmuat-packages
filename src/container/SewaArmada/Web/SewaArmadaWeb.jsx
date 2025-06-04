@@ -15,7 +15,7 @@ import { LocationModalFormWeb } from "@/components/LocationManagement/LocationMo
 import RadioButton from "@/components/Radio/RadioButton";
 import TextArea from "@/components/TextArea/TextArea";
 import { TimelineField } from "@/components/Timeline/timeline-field";
-import Tooltip from "@/components/Tooltip/Tooltip";
+import { InfoTooltip } from "@/components/Tooltip/Tooltip";
 import { cn } from "@/lib/cn";
 // import SWRHandler from "@/services/useSWRHook";
 import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
@@ -25,6 +25,8 @@ import BannerCarousel from "./BannerCarousel/BannerCarousel";
 import FilterModal from "./FilterModal/FilterModal";
 import FirstTimer from "./FirstTimer/FirstTimer";
 import FleetOrderConfirmationModal from "./FleetOrderConfirmationModal/FleetOrderConfirmationModal";
+import { InformasiMuatanModal } from "./InformasiMuatan";
+import { InformasiMuatanTable } from "./InformasiMuatan/InformasiMuatanTable";
 import SelectedTruck from "./SelectedTruck/SelectedTruck";
 import TruckImageModal from "./TruckImageModal/TruckImageModal";
 import WelcomeCard from "./WelcomeCard/WelcomeCard";
@@ -38,10 +40,46 @@ const FormLabel = ({ size = "big", title, required = false }) => (
 );
 
 const defaultModalConfig = {
-  isOpen: false,
+  open: false,
   formMode: "muat",
-  onSubmit: () => {},
   allSelectedLocations: [],
+  defaultValues: null,
+  onSubmit: () => {},
+};
+
+const MODE_MAP = {
+  muat: "lokasiMuat",
+  bongkar: "lokasiBongkar",
+};
+
+export const useModalLocation = () => {
+  const [modalConfig, setModalConfig] = useState(defaultModalConfig);
+  const updateLokasi = useSewaArmadaStore((state) => state.updateLokasi);
+
+  const handleOpenModalLocation = ({
+    formMode,
+    allSelectedLocations,
+    defaultValues,
+    index,
+  }) => {
+    setModalConfig({
+      open: true,
+      formMode,
+      allSelectedLocations,
+      defaultValues,
+      onSubmit: (newData) => {
+        updateLokasi(MODE_MAP[formMode], index, newData);
+      },
+      index,
+    });
+  };
+  const handleCloseModalLocation = () => setModalConfig(defaultModalConfig);
+
+  return {
+    modalConfig,
+    handleOpenModalLocation,
+    handleCloseModalLocation,
+  };
 };
 
 export default function SewaArmadaWeb() {
@@ -153,7 +191,12 @@ export default function SewaArmadaWeb() {
     validateForm,
     orderType,
     setOrderType,
+    updateLokasi,
   } = useSewaArmadaStore();
+  console.log("🚀 ~ SewaArmadaWeb ~ formValues:", formValues);
+
+  const { modalConfig, handleOpenModalLocation, handleCloseModalLocation } =
+    useModalLocation();
   console.log("form", formValues);
   const timezone = {
     id: "Asia/Jakarta",
@@ -162,8 +205,15 @@ export default function SewaArmadaWeb() {
 
   // State untuk carousel
   const [isAsuransiModalOpen, setIsAsuransiModalOpen] = useState(false);
+
+  const informasiMuatan = useSewaArmadaStore(
+    (state) => state.formValues.informasiMuatan
+  );
   const [isInformasiMuatanModalOpen, setIsInformasiMuatanModalOpen] =
     useState(false);
+  const handleSaveInformasiMuatan = (data) => {
+    setField("informasiMuatan", data);
+  };
 
   // State untuk jenis armada
   const [isArmadaPopupOpen, setIsArmadaPopupOpen] = useState(false);
@@ -183,39 +233,6 @@ export default function SewaArmadaWeb() {
       // useArmadaInstanStore.getState().resetForm();
     };
   }, []);
-
-  const [lokasiModalConfig, setLokasiModalConfig] =
-    useState(defaultModalConfig);
-
-  const handleAddMuatLocation = () => {
-    setLokasiModalConfig({
-      isOpen: true,
-      formMode: "muat",
-      onSubmit: (data) => {
-        addLokasi("lokasiMuat", data);
-        setLokasiModalConfig(defaultModalConfig);
-      },
-      allSelectedLocations: formValues.lokasiMuat,
-    });
-  };
-  const handleDeleteMuatLocation = (index) => {
-    removeLokasi("lokasiMuat", index);
-  };
-
-  const handleAddBongkarLocation = () => {
-    setLokasiModalConfig({
-      isOpen: true,
-      formMode: "bongkar",
-      onSubmit: (data) => {
-        addLokasi("lokasiBongkar", data);
-        setLokasiModalConfig(defaultModalConfig);
-      },
-      allSelectedLocations: formValues.lokasiBongkar,
-    });
-  };
-  const handleDeleteBongkarLocation = (index) => {
-    removeLokasi("lokasiBongkar", index);
-  };
 
   // API Calls dengan SWR
   // const { data: cargoTypesData, error: cargoTypesError } = useSWRHook(
@@ -423,17 +440,13 @@ export default function SewaArmadaWeb() {
                         checked={formValues.showRangeOption}
                         onChange={(e) => setField("showRangeOption", e.checked)}
                       />
-                      <Tooltip
-                        className="!-ml-4 text-[14px] leading-[16.8px]"
-                        text="Jika kamu memilih opsi ini, kamu dapat menentukan pukul mulai dan pukul akhir untuk penjemputan muatan. "
-                        position="top"
-                      >
+                      <InfoTooltip content="Jika kamu memilih opsi ini, kamu dapat menentukan pukul mulai dan pukul akhir untuk penjemputan muatan.">
                         <IconComponent
                           src="/icons/info16.svg"
                           width={16}
                           height={16}
                         />
-                      </Tooltip>
+                      </InfoTooltip>
                     </div>
                   </div>
                 </div>
@@ -443,19 +456,26 @@ export default function SewaArmadaWeb() {
                   <label className="flex w-[174px] items-center text-xs font-medium text-neutral-600">
                     Lokasi Muat*
                   </label>
-
                   <TimelineField
-                    className="flex-1"
                     variant="muat"
-                    // Only accept array string address
-                    // You need to map the value that will be rendered, in case the state is an array of object
+                    className="flex-1"
                     values={
                       formValues.lokasiMuat?.map(
-                        (item) => item.dataLokasi.location.name
+                        (item) => item?.dataLokasi?.location || null
                       ) || []
                     }
-                    onAddLocation={handleAddMuatLocation}
-                    onDeleteLocation={handleDeleteMuatLocation}
+                    onAddLocation={() => addLokasi("lokasiMuat", null)}
+                    onDeleteLocation={(index) =>
+                      removeLokasi("lokasiMuat", index)
+                    }
+                    onEditLocation={(index) => {
+                      handleOpenModalLocation({
+                        formMode: "muat",
+                        allSelectedLocations: formValues.lokasiMuat,
+                        defaultValues: formValues.lokasiMuat[index],
+                        index,
+                      });
+                    }}
                   />
                 </div>
 
@@ -465,17 +485,25 @@ export default function SewaArmadaWeb() {
                     Lokasi Bongkar*
                   </label>
                   <TimelineField
-                    className="flex-1"
                     variant="bongkar"
-                    // Only accept array string address
-                    // You need to map the value that will be rendered, in case the state is an array of object
+                    className="flex-1"
                     values={
                       formValues.lokasiBongkar?.map(
-                        (item) => item.dataLokasi.location.name
+                        (item) => item?.dataLokasi?.location || null
                       ) || []
                     }
-                    onAddLocation={handleAddBongkarLocation}
-                    onDeleteLocation={handleDeleteBongkarLocation}
+                    onAddLocation={() => addLokasi("lokasiBongkar", null)}
+                    onDeleteLocation={(index) =>
+                      removeLokasi("lokasiBongkar", index)
+                    }
+                    onEditLocation={(index) => {
+                      handleOpenModalLocation({
+                        formMode: "bongkar",
+                        allSelectedLocations: formValues.lokasiBongkar,
+                        defaultValues: formValues.lokasiBongkar[index],
+                        index,
+                      });
+                    }}
                   />
                 </div>
 
@@ -636,19 +664,26 @@ export default function SewaArmadaWeb() {
                   <label className="flex w-[174px] items-center text-xs font-medium text-neutral-600">
                     Informasi Muatan*
                   </label>
-                  <div
-                    className="flex h-8 flex-1 cursor-pointer items-center rounded-md border border-neutral-600 bg-neutral-200 px-3"
-                    onClick={() => setIsInformasiMuatanModalOpen(true)}
-                  >
-                    <IconComponent
-                      src="/icons/lock.svg"
-                      width={16}
-                      height={16}
+                  {informasiMuatan.length > 0 ? (
+                    <InformasiMuatanTable
+                      informasiMuatan={informasiMuatan}
+                      onClickUpdate={() => setIsInformasiMuatanModalOpen(true)}
                     />
-                    <span className="ml-2 text-xs font-medium text-neutral-600">
-                      Isi informasi ini setelah mengisi jenis armada
-                    </span>
-                  </div>
+                  ) : (
+                    <div
+                      className="flex h-8 flex-1 cursor-pointer items-center rounded-md border border-neutral-600 bg-neutral-200 px-3"
+                      onClick={() => setIsInformasiMuatanModalOpen(true)}
+                    >
+                      <IconComponent
+                        src="/icons/lock.svg"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="ml-2 text-xs font-medium text-neutral-600">
+                        Isi informasi ini setelah mengisi jenis armada
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Lampiran/Foto Muatan */}
@@ -961,11 +996,16 @@ export default function SewaArmadaWeb() {
       />
 
       <LocationModalFormWeb
-        open={lokasiModalConfig.isOpen}
-        formMode={lokasiModalConfig.formMode}
-        onSubmit={lokasiModalConfig.onSubmit}
-        onOpenChange={() => setLokasiModalConfig(defaultModalConfig)}
-        allSelectedLocations={lokasiModalConfig.allSelectedLocations}
+        {...modalConfig}
+        onOpenChange={handleCloseModalLocation}
+      />
+
+      <InformasiMuatanModal
+        open={isInformasiMuatanModalOpen}
+        onOpenChange={setIsInformasiMuatanModalOpen}
+        maxInformasiMuatan={5}
+        onSaveInformasiMuatan={handleSaveInformasiMuatan}
+        defaultValues={informasiMuatan}
       />
     </main>
   );

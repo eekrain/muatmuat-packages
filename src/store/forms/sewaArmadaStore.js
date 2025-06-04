@@ -7,11 +7,11 @@ const defaultValues = {
   startDate: null,
   endDate: null,
   showRangeOption: false,
-  lokasiMuat: [],
-  lokasiBongkar: [],
+  lokasiMuat: [null],
+  lokasiBongkar: [null],
   tipeMuatan: "bahan-mentah",
   jenisMuatan: "padat",
-  informasiMuatan: "",
+  informasiMuatan: [],
   fotoMuatan: [null, null, null, null],
   deskripsi: "",
   jenisCarrier: null,
@@ -67,11 +67,24 @@ export const useSewaArmadaStore = create(
           [field]: [...state.formValues[field], value],
         },
       })),
+    updateLokasi: (field, index, newValue) =>
+      set((state) => ({
+        formValues: {
+          ...state.formValues,
+          [field]: state.formValues[field].map((item, i) =>
+            i === index ? newValue : item
+          ),
+        },
+      })),
     removeLokasi: (field, index) =>
       set((state) => ({
         formValues: {
           ...state.formValues,
-          [field]: state.formValues[field].filter((_, i) => i !== index),
+          ...(state.formValues[field].length === 1
+            ? { [field]: [null] }
+            : {
+                [field]: state.formValues[field].filter((_, i) => i !== index),
+              }),
         },
       })),
     reset: () => set({ formValues: defaultValues, formErrors: defaultErrors }),
