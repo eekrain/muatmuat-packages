@@ -2,28 +2,30 @@
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
-import { useResponsiveRouterStore } from "@/store/responsiveRouter";
+import { useResponsiveRouteParams } from "@/lib/responsive-navigation";
+
+const DEFAULT_FUNCTION = () =>
+  alert("Responsive Default Header: No function provided");
 
 export const HeaderResponsiveDefault = () => {
-  const screenStack = useResponsiveRouterStore((state) => state.screenStack);
-  const currentScreen = screenStack[screenStack.length - 1];
+  const params = useResponsiveRouteParams();
 
   const menuIcons = [
     {
       src: "/icons/manajemen-notifikasi24.svg",
       count: 2,
-      onClick: currentScreen.header.onClickNotificationButton,
+      onClick: params?.header?.onClickNotificationButton || DEFAULT_FUNCTION,
     },
     {
       src: "/icons/chat24.svg",
       count: 99,
-      onClick: currentScreen.header.onClickChatButton,
+      onClick: params?.header?.onClickChatButton || DEFAULT_FUNCTION,
     },
-    ...(currentScreen.layout === "default"
+    ...(params?.layout === "default"
       ? [
           {
             src: "/icons/burger-menu24.svg",
-            onClick: currentScreen.header.onClickMenuButton,
+            onClick: params?.header?.onClickMenuButton || DEFAULT_FUNCTION,
           },
         ]
       : []),
@@ -37,7 +39,7 @@ export const HeaderResponsiveDefault = () => {
           src="/icons/chevron-left24.svg"
           width={24}
           height={24}
-          onClick={currentScreen.header.onClickBackButton}
+          onClick={params?.header?.onClickBackButton || DEFAULT_FUNCTION}
         />
         <ImageComponent src="/icons/muattrans.svg" width={120} height={24} />
       </div>

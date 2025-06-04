@@ -1,16 +1,18 @@
 "use client";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { useResponsiveRouterStore } from "@/store/responsiveRouter";
+import { useResponsiveRouteParams } from "@/lib/responsive-navigation";
+
+const DEFAULT_FUNCTION = () =>
+  alert("Responsive Form Header: No function provided");
 
 export const HeaderResponsiveForm = () => {
-  const screenStack = useResponsiveRouterStore((state) => state.screenStack);
-  const currentScreen = screenStack[screenStack.length - 1];
+  const params = useResponsiveRouteParams();
 
   return (
     <div className="flex w-full items-center justify-between">
       <div className="flex items-center gap-x-3">
-        <button onClick={currentScreen.header.onClickBackButton}>
+        <button onClick={params?.header?.onClickBackButton || DEFAULT_FUNCTION}>
           <IconComponent
             className="icon-stroke-muat-trans-primary-400 rounded-xl bg-muat-trans-secondary-900"
             src="/icons/chevron-left24.svg"
@@ -19,16 +21,16 @@ export const HeaderResponsiveForm = () => {
           />
         </button>
 
-        <h1 className="text-base font-bold leading-[1]">
-          {currentScreen?.header?.title?.label}
+        <h1 className="mt-1 text-base font-bold leading-[1]">
+          {params?.header?.title?.label}
         </h1>
       </div>
 
-      {currentScreen?.header?.withMenu && (
+      {params?.header?.withMenu && (
         <div className="flex items-center gap-x-2 text-muat-trans-secondary-900">
           <button
-            onClick={currentScreen.header.withMenu.onClickInfo}
-            className="flex w-[38px] flex-col items-center"
+            onClick={params?.header?.withMenu?.onClickInfo || DEFAULT_FUNCTION}
+            className="flex w-[38px] flex-col items-center gap-[2px]"
           >
             <IconComponent
               src="/icons/info-circle24.svg"
@@ -38,8 +40,8 @@ export const HeaderResponsiveForm = () => {
             <span className="text-[10px] font-semibold">Info</span>
           </button>
           <button
-            onClick={currentScreen.header.withMenu.onClickMenu}
-            className="flex w-[38px] flex-col items-center"
+            onClick={params?.header?.withMenu?.onClickMenu || DEFAULT_FUNCTION}
+            className="flex w-[38px] flex-col items-center gap-[2px]"
           >
             <IconComponent src="/icons/menu-dot.svg" width={24} height={24} />
             <span className="text-[10px] font-semibold">Menu</span>

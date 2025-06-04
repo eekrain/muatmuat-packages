@@ -1,38 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
-
 import ExampleResponsive from "@/container/Example/Responsive/ExampleResponsive";
 import ExampleWeb from "@/container/Example/Web/ExampleWeb";
 import useDevice from "@/hooks/use-device";
-import { useResponsiveRouter } from "@/store/responsiveRouter";
-
-const ExampleResponsiveDefault = () => {
-  const { replaceScreen } = useResponsiveRouter();
-
-  useEffect(() => {
-    replaceScreen({
-      layout: "default",
-      screen: null,
-      header: {
-        onClickBackButton: () => {
-          alert("back button");
-        },
-        onClickChatButton: () => {
-          alert("chat button");
-        },
-        onClickNotificationButton: () => {
-          alert("notification button");
-        },
-        onClickMenuButton: () => {
-          alert("menu button");
-        },
-      },
-    });
-  }, []);
-
-  return <ExampleResponsive />;
-};
+import { ResponsiveRoute } from "@/lib/responsive-navigation";
 
 export default function Page() {
   const { isMobile, mounted } = useDevice();
@@ -41,7 +12,23 @@ export default function Page() {
     return null;
   }
   if (isMobile) {
-    return <ExampleResponsiveDefault />;
+    return (
+      <>
+        <ResponsiveRoute path="/" index component={<ExampleResponsive />} />
+        <ResponsiveRoute
+          path="/mobile-searchbar"
+          component={<ExampleResponsive />}
+        />
+        <ResponsiveRoute
+          path="/mobile-form"
+          component={<ExampleResponsive />}
+        />
+        <ResponsiveRoute
+          path="/mobile-form-with-menu"
+          component={<ExampleResponsive />}
+        />
+      </>
+    );
   }
   return <ExampleWeb />;
 }

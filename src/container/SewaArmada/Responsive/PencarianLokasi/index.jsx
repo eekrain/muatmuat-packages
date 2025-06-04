@@ -3,11 +3,11 @@ import { useEffect } from "react";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { ModalPostalCodeResponsive } from "@/components/LocationManagement/Responsive/ModalPostalCodeResponsive";
 import { useLocation } from "@/hooks/use-location";
-import { useLocationFormStore } from "@/store/forms/locationFormStore";
 import {
-  useResponsiveRouter,
-  useResponsiveRouterStore,
-} from "@/store/responsiveRouter";
+  useResponsiveNavigation,
+  useResponsiveSearch,
+} from "@/lib/responsive-navigation";
+import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
 import { RecentTransactionItem } from "./RecentTransactionItem";
 import { SavedLocationItem } from "./SavedLocationItem";
@@ -26,7 +26,8 @@ const recentSearches = [
 ];
 
 export const PencarianLokasi = () => {
-  const searchValue = useResponsiveRouterStore((state) => state.searchValue);
+  const navigation = useResponsiveNavigation();
+  const { searchValue } = useResponsiveSearch();
 
   const {
     formValues,
@@ -73,11 +74,9 @@ export const PencarianLokasi = () => {
     setLocationCoordinatesOnly,
   });
 
-  const { pushScreen, popScreen } = useResponsiveRouter();
   const handleToUserSavedLocationManagement = () => {
-    pushScreen({
+    navigation.push("/PencarianLokasiTersimpan", {
       layout: "searchBar",
-      screen: "PencarianLokasiTersimpan",
       header: {
         onClickBackButton: () => {
           // mundur ke screen sebelumnya

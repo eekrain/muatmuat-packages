@@ -2,7 +2,8 @@ import { useState } from "react";
 
 import { Package, Plus, Shield, Truck } from "lucide-react";
 
-import { useResponsiveRouter } from "@/store/responsiveRouter";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 
 import { BannerCarousel } from "../../common/BannerCarousel";
 import { ModalFirstTimer } from "./ModalFirstTimer";
@@ -43,7 +44,9 @@ const banners = [
 ];
 
 export const SewaArmadaHome = () => {
-  const { replaceScreen, pushScreen, popScreen } = useResponsiveRouter();
+  const navigation = useResponsiveNavigation();
+  const { formValues } = useSewaArmadaStore();
+
   const [formData, setFormData] = useState({
     waktuMuat: "",
     lokasiMuat: "",
@@ -55,32 +58,24 @@ export const SewaArmadaHome = () => {
   });
 
   const handleAddLocation = () => {
-    pushScreen({
+    navigation.push("/PencarianLokasi", {
       layout: "searchBar",
-      screen: "PencarianLokasi",
       header: {
         onClickBackButton: () => {
           // mundur ke screen sebelumnya
-          popScreen();
-        },
-        onClickChatButton: () => {
-          alert("implement redirect chat");
-        },
-        onClickNotificationButton: () => {
-          alert("implement redirect notification");
+          navigation.pop();
         },
       },
     });
   };
 
   const handleAddInformasiMuatan = () => {
-    pushScreen({
+    navigation.push("/InformasiMuatan", {
       layout: "form",
-      screen: "InformasiMuatan",
       header: {
         onClickBackButton: () => {
           // mundur ke screen sebelumnya
-          popScreen();
+          navigation.pop();
         },
         title: {
           label: "Informasi Muatan",
@@ -334,6 +329,7 @@ export const SewaArmadaHome = () => {
           </div>
         </div>
       </div>
+      <pre>{JSON.stringify(formValues, null, 2)}</pre>
 
       <ModalFirstTimer />
     </>

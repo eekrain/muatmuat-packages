@@ -1,17 +1,17 @@
 import { useMemo } from "react";
 
 import { useLocation } from "@/hooks/use-location";
-import { useLocationFormStore } from "@/store/forms/locationFormStore";
 import {
-  useResponsiveRouter,
-  useResponsiveRouterStore,
-} from "@/store/responsiveRouter";
+  useResponsiveNavigation,
+  useResponsiveSearch,
+} from "@/lib/responsive-navigation";
+import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
 import { SavedLocationItem } from "../PencarianLokasi/SavedLocationItem";
 
 export const PencarianLokasiTersimpan = () => {
-  const searchValue = useResponsiveRouterStore((state) => state.searchValue);
-  const { popScreen } = useResponsiveRouter();
+  const navigation = useResponsiveNavigation();
+  const { searchValue } = useResponsiveSearch();
   const {
     formValues,
     formErrors,
@@ -42,8 +42,6 @@ export const PencarianLokasiTersimpan = () => {
     setIsDropdownOpen,
 
     handleSelectUserSavedLocation,
-    isModalSavedLocationManagementOpen,
-    setIsModalSavedLocationManagementOpen,
   } = useLocation({
     onAddressSelected: (data) => {
       setField("dataLokasi", data);
