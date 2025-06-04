@@ -1,50 +1,150 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import { format } from "date-fns";
 
 import {
   BottomSheet,
   BottomSheetContent,
   BottomSheetHeader,
-  BottomSheetTrigger,
 } from "@/components/Bottomsheet/Bottomsheet";
 import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Checkbox/Checkbox";
 import DatetimePicker from "@/components/DatetimePicker/DatetimePicker";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
+import usePrevious from "@/hooks/use-previous";
 import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 import { getNowTimezone } from "@/utils/dateTime";
 
 const WaktuMuatBottomsheet = () => {
+  const dateFormat = "dd MMM yyyy HH:mm";
   const timezone = {
     id: "Asia/Jakarta",
     offset: "+07:00",
   };
   const { formValues, setField, orderType, setOrderType } =
     useSewaArmadaStore();
-  const [formErrors, setFormErrors] = useState({});
+  const [isBottomsheetOpen, setIsBottomsheetOpen] = useState(false);
+  const previousIsBottomsheetOpen = usePrevious(isBottomsheetOpen);
+  const [bottomsheetFormValues, setBottomsheetFormValues] = useState({
+    orderType: "",
+    startDate: null,
+    endDate: null,
+    showRangeOption: false,
+  });
+  const [bottomsheetFormErrors, setBottomsheetFormErrors] = useState({});
 
-  const handleDateChange = (field, value) => {
-    const newDate = new Date(value);
-    newDate.setSeconds(0, 0);
-    setField(field === "start" ? "startDate" : "endDate", newDate);
+  useEffect(() => {
+    if (isBottomsheetOpen && !previousIsBottomsheetOpen) {
+      const data = {
+        startDate: formValues.startDate,
+        endDate: formValues.endDate,
+        showRangeOption: formValues.showRangeOption,
+        orderType,
+      };
+      setBottomsheetFormValues(data);
+    }
+  }, [
+    isBottomsheetOpen,
+    previousIsBottomsheetOpen,
+    formValues.startDate,
+    formValues.endDate,
+    formValues.showRangeOption,
+    orderType,
+  ]);
+
+  const handleChangeBottomsheetFormValues = (field, value) => {
+    if (field === "startDate" || field === "endDate") {
+      const newDate = new Date(value);
+      newDate.setSeconds(0, 0);
+      setBottomsheetFormValues((prevState) => ({
+        ...prevState,
+        [field]: newDate,
+      }));
+    } else {
+      setBottomsheetFormValues((prevState) => ({
+        ...prevState,
+        [field]: value,
+      }));
+    }
   };
 
-  const handleOrderTypeChange = (data) => {
-    setOrderType(data.value);
+  const validateForm = () => {
+    const newErrors = {};
+    if (!bottomsheetFormValues.startDate) {
+      newErrors.startDate = "Tanggal & waktu muat wajib diisi";
+    }
+    if (
+      bottomsheetFormValues.startDate &&
+      bottomsheetFormValues.showRangeOption
+    ) {
+      const start = new Date(bottomsheetFormValues.startDate);
+      const end = new Date(bottomsheetFormValues.endDate);
+      const diffMs = end - start;
+      const diffHours = diffMs / (1000 * 60 * 60);
+      const eightHoursMs = 8 * 60 * 60 * 1000;
+      if (!bottomsheetFormValues.endDate) {
+        newErrors.endDate = "Rentang waktu muat awal & akhir wajib diisi";
+      } else if (diffHours < 1) {
+        newErrors.endDate = "Rentang waktu muat awal & akhir minimal 1 jam";
+      } else if (diffMs > eightHoursMs) {
+        newErrors.endDate = "Rentang waktu muat awal & akhir maksimal 8 jam";
+      }
+    }
+    setBottomsheetFormErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const omit = (obj, keyToOmit) => {
+    return Object.fromEntries(
+      Object.entries(obj).filter(([key]) => key !== keyToOmit)
+    );
   };
 
   const handleSubmit = () => {
-    console.log("Form submitted:");
-    // Handle form submission logic here
+    const valid = validateForm();
+    if (!valid) return;
+    Object.entries(omit(bottomsheetFormValues, "orderType")).forEach(
+      ([key, value]) => {
+        setField(key, value);
+      }
+    );
+    setOrderType(bottomsheetFormValues.orderType);
+    setIsBottomsheetOpen(false);
   };
   return (
-    <BottomSheet>
-      <BottomSheetTrigger className="flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 bg-neutral-50 px-3">
-        <IconComponent src="/icons/calendar16.svg" />
-        <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-600">
-          Pilih Tanggal & Waktu Muat
-        </span>
-      </BottomSheetTrigger>
+    <BottomSheet open={isBottomsheetOpen} onOpenChange={setIsBottomsheetOpen}>
+      <div className="flex flex-col gap-y-3">
+        <button
+          className="flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 bg-neutral-50 px-3"
+          onClick={() => setIsBottomsheetOpen(true)}
+        >
+          <IconComponent src="/icons/calendar16.svg" />
+          <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-600">
+            {formValues.startDate
+              ? `${format(formValues.startDate, dateFormat)} WIB`
+              : "Pilih Tanggal & Waktu Muat"}
+          </span>
+        </button>
+        {formValues.showRangeOption ? (
+          <>
+            <span className="text-[12px] font-semibold leading-[13.2px] text-neutral-600">
+              Sampai dengan
+            </span>
+            <button
+              className="flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 bg-neutral-50 px-3"
+              onClick={() => setIsBottomsheetOpen(true)}
+            >
+              <IconComponent src="/icons/calendar16.svg" />
+              <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-600">
+                {formValues.endDate
+                  ? `${format(formValues.endDate, dateFormat)} WIB`
+                  : "Pilih Tanggal & Waktu Muat"}
+              </span>
+            </button>
+          </>
+        ) : null}
+      </div>
       <BottomSheetContent>
         <BottomSheetHeader title="Tanggal & Waktu Muat"></BottomSheetHeader>
         <div className="flex h-[380px] w-full flex-col gap-4 overflow-y-auto bg-white px-4 py-6">
@@ -53,10 +153,12 @@ const WaktuMuatBottomsheet = () => {
             {/* Opsi Instan */}
             <div className="flex flex-col gap-y-3">
               <RadioButton
-                name="order_type"
+                name="orderType"
                 value="instan"
-                checked={orderType === "instan"}
-                onClick={handleOrderTypeChange}
+                checked={bottomsheetFormValues.orderType === "instan"}
+                onClick={(data) =>
+                  handleChangeBottomsheetFormValues("orderType", data.value)
+                }
                 label="Instan"
               />
               <p className="pl-6 text-[12px] font-medium leading-[14.4px] text-neutral-600">
@@ -68,10 +170,12 @@ const WaktuMuatBottomsheet = () => {
             {/* Opsi Terjadwal */}
             <div className="flex flex-col gap-y-3">
               <RadioButton
-                name="order_type"
+                name="orderType"
                 value="terjadwal"
-                checked={orderType === "terjadwal"}
-                onClick={handleOrderTypeChange}
+                checked={bottomsheetFormValues.orderType === "terjadwal"}
+                onClick={(data) =>
+                  handleChangeBottomsheetFormValues("orderType", data.value)
+                }
                 label="Terjadwal"
               />
               <p className="pl-6 text-[12px] font-medium leading-[14.4px] text-neutral-600">
@@ -88,15 +192,22 @@ const WaktuMuatBottomsheet = () => {
           <div className="flex flex-col gap-y-3">
             {/* Field Tanggal Mulai */}
             <DatetimePicker
-              datetimeValue={formValues.startDate}
-              onApply={(date) => handleDateChange("start", date)}
+              datetimeValue={bottomsheetFormValues.startDate}
+              onApply={(date) =>
+                handleChangeBottomsheetFormValues("startDate", date)
+              }
               placeholder="Pilih Tanggal & Waktu Muat"
-              status={formErrors.startDate ? "error" : null}
+              status={bottomsheetFormErrors.startDate ? "error" : null}
               className="w-full"
               minDate={getNowTimezone(timezone)}
             />
+            {bottomsheetFormErrors.startDate ? (
+              <span className="text-[12px] font-medium leading-[13.2px] text-error-400">
+                {bottomsheetFormErrors.startDate}
+              </span>
+            ) : null}
 
-            {formValues.showRangeOption ? (
+            {bottomsheetFormValues.showRangeOption ? (
               <>
                 {/* Label "Sampai dengan" */}
                 <span className="text-[12px] font-semibold leading-[13.2px] text-neutral-600">
@@ -105,14 +216,21 @@ const WaktuMuatBottomsheet = () => {
 
                 {/* Field Tanggal Akhir */}
                 <DatetimePicker
-                  datetimeValue={formValues.endDate}
-                  onApply={(date) => handleDateChange("end", date)}
+                  datetimeValue={bottomsheetFormValues.endDate}
+                  onApply={(date) =>
+                    handleChangeBottomsheetFormValues("endDate", date)
+                  }
                   placeholder="Pilih Tanggal & Waktu Muat"
-                  disabled={!formValues.startDate}
-                  status={formErrors.endDate ? "error" : null}
+                  disabled={!bottomsheetFormErrors.startDate}
+                  status={bottomsheetFormErrors.endDate ? "error" : null}
                   className="w-full"
                   minDate={getNowTimezone(timezone)}
                 />
+                {bottomsheetFormErrors.endDate ? (
+                  <span className="text-[12px] font-medium leading-[13.2px] text-error-400">
+                    {bottomsheetFormErrors.endDate}
+                  </span>
+                ) : null}
               </>
             ) : null}
           </div>
@@ -121,9 +239,11 @@ const WaktuMuatBottomsheet = () => {
           <div className="flex flex-col gap-y-3">
             <Checkbox
               label="Dengan Rentang Waktu"
-              value="rentang_waktu"
-              checked={formValues.showRangeOption}
-              onChange={(e) => setField("showRangeOption", e.checked)}
+              value="showRangeOption"
+              checked={bottomsheetFormValues.showRangeOption}
+              onChange={(e) =>
+                handleChangeBottomsheetFormValues("showRangeOption", e.checked)
+              }
             />
             <p className="pl-6 text-[12px] font-medium leading-[14.4px] text-neutral-600">
               Jika kamu memilih opsi ini, kamu dapat menentukan pukul mulai dan

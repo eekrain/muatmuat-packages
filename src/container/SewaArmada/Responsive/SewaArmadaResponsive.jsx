@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 import { Package, Plus, Shield, Truck } from "lucide-react";
 
+import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 import { useResponsiveLayoutActions } from "@/store/responsiveLayout";
 
 import WaktuMuatBottomsheet from "./WaktuMuatBottomsheet";
@@ -24,6 +25,7 @@ const SewaArmadaResponsive = () => {
   const router = useRouter();
 
   const { setDefaultScreen } = useResponsiveLayoutActions();
+  const { setOrderType } = useSewaArmadaStore();
 
   useEffect(() => {
     setDefaultScreen({
@@ -44,6 +46,10 @@ const SewaArmadaResponsive = () => {
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    setOrderType("instan");
   }, []);
 
   const [formData, setFormData] = useState({
