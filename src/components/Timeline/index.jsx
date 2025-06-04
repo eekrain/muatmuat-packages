@@ -98,7 +98,7 @@ export const TimelineItem = ({
             })
           )}
         >
-          {variant !== "bullet" && index + 1}
+          {variant !== "bullet" && <div className="mt-[4px]">{index + 1}</div>}
         </span>
       </div>
       <div className="min-w-0">{children}</div>
@@ -133,13 +133,14 @@ export const TimelineContentWithButton = ({
   );
 };
 
-export const TimelineContentAddress = ({ title, className }) => {
+export const TimelineContentAddress = ({ title, className, ...props }) => {
   return (
     <div
       className={cn(
         "w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap pb-4 text-base font-semibold leading-tight text-gray-700",
         className
       )}
+      {...props}
     >
       {title}
     </div>

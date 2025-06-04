@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-
 import { cn } from "@/lib/cn";
 
 import { TimelineContainer, TimelineContentAddress, TimelineItem } from ".";
@@ -8,7 +6,7 @@ import IconComponent from "../IconComponent/IconComponent";
 /**
  * @typedef {Object} TimelineFieldProps
  * @property {"muat" | "bongkar"} variant
- * @property {string[]} values
+ * @property {{name: string, value: string}[]} values
  * @property {number} maxLocation
  * @property {Function} onAddLocation
  * @property {Function} onDeleteLocation
@@ -22,26 +20,13 @@ export const TimelineField = ({
   maxLocation = 5,
   onAddLocation,
   onDeleteLocation,
+  onEditLocation,
   className,
 }) => {
-  const [internalValues, setInternalValues] = useState(
-    values.length > 0 ? values : [null]
-  );
-
-  useEffect(() => {
-    setInternalValues(values);
-  }, [values]);
-
-  useEffect(() => {
-    if (internalValues.length === 0) {
-      setInternalValues([null]);
-    }
-  }, [internalValues]);
-
   const getVariant = () => {
     const selected = {};
 
-    if (internalValues.length > 1) {
+    if (values.length > 1) {
       if (variant === "bongkar") selected.variant = "field-bongkar";
       else selected.variant = "field-muat";
     } else {
@@ -57,11 +42,11 @@ export const TimelineField = ({
   return (
     <div className={cn("rounded-xl border border-[#7B7B7B] p-3", className)}>
       <TimelineContainer>
-        {internalValues.map((value, index) => (
+        {values.map((item, index) => (
           <TimelineItem
-            key={value}
+            key={index}
             variant={getVariant().variant}
-            totalLength={internalValues.length}
+            totalLength={values.length}
             index={index}
             activeIndex={getVariant().activeIndex}
           >
@@ -69,12 +54,13 @@ export const TimelineField = ({
               <div className="flex min-w-0 items-center">
                 <TimelineContentAddress
                   title={
-                    value ||
+                    item?.name ||
                     (variant === "muat"
                       ? "Masukkan Lokasi Muat"
                       : "Masukkan Lokasi Bongkar")
                   }
-                  className="min-w-0 flex-shrink p-0 font-medium"
+                  className="min-w-0 flex-shrink cursor-pointer p-0 font-medium"
+                  onClick={() => onEditLocation(index)}
                 />
 
                 <button
@@ -84,17 +70,15 @@ export const TimelineField = ({
                   <IconComponent src="/icons/min-square24.svg" size="medium" />
                 </button>
               </div>
-              {internalValues.length > 1 && (
+              {values.length > 1 && (
                 <hr className="my-3 block border-[#C4C4C4]" />
               )}
             </div>
           </TimelineItem>
         ))}
       </TimelineContainer>
-      {internalValues.length === 1 && (
-        <hr className="my-3 block border-[#C4C4C4]" />
-      )}
-      {internalValues.length < maxLocation && (
+      {values.length === 1 && <hr className="my-3 block border-[#C4C4C4]" />}
+      {values.length < maxLocation && (
         <div className="flex justify-center">
           <button
             className="flex items-center gap-2 text-sm font-semibold text-[#176CF7]"
