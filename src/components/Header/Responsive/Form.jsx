@@ -7,13 +7,20 @@ import { useResponsiveRouteParams } from "@/lib/responsive-navigation";
 const DEFAULT_FUNCTION = () =>
   alert("Responsive Form Header: No function provided");
 
-export const HeaderResponsiveForm = () => {
+export const HeaderResponsiveForm = ({
+  onClickBackButton = DEFAULT_FUNCTION,
+  title = {
+    label: "Form Title",
+    className: "",
+  },
+  withMenu = null,
+}) => {
   const params = useResponsiveRouteParams();
 
   return (
     <div className="flex w-full items-center justify-between">
       <div className="flex items-center gap-x-3">
-        <button onClick={params?.header?.onClickBackButton || DEFAULT_FUNCTION}>
+        <button onClick={onClickBackButton}>
           <IconComponent
             className="icon-stroke-muat-trans-primary-400 rounded-xl bg-muat-trans-secondary-900"
             src="/icons/chevron-left24.svg"
@@ -25,17 +32,17 @@ export const HeaderResponsiveForm = () => {
         <h1
           className={cn(
             "mt-1 text-base font-bold leading-[1]",
-            params?.header?.title?.className
+            params?.header?.title?.className || title?.className
           )}
         >
-          {params?.header?.title?.label}
+          {params?.header?.title?.label || title?.label}
         </h1>
       </div>
 
-      {params?.header?.withMenu && (
+      {withMenu && (
         <div className="flex items-center gap-x-2 text-muat-trans-secondary-900">
           <button
-            onClick={params?.header?.withMenu?.onClickInfo || DEFAULT_FUNCTION}
+            onClick={withMenu?.onClickInfo || DEFAULT_FUNCTION}
             className="flex w-[38px] flex-col items-center gap-[2px]"
           >
             <IconComponent
@@ -46,7 +53,7 @@ export const HeaderResponsiveForm = () => {
             <span className="text-[10px] font-semibold">Info</span>
           </button>
           <button
-            onClick={params?.header?.withMenu?.onClickMenu || DEFAULT_FUNCTION}
+            onClick={withMenu?.onClickMenu || DEFAULT_FUNCTION}
             className="flex w-[38px] flex-col items-center gap-[2px]"
           >
             <IconComponent src="/icons/menu-dot.svg" width={24} height={24} />

@@ -58,31 +58,11 @@ export const SewaArmadaHome = () => {
   });
 
   const handleAddLocation = () => {
-    navigation.push("/PencarianLokasi", {
-      layout: "searchBar",
-      header: {
-        onClickBackButton: () => {
-          // mundur ke screen sebelumnya
-          navigation.pop();
-        },
-        placeholder: "Cari Lokasi Muat",
-      },
-    });
+    navigation.push("/PencarianLokasi");
   };
 
   const handleAddInformasiMuatan = () => {
-    navigation.push("/InformasiMuatan", {
-      layout: "form",
-      header: {
-        onClickBackButton: () => {
-          // mundur ke screen sebelumnya
-          navigation.pop();
-        },
-        title: {
-          label: "Informasi Muatan",
-        },
-      },
-    });
+    navigation.push("/InformasiMuatan");
   };
 
   return (

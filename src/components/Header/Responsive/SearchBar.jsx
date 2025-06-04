@@ -2,21 +2,20 @@
 
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import {
-  useResponsiveRouteParams,
-  useResponsiveSearch,
-} from "@/lib/responsive-navigation";
+import { useResponsiveSearch } from "@/lib/responsive-navigation";
 
 const DEFAULT_FUNCTION = () =>
   alert("Responsive SearchBar Header: No function provided");
 
-export const HeaderResponsiveSearchBar = () => {
+export const HeaderResponsiveSearchBar = ({
+  onClickBackButton = DEFAULT_FUNCTION,
+  placeholder = "Search...",
+}) => {
   const { searchValue, setSearchValue } = useResponsiveSearch();
-  const params = useResponsiveRouteParams();
 
   return (
     <div className="flex w-full items-center gap-x-3">
-      <button onClick={params?.header?.onClickBackButton || DEFAULT_FUNCTION}>
+      <button onClick={onClickBackButton}>
         <IconComponent
           className="icon-stroke-muat-trans-primary-400 rounded-xl bg-muat-trans-secondary-900"
           src="/icons/chevron-left24.svg"
@@ -29,7 +28,7 @@ export const HeaderResponsiveSearchBar = () => {
         type="text"
         value={searchValue}
         onChange={(e) => setSearchValue(e.currentTarget.value)}
-        placeholder={params?.header?.placeholder || "Search..."}
+        placeholder={placeholder}
         className="w-full flex-1 border-none"
       />
     </div>

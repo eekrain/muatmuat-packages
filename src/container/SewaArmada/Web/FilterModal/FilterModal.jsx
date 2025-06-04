@@ -7,7 +7,7 @@ import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
-import Tooltip from "@/components/Tooltip/Tooltip";
+import { InfoTooltip } from "@/components/Tooltip/Tooltip";
 
 // Warning Badge Component
 const WarningBadge = ({ icon, message }) => {
@@ -151,20 +151,7 @@ const SectionHeader = ({ recommended, type }) => {
       <span className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
         {recommended ? recommendedTitle : "Tidak Direkomendasikan"}
       </span>
-      {recommended && (
-        <Tooltip
-          className="!-ml-4 text-[14px] leading-[16.8px]"
-          text={tooltipContent}
-          position="bottom"
-        >
-          <IconComponent
-            src="/icons/info-circle24.svg"
-            width={24}
-            height={24}
-            className="icon-gray"
-          />
-        </Tooltip>
-      )}
+      {recommended && <InfoTooltip content={tooltipContent} />}
     </div>
   );
 };

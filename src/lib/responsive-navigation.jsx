@@ -58,7 +58,7 @@ const defaultLayoutParams = {
  */
 
 /** @type {import('zustand').UseBoundStore<import('zustand').StoreApi<NavigationState>>} */
-const useNavigationStore = create((set) => ({
+export const useNavigationStore = create((set) => ({
   stack: [{ path: "/", component: null, params: { ...defaultLayoutParams } }],
   push: (path, params = {}) =>
     set((state) => ({
@@ -111,26 +111,21 @@ export const useResponsiveSearch = () => {
 };
 
 /**
- * Conditionally renders the component based on path match.
- * If `index` is true, it renders only when path is exactly the current route path.
+ * Renders the component if the current route matches.
+ * Supports `index` routes and optional layout as a React component.
  *
  * @param {{
  *   path?: string,
  *   component: React.ReactNode,
- *   index?: boolean
+ *   index?: boolean,
+ *   layout?: (children: React.ReactNode) => React.ReactNode
  * }} props
  */
-export const ResponsiveRoute = ({ path, component, index = false }) => {
-  const stack = useNavigationStore((state) => state.stack);
+export const ResponsiveRoute = ({ path, layout, component }) => {
+  const { stack } = useNavigationStore();
   const current = stack[stack.length - 1];
 
-  if (index && current.path === "/") {
-    return component;
-  }
+  if (path !== current.path) return null;
 
-  if (!index && path === current.path) {
-    return component;
-  }
-
-  return null;
+  return layout ? layout(component) : component;
 };

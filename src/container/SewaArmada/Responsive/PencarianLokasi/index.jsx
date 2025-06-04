@@ -29,14 +29,7 @@ export const PencarianLokasi = () => {
   const navigation = useResponsiveNavigation();
   const { searchValue } = useResponsiveSearch();
 
-  const {
-    formValues,
-    formErrors,
-    setField,
-    setLocationCoordinatesOnly,
-    validateForm,
-    reset,
-  } = useLocationFormStore();
+  const { setField, setLocationCoordinatesOnly } = useLocationFormStore();
 
   const {
     locationAutoCompleteResult,
@@ -44,23 +37,13 @@ export const PencarianLokasi = () => {
     userSavedLocations,
     searchLocationAutoComplete,
     setSearchLocationAutoComplete,
-
     isModalPostalCodeOpen,
     setIsModalPostalCodeOpen,
     searchLocationByPostalCode,
     setSearchLocationByPostalCode,
     postalCodeAutoCompleteResult,
     onSelectPostalCode,
-
-    coordinates,
-    setCoordinates,
     handleGetCurrentLocation,
-    isDropdownOpen,
-    setIsDropdownOpen,
-
-    handleSelectUserSavedLocation,
-    isModalSavedLocationManagementOpen,
-    setIsModalSavedLocationManagementOpen,
   } = useLocation({
     onAddressSelected: (data) => {
       setField("dataLokasi", data);
@@ -76,12 +59,7 @@ export const PencarianLokasi = () => {
 
   const handleToUserSavedLocationManagement = () => {
     navigation.push("/PencarianLokasiTersimpan", {
-      layout: "searchBar",
       header: {
-        onClickBackButton: () => {
-          // mundur ke screen sebelumnya
-          navigation.pop();
-        },
         placeholder: "Cari Lokasi yang Disimpan",
       },
     });
@@ -91,12 +69,7 @@ export const PencarianLokasi = () => {
     console.log("🚀 ~ asw:");
     handleGetCurrentLocation().then((dataLokasi) => {
       navigation.push("/PinPointMap", {
-        layout: "form",
         header: {
-          onClickBackButton: () => {
-            // mundur ke screen sebelumnya
-            navigation.pop();
-          },
           title: {
             label: dataLokasi.location.name,
             className: "text-sm font-semibold line-clamp-1 break-all",
