@@ -1,55 +1,59 @@
 "use client";
 
+import * as TooltipPrimitive from "@radix-ui/react-tooltip";
+
 import IconComponent from "../IconComponent/IconComponent";
-import style from "./Tooltip.module.scss";
 
-const Tooltip = ({
-  className,
-  text,
-  children,
-  title,
-  icon,
-  position = "bottom",
-  ...props
-}) => {
+export function InfoTooltip({
+  // You can pass a custom trigger element like a <button> or <span>
+  trigger = null,
+  icon = "/icons/info16.svg",
+  content,
+  appearance = {
+    contentClassName: "",
+  },
+  side = "top",
+  align = "center",
+  sideOffset = 8,
+}) {
   return (
-    <div
-      className="group relative flex cursor-pointer items-center justify-center"
-      {...props}
-    >
-      <div className="absolute hidden w-[312px] group-hover:block">
-        <div
-          className={`relative flex flex-col-reverse items-center justify-start ${style[`position_${position}`]}`}
-        >
-          <div
-            className={`flex gap-[8px] bg-neutral-50 ${style[`box_shadow_${position}`]} z-[1] cursor-default rounded-[12px] p-[12px]`}
+    <TooltipPrimitive.Provider delayDuration={100}>
+      <TooltipPrimitive.Root>
+        <TooltipPrimitive.Trigger>
+          {trigger ? (
+            trigger
+          ) : (
+            <div className="size-4">
+              <IconComponent
+                loader={false}
+                src={{ src: icon }}
+                height={16}
+                width={16}
+                className="text-neutral-600"
+              />
+            </div>
+          )}
+        </TooltipPrimitive.Trigger>
+        <TooltipPrimitive.Portal>
+          <TooltipPrimitive.Content
+            side={side}
+            align={align}
+            className={`relative z-[9999999999] max-w-sm rounded-xl border border-gray-200 bg-white p-3 text-sm shadow-xl ${appearance.contentClassName}`}
+            sideOffset={sideOffset}
+            style={{
+              filter: "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))",
+            }}
           >
-            <div className={"mt-[2px] w-[16px]"}>
-              {icon && (
-                <IconComponent
-                  loader={false}
-                  src={{ src: "/icons/info.svg" }}
-                  height={16}
-                  width={16}
-                  className={style.fill_black}
-                />
-              )}
-            </div>
-            <div className="flex flex-col gap-[8px]">
-              {title && <div className={`${style.title}`}>{title}</div>}
-              {text && (
-                <div className={`${style.text} ${className}`}>{text}</div>
-              )}
-            </div>
-          </div>
-          <div
-            className={`absolute h-[15px] w-[15px] bg-neutral-50 ${style[`tooltip_${position}`]}`}
-          ></div>
-        </div>
-      </div>
-      {children}
-    </div>
+            {content}
+            <TooltipPrimitive.Arrow
+              className="h-[11px] w-4 fill-white"
+              style={{
+                filter: "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))",
+              }}
+            />
+          </TooltipPrimitive.Content>
+        </TooltipPrimitive.Portal>
+      </TooltipPrimitive.Root>
+    </TooltipPrimitive.Provider>
   );
-};
-
-export default Tooltip;
+}

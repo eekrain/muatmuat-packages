@@ -5,8 +5,10 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import { useAuthStore } from "@/store/auth/authStore";
+import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 
-const FirstTimer = ({ setRentalType }) => {
+const FirstTimer = () => {
+  const { setOrderType } = useSewaArmadaStore();
   const [openModalLogin, setOpenModalLogin] = useState(false);
   const accessToken = useAuthStore((state) => state.accessToken);
 
@@ -14,7 +16,7 @@ const FirstTimer = ({ setRentalType }) => {
     if (!accessToken) {
       setOpenModalLogin(true);
     } else {
-      setRentalType(type);
+      setOrderType(type);
     }
   };
 

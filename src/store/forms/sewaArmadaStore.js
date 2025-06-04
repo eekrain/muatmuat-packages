@@ -4,15 +4,14 @@ import { create } from "zustand";
 import { zustandDevtools } from "@/lib/utils";
 
 const defaultValues = {
-  rentalType: "",
   startDate: null,
   endDate: null,
   showRangeOption: false,
-  lokasiMuat: [],
-  lokasiBongkar: [],
+  lokasiMuat: [null],
+  lokasiBongkar: [null],
   tipeMuatan: "bahan-mentah",
   jenisMuatan: "padat",
-  informasiMuatan: "",
+  informasiMuatan: [],
   fotoMuatan: [null, null, null, null],
   deskripsi: "",
   jenisCarrier: null,
@@ -27,6 +26,8 @@ const defaultValues = {
 
 export const useSewaArmadaStore = create(
   zustandDevtools((set, get) => ({
+    orderType: "",
+    setOrderType: (orderType) => set({ orderType }),
     formValues: defaultValues,
     formErrors: {},
     setField: (field, value) =>
@@ -40,7 +41,7 @@ export const useSewaArmadaStore = create(
       })),
     setFotoMuatan: (index, value) =>
       set((state) => {
-        let updated = [...state.values.fotoMuatan];
+        let updated = [...state.formValues.fotoMuatan];
         if (value == null) {
           updated[index] = null;
           updated = updated
@@ -66,11 +67,24 @@ export const useSewaArmadaStore = create(
           [field]: [...state.formValues[field], value],
         },
       })),
+    updateLokasi: (field, index, newValue) =>
+      set((state) => ({
+        formValues: {
+          ...state.formValues,
+          [field]: state.formValues[field].map((item, i) =>
+            i === index ? newValue : item
+          ),
+        },
+      })),
     removeLokasi: (field, index) =>
       set((state) => ({
         formValues: {
           ...state.formValues,
-          [field]: state.formValues[field].filter((_, i) => i !== index),
+          ...(state.formValues[field].length === 1
+            ? { [field]: [null] }
+            : {
+                [field]: state.formValues[field].filter((_, i) => i !== index),
+              }),
         },
       })),
     reset: () => set({ formValues: defaultValues, formErrors: defaultErrors }),

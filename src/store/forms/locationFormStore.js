@@ -78,59 +78,68 @@ export const useLocationFormStore = create(
       set((state) => ({
         formErrors,
       })),
-    resetForm: () => set({ formValues: defaultValues, formErrors: {} }),
-    validateForm: (allSelectedLocations = [], formMode) => {
-      const errors = {};
+    reset: (newValues) =>
+      set({
+        formValues: newValues ? newValues : defaultValues,
+        formErrors: {},
+      }),
+    validateForm: (formMode, allSelectedLocations = [], index) => {
       const { formValues } = get();
-      const sameLocationIndex = allSelectedLocations.findIndex(
-        (item) =>
-          item.dataLokasi.location.name === formValues.dataLokasi.location.value
-      );
 
-      if (sameLocationIndex !== -1)
-        errors.dataLokasi =
-          formMode === "muat"
-            ? `Lokasi Muat ${allSelectedLocations.length + 1} tidak boleh sama dengan Lokasi Muat ${sameLocationIndex + 1}`
-            : `Lokasi bongkar ${allSelectedLocations.length + 1} tidak boleh sama dengan Lokasi bongkar ${sameLocationIndex + 1}`;
-
-      if (!formValues.dataLokasi.location)
-        errors.dataLokasi =
-          formMode === "muat"
+      const validateLocation = () => {
+        if (!formValues.dataLokasi.location)
+          return formMode === "muat"
             ? "Lokasi muat harus diisi"
             : "Lokasi bongkar harus diisi";
 
-      if (formValues.namaPIC.length < 3)
-        errors.namaPIC = "Nama PIC minimal 3 karakter";
-      // validate it name only alphabet and "'"
-      if (!/^[a-zA-Z' ]+$/.test(formValues.namaPIC))
-        errors.namaPIC = "Penulisan Nama PIC tidak valid";
-      if (!formValues.namaPIC) errors.namaPIC = "Nama PIC harus diisi";
+        const foundLocationIndex = allSelectedLocations.findIndex(
+          (item) =>
+            item?.dataLokasi?.location?.name ===
+            formValues?.dataLokasi?.location?.name
+        );
 
-      // validate it only starts with 0 or 62
-      if (
-        !formValues.noHPPIC.startsWith("0") &&
-        !formValues.noHPPIC.startsWith("62")
-      )
-        errors.noHPPIC = "Format No. HP PIC muat salah";
-      // validate if its only contains the same number, like 777777777
-      if (
-        formValues.noHPPIC
-          .split("")
-          ?.every((char) => char === formValues.noHPPIC[0])
-      )
-        errors.noHPPIC = "Format No. HP PIC muat salah";
+        if (foundLocationIndex !== -1)
+          return formMode === "muat"
+            ? `Lokasi Muat ${index + 1} tidak boleh sama dengan Lokasi Muat ${foundLocationIndex + 1}`
+            : `Lokasi bongkar ${index + 1} tidak boleh sama dengan Lokasi bongkar ${foundLocationIndex + 1}`;
+      };
 
-      // validate it noHPPIC only number
-      if (!/^[0-9]+$/.test(formValues.noHPPIC))
-        errors.noHPPIC = "No. HP PIC tidak valid";
+      const validateNamaPIC = () => {
+        if (!formValues.namaPIC) return "Nama PIC harus diisi";
+        if (formValues.namaPIC.length < 3) return "Nama PIC minimal 3 karakter";
+        // validate it name only alphabet and "'"
+        if (!/^[a-zA-Z' ]+$/.test(formValues.namaPIC))
+          return "Penulisan Nama PIC tidak valid";
+      };
 
-      if (!formValues.noHPPIC) errors.noHPPIC = "No. HP PIC harus diisi";
-      else if (formValues.noHPPIC.length < 8)
-        errors.noHPPIC = "No. HP PIC minimal 8 digit";
+      const validateNoHPPIC = () => {
+        if (!formValues.noHPPIC) return "No. HP PIC harus diisi";
+        if (formValues.noHPPIC.length < 8) return "No. HP PIC minimal 8 digit";
+        if (!/^[0-9]+$/.test(formValues.noHPPIC))
+          return "No. HP PIC tidak valid";
+        if (
+          formValues.noHPPIC
+            .split("")
+            ?.every((char) => char === formValues.noHPPIC[0])
+        )
+          return "Format No. HP PIC muat salah";
+        if (
+          !formValues.noHPPIC.startsWith("0") &&
+          !formValues.noHPPIC.startsWith("62")
+        )
+          return "Format No. HP PIC muat salah";
+      };
+
+      const errors = {
+        dataLokasi: validateLocation(),
+        namaPIC: validateNamaPIC(),
+        noHPPIC: validateNoHPPIC(),
+      };
+      // console.log("🚀 ~ zustandDevtools ~ errors:", errors);
 
       set({ formErrors: errors });
-      set({ formErrors: errors });
-      return Object.keys(errors).length === 0;
+      // return validateForm is valid if all errors are undefined
+      return Object.values(errors).every((error) => error === undefined);
     },
   }))
 );
