@@ -6,7 +6,7 @@ import { Package, Plus, Shield, Truck } from "lucide-react";
 import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 import { useResponsiveLayoutActions } from "@/store/responsiveLayout";
 
-import WaktuMuatBottomsheet from "./WaktuMuatBottomsheet/WaktuMuatBottomsheet";
+import WaktuMuat from "./WaktuMuat/WaktuMuat";
 
 const FormLabel = ({ title, required = true }) => {
   return (
@@ -111,7 +111,7 @@ const SewaArmadaResponsive = () => {
             {/* Waktu Muat Field */}
             <div className="flex flex-col gap-y-4">
               <FormLabel title="Waktu Muat" />
-              <WaktuMuatBottomsheet />
+              <WaktuMuat />
             </div>
 
             {/* Lokasi Muat Field */}
