@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import {
   ResponsiveRoute,
   useResponsiveNavigation,
+  useResponsiveRouteParams,
 } from "@/lib/responsive-navigation";
 
 import { SewaArmadaHome } from "./Home";
@@ -17,9 +18,10 @@ const SewaArmadaResponsive = () => {
   const router = useRouter();
 
   const navigation = useResponsiveNavigation();
-
+  const params = useResponsiveRouteParams();
+  console.log("🚀 ~ SewaArmadaResponsive ~ params:", params);
   useEffect(() => {
-    navigation.replace("/", {
+    navigation.push("/", {
       layout: "default",
       header: {
         onClickBackButton: () => {
@@ -56,15 +58,18 @@ const SewaArmadaResponsive = () => {
 
   return (
     <>
-      <ResponsiveRoute path="/" index element={<SewaArmadaHome />} />
-      <ResponsiveRoute path="/PencarianLokasi" element={<PencarianLokasi />} />
+      <ResponsiveRoute path="/" index component={<SewaArmadaHome />} />
+      <ResponsiveRoute
+        path="/PencarianLokasi"
+        component={<PencarianLokasi />}
+      />
       <ResponsiveRoute
         path="/PencarianLokasiTersimpan"
-        element={<PencarianLokasiTersimpan />}
+        component={<PencarianLokasiTersimpan />}
       />
       <ResponsiveRoute
         path="/InformasiMuatan"
-        element={<InformasiMuatanScreen />}
+        component={<InformasiMuatanScreen />}
       />
     </>
   );
