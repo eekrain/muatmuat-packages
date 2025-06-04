@@ -1,11 +1,13 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { Package, Plus, Shield, Truck } from "lucide-react";
+import { Package, Plus, Truck } from "lucide-react";
 
 import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
+import { useSewaArmadaResponsiveStore } from "@/store/responsive/sewaArmadaResponsiveStore";
 import { useResponsiveLayoutActions } from "@/store/responsiveLayout";
 
+import InformasiMuatanScreen from "./InformasiMuatanScreen/InformasiMuatanScreen";
 import WaktuMuat from "./WaktuMuat/WaktuMuat";
 
 const FormLabel = ({ title, required = true }) => {
@@ -26,6 +28,7 @@ const SewaArmadaResponsive = () => {
 
   const { setDefaultScreen } = useResponsiveLayoutActions();
   const { setOrderType } = useSewaArmadaStore();
+  const { screen, setScreen } = useSewaArmadaResponsiveStore();
 
   useEffect(() => {
     setDefaultScreen({
@@ -62,7 +65,9 @@ const SewaArmadaResponsive = () => {
     layananTambahan: "",
   });
 
-  const [bannerIndex, setBannerIndex] = useState(0);
+  if (screen === "informasiMuatan") {
+    return <InformasiMuatanScreen />;
+  }
 
   return (
     <>
@@ -115,7 +120,7 @@ const SewaArmadaResponsive = () => {
             </div>
 
             {/* Lokasi Muat Field */}
-            <div className="space-y-4">
+            <div className="flex flex-col gap-y-4">
               <label className="block text-[14px] font-semibold leading-[15.4px] text-neutral-900">
                 Lokasi Muat*
               </label>
@@ -145,7 +150,7 @@ const SewaArmadaResponsive = () => {
             </div>
 
             {/* Lokasi Bongkar Field */}
-            <div className="space-y-4">
+            <div className="flex flex-col gap-y-4">
               <label className="block text-[14px] font-semibold leading-[15.4px] text-neutral-900">
                 Lokasi Bongkar*
               </label>
@@ -178,11 +183,14 @@ const SewaArmadaResponsive = () => {
             </div>
 
             {/* Informasi Muatan Field */}
-            <div className="space-y-4">
+            <div className="flex flex-col gap-y-4">
               <label className="block text-[14px] font-semibold leading-[15.4px] text-neutral-900">
                 Informasi Muatan*
               </label>
-              <div className="relative">
+              <div
+                className="relative"
+                onClick={() => setScreen("informasiMuatan")}
+              >
                 <div className="flex h-8 w-full items-center gap-2 rounded-md border border-neutral-600 bg-neutral-50 px-3 py-2">
                   <Package className="h-4 w-4 text-neutral-700" />
                   <input
@@ -215,7 +223,7 @@ const SewaArmadaResponsive = () => {
             </div>
 
             {/* Jenis Armada Field */}
-            <div className="space-y-4">
+            <div className="flex flex-col gap-y-4">
               <label className="block text-[14px] font-semibold leading-[15.4px] text-neutral-900">
                 Jenis Armada*
               </label>
@@ -265,7 +273,8 @@ const SewaArmadaResponsive = () => {
             </div>
 
             {/* Asuransi Barang Field */}
-            <div className="space-y-4">
+            {/* DI HIDE DULU */}
+            {/* <div className="flex flex-col gap-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1">
                   <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
@@ -285,10 +294,10 @@ const SewaArmadaResponsive = () => {
                   Gratis perlindungan hingga Rp10.000.000
                 </span>
               </div>
-            </div>
+            </div> */}
 
             {/* Layanan Tambahan Field */}
-            <div className="space-y-4">
+            <div className="flex flex-col gap-y-4">
               <div className="flex items-center gap-1">
                 <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
                   Layanan Tambahan

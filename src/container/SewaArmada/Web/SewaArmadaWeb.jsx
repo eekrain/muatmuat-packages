@@ -523,7 +523,7 @@ export default function SewaArmadaWeb() {
                     <>
                       <div className="w-[250px]">
                         <RadioButton
-                          name="tipe-muatan"
+                          name="tipeMuatan"
                           label="Bahan Mentah"
                           checked={formValues.tipeMuatan === "bahan-mentah"}
                           onClick={() => setField("tipeMuatan", "bahan-mentah")}
@@ -532,7 +532,7 @@ export default function SewaArmadaWeb() {
                       </div>
                       <div className="w-[250px]">
                         <RadioButton
-                          name="tipe-muatan"
+                          name="tipeMuatan"
                           label="Barang Jadi"
                           checked={formValues.tipeMuatan === "barang-jadi"}
                           onClick={() => setField("tipeMuatan", "barang-jadi")}
@@ -541,7 +541,7 @@ export default function SewaArmadaWeb() {
                       </div>
                       <div className="w-[250px]">
                         <RadioButton
-                          name="tipe-muatan"
+                          name="tipeMuatan"
                           label="Barang Setengah Jadi"
                           checked={
                             formValues.tipeMuatan === "barang-setengah-jadi"
@@ -554,7 +554,7 @@ export default function SewaArmadaWeb() {
                       </div>
                       <div className="w-[250px]">
                         <RadioButton
-                          name="tipe-muatan"
+                          name="tipeMuatan"
                           label="Lainnya"
                           checked={formValues.tipeMuatan === "lainnya"}
                           onClick={() => setField("tipeMuatan", "lainnya")}
@@ -570,7 +570,7 @@ export default function SewaArmadaWeb() {
                       cargoTypes.map((type) => (
                         <div className="w-[250px]" key={type.id}>
                           <RadioButton
-                            name="tipe-muatan"
+                            name="tipeMuatan"
                             label={type.name}
                             checked={tipeMuatan === type.id}
                             onClick={() => setTipeMuatan(type.id)}
@@ -599,7 +599,7 @@ export default function SewaArmadaWeb() {
                       [].map((category) => (
                         <div className="w-[250px]" key={category.id}>
                           <RadioButton
-                            name="jenis-muatan"
+                            name="jenisMuatan"
                             label={category.name}
                             checked={formValues.jenisMuatan === category.id}
                             onClick={() => setField("jenisMuatan", category.id)}
@@ -611,7 +611,7 @@ export default function SewaArmadaWeb() {
                       <>
                         <div className="w-[250px]">
                           <RadioButton
-                            name="jenis-muatan"
+                            name="jenisMuatan"
                             label="Padat"
                             checked={formValues.jenisMuatan === "padat"}
                             onClick={() => setField("jenisMuatan", "padat")}
@@ -620,7 +620,7 @@ export default function SewaArmadaWeb() {
                         </div>
                         <div className="w-[250px]">
                           <RadioButton
-                            name="jenis-muatan"
+                            name="jenisMuatan"
                             label="Cair"
                             checked={formValues.jenisMuatan === "cair"}
                             onClick={() => setField("jenisMuatan", "cair")}
@@ -629,7 +629,7 @@ export default function SewaArmadaWeb() {
                         </div>
                         <div className="w-[250px]">
                           <RadioButton
-                            name="jenis-muatan"
+                            name="jenisMuatan"
                             label="Curah"
                             checked={formValues.jenisMuatan === "curah"}
                             onClick={() => setField("jenisMuatan", "curah")}
@@ -638,7 +638,7 @@ export default function SewaArmadaWeb() {
                         </div>
                         <div className="w-[250px]">
                           <RadioButton
-                            name="jenis-muatan"
+                            name="jenisMuatan"
                             label="Kendaraan"
                             checked={formValues.jenisMuatan === "kendaraan"}
                             onClick={() => setField("jenisMuatan", "kendaraan")}
@@ -647,7 +647,7 @@ export default function SewaArmadaWeb() {
                         </div>
                         <div className="w-[250px]">
                           <RadioButton
-                            name="jenis-muatan"
+                            name="jenisMuatan"
                             label="Container"
                             checked={formValues.jenisMuatan === "container"}
                             onClick={() => setField("jenisMuatan", "container")}
