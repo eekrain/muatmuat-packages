@@ -7,6 +7,12 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import Input from "@/components/Input/Input";
 import RadioButton from "@/components/Radio/RadioButton";
 
+import {
+  FormLabel,
+  FormLabelContainer,
+  FormLabelInfoTooltip,
+} from "../FormLabel/FormLabel";
+
 const InformasiMuatanScreen = () => {
   // State Management
   const [tipeMuatan, setTipeMuatan] = useState("");
@@ -48,24 +54,45 @@ const InformasiMuatanScreen = () => {
   return (
     <div className="mt-[62px] flex min-h-screen w-full flex-col gap-2 bg-neutral-200">
       {/* Section Tipe Muatan */}
-      <div className="flex flex-col gap-4 bg-white px-4 py-5">
+      <div className="flex flex-col gap-y-4 bg-white px-4 py-5">
         {/* Header */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-1">
-            <h3 className="text-[14px] font-bold leading-[15px] text-black">
-              Tipe Muatan*
-            </h3>
-            <IconComponent
-              src="/icons/info.svg"
-              height={16}
-              width={16}
-              classname="icon-gray"
-            />
-          </div>
-          <span className="text-[12px] font-semibold leading-[13px] text-primary-700 opacity-0">
-            Reset Pilihan
-          </span>
-        </div>
+        <FormLabelContainer>
+          <FormLabel className="font-bold" title="Tipe Muatan" />
+          <FormLabelInfoTooltip title="Tipe Muatan yang Akan Dikirimkan">
+            <div className="flex flex-col gap-y-4 px-4 py-6">
+              {/* Main Content Area - Frame 42239 */}
+              <ul style={{ marginLeft: "16px", listStyleType: "disc" }}>
+                <li className="text-[14px] font-medium leading-[15.4px]">
+                  <span className="font-bold">Bahan Mentah :</span> Material
+                  atau komponen yang belum diproses
+                </li>
+
+                <li className="text-[14px] font-medium leading-[15.4px]">
+                  <span className="font-bold">Barang Setengah Jadi :</span>{" "}
+                  Produk yang telah mengalami beberapa tahap proses tapi belum
+                  selesai.
+                </li>
+
+                <li className="text-[14px] font-medium leading-[15.4px]">
+                  <span className="font-bold">Barang Jadi :</span> Produk akhir
+                  yang siap untuk digunakan atau dijual.
+                </li>
+
+                <li className="text-[14px] font-medium leading-[15.4px]">
+                  <span className="font-bold">Lainnya :</span> Barang / barang
+                  yang tidak sesuai jenis diatas, namun memiliki nilai ekonomis
+                  dan fungsi dalam proses produksi atau distribusi.
+                </li>
+              </ul>
+
+              {/* Bottom Text Area - Frame 42240 */}
+              <span className="text-center text-[14px] font-medium leading-[15.4px] text-neutral-900">
+                Pemilihan tipe muatan yang tepat akan membantu dalam pengelolaan
+                dan pengiriman.
+              </span>
+            </div>
+          </FormLabelInfoTooltip>
+        </FormLabelContainer>
 
         {/* Radio Button Group */}
         <div className="flex flex-col gap-4">
