@@ -37,6 +37,7 @@ const Input = forwardRef(
         containerClassName: "",
         inputClassName: "",
       },
+      hideErrorMessage = false,
       ...props
     },
     ref
@@ -106,7 +107,7 @@ const Input = forwardRef(
             </span>
           )}
         </div>
-        {errorMessage && (
+        {!hideErrorMessage && errorMessage && (
           <div className="flex items-center justify-between text-xs font-medium text-error-400">
             <span>{errorMessage}</span>
           </div>

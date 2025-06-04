@@ -18,11 +18,23 @@ const ExampleMobileSearchBar = () => {
 
   useEffect(() => {
     replaceScreen({
-      layout: "searchBar",
+      layout: "form",
       screen: null,
       header: {
+        title: {
+          label: "Form",
+          className: "", // Buat case spesifik, misal untuk form, bisa tambahkan class untuk ukuran text title
+        },
         onClickBackButton: () => {
-          router.back();
+          alert("back button");
+        },
+        withMenu: {
+          onClickInfo: () => {
+            alert("info button");
+          },
+          onClickMenu: () => {
+            alert("menu button");
+          },
         },
       },
     });

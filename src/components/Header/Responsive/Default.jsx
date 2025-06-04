@@ -1,15 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
-import { useResponsiveRouter } from "@/store/responsiveRouter";
+import { useResponsiveRouterStore } from "@/store/responsiveRouter";
 
 export const HeaderResponsiveDefault = () => {
-  const router = useRouter();
-
-  const screenStack = useResponsiveRouter((state) => state.screenStack);
+  const screenStack = useResponsiveRouterStore((state) => state.screenStack);
   const currentScreen = screenStack[screenStack.length - 1];
 
   const menuIcons = [
@@ -23,7 +19,7 @@ export const HeaderResponsiveDefault = () => {
       count: 99,
       onClick: currentScreen.header.onClickChatButton,
     },
-    ...(currentScreen.screen === "default"
+    ...(currentScreen.layout === "default"
       ? [
           {
             src: "/icons/burger-menu24.svg",

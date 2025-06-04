@@ -218,6 +218,7 @@ export const useLocation = ({
     searchLocationAutoComplete,
     setSearchLocationAutoComplete: setSearchLocationAutoComplete,
     isModalPostalCodeOpen,
+    setIsModalPostalCodeOpen,
     searchLocationByPostalCode,
     setSearchLocationByPostalCode: (value) =>
       startTransition(() => setSearchLocationByPostalCode(value)),

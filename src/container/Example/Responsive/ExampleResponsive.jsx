@@ -10,7 +10,24 @@ import {
 import Button from "@/components/Button/Button";
 import ToogleButton from "@/components/ToogleButton/ToogleButton";
 
-const RESPONSIVE_LINKS = ["/example", "/example/mobile-searchbar"];
+const RESPONSIVE_LINKS = [
+  {
+    href: "/example",
+    label: "Layout Default",
+  },
+  {
+    label: "Layout Searchbar",
+    href: "/example/mobile-searchbar",
+  },
+  {
+    label: "Layout Form",
+    href: "/example/mobile-form",
+  },
+  {
+    label: "Layout Form with Menu",
+    href: "/example/mobile-form-with-menu",
+  },
+];
 
 const ExampleResponsive = ({ searchValue = "" }) => {
   const [courierStatus, setCourierStatus] = useState({
@@ -95,13 +112,13 @@ const ExampleResponsive = ({ searchValue = "" }) => {
       <div>
         <h1 className="text-2xl font-bold">Links</h1>
         {RESPONSIVE_LINKS.map((link) => (
-          <Link
-            key={link}
-            href={link}
-            className="block text-blue-500 underline"
-          >
-            {link}
-          </Link>
+          <div className="flex gap-3" key={link.href}>
+            <Link href={link.href} className="block text-blue-500 underline">
+              {link.label}
+            </Link>
+
+            <span className="text-neutral-500">{link.label}</span>
+          </div>
         ))}
       </div>
     </div>

@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { cn } from "@/lib/cn";
 
-const BannerCarousel = ({
+export const BannerCarousel = ({
   banners,
   autoplaySpeed = 5000,
   showControls = true,
@@ -137,5 +137,3 @@ const BannerCarousel = ({
     </div>
   );
 };
-
-export default BannerCarousel;

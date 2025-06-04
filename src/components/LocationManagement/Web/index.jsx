@@ -7,8 +7,8 @@ import { useLocation } from "@/hooks/use-location";
 import { cn } from "@/lib/cn";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
+import { MapContainer } from "../common/MapContainer";
 import { InputLocationManagementDropdown } from "./InputLocationManagementDropdown";
-import { MapContainer } from "./MapContainer";
 import { ModalPostalCode } from "./ModalPostalCode";
 import { ModalSavedLocationManagement } from "./ModalSavedLocationManagement";
 

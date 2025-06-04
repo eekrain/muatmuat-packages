@@ -304,7 +304,7 @@ const FilterModal = ({ data, isOpen, setIsOpen, onSelectArmada, type }) => {
                 {filteredData.length === 0 ? (
                   <div className="flex h-[302px] items-center justify-center">
                     <DataNotFound
-                      classname="gap-y-5"
+                      className="gap-y-5"
                       textClass="text-[#868686] leading-[19.2px]"
                       title="Keyword Tidak Ditemukan"
                       width={71}

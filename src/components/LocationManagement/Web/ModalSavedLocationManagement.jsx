@@ -17,8 +17,10 @@ export const ModalSavedLocationManagement = ({
 
   const filteredUserSavedLocations = useMemo(() => {
     if (!userSavedLocations) return [];
-    return userSavedLocations.filter((item) =>
-      item.Name.toLowerCase().includes(searchValue.toLowerCase())
+    return userSavedLocations.filter(
+      (item) =>
+        item.Name.toLowerCase().includes(searchValue.toLowerCase()) ||
+        item.Address.toLowerCase().includes(searchValue.toLowerCase())
     );
   }, [searchValue, userSavedLocations]);
 

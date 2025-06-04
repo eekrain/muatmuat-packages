@@ -11,7 +11,7 @@ import FloatingButton from "@/components/FloatingButton/FloatingButton";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageUploader from "@/components/ImageUploader/ImageUploader";
 import Input from "@/components/Input/Input";
-import { LocationModalFormWeb } from "@/components/LocationManagement/LocationModalFormWeb";
+import { LocationModalFormWeb } from "@/components/LocationManagement/Web";
 import RadioButton from "@/components/Radio/RadioButton";
 import TextArea from "@/components/TextArea/TextArea";
 import { TimelineField } from "@/components/Timeline/timeline-field";
@@ -21,7 +21,7 @@ import { cn } from "@/lib/cn";
 import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 import { getNowTimezone } from "@/utils/dateTime";
 
-import BannerCarousel from "../shared/BannerCarousel";
+import { BannerCarousel } from "../common/BannerCarousel";
 import FilterModal from "./FilterModal/FilterModal";
 import FirstTimer from "./FirstTimer/FirstTimer";
 import FleetOrderConfirmationModal from "./FleetOrderConfirmationModal/FleetOrderConfirmationModal";

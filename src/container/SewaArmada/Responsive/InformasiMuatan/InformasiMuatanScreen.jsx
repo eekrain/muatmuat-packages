@@ -68,7 +68,7 @@ const InformasiMuatanScreen = () => {
   };
 
   return (
-    <div className="mt-[62px] flex min-h-screen w-full flex-col gap-x-2 bg-neutral-200">
+    <div className="flex w-full flex-col gap-x-2 bg-neutral-200">
       {/* Section Tipe Muatan */}
       <div className="flex flex-col gap-y-4 bg-white px-4 py-5">
         {/* Header */}
@@ -273,7 +273,7 @@ const InformasiMuatanScreen = () => {
             onChange={handleHalalCertificationChange}
             label="Centang opsi jika pengiriman memerlukan armada dengan sertifikat halal logistik"
             value="halal_certification"
-            classname="w-full"
+            className="w-full"
           />
         </div>
       </div>
@@ -294,10 +294,10 @@ const InformasiMuatanScreen = () => {
               left: "/icons/search.svg",
               right: "/icons/chevron-down.svg",
             }}
-            classname="w-full"
+            className="w-full"
             classInput="bg-neutral-200 text-neutral-600"
             value={namaMuatan}
-            changeEvent={(e) => setNamaMuatan(e.target.value)}
+            onChange={(e) => setNamaMuatan(e.target.value)}
           />
         </div>
 
@@ -321,10 +321,10 @@ const InformasiMuatanScreen = () => {
               type="number"
               placeholder="0"
               name="berat_muatan"
-              classname="flex-1"
+              className="flex-1"
               classInput="bg-neutral-200 text-neutral-600"
               value={beratMuatan}
-              changeEvent={(e) => setBeratMuatan(e.target.value)}
+              onChange={(e) => setBeratMuatan(e.target.value)}
             />
             <Input
               type="text"
@@ -333,7 +333,7 @@ const InformasiMuatanScreen = () => {
               icon={{
                 right: "/icons/chevron-down.svg",
               }}
-              classname="w-16"
+              className="w-16"
               classInput="bg-neutral-200 text-center text-neutral-600"
             />
           </div>
@@ -415,7 +415,7 @@ const InformasiMuatanScreen = () => {
               icon={{
                 right: "/icons/chevron-down.svg",
               }}
-              classname="w-16"
+              className="w-16"
               classInput="bg-neutral-200 text-center text-neutral-600"
             />
           </div>

@@ -145,7 +145,7 @@ export const DropdownSearch = ({
                         src="/icons/silang.svg"
                         width={16}
                         height={16}
-                        classname="fill-neutral-700"
+                        className="fill-neutral-700"
                       />
                     </button>
                   )}

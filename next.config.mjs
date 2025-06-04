@@ -15,5 +15,5 @@ const nextConfig = {
 
 export default MillionLint.next({
   enabled: process.env.NODE_ENV === "development",
-  rsc: true,
+  rsc: process.env.NODE_ENV === "development",
 })(nextConfig);

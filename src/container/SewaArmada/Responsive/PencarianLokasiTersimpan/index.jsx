@@ -1,0 +1,97 @@
+import { useMemo } from "react";
+
+import { useLocation } from "@/hooks/use-location";
+import { useLocationFormStore } from "@/store/forms/locationFormStore";
+import {
+  useResponsiveRouter,
+  useResponsiveRouterStore,
+} from "@/store/responsiveRouter";
+
+import { SavedLocationItem } from "../PencarianLokasi/SavedLocationItem";
+
+export const PencarianLokasiTersimpan = () => {
+  const searchValue = useResponsiveRouterStore((state) => state.searchValue);
+  const { popScreen } = useResponsiveRouter();
+  const {
+    formValues,
+    formErrors,
+    setField,
+    setLocationCoordinatesOnly,
+    validateForm,
+    reset,
+  } = useLocationFormStore();
+
+  const {
+    locationAutoCompleteResult,
+    onSelectAutoComplete,
+    userSavedLocations,
+    searchLocationAutoComplete,
+    setSearchLocationAutoComplete,
+
+    isModalPostalCodeOpen,
+    setIsModalPostalCodeOpen,
+    searchLocationByPostalCode,
+    setSearchLocationByPostalCode,
+    postalCodeAutoCompleteResult,
+    onSelectPostalCode,
+
+    coordinates,
+    setCoordinates,
+    handleGetCurrentLocation,
+    isDropdownOpen,
+    setIsDropdownOpen,
+
+    handleSelectUserSavedLocation,
+    isModalSavedLocationManagementOpen,
+    setIsModalSavedLocationManagementOpen,
+  } = useLocation({
+    onAddressSelected: (data) => {
+      setField("dataLokasi", data);
+    },
+    setPICName: (name) => {
+      setField("namaPIC", name);
+    },
+    setNoHPPIC: (noHPPIC) => {
+      setField("noHPPIC", noHPPIC);
+    },
+    setLocationCoordinatesOnly,
+  });
+
+  const filteredUserSavedLocations = useMemo(() => {
+    if (!userSavedLocations) return [];
+    return userSavedLocations.filter(
+      (item) =>
+        item.Name.toLowerCase().includes(searchValue.toLowerCase()) ||
+        item.Address.toLowerCase().includes(searchValue.toLowerCase())
+    );
+  }, [searchValue, userSavedLocations]);
+
+  return (
+    <div className="grid gap-5 px-4 py-5">
+      {/* Location Management Section */}
+      <div className="flex flex-col gap-4">
+        <h3 className="text-sm font-bold text-neutral-700">Manajemen Lokasi</h3>
+
+        <div className="flex flex-col gap-3">
+          {filteredUserSavedLocations.map((location, index) => (
+            <SavedLocationItem
+              key={location.ID}
+              location={location}
+              onClick={(location) => {
+                handleSelectUserSavedLocation(location);
+                popScreen();
+                popScreen();
+              }}
+              withEdit={{
+                onClick: (e) => {
+                  e.stopPropagation();
+                  alert("kocak");
+                },
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};

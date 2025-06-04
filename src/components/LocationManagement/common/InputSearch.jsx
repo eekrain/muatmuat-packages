@@ -4,7 +4,7 @@ import { useMemo, useRef } from "react";
 
 import { X } from "lucide-react";
 
-import Input from "@/components/Input/Input";
+import Input from "@/components/Form/Input";
 import { useTranslation } from "@/hooks/use-translation";
 
 const FilterableMenu = ({
@@ -66,7 +66,7 @@ const FilterableMenu = ({
             );
           })
         ) : (
-          <div className="p-2 text-center font-semibold">
+          <div className="p-2 text-center text-xs font-semibold">
             {t("labelSearchNotFound")}
           </div>
         )}
@@ -81,6 +81,8 @@ export const InputSearch = ({
   onSelectValue,
   searchValue,
   setSearchValue,
+  hideDropdown = false,
+  errorMessage = null,
   ...props
 }) => {
   const inputRef = useRef(null);
@@ -94,6 +96,8 @@ export const InputSearch = ({
         classInput="pr-4 !text-[#1b1b1b]"
         value={searchValue}
         onChange={(e) => setSearchValue(e.currentTarget.value)}
+        errorMessage={errorMessage}
+        hideErrorMessage={true}
       />
 
       {searchValue.length > 0 && (
@@ -108,7 +112,7 @@ export const InputSearch = ({
         </div>
       )}
 
-      {searchValue.length > 0 && options.length > 0 && (
+      {searchValue.length > 0 && options.length > 0 && !hideDropdown && (
         <div className="relative">
           <FilterableMenu
             options={options}
