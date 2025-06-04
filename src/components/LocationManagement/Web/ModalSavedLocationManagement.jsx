@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 
+import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import Input from "@/components/Input/Input";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { useTranslation } from "@/hooks/use-translation";
 
@@ -46,7 +46,9 @@ export const ModalSavedLocationManagement = ({
                   />
                 ),
               }}
-              classInput={"!text-[#1b1b1b]"}
+              appearance={{
+                inputClassName: "!text-[#1b1b1b]",
+              }}
             />
           </div>
 

@@ -93,7 +93,9 @@ export const InputSearch = ({
         {...props}
         ref={inputRef}
         icon={{ left: "/icons/search.svg" }}
-        classInput="pr-4 !text-[#1b1b1b]"
+        appearance={{
+          inputClassName: "pr-4 !text-[#1b1b1b]",
+        }}
         value={searchValue}
         onChange={(e) => setSearchValue(e.currentTarget.value)}
         errorMessage={errorMessage}

@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 
 import Checkbox from "@/components/Checkbox/Checkbox";
+import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import Input from "@/components/Input/Input";
 import RadioButton from "@/components/Radio/RadioButton";
 import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 
@@ -295,7 +295,9 @@ const InformasiMuatanScreen = () => {
               right: "/icons/chevron-down.svg",
             }}
             className="w-full"
-            classInput="bg-neutral-200 text-neutral-600"
+            appearance={{
+              inputClassName: "bg-neutral-200 text-neutral-600",
+            }}
             value={namaMuatan}
             onChange={(e) => setNamaMuatan(e.target.value)}
           />
@@ -322,7 +324,9 @@ const InformasiMuatanScreen = () => {
               placeholder="0"
               name="berat_muatan"
               className="flex-1"
-              classInput="bg-neutral-200 text-neutral-600"
+              appearance={{
+                inputClassName: "bg-neutral-200 text-neutral-600",
+              }}
               value={beratMuatan}
               onChange={(e) => setBeratMuatan(e.target.value)}
             />
@@ -334,7 +338,9 @@ const InformasiMuatanScreen = () => {
                 right: "/icons/chevron-down.svg",
               }}
               className="w-16"
-              classInput="bg-neutral-200 text-center text-neutral-600"
+              appearance={{
+                inputClassName: "bg-neutral-200 text-center text-neutral-600",
+              }}
             />
           </div>
         </div>
@@ -416,7 +422,9 @@ const InformasiMuatanScreen = () => {
                 right: "/icons/chevron-down.svg",
               }}
               className="w-16"
-              classInput="bg-neutral-200 text-center text-neutral-600"
+              appearance={{
+                inputClassName: "bg-neutral-200 text-center text-neutral-600",
+              }}
             />
           </div>
         </div>

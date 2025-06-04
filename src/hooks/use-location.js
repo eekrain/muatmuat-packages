@@ -22,7 +22,7 @@ const DEFAULT_LAT = -7.250445;
 const DEFAULT_LNG = 112.768845;
 
 export const useLocation = ({
-  onAddressSelected,
+  onAddressSelected = () => {},
   setPICName,
   setNoHPPIC,
   setLocationCoordinatesOnly,
@@ -97,14 +97,20 @@ export const useLocation = ({
         ...tempLocation,
         ...normalizePostalCodeData(option),
       });
-      setCoordinates(tempLocation.coordinates);
+      if (tempLocation?.coordinates) setCoordinates(tempLocation.coordinates);
+      console.log("🚀 ~ tempLocation:", tempLocation);
       setIsModalPostalCodeOpen(false);
     },
     [onAddressSelected, tempLocation]
   );
 
-  const handleGetCurrentLocation = useCallback(async () => {
-    if (window.navigator.geolocation) {
+  const handleGetCurrentLocation = useCallback(() => {
+    return new Promise((resolve, reject) => {
+      if (!window.navigator.geolocation) {
+        reject(new Error("Geolocation is not supported by this browser."));
+        return;
+      }
+
       window.navigator.geolocation.getCurrentPosition(
         async ({ coords }) => {
           try {
@@ -117,44 +123,51 @@ export const useLocation = ({
               Long: coords.longitude,
             });
             const getLocation = res1.data.Data;
+            console.log("🚀 ~ getLocation:", getLocation);
 
             const res2 = await axios.post(
               "v1/district_by_token",
               new URLSearchParams({ placeId: getLocation.place_id })
             );
             const getDistrict = res2.data.Data;
+            console.log("🚀 ~ getDistrict:", getDistrict);
 
+            let result;
             if (getDistrict.Districts?.[0]) {
-              const normalizedData = normalizeDistrictData(getDistrict);
+              result = normalizeDistrictData(getDistrict);
               onAddressSelected({
-                ...normalizedData,
+                ...result,
                 ...normalizeLocationByLatLong(getLocation, coords),
               });
             } else {
-              setTempLocation(normalizeLocationByLatLong(getLocation, coords));
+              result = normalizeLocationByLatLong(getLocation, coords);
+              setTempLocation(result);
               setIsModalPostalCodeOpen(true);
-              // Kadang dari /v1/location_by_lat_long udah ada data kode pos nya, jadi set aja biar auto ke-isi dari result ini
-              if (getLocation?.postal)
+              if (getLocation?.postal) {
                 setSearchLocationByPostalCode(getLocation.postal);
+                result = { ...result, postalCode: getLocation.postal };
+              }
             }
             setSearchLocationAutoComplete(getLocation.formatted_address);
             setIsDropdownOpen(false);
+            resolve(result);
           } catch (error) {
             console.error("Error getting location:", error);
+            reject(error);
           }
         },
         (error) => {
           console.error("Error getting location:", error);
+          reject(error);
         }
       );
-    } else {
-      console.error("Geolocation is not supported by this browser.");
-    }
+    });
   }, [onAddressSelected]);
 
   const handleSelectUserSavedLocation = useCallback(
     (location) => {
-      onAddressSelected(normalizeUserSavedLocation(location));
+      const result = normalizeUserSavedLocation(location);
+      onAddressSelected(result);
       if (location.PicName) setPICName(location.PicName);
       if (location.PicNoTelp) setNoHPPIC(location.PicNoTelp);
       setCoordinates({

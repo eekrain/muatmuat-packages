@@ -1,6 +1,7 @@
 "use client";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { cn } from "@/lib/cn";
 import { useResponsiveRouteParams } from "@/lib/responsive-navigation";
 
 const DEFAULT_FUNCTION = () =>
@@ -21,7 +22,12 @@ export const HeaderResponsiveForm = () => {
           />
         </button>
 
-        <h1 className="mt-1 text-base font-bold leading-[1]">
+        <h1
+          className={cn(
+            "mt-1 text-base font-bold leading-[1]",
+            params?.header?.title?.className
+          )}
+        >
           {params?.header?.title?.label}
         </h1>
       </div>

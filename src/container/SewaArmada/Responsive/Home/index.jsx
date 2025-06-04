@@ -65,6 +65,7 @@ export const SewaArmadaHome = () => {
           // mundur ke screen sebelumnya
           navigation.pop();
         },
+        placeholder: "Cari Lokasi Muat",
       },
     });
   };

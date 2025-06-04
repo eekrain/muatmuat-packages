@@ -4,10 +4,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 
+import { cn } from "@/lib/cn";
+
 export const MapContainer = ({
   coordinates,
-  width,
-  height,
   className,
   viewOnly,
   textLabel,
@@ -125,19 +125,20 @@ export const MapContainer = ({
   if (!isLoaded) {
     return (
       <div
-        style={{ width: `${width}px`, height: `${height}px` }}
-        className={`h-[200px] w-[200px] animate-pulse overflow-hidden rounded-md bg-gray-400 ${className}`}
+        className={cn(
+          "h-[200px] w-[200px] animate-pulse overflow-hidden rounded-md bg-gray-400",
+          className
+        )}
       ></div>
     );
   }
 
   return (
     <div
-      style={{
-        width: `${width}px !important`,
-        height: `${height}px !important`,
-      }}
-      className={`h-[200px] w-[200px] overflow-hidden rounded-md ${className}`}
+      className={cn(
+        "h-[200px] w-[200px] overflow-hidden rounded-md",
+        className
+      )}
     >
       <GoogleMap
         center={{
@@ -154,6 +155,8 @@ export const MapContainer = ({
           scrollwheel: !viewOnly,
           streetViewControl: false,
           mapTypeControl: false,
+          cameraControl: false,
+          fullscreenControl: false,
         }}
         zoom={15}
       >

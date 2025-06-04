@@ -3,9 +3,9 @@
 import { Fragment, useEffect, useState } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
+import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
-import Input from "@/components/Input/Input";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import Tooltip from "@/components/Tooltip/Tooltip";
 

@@ -80,9 +80,30 @@ export const PencarianLokasi = () => {
       header: {
         onClickBackButton: () => {
           // mundur ke screen sebelumnya
-          popScreen();
+          navigation.pop();
         },
+        placeholder: "Cari Lokasi yang Disimpan",
       },
+    });
+  };
+
+  const handleToPinPointMap = () => {
+    console.log("🚀 ~ asw:");
+    handleGetCurrentLocation().then((dataLokasi) => {
+      navigation.push("/PinPointMap", {
+        layout: "form",
+        header: {
+          onClickBackButton: () => {
+            // mundur ke screen sebelumnya
+            navigation.pop();
+          },
+          title: {
+            label: dataLokasi.location.name,
+            className: "text-sm font-semibold line-clamp-1 break-all",
+          },
+        },
+        dataLokasi,
+      });
     });
   };
 
@@ -115,10 +136,7 @@ export const PencarianLokasi = () => {
       ) : (
         <>
           <button
-            onClick={async () => {
-              await handleGetCurrentLocation();
-              setIsDropdownOpen(false);
-            }}
+            onClick={handleToPinPointMap}
             className="] flex w-full items-center gap-3 font-medium text-[#176CF7]"
           >
             <IconComponent
@@ -146,9 +164,9 @@ export const PencarianLokasi = () => {
                 <SearchResultItem
                   key={index}
                   location={location}
-                  onClick={() => handleLocationClick(location)}
+                  onClick={() => alert("not implemented")}
                   withBookmark={{
-                    onClick: () => alert("wkwk"),
+                    onClick: () => alert("not implemented"),
                   }}
                 />
               ))}
@@ -174,7 +192,7 @@ export const PencarianLokasi = () => {
                     withEdit={{
                       onClick: (e) => {
                         e.stopPropagation();
-                        alert("kocak");
+                        alert("not implemented");
                       },
                     }}
                   />
@@ -204,9 +222,9 @@ export const PencarianLokasi = () => {
                 <RecentTransactionItem
                   key={index}
                   location={location}
-                  onClick={() => handleLocationClick(location)}
+                  onClick={() => alert("not implemented")}
                   withBookmark={{
-                    onClick: () => alert("wkwk"),
+                    onClick: () => alert("not implemented"),
                   }}
                 />
               ))}

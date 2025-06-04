@@ -13,6 +13,7 @@ import { SewaArmadaHome } from "./Home";
 import InformasiMuatanScreen from "./InformasiMuatan/InformasiMuatanScreen";
 import { PencarianLokasi } from "./PencarianLokasi";
 import { PencarianLokasiTersimpan } from "./PencarianLokasiTersimpan";
+import { PinPointMap } from "./PinPointMap";
 
 const SewaArmadaResponsive = () => {
   const router = useRouter();
@@ -71,6 +72,7 @@ const SewaArmadaResponsive = () => {
         path="/InformasiMuatan"
         component={<InformasiMuatanScreen />}
       />
+      <ResponsiveRoute path="/PinPointMap" component={<PinPointMap />} />
     </>
   );
 };

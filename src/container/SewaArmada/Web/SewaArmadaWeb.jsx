@@ -8,9 +8,9 @@ import Card from "@/components/Card/Card";
 import Checkbox from "@/components/Checkbox/Checkbox";
 import DatetimePicker from "@/components/DatetimePicker/DatetimePicker";
 import FloatingButton from "@/components/FloatingButton/FloatingButton";
+import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageUploader from "@/components/ImageUploader/ImageUploader";
-import Input from "@/components/Input/Input";
 import { LocationModalFormWeb } from "@/components/LocationManagement/Web";
 import RadioButton from "@/components/Radio/RadioButton";
 import TextArea from "@/components/TextArea/TextArea";
@@ -193,11 +193,10 @@ export default function SewaArmadaWeb() {
     setOrderType,
     updateLokasi,
   } = useSewaArmadaStore();
-  console.log("🚀 ~ SewaArmadaWeb ~ formValues:", formValues);
 
   const { modalConfig, handleOpenModalLocation, handleCloseModalLocation } =
     useModalLocation();
-  console.log("form", formValues);
+  // console.log("form", formValues);
   const timezone = {
     id: "Asia/Jakarta",
     offset: "+07:00",
@@ -732,7 +731,6 @@ export default function SewaArmadaWeb() {
                       value={formValues.deskripsi}
                       onChange={(e) => setField("deskripsi", e.target.value)}
                       status={formErrors.deskripsi ? "error" : ""}
-                      // classInput={"!text-[#1b1b1b]"}
                     />
                   </div>
                 </div>

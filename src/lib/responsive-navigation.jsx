@@ -7,6 +7,7 @@ import { create } from "zustand";
 //   layout: "searchBar",
 //   header: {
 //     onClickBackButton: () => {},
+//     placeholder: "Cari Lokasi Muat",
 //   },
 // };
 
@@ -122,7 +123,6 @@ export const useResponsiveSearch = () => {
 export const ResponsiveRoute = ({ path, component, index = false }) => {
   const stack = useNavigationStore((state) => state.stack);
   const current = stack[stack.length - 1];
-  console.log("🚀 ~ ResponsiveRoute ~ current:", current);
 
   if (index && current.path === "/") {
     return component;

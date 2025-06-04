@@ -77,8 +77,8 @@ export const PencarianLokasiTersimpan = () => {
               location={location}
               onClick={(location) => {
                 handleSelectUserSavedLocation(location);
-                popScreen();
-                popScreen();
+                navigation.pop();
+                navigation.pop();
               }}
               withEdit={{
                 onClick: (e) => {

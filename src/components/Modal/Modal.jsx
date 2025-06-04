@@ -53,6 +53,7 @@ export const Modal = ({
   closeOnOutsideClick = false,
   withCloseButton = true,
 }) => {
+  console.log("🚀 ~ closeOnOutsideClick:", closeOnOutsideClick);
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   const dialogRef = useRef(null);
 
