@@ -68,7 +68,7 @@ const InformasiMuatanScreen = () => {
   };
 
   return (
-    <div className="mt-[62px] flex min-h-screen w-full flex-col gap-2 bg-neutral-200">
+    <div className="mt-[62px] flex min-h-screen w-full flex-col gap-x-2 bg-neutral-200">
       {/* Section Tipe Muatan */}
       <div className="flex flex-col gap-y-4 bg-white px-4 py-5">
         {/* Header */}
@@ -282,9 +282,9 @@ const InformasiMuatanScreen = () => {
       <div className="flex flex-col gap-6 bg-white px-4 py-5">
         {/* Nama Muatan Field */}
         <div className="flex flex-col gap-y-4">
-          <h3 className="text-[14px] font-semibold leading-[15px] text-black">
-            Nama Muatan*
-          </h3>
+          <FormLabelContainer>
+            <FormLabel className="font-semibold" title="Nama Muatan" />
+          </FormLabelContainer>
           <Input
             type="text"
             placeholder="Masukkan Muatan"
@@ -303,17 +303,18 @@ const InformasiMuatanScreen = () => {
 
         {/* Berat Muatan Field */}
         <div className="flex flex-col gap-y-4">
-          <div className="flex items-center gap-1">
-            <h3 className="text-[14px] font-semibold leading-[15px] text-black">
-              Berat Muatan*
-            </h3>
-            <IconComponent
-              src="/icons/info.svg"
-              height={16}
-              width={16}
-              classname="icon-gray"
-            />
-          </div>
+          <FormLabelContainer>
+            <FormLabel className="font-semibold" title="Berat Muatan" />
+            <FormLabelInfoTooltip title="Berat Muatan">
+              <div className="flex flex-col gap-y-4 px-4 py-6">
+                {/* Main Content Area - Frame 42239 */}
+                <span className="text-[14px] font-medium leading-[15.4px] text-neutral-900">
+                  Masukkan berat keseluruhan atau total dari seluruh muatan yang
+                  akan dikirim.
+                </span>
+              </div>
+            </FormLabelInfoTooltip>
+          </FormLabelContainer>
 
           <div className="flex items-center gap-2.5">
             <Input
@@ -340,20 +341,40 @@ const InformasiMuatanScreen = () => {
 
         {/* Dimensi Muatan Field */}
         <div className="flex flex-col gap-y-4">
-          <div className="flex items-center gap-1">
-            <h3 className="text-[14px] font-semibold leading-[15px] text-black">
-              Dimensi Muatan
-            </h3>
-            <span className="text-[10px] font-semibold leading-[12px] text-black">
-              (Opsional)
-            </span>
-            <IconComponent
-              src="/icons/info.svg"
-              height={16}
-              width={16}
-              classname="icon-gray"
+          <FormLabelContainer>
+            <FormLabel
+              className="font-semibold"
+              title="Dimensi Muatan"
+              required={false}
             />
-          </div>
+            <FormLabelInfoTooltip title="Dimensi Muatan yang Akan Dikirimkan">
+              <div className="flex flex-col gap-y-4 px-4 py-6">
+                {/* Main Content Area - Frame 42239 */}
+                <ul style={{ marginLeft: "16px", listStyleType: "disc" }}>
+                  <li className="text-[14px] font-medium leading-[15.4px]">
+                    <span className="font-bold">Panjang :</span> Ukuran
+                    terpanjang dari muatan.
+                  </li>
+
+                  <li className="text-[14px] font-medium leading-[15.4px]">
+                    <span className="font-bold">Lebar :</span> Ukuran terlebar
+                    dari muatan.
+                  </li>
+
+                  <li className="text-[14px] font-medium leading-[15.4px]">
+                    <span className="font-bold">Tinggi :</span> Ukuran tertinggi
+                    dari muatan.
+                  </li>
+                </ul>
+
+                {/* Bottom Text Area - Frame 42240 */}
+                <span className="text-center text-[14px] font-medium leading-[15.4px] text-neutral-900">
+                  Pengisian dimensi yang tepat akan membantu dalam pengelolaan
+                  dan pengiriman.
+                </span>
+              </div>
+            </FormLabelInfoTooltip>
+          </FormLabelContainer>
 
           <div className="flex items-center gap-2.5">
             {/* Custom Dimension Input */}
@@ -402,15 +423,11 @@ const InformasiMuatanScreen = () => {
 
         {/* Add Button */}
         <div className="flex justify-end">
-          <button
-            onClick={handleAddMuatan}
-            className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-neutral-600 bg-white transition-colors hover:bg-neutral-50"
-          >
+          <button onClick={handleAddMuatan}>
             <IconComponent
-              src="/icons/plus.svg"
-              height={16}
-              width={16}
-              classname="icon-gray"
+              src="/icons/plus-square32.svg"
+              height={32}
+              width={32}
             />
           </button>
         </div>
