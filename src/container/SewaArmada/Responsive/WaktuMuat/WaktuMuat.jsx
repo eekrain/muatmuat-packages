@@ -37,10 +37,10 @@ const WaktuMuatBottomsheet = () => {
   useEffect(() => {
     if (isBottomsheetOpen && !previousIsBottomsheetOpen) {
       const data = {
+        orderType,
         startDate: formValues.startDate,
         endDate: formValues.endDate,
         showRangeOption: formValues.showRangeOption,
-        orderType,
       };
       setBottomsheetFormValues(data);
     }

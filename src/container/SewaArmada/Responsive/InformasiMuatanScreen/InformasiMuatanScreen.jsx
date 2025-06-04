@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Checkbox from "@/components/Checkbox/Checkbox";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Input from "@/components/Input/Input";
 import RadioButton from "@/components/Radio/RadioButton";
+import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 
 import {
   FormLabel,
@@ -14,6 +15,8 @@ import {
 } from "../FormLabel/FormLabel";
 
 const InformasiMuatanScreen = () => {
+  const { formValues, setField, orderType, setOrderType } =
+    useSewaArmadaStore();
   // State Management
   const [tipeMuatan, setTipeMuatan] = useState("");
   const [jenisMuatan, setJenisMuatan] = useState("");
@@ -29,6 +32,19 @@ const InformasiMuatanScreen = () => {
     jenisMuatan: "",
     sertifikasiHalal: false,
   });
+  console.log("temp", tempInformasiMuatan);
+  useEffect(() => {
+    const data = {
+      tipeMuatan: formValues.tipeMuatan,
+      jenisMuatan: formValues.jenisMuatan,
+      sertifikasiHalal: formValues.halalCertification,
+    };
+    setTempInformasiMuatan(data);
+  }, [
+    formValues.tipeMuatan,
+    formValues.jenisMuatan,
+    formValues.sertifikasiHalal,
+  ]);
 
   // Handler Functions
   const handleTempInformasiMuatanChange = (field, value) => {
@@ -95,33 +111,33 @@ const InformasiMuatanScreen = () => {
         </FormLabelContainer>
 
         {/* Radio Button Group */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-y-4">
           <RadioButton
             name="tipeMuatan"
             label="Bahan Mentah"
-            checked={tempInformasiMuatan.tipeMuatan === "bahan_mentah"}
+            checked={tempInformasiMuatan.tipeMuatan === "bahan-mentah"}
             onClick={(data) =>
               handleTempInformasiMuatanChange("tipeMuatan", data.value)
             }
-            value="bahan_mentah"
+            value="bahan-mentah"
           />
           <RadioButton
             name="tipeMuatan"
             label="Barang Setengah Jadi"
-            checked={tempInformasiMuatan.tipeMuatan === "barang_setengah_jadi"}
+            checked={tempInformasiMuatan.tipeMuatan === "barang-setengah-jadi"}
             onClick={(data) =>
               handleTempInformasiMuatanChange("tipeMuatan", data.value)
             }
-            value="barang_setengah_jadi"
+            value="barang-setengah-jadi"
           />
           <RadioButton
             name="tipeMuatan"
             label="Barang Jadi"
-            checked={tempInformasiMuatan.tipeMuatan === "barang_jadi"}
+            checked={tempInformasiMuatan.tipeMuatan === "barang-jadi"}
             onClick={(data) =>
               handleTempInformasiMuatanChange("tipeMuatan", data.value)
             }
-            value="barang_jadi"
+            value="barang-jadi"
           />
           <RadioButton
             name="tipeMuatan"
@@ -138,25 +154,49 @@ const InformasiMuatanScreen = () => {
       {/* Section Jenis Muatan */}
       <div className="flex flex-col gap-4 bg-white px-4 py-5">
         {/* Header */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-1">
-            <h3 className="text-[14px] font-bold leading-[15px] text-black">
-              Jenis Muatan*
-            </h3>
-            <IconComponent
-              src="/icons/info.svg"
-              height={16}
-              width={16}
-              classname="icon-gray"
-            />
-          </div>
-          <span className="text-[12px] font-semibold leading-[13px] text-primary-700 opacity-0">
-            Reset Pilihan
-          </span>
-        </div>
+        <FormLabelContainer>
+          <FormLabel className="font-bold" title="Jenis Muatan" />
+          <FormLabelInfoTooltip title="Informasi Jenis Muatan">
+            <div className="flex flex-col gap-y-4 px-4 py-6">
+              {/* Main Content Area - Frame 42239 */}
+              <ul style={{ marginLeft: "16px", listStyleType: "disc" }}>
+                <li className="text-[14px] font-medium leading-[15.4px]">
+                  <span className="font-bold">Padat :</span> Muatan yang
+                  berbentuk solid.
+                </li>
+
+                <li className="text-[14px] font-medium leading-[15.4px]">
+                  <span className="font-bold">Cair :</span> Muatan dalam bentuk
+                  cairan, biasanya membutuhkan penanganan khusus.
+                </li>
+
+                <li className="text-[14px] font-medium leading-[15.4px]">
+                  <span className="font-bold">Curah :</span> Muatan yang dikirim
+                  secara massal, seperti biji-bijian atau pasir.
+                </li>
+
+                <li className="text-[14px] font-medium leading-[15.4px]">
+                  <span className="font-bold">Kendaraan :</span> Muatan berupa
+                  alat transportasi yang perlu diangkut.
+                </li>
+
+                <li className="text-[14px] font-medium leading-[15.4px]">
+                  <span className="font-bold">Container :</span> Muatan yang
+                  dikemas dalam suatu container.
+                </li>
+              </ul>
+
+              {/* Bottom Text Area - Frame 42240 */}
+              <span className="text-center text-[14px] font-medium leading-[15.4px] text-neutral-900">
+                Pemilihan jenis muatan yang tepat akan membantu dalam
+                pengelolaan dan pengiriman.
+              </span>
+            </div>
+          </FormLabelInfoTooltip>
+        </FormLabelContainer>
 
         {/* Radio Button Group */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-y-4">
           <RadioButton
             name="jenisMuatan"
             label="Padat"
@@ -208,20 +248,23 @@ const InformasiMuatanScreen = () => {
       {/* Section Sertifikasi Halal Logistik */}
       <div className="flex flex-col gap-4 bg-white px-4 py-5">
         {/* Header */}
-        <div className="flex items-center gap-1">
-          <h3 className="text-[14px] font-bold leading-[15px] text-black">
-            Sertifikasi Halal Logistik
-          </h3>
-          <span className="text-[10px] font-semibold leading-[12px] text-black">
-            (Opsional)
-          </span>
-          <IconComponent
-            src="/icons/info.svg"
-            height={16}
-            width={16}
-            classname="icon-gray"
+        <FormLabelContainer>
+          <FormLabel
+            className="font-bold"
+            title="Sertifikasi Halal Logistik"
+            required={false}
           />
-        </div>
+          <FormLabelInfoTooltip title="Sertifikasi Halal Logistik">
+            <div className="flex flex-col gap-y-4 px-4 py-6">
+              {/* Main Content Area - Frame 42239 */}
+              <span className="text-[14px] font-medium leading-[15.4px] text-neutral-900">
+                Pilih opsi ini jika pengiriman memerlukan pengelolaan rantai
+                pasok yang memastikan produk tetap sesuai prinsip halal, mulai
+                dari transportasi hingga penyimpanan
+              </span>
+            </div>
+          </FormLabelInfoTooltip>
+        </FormLabelContainer>
 
         {/* Checkbox Section */}
         <div className="flex gap-1">
@@ -238,7 +281,7 @@ const InformasiMuatanScreen = () => {
       {/* Section Input Data Muatan */}
       <div className="flex flex-col gap-6 bg-white px-4 py-5">
         {/* Nama Muatan Field */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-y-4">
           <h3 className="text-[14px] font-semibold leading-[15px] text-black">
             Nama Muatan*
           </h3>
@@ -259,7 +302,7 @@ const InformasiMuatanScreen = () => {
         </div>
 
         {/* Berat Muatan Field */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-y-4">
           <div className="flex items-center gap-1">
             <h3 className="text-[14px] font-semibold leading-[15px] text-black">
               Berat Muatan*
@@ -296,7 +339,7 @@ const InformasiMuatanScreen = () => {
         </div>
 
         {/* Dimensi Muatan Field */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-y-4">
           <div className="flex items-center gap-1">
             <h3 className="text-[14px] font-semibold leading-[15px] text-black">
               Dimensi Muatan
