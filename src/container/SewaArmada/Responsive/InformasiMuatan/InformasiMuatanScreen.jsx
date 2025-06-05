@@ -9,7 +9,10 @@ import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
-import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import {
+  useResponsiveNavigation,
+  useResponsiveRouteParams,
+} from "@/lib/responsive-navigation";
 import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 
 import {
@@ -19,6 +22,25 @@ import {
 } from "../FormLabel/FormLabel";
 
 const InformasiMuatanScreen = () => {
+  const namaMuatanOptions = [
+    { value: "71b8881a-66ff-454d-a0c6-66b26b84628d", label: "Furniture Kayu" },
+    {
+      value: "0c57b52d-7e63-46c8-b779-c5697242b471",
+      label: "Elektronik Rumah Tangga",
+    },
+    {
+      value: "949c658e-b4d6-4ca2-8d2f-d69bf1594c4f",
+      label: "Peralatan dan Kebutuhan Kantor",
+    },
+    {
+      value: "38015672-0dab-4523-bda8-867893c95cfb",
+      label: "Produk Makanan Kemasan",
+    },
+    {
+      value: "bb93259b-eefb-4915-aff0-3d1f5a3ab241",
+      label: "Produk Minuman Kemasan",
+    },
+  ];
   const beratMuatanOptions = [
     {
       label: "kg",
@@ -44,6 +66,7 @@ const InformasiMuatanScreen = () => {
     },
   ];
   const navigation = useResponsiveNavigation();
+  const params = useResponsiveRouteParams();
   const { formValues, setField, orderType, setOrderType } =
     useSewaArmadaStore();
   // State Management
@@ -68,6 +91,27 @@ const InformasiMuatanScreen = () => {
       },
     ],
   });
+  console.log("temo", tempInformasiMuatan, params);
+  useEffect(() => {
+    console.log("BABA2", params.namaMuatan, params.key);
+    if (params.namaMuatan && params.key !== undefined) {
+      console.log("BABA");
+      setTempInformasiMuatan((prev) => ({
+        ...prev,
+        informasiMuatan: prev.informasiMuatan.map((muatan, i) => {
+          console.log(
+            "test",
+            i === params.key
+              ? { ...muatan, namaMuatan: params.namaMuatan }
+              : muatan
+          );
+          return i === params.key
+            ? { ...muatan, namaMuatan: params.namaMuatan }
+            : muatan;
+        }),
+      }));
+    }
+  }, [JSON.stringify(params.namaMuatan), params.key]);
 
   useEffect(() => {
     const data = {
@@ -92,10 +136,6 @@ const InformasiMuatanScreen = () => {
   // Handler Functions
   const handleTempInformasiMuatanChange = (field, value) => {
     setTempInformasiMuatan((prevState) => ({ ...prevState, [field]: value }));
-  };
-
-  const handlesertifikasiHalalChange = (data) => {
-    setSertifikasiHalal(data.checked);
   };
 
   const handleAddMuatan = () => {
@@ -374,7 +414,7 @@ const InformasiMuatanScreen = () => {
           <div className="flex gap-1">
             <Checkbox
               checked={tempInformasiMuatan.sertifikasiHalal}
-              onChange={handlesertifikasiHalalChange}
+              onChange={handleTempInformasiMuatanChange}
               label="Centang opsi jika pengiriman memerlukan armada dengan sertifikat halal logistik"
               value="halal_certification"
               className="w-full"
@@ -390,6 +430,13 @@ const InformasiMuatanScreen = () => {
             const formattedBeratMuatan = item.beratMuatan.berat
               ? new Intl.NumberFormat("id-ID").format(item.beratMuatan.berat)
               : "";
+            const selectedNamaMuatan = item.namaMuatan
+              ? namaMuatanOptions.find(
+                  (option) => option.value === item.namaMuatan.value
+                )
+              : null;
+            console.log("nama", namaMuatanOptions, item.namaMuatan);
+            const namaMuatanLabel = selectedNamaMuatan?.label ?? "Pilih Muatan";
             return (
               <Fragment key={key}>
                 {/* Nama Muatan Field */}
@@ -401,12 +448,12 @@ const InformasiMuatanScreen = () => {
                     className={
                       "flex h-8 items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-3"
                     }
-                    onClick={() => navigation.push("/CariNamaMuatan")}
+                    onClick={() => navigation.push("/CariNamaMuatan", { key })}
                   >
                     <div className="flex items-center gap-x-2">
                       <IconComponent src="/icons/muatan16.svg" />
                       <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-600">
-                        Pilih Muatan
+                        {namaMuatanLabel}
                       </span>
                     </div>
                     <IconComponent src="/icons/chevron-right.svg" />

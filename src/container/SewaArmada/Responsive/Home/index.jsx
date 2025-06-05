@@ -1,27 +1,16 @@
 import { useState } from "react";
 
-import { Package, Plus, Shield, Truck } from "lucide-react";
+import { Plus, Shield, Truck } from "lucide-react";
 
+import IconComponent from "@/components/IconComponent/IconComponent";
 import DefaultResponsiveLayout from "@/layout/ResponsiveLayout/DefaultResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 
 import { BannerCarousel } from "../../common/BannerCarousel";
+import { FormLabel, FormLabelContainer } from "../FormLabel/FormLabel";
 import { ModalFirstTimer } from "./ModalFirstTimer";
 import WaktuMuatBottomsheet from "./WaktuMuat/WaktuMuat";
-
-const FormLabel = ({ title, required = true }) => {
-  return (
-    <div className="flex items-center gap-x-1 font-bold text-neutral-900">
-      <span className="text-[14px] leading-[15.4px]">
-        {`${title}${required ? "*" : ""}`}
-      </span>
-      {!required ? (
-        <span className="text-[10px] leading-[10px]">{"(Opsional)"}</span>
-      ) : null}
-    </div>
-  );
-};
 
 const banners = [
   {
@@ -62,8 +51,12 @@ export const SewaArmadaHome = () => {
     navigation.push("/PencarianLokasi");
   };
 
-  const handleAddInformasiMuatan = () => {
+  const handleEditInformasiMuatan = () => {
     navigation.push("/InformasiMuatan");
+  };
+
+  const handleEditLayananTambahan = () => {
+    navigation.push("/LayananTambahan");
   };
 
   return (
@@ -98,7 +91,9 @@ export const SewaArmadaHome = () => {
           <div className="flex flex-col gap-y-6">
             {/* Waktu Muat Field */}
             <div className="flex flex-col gap-y-4">
-              <FormLabel title="Waktu Muat" />
+              <FormLabelContainer>
+                <FormLabel className="font-semibold" title="Waktu Muat" />
+              </FormLabelContainer>
               <WaktuMuatBottomsheet />
             </div>
 
@@ -170,39 +165,23 @@ export const SewaArmadaHome = () => {
 
             {/* Informasi Muatan Field */}
             <div className="flex flex-col gap-y-4">
-              <label className="block text-[14px] font-semibold leading-[15.4px] text-neutral-900">
-                Informasi Muatan*
-              </label>
-              <div className="relative" onClick={handleAddInformasiMuatan}>
-                <div className="flex h-8 w-full items-center gap-2 rounded-md border border-neutral-600 bg-neutral-50 px-3 py-2">
-                  <Package className="h-4 w-4 text-neutral-700" />
-                  <input
-                    type="text"
-                    placeholder="Masukkan Muatan"
-                    className="flex-1 bg-transparent text-[14px] font-semibold text-neutral-600 outline-none placeholder:text-neutral-600"
-                    value={formData.informasiMuatan}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        informasiMuatan: e.target.value,
-                      })
-                    }
-                  />
-                  <svg
-                    className="h-4 w-4 text-neutral-700"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
+              <FormLabelContainer>
+                <FormLabel className="font-semibold" title="Informasi Muatan" />
+              </FormLabelContainer>
+              <button
+                className={
+                  "flex h-8 items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-3"
+                }
+                onClick={handleEditInformasiMuatan}
+              >
+                <div className="flex items-center gap-x-2">
+                  <IconComponent src="/icons/muatan16.svg" />
+                  <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-600">
+                    Masukkan Muatan
+                  </span>
                 </div>
-              </div>
+                <IconComponent src="/icons/chevron-right.svg" />
+              </button>
             </div>
 
             {/* Jenis Armada Field */}
@@ -279,34 +258,28 @@ export const SewaArmadaHome = () => {
             </div>
 
             {/* Layanan Tambahan Field */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-1">
-                <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
-                  Layanan Tambahan
-                </span>
-                <span className="text-[10px] font-semibold text-neutral-900">
-                  (Opsional)
-                </span>
-              </div>
-              <div className="flex h-8 w-full items-center gap-2 rounded-md border border-neutral-600 bg-neutral-50 px-3 py-2">
-                <Package className="h-4 w-4 text-neutral-700" />
-                <span className="flex-1 text-[14px] font-semibold text-neutral-600">
-                  Pilih Layanan Tambahan
-                </span>
-                <svg
-                  className="h-4 w-4 text-neutral-700"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
+            <div className="flex flex-col gap-y-4">
+              <FormLabelContainer>
+                <FormLabel
+                  className="font-semibold"
+                  title="Layanan Tambahan"
+                  required={false}
+                />
+              </FormLabelContainer>
+              <button
+                className={
+                  "flex h-8 items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-3"
+                }
+                onClick={handleEditLayananTambahan}
+              >
+                <div className="flex items-center gap-x-2">
+                  <IconComponent src="/icons/muatan16.svg" />
+                  <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-600">
+                    Layanan Tambahan
+                  </span>
+                </div>
+                <IconComponent src="/icons/chevron-right.svg" />
+              </button>
             </div>
           </div>
         </div>

@@ -1,7 +1,13 @@
+import { useEffect } from "react";
+
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import FooterOneButton from "@/components/Footer/OneButton";
 import SearchBarResponsiveLayout from "@/layout/ResponsiveLayout/SearchBarResponsiveLayout";
-import { useResponsiveSearch } from "@/lib/responsive-navigation";
+import {
+  useResponsiveNavigation,
+  useResponsiveRouteParams,
+  useResponsiveSearch,
+} from "@/lib/responsive-navigation";
 import { searchFilter } from "@/utils/filter";
 
 const CariNamaMuatan = () => {
@@ -24,9 +30,18 @@ const CariNamaMuatan = () => {
       label: "Produk Minuman Kemasan",
     },
   ];
+
+  const navigation = useResponsiveNavigation();
+  const params = useResponsiveRouteParams();
   const { searchValue, setSearchValue } = useResponsiveSearch();
 
-  const hanldeSelectNamaMuatan = () => {};
+  useEffect(() => {
+    setSearchValue("");
+  }, []);
+
+  const hanldeSelectNamaMuatan = (namaMuatan) => {
+    navigation.push("/InformasiMuatan", { namaMuatan, key: params.key });
+  };
 
   const filtereNamaMuatanOptions = searchFilter(
     searchValue,
@@ -44,6 +59,7 @@ const CariNamaMuatan = () => {
               <button
                 className={`${isLastItem ? "" : "border-b border-b-neutral-400 pb-4"} flex`}
                 key={key}
+                onClick={() => hanldeSelectNamaMuatan(item)}
               >
                 <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
                   {item.label}
