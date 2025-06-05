@@ -113,38 +113,36 @@ const InformasiMuatanScreen = () => {
           <FormLabelContainer>
             <FormLabel className="font-bold" title="Tipe Muatan" />
             <FormLabelInfoTooltip title="Tipe Muatan yang Akan Dikirimkan">
-              <div className="flex flex-col gap-y-4 px-4 py-6">
-                {/* Main Content Area - Frame 42239 */}
-                <ul style={{ marginLeft: "16px", listStyleType: "disc" }}>
-                  <li className="text-[14px] font-medium leading-[15.4px]">
-                    <span className="font-bold">Bahan Mentah :</span> Material
-                    atau komponen yang belum diproses
-                  </li>
+              {/* Main Content Area - Frame 42239 */}
+              <ul style={{ marginLeft: "16px", listStyleType: "disc" }}>
+                <li className="text-[14px] font-medium leading-[15.4px]">
+                  <span className="font-bold">Bahan Mentah :</span> Material
+                  atau komponen yang belum diproses
+                </li>
 
-                  <li className="text-[14px] font-medium leading-[15.4px]">
-                    <span className="font-bold">Barang Setengah Jadi :</span>{" "}
-                    Produk yang telah mengalami beberapa tahap proses tapi belum
-                    selesai.
-                  </li>
+                <li className="text-[14px] font-medium leading-[15.4px]">
+                  <span className="font-bold">Barang Setengah Jadi :</span>{" "}
+                  Produk yang telah mengalami beberapa tahap proses tapi belum
+                  selesai.
+                </li>
 
-                  <li className="text-[14px] font-medium leading-[15.4px]">
-                    <span className="font-bold">Barang Jadi :</span> Produk
-                    akhir yang siap untuk digunakan atau dijual.
-                  </li>
+                <li className="text-[14px] font-medium leading-[15.4px]">
+                  <span className="font-bold">Barang Jadi :</span> Produk akhir
+                  yang siap untuk digunakan atau dijual.
+                </li>
 
-                  <li className="text-[14px] font-medium leading-[15.4px]">
-                    <span className="font-bold">Lainnya :</span> Barang / barang
-                    yang tidak sesuai jenis diatas, namun memiliki nilai
-                    ekonomis dan fungsi dalam proses produksi atau distribusi.
-                  </li>
-                </ul>
+                <li className="text-[14px] font-medium leading-[15.4px]">
+                  <span className="font-bold">Lainnya :</span> Barang / barang
+                  yang tidak sesuai jenis diatas, namun memiliki nilai ekonomis
+                  dan fungsi dalam proses produksi atau distribusi.
+                </li>
+              </ul>
 
-                {/* Bottom Text Area - Frame 42240 */}
-                <span className="text-center text-[14px] font-medium leading-[15.4px] text-neutral-900">
-                  Pemilihan tipe muatan yang tepat akan membantu dalam
-                  pengelolaan dan pengiriman.
-                </span>
-              </div>
+              {/* Bottom Text Area - Frame 42240 */}
+              <span className="text-center text-[14px] font-medium leading-[15.4px] text-neutral-900">
+                Pemilihan tipe muatan yang tepat akan membantu dalam pengelolaan
+                dan pengiriman.
+              </span>
             </FormLabelInfoTooltip>
           </FormLabelContainer>
 
@@ -197,41 +195,39 @@ const InformasiMuatanScreen = () => {
           <FormLabelContainer>
             <FormLabel className="font-bold" title="Jenis Muatan" />
             <FormLabelInfoTooltip title="Informasi Jenis Muatan">
-              <div className="flex flex-col gap-y-4 px-4 py-6">
-                {/* Main Content Area - Frame 42239 */}
-                <ul style={{ marginLeft: "16px", listStyleType: "disc" }}>
-                  <li className="text-[14px] font-medium leading-[15.4px]">
-                    <span className="font-bold">Padat :</span> Muatan yang
-                    berbentuk solid.
-                  </li>
+              {/* Main Content Area - Frame 42239 */}
+              <ul style={{ marginLeft: "16px", listStyleType: "disc" }}>
+                <li className="text-[14px] font-medium leading-[15.4px]">
+                  <span className="font-bold">Padat :</span> Muatan yang
+                  berbentuk solid.
+                </li>
 
-                  <li className="text-[14px] font-medium leading-[15.4px]">
-                    <span className="font-bold">Cair :</span> Muatan dalam
-                    bentuk cairan, biasanya membutuhkan penanganan khusus.
-                  </li>
+                <li className="text-[14px] font-medium leading-[15.4px]">
+                  <span className="font-bold">Cair :</span> Muatan dalam bentuk
+                  cairan, biasanya membutuhkan penanganan khusus.
+                </li>
 
-                  <li className="text-[14px] font-medium leading-[15.4px]">
-                    <span className="font-bold">Curah :</span> Muatan yang
-                    dikirim secara massal, seperti biji-bijian atau pasir.
-                  </li>
+                <li className="text-[14px] font-medium leading-[15.4px]">
+                  <span className="font-bold">Curah :</span> Muatan yang dikirim
+                  secara massal, seperti biji-bijian atau pasir.
+                </li>
 
-                  <li className="text-[14px] font-medium leading-[15.4px]">
-                    <span className="font-bold">Kendaraan :</span> Muatan berupa
-                    alat transportasi yang perlu diangkut.
-                  </li>
+                <li className="text-[14px] font-medium leading-[15.4px]">
+                  <span className="font-bold">Kendaraan :</span> Muatan berupa
+                  alat transportasi yang perlu diangkut.
+                </li>
 
-                  <li className="text-[14px] font-medium leading-[15.4px]">
-                    <span className="font-bold">Container :</span> Muatan yang
-                    dikemas dalam suatu container.
-                  </li>
-                </ul>
+                <li className="text-[14px] font-medium leading-[15.4px]">
+                  <span className="font-bold">Container :</span> Muatan yang
+                  dikemas dalam suatu container.
+                </li>
+              </ul>
 
-                {/* Bottom Text Area - Frame 42240 */}
-                <span className="text-center text-[14px] font-medium leading-[15.4px] text-neutral-900">
-                  Pemilihan jenis muatan yang tepat akan membantu dalam
-                  pengelolaan dan pengiriman.
-                </span>
-              </div>
+              {/* Bottom Text Area - Frame 42240 */}
+              <span className="text-center text-[14px] font-medium leading-[15.4px] text-neutral-900">
+                Pemilihan jenis muatan yang tepat akan membantu dalam
+                pengelolaan dan pengiriman.
+              </span>
             </FormLabelInfoTooltip>
           </FormLabelContainer>
 
@@ -295,14 +291,12 @@ const InformasiMuatanScreen = () => {
               required={false}
             />
             <FormLabelInfoTooltip title="Sertifikasi Halal Logistik">
-              <div className="flex flex-col gap-y-4 px-4 py-6">
-                {/* Main Content Area - Frame 42239 */}
-                <span className="text-[14px] font-medium leading-[15.4px] text-neutral-900">
-                  Pilih opsi ini jika pengiriman memerlukan pengelolaan rantai
-                  pasok yang memastikan produk tetap sesuai prinsip halal, mulai
-                  dari transportasi hingga penyimpanan
-                </span>
-              </div>
+              {/* Main Content Area - Frame 42239 */}
+              <span className="text-[14px] font-medium leading-[15.4px] text-neutral-900">
+                Pilih opsi ini jika pengiriman memerlukan pengelolaan rantai
+                pasok yang memastikan produk tetap sesuai prinsip halal, mulai
+                dari transportasi hingga penyimpanan
+              </span>
             </FormLabelInfoTooltip>
           </FormLabelContainer>
 
@@ -346,13 +340,11 @@ const InformasiMuatanScreen = () => {
             <FormLabelContainer>
               <FormLabel className="font-semibold" title="Berat Muatan" />
               <FormLabelInfoTooltip title="Berat Muatan">
-                <div className="flex flex-col gap-y-4 px-4 py-6">
-                  {/* Main Content Area - Frame 42239 */}
-                  <span className="text-[14px] font-medium leading-[15.4px] text-neutral-900">
-                    Masukkan berat keseluruhan atau total dari seluruh muatan
-                    yang akan dikirim.
-                  </span>
-                </div>
+                {/* Main Content Area - Frame 42239 */}
+                <span className="text-[14px] font-medium leading-[15.4px] text-neutral-900">
+                  Masukkan berat keseluruhan atau total dari seluruh muatan yang
+                  akan dikirim.
+                </span>
               </FormLabelInfoTooltip>
             </FormLabelContainer>
 
@@ -385,31 +377,29 @@ const InformasiMuatanScreen = () => {
                 required={false}
               />
               <FormLabelInfoTooltip title="Dimensi Muatan yang Akan Dikirimkan">
-                <div className="flex flex-col gap-y-4 px-4 py-6">
-                  {/* Main Content Area - Frame 42239 */}
-                  <ul style={{ marginLeft: "16px", listStyleType: "disc" }}>
-                    <li className="text-[14px] font-medium leading-[15.4px]">
-                      <span className="font-bold">Panjang :</span> Ukuran
-                      terpanjang dari muatan.
-                    </li>
+                {/* Main Content Area - Frame 42239 */}
+                <ul style={{ marginLeft: "16px", listStyleType: "disc" }}>
+                  <li className="text-[14px] font-medium leading-[15.4px]">
+                    <span className="font-bold">Panjang :</span> Ukuran
+                    terpanjang dari muatan.
+                  </li>
 
-                    <li className="text-[14px] font-medium leading-[15.4px]">
-                      <span className="font-bold">Lebar :</span> Ukuran terlebar
-                      dari muatan.
-                    </li>
+                  <li className="text-[14px] font-medium leading-[15.4px]">
+                    <span className="font-bold">Lebar :</span> Ukuran terlebar
+                    dari muatan.
+                  </li>
 
-                    <li className="text-[14px] font-medium leading-[15.4px]">
-                      <span className="font-bold">Tinggi :</span> Ukuran
-                      tertinggi dari muatan.
-                    </li>
-                  </ul>
+                  <li className="text-[14px] font-medium leading-[15.4px]">
+                    <span className="font-bold">Tinggi :</span> Ukuran tertinggi
+                    dari muatan.
+                  </li>
+                </ul>
 
-                  {/* Bottom Text Area - Frame 42240 */}
-                  <span className="text-center text-[14px] font-medium leading-[15.4px] text-neutral-900">
-                    Pengisian dimensi yang tepat akan membantu dalam pengelolaan
-                    dan pengiriman.
-                  </span>
-                </div>
+                {/* Bottom Text Area - Frame 42240 */}
+                <span className="text-center text-[14px] font-medium leading-[15.4px] text-neutral-900">
+                  Pengisian dimensi yang tepat akan membantu dalam pengelolaan
+                  dan pengiriman.
+                </span>
               </FormLabelInfoTooltip>
             </FormLabelContainer>
 

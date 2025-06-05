@@ -38,7 +38,7 @@ export const FormLabelInfoTooltip = ({ children, title }) => {
       </BottomSheetTrigger>
       <BottomSheetContent>
         <BottomSheetHeader title={title}></BottomSheetHeader>
-        {children}
+        <div className="flex flex-col gap-y-4 px-4 py-6">{children}</div>
       </BottomSheetContent>
     </BottomSheet>
   );
