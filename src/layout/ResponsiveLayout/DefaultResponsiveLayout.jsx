@@ -3,6 +3,19 @@ import {
   HeaderResponsiveDefault,
 } from "@/components/Header/Responsive";
 
+/**
+ * @typedef {Object} DefaultResponsiveLayoutProps
+ * @property {React.ReactNode} children
+ * @property {"default" | "menu"} mode
+ * @property {() => void | undefined} onClickNotificationButton
+ * @property {() => void | undefined} onClickChatButton
+ * @property {() => void | undefined} onClickMenuButton
+ */
+
+/**
+ * @param {DefaultResponsiveLayoutProps} props
+ * @returns {React.ReactNode}
+ */
 const DefaultResponsiveLayout = ({
   children,
   mode = "default",

@@ -1,34 +1,74 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
-const DEFAULT_FUNCTION = () =>
-  alert("Responsive Default Header: No function provided");
+/**
+ * @typedef {Object} DefaultResponsiveLayoutProps
+ * @property {"default" | "menu"} mode
+ * @property {() => void | undefined} onClickBackButton
+ * @property {() => void | undefined} onClickNotificationButton
+ * @property {() => void | undefined} onClickChatButton
+ * @property {() => void | undefined} onClickMenuButton
+ */
 
+/**
+ * @param {DefaultResponsiveLayoutProps} props
+ * @returns {React.ReactNode}
+ */
 export const HeaderResponsiveDefault = ({
   mode = "default",
-  onClickBackButton = DEFAULT_FUNCTION,
-  onClickNotificationButton = DEFAULT_FUNCTION,
-  onClickChatButton = DEFAULT_FUNCTION,
-  onClickMenuButton = DEFAULT_FUNCTION,
+  onClickBackButton,
+  onClickNotificationButton,
+  onClickChatButton,
+  onClickMenuButton,
 }) => {
+  const router = useRouter();
+  const navigation = useResponsiveNavigation();
+
+  const handleNotificationButton = () => {
+    if (onClickNotificationButton) onClickNotificationButton();
+    else
+      alert(
+        "HeaderResponsiveDefault ~ onClickNotificationButton ~ not implemented"
+      );
+  };
+
+  const handleChatButton = () => {
+    if (onClickChatButton) onClickChatButton();
+    else alert("HeaderResponsiveDefault ~ onClickChatButton ~ not implemented");
+  };
+
+  const handleMenuButton = () => {
+    if (onClickMenuButton) onClickMenuButton();
+    else navigation.push("/menu");
+  };
+
+  const handleBackButton = () => {
+    if (onClickBackButton) onClickBackButton();
+    else if (mode === "default") router.back();
+    else navigation.pop();
+  };
+
   const menuIcons = [
     {
       src: "/icons/manajemen-notifikasi24.svg",
       count: 2,
-      onClick: onClickNotificationButton || DEFAULT_FUNCTION,
+      onClick: handleNotificationButton,
     },
     {
       src: "/icons/chat24.svg",
       count: 99,
-      onClick: onClickChatButton || DEFAULT_FUNCTION,
+      onClick: handleChatButton,
     },
-    ...(mode === "menu" && onClickMenuButton
+    ...(mode === "default"
       ? [
           {
             src: "/icons/burger-menu24.svg",
-            onClick: onClickMenuButton || DEFAULT_FUNCTION,
+            onClick: handleMenuButton,
           },
         ]
       : []),
@@ -42,7 +82,7 @@ export const HeaderResponsiveDefault = ({
           src="/icons/chevron-left24.svg"
           width={24}
           height={24}
-          onClick={onClickBackButton || DEFAULT_FUNCTION}
+          onClick={handleBackButton}
         />
         <ImageComponent src="/icons/muattrans.svg" width={120} height={24} />
       </div>

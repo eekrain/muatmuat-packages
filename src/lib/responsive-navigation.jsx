@@ -121,11 +121,11 @@ export const useResponsiveSearch = () => {
  *   layout?: (children: React.ReactNode) => React.ReactNode
  * }} props
  */
-export const ResponsiveRoute = ({ path, layout, component }) => {
+export const ResponsiveRoute = ({ path, component }) => {
   const { stack } = useNavigationStore();
   const current = stack[stack.length - 1];
 
   if (path !== current.path) return null;
 
-  return layout ? layout(component) : component;
+  return component;
 };

@@ -3,6 +3,17 @@ import {
   HeaderResponsiveSearchBar,
 } from "@/components/Header/Responsive";
 
+/**
+ * @typedef {Object} SearchBarResponsiveLayoutProps
+ * @property {() => void | undefined} onClickBackButton
+ * @property {string | undefined} placeholder
+ * @property {React.ReactNode} children
+ */
+
+/**
+ * @param {SearchBarResponsiveLayoutProps} props
+ * @returns {React.ReactNode}
+ */
 const SearchBarResponsiveLayout = ({
   children,
   onClickBackButton,

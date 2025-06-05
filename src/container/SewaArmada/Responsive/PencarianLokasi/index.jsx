@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { ModalPostalCodeResponsive } from "@/components/LocationManagement/Responsive/ModalPostalCodeResponsive";
 import { useLocation } from "@/hooks/use-location";
+import SearchBarResponsiveLayout from "@/layout/ResponsiveLayout/SearchBarResponsiveLayout";
 import {
   useResponsiveNavigation,
   useResponsiveSearch,
@@ -58,25 +59,12 @@ export const PencarianLokasi = () => {
   });
 
   const handleToUserSavedLocationManagement = () => {
-    navigation.push("/PencarianLokasiTersimpan", {
-      header: {
-        placeholder: "Cari Lokasi yang Disimpan",
-      },
-    });
+    navigation.push("/PencarianLokasiTersimpan");
   };
 
   const handleToPinPointMap = () => {
-    console.log("🚀 ~ asw:");
     handleGetCurrentLocation().then((dataLokasi) => {
-      navigation.push("/PinPointMap", {
-        header: {
-          title: {
-            label: dataLokasi.location.name,
-            className: "text-sm font-semibold line-clamp-1 break-all",
-          },
-        },
-        dataLokasi,
-      });
+      navigation.push("/PinPointMap", { dataLokasi });
     });
   };
 
@@ -86,134 +74,136 @@ export const PencarianLokasi = () => {
   }, [searchValue]);
 
   return (
-    <div className="grid gap-5 px-4 py-5">
-      {locationAutoCompleteResult && searchLocationAutoComplete ? (
-        <div className="flex flex-col gap-4">
-          <h3 className="text-sm font-bold text-neutral-700">
-            Hasil Pencarian
-          </h3>
-
-          <div className="flex flex-col gap-3">
-            {locationAutoCompleteResult.map((location, index) => (
-              <SearchResultItem
-                key={location.ID}
-                location={location}
-                onClick={() => {
-                  onSelectAutoComplete(location);
-                  console.log("🚀 ~ TambahLokasi ~ location:", location);
-                }}
-              />
-            ))}
-          </div>
-        </div>
-      ) : (
-        <>
-          <button
-            onClick={handleToPinPointMap}
-            className="] flex w-full items-center gap-3 font-medium text-[#176CF7]"
-          >
-            <IconComponent
-              src="/icons/marker-target-outline.svg"
-              width={24}
-              height={24}
-              className="-mt-[2px]"
-            />
-            <h2 className="text-sm font-semibold text-primary-700">
-              Pilih Lokasi
-            </h2>
-          </button>
-
-          {/* Divider */}
-          <div className="h-px w-full bg-neutral-400"></div>
-
-          {/* Recent Searches Section */}
+    <SearchBarResponsiveLayout placeholder="Cari Lokasi Muat">
+      <div className="grid gap-5 px-4 py-5">
+        {locationAutoCompleteResult && searchLocationAutoComplete ? (
           <div className="flex flex-col gap-4">
             <h3 className="text-sm font-bold text-neutral-700">
-              Pencarian Terakhir
+              Hasil Pencarian
             </h3>
 
             <div className="flex flex-col gap-3">
-              {recentSearches.map((location, index) => (
+              {locationAutoCompleteResult.map((location, index) => (
                 <SearchResultItem
-                  key={index}
+                  key={location.ID}
                   location={location}
-                  onClick={() => alert("not implemented")}
-                  withBookmark={{
-                    onClick: () => alert("not implemented"),
+                  onClick={() => {
+                    onSelectAutoComplete(location);
+                    console.log("🚀 ~ TambahLokasi ~ location:", location);
                   }}
                 />
               ))}
             </div>
           </div>
+        ) : (
+          <>
+            <button
+              onClick={handleToPinPointMap}
+              className="] flex w-full items-center gap-3 font-medium text-[#176CF7]"
+            >
+              <IconComponent
+                src="/icons/marker-target-outline.svg"
+                width={24}
+                height={24}
+                className="-mt-[2px]"
+              />
+              <h2 className="text-sm font-semibold text-primary-700">
+                Pilih Lokasi
+              </h2>
+            </button>
 
-          {/* Divider */}
-          <div className="h-px w-full bg-neutral-400"></div>
+            {/* Divider */}
+            <div className="h-px w-full bg-neutral-400"></div>
 
-          {/* Location Management Section */}
-          {userSavedLocations.length > 0 ? (
+            {/* Recent Searches Section */}
             <div className="flex flex-col gap-4">
               <h3 className="text-sm font-bold text-neutral-700">
-                Manajemen Lokasi
+                Pencarian Terakhir
               </h3>
 
               <div className="flex flex-col gap-3">
-                {userSavedLocations.slice(0, 3).map((location, index) => (
-                  <SavedLocationItem
+                {recentSearches.map((location, index) => (
+                  <SearchResultItem
                     key={index}
                     location={location}
-                    onClick={() => alert("coba")}
-                    withEdit={{
-                      onClick: (e) => {
-                        e.stopPropagation();
-                        alert("not implemented");
-                      },
+                    onClick={() => alert("not implemented")}
+                    withBookmark={{
+                      onClick: () => alert("not implemented"),
                     }}
                   />
                 ))}
               </div>
-
-              <button
-                onClick={handleToUserSavedLocationManagement}
-                className="text-right text-xs font-semibold text-primary-700 hover:underline"
-              >
-                Lihat Manajemen Lokasi
-              </button>
             </div>
-          ) : null}
 
-          {/* Divider */}
-          <div className="h-px w-full bg-neutral-400"></div>
+            {/* Divider */}
+            <div className="h-px w-full bg-neutral-400"></div>
 
-          {/* Recent Transactions Section */}
-          <div className="flex flex-col gap-4">
-            <h3 className="text-sm font-bold text-neutral-700">
-              Transaksi Terakhir
-            </h3>
+            {/* Location Management Section */}
+            {userSavedLocations.length > 0 ? (
+              <div className="flex flex-col gap-4">
+                <h3 className="text-sm font-bold text-neutral-700">
+                  Manajemen Lokasi
+                </h3>
 
-            <div className="flex flex-col gap-3">
-              {recentSearches.map((location, index) => (
-                <RecentTransactionItem
-                  key={index}
-                  location={location}
-                  onClick={() => alert("not implemented")}
-                  withBookmark={{
-                    onClick: () => alert("not implemented"),
-                  }}
-                />
-              ))}
+                <div className="flex flex-col gap-3">
+                  {userSavedLocations.slice(0, 3).map((location, index) => (
+                    <SavedLocationItem
+                      key={index}
+                      location={location}
+                      onClick={() => alert("coba")}
+                      withEdit={{
+                        onClick: (e) => {
+                          e.stopPropagation();
+                          alert("not implemented");
+                        },
+                      }}
+                    />
+                  ))}
+                </div>
+
+                <button
+                  onClick={handleToUserSavedLocationManagement}
+                  className="text-right text-xs font-semibold text-primary-700 hover:underline"
+                >
+                  Lihat Manajemen Lokasi
+                </button>
+              </div>
+            ) : null}
+
+            {/* Divider */}
+            <div className="h-px w-full bg-neutral-400"></div>
+
+            {/* Recent Transactions Section */}
+            <div className="flex flex-col gap-4">
+              <h3 className="text-sm font-bold text-neutral-700">
+                Transaksi Terakhir
+              </h3>
+
+              <div className="flex flex-col gap-3">
+                {recentSearches.map((location, index) => (
+                  <RecentTransactionItem
+                    key={index}
+                    location={location}
+                    onClick={() => alert("not implemented")}
+                    withBookmark={{
+                      onClick: () => alert("not implemented"),
+                    }}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
 
-      <ModalPostalCodeResponsive
-        open={isModalPostalCodeOpen}
-        searchValue={searchLocationByPostalCode}
-        setSearchValue={setSearchLocationByPostalCode}
-        options={postalCodeAutoCompleteResult}
-        onSelectPostalCode={onSelectPostalCode}
-        onOpenChange={setIsModalPostalCodeOpen}
-      />
-    </div>
+        <ModalPostalCodeResponsive
+          open={isModalPostalCodeOpen}
+          searchValue={searchLocationByPostalCode}
+          setSearchValue={setSearchLocationByPostalCode}
+          options={postalCodeAutoCompleteResult}
+          onSelectPostalCode={onSelectPostalCode}
+          onOpenChange={setIsModalPostalCodeOpen}
+        />
+      </div>
+    </SearchBarResponsiveLayout>
   );
 };

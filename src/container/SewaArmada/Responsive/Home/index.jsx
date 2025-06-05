@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { Package, Plus, Shield, Truck } from "lucide-react";
 
+import DefaultResponsiveLayout from "@/layout/ResponsiveLayout/DefaultResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 
@@ -66,7 +67,7 @@ export const SewaArmadaHome = () => {
   };
 
   return (
-    <>
+    <DefaultResponsiveLayout mode="default">
       <div className="min-h-screen w-full bg-neutral-100">
         <BannerCarousel banners={banners} showControls={false} />
 
@@ -313,6 +314,6 @@ export const SewaArmadaHome = () => {
       <pre>{JSON.stringify(formValues, null, 2)}</pre>
 
       <ModalFirstTimer />
-    </>
+    </DefaultResponsiveLayout>
   );
 };

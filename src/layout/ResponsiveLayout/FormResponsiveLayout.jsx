@@ -1,6 +1,28 @@
 import { HeaderResponsiveContainer } from "@/components/Header/Responsive";
 import { HeaderResponsiveForm } from "@/components/Header/Responsive/Form";
 
+/**
+ * @typedef {Object} HeaderResponsiveFormTitle
+ * @property {string} label
+ * @property {string} className
+ */
+/**
+ * @typedef {Object} HeaderResponsiveFormWithMenu
+ * @property {() => void | undefined} onClickInfo
+ * @property {() => void | undefined} onClickMenu
+ */
+/**
+ * @typedef {Object} HeaderResponsiveFormProps
+ * @property {() => void | undefined} onClickBackButton
+ * @property {HeaderResponsiveFormTitle | undefined} title
+ * @property {HeaderResponsiveFormWithMenu | undefined} withMenu
+ * @property {React.ReactNode} children
+ */
+
+/**
+ * @param {HeaderResponsiveFormProps} props
+ * @returns {React.ReactNode}
+ */
 const FormResponsiveLayout = ({
   onClickBackButton,
   title,

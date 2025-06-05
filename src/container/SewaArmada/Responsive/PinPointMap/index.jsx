@@ -4,12 +4,16 @@ import FooterOneButton from "@/components/Footer/OneButton";
 import { ModalPostalCodeResponsive } from "@/components/LocationManagement/Responsive/ModalPostalCodeResponsive";
 import { MapContainer } from "@/components/LocationManagement/common/MapContainer";
 import { useLocation } from "@/hooks/use-location";
-import { useResponsiveRouteParams } from "@/lib/responsive-navigation";
+import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
+import {
+  useResponsiveNavigation,
+  useResponsiveRouteParams,
+} from "@/lib/responsive-navigation";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
 export const PinPointMap = () => {
+  const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
-  console.log("🚀 ~ PinPointMap ~ params:", params);
   const { formValues, setField, setLocationCoordinatesOnly } =
     useLocationFormStore();
 
@@ -45,7 +49,12 @@ export const PinPointMap = () => {
   }, [params?.dataLokasi?.district]);
 
   return (
-    <div>
+    <FormResponsiveLayout
+      title={{
+        label: params?.dataLokasi?.location?.name,
+        className: "text-sm font-semibold line-clamp-1 break-all",
+      }}
+    >
       <MapContainer
         viewOnly={false}
         coordinates={coordinates}
@@ -67,6 +76,6 @@ export const PinPointMap = () => {
         onClick={() => alert("test")}
         className="bg-transparent"
       />
-    </div>
+    </FormResponsiveLayout>
   );
 };

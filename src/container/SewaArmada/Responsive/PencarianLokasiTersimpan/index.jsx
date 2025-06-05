@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 
 import { useLocation } from "@/hooks/use-location";
+import SearchBarResponsiveLayout from "@/layout/ResponsiveLayout/SearchBarResponsiveLayout";
 import {
   useResponsiveNavigation,
   useResponsiveSearch,
@@ -65,31 +66,35 @@ export const PencarianLokasiTersimpan = () => {
   }, [searchValue, userSavedLocations]);
 
   return (
-    <div className="grid gap-5 px-4 py-5">
-      {/* Location Management Section */}
-      <div className="flex flex-col gap-4">
-        <h3 className="text-sm font-bold text-neutral-700">Manajemen Lokasi</h3>
+    <SearchBarResponsiveLayout placeholder="Cari Lokasi yang Disimpan">
+      <div className="grid gap-5 px-4 py-5">
+        {/* Location Management Section */}
+        <div className="flex flex-col gap-4">
+          <h3 className="text-sm font-bold text-neutral-700">
+            Manajemen Lokasi
+          </h3>
 
-        <div className="flex flex-col gap-3">
-          {filteredUserSavedLocations.map((location, index) => (
-            <SavedLocationItem
-              key={location.ID}
-              location={location}
-              onClick={(location) => {
-                handleSelectUserSavedLocation(location);
-                navigation.pop();
-                navigation.pop();
-              }}
-              withEdit={{
-                onClick: (e) => {
-                  e.stopPropagation();
-                  alert("kocak");
-                },
-              }}
-            />
-          ))}
+          <div className="flex flex-col gap-3">
+            {filteredUserSavedLocations.map((location, index) => (
+              <SavedLocationItem
+                key={location.ID}
+                location={location}
+                onClick={(location) => {
+                  handleSelectUserSavedLocation(location);
+                  navigation.pop();
+                  navigation.pop();
+                }}
+                withEdit={{
+                  onClick: (e) => {
+                    e.stopPropagation();
+                    alert("kocak");
+                  },
+                }}
+              />
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </SearchBarResponsiveLayout>
   );
 };
