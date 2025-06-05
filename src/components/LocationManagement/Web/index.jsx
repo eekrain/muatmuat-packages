@@ -7,8 +7,8 @@ import { useLocation } from "@/hooks/use-location";
 import { cn } from "@/lib/cn";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
+import { MapContainer } from "../common/MapContainer";
 import { InputLocationManagementDropdown } from "./InputLocationManagementDropdown";
-import { MapContainer } from "./MapContainer";
 import { ModalPostalCode } from "./ModalPostalCode";
 import { ModalSavedLocationManagement } from "./ModalSavedLocationManagement";
 
@@ -55,6 +55,7 @@ export const LocationModalFormWeb = ({
     setIsModalSavedLocationManagementOpen,
   } = useLocation({
     onAddressSelected: (data) => {
+      console.log("🚀 ~ data:", data);
       setField("dataLokasi", data);
     },
     setPICName: (name) => {
@@ -102,16 +103,19 @@ export const LocationModalFormWeb = ({
 
   return (
     <>
-      <Modal open={open} onOpenChange={onOpenChange} closeOnOutsideClick>
+      <Modal
+        open={open}
+        onOpenChange={onOpenChange}
+        closeOnOutsideClick={false}
+      >
         <ModalContent>
           <div className="h-[420px] w-[919px]">
             <div className="flex h-full w-full flex-row items-center gap-4 p-4">
               <MapContainer
                 viewOnly={false}
-                width={604}
-                height={380}
                 coordinates={coordinates}
                 onPositionChange={setCoordinates}
+                className="h-[380px] w-[604px]"
               />
 
               <div className="w-full flex-1">

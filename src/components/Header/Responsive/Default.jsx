@@ -4,29 +4,71 @@ import { useRouter } from "next/navigation";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
-import { useResponsiveLayout } from "@/store/responsiveLayout";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
-export const HeaderResponsiveDefault = () => {
+/**
+ * @typedef {Object} DefaultResponsiveLayoutProps
+ * @property {"default" | "menu"} mode
+ * @property {() => void | undefined} onClickBackButton
+ * @property {() => void | undefined} onClickNotificationButton
+ * @property {() => void | undefined} onClickChatButton
+ * @property {() => void | undefined} onClickMenuButton
+ */
+
+/**
+ * @param {DefaultResponsiveLayoutProps} props
+ * @returns {React.ReactNode}
+ */
+export const HeaderResponsiveDefault = ({
+  mode = "default",
+  onClickBackButton,
+  onClickNotificationButton,
+  onClickChatButton,
+  onClickMenuButton,
+}) => {
   const router = useRouter();
+  const navigation = useResponsiveNavigation();
 
-  const screen = useResponsiveLayout((state) => state.screen);
-  const defaultScreenState = useResponsiveLayout((state) => state.default);
+  const handleNotificationButton = () => {
+    if (onClickNotificationButton) onClickNotificationButton();
+    else
+      alert(
+        "HeaderResponsiveDefault ~ onClickNotificationButton ~ not implemented"
+      );
+  };
+
+  const handleChatButton = () => {
+    if (onClickChatButton) onClickChatButton();
+    else alert("HeaderResponsiveDefault ~ onClickChatButton ~ not implemented");
+  };
+
+  const handleMenuButton = () => {
+    if (onClickMenuButton) onClickMenuButton();
+    else navigation.push("/menu");
+  };
+
+  const handleBackButton = () => {
+    if (onClickBackButton) onClickBackButton();
+    else if (mode === "default") router.back();
+    else navigation.pop();
+  };
+
   const menuIcons = [
     {
       src: "/icons/manajemen-notifikasi24.svg",
       count: 2,
-      onClick: defaultScreenState.header.onClickNotificationButton,
+      onClick: handleNotificationButton,
     },
     {
       src: "/icons/chat24.svg",
       count: 99,
-      onClick: defaultScreenState.header.onClickChatButton,
+      onClick: handleChatButton,
     },
-    ...(screen === "default"
+    ...(mode === "default"
       ? [
           {
             src: "/icons/burger-menu24.svg",
-            onClick: defaultScreenState.header.onClickMenuButton,
+            onClick: handleMenuButton,
           },
         ]
       : []),
@@ -40,7 +82,7 @@ export const HeaderResponsiveDefault = () => {
           src="/icons/chevron-left24.svg"
           width={24}
           height={24}
-          onClick={defaultScreenState.header.onClickBackButton}
+          onClick={handleBackButton}
         />
         <ImageComponent src="/icons/muattrans.svg" width={120} height={24} />
       </div>

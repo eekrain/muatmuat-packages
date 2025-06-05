@@ -3,11 +3,11 @@
 import { Fragment, useEffect, useState } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
+import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
-import Input from "@/components/Input/Input";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
-import Tooltip from "@/components/Tooltip/Tooltip";
+import { InfoTooltip } from "@/components/Tooltip/Tooltip";
 
 // Warning Badge Component
 const WarningBadge = ({ icon, message }) => {
@@ -151,20 +151,7 @@ const SectionHeader = ({ recommended, type }) => {
       <span className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
         {recommended ? recommendedTitle : "Tidak Direkomendasikan"}
       </span>
-      {recommended && (
-        <Tooltip
-          className="!-ml-4 text-[14px] leading-[16.8px]"
-          text={tooltipContent}
-          position="bottom"
-        >
-          <IconComponent
-            src="/icons/info-circle24.svg"
-            width={24}
-            height={24}
-            className="icon-gray"
-          />
-        </Tooltip>
-      )}
+      {recommended && <InfoTooltip content={tooltipContent} />}
     </div>
   );
 };
@@ -304,7 +291,7 @@ const FilterModal = ({ data, isOpen, setIsOpen, onSelectArmada, type }) => {
                 {filteredData.length === 0 ? (
                   <div className="flex h-[302px] items-center justify-center">
                     <DataNotFound
-                      classname="gap-y-5"
+                      className="gap-y-5"
                       textClass="text-[#868686] leading-[19.2px]"
                       title="Keyword Tidak Ditemukan"
                       width={71}

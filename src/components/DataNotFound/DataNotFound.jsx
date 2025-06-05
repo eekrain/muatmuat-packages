@@ -4,7 +4,7 @@ import { useTranslation } from "@/hooks/use-translation";
 const DataNotFound = ({
   title,
   children,
-  classname,
+  className,
   image,
   type = "search",
   textClass,
@@ -16,7 +16,7 @@ const DataNotFound = ({
 
   return (
     <div
-      className={`flex flex-col items-center justify-center gap-[10px] ${classname}`}
+      className={`flex flex-col items-center justify-center gap-[10px] ${className}`}
     >
       <ImageComponent
         src={

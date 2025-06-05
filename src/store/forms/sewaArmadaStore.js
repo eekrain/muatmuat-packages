@@ -123,3 +123,25 @@ export const useSewaArmadaStore = create(
     },
   }))
 );
+
+export const useSewaArmadaActions = () => {
+  const setField = useSewaArmadaStore((state) => state.setField);
+  const setError = useSewaArmadaStore((state) => state.setError);
+  const setFotoMuatan = useSewaArmadaStore((state) => state.setFotoMuatan);
+  const addLokasi = useSewaArmadaStore((state) => state.addLokasi);
+  const updateLokasi = useSewaArmadaStore((state) => state.updateLokasi);
+  const removeLokasi = useSewaArmadaStore((state) => state.removeLokasi);
+  const reset = useSewaArmadaStore((state) => state.reset);
+  const validateForm = useSewaArmadaStore((state) => state.validateForm);
+
+  return {
+    setField,
+    setError,
+    setFotoMuatan,
+    addLokasi,
+    updateLokasi,
+    removeLokasi,
+    reset,
+    validateForm,
+  };
+};

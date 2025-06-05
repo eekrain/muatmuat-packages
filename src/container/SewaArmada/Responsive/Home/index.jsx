@@ -1,0 +1,319 @@
+import { useState } from "react";
+
+import { Package, Plus, Shield, Truck } from "lucide-react";
+
+import DefaultResponsiveLayout from "@/layout/ResponsiveLayout/DefaultResponsiveLayout";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
+
+import { BannerCarousel } from "../../common/BannerCarousel";
+import { ModalFirstTimer } from "./ModalFirstTimer";
+import WaktuMuatBottomsheet from "./WaktuMuat/WaktuMuat";
+
+const FormLabel = ({ title, required = true }) => {
+  return (
+    <div className="flex items-center gap-x-1 font-bold text-neutral-900">
+      <span className="text-[14px] leading-[15.4px]">
+        {`${title}${required ? "*" : ""}`}
+      </span>
+      {!required ? (
+        <span className="text-[10px] leading-[10px]">{"(Opsional)"}</span>
+      ) : null}
+    </div>
+  );
+};
+
+const banners = [
+  {
+    id: 1,
+    imageUrl: "/img/truck-banner.png",
+    altText: "Promo Muatrans",
+    linkUrl: "/promo/1",
+  },
+  {
+    id: 2,
+    imageUrl: "/img/truck-banner2.png",
+    altText: "Layanan Pengiriman",
+    linkUrl: "/services",
+  },
+  {
+    id: 3,
+    imageUrl: "/img/truck-banner3.png",
+    altText: "Download Aplikasi",
+    linkUrl: "/download",
+  },
+];
+
+export const SewaArmadaHome = () => {
+  const navigation = useResponsiveNavigation();
+  const { formValues } = useSewaArmadaStore();
+
+  const [formData, setFormData] = useState({
+    waktuMuat: "",
+    lokasiMuat: "",
+    lokasiBongkar: "",
+    informasiMuatan: "",
+    jenisCarrier: "",
+    jenisTruk: "",
+    layananTambahan: "",
+  });
+
+  const handleAddLocation = () => {
+    navigation.push("/PencarianLokasi");
+  };
+
+  const handleAddInformasiMuatan = () => {
+    navigation.push("/InformasiMuatan");
+  };
+
+  return (
+    <DefaultResponsiveLayout mode="default">
+      <div className="min-h-screen w-full bg-neutral-100">
+        <BannerCarousel banners={banners} showControls={false} />
+
+        {/* Brand Section */}
+        <div className="flex h-[61px] w-full items-center justify-between gap-[29px] bg-gradient-to-r from-neutral-300 via-neutral-200 to-neutral-300 px-4 py-3">
+          <div className="flex-1">
+            <h2 className="text-[16px] font-semibold leading-[17.6px] text-[#461B02]">
+              Ayo kirim muatan kamu dengan muatrans!
+            </h2>
+          </div>
+          <div className="flex w-[123px] flex-col items-end gap-1">
+            <img
+              src="/icons/muattrans.svg"
+              alt="muatrans"
+              className="h-4 w-20"
+            />
+            {/* <div className="flex h-4 w-20 items-center justify-center rounded bg-gradient-to-r from-blue-600 to-yellow-500 text-xs font-bold text-white">
+              muatrans
+            </div> */}
+            <p className="text-right text-[10px] font-semibold leading-[10px] text-[#461B02]">
+              Cargo Land Transportation Company
+            </p>
+          </div>
+        </div>
+
+        {/* Form Section */}
+        <div className="bg-white px-4 py-5">
+          <div className="flex flex-col gap-y-6">
+            {/* Waktu Muat Field */}
+            <div className="flex flex-col gap-y-4">
+              <FormLabel title="Waktu Muat" />
+              <WaktuMuatBottomsheet />
+            </div>
+
+            {/* Lokasi Muat Field */}
+            <div className="space-y-4">
+              <label className="block text-[14px] font-semibold leading-[15.4px] text-neutral-900">
+                Lokasi Muat*
+              </label>
+              <div className="w-full space-y-3 rounded-md border border-neutral-600 bg-neutral-50 p-3">
+                <div className="flex items-center gap-2">
+                  <div className="relative h-4 w-4 rounded-full bg-yellow-400">
+                    <div className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-[#461B02]"></div>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Masukkan Lokasi Muat"
+                    className="flex-1 bg-transparent text-[14px] font-semibold text-neutral-600 outline-none placeholder:text-neutral-600"
+                    value={formData.lokasiMuat}
+                    onChange={(e) =>
+                      setFormData({ ...formData, lokasiMuat: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="h-px w-full bg-neutral-400"></div>
+                <button
+                  onClick={handleAddLocation}
+                  className="flex w-full cursor-pointer items-center justify-center gap-2"
+                >
+                  <Plus className="h-5 w-5 text-primary-700" />
+                  <span className="text-[14px] font-semibold text-primary-700">
+                    Tambah Lokasi Muat
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* Lokasi Bongkar Field */}
+            <div className="space-y-4">
+              <label className="block text-[14px] font-semibold leading-[15.4px] text-neutral-900">
+                Lokasi Bongkar*
+              </label>
+              <div className="w-full space-y-3 rounded-md border border-neutral-600 bg-neutral-50 p-3">
+                <div className="flex items-center gap-2">
+                  <div className="relative h-4 w-4 rounded-full bg-[#461B02]">
+                    <div className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-white"></div>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Masukkan Lokasi Bongkar"
+                    className="flex-1 bg-transparent text-[14px] font-semibold text-neutral-600 outline-none placeholder:text-neutral-600"
+                    value={formData.lokasiBongkar}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        lokasiBongkar: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className="h-px w-full bg-neutral-400"></div>
+                <div className="flex cursor-pointer items-center justify-center gap-2">
+                  <Plus className="h-5 w-5 text-primary-700" />
+                  <span className="text-[14px] font-semibold text-primary-700">
+                    Tambah Lokasi Bongkar
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Informasi Muatan Field */}
+            <div className="flex flex-col gap-y-4">
+              <label className="block text-[14px] font-semibold leading-[15.4px] text-neutral-900">
+                Informasi Muatan*
+              </label>
+              <div className="relative" onClick={handleAddInformasiMuatan}>
+                <div className="flex h-8 w-full items-center gap-2 rounded-md border border-neutral-600 bg-neutral-50 px-3 py-2">
+                  <Package className="h-4 w-4 text-neutral-700" />
+                  <input
+                    type="text"
+                    placeholder="Masukkan Muatan"
+                    className="flex-1 bg-transparent text-[14px] font-semibold text-neutral-600 outline-none placeholder:text-neutral-600"
+                    value={formData.informasiMuatan}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        informasiMuatan: e.target.value,
+                      })
+                    }
+                  />
+                  <svg
+                    className="h-4 w-4 text-neutral-700"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Jenis Armada Field */}
+            <div className="space-y-4">
+              <label className="block text-[14px] font-semibold leading-[15.4px] text-neutral-900">
+                Jenis Armada*
+              </label>
+              <div className="space-y-2">
+                {/* Pilih Jenis Carrier */}
+                <div className="flex h-8 w-full items-center gap-2 rounded-md border border-neutral-600 bg-neutral-200 px-3 py-2">
+                  <Truck className="h-4 w-4 text-neutral-600" />
+                  <span className="flex-1 text-[14px] font-semibold text-neutral-600">
+                    Pilih Jenis Carrier
+                  </span>
+                  <svg
+                    className="h-4 w-4 text-neutral-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+
+                {/* Pilih Jenis Truk */}
+                <div className="flex h-8 w-full items-center gap-2 rounded-md border border-neutral-600 bg-neutral-200 px-3 py-2">
+                  <Truck className="h-4 w-4 text-neutral-600" />
+                  <span className="flex-1 text-[14px] font-semibold text-neutral-600">
+                    Pilih Jenis Truk
+                  </span>
+                  <svg
+                    className="h-4 w-4 text-neutral-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Asuransi Barang Field */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1">
+                  <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
+                    Asuransi Barang
+                  </span>
+                  <span className="text-[10px] font-semibold text-neutral-900">
+                    (Opsional)
+                  </span>
+                </div>
+                <span className="cursor-pointer text-[12px] font-semibold text-primary-700">
+                  Ubah Asuransi
+                </span>
+              </div>
+              <div className="flex h-8 w-full items-center gap-2 rounded-md border border-neutral-600 bg-neutral-50 px-3 py-2">
+                <Shield className="h-4 w-4 text-neutral-700" />
+                <span className="flex-1 text-[14px] font-semibold text-neutral-900">
+                  Gratis perlindungan hingga Rp10.000.000
+                </span>
+              </div>
+            </div>
+
+            {/* Layanan Tambahan Field */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-1">
+                <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
+                  Layanan Tambahan
+                </span>
+                <span className="text-[10px] font-semibold text-neutral-900">
+                  (Opsional)
+                </span>
+              </div>
+              <div className="flex h-8 w-full items-center gap-2 rounded-md border border-neutral-600 bg-neutral-50 px-3 py-2">
+                <Package className="h-4 w-4 text-neutral-700" />
+                <span className="flex-1 text-[14px] font-semibold text-neutral-600">
+                  Pilih Layanan Tambahan
+                </span>
+                <svg
+                  className="h-4 w-4 text-neutral-700"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <pre>{JSON.stringify(formValues, null, 2)}</pre>
+
+      <ModalFirstTimer />
+    </DefaultResponsiveLayout>
+  );
+};

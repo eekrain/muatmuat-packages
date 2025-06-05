@@ -9,7 +9,6 @@ import useDevice from "@/hooks/use-device";
 import { useInitTranslation, useTranslation } from "@/hooks/use-translation";
 
 import DesktopLayout from "../DesktopLayout/DesktopLayout";
-import ResponsiveLayout from "../ResponsiveLayout/ResponsiveLayout";
 
 const Script = () => {
   useInitAuthentication();
@@ -27,13 +26,13 @@ const MainLayout = ({ children }) => {
 
   if (isMobile) {
     return (
-      <ResponsiveLayout>
+      <>
         <Suspense fallback={<Loading />}>
           <Script />
           {isTranslationsReady ? children : <Loading />}
         </Suspense>
         <Toaster />
-      </ResponsiveLayout>
+      </>
     );
   }
 

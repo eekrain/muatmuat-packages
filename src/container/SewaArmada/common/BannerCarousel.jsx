@@ -1,10 +1,9 @@
-import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { cn } from "@/lib/cn";
 
-const BannerCarousel = ({
+export const BannerCarousel = ({
   banners,
   autoplaySpeed = 5000,
   showControls = true,
@@ -62,11 +61,11 @@ const BannerCarousel = ({
 
   return (
     <div
-      className="relative mx-auto h-[250px] w-[1054px]"
+      className="relative mx-auto h-[146px] w-screen md:h-[250px] md:w-[1054px]"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="relative mx-auto h-[250px] w-[1000px] overflow-hidden rounded-xl">
+      <div className="relative mx-auto h-[146px] w-screen overflow-hidden md:h-[250px] md:w-[1000px] md:rounded-xl">
         {banners.map((banner, index) => (
           <a
             key={banner.id}
@@ -77,13 +76,10 @@ const BannerCarousel = ({
               index === currentIndex ? "z-0 opacity-100" : "-z-10 opacity-0"
             }`}
           >
-            <Image
+            <img
               src={banner.imageUrl}
               alt={banner.altText || "Banner image"}
-              fill
-              sizes="1000px"
-              className="rounded-xl object-cover"
-              priority={index === 0}
+              className="h-full object-cover"
             />
           </a>
         ))}
@@ -141,5 +137,3 @@ const BannerCarousel = ({
     </div>
   );
 };
-
-export default BannerCarousel;
