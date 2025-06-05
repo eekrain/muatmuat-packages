@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   BottomSheet,
@@ -8,6 +8,7 @@ import {
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
+import usePrevious from "@/hooks/use-previous";
 
 const DropdownRadioBottomsheeet = ({
   className,
@@ -18,6 +19,21 @@ const DropdownRadioBottomsheeet = ({
 }) => {
   const [tempValue, setTempValue] = useState("");
   const [isBottomsheetOpen, setIsBottomsheetOpen] = useState(false);
+  const previousIsBottomsheetOpen = usePrevious(isBottomsheetOpen);
+
+  useEffect(() => {
+    if (isBottomsheetOpen && !previousIsBottomsheetOpen) {
+      setTempValue(value);
+    }
+  }, [isBottomsheetOpen, previousIsBottomsheetOpen, value]);
+
+  const handleSelectOption = () => {
+    onChange(tempValue);
+    setIsBottomsheetOpen(false);
+  };
+
+  const selectedItem = options.find((item) => item.value === value);
+
   return (
     <BottomSheet open={isBottomsheetOpen} onOpenChange={setIsBottomsheetOpen}>
       <button
@@ -25,7 +41,7 @@ const DropdownRadioBottomsheeet = ({
         onClick={() => setIsBottomsheetOpen(true)}
       >
         <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
-          {(value ?? options.length > 0) ? options[0].label : ""}
+          {selectedItem?.label ?? ""}
         </span>
         <IconComponent src="/icons/chevron-down.svg" />
       </button>
@@ -54,7 +70,7 @@ const DropdownRadioBottomsheeet = ({
           <Button
             className="h-10 max-w-full"
             color="primary"
-            onClick={() => {}}
+            onClick={handleSelectOption}
           >
             Terapkan
           </Button>

@@ -56,8 +56,14 @@ const CariNamaMuatan = () => {
         <div className="flex min-h-[calc(100vh_-_126px)] items-center justify-center">
           <DataNotFound
             className="gap-y-3.5"
-            textClass="text-[#868686] leading-[19.2px]"
-            title="Keyword Tidak Ditemukan"
+            textClass="leading-[14px] !text-[14px]"
+            title={
+              <>
+                Keyword
+                <br />
+                Tidak Ditemukan
+              </>
+            }
             width={127}
             height={109}
           />

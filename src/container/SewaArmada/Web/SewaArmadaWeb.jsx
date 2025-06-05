@@ -193,7 +193,7 @@ export default function SewaArmadaWeb() {
     setOrderType,
     updateLokasi,
   } = useSewaArmadaStore();
-
+  console.log("form", formValues);
   const { modalConfig, handleOpenModalLocation, handleCloseModalLocation } =
     useModalLocation();
   // console.log("form", formValues);
