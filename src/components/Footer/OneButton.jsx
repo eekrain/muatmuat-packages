@@ -6,7 +6,7 @@ const FooterOneButton = ({ className, buttonTitle, onClick }) => {
   return (
     <div
       className={cn(
-        "fixed bottom-0 left-0 w-screen rounded-t-[10px] bg-neutral-50 px-4 py-3",
+        "fixed bottom-0 left-0 flex h-16 w-screen items-center rounded-t-[10px] bg-neutral-50 px-4",
         className
       )}
     >

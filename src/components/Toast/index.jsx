@@ -10,7 +10,7 @@ import { useToastStore } from "@/store/toastStore";
 
 const Toaster = ({ className }) => {
   const [mounted, setMounted] = useState(false);
-  const { dataToast, removeToast } = useToastStore();
+  const { dataToast, actions } = useToastStore();
 
   useEffect(() => {
     return () => {
@@ -56,7 +56,7 @@ const Toaster = ({ className }) => {
             height={20}
             width={20}
             className="flex-shrink-0 cursor-pointer"
-            onClick={() => removeToast(toast.id)}
+            onClick={() => actions.removeToast(toast.id)}
           />
         </div>
       ))}

@@ -9,6 +9,7 @@ import {
   useResponsiveNavigation,
 } from "@/lib/responsive-navigation";
 
+import CariNamaMuatan from "./CariNamaMuatan/CariNamaMuatan";
 import { SewaArmadaHome } from "./Home";
 import InformasiMuatanScreen from "./InformasiMuatan/InformasiMuatanScreen";
 import { PencarianLokasi } from "./PencarianLokasi";
@@ -40,6 +41,7 @@ const SewaArmadaResponsive = () => {
         path="/InformasiMuatan"
         component={<InformasiMuatanScreen />}
       />
+      <ResponsiveRoute path="/CariNamaMuatan" component={<CariNamaMuatan />} />
       <ResponsiveRoute path="/PinPointMap" component={<PinPointMap />} />
       <ResponsiveRoute path="/menu" component={<ResponsiveMenu />} />
     </>

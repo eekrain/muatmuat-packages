@@ -29,7 +29,12 @@ export const FormLabelInfoTooltip = ({ children, title }) => {
   return (
     <BottomSheet>
       <BottomSheetTrigger className="block">
-        <IconComponent src="/icons/info16.svg" width={16} height={16} />
+        <IconComponent
+          className="icon-stroke-neutral-700"
+          src="/icons/info16.svg"
+          width={16}
+          height={16}
+        />
       </BottomSheetTrigger>
       <BottomSheetContent>
         <BottomSheetHeader title={title}></BottomSheetHeader>

@@ -3,10 +3,13 @@
 import { useEffect, useState } from "react";
 
 import Checkbox from "@/components/Checkbox/Checkbox";
+import DropdownRadioBottomsheeet from "@/components/Dropdown/DropdownRadioBottomsheeet";
+import FooterOneButton from "@/components/Footer/OneButton";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 
 import {
@@ -16,12 +19,37 @@ import {
 } from "../FormLabel/FormLabel";
 
 const InformasiMuatanScreen = () => {
+  const beratMuatanOptions = [
+    {
+      label: "kg",
+      value: "kg",
+    },
+    {
+      label: "Liter",
+      value: "liter",
+    },
+    {
+      label: "Ton",
+      value: "ton",
+    },
+  ];
+  const dimensiMuatanOptions = [
+    {
+      label: "m",
+      value: "m",
+    },
+    {
+      label: "cm",
+      value: "cm",
+    },
+  ];
+  const navigation = useResponsiveNavigation();
   const { formValues, setField, orderType, setOrderType } =
     useSewaArmadaStore();
   // State Management
   const [tipeMuatan, setTipeMuatan] = useState("");
   const [jenisMuatan, setJenisMuatan] = useState("");
-  const [halalCertification, setHalalCertification] = useState(false);
+  const [sertifikasiHalal, setSertifikasiHalal] = useState(false);
   const [namaMuatan, setNamaMuatan] = useState("");
   const [beratMuatan, setBeratMuatan] = useState("");
   const [dimensiP, setDimensiP] = useState("");
@@ -38,7 +66,7 @@ const InformasiMuatanScreen = () => {
     const data = {
       tipeMuatan: formValues.tipeMuatan,
       jenisMuatan: formValues.jenisMuatan,
-      sertifikasiHalal: formValues.halalCertification,
+      sertifikasiHalal: formValues.sertifikasiHalal,
     };
     setTempInformasiMuatan(data);
   }, [
@@ -59,13 +87,17 @@ const InformasiMuatanScreen = () => {
     setJenisMuatan(data.value);
   };
 
-  const handleHalalCertificationChange = (data) => {
-    setHalalCertification(data.checked);
+  const handlesertifikasiHalalChange = (data) => {
+    setSertifikasiHalal(data.checked);
   };
 
   const handleAddMuatan = () => {
     // Add functionality here
     console.log("Add muatan clicked");
+  };
+
+  const handleSaveInformasiMuatan = () => {
+    // toast.error("Terdapat field yang kosong");
   };
 
   return (
@@ -74,7 +106,7 @@ const InformasiMuatanScreen = () => {
         label: "Informasi Muatan",
       }}
     >
-      <div className="flex w-full flex-col gap-x-2 bg-neutral-200">
+      <div className="mb-16 flex w-full flex-col gap-y-2 bg-neutral-200">
         {/* Section Tipe Muatan */}
         <div className="flex flex-col gap-y-4 bg-white px-4 py-5">
           {/* Header */}
@@ -278,7 +310,7 @@ const InformasiMuatanScreen = () => {
           <div className="flex gap-1">
             <Checkbox
               checked={tempInformasiMuatan.sertifikasiHalal}
-              onChange={handleHalalCertificationChange}
+              onChange={handlesertifikasiHalalChange}
               label="Centang opsi jika pengiriman memerlukan armada dengan sertifikat halal logistik"
               value="halal_certification"
               className="w-full"
@@ -293,22 +325,20 @@ const InformasiMuatanScreen = () => {
             <FormLabelContainer>
               <FormLabel className="font-semibold" title="Nama Muatan" />
             </FormLabelContainer>
-            <Input
-              type="text"
-              placeholder="Masukkan Muatan"
-              name="nama_muatan"
-              disabled={true}
-              icon={{
-                left: "/icons/search.svg",
-                right: "/icons/chevron-down.svg",
-              }}
-              className="w-full"
-              appearance={{
-                inputClassName: "bg-neutral-200 text-neutral-600",
-              }}
-              value={namaMuatan}
-              onChange={(e) => setNamaMuatan(e.target.value)}
-            />
+            <button
+              className={
+                "flex h-8 items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-3"
+              }
+              onClick={() => navigation.push("/CariNamaMuatan")}
+            >
+              <div className="flex items-center gap-x-2">
+                <IconComponent src="/icons/muatan16.svg" />
+                <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-600">
+                  Pilih Muatan
+                </span>
+              </div>
+              <IconComponent src="/icons/chevron-right.svg" />
+            </button>
           </div>
 
           {/* Berat Muatan Field */}
@@ -338,17 +368,10 @@ const InformasiMuatanScreen = () => {
                 value={beratMuatan}
                 onChange={(e) => setBeratMuatan(e.target.value)}
               />
-              <Input
-                type="text"
-                value="kg"
-                disabled={true}
-                icon={{
-                  right: "/icons/chevron-down.svg",
-                }}
-                className="w-16"
-                appearance={{
-                  inputClassName: "bg-neutral-200 text-center text-neutral-600",
-                }}
+              <DropdownRadioBottomsheeet
+                className="w-[65px]"
+                title="Berat Muatan"
+                options={beratMuatanOptions}
               />
             </div>
           </div>
@@ -422,17 +445,10 @@ const InformasiMuatanScreen = () => {
                 />
               </div>
 
-              <Input
-                type="text"
-                value="m"
-                disabled={true}
-                icon={{
-                  right: "/icons/chevron-down.svg",
-                }}
-                className="w-16"
-                appearance={{
-                  inputClassName: "bg-neutral-200 text-center text-neutral-600",
-                }}
+              <DropdownRadioBottomsheeet
+                className="w-[65px]"
+                title="Dimensi Muatan"
+                options={dimensiMuatanOptions}
               />
             </div>
           </div>
@@ -449,6 +465,10 @@ const InformasiMuatanScreen = () => {
           </div>
         </div>
       </div>
+      <FooterOneButton
+        buttonTitle="Simpan"
+        onClick={handleSaveInformasiMuatan}
+      />
     </FormResponsiveLayout>
   );
 };
