@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import Checkbox from "@/components/Checkbox/Checkbox";
+import FooterOneButton from "@/components/Footer/OneButton";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Input from "@/components/Input/Input";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
@@ -261,6 +262,7 @@ const LayananTambahan = () => {
           </div>
         </div>
       </div>
+      <FooterOneButton buttonTitle="Simpan" onClick={() => {}} />
     </FormResponsiveLayout>
   );
 };
