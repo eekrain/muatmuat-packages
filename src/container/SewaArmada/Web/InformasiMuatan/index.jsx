@@ -6,10 +6,10 @@ import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import * as v from "valibot";
 
 import Button from "@/components/Button/Button";
+import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
-import { InfoTooltip } from "@/components/Tooltip/Tooltip";
 import { useTranslation } from "@/hooks/use-translation";
 
 import { DropdownWithCheckIcon } from "./DropdownWithCheckIcon";
@@ -199,39 +199,31 @@ export const InformasiMuatanModal = ({
                       <th className="w-[168px]">
                         <div className="flex items-end gap-x-2">
                           <FormLabel title={"Berat Muatan"} required />
-                          <InfoTooltip content="Masukkan berat keseluruhan atau total dari seluruh muatan yang akan dikirim." />
+                          <InfoTooltip>
+                            Masukkan berat keseluruhan atau total dari seluruh
+                            muatan yang akan dikirim.
+                          </InfoTooltip>
                         </div>
                       </th>
                       <th>
                         <div className="flex items-end gap-x-2">
                           <FormLabel title={"Dimensi Muatan"} />
-                          <InfoTooltip
-                            content={
-                              <div className="text-left text-sm font-normal leading-[1.2]">
-                                <ul>
-                                  <li>
-                                    <b>Panjang</b> : Ukuran terpanjang dari
-                                    muatan.
-                                  </li>
-                                  <li>
-                                    <b>Lebar</b> : Ukuran terlebar dari muatan.
-                                  </li>
-                                  <li>
-                                    <b>Tinggi</b> : Ukuran tertinggi dari muatan
-                                  </li>
-                                </ul>
-                                <p className="mt-1">
-                                  Pengisian dimensi yang tepat akan membantu
-                                  dalam pengelolaan dan pengiriman.
-                                </p>
-                              </div>
-                            }
-                          >
-                            <IconComponent
-                              src="/icons/info16.svg"
-                              width={16}
-                              height={16}
-                            />
+                          <InfoTooltip>
+                            <ul>
+                              <li>
+                                <b>Panjang :</b> Ukuran terpanjang dari muatan.
+                              </li>
+                              <li>
+                                <b>Lebar :</b> Ukuran terlebar dari muatan.
+                              </li>
+                              <li>
+                                <b>Tinggi :</b> Ukuran tertinggi dari muatan
+                              </li>
+                            </ul>
+                            <p>
+                              Pengisian dimensi yang tepat akan membantu dalam
+                              pengelolaan dan pengiriman.
+                            </p>
                           </InfoTooltip>
                         </div>
                       </th>

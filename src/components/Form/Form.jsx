@@ -1,7 +1,12 @@
 import { cn } from "@/lib/cn";
 
 export const FormContainer = ({ children, className }) => (
-  <div className={cn("flex w-full items-start gap-8", className)}>
+  <div
+    className={cn(
+      "flex w-full flex-col items-start gap-4 bg-white px-4 py-5 md:flex-row md:gap-8 md:bg-transparent md:p-0",
+      className
+    )}
+  >
     {children}
   </div>
 );
@@ -15,12 +20,12 @@ export const FormLabel = ({
 }) => (
   <div
     className={cn(
-      "flex h-4 w-[174px] items-center gap-1 text-xs font-medium leading-[1.2] text-neutral-600",
+      "flex h-4 w-full items-center gap-1 text-sm font-bold leading-[1.1] text-neutral-900 md:w-[174px] md:text-xs md:font-medium md:leading-[1.2] md:text-neutral-600",
       variant === "big" && "h-8",
       className
     )}
   >
-    <label>
+    <label className="mt-[2px]">
       {children}
       {required ? "*" : " (Opsional)"}
     </label>

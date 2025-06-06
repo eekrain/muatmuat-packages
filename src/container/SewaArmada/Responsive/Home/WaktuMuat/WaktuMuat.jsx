@@ -146,7 +146,7 @@ const WaktuMuatBottomsheet = () => {
         ) : null}
       </div>
       <BottomSheetContent>
-        <BottomSheetHeader title="Tanggal & Waktu Muat"></BottomSheetHeader>
+        <BottomSheetHeader>Tanggal & Waktu Muat</BottomSheetHeader>
         <div className="flex h-[380px] w-full flex-col gap-4 overflow-y-auto bg-white px-4 py-6">
           {/* Section Tipe Pengiriman */}
           <div className="flex flex-col gap-4">

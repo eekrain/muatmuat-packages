@@ -1,6 +1,6 @@
 import { FormContainer, FormLabel } from "@/components/Form/Form";
+import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import RadioButton from "@/components/Radio/RadioButton";
-import { InfoTooltip } from "@/components/Tooltip/Tooltip";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -17,38 +17,32 @@ export const JenisMuatan = () => {
       <FormLabel
         required
         tooltip={
-          <InfoTooltip
-            className="w-[336px]"
-            side="right"
-            content={
-              <div>
-                <ul>
-                  <li>
-                    <b>Padat:</b> Muatan yang berbentuk solid.
-                  </li>
-                  <li>
-                    <b>Cair:</b> Muatan dalam bentuk cairan, biasanya
-                    membutuhkan penanganan khusus.
-                  </li>
-                  <li>
-                    <b>Curah:</b> Muatan yang dikirim secara massal, seperti
-                    biji-bijian atau pasir.
-                  </li>
-                  <li>
-                    <b>Kendaraan:</b> Muatan berupa alat transportasi yang perlu
-                    diangkut.
-                  </li>
-                  <li>
-                    <b>Container:</b> Muatan yang dikemas dalam suatu container.
-                  </li>
-                </ul>
-                <span>
-                  Pemilihan jenis muatan yang tepat akan membantu dalam
-                  pengelolaan dan pengiriman.
-                </span>
-              </div>
-            }
-          />
+          <InfoTooltip className="w-[336px]" side="right">
+            <ul>
+              <li>
+                <b>Padat:</b> Muatan yang berbentuk solid.
+              </li>
+              <li>
+                <b>Cair:</b> Muatan dalam bentuk cairan, biasanya membutuhkan
+                penanganan khusus.
+              </li>
+              <li>
+                <b>Curah:</b> Muatan yang dikirim secara massal, seperti
+                biji-bijian atau pasir.
+              </li>
+              <li>
+                <b>Kendaraan:</b> Muatan berupa alat transportasi yang perlu
+                diangkut.
+              </li>
+              <li>
+                <b>Container:</b> Muatan yang dikemas dalam suatu container.
+              </li>
+            </ul>
+            <p>
+              Pemilihan jenis muatan yang tepat akan membantu dalam pengelolaan
+              dan pengiriman.
+            </p>
+          </InfoTooltip>
         }
       >
         Jenis Muatan

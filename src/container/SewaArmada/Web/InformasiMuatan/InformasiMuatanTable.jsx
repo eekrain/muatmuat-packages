@@ -1,5 +1,5 @@
+import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { InfoTooltip } from "@/components/Tooltip/Tooltip";
 import { thousandSeparator } from "@/lib/formatters";
 
 const FormLabel = ({ title, required = false }) => (
@@ -22,38 +22,31 @@ export const InformasiMuatanTable = ({ informasiMuatan, onClickUpdate }) => {
             <th className="w-[113px]">
               <div className="flex items-end gap-x-2">
                 <FormLabel title={"Berat Muatan"} required />
-                <InfoTooltip content="Masukkan berat keseluruhan atau total dari seluruh muatan yang akan dikirim." />
+                <InfoTooltip>
+                  Masukkan berat keseluruhan atau total dari seluruh muatan yang
+                  akan dikirim.
+                </InfoTooltip>
               </div>
             </th>
             <th className="w-[190px]">
               <div className="flex items-end gap-x-2">
                 <FormLabel title={"Dimensi Muatan"} />
-                <InfoTooltip
-                  content={
-                    <div className="text-left text-sm font-normal leading-[1.2]">
-                      <ul>
-                        <li>
-                          <b>Panjang</b> : Ukuran terpanjang dari muatan.
-                        </li>
-                        <li>
-                          <b>Lebar</b> : Ukuran terlebar dari muatan.
-                        </li>
-                        <li>
-                          <b>Tinggi</b> : Ukuran tertinggi dari muatan
-                        </li>
-                      </ul>
-                      <p className="mt-1">
-                        Pengisian dimensi yang tepat akan membantu dalam
-                        pengelolaan dan pengiriman.
-                      </p>
-                    </div>
-                  }
-                >
-                  <IconComponent
-                    src="/icons/info16.svg"
-                    width={16}
-                    height={16}
-                  />
+                <InfoTooltip>
+                  <ul>
+                    <li>
+                      <b>Panjang</b> : Ukuran terpanjang dari muatan.
+                    </li>
+                    <li>
+                      <b>Lebar</b> : Ukuran terlebar dari muatan.
+                    </li>
+                    <li>
+                      <b>Tinggi</b> : Ukuran tertinggi dari muatan
+                    </li>
+                  </ul>
+                  <p>
+                    Pengisian dimensi yang tepat akan membantu dalam pengelolaan
+                    dan pengiriman.
+                  </p>
                 </InfoTooltip>
               </div>
             </th>

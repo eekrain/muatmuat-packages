@@ -5,6 +5,8 @@ import { Fragment, useEffect, useState } from "react";
 import Checkbox from "@/components/Checkbox/Checkbox";
 import DropdownRadioBottomsheeet from "@/components/Dropdown/DropdownRadioBottomsheeet";
 import FooterOneButton from "@/components/Footer/OneButton";
+import { FormContainer, FormLabel } from "@/components/Form/Form";
+import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
@@ -14,12 +16,6 @@ import {
   useResponsiveRouteParams,
 } from "@/lib/responsive-navigation";
 import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
-
-import {
-  FormLabel,
-  FormLabelContainer,
-  FormLabelInfoTooltip,
-} from "../FormLabel/FormLabel";
 
 const InformasiMuatanScreen = () => {
   const namaMuatanOptions = [
@@ -216,45 +212,46 @@ const InformasiMuatanScreen = () => {
         label: "Informasi Muatan",
       }}
     >
-      <div className="mb-16 flex w-full flex-col gap-y-2 bg-neutral-200">
+      <div className="grid grid-cols-1 gap-2">
         {/* Section Tipe Muatan */}
-        <div className="flex flex-col gap-y-4 bg-white px-4 py-5">
+        <FormContainer>
           {/* Header */}
-          <FormLabelContainer>
-            <FormLabel className="font-bold" title="Tipe Muatan" />
-            <FormLabelInfoTooltip title="Tipe Muatan yang Akan Dikirimkan">
-              {/* Main Content Area - Frame 42239 */}
-              <ul style={{ marginLeft: "16px", listStyleType: "disc" }}>
-                <li className="text-[14px] font-medium leading-[15.4px]">
-                  <span className="font-bold">Bahan Mentah :</span> Material
-                  atau komponen yang belum diproses
-                </li>
-
-                <li className="text-[14px] font-medium leading-[15.4px]">
-                  <span className="font-bold">Barang Setengah Jadi :</span>{" "}
-                  Produk yang telah mengalami beberapa tahap proses tapi belum
-                  selesai.
-                </li>
-
-                <li className="text-[14px] font-medium leading-[15.4px]">
-                  <span className="font-bold">Barang Jadi :</span> Produk akhir
-                  yang siap untuk digunakan atau dijual.
-                </li>
-
-                <li className="text-[14px] font-medium leading-[15.4px]">
-                  <span className="font-bold">Lainnya :</span> Barang / barang
-                  yang tidak sesuai jenis diatas, namun memiliki nilai ekonomis
-                  dan fungsi dalam proses produksi atau distribusi.
-                </li>
-              </ul>
-
-              {/* Bottom Text Area - Frame 42240 */}
-              <span className="text-center text-[14px] font-medium leading-[15.4px] text-neutral-900">
-                Pemilihan tipe muatan yang tepat akan membantu dalam pengelolaan
-                dan pengiriman.
-              </span>
-            </FormLabelInfoTooltip>
-          </FormLabelContainer>
+          <FormLabel
+            required
+            tooltip={
+              <InfoBottomsheet title="Tipe Muatan yang Akan Dikirimkan">
+                {/* Usahakan content info di isi tanpa menggunakan custom className / style sama sekali */}
+                {/* Tag yang di pake ngikutin di globals.scss di class .info-tooltip-content dan .info-bottomsheet-content, sekarang ada ul li b p (biar pendek) */}
+                {/* Supaya content yang ada di dalam bottomsheet ini bisa di simpan di module multibahasa, artinya konten ini dinamis */}
+                {/* Nantinya bakal di render pake dangerouslySetInnerHTML={{ __html: children }} di komponen InfoBottomsheet / InfoTooltip */}
+                <ul>
+                  <li>
+                    <b>Bahan Mentah :</b> Material atau komponen yang belum
+                    diproses.
+                  </li>
+                  <li>
+                    <b>Barang Setengah Jadi :</b> Produk yang telah mengalami
+                    beberapa tahap proses tapi belum selesai.
+                  </li>
+                  <li>
+                    <b>Barang Jadi :</b> Produk akhir yang siap untuk digunakan
+                    atau dijual.
+                  </li>
+                  <li>
+                    <b>Lainnya :</b> Bahan / barang yang tidak sesuai dengan
+                    jenis diatas, namun tetap memiliki fungsi dalam proses
+                    produksi atau distribusi.
+                  </li>
+                </ul>
+                <p>
+                  Pemilihan tipe muatan yang tepat akan membantu dalam
+                  pengelolaan dan pengiriman.
+                </p>
+              </InfoBottomsheet>
+            }
+          >
+            Tipe Muatan
+          </FormLabel>
 
           {/* Radio Button Group */}
           <div className="flex flex-col gap-y-4">
@@ -297,49 +294,43 @@ const InformasiMuatanScreen = () => {
               value="lainnya"
             />
           </div>
-        </div>
+        </FormContainer>
 
         {/* Section Jenis Muatan */}
-        <div className="flex flex-col gap-4 bg-white px-4 py-5">
-          {/* Header */}
-          <FormLabelContainer>
-            <FormLabel className="font-bold" title="Jenis Muatan" />
-            <FormLabelInfoTooltip title="Informasi Jenis Muatan">
-              {/* Main Content Area - Frame 42239 */}
-              <ul style={{ marginLeft: "16px", listStyleType: "disc" }}>
-                <li className="text-[14px] font-medium leading-[15.4px]">
-                  <span className="font-bold">Padat :</span> Muatan yang
-                  berbentuk solid.
-                </li>
-
-                <li className="text-[14px] font-medium leading-[15.4px]">
-                  <span className="font-bold">Cair :</span> Muatan dalam bentuk
-                  cairan, biasanya membutuhkan penanganan khusus.
-                </li>
-
-                <li className="text-[14px] font-medium leading-[15.4px]">
-                  <span className="font-bold">Curah :</span> Muatan yang dikirim
-                  secara massal, seperti biji-bijian atau pasir.
-                </li>
-
-                <li className="text-[14px] font-medium leading-[15.4px]">
-                  <span className="font-bold">Kendaraan :</span> Muatan berupa
-                  alat transportasi yang perlu diangkut.
-                </li>
-
-                <li className="text-[14px] font-medium leading-[15.4px]">
-                  <span className="font-bold">Container :</span> Muatan yang
-                  dikemas dalam suatu container.
-                </li>
-              </ul>
-
-              {/* Bottom Text Area - Frame 42240 */}
-              <span className="text-center text-[14px] font-medium leading-[15.4px] text-neutral-900">
-                Pemilihan jenis muatan yang tepat akan membantu dalam
-                pengelolaan dan pengiriman.
-              </span>
-            </FormLabelInfoTooltip>
-          </FormLabelContainer>
+        <FormContainer>
+          <FormLabel
+            required
+            tooltip={
+              <InfoBottomsheet title="Tipe Muatan yang Akan Dikirimkan">
+                <ul>
+                  <li>
+                    <b>Padat:</b> Muatan yang berbentuk solid.
+                  </li>
+                  <li>
+                    <b>Cair:</b> Muatan dalam bentuk cairan, biasanya
+                    membutuhkan penanganan khusus.
+                  </li>
+                  <li>
+                    <b>Curah:</b> Muatan yang dikirim secara massal, seperti
+                    biji-bijian atau pasir.
+                  </li>
+                  <li>
+                    <b>Kendaraan:</b> Muatan berupa alat transportasi yang perlu
+                    diangkut.
+                  </li>
+                  <li>
+                    <b>Container:</b> Muatan yang dikemas dalam suatu container.
+                  </li>
+                </ul>
+                <p>
+                  Pemilihan jenis muatan yang tepat akan membantu dalam
+                  pengelolaan dan pengiriman.
+                </p>
+              </InfoBottomsheet>
+            }
+          >
+            Tipe Muatan
+          </FormLabel>
 
           {/* Radio Button Group */}
           <div className="flex flex-col gap-y-4">
@@ -389,26 +380,24 @@ const InformasiMuatanScreen = () => {
               value="container"
             />
           </div>
-        </div>
+        </FormContainer>
 
         {/* Section Sertifikasi Halal Logistik */}
-        <div className="flex flex-col gap-4 bg-white px-4 py-5">
-          {/* Header */}
-          <FormLabelContainer>
-            <FormLabel
-              className="font-bold"
-              title="Sertifikasi Halal Logistik"
-              required={false}
-            />
-            <FormLabelInfoTooltip title="Sertifikasi Halal Logistik">
-              {/* Main Content Area - Frame 42239 */}
-              <span className="text-[14px] font-medium leading-[15.4px] text-neutral-900">
-                Pilih opsi ini jika pengiriman memerlukan pengelolaan rantai
-                pasok yang memastikan produk tetap sesuai prinsip halal, mulai
-                dari transportasi hingga penyimpanan
-              </span>
-            </FormLabelInfoTooltip>
-          </FormLabelContainer>
+        <FormContainer>
+          <FormLabel
+            required
+            tooltip={
+              <InfoBottomsheet title="Tipe Muatan yang Akan Dikirimkan">
+                <p>
+                  Pilih opsi ini jika pengiriman memerlukan pengelolaan rantai
+                  pasok yang memastikan produk tetap sesuai prinsip halal, mulai
+                  dari transportasi hingga penyimpanan
+                </p>
+              </InfoBottomsheet>
+            }
+          >
+            Sertifikasi Halal Logistik
+          </FormLabel>
 
           {/* Checkbox Section */}
           <div className="flex gap-1">
@@ -420,7 +409,7 @@ const InformasiMuatanScreen = () => {
               className="w-full"
             />
           </div>
-        </div>
+        </FormContainer>
 
         {/* Section Input Data Muatan */}
         <div className="flex flex-col gap-6 bg-white px-4 py-5">
@@ -440,38 +429,43 @@ const InformasiMuatanScreen = () => {
             return (
               <Fragment key={key}>
                 {/* Nama Muatan Field */}
-                <div className="flex flex-col gap-y-4">
-                  <FormLabelContainer>
-                    <FormLabel className="font-semibold" title="Nama Muatan" />
-                  </FormLabelContainer>
-                  <button
-                    className={
-                      "flex h-8 items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-3"
-                    }
-                    onClick={() => navigation.push("/CariNamaMuatan", { key })}
-                  >
-                    <div className="flex items-center gap-x-2">
-                      <IconComponent src="/icons/muatan16.svg" />
-                      <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-600">
-                        {namaMuatanLabel}
-                      </span>
-                    </div>
-                    <IconComponent src="/icons/chevron-right.svg" />
-                  </button>
-                </div>
+                <FormContainer className="p-0">
+                  <FormLabel>Nama Muatan</FormLabel>
+                  <Input
+                    type="text"
+                    placeholder="Masukkan Muatan"
+                    name="nama_muatan"
+                    disabled={true}
+                    icon={{
+                      left: "/icons/search.svg",
+                      right: "/icons/chevron-down.svg",
+                    }}
+                    className="w-full"
+                    appearance={{
+                      inputClassName: "bg-neutral-200 text-neutral-600",
+                    }}
+                    value={namaMuatan}
+                    onChange={(e) => setNamaMuatan(e.target.value)}
+                  />
+                </FormContainer>
 
                 {/* Berat Muatan Field */}
-                <div className="flex flex-col gap-y-4">
-                  <FormLabelContainer>
-                    <FormLabel className="font-semibold" title="Berat Muatan" />
-                    <FormLabelInfoTooltip title="Berat Muatan">
-                      {/* Main Content Area - Frame 42239 */}
-                      <span className="text-[14px] font-medium leading-[15.4px] text-neutral-900">
-                        Masukkan berat keseluruhan atau total dari seluruh
-                        muatan yang akan dikirim.
-                      </span>
-                    </FormLabelInfoTooltip>
-                  </FormLabelContainer>
+                <FormContainer className="p-0">
+                  <FormLabel
+                    required
+                    tooltip={
+                      <InfoBottomsheet title="Tipe Muatan yang Akan Dikirimkan">
+                        <p>
+                          Pilih opsi ini jika pengiriman memerlukan pengelolaan
+                          rantai pasok yang memastikan produk tetap sesuai
+                          prinsip halal, mulai dari transportasi hingga
+                          penyimpanan
+                        </p>
+                      </InfoBottomsheet>
+                    }
+                  >
+                    Berat Muatan
+                  </FormLabel>
 
                   <div className="flex items-center gap-2.5">
                     <Input
@@ -492,42 +486,33 @@ const InformasiMuatanScreen = () => {
                       }
                     />
                   </div>
-                </div>
+                </FormContainer>
 
                 {/* Dimensi Muatan Field */}
-                <div className="flex flex-col gap-y-4">
-                  <FormLabelContainer>
-                    <FormLabel
-                      className="font-semibold"
-                      title="Dimensi Muatan"
-                      required={false}
-                    />
-                    <FormLabelInfoTooltip title="Dimensi Muatan yang Akan Dikirimkan">
-                      {/* Main Content Area - Frame 42239 */}
-                      <ul style={{ marginLeft: "16px", listStyleType: "disc" }}>
-                        <li className="text-[14px] font-medium leading-[15.4px]">
-                          <span className="font-bold">Panjang :</span> Ukuran
-                          terpanjang dari muatan.
-                        </li>
-
-                        <li className="text-[14px] font-medium leading-[15.4px]">
-                          <span className="font-bold">Lebar :</span> Ukuran
-                          terlebar dari muatan.
-                        </li>
-
-                        <li className="text-[14px] font-medium leading-[15.4px]">
-                          <span className="font-bold">Tinggi :</span> Ukuran
-                          tertinggi dari muatan.
-                        </li>
-                      </ul>
-
-                      {/* Bottom Text Area - Frame 42240 */}
-                      <span className="text-center text-[14px] font-medium leading-[15.4px] text-neutral-900">
-                        Pengisian dimensi yang tepat akan membantu dalam
-                        pengelolaan dan pengiriman.
-                      </span>
-                    </FormLabelInfoTooltip>
-                  </FormLabelContainer>
+                <FormContainer className="p-0">
+                  <FormLabel
+                    tooltip={
+                      <InfoBottomsheet title="Tipe Muatan yang Akan Dikirimkan">
+                        <ul>
+                          <li>
+                            <b>Panjang :</b> Ukuran terpanjang dari muatan.
+                          </li>
+                          <li>
+                            <b>Lebar :</b> Ukuran terlebar dari muatan.
+                          </li>
+                          <li>
+                            <b>Tinggi :</b> Ukuran tertinggi dari muatan
+                          </li>
+                        </ul>
+                        <p>
+                          Pengisian dimensi yang tepat akan membantu dalam
+                          pengelolaan dan pengiriman.
+                        </p>
+                      </InfoBottomsheet>
+                    }
+                  >
+                    Dimensi Muatan
+                  </FormLabel>
 
                   <div className="flex items-center gap-2.5">
                     {/* Custom Dimension Input */}
@@ -571,7 +556,7 @@ const InformasiMuatanScreen = () => {
                       }
                     />
                   </div>
-                </div>
+                </FormContainer>
 
                 {/* Add and Remove Button */}
                 <div

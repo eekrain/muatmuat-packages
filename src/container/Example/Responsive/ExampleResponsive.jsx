@@ -213,7 +213,7 @@ const ExampleResponsive = ({}) => {
               <BottomSheet>
                 <BottomSheetTrigger>Open Bottom Sheet</BottomSheetTrigger>
                 <BottomSheetContent>
-                  <BottomSheetHeader title="Bagikan Produk"></BottomSheetHeader>
+                  <BottomSheetHeader>Bagikan Produk</BottomSheetHeader>
                   <div className="divide-y px-4">
                     <button className="w-full px-6 py-4 text-left">
                       Ringkasan Status Pesanan

@@ -10,11 +10,11 @@ export function InfoTooltip({
   // You can pass a custom trigger element like a <button> or <span>
   trigger = null,
   icon = "/icons/info16.svg",
-  content,
   side = "top",
   align = "center",
   sideOffset = 8,
   className,
+  children,
 }) {
   return (
     <TooltipPrimitive.Provider delayDuration={100}>
@@ -48,7 +48,7 @@ export function InfoTooltip({
             }}
           >
             {/* Styles in globals.scss */}
-            <div className="tooltip-content">{content}</div>
+            <div className="info-tooltip-content">{children}</div>
             <TooltipPrimitive.Arrow
               className="h-[11px] w-4 fill-white"
               style={{

@@ -1,6 +1,6 @@
 import { FormContainer, FormLabel } from "@/components/Form/Form";
+import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import RadioButton from "@/components/Radio/RadioButton";
-import { InfoTooltip } from "@/components/Tooltip/Tooltip";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -15,37 +15,31 @@ export const TipeMuatan = () => {
       <FormLabel
         required
         tooltip={
-          <InfoTooltip
-            className="w-[336px]"
-            content={
-              <div>
-                <ul>
-                  <li>
-                    <b>Bahan Mentah :</b> Material atau komponen yang belum
-                    diproses.
-                  </li>
-                  <li>
-                    <b>Barang Setengah Jadi :</b> Produk yang telah mengalami
-                    beberapa tahap proses tapi belum selesai.
-                  </li>
-                  <li>
-                    <b>Barang Jadi :</b> Produk akhir yang siap untuk digunakan
-                    atau dijual.
-                  </li>
-                  <li>
-                    <b>Lainnya :</b> Bahan / barang yang tidak sesuai dengan
-                    jenis diatas, namun tetap memiliki fungsi dalam proses
-                    produksi atau distribusi.
-                  </li>
-                </ul>
-                <span>
-                  Pemilihan tipe muatan yang tepat akan membantu dalam
-                  pengelolaan dan pengiriman.
-                </span>
-              </div>
-            }
-            side="right"
-          />
+          <InfoTooltip className="w-[336px]" side="right">
+            <ul>
+              <li>
+                <b>Bahan Mentah :</b> Material atau komponen yang belum
+                diproses.
+              </li>
+              <li>
+                <b>Barang Setengah Jadi :</b> Produk yang telah mengalami
+                beberapa tahap proses tapi belum selesai.
+              </li>
+              <li>
+                <b>Barang Jadi :</b> Produk akhir yang siap untuk digunakan atau
+                dijual.
+              </li>
+              <li>
+                <b>Lainnya :</b> Bahan / barang yang tidak sesuai dengan jenis
+                diatas, namun tetap memiliki fungsi dalam proses produksi atau
+                distribusi.
+              </li>
+            </ul>
+            <p>
+              Pemilihan tipe muatan yang tepat akan membantu dalam pengelolaan
+              dan pengiriman.
+            </p>
+          </InfoTooltip>
         }
       >
         Tipe Muatan

@@ -12,6 +12,7 @@ import React, {
 import { Portal } from "@radix-ui/react-portal";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { cn } from "@/lib/cn";
 
 /**
  * @typedef {Object} BottomSheetContextType
@@ -296,11 +297,10 @@ export const BottomSheetContent = ({ children, className }) => {
   );
 };
 
-export const BottomSheetHeader = ({ className, title }) => {
+export const BottomSheetHeader = ({ className, children }) => {
   const { close } = useBottomSheet();
-  const baseClass = "flex justify-between items-center px-4";
   return (
-    <div className={className ?? baseClass}>
+    <div className={cn("flex items-center justify-between px-4", className)}>
       <button
         onClick={close}
         className="flex size-[24px] items-center justify-between"
@@ -312,7 +312,7 @@ export const BottomSheetHeader = ({ className, title }) => {
           height={24}
         />
       </button>
-      <span className="text-[14px] font-bold leading-[15.4px]">{title}</span>
+      <span className="text-[14px] font-bold leading-[15.4px]">{children}</span>
       <div className="size-[24px]" />
     </div>
   );

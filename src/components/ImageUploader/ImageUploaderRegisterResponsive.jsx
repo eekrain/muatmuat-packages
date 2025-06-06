@@ -367,9 +367,9 @@ const ImageUploaderRegisterResponsive = ({
     <>
       <BottomSheet open={isBottomSheetOpen} onOpenChange={setIsBottomSheetOpen}>
         <BottomSheetContent>
-          <BottomSheetHeader
-            title={t("labelPilihSumberFoto") || "Pilih Sumber Foto"}
-          />
+          <BottomSheetHeader>
+            {t("labelPilihSumberFoto") || "Pilih Sumber Foto"}
+          </BottomSheetHeader>
           <div className="flex items-center justify-evenly py-4">
             {uploadOptions.map((option, index) => (
               <div

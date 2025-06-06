@@ -393,21 +393,43 @@ body {
   color: var(--neutral-50);
 }
 
-.tooltip-content {
+.info-tooltip-content {
   ul {
     margin: 0;
     margin-bottom: 4px;
     padding: 0;
   }
+
   li:before {
     content: "•";
     display: inline-block;
     width: 10px;
   }
+
   b {
     font-weight: 700;
   }
-  span {
+
+  p {
     display: block;
+  }
+}
+
+.info-bottomsheet-content {
+  ul {
+    margin-bottom: 16px;
+    padding: 0;
+    list-style-type: disc;
+    margin-left: 16px;
+  }
+
+  b {
+    font-weight: 700;
+  }
+
+  p {
+    display: block;
+    text-align: center;
+    text-wrap: balance;
   }
 }

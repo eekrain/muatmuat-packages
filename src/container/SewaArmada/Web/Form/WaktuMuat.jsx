@@ -3,7 +3,7 @@
 import Checkbox from "@/components/Checkbox/Checkbox";
 import DatetimePicker from "@/components/DatetimePicker/DatetimePicker";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
-import { InfoTooltip } from "@/components/Tooltip/Tooltip";
+import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -77,7 +77,10 @@ export const WaktuMuat = () => {
             checked={showRangeOption}
             onChange={(e) => setField("showRangeOption", e.checked)}
           />
-          <InfoTooltip content="Jika kamu memilih opsi ini, kamu dapat menentukan pukul mulai dan pukul akhir untuk penjemputan muatan." />
+          <InfoTooltip>
+            Jika kamu memilih opsi ini, kamu dapat menentukan pukul mulai dan
+            pukul akhir untuk penjemputan muatan.
+          </InfoTooltip>
         </div>
       </div>
     </FormContainer>
