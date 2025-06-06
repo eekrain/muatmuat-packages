@@ -2,45 +2,32 @@
 import { useToastStore } from "@/store/toastStore";
 
 /**
- * @typedef {Object} ToastOptions
- * @property {number} [duration=6000] - Duration in milliseconds
- * @property {"default"} [offset="default"] - Offset in pixels
- */
-
-const defaultOptions = {
-  duration: 6000,
-  offset: "default",
-};
-
-/**
  * Global toast utility
  */
 export const toast = {
   /**
    * Trigger a success toast
    * @param {string} message - The message to display
-   * @param {Partial<ToastOptions>} [options] - Options for the toast
+   * @param {number} [duration=100000] - Duration in milliseconds
    */
-  success: (message, options) => {
-    const newOptions = { ...defaultOptions, ...options };
+  success: (message, duration = 100000) => {
     useToastStore.getState().actions.addToast({
       message,
       type: "success",
-      ...newOptions,
+      duration,
     });
   },
 
   /**
    * Trigger an error toast
    * @param {string} message - The message to display
-   * @param {Partial<ToastOptions>} [options] - Options for the toast
+   * @param {number} [duration=100000] - Duration in milliseconds
    */
-  error: (message, options) => {
-    const newOptions = { ...defaultOptions, ...options };
+  error: (message, duration = 100000) => {
     useToastStore.getState().actions.addToast({
       message,
       type: "error",
-      ...newOptions,
+      duration,
     });
   },
 };

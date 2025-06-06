@@ -3,6 +3,8 @@ import xior from "xior";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useUserStore } from "@/store/auth/userStore";
 
+const LIST_PUBLIC_ROUTES = ["/sewaarmada", "/example"];
+
 export const createAxios = (baseURL) => {
   const fetcher = xior.create({
     baseURL,
@@ -43,8 +45,11 @@ export const createAxios = (baseURL) => {
         if (error.response.status === 401 || error.response.status === 403) {
           useAuthStore.getState().logout();
           useUserStore.getState().removeUser();
-          // if the user is not on the /sewaarmada page, redirect to it
-          if (window?.location && window.location.pathname !== "/sewaarmada") {
+          // If the user is not on the public routes, redirect to /sewaarmada
+          if (
+            window?.location &&
+            !LIST_PUBLIC_ROUTES.includes(window.location.pathname)
+          ) {
             window.location.replace("/sewaarmada");
           }
           return new Promise(() => {}); // Prevent further error propagation.

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 
 import PropTypes from "prop-types";
 import { createPortal } from "react-dom";
@@ -11,20 +11,26 @@ import { cn } from "@/lib/cn";
 import { useToastStore } from "@/store/toastStore";
 
 const Toaster = ({ className }) => {
-  const [mounted, setMounted] = useState(false);
   const dataToast = useToastStore((state) => state.dataToast);
   const { removeToast, removeAll } = useToastStore((state) => state.actions);
-  const { isMobile } = useDevice();
+  const { isMobile, mounted } = useDevice();
 
   const bottomOffset = useMemo(() => {
-    if (!isMobile) return "80px";
+    // Getting the right offset for the toast
+    // 61px is the position of Pusat Bantuan Icon
+    // 70px is the height of Pusat Bantuan Icon
+    // 69px is the offset from the Pusat Bantuan Icon
+    if (!isMobile) return "calc(61px + 70px + 69px)";
+
+    // Getting the height of the responsive footer
     const footerHeight =
       document.getElementById("responsive-footer")?.clientHeight || 0;
-    console.log("🚀 ~ bottomOffset ~ footerHeight:", footerHeight);
 
     return `calc(20px + ${footerHeight}px)`;
-  }, [isMobile]);
-  console.log("🚀 ~ bottomOffset ~ bottomOffset:", bottomOffset);
+
+    // dataToast must be added to the dependency array, so we can recalculate the offset when the toast is added or removed
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMobile, dataToast]);
 
   useEffect(() => {
     return () => {
@@ -32,16 +38,12 @@ const Toaster = ({ className }) => {
     };
   }, [removeAll]);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   if (!mounted) return null;
 
   return createPortal(
     <div
       className={cn(
-        "fixed left-0 z-50 mx-4 flex flex-col items-end gap-2 md:right-0 md:mx-0",
+        "fixed left-0 z-50 flex w-full flex-col items-end gap-2 px-4 md:right-0 md:mx-0",
         "pointer-events-none"
       )}
       style={{
@@ -54,8 +56,7 @@ const Toaster = ({ className }) => {
         <div
           key={toast.id}
           className={cn(
-            "pointer-events-auto flex w-fit items-center justify-between rounded-lg border px-4 py-3 text-sm font-semibold text-neutral-900",
-            "animate-enter",
+            "pointer-events-auto flex w-full animate-enter items-center justify-between gap-3 rounded-lg border px-3 py-[15px] md:w-[440px]",
             toast.type === "success" && "border-success-400 bg-success-50",
             toast.type === "error" && "border-error-400 bg-error-50",
             className
@@ -66,7 +67,7 @@ const Toaster = ({ className }) => {
           role="alert"
           aria-live="polite"
         >
-          <div className="flex w-[328px] items-center gap-3 pr-2 md:w-[380px]">
+          <div className="flex flex-1 items-center gap-3">
             <div className="flex-shrink-0">
               <IconComponent
                 src={
@@ -74,29 +75,30 @@ const Toaster = ({ className }) => {
                     ? "/icons/toast-succes.svg"
                     : "/icons/toast-error.svg"
                 }
-                height={20}
                 className={cn(
                   toast.type === "success"
                     ? "text-success-400"
                     : "text-error-400"
                 )}
-                width={20}
+                height={18}
+                width={18}
                 aria-hidden="true"
               />
             </div>
-            <span className="flex-1 text-xs font-semibold">
+            <span className="mt-1 flex-1 text-xs font-semibold text-neutral-900">
               {toast.message}
             </span>
           </div>
           <button
             onClick={() => removeToast(toast.id)}
-            className="flex-shrink-0 cursor-pointer rounded-full p-1 transition-colors hover:bg-black/5 focus:outline-none focus:ring-2 focus:ring-black/10"
+            className="flex size-6 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-black/5 focus:outline-none focus:ring-2 focus:ring-black/10"
             aria-label="Close notification"
           >
             <IconComponent
               src="/icons/toast-close.svg"
-              height={20}
-              width={20}
+              height={16}
+              width={16}
+              className="text-neutral-700"
             />
           </button>
         </div>
