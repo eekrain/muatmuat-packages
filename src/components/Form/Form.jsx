@@ -15,12 +15,12 @@ export const FormLabel = ({
 }) => (
   <div
     className={cn(
-      "flex h-4 w-[174px] items-center gap-1",
+      "flex h-4 w-[174px] items-center gap-1 text-xs font-medium leading-[1.2] text-neutral-600",
       variant === "big" && "h-8",
       className
     )}
   >
-    <label className="text-xs font-medium leading-[1.2] text-neutral-600">
+    <label>
       {children}
       {required ? "*" : " (Opsional)"}
     </label>
