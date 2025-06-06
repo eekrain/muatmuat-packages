@@ -392,3 +392,22 @@ body {
   background-color: var(--muat-parts-member-400) !important;
   color: var(--neutral-50);
 }
+
+.tooltip-content {
+  ul {
+    margin: 0;
+    margin-bottom: 4px;
+    padding: 0;
+  }
+  li:before {
+    content: "•";
+    display: inline-block;
+    width: 10px;
+  }
+  b {
+    font-weight: 700;
+  }
+  span {
+    display: block;
+  }
+}

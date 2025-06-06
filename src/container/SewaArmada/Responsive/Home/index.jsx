@@ -11,8 +11,7 @@ import DefaultResponsiveLayout from "@/layout/ResponsiveLayout/DefaultResponsive
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 
-import { BannerCarousel } from "../../common/BannerCarousel";
-import { FormLabel, FormLabelContainer } from "../FormLabel/FormLabel";
+import { BannerCarousel } from "../../../../components/BannerCarousel/BannerCarousel";
 import { ModalFirstTimer } from "./ModalFirstTimer";
 import WaktuMuatBottomsheet from "./WaktuMuat/WaktuMuat";
 

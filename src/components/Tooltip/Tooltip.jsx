@@ -2,6 +2,8 @@
 
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 
+import { cn } from "@/lib/cn";
+
 import IconComponent from "../IconComponent/IconComponent";
 
 export function InfoTooltip({
@@ -9,12 +11,10 @@ export function InfoTooltip({
   trigger = null,
   icon = "/icons/info16.svg",
   content,
-  appearance = {
-    contentClassName: "",
-  },
   side = "top",
   align = "center",
   sideOffset = 8,
+  className,
 }) {
   return (
     <TooltipPrimitive.Provider delayDuration={100}>
@@ -38,13 +38,17 @@ export function InfoTooltip({
           <TooltipPrimitive.Content
             side={side}
             align={align}
-            className={`relative z-50 max-w-sm rounded-xl border border-gray-200 bg-white p-3 text-sm shadow-xl ${appearance.contentClassName}`}
+            className={cn(
+              "relative z-50 max-w-sm rounded-xl border border-gray-200 bg-white p-3 text-sm shadow-xl",
+              className
+            )}
             sideOffset={sideOffset}
             style={{
               filter: "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))",
             }}
           >
-            {content}
+            {/* Styles in globals.scss */}
+            <div className="tooltip-content">{content}</div>
             <TooltipPrimitive.Arrow
               className="h-[11px] w-4 fill-white"
               style={{

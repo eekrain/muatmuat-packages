@@ -1,22 +1,22 @@
 import { useState } from "react";
 
-import Button from "@/components/Button/Button";
-import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
-import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import { useAuthStore } from "@/store/auth/authStore";
-import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
+import { useSewaArmadaActions } from "@/store/forms/sewaArmadaStore";
 
-const FirstTimer = () => {
-  const { setOrderType } = useSewaArmadaStore();
+import { ArmadaOption } from "./ArmadaOption";
+import { ModalLogin } from "./ModalLogin";
+
+export const FirstTimer = () => {
   const [openModalLogin, setOpenModalLogin] = useState(false);
   const accessToken = useAuthStore((state) => state.accessToken);
+  const { setField } = useSewaArmadaActions();
 
   const handleClickArmadaOption = (type) => {
     if (!accessToken) {
       setOpenModalLogin(true);
     } else {
-      setOrderType(type);
+      setField("orderType", type);
     }
   };
 
@@ -60,68 +60,5 @@ const FirstTimer = () => {
       </div>
       <ModalLogin open={openModalLogin} setOpen={setOpenModalLogin} />
     </div>
-  );
-};
-export default FirstTimer;
-
-const ArmadaOption = ({ title, description, iconType, onClick }) => {
-  // Icon path based on type
-  const iconPath =
-    iconType === "instant"
-      ? "/icons/muattrans-instan.svg"
-      : "/icons/muattrans-terjadwal32.svg";
-
-  return (
-    <div
-      className="flex h-[136px] w-[369px] cursor-pointer flex-col items-center justify-center rounded-xl border border-neutral-400 bg-white p-6 transition-colors duration-500 hover:border-[#FFC217]"
-      onClick={onClick}
-    >
-      <div className="flex flex-col items-center gap-3">
-        <IconComponent src={iconPath} width={32} height={32} />
-
-        <div className="flex flex-col items-center gap-3">
-          <h3 className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
-            {title}
-          </h3>
-
-          <p className="w-[294px] text-center text-[12px] font-medium leading-[14.4px] text-neutral-600">
-            {description}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const ModalLogin = ({ open, setOpen }) => {
-  return (
-    <Modal open={open} onOpenChange={setOpen} closeOnOutsideClick>
-      <ModalContent>
-        <ModalHeader size="small" />
-        <div className="w-modal-small px-6 py-9">
-          <div className="flex flex-col items-center justify-center gap-6">
-            {/* Judul Modal */}
-            <h2 className="w-full text-center text-[16px] font-bold leading-[19.2px] text-neutral-900">
-              Informasi
-            </h2>
-
-            <p className="w-full text-center text-[14px] font-medium leading-[16.8px] text-neutral-900">
-              Untuk melanjutkan pemesanan jasa angkut, kamu perlu login terlebih
-              dahulu. Silakan login untuk melanjutkan.
-            </p>
-
-            <a
-              href={`${process.env.NEXT_PUBLIC_INTERNAL_WEB}login?from=muattrans`}
-            >
-              <Button variant="muatparts-primary">
-                <span className="text-[14px] font-semibold leading-[1] text-neutral-50">
-                  Masuk
-                </span>
-              </Button>
-            </a>
-          </div>
-        </div>
-      </ModalContent>
-    </Modal>
   );
 };

@@ -1,7 +1,7 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 
-const SelectedTruck = ({
+export const SelectedTruck = ({
   title,
   src,
   cost,
@@ -60,5 +60,3 @@ const SelectedTruck = ({
     </div>
   );
 };
-
-export default SelectedTruck;
