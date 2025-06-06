@@ -25,7 +25,9 @@ export const useInitAuthentication = () => {
       setUser(resUser.data?.Data);
       setDataMatrix(resMatrix.data?.Data);
     };
-    init();
+    init().catch((err) => {
+      console.error("Error initializing authentication", err);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
