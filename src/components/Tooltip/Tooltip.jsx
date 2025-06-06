@@ -19,7 +19,7 @@ export function InfoTooltip({
   return (
     <TooltipPrimitive.Provider delayDuration={100}>
       <TooltipPrimitive.Root>
-        <TooltipPrimitive.Trigger>
+        <TooltipPrimitive.Trigger asChild>
           {trigger ? (
             trigger
           ) : (

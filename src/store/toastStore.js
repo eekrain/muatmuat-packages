@@ -8,6 +8,7 @@
  * @property {number} duration - Duration in milliseconds
  * @property {number} timeoutId - setTimeout ID for cleanup
  * @property {number} createdAt - Timestamp when the toast was created
+ * @property {boolean} isLeaving - Whether the toast is in leaving animation state
  *
  * @typedef {Object} ToastState
  * @property {Toast[]} dataToast - Array of active toasts
@@ -60,28 +61,46 @@ export const useToastStore = create(
       },
 
       removeToast: (id) => {
-        // Clear the timeout first
-        const toast = get().dataToast.find((t) => t.id === id);
-        if (toast?.timeoutId) {
-          clearTimeout(toast.timeoutId);
-        }
-
-        // Then remove the toast from state
+        // First set the leaving state
         set((state) => ({
-          dataToast: state.dataToast.filter((t) => t.id !== id),
+          dataToast: state.dataToast.map((t) =>
+            t.id === id ? { ...t, isLeaving: true } : t
+          ),
         }));
+
+        // Wait for animation to complete before removing
+        setTimeout(() => {
+          // Clear the timeout first
+          const toast = get().dataToast.find((t) => t.id === id);
+          if (toast?.timeoutId) {
+            clearTimeout(toast.timeoutId);
+          }
+
+          // Then remove the toast from state
+          set((state) => ({
+            dataToast: state.dataToast.filter((t) => t.id !== id),
+          }));
+        }, 150); // Match this with the leave animation duration in tailwind.config.js
       },
 
       removeAll: () => {
-        // Clear all timeouts first
-        get().dataToast.forEach((toast) => {
-          if (toast.timeoutId) {
-            clearTimeout(toast.timeoutId);
-          }
-        });
+        // Set all toasts to leaving state
+        set((state) => ({
+          dataToast: state.dataToast.map((t) => ({ ...t, isLeaving: true })),
+        }));
 
-        // Then clear the state
-        set({ dataToast: [] });
+        // Wait for animation before clearing
+        setTimeout(() => {
+          // Clear all timeouts first
+          get().dataToast.forEach((toast) => {
+            if (toast.timeoutId) {
+              clearTimeout(toast.timeoutId);
+            }
+          });
+
+          // Then clear the state
+          set({ dataToast: [] });
+        }, 150);
       },
     },
   })
