@@ -6,6 +6,7 @@ import { useLocation } from "@/hooks/use-location";
 import SearchBarResponsiveLayout from "@/layout/ResponsiveLayout/SearchBarResponsiveLayout";
 import {
   useResponsiveNavigation,
+  useResponsiveRouteParams,
   useResponsiveSearch,
 } from "@/lib/responsive-navigation";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
@@ -28,9 +29,11 @@ const recentSearches = [
 
 export const PencarianLokasi = () => {
   const navigation = useResponsiveNavigation();
+  const params = useResponsiveRouteParams();
+  console.log("🚀 ~ PencarianLokasi ~ params:", params);
   const { searchValue } = useResponsiveSearch();
 
-  const { setField, setLocationCoordinatesOnly } = useLocationFormStore();
+  const { setField, setLocationPartial } = useLocationFormStore();
 
   const {
     locationAutoCompleteResult,
@@ -46,25 +49,28 @@ export const PencarianLokasi = () => {
     onSelectPostalCode,
     handleGetCurrentLocation,
   } = useLocation({
-    onAddressSelected: (data) => {
-      setField("dataLokasi", data);
-    },
+    onAddressSelected: setLocationPartial,
     setPICName: (name) => {
       setField("namaPIC", name);
     },
     setNoHPPIC: (noHPPIC) => {
       setField("noHPPIC", noHPPIC);
     },
-    setLocationCoordinatesOnly,
+    setLocationPartial,
   });
 
   const handleToUserSavedLocationManagement = () => {
     navigation.push("/PencarianLokasiTersimpan");
   };
 
-  const handleToPinPointMap = () => {
+  const getCurrentLocation = () => {
     handleGetCurrentLocation().then((dataLokasi) => {
-      navigation.push("/PinPointMap", { dataLokasi });
+      console.log("🚀 ~ handleGetCurrentLocation ~ dataLokasi:", dataLokasi);
+      setLocationPartial({
+        coordinates: dataLokasi.coordinates,
+        location: dataLokasi.location,
+      });
+      navigation.push("/PinPointMap", { ...params, dataLokasi });
     });
   };
 
@@ -88,8 +94,8 @@ export const PencarianLokasi = () => {
                   key={location.ID}
                   location={location}
                   onClick={() => {
-                    onSelectAutoComplete(location);
                     console.log("🚀 ~ TambahLokasi ~ location:", location);
+                    onSelectAutoComplete(location);
                   }}
                 />
               ))}
@@ -98,7 +104,7 @@ export const PencarianLokasi = () => {
         ) : (
           <>
             <button
-              onClick={handleToPinPointMap}
+              onClick={getCurrentLocation}
               className="] flex w-full items-center gap-3 font-medium text-[#176CF7]"
             >
               <IconComponent

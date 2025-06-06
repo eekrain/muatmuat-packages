@@ -3,7 +3,7 @@
 import { Suspense } from "react";
 
 import Loading from "@/components/Loading/Loading";
-import Toaster from "@/components/Toast";
+import Toaster from "@/components/Toaster/Toaster";
 import { useInitAuthentication } from "@/hooks/use-auth";
 import useDevice from "@/hooks/use-device";
 import { useInitTranslation, useTranslation } from "@/hooks/use-translation";

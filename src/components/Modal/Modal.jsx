@@ -53,7 +53,6 @@ export const Modal = ({
   closeOnOutsideClick = false,
   withCloseButton = true,
 }) => {
-  console.log("🚀 ~ closeOnOutsideClick:", closeOnOutsideClick);
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   const dialogRef = useRef(null);
 
@@ -175,7 +174,7 @@ export const ModalContent = ({
       <div ref={dialogRef} className="relative rounded-xl bg-neutral-50">
         {withCloseButton && (
           <button
-            className="absolute right-2 top-2 z-[99999] flex cursor-pointer items-center justify-center rounded-full bg-neutral-50"
+            className="absolute right-2 top-2 z-50 flex cursor-pointer items-center justify-center rounded-full bg-neutral-50"
             onClick={close}
           >
             <IconComponent

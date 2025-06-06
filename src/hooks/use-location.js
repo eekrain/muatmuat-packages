@@ -25,7 +25,7 @@ export const useLocation = ({
   onAddressSelected = () => {},
   setPICName,
   setNoHPPIC,
-  setLocationCoordinatesOnly,
+  setLocationPartial,
 }) => {
   const [coordinates, setCoordinates] = useState({
     latitude: DEFAULT_LAT,
@@ -93,16 +93,29 @@ export const useLocation = ({
 
   const onSelectPostalCode = useCallback(
     (option) => {
-      onAddressSelected({
+      const result = {
         ...tempLocation,
         ...normalizePostalCodeData(option),
-      });
+      };
+      console.log("🚀 ~ tempLocation:", tempLocation);
+      console.log("🚀 ~ result:", result);
+      onAddressSelected(result);
+
       if (tempLocation?.coordinates) setCoordinates(tempLocation.coordinates);
       console.log("🚀 ~ tempLocation:", tempLocation);
       setIsModalPostalCodeOpen(false);
     },
     [onAddressSelected, tempLocation]
   );
+
+  const handleGetLocationByLatLong = async (coords) => {
+    const res1 = await axios.post("/v1/location_by_lat_long", {
+      Lat: coords.latitude,
+      Long: coords.longitude,
+    });
+    const getLocation = res1.data.Data;
+    return getLocation;
+  };
 
   const handleGetCurrentLocation = useCallback(() => {
     return new Promise((resolve, reject) => {
@@ -118,29 +131,25 @@ export const useLocation = ({
               latitude: coords.latitude,
               longitude: coords.longitude,
             });
-            const res1 = await axios.post("/v1/location_by_lat_long", {
-              Lat: coords.latitude,
-              Long: coords.longitude,
-            });
-            const getLocation = res1.data.Data;
-            console.log("🚀 ~ getLocation:", getLocation);
+            const getLocation = await handleGetLocationByLatLong(coords);
 
             const res2 = await axios.post(
               "v1/district_by_token",
               new URLSearchParams({ placeId: getLocation.place_id })
             );
             const getDistrict = res2.data.Data;
-            console.log("🚀 ~ getDistrict:", getDistrict);
 
             let result;
             if (getDistrict.Districts?.[0]) {
-              result = normalizeDistrictData(getDistrict);
-              onAddressSelected({
-                ...result,
+              result = {
+                ...normalizeDistrictData(getDistrict),
                 ...normalizeLocationByLatLong(getLocation, coords),
-              });
+              };
+              // console.log("🚀 ~ result eka 1:", result);
+              onAddressSelected(result);
             } else {
               result = normalizeLocationByLatLong(getLocation, coords);
+              // console.log("🚀 ~ result eka 2:", result);
               setTempLocation(result);
               setIsModalPostalCodeOpen(true);
               if (getLocation?.postal) {
@@ -199,13 +208,7 @@ export const useLocation = ({
   }, [searchLocationByPostalCode]);
 
   useEffect(() => {
-    // Untuk menghapus data lokasi jika user menghapus text di inputan
-    if (!searchLocationAutoComplete) onAddressSelected(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchLocationAutoComplete]);
-
-  useEffect(() => {
-    if (coordinates) setLocationCoordinatesOnly(coordinates);
+    if (coordinates) setLocationPartial({ coordinates });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coordinates]);
 
@@ -239,6 +242,7 @@ export const useLocation = ({
     onSelectPostalCode,
     coordinates,
     setCoordinates,
+    handleGetLocationByLatLong,
     handleGetCurrentLocation,
     isDropdownOpen,
     setIsDropdownOpen,

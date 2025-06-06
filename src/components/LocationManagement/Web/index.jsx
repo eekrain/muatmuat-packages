@@ -25,7 +25,7 @@ export const LocationModalFormWeb = ({
     formValues,
     formErrors,
     setField,
-    setLocationCoordinatesOnly,
+    setLocationPartial,
     validateForm,
     reset,
   } = useLocationFormStore();
@@ -64,8 +64,14 @@ export const LocationModalFormWeb = ({
     setNoHPPIC: (noHPPIC) => {
       setField("noHPPIC", noHPPIC);
     },
-    setLocationCoordinatesOnly,
+    setLocationPartial,
   });
+
+  // useEffect(() => {
+  //   // Untuk menghapus data lokasi jika user menghapus text di inputan
+  //   if (!searchLocationAutoComplete) onAddressSelected(null);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [searchLocationAutoComplete]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -206,7 +212,11 @@ export const LocationModalFormWeb = ({
                     <input
                       type="number"
                       value={formValues.noHPPIC}
-                      onChange={(e) => setField("noHPPIC", e.target.value)}
+                      onChange={(e) => {
+                        const val = e.currentTarget.value;
+                        if (val.length > 14) return;
+                        setField("noHPPIC", val);
+                      }}
                       placeholder="Masukkan No. HP PIC Lokasi Muat"
                       className={cn(
                         "w-full rounded-[6px] border p-2 text-xs font-medium",

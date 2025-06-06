@@ -17,33 +17,12 @@ export const PencarianLokasiTersimpan = () => {
     formValues,
     formErrors,
     setField,
-    setLocationCoordinatesOnly,
+    setLocationPartial,
     validateForm,
     reset,
   } = useLocationFormStore();
 
-  const {
-    locationAutoCompleteResult,
-    onSelectAutoComplete,
-    userSavedLocations,
-    searchLocationAutoComplete,
-    setSearchLocationAutoComplete,
-
-    isModalPostalCodeOpen,
-    setIsModalPostalCodeOpen,
-    searchLocationByPostalCode,
-    setSearchLocationByPostalCode,
-    postalCodeAutoCompleteResult,
-    onSelectPostalCode,
-
-    coordinates,
-    setCoordinates,
-    handleGetCurrentLocation,
-    isDropdownOpen,
-    setIsDropdownOpen,
-
-    handleSelectUserSavedLocation,
-  } = useLocation({
+  const { userSavedLocations, handleSelectUserSavedLocation } = useLocation({
     onAddressSelected: (data) => {
       setField("dataLokasi", data);
     },
@@ -53,7 +32,7 @@ export const PencarianLokasiTersimpan = () => {
     setNoHPPIC: (noHPPIC) => {
       setField("noHPPIC", noHPPIC);
     },
-    setLocationCoordinatesOnly,
+    setLocationPartial,
   });
 
   const filteredUserSavedLocations = useMemo(() => {

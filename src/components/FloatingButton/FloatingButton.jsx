@@ -34,7 +34,7 @@ const FloatingButton = () => {
 
   return (
     <div
-      className={`fixed z-[50] lg:right-[40px] ${isShow ? "max-[600px]:right-[15px]" : "max-[600px]:right-[-38px]"} bottom-[61px] max-[600px]:bottom-[99px] ${styles.floating_button_container}`}
+      className={`fixed z-50 lg:right-[40px] ${isShow ? "max-[600px]:right-[15px]" : "max-[600px]:right-[-38px]"} bottom-[61px] max-[600px]:bottom-[99px] ${styles.floating_button_container}`}
     >
       {!isOpen && (
         <Fragment>
@@ -167,7 +167,7 @@ const FloatingButton = () => {
         open={isModalOpen}
         onClose={() => {}}
         transition
-        className="fixed inset-0 z-[51] flex w-screen items-center justify-center bg-black/30 p-4 transition duration-300 ease-out data-[closed]:opacity-0"
+        className="fixed inset-0 z-50 flex w-screen items-center justify-center bg-black/30 p-4 transition duration-300 ease-out data-[closed]:opacity-0"
       >
         <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
           <DialogPanel className={"relative max-w-lg"}>

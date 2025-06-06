@@ -1,6 +1,7 @@
 import React from "react";
 
 import { create } from "zustand";
+import { useShallow } from "zustand/react/shallow";
 
 // // Cara make nya kaya gini
 // const searchBarDefaultLayoutParams = {
@@ -96,7 +97,7 @@ export const useResponsiveNavigation = () => {
  * @returns {Object} route parameters passed during navigation.
  */
 export const useResponsiveRouteParams = () => {
-  const stack = useNavigationStore((state) => state.stack);
+  const stack = useNavigationStore(useShallow((state) => state.stack));
   return stack[stack.length - 1]?.params || {};
 };
 
@@ -122,7 +123,9 @@ export const useResponsiveSearch = () => {
  * }} props
  */
 export const ResponsiveRoute = ({ path, component }) => {
-  const { stack } = useNavigationStore();
+  const stack = useNavigationStore(
+    useShallow((state) => state.stack.slice(-1))
+  );
   const current = stack[stack.length - 1];
 
   if (path !== current.path) return null;

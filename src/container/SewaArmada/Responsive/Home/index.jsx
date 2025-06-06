@@ -2,7 +2,11 @@ import { useState } from "react";
 
 import { Plus, Shield, Truck } from "lucide-react";
 
+<<<<<<< HEAD
 import IconComponent from "@/components/IconComponent/IconComponent";
+=======
+import { TimelineField } from "@/components/Timeline/timeline-field";
+>>>>>>> b723684 (fix: zIndex max to 50, toast will dynamically shown on top of the ResponsiveFooter, implement init auth, user data, and credential-check)
 import DefaultResponsiveLayout from "@/layout/ResponsiveLayout/DefaultResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
@@ -35,7 +39,18 @@ const banners = [
 
 export const SewaArmadaHome = () => {
   const navigation = useResponsiveNavigation();
-  const { formValues } = useSewaArmadaStore();
+  const {
+    formValues,
+    formErrors,
+    setField,
+    setFotoMuatan,
+    addLokasi,
+    removeLokasi,
+    validateForm,
+    orderType,
+    setOrderType,
+    updateLokasi,
+  } = useSewaArmadaStore();
 
   const [formData, setFormData] = useState({
     waktuMuat: "",
@@ -47,11 +62,15 @@ export const SewaArmadaHome = () => {
     layananTambahan: "",
   });
 
+<<<<<<< HEAD
   const handleAddLocation = () => {
     navigation.push("/PencarianLokasi");
   };
 
   const handleEditInformasiMuatan = () => {
+=======
+  const handleAddInformasiMuatan = () => {
+>>>>>>> b723684 (fix: zIndex max to 50, toast will dynamically shown on top of the ResponsiveFooter, implement init auth, user data, and credential-check)
     navigation.push("/InformasiMuatan");
   };
 
@@ -102,32 +121,27 @@ export const SewaArmadaHome = () => {
               <label className="block text-[14px] font-semibold leading-[15.4px] text-neutral-900">
                 Lokasi Muat*
               </label>
-              <div className="w-full space-y-3 rounded-md border border-neutral-600 bg-neutral-50 p-3">
-                <div className="flex items-center gap-2">
-                  <div className="relative h-4 w-4 rounded-full bg-yellow-400">
-                    <div className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-[#461B02]"></div>
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Masukkan Lokasi Muat"
-                    className="flex-1 bg-transparent text-[14px] font-semibold text-neutral-600 outline-none placeholder:text-neutral-600"
-                    value={formData.lokasiMuat}
-                    onChange={(e) =>
-                      setFormData({ ...formData, lokasiMuat: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="h-px w-full bg-neutral-400"></div>
-                <button
-                  onClick={handleAddLocation}
-                  className="flex w-full cursor-pointer items-center justify-center gap-2"
-                >
-                  <Plus className="h-5 w-5 text-primary-700" />
-                  <span className="text-[14px] font-semibold text-primary-700">
-                    Tambah Lokasi Muat
-                  </span>
-                </button>
-              </div>
+              <TimelineField
+                variant="muat"
+                className="flex-1"
+                values={
+                  formValues.lokasiMuat?.map(
+                    (item) => item?.dataLokasi?.location || null
+                  ) || []
+                }
+                onAddLocation={() => addLokasi("lokasiMuat", null)}
+                onDeleteLocation={(index) => removeLokasi("lokasiMuat", index)}
+                onEditLocation={(index) => {
+                  navigation.push("/PencarianLokasi", {
+                    config: {
+                      formMode: "muat",
+                      allSelectedLocations: formValues.lokasiMuat,
+                      defaultValues: formValues.lokasiMuat[index],
+                      index,
+                    },
+                  });
+                }}
+              />
             </div>
 
             {/* Lokasi Bongkar Field */}

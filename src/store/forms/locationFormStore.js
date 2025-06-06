@@ -57,89 +57,96 @@ const defaultValues = {
  * @type {import('zustand').UseBoundStore<import('zustand').StoreApi<LocationFormStoreState>>}
  */
 export const useLocationFormStore = create(
-  zustandDevtools((set, get) => ({
-    formValues: defaultValues,
-    formErrors: {},
-    setField: (field, value) =>
-      set((state) => ({
-        formValues: { ...state.formValues, [field]: value },
-      })),
-    setLocationCoordinatesOnly: (coordinates) =>
-      set((state) => ({
-        formValues: {
-          ...state.formValues,
-          dataLokasi: {
-            ...state.formValues.dataLokasi,
-            coordinates,
+  zustandDevtools(
+    (set, get) => ({
+      formValues: defaultValues,
+      formErrors: {},
+      setField: (field, value) =>
+        set((state) => ({
+          formValues: { ...state.formValues, [field]: value },
+        })),
+      setLocationPartial: (partialLocation) =>
+        set((state) => ({
+          formValues: {
+            ...state.formValues,
+            dataLokasi: {
+              ...state.formValues.dataLokasi,
+              ...partialLocation,
+            },
           },
-        },
-      })),
-    setErrors: (formErrors) =>
-      set((state) => ({
-        formErrors,
-      })),
-    reset: (newValues) =>
-      set({
-        formValues: newValues ? newValues : defaultValues,
-        formErrors: {},
-      }),
-    validateForm: (formMode, allSelectedLocations = [], index) => {
-      const { formValues } = get();
+        })),
+      setErrors: (formErrors) =>
+        set((state) => ({
+          formErrors,
+        })),
+      reset: (newValues) =>
+        set({
+          formValues: newValues ? newValues : defaultValues,
+          formErrors: {},
+        }),
+      validateForm: (formMode, allSelectedLocations = [], index) => {
+        const { formValues } = get();
 
-      const validateLocation = () => {
-        if (!formValues.dataLokasi.location)
-          return formMode === "muat"
-            ? "Lokasi muat harus diisi"
-            : "Lokasi bongkar harus diisi";
+        const validateLocation = () => {
+          if (!formValues.dataLokasi?.location)
+            return formMode === "muat"
+              ? "Lokasi muat harus diisi"
+              : "Lokasi bongkar harus diisi";
 
-        const foundLocationIndex = allSelectedLocations.findIndex(
-          (item) =>
-            item?.dataLokasi?.location?.name ===
-            formValues?.dataLokasi?.location?.name
-        );
+          const foundLocationIndex = allSelectedLocations.findIndex(
+            (item) =>
+              item?.dataLokasi?.location?.name ===
+              formValues?.dataLokasi?.location?.name
+          );
 
-        if (foundLocationIndex !== -1)
-          return formMode === "muat"
-            ? `Lokasi Muat ${index + 1} tidak boleh sama dengan Lokasi Muat ${foundLocationIndex + 1}`
-            : `Lokasi bongkar ${index + 1} tidak boleh sama dengan Lokasi bongkar ${foundLocationIndex + 1}`;
-      };
+          if (foundLocationIndex !== -1)
+            return formMode === "muat"
+              ? `Lokasi Muat ${index + 1} tidak boleh sama dengan Lokasi Muat ${foundLocationIndex + 1}`
+              : `Lokasi bongkar ${index + 1} tidak boleh sama dengan Lokasi bongkar ${foundLocationIndex + 1}`;
+        };
 
-      const validateNamaPIC = () => {
-        if (!formValues.namaPIC) return "Nama PIC harus diisi";
-        if (formValues.namaPIC.length < 3) return "Nama PIC minimal 3 karakter";
-        // validate it name only alphabet and "'"
-        if (!/^[a-zA-Z' ]+$/.test(formValues.namaPIC))
-          return "Penulisan Nama PIC tidak valid";
-      };
+        const validateNamaPIC = () => {
+          if (!formValues.namaPIC) return "Nama PIC harus diisi";
+          if (formValues.namaPIC.length < 3)
+            return "Nama PIC minimal 3 karakter";
+          // validate it name only alphabet and "'"
+          if (!/^[a-zA-Z' ]+$/.test(formValues.namaPIC))
+            return "Penulisan Nama PIC tidak valid";
+        };
 
-      const validateNoHPPIC = () => {
-        if (!formValues.noHPPIC) return "No. HP PIC harus diisi";
-        if (formValues.noHPPIC.length < 8) return "No. HP PIC minimal 8 digit";
-        if (!/^[0-9]+$/.test(formValues.noHPPIC))
-          return "No. HP PIC tidak valid";
-        if (
-          formValues.noHPPIC
-            .split("")
-            ?.every((char) => char === formValues.noHPPIC[0])
-        )
-          return "Format No. HP PIC muat salah";
-        if (
-          !formValues.noHPPIC.startsWith("0") &&
-          !formValues.noHPPIC.startsWith("62")
-        )
-          return "Format No. HP PIC muat salah";
-      };
+        const validateNoHPPIC = () => {
+          if (!formValues.noHPPIC) return "No. HP PIC harus diisi";
+          if (formValues.noHPPIC.length < 8)
+            return "No. HP PIC minimal 8 digit";
+          if (!/^[0-9]+$/.test(formValues.noHPPIC))
+            return "No. HP PIC tidak valid";
+          if (
+            formValues.noHPPIC
+              .split("")
+              ?.every((char) => char === formValues.noHPPIC[0])
+          )
+            return "Format No. HP PIC muat salah";
+          if (
+            !formValues.noHPPIC.startsWith("0") &&
+            !formValues.noHPPIC.startsWith("62")
+          )
+            return "Format No. HP PIC muat salah";
+        };
 
-      const errors = {
-        dataLokasi: validateLocation(),
-        namaPIC: validateNamaPIC(),
-        noHPPIC: validateNoHPPIC(),
-      };
-      // console.log("🚀 ~ zustandDevtools ~ errors:", errors);
+        const errors = {
+          dataLokasi: validateLocation(),
+          namaPIC: validateNamaPIC(),
+          noHPPIC: validateNoHPPIC(),
+        };
+        console.log("🚀 ~ zustandDevtools ~ errors:", errors);
 
-      set({ formErrors: errors });
-      // return validateForm is valid if all errors are undefined
-      return Object.values(errors).every((error) => error === undefined);
-    },
-  }))
+        set({ formErrors: errors });
+        // return validateForm is valid if all errors are undefined
+        return Object.values(errors).every((error) => error === undefined);
+      },
+    }),
+    {
+      name: "location-form-store",
+    }
+  )
 );

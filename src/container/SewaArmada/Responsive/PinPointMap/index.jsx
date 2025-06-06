@@ -1,6 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
-import FooterOneButton from "@/components/Footer/OneButton";
+import Button from "@/components/Button/Button";
+import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import { ModalPostalCodeResponsive } from "@/components/LocationManagement/Responsive/ModalPostalCodeResponsive";
 import { MapContainer } from "@/components/LocationManagement/common/MapContainer";
 import { useLocation } from "@/hooks/use-location";
@@ -14,9 +15,10 @@ import { useLocationFormStore } from "@/store/forms/locationFormStore";
 export const PinPointMap = () => {
   const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
-  const { formValues, setField, setLocationCoordinatesOnly } =
-    useLocationFormStore();
+  console.log("🚀 ~ PinPointMap ~ params:", params);
 
+  const { formValues, setField, setLocationPartial } = useLocationFormStore();
+  const hasInit = useRef(false);
   const {
     isModalPostalCodeOpen,
     setIsModalPostalCodeOpen,
@@ -26,32 +28,58 @@ export const PinPointMap = () => {
     onSelectPostalCode,
     coordinates,
     setCoordinates,
+    handleGetLocationByLatLong,
   } = useLocation({
-    onAddressSelected: (data) => {
-      setField("dataLokasi", data);
-    },
+    onAddressSelected: setLocationPartial,
     setPICName: (name) => {
       setField("namaPIC", name);
     },
     setNoHPPIC: (noHPPIC) => {
       setField("noHPPIC", noHPPIC);
     },
-    setLocationCoordinatesOnly,
+    setLocationPartial,
   });
 
   useEffect(() => {
-    if (!params?.dataLokasi?.district) {
-      if (params?.dataLokasi?.postalCode)
+    if (!params?.dataLokasi?.district && !hasInit.current) {
+      if (params?.dataLokasi?.coordinates) {
+        setCoordinates(params?.dataLokasi?.coordinates);
+      }
+      if (params?.dataLokasi?.postalCode) {
         setSearchLocationByPostalCode(params?.dataLokasi.postalCode);
-      setIsModalPostalCodeOpen(true);
+        setIsModalPostalCodeOpen(true);
+      }
+      hasInit.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params?.dataLokasi?.district]);
+  }, [params?.dataLokasi]);
+
+  useEffect(() => {
+    if (coordinates?.latitude && coordinates?.longitude) {
+      handleGetLocationByLatLong(coordinates).then((res) => {
+        console.log("🚀 ~ handleGetLocationByLatLong ~ res:", res);
+        setLocationPartial({
+          coordinates,
+          location: {
+            name: res.formatted_address,
+            value: res.place_id,
+          },
+        });
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [coordinates]);
+
+  const handleSave = () => {
+    navigation.push("/FormLokasiBongkarMuat", { ...params });
+  };
 
   return (
     <FormResponsiveLayout
       title={{
-        label: params?.dataLokasi?.location?.name,
+        label:
+          formValues?.dataLokasi?.location?.name ||
+          params?.dataLokasi?.location?.name,
         className: "text-sm font-semibold line-clamp-1 break-all",
       }}
     >
@@ -71,11 +99,15 @@ export const PinPointMap = () => {
         onOpenChange={setIsModalPostalCodeOpen}
       />
 
-      <FooterOneButton
-        buttonTitle="Simpan"
-        onClick={() => alert("test")}
-        className="bg-transparent"
-      />
+      <ResponsiveFooter>
+        <Button
+          variant="muatparts-primary"
+          className="w-full"
+          onClick={handleSave}
+        >
+          Simpan
+        </Button>
+      </ResponsiveFooter>
     </FormResponsiveLayout>
   );
 };

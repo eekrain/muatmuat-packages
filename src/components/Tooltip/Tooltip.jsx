@@ -38,7 +38,7 @@ export function InfoTooltip({
           <TooltipPrimitive.Content
             side={side}
             align={align}
-            className={`relative z-[9999999999] max-w-sm rounded-xl border border-gray-200 bg-white p-3 text-sm shadow-xl ${appearance.contentClassName}`}
+            className={`relative z-50 max-w-sm rounded-xl border border-gray-200 bg-white p-3 text-sm shadow-xl ${appearance.contentClassName}`}
             sideOffset={sideOffset}
             style={{
               filter: "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))",

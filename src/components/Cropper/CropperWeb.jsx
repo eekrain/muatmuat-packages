@@ -114,7 +114,7 @@ export default function CropperWeb({
               {title}
             </span>
             <div className="relative h-[386px] w-[386px]">
-              <div className="absolute bottom-2 right-2 z-[100] flex h-20 w-10 flex-col rounded-lg border border-[#E2E2E2] bg-white">
+              <div className="absolute bottom-2 right-2 z-50 flex h-20 w-10 flex-col rounded-lg border border-[#E2E2E2] bg-white">
                 <div
                   className="flex h-1/2 cursor-pointer items-center justify-center"
                   onClick={zoomIn}

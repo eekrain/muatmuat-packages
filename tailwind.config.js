@@ -171,6 +171,20 @@ module.exports = {
         button: "0 -4px 6px rgba(0, 0, 0, 0.1)",
         "button-container": "0 -8px 8px rgba(0, 0, 0, 0.05)",
       },
+      keyframes: {
+        enter: {
+          "0%": { transform: "scale(0.9)", opacity: 0 },
+          "100%": { transform: "scale(1)", opacity: 1 },
+        },
+        leave: {
+          "0%": { transform: "scale(1)", opacity: 1 },
+          "100%": { transform: "scale(0.9)", opacity: 0 },
+        },
+      },
+      animation: {
+        enter: "enter 200ms ease-out",
+        leave: "leave 150ms ease-in forwards",
+      },
     },
   },
   plugins: [],

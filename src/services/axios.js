@@ -1,6 +1,7 @@
 import xior from "xior";
 
 import { useAuthStore } from "@/store/auth/authStore";
+import { useUserStore } from "@/store/auth/userStore";
 
 export const createAxios = (baseURL) => {
   const fetcher = xior.create({
@@ -42,22 +43,13 @@ export const createAxios = (baseURL) => {
         if (error.response.status === 401 || error.response.status === 403) {
           useAuthStore.getState().logout();
           useUserStore.getState().removeUser();
-          if (window) {
-            window.location.replace(
-              `${process.env.NEXT_PUBLIC_INTERNAL_WEB}login`
-            );
+          // if the user is not on the /sewaarmada page, redirect to it
+          if (window?.location && window.location.pathname !== "/sewaarmada") {
+            window.location.replace("/sewaarmada");
           }
           return new Promise(() => {}); // Prevent further error propagation.
         }
         return Promise.reject(error);
-      } else if (error.request) {
-        // No response received (e.g., network error, server completely down).
-        console.error("Network Error. No response from server.");
-        // Redirect to maintenance page because server is effectively unavailable.
-        window.location.replace(
-          `${process.env.NEXT_PUBLIC_INTERNAL_WEB}sistem`
-        );
-        return new Promise(() => {}); // Prevent further error propagation.
       } else {
         // Something happened in setting up the request that triggered an Error
         console.error("Request setup error:", error.message);

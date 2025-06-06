@@ -419,7 +419,7 @@ const DatetimePicker = ({
       </div>
       {isPickerOpen && (
         <div
-          className="absolute z-[9] w-fit max-w-[calc(100dvw-32px)] rounded-lg border border-[#E5E7F0] bg-white shadow-lg"
+          className="absolute z-10 w-fit max-w-[calc(100dvw-32px)] rounded-lg border border-[#E5E7F0] bg-white shadow-lg"
           style={dropdownPosition}
         >
           {/* MP 22: LB - 0166 */}

@@ -26,7 +26,7 @@ const CropperPreviewResponsive = ({
   const handleEditImage = () => setIsBottomSheetOpen(true);
 
   return (
-    <div className="fixed left-0 top-0 z-[102] h-screen w-full bg-white">
+    <div className="fixed left-0 top-0 z-50 h-screen w-full bg-white">
       <HeaderMobile
         onBack={() => {
           onCancelCrop();
