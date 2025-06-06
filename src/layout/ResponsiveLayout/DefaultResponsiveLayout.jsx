@@ -25,7 +25,7 @@ const DefaultResponsiveLayout = ({
   onClickMenuButton,
 }) => {
   return (
-    <div className="min-h-screen bg-neutral-200">
+    <div className="min-h-screen bg-background">
       <HeaderResponsiveContainer className="flex h-[62px] items-center border-b-2 border-b-muat-trans-secondary-900 px-4">
         <HeaderResponsiveDefault
           mode={mode}
@@ -35,7 +35,7 @@ const DefaultResponsiveLayout = ({
           onClickMenuButton={onClickMenuButton}
         />
       </HeaderResponsiveContainer>
-      <main className="min-h-screen pt-[62px]">{children}</main>
+      <main className="min-h-screen">{children}</main>
     </div>
   );
 };

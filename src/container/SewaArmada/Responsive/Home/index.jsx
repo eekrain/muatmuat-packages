@@ -80,11 +80,11 @@ export const SewaArmadaHome = () => {
 
   return (
     <DefaultResponsiveLayout mode="default">
-      <div className="min-h-screen w-full bg-neutral-100">
+      <div className="w-full bg-neutral-100">
         <BannerCarousel banners={banners} showControls={false} />
 
         {/* Brand Section */}
-        <div className="flex h-[61px] w-full items-center justify-between gap-[29px] bg-gradient-to-r from-neutral-300 via-neutral-200 to-neutral-300 px-4 py-3">
+        <div className="my-2 flex h-[61px] w-full items-center justify-between gap-[29px] bg-white px-4 py-3">
           <div className="flex-1">
             <h2 className="text-[16px] font-semibold leading-[17.6px] text-[#461B02]">
               Ayo kirim muatan kamu dengan muatrans!
@@ -298,7 +298,6 @@ export const SewaArmadaHome = () => {
           </div>
         </div>
       </div>
-      <pre>{JSON.stringify(formValues, null, 2)}</pre>
 
       <ModalFirstTimer />
     </DefaultResponsiveLayout>

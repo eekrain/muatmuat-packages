@@ -38,12 +38,10 @@ const MainLayout = ({ children }) => {
 
   return (
     <DesktopLayout>
-      <main className="min-h-[calc(100vh-60px)]">
-        <Suspense fallback={<Loading />}>
-          <Script />
-          {isTranslationsReady ? children : <Loading />}
-        </Suspense>
-      </main>
+      <Suspense fallback={<Loading />}>
+        <Script />
+        {isTranslationsReady ? children : <Loading />}
+      </Suspense>
       <Toaster />
     </DesktopLayout>
   );

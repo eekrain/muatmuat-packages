@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { createPortal } from "react-dom";
+import { Portal } from "@radix-ui/react-portal";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
@@ -70,49 +70,47 @@ export const DownloadPopover = () => {
           {t("linkDownloadMuatMuat")}
         </span>
       </div>
-      {mounted &&
-        createPortal(
-          <div
-            ref={popoverRef}
-            className={cn(
-              "fixed z-50 pt-[22px]",
-              open ? "opacity-100" : "pointer-events-none opacity-0"
-            )}
-            style={{
-              top: position.top,
-              left: position.left,
-            }}
-          >
-            <div className="flex w-[392px] items-center gap-6 rounded-xl bg-white p-8 shadow-lg">
+      <Portal>
+        <div
+          ref={popoverRef}
+          className={cn(
+            "fixed z-50 pt-[22px]",
+            open ? "opacity-100" : "pointer-events-none opacity-0"
+          )}
+          style={{
+            top: position.top,
+            left: position.left,
+          }}
+        >
+          <div className="flex w-[392px] items-center gap-6 rounded-xl bg-white p-8 shadow-lg">
+            <ImageComponent
+              src="/img/qr-downloadapps.png"
+              width={132}
+              height={132}
+              alt="download"
+            />
+            <div className="flex flex-col items-center justify-center gap-4">
+              <span className="text-center text-sm font-semibold text-[#1b1b1b]">
+                {t("labelScanQr")}
+              </span>
               <ImageComponent
-                src="/img/qr-downloadapps.png"
-                width={132}
-                height={132}
-                alt="download"
+                loading="lazy"
+                src="/icons/play-store.svg"
+                alt="Download Apps"
+                className="cursor-pointer object-contain"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.open(
+                    "https://play.google.com/store/apps/developer?id=PT.+AZLOGISTIK+DOT+COM",
+                    "_blank"
+                  );
+                }}
               />
-              <div className="flex flex-col items-center justify-center gap-4">
-                <span className="text-center text-sm font-semibold text-[#1b1b1b]">
-                  {t("labelScanQr")}
-                </span>
-                <ImageComponent
-                  loading="lazy"
-                  src="/icons/play-store.svg"
-                  alt="Download Apps"
-                  className="cursor-pointer object-contain"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    window.open(
-                      "https://play.google.com/store/apps/developer?id=PT.+AZLOGISTIK+DOT+COM",
-                      "_blank"
-                    );
-                  }}
-                />
-              </div>
             </div>
-          </div>,
-          document.body
-        )}
+          </div>
+        </div>
+      </Portal>
     </a>
   );
 };

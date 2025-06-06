@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
-import { createPortal } from "react-dom";
+import { Portal } from "@radix-ui/react-portal";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 
@@ -245,7 +245,11 @@ export const InputLocationManagementDropdown = ({
           className="absolute left-3 top-1/2 -translate-y-1/2"
         />
       </div>
-      {isDropdownOpen && dropdownStyle && createPortal(dropdown, document.body)}
+      {isDropdownOpen && dropdownStyle && (
+        <Portal>
+          <div>{dropdown}</div>
+        </Portal>
+      )}
     </div>
   );
 };

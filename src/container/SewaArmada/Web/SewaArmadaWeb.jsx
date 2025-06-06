@@ -311,7 +311,7 @@ export default function SewaArmadaWeb() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center gap-6 bg-neutral-50 px-10 py-8">
+    <main className="flex min-h-screen flex-col items-center gap-6 px-10">
       {/* Carousel Banner */}
       <BannerCarousel banners={banners} />
 

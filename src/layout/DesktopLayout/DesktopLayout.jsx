@@ -10,9 +10,9 @@ export default function DesktopLayout({ children }) {
     return children;
   }
   return (
-    <div className="min-h-screen bg-neutral-100">
+    <div className="min-h-screen bg-background">
       <HeaderWeb />
-      <main className="pt-[62px]">{children}</main>
+      <div className="pt-8">{children}</div>
       <FloatingButton />
     </div>
   );
