@@ -61,7 +61,7 @@ export const BannerCarousel = ({
 
   return (
     <div
-      className="relative mx-auto h-[146px] w-full md:h-[250px] md:w-[1054px]"
+      className="relative mx-auto h-[146px] w-screen bg-background md:h-[250px] md:w-[1054px]"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

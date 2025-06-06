@@ -12,7 +12,7 @@ export default function DesktopLayout({ children }) {
   return (
     <div className="relative min-h-screen">
       <HeaderWeb />
-      <div className="pt-8">{children}</div>
+      <div className="py-8">{children}</div>
       <FloatingButton />
 
       <img
