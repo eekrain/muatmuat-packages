@@ -253,10 +253,9 @@ const WaktuMuatBottomsheet = () => {
 
           {/* Button Simpan */}
           <Button
-            color="primary"
+            variant="muatparts-primary"
             className="h-10 max-w-full"
             onClick={handleSubmit}
-            type="muatparts"
           >
             Simpan
           </Button>

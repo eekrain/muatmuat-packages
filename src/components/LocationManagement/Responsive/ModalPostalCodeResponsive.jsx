@@ -86,18 +86,16 @@ export const ModalPostalCodeResponsive = ({
 
           <div className="flex flex-row justify-center gap-2">
             <Button
-              color="primary_secondary"
+              variant="muatparts-primary-secondary"
               onClick={() => onOpenChange(false)}
               className="h-8 min-w-[108px]"
-              type="muatparts"
             >
               Batal
             </Button>
             <Button
-              color="primary"
+              variant="muatparts-primary"
               onClick={handleSave}
               className="h-8 min-w-[108px]"
-              type="muatparts"
             >
               Simpan
             </Button>

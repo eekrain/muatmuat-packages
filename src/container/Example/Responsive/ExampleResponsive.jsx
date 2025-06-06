@@ -174,24 +174,19 @@ const ExampleResponsive = ({}) => {
           <div className="flex flex-col gap-y-3 p-4">
             <div className="itmes-center flex flex-wrap gap-2">
               <Button
-                color="primary"
-                type="muattrans"
+                variant="muattrans-primary"
                 onClick={() => setOpenControlled(true)}
               >
                 Primary
               </Button>
-              <Button color="primary_secondary" type="muattrans">
+              <Button variant="muattrans-primary-secondary">
                 Primary Secondary
               </Button>
-              <Button color="error" type="muattrans">
-                Error
-              </Button>
-              <Button color="error_secondary" type="muattrans">
+              <Button variant="muattrans-error">Error</Button>
+              <Button variant="muattrans-error-secondary">
                 Error Seconary
               </Button>
-              <Button color="warning" type="muattrans">
-                Warning
-              </Button>
+              <Button variant="muattrans-warning">Warning</Button>
             </div>
             <div>
               <ToogleButton

@@ -48,7 +48,7 @@ const CropperPreviewResponsive = ({
         </div>
         <Button
           className="mt-6 h-10 px-6"
-          color="primary_secondary"
+          variant="muatparts-primary-secondary"
           onClick={handleEditImage}
         >
           Ubah Foto
@@ -61,7 +61,7 @@ const CropperPreviewResponsive = ({
       <div className="shadow-muat fixed bottom-0 left-0 w-full bg-neutral-50 px-4 py-3">
         <Button
           className="h-8 w-full max-w-full"
-          color="primary"
+          variant="muatparts-primary"
           onClick={onConfirm}
         >
           Simpan Foto

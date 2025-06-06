@@ -10,12 +10,7 @@ const FooterOneButton = ({ className, buttonTitle, onClick }) => {
         className
       )}
     >
-      <Button
-        color="primary"
-        onClick={onClick}
-        type="muatparts"
-        className="w-full"
-      >
+      <Button variant="muatparts-primary" onClick={onClick} className="w-full">
         {buttonTitle}
       </Button>
     </div>

@@ -431,7 +431,7 @@ export const InformasiMuatanModal = ({
               </div>
               {/* Submit button for demo */}
               <div className="mt-4 flex justify-center">
-                <Button type="muatparts" className="w-[112px]">
+                <Button variant="muatparts-primary" className="w-[112px]">
                   Simpan
                 </Button>
               </div>

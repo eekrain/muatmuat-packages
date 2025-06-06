@@ -30,7 +30,7 @@ export const UserDropdown = () => {
     <>
       {!accessToken ? (
         <a href={`${process.env.NEXT_PUBLIC_INTERNAL_WEB}login?from=muattrans`}>
-          <Button className="bg-buyer-seller-900">
+          <Button variant="muatparts-primary">
             <span className="text-[14px] font-semibold leading-[1] text-neutral-50">
               Masuk
             </span>

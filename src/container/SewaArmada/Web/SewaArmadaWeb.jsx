@@ -958,9 +958,8 @@ export default function SewaArmadaWeb() {
                   </div>
                 </div>
                 <Button
-                  color="primary"
+                  variant="muatparts-primary"
                   onClick={handleValidateFleetOrder}
-                  type="muatparts"
                 >
                   Lanjut Pembayaran
                 </Button>

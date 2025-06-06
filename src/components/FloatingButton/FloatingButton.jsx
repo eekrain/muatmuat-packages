@@ -69,7 +69,7 @@ const FloatingButton = () => {
               setIsModalOpen(true);
               setIsOpen(false);
             }}
-            type="muatparts"
+            variant="muatparts-primary"
           >
             <div className="flex w-full flex-row gap-x-2.5">
               <ImageComponent
@@ -86,7 +86,7 @@ const FloatingButton = () => {
           <Button
             className="!h-[44px] !px-2.5"
             onClick={() => router.push(`${process.env.NEXT_PUBLIC_FAQ_WEB}`)}
-            type="muatparts"
+            variant="muatparts-primary"
           >
             <div className="flex w-full flex-row gap-x-2.5">
               <ImageComponent
@@ -147,7 +147,7 @@ const FloatingButton = () => {
                 rel="noopener noreferrer"
                 className="mt-2"
               >
-                <Button type="muatparts">
+                <Button variant="muatparts-primary">
                   <div className="flex flex-row gap-x-2">
                     <ImageComponent
                       className="h-5 w-5 self-center"
