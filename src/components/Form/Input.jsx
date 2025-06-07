@@ -38,10 +38,27 @@ const Input = forwardRef(
         inputClassName: "",
       },
       hideErrorMessage = false,
+      onChange,
+      positiveOnly = false,
       ...props
     },
     ref
   ) => {
+    // const handleChange = (e) => {
+    //   let val = e.currentTarget.value;
+
+    //   if (type === "number") {
+    //     if (val === "") {
+    //       val = "";
+    //     }
+    //     if (positiveOnly && val === "-") {
+    //     }
+    //     onChange?.(val);
+    //   } else {
+    //     onChange?.(val);
+    //   }
+    // };
+
     return (
       <div className={cn("flex w-full flex-col gap-y-2", className)}>
         <div
@@ -76,6 +93,7 @@ const Input = forwardRef(
           )}
           <input
             {...props}
+            onChange={onChange}
             type={type}
             ref={ref}
             name={name}
