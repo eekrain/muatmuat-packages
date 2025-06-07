@@ -49,6 +49,7 @@ export const LocationModalFormWeb = ({
     handleGetCurrentLocation,
     isDropdownOpen,
     setIsDropdownOpen,
+    handleGetLocationByLatLong,
 
     handleSelectUserSavedLocation,
     isModalSavedLocationManagementOpen,

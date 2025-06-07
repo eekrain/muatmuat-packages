@@ -6,6 +6,8 @@ import {
   useTransition,
 } from "react";
 
+import { equal } from "fast-shallow-equal";
+
 import {
   normalizeAutoCompleteLocation,
   normalizeDistrictData,
@@ -16,21 +18,20 @@ import {
 import axios from "@/services/axios";
 
 import { useDebounceCallback } from "./use-debounce-callback";
+import { useShallowCompareEffect } from "./use-shallow-effect";
 import { useSWRHook, useSWRMutateHook } from "./use-swr";
 
-const DEFAULT_LAT = -7.250445;
-const DEFAULT_LNG = 112.768845;
+const DEFAULT_COORDINATES = {
+  latitude: -7.250445,
+  longitude: 112.768845,
+};
 
 export const useLocation = ({
-  onAddressSelected = () => {},
+  setLocationPartial = () => {},
   setPICName,
   setNoHPPIC,
-  setLocationPartial,
 }) => {
-  const [coordinates, setCoordinates] = useState({
-    latitude: DEFAULT_LAT,
-    longitude: DEFAULT_LNG,
-  });
+  const [coordinates, setCoordinates] = useState(DEFAULT_COORDINATES);
 
   const [isModalPostalCodeOpen, setIsModalPostalCodeOpen] = useState(false);
   const [
@@ -71,7 +72,7 @@ export const useLocation = ({
 
       if (res.data?.Data?.Districts?.[0]) {
         const normalizedData = normalizeDistrictData(res.data.Data);
-        onAddressSelected({
+        setLocationPartial({
           ...normalizedData,
           location: { name: location.Title, value: location.ID },
         });
@@ -88,7 +89,7 @@ export const useLocation = ({
         setSearchLocationAutoComplete(location.Title);
       }
     },
-    [onAddressSelected]
+    [setLocationPartial]
   );
 
   const onSelectPostalCode = useCallback(
@@ -99,13 +100,13 @@ export const useLocation = ({
       };
       console.log("🚀 ~ tempLocation:", tempLocation);
       console.log("🚀 ~ result:", result);
-      onAddressSelected(result);
+      setLocationPartial(result);
 
       if (tempLocation?.coordinates) setCoordinates(tempLocation.coordinates);
       console.log("🚀 ~ tempLocation:", tempLocation);
       setIsModalPostalCodeOpen(false);
     },
-    [onAddressSelected, tempLocation]
+    [setLocationPartial, tempLocation]
   );
 
   const handleGetLocationByLatLong = async (coords) => {
@@ -114,7 +115,35 @@ export const useLocation = ({
       Long: coords.longitude,
     });
     const getLocation = res1.data.Data;
-    return getLocation;
+
+    const res2 = await axios.post(
+      "v1/district_by_token",
+      new URLSearchParams({ placeId: getLocation.place_id })
+    );
+    const getDistrict = res2.data.Data;
+
+    let result;
+    if (getDistrict.Districts?.[0]) {
+      result = {
+        ...normalizeDistrictData(getDistrict),
+        ...normalizeLocationByLatLong(getLocation, coords),
+      };
+      // console.log("🚀 ~ result eka 1:", result);
+      setLocationPartial(result);
+    } else {
+      result = normalizeLocationByLatLong(getLocation, coords);
+      // console.log("🚀 ~ result eka 2:", result);
+      setTempLocation(result);
+      setIsModalPostalCodeOpen(true);
+      if (getLocation?.postal) {
+        setSearchLocationByPostalCode(getLocation.postal);
+        result = { ...result, postalCode: getLocation.postal };
+      }
+    }
+    setSearchLocationAutoComplete(getLocation.formatted_address);
+    setIsDropdownOpen(false);
+
+    return result;
   };
 
   const handleGetCurrentLocation = useCallback(() => {
@@ -131,34 +160,7 @@ export const useLocation = ({
               latitude: coords.latitude,
               longitude: coords.longitude,
             });
-            const getLocation = await handleGetLocationByLatLong(coords);
-
-            const res2 = await axios.post(
-              "v1/district_by_token",
-              new URLSearchParams({ placeId: getLocation.place_id })
-            );
-            const getDistrict = res2.data.Data;
-
-            let result;
-            if (getDistrict.Districts?.[0]) {
-              result = {
-                ...normalizeDistrictData(getDistrict),
-                ...normalizeLocationByLatLong(getLocation, coords),
-              };
-              // console.log("🚀 ~ result eka 1:", result);
-              onAddressSelected(result);
-            } else {
-              result = normalizeLocationByLatLong(getLocation, coords);
-              // console.log("🚀 ~ result eka 2:", result);
-              setTempLocation(result);
-              setIsModalPostalCodeOpen(true);
-              if (getLocation?.postal) {
-                setSearchLocationByPostalCode(getLocation.postal);
-                result = { ...result, postalCode: getLocation.postal };
-              }
-            }
-            setSearchLocationAutoComplete(getLocation.formatted_address);
-            setIsDropdownOpen(false);
+            const result = await handleGetLocationByLatLong(coords);
             resolve(result);
           } catch (error) {
             console.error("Error getting location:", error);
@@ -171,12 +173,13 @@ export const useLocation = ({
         }
       );
     });
-  }, [onAddressSelected]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSelectUserSavedLocation = useCallback(
     (location) => {
       const result = normalizeUserSavedLocation(location);
-      onAddressSelected(result);
+      setLocationPartial(result);
       if (location.PicName) setPICName(location.PicName);
       if (location.PicNoTelp) setNoHPPIC(location.PicNoTelp);
       setCoordinates({
@@ -186,7 +189,7 @@ export const useLocation = ({
       setSearchLocationAutoComplete(location.Address);
       setIsDropdownOpen(false);
     },
-    [onAddressSelected, setPICName, setNoHPPIC]
+    [setLocationPartial, setPICName, setNoHPPIC]
   );
 
   useEffect(() => {
@@ -207,9 +210,19 @@ export const useLocation = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchLocationByPostalCode]);
 
-  useEffect(() => {
+  useShallowCompareEffect(() => {
     if (coordinates) setLocationPartial({ coordinates });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [coordinates]);
+
+  // Get newest location if the coordinates is changed
+  // e.g: when the user move the marker on the map
+  useShallowCompareEffect(() => {
+    // Skip if the coordinates is the default coordinates
+    // This is to prevent the postal code modal from being opened, when the user is not interacting with the map yet
+    if (equal(coordinates, DEFAULT_COORDINATES)) return;
+    if (coordinates?.latitude && coordinates?.longitude) {
+      handleGetLocationByLatLong(coordinates);
+    }
   }, [coordinates]);
 
   const memoizedlocationAutoCompleteResult = useMemo(

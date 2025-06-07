@@ -30,7 +30,6 @@ export const PinPointMap = () => {
     setCoordinates,
     handleGetLocationByLatLong,
   } = useLocation({
-    onAddressSelected: setLocationPartial,
     setPICName: (name) => {
       setField("namaPIC", name);
     },
@@ -40,6 +39,7 @@ export const PinPointMap = () => {
     setLocationPartial,
   });
 
+  // Initialize the coordinates and postal code from the params
   useEffect(() => {
     if (!params?.dataLokasi?.district && !hasInit.current) {
       if (params?.dataLokasi?.coordinates) {
@@ -53,22 +53,6 @@ export const PinPointMap = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params?.dataLokasi]);
-
-  useEffect(() => {
-    if (coordinates?.latitude && coordinates?.longitude) {
-      handleGetLocationByLatLong(coordinates).then((res) => {
-        console.log("🚀 ~ handleGetLocationByLatLong ~ res:", res);
-        setLocationPartial({
-          coordinates,
-          location: {
-            name: res.formatted_address,
-            value: res.place_id,
-          },
-        });
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [coordinates]);
 
   const handleSave = () => {
     navigation.push("/FormLokasiBongkarMuat", { ...params });

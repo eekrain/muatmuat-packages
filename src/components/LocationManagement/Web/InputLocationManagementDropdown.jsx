@@ -116,7 +116,7 @@ export const InputLocationManagementDropdown = ({
           </div>
           {locationAutoCompleteResult.map((location) => (
             <button
-              key={location.ID}
+              key={location.ID + location.Title}
               onClick={() => {
                 onSelectAutoComplete(location);
                 setIsDropdownOpen(false);
@@ -174,7 +174,7 @@ export const InputLocationManagementDropdown = ({
                 {userSavedLocations.map((location) => (
                   <button
                     onClick={() => handleSelectUserSavedLocation(location)}
-                    key={location.ID}
+                    key={location.ID + location.Title}
                     className="flex items-start gap-2 text-left"
                   >
                     <div className="h-[20px] w-[20px]">
