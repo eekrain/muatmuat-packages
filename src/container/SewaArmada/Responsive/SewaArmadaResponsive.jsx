@@ -1,12 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
-
+import { FormSimpanLokasiResponsive } from "@/components/LocationManagement/Responsive/FormSimpanLokasiResponsive";
 import { ResponsiveMenu } from "@/container/ResponsiveMenu";
-import {
-  ResponsiveRoute,
-  useResponsiveNavigation,
-} from "@/lib/responsive-navigation";
+import { ResponsiveRoute } from "@/lib/responsive-navigation";
 
 <<<<<<< HEAD
 import CariNamaMuatan from "./CariNamaMuatan/CariNamaMuatan";
@@ -21,12 +17,10 @@ import { PencarianLokasiTersimpan } from "./PencarianLokasiTersimpan";
 import { PinPointMap } from "./PinPointMap";
 
 const SewaArmadaResponsive = () => {
-  const navigation = useResponsiveNavigation();
-
-  useEffect(() => {
-    navigation.replace("/");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // const navigation = useResponsiveNavigation();
+  // useEffect(() => {
+  //   navigation.replace("/PencarianLokasi");
+  // }, []);
 
   return (
     <>
@@ -55,6 +49,10 @@ const SewaArmadaResponsive = () => {
 >>>>>>> b723684 (fix: zIndex max to 50, toast will dynamically shown on top of the ResponsiveFooter, implement init auth, user data, and credential-check)
       />
       <ResponsiveRoute path="/menu" component={<ResponsiveMenu />} />
+      <ResponsiveRoute
+        path="/FormSimpanLokasi"
+        component={<FormSimpanLokasiResponsive />}
+      />
     </>
   );
 };

@@ -170,6 +170,7 @@ module.exports = {
       boxShadow: {
         button: "0 -4px 6px rgba(0, 0, 0, 0.1)",
         "button-container": "0 -8px 8px rgba(0, 0, 0, 0.05)",
+        "responsive-footer": "0px -8px 16px 2px rgba(0, 0, 0, 0.15)",
       },
       keyframes: {
         enter: {

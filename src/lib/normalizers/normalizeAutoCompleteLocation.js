@@ -1,4 +1,4 @@
-export const normalizeAutoCompleteLocation = (data, messageData) => {
+export const normalizeAutoCompleteNotFound = (data, messageData) => {
   return {
     location: {
       name: data.Title,

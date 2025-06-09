@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,

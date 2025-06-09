@@ -102,7 +102,7 @@ export const InputSearch = ({
         hideErrorMessage={true}
       />
 
-      {searchValue.length > 0 && (
+      {searchValue && searchValue.length > 0 ? (
         <div
           className="absolute right-2 top-2 cursor-pointer"
           onClick={() => {
@@ -112,9 +112,12 @@ export const InputSearch = ({
         >
           <X size={16} />
         </div>
-      )}
+      ) : null}
 
-      {searchValue.length > 0 && options.length > 0 && !hideDropdown && (
+      {searchValue &&
+      searchValue.length > 0 &&
+      options.length > 0 &&
+      !hideDropdown ? (
         <div className="relative">
           <FilterableMenu
             options={options}
@@ -123,7 +126,7 @@ export const InputSearch = ({
             getOptionLabel={getOptionLabel}
           />
         </div>
-      )}
+      ) : null}
     </div>
   );
 };

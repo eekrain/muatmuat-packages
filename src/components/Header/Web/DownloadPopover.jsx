@@ -7,7 +7,7 @@ import { Portal } from "@radix-ui/react-portal";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { useTranslation } from "@/hooks/use-translation";
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 export const DownloadPopover = () => {
   const { t } = useTranslation();

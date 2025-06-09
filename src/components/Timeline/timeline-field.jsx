@@ -1,4 +1,4 @@
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 import { TimelineContainer, TimelineContentAddress, TimelineItem } from ".";
 import IconComponent from "../IconComponent/IconComponent";

@@ -5,22 +5,38 @@ import { cn } from "@/lib/utils";
 import IconComponent from "../IconComponent/IconComponent";
 
 /**
- * Input component with left/right icon, left/right text, and supportive text.
+ * Input component with left/right icon, left/right text, and error message support.
  * Uses Tailwind CSS for styling and cn for class composition.
  *
- * @param {object} props
- * @param {string} [props.name]
- * @param {string} [props.type]
- * @param {string} [props.placeholder]
- * @param {boolean} [props.disabled]
- * @param {"error"|"success"|null} [props.status]
- * @param {{left?: React.ReactNode, right?: React.ReactNode}} [props.icon]
- * @param {{left?: React.ReactNode, right?: React.ReactNode}} [props.text]
- * @param {{title?: string, desc?: string}} [props.supportiveText]
- * @param {{width?: string, maxWidth?: string, minWidth?: string}} [props.width]
- * @param {string} [props.className]
- * @param {string} [props.classInput]
- * @param {any} [props.rest]
+ * @typedef {Object} InputIcon
+ * @property {React.ReactNode|string} [left] - Left icon element or icon source string
+ * @property {React.ReactNode|string} [right] - Right icon element or icon source string
+ *
+ * @typedef {Object} InputText
+ * @property {React.ReactNode} [left] - Text to display on the left side
+ * @property {React.ReactNode} [right] - Text to display on the right side
+ *
+ * @typedef {Object} InputAppearance
+ * @property {string} [containerClassName] - Additional classes for the container element
+ * @property {string} [inputClassName] - Additional classes for the input element
+ *
+ * @typedef {Object} InputProps
+ * @property {string} [name] - Input name attribute
+ * @property {"text"|"password"|"email"|"number"|"tel"|"url"} [type="text"] - Input type
+ * @property {string} [placeholder="Placeholder"] - Input placeholder text
+ * @property {boolean} [disabled=false] - Whether the input is disabled
+ * @property {InputIcon} [icon] - Left and right icon configuration
+ * @property {InputText} [text] - Left and right text configuration
+ * @property {string} [errorMessage] - Error message to display
+ * @property {string} [className] - Additional classes for the root element
+ * @property {InputAppearance} [appearance] - Appearance configuration
+ * @property {boolean} [hideErrorMessage=false] - Whether to hide error message
+ * @property {(value: string) => void} [onChange] - Change event handler
+ * @property {boolean} [positiveOnly=false] - For number inputs, whether to allow only positive values
+ *
+ * @param {InputProps} props
+ * @param {import('react').Ref<HTMLInputElement>} ref
+ * @returns {JSX.Element}
  */
 const Input = forwardRef(
   (
@@ -126,9 +142,9 @@ const Input = forwardRef(
           )}
         </div>
         {!hideErrorMessage && errorMessage && (
-          <div className="flex items-center justify-between text-xs font-medium text-error-400">
-            <span>{errorMessage}</span>
-          </div>
+          <span className="text-xs font-medium text-error-400">
+            {errorMessage}
+          </span>
         )}
       </div>
     );

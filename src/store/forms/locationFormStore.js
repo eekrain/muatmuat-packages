@@ -2,6 +2,8 @@ import { create } from "zustand";
 
 import { zustandDevtools } from "@/lib/utils";
 
+import { useSewaArmadaStore } from "./sewaArmadaStore";
+
 /**
  * @typedef {Object} NameValuePair
  * @property {string} name - The name of the district.
@@ -28,10 +30,12 @@ import { zustandDevtools } from "@/lib/utils";
 
 /**
  * @typedef {Object} LocationFormValues
+ * @property {string} namaLokasi
  * @property {SelectedAddress|null} dataLokasi
  * @property {string} detailLokasi
  * @property {string} namaPIC
  * @property {string} noHPPIC
+ * @property {boolean} isPrimaryLocation
  */
 
 /**
@@ -40,16 +44,18 @@ import { zustandDevtools } from "@/lib/utils";
  * @property {Object} formErrors
  * @property {(field: keyof LocationFormValues, value: any) => void} setField
  * @property {(formErrors: Object) => void} setErrors
- * @property {() => void} resetForm
+ * @property {() => void} reset
  * @property {() => boolean} validateForm
  */
 
 /** @type {LocationFormValues} */
 const defaultValues = {
+  namaLokasi: "",
   dataLokasi: null,
   detailLokasi: "",
   namaPIC: "",
   noHPPIC: "",
+  isMainAddress: false,
 };
 
 /**
@@ -84,8 +90,12 @@ export const useLocationFormStore = create(
           formValues: newValues ? newValues : defaultValues,
           formErrors: {},
         }),
-      validateForm: (formMode, allSelectedLocations = [], index) => {
+      validateLokasiBongkarMuat: (formMode, index) => {
         const { formValues } = get();
+        const allSelectedLocations =
+          useSewaArmadaStore.getState().formValues[
+            formMode === "muat" ? "lokasiMuat" : "lokasiBongkar"
+          ];
 
         const validateLocation = () => {
           if (!formValues.dataLokasi?.location)
@@ -105,40 +115,25 @@ export const useLocationFormStore = create(
               : `Lokasi bongkar ${index + 1} tidak boleh sama dengan Lokasi bongkar ${foundLocationIndex + 1}`;
         };
 
-        const validateNamaPIC = () => {
-          if (!formValues.namaPIC) return "Nama PIC harus diisi";
-          if (formValues.namaPIC.length < 3)
-            return "Nama PIC minimal 3 karakter";
-          // validate it name only alphabet and "'"
-          if (!/^[a-zA-Z' ]+$/.test(formValues.namaPIC))
-            return "Penulisan Nama PIC tidak valid";
-        };
-
-        const validateNoHPPIC = () => {
-          if (!formValues.noHPPIC) return "No. HP PIC harus diisi";
-          if (formValues.noHPPIC.length < 8)
-            return "No. HP PIC minimal 8 digit";
-          if (!/^[0-9]+$/.test(formValues.noHPPIC))
-            return "No. HP PIC tidak valid";
-          if (
-            formValues.noHPPIC
-              .split("")
-              ?.every((char) => char === formValues.noHPPIC[0])
-          )
-            return "Format No. HP PIC muat salah";
-          if (
-            !formValues.noHPPIC.startsWith("0") &&
-            !formValues.noHPPIC.startsWith("62")
-          )
-            return "Format No. HP PIC muat salah";
-        };
-
         const errors = {
           dataLokasi: validateLocation(),
-          namaPIC: validateNamaPIC(),
-          noHPPIC: validateNoHPPIC(),
+          namaPIC: validateNamaPIC(formValues.namaPIC),
+          noHPPIC: validateNoHPPIC(formValues.noHPPIC),
         };
-        console.log("🚀 ~ zustandDevtools ~ errors:", errors);
+
+        set({ formErrors: errors });
+        // return validateForm is valid if all errors are undefined
+        return Object.values(errors).every((error) => error === undefined);
+      },
+      validateSimpanLokasi: () => {
+        const { formValues } = get();
+
+        const errors = {
+          namaLokasi: validateNamaLokasi(formValues.namaLokasi),
+          detailLokasi: validateDetailLokasi(formValues.detailLokasi),
+          namaPIC: validateNamaPIC(formValues.namaPIC),
+          noHPPIC: validateNoHPPIC(formValues.noHPPIC),
+        };
 
         set({ formErrors: errors });
         // return validateForm is valid if all errors are undefined
@@ -150,3 +145,30 @@ export const useLocationFormStore = create(
     }
   )
 );
+
+const validateNamaLokasi = (namaLokasi) => {
+  if (!namaLokasi) return "Nama Lokasi harus diisi";
+  if (namaLokasi.length < 3) return "Nama Lokasi minimal 3 karakter";
+};
+
+const validateDetailLokasi = (detailLokasi) => {
+  if (!detailLokasi) return "Detail Lokasi harus diisi";
+  if (detailLokasi.length < 3) return "Detail Lokasi minimal 3 karakter";
+};
+
+const validateNamaPIC = (namaPIC) => {
+  if (!namaPIC) return "Nama PIC harus diisi";
+  if (namaPIC.length < 3) return "Nama PIC minimal 3 karakter";
+  // validate it name only alphabet and "'"
+  if (!/^[a-zA-Z' ]+$/.test(namaPIC)) return "Penulisan Nama PIC tidak valid";
+};
+
+const validateNoHPPIC = (noHPPIC) => {
+  if (!noHPPIC) return "No. HP PIC harus diisi";
+  if (noHPPIC.length < 8) return "No. HP PIC minimal 8 digit";
+  if (!/^[0-9]+$/.test(noHPPIC)) return "No. HP PIC tidak valid";
+  if (noHPPIC.split("")?.every((char) => char === noHPPIC[0]))
+    return "Format No. HP PIC muat salah";
+  if (!noHPPIC.startsWith("0") && !noHPPIC.startsWith("62"))
+    return "Format No. HP PIC muat salah";
+};

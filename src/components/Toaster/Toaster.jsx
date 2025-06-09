@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import useDevice from "@/hooks/use-device";
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 import { useToastStore } from "@/store/toastStore";
 
 const Toaster = ({ className }) => {

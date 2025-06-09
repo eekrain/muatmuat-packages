@@ -1,5 +1,6 @@
 import { HeaderResponsiveContainer } from "@/components/Header/Responsive";
 import { HeaderResponsiveForm } from "@/components/Header/Responsive/Form";
+import { cn } from "@/lib/utils";
 
 /**
  * @typedef {Object} HeaderResponsiveFormTitle
@@ -28,6 +29,7 @@ const FormResponsiveLayout = ({
   title,
   withMenu,
   children,
+  className,
 }) => {
   return (
     <div className="min-h-screen bg-background">
@@ -39,7 +41,9 @@ const FormResponsiveLayout = ({
         />
       </HeaderResponsiveContainer>
 
-      <main className="min-h-screen">{children}</main>
+      <main className={cn("min-h-[calc(100vh-62px)]", className)}>
+        {children}
+      </main>
     </div>
   );
 };

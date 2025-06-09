@@ -3,43 +3,6 @@ import React from "react";
 import { create } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 
-// // Cara make nya kaya gini
-// const searchBarDefaultLayoutParams = {
-//   layout: "searchBar",
-//   header: {
-//     onClickBackButton: () => {},
-//     placeholder: "Cari Lokasi Muat",
-//   },
-// };
-
-// const defaultFormLayoutParams = {
-//   layout: "form",
-//   header: {
-//     onClickBackButton: () => {},
-//     title: {
-//       label: "",
-//       className: "",
-//     },
-//     withMenu: {
-//       onClickInfo: () => {},
-//       onClickMenu: () => {},
-//     },
-//   },
-//   footer: {
-//     button: [],
-//   },
-// };
-
-const defaultLayoutParams = {
-  layout: "default",
-  header: {
-    onClickBackButton: () => alert("belum di implementasi"),
-    onClickNotificationButton: () => alert("belum di implementasi"),
-    onClickChatButton: () => alert("belum di implementasi"),
-    onClickMenuButton: () => alert("belum di implementasi"),
-  },
-};
-
 /**
  * @typedef {Object} StackEntry
  * @property {string} id - Unique ID for the stack item.
@@ -54,13 +17,15 @@ const defaultLayoutParams = {
  * @property {(path: string, params?: Object) => void} push - Push a new screen.
  * @property {() => void} pop - Pop the top screen.
  * @property {(path: string, params?: Object) => void} replace - Replace the current screen.
+ * @property {(path: string) => void} popTo - Pop screens until reaching the specified path.
+ * @property {() => void} popToTop - Pop all screens except the first one.
  * @property {string} searchValue - The search value.
  * @property {(value: string) => void} setSearchValue - Set the search value.
  */
 
 /** @type {import('zustand').UseBoundStore<import('zustand').StoreApi<NavigationState>>} */
 export const useNavigationStore = create((set) => ({
-  stack: [{ path: "/", component: null, params: { ...defaultLayoutParams } }],
+  stack: [{ path: "/", params: {} }],
   push: (path, params = {}) =>
     set((state) => ({
       stack: [...state.stack, { path, params }],
@@ -72,6 +37,16 @@ export const useNavigationStore = create((set) => ({
       }
       return state;
     }),
+  popTo: (path) =>
+    set((state) => {
+      const targetIndex = state.stack.findIndex((entry) => entry.path === path);
+      if (targetIndex === -1) return state; // Path not found, keep state unchanged
+      return { stack: state.stack.slice(0, targetIndex + 1) };
+    }),
+  popToTop: () =>
+    set((state) => ({
+      stack: state.stack.slice(0, 1),
+    })),
   replace: (path, params = {}) =>
     set((state) => {
       return { stack: [{ path, params }] };
@@ -82,14 +57,22 @@ export const useNavigationStore = create((set) => ({
 }));
 
 /**
- * Hook to access stack navigation actions (push, pop, replace).
- * @returns {{ push: NavigationState["push"], pop: NavigationState["pop"], replace: NavigationState["replace"] }}
+ * Hook to access stack navigation actions (push, pop, replace, popTo, popToTop).
+ * @returns {{
+ *   push: NavigationState["push"],
+ *   pop: NavigationState["pop"],
+ *   replace: NavigationState["replace"],
+ *   popTo: NavigationState["popTo"],
+ *   popToTop: NavigationState["popToTop"]
+ * }}
  */
 export const useResponsiveNavigation = () => {
   const push = useNavigationStore((state) => state.push);
   const pop = useNavigationStore((state) => state.pop);
   const replace = useNavigationStore((state) => state.replace);
-  return { push, pop, replace };
+  const popTo = useNavigationStore((state) => state.popTo);
+  const popToTop = useNavigationStore((state) => state.popToTop);
+  return { push, pop, replace, popTo, popToTop };
 };
 
 /**

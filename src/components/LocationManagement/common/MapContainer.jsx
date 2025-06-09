@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 export const MapContainer = ({
   coordinates,

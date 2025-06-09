@@ -2,28 +2,27 @@ import { MapPin, User } from "lucide-react";
 
 import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
+import Input from "@/components/Form/Input";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
-import { cn } from "@/lib/cn";
-import { useResponsiveRouteParams } from "@/lib/responsive-navigation";
+import {
+  useResponsiveNavigation,
+  useResponsiveRouteParams,
+} from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
+import { useSewaArmadaActions } from "@/store/forms/sewaArmadaStore";
+
+const MODE_MAP = {
+  muat: "lokasiMuat",
+  bongkar: "lokasiBongkar",
+};
 
 export const FormLokasiBongkarMuat = () => {
   const params = useResponsiveRouteParams();
-  console.log("🚀 ~ FormLokasiBongkarMuat ~ params:", params);
-  const {
-    formValues,
-    formErrors,
-    setField,
-    setLocationPartial,
-    validateForm,
-    reset,
-  } = useLocationFormStore();
-
-  const handleBack = () => {
-    // Handle back navigation
-    console.log("Navigate back");
-  };
+  const navigation = useResponsiveNavigation();
+  const { updateLokasi } = useSewaArmadaActions();
+  const { formValues, formErrors, setField, validateLokasiBongkarMuat, reset } =
+    useLocationFormStore();
 
   const handleUbahLokasi = () => {
     // Handle location change
@@ -31,10 +30,8 @@ export const FormLokasiBongkarMuat = () => {
   };
 
   const handleSave = () => {
-    console.log("Save");
-    const isValid = validateForm(
+    const isValid = validateLokasiBongkarMuat(
       params.config.formMode,
-      params.config.allSelectedLocations,
       params.config.index
     );
     if (!isValid) {
@@ -43,6 +40,16 @@ export const FormLokasiBongkarMuat = () => {
       }
       return;
     }
+
+    updateLokasi(
+      MODE_MAP[params.config.formMode],
+      params.config.index,
+      formValues
+    );
+    navigation.popTo("/");
+
+    // Reset form values in useLocationFormStore
+    reset();
   };
 
   return (
@@ -104,7 +111,7 @@ export const FormLokasiBongkarMuat = () => {
                       setField("detailLokasi", textarea.value);
                     }}
                     placeholder="Masukkan Detail Lokasi"
-                    className="min-h-8 w-full resize-none overflow-y-auto rounded-md border border-neutral-600 bg-white px-3 py-[6px] text-[14px] font-semibold text-neutral-600 placeholder:text-neutral-600 focus:border-primary-700 focus:outline-none"
+                    className="min-h-8 w-full resize-none overflow-y-auto rounded-md border border-neutral-600 bg-white px-3 py-[6px] text-[14px] font-semibold placeholder:text-neutral-600 focus:border-primary-700 focus:outline-none"
                     maxLength={500}
                     rows={1}
                     style={{ height: "32px" }} // Initial height for 1 line
@@ -123,25 +130,16 @@ export const FormLokasiBongkarMuat = () => {
                 Nama PIC Lokasi Muat<span className="text-red-500">*</span>
               </label>
               <div className="flex flex-col gap-3">
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={formValues.namaPIC}
-                    onChange={(e) => setField("namaPIC", e.target.value)}
-                    placeholder="Masukkan Nama PIC Lokasi Muat"
-                    className={cn(
-                      "h-8 w-full rounded-md border border-neutral-600 bg-white px-3 py-3 text-[14px] font-semibold text-neutral-600 placeholder:text-neutral-600 focus:border-primary-700 focus:outline-none",
-                      formErrors?.namaPIC && "border-red-500"
-                    )}
-                  />
-                  <User className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-[#176CF7]" />
-                </div>
-
-                {formErrors?.namaPIC && (
-                  <span className="text-xs font-medium leading-[1] text-red-500">
-                    {formErrors?.namaPIC}
-                  </span>
-                )}
+                <Input
+                  type="text"
+                  placeholder="Masukkan Nama PIC Lokasi Muat"
+                  icon={{
+                    right: <User className="h-4 w-4 text-[#176CF7]" />,
+                  }}
+                  value={formValues.namaPIC}
+                  onChange={(e) => setField("namaPIC", e.target.value)}
+                  errorMessage={formErrors?.namaPIC}
+                />
               </div>
             </div>
 
@@ -151,25 +149,17 @@ export const FormLokasiBongkarMuat = () => {
                 No. HP PIC Lokasi Muat<span className="text-red-500">*</span>
               </label>
               <div className="flex flex-col gap-3">
-                <input
+                <Input
                   type="number"
+                  placeholder="Contoh: 08xxxxxxxx"
                   value={formValues.noHPPIC}
                   onChange={(e) => {
                     const val = e.currentTarget.value;
                     if (val.length > 14) return;
                     setField("noHPPIC", val);
                   }}
-                  placeholder="Contoh: 08xxxxxxxx"
-                  className={cn(
-                    "h-8 w-full rounded-md border border-neutral-600 bg-white px-3 py-2.5 text-[14px] font-semibold text-neutral-600 placeholder:text-neutral-600 focus:border-primary-700 focus:outline-none",
-                    formErrors?.noHPPIC && "border-red-500"
-                  )}
+                  errorMessage={formErrors?.noHPPIC}
                 />
-                {formErrors?.noHPPIC && (
-                  <span className="text-xs font-medium text-red-500">
-                    {formErrors?.noHPPIC}
-                  </span>
-                )}
               </div>
             </div>
           </div>

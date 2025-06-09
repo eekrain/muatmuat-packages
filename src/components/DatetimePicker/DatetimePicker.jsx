@@ -20,7 +20,7 @@ import { id } from "date-fns/locale/id";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 import ImageComponent from "../ImageComponent/ImageComponent";
 import style from "./DatetimePicker.module.scss";

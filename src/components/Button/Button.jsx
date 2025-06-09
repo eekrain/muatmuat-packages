@@ -1,7 +1,7 @@
 import { cva } from "class-variance-authority";
 import PropTypes from "prop-types";
 
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 import IconComponent from "../IconComponent/IconComponent";
 

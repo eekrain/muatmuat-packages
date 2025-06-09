@@ -1,71 +1,127 @@
 //  dependencies:
 // npm install zustand react-google-maps/api
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Modal, ModalContent } from "@/components/Modal/Modal";
-import { useLocation } from "@/hooks/use-location";
-import { cn } from "@/lib/cn";
+import { LocationProvider, useLocationContext } from "@/hooks/use-location";
+import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
+import { cn } from "@/lib/utils";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
 import { MapContainer } from "../common/MapContainer";
 import { InputLocationManagementDropdown } from "./InputLocationManagementDropdown";
+import ModalFormSimpanLokasiWeb from "./ModalFormSimpanLokasiWeb";
 import { ModalPostalCode } from "./ModalPostalCode";
 import { ModalSavedLocationManagement } from "./ModalSavedLocationManagement";
 
-export const LocationModalFormWeb = ({
+const defaultModalConfig = {
+  open: false,
+  mode: "add",
+  title: "Detail Alamat",
+  defaultValues: null,
+};
+
+const useModalFormSimpanLokasiWeb = ({
+  setIsDropdownSearchOpen,
+  getLocationByPlaceId,
+  handleSelectSearchResult,
+}) => {
+  const [modalConfig, setModalConfig] = useState(defaultModalConfig);
+
+  const districtData = useLocationFormStore(
+    (s) => s.formValues.dataLokasi?.district
+  );
+  const [isManualPostalCode, setIsManualPostalCode] = useState(false);
+
+  const handleCloseModalFormSimpanLokasiWeb = () =>
+    setModalConfig(defaultModalConfig);
+
+  const handleAddToSavedLocation = (location) => {
+    setIsDropdownSearchOpen(false);
+
+    handleSelectSearchResult(location).then((result) => {
+      console.log("🚀 ~ handleSelectSearchResult ~ result:", result);
+      if (result?.district?.value) {
+        setModalConfig({
+          open: true,
+          mode: "add",
+          title: "Detail Alamat",
+          defaultValues: null,
+        });
+      } else {
+        setIsManualPostalCode(true);
+      }
+    });
+  };
+
+  useShallowCompareEffect(() => {
+    // If districtData has been filled, then navigate to FormLokasiBongkarMuat
+    if (districtData && isManualPostalCode) {
+      console.log("🚀 ~ useShallowCompareEffect ~ districtData:", districtData);
+      setModalConfig({
+        open: true,
+        mode: "add",
+        title: "Detail Alamat",
+        defaultValues: null,
+      });
+    }
+  }, [districtData, isManualPostalCode]);
+
+  return {
+    configFormSimpanLokasi: modalConfig,
+    handleAddToSavedLocation,
+    handleCloseModalFormSimpanLokasiWeb,
+  };
+};
+
+const InnerLocationModalFormWeb = ({
   formMode = "muat",
   open,
   onSubmit = () => {},
   onOpenChange = () => {},
-  allSelectedLocations = [],
   defaultValues,
   index,
 }) => {
-  const {
-    formValues,
-    formErrors,
-    setField,
-    setLocationPartial,
-    validateForm,
-    reset,
-  } = useLocationFormStore();
-  const hasInit = useRef(false);
+  const [
+    isModalSavedLocationManagementOpen,
+    setIsModalSavedLocationManagementOpen,
+  ] = useState(false);
+
+  const { formValues, formErrors, setField, validateLokasiBongkarMuat, reset } =
+    useLocationFormStore();
 
   const {
-    locationAutoCompleteResult,
-    onSelectAutoComplete,
-    userSavedLocations,
-    searchLocationAutoComplete,
-    setSearchLocationAutoComplete,
-
-    isModalPostalCodeOpen,
-    searchLocationByPostalCode,
-    setSearchLocationByPostalCode,
-    postalCodeAutoCompleteResult,
-    onSelectPostalCode,
+    autoCompleteSearchPhrase,
+    autoCompleteSearchResult,
+    isDropdownSearchOpen,
+    setIsDropdownSearchOpen,
+    handleSelectSearchResult,
+    setAutoCompleteSearchPhrase,
 
     coordinates,
     setCoordinates,
     handleGetCurrentLocation,
-    isDropdownOpen,
-    setIsDropdownOpen,
-    handleGetLocationByLatLong,
 
+    isModalPostalCodeOpen,
+    locationPostalCodeSearchPhrase,
+    setLocationPostalCodeSearchPhrase,
+    postalCodeAutoCompleteResult,
+    handleSelectPostalCode,
+
+    userSavedLocationResult,
     handleSelectUserSavedLocation,
-    isModalSavedLocationManagementOpen,
-    setIsModalSavedLocationManagementOpen,
-  } = useLocation({
-    onAddressSelected: (data) => {
-      console.log("🚀 ~ data:", data);
-      setField("dataLokasi", data);
-    },
-    setPICName: (name) => {
-      setField("namaPIC", name);
-    },
-    setNoHPPIC: (noHPPIC) => {
-      setField("noHPPIC", noHPPIC);
-    },
-    setLocationPartial,
+
+    getLocationByPlaceId,
+  } = useLocationContext();
+
+  const {
+    configFormSimpanLokasi,
+    handleAddToSavedLocation,
+    handleCloseModalFormSimpanLokasiWeb,
+  } = useModalFormSimpanLokasiWeb({
+    setIsDropdownSearchOpen,
+    getLocationByPlaceId,
+    handleSelectSearchResult,
   });
 
   // useEffect(() => {
@@ -76,22 +132,23 @@ export const LocationModalFormWeb = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const isFormValid = validateForm(formMode, allSelectedLocations, index);
+    const isFormValid = validateLokasiBongkarMuat(formMode, index);
     if (!isFormValid) return;
 
     onSubmit(formValues);
-    setSearchLocationAutoComplete("");
-    setSearchLocationByPostalCode("");
+    setAutoCompleteSearchPhrase("");
+    setLocationPostalCodeSearchPhrase("");
     onOpenChange(false);
   };
 
+  const hasInit = useRef(false);
   useEffect(() => {
     if (open && !hasInit.current) {
       // This is for the first time the modal is opened
       if (defaultValues) {
         // If there is default values, set the search location auto complete and postal code, and reset the form with the default values
-        setSearchLocationAutoComplete(defaultValues.dataLokasi.location.name);
-        setSearchLocationByPostalCode(
+        setAutoCompleteSearchPhrase(defaultValues.dataLokasi.location.name);
+        setLocationPostalCodeSearchPhrase(
           defaultValues.dataLokasi.postalCode?.value
         );
         reset(defaultValues);
@@ -101,8 +158,8 @@ export const LocationModalFormWeb = ({
       // This is for handling when the modal is closed
       // Reset the form and the search location auto complete and postal code
       reset();
-      setSearchLocationAutoComplete("");
-      setSearchLocationByPostalCode("");
+      setAutoCompleteSearchPhrase("");
+      setLocationPostalCodeSearchPhrase("");
       hasInit.current = false;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -139,23 +196,24 @@ export const LocationModalFormWeb = ({
                       {formMode === "muat" ? "Lokasi Muat*" : "Lokasi Bongkar*"}
                     </label>
                     <InputLocationManagementDropdown
-                      locationAutoCompleteResult={locationAutoCompleteResult}
-                      onSelectAutoComplete={onSelectAutoComplete}
-                      userSavedLocations={userSavedLocations}
-                      searchLocationAutoComplete={searchLocationAutoComplete}
+                      isDropdownSearchOpen={isDropdownSearchOpen}
+                      setIsDropdownSearchOpen={setIsDropdownSearchOpen}
+                      locationAutoCompleteResult={autoCompleteSearchResult}
+                      onSelectSearchResult={handleSelectSearchResult}
+                      userSavedLocations={userSavedLocationResult}
+                      searchLocationAutoComplete={autoCompleteSearchPhrase}
                       setSearchLocationAutoComplete={
-                        setSearchLocationAutoComplete
+                        setAutoCompleteSearchPhrase
                       }
                       handleGetCurrentLocation={handleGetCurrentLocation}
-                      isDropdownOpen={isDropdownOpen}
-                      setIsDropdownOpen={setIsDropdownOpen}
                       handleSelectUserSavedLocation={
                         handleSelectUserSavedLocation
                       }
                       onLocationManagementClicked={() => {
                         setIsModalSavedLocationManagementOpen(true);
-                        setIsDropdownOpen(false);
+                        setIsDropdownSearchOpen(false);
                       }}
+                      handleAddToSavedLocation={handleAddToSavedLocation}
                     />
                     {formErrors?.dataLokasi && (
                       <span className="text-xs font-medium text-red-500">
@@ -246,21 +304,31 @@ export const LocationModalFormWeb = ({
 
       <ModalPostalCode
         open={isModalPostalCodeOpen}
-        searchValue={searchLocationByPostalCode}
-        setSearchValue={setSearchLocationByPostalCode}
+        searchValue={locationPostalCodeSearchPhrase}
+        setSearchValue={setLocationPostalCodeSearchPhrase}
         options={postalCodeAutoCompleteResult}
-        onSelectPostalCode={onSelectPostalCode}
-        onLocationManagementClicked={() =>
-          setIsModalSavedLocationManagementOpen(true)
-        }
+        onSelectPostalCode={handleSelectPostalCode}
       />
 
       <ModalSavedLocationManagement
         open={isModalSavedLocationManagementOpen}
         onOpenChange={setIsModalSavedLocationManagementOpen}
-        userSavedLocations={userSavedLocations}
+        userSavedLocations={userSavedLocationResult}
         handleSelectUserSavedLocation={handleSelectUserSavedLocation}
       />
+
+      <ModalFormSimpanLokasiWeb
+        {...configFormSimpanLokasi}
+        onOpenChange={handleCloseModalFormSimpanLokasiWeb}
+      />
     </>
+  );
+};
+
+export const LocationModalFormWeb = (props) => {
+  return (
+    <LocationProvider>
+      <InnerLocationModalFormWeb {...props} />
+    </LocationProvider>
   );
 };

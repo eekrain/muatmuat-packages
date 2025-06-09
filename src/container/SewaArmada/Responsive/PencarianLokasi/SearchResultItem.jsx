@@ -11,7 +11,7 @@ export const SearchResultItem = ({
       onClick={onClick}
     >
       <div className="flex flex-1 items-center gap-2">
-        <div className="h-6 w-6">
+        <div className="mb-2 h-6 w-6">
           <IconComponent
             className=""
             src="/icons/marker-outline.svg"
@@ -19,7 +19,7 @@ export const SearchResultItem = ({
             height={24}
           />
         </div>
-        <span className="flex-1 text-sm font-semibold text-neutral-700">
+        <span className="line-clamp-2 flex-1 text-sm font-semibold text-neutral-700">
           {location.Title}
         </span>
       </div>

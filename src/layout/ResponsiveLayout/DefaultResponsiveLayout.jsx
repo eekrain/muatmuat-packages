@@ -2,6 +2,7 @@ import {
   HeaderResponsiveContainer,
   HeaderResponsiveDefault,
 } from "@/components/Header/Responsive";
+import { cn } from "@/lib/utils";
 
 /**
  * @typedef {Object} DefaultResponsiveLayoutProps
@@ -23,6 +24,7 @@ const DefaultResponsiveLayout = ({
   onClickNotificationButton,
   onClickChatButton,
   onClickMenuButton,
+  className,
 }) => {
   return (
     <div className="min-h-screen bg-background">
@@ -35,7 +37,9 @@ const DefaultResponsiveLayout = ({
           onClickMenuButton={onClickMenuButton}
         />
       </HeaderResponsiveContainer>
-      <main className="min-h-screen">{children}</main>
+      <main className={cn("min-h-[calc(100vh-62px)]", className)}>
+        {children}
+      </main>
     </div>
   );
 };

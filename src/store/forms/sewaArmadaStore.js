@@ -68,7 +68,8 @@ export const useSewaArmadaStore = create(
             [field]: [...state.formValues[field], value],
           },
         })),
-      updateLokasi: (field, index, newValue) =>
+      updateLokasi: (field, index, newValue) => {
+        console.log("Tes njir", { field, index, newValue });
         set((state) => ({
           formValues: {
             ...state.formValues,
@@ -76,7 +77,8 @@ export const useSewaArmadaStore = create(
               i === index ? newValue : item
             ),
           },
-        })),
+        }));
+      },
       removeLokasi: (field, index) =>
         set((state) => ({
           formValues: {

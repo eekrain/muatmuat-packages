@@ -5,7 +5,7 @@ import * as HoverCard from "@radix-ui/react-hover-card";
 import Button from "@/components/Button/Button";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { useTranslation } from "@/hooks/use-translation";
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth/authStore";
 
 const DropdownMenuItem = ({ imgUrl, title, variant, onClick }) => {

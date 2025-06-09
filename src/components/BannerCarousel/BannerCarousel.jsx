@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 export const BannerCarousel = ({
   banners,
