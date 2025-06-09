@@ -7,14 +7,14 @@ import { FormLabel } from "@/components/Form/Form";
 import Input from "@/components/Form/Input";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
-import normalizeLocationDataForSaving from "@/lib/normalizers/normalizeLocationDataForSaving";
+import axios from "@/lib/axios";
+import { normalizeLocationDataForSaving } from "@/lib/normalizers";
 import {
   useResponsiveNavigation,
   useResponsiveRouteParams,
 } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import axios from "@/services/axios";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
 export const FormSimpanLokasiResponsive = () => {

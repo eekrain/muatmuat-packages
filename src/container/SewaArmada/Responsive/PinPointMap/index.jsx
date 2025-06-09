@@ -1,10 +1,18 @@
 import { useEffect, useRef } from "react";
 
+import { equal } from "fast-shallow-equal";
+
 import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import { ModalPostalCodeResponsive } from "@/components/LocationManagement/Responsive/ModalPostalCodeResponsive";
 import { MapContainer } from "@/components/LocationManagement/common/MapContainer";
-import { LocationProvider, useLocationContext } from "@/hooks/use-location";
+import {
+  DEFAULT_COORDINATES,
+  LocationProvider,
+  useLocationContext,
+} from "@/hooks/use-location";
+import { fetcher } from "@/hooks/use-location/fetcher";
+import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
 import {
   useResponsiveNavigation,
@@ -16,16 +24,12 @@ const InnerPinPointMap = () => {
   const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
 
-  const { formValues } = useLocationFormStore();
+  const { formValues, setLocationPartial } = useLocationFormStore();
   const {
     coordinates,
     setCoordinates,
-    isModalPostalCodeOpen,
     setIsModalPostalCodeOpen,
-    searchLocationByPostalCode,
-    setSearchLocationByPostalCode,
-    postalCodeAutoCompleteResult,
-    onSelectPostalCode,
+    dontTriggerPostalCodeModal,
   } = useLocationContext();
 
   const handleSave = () => {
@@ -49,6 +53,25 @@ const InnerPinPointMap = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formValues?.dataLokasi?.coordinates]);
+
+  // Get newest location if the coordinates is changed
+  // e.g: when the user move the marker on the map
+  useShallowCompareEffect(() => {
+    // Skip if the coordinates is the default coordinates
+    // This is to prevent the postal code modal from being opened, when the user is not interacting with the map yet
+    if (equal(coordinates, DEFAULT_COORDINATES)) return;
+    if (coordinates?.latitude && coordinates?.longitude) {
+      fetcher.getLocationByLatLong(coordinates).then((result) => {
+        console.log("🚀 ~ fetcher.getLocationByLatLong ~ result:", result);
+        setLocationPartial(result);
+        setCoordinates(result.coordinates);
+        if (!result?.district?.value && !dontTriggerPostalCodeModal) {
+          setIsModalPostalCodeOpen(true);
+          setLocationPostalCodeSearchPhrase(result.postalCode.value);
+        }
+      });
+    }
+  }, [coordinates, dontTriggerPostalCodeModal]);
 
   return (
     <FormResponsiveLayout

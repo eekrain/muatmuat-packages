@@ -1,7 +1,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 
-import axios from "@/services/axios";
+import axios from "@/lib/axios";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useUserStore } from "@/store/auth/userStore";
 

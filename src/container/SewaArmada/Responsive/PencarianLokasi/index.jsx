@@ -10,6 +10,7 @@ import {
   useResponsiveNavigation,
   useResponsiveRouteParams,
 } from "@/lib/responsive-navigation";
+import { toast } from "@/lib/toast";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
 import { SavedLocationItem } from "./SavedLocationItem";
@@ -18,9 +19,13 @@ import { SearchResultItem } from "./SearchResultItem";
 const InnerPencarianLokasi = () => {
   const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
+  console.log("🚀 ~ InnerPencarianLokasi ~ params:", params);
 
   const districtData = useLocationFormStore(
     (s) => s.formValues.dataLokasi?.district
+  );
+  const validateLokasiOnSelect = useLocationFormStore(
+    (s) => s.validateLokasiOnSelect
   );
 
   const {
@@ -41,6 +46,17 @@ const InnerPencarianLokasi = () => {
     useState(false);
 
   const onLocationSearchSelected = (location) => {
+    const error = validateLokasiOnSelect(
+      params.config.formMode,
+      params.config.index,
+      location.Title
+    );
+
+    if (error) {
+      toast.error(error);
+      return;
+    }
+
     handleSelectSearchResult(location).then((result) => {
       // If districtData is automatically filled, then immediately navigate to FormLokasiBongkarMuat
       if (result?.district?.value) {
@@ -166,7 +182,13 @@ const InnerPencarianLokasi = () => {
   }, []);
 
   return (
-    <SearchBarResponsiveLayout placeholder="Cari Lokasi Muat">
+    <SearchBarResponsiveLayout
+      placeholder={
+        params.config.formMode === "muat"
+          ? "Cari Lokasi Muat"
+          : "Cari Lokasi Bongkar"
+      }
+    >
       <div className="flex h-full flex-col gap-5 px-4 py-5">
         {autoCompleteSearchResult && autoCompleteSearchPhrase ? (
           <div className="flex h-full flex-col gap-4">

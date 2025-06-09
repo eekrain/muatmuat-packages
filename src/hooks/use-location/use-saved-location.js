@@ -23,10 +23,13 @@ export const useSavedLocation = ({
 
   const handleSelectUserSavedLocation = useCallback(
     (location) => {
+      console.log("🚀 ~ location:", location);
       const result = normalizeUserSavedLocation(location);
       setLocationPartial(result);
       if (location.PicName) setField("namaPIC", location.PicName);
       if (location.PicNoTelp) setField("noHPPIC", location.PicNoTelp);
+      if (location.AddressDetail)
+        setField("detailLokasi", location.AddressDetail);
       setDontTriggerPostalCodeModal(true);
       setCoordinates({
         latitude: location.Latitude,

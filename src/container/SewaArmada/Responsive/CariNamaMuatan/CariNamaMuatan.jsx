@@ -1,14 +1,15 @@
 import { useEffect } from "react";
 
+import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
-import FooterOneButton from "@/components/Footer/OneButton";
+import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import SearchBarResponsiveLayout from "@/layout/ResponsiveLayout/SearchBarResponsiveLayout";
 import {
   useResponsiveNavigation,
   useResponsiveRouteParams,
   useResponsiveSearch,
 } from "@/lib/responsive-navigation";
-import { searchFilter } from "@/utils/filter";
+import { searchFilter } from "@/lib/utils/filter";
 
 const CariNamaMuatan = () => {
   const namaMuatanOptions = [
@@ -85,10 +86,17 @@ const CariNamaMuatan = () => {
           />
         </div>
       )}
-      <FooterOneButton
-        buttonTitle="Tambah Nama Muatan"
-        onClick={hanldeSelectNamaMuatan}
-      />
+
+      <ResponsiveFooter className="flex gap-3">
+        <Button
+          variant="muatparts-primary"
+          className="flex-1"
+          onClick={hanldeSelectNamaMuatan}
+          type="button"
+        >
+          Tambah Nama Muatan
+        </Button>
+      </ResponsiveFooter>
     </SearchBarResponsiveLayout>
   );
 };

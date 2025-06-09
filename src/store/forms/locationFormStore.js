@@ -139,6 +139,23 @@ export const useLocationFormStore = create(
         // return validateForm is valid if all errors are undefined
         return Object.values(errors).every((error) => error === undefined);
       },
+      validateLokasiOnSelect: (formMode, index, selectedAddress) => {
+        const allSelectedLocations =
+          useSewaArmadaStore.getState().formValues[
+            formMode === "muat" ? "lokasiMuat" : "lokasiBongkar"
+          ];
+        console.log("🚀 ~ allSelectedLocations:", allSelectedLocations);
+
+        const foundLocationIndex = allSelectedLocations.findIndex(
+          (item) => item?.dataLokasi?.location?.name === selectedAddress
+        );
+        console.log("🚀 ~ foundLocationIndex:", foundLocationIndex);
+
+        if (foundLocationIndex !== -1 && foundLocationIndex !== index)
+          return formMode === "muat"
+            ? `Lokasi Muat ${index + 1} tidak boleh sama dengan Lokasi Muat ${foundLocationIndex + 1}`
+            : `Lokasi bongkar ${index + 1} tidak boleh sama dengan Lokasi bongkar ${foundLocationIndex + 1}`;
+      },
     }),
     {
       name: "location-form-store",

@@ -1,12 +1,10 @@
 import { useState } from "react";
 
-import { Plus, Shield, Truck } from "lucide-react";
+import { Shield, Truck } from "lucide-react";
 
-<<<<<<< HEAD
+import { FormContainer, FormLabel } from "@/components/Form/Form";
 import IconComponent from "@/components/IconComponent/IconComponent";
-=======
 import { TimelineField } from "@/components/Timeline/timeline-field";
->>>>>>> b723684 (fix: zIndex max to 50, toast will dynamically shown on top of the ResponsiveFooter, implement init auth, user data, and credential-check)
 import DefaultResponsiveLayout from "@/layout/ResponsiveLayout/DefaultResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
@@ -61,15 +59,15 @@ export const SewaArmadaHome = () => {
     layananTambahan: "",
   });
 
-<<<<<<< HEAD
   const handleAddLocation = () => {
     navigation.push("/PencarianLokasi");
   };
 
   const handleEditInformasiMuatan = () => {
-=======
+    navigation.push("/InformasiMuatan");
+  };
+
   const handleAddInformasiMuatan = () => {
->>>>>>> b723684 (fix: zIndex max to 50, toast will dynamically shown on top of the ResponsiveFooter, implement init auth, user data, and credential-check)
     navigation.push("/InformasiMuatan");
   };
 
@@ -109,9 +107,7 @@ export const SewaArmadaHome = () => {
           <div className="flex flex-col gap-y-6">
             {/* Waktu Muat Field */}
             <div className="flex flex-col gap-y-4">
-              <FormLabelContainer>
-                <FormLabel className="font-semibold" title="Waktu Muat" />
-              </FormLabelContainer>
+              <FormLabel>Waktu Muat</FormLabel>
               <WaktuMuatBottomsheet />
             </div>
 
@@ -148,39 +144,34 @@ export const SewaArmadaHome = () => {
               <label className="block text-[14px] font-semibold leading-[15.4px] text-neutral-900">
                 Lokasi Bongkar*
               </label>
-              <div className="w-full space-y-3 rounded-md border border-neutral-600 bg-neutral-50 p-3">
-                <div className="flex items-center gap-2">
-                  <div className="relative h-4 w-4 rounded-full bg-[#461B02]">
-                    <div className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-white"></div>
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Masukkan Lokasi Bongkar"
-                    className="flex-1 bg-transparent text-[14px] font-semibold text-neutral-600 outline-none placeholder:text-neutral-600"
-                    value={formData.lokasiBongkar}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        lokasiBongkar: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-                <div className="h-px w-full bg-neutral-400"></div>
-                <div className="flex cursor-pointer items-center justify-center gap-2">
-                  <Plus className="h-5 w-5 text-primary-700" />
-                  <span className="text-[14px] font-semibold text-primary-700">
-                    Tambah Lokasi Bongkar
-                  </span>
-                </div>
-              </div>
+              <TimelineField
+                variant="bongkar"
+                className="flex-1"
+                values={
+                  formValues.lokasiBongkar?.map(
+                    (item) => item?.dataLokasi?.location || null
+                  ) || []
+                }
+                onAddLocation={() => addLokasi("lokasiBongkar", null)}
+                onDeleteLocation={(index) =>
+                  removeLokasi("lokasiBongkar", index)
+                }
+                onEditLocation={(index) => {
+                  navigation.push("/PencarianLokasi", {
+                    config: {
+                      formMode: "bongkar",
+                      allSelectedLocations: formValues.lokasiBongkar,
+                      defaultValues: formValues.lokasiBongkar[index],
+                      index,
+                    },
+                  });
+                }}
+              />
             </div>
 
             {/* Informasi Muatan Field */}
-            <div className="flex flex-col gap-y-4">
-              <FormLabelContainer>
-                <FormLabel className="font-semibold" title="Informasi Muatan" />
-              </FormLabelContainer>
+            <FormContainer>
+              <FormLabel>Informasi Muatan</FormLabel>
               <button
                 className={
                   "flex h-8 items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-3"
@@ -195,7 +186,8 @@ export const SewaArmadaHome = () => {
                 </div>
                 <IconComponent src="/icons/chevron-right.svg" />
               </button>
-            </div>
+            </FormContainer>
+            <div className="flex flex-col gap-y-4"> </div>
 
             {/* Jenis Armada Field */}
             <div className="space-y-4">
@@ -271,14 +263,9 @@ export const SewaArmadaHome = () => {
             </div>
 
             {/* Layanan Tambahan Field */}
-            <div className="flex flex-col gap-y-4">
-              <FormLabelContainer>
-                <FormLabel
-                  className="font-semibold"
-                  title="Layanan Tambahan"
-                  required={false}
-                />
-              </FormLabelContainer>
+            <FormContainer>
+              <FormLabel required>Layanan Tambahan</FormLabel>
+
               <button
                 className={
                   "flex h-8 items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-3"
@@ -293,7 +280,7 @@ export const SewaArmadaHome = () => {
                 </div>
                 <IconComponent src="/icons/chevron-right.svg" />
               </button>
-            </div>
+            </FormContainer>
           </div>
         </div>
       </div>

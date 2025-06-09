@@ -35,9 +35,12 @@ export const FormLokasiBongkarMuat = () => {
       params.config.index
     );
     if (!isValid) {
-      if (!formValues.namaPIC && !formValues.noHPPIC) {
+      /** Toast Error Setup */
+      if (!formValues.namaPIC && !formValues.noHPPIC)
         toast.error("Terdapat field yang kosong");
-      }
+
+      if (formErrors.dataLokasi) toast.error(formErrors.dataLokasi);
+
       return;
     }
 
@@ -55,7 +58,8 @@ export const FormLokasiBongkarMuat = () => {
   return (
     <FormResponsiveLayout
       title={{
-        label: "Lokasi Muat",
+        label:
+          params.config.formMode === "muat" ? "Lokasi Muat" : "Lokasi Bongkar",
       }}
     >
       {/* Content Container */}
@@ -66,7 +70,9 @@ export const FormLokasiBongkarMuat = () => {
             {/* Header with Ubah Lokasi */}
             <div className="flex items-center justify-between">
               <h2 className="flex-1 text-[14px] font-bold leading-[15px] text-black">
-                Lokasi Muat
+                {params.config.formMode === "muat"
+                  ? "Lokasi Muat"
+                  : "Lokasi Bongkar"}
               </h2>
               <button
                 onClick={handleUbahLokasi}
@@ -127,12 +133,16 @@ export const FormLokasiBongkarMuat = () => {
             {/* Nama PIC Field */}
             <div className="flex flex-col gap-4">
               <label className="text-[14px] font-semibold leading-[15px] text-black">
-                Nama PIC Lokasi Muat<span className="text-red-500">*</span>
+                Nama PIC Lokasi Lokasi{" "}
+                {params.config.formMode === "muat" ? "Muat" : "Bongkar"}
+                <span className="text-red-500">*</span>
               </label>
               <div className="flex flex-col gap-3">
                 <Input
                   type="text"
-                  placeholder="Masukkan Nama PIC Lokasi Muat"
+                  placeholder={`Masukkan Nama PIC Lokasi ${
+                    params.config.formMode === "muat" ? "Muat" : "Bongkar"
+                  }`}
                   icon={{
                     right: <User className="h-4 w-4 text-[#176CF7]" />,
                   }}
@@ -146,7 +156,9 @@ export const FormLokasiBongkarMuat = () => {
             {/* No. HP PIC Field */}
             <div className="flex flex-col gap-4">
               <label className="text-[14px] font-semibold leading-[15px] text-black">
-                No. HP PIC Lokasi Muat<span className="text-red-500">*</span>
+                No. HP PIC Lokasi{" "}
+                {params.config.formMode === "muat" ? "Muat" : "Bongkar"}
+                <span className="text-red-500">*</span>
               </label>
               <div className="flex flex-col gap-3">
                 <Input

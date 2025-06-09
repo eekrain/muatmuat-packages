@@ -1,6 +1,6 @@
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { thousandSeparator } from "@/lib/formatters";
+import { thousandSeparator } from "@/lib/utils/formatters";
 
 const FormLabel = ({ title, required = false }) => (
   <span

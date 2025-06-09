@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 
-import axios from "@/services/axios";
+import axios from "@/lib/axios";
 
 /**
  * Reusable SWR data fetching hook using axios.

@@ -2,9 +2,10 @@
 
 import { Fragment, useEffect, useState } from "react";
 
+import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Checkbox/Checkbox";
 import DropdownRadioBottomsheeet from "@/components/Dropdown/DropdownRadioBottomsheeet";
-import FooterOneButton from "@/components/Footer/OneButton";
+import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
 import Input from "@/components/Form/Input";
@@ -586,10 +587,17 @@ const InformasiMuatanScreen = () => {
           })}
         </div>
       </div>
-      <FooterOneButton
-        buttonTitle="Simpan"
-        onClick={handleSaveInformasiMuatan}
-      />
+
+      <ResponsiveFooter className="flex gap-3">
+        <Button
+          variant="muatparts-primary"
+          className="flex-1"
+          onClick={hanldeSelectNamaMuatan}
+          type="button"
+        >
+          Tambah Nama Muatan
+        </Button>
+      </ResponsiveFooter>
     </FormResponsiveLayout>
   );
 };

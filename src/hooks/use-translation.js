@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-import axios from "@/services/axios";
+import axios from "@/lib/axios";
 import {
   useSelectedLanguageActions,
   useSelectedLanguageStore,

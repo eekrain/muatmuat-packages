@@ -1,4 +1,3 @@
-// lib/toast.ts
 import { useToastStore } from "@/store/toastStore";
 
 /**

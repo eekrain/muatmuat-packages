@@ -1,4 +1,4 @@
-const normalizeLocationDataForSaving = (data) => {
+export const normalizeLocationDataForSaving = (data) => {
   const payload = {};
 
   payload.Name = data.namaLokasi;
@@ -28,5 +28,3 @@ const normalizeLocationDataForSaving = (data) => {
 
   return payload;
 };
-
-export default normalizeLocationDataForSaving;

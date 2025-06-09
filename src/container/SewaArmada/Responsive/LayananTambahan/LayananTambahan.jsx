@@ -1,7 +1,8 @@
 import { useState } from "react";
 
+import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Checkbox/Checkbox";
-import FooterOneButton from "@/components/Footer/OneButton";
+import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Input from "@/components/Input/Input";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
@@ -262,7 +263,17 @@ const LayananTambahan = () => {
           </div>
         </div>
       </div>
-      <FooterOneButton buttonTitle="Simpan" onClick={() => {}} />
+
+      <ResponsiveFooter className="flex gap-3">
+        <Button
+          variant="muatparts-primary"
+          className="flex-1"
+          onClick={() => {}}
+          type="button"
+        >
+          Simpan
+        </Button>
+      </ResponsiveFooter>
     </FormResponsiveLayout>
   );
 };

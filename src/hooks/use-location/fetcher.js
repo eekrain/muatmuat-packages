@@ -1,9 +1,9 @@
+import axios from "@/lib/axios";
 import {
   normalizeAutoCompleteNotFound,
   normalizeDistrictData,
   normalizeLocationByLatLong,
 } from "@/lib/normalizers";
-import axios from "@/services/axios";
 
 const getLocationByLatLong = async (coordinates) => {
   const res1 = await axios.post("/v1/location_by_lat_long", {
@@ -41,10 +41,12 @@ const getLocationByLatLong = async (coordinates) => {
 };
 
 const getLocationByPlaceId = async (location) => {
+  console.log("🚀 ~ getLocationByPlaceId ~ location:", location);
   const res = await axios.post(
     "v1/district_by_token",
     new URLSearchParams({ placeId: location.ID })
   );
+  console.log("🚀 ~ getLocationByPlaceId ~ res:", res);
   const dataDistrict = res.data.Data;
   const dataNotFound = res.data?.Data?.Message?.Data;
 
@@ -56,7 +58,7 @@ const getLocationByPlaceId = async (location) => {
     };
   } else if (dataNotFound) {
     const temp = normalizeAutoCompleteNotFound(location, dataNotFound);
-    // If there is no district data, we fetch with coordinates from this dataNotFound
+    console.log("🚀 ~ getLocationByPlaceId ~ temp:", temp);
     const getDetailedLocation = await getLocationByLatLong(temp.coordinates);
     result = {
       ...getDetailedLocation,
