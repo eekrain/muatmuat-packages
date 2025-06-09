@@ -61,11 +61,11 @@ export const BannerCarousel = ({
 
   return (
     <div
-      className="relative mx-auto h-[146px] w-screen md:h-[250px] md:w-[1054px]"
+      className="relative mx-auto h-[146px] w-full md:h-[250px] md:w-[1054px]"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="relative mx-auto h-[146px] w-screen overflow-hidden md:h-[250px] md:w-[1000px] md:rounded-xl">
+      <div className="relative mx-auto h-[146px] w-full overflow-hidden md:h-[250px] md:w-[1000px] md:rounded-xl">
         {banners.map((banner, index) => (
           <a
             key={banner.id}

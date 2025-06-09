@@ -219,6 +219,14 @@ input::-webkit-inner-spin-button {
   }
 }
 
+.icon-stroke-neutral-700 {
+  circle,
+  path,
+  rect {
+    stroke: var(--neutral-700);
+  }
+}
+
 .icon-stroke-neutral-900 {
   path {
     stroke: var(--neutral-900);

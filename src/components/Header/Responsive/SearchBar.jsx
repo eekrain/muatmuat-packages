@@ -48,7 +48,23 @@ export const HeaderResponsiveSearchBar = ({
         value={searchValue}
         onChange={(e) => setSearchValue(e.currentTarget.value)}
         placeholder={placeholder}
-        className="w-full flex-1 border-none"
+        className="w-full flex-1"
+        appearance={{
+          containerClassName: "border-none",
+        }}
+        icon={{
+          left: (
+            <IconComponent className="icon-blue" src="/icons/search16.svg" />
+          ),
+          right: searchValue ? (
+            <IconComponent
+              src="/icons/silang.svg"
+              height={16}
+              width={16}
+              onClick={() => setSearchValue("")}
+            />
+          ) : null,
+        }}
       />
     </div>
   );

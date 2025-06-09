@@ -17,25 +17,25 @@ export const ModalFirstTimer = ({}) => {
 
   useEffect(() => {
     // Open the modal on first render if dontShowAgain is false
-    if (!dontShowAgain && userId === dataUser.ID && !hasInit.current) {
+    if (!dontShowAgain && userId === dataUser?.ID && !hasInit.current) {
       setOpen(true);
       hasInit.current = true;
     }
     // Reset the state if the user is not the same, e.g. user has logged out and logged in with another account
-    else if (userId !== dataUser.ID) {
-      setDontShowAgain(false, dataUser.ID);
+    else if (userId !== dataUser?.ID) {
+      setDontShowAgain(false, dataUser?.ID);
       setOpen(true);
       hasInit.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dontShowAgain, userId, dataUser.ID]);
+  }, [dontShowAgain, userId, dataUser?.ID]);
 
   return (
     <Modal
       open={open}
       onOpenChange={(value) => {
         if (value === false) {
-          setDontShowAgain(isChecked, dataUser.ID);
+          setDontShowAgain(isChecked, dataUser?.ID);
           setOpen(value);
         }
       }}

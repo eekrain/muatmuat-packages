@@ -14,7 +14,7 @@ const Button = ({
   iconLeft = null,
   iconRight = null,
   disabled = false,
-  type = "muattrans",
+  type = "muatparts",
 }) => {
   /*
     @params color = ['primary', 'primary_secondary', 'error', 'error_secondary', 'warning']
