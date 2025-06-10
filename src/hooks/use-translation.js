@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-import axios from "@/services/axios";
+import axios from "@/lib/axios";
 import {
   useSelectedLanguageActions,
   useSelectedLanguageStore,
@@ -27,7 +27,6 @@ export const useTranslation = () => {
   };
 };
 
-let i = 0;
 export const useInitTranslation = () => {
   const selectedLanguageUrl = useSelectedLanguageStore(
     (state) => state.selectedLanguage?.url
@@ -39,6 +38,7 @@ export const useInitTranslation = () => {
   const [hasSetupSelectedLanguage, setHasSetupSelectedLanguage] =
     useState(false);
 
+  // First this effect will run, and it will fetch the list of language and initialize the selectedLanguage state
   useEffect(() => {
     // This function is used to initialize the list of language and the translations
     const initLanguageSelection = async () => {
@@ -97,6 +97,7 @@ export const useInitTranslation = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedLanguageUrl, hasSetupSelectedLanguage]);
 
+  // This effect will run when the selectedLanguageUrl or hasSetupSelectedLanguage state is changed
   useEffect(() => {
     if (selectedLanguageUrl && hasSetupSelectedLanguage) {
       updateTranslations(selectedLanguageUrl);

@@ -1,54 +1,104 @@
+import { cva } from "class-variance-authority";
 import PropTypes from "prop-types";
 
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 import IconComponent from "../IconComponent/IconComponent";
-import style from "./Button.module.scss";
 
+/**
+ * @typedef {'muattrans-primary' | 'muattrans-primary-secondary' | 'muattrans-error' | 'muattrans-error-secondary' | 'muattrans-warning' | 'muatparts-primary' | 'muatparts-primary-secondary' | 'muatparts-error' | 'muatparts-error-secondary' | 'muatparts-warning'} ButtonVariant
+ */
+
+const buttonVariants = cva(
+  // Base styles
+  "flex h-10 items-center justify-center gap-1 rounded-[24px] px-6 py-3 text-sm font-semibold leading-[16.8px] transition-colors lg:h-8",
+  {
+    variants: {
+      variant: {
+        // MuatTrans variants
+        "muattrans-primary":
+          "bg-[--muat-trans-primary-400] text-neutral-900 hover:bg-[--muat-trans-primary-500]",
+        "muattrans-primary-secondary":
+          "border border-[--muat-trans-secondary-900] bg-neutral-50 text-[--muat-trans-secondary-900] hover:bg-[--muat-trans-secondary-50]",
+        "muattrans-error": "bg-error-400 text-neutral-50 hover:bg-error-600",
+        "muattrans-error-secondary":
+          "border border-error-400 bg-neutral-50 text-error-400 hover:bg-error-50",
+        "muattrans-warning":
+          "bg-secondary-500 text-primary-700 hover:bg-secondary-300",
+
+        // MuatParts variants
+        "muatparts-primary":
+          "bg-primary-700 text-neutral-50 hover:bg-primary-800",
+        "muatparts-primary-secondary":
+          "border border-primary-700 bg-neutral-50 text-primary-700 hover:bg-primary-50",
+        "muatparts-error": "bg-error-400 text-neutral-50 hover:bg-error-600",
+        "muatparts-error-secondary":
+          "border border-error-400 bg-neutral-50 text-error-400 hover:bg-error-50",
+        "muatparts-warning":
+          "bg-secondary-500 text-primary-700 hover:bg-secondary-300",
+      },
+      disabled: {
+        true: "cursor-not-allowed bg-neutral-200 text-neutral-600 hover:bg-neutral-200",
+        "true-secondary":
+          "cursor-not-allowed border border-neutral-600 bg-neutral-200 text-neutral-600 hover:bg-neutral-200",
+      },
+    },
+    defaultVariants: {
+      variant: "muattrans-primary",
+      disabled: false,
+    },
+  }
+);
+
+const iconColorVariants = {
+  "muattrans-primary": "icon-stroke-neutral-900",
+  "muattrans-primary-secondary": "icon-stroke-muat-trans-secondary-900",
+  "muattrans-error": "icon-fill-white",
+  "muattrans-error-secondary": "icon-error-400",
+  "muattrans-warning": "icon-blue",
+  "muatparts-primary": "icon-fill-white",
+  "muatparts-primary-secondary": "icon-stroke-primary-700",
+  "muatparts-error": "icon-fill-white",
+  "muatparts-error-secondary": "icon-error-400",
+  "muatparts-warning": "icon-blue",
+};
+
+/**
+ * Button component with various visual variants for MuatTrans and MuatParts applications
+ * @param {Object} props - Component props
+ * @param {ButtonVariant} [props.variant='muattrans-primary'] - Visual variant of the button
+ * @param {React.ReactNode} [props.children='Button'] - Content to be rendered inside the button
+ * @param {string} [props.className] - Additional CSS classes to be applied
+ * @param {string | React.ReactNode} [props.iconLeft] - Icon to be rendered on the left side of the content
+ * @param {string | React.ReactNode} [props.iconRight] - Icon to be rendered on the right side of the content
+ * @param {boolean} [props.disabled=false] - Whether the button is disabled
+ * @param {import('react').ButtonHTMLAttributes<HTMLButtonElement>} props.buttonProps - Native button element props
+ * @returns {JSX.Element} Rendered Button component
+ */
 const Button = ({
-  color = "primary",
+  variant = "muattrans-primary",
   children = "Button",
-  name,
-  onClick,
   className,
   iconLeft = null,
   iconRight = null,
   disabled = false,
-  type = "muatparts",
+  ...buttonProps
 }) => {
-  /*
-    @params color = ['primary', 'primary_secondary', 'error', 'error_secondary', 'warning']
-
-    @params disabled = true or false
-  */
-
-  let disabledProp = "";
-  let colorIcon;
-
-  if (!color.includes("secondary")) {
-    colorIcon = style["fill_white"];
-  } else {
-    colorIcon = style[`fill_${color.split("_")[0]}`];
-  }
-
-  if (disabled && color.includes("secondary")) {
-    disabledProp = style["btn_disabled_secondary"];
-  } else if (disabled) {
-    disabledProp = style["btn_disabled"];
-  }
+  const isSecondaryVariant = variant.includes("secondary");
+  const disabledVariant = isSecondaryVariant ? "true-secondary" : true;
+  const iconColorClass = disabled ? "icon-gray" : iconColorVariants[variant];
 
   return (
     <button
-      name={name}
-      onClick={onClick}
       disabled={disabled}
       className={cn(
-        "h:10 flex items-center justify-center gap-[4px] rounded-[24px] px-[24px] py-[12px] text-[14px] !font-semibold leading-[16.8px] transition-colors lg:h-8",
-        `${disabledProp} ${style.btn}`,
-        className,
-        style[`btn_${type}_${color}`]
+        buttonVariants({
+          variant: disabled ? undefined : variant,
+          disabled: disabled ? disabledVariant : false,
+          className,
+        })
       )}
-      type="submit"
+      {...buttonProps}
     >
       {typeof iconLeft === "string" ? (
         <IconComponent
@@ -56,7 +106,7 @@ const Button = ({
           src={iconLeft}
           height={16}
           width={16}
-          className={disabled ? style["fill_disabled"] : colorIcon}
+          className={iconColorClass}
         />
       ) : (
         iconLeft
@@ -68,7 +118,7 @@ const Button = ({
           src={iconRight}
           height={16}
           width={16}
-          className={disabled ? style["fill_disabled"] : colorIcon}
+          className={iconColorClass}
         />
       ) : (
         iconRight
@@ -80,17 +130,21 @@ const Button = ({
 export default Button;
 
 Button.propTypes = {
-  color: PropTypes.oneOf([
-    "primary",
-    "primary_secondary",
-    "error",
-    "error_secondary",
-    "warning",
+  variant: PropTypes.oneOf([
+    "muattrans-primary",
+    "muattrans-primary-secondary",
+    "muattrans-error",
+    "muattrans-error-secondary",
+    "muattrans-warning",
+    "muatparts-primary",
+    "muatparts-primary-secondary",
+    "muatparts-error",
+    "muatparts-error-secondary",
+    "muatparts-warning",
   ]),
-  name: PropTypes.string,
-  onClick: PropTypes.func.isRequired,
+  children: PropTypes.node,
   className: PropTypes.string,
-  iconLeft: PropTypes.string,
-  iconRight: PropTypes.string,
+  iconLeft: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+  iconRight: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   disabled: PropTypes.bool,
 };

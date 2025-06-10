@@ -105,9 +105,7 @@ export default function CropperResponsive({
 
   return (
     <>
-      <div
-        className={"fixed left-0 top-0 z-[102] h-screen w-full bg-[#20242F]"}
-      >
+      <div className={"fixed left-0 top-0 z-50 h-screen w-full bg-[#20242F]"}>
         <div className="flex flex-row items-center justify-between p-4 pt-3">
           <div className="flex flex-row items-center gap-x-3">
             {/* <button
@@ -135,7 +133,7 @@ export default function CropperResponsive({
           <div
             className={`m-auto aspect-square w-full ${isCircle ? "modal-cropper-circle" : ""} `}
           >
-            {/* <div className="bg-[white] flex flex-col absolute right-[8px] bottom-[7.5px] border-[#E2E2E2] border-[1px] rounded-[12px] z-[100] h-[80px]">
+            {/* <div className="bg-[white] flex flex-col absolute right-[8px] bottom-[7.5px] border-[#E2E2E2] border-[1px] rounded-[12px] z-50 h-[80px]">
                             <div className="h-1/2 text-[25px] cursor-pointer text-[black] flex justify-center items-center" onClick={zoomIn}>
                                 +
                             </div>

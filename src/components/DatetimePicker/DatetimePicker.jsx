@@ -20,7 +20,7 @@ import { id } from "date-fns/locale/id";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 import ImageComponent from "../ImageComponent/ImageComponent";
 import style from "./DatetimePicker.module.scss";
@@ -419,7 +419,7 @@ const DatetimePicker = ({
       </div>
       {isPickerOpen && (
         <div
-          className="absolute z-[9] w-fit max-w-[calc(100dvw-32px)] rounded-lg border border-[#E5E7F0] bg-white shadow-lg"
+          className="absolute z-10 w-fit max-w-[calc(100dvw-32px)] rounded-lg border border-[#E5E7F0] bg-white shadow-lg"
           style={dropdownPosition}
         >
           {/* MP 22: LB - 0166 */}

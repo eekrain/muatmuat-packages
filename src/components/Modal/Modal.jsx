@@ -9,11 +9,11 @@ import React, {
   useState,
 } from "react";
 
-import { createPortal } from "react-dom";
+import { Portal } from "@radix-ui/react-portal";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 /**
  * @typedef {Object} ModalContextType
@@ -53,7 +53,6 @@ export const Modal = ({
   closeOnOutsideClick = false,
   withCloseButton = true,
 }) => {
-  console.log("🚀 ~ closeOnOutsideClick:", closeOnOutsideClick);
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   const dialogRef = useRef(null);
 
@@ -165,31 +164,32 @@ export const ModalContent = ({
     return null;
   }
 
-  return createPortal(
-    <div
-      className={cn(
-        "fixed inset-0 z-50 flex items-center justify-center bg-black/25"
-      )}
-      onMouseDown={handleClickOutside}
-    >
-      <div ref={dialogRef} className="relative rounded-xl bg-neutral-50">
-        {withCloseButton && (
-          <button
-            className="absolute right-2 top-2 z-[99999] flex cursor-pointer items-center justify-center rounded-full bg-neutral-50"
-            onClick={close}
-          >
-            <IconComponent
-              className={iconClassnames[type] || iconClassnames.muattrans}
-              src="/icons/close20.svg"
-              width={20}
-              height={20}
-            />
-          </button>
+  return (
+    <Portal>
+      <div
+        className={cn(
+          "fixed inset-0 z-50 flex items-center justify-center bg-black/25"
         )}
-        <div className={className ?? baseClass}>{children}</div>
+        onMouseDown={handleClickOutside}
+      >
+        <div ref={dialogRef} className="relative rounded-xl bg-neutral-50">
+          {withCloseButton && (
+            <button
+              className="absolute right-2 top-2 z-50 flex cursor-pointer items-center justify-center rounded-full bg-neutral-50"
+              onClick={close}
+            >
+              <IconComponent
+                className={iconClassnames[type] || iconClassnames.muattrans}
+                src="/icons/close20.svg"
+                width={20}
+                height={20}
+              />
+            </button>
+          )}
+          <div className={className ?? baseClass}>{children}</div>
+        </div>
       </div>
-    </div>,
-    document.body
+    </Portal>
   );
 };
 

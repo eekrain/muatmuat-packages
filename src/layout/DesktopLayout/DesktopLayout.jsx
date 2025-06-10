@@ -10,10 +10,16 @@ export default function DesktopLayout({ children }) {
     return children;
   }
   return (
-    <div className="min-h-screen bg-neutral-100">
+    <div className="relative min-h-screen">
       <HeaderWeb />
-      <main className="pt-[62px]">{children}</main>
+      <div className="py-8">{children}</div>
       <FloatingButton />
+
+      <img
+        src="/img/background-indonesia-map.webp"
+        alt="bg-muattrans"
+        className="fixed bottom-0 left-0 z-[-1] w-screen object-contain"
+      />
     </div>
   );
 }

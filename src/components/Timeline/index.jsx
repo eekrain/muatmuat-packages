@@ -1,6 +1,6 @@
 import { cva } from "class-variance-authority";
 
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 export const lineVariants = cva(
   "absolute left-1/2 top-1 block h-full -translate-x-1/2 border-l-[2px] border-dashed",

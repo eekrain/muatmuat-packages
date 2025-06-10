@@ -3,11 +3,11 @@
 import { Fragment, useEffect, useState } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
+import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
-import { InfoTooltip } from "@/components/Tooltip/Tooltip";
 
 // Warning Badge Component
 const WarningBadge = ({ icon, message }) => {
@@ -151,7 +151,7 @@ const SectionHeader = ({ recommended, type }) => {
       <span className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
         {recommended ? recommendedTitle : "Tidak Direkomendasikan"}
       </span>
-      {recommended && <InfoTooltip content={tooltipContent} />}
+      {recommended && <InfoTooltip>{tooltipContent}</InfoTooltip>}
     </div>
   );
 };

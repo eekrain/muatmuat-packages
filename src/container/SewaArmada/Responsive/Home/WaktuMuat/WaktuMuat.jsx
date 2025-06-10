@@ -13,8 +13,11 @@ import DatetimePicker from "@/components/DatetimePicker/DatetimePicker";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
 import usePrevious from "@/hooks/use-previous";
-import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
-import { getNowTimezone } from "@/utils/dateTime";
+import { getNowTimezone } from "@/lib/utils/dateTime";
+import {
+  useSewaArmadaActions,
+  useSewaArmadaStore,
+} from "@/store/forms/sewaArmadaStore";
 
 const WaktuMuatBottomsheet = () => {
   const dateFormat = "dd MMM yyyy HH:mm";
@@ -22,8 +25,8 @@ const WaktuMuatBottomsheet = () => {
     id: "Asia/Jakarta",
     offset: "+07:00",
   };
-  const { formValues, setField, orderType, setOrderType } =
-    useSewaArmadaStore();
+  const { formValues, orderType } = useSewaArmadaStore();
+  const { setField, setOrderType } = useSewaArmadaActions();
   const [isBottomsheetOpen, setIsBottomsheetOpen] = useState(false);
   const previousIsBottomsheetOpen = usePrevious(isBottomsheetOpen);
   const [bottomsheetFormValues, setBottomsheetFormValues] = useState({
@@ -120,10 +123,14 @@ const WaktuMuatBottomsheet = () => {
           onClick={() => setIsBottomsheetOpen(true)}
         >
           <IconComponent src="/icons/calendar16.svg" />
-          <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-600">
-            {formValues.startDate
-              ? `${format(formValues.startDate, dateFormat)} WIB`
-              : "Pilih Tanggal & Waktu Muat"}
+          <span className="text-[14px] font-semibold leading-[15.4px]">
+            {formValues.startDate ? (
+              <span className="text-neutral-900">{`${format(formValues.startDate, dateFormat)} WIB`}</span>
+            ) : (
+              <span className="text-neutral-600">
+                {"Pilih Tanggal & Waktu Muat"}
+              </span>
+            )}
           </span>
         </button>
         {formValues.showRangeOption ? (
@@ -136,17 +143,21 @@ const WaktuMuatBottomsheet = () => {
               onClick={() => setIsBottomsheetOpen(true)}
             >
               <IconComponent src="/icons/calendar16.svg" />
-              <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-600">
-                {formValues.endDate
-                  ? `${format(formValues.endDate, dateFormat)} WIB`
-                  : "Pilih Tanggal & Waktu Muat"}
+              <span className="text-[14px] font-semibold leading-[15.4px]">
+                {formValues.endDate ? (
+                  <span className="text-neutral-900">{`${format(formValues.endDate, dateFormat)} WIB`}</span>
+                ) : (
+                  <span className="text-neutral-600">
+                    {"Pilih Tanggal & Waktu Muat"}
+                  </span>
+                )}
               </span>
             </button>
           </>
         ) : null}
       </div>
       <BottomSheetContent>
-        <BottomSheetHeader title="Tanggal & Waktu Muat"></BottomSheetHeader>
+        <BottomSheetHeader>Tanggal & Waktu Muat</BottomSheetHeader>
         <div className="flex h-[380px] w-full flex-col gap-4 overflow-y-auto bg-white px-4 py-6">
           {/* Section Tipe Pengiriman */}
           <div className="flex flex-col gap-4">
@@ -253,10 +264,9 @@ const WaktuMuatBottomsheet = () => {
 
           {/* Button Simpan */}
           <Button
-            color="primary"
+            variant="muatparts-primary"
             className="h-10 max-w-full"
             onClick={handleSubmit}
-            type="muatparts"
           >
             Simpan
           </Button>

@@ -59,18 +59,16 @@ export const ModalNamaMuatan = ({ open, onOpenChange, onSubmit }) => {
             {/* Container Tombol */}
             <div className="flex flex-row justify-center gap-2">
               <Button
-                color="primary_secondary"
+                variant="muatparts-primary-secondary"
                 onClick={() => {}}
                 className="h-8 w-[112px]"
-                type="muatparts"
               >
                 {t("Batal")}
               </Button>
               <Button
-                color="primary"
+                variant="muatparts-primary"
                 onClick={handleSubmit}
                 className="h-8 w-[112px]"
-                type="muatparts"
               >
                 {t("Simpan")}
               </Button>

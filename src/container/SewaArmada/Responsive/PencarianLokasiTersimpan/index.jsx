@@ -1,69 +1,63 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
-import { useLocation } from "@/hooks/use-location";
+import { useLocationContext } from "@/hooks/use-location";
 import SearchBarResponsiveLayout from "@/layout/ResponsiveLayout/SearchBarResponsiveLayout";
+import { normalizeUserSavedLocation } from "@/lib/normalizers";
 import {
   useResponsiveNavigation,
+  useResponsiveRouteParams,
   useResponsiveSearch,
 } from "@/lib/responsive-navigation";
-import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
 import { SavedLocationItem } from "../PencarianLokasi/SavedLocationItem";
 
 export const PencarianLokasiTersimpan = () => {
   const navigation = useResponsiveNavigation();
-  const { searchValue } = useResponsiveSearch();
-  const {
-    formValues,
-    formErrors,
-    setField,
-    setLocationCoordinatesOnly,
-    validateForm,
-    reset,
-  } = useLocationFormStore();
+  const params = useResponsiveRouteParams();
+  const { searchValue, setSearchValue } = useResponsiveSearch();
 
-  const {
-    locationAutoCompleteResult,
-    onSelectAutoComplete,
-    userSavedLocations,
-    searchLocationAutoComplete,
-    setSearchLocationAutoComplete,
-
-    isModalPostalCodeOpen,
-    setIsModalPostalCodeOpen,
-    searchLocationByPostalCode,
-    setSearchLocationByPostalCode,
-    postalCodeAutoCompleteResult,
-    onSelectPostalCode,
-
-    coordinates,
-    setCoordinates,
-    handleGetCurrentLocation,
-    isDropdownOpen,
-    setIsDropdownOpen,
-
-    handleSelectUserSavedLocation,
-  } = useLocation({
-    onAddressSelected: (data) => {
-      setField("dataLokasi", data);
-    },
-    setPICName: (name) => {
-      setField("namaPIC", name);
-    },
-    setNoHPPIC: (noHPPIC) => {
-      setField("noHPPIC", noHPPIC);
-    },
-    setLocationCoordinatesOnly,
-  });
+  const { userSavedLocationResult, handleSelectUserSavedLocation } =
+    useLocationContext();
 
   const filteredUserSavedLocations = useMemo(() => {
-    if (!userSavedLocations) return [];
-    return userSavedLocations.filter(
+    if (!userSavedLocationResult) return [];
+    return userSavedLocationResult.filter(
       (item) =>
         item.Name.toLowerCase().includes(searchValue.toLowerCase()) ||
         item.Address.toLowerCase().includes(searchValue.toLowerCase())
     );
-  }, [searchValue, userSavedLocations]);
+  }, [searchValue, userSavedLocationResult]);
+
+  const hasInit = useRef(false);
+  useEffect(() => {
+    if (!hasInit.current) {
+      setSearchValue("");
+      hasInit.current = true;
+    }
+  }, []);
+
+  const onSelected = (location) => {
+    handleSelectUserSavedLocation(location);
+    navigation.push("/FormLokasiBongkarMuat", { ...params });
+  };
+
+  const handleEditSavedLocation = (location) => {
+    const dataLokasi = normalizeUserSavedLocation(location);
+    navigation.push("/FormSimpanLokasi", {
+      ...params,
+      defaultValues: {
+        namaLokasi: location.Name,
+        dataLokasi,
+        detailLokasi: location.AddressDetail,
+        namaPIC: location.PicName,
+        noHPPIC: location.PicNoTelp,
+        isMainAddress: Boolean(location.IsMainAddress),
+      },
+      layout: {
+        title: "Ubah Lokasi",
+      },
+    });
+  };
 
   return (
     <SearchBarResponsiveLayout placeholder="Cari Lokasi yang Disimpan">
@@ -79,15 +73,11 @@ export const PencarianLokasiTersimpan = () => {
               <SavedLocationItem
                 key={location.ID}
                 location={location}
-                onClick={(location) => {
-                  handleSelectUserSavedLocation(location);
-                  navigation.pop();
-                  navigation.pop();
-                }}
+                onClick={onSelected}
                 withEdit={{
                   onClick: (e) => {
                     e.stopPropagation();
-                    alert("kocak");
+                    handleEditSavedLocation(location);
                   },
                 }}
               />

@@ -37,35 +37,24 @@ const ExampleWeb = () => {
     <div className="flex flex-col gap-y-3 p-4">
       <div className="itmes-center flex gap-x-2">
         <Button
-          color="primary"
-          type="muattrans"
+          variant="muattrans-primary"
           onClick={() => setOpenControlled(true)}
         >
           Primary
         </Button>
-        <Button color="primary_secondary" type="muattrans">
-          Primary Secondary
-        </Button>
-        <Button color="error" type="muattrans">
-          Error
-        </Button>
-        <Button color="error_secondary" type="muattrans">
-          Error Seconary
-        </Button>
-        <Button color="warning" type="muattrans">
-          Warning
-        </Button>
+        <Button variant="muattrans-primary-secondary">Primary Secondary</Button>
+        <Button variant="muattrans-error">Error</Button>
+        <Button variant="muattrans-error-secondary">Error Seconary</Button>
+        <Button variant="muattrans-warning">Warning</Button>
 
         <Button
-          color="primary"
-          type="muattrans"
+          variant="muattrans-primary"
           onClick={() => toast.success("Toast Success")}
         >
           Toast Success
         </Button>
         <Button
-          color="error"
-          type="muattrans"
+          variant="muattrans-error"
           onClick={() => toast.error("Toast Error")}
         >
           Toast Error
@@ -127,7 +116,7 @@ const ExampleWeb = () => {
               {/* Container Tombol */}
               <div className="flex flex-row justify-center gap-2">
                 <Button
-                  color="primary_secondary"
+                  variant="muatparts-primary-secondary"
                   onClick={() => setOpenControlled(false)}
                   className="h-8 min-w-[132px]"
                   type="muatparts"
@@ -135,7 +124,7 @@ const ExampleWeb = () => {
                   Kembali
                 </Button>
                 <Button
-                  color="primary"
+                  variant="muatparts-primary"
                   onClick={() => setOpenControlled(false)}
                   className="h-8 min-w-[151px]"
                   type="muatparts"

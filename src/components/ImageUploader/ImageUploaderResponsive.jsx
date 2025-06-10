@@ -256,7 +256,7 @@ export default function ImageUploaderResponsive({
     <>
       <BottomSheet open={isBottomSheetOpen} onOpenChange={setIsBottomSheetOpen}>
         <BottomSheetContent>
-          <BottomSheetHeader title="Pilih Sumber Foto" />
+          <BottomSheetHeader>Pilih Sumber Foto</BottomSheetHeader>
           <div className="flex justify-around py-4">
             {uploadOptions.map((option, key) => (
               <div className="flex flex-col items-center gap-y-4" key={key}>

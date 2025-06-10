@@ -49,13 +49,12 @@ const FleetOrderConfirmationModal = ({ isOpen, setIsOpen, onOrderFleet }) => {
             {/* Container Tombol */}
             <div className="flex flex-row justify-center gap-2">
               <Button
-                color="primary_secondary"
+                variant="muatparts-primary-secondary"
                 onClick={() => setIsModalConfirmationOpen(false)}
-                type="muatparts"
               >
                 Kembali
               </Button>
-              <Button color="primary" onClick={onOrderFleet} type="muatparts">
+              <Button variant="muatparts-primary" onClick={onOrderFleet}>
                 Pesan Sekarang
               </Button>
             </div>

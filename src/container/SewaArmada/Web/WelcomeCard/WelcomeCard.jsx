@@ -1,7 +1,7 @@
 import Card from "@/components/Card/Card";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 
-const WelcomeCard = () => {
+export const WelcomeCard = () => {
   return (
     <Card className="flex !h-[140px] max-w-[1200px] flex-col items-center justify-center gap-6 rounded-xl border-none bg-neutral-50">
       <div className="flex h-[76px] w-[670px] flex-row items-center justify-center gap-3">
@@ -25,5 +25,3 @@ const WelcomeCard = () => {
     </Card>
   );
 };
-
-export default WelcomeCard;

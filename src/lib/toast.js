@@ -1,4 +1,3 @@
-// lib/toast.ts
 import { useToastStore } from "@/store/toastStore";
 
 /**
@@ -11,9 +10,11 @@ export const toast = {
    * @param {number} [duration=6000] - Duration in milliseconds
    */
   success: (message, duration = 6000) => {
-    useToastStore
-      .getState()
-      .actions.addToast({ message, type: "success", duration });
+    useToastStore.getState().actions.addToast({
+      message,
+      type: "success",
+      duration,
+    });
   },
 
   /**
@@ -22,8 +23,10 @@ export const toast = {
    * @param {number} [duration=6000] - Duration in milliseconds
    */
   error: (message, duration = 6000) => {
-    useToastStore
-      .getState()
-      .actions.addToast({ message, type: "error", duration });
+    useToastStore.getState().actions.addToast({
+      message,
+      type: "error",
+      duration,
+    });
   },
 };

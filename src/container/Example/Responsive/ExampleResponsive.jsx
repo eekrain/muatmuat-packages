@@ -7,12 +7,14 @@ import {
   BottomSheetTrigger,
 } from "@/components/Bottomsheet/Bottomsheet";
 import Button from "@/components/Button/Button";
+import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import ToogleButton from "@/components/ToogleButton/ToogleButton";
 import {
   ResponsiveRoute,
   useResponsiveNavigation,
   useResponsiveSearch,
 } from "@/lib/responsive-navigation";
+import { toast } from "@/lib/toast";
 
 const ExampleResponsive = ({}) => {
   const [courierStatus, setCourierStatus] = useState({
@@ -174,23 +176,31 @@ const ExampleResponsive = ({}) => {
           <div className="flex flex-col gap-y-3 p-4">
             <div className="itmes-center flex flex-wrap gap-2">
               <Button
-                color="primary"
-                type="muattrans"
+                variant="muattrans-primary"
                 onClick={() => setOpenControlled(true)}
               >
                 Primary
               </Button>
-              <Button color="primary_secondary" type="muattrans">
+              <Button variant="muattrans-primary-secondary">
                 Primary Secondary
               </Button>
-              <Button color="error" type="muattrans">
-                Error
-              </Button>
-              <Button color="error_secondary" type="muattrans">
+              <Button variant="muattrans-error">Error</Button>
+              <Button variant="muattrans-error-secondary">
                 Error Seconary
               </Button>
-              <Button color="warning" type="muattrans">
-                Warning
+              <Button variant="muattrans-warning">Warning</Button>
+
+              <Button
+                variant="muattrans-primary"
+                onClick={() => toast.success("Toast Success")}
+              >
+                Toast Success
+              </Button>
+              <Button
+                variant="muattrans-error"
+                onClick={() => toast.error("Toast Error")}
+              >
+                Toast Error
               </Button>
             </div>
             <div>
@@ -203,7 +213,7 @@ const ExampleResponsive = ({}) => {
               <BottomSheet>
                 <BottomSheetTrigger>Open Bottom Sheet</BottomSheetTrigger>
                 <BottomSheetContent>
-                  <BottomSheetHeader title="Bagikan Produk"></BottomSheetHeader>
+                  <BottomSheetHeader>Bagikan Produk</BottomSheetHeader>
                   <div className="divide-y px-4">
                     <button className="w-full px-6 py-4 text-left">
                       Ringkasan Status Pesanan
@@ -270,6 +280,12 @@ const ExampleResponsive = ({}) => {
           </div>
         }
       />
+
+      <ResponsiveFooter>
+        <Button variant="muatparts-primary" className="w-full">
+          Responsive Footer
+        </Button>
+      </ResponsiveFooter>
     </>
   );
 };

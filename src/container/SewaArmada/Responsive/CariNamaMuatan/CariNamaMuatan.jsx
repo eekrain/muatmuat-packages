@@ -1,46 +1,54 @@
 import { useEffect } from "react";
 
+import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
-import FooterOneButton from "@/components/Footer/OneButton";
+import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import SearchBarResponsiveLayout from "@/layout/ResponsiveLayout/SearchBarResponsiveLayout";
 import {
   useResponsiveNavigation,
   useResponsiveRouteParams,
   useResponsiveSearch,
 } from "@/lib/responsive-navigation";
-import { searchFilter } from "@/utils/filter";
+import { searchFilter } from "@/lib/utils/filter";
+import { useInformasiMuatanStore } from "@/store/forms/informasiMuatanStore";
+
+const namaMuatanOptions = [
+  { value: "71b8881a-66ff-454d-a0c6-66b26b84628d", label: "Furniture Kayu" },
+  {
+    value: "0c57b52d-7e63-46c8-b779-c5697242b471",
+    label: "Elektronik Rumah Tangga",
+  },
+  {
+    value: "949c658e-b4d6-4ca2-8d2f-d69bf1594c4f",
+    label: "Peralatan dan Kebutuhan Kantor",
+  },
+  {
+    value: "38015672-0dab-4523-bda8-867893c95cfb",
+    label: "Produk Makanan Kemasan",
+  },
+  {
+    value: "bb93259b-eefb-4915-aff0-3d1f5a3ab241",
+    label: "Produk Minuman Kemasan",
+  },
+];
 
 const CariNamaMuatan = () => {
-  const namaMuatanOptions = [
-    { value: "71b8881a-66ff-454d-a0c6-66b26b84628d", label: "Furniture Kayu" },
-    {
-      value: "0c57b52d-7e63-46c8-b779-c5697242b471",
-      label: "Elektronik Rumah Tangga",
-    },
-    {
-      value: "949c658e-b4d6-4ca2-8d2f-d69bf1594c4f",
-      label: "Peralatan dan Kebutuhan Kantor",
-    },
-    {
-      value: "38015672-0dab-4523-bda8-867893c95cfb",
-      label: "Produk Makanan Kemasan",
-    },
-    {
-      value: "bb93259b-eefb-4915-aff0-3d1f5a3ab241",
-      label: "Produk Minuman Kemasan",
-    },
-  ];
-
   const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
   const { searchValue, setSearchValue } = useResponsiveSearch();
+  const { updateInformasiMuatan } = useInformasiMuatanStore();
 
   useEffect(() => {
     setSearchValue("");
   }, []);
 
-  const hanldeSelectNamaMuatan = (namaMuatan) => {
-    navigation.push("/InformasiMuatan", { namaMuatan, key: params.key });
+  const handleSelectNamaMuatan = (namaMuatan) => {
+    updateInformasiMuatan(params.index, "namaMuatan", namaMuatan);
+    navigation.pop();
+  };
+
+  const handleTambahNamaMuatan = () => {
+    alert("not implemented");
   };
 
   const filtereNamaMuatanOptions = searchFilter(
@@ -59,7 +67,7 @@ const CariNamaMuatan = () => {
               <button
                 className={`${isLastItem ? "" : "border-b border-b-neutral-400 pb-4"} flex`}
                 key={key}
-                onClick={() => hanldeSelectNamaMuatan(item)}
+                onClick={() => handleSelectNamaMuatan(item)}
               >
                 <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
                   {item.label}
@@ -85,10 +93,17 @@ const CariNamaMuatan = () => {
           />
         </div>
       )}
-      <FooterOneButton
-        buttonTitle="Tambah Nama Muatan"
-        onClick={hanldeSelectNamaMuatan}
-      />
+
+      <ResponsiveFooter className="flex gap-3">
+        <Button
+          variant="muatparts-primary"
+          className="flex-1"
+          onClick={handleTambahNamaMuatan}
+          type="button"
+        >
+          Tambah Nama Muatan
+        </Button>
+      </ResponsiveFooter>
     </SearchBarResponsiveLayout>
   );
 };

@@ -9,9 +9,10 @@ import React, {
   useState,
 } from "react";
 
-import { createPortal } from "react-dom";
+import { Portal } from "@radix-ui/react-portal";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { cn } from "@/lib/utils";
 
 /**
  * @typedef {Object} BottomSheetContextType
@@ -101,13 +102,11 @@ export const BottomSheet = ({
 };
 
 export const BottomSheetTrigger = ({ children, className }) => {
-  const baseClass =
-    "rounded bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700";
   const { open } = useBottomSheet();
   return (
-    <button onClick={open} className={className ?? baseClass}>
+    <div onClick={open} className={className}>
       {children}
-    </button>
+    </div>
   );
 };
 
@@ -243,6 +242,7 @@ export const BottomSheetContent = ({ children, className }) => {
       window.removeEventListener("mousemove", move);
       window.removeEventListener("mouseup", up);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dragging, startY, translateY]);
 
   if (!isOpen || typeof window === "undefined") return null;
@@ -253,52 +253,52 @@ export const BottomSheetContent = ({ children, className }) => {
     1 - translateY / (window.innerHeight * 0.5)
   );
 
-  return createPortal(
-    <div
-      className="fixed inset-0 z-50 flex flex-col items-center justify-end bg-neutral-900/30 bg-opacity-40 transition-opacity duration-200"
-      style={{
-        backgroundColor: `rgba(38, 38, 38, ${0.3 * backdropOpacity})`,
-      }}
-      onMouseDown={handleClickOutside}
-    >
+  return (
+    <Portal>
       <div
-        ref={sheetRef}
-        className={className ?? baseClass}
+        className="fixed inset-0 z-50 flex flex-col items-center justify-end bg-neutral-900/30 bg-opacity-40 transition-opacity duration-200"
         style={{
-          transform: `translateY(${translateY}px)`,
-          transition: dragging
-            ? "none"
-            : "transform 0.3s cubic-bezier(0.4,0,0.2,1)",
-          touchAction: "none",
-          opacity: dragging
-            ? Math.max(0.3, 1 - translateY / (window.innerHeight * 0.4))
-            : 1,
+          backgroundColor: `rgba(38, 38, 38, ${0.3 * backdropOpacity})`,
         }}
-        onTouchStart={onDragStart}
-        onTouchMove={(e) => dragging && e.preventDefault()}
-        onTouchEnd={onDragEnd}
-        onMouseDown={onDragStart}
+        onMouseDown={handleClickOutside}
       >
-        {/* Enhanced drag handle with visual feedback */}
-        <div className="flex cursor-grab select-none justify-center pb-4 pt-2 active:cursor-grabbing">
-          <div
-            className={
-              "h-1.5 w-[38px] rounded-sm bg-[#DDDDDD] transition-colors duration-200"
-            }
-          />
+        <div
+          ref={sheetRef}
+          className={className ?? baseClass}
+          style={{
+            transform: `translateY(${translateY}px)`,
+            transition: dragging
+              ? "none"
+              : "transform 0.3s cubic-bezier(0.4,0,0.2,1)",
+            touchAction: "none",
+            opacity: dragging
+              ? Math.max(0.3, 1 - translateY / (window.innerHeight * 0.4))
+              : 1,
+          }}
+          onTouchStart={onDragStart}
+          onTouchMove={(e) => dragging && e.preventDefault()}
+          onTouchEnd={onDragEnd}
+          onMouseDown={onDragStart}
+        >
+          {/* Enhanced drag handle with visual feedback */}
+          <div className="flex cursor-grab select-none justify-center pb-4 pt-2 active:cursor-grabbing">
+            <div
+              className={
+                "h-1.5 w-[38px] rounded-sm bg-[#DDDDDD] transition-colors duration-200"
+              }
+            />
+          </div>
+          {children}
         </div>
-        {children}
       </div>
-    </div>,
-    document.body
+    </Portal>
   );
 };
 
-export const BottomSheetHeader = ({ className, title }) => {
+export const BottomSheetHeader = ({ className, children }) => {
   const { close } = useBottomSheet();
-  const baseClass = "flex justify-between items-center px-4";
   return (
-    <div className={className ?? baseClass}>
+    <div className={cn("flex items-center justify-between px-4", className)}>
       <button
         onClick={close}
         className="flex size-[24px] items-center justify-between"
@@ -310,7 +310,7 @@ export const BottomSheetHeader = ({ className, title }) => {
           height={24}
         />
       </button>
-      <span className="text-[14px] font-bold leading-[15.4px]">{title}</span>
+      <span className="text-[14px] font-bold leading-[15.4px]">{children}</span>
       <div className="size-[24px]" />
     </div>
   );

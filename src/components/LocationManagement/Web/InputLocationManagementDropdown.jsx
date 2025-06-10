@@ -1,20 +1,21 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
-import { createPortal } from "react-dom";
+import { Portal } from "@radix-ui/react-portal";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 
 export const InputLocationManagementDropdown = ({
   locationAutoCompleteResult,
-  onSelectAutoComplete,
+  onSelectSearchResult,
   userSavedLocations,
   searchLocationAutoComplete,
   setSearchLocationAutoComplete,
   handleGetCurrentLocation,
-  isDropdownOpen,
-  setIsDropdownOpen,
   handleSelectUserSavedLocation,
   onLocationManagementClicked,
+  isDropdownSearchOpen,
+  setIsDropdownSearchOpen,
+  handleAddToSavedLocation,
 }) => {
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
@@ -22,11 +23,11 @@ export const InputLocationManagementDropdown = ({
 
   // Function to update dropdown position
   const updateDropdownPosition = () => {
-    if (isDropdownOpen && inputRef.current) {
+    if (isDropdownSearchOpen && inputRef.current) {
       const rect = inputRef.current.getBoundingClientRect();
       const top = rect.bottom + window.scrollY;
       if (top < 250) {
-        setIsDropdownOpen(false);
+        setIsDropdownSearchOpen, false;
         inputRef.current.blur();
       } else {
         setDropdownStyle({
@@ -44,11 +45,11 @@ export const InputLocationManagementDropdown = ({
   useLayoutEffect(() => {
     updateDropdownPosition();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDropdownOpen]);
+  }, [isDropdownSearchOpen]);
 
   // Update dropdown position on scroll and resize
   useEffect(() => {
-    if (!isDropdownOpen) return;
+    if (!isDropdownSearchOpen) return;
     const handleScrollOrResize = () => {
       updateDropdownPosition();
     };
@@ -59,11 +60,11 @@ export const InputLocationManagementDropdown = ({
       window.removeEventListener("resize", handleScrollOrResize);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDropdownOpen]);
+  }, [isDropdownSearchOpen]);
 
   // Click outside handler
   useEffect(() => {
-    if (!isDropdownOpen) return;
+    if (!isDropdownSearchOpen) return;
     function handleClickOutside(event) {
       if (
         inputRef.current &&
@@ -71,15 +72,14 @@ export const InputLocationManagementDropdown = ({
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target)
       ) {
-        setIsDropdownOpen(false);
+        setIsDropdownSearchOpen, false;
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDropdownOpen]);
+  }, [isDropdownSearchOpen]);
 
   // Dropdown content
   const dropdown = (
@@ -94,7 +94,7 @@ export const InputLocationManagementDropdown = ({
         <button
           onClick={async () => {
             await handleGetCurrentLocation();
-            setIsDropdownOpen(false);
+            setIsDropdownSearchOpen, false;
           }}
           className="flex w-full items-center gap-2 px-[20px] py-[12px] text-[10px] font-medium text-[#176CF7]"
         >
@@ -116,10 +116,10 @@ export const InputLocationManagementDropdown = ({
           </div>
           {locationAutoCompleteResult.map((location) => (
             <button
-              key={location.ID}
+              key={location.ID + location.Title}
               onClick={() => {
-                onSelectAutoComplete(location);
-                setIsDropdownOpen(false);
+                onSelectSearchResult(location);
+                setIsDropdownSearchOpen(false);
               }}
               className="flex items-start gap-2"
             >
@@ -139,7 +139,7 @@ export const InputLocationManagementDropdown = ({
                 className="h-[20px] w-[20px] cursor-pointer hover:text-[#176CF7]"
                 onClick={(e) => {
                   e.stopPropagation();
-                  alert("not implemented");
+                  handleAddToSavedLocation(location);
                 }}
               >
                 <IconComponent
@@ -171,10 +171,10 @@ export const InputLocationManagementDropdown = ({
                 Manajemen Lokasi
               </div>
               <div className="space-y-2">
-                {userSavedLocations.map((location) => (
+                {userSavedLocations.slice(0, 3).map((location) => (
                   <button
                     onClick={() => handleSelectUserSavedLocation(location)}
-                    key={location.ID}
+                    key={location.ID + location.Title}
                     className="flex items-start gap-2 text-left"
                   >
                     <div className="h-[20px] w-[20px]">
@@ -232,7 +232,7 @@ export const InputLocationManagementDropdown = ({
           type="text"
           placeholder="Masukkan Lokasi Muat"
           value={searchLocationAutoComplete}
-          onFocus={() => setIsDropdownOpen(true)}
+          onFocus={() => setIsDropdownSearchOpen(true)}
           onChange={(e) => {
             setSearchLocationAutoComplete(e.currentTarget.value);
           }}
@@ -245,7 +245,11 @@ export const InputLocationManagementDropdown = ({
           className="absolute left-3 top-1/2 -translate-y-1/2"
         />
       </div>
-      {isDropdownOpen && dropdownStyle && createPortal(dropdown, document.body)}
+      {isDropdownSearchOpen && dropdownStyle && (
+        <Portal>
+          <div>{dropdown}</div>
+        </Portal>
+      )}
     </div>
   );
 };

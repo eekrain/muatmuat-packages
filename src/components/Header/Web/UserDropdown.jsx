@@ -5,7 +5,7 @@ import * as HoverCard from "@radix-ui/react-hover-card";
 import Button from "@/components/Button/Button";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { useTranslation } from "@/hooks/use-translation";
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth/authStore";
 
 const DropdownMenuItem = ({ imgUrl, title, variant, onClick }) => {
@@ -30,7 +30,7 @@ export const UserDropdown = () => {
     <>
       {!accessToken ? (
         <a href={`${process.env.NEXT_PUBLIC_INTERNAL_WEB}login?from=muattrans`}>
-          <Button className="bg-buyer-seller-900">
+          <Button variant="muatparts-primary">
             <span className="text-[14px] font-semibold leading-[1] text-neutral-50">
               Masuk
             </span>

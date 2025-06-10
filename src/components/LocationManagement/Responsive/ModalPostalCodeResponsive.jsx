@@ -3,19 +3,22 @@ import { useEffect, useState } from "react";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
+import { useLocationContext } from "@/hooks/use-location";
 import { useTranslation } from "@/hooks/use-translation";
 
 import { InputSearch } from "../common/InputSearch";
 
-export const ModalPostalCodeResponsive = ({
-  open,
-  searchValue,
-  setSearchValue,
-  options,
-  onSelectPostalCode,
-  onOpenChange,
-}) => {
+export const ModalPostalCodeResponsive = () => {
   const { t } = useTranslation();
+
+  const {
+    isModalPostalCodeOpen,
+    setIsModalPostalCodeOpen,
+    locationPostalCodeSearchPhrase,
+    setLocationPostalCodeSearchPhrase,
+    postalCodeAutoCompleteResult,
+    handleSelectPostalCode,
+  } = useLocationContext();
 
   const [tempSelectedPostalCode, setTempSelectedPostalCode] = useState(null);
   const [hideDropdown, setHideDropdown] = useState(false);
@@ -23,7 +26,7 @@ export const ModalPostalCodeResponsive = ({
 
   const handleSelect = (option) => {
     setTempSelectedPostalCode(option);
-    setSearchValue(option.Description);
+    setLocationPostalCodeSearchPhrase(option.Description);
     setHideDropdown(true);
   };
 
@@ -33,27 +36,39 @@ export const ModalPostalCodeResponsive = ({
       return;
     }
 
-    onSelectPostalCode(tempSelectedPostalCode);
+    handleSelectPostalCode(tempSelectedPostalCode);
 
     // Reset state and close the modal
-    setSearchValue("");
+    setLocationPostalCodeSearchPhrase("");
     setTempSelectedPostalCode(null);
     setHideDropdown(false);
     setErrorMessage("");
-    onOpenChange(false);
+    setIsModalPostalCodeOpen(false);
   };
 
   useEffect(() => {
     // If search value is empty, then reset hideDropdown to false and tempSelectedPostalCode to null
     // e.g: user click icon X (clear)
-    if (!searchValue) {
+    if (!locationPostalCodeSearchPhrase) {
       setHideDropdown(false);
       setTempSelectedPostalCode(null);
     }
-  }, [searchValue]);
+  }, [locationPostalCodeSearchPhrase]);
+
+  useEffect(() => {
+    // Reset the state when the modal is closed
+    if (!isModalPostalCodeOpen) {
+      setHideDropdown(false);
+      setTempSelectedPostalCode(null);
+    }
+  }, [isModalPostalCodeOpen]);
 
   return (
-    <Modal open={open} closeOnOutsideClick={false} withCloseButton={false}>
+    <Modal
+      open={isModalPostalCodeOpen}
+      closeOnOutsideClick={false}
+      withCloseButton={false}
+    >
       <ModalContent>
         <div className="relative w-[328px] space-y-6 p-6">
           <div className="text-center text-sm font-bold">
@@ -74,10 +89,10 @@ export const ModalPostalCodeResponsive = ({
           <InputSearch
             name="search"
             placeholder={t("labelSearchVPS")}
-            searchValue={searchValue}
-            setSearchValue={setSearchValue}
+            searchValue={locationPostalCodeSearchPhrase}
+            setSearchValue={setLocationPostalCodeSearchPhrase}
             icon={{ left: "/icons/search.svg" }}
-            options={options}
+            options={postalCodeAutoCompleteResult}
             getOptionLabel={(option) => option.Description}
             onSelectValue={handleSelect}
             hideDropdown={hideDropdown}
@@ -86,18 +101,16 @@ export const ModalPostalCodeResponsive = ({
 
           <div className="flex flex-row justify-center gap-2">
             <Button
-              color="primary_secondary"
-              onClick={() => onOpenChange(false)}
+              variant="muatparts-primary-secondary"
+              onClick={() => setIsModalPostalCodeOpen(false)}
               className="h-8 min-w-[108px]"
-              type="muatparts"
             >
               Batal
             </Button>
             <Button
-              color="primary"
+              variant="muatparts-primary"
               onClick={handleSave}
               className="h-8 min-w-[108px]"
-              type="muatparts"
             >
               Simpan
             </Button>

@@ -4,21 +4,13 @@ export default function Page() {
   return (
     <div className="">
       <div className="itmes-center flex gap-x-2">
-        <Button color="primary" type="muattrans">
-          Primary
-        </Button>
-        <Button color="primary_secondary" type="muattrans">
+        <Button variant="muattrans-primary">Primary</Button>
+        <Button variant="muattrans-primary-secondary" type="muattrans">
           Primary Secondary
         </Button>
-        <Button color="error" type="muattrans">
-          Error
-        </Button>
-        <Button color="error_secondary" type="muattrans">
-          Error Seconary
-        </Button>
-        <Button color="warning" type="muattrans">
-          Warning
-        </Button>
+        <Button variant="muattrans-error">Error</Button>
+        <Button variant="muattrans-error-secondary">Error Seconary</Button>
+        <Button variant="muattrans-warning">Warning</Button>
       </div>
     </div>
   );

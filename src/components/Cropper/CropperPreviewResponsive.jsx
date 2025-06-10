@@ -26,7 +26,7 @@ const CropperPreviewResponsive = ({
   const handleEditImage = () => setIsBottomSheetOpen(true);
 
   return (
-    <div className="fixed left-0 top-0 z-[102] h-screen w-full bg-white">
+    <div className="fixed left-0 top-0 z-50 h-screen w-full bg-white">
       <HeaderMobile
         onBack={() => {
           onCancelCrop();
@@ -48,7 +48,7 @@ const CropperPreviewResponsive = ({
         </div>
         <Button
           className="mt-6 h-10 px-6"
-          color="primary_secondary"
+          variant="muatparts-primary-secondary"
           onClick={handleEditImage}
         >
           Ubah Foto
@@ -61,7 +61,7 @@ const CropperPreviewResponsive = ({
       <div className="shadow-muat fixed bottom-0 left-0 w-full bg-neutral-50 px-4 py-3">
         <Button
           className="h-8 w-full max-w-full"
-          color="primary"
+          variant="muatparts-primary"
           onClick={onConfirm}
         >
           Simpan Foto
@@ -69,7 +69,7 @@ const CropperPreviewResponsive = ({
       </div>
       <BottomSheet open={isBottomSheetOpen} onOpenChange={setIsBottomSheetOpen}>
         <BottomSheetContent>
-          <BottomSheetHeader title="Pilih Sumber Foto" />
+          <BottomSheetHeader>Pilih Sumber Foto</BottomSheetHeader>
           <div className="flex justify-around py-4">
             {uploadOptions.map((option, key) => (
               <div className="flex flex-col items-center gap-y-4" key={key}>

@@ -1,8 +1,8 @@
 "use client";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { cn } from "@/lib/cn";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import { cn } from "@/lib/utils";
 
 const DEFAULT_FUNCTION = () =>
   alert("Responsive Form Header: No function provided");

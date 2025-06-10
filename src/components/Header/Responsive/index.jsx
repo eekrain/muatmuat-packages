@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 const backgroundClassnames = {
   muatmuat: "bg-neutral-50",
@@ -17,7 +17,7 @@ export const HeaderResponsiveContainer = ({
     <div
       className={cn(
         backgroundClassnames[type],
-        "fixed left-0 top-0 z-10 w-full",
+        "sticky left-0 top-0 z-10 w-full",
         className
       )}
     >

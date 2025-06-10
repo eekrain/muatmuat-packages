@@ -6,23 +6,17 @@ import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import * as v from "valibot";
 
 import Button from "@/components/Button/Button";
-import Input from "@/components/Form/Input";
+import { DimensionInput } from "@/components/Form/DimensionInput";
+import { FormLabel } from "@/components/Form/Form";
+import { InfoTooltip } from "@/components/Form/InfoTooltip";
+import { NumberInput } from "@/components/Form/NumberInput";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
-import { InfoTooltip } from "@/components/Tooltip/Tooltip";
 import { useTranslation } from "@/hooks/use-translation";
 
 import { DropdownWithCheckIcon } from "./DropdownWithCheckIcon";
 import { DropdownSearch } from "./InformasiMuatanDropdown";
 import { ModalNamaMuatan } from "./ModalNamaMuatan";
-
-const FormLabel = ({ title, required = false }) => (
-  <span
-    className={"block text-[12px] font-bold leading-[14.4px] text-neutral-600"}
-  >
-    {`${title}${required ? "*" : " (Opsional)"}`}
-  </span>
-);
 
 // Define units
 const weightUnits = [
@@ -71,15 +65,15 @@ const informasiMuatanSchema = v.object({
     // the value might be empty string or a number, so make sure to transform it to a number
     panjang: v.pipe(
       v.any(),
-      v.transform((input) => (input ? input : 0))
+      v.transform((input) => (input ? Number(input) : 0))
     ),
     lebar: v.pipe(
       v.any(),
-      v.transform((input) => (input ? input : 0))
+      v.transform((input) => (input ? Number(input) : 0))
     ),
     tinggi: v.pipe(
       v.any(),
-      v.transform((input) => (input ? input : 0))
+      v.transform((input) => (input ? Number(input) : 0))
     ),
     unit: v.string(),
   }),
@@ -116,8 +110,9 @@ export const InformasiMuatanModal = ({
 
   const values = useWatch({
     control,
-    name: "informasiMuatan",
+    name: "informasiMuatan.0",
   });
+  console.log("🚀 ~ values:", values);
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -194,46 +189,51 @@ export const InformasiMuatanModal = ({
                   <thead className="border-b">
                     <tr className="h-9 align-top font-bold">
                       <th className="w-[209px] text-left">
-                        <FormLabel title={"Nama Muatan"} required />
+                        <FormLabel className="h-auto md:font-bold" required>
+                          Nama Muatan
+                        </FormLabel>
                       </th>
                       <th className="w-[168px]">
-                        <div className="flex items-end gap-x-2">
-                          <FormLabel title={"Berat Muatan"} required />
-                          <InfoTooltip content="Masukkan berat keseluruhan atau total dari seluruh muatan yang akan dikirim." />
-                        </div>
+                        <FormLabel
+                          className="h-auto md:font-bold"
+                          required
+                          tooltip={
+                            <InfoTooltip>
+                              Masukkan berat keseluruhan atau total dari seluruh
+                              muatan yang akan dikirim.
+                            </InfoTooltip>
+                          }
+                        >
+                          Berat Muatan
+                        </FormLabel>
                       </th>
                       <th>
-                        <div className="flex items-end gap-x-2">
-                          <FormLabel title={"Dimensi Muatan"} />
-                          <InfoTooltip
-                            content={
-                              <div className="text-left text-sm font-normal leading-[1.2]">
-                                <ul>
-                                  <li>
-                                    <b>Panjang</b> : Ukuran terpanjang dari
-                                    muatan.
-                                  </li>
-                                  <li>
-                                    <b>Lebar</b> : Ukuran terlebar dari muatan.
-                                  </li>
-                                  <li>
-                                    <b>Tinggi</b> : Ukuran tertinggi dari muatan
-                                  </li>
-                                </ul>
-                                <p className="mt-1">
-                                  Pengisian dimensi yang tepat akan membantu
-                                  dalam pengelolaan dan pengiriman.
-                                </p>
-                              </div>
-                            }
-                          >
-                            <IconComponent
-                              src="/icons/info16.svg"
-                              width={16}
-                              height={16}
-                            />
-                          </InfoTooltip>
-                        </div>
+                        <FormLabel
+                          className="h-auto md:font-bold"
+                          required
+                          tooltip={
+                            <InfoTooltip>
+                              <ul>
+                                <li>
+                                  <b>Panjang :</b> Ukuran terpanjang dari
+                                  muatan.
+                                </li>
+                                <li>
+                                  <b>Lebar :</b> Ukuran terlebar dari muatan.
+                                </li>
+                                <li>
+                                  <b>Tinggi :</b> Ukuran tertinggi dari muatan
+                                </li>
+                              </ul>
+                              <p>
+                                Pengisian dimensi yang tepat akan membantu dalam
+                                pengelolaan dan pengiriman.
+                              </p>
+                            </InfoTooltip>
+                          }
+                        >
+                          Dimensi Muatan
+                        </FormLabel>
                       </th>
                       <th className="w-20 text-center" />
                     </tr>
@@ -269,27 +269,24 @@ export const InformasiMuatanModal = ({
                             <Controller
                               control={control}
                               name={`informasiMuatan.${index}.beratMuatan.berat`}
-                              render={({ field }) => (
-                                <Input
-                                  {...field}
-                                  type="number"
-                                  value={field.value === "" ? "" : field.value}
-                                  onChange={(e) => {
-                                    const val = e.currentTarget.value;
-                                    field.onChange(
-                                      val === "" ? "" : Number(val)
-                                    );
-                                  }}
-                                  errorMessage={
-                                    errors?.informasiMuatan?.[index]
-                                      ?.beratMuatan?.berat?.message
-                                  }
-                                  appearance={{
-                                    inputClassName: "cursor-pointer",
-                                  }}
-                                  placeholder="0"
-                                />
-                              )}
+                              render={({ field }) => {
+                                return (
+                                  <NumberInput
+                                    {...field}
+                                    min={0}
+                                    stepper={1}
+                                    placeholder="0"
+                                    errorMessage={
+                                      errors?.informasiMuatan?.[index]
+                                        ?.beratMuatan?.berat?.message
+                                    }
+                                    appearance={{
+                                      containerClassName: "w-[120px]",
+                                      inputClassName: "cursor-pointer ",
+                                    }}
+                                  />
+                                );
+                              }}
                             />
 
                             <Controller
@@ -308,78 +305,19 @@ export const InformasiMuatanModal = ({
                         {/* Dimensi Muatan */}
                         <td className="pr-4 pt-5">
                           <div className="flex items-center gap-2">
-                            <div className="flex h-8 items-center rounded-md border border-gray-500 bg-white px-3 py-2">
-                              <Controller
-                                control={control}
-                                name={`informasiMuatan.${index}.dimensiMuatan.panjang`}
-                                render={({ field }) => (
-                                  <input
-                                    {...field}
-                                    type="number"
-                                    value={
-                                      field.value === "" ? "" : field.value
-                                    }
-                                    onChange={(e) => {
-                                      const val = e.currentTarget.value;
-                                      field.onChange(
-                                        val === "" ? "" : Number(val)
-                                      );
-                                    }}
-                                    placeholder="0"
-                                    className="w-8 cursor-pointer text-center text-xs font-medium placeholder-gray-500 focus:outline-none"
-                                  />
-                                )}
-                              />
-                              <span className="mx-1 text-xs text-gray-500">
-                                x
-                              </span>
-                              <Controller
-                                control={control}
-                                name={`informasiMuatan.${index}.dimensiMuatan.lebar`}
-                                render={({ field }) => (
-                                  <input
-                                    {...field}
-                                    type="number"
-                                    value={
-                                      field.value === "" ? "" : field.value
-                                    }
-                                    onChange={(e) => {
-                                      const val = e.currentTarget.value;
-                                      field.onChange(
-                                        val === "" ? "" : Number(val)
-                                      );
-                                    }}
-                                    placeholder="0"
-                                    className="w-8 cursor-pointer text-center text-xs font-medium placeholder-gray-500 focus:outline-none"
-                                  />
-                                )}
-                              />
-                              <span className="mx-1 text-xs text-gray-500">
-                                x
-                              </span>
-
-                              <Controller
-                                control={control}
-                                name={`informasiMuatan.${index}.dimensiMuatan.tinggi`}
-                                render={({ field }) => (
-                                  <input
-                                    {...field}
-                                    type="number"
-                                    value={
-                                      field.value === "" ? "" : field.value
-                                    }
-                                    onChange={(e) => {
-                                      const val = e.currentTarget.value;
-                                      field.onChange(
-                                        val === "" ? "" : Number(val)
-                                      );
-                                    }}
-                                    placeholder="0"
-                                    className="w-8 cursor-pointer text-center text-xs font-medium placeholder-gray-500 focus:outline-none"
-                                  />
-                                )}
-                              />
-                            </div>
+                            <DimensionInput
+                              register={{
+                                panjang: register(
+                                  `informasiMuatan.${index}.dimensiMuatan.panjang`
+                                ),
+                                lebar: register(
+                                  `informasiMuatan.${index}.dimensiMuatan.lebar`
+                                ),
+                                tinggi: register(
+                                  `informasiMuatan.${index}.dimensiMuatan.tinggi`
+                                ),
+                              }}
+                            />
 
                             <Controller
                               control={control}
@@ -431,7 +369,7 @@ export const InformasiMuatanModal = ({
               </div>
               {/* Submit button for demo */}
               <div className="mt-4 flex justify-center">
-                <Button type="muatparts" className="w-[112px]">
+                <Button variant="muatparts-primary" className="w-[112px]">
                   Simpan
                 </Button>
               </div>
