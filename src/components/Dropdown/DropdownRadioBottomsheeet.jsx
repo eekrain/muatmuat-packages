@@ -9,6 +9,7 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
 import usePrevious from "@/hooks/use-previous";
+import { cn } from "@/lib/utils";
 
 const DropdownRadioBottomsheeet = ({
   className,
@@ -37,7 +38,10 @@ const DropdownRadioBottomsheeet = ({
   return (
     <BottomSheet open={isBottomsheetOpen} onOpenChange={setIsBottomsheetOpen}>
       <button
-        className={`flex h-8 items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-2 ${className}`}
+        className={cn(
+          "flex h-8 items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-2",
+          className
+        )}
         onClick={() => setIsBottomsheetOpen(true)}
       >
         <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
@@ -46,7 +50,7 @@ const DropdownRadioBottomsheeet = ({
         <IconComponent src="/icons/chevron-down.svg" />
       </button>
       <BottomSheetContent>
-        <BottomSheetHeader title={title}></BottomSheetHeader>
+        <BottomSheetHeader>{title}</BottomSheetHeader>
         <div className="flex flex-col gap-y-4 px-4 py-6">
           {options.map((option, key) => {
             const isLastItem = options.length - 1 === key;
@@ -69,7 +73,7 @@ const DropdownRadioBottomsheeet = ({
           })}
           <Button
             className="h-10 max-w-full"
-            color="primary"
+            variant="muatparts-primary"
             onClick={handleSelectOption}
           >
             Terapkan

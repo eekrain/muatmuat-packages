@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 export const FormContainer = ({ children, className }) => (
   <div
     className={cn(
-      "flex w-full flex-col items-start gap-4 bg-white px-4 py-5 md:flex-row md:gap-8 md:bg-transparent md:p-0",
+      "grid grid-cols-1 items-start gap-4 bg-white md:grid-cols-[174px_1fr] md:gap-8",
       className
     )}
   >
@@ -20,8 +20,8 @@ export const FormLabel = ({
 }) => (
   <div
     className={cn(
-      "flex h-4 w-full items-center gap-1 text-sm font-bold leading-[1.1] text-neutral-900 md:w-[174px] md:text-xs md:font-medium md:leading-[1.2] md:text-neutral-600",
-      variant === "big" && "h-8",
+      "flex w-full items-center gap-1 text-sm font-bold leading-[1.1] text-neutral-900 md:h-4 md:w-[174px] md:text-xs md:font-medium md:leading-[1.2] md:text-neutral-600",
+      variant === "big" && "md:h-8",
       className
     )}
   >

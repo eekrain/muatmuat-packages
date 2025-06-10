@@ -306,15 +306,17 @@ export const InformasiMuatanModal = ({
                         <td className="pr-4 pt-5">
                           <div className="flex items-center gap-2">
                             <DimensionInput
-                              registerPanjang={register(
-                                `informasiMuatan.${index}.dimensiMuatan.panjang`
-                              )}
-                              registerLebar={register(
-                                `informasiMuatan.${index}.dimensiMuatan.lebar`
-                              )}
-                              registerTinggi={register(
-                                `informasiMuatan.${index}.dimensiMuatan.tinggi`
-                              )}
+                              register={{
+                                panjang: register(
+                                  `informasiMuatan.${index}.dimensiMuatan.panjang`
+                                ),
+                                lebar: register(
+                                  `informasiMuatan.${index}.dimensiMuatan.lebar`
+                                ),
+                                tinggi: register(
+                                  `informasiMuatan.${index}.dimensiMuatan.tinggi`
+                                ),
+                              }}
                             />
 
                             <Controller
