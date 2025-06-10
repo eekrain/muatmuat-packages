@@ -17,6 +17,8 @@ const DropdownRadioBottomsheeet = ({
   options = [],
   value,
   onChange = () => {},
+  saveLabel,
+  placeHolder,
 }) => {
   const [tempValue, setTempValue] = useState("");
   const [isBottomsheetOpen, setIsBottomsheetOpen] = useState(false);
@@ -45,7 +47,7 @@ const DropdownRadioBottomsheeet = ({
         onClick={() => setIsBottomsheetOpen(true)}
       >
         <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
-          {selectedItem?.label ?? ""}
+          {selectedItem?.label ?? placeHolder ?? ""}
         </span>
         <IconComponent src="/icons/chevron-down.svg" />
       </button>
@@ -76,7 +78,7 @@ const DropdownRadioBottomsheeet = ({
             variant="muatparts-primary"
             onClick={handleSelectOption}
           >
-            Terapkan
+            {saveLabel}
           </Button>
         </div>
       </BottomSheetContent>

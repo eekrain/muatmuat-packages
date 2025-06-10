@@ -40,7 +40,12 @@ export const TimelineField = ({
   };
 
   return (
-    <div className={cn("rounded-xl border border-[#7B7B7B] p-3", className)}>
+    <div
+      className={cn(
+        "rounded-[6px] border border-[#7B7B7B] p-3 md:rounded-xl",
+        className
+      )}
+    >
       <TimelineContainer>
         {values.map((item, index) => (
           <TimelineItem

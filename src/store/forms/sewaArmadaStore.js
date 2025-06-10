@@ -20,9 +20,10 @@ const defaultValues = {
   jenisTruk: null,
   jumlahArmada: 0,
   useAsuransi: true,
+  // layananTambahan: [],
   kirimBuktiFisik: false,
   bantuanTambahan: false,
-  noDO: "",
+  noDO: [],
   isCompany: false,
 };
 

@@ -120,10 +120,14 @@ const WaktuMuatBottomsheet = () => {
           onClick={() => setIsBottomsheetOpen(true)}
         >
           <IconComponent src="/icons/calendar16.svg" />
-          <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-600">
-            {formValues.startDate
-              ? `${format(formValues.startDate, dateFormat)} WIB`
-              : "Pilih Tanggal & Waktu Muat"}
+          <span className="text-[14px] font-semibold leading-[15.4px]">
+            {formValues.startDate ? (
+              <span className="text-neutral-900">{`${format(formValues.startDate, dateFormat)} WIB`}</span>
+            ) : (
+              <span className="text-neutral-600">
+                {"Pilih Tanggal & Waktu Muat"}
+              </span>
+            )}
           </span>
         </button>
         {formValues.showRangeOption ? (
@@ -136,10 +140,14 @@ const WaktuMuatBottomsheet = () => {
               onClick={() => setIsBottomsheetOpen(true)}
             >
               <IconComponent src="/icons/calendar16.svg" />
-              <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-600">
-                {formValues.endDate
-                  ? `${format(formValues.endDate, dateFormat)} WIB`
-                  : "Pilih Tanggal & Waktu Muat"}
+              <span className="text-[14px] font-semibold leading-[15.4px]">
+                {formValues.endDate ? (
+                  <span className="text-neutral-900">{`${format(formValues.endDate, dateFormat)} WIB`}</span>
+                ) : (
+                  <span className="text-neutral-600">
+                    {"Pilih Tanggal & Waktu Muat"}
+                  </span>
+                )}
               </span>
             </button>
           </>

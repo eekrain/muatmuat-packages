@@ -342,6 +342,7 @@ const InformasiMuatanScreen = () => {
                       onChange={(value) =>
                         updateBeratMuatan(index, "unit", value)
                       }
+                      saveLabel="Terapkan"
                     />
                   </div>
                 </FormContainer>
@@ -406,6 +407,7 @@ const InformasiMuatanScreen = () => {
                       onChange={(value) =>
                         updateDimensiMuatan(index, "unit", value)
                       }
+                      saveLabel="Terapkan"
                     />
                   </div>
                 </FormContainer>

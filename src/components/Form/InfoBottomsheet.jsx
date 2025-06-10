@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 import {
   BottomSheet,
   BottomSheetContent,
@@ -6,10 +8,10 @@ import {
 } from "../Bottomsheet/Bottomsheet";
 import IconComponent from "../IconComponent/IconComponent";
 
-export const InfoBottomsheet = ({ children, title }) => {
+export const InfoBottomsheet = ({ className, title, children }) => {
   return (
     <BottomSheet>
-      <BottomSheetTrigger className="block size-4">
+      <BottomSheetTrigger className={cn("block size-4", className)}>
         <IconComponent src="/icons/info16.svg" width={16} height={16} />
       </BottomSheetTrigger>
       <BottomSheetContent>

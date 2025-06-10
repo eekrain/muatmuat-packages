@@ -20,15 +20,19 @@ export const FormLabel = ({
 }) => (
   <div
     className={cn(
-      "flex w-full items-center gap-1 text-sm font-bold leading-[1.1] text-neutral-900 md:h-4 md:w-[174px] md:text-xs md:font-medium md:leading-[1.2] md:text-neutral-600",
+      "flex w-full items-center gap-1 text-sm font-semibold leading-[1.1] text-neutral-900 md:h-4 md:w-[174px] md:text-xs md:font-medium md:leading-[1.2] md:text-neutral-600",
       variant === "big" && "md:h-8",
       className
     )}
   >
-    <label className="mt-[2px]">
-      {children}
-      {required ? "*" : " (Opsional)"}
-    </label>
+    {typeof children === "string" ? (
+      <label className="mt-[2px]">
+        {children}
+        {required ? "*" : " (Opsional)"}
+      </label>
+    ) : (
+      children
+    )}
 
     {/* If you need to add like InfoTooltip, you can add via tooltip props */}
     <div className="flex-shrink-0">{tooltip}</div>
