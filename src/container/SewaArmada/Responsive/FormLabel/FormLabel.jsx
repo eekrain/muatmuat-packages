@@ -14,14 +14,14 @@ export const FormLabelContainer = ({ children }) => {
 
 export const FormLabel = ({ className, title, required = true }) => {
   return (
-    <>
-      <span className={`text-[14px] leading-[15.4px] ${className}`}>
+    <div className="flex items-center gap-x-1 text-neutral-900">
+      <span className={`leading-[15.4px text-[14px] ${className}`}>
         {`${title}${required ? "*" : ""}`}
       </span>
       {!required ? (
         <span className="text-[10px] leading-[10px]">{"(Opsional)"}</span>
       ) : null}
-    </>
+    </div>
   );
 };
 

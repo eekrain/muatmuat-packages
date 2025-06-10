@@ -8,6 +8,7 @@ import {
   useNavigationStore,
   useResponsiveNavigation,
 } from "@/lib/responsive-navigation";
+import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 
 import CariNamaMuatan from "./CariNamaMuatan/CariNamaMuatan";
 import { SewaArmadaHome } from "./Home";
@@ -19,8 +20,13 @@ import { PinPointMap } from "./PinPointMap";
 
 const SewaArmadaResponsive = () => {
   const tes = useNavigationStore((state) => state.stack);
+  const { setOrderType } = useSewaArmadaStore();
   console.log("🚀 ~ SewaArmadaResponsive ~ tes:", tes);
   const navigation = useResponsiveNavigation();
+
+  useEffect(() => {
+    setOrderType("instan");
+  }, [setOrderType]);
 
   useEffect(() => {
     navigation.replace("/");
