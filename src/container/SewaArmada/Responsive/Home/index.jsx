@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import { Shield, Truck } from "lucide-react";
 
 import { FormContainer, FormLabel } from "@/components/Form/Form";
@@ -67,16 +65,6 @@ export const SewaArmadaHome = () => {
     setOrderType,
     updateLokasi,
   } = useSewaArmadaStore();
-
-  const [formData, setFormData] = useState({
-    waktuMuat: "",
-    lokasiMuat: "",
-    lokasiBongkar: "",
-    informasiMuatan: "",
-    jenisCarrier: "",
-    jenisTruk: "",
-    layananTambahan: "",
-  });
 
   const handleAddLocation = () => {
     navigation.push("/PencarianLokasi");
@@ -185,17 +173,27 @@ export const SewaArmadaHome = () => {
             <FormLabel required>Informasi Muatan</FormLabel>
             <button
               className={
-                "flex h-8 items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-3"
+                "flex h-8 w-full items-center justify-between gap-x-2 rounded-md border border-neutral-600 bg-neutral-50 px-3"
               }
               onClick={handleEditInformasiMuatan}
             >
               <div className="flex items-center gap-x-2">
                 <IconComponent src="/icons/muatan16.svg" />
-                <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-600">
-                  Masukkan Muatan
+                <span className="max-w-[256px] truncate text-[14px] font-semibold leading-[15.4px]">
+                  {formValues.informasiMuatan.length === 0 ? (
+                    <span className="text-neutral-600">Masukkan Muatan</span>
+                  ) : (
+                    <span className="text-neutral-900">
+                      {formValues.informasiMuatan
+                        .map((item) => item.namaMuatan.label)
+                        .join(", ")}
+                    </span>
+                  )}
                 </span>
               </div>
-              <IconComponent src="/icons/chevron-right.svg" />
+              <div className="size-[16px]">
+                <IconComponent src="/icons/chevron-right.svg" />
+              </div>
             </button>
           </FormContainer>
 

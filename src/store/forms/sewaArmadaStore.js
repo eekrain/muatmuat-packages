@@ -4,7 +4,6 @@ import { create } from "zustand";
 import { zustandDevtools } from "@/lib/utils";
 
 const defaultValues = {
-  orderType: "",
   startDate: null,
   endDate: null,
   showRangeOption: false,
@@ -30,6 +29,8 @@ const defaultValues = {
 export const useSewaArmadaStore = create(
   zustandDevtools(
     (set, get) => ({
+      orderType: "",
+      setOrderType: (orderType) => set({ orderType }),
       formValues: defaultValues,
       formErrors: {},
       setField: (field, value) =>
@@ -136,6 +137,7 @@ export const useSewaArmadaStore = create(
 );
 
 export const useSewaArmadaActions = () => {
+  const setOrderType = useSewaArmadaStore((state) => state.setOrderType);
   const setField = useSewaArmadaStore((state) => state.setField);
   const setError = useSewaArmadaStore((state) => state.setError);
   const setFotoMuatan = useSewaArmadaStore((state) => state.setFotoMuatan);
@@ -146,6 +148,7 @@ export const useSewaArmadaActions = () => {
   const validateForm = useSewaArmadaStore((state) => state.validateForm);
 
   return {
+    setOrderType,
     setField,
     setError,
     setFotoMuatan,

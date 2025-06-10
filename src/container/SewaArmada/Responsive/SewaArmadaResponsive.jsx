@@ -1,9 +1,12 @@
 "use client";
 
+import { useEffect } from "react";
+
 import { FormSimpanLokasiResponsive } from "@/components/LocationManagement/Responsive/FormSimpanLokasiResponsive";
 import { ResponsiveMenu } from "@/container/ResponsiveMenu";
 import { LocationProvider } from "@/hooks/use-location";
 import { ResponsiveRoute } from "@/lib/responsive-navigation";
+import { useSewaArmadaActions } from "@/store/forms/sewaArmadaStore";
 
 import CariNamaMuatan from "./CariNamaMuatan/CariNamaMuatan";
 import { FormLokasiBongkarMuat } from "./FormLokasiBongkarMuat";
@@ -19,6 +22,11 @@ const SewaArmadaResponsive = () => {
   // useEffect(() => {
   //   navigation.replace("/PencarianLokasi");
   // }, []);
+  const { setOrderType } = useSewaArmadaActions();
+
+  useEffect(() => {
+    setOrderType("instan");
+  }, []);
 
   return (
     <>

@@ -14,7 +14,10 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
 import usePrevious from "@/hooks/use-previous";
 import { getNowTimezone } from "@/lib/utils/dateTime";
-import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
+import {
+  useSewaArmadaActions,
+  useSewaArmadaStore,
+} from "@/store/forms/sewaArmadaStore";
 
 const WaktuMuatBottomsheet = () => {
   const dateFormat = "dd MMM yyyy HH:mm";
@@ -22,8 +25,8 @@ const WaktuMuatBottomsheet = () => {
     id: "Asia/Jakarta",
     offset: "+07:00",
   };
-  const { formValues, setField, orderType, setOrderType } =
-    useSewaArmadaStore();
+  const { formValues, orderType } = useSewaArmadaStore();
+  const { setField, setOrderType } = useSewaArmadaActions();
   const [isBottomsheetOpen, setIsBottomsheetOpen] = useState(false);
   const previousIsBottomsheetOpen = usePrevious(isBottomsheetOpen);
   const [bottomsheetFormValues, setBottomsheetFormValues] = useState({

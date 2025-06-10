@@ -47,7 +47,7 @@ const banners = [
 ];
 
 export default function SewaArmadaWeb() {
-  const orderType = useSewaArmadaStore((state) => state.formValues.orderType);
+  const orderType = useSewaArmadaStore((state) => state.orderType);
 
   return (
     <main className="flex min-h-screen flex-col items-center gap-6 px-10">

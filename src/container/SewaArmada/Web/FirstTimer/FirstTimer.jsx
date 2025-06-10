@@ -10,13 +10,13 @@ import { ModalLogin } from "./ModalLogin";
 export const FirstTimer = () => {
   const [openModalLogin, setOpenModalLogin] = useState(false);
   const accessToken = useAuthStore((state) => state.accessToken);
-  const { setField } = useSewaArmadaActions();
+  const { setOrderType } = useSewaArmadaActions();
 
   const handleClickArmadaOption = (type) => {
     if (!accessToken) {
       setOpenModalLogin(true);
     } else {
-      setField("orderType", type);
+      setOrderType(type);
     }
   };
 

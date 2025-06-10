@@ -19,6 +19,7 @@ import {
 } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
 import { useInformasiMuatanStore } from "@/store/forms/informasiMuatanStore";
+import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 
 const beratMuatanOptions = [
   {
@@ -58,12 +59,18 @@ const InformasiMuatanScreen = () => {
     updateDimensiMuatan,
     validateForm,
   } = useInformasiMuatanStore();
+  const { setField: setSewaArmadaField } = useSewaArmadaStore();
 
   const handleSaveInformasiMuatan = () => {
     console.log("🚀 ~ handleSaveInformasiMuatan ~ formValues:", formValues);
     if (!validateForm()) {
       console.log("Form has errors", formErrors);
+      return;
     }
+    Object.entries(formValues).forEach(([key, value]) => {
+      setSewaArmadaField(key, value);
+    });
+    navigation.pop();
     // Handle form submission, save to sewaArmadaStore here
   };
 
@@ -397,6 +404,10 @@ const InformasiMuatanScreen = () => {
                         onChange={(field, value) =>
                           updateDimensiMuatan(index, field, value)
                         }
+                        appearance={{
+                          inputClassName:
+                            "font-semibold text-[14px] leading-[15.4px] text-neutral-900",
+                        }}
                       />
                     </div>
                     <DropdownRadioBottomsheeet

@@ -11,6 +11,8 @@ const nextConfig = {
   reactStrictMode: false,
 };
 
+export default nextConfig;
+
 // export default MillionLint.next({
 //   enabled: process.env.NODE_ENV === "development",
 //   rsc: process.env.NODE_ENV === "development",

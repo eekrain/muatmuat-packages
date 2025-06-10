@@ -44,7 +44,7 @@ const CariNamaMuatan = () => {
 
   const handleSelectNamaMuatan = (namaMuatan) => {
     updateInformasiMuatan(params.index, "namaMuatan", namaMuatan);
-    navigation.push("/InformasiMuatan");
+    navigation.pop();
   };
 
   const handleTambahNamaMuatan = () => {

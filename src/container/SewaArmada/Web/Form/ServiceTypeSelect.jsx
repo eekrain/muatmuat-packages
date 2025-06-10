@@ -7,8 +7,8 @@ import {
 } from "@/store/forms/sewaArmadaStore";
 
 export const ServiceTypeSelect = () => {
-  const orderType = useSewaArmadaStore((state) => state.formValues.orderType);
-  const { setField } = useSewaArmadaActions();
+  const orderType = useSewaArmadaStore((state) => state.orderType);
+  const { setOrderType } = useSewaArmadaActions();
 
   return (
     <div className="flex justify-center gap-3">
@@ -18,7 +18,7 @@ export const ServiceTypeSelect = () => {
           "flex h-[136px] w-[385px] cursor-pointer flex-col items-center justify-center gap-y-3 rounded-xl border border-neutral-400 bg-white p-6 hover:border-[#FFC217]",
           orderType === "instan" && "border-[#FFC217] bg-[#FFF5C6]"
         )}
-        onClick={() => setField("orderType", "instan")}
+        onClick={() => setOrderType("instan")}
       >
         <div className="relative h-8 w-8">
           <Image
@@ -41,7 +41,7 @@ export const ServiceTypeSelect = () => {
           "flex h-[136px] w-[385px] cursor-pointer flex-col items-center justify-center gap-y-3 rounded-xl border border-neutral-400 bg-white p-6 hover:border-[#FFC217]",
           orderType === "terjadwal" && "border-[#FFC217] bg-[#FFF5C6]"
         )}
-        onClick={() => setField("orderType", "terjadwal")}
+        onClick={() => setOrderType("terjadwal")}
       >
         <div className="relative h-8 w-8">
           <Image
