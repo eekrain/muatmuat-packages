@@ -12,6 +12,7 @@ export const useGetCurrentLocation = ({
   setIsModalPostalCodeOpen,
   setLocationPostalCodeSearchPhrase,
   dontTriggerPostalCodeModal,
+  setDontTriggerPostalCodeModal,
 }) => {
   const setLocationPartial = useLocationFormStore((s) => s.setLocationPartial);
   const { isMobile } = useDevice();
@@ -37,6 +38,7 @@ export const useGetCurrentLocation = ({
             if (!result?.district?.value) {
               setIsModalPostalCodeOpen(true);
               setLocationPostalCodeSearchPhrase(result.postalCode.value);
+              setDontTriggerPostalCodeModal(true);
             }
             resolve(result);
           } catch (error) {

@@ -6,11 +6,7 @@ import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import { ModalPostalCodeResponsive } from "@/components/LocationManagement/Responsive/ModalPostalCodeResponsive";
 import { MapContainer } from "@/components/LocationManagement/common/MapContainer";
-import {
-  DEFAULT_COORDINATES,
-  LocationProvider,
-  useLocationContext,
-} from "@/hooks/use-location";
+import { DEFAULT_COORDINATES, useLocationContext } from "@/hooks/use-location";
 import { fetcher } from "@/hooks/use-location/fetcher";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
@@ -20,7 +16,7 @@ import {
 } from "@/lib/responsive-navigation";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
-const InnerPinPointMap = () => {
+export const PinPointMap = () => {
   const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
 
@@ -30,7 +26,12 @@ const InnerPinPointMap = () => {
     setCoordinates,
     setIsModalPostalCodeOpen,
     dontTriggerPostalCodeModal,
+    setLocationPostalCodeSearchPhrase,
   } = useLocationContext();
+  console.log(
+    "🚀 ~ PinPointMap ~ dontTriggerPostalCodeModal:",
+    dontTriggerPostalCodeModal
+  );
 
   const handleSave = () => {
     navigation.push("/FormLokasiBongkarMuat", { ...params });
@@ -101,13 +102,5 @@ const InnerPinPointMap = () => {
         </Button>
       </ResponsiveFooter>
     </FormResponsiveLayout>
-  );
-};
-
-export const PinPointMap = () => {
-  return (
-    <LocationProvider>
-      <InnerPinPointMap />
-    </LocationProvider>
   );
 };

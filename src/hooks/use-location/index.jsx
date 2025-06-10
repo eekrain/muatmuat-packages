@@ -41,6 +41,7 @@ export const LocationProvider = ({ children }) => {
     setIsModalPostalCodeOpen,
     setLocationPostalCodeSearchPhrase,
     dontTriggerPostalCodeModal,
+    setDontTriggerPostalCodeModal,
   });
   const postalCode = usePostalCode({
     setIsModalPostalCodeOpen,
@@ -56,6 +57,16 @@ export const LocationProvider = ({ children }) => {
     setLocationPostalCodeSearchPhrase,
     setDontTriggerPostalCodeModal,
   });
+
+  const resetLocationContext = () => {
+    setCoordinates(DEFAULT_COORDINATES);
+    setAutoCompleteSearchPhrase("");
+    setIsDropdownSearchOpen(false);
+    setIsModalPostalCodeOpen(false);
+    setLocationPostalCodeSearchPhrase("");
+    setTempLocation(null);
+    setDontTriggerPostalCodeModal(false);
+  };
 
   return (
     <LocationContext.Provider
@@ -78,6 +89,8 @@ export const LocationProvider = ({ children }) => {
         setIsModalPostalCodeOpen,
         tempLocation,
         setTempLocation,
+        dontTriggerPostalCodeModal,
+        resetLocationContext,
       }}
     >
       {children}

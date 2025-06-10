@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { ModalPostalCodeResponsive } from "@/components/LocationManagement/Responsive/ModalPostalCodeResponsive";
-import { LocationProvider, useLocationContext } from "@/hooks/use-location";
+import { useLocationContext } from "@/hooks/use-location";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import SearchBarResponsiveLayout from "@/layout/ResponsiveLayout/SearchBarResponsiveLayout";
 import { normalizeUserSavedLocation } from "@/lib/normalizers";
@@ -16,7 +16,7 @@ import { useLocationFormStore } from "@/store/forms/locationFormStore";
 import { SavedLocationItem } from "./SavedLocationItem";
 import { SearchResultItem } from "./SearchResultItem";
 
-const InnerPencarianLokasi = () => {
+export const PencarianLokasi = () => {
   const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
   console.log("🚀 ~ InnerPencarianLokasi ~ params:", params);
@@ -38,6 +38,7 @@ const InnerPencarianLokasi = () => {
     handleSelectUserSavedLocation,
 
     handleGetCurrentLocation,
+    resetLocationContext,
   } = useLocationContext();
 
   // ======================================================================================================
@@ -169,13 +170,15 @@ const InnerPencarianLokasi = () => {
     });
   };
 
-  const reset = useLocationFormStore((s) => s.reset);
+  const resetLocationForm = useLocationFormStore((s) => s.reset);
   const hasInit = useRef(false);
   useEffect(() => {
     // Reset form values when component is mounted
     // This is to prevent form values from being filled when user navigates back to this page
     if (!hasInit.current) {
-      reset();
+      resetLocationForm();
+      resetLocationContext();
+
       hasInit.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -330,14 +333,6 @@ const InnerPencarianLokasi = () => {
         <ModalPostalCodeResponsive />
       </div>
     </SearchBarResponsiveLayout>
-  );
-};
-
-export const PencarianLokasi = () => {
-  return (
-    <LocationProvider>
-      <InnerPencarianLokasi />
-    </LocationProvider>
   );
 };
 

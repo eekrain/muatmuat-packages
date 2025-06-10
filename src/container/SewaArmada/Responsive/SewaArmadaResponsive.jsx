@@ -2,6 +2,7 @@
 
 import { FormSimpanLokasiResponsive } from "@/components/LocationManagement/Responsive/FormSimpanLokasiResponsive";
 import { ResponsiveMenu } from "@/container/ResponsiveMenu";
+import { LocationProvider } from "@/hooks/use-location";
 import { ResponsiveRoute } from "@/lib/responsive-navigation";
 
 import CariNamaMuatan from "./CariNamaMuatan/CariNamaMuatan";
@@ -23,32 +24,36 @@ const SewaArmadaResponsive = () => {
     <>
       <ResponsiveRoute path="/" component={<SewaArmadaHome />} />
       <ResponsiveRoute
-        path="/PencarianLokasi"
-        component={<PencarianLokasi />}
+        path="/FormLokasiBongkarMuat"
+        component={<FormLokasiBongkarMuat />}
       />
-      <ResponsiveRoute
-        path="/PencarianLokasiTersimpan"
-        component={<PencarianLokasiTersimpan />}
-      />
+
       <ResponsiveRoute
         path="/InformasiMuatan"
         component={<InformasiMuatanScreen />}
       />
       <ResponsiveRoute path="/CariNamaMuatan" component={<CariNamaMuatan />} />
-      <ResponsiveRoute path="/PinPointMap" component={<PinPointMap />} />
-      <ResponsiveRoute
-        path="/FormLokasiBongkarMuat"
-        component={<FormLokasiBongkarMuat />}
-      />
       <ResponsiveRoute
         path="/LayananTambahan"
         component={<LayananTambahan />}
       />
-      <ResponsiveRoute path="/menu" component={<ResponsiveMenu />} />
+
+      <LocationProvider>
+        <ResponsiveRoute
+          path="/PencarianLokasi"
+          component={<PencarianLokasi />}
+        />
+        <ResponsiveRoute
+          path="/PencarianLokasiTersimpan"
+          component={<PencarianLokasiTersimpan />}
+        />
+        <ResponsiveRoute path="/PinPointMap" component={<PinPointMap />} />
+      </LocationProvider>
       <ResponsiveRoute
         path="/FormSimpanLokasi"
         component={<FormSimpanLokasiResponsive />}
       />
+      <ResponsiveRoute path="/menu" component={<ResponsiveMenu />} />
     </>
   );
 };

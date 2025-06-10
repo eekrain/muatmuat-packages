@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 
-import { LocationProvider, useLocationContext } from "@/hooks/use-location";
+import { useLocationContext } from "@/hooks/use-location";
 import SearchBarResponsiveLayout from "@/layout/ResponsiveLayout/SearchBarResponsiveLayout";
 import { normalizeUserSavedLocation } from "@/lib/normalizers";
 import {
@@ -11,7 +11,7 @@ import {
 
 import { SavedLocationItem } from "../PencarianLokasi/SavedLocationItem";
 
-const InnerPencarianLokasiTersimpan = () => {
+export const PencarianLokasiTersimpan = () => {
   const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
   const { searchValue, setSearchValue } = useResponsiveSearch();
@@ -86,13 +86,5 @@ const InnerPencarianLokasiTersimpan = () => {
         </div>
       </div>
     </SearchBarResponsiveLayout>
-  );
-};
-
-export const PencarianLokasiTersimpan = () => {
-  return (
-    <LocationProvider>
-      <InnerPencarianLokasiTersimpan />
-    </LocationProvider>
   );
 };
