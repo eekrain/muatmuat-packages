@@ -57,7 +57,7 @@ const Toaster = ({ className }) => {
           <div
             key={toast.id}
             className={cn(
-              "pointer-events-auto flex w-full items-center justify-between gap-3 rounded-lg border px-3 py-[15px] md:w-[440px]",
+              "pointer-events-auto flex h-[48px] w-full items-center justify-between gap-3 rounded-lg border px-3 md:h-auto md:w-[440px] md:py-[15px]",
               toast.type === "success" && "border-success-400 bg-success-50",
               toast.type === "error" && "border-error-400 bg-error-50",
               toast.isLeaving ? "animate-leave" : "animate-enter",
