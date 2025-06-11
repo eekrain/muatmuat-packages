@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { useEffect, useMemo } from "react";
 
 import {
   GoogleMap,
@@ -82,7 +82,7 @@ export const MapWithPath = ({
   });
 
   // Calculate truck position and rotation based on truck waypoints
-  const truckMarker = React.useMemo(() => {
+  const truckMarker = useMemo(() => {
     if (!truckWaypoints || truckWaypoints.length < 2 || !showTruck) return null;
 
     const lastPoint = truckWaypoints[truckWaypoints.length - 1];
@@ -98,7 +98,7 @@ export const MapWithPath = ({
   }, [truckWaypoints, showTruck]);
 
   // Process markers with proper icons when Google Maps is loaded
-  const processedMarkers = React.useMemo(() => {
+  const processedMarkers = useMemo(() => {
     if (!isLoaded || !window.google) return markers;
     return markers.map((marker) => ({
       ...marker,
@@ -112,7 +112,7 @@ export const MapWithPath = ({
   }, [markers, isLoaded]);
 
   // Process truck marker with rotation
-  const processedTruckMarker = React.useMemo(() => {
+  const processedTruckMarker = useMemo(() => {
     if (!isLoaded || !window.google || !truckMarker) return null;
 
     return {
@@ -127,7 +127,7 @@ export const MapWithPath = ({
   }, [truckMarker, truckIcon, isLoaded]);
 
   // Add styles for marker labels
-  React.useEffect(() => {
+  useEffect(() => {
     // Add CSS for marker labels
     const style = document.createElement("style");
     style.textContent = `
@@ -147,7 +147,7 @@ export const MapWithPath = ({
     return () => document.head.removeChild(style);
   }, []);
 
-  const combinedMapOptions = React.useMemo(
+  const combinedMapOptions = useMemo(
     () => ({
       ...defaultMapOptions,
       ...mapOptions,
