@@ -4,6 +4,7 @@ import { useState } from "react";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
+import Stepper from "@/components/Stepper/Stepper";
 import ToogleButton from "@/components/ToogleButton/ToogleButton";
 import { toast } from "@/lib/toast";
 
@@ -146,6 +147,39 @@ const ExampleWeb = () => {
       </div>
 
       <Link href="/sewaarmada">Sewa Armada</Link>
+
+      <div className="max-w-[750px] bg-blue-50">
+        <h1 className="mb-2 text-xl font-bold">Stepper</h1>
+        <Stepper
+          steps={[
+            {
+              label: "Armada Dijadwalkan",
+              icon: "/icons/stepper-scheduled.svg",
+            },
+            {
+              label: "Proses Muat",
+              icon: "/icons/stepper-box.svg",
+            },
+            {
+              label: "Proses Bongkar",
+              icon: "/icons/stepper-box-opened.svg",
+            },
+            {
+              label: "Dokumen Sedang Disiapkan",
+              icon: "/icons/stepper-document-preparing.svg",
+            },
+            {
+              label: "Proses Pengiriman Dokumen",
+              icon: "/icons/stepper-document-sending.svg",
+            },
+            {
+              label: "Selesai",
+              icon: "/icons/stepper-done.svg",
+            },
+          ]}
+          currentStep={2}
+        />
+      </div>
     </div>
   );
 };

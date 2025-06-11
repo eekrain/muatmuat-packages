@@ -4,7 +4,7 @@ import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { useTranslation } from "@/hooks/use-translation";
 
-import { InputSearch } from "../common/InputSearch";
+import { InputSearch } from "../../InputSearch/InputSearch";
 
 export const ModalPostalCode = ({
   open,

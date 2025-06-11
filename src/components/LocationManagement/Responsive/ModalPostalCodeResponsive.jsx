@@ -6,7 +6,7 @@ import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { useLocationContext } from "@/hooks/use-location";
 import { useTranslation } from "@/hooks/use-translation";
 
-import { InputSearch } from "../common/InputSearch";
+import { InputSearch } from "../../InputSearch/InputSearch";
 
 export const ModalPostalCodeResponsive = () => {
   const { t } = useTranslation();
