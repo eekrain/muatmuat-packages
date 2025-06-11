@@ -4,8 +4,12 @@
 import { useState } from "react";
 
 import Checkbox from "@/components/Checkbox/Checkbox";
+import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import Input from "@/components/Input/Input";
+
+// pages/shipping/form/page.tsx
+
+// pages/shipping/form/page.tsx
 
 // pages/shipping/form/page.tsx
 

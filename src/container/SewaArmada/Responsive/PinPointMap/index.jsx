@@ -5,7 +5,7 @@ import { equal } from "fast-shallow-equal";
 import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import { ModalPostalCodeResponsive } from "@/components/LocationManagement/Responsive/ModalPostalCodeResponsive";
-import { MapContainer } from "@/components/LocationManagement/common/MapContainer";
+import { MapContainer } from "@/components/MapContainer/MapContainer";
 import { DEFAULT_COORDINATES, useLocationContext } from "@/hooks/use-location";
 import { fetcher } from "@/hooks/use-location/fetcher";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";

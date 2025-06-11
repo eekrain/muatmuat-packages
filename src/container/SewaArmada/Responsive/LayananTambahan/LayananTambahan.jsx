@@ -4,10 +4,14 @@ import DropdownRadioBottomsheeet from "@/components/Dropdown/DropdownRadioBottom
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
+import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import Input from "@/components/Input/Input";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
-import useTempLayananTambahanStore from "@/store/forms/tempLayananTambahanStore";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import {
+  useLayananTambahanActions,
+  useLayananTambahanStore,
+} from "@/store/forms/layananTambahanStore";
 
 const LayananTambahan = () => {
   // dummy data
@@ -33,29 +37,72 @@ const LayananTambahan = () => {
       value: "60265",
     },
   ];
+  const shippingData = [
+    {
+      category: "Pengiriman Instant",
+      options: [
+        {
+          courier: "Gojek",
+          price: "Rp30.000",
+          estimation:
+            "Estimasi Tiba : Hari ini (3 jam setelah dikirim Penjual)",
+        },
+        {
+          courier: "Grab Express",
+          price: "Rp25.000",
+          estimation:
+            "Estimasi Tiba : Hari ini (3 jam setelah dikirim Penjual)",
+        },
+      ],
+    },
+    {
+      category: "Regular",
+      options: [
+        {
+          courier: "JNT",
+          price: "Rp30.000",
+          estimation: "Estimasi Tiba : 20 - 25 Okt",
+        },
+        {
+          courier: "JNE",
+          price: "Rp25.000",
+          estimation: "Estimasi Tiba : 20 - 25 Okt",
+        },
+      ],
+    },
+    {
+      category: "Kargo",
+      options: [
+        {
+          courier: "JNT Cargo",
+          price: "Rp30.000",
+          estimation: "Estimasi Tiba : 20 - 25 Okt",
+        },
+        {
+          courier: "JNE Trucking",
+          price: "Rp25.000",
+          estimation: "Estimasi Tiba : 20 - 25 Okt",
+        },
+      ],
+    },
+  ];
   // Zustand store
-  const {
-    namaPenerima,
-    nomorHandphone,
-    alamatTujuan,
-    detailAlamat,
-    kecamatan,
-    kodePos,
-    kirimBuktiFisik,
-    bantuanTambahan,
-    troli,
-    showOtherAdditionalServices,
-    updateFormData,
-    setKirimBuktiFisik,
-    setBantuanTambahan,
-    setTroli,
-    toggleOtherAdditionalServices,
-  } = useTempLayananTambahanStore();
+  const { formValues, formErrors } = useLayananTambahanStore();
+  const { setField, validateForm } = useLayananTambahanActions();
+  const navigation = useResponsiveNavigation();
 
   // Handler untuk form input
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    updateFormData(name, value);
+    setField(name, value);
+  };
+
+  const handleSaveLayananTambahan = () => {
+    const isFormValid = validateForm();
+    if (!isFormValid) {
+      return;
+    }
+    navigation.pop();
   };
 
   return (
@@ -72,8 +119,8 @@ const LayananTambahan = () => {
             <div className="flex items-center gap-x-1 text-neutral-900">
               <Checkbox
                 label="Kirim Bukti Fisik Penerimaan Barang"
-                checked={kirimBuktiFisik}
-                onClick={setKirimBuktiFisik}
+                checked={formValues.kirimBuktiFisik}
+                onChange={(e) => setField("kirimBuktiFisik", e.checked)}
               />
 
               <InfoBottomsheet title="Kirim Bukti Fisik Penerimaan Barang">
@@ -125,7 +172,7 @@ const LayananTambahan = () => {
                               contacts[0].tel.length > 0
                             ) {
                               alert(contacts[0].tel[0]); // Display first phone number
-                              updateFormData(name, value);
+                              setField(name, value);
                             } else {
                               alert("No phone number found.");
                             }
@@ -144,8 +191,10 @@ const LayananTambahan = () => {
                 }}
                 name="namaPenerima"
                 type="text"
-                value={namaPenerima}
+                value={formValues.namaPenerima}
                 onChange={handleInputChange}
+                status={formErrors?.namaPenerima ? "error" : null}
+                supportiveText={{ title: formErrors?.namaPenerima ?? "" }}
               />
             </FormContainer>
 
@@ -156,7 +205,7 @@ const LayananTambahan = () => {
                 placeholder="Contoh: 08xxxxxxxx"
                 name="nomorHandphone"
                 type="text"
-                value={nomorHandphone}
+                value={formValues.nomorHandphonePenerima}
                 onChange={handleInputChange}
               />
             </FormContainer>
@@ -168,7 +217,7 @@ const LayananTambahan = () => {
                 placeholder="Masukkan Alamat Tujuan"
                 name="alamatTujuan"
                 type="text"
-                value={alamatTujuan}
+                value={formValues.alamatTujuan}
                 onChange={handleInputChange}
               />
             </FormContainer>
@@ -180,8 +229,10 @@ const LayananTambahan = () => {
                 placeholder="Masukkan Detail Alamat Tujuan"
                 name="detailAlamat"
                 type="text"
-                supportiveText={{ desc: `${detailAlamat.length}/500` }}
-                value={detailAlamat}
+                supportiveText={{
+                  desc: `${formValues.detailAlamat.length}/500`,
+                }}
+                value={formValues.detailAlamat}
                 onChange={handleInputChange}
               />
             </FormContainer>
@@ -194,7 +245,7 @@ const LayananTambahan = () => {
                 icon={{ left: "/icons/ic-sport-winner.svg" }}
                 name="kecamatan"
                 type="text"
-                value={kecamatan}
+                value={formValues.kecamatan}
                 onChange={handleInputChange}
               />
             </FormContainer>
@@ -225,25 +276,63 @@ const LayananTambahan = () => {
               <DropdownRadioBottomsheeet
                 className="w-full"
                 title="Kode Pos"
-                options={kodePosOptions}
-                value={kodePos}
-                onChange={(value) => updateFormData("kodePos", value)}
+                options={formValues.kodePosOptions}
+                value={formValues.kodePos}
+                onChange={(value) => setField("kodePos", value)}
                 saveLabel="Simpan"
                 placeHolder="Pilih Kode Pos"
               />
             </FormContainer>
 
             {/* Section 3: Pilih Opsi Pengiriman */}
-            <div className="flex h-11 w-full cursor-pointer flex-row items-center justify-between rounded-md bg-neutral-200 px-4">
-              <div className="flex h-7 items-center gap-x-3">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white p-1.5">
-                  <IconComponent src="/icons/transporter16.svg" />
-                </div>
-                <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-700">
-                  Pilih Opsi Pengiriman
-                </span>
+            <div className="flex flex-col gap-y-3">
+              <div className="flex w-full cursor-pointer flex-col gap-y-3 rounded-md bg-primary-50 px-4 py-2">
+                <button
+                  className={`flex w-full items-center justify-between ${formValues.opsiPegiriman ? "border-b border-b-neutral-400 pb-3" : ""}`}
+                  onClick={() =>
+                    navigation.push("/OpsiPengiriman", { shippingData })
+                  }
+                >
+                  <div className="flex items-center gap-x-3">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white p-1.5">
+                      <IconComponent src="/icons/transporter16.svg" />
+                    </div>
+                    <div className="flex flex-col items-start gap-y-2">
+                      {formValues.opsiPegiriman ? (
+                        <>
+                          <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
+                            {formValues.opsiPegiriman.courier}
+                          </span>
+                          <span className="text-[12px] font-medium leading-[13.2px] text-neutral-900">
+                            {formValues.opsiPegiriman.price}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-[14px] font-semibold leading-[15.4px] text-primary-700">
+                          Pilih Opsi Pengiriman
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <IconComponent
+                    src="/icons/chevron-right24.svg"
+                    size="medium"
+                  />
+                </button>
+                {formValues.opsiPegiriman ? (
+                  <Checkbox
+                    checked={formValues.asuransiPengiriman}
+                    onChange={(e) => setField("asuransiPengiriman", e.checked)}
+                    label="Pakai Asuransi Pengiriman (Rp10.000)"
+                    className="!text-[12px] !font-medium !leading-[15.6px]"
+                  />
+                ) : null}
               </div>
-              <IconComponent src="/icons/chevron-right24.svg" size="medium" />
+              {formErrors?.opsiPegiriman ? (
+                <span className="text-[12px] font-medium leading-[13.2px] text-error-400">
+                  {formErrors?.opsiPegiriman}
+                </span>
+              ) : null}
             </div>
           </div>
         </div>
@@ -253,7 +342,12 @@ const LayananTambahan = () => {
           {/* Section Header */}
           <button
             className="flex h-5 w-full flex-row items-center justify-between gap-4"
-            onClick={toggleOtherAdditionalServices}
+            onClick={() =>
+              setField(
+                "showOtherAdditionalServices",
+                !formValues.showOtherAdditionalServices
+              )
+            }
           >
             <span className="flex items-center text-[14px] font-bold leading-[15.4px] text-neutral-900">
               Layanan Tambahan Lainnya
@@ -266,22 +360,23 @@ const LayananTambahan = () => {
           </button>
 
           {/* Services List Container */}
-          {showOtherAdditionalServices ? (
+          {formValues.showOtherAdditionalServices ? (
             <div className="flex flex-col gap-y-4">
               {/* Bantuan Tambahan Checkbox */}
               <div className="flex flex-col gap-y-2">
-                <FormLabel
-                  required
-                  tooltip={
-                    <InfoBottomsheet title="Bantuan Tambahan">
-                      <p>
-                        Pilih opsi ini jika kamu memerlukan bantuan kenek untuk
-                        proses bongkar-muat barang.
-                      </p>
-                    </InfoBottomsheet>
-                  }
-                >
-                  Bantuan Tambahan
+                <FormLabel>
+                  <Checkbox
+                    label="Bantuan Tambahan"
+                    checked={formValues.bantuanTambahan}
+                    onChange={(e) => setField("bantuanTambahan", e.checked)}
+                  />
+                  <InfoBottomsheet title="Bantuan Tambahan">
+                    {/* Main Content Area - Frame 42239 */}
+                    <p className="text-[14px] font-medium leading-[15.4px] text-neutral-900">
+                      Pilih opsi ini jika kamu memerlukan bantuan kenek untuk
+                      proses bongkar-muat barang.
+                    </p>
+                  </InfoBottomsheet>
                 </FormLabel>
                 <span className="ml-6 text-[14px] font-medium leading-[15.4px] text-neutral-600">
                   Rp100.000
@@ -291,7 +386,11 @@ const LayananTambahan = () => {
               {/* Troli Checkbox */}
               <div className="flex flex-col gap-y-2">
                 <FormLabel>
-                  <Checkbox label="Troli" checked={troli} onClick={setTroli} />
+                  <Checkbox
+                    label="Troli"
+                    checked={formValues.troli}
+                    onChange={(e) => setField("troli", e.checked)}
+                  />
                   <InfoBottomsheet title="Troli">
                     {/* Main Content Area - Frame 42239 */}
                     <span className="text-[14px] font-medium leading-[15.4px] text-neutral-900">
@@ -313,7 +412,7 @@ const LayananTambahan = () => {
         <Button
           variant="muatparts-primary"
           className="flex-1"
-          onClick={() => {}}
+          onClick={handleSaveLayananTambahan}
           type="button"
         >
           Simpan

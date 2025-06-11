@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import PropTypes from "prop-types";
 
-import style from "./Checkbox.module.scss";
+import { cn } from "@/lib/utils";
 
 const Checkbox = ({
   onChange = () => {},
@@ -14,13 +14,15 @@ const Checkbox = ({
   children,
   key,
   className,
+  appearance = {
+    inputClassName: "",
+    labelClassName: "",
+  },
   checked = false,
   ...props
 }) => {
   const [checkedState, setChecked] = useState(checked);
-
   const checkedRef = useRef(null);
-
   useEffect(() => {
     setChecked(checked);
   }, [checked]);
@@ -35,12 +37,13 @@ const Checkbox = ({
     });
     setChecked(!checkedState);
   };
-  useEffect(() => {
-    setChecked(checked);
-  }, [checked]);
+
   return (
     <div
-      className={`${style.container_checkbox} flex items-center gap-[8px] ${className}`}
+      className={cn(
+        "relative flex items-center gap-[8px] text-[12px] text-neutral-900",
+        className
+      )}
       onClick={checkedClick}
     >
       <input
@@ -51,10 +54,36 @@ const Checkbox = ({
         value={value}
         onChange={() => checkedClick()}
         disabled={disabled}
+        className="absolute h-0 w-0 cursor-pointer"
         {...props}
       />
-      <span className={`relative ${style.checkbox_primary}`}></span>
-      <span className="select-none text-[14px] font-semibold leading-[15.4px] text-neutral-900 md:text-[12px] md:font-medium md:leading-[14.4px]">
+      <span
+        className={cn(
+          // Base styles
+          "relative h-[16px] w-[16px] min-w-[16px] cursor-pointer rounded-[4px]",
+          "border border-neutral-600 transition-all duration-300 ease-in-out",
+          "hover:border-primary-700",
+          // Checked state
+          checkedState && "border-primary-700 bg-primary-700",
+          // Disabled states
+          disabled &&
+            checkedState &&
+            "cursor-not-allowed !border-neutral-500 !bg-neutral-400",
+          disabled && !checkedState && "cursor-not-allowed !border-neutral-500",
+          // Checkmark styles
+          "after:hidden",
+          checkedState && "after:block",
+          "after:absolute after:left-[5px] after:top-[2px] after:h-[8px] after:w-[4px]",
+          "after:rotate-45 after:border-b after:border-r after:border-white",
+          disabled && "after:border-neutral-500"
+        )}
+      />
+      <span
+        className={cn(
+          "select-none text-[14px] font-semibold leading-[15.4px] text-neutral-900 md:text-[12px] md:font-medium md:leading-[14.4px]",
+          appearance.labelClassName
+        )}
+      >
         {children ? children : label}
       </span>
     </div>

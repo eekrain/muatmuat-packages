@@ -1,5 +1,7 @@
 import { Shield, Truck } from "lucide-react";
 
+import Button from "@/components/Button/Button";
+import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { TimelineField } from "@/components/Timeline/timeline-field";
@@ -66,6 +68,8 @@ export const SewaArmadaHome = () => {
     updateLokasi,
   } = useSewaArmadaStore();
 
+  const isShowCostDetail = true; // nanti pakek usestate
+
   const handleAddLocation = () => {
     navigation.push("/PencarianLokasi");
   };
@@ -84,7 +88,9 @@ export const SewaArmadaHome = () => {
 
   return (
     <DefaultResponsiveLayout mode="default">
-      <div className="w-full bg-neutral-100">
+      <div
+        className={`w-full bg-neutral-100 ${isShowCostDetail ? "mb-[100px]" : ""}`}
+      >
         <BannerCarousel banners={banners} showControls={false} />
 
         {/* Brand Section */}
@@ -294,6 +300,37 @@ export const SewaArmadaHome = () => {
           </div>
         </div>
       </div>
+
+      {isShowCostDetail ? (
+        <ResponsiveFooter className="flex flex-col gap-y-4">
+          <div className="flex w-full items-center justify-between">
+            <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
+              Total Biaya
+            </span>
+            <span className="text-[14px] font-bold leading-[15.4px] text-neutral-900">
+              Rp1.123.233
+            </span>
+          </div>
+          <div className="flex items-center gap-x-2">
+            <Button
+              variant="muatparts-primary-secondary"
+              className="flex-1"
+              onClick={() => {}}
+              type="button"
+            >
+              Lihat Detail Biaya
+            </Button>
+            <Button
+              variant="muatparts-primary"
+              className="flex-1"
+              onClick={() => navigation.push("/InformasiPesanan")}
+              type="button"
+            >
+              Lanjut
+            </Button>
+          </div>
+        </ResponsiveFooter>
+      ) : null}
 
       <ModalFirstTimer />
     </DefaultResponsiveLayout>

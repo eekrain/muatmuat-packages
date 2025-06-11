@@ -239,7 +239,7 @@ export const InputLocationManagementDropdown = ({
           className="w-full rounded-[6px] border border-blue-300 py-[8.5px] pl-[38px] pr-3 text-xs font-medium placeholder:text-neutral-600 focus:border-blue-500"
         />
         <IconComponent
-          src="/icons/marker-muattrans.svg"
+          src="/icons/marker-lokasi-muat.svg"
           width={16}
           height={16}
           className="absolute left-3 top-1/2 -translate-y-1/2"

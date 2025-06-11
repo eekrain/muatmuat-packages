@@ -8,7 +8,7 @@ import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { cn } from "@/lib/utils";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
-import { MapContainer } from "../common/MapContainer";
+import { MapContainer } from "../../MapContainer/MapContainer";
 import { InputLocationManagementDropdown } from "./InputLocationManagementDropdown";
 import ModalFormSimpanLokasiWeb from "./ModalFormSimpanLokasiWeb";
 import { ModalPostalCode } from "./ModalPostalCode";
