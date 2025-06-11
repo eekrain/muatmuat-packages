@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import { MapWithPath } from "@/components/MapContainer/MapWithPath";
 
 // Example usage component
@@ -23,7 +25,7 @@ const MapExample = () => {
     { lat: -7.246, lng: 112.772 }, // Truck current position (end)
   ];
 
-  const exampleMarkers = React.useMemo(
+  const exampleMarkers = useMemo(
     () => [
       {
         id: "muat1",
