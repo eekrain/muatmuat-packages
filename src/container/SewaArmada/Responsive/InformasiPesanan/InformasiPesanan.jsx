@@ -448,11 +448,13 @@ const InformasiPesanan = () => {
 
       <ResponsiveFooter className="flex flex-col gap-y-2.5">
         <button className="flex h-[44px] items-center justify-between rounded-md bg-primary-50 px-4">
-          <div>
+          <div className="flex items-center gap-x-3">
+            <IconComponent src="/icons/voucher24.svg" size="medium" />
             <span className="text-[14px] font-semibold leading-[15.4px] text-primary-700">
               Makin hemat pakai voucher
             </span>
           </div>
+          <IconComponent src="/icons/chevron-right24.svg" size="medium" />
         </button>
         <Button
           variant="muatparts-primary"
