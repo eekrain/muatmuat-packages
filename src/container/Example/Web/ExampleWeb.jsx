@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
+import BatalkanModal from "@/components/BatalkanModal/BatalkanModal";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
@@ -260,6 +261,8 @@ const ExampleWeb = () => {
           ))}
         </div>
       </div>
+
+      <BatalkanModal />
     </div>
   );
 };
