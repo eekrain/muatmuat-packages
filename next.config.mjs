@@ -6,6 +6,9 @@ const nextConfig = {
       {
         hostname: "cdn.builder.io",
       },
+      {
+        hostname: "azlogistik.s3.ap-southeast-3.amazonaws.com",
+      },
     ],
   },
   reactStrictMode: false,

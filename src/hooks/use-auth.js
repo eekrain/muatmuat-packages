@@ -22,7 +22,8 @@ export const useInitAuthentication = () => {
         axios.get("v1/muatparts/auth/credential-check"),
       ]);
       // console.log("🚀 ~ init ~ resCredential:", resCredential);
-      setUser(resUser.data?.Data);
+      const { accessToken, refreshtoken, ...user } = resCredential.data?.Data;
+      setUser({ ...resUser.data?.Data, ...user });
       setDataMatrix(resMatrix.data?.Data);
     };
     init().catch((err) => {
