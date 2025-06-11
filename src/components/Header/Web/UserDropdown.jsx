@@ -4,6 +4,7 @@ import * as HoverCard from "@radix-ui/react-hover-card";
 
 import Button from "@/components/Button/Button";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
+import { useUser } from "@/hooks/use-auth";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth/authStore";
@@ -26,6 +27,8 @@ const DropdownMenuItem = ({ imgUrl, title, variant, onClick }) => {
 export const UserDropdown = () => {
   const { t } = useTranslation();
   const accessToken = useAuthStore((state) => state.accessToken);
+  const { dataUser } = useUser();
+  console.log("🚀 ~ UserDropdown ~ dataUser:", dataUser);
   return (
     <>
       {!accessToken ? (
@@ -41,14 +44,10 @@ export const UserDropdown = () => {
           <HoverCard.Trigger asChild>
             <button className="flex items-center gap-x-2">
               <div className="size-[20px] overflow-hidden rounded-[90px] border border-neutral-500">
-                <ImageComponent
-                  src="/img/user-photo-default.png"
-                  width={20}
-                  height={20}
-                />
+                <ImageComponent src={dataUser?.Avatar} width={20} height={20} />
               </div>
               <span className="max-w-[104px] truncate text-[12px] font-medium leading-[12px]">
-                Briko Sparepart Eka Candra
+                {dataUser?.name}
               </span>
             </button>
           </HoverCard.Trigger>
