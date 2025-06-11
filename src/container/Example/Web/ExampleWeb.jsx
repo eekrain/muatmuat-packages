@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
@@ -148,7 +149,7 @@ const ExampleWeb = () => {
 
       <Link href="/sewaarmada">Sewa Armada</Link>
 
-      <div className="max-w-[750px] bg-blue-50">
+      <div className="max-w-[750px]">
         <h1 className="mb-2 text-xl font-bold">Stepper</h1>
         <Stepper
           steps={[
@@ -179,6 +180,85 @@ const ExampleWeb = () => {
           ]}
           currentStep={2}
         />
+      </div>
+
+      <div className="max-w-[750px]">
+        <h1 className="mb-2 text-xl font-bold">Badge Status Pesanan</h1>
+
+        <div className="flex flex-row flex-wrap gap-4">
+          {[
+            {
+              icon: "/icons/info16.svg",
+              label: "Menunggu Konfirmasi",
+              variant: "primary",
+            },
+            {
+              label: "Pesanan Terkonfirmasi",
+              variant: "primary",
+            },
+            {
+              label: "Armada Dijadwalkan",
+              variant: "primary",
+            },
+            {
+              label: "Proses Muat",
+              variant: "primary",
+            },
+            {
+              label: "Proses Bongkar",
+              variant: "primary",
+            },
+            {
+              label: "Dokumen Sedang Disiapkan",
+              variant: "primary",
+            },
+            {
+              label: "Proses Pengiriman Dokumen",
+              variant: "primary",
+            },
+            {
+              icon: "/icons/warning24.svg",
+              label: "Perlu Respon Perubahan",
+              variant: "warning",
+            },
+            {
+              icon: "/icons/warning24.svg",
+              label: "Perlu Konfirmasi Siap",
+              variant: "error",
+            },
+            {
+              icon: "/icons/warning24.svg",
+              label: "Perlu Assign Armada",
+              variant: "warning",
+            },
+            {
+              label: "Selesai",
+              variant: "success",
+            },
+            {
+              label: "Dibatalkan Shipper",
+              variant: "error",
+            },
+            {
+              label: "Dibatalkan Transporter",
+              variant: "error",
+            },
+            {
+              label: "Dibatalkan Sistem",
+              variant: "error",
+            },
+          ].map((item) => (
+            <BadgeStatusPesanan
+              key={item.label}
+              variant={item.variant}
+              icon={{
+                iconLeft: item.icon,
+              }}
+            >
+              <p>{item.label}</p>
+            </BadgeStatusPesanan>
+          ))}
+        </div>
       </div>
     </div>
   );
