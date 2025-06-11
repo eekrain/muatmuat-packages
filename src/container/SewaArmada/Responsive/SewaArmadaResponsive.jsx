@@ -12,6 +12,7 @@ import CariNamaMuatan from "./CariNamaMuatan/CariNamaMuatan";
 import { FormLokasiBongkarMuat } from "./FormLokasiBongkarMuat";
 import { SewaArmadaHome } from "./Home";
 import InformasiMuatanScreen from "./InformasiMuatan/InformasiMuatanScreen";
+import InformasiPesanan from "./InformasiPesanan/InformasiPesanan";
 import LayananTambahan from "./LayananTambahan/LayananTambahan";
 import OpsiPengiriman from "./OpsiPengiriman/OpsiPengiriman";
 import { PencarianLokasi } from "./PencarianLokasi";
@@ -61,6 +62,12 @@ const SewaArmadaResponsive = () => {
       <ResponsiveRoute
         path="/FormSimpanLokasi"
         component={<FormSimpanLokasiResponsive />}
+      />
+
+      {/* STEP 2 */}
+      <ResponsiveRoute
+        path="/InformasiPesanan"
+        component={<InformasiPesanan />}
       />
       <ResponsiveRoute path="/menu" component={<ResponsiveMenu />} />
     </>
