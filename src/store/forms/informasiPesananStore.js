@@ -11,8 +11,8 @@ const defaultValues = {
   // Badan usaha data
   isBadanUsaha: false,
   badanUsahaData: {
-    namaBadanUsaha: "",
-    nomorNPWP: "",
+    companyName: "",
+    npwp: "",
   },
 
   // UI state
@@ -63,8 +63,8 @@ export const useInformasiPesananStore = create((set, get) => ({
         badanUsahaData: checked
           ? state.formValues.badanUsahaData
           : {
-              namaBadanUsaha: "",
-              nomorNPWP: "",
+              companyName: "",
+              npwp: "",
             },
       },
     })),
@@ -97,19 +97,19 @@ export const useInformasiPesananStore = create((set, get) => ({
 
     // Validate badan usaha fields if checkbox is checked
     if (isBadanUsaha) {
-      if (!badanUsahaData.namaBadanUsaha.trim()) {
-        newErrors.namaBadanUsaha = "Nama badan usaha/perusahaan wajib diisi";
-      } else if (badanUsahaData.namaBadanUsaha.trim().length < 3) {
-        newErrors.namaBadanUsaha =
+      if (!badanUsahaData.companyName.trim()) {
+        newErrors.companyName = "Nama badan usaha/perusahaan wajib diisi";
+      } else if (badanUsahaData.companyName.trim().length < 3) {
+        newErrors.companyName =
           "Nama badan usaha/perusahaan minimal 3 karakter";
-      } else if (/[^a-zA-Z]/.test(badanUsahaData.namaBadanUsaha)) {
-        newErrors.namaBadanUsaha = "Nama badan usaha/perusahaan tidak valid";
+      } else if (/[^a-zA-Z]/.test(badanUsahaData.companyName)) {
+        newErrors.companyName = "Nama badan usaha/perusahaan tidak valid";
       }
 
-      if (!badanUsahaData.nomorNPWP.trim()) {
-        newErrors.nomorNPWP = "Nomor NPWP wajib diisi";
-      } else if (badanUsahaData.nomorNPWP.trim().length < 15) {
-        newErrors.nomorNPWP = "Nomor NPWP minimal 15 digit";
+      if (!badanUsahaData.npwp.trim()) {
+        newErrors.npwp = "Nomor NPWP wajib diisi";
+      } else if (badanUsahaData.npwp.trim().length < 15) {
+        newErrors.npwp = "Nomor NPWP minimal 15 digit";
       }
     }
 

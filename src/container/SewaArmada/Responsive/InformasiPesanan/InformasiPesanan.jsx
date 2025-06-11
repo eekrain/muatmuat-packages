@@ -1,5 +1,7 @@
 "use client";
 
+import { Fragment } from "react";
+
 import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Checkbox/Checkbox";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
@@ -7,54 +9,83 @@ import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageUploader from "@/components/ImageUploader/ImageUploader";
 import Input from "@/components/Input/Input";
+import TextArea from "@/components/TextArea/TextArea";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import {
-  useInformasiPesananActions,
-  useInformasiPesananStore,
-} from "@/store/forms/informasiPesananStore";
+  useSewaArmadaActions,
+  useSewaArmadaStore,
+} from "@/store/forms/sewaArmadaStore";
 
 const InformasiPesanan = () => {
+  const bankOptions = [
+    {
+      id: "bca",
+      name: "BCA Virtual Account",
+      icon: "/icons/bca24.svg",
+    },
+    {
+      id: "mandiri",
+      name: "Mandiri Virtual Account",
+      icon: "/icons/bca24.svg",
+    },
+    {
+      id: "bni",
+      name: "BNI Virtual Account",
+      icon: "/icons/bca24.svg",
+    },
+    {
+      id: "bri",
+      name: "BRI Virtual Account",
+      icon: "/icons/bca24.svg",
+    },
+    {
+      id: "bsi",
+      name: "BSI Virtual Account",
+      icon: "/icons/bca24.svg",
+    },
+    {
+      id: "permata",
+      name: "Permata Virtual Account",
+      icon: "/icons/bca24.svg",
+    },
+    {
+      id: "cimb",
+      name: "CIMB Virtual Account",
+      icon: "/icons/bca24.svg",
+    },
+  ];
+  const navigation = useResponsiveNavigation();
   // Get state from Zustand store
-  const { formValues, formErrors } = useInformasiPesananStore();
+  const { formValues, formErrors } = useSewaArmadaStore();
   const {
-    uploadedImages,
-    deskripsiMuatan,
-    isBadanUsaha,
-    deliveryOrder,
-    showDOInput,
-    badanUsahaData,
+    fotoMuatan,
+    deskripsi,
+    // deliveryOrder,
+    isCompany,
+    companyName,
+    companyNpwp,
+    opsiPembayaran,
   } = formValues;
 
   // Get actions from Zustand store
-  const {
-    setField,
-    setBadanUsahaField,
-    handleImageUpload,
-    handleBadanUsahaToggle,
-    handleAddDeliveryOrder,
-    validateForm,
-  } = useInformasiPesananActions();
+  const { setField, setFotoMuatan, validateSecondForm } =
+    useSewaArmadaActions();
 
   // Event handlers
-  const handleCheckboxChange = ({ checked }) => {
-    handleBadanUsahaToggle(checked);
-  };
-
-  const handleBadanUsahaInputChange = (field) => (e) => {
-    setBadanUsahaField(field, e.target.value);
-  };
-
-  const handleDeskripsiChange = (e) => {
-    setField("deskripsiMuatan", e.target.value);
-  };
+  const handleImageUpload = (index, img) => setFotoMuatan(index, img);
 
   const handleSubmit = () => {
-    if (validateForm()) {
+    if (validateSecondForm()) {
       // Navigate to next page or submit form
       // navigation.push("/NextPage");
       console.log("Form is valid, proceeding...");
     }
   };
+
+  const selectedOpsiPembayaran = opsiPembayaran
+    ? bankOptions.find((item) => item.id === opsiPembayaran.id)
+    : null;
 
   return (
     <FormResponsiveLayout
@@ -122,25 +153,23 @@ const InformasiPesanan = () => {
 
             {/* Grid Upload Foto */}
             <div className="flex flex-wrap gap-3">
-              {[0, 1, 2, 3].map((index) => (
-                <ImageUploader
-                  key={index}
-                  className="size-[72px]"
-                  getImage={(imageData) => handleImageUpload(index, imageData)}
-                  uploadText="Unggah"
-                  errorText="Ulangi"
-                  maxSize={10}
-                  value={uploadedImages[index]}
-                  acceptedFormats={[".jpg", ".jpeg", ".png"]}
-                  onUpload={(imageData) => handleImageUpload(index, imageData)}
-                  onError={() => {}}
-                />
+              {[...Array(4)].map((_, key) => (
+                <Fragment key={key}>
+                  <ImageUploader
+                    getImage={(value) => handleImageUpload(key, value)}
+                    uploadText={key === 0 ? "Foto Utama" : `Foto ${key + 1}`}
+                    maxSize={10}
+                    className="!size-[72px]"
+                    value={fotoMuatan[key]}
+                    isNull={formErrors.fotoMuatan}
+                  />
+                </Fragment>
               ))}
             </div>
 
-            {formErrors.uploadedImages && (
+            {formErrors.fotoMuatan && (
               <p className="text-[12px] font-medium leading-[14.4px] text-error-400">
-                {formErrors.uploadedImages}
+                {formErrors.fotoMuatan}
               </p>
             )}
 
@@ -160,29 +189,20 @@ const InformasiPesanan = () => {
 
             <div className="flex flex-col gap-3">
               <div className="w-full">
-                <textarea
-                  value={deskripsiMuatan}
-                  onChange={handleDeskripsiChange}
-                  placeholder="Lengkapi deskripsi informasi muatan kamu dengan rincian spesifik terkait barang yang dikirim, seperti bahan, penggunaan, atau karakteristik unik lainnya."
-                  className={`h-[77px] w-full resize-none rounded-md border bg-white p-3 text-[14px] font-semibold placeholder:text-neutral-600 hover:border-primary-700 focus:border-primary-700 focus:outline-none ${
-                    formErrors.deskripsiMuatan
-                      ? "border-error-400 text-error-400"
-                      : "border-neutral-600 text-neutral-600"
-                  }`}
+                <TextArea
                   maxLength={500}
+                  hasCharCount
+                  supportiveText={{
+                    title: formErrors.deskripsi,
+                  }}
+                  resize="none"
+                  placeholder={
+                    "Lengkapi deskripsi informasi muatan Anda dengan rincian spesifik terkait barang yang dikirim, seperti bahan, penggunaan, atau karakteristik unik lainnya."
+                  }
+                  value={deskripsi}
+                  onChange={(e) => setField("deskripsi", e.target.value)}
+                  status={formErrors.deskripsi ? "error" : ""}
                 />
-              </div>
-
-              {formErrors.deskripsiMuatan && (
-                <p className="text-[12px] font-medium leading-[14.4px] text-error-400">
-                  {formErrors.deskripsiMuatan}
-                </p>
-              )}
-
-              <div className="flex justify-end">
-                <span className="text-[12px] font-medium text-neutral-600">
-                  {deskripsiMuatan.length}/500
-                </span>
               </div>
             </div>
           </div>
@@ -204,26 +224,12 @@ const InformasiPesanan = () => {
               />
             </div>
             <button
-              onClick={handleAddDeliveryOrder}
+              onClick={() => {}}
               className="text-[14px] font-semibold text-primary-700"
             >
               Tambah
             </button>
           </div>
-
-          {/* Delivery Order Input - Show when button is clicked */}
-          {showDOInput && (
-            <div className="flex flex-col gap-3">
-              <Input
-                type="text"
-                name="deliveryOrder"
-                placeholder="Masukkan No. Delivery Order"
-                value={deliveryOrder}
-                onChange={(e) => setField("deliveryOrder", e.target.value)}
-                classname="w-full"
-              />
-            </div>
-          )}
         </div>
 
         {/* Badan Usaha Pemesan - Updated Section */}
@@ -247,14 +253,12 @@ const InformasiPesanan = () => {
           {/* Checkbox */}
           <Checkbox
             label="Centang opsi jika kamu merupakan suatu badan usaha/perusahaan"
-            checked={isBadanUsaha}
-            onChange={handleCheckboxChange}
-            value="badanUsaha"
-            classname="bank_checkbox"
+            checked={isCompany}
+            onChange={({ checked }) => setField("isCompany", checked)}
           />
 
           {/* Form Fields - Only show when checkbox is checked */}
-          {isBadanUsaha && (
+          {isCompany && (
             <div className="mt-2 flex flex-col gap-4">
               {/* Field Nama Badan Usaha */}
               <div className="flex flex-col gap-3">
@@ -263,13 +267,13 @@ const InformasiPesanan = () => {
                 </label>
                 <Input
                   type="text"
-                  name="namaBadanUsaha"
+                  name="companyName"
                   placeholder="Masukkan Nama Badan Usaha/Perusahaan"
-                  value={badanUsahaData.namaBadanUsaha}
-                  onChange={handleBadanUsahaInputChange("namaBadanUsaha")}
+                  value={companyName}
+                  onChange={(e) => setField(e.target.name, e.target.value)}
                   classname="w-full"
-                  status={formErrors.namaBadanUsaha ? "error" : null}
-                  supportiveText={{ title: formErrors?.namaBadanUsaha ?? "" }}
+                  status={formErrors.companyName ? "error" : null}
+                  supportiveText={{ title: formErrors?.companyName ?? "" }}
                 />
               </div>
 
@@ -280,13 +284,13 @@ const InformasiPesanan = () => {
                 </label>
                 <Input
                   type="text"
-                  name="nomorNPWP"
+                  name="companyNpwp"
                   placeholder="Masukkan Nomor NPWP Perusahaan"
-                  value={badanUsahaData.nomorNPWP}
-                  onChange={handleBadanUsahaInputChange("nomorNPWP")}
+                  value={companyNpwp}
+                  onChange={(e) => setField(e.target.name, e.target.value)}
                   classname="w-full"
-                  status={formErrors.nomorNPWP ? "error" : null}
-                  supportiveText={{ title: formErrors?.nomorNPWP ?? "" }}
+                  status={formErrors.companyNpwp ? "error" : null}
+                  supportiveText={{ title: formErrors?.companyNpwp ?? "" }}
                 />
               </div>
             </div>
@@ -294,13 +298,33 @@ const InformasiPesanan = () => {
         </div>
 
         {/* Opsi Pembayaran */}
-        <div className="flex items-center justify-between rounded-md bg-white p-4">
-          <h2 className="text-[14px] font-semibold text-neutral-900">
-            Opsi Pembayaran
-          </h2>
-          <button className="text-[14px] font-semibold text-primary-700">
-            Pilih
-          </button>
+        <div className="flex flex-col gap-y-3 bg-neutral-50 p-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-[14px] font-semibold text-neutral-900">
+              Opsi Pembayaran
+            </h2>
+            <button
+              className="text-[14px] font-semibold text-primary-700"
+              onClick={() =>
+                navigation.push("/OpsiPembayaran", { bankOptions })
+              }
+            >
+              Pilih
+            </button>
+          </div>
+          {selectedOpsiPembayaran ? (
+            <div className="flex items-center gap-x-2">
+              <IconComponent src={selectedOpsiPembayaran.icon} size="medium" />
+              <span className="text-[12px] font-semibold leading-[13.2px] text-neutral-900">
+                {selectedOpsiPembayaran.name}
+              </span>
+            </div>
+          ) : null}
+          {formErrors.opsiPembayaran ? (
+            <span className="text-[12px] font-medium leading-[13.2px] text-error-400">
+              Metode pembayaran wajib diisi
+            </span>
+          ) : null}
         </div>
 
         {/* Ringkasan Transaksi */}
@@ -423,14 +447,16 @@ const InformasiPesanan = () => {
       </div>
 
       <ResponsiveFooter className="flex flex-col gap-y-2.5">
-        <button className="flex justify-between">
+        <button className="flex h-[44px] items-center justify-between rounded-md bg-primary-50 px-4">
           <div>
-            <span>Makin hemat pakai voucher</span>
+            <span className="text-[14px] font-semibold leading-[15.4px] text-primary-700">
+              Makin hemat pakai voucher
+            </span>
           </div>
         </button>
         <Button
           variant="muatparts-primary"
-          className="flex-1"
+          className="h-10"
           onClick={handleSubmit}
           type="button"
         >
