@@ -91,7 +91,7 @@ const OtpRekeningWeb = ({ notification, onResendCode }) => {
               } `}
             >
               <IconComponent
-                classname={
+                className={
                   notification.status === "error" ? styles.icon_error : ""
                 }
                 src={

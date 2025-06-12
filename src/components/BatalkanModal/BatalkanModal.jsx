@@ -87,7 +87,7 @@ const BatalkanModal = ({ open, onOpenChange, data }) => {
                             <>
                               <Input
                                 maxLength="80"
-                                classname="w-[312px]"
+                                className="w-[312px]"
                                 changeEvent={(event) => {
                                   setValidateReason(false);
                                   setReason(event.target.value);

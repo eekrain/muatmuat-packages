@@ -53,7 +53,7 @@ const LanguageDropdown = () => {
                 <div className="flex items-center gap-2">
                   <img src={language.image} className="h-4 w-6" alt="Flag" />
                   <span
-                    className={`pt-1 hover:text-error-900 ${
+                    className={`pt-1 hover:text-muat-trans-primary-600 ${
                       selectedLanguage.name == language.name && "font-bold"
                     }`}
                   >

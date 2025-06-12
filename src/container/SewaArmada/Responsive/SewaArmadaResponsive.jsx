@@ -14,6 +14,7 @@ import { SewaArmadaHome } from "./Home";
 import InformasiMuatanScreen from "./InformasiMuatan/InformasiMuatanScreen";
 import InformasiPesanan from "./InformasiPesanan/InformasiPesanan";
 import LayananTambahan from "./LayananTambahan/LayananTambahan";
+import OpsiPembayaran from "./OpsiPembayaran/OpsiPembayaran";
 import OpsiPengiriman from "./OpsiPengiriman/OpsiPengiriman";
 import { PencarianLokasi } from "./PencarianLokasi";
 import { PencarianLokasiTersimpan } from "./PencarianLokasiTersimpan";
@@ -69,6 +70,7 @@ const SewaArmadaResponsive = () => {
         path="/InformasiPesanan"
         component={<InformasiPesanan />}
       />
+      <ResponsiveRoute path="/OpsiPembayaran" component={<OpsiPembayaran />} />
       <ResponsiveRoute path="/menu" component={<ResponsiveMenu />} />
     </>
   );
