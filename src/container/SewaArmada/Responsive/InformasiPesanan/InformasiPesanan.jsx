@@ -7,9 +7,11 @@ import Checkbox from "@/components/Checkbox/Checkbox";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import ImageUploader from "@/components/ImageUploader/ImageUploader";
 import Input from "@/components/Input/Input";
 import TextArea from "@/components/TextArea/TextArea";
+import NoDeliveryOrder from "@/container/SewaArmada/Responsive/InformasiPesanan/NoDeliveryOrder";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import {
@@ -114,14 +116,17 @@ const InformasiPesanan = () => {
         {/* Info Jasa Angkut */}
         <div className="flex items-center gap-3 bg-neutral-50 px-4 py-5">
           {/* Image Container */}
-          <div
-            className="relative size-[68px] rounded border border-neutral-400 bg-neutral-100 bg-cover bg-center"
-            style={{
-              backgroundImage:
-                "url(/img/light-truck-cold-diesel-engkel-reefer.png)",
-            }}
-          >
-            <button className="absolute right-1 top-1 flex size-5 items-center justify-center rounded-full bg-white">
+          <div className="relative size-[68px] overflow-hidden rounded-xl border border-neutral-400">
+            <ImageComponent
+              className="w-full"
+              src="/img/recommended1.png"
+              width={68}
+              height={68}
+            />
+            <button
+              className="absolute right-2 top-2 flex size-[20px] items-center justify-center rounded-3xl bg-neutral-50"
+              onClick={() => {}}
+            >
               <IconComponent
                 src="/icons/fullscreen12.svg"
                 width={12}
@@ -208,28 +213,7 @@ const InformasiPesanan = () => {
           </div>
 
           {/* No. Delivery Order */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1">
-              <h2 className="text-[14px] font-semibold text-neutral-900">
-                No. Delivery Order (DO)
-              </h2>
-              <span className="text-[10px] font-semibold text-neutral-900">
-                (Opsional)
-              </span>
-              <IconComponent
-                src="/icons/info.svg"
-                width={16}
-                height={16}
-                classname="icon-gray"
-              />
-            </div>
-            <button
-              onClick={() => {}}
-              className="text-[14px] font-semibold text-primary-700"
-            >
-              Tambah
-            </button>
-          </div>
+          <NoDeliveryOrder />
         </div>
 
         {/* Badan Usaha Pemesan - Updated Section */}
@@ -271,7 +255,7 @@ const InformasiPesanan = () => {
                   placeholder="Masukkan Nama Badan Usaha/Perusahaan"
                   value={companyName}
                   onChange={(e) => setField(e.target.name, e.target.value)}
-                  classname="w-full"
+                  className="w-full"
                   status={formErrors.companyName ? "error" : null}
                   supportiveText={{ title: formErrors?.companyName ?? "" }}
                 />
@@ -288,7 +272,7 @@ const InformasiPesanan = () => {
                   placeholder="Masukkan Nomor NPWP Perusahaan"
                   value={companyNpwp}
                   onChange={(e) => setField(e.target.name, e.target.value)}
-                  classname="w-full"
+                  className="w-full"
                   status={formErrors.companyNpwp ? "error" : null}
                   supportiveText={{ title: formErrors?.companyNpwp ?? "" }}
                 />

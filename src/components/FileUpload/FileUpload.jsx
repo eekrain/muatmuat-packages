@@ -108,7 +108,7 @@ const FileUpload = ({
             <IconComponent
               src="/icons/silang.svg"
               onclick={handleDelete}
-              classname="cursor-pointer"
+              className="cursor-pointer"
             />
             <span
               className="cursor-pointer text-[12px] font-medium leading-[14.4px] text-primary-700"

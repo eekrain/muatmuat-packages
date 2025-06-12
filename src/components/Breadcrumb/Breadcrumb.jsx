@@ -11,7 +11,7 @@ const BreadCrumb = ({
   data,
   onclick = () => {},
   onActive = () => {},
-  classname,
+  className,
   disableActive = false,
   disableClick = false,
   maxWidth,
@@ -30,7 +30,7 @@ const BreadCrumb = ({
   }
 
   return (
-    <div className={`${style.main} ${style.breadcrumb} ${classname}`}>
+    <div className={`${style.main} ${style.breadcrumb} ${className}`}>
       {data?.map((val, idx) => {
         return (
           <div className="flex items-center gap-[5px]" key={idx}>
@@ -49,7 +49,7 @@ const BreadCrumb = ({
             {idx !== data.length - 1 && (
               <IconComponent
                 src={"/icons/chevron-right.svg"}
-                classname={style.Icon}
+                className={style.Icon}
               />
             )}
           </div>
@@ -64,7 +64,7 @@ BreadCrumb.propTypes = {
   data: PropTypes.array,
   onclick: PropTypes.func,
   onActive: PropTypes.func,
-  classname: PropTypes.string,
+  className: PropTypes.string,
   disableActive: PropTypes.bool,
   maxWidth: PropTypes.number,
 };

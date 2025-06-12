@@ -107,7 +107,7 @@ const PilihProvinsi = ({
   return (
     <div className="flex min-h-[calc(100vh_-_88px)] flex-col gap-y-5 bg-neutral-50 px-4 py-5 pb-[124px]">
       <Input
-        classname={"w-full"}
+        className={"w-full"}
         placeholder={t("labelSearchProvince")}
         icon={{
           left: <IconComponent src={"/icons/search.svg"} />,
@@ -130,7 +130,7 @@ const PilihProvinsi = ({
               {t("checkboxSelectAll")}
             </span>
             <Checkbox
-              classname="!gap-0"
+              className="!gap-0"
               disabled={count > 0}
               label=""
               checked={isAllChecked}
@@ -158,7 +158,7 @@ const PilihProvinsi = ({
                           {province.Province}
                         </span>
                         <Checkbox
-                          classname="!gap-0"
+                          className="!gap-0"
                           label=""
                           checked={isChecked}
                           onChange={(e) =>
@@ -184,7 +184,7 @@ const PilihProvinsi = ({
       ) : (
         <div className="flex min-h-[calc(100vh_-_232px)]">
           <DataNotFound
-            classname="gap-y-3 m-auto"
+            className="m-auto gap-y-3"
             textClass="max-w-[111px] font-semibold text-[14px] leading-[16.8px]"
             title={t("labelKeywordNotFound")}
           />

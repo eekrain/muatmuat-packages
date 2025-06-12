@@ -1,3 +1,4 @@
+import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import DetailPIC from "@/container/Detailpesanan/Web/DetailPic/DetailPic";
@@ -6,11 +7,21 @@ import RingkasanPesanan from "@/container/Detailpesanan/Web/RingkasanPesanan/Rin
 import StatusPesanan from "@/container/Detailpesanan/Web/StatusPesanan/StatusPesanan";
 
 const DetailPesananWeb = () => {
+  const breadCrumbData = [
+    { name: "Daftar Pesanan" },
+    { name: "Detail Pesanan" },
+  ];
+
+  const handleBreadCrumbClick = (val) => {};
   return (
     <div className="flex justify-center">
       <div className="mx-auto w-[1280px] px-10">
         <div className="flex flex-col gap-y-6">
-          <div>BREADCRUMB BLM ADA</div>
+          <BreadCrumb
+            className="!mb-0"
+            data={breadCrumbData}
+            onclick={handleBreadCrumbClick}
+          />
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <IconComponent src="/icons/arrow-left24.svg" size="medium" />

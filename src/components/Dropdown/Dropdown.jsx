@@ -30,7 +30,7 @@ const Dropdown = ({
   options: pilihan = [],
   optionsOther: pilihanLain = [],
   optionsOtherText = "",
-  classname,
+  className,
   onSearchValue,
   onSelected = () => {},
   selectedIconElement,
@@ -177,7 +177,7 @@ const Dropdown = ({
           >
             {isMultipleSelected && (
               <Checkbox
-                classname={style.checkBox}
+                className={style.checkBox}
                 label=""
                 value={val.value}
                 checked={selected.filter((a) => a.value === val.value).length}
@@ -231,7 +231,7 @@ const Dropdown = ({
                 >
                   {isMultipleSelected && (
                     <Checkbox
-                      classname={style.checkBox}
+                      className={style.checkBox}
                       label=""
                       value={val.value}
                       checked={
@@ -276,7 +276,7 @@ const Dropdown = ({
     <>
       <div
         ref={dropdownRef}
-        className={`${style.main} ${classname} ${disabled ? style.disabled : ""} ${isError && "border !border-red-500"}`}
+        className={`${style.main} ${className} ${disabled ? style.disabled : ""} ${isError && "border !border-red-500"}`}
         onClick={onClick}
       >
         <button
@@ -307,7 +307,7 @@ const Dropdown = ({
             <IconComponent
               src={selectedIconElement ?? "/icons/chevron-down.svg"}
               color={arrowColor}
-              classname={`${style.chevron} ${isOpen ? style.chevronRotate : ""}`}
+              className={`${style.chevron} ${isOpen ? style.chevronRotate : ""}`}
             />
           </span>
         </button>
@@ -345,7 +345,7 @@ const Dropdown = ({
                   src={"/icons/Plus.svg"}
                   width={14}
                   height={14}
-                  classname={style.customIcon}
+                  className={style.customIcon}
                 />
                 <span className="text-[12px] text-neutral-900">
                   {textCustom}

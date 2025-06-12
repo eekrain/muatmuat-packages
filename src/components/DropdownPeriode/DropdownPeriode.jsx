@@ -90,7 +90,7 @@ const DropdownPeriode = ({
               }
               classInput={"w-full"}
               status={validate?.start_date && "error"}
-              classname={"!w-[136px] max-w-none"}
+              className={"!w-[136px] max-w-none"}
               placeholder={t("AppMuatpartsAnalisaProdukPeriodeAwal")}
               icon={{ right: <IconComponent src={"/icons/calendar.svg"} /> }}
               supportiveText={{
@@ -110,7 +110,7 @@ const DropdownPeriode = ({
                 setInputDateCustom((a) => ({ ...a, status: "end_date" }))
               }
               classInput={"w-full"}
-              classname={"!w-[136px] max-w-none"}
+              className={"!w-[136px] max-w-none"}
               placeholder={t("AppMuatpartsAnalisaProdukPeriodeAkhir")}
               icon={{ right: <IconComponent src={"/icons/calendar.svg"} /> }}
             />

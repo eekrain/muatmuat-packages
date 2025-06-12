@@ -24,7 +24,7 @@ const ImagesPreviewResponsive = ({
         onClick={() => setIsOpen(false)}
       >
         <IconComponent
-          classname={styles.icon_white}
+          className={styles.icon_white}
           src="/icons/silang.svg"
           size="medium"
         />
