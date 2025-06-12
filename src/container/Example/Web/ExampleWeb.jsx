@@ -1,10 +1,16 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import BatalkanModal from "@/components/BatalkanModal/BatalkanModal";
 import Button from "@/components/Button/Button";
+import { Select } from "@/components/Form/Select";
+import { TagInput } from "@/components/Form/TagInput";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import LightboxTrigger, {
+  LightboxProvider,
+} from "@/components/Lightbox/Lighbox";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import Stepper from "@/components/Stepper/Stepper";
 import ToogleButton from "@/components/ToogleButton/ToogleButton";
@@ -12,6 +18,13 @@ import { toast } from "@/lib/toast";
 
 import ExampleSwr from "./ExampleSwr";
 import ExampleTimeline from "./ExampleTimeline";
+
+const images = [
+  "https://picsum.photos/400/300?random=1",
+  "https://picsum.photos/400/300?random=2",
+  "https://picsum.photos/400/300?random=3",
+  "https://picsum.photos/400/300?random=4",
+];
 
 const ExampleWeb = () => {
   const [courierStatus, setCourierStatus] = useState({
@@ -36,8 +49,16 @@ const ExampleWeb = () => {
     }));
   };
 
+  const [batalkanModal, setBatalkanModal] = useState(false);
+
+  const [tags, setTags] = useState([]);
+  const [tagsError, setTagsError] = useState("");
+
+  const [selectValue, setSelectValue] = useState("");
+  console.log("🚀 ~ ExampleWeb ~ selectValue:", selectValue);
+
   return (
-    <div className="flex flex-col gap-y-3 p-4">
+    <div className="flex flex-col gap-4 bg-white p-4">
       <div className="itmes-center flex gap-x-2">
         <Button
           variant="muattrans-primary"
@@ -150,119 +171,224 @@ const ExampleWeb = () => {
 
       <Link href="/sewaarmada">Sewa Armada</Link>
 
-      <div className="max-w-[750px]">
-        <h1 className="mb-2 text-xl font-bold">Stepper</h1>
-        <Stepper
-          steps={[
-            {
-              label: "Armada Dijadwalkan",
-              icon: "/icons/stepper-scheduled.svg",
-            },
-            {
-              label: "Proses Muat",
-              icon: "/icons/stepper-box.svg",
-            },
-            {
-              label: "Proses Bongkar",
-              icon: "/icons/stepper-box-opened.svg",
-            },
-            {
-              label: "Dokumen Sedang Disiapkan",
-              icon: "/icons/stepper-document-preparing.svg",
-            },
-            {
-              label: "Proses Pengiriman Dokumen",
-              icon: "/icons/stepper-document-sending.svg",
-            },
-            {
-              label: "Selesai",
-              icon: "/icons/stepper-done.svg",
-            },
-          ]}
-          currentStep={2}
-        />
-      </div>
+      <div className="grid grid-cols-2">
+        <div>
+          <h1 className="mb-2 text-xl font-bold">Badge Status Pesanan</h1>
 
-      <div className="max-w-[750px]">
-        <h1 className="mb-2 text-xl font-bold">Badge Status Pesanan</h1>
+          <div className="flex flex-row flex-wrap gap-4">
+            {[
+              {
+                icon: "/icons/info16.svg",
+                label: "Menunggu Konfirmasi",
+                variant: "primary",
+              },
+              {
+                label: "Pesanan Terkonfirmasi",
+                variant: "primary",
+              },
+              {
+                label: "Armada Dijadwalkan",
+                variant: "primary",
+              },
+              {
+                label: "Proses Muat",
+                variant: "primary",
+              },
+              {
+                label: "Proses Bongkar",
+                variant: "primary",
+              },
+              {
+                label: "Dokumen Sedang Disiapkan",
+                variant: "primary",
+              },
+              {
+                label: "Proses Pengiriman Dokumen",
+                variant: "primary",
+              },
+              {
+                icon: "/icons/warning24.svg",
+                label: "Perlu Respon Perubahan",
+                variant: "warning",
+              },
+              {
+                icon: "/icons/warning24.svg",
+                label: "Perlu Konfirmasi Siap",
+                variant: "error",
+              },
+              {
+                icon: "/icons/warning24.svg",
+                label: "Perlu Assign Armada",
+                variant: "warning",
+              },
+              {
+                label: "Selesai",
+                variant: "success",
+              },
+              {
+                label: "Dibatalkan Shipper",
+                variant: "error",
+              },
+              {
+                label: "Dibatalkan Transporter",
+                variant: "error",
+              },
+              {
+                label: "Dibatalkan Sistem",
+                variant: "error",
+              },
+              {
+                label: "Proses Muat",
+                variant: "primary",
+                className: "w-fit",
+              },
+            ].map((item, index) => (
+              <BadgeStatusPesanan
+                key={item.label + index}
+                variant={item.variant}
+                icon={{
+                  iconLeft: item.icon,
+                }}
+                className={item?.className}
+              >
+                <p>{item.label}</p>
+              </BadgeStatusPesanan>
+            ))}
+          </div>
+        </div>
+        <div>
+          <h1 className="mb-2 text-xl font-bold">Stepper</h1>
+          <Stepper
+            steps={[
+              {
+                label: "Armada Dijadwalkan",
+                icon: "/icons/stepper-scheduled.svg",
+              },
+              {
+                label: "Proses Muat",
+                icon: "/icons/stepper-box.svg",
+              },
+              {
+                label: "Proses Bongkar",
+                icon: "/icons/stepper-box-opened.svg",
+              },
+              {
+                label: "Dokumen Sedang Disiapkan",
+                icon: "/icons/stepper-document-preparing.svg",
+              },
+              {
+                label: "Proses Pengiriman Dokumen",
+                icon: "/icons/stepper-document-sending.svg",
+              },
+              {
+                label: "Selesai",
+                icon: "/icons/stepper-done.svg",
+              },
+            ]}
+            currentStep={2}
+          />
 
-        <div className="flex flex-row flex-wrap gap-4">
-          {[
-            {
-              icon: "/icons/info16.svg",
-              label: "Menunggu Konfirmasi",
-              variant: "primary",
-            },
-            {
-              label: "Pesanan Terkonfirmasi",
-              variant: "primary",
-            },
-            {
-              label: "Armada Dijadwalkan",
-              variant: "primary",
-            },
-            {
-              label: "Proses Muat",
-              variant: "primary",
-            },
-            {
-              label: "Proses Bongkar",
-              variant: "primary",
-            },
-            {
-              label: "Dokumen Sedang Disiapkan",
-              variant: "primary",
-            },
-            {
-              label: "Proses Pengiriman Dokumen",
-              variant: "primary",
-            },
-            {
-              icon: "/icons/warning24.svg",
-              label: "Perlu Respon Perubahan",
-              variant: "warning",
-            },
-            {
-              icon: "/icons/warning24.svg",
-              label: "Perlu Konfirmasi Siap",
-              variant: "error",
-            },
-            {
-              icon: "/icons/warning24.svg",
-              label: "Perlu Assign Armada",
-              variant: "warning",
-            },
-            {
-              label: "Selesai",
-              variant: "success",
-            },
-            {
-              label: "Dibatalkan Shipper",
-              variant: "error",
-            },
-            {
-              label: "Dibatalkan Transporter",
-              variant: "error",
-            },
-            {
-              label: "Dibatalkan Sistem",
-              variant: "error",
-            },
-          ].map((item) => (
-            <BadgeStatusPesanan
-              key={item.label}
-              variant={item.variant}
-              icon={{
-                iconLeft: item.icon,
-              }}
-            >
-              <p>{item.label}</p>
-            </BadgeStatusPesanan>
-          ))}
+          <div className="w-[200px]">
+            <h1 className="my-2 text-xl font-bold">Select</h1>
+            <Select
+              options={[
+                {
+                  label: "kg",
+                  value: "kg",
+                },
+                {
+                  label: "Liter",
+                  value: "liter",
+                },
+                {
+                  label: "Ton",
+                  value: "ton",
+                },
+              ]}
+              value={selectValue}
+              onChange={setSelectValue}
+            />
+          </div>
         </div>
       </div>
 
-      <BatalkanModal />
+      <div className="grid grid-cols-2">
+        <div>
+          <h1 className="mb-2 text-xl font-bold">Batalkan Modal</h1>
+          <Button
+            variant="muatparts-error-secondary"
+            onClick={() => setBatalkanModal(true)}
+          >
+            Batalkan Modal
+          </Button>
+
+          <BatalkanModal
+            open={batalkanModal}
+            onOpenChange={setBatalkanModal}
+            onConfirm={() => setBatalkanModal(false)}
+          />
+        </div>
+
+        <div>
+          <h1 className="mb-2 text-xl font-bold">Tag Input</h1>
+          <TagInput
+            tags={tags}
+            onTagsChange={setTags}
+            placeholder="Masukkan No. Delivery Order (DO)"
+            onTagsDuplicate={(duplicateTag) =>
+              setTagsError(`Tag ${duplicateTag} sudah ada`)
+            }
+            errorMessage={tagsError}
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2">
+        <div>
+          <h1 className="mb-2 text-xl font-bold">Lightbox (Single Image)</h1>
+
+          <LightboxProvider image={images[0]} title="Jenis Carrier">
+            <LightboxTrigger
+              image={images[0]}
+              alt="Jenis Carrier"
+              className="size-[100px] overflow-hidden rounded-md object-cover"
+            />
+          </LightboxProvider>
+        </div>
+
+        <div>
+          <h1 className="mb-2 text-xl font-bold">Lightbox (Multiple Images)</h1>
+
+          <LightboxProvider
+            images={images}
+            title="Bukti Muat Barang di Lokasi 2"
+          >
+            <div className="flex flex-wrap gap-2">
+              {images.map((image, index) => (
+                <LightboxTrigger
+                  key={index}
+                  image={image}
+                  index={index}
+                  className="size-[100px] overflow-hidden rounded-md object-cover"
+                  alt={`Bukti Muat Barang di Lokasi 2, Foto ke-${index + 1}`}
+                />
+              ))}
+            </div>
+          </LightboxProvider>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2">
+        <div>
+          <h1 className="mb-2 text-xl font-bold">Avatar Driver</h1>
+
+          <AvatarDriver
+            name="Noel Gallagher"
+            image="https://picsum.photos/50"
+            platNomor="B 123456"
+          />
+        </div>
+      </div>
     </div>
   );
 };

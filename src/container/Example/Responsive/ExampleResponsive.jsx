@@ -8,6 +8,9 @@ import {
 } from "@/components/Bottomsheet/Bottomsheet";
 import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
+import LightboxTrigger, {
+  LightboxProvider,
+} from "@/components/Lightbox/Lighbox";
 import ToogleButton from "@/components/ToogleButton/ToogleButton";
 import {
   ResponsiveRoute,
@@ -15,6 +18,13 @@ import {
   useResponsiveSearch,
 } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
+
+const images = [
+  "https://picsum.photos/800/600?random=1",
+  "https://picsum.photos/800/600?random=2",
+  "https://picsum.photos/800/600?random=3",
+  "https://picsum.photos/800/600?random=4",
+];
 
 const ExampleResponsive = ({}) => {
   const [courierStatus, setCourierStatus] = useState({
@@ -280,6 +290,18 @@ const ExampleResponsive = ({}) => {
           </div>
         }
       />
+
+      <div>
+        <h1 className="mb-2 text-xl font-bold">Lightbox (Single Image)</h1>
+
+        <LightboxProvider image={images[0]} title="Jenis Carrier">
+          <LightboxTrigger
+            image={images[0]}
+            alt="Jenis Carrier"
+            className="size-[100px] overflow-hidden rounded-md object-cover"
+          />
+        </LightboxProvider>
+      </div>
 
       <ResponsiveFooter>
         <Button variant="muatparts-primary" className="w-full">
