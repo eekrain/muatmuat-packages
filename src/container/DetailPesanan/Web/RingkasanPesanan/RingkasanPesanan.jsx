@@ -5,6 +5,7 @@ import { useState } from "react";
 import Card, { CardContent } from "@/components/Card/Card";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
+import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import {
   TimelineContainer,
   TimelineContentAddress,
@@ -48,6 +49,22 @@ const RingkasanPesanan = () => {
     description:
       "tolong kirim muatan dengan hati hati, jangan sampai rusak dan hancur, terimakasih",
     deliveryOrders: ["DO-20241023-001", "DO-20241023-002"],
+  };
+  const productCategories = [
+    { name: "Perlengkapan Rumah Tangga", weight: 1.8 },
+    { name: "Peralatan dan Kebutuhan Kantor", weight: 2 },
+    { name: "Elektronik dan Aksesoris", weight: 2 },
+    { name: "Alat Kebersihan dan Higienitas", weight: 2 },
+    { name: "Makanan dan Minuman Ringan", weight: 2 },
+    { name: "Bahan Bangunan dan Konstruksi", weight: 2 },
+    { name: "Perlengkapan Dapur dan Masak", weight: 2 },
+    { name: "Pakaian dan Tekstil", weight: 2 },
+    { name: "Mainan dan Peralatan Anak", weight: 2 },
+    { name: "Produk Kesehatan dan Obat-obatan", weight: 2 },
+  ];
+
+  const formatWeight = (weight) => {
+    return weight % 1 === 0 ? weight.toString() : weight.toString();
   };
 
   return (
@@ -196,9 +213,35 @@ const RingkasanPesanan = () => {
                     </span>
                   </div>
                 ))}
-                <button className="self-start text-[12px] font-medium leading-[14.4px] text-primary-700">
-                  Lihat Informasi Muatan Lainnya
-                </button>
+                <Modal closeOnOutsideClick={false}>
+                  <ModalTrigger>
+                    <button className="text-[12px] font-medium leading-[14.4px] text-primary-700">
+                      Lihat Informasi Muatan Lainnya
+                    </button>
+                  </ModalTrigger>
+                  <ModalContent>
+                    <div className="flex flex-col gap-y-3 p-6">
+                      {/* Header */}
+                      <h2 className="text-center text-[16px] font-bold leading-[19.2px] text-neutral-900">
+                        Informasi Muatan
+                      </h2>
+                      <div className="flex w-[600px] flex-col items-start gap-2 rounded-xl border border-neutral-400 px-4 py-5">
+                        {productCategories.map((category, index) => (
+                          <div
+                            key={index}
+                            className="flex w-full flex-row items-center gap-2"
+                          >
+                            <IconComponent src="/icons/muatan16.svg" />
+                            <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                              {category.name} ({formatWeight(category.weight)}{" "}
+                              kg)
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </ModalContent>
+                </Modal>
               </div>
             </div>
           </div>
