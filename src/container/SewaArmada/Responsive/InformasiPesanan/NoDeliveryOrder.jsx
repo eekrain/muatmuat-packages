@@ -22,7 +22,7 @@ const NoDeliveryOrder = () => {
   const [type, setType] = useState("");
   const [tempNoDeliveryOrders, setTempNoDeliveryOrders] = useState([]);
   const [newDo, setNewDo] = useState("");
-
+  console.log("temp", tempNoDeliveryOrders);
   const handleAddTempNoDeliveryOrders = () => {
     setTempNoDeliveryOrders((prevState) => [...prevState, newDo]);
     setType("list");
@@ -56,6 +56,7 @@ const NoDeliveryOrder = () => {
               setIsBottomSheetOpen(true);
               if (formValues.noDO.length === 0) {
                 setNewDo("");
+                setTempNoDeliveryOrders(formValues.noDO);
                 setType("add");
               } else {
                 setTempNoDeliveryOrders(formValues.noDO);
@@ -74,8 +75,9 @@ const NoDeliveryOrder = () => {
                 <TagBubble
                   tag={item}
                   onRemove={() =>
-                    setTempNoDeliveryOrders((prevState) =>
-                      prevState.filter((_, i) => i !== key)
+                    setField(
+                      "noDO",
+                      formValues.noDO.filter((_, i) => i !== key)
                     )
                   }
                   className="!bg-primary-50"
