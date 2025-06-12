@@ -18,7 +18,7 @@ const RingkasanPesanan = () => {
   const orderData = {
     armada: {
       name: "Box - Colt Diesel Engkel",
-      image: "/images/truck-box.png",
+      image: "/img/recommended1.png",
       requirement: "Kebutuhan : 1 Unit",
     },
     waktuMuat: "3 Okt 2024 18:00 WIB s/d 4 Okt 2024 08:00 WIB",
@@ -40,10 +40,10 @@ const RingkasanPesanan = () => {
       { name: "Peralatan dan Kebutuhan Kantor", weight: "2 kg" },
     ],
     photos: [
-      "/images/muatan-1.jpg",
-      "/images/muatan-2.jpg",
-      "/images/muatan-3.jpg",
-      "/images/muatan-4.jpg",
+      "/img/muatan1.png",
+      "/img/muatan2.png",
+      "/img/muatan3.png",
+      "/img/muatan4.png",
     ],
     description:
       "tolong kirim muatan dengan hati hati, jangan sampai rusak dan hancur, terimakasih",
@@ -80,7 +80,7 @@ const RingkasanPesanan = () => {
           </div>
           <div className="flex flex-1 items-center gap-4">
             {/* Armada Image */}
-            <div className="relative size-[68px] rounded-xl border border-neutral-400 bg-white">
+            <div className="relative size-[68px] rounded-xl border border-neutral-400 bg-neutral-50">
               <ImageComponent
                 src={orderData.armada.image}
                 width={68}
@@ -88,8 +88,12 @@ const RingkasanPesanan = () => {
                 alt="Armada"
                 className="rounded-xl object-cover"
               />
-              <button className="absolute right-2 top-2 flex size-5 items-center justify-center rounded-full bg-white">
-                <IconComponent src="/icons/expand.svg" width={12} height={12} />
+              <button className="absolute right-2 top-2 flex size-5 items-center justify-center rounded-3xl bg-neutral-50">
+                <IconComponent
+                  src="/icons/fullscreen12.svg"
+                  width={12}
+                  height={12}
+                />
               </button>
             </div>
 
@@ -215,9 +219,9 @@ const RingkasanPesanan = () => {
                       alt={`Foto muatan ${index + 1}`}
                       className="size-full object-cover"
                     />
-                    <button className="absolute right-2 top-2 flex size-5 items-center justify-center rounded-full bg-white">
+                    <button className="absolute right-2 top-2 flex size-5 items-center justify-center rounded-3xl bg-neutral-50">
                       <IconComponent
-                        src="/icons/expand.svg"
+                        src="/icons/fullscreen12.svg"
                         width={12}
                         height={12}
                       />
@@ -251,7 +255,7 @@ const RingkasanPesanan = () => {
               {orderData.deliveryOrders.map((order, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-center rounded-2xl border border-primary-700 bg-white px-3 py-1.5"
+                  className="flex items-center justify-center rounded-2xl border border-primary-700 bg-neutral-50 px-3 py-1.5"
                 >
                   <span className="text-[10px] font-semibold leading-[13px] text-primary-700">
                     {order}
@@ -263,12 +267,12 @@ const RingkasanPesanan = () => {
         </div>
 
         {/* Collapse Button */}
-        <div className="flex w-full items-center justify-center gap-2 pt-4">
+        <div className="flex w-full items-center justify-center gap-2">
           <IconComponent
-            src="/icons/chevron-up.svg"
+            src="/icons/chevron-up20.svg"
             width={20}
             height={20}
-            className="text-primary-700"
+            className="icon-blue"
           />
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
