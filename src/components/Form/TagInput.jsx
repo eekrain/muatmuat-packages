@@ -1,8 +1,8 @@
 import React, { useCallback, useRef, useState } from "react";
 
-import { X } from "lucide-react";
-
 import { cn } from "@/lib/utils";
+
+import { TagBubble } from "../Badge/TagBubble";
 
 /**
  * @typedef {Object} TagInputProps
@@ -161,31 +161,13 @@ export const TagInput = ({
         >
           <div className="flex min-h-[28px] flex-1 flex-row flex-wrap content-start items-center gap-2">
             {currentTags.map((tag, index) => (
-              <div
+              <TagBubble
                 key={`${tag}-${index}`}
-                className={cn(
-                  "group box-border flex h-7 max-w-[204px] flex-row items-center gap-1 rounded-2xl border border-blue-600 bg-white px-3 py-1.5 transition-colors duration-150 hover:bg-blue-50",
-                  appearance.tagClassName
-                )}
-              >
-                <span className="flex-1 truncate font-['Avenir_Next_LT_Pro',_system-ui,_-apple-system,_sans-serif] text-xs font-semibold leading-[130%] text-blue-600">
-                  {tag}
-                </span>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeTag(index);
-                  }}
-                  disabled={disabled}
-                  className={cn(
-                    "flex h-3.5 w-3.5 items-center justify-center rounded-full text-blue-600 transition-colors duration-150 hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-1 focus:ring-blue-600 disabled:cursor-not-allowed"
-                  )}
-                  aria-label={`Remove ${tag} tag`}
-                >
-                  <X size={10} strokeWidth={2.5} />
-                </button>
-              </div>
+                tag={tag}
+                onRemove={() => removeTag(index)}
+                disabled={disabled}
+                appearance={appearance.tagClassName}
+              />
             ))}
 
             <input
