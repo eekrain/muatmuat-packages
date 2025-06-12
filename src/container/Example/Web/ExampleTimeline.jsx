@@ -2,12 +2,17 @@ import { useState } from "react";
 
 import { TimelineField } from "@/components/Timeline/timeline-field";
 
-import { dataCollapsed, dataMuatBongkar, fakeAddress } from "./mockdata";
+import {
+  dataCollapsed,
+  dataCollapsedWithDate,
+  dataMuatBongkar,
+  fakeAddress,
+} from "./mockdata";
 
 const {
   TimelineContainer,
   TimelineItem,
-  TimelineContentWithButton,
+  TimelineContentWithButtonDate,
   TimelineContentAddress,
 } = require("@/components/Timeline");
 
@@ -72,29 +77,55 @@ function ExampleTimeline() {
           </TimelineContainer>
         </div>
 
-        <div>
-          <h1 className="mb-2 text-xl font-bold">
-            Timeline Bongkar Muat Collapsed
-          </h1>
-          <TimelineContainer>
-            {dataCollapsed.map((item, index) => (
-              <TimelineItem
-                key={index}
-                variant="bullet"
-                totalLength={dataCollapsed.length}
-                index={index}
-                activeIndex={0}
-              >
-                <TimelineContentWithButton
-                  title={item.title}
-                  subtitle={item.subtitle}
-                  onSubtitleClick={() =>
-                    alert(`Tampilkan modal untuk ${item.subtitle}`)
-                  }
-                />
-              </TimelineItem>
-            ))}
-          </TimelineContainer>
+        <div className="grid gap-4">
+          <div className="max-w-[400px]">
+            <h1 className="mb-2 text-xl font-bold">
+              Timeline Bongkar Muat Collapsed
+            </h1>
+            <TimelineContainer>
+              {dataCollapsed.map((item, index) => (
+                <TimelineItem
+                  key={index}
+                  variant="bullet"
+                  totalLength={dataCollapsed.length}
+                  index={index}
+                  activeIndex={0}
+                >
+                  <TimelineContentWithButtonDate
+                    title={item.title}
+                    withButton={item.withButton}
+                    onSubtitleClick={() =>
+                      alert(`Tampilkan modal untuk ${item.subtitle}`)
+                    }
+                  />
+                </TimelineItem>
+              ))}
+            </TimelineContainer>
+          </div>
+
+          <div className="max-w-[400px]">
+            <h1 className="mb-2 text-xl font-bold">Detail Status Driver</h1>
+            <TimelineContainer>
+              {dataCollapsedWithDate.map((item, index) => (
+                <TimelineItem
+                  key={index}
+                  variant="bullet-driver-status"
+                  totalLength={dataCollapsedWithDate.length}
+                  index={index}
+                  activeIndex={0}
+                >
+                  <TimelineContentWithButtonDate
+                    title={item.title}
+                    withButton={item.withButton}
+                    withDate={item.withDate}
+                    onSubtitleClick={() =>
+                      alert(`Tampilkan modal untuk ${item.subtitle}`)
+                    }
+                  />
+                </TimelineItem>
+              ))}
+            </TimelineContainer>
+          </div>
         </div>
       </div>
 
