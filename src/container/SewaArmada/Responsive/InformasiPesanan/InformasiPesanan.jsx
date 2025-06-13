@@ -20,41 +20,47 @@ import {
 } from "@/store/forms/sewaArmadaStore";
 
 const InformasiPesanan = () => {
-  const bankOptions = [
+  const paymentMethods = [
     {
-      id: "bca",
-      name: "BCA Virtual Account",
-      icon: "/icons/bca24.svg",
-    },
-    {
-      id: "mandiri",
-      name: "Mandiri Virtual Account",
-      icon: "/icons/bca24.svg",
-    },
-    {
-      id: "bni",
-      name: "BNI Virtual Account",
-      icon: "/icons/bca24.svg",
-    },
-    {
-      id: "bri",
-      name: "BRI Virtual Account",
-      icon: "/icons/bca24.svg",
-    },
-    {
-      id: "bsi",
-      name: "BSI Virtual Account",
-      icon: "/icons/bca24.svg",
-    },
-    {
-      id: "permata",
-      name: "Permata Virtual Account",
-      icon: "/icons/bca24.svg",
-    },
-    {
-      id: "cimb",
-      name: "CIMB Virtual Account",
-      icon: "/icons/bca24.svg",
+      title: "Transfer Virtual Account",
+      icon: "/icons/transfer24.svg",
+      options: [
+        {
+          id: "bca",
+          name: "BCA Virtual Account",
+          icon: "/icons/bca24.svg",
+        },
+        {
+          id: "mandiri",
+          name: "Mandiri Virtual Account",
+          icon: "/icons/bca24.svg",
+        },
+        {
+          id: "bni",
+          name: "BNI Virtual Account",
+          icon: "/icons/bca24.svg",
+        },
+        {
+          id: "bri",
+          name: "BRI Virtual Account",
+          icon: "/icons/bca24.svg",
+        },
+        {
+          id: "bsi",
+          name: "BSI Virtual Account",
+          icon: "/icons/bca24.svg",
+        },
+        {
+          id: "permata",
+          name: "Permata Virtual Account",
+          icon: "/icons/bca24.svg",
+        },
+        {
+          id: "cimb",
+          name: "CIMB Virtual Account",
+          icon: "/icons/bca24.svg",
+        },
+      ],
     },
   ];
   const navigation = useResponsiveNavigation();
@@ -86,7 +92,9 @@ const InformasiPesanan = () => {
   };
 
   const selectedOpsiPembayaran = opsiPembayaran
-    ? bankOptions.find((item) => item.id === opsiPembayaran.id)
+    ? paymentMethods
+        .flatMap((method) => method.options || [])
+        .find((item) => item.id === opsiPembayaran.id)
     : null;
 
   return (
@@ -290,7 +298,7 @@ const InformasiPesanan = () => {
             <button
               className="text-[14px] font-semibold text-primary-700"
               onClick={() =>
-                navigation.push("/OpsiPembayaran", { bankOptions })
+                navigation.push("/OpsiPembayaran", { paymentMethods })
               }
             >
               Pilih
