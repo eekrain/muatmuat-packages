@@ -65,6 +65,7 @@ export const SummaryPanel = () => {
   const bantuanTambahan = useSewaArmadaStore(
     (state) => state.formValues.bantuanTambahan
   );
+  const isCompany = useSewaArmadaStore((state) => state.formValues.isCompany);
   const opsiPembayaran = useSewaArmadaStore(
     (state) => state.formValues.opsiPembayaran
   );
@@ -111,6 +112,27 @@ export const SummaryPanel = () => {
         .find((item) => item.id === opsiPembayaran.id)
     : null;
 
+  const detailPesanan = [
+    {
+      title: "Biaya Lainnya",
+      items: [
+        {
+          label: "Admin Layanan",
+          cost: 10000,
+        },
+        // Conditional item using spread operator
+        ...(isCompany
+          ? [
+              {
+                label: "Pajak",
+                cost: 21300,
+              },
+            ]
+          : []),
+      ],
+    },
+  ];
+
   return (
     <>
       <Card className="shadow-muat flex w-[338px] flex-col gap-6 rounded-xl border-none bg-white">
@@ -119,7 +141,7 @@ export const SummaryPanel = () => {
             Ringkasan Transaksi
           </h3>
 
-          <div className="max-h-[263px] overflow-y-auto">
+          <div className="flex max-h-[263px] flex-col gap-y-6 overflow-y-auto">
             <div className="flex h-10 items-center gap-2 rounded-md border border-primary-700 bg-primary-50 px-3">
               <div className="relative h-6 w-6">
                 <Image
@@ -139,6 +161,34 @@ export const SummaryPanel = () => {
                 className="ml-auto"
               />
             </div>
+            {/* Nanti ganti dengan kondisi kalo sdh ada detail pesanan */}
+            {true ? (
+              <>
+                <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
+                  Detail Pesanan
+                </span>
+                {detailPesanan.map(({ title, items }, key) => (
+                  <div className="flex flex-col gap-y-3" key={key}>
+                    <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
+                      {title}
+                    </span>
+                    {items.map(({ label, cost }, key) => (
+                      <div
+                        className="flex items-center justify-between"
+                        key={key}
+                      >
+                        <span className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                          {label}
+                        </span>
+                        <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                          {cost}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </>
+            ) : null}
           </div>
         </div>
 

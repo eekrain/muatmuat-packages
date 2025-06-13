@@ -8,6 +8,7 @@ import { BannerCarousel } from "../../../components/BannerCarousel/BannerCarouse
 import { FirstTimer } from "./FirstTimer/FirstTimer";
 import {
   AsuransiBarang,
+  BadanUsahaPemesan,
   FotoMuatan,
   InformasiMuatan,
   JenisArmada,
@@ -18,7 +19,6 @@ import {
   NoDeliveryOrder,
   ServiceTypeSelect,
   TipeMuatan,
-  TipePemesan,
   WaktuMuat,
 } from "./Form";
 import DeskripsiMuatan from "./Form/DeskripsiMuatan";
@@ -82,7 +82,7 @@ export default function SewaArmadaWeb() {
                 <AsuransiBarang />
                 <LayananTambahan />
                 <NoDeliveryOrder />
-                <TipePemesan />
+                <BadanUsahaPemesan />
               </div>
             </Card>
 

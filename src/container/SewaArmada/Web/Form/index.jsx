@@ -1,4 +1,5 @@
 export * from "./AsuransiBarang";
+export * from "./BadanUsahaPemesan";
 export * from "./DeskripsiMuatan";
 export * from "./FotoMuatan";
 export * from "./InformasiMuatan";
@@ -10,5 +11,4 @@ export * from "./LokasiMuat";
 export * from "./NoDeliveryOrder";
 export * from "./ServiceTypeSelect";
 export * from "./TipeMuatan";
-export * from "./TipePemesan";
 export * from "./WaktuMuat";

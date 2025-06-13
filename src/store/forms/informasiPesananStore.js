@@ -110,6 +110,8 @@ export const useInformasiPesananStore = create((set, get) => ({
         newErrors.npwp = "Nomor NPWP wajib diisi";
       } else if (badanUsahaData.npwp.trim().length < 15) {
         newErrors.npwp = "Nomor NPWP minimal 15 digit";
+      } else if (badanUsahaData.npwp.trim().length > 15) {
+        newErrors.npwp = "Nomor NPWP maksimal 16 digit";
       }
     }
 
