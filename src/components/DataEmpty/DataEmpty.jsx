@@ -26,7 +26,7 @@ const DataEmpty = ({
       </div>
       <Button
         iconLeft={iconPlus ? <Plus size={16} /> : <Search size={16} />}
-        Class="!font-semibold !gap-2 !items-center !h-8"
+        className="!h-8 !items-center !gap-2 !font-semibold"
         onClick={onButtonClick}
       >
         <span className="pt-0.5">{buttonText}</span>

@@ -8,27 +8,27 @@ import menuZus from "@/store/zustand/menu";
  *
  * @param {Object} props - The component props.
  * @param {Array} props.menu - An array of menu items, each containing an id, name, and optional notif.
- * @param {Function} props.onclick - A callback function to be called when a tab is clicked.
+ * @param {Function} props.onClick - A callback function to be called when a tab is clicked.
  *
  * @returns {JSX.Element} The rendered TabMenu component.
  */
-const TabMenu = ({ menu, onclick, type }) => {
+const TabMenu = ({ menu, onClick, type }) => {
   const { setMenuZ, menuZ } = menuZus();
   const tabRef = useRef(null);
 
   useEffect(() => {
     if (menu.length > 0 && !menuZ?.value) {
       setMenuZ({ id: menu[0].id, value: menu[0].name });
-      onclick();
+      onClick();
     }
-  }, [menu, menuZ?.value, setMenuZ, onclick]);
+  }, [menu, menuZ?.value, setMenuZ, onClick]);
 
   const handleSelected = (e, key) => {
     e.preventDefault();
     setMenuZ({ id: key.id, value: key.name });
     // tabRef.current.scrollIntoView({ behavior: "smooth" });
     // router.push(`?tab=${key.id}`);
-    onclick();
+    onClick();
   };
 
   const { isMobile } = useDevice();

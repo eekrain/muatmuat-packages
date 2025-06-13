@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import useDevice from "@/hooks/use-device";
 import { cn } from "@/lib/utils";
 
+import IconComponent from "../IconComponent/IconComponent";
 import { Modal, ModalContent } from "../Modal/Modal";
 
 const LightboxContext = createContext(null);
@@ -87,13 +88,13 @@ export const LightboxProvider = ({ title, images = [], image, children }) => {
             {memoizedImages.length > 1 && (
               <>
                 <button
-                  className="absolute -left-3 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-lg"
+                  className="absolute -left-3 top-1/2 hidden size-8 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-lg md:flex"
                   onClick={prev}
                 >
                   <ChevronLeft className="size-6" />
                 </button>
                 <button
-                  className="absolute -right-3 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-lg"
+                  className="absolute -right-3 top-1/2 hidden size-8 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-lg md:flex"
                   onClick={next}
                 >
                   <ChevronRight className="size-6" />
@@ -104,7 +105,7 @@ export const LightboxProvider = ({ title, images = [], image, children }) => {
 
           {/* Previews of images */}
           {memoizedImages.length > 1 && (
-            <div className="mt-3 flex flex-row gap-2">
+            <div className="mt-3 hidden flex-row gap-2 md:flex">
               {memoizedImages.map((image, index) => (
                 <img
                   key={image}
@@ -143,15 +144,30 @@ const useLightbox = () => {
 /**
  * @param {LightboxTriggerProps} props
  */
-export default function LightboxTrigger({ image, index = 0, className, alt }) {
+export default function LightboxTrigger({
+  image,
+  index = 0,
+  className,
+  alt,
+  withZoom = true,
+}) {
   const { openLightbox } = useLightbox();
 
   return (
-    <img
-      className={cn("cursor-pointer", className)}
-      onClick={() => openLightbox(index)}
-      src={image}
-      alt={alt}
-    />
+    <div className="relative block w-fit">
+      <img className={className} src={image} alt={alt} />
+
+      <div
+        onClick={() => openLightbox(index)}
+        className="absolute right-1 top-1 flex size-5 cursor-pointer items-center justify-center rounded-full bg-white"
+      >
+        <IconComponent
+          src="/icons/zoom12.svg"
+          width={12}
+          height={12}
+          className="text-neutral-500"
+        />
+      </div>
+    </div>
   );
 }

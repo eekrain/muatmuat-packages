@@ -3,6 +3,8 @@ import React from "react";
 import { create } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 
+import { zustandDevtools } from "./utils";
+
 /**
  * @typedef {Object} StackEntry
  * @property {string} id - Unique ID for the stack item.
@@ -24,37 +26,46 @@ import { useShallow } from "zustand/react/shallow";
  */
 
 /** @type {import('zustand').UseBoundStore<import('zustand').StoreApi<NavigationState>>} */
-export const useNavigationStore = create((set) => ({
-  stack: [{ path: "/", params: {} }],
-  push: (path, params = {}) =>
-    set((state) => ({
-      stack: [...state.stack, { path, params }],
-    })),
-  pop: () =>
-    set((state) => {
-      if (state.stack.length > 1) {
-        return { stack: state.stack.slice(0, -1) };
-      }
-      return state;
-    }),
-  popTo: (path) =>
-    set((state) => {
-      const targetIndex = state.stack.findIndex((entry) => entry.path === path);
-      if (targetIndex === -1) return state; // Path not found, keep state unchanged
-      return { stack: state.stack.slice(0, targetIndex + 1) };
-    }),
-  popToTop: () =>
-    set((state) => ({
-      stack: state.stack.slice(0, 1),
-    })),
-  replace: (path, params = {}) =>
-    set((state) => {
-      return { stack: [{ path, params }] };
-    }),
+export const useNavigationStore = create(
+  zustandDevtools(
+    (set) => ({
+      stack: [{ path: "/", params: {} }],
+      push: (path, params = {}) =>
+        set((state) => ({
+          stack: [...state.stack, { path, params }],
+        })),
+      pop: () =>
+        set((state) => {
+          if (state.stack.length > 1) {
+            return { stack: state.stack.slice(0, -1) };
+          }
+          return state;
+        }),
+      popTo: (path) =>
+        set((state) => {
+          const targetIndex = state.stack.findIndex(
+            (entry) => entry.path === path
+          );
+          if (targetIndex === -1) return state; // Path not found, keep state unchanged
+          return { stack: state.stack.slice(0, targetIndex + 1) };
+        }),
+      popToTop: () =>
+        set((state) => ({
+          stack: state.stack.slice(0, 1),
+        })),
+      replace: (path, params = {}) =>
+        set((state) => {
+          return { stack: [{ path, params }] };
+        }),
 
-  searchValue: "",
-  setSearchValue: (value) => set({ searchValue: value }),
-}));
+      searchValue: "",
+      setSearchValue: (value) => set({ searchValue: value }),
+    }),
+    {
+      name: "responsive-navigation",
+    }
+  )
+);
 
 /**
  * Hook to access stack navigation actions (push, pop, replace, popTo, popToTop).
@@ -110,8 +121,16 @@ export const ResponsiveRoute = ({ path, component }) => {
     useShallow((state) => state.stack.slice(-1))
   );
   const current = stack[stack.length - 1];
+  console.log("🚀 ~ ResponsiveRoute ~ path:", {
+    path,
+    currentPath: current.path,
+  });
+  console.log(
+    "🚀 ~ ResponsiveRoute ~ path !== current.path:",
+    path !== current.path
+  );
 
-  if (path !== current.path) return null;
+  if (path === current.path) return component;
 
-  return component;
+  return null;
 };

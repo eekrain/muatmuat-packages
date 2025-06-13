@@ -131,7 +131,11 @@ export const Modal = ({
 export const ModalTrigger = ({ children }) => {
   const { open } = useModal();
 
-  return <div onClick={open}>{children}</div>;
+  return (
+    <div className="cursor-pointer" onClick={open}>
+      {children}
+    </div>
+  );
 };
 
 /**

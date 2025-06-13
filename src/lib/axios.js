@@ -3,7 +3,12 @@ import xior from "xior";
 import { useAuthStore } from "@/store/auth/authStore";
 import { useUserStore } from "@/store/auth/userStore";
 
-const LIST_PUBLIC_ROUTES = ["/sewaarmada", "/example", "/example/map"];
+const LIST_PUBLIC_ROUTES = [
+  "/sewaarmada",
+  "/example",
+  "/example/map",
+  "/example/pilihprovinsi",
+];
 
 export const createAxios = (baseURL) => {
   const fetcher = xior.create({
