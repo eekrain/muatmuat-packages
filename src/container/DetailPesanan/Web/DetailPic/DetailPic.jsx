@@ -135,26 +135,30 @@ const DetailPIC = () => {
             src="/icons/chevron-down.svg"
             width={24}
             height={24}
-            className={`transition-transform ${isExpanded ? "rotate-180" : ""}`}
+            className={`transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`}
           />
         </button>
       </div>
 
-      {/* Main Content Area */}
+      {/* Main Content Area - FIXED VERSION */}
       <div
-        className={`flex flex-col gap-y-6 transition-all duration-300 ${isExpanded ? "max-h-full pt-6 opacity-100" : "max-h-0 opacity-0"} `}
+        className={`w-full overflow-hidden transition-all duration-300 ease-in-out ${
+          isExpanded ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
+        }`}
       >
-        {/* Detail PIC Lokasi Muat Section */}
-        <PICLocationCard
-          locations={locationData.muat}
-          title="Detail PIC Lokasi Muat"
-        />
+        <div className="flex flex-col gap-y-6 pt-6">
+          {/* Detail PIC Lokasi Muat Section */}
+          <PICLocationCard
+            locations={locationData.muat}
+            title="Detail PIC Lokasi Muat"
+          />
 
-        {/* Detail PIC Lokasi Bongkar Section */}
-        <PICLocationCard
-          locations={locationData.bongkar}
-          title="Detail PIC Lokasi Bongkar"
-        />
+          {/* Detail PIC Lokasi Bongkar Section */}
+          <PICLocationCard
+            locations={locationData.bongkar}
+            title="Detail PIC Lokasi Bongkar"
+          />
+        </div>
       </div>
     </div>
   );

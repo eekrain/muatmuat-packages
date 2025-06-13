@@ -1,5 +1,5 @@
 import { FormContainer, FormLabel } from "@/components/Form/Form";
-import Input from "@/components/Form/Input";
+import { TagInput } from "@/components/Form/TagInput";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -13,11 +13,10 @@ export const NoDeliveryOrder = () => {
     <FormContainer>
       <FormLabel>No. Delivery Order (DO)</FormLabel>
       <div className="flex-1">
-        <Input
-          type="text"
+        <TagInput
+          tags={noDO}
+          onTagsChange={(value) => setField("noDO", value)}
           placeholder="Masukkan No. Delivery Order (DO)"
-          onChange={(e) => setField("noDO", e.target.value)}
-          value={noDO}
         />
       </div>
     </FormContainer>
