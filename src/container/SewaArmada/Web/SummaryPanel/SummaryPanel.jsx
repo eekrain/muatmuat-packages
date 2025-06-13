@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import Button from "@/components/Button/Button";
@@ -58,6 +59,8 @@ export const SummaryPanel = () => {
     },
   ];
 
+  const router = useRouter();
+
   const jenisTruk = useSewaArmadaStore((state) => state.formValues.jenisTruk);
   const bantuanTambahan = useSewaArmadaStore(
     (state) => state.formValues.bantuanTambahan
@@ -99,6 +102,7 @@ export const SummaryPanel = () => {
   const handleOrderFleet = () => {
     alert("Hore Berhasil Sewa Armada :)");
     setIsModalConfirmationOpen(false);
+    router.push("/daftarpesanan/detailpesanan/1");
   };
 
   const selectedOpsiPembayaran = opsiPembayaran
