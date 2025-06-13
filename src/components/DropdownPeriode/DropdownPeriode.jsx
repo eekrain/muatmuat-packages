@@ -2,15 +2,15 @@ import { useEffect, useRef, useState } from "react";
 
 import { Plus } from "lucide-react";
 import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 
-import { useLanguage } from "@/context/LanguageContext";
-import { formatDateInput } from "@/libs/DateFormat";
+import { useTranslation } from "@/hooks/use-translation";
+import { formatDateInput } from "@/lib/utils/dateFormat";
 
 import Button from "../Button/Button";
 import IconComponent from "../IconComponent/IconComponent";
 import Input from "../Input/Input";
-import ModalComponent from "../Modals/ModalComponent";
-import style from "./DropdownPeriode.module.scss";
+import { Modal, ModalContent, ModalHeader } from "../Modal/Modal";
 
 const DropdownPeriode = ({
   options = [],
@@ -18,7 +18,7 @@ const DropdownPeriode = ({
   onSelect,
   disable = false,
 }) => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
   const [selected, setSelected] = useState(
     options[0] || { name: "Select an option", value: "" }
   );
@@ -67,104 +67,7 @@ const DropdownPeriode = ({
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
   return (
-    <div className={`${style.main} text-neutral-900`} ref={dropdownRef}>
-      <ModalComponent
-        setClose={() => {
-          setInputDateCustom((a) => ({ ...a, status: "" }));
-          setIsPeriode(false);
-          resetValue();
-        }}
-        isOpen={isPeriode}
-        full
-      >
-        <div className="flex flex-col items-center gap-6 px-4 py-7">
-          <span className="bold-base">
-            {t("AppMuatpartsAnalisaProdukPilihPeriode")}
-          </span>
-          <div className="relative flex items-center gap-2">
-            {/* 24. THP 2 - MOD001 - MP - 035 - QC Plan - Web - MuatParts - General - Daftar Pesanan  LB - 0024 LB - 0026 */}
-            <Input
-              value={inputDateCustom?.start_date}
-              focusEvent={() =>
-                setInputDateCustom((a) => ({ ...a, status: "start_date" }))
-              }
-              classInput={"w-full"}
-              status={validate?.start_date && "error"}
-              classname={"!w-[136px] max-w-none"}
-              placeholder={t("AppMuatpartsAnalisaProdukPeriodeAwal")}
-              icon={{ right: <IconComponent src={"/icons/calendar.svg"} /> }}
-              supportiveText={{
-                title: validate?.start_date && "Periode awal harus diisi",
-                desc: "",
-              }}
-            />
-            <span className="semi-xs text-neutral-600">s/d</span>
-            <Input
-              value={inputDateCustom?.end_date}
-              supportiveText={{
-                title: validate?.end_date && "Periode akhir harus diisi",
-                desc: "",
-              }}
-              status={validate?.end_date && "error"}
-              focusEvent={() =>
-                setInputDateCustom((a) => ({ ...a, status: "end_date" }))
-              }
-              classInput={"w-full"}
-              classname={"!w-[136px] max-w-none"}
-              placeholder={t("AppMuatpartsAnalisaProdukPeriodeAkhir")}
-              icon={{ right: <IconComponent src={"/icons/calendar.svg"} /> }}
-            />
-            {inputDateCustom?.status && (
-              <Calendar
-                className={"absolute top-2 rounded-md"}
-                onChange={(date) => {
-                  setValidate((a) => ({
-                    ...a,
-                    [inputDateCustom.status]: false,
-                  }));
-                  setInputDateCustom((a) => ({
-                    ...a,
-                    [a.status]: formatDateInput(
-                      date,
-                      ["day", "month", "year"],
-                      false
-                    ),
-                    status: "",
-                  }));
-                }}
-              />
-            )}
-          </div>
-          <Button
-            Class="!h-8 w-[112px]"
-            onClick={() => {
-              let next = true;
-              if (inputDateCustom.start_date == "") {
-                setValidate((a) => ({ ...a, start_date: true }));
-                next = false;
-              }
-              if (inputDateCustom.end_date == "") {
-                setValidate((a) => ({ ...a, end_date: true }));
-                next = false;
-              }
-              if (!next) return;
-              handleSelect(
-                {
-                  name: `${inputDateCustom.start_date} - ${inputDateCustom.end_date}`,
-                  value: `${inputDateCustom.start_date} - ${inputDateCustom.end_date}`,
-                  start_date: inputDateCustom.start_date,
-                  end_date: inputDateCustom.end_date,
-                  range: true,
-                },
-                true
-              );
-              setIsPeriode(false);
-            }}
-          >
-            {t("AppMuatpartsAnalisaProdukTerapkan")}
-          </Button>
-        </div>
-      </ModalComponent>
+    <div className={"relative w-[202px] text-neutral-900"} ref={dropdownRef}>
       <button
         disabled={disable}
         className={`flex h-8 w-full items-center justify-between border ${!disable ? "bg-neutral-50 text-neutral-900" : "bg-neutral-200 text-neutral-600"} rounded-lg px-3 py-2 shadow-sm ${isOpen ? "border-primary-700" : "border-neutral-600"}`}
@@ -173,11 +76,11 @@ const DropdownPeriode = ({
         <span className="medium-xs line-clamp-1 text-left">
           {selected.name.replace("(Default)", "")}
         </span>
-        <IconComponent src={"/icons/calendar.svg"} />
+        <IconComponent src={"/icons/calendar16.svg"} />
       </button>
 
       {isOpen && (
-        <ul className="absolute mt-1 w-full rounded-lg border border-gray-300 bg-white shadow-lg">
+        <ul className="absolute z-20 mt-1 w-full rounded-lg border border-gray-300 bg-white shadow-lg">
           {options.map((option) => (
             <li
               key={option.value}
@@ -228,6 +131,107 @@ const DropdownPeriode = ({
           )}
         </ul>
       )}
+
+      <Modal open={isPeriode} onOpenChange={setIsPeriode} closeOnOutsideClick>
+        <ModalContent>
+          <ModalHeader size="small" />
+          <div className="flex w-modal-small flex-col items-center gap-6 px-4 py-7">
+            <h3 className="bold-base text-center">
+              {t("AppMuatpartsAnalisaProdukPilihPeriode")}
+            </h3>
+
+            <div className="relative flex items-center gap-2">
+              {/* 24. THP 2 - MOD001 - MP - 035 - QC Plan - Web - MuatParts - General - Daftar Pesanan  LB - 0024 LB - 0026 */}
+              <Input
+                value={inputDateCustom?.start_date}
+                onFocus={() =>
+                  setInputDateCustom((a) => ({ ...a, status: "start_date" }))
+                }
+                onChange={() => {}}
+                classInput={"w-full"}
+                status={validate?.start_date && "error"}
+                className={"!w-[136px] max-w-none"}
+                placeholder={t("AppMuatpartsAnalisaProdukPeriodeAwal")}
+                icon={{
+                  right: <IconComponent src={"/icons/calendar16.svg"} />,
+                }}
+                supportiveText={{
+                  title: validate?.start_date && "Periode awal harus diisi",
+                  desc: "",
+                }}
+              />
+              <span className="semi-xs text-neutral-600">s/d</span>
+              <Input
+                value={inputDateCustom?.end_date}
+                supportiveText={{
+                  title: validate?.end_date && "Periode akhir harus diisi",
+                  desc: "",
+                }}
+                status={validate?.end_date && "error"}
+                onFocus={() =>
+                  setInputDateCustom((a) => ({ ...a, status: "end_date" }))
+                }
+                onChange={() => {}}
+                classInput={"w-full"}
+                className={"!w-[136px] max-w-none"}
+                placeholder={t("AppMuatpartsAnalisaProdukPeriodeAkhir")}
+                icon={{
+                  right: <IconComponent src={"/icons/calendar16.svg"} />,
+                }}
+              />
+              {inputDateCustom?.status && (
+                <Calendar
+                  className={"absolute top-2 rounded-md"}
+                  onChange={(date) => {
+                    setValidate((a) => ({
+                      ...a,
+                      [inputDateCustom.status]: false,
+                    }));
+                    setInputDateCustom((a) => ({
+                      ...a,
+                      [a.status]: formatDateInput(
+                        date,
+                        ["day", "month", "year"],
+                        false
+                      ),
+                      status: "",
+                    }));
+                  }}
+                />
+              )}
+            </div>
+
+            <Button
+              className="!h-8 w-[112px]"
+              onClick={() => {
+                let next = true;
+                if (inputDateCustom.start_date == "") {
+                  setValidate((a) => ({ ...a, start_date: true }));
+                  next = false;
+                }
+                if (inputDateCustom.end_date == "") {
+                  setValidate((a) => ({ ...a, end_date: true }));
+                  next = false;
+                }
+                if (!next) return;
+                handleSelect(
+                  {
+                    name: `${inputDateCustom.start_date} - ${inputDateCustom.end_date}`,
+                    value: `${inputDateCustom.start_date} - ${inputDateCustom.end_date}`,
+                    start_date: inputDateCustom.start_date,
+                    end_date: inputDateCustom.end_date,
+                    range: true,
+                  },
+                  true
+                );
+                setIsPeriode(false);
+              }}
+            >
+              {t("AppMuatpartsAnalisaProdukTerapkan")}
+            </Button>
+          </div>
+        </ModalContent>
+      </Modal>
     </div>
   );
 };

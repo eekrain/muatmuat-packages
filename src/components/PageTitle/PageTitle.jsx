@@ -1,4 +1,4 @@
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 const PageTitle = ({ children }) => {
   const router = useRouter();
@@ -6,7 +6,7 @@ const PageTitle = ({ children }) => {
   return (
     <div className="mb-4 flex items-center gap-3">
       <img
-        src="/icons/arrowbackblue.svg"
+        src="/icons/arrow-left24.svg"
         width={24}
         height={24}
         className="cursor-pointer"

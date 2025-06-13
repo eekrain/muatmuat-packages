@@ -9,6 +9,9 @@ const nextConfig = {
       {
         hostname: "azlogistik.s3.ap-southeast-3.amazonaws.com",
       },
+      {
+        hostname: "picsum.photos",
+      },
     ],
   },
   reactStrictMode: false,

@@ -132,10 +132,7 @@ export const ModalTrigger = ({ children }) => {
   const { open } = useModal();
 
   return (
-    <div
-      onClick={open}
-      className="rounded bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-    >
+    <div className="cursor-pointer" onClick={open}>
       {children}
     </div>
   );

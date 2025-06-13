@@ -34,6 +34,7 @@ export default function Slider({ slides, onComplete, onSlideChange }) {
 
   useEffect(() => {
     if (onSlideChange) onSlideChange(currentSlide);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSlide]);
 
   // Call onComplete when the last slide is viewed
@@ -137,6 +138,8 @@ export default function Slider({ slides, onComplete, onSlideChange }) {
     setTouchEnd(null);
     setIsDragging(false);
     setDragOffset(0);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [touchStart, touchEnd, currentSlide, slides.length]);
 
   // Touch event handlers

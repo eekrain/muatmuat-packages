@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
-import { ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-import ImageComponent from "@/components/ImageComponent/ImageComponent";
+import IconComponent from "../IconComponent/IconComponent";
 
 const SortingDropdown = ({ onChange, options, value, disabled = false }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -62,7 +62,7 @@ const SortingDropdown = ({ onChange, options, value, disabled = false }) => {
         aria-haspopup="listbox"
       >
         <div className="flex items-center gap-2">
-          <ImageComponent
+          <IconComponent
             src={
               isOpen || wasSelected
                 ? "/icons/sort-active.svg"
@@ -74,19 +74,18 @@ const SortingDropdown = ({ onChange, options, value, disabled = false }) => {
           />
           <span className="text-sm font-medium">{selectedOption.label}</span>
         </div>
-        {isOpen || wasSelected ? (
-          <ImageComponent
-            src="/icons/chevron-active.svg"
-            width={16}
-            height={16}
-            alt="chevron"
-          />
-        ) : (
-          <ChevronDown
-            size={16}
-            className={disabled ? "text-[#7b7b7b]" : "text-neutral-700"}
-          />
-        )}
+        <IconComponent
+          src="/icons/chevron-down24.svg"
+          width={16}
+          height={16}
+          alt="chevron"
+          className={cn(
+            "text-neutral-700 transition-transform duration-200",
+            isOpen && "rotate-180",
+            isOpen || wasSelected ? "text-primary-700" : "",
+            disabled && "text-neutral-600"
+          )}
+        />
 
         {/* LB 006 Ulasan Buyer */}
       </button>

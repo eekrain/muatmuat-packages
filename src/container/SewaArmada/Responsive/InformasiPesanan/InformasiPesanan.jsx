@@ -220,7 +220,7 @@ const InformasiPesanan = () => {
                 src="/icons/info.svg"
                 width={16}
                 height={16}
-                classname="icon-gray"
+                className="icon-gray"
               />
             </div>
             <button
@@ -271,7 +271,7 @@ const InformasiPesanan = () => {
                   placeholder="Masukkan Nama Badan Usaha/Perusahaan"
                   value={companyName}
                   onChange={(e) => setField(e.target.name, e.target.value)}
-                  classname="w-full"
+                  className="w-full"
                   status={formErrors.companyName ? "error" : null}
                   supportiveText={{ title: formErrors?.companyName ?? "" }}
                 />
@@ -288,7 +288,7 @@ const InformasiPesanan = () => {
                   placeholder="Masukkan Nomor NPWP Perusahaan"
                   value={companyNpwp}
                   onChange={(e) => setField(e.target.name, e.target.value)}
-                  classname="w-full"
+                  className="w-full"
                   status={formErrors.companyNpwp ? "error" : null}
                   supportiveText={{ title: formErrors?.companyNpwp ?? "" }}
                 />

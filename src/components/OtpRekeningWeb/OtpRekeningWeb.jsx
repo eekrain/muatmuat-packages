@@ -17,7 +17,7 @@ const OtpRekeningWeb = ({ notification, onResendCode }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="relative mt-[-80px] flex min-h-screen bg-primary-700">
+    <div className="relative flex min-h-screen bg-primary-700">
       {/* Left meteor */}
       <div className="absolute left-0 top-0">
         <ImageComponent
@@ -91,7 +91,7 @@ const OtpRekeningWeb = ({ notification, onResendCode }) => {
               } `}
             >
               <IconComponent
-                classname={
+                className={
                   notification.status === "error" ? styles.icon_error : ""
                 }
                 src={

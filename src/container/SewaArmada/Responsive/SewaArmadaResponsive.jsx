@@ -13,6 +13,7 @@ import { FormLokasiBongkarMuat } from "./FormLokasiBongkarMuat";
 import { SewaArmadaHome } from "./Home";
 import InformasiMuatanScreen from "./InformasiMuatan/InformasiMuatanScreen";
 import InformasiPesanan from "./InformasiPesanan/InformasiPesanan";
+import { JenisCarrierScreen } from "./JenisCarrier/JenisCarrierScree";
 import LayananTambahan from "./LayananTambahan/LayananTambahan";
 import OpsiPembayaran from "./OpsiPembayaran/OpsiPembayaran";
 import OpsiPengiriman from "./OpsiPengiriman/OpsiPengiriman";
@@ -23,7 +24,7 @@ import { PinPointMap } from "./PinPointMap";
 const SewaArmadaResponsive = () => {
   // const navigation = useResponsiveNavigation();
   // useEffect(() => {
-  //   navigation.replace("/PencarianLokasi");
+  //   navigation.replace("/JenisCarrier");
   // }, []);
   const { setOrderType } = useSewaArmadaActions();
 
@@ -71,6 +72,11 @@ const SewaArmadaResponsive = () => {
         component={<InformasiPesanan />}
       />
       <ResponsiveRoute path="/OpsiPembayaran" component={<OpsiPembayaran />} />
+
+      <ResponsiveRoute
+        path="/JenisCarrier"
+        component={<JenisCarrierScreen />}
+      />
       <ResponsiveRoute path="/menu" component={<ResponsiveMenu />} />
     </>
   );

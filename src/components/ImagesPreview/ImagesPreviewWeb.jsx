@@ -2,7 +2,7 @@ import { Fragment, useEffect, useState } from "react";
 
 import ReactPlayer from "react-player";
 
-import { generateThumbnail } from "@/libs/services";
+import { generateThumbnail } from "@/lib/utils/services";
 
 import IconComponent from "../IconComponent/IconComponent";
 import ImageComponent from "../ImageComponent/ImageComponent";
@@ -55,7 +55,7 @@ const ImagesPreviewWeb = ({
           onClick={() => setIsOpen(false)}
         >
           <IconComponent
-            classname={styles.icon_primary}
+            className={styles.icon_primary}
             src="/icons/silang.svg"
             width={12.5}
             height={12.5}

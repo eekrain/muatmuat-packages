@@ -393,6 +393,18 @@ body {
     scrollbar-width: none; /* Firefox */
   }
 }
+.calendar-outline {
+  path {
+    fill: none;
+    stroke: var(--neutral-50);
+  }
+}
+.calendar-fill {
+  path {
+    fill: var(--neutral-50);
+    stroke: #c22716;
+  }
+}
 .react-calendar__tile--now {
   background-color: var(--muat-parts-member-400) !important;
   color: var(--neutral-50);
