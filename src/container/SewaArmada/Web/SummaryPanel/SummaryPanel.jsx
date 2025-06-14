@@ -133,6 +133,11 @@ export const SummaryPanel = () => {
     },
   ];
 
+  // Method: Using flatMap and reduce
+  const totalCost = detailPesanan
+    .flatMap((section) => section.items)
+    .reduce((total, item) => total + item.cost, 0);
+
   return (
     <>
       <Card className="shadow-muat flex w-[338px] flex-col gap-6 rounded-xl border-none bg-white">
@@ -181,7 +186,7 @@ export const SummaryPanel = () => {
                           {label}
                         </span>
                         <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                          {cost}
+                          {`Rp${cost.toLocaleString("id-ID")}`}
                         </span>
                       </div>
                     ))}
@@ -196,7 +201,8 @@ export const SummaryPanel = () => {
           <div className="flex items-center justify-between">
             <span className="text-base font-bold text-black">Total</span>
             <span className="text-base font-bold text-black">
-              Rp{bantuanTambahan ? "105.000" : "0"}
+              Rp
+              {bantuanTambahan ? "105.000" : totalCost.toLocaleString("id-ID")}
             </span>
           </div>
           {jenisTruk &&

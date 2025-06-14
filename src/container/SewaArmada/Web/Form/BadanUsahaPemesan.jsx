@@ -13,6 +13,12 @@ import {
 
 export const BadanUsahaPemesan = () => {
   const isCompany = useSewaArmadaStore((state) => state.formValues.isCompany);
+  const companyName = useSewaArmadaStore(
+    (state) => state.formValues.companyName
+  );
+  const companyNpwp = useSewaArmadaStore(
+    (state) => state.formValues.companyNpwp
+  );
   const { setField } = useSewaArmadaActions();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,6 +42,7 @@ export const BadanUsahaPemesan = () => {
   const handleToggleCheckbox = (checked) => {
     setField("isCompany", checked);
     if (checked) {
+      setFormData({ companyName, companyNpwp });
       setIsModalOpen(true);
     } else {
       setField("companyName", "");
@@ -44,7 +51,6 @@ export const BadanUsahaPemesan = () => {
   };
 
   const handleSimpan = () => {
-    // TODO: Implement save functionality
     const newErrors = {};
     const { companyName, companyNpwp } = formData;
     if (!companyName) {
