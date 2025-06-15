@@ -12,8 +12,6 @@ import {
 } from "@/lib/constants/detailpesanan/detailpesanan.constants";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
-import { AlertStatusPesanan } from "./AlertStatusPesanan";
-
 // Header Component
 const StatusPesananHeader = ({ orderCode, orderStatus }) => {
   const orderStatusLabel = useMemo(() => {
@@ -91,10 +89,10 @@ const StatusPesanan = ({ dataStatusPesanan }) => {
 
   return (
     <>
-      <AlertStatusPesanan
+      {/* <AlertStatusPesanan
         orderStatus={dataStatusPesanan.orderStatus}
         paymentDueDateTime={dataStatusPesanan?.paymentDueDateTime}
-      />
+      /> */}
       <Card className="w-full rounded-xl border-none">
         <CardContent className="px-9 py-6">
           <div className="flex flex-col items-end gap-6">

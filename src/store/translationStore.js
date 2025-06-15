@@ -1,138 +1,114 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-/**
- * @typedef {Object} SelectedLanguage
- * @property {string} languangeid - Unique identifier for the language
- * @property {string} image - URL to the language's flag/image
- * @property {string} locale - Full locale name with region
- * @property {string} url - Short URL code for the language
- * @property {string} code - Language-region code
- * @property {string} name - Display name of the language
- * @property {boolean} default - Whether this is the default language
- */
+import { zustandDevtools } from "@/lib/utils";
 
 /**
  * @typedef {Object} SelectedLanguageState
- * @property {SelectedLanguage|null} selectedLanguage - The currently selected language
+ * @property {string|null} selectedLanguage - The currently selected language code
+ * @property {Object} actions - Actions to modify the selected language
+ * @property {function(string): void} actions.setSelectedLanguage - Function to set the selected language
  */
 
 /**
- * @typedef {Object} SelectedLanguageActions
- * @property {(selected: string) => void} setSelectedLanguage - Set the selected language
- */
-
-/**
- * @typedef {SelectedLanguageState & SelectedLanguageActions} SelectedLanguageStore
- */
-
-/**
- * Creates the selected language store with persistence
- * @type {import('zustand').UseBoundStore<import('zustand').StoreApi<SelectedLanguageStore>>}
+ * Store for managing the selected language
+ * @type {import('zustand').UseStore<SelectedLanguageState>}
  */
 export const useSelectedLanguageStore = create(
-  persist(
-    /** @param {import('zustand').StateCreator<SelectedLanguageStore>} set */
-    (set) => ({
-      selectedLanguage: null,
-      // Actions should be defined at the root level, not inside persisted state,
-      // to avoid issues with rehydration and undefined functions.
-      setSelectedLanguage: (selected) =>
-        set({
-          selectedLanguage: selected,
-        }),
-    }),
+  zustandDevtools(
+    persist(
+      (set) => ({
+        selectedLanguage: null,
+        actions: {
+          setSelectedLanguage: (selected) =>
+            set({
+              selectedLanguage: selected,
+            }),
+        },
+      }),
+      {
+        name: "locale-selection",
+        getStorage: () => localStorage,
+        // Only persist selectedLanguage, not actions
+        partialize: (state) => ({ selectedLanguage: state.selectedLanguage }),
+      }
+    ),
     {
-      name: "locale",
-      getStorage: () => localStorage,
-      // Only persist selectedLanguage, not actions
-      partialize: (state) => ({ selectedLanguage: state.selectedLanguage }),
+      name: "locale-selection",
     }
   )
 );
 
 /**
+ * Hook to access selected language actions
+ * @returns {SelectedLanguageState['actions']}
+ */
+export const useSelectedLanguageActions = () =>
+  useSelectedLanguageStore((s) => s.actions);
+
+/**
  * @typedef {Object} TranslationState
- * @property {Object.<string, any>} translation - Translation key-value pairs
+ * @property {Object} translation - The current translation object
  * @property {string[]} listLanguages - List of available languages
+ * @property {boolean} isTranslationsReady - Whether translations are loaded
+ * @property {Object} actions - Actions to modify translations
+ * @property {function(string[]): void} actions.setListLanguages - Function to set available languages
+ * @property {function(string): Promise<void>} actions.updateTranslations - Function to update translations for a language
  */
 
 /**
- * @typedef {Object} TranslationActions
- * @property {(listLanguages: string[]) => void} setListLanguages - Set the list of available languages
- * @property {(languageUrl: string) => Promise<void>} updateTranslations - Fetch and update translations for a language
- * @property {() => boolean} isTranslationsReady - Check if translations are loaded
+ * Store for managing translations
+ * @type {import('zustand').UseStore<TranslationState>}
  */
+export const useTranslationStore = create(
+  zustandDevtools(
+    (set) => ({
+      // State
+      translation: {},
+      listLanguages: [],
+      isTranslationsReady: false,
+      // Actions grouped in an actions object
+      actions: {
+        setListLanguages: (listLanguages) => set({ listLanguages }),
 
-/**
- * @typedef {TranslationState & { actions: TranslationActions }} TranslationStore
- */
+        updateTranslations: async (languageUrl) => {
+          if (!languageUrl) return console.error("Locale is not defined");
 
-/**
- * Creates the translation slice
- * @param {import('zustand').StateCreator<TranslationStore>} set
- * @param {import('zustand').StoreApi<TranslationStore>['getState']} get
- * @returns {TranslationStore}
- */
-const createTranslationSlice = (set, get) => ({
-  // State
-  translation: {},
-  listLanguages: [],
-  isTranslationsReady: false,
-  // Actions grouped in an actions object
-  actions: {
-    setListLanguages: (listLanguages) => set({ listLanguages }),
+          const envProd = process.env.NEXT_PUBLIC_ENVIRONMENT;
+          const s3url = process.env.NEXT_PUBLIC_S3_URL;
+          const url = `${s3url}content-general/locales/${envProd}/${languageUrl}/common.json`;
 
-    updateTranslations: async (languageUrl) => {
-      if (!languageUrl) return console.error("Locale is not defined");
-
-      const envProd = process.env.NEXT_PUBLIC_ENVIRONMENT;
-      const s3url = process.env.NEXT_PUBLIC_S3_URL;
-      const url = `${s3url}content-general/locales/${envProd}/${languageUrl}/common.json`;
-
-      try {
-        const response = await fetch(url, {
-          headers: {
-            "Content-Type": "application/json",
-            "Cache-Control":
-              "public, max-age=86400, stale-while-revalidate=3600",
-          },
-        });
-        if (!response.ok) {
-          throw new Error(`Failed to fetch ${languageUrl} translations`);
-        }
-        const data = await response.json();
-        set({ translation: data, isTranslationsReady: true });
-      } catch (error) {
-        console.error(
-          `Error fetching ${languageUrl} translations: ${error.message}`
-        );
-        set({ translation: {}, isTranslationsReady: true });
-      }
-    },
-  },
-});
-
-/**
- * Creates the translation store
- * @type {import('zustand').UseBoundStore<import('zustand').StoreApi<TranslationStore>>}
- */
-export const useTranslationStore = create(createTranslationSlice);
+          try {
+            const response = await fetch(url, {
+              headers: {
+                "Content-Type": "application/json",
+                "Cache-Control":
+                  "public, max-age=86400, stale-while-revalidate=3600",
+              },
+            });
+            if (!response.ok) {
+              throw new Error(`Failed to fetch ${languageUrl} translations`);
+            }
+            const data = await response.json();
+            set({ translation: data, isTranslationsReady: true });
+          } catch (error) {
+            console.error(
+              `Error fetching ${languageUrl} translations: ${error.message}`
+            );
+            set({ translation: {}, isTranslationsReady: true });
+          }
+        },
+      },
+    }),
+    {
+      name: "translation",
+    }
+  )
+);
 
 /**
  * Hook to access translation actions
- * @returns {TranslationActions}
+ * @returns {TranslationState['actions']}
  */
 export const useTranslationActions = () =>
-  useTranslationStore((state) => state.actions);
-
-/**
- * Hook to access selected language actions
- * @returns {SelectedLanguageActions}
- */
-export const useSelectedLanguageActions = () => {
-  const setSelectedLanguage = useSelectedLanguageStore(
-    (state) => state.setSelectedLanguage
-  );
-  return { setSelectedLanguage };
-};
+  useTranslationStore((s) => s.actions);

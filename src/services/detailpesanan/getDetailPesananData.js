@@ -470,14 +470,18 @@ const fetcher = async (cacheKey) => {
   if (resultFleetSearchStatus.fleetSearchStatus === "SEARCHING") {
     const fleetSearchDetail = normalizeDetailPesananFleetSearchDetail({
       dataFleetSearchDetail: resultFleetSearchDetail,
+      dataPaymentStatus: resultPaymentStatus,
+      dataPaymentInstruction: resultPaymentInstruction,
     });
 
     return fleetSearchDetail;
   } else {
     const orderDetail = normalizeDetailPesananOrderDetail({
       dataOrderDetail: resultOrderDetail,
+      dataPaymentStatus: resultPaymentStatus,
       dataPaymentCountdown: resultPaymentCountdown,
       dataFleetSearchDetail: resultFleetSearchDetail,
+      dataPaymentInstruction: resultPaymentInstruction,
     });
     return orderDetail;
   }

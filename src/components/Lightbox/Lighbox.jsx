@@ -42,7 +42,6 @@ export const LightboxProvider = ({ title, images = [], image, children }) => {
     }
     return images;
   }, [image, images]);
-  console.log("🚀 ~ memoizedImages ~ memoizedImages:", memoizedImages);
 
   return (
     <LightboxContext.Provider

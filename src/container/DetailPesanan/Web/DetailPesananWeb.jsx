@@ -1,22 +1,65 @@
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTrigger,
+} from "@/components/Modal/Modal";
+import Slider from "@/components/Slider/Slider";
 import { useGetDetailPesananData } from "@/services/detailpesanan/getDetailPesananData";
 import { useLoadingAction } from "@/store/loadingStore";
 
 import DetailPIC from "./DetailPic/DetailPic";
-import RingkasanPembayaran from "./RingkasanPembayaran/RingkasanPembayaran";
+import { PaymentInstruction } from "./PaymentInstruction/PaymentInstruction";
+import { RingkasanPembayaran } from "./RingkasanPembayaran/RingkasanPembayaran";
 import RingkasanPesanan from "./RingkasanPesanan/RingkasanPesanan";
 import StatusPesanan from "./StatusPesanan/StatusPesanan";
 
-const breadCrumbData = [{ name: "Daftar Pesanan" }, { name: "Detail Pesanan" }];
-
 const DetailPesananWeb = () => {
   const params = useParams();
-  const [isOpen, setIsOpen] = useState(false);
+
+  const breadCrumbData = [
+    { name: "Daftar Pesanan" },
+    { name: "Detail Pesanan" },
+  ];
+  const slides = [
+    {
+      title: "Status Pesanan",
+      imgSrc: "/img/detail-pesanan-first-time/1-status-pesanan.webp",
+      content:
+        "Label informasi mengenai status terkini dari pesanan yang anda lakukan.",
+    },
+    {
+      title: "Ringkasan Status Pesanan",
+      imgSrc: "/img/detail-pesanan-first-time/2-ringkasan-status-pesanan.webp",
+      content:
+        "Pantau perkembangan pesanan yang Anda lakukan, mulai dari proses muat, proses bongkar hingga pesanan selesai.",
+    },
+    {
+      title: "Status Driver",
+      imgSrc: "/img/detail-pesanan-first-time/3-status-driver.webp",
+      content:
+        "Pada bagian informasi driver, terdapat label Informasi mengenai status terkini yang sedang dijalankan oleh driver.",
+    },
+    {
+      title: "Detail Status",
+      imgSrc: "/img/detail-pesanan-first-time/4-detail-status.webp",
+      content:
+        // eslint-disable-next-line quotes
+        'Pantau perkembangan status driver secara menyeluruh dengan mengakses menu \"Detail Status\" pada bagian informasi driver.',
+    },
+    {
+      title: "QR Code Lokasi Muat / Bongkar",
+      imgSrc: "/img/detail-pesanan-first-time/5-qr-code-lokasi.webp",
+      content:
+        "Saat driver akan melakukan proses muat atau bongkar, tunjukkan QR Code lokasi muat atau bongkar agar mereka bisa memindainya dan melanjutkan proses.",
+    },
+  ];
 
   const { data: dataDetailPesanan, isLoading: isLoadingDetailPesanan } =
     useGetDetailPesananData(params.orderId);
@@ -40,12 +83,30 @@ const DetailPesananWeb = () => {
                 <div className="ml-3 text-[20px] font-bold leading-[24px] text-neutral-900">
                   Detail Pesanan
                 </div>
-                <div className="ml-1">
-                  <IconComponent
-                    src="/icons/info16.svg"
-                    onClick={() => setIsOpen(true)}
-                  />
-                </div>
+
+                <Modal closeOnOutsideClick={false}>
+                  <ModalTrigger>
+                    <div className="ml-1">
+                      <IconComponent
+                        src="/icons/info16.svg"
+                        width={16}
+                        height={16}
+                      />
+                    </div>
+                  </ModalTrigger>
+                  <ModalContent className="w-modal-small">
+                    <ModalHeader size="small" />
+                    <div className="w-full px-6 py-9">
+                      <Slider
+                        slides={slides}
+                        onComplete={() => console.log("Slider completed!")}
+                        onSlideChange={(index) =>
+                          console.log("Current slide:", index)
+                        }
+                      />
+                    </div>
+                  </ModalContent>
+                </Modal>
               </div>
               <div className="flex items-center gap-x-3">
                 <Button
@@ -85,19 +146,29 @@ const DetailPesananWeb = () => {
                   <DetailPIC dataDetailPIC={dataDetailPesanan?.dataDetailPIC} />
                 )}
               </div>
-              {dataDetailPesanan?.dataRingkasanPembayaran && (
-                <RingkasanPembayaran
-                  dataRingkasanPembayaran={
-                    dataDetailPesanan.dataRingkasanPembayaran
-                  }
-                />
-              )}
+
+              <div className="flex flex-col gap-y-4">
+                {dataDetailPesanan?.dataRingkasanPembayaran && (
+                  <RingkasanPembayaran
+                    dataRingkasanPembayaran={
+                      dataDetailPesanan.dataRingkasanPembayaran
+                    }
+                  />
+                )}
+                {dataDetailPesanan?.dataPaymentInstruction && (
+                  <PaymentInstruction
+                    dataPaymentInstruction={
+                      dataDetailPesanan.dataPaymentInstruction
+                    }
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* <pre>{JSON.stringify(dataDetailPesanan, null, 2)}</pre> */}
+      <pre>{JSON.stringify(dataDetailPesanan, null, 2)}</pre>
     </>
   );
 };

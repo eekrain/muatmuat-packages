@@ -2,14 +2,20 @@
 //  /api/v1/orders/{orderId}/fleet-search-detail
 //  /api/v1/orders/{orderId}/summary
 // Di normalize supaya bisa langsung dipakai di props component
-import { LocationTypeEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import {
+  LocationTypeEnum,
+  OrderStatusEnum,
+} from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { PaymentInstructionTitle } from "@/lib/constants/detailpesanan/payment.enum";
 
 // Kita passing hasil dari API dataFleetSearchDetail dan dataSummary
 // Proses merging / normaliasi terjadi di sini
 export const normalizeDetailPesananOrderDetail = ({
-  dataOrderDetail,
-  dataPaymentCountdown,
   dataFleetSearchDetail,
+  dataOrderDetail,
+  dataPaymentStatus,
+  dataPaymentCountdown,
+  dataPaymentInstruction,
 }) => {
   try {
     const dataStatusPesanan = {
@@ -82,7 +88,8 @@ export const normalizeDetailPesananOrderDetail = ({
 
     const dataRingkasanPembayaran = {
       paymentMethod: dataOrderDetail?.paymentMethod,
-      paymentDueDateTime: dataOrderDetail?.paymentDueDateTime,
+      vaNumber: dataPaymentStatus?.vaNumber,
+      paymentDueDateTime: dataPaymentCountdown?.paymentDueDateTime,
       transportFee: dataOrderDetail?.transportFee,
       insuranceFee: dataOrderDetail?.insuranceFee,
       additionalServiceFee: dataOrderDetail?.additionalServiceFee,
@@ -93,13 +100,27 @@ export const normalizeDetailPesananOrderDetail = ({
       orderStatus: dataOrderDetail?.orderStatus,
     };
 
+    let instructionFormatted = null;
+    if (
+      dataOrderDetail?.orderStatus === OrderStatusEnum.PENDING_PAYMENT &&
+      dataPaymentInstruction?.paymentInstructions
+    ) {
+      const temp = Object.keys(dataPaymentInstruction?.paymentInstructions);
+      console.log("🚀 ~ temp:", temp);
+      instructionFormatted = temp.map((key) => ({
+        title: PaymentInstructionTitle[key],
+        item: dataPaymentInstruction?.paymentInstructions[key],
+      }));
+    }
+
     return {
       dataStatusPesanan,
       dataRingkasanPesanan,
       dataDetailPIC,
       dataRingkasanPembayaran,
+      dataPaymentInstruction: instructionFormatted,
     };
   } catch (error) {
-    console.log("🚀 ~ error:", error);
+    console.error("🚀 ~ error:", error);
   }
 };

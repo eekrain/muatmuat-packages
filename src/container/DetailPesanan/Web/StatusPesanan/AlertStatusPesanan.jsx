@@ -1,56 +1,12 @@
-import { useEffect, useRef, useState } from "react";
-
-import { differenceInSeconds } from "date-fns";
-
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useCountdown } from "@/hooks/use-countdown";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
 export const AlertStatusPesanan = ({ orderStatus, paymentDueDateTime }) => {
-  const [countdown, setCountdown] = useState("");
-  const intervalRef = useRef();
-
-  useEffect(() => {
-    if (orderStatus === OrderStatusEnum.PENDING_PAYMENT && paymentDueDateTime) {
-      const updateCountdown = () => {
-        const now = new Date();
-        const dueDate = new Date(paymentDueDateTime);
-        const diffInSeconds = differenceInSeconds(dueDate, now);
-
-        if (diffInSeconds <= 0) {
-          setCountdown("00:00");
-          clearInterval(intervalRef.current);
-          return;
-        }
-
-        const hours = Math.floor(diffInSeconds / 3600);
-        const minutes = Math.floor((diffInSeconds % 3600) / 60);
-        const seconds = diffInSeconds % 60;
-
-        if (hours > 0) {
-          setCountdown(
-            `${hours.toString().padStart(2, "0")}:${minutes
-              .toString()
-              .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
-          );
-        } else {
-          setCountdown(
-            `${minutes.toString().padStart(2, "0")}:${seconds
-              .toString()
-              .padStart(2, "0")}`
-          );
-        }
-      };
-
-      updateCountdown();
-      intervalRef.current = setInterval(updateCountdown, 1000);
-    }
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [orderStatus, paymentDueDateTime]);
+  const { countdown } = useCountdown({
+    endingDate: paymentDueDateTime,
+    isNeedCountdown: orderStatus === OrderStatusEnum.PENDING_PAYMENT,
+  });
 
   const isShowAlert =
     orderStatus === OrderStatusEnum.SEARCHING_FLEET ||

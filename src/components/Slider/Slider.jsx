@@ -320,12 +320,12 @@ export default function Slider({ slides, onComplete, onSlideChange }) {
         </button>
       </div>
 
-      <h2 className="mb-3 hidden h-[44px] text-center text-lg font-bold lg:mt-6 lg:block">
+      <h2 className="mb-3 hidden text-center text-lg font-bold leading-[1.2] lg:mt-6 lg:block">
         {slides[currentSlide]?.title}
       </h2>
 
-      <div className="mx-auto mt-[18px] flex max-w-[328px] flex-col justify-between lg:mt-0 lg:h-[122px]">
-        <div className="flex justify-center font-medium">
+      <div className="mx-auto flex max-w-[328px] flex-col justify-between lg:mt-0 lg:h-[122px]">
+        <div className="flex justify-center text-sm font-medium leading-[1.2] text-neutral-900">
           {slides[currentSlide]?.content}
         </div>
         {/* Dots navigation */}

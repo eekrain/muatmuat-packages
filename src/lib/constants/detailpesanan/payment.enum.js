@@ -17,3 +17,17 @@ export const PaymentMethodTitle = {
   [PaymentMethodEnum.VA_MANDIRI]: "Mandiri Virtual Account",
   [PaymentMethodEnum.VA_PERMATA]: "Permata Virtual Account",
 };
+
+export const PaymentInstructionEnum = {
+  ATM: "atm",
+  INTERNET_BANKING: "internetBanking",
+  MOBILE_BANKING: "mobileBanking",
+  BANK_OFFICE: "bankOffice",
+};
+
+export const PaymentInstructionTitle = {
+  [PaymentInstructionEnum.ATM]: "ATM",
+  [PaymentInstructionEnum.INTERNET_BANKING]: "Internet Banking",
+  [PaymentInstructionEnum.MOBILE_BANKING]: "Mobile Banking",
+  [PaymentInstructionEnum.BANK_OFFICE]: "Bank Office",
+};
