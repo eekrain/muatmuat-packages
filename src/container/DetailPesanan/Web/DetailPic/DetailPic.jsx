@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import Card, { CardContent } from "@/components/Card/Card";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { LocationTypeEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
 // Data untuk lokasi muat dan bongkar
 const locationData = {
@@ -70,23 +71,28 @@ const PICLocationCard = ({ locations, title }) => (
       <CardContent className="h-full !px-4 !py-5">
         <div className="flex h-full flex-col gap-5">
           {locations.map((location, index) => (
-            <React.Fragment key={location.id}>
+            <React.Fragment
+              key={`${location.fullAddress}-${location.sequence}`}
+            >
               <div className="flex flex-col gap-y-3">
                 {/* Header lokasi */}
                 <span className="text-[12px] font-bold leading-[14.4px] text-neutral-900">
-                  {location.title}
+                  {location.locationType === LocationTypeEnum.PICKUP
+                    ? "Lokasi Muat"
+                    : "Lokasi Bongkar"}{" "}
+                  {location.sequence}
                 </span>
 
                 {/* Detail items */}
                 <PICDetailItem
                   icon="/icons/location16.svg"
                   iconClassName="icon-muat-trans-secondary-900"
-                  text={location.address}
+                  text={location.fullAddress}
                 />
                 <PICDetailItem
                   icon="/icons/topik-amandemen16.svg"
                   iconClassName="icon-fill-muat-trans-secondary-900"
-                  text={location.note}
+                  text={location.detailAddress}
                 />
                 <PICDetailItem
                   icon="/icons/profile16.svg"
@@ -96,7 +102,7 @@ const PICLocationCard = ({ locations, title }) => (
                 <PICDetailItem
                   icon="/icons/call16.svg"
                   iconClassName="icon-fill-muat-trans-secondary-900"
-                  text={location.phone}
+                  text={location.picPhoneNumber}
                 />
               </div>
 
@@ -113,7 +119,7 @@ const PICLocationCard = ({ locations, title }) => (
 );
 
 // Main component
-const DetailPIC = () => {
+const DetailPIC = ({ dataDetailPIC }) => {
   const [isExpanded, setIsExpanded] = useState(true);
 
   const toggleExpanded = () => {
@@ -149,13 +155,13 @@ const DetailPIC = () => {
         <div className="flex flex-col gap-y-6 pt-6">
           {/* Detail PIC Lokasi Muat Section */}
           <PICLocationCard
-            locations={locationData.muat}
+            locations={dataDetailPIC.muat}
             title="Detail PIC Lokasi Muat"
           />
 
           {/* Detail PIC Lokasi Bongkar Section */}
           <PICLocationCard
-            locations={locationData.bongkar}
+            locations={dataDetailPIC.bongkar}
             title="Detail PIC Lokasi Bongkar"
           />
         </div>

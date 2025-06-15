@@ -8,7 +8,7 @@ import Input from "@/components/Form/Input";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
 import axios from "@/lib/axios";
-import { normalizeLocationDataForSaving } from "@/lib/normalizers";
+import { normalizeLocationDataForSaving } from "@/lib/normalizers/location";
 import {
   useResponsiveNavigation,
   useResponsiveRouteParams,
@@ -23,6 +23,8 @@ export const FormSimpanLokasiResponsive = () => {
   console.log("🚀 ~ FormSimpanLokasi ~ params:", params);
   const { formValues, formErrors, setField, reset, validateSimpanLokasi } =
     useLocationFormStore();
+
+  formValues.dataLokasi.coordinates.latitude;
 
   useShallowCompareEffect(() => {
     if (params.defaultValues) {

@@ -12,10 +12,10 @@ const LightboxContext = createContext(null);
 
 /**
  * @typedef {Object} LightboxProviderProps
- * @property {string} title
- * @property {string[]} images
- * @property {string} image
- * @property {React.ReactNode} children
+ * @property {string} title - Title of the lightbox
+ * @property {string[]} images - Array of images to display in the lightbox
+ * @property {string} image - Single image to display in the lightbox
+ * @property {React.ReactNode} children - Children of the lightbox
  */
 
 /**
@@ -155,8 +155,11 @@ export default function LightboxTrigger({
 
   return (
     <div className="relative block w-fit">
-      <img className={className} src={image} alt={alt} />
-
+      <img
+        className={cn("size-[68px] rounded-xl border object-cover", className)}
+        src={image}
+        alt={alt}
+      />
       <div
         onClick={() => openLightbox(index)}
         className="absolute right-1 top-1 flex size-5 cursor-pointer items-center justify-center rounded-full bg-white"

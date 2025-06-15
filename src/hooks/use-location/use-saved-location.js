@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
 
-import { normalizeUserSavedLocation } from "@/lib/normalizers";
+import { normalizeUserSavedLocation } from "@/lib/normalizers/location";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
 import { useSWRHook } from "../use-swr";

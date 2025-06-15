@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 
 import { useLocationContext } from "@/hooks/use-location";
 import SearchBarResponsiveLayout from "@/layout/ResponsiveLayout/SearchBarResponsiveLayout";
-import { normalizeUserSavedLocation } from "@/lib/normalizers";
+import { normalizeUserSavedLocation } from "@/lib/normalizers/location";
 import {
   useResponsiveNavigation,
   useResponsiveRouteParams,
@@ -34,6 +34,7 @@ export const PencarianLokasiTersimpan = () => {
       setSearchValue("");
       hasInit.current = true;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onSelected = (location) => {

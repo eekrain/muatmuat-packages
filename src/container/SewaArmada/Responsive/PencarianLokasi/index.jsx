@@ -5,7 +5,7 @@ import { ModalPostalCodeResponsive } from "@/components/LocationManagement/Respo
 import { useLocationContext } from "@/hooks/use-location";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import SearchBarResponsiveLayout from "@/layout/ResponsiveLayout/SearchBarResponsiveLayout";
-import { normalizeUserSavedLocation } from "@/lib/normalizers";
+import { normalizeUserSavedLocation } from "@/lib/normalizers/location";
 import {
   useResponsiveNavigation,
   useResponsiveRouteParams,

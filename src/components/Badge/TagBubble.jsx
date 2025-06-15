@@ -3,10 +3,10 @@ import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const TagBubble = ({
-  onRemove = () => {},
   disabled = false,
-  tag,
   className = "",
+  withRemove = null,
+  children,
 }) => {
   return (
     <div
@@ -16,22 +16,24 @@ export const TagBubble = ({
       )}
     >
       <span className="flex-1 truncate text-xs font-semibold leading-[130%] text-blue-600">
-        {tag}
+        {children}
       </span>
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          onRemove();
-        }}
-        disabled={disabled}
-        className={cn(
-          "flex h-3.5 w-3.5 items-center justify-center rounded-full text-blue-600 transition-colors duration-150 hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-1 focus:ring-blue-600 disabled:cursor-not-allowed"
-        )}
-        aria-label={`Remove ${tag} tag`}
-      >
-        <X size={10} strokeWidth={2.5} />
-      </button>
+      {withRemove && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            withRemove?.onRemove?.();
+          }}
+          disabled={disabled}
+          className={cn(
+            "flex h-3.5 w-3.5 items-center justify-center rounded-full text-blue-600 transition-colors duration-150 hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-1 focus:ring-blue-600 disabled:cursor-not-allowed"
+          )}
+          aria-label={`Remove ${tag} tag`}
+        >
+          <X size={10} strokeWidth={2.5} />
+        </button>
+      )}
     </div>
   );
 };

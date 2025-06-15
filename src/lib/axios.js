@@ -74,5 +74,14 @@ export const createAxios = (baseURL) => {
   return fetcher;
 };
 
+// For compatibility with existing code
 const axios = createAxios(process.env.NEXT_PUBLIC_INTERNAL_API);
 export default axios;
+
+// API's with different target baseURL
+export const fetcherMuatparts = createAxios(
+  process.env.NEXT_PUBLIC_INTERNAL_API
+);
+export const fetcherMuatrans = createAxios(
+  "https://apimtrans-az.assetlogistik.com/"
+);

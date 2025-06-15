@@ -29,7 +29,6 @@ export const UserDropdown = () => {
   const { t } = useTranslation();
   const accessToken = useAuthStore((state) => state.accessToken);
   const { dataUser } = useUser();
-  console.log("🚀 ~ UserDropdown ~ dataUser:", dataUser);
   return (
     <>
       {!accessToken ? (

@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { useState } from "react";
 
 import { TagBubble } from "@/components/Badge/TagBubble";
 import {
@@ -71,18 +71,17 @@ const NoDeliveryOrder = () => {
         {formValues.noDO.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {formValues.noDO.map((item, key) => (
-              <Fragment key={key}>
-                <TagBubble
-                  tag={item}
-                  onRemove={() =>
+              <TagBubble
+                key={item}
+                withRemove={{
+                  onRemove: () =>
                     setField(
                       "noDO",
                       formValues.noDO.filter((_, i) => i !== key)
-                    )
-                  }
-                  className="!bg-primary-50"
-                />
-              </Fragment>
+                    ),
+                }}
+                className="!bg-primary-50"
+              />
             ))}
           </div>
         ) : null}

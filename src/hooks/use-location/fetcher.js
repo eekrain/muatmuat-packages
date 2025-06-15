@@ -3,7 +3,7 @@ import {
   normalizeAutoCompleteNotFound,
   normalizeDistrictData,
   normalizeLocationByLatLong,
-} from "@/lib/normalizers";
+} from "@/lib/normalizers/location";
 
 const getLocationByLatLong = async (coordinates) => {
   const res1 = await axios.post("/v1/location_by_lat_long", {

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo } from "react";
 
-import { normalizePostalCodeData } from "@/lib/normalizers";
+import { normalizePostalCodeData } from "@/lib/normalizers/location";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
 import { useDebounceCallback } from "../use-debounce-callback";

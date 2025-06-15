@@ -2,70 +2,23 @@
 
 import { useState } from "react";
 
+import { TagBubble } from "@/components/Badge/TagBubble";
 import Card, { CardContent } from "@/components/Card/Card";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
+import LightboxTrigger, {
+  LightboxProvider,
+} from "@/components/Lightbox/Lighbox";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import {
   TimelineContainer,
-  TimelineContentAddress,
+  TimelineContentWithButtonDate,
   TimelineItem,
 } from "@/components/Timeline";
+import { formatDate } from "@/lib/utils/dateFormat";
 
-const RingkasanPesanan = () => {
+const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-
-  // Data mock untuk demo
-  const orderData = {
-    armada: {
-      name: "Box - Colt Diesel Engkel",
-      image: "/img/recommended1.png",
-      requirement: "Kebutuhan : 1 Unit",
-    },
-    waktuMuat: "3 Okt 2024 18:00 WIB s/d 4 Okt 2024 08:00 WIB",
-    route: {
-      estimasi: "Estimasi 178 km",
-      muat: {
-        location:
-          "Graha Aero, Jl. Kedungdoro 88, Kedungdoro, Kec Tegalsari, Kota Surabaya, Jawa Timur 60261",
-        hasOthers: true,
-      },
-      bongkar: {
-        location:
-          "Jalan Perusahaan Raya No.46, Banjararum, Singosari, Malang, Jawa Timur, 65153, Indonesia",
-        hasOthers: true,
-      },
-    },
-    muatan: [
-      { name: "Perlengkapan Rumah Tangga", weight: "1.800 kg" },
-      { name: "Peralatan dan Kebutuhan Kantor", weight: "2 kg" },
-    ],
-    photos: [
-      "/img/muatan1.png",
-      "/img/muatan2.png",
-      "/img/muatan3.png",
-      "/img/muatan4.png",
-    ],
-    description:
-      "tolong kirim muatan dengan hati hati, jangan sampai rusak dan hancur, terimakasih",
-    deliveryOrders: ["DO-20241023-001", "DO-20241023-002"],
-  };
-  const productCategories = [
-    { name: "Perlengkapan Rumah Tangga", weight: 1.8 },
-    { name: "Peralatan dan Kebutuhan Kantor", weight: 2 },
-    { name: "Elektronik dan Aksesoris", weight: 2 },
-    { name: "Alat Kebersihan dan Higienitas", weight: 2 },
-    { name: "Makanan dan Minuman Ringan", weight: 2 },
-    { name: "Bahan Bangunan dan Konstruksi", weight: 2 },
-    { name: "Perlengkapan Dapur dan Masak", weight: 2 },
-    { name: "Pakaian dan Tekstil", weight: 2 },
-    { name: "Mainan dan Peralatan Anak", weight: 2 },
-    { name: "Produk Kesehatan dan Obat-obatan", weight: 2 },
-  ];
-
-  const formatWeight = (weight) => {
-    return weight % 1 === 0 ? weight.toString() : weight.toString();
-  };
 
   return (
     // Main Content Card
@@ -73,19 +26,21 @@ const RingkasanPesanan = () => {
       <CardContent className="p-8">
         <div className="flex flex-col gap-y-6">
           {/* Header Notification Halal */}
-          <div className="flex h-10 w-full items-center rounded-xl bg-[#F7EAFD] px-4">
-            <div className="flex items-center gap-3">
-              <ImageComponent
-                src="/icons/halal.svg"
-                width={18}
-                height={24}
-                alt="Halal Indonesia"
-              />
-              <span className="text-center text-[12px] font-semibold leading-[14.4px] text-[#652672]">
-                Menggunakan Layanan Halal Logistik
-              </span>
+          {dataRingkasanPesanan.isHalalLogistics && (
+            <div className="flex h-10 w-full items-center rounded-xl bg-[#F7EAFD] px-4">
+              <div className="flex items-center gap-3">
+                <ImageComponent
+                  src="/icons/halal.svg"
+                  width={18}
+                  height={24}
+                  alt="Halal Indonesia"
+                />
+                <span className="text-center text-[12px] font-semibold leading-[14.4px] text-[#652672]">
+                  Menggunakan Layanan Halal Logistik
+                </span>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Page Title */}
           <h1 className="mb-6 text-lg font-bold leading-[21.6px] text-neutral-900">
@@ -98,30 +53,25 @@ const RingkasanPesanan = () => {
             </div>
             <div className="flex flex-1 items-center gap-4">
               {/* Armada Image */}
-              <div className="relative size-[68px] rounded-xl border border-neutral-400 bg-neutral-50">
-                <ImageComponent
-                  src={orderData.armada.image}
-                  width={68}
-                  height={68}
-                  alt="Armada"
-                  className="rounded-xl object-cover"
+              <LightboxProvider
+                image={dataRingkasanPesanan?.vehicle?.image}
+                title={dataRingkasanPesanan?.vehicle?.name}
+              >
+                <LightboxTrigger
+                  image={dataRingkasanPesanan?.vehicle?.image}
+                  alt="Jenis Carrier"
+                  className="size-[68px]"
+                  withZoom={true}
                 />
-                <button className="absolute right-2 top-2 flex size-5 items-center justify-center rounded-3xl bg-neutral-50">
-                  <IconComponent
-                    src="/icons/fullscreen12.svg"
-                    width={12}
-                    height={12}
-                  />
-                </button>
-              </div>
+              </LightboxProvider>
 
               {/* Armada Info */}
               <div className="flex flex-col gap-2">
                 <h3 className="text-[12px] font-bold leading-[14.4px] text-neutral-900">
-                  {orderData.armada.name}
+                  {dataRingkasanPesanan?.vehicle?.name}
                 </h3>
                 <p className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                  {orderData.armada.requirement}
+                  Kebutuhan : {dataRingkasanPesanan?.vehicle.truckCount} Unit
                 </p>
               </div>
             </div>
@@ -134,7 +84,8 @@ const RingkasanPesanan = () => {
             </div>
             <div className="flex-1">
               <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                {orderData.waktuMuat}
+                {formatDate(dataRingkasanPesanan?.loadTimeStart)} s/d{" "}
+                {formatDate(dataRingkasanPesanan?.loadTimeEnd)}
               </span>
             </div>
           </div>
@@ -146,7 +97,7 @@ const RingkasanPesanan = () => {
             </div>
             <div className="flex-1">
               <p className="mb-3 text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                {orderData.route.estimasi}
+                Estimasi {dataRingkasanPesanan?.estimatedDistance} km
               </p>
 
               {/* Timeline */}
@@ -156,19 +107,21 @@ const RingkasanPesanan = () => {
                   totalLength={2}
                   index={0}
                   activeIndex={0}
-                  className="pb-6"
                 >
-                  <div>
-                    <TimelineContentAddress
-                      title={orderData.route.muat.location}
-                      className="text-[12px] font-medium leading-[14.4px] text-neutral-900"
-                    />
-                    {orderData.route.muat.hasOthers && (
-                      <button className="text-[12px] font-medium leading-[14.4px] text-primary-700">
-                        Lihat Lokasi Muat Lainnya
-                      </button>
-                    )}
-                  </div>
+                  <TimelineContentWithButtonDate
+                    title={
+                      dataRingkasanPesanan?.route?.muat?.[0]?.fullAddress || ""
+                    }
+                    withButton={
+                      dataRingkasanPesanan?.route?.muat &&
+                      dataRingkasanPesanan?.route?.muat.length > 1
+                        ? {
+                            label: "Lihat Lokasi Muat Lainnya",
+                            onClick: () => alert("Lihat Lokasi Muat Lainnya"),
+                          }
+                        : undefined
+                    }
+                  />
                 </TimelineItem>
 
                 <TimelineItem
@@ -177,17 +130,22 @@ const RingkasanPesanan = () => {
                   index={1}
                   activeIndex={0}
                 >
-                  <div>
-                    <TimelineContentAddress
-                      title={orderData.route.bongkar.location}
-                      className="text-[12px] font-medium leading-[14.4px] text-neutral-900"
-                    />
-                    {orderData.route.bongkar.hasOthers && (
-                      <button className="text-[12px] font-medium leading-[14.4px] text-primary-700">
-                        Lihat Lokasi Bongkar Lainnya
-                      </button>
-                    )}
-                  </div>
+                  <TimelineContentWithButtonDate
+                    title={
+                      dataRingkasanPesanan?.route?.bongkar?.[0]?.fullAddress ||
+                      ""
+                    }
+                    withButton={
+                      dataRingkasanPesanan?.route?.bongkar &&
+                      dataRingkasanPesanan?.route?.bongkar.length > 1
+                        ? {
+                            label: "Lihat Lokasi Bongkar Lainnya",
+                            onClick: () =>
+                              alert("Lihat Lokasi Bongkar Lainnya"),
+                          }
+                        : undefined
+                    }
+                  />
                 </TimelineItem>
               </TimelineContainer>
             </div>
@@ -200,7 +158,7 @@ const RingkasanPesanan = () => {
             </div>
             <div className="flex-1">
               <div className="flex flex-col gap-2">
-                {orderData.muatan.map((item, index) => (
+                {dataRingkasanPesanan.cargos.slice(0, 2).map((item, index) => (
                   <div key={index} className="flex items-center gap-2">
                     <IconComponent
                       src="/icons/package.svg"
@@ -209,7 +167,7 @@ const RingkasanPesanan = () => {
                       className="flex-shrink-0"
                     />
                     <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                      {item.name} ({item.weight})
+                      {item.name} ({item.weight} {item.weightUnit})
                     </span>
                   </div>
                 ))}
@@ -226,15 +184,14 @@ const RingkasanPesanan = () => {
                         Informasi Muatan
                       </h2>
                       <div className="flex w-[600px] flex-col items-start gap-2 rounded-xl border border-neutral-400 px-4 py-5">
-                        {productCategories.map((category, index) => (
+                        {dataRingkasanPesanan.cargos.map((item, index) => (
                           <div
                             key={index}
                             className="flex w-full flex-row items-center gap-2"
                           >
                             <IconComponent src="/icons/muatan16.svg" />
                             <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                              {category.name} ({formatWeight(category.weight)}{" "}
-                              kg)
+                              {item.name} ({item.weight} {item.weightUnit})
                             </span>
                           </div>
                         ))}
@@ -260,40 +217,35 @@ const RingkasanPesanan = () => {
               <div className="w-full text-[12px] font-medium leading-[14.4px] text-neutral-600 md:w-[178px]">
                 Lampiran/Foto Muatan
               </div>
-              <div className="flex-1">
-                <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                  {orderData.photos.map((photo, index) => (
-                    <div key={index} className="relative">
-                      <div className="relative size-[124px] overflow-hidden rounded-xl border border-neutral-400">
-                        <ImageComponent
-                          src={photo}
-                          width={124}
-                          height={124}
-                          alt={`Foto muatan ${index + 1}`}
-                          className="size-full object-cover"
-                        />
-                        <button className="absolute right-2 top-2 flex size-5 items-center justify-center rounded-3xl bg-neutral-50">
-                          <IconComponent
-                            src="/icons/fullscreen12.svg"
-                            width={12}
-                            height={12}
-                          />
-                        </button>
-                      </div>
-                    </div>
+              <div className="grid flex-1 grid-cols-2 gap-4 md:grid-cols-4">
+                <LightboxProvider
+                  images={dataRingkasanPesanan.cargoPhotos.map(
+                    (item) => item?.photoUrl
+                  )}
+                  title="Lampiran/Foto Muatan"
+                >
+                  {dataRingkasanPesanan.cargoPhotos.map((item, index) => (
+                    <LightboxTrigger
+                      key={item?.photoId}
+                      image={item?.photoUrl}
+                      alt={`Foto muatan ${index + 1}`}
+                      className="size-[124px]"
+                      withZoom={true}
+                    />
                   ))}
-                </div>
+                </LightboxProvider>
               </div>
             </div>
 
             {/* Deskripsi Muatan */}
+
             <div className="flex flex-col gap-4 md:flex-row md:gap-8">
               <div className="w-full text-[12px] font-medium leading-[14.4px] text-neutral-600 md:w-[178px]">
                 Deskripsi Muatan
               </div>
               <div className="flex-1">
                 <p className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                  {orderData.description}
+                  {dataRingkasanPesanan.cargoDescription}
                 </p>
               </div>
             </div>
@@ -305,16 +257,11 @@ const RingkasanPesanan = () => {
               </div>
               <div className="flex-1">
                 <div className="flex flex-wrap gap-2">
-                  {orderData.deliveryOrders.map((order, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-center rounded-2xl border border-primary-700 bg-neutral-50 px-3 py-1.5"
-                    >
-                      <span className="text-[10px] font-semibold leading-[13px] text-primary-700">
-                        {order}
-                      </span>
-                    </div>
-                  ))}
+                  {dataRingkasanPesanan.deliveryOrderNumbers.map(
+                    (orderNumber) => (
+                      <TagBubble key={orderNumber}>{orderNumber}</TagBubble>
+                    )
+                  )}
                 </div>
               </div>
             </div>
