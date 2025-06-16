@@ -9,11 +9,19 @@ import { useInitAuthentication } from "@/hooks/use-auth";
 import useDevice from "@/hooks/use-device";
 import { useInitTranslation, useTranslation } from "@/hooks/use-translation";
 import { useLoadingAction } from "@/store/loadingStore";
+import { useNotificationCounterActions } from "@/store/notificationCounterStore";
 
 import DesktopLayout from "../DesktopLayout/DesktopLayout";
 
 const Script = () => {
   useInitAuthentication();
+
+  const { fetchSidebarData } = useNotificationCounterActions();
+  useEffect(() => {
+    fetchSidebarData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return <></>;
 };
 

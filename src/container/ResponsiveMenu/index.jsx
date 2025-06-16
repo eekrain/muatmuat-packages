@@ -11,37 +11,39 @@ import {
 } from "lucide-react";
 
 import DefaultResponsiveLayout from "@/layout/ResponsiveLayout/DefaultResponsiveLayout";
-
-const navigationItems = [
-  {
-    icon: <FileText className="h-5 w-5" />,
-    label: "Daftar Pesanan",
-    badge: 12,
-    badgeColor: "bg-red-500",
-  },
-  {
-    icon: <Phone className="h-5 w-5" />,
-    label: "Pusat Bantuan",
-  },
-];
-
-const settingsItems = [
-  {
-    icon: <MapPin className="h-6 w-6" />,
-    label: "Manajemen Lokasi",
-  },
-  {
-    icon: <CreditCard className="h-5 w-5" />,
-    label: "Rekening Bank",
-  },
-  {
-    icon: <Globe className="h-5 w-5" />,
-    label: "Bahasa",
-  },
-];
+import { useNotificationCounterStore } from "@/store/notificationCounterStore";
 
 export const ResponsiveMenu = () => {
   const [isSettingsExpanded, setIsSettingsExpanded] = useState(true);
+  const { notification, chat, order } = useNotificationCounterStore();
+
+  const navigationItems = [
+    {
+      icon: <FileText className="h-5 w-5" />,
+      label: "Daftar Pesanan",
+      badge: order,
+      badgeColor: "bg-red-500",
+    },
+    {
+      icon: <Phone className="h-5 w-5" />,
+      label: "Pusat Bantuan",
+    },
+  ];
+
+  const settingsItems = [
+    {
+      icon: <MapPin className="h-6 w-6" />,
+      label: "Manajemen Lokasi",
+    },
+    {
+      icon: <CreditCard className="h-5 w-5" />,
+      label: "Rekening Bank",
+    },
+    {
+      icon: <Globe className="h-5 w-5" />,
+      label: "Bahasa",
+    },
+  ];
 
   return (
     <DefaultResponsiveLayout mode="menu">

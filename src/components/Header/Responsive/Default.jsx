@@ -21,6 +21,10 @@ import { useResponsiveNavigation } from "@/lib/responsive-navigation";
  */
 export const HeaderResponsiveDefault = ({
   mode = "default",
+  notifCounter = {
+    notification: 0,
+    chat: 0,
+  },
   onClickBackButton,
   onClickNotificationButton,
   onClickChatButton,
@@ -56,12 +60,12 @@ export const HeaderResponsiveDefault = ({
   const menuIcons = [
     {
       src: "/icons/manajemen-notifikasi24.svg",
-      count: 2,
+      count: notifCounter.notification,
       onClick: handleNotificationButton,
     },
     {
       src: "/icons/chat24.svg",
-      count: 99,
+      count: notifCounter.chat,
       onClick: handleChatButton,
     },
     ...(mode === "default"
