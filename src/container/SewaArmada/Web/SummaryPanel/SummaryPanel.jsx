@@ -146,8 +146,8 @@ export const SummaryPanel = () => {
             Ringkasan Transaksi
           </h3>
 
-          <div className="flex max-h-[263px] flex-col gap-y-6 overflow-y-auto">
-            <div className="flex h-10 items-center gap-2 rounded-md border border-primary-700 bg-primary-50 px-3">
+          <div className="scrollbar-custombadanusaha mr-[-12px] flex max-h-[263px] flex-col gap-y-6 overflow-y-auto pr-2">
+            <div className="flex h-10 items-center gap-2 rounded-md border border-primary-700 bg-primary-50 px-3 py-2">
               <div className="relative h-6 w-6">
                 <Image
                   src="/icons/voucher24.svg"

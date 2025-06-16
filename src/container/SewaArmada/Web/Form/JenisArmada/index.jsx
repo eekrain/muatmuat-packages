@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useSWRHook } from "@/hooks/use-swr";
 import { cn } from "@/lib/utils";
 import {
   useSewaArmadaActions,
@@ -11,33 +12,7 @@ import {
 import FilterModal from "../../FilterModal/FilterModal";
 import { SelectedTruck } from "./SelectedTruck";
 
-const carrierData = {
-  recommended: [
-    {
-      id: 1,
-      title: "Towing Car",
-      src: "/img/recommended1.png",
-    },
-  ],
-  notRecommended: [
-    {
-      id: 2,
-      title: "Flat Bed",
-      src: "/img/recommended1.png",
-    },
-    {
-      id: 3,
-      title: "Trailer Container",
-      src: "/img/recommended1.png",
-    },
-    {
-      id: 4,
-      title: "Trailer Reefer",
-      src: "/img/recommended2.png",
-    },
-  ],
-};
-
+// Definisi data dummy untuk truk
 const truckData = {
   recommended: [
     {
@@ -77,11 +52,6 @@ const truckData = {
   ],
 };
 
-const armadaData = {
-  carrier: carrierData,
-  truck: truckData,
-};
-
 export const JenisArmada = () => {
   const [isTruckImageModalOpen, setIsTruckImageModalOpen] = useState(false);
   const [selectedImageSrc, setSelectedImageSrc] = useState("");
@@ -92,6 +62,13 @@ export const JenisArmada = () => {
   );
   const jenisTruk = useSewaArmadaStore((state) => state.formValues.jenisTruk);
   const { setField } = useSewaArmadaActions();
+
+  const cargoCategoryId = "f483709a-de4c-4541-b29e-6f4d9a912332";
+
+  // Fetch recommended carriers from API using SWR
+  const { data: carriersData, error: carriersError } = useSWRHook(
+    `v1/orders/carriers/recommended?cargoCategoryId=${cargoCategoryId}`
+  );
 
   const handleSelectArmada = (value) => {
     if (type === "carrier") {
@@ -166,11 +143,14 @@ export const JenisArmada = () => {
       </FormContainer>
 
       <FilterModal
-        data={armadaData[type] || armadaData.carrier}
+        carrierData={carriersData?.Data}
+        truckData={truckData}
         isOpen={isArmadaPopupOpen}
         setIsOpen={setIsArmadaPopupOpen}
         onSelectArmada={handleSelectArmada}
         type={type}
+        isLoadingCarrier={!carriersData && !carriersError && type === "carrier"}
+        errorCarrier={carriersError}
       />
     </>
   );

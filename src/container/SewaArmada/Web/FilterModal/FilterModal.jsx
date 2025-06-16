@@ -157,16 +157,27 @@ const SectionHeader = ({ recommended, type }) => {
 };
 
 // Main Popup Component
-const FilterModal = ({ data, isOpen, setIsOpen, onSelectArmada, type }) => {
+const FilterModal = ({
+  carrierData,
+  truckData,
+  isOpen,
+  setIsOpen,
+  onSelectArmada,
+  type,
+  isLoadingCarrier,
+  errorCarrier,
+}) => {
   const [search, setSearch] = useState("");
+  const [selectedImageSrc, setSelectedImageSrc] = useState("");
+  const [isTruckImageModalOpen, setIsTruckImageModalOpen] = useState(false);
 
   useEffect(() => {
     setSearch("");
   }, [isOpen]);
 
-  const handleArmadaSelect = (title) => {
+  const handleArmadaSelect = (item) => {
     if (onSelectArmada) {
-      onSelectArmada(title);
+      onSelectArmada(item);
     }
     setIsOpen(false);
   };
@@ -185,9 +196,89 @@ const FilterModal = ({ data, isOpen, setIsOpen, onSelectArmada, type }) => {
   };
   const modalTitle = modalTitles[type] || modalTitles.carrier;
 
-  const filteredData = [...data.recommended, ...data.notRecommended].filter(
-    (data) => data.title.toLowerCase().includes(search.toLowerCase())
-  );
+  // Get current data based on type
+  const getCurrentData = () => {
+    if (type === "carrier") {
+      // Loading or error state for carrier data
+      if (isLoadingCarrier) {
+        return { recommended: [], notRecommended: [] };
+      }
+
+      if (errorCarrier) {
+        return { recommended: [], notRecommended: [] };
+      }
+
+      // Transform API carrier data to match component structure
+      if (carrierData) {
+        return {
+          recommended:
+            carrierData.recommendedCarriers?.map((carrier) => ({
+              id: carrier.carrierId,
+              title: carrier.name,
+              src: carrier.image,
+            })) || [],
+          notRecommended:
+            carrierData.nonRecommendedCarriers?.map((carrier) => ({
+              id: carrier.carrierId,
+              title: carrier.name,
+              src: carrier.image,
+            })) || [],
+        };
+      }
+
+      return { recommended: [], notRecommended: [] };
+    } else {
+      // For truck, use dummy data
+      return truckData;
+    }
+  };
+
+  const currentData = getCurrentData();
+
+  // Filter based on search
+  const filteredData = [
+    ...(currentData.recommended || []),
+    ...(currentData.notRecommended || []),
+  ].filter((item) => item?.title?.toLowerCase().includes(search.toLowerCase()));
+
+  // Show loading state for carrier data
+  if (type === "carrier" && isLoadingCarrier) {
+    return (
+      <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick={false}>
+        <ModalContent>
+          <div className="flex h-[300px] flex-col items-center justify-center gap-y-4 px-6 py-9">
+            <div className="text-center">
+              <IconComponent
+                src="/icons/loading.svg"
+                width={48}
+                height={48}
+                className="animate-spin"
+              />
+              <p className="mt-4 text-[14px] font-medium">Memuat data...</p>
+            </div>
+          </div>
+        </ModalContent>
+      </Modal>
+    );
+  }
+
+  // Show error state for carrier data
+  if (type === "carrier" && errorCarrier) {
+    return (
+      <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick={false}>
+        <ModalContent>
+          <div className="flex h-[300px] flex-col items-center justify-center gap-y-4 px-6 py-9">
+            <div className="text-center">
+              <IconComponent src="/icons/error.svg" width={48} height={48} />
+              <p className="mt-4 text-[14px] font-medium text-error-400">
+                Gagal memuat data. Silakan coba lagi.
+              </p>
+            </div>
+          </div>
+        </ModalContent>
+      </Modal>
+    );
+  }
 
   return (
     <>
@@ -195,7 +286,7 @@ const FilterModal = ({ data, isOpen, setIsOpen, onSelectArmada, type }) => {
         <ModalContent>
           <div className="flex flex-col gap-y-4 px-6 py-9">
             {/* Header */}
-            <div className="text-center">
+            <div className="flex w-[424px] justify-center">
               <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
                 {modalTitle}
               </h1>
@@ -203,7 +294,7 @@ const FilterModal = ({ data, isOpen, setIsOpen, onSelectArmada, type }) => {
 
             {/* Search Field */}
             <Input
-              placeholder="Cari Jenis Carrier"
+              placeholder={`Cari Jenis ${type === "carrier" ? "Carrier" : "Truk"}`}
               icon={{
                 left: "/icons/search16.svg",
                 right: search ? (
@@ -226,62 +317,73 @@ const FilterModal = ({ data, isOpen, setIsOpen, onSelectArmada, type }) => {
                 <div className="mb-6">
                   <SectionHeader recommended type={type} />
 
-                  {data.recommended.map((item, key) => (
-                    <Fragment key={key}>
-                      {type === "carrier" ? (
-                        <CarrierItem
-                          title={item.title}
-                          src={item.src}
-                          onClick={() => handleArmadaSelect(item)}
-                          onSelectImage={handleSelectImage}
-                        />
-                      ) : (
-                        <TruckItem
-                          title={item.title}
-                          src={item.src}
-                          cost={item.cost}
-                          capacity={item.capacity}
-                          dimension={item.dimension}
-                          onClick={() => handleArmadaSelect(item)}
-                          onSelectImage={handleSelectImage}
-                        />
-                      )}
-                    </Fragment>
-                  ))}
+                  {currentData.recommended?.length > 0 ? (
+                    currentData.recommended.map((item, key) => (
+                      <Fragment key={key}>
+                        {type === "carrier" ? (
+                          <CarrierItem
+                            title={item.title}
+                            src={item.src}
+                            onClick={() => handleArmadaSelect(item)}
+                            onSelectImage={handleSelectImage}
+                          />
+                        ) : (
+                          <TruckItem
+                            title={item.title}
+                            src={item.src}
+                            cost={item.cost}
+                            capacity={item.capacity}
+                            dimension={item.dimension}
+                            onClick={() => handleArmadaSelect(item)}
+                            onSelectImage={handleSelectImage}
+                          />
+                        )}
+                      </Fragment>
+                    ))
+                  ) : (
+                    <div className="flex h-[92px] items-center justify-center">
+                      <p className="text-[12px] text-neutral-600">
+                        Tidak ada {type === "carrier" ? "carrier" : "truk"} yang
+                        direkomendasikan
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Tidak Direkomendasikan Section */}
-                <div>
-                  <SectionHeader recommended={false} type={type} />
+                {currentData.notRecommended?.length > 0 && (
+                  <div>
+                    <SectionHeader recommended={false} type={type} />
 
-                  <WarningBadge
-                    icon="/icons/warning14.svg"
-                    message="Pilihan carrier di bawah ini berisiko melebihi batas dimensi atau tidak sesuai dengan informasi muatan"
-                  />
+                    <WarningBadge
+                      icon="/icons/warning14.svg"
+                      message={`Pilihan ${type === "carrier" ? "carrier" : "truk"} di bawah ini berisiko melebihi batas dimensi atau tidak sesuai dengan informasi muatan`}
+                    />
 
-                  {data.notRecommended.map((item, key) => (
-                    <Fragment key={key}>
-                      {type === "carrier" ? (
-                        <CarrierItem
-                          title={item.title}
-                          src={item.src}
-                          onClick={() => handleArmadaSelect(item)}
-                          onSelectImage={handleSelectImage}
-                        />
-                      ) : (
-                        <TruckItem
-                          title={item.title}
-                          src={item.src}
-                          cost={item.cost}
-                          capacity={item.capacity}
-                          dimension={item.dimension}
-                          onClick={() => handleArmadaSelect(item)}
-                          onSelectImage={handleSelectImage}
-                        />
-                      )}
-                    </Fragment>
-                  ))}
-                </div>
+                    {currentData.notRecommended.map((item, key) => (
+                      <Fragment key={key}>
+                        {type === "carrier" ? (
+                          <CarrierItem
+                            title={item.title}
+                            src={item.src}
+                            onClick={() => handleArmadaSelect(item)}
+                            onSelectImage={handleSelectImage}
+                          />
+                        ) : (
+                          <TruckItem
+                            title={item.title}
+                            src={item.src}
+                            cost={item.cost}
+                            capacity={item.capacity}
+                            dimension={item.dimension}
+                            onClick={() => handleArmadaSelect(item)}
+                            onSelectImage={handleSelectImage}
+                          />
+                        )}
+                      </Fragment>
+                    ))}
+                  </div>
+                )}
               </div>
             ) : (
               <div>
