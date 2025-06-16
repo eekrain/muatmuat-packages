@@ -4,16 +4,34 @@ import ImageComponent from "@/components/ImageComponent/ImageComponent";
 export const SelectedTruck = ({
   title,
   src,
-  cost,
-  capacity,
-  dimension,
+  price,
+  maxWeight,
+  weightUnit,
+  dimensions,
   onSelectImage,
 }) => {
+  // Format price to Indonesian Rupiah format
+  const formattedPrice = new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  })
+    .format(price || 0)
+    .replace("IDR", "Rp");
+
+  // Format capacity and dimensions from API data
+  const capacity =
+    maxWeight && weightUnit ? `${maxWeight} ${weightUnit}` : "N/A";
+  const dimension = dimensions
+    ? `${dimensions.length} x ${dimensions.width} x ${dimensions.height} ${dimensions.dimensionUnit}`
+    : "N/A";
+
   const details = [
     {
       iconSrc: "/icons/truck16.svg",
       title: "Harga per Unit : ",
-      value: cost,
+      value: formattedPrice,
     },
     {
       iconSrc: "/icons/estimasi-kapasitas16.svg",
@@ -26,6 +44,7 @@ export const SelectedTruck = ({
       value: dimension,
     },
   ];
+
   return (
     <div className="flex gap-x-4">
       <div className="relative size-[96px] overflow-hidden rounded-xl border border-neutral-400">
@@ -39,11 +58,13 @@ export const SelectedTruck = ({
       </div>
       <div className="flex w-[348px]">
         <div className="flex flex-col gap-y-3">
-          <span className={"text-[12px] font-bold leading-[14.4px]"}>
-            {title}
-          </span>
+          <div className="flex flex-col">
+            <span className={"text-[12px] font-bold leading-[14.4px]"}>
+              {title}
+            </span>
+          </div>
           <span className={"text-[14px] font-semibold leading-[15.4px]"}>
-            Rp200.000
+            {formattedPrice}
           </span>
           <div className="flex flex-col gap-y-2">
             {details.map((detail, key) => (

@@ -73,16 +73,36 @@ const TruckItem = ({
   title,
   src,
   onClick,
-  cost,
-  capacity,
-  dimension,
   onSelectImage,
+  // New props based on API response
+  description,
+  price,
+  maxWeight,
+  weightUnit,
+  dimensions,
 }) => {
+  // Format price to Indonesian Rupiah format
+  const formattedPrice = new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  })
+    .format(price || 0)
+    .replace("IDR", "Rp");
+
+  // Format capacity and dimensions from API data
+  const capacity =
+    maxWeight && weightUnit ? `${maxWeight} ${weightUnit}` : "N/A";
+  const dimension = dimensions
+    ? `${dimensions.length} x ${dimensions.width} x ${dimensions.height} ${dimensions.dimensionUnit}`
+    : "N/A";
+
   const details = [
     {
       iconSrc: "/icons/truck16.svg",
       title: "Harga per Unit : ",
-      value: cost,
+      value: formattedPrice,
     },
     {
       iconSrc: "/icons/estimasi-kapasitas16.svg",
@@ -95,6 +115,7 @@ const TruckItem = ({
       value: dimension,
     },
   ];
+
   return (
     <div
       className={
@@ -107,11 +128,13 @@ const TruckItem = ({
 
         <div className="flex w-[348px]">
           <div className="flex flex-col gap-y-3">
-            <span className={"text-[12px] font-bold leading-[14.4px]"}>
-              {title}
-            </span>
+            <div className="flex flex-col">
+              <span className={"text-[12px] font-bold leading-[14.4px]"}>
+                {title}
+              </span>
+            </div>
             <span className={"text-[14px] font-semibold leading-[15.4px]"}>
-              Rp200.000
+              {formattedPrice}
             </span>
             <div className="flex flex-col gap-y-2">
               {details.map((detail, key) => (
@@ -166,6 +189,8 @@ const FilterModal = ({
   type,
   isLoadingCarrier,
   errorCarrier,
+  isLoadingTruck,
+  errorTruck,
 }) => {
   const [search, setSearch] = useState("");
   const [selectedImageSrc, setSelectedImageSrc] = useState("");
@@ -228,7 +253,44 @@ const FilterModal = ({
 
       return { recommended: [], notRecommended: [] };
     } else {
-      // For truck, use dummy data
+      // For truck, use API data if available
+      if (isLoadingTruck) {
+        return { recommended: [], notRecommended: [] };
+      }
+
+      if (errorTruck) {
+        return { recommended: [], notRecommended: [] };
+      }
+
+      if (truckData && truckData.recommendedTrucks) {
+        // Transform API truck data
+        return {
+          recommended:
+            truckData.recommendedTrucks?.map((truck) => ({
+              id: truck.truckTypeId,
+              title: truck.name,
+              description: truck.description,
+              src: truck.image,
+              price: truck.price,
+              maxWeight: truck.maxWeight,
+              weightUnit: truck.weightUnit,
+              dimensions: truck.dimensions,
+            })) || [],
+          notRecommended:
+            truckData.nonRecommendedTrucks?.map((truck) => ({
+              id: truck.truckTypeId,
+              title: truck.name,
+              description: truck.description,
+              src: truck.image,
+              price: truck.price,
+              maxWeight: truck.maxWeight,
+              weightUnit: truck.weightUnit,
+              dimensions: truck.dimensions,
+            })) || [],
+        };
+      }
+
+      // Fallback to dummy data
       return truckData;
     }
   };
@@ -240,45 +302,6 @@ const FilterModal = ({
     ...(currentData.recommended || []),
     ...(currentData.notRecommended || []),
   ].filter((item) => item?.title?.toLowerCase().includes(search.toLowerCase()));
-
-  // Show loading state for carrier data
-  if (type === "carrier" && isLoadingCarrier) {
-    return (
-      <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick={false}>
-        <ModalContent>
-          <div className="flex h-[300px] flex-col items-center justify-center gap-y-4 px-6 py-9">
-            <div className="text-center">
-              <IconComponent
-                src="/icons/loading.svg"
-                width={48}
-                height={48}
-                className="animate-spin"
-              />
-              <p className="mt-4 text-[14px] font-medium">Memuat data...</p>
-            </div>
-          </div>
-        </ModalContent>
-      </Modal>
-    );
-  }
-
-  // Show error state for carrier data
-  if (type === "carrier" && errorCarrier) {
-    return (
-      <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick={false}>
-        <ModalContent>
-          <div className="flex h-[300px] flex-col items-center justify-center gap-y-4 px-6 py-9">
-            <div className="text-center">
-              <IconComponent src="/icons/error.svg" width={48} height={48} />
-              <p className="mt-4 text-[14px] font-medium text-error-400">
-                Gagal memuat data. Silakan coba lagi.
-              </p>
-            </div>
-          </div>
-        </ModalContent>
-      </Modal>
-    );
-  }
 
   return (
     <>
@@ -330,10 +353,12 @@ const FilterModal = ({
                         ) : (
                           <TruckItem
                             title={item.title}
+                            description={item.description}
                             src={item.src}
-                            cost={item.cost}
-                            capacity={item.capacity}
-                            dimension={item.dimension}
+                            price={item.price}
+                            maxWeight={item.maxWeight}
+                            weightUnit={item.weightUnit}
+                            dimensions={item.dimensions}
                             onClick={() => handleArmadaSelect(item)}
                             onSelectImage={handleSelectImage}
                           />
@@ -372,10 +397,12 @@ const FilterModal = ({
                         ) : (
                           <TruckItem
                             title={item.title}
+                            description={item.description}
                             src={item.src}
-                            cost={item.cost}
-                            capacity={item.capacity}
-                            dimension={item.dimension}
+                            price={item.price}
+                            maxWeight={item.maxWeight}
+                            weightUnit={item.weightUnit}
+                            dimensions={item.dimensions}
                             onClick={() => handleArmadaSelect(item)}
                             onSelectImage={handleSelectImage}
                           />
@@ -414,10 +441,12 @@ const FilterModal = ({
                         ) : (
                           <TruckItem
                             title={item.title}
+                            description={item.description}
                             src={item.src}
-                            cost={item.cost}
-                            capacity={item.capacity}
-                            dimension={item.dimension}
+                            price={item.price}
+                            maxWeight={item.maxWeight}
+                            weightUnit={item.weightUnit}
+                            dimensions={item.dimensions}
                             onClick={() => handleArmadaSelect(item)}
                             onSelectImage={handleSelectImage}
                           />

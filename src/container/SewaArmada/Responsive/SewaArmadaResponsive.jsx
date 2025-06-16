@@ -29,7 +29,7 @@ const SewaArmadaResponsive = () => {
   const { setOrderType } = useSewaArmadaActions();
 
   useEffect(() => {
-    setOrderType("instan");
+    setOrderType("INSTANT");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

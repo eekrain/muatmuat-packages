@@ -47,14 +47,14 @@ export const FirstTimer = () => {
             title="Instan"
             description="Pesan jasa angkut untuk penjemputan dan pengiriman segera atau di Hari+1."
             iconType="instant"
-            onClick={() => handleClickArmadaOption("instan")}
+            onClick={() => handleClickArmadaOption("INSTANT")}
           />
 
           <ArmadaOption
             title="Terjadwal"
             description="Pesan jasa angkut untuk penjemputan dan pengiriman di Hari+2 sampai dengan Hari+30."
             iconType="scheduled"
-            onClick={() => handleClickArmadaOption("terjadwal")}
+            onClick={() => handleClickArmadaOption("SCHEDULED")}
           />
         </div>
       </div>

@@ -276,7 +276,7 @@ const InnerLayananTambahan = () => {
 
               <Select
                 placeholder="Pilih Satuan"
-                options={dataLokasi?.postalCodeList.map(
+                options={dataLokasi?.postalCodeList?.map(
                   (item) =>
                     ({
                       label: item.name,
