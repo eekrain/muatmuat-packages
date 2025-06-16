@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from "react";
 
+import { fetcherMuatparts } from "@/lib/axios";
 import { normalizeUserSavedLocation } from "@/lib/normalizers/location";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
@@ -18,7 +19,10 @@ export const useSavedLocation = ({
   );
   const setField = useLocationFormStore((state) => state.setField);
 
-  const { data } = useSWRHook("v1/muatparts/profile/location");
+  const { data } = useSWRHook(
+    "v1/muatparts/profile/location",
+    fetcherMuatparts
+  );
   const userSavedLocationResult = useMemo(() => data?.Data || [], [data]);
 
   const handleSelectUserSavedLocation = useCallback(

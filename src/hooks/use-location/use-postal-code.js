@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo } from "react";
 
+import { fetcherMuatparts } from "@/lib/axios";
 import { normalizePostalCodeData } from "@/lib/normalizers/location";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
@@ -18,7 +19,11 @@ export const usePostalCode = ({
     (state) => state.setLocationPartial
   );
 
-  const { data, trigger } = useSWRMutateHook("v1/autocompleteStreetLocal");
+  const { data, trigger } = useSWRMutateHook(
+    "v1/autocompleteStreetLocal",
+    "POST",
+    fetcherMuatparts
+  );
   const debouncedTrigger = useDebounceCallback(trigger, 500);
   const postalCodeAutoCompleteResult = useMemo(
     () => data?.Data?.data?.Data || [],

@@ -3,8 +3,10 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Portal } from "@radix-ui/react-portal";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { cn } from "@/lib/utils";
 
 export const InputLocationManagementDropdown = ({
+  className,
   locationAutoCompleteResult,
   onSelectSearchResult,
   userSavedLocations,
@@ -17,6 +19,7 @@ export const InputLocationManagementDropdown = ({
   setIsDropdownSearchOpen,
   handleAddToSavedLocation,
 }) => {
+  console.log("🚀 ~ className:", className);
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
   const [dropdownStyle, setDropdownStyle] = useState(null);
@@ -72,13 +75,14 @@ export const InputLocationManagementDropdown = ({
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target)
       ) {
-        setIsDropdownSearchOpen, false;
+        setIsDropdownSearchOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDropdownSearchOpen]);
 
   // Dropdown content
@@ -225,7 +229,7 @@ export const InputLocationManagementDropdown = ({
   );
 
   return (
-    <div className="relative mx-auto mt-4 w-full">
+    <div className={cn("relative mx-auto mt-4 w-full", className)}>
       <div className="relative">
         <input
           ref={inputRef}
