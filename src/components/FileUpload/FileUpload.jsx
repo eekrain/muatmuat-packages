@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 
 import { useSWRMutateHook } from "@/hooks/use-swr";
-import axios from "@/lib/axios";
+import { fetcherMuatparts } from "@/lib/axios";
 
 import Button from "../Button/Button";
 import IconComponent from "../IconComponent/IconComponent";
@@ -34,7 +34,7 @@ const FileUpload = ({
     "v1/muatparts/product/photo",
     "POST",
     (url, arg) => {
-      return axios({
+      return fetcherMuatparts({
         url,
         method: "POST",
         data: arg,

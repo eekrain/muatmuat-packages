@@ -121,6 +121,6 @@ export const normalizeDetailPesananOrderDetail = ({
       dataPaymentInstruction: instructionFormatted,
     };
   } catch (error) {
-    console.error("🚀 ~ error:", error);
+    console.error("🚀 ~ normalizeDetailPesananOrderDetail ~ error:", error);
   }
 };

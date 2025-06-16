@@ -16,7 +16,7 @@ import { useLocationFormStore } from "@/store/forms/locationFormStore";
 import { SavedLocationItem } from "./SavedLocationItem";
 import { SearchResultItem } from "./SearchResultItem";
 
-export const PencarianLokasi = () => {
+export const PencarianLokasiScreen = () => {
   const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
   console.log("🚀 ~ InnerPencarianLokasi ~ params:", params);
@@ -61,7 +61,7 @@ export const PencarianLokasi = () => {
     handleSelectSearchResult(location).then((result) => {
       // If districtData is automatically filled, then immediately navigate to FormLokasiBongkarMuat
       if (result?.district?.value) {
-        navigation.push("/FormLokasiBongkarMuat", { ...params });
+        params?.config?.afterLocationSelected?.();
       }
       // If districtData is not automatically filled, then mark it as manual postal code, handle it later when user filled the postal code
       else {
@@ -73,7 +73,7 @@ export const PencarianLokasi = () => {
   useShallowCompareEffect(() => {
     // If districtData has been filled, then navigate to FormLokasiBongkarMuat
     if (districtData && isManualPostalCodeAutoComplete) {
-      navigation.push("/FormLokasiBongkarMuat", { ...params });
+      params?.afterLocationSelected?.();
     }
   }, [districtData, isManualPostalCodeAutoComplete]);
 
@@ -86,7 +86,7 @@ export const PencarianLokasi = () => {
       console.log("🚀 ~ handleGetCurrentLocation ~ result:", result);
       // If districtData is automatically filled, then immediately navigate to FormLokasiBongkarMuat
       if (result?.district?.value) {
-        navigation.push("/FormLokasiBongkarMuat", { ...params });
+        params?.afterLocationSelected?.();
       }
       // If districtData is not automatically filled, then mark it as manual postal code, handle it later when user filled the postal code
       else {
@@ -98,7 +98,7 @@ export const PencarianLokasi = () => {
   useShallowCompareEffect(() => {
     // If districtData has been filled, then navigate to FormLokasiBongkarMuat
     if (districtData && isManualPostalCodeGPS) {
-      navigation.push("/PinPointMap", { ...params });
+      params?.afterLocationSelected?.();
     }
   }, [districtData, isManualPostalCodeGPS]);
 
@@ -140,7 +140,7 @@ export const PencarianLokasi = () => {
 
   const onSelectUserSavedLocation = (location) => {
     handleSelectUserSavedLocation(location);
-    navigation.push("/FormLokasiBongkarMuat", { ...params });
+    params?.afterLocationSelected?.();
   };
 
   const handleEditSavedLocation = (location) => {

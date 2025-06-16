@@ -121,6 +121,9 @@ export const normalizeDetailPesananFleetSearchDetail = ({
       dataRingkasanPembayaran,
     };
   } catch (error) {
-    console.error("🚀 ~ error:", error);
+    console.error(
+      "🚀 ~ normalizeDetailPesananFleetSearchDetail ~ error:",
+      error
+    );
   }
 };

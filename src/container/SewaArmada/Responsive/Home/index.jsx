@@ -55,30 +55,11 @@ const banners = [
 
 export const SewaArmadaHome = () => {
   const navigation = useResponsiveNavigation();
-  const {
-    formValues,
-    formErrors,
-    setField,
-    setFotoMuatan,
-    addLokasi,
-    removeLokasi,
-    validateForm,
-    orderType,
-    setOrderType,
-    updateLokasi,
-  } = useSewaArmadaStore();
+  const { formValues, addLokasi, removeLokasi } = useSewaArmadaStore();
 
   const isShowCostDetail = true; // nanti pakek usestate
 
-  const handleAddLocation = () => {
-    navigation.push("/PencarianLokasi");
-  };
-
   const handleEditInformasiMuatan = () => {
-    navigation.push("/InformasiMuatan");
-  };
-
-  const handleAddInformasiMuatan = () => {
     navigation.push("/InformasiMuatan");
   };
 
@@ -137,12 +118,22 @@ export const SewaArmadaHome = () => {
               onAddLocation={() => addLokasi("lokasiMuat", null)}
               onDeleteLocation={(index) => removeLokasi("lokasiMuat", index)}
               onEditLocation={(index) => {
+                const params = {
+                  formMode: "muat",
+                  allSelectedLocations: formValues.lokasiBongkar,
+                  defaultValues: formValues.lokasiBongkar[index],
+                  index,
+                };
                 navigation.push("/PencarianLokasi", {
                   config: {
-                    formMode: "muat",
-                    allSelectedLocations: formValues.lokasiMuat,
-                    defaultValues: formValues.lokasiMuat[index],
-                    index,
+                    ...params,
+                    afterLocationSelected: () => {
+                      navigation.push("/FormLokasiBongkarMuat", {
+                        config: {
+                          ...params,
+                        },
+                      });
+                    },
                   },
                 });
               }}
@@ -162,12 +153,20 @@ export const SewaArmadaHome = () => {
               onAddLocation={() => addLokasi("lokasiBongkar", null)}
               onDeleteLocation={(index) => removeLokasi("lokasiBongkar", index)}
               onEditLocation={(index) => {
+                const params = {
+                  formMode: "bongkar",
+                  allSelectedLocations: formValues.lokasiBongkar,
+                  defaultValues: formValues.lokasiBongkar[index],
+                  index,
+                };
                 navigation.push("/PencarianLokasi", {
                   config: {
-                    formMode: "bongkar",
-                    allSelectedLocations: formValues.lokasiBongkar,
-                    defaultValues: formValues.lokasiBongkar[index],
-                    index,
+                    ...params,
+                    afterLocationSelected: () => {
+                      navigation.push("/FormLokasiBongkarMuat", {
+                        ...params,
+                      });
+                    },
                   },
                 });
               }}

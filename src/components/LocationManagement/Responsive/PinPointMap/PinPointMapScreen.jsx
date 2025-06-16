@@ -16,7 +16,7 @@ import {
 } from "@/lib/responsive-navigation";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
-export const PinPointMap = () => {
+export const PinPointMapScreen = () => {
   const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
 

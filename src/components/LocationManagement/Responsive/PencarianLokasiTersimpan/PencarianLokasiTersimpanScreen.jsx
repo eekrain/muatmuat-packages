@@ -11,7 +11,7 @@ import {
 
 import { SavedLocationItem } from "../PencarianLokasi/SavedLocationItem";
 
-export const PencarianLokasiTersimpan = () => {
+export const PencarianLokasiTersimpanScreen = () => {
   const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
   const { searchValue, setSearchValue } = useResponsiveSearch();

@@ -83,5 +83,5 @@ export const fetcherMuatparts = createAxios(
   process.env.NEXT_PUBLIC_INTERNAL_API
 );
 export const fetcherMuatrans = createAxios(
-  "https://apimtrans-az.assetlogistik.com/"
+  process.env.NEXT_PUBLIC_MUATRANS_API
 );

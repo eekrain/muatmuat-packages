@@ -7,7 +7,7 @@ import { FormLabel } from "@/components/Form/Form";
 import Input from "@/components/Form/Input";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
-import axios from "@/lib/axios";
+import { fetcherMuatparts } from "@/lib/axios";
 import { normalizeLocationDataForSaving } from "@/lib/normalizers/location";
 import {
   useResponsiveNavigation,
@@ -17,7 +17,7 @@ import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
-export const FormSimpanLokasiResponsive = () => {
+export const FormSimpanLokasiScreen = () => {
   const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
   console.log("🚀 ~ FormSimpanLokasi ~ params:", params);
@@ -37,7 +37,7 @@ export const FormSimpanLokasiResponsive = () => {
     if (!isValid) return;
 
     if (params.mode === "add") {
-      axios
+      fetcherMuatparts
         .post("v1/muatparts/profile/location", {
           param: normalizeLocationDataForSaving(formValues),
         })
@@ -54,7 +54,7 @@ export const FormSimpanLokasiResponsive = () => {
         });
     } else if (params.mode === "update") {
       console.log("update");
-      axios
+      fetcherMuatparts
         .put("v1/muatparts/profile/location", {
           param: {
             ...normalizeLocationDataForSaving(formValues),

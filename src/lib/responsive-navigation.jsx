@@ -121,14 +121,14 @@ export const ResponsiveRoute = ({ path, component }) => {
     useShallow((state) => state.stack.slice(-1))
   );
   const current = stack[stack.length - 1];
-  console.log("🚀 ~ ResponsiveRoute ~ path:", {
-    path,
-    currentPath: current.path,
-  });
-  console.log(
-    "🚀 ~ ResponsiveRoute ~ path !== current.path:",
-    path !== current.path
-  );
+  // console.log("🚀 ~ ResponsiveRoute ~ path:", {
+  //   path,
+  //   currentPath: current.path,
+  // });
+  // console.log(
+  //   "🚀 ~ ResponsiveRoute ~ path !== current.path:",
+  //   path !== current.path
+  // );
 
   if (path === current.path) return component;
 

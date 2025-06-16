@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 
-import { fetcherMuatparts } from "@/lib/axios";
+import { fetcherMuatrans } from "@/lib/axios";
 
 /**
  * Reusable SWR data fetching hook using axios.
@@ -10,11 +10,7 @@ import { fetcherMuatparts } from "@/lib/axios";
  * @param {import('swr').SWRConfiguration} [options] - SWR options.
  * @returns {import('swr').SWRResponse<T, any>}
  */
-export function useSWRHook(
-  key,
-  customFetcher = fetcherMuatparts,
-  options = {}
-) {
+export function useSWRHook(key, customFetcher = fetcherMuatrans, options = {}) {
   const fetcher = async (url) => {
     const res = await customFetcher.get(url);
     return res.data;
@@ -39,7 +35,7 @@ export function useSWRHook(
 export function useSWRMutateHook(
   key,
   method = "POST",
-  customFetcher = fetcherMuatparts,
+  customFetcher = fetcherMuatrans,
   options = {}
 ) {
   const fetcher = async (url, { arg }) => {

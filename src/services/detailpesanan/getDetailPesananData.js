@@ -5,8 +5,10 @@ import {
   FleetSearchStatusEnum,
   PaymentStatusEnum,
 } from "@/lib/constants/detailpesanan/detailpesanan.enum";
-import { normalizeDetailPesananFleetSearchDetail } from "@/lib/normalizers/detailpesanan/normalizeDetailPesananFleetSearchDetail";
-import { normalizeDetailPesananOrderDetail } from "@/lib/normalizers/detailpesanan/normalizeDetailPesananOrderDetail";
+import {
+  normalizeDetailPesananFleetSearchDetail,
+  normalizeDetailPesananOrderDetail,
+} from "@/lib/normalizers/detailpesanan";
 
 const apiFleetResultSearchStatus = {
   orderId: "550e8400-e29b-41d4-a716-446655440090",

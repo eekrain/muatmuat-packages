@@ -194,7 +194,7 @@ const LayananTambahan = () => {
                 value={formValues.namaPenerima}
                 onChange={handleInputChange}
                 status={formErrors?.namaPenerima ? "error" : null}
-                supportiveText={{ title: formErrors?.namaPenerima ?? "" }}
+                errorMessage={formErrors?.namaPenerima}
               />
             </FormContainer>
 
@@ -213,13 +213,24 @@ const LayananTambahan = () => {
             {/* Alamat Tujuan Field */}
             <FormContainer>
               <FormLabel required>Alamat Tujuan</FormLabel>
-              <Input
-                placeholder="Masukkan Alamat Tujuan"
-                name="alamatTujuan"
-                type="text"
-                value={formValues.alamatTujuan}
-                onChange={handleInputChange}
-              />
+              <div
+                className=""
+                onClick={() => {
+                  navigation.push("/PilihAlamat", {
+                    onSelect: (alamat) => {
+                      setField("alamatTujuan", alamat);
+                    },
+                  });
+                }}
+              >
+                <Input
+                  placeholder="Masukkan Alamat Tujuan"
+                  name="alamatTujuan"
+                  type="text"
+                  value={formValues.alamatTujuan}
+                  onChange={handleInputChange}
+                />
+              </div>
             </FormContainer>
 
             {/* Detail Alamat Tujuan Field */}
