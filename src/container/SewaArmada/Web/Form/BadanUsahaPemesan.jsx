@@ -103,7 +103,7 @@ export const BadanUsahaPemesan = () => {
         onOpenChange={setIsModalOpen}
         closeOnOutsideClick={false}
       >
-        <ModalContent>
+        <ModalContent type="muatmuat">
           <div className="flex flex-col gap-y-4 px-6 py-8">
             <div className="flex w-[424px] justify-center">
               <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
