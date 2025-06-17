@@ -2,13 +2,9 @@
 
 import { useEffect } from "react";
 
+import { BannerCarousel } from "@/components/BannerCarousel/BannerCarousel";
 import Card from "@/components/Card/Card";
-// import SWRHandler from "@/services/useSWRHook";
-import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
-import { useLoadingAction } from "@/store/loadingStore";
-
-import { BannerCarousel } from "../../../components/BannerCarousel/BannerCarousel";
-import { FirstTimer } from "./FirstTimer/FirstTimer";
+import { FirstTimer } from "@/container/SewaArmada/Web/FirstTimer/FirstTimer";
 import {
   AsuransiBarang,
   BadanUsahaPemesan,
@@ -23,10 +19,13 @@ import {
   ServiceTypeSelect,
   TipeMuatan,
   WaktuMuat,
-} from "./Form";
-import DeskripsiMuatan from "./Form/DeskripsiMuatan";
-import { SummaryPanel } from "./SummaryPanel/SummaryPanel";
-import { WelcomeCard } from "./WelcomeCard/WelcomeCard";
+} from "@/container/SewaArmada/Web/Form";
+import DeskripsiMuatan from "@/container/SewaArmada/Web/Form/DeskripsiMuatan";
+import SertifikasiHalal from "@/container/SewaArmada/Web/Form/SertifikasiHalal";
+import { SummaryPanel } from "@/container/SewaArmada/Web/SummaryPanel/SummaryPanel";
+import { WelcomeCard } from "@/container/SewaArmada/Web/WelcomeCard/WelcomeCard";
+import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
+import { useLoadingAction } from "@/store/loadingStore";
 
 const banners = [
   {
@@ -84,6 +83,7 @@ export default function SewaArmadaWeb() {
                 <LokasiBongkar />
                 <TipeMuatan />
                 <JenisMuatan />
+                <SertifikasiHalal />
                 <InformasiMuatan />
                 <FotoMuatan />
                 <DeskripsiMuatan />
