@@ -168,7 +168,8 @@ const apiResultOrderDetail = {
         "/img/muatan3.png",
         "/img/muatan4.png",
       ],
-      cargoDescription: "",
+      cargoDescription:
+        "tolong kirim muatan dengan hati hati, jangan sampai rusak dan hancur, terimakasih",
       numberDeliveryOrder: ["DO123456ABCD"],
     },
     changeCount: 0,
