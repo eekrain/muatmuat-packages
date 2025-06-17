@@ -5,13 +5,12 @@ import { normalizeUserSavedLocation } from "@/lib/normalizers/location";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
 import { useSWRHook } from "../use-swr";
+import { fetcher } from "./fetcher";
 
 export const useSavedLocation = ({
   setCoordinates,
   setAutoCompleteSearchPhrase,
   setIsDropdownSearchOpen,
-  setIsModalPostalCodeOpen,
-  setLocationPostalCodeSearchPhrase,
   setDontTriggerPostalCodeModal,
 }) => {
   const setLocationPartial = useLocationFormStore(
@@ -26,10 +25,20 @@ export const useSavedLocation = ({
   const userSavedLocationResult = useMemo(() => data?.Data || [], [data]);
 
   const handleSelectUserSavedLocation = useCallback(
-    (location) => {
-      console.log("🚀 ~ location:", location);
-      const result = normalizeUserSavedLocation(location);
-      setLocationPartial(result);
+    async (location) => {
+      const supportiveData = await fetcher.getLocationByLatLong({
+        latitude: location.Latitude,
+        longitude: location.Longitude,
+      });
+
+      setLocationPartial(
+        normalizeUserSavedLocation(
+          location,
+          supportiveData?.kecamatanList,
+          supportiveData?.postalCodeList
+        )
+      );
+
       if (location.PicName) setField("namaPIC", location.PicName);
       if (location.PicNoTelp) setField("noHPPIC", location.PicNoTelp);
       if (location.AddressDetail)

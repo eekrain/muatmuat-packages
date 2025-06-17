@@ -1,3 +1,5 @@
+import { Fragment } from "react";
+
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
 import {
   useResponsiveNavigation,
@@ -34,7 +36,7 @@ const OpsiPengiriman = () => {
 
             {/* Options Section */}
             {category.options.map((option, optionIndex) => (
-              <>
+              <Fragment key={optionIndex}>
                 {/* Option Row */}
                 <button
                   className={`flex w-full flex-col items-start gap-y-4 ${optionIndex < category.options.length - 1 ? "border-b border-b-neutral-400 pb-4" : ""}`}
@@ -61,7 +63,7 @@ const OpsiPengiriman = () => {
                     {option.estimation}
                   </span>
                 </button>
-              </>
+              </Fragment>
             ))}
           </div>
         ))}

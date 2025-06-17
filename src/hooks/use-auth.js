@@ -44,9 +44,6 @@ export const useInitAuthentication = () => {
         fetcherMuatparts.get("v1/register/checkmatrix"),
         fetcherMuatparts.get("v1/muatparts/auth/credential-check"),
       ]);
-      console.log("🚀 ~ credentialCheck ~ resUser:", resUser);
-      console.log("🚀 ~ credentialCheck ~ resMatrix:", resMatrix);
-      console.log("🚀 ~ credentialCheck ~ resCredential:", resCredential);
 
       // console.log("🚀 ~ init ~ resCredential:", resCredential);
       const { accessToken, refreshtoken, ...user } = resCredential.data?.Data;

@@ -1,20 +1,20 @@
 import { useEffect, useMemo, useRef } from "react";
 
-import { useLocationContext } from "@/hooks/use-location";
+import { useLocationContext } from "@/hooks/use-location/use-location";
 import SearchBarResponsiveLayout from "@/layout/ResponsiveLayout/SearchBarResponsiveLayout";
 import { normalizeUserSavedLocation } from "@/lib/normalizers/location";
 import {
   useResponsiveNavigation,
   useResponsiveRouteParams,
-  useResponsiveSearch,
 } from "@/lib/responsive-navigation";
+import { useResponsiveSearchStore } from "@/store/zustand/responsiveSearchStore";
 
 import { SavedLocationItem } from "../PencarianLokasi/SavedLocationItem";
 
-export const PencarianLokasiTersimpanScreen = () => {
+const PencarianLokasiTersimpanScreen = () => {
   const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
-  const { searchValue, setSearchValue } = useResponsiveSearch();
+  const { searchValue, setSearchValue } = useResponsiveSearchStore();
 
   const { userSavedLocationResult, handleSelectUserSavedLocation } =
     useLocationContext();
@@ -89,3 +89,5 @@ export const PencarianLokasiTersimpanScreen = () => {
     </SearchBarResponsiveLayout>
   );
 };
+
+export default PencarianLokasiTersimpanScreen;

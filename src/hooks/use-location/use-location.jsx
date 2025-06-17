@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
 
+import useDevice from "../use-device";
 import { fetcher } from "./fetcher";
 import { useAutoComplete } from "./use-auto-complete";
 import { useGetCurrentLocation } from "./use-get-current-location";
@@ -14,6 +15,7 @@ export const DEFAULT_COORDINATES = {
 const LocationContext = createContext(null);
 
 export const LocationProvider = ({ children }) => {
+  const { isMobile } = useDevice();
   const [coordinates, setCoordinates] = useState(DEFAULT_COORDINATES);
   const [autoCompleteSearchPhrase, setAutoCompleteSearchPhrase] = useState("");
   const [isDropdownSearchOpen, setIsDropdownSearchOpen] = useState(false);
@@ -35,13 +37,13 @@ export const LocationProvider = ({ children }) => {
     setIsDropdownSearchOpen,
   });
   const getCurrentLocation = useGetCurrentLocation({
-    coordinates,
     setCoordinates,
     setAutoCompleteSearchPhrase,
     setIsModalPostalCodeOpen,
     setLocationPostalCodeSearchPhrase,
     dontTriggerPostalCodeModal,
     setDontTriggerPostalCodeModal,
+    setIsDropdownSearchOpen,
   });
   const postalCode = usePostalCode({
     setIsModalPostalCodeOpen,
@@ -53,8 +55,6 @@ export const LocationProvider = ({ children }) => {
     setCoordinates,
     setAutoCompleteSearchPhrase,
     setIsDropdownSearchOpen,
-    setIsModalPostalCodeOpen,
-    setLocationPostalCodeSearchPhrase,
     setDontTriggerPostalCodeModal,
   });
 

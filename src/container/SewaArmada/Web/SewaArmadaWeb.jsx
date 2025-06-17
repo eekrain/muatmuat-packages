@@ -1,8 +1,11 @@
 "use client";
 
+import { useEffect } from "react";
+
 import Card from "@/components/Card/Card";
 // import SWRHandler from "@/services/useSWRHook";
 import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
+import { useLoadingAction } from "@/store/loadingStore";
 
 import { BannerCarousel } from "../../../components/BannerCarousel/BannerCarousel";
 import { FirstTimer } from "./FirstTimer/FirstTimer";
@@ -48,6 +51,12 @@ const banners = [
 
 export default function SewaArmadaWeb() {
   const orderType = useSewaArmadaStore((state) => state.orderType);
+
+  const { setIsGlobalLoading } = useLoadingAction();
+  useEffect(() => {
+    setIsGlobalLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <main className="flex min-h-screen flex-col items-center gap-6 px-10">

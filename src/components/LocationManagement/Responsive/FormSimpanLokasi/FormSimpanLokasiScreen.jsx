@@ -17,7 +17,7 @@ import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
-export const FormSimpanLokasiScreen = () => {
+const FormSimpanLokasiScreen = () => {
   const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
   console.log("🚀 ~ FormSimpanLokasi ~ params:", params);
@@ -228,3 +228,5 @@ export const FormSimpanLokasiScreen = () => {
     </FormResponsiveLayout>
   );
 };
+
+export default FormSimpanLokasiScreen;

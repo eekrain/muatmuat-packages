@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo } from "react";
 
 import { fetcherMuatparts } from "@/lib/axios";
-import { useResponsiveSearch } from "@/lib/responsive-navigation";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
+import { useResponsiveSearchStore } from "@/store/zustand/responsiveSearchStore";
 
 import { useDebounceCallback } from "../use-debounce-callback";
 import useDevice from "../use-device";
@@ -20,7 +20,9 @@ export const useAutoComplete = ({
   setIsDropdownSearchOpen,
 }) => {
   const { isMobile } = useDevice();
-  const { searchValue: responsiveSearchValue } = useResponsiveSearch();
+  const responsiveSearchValue = useResponsiveSearchStore(
+    (state) => state.searchValue
+  );
   useEffect(() => {
     if (isMobile) {
       setAutoCompleteSearchPhrase(responsiveSearchValue);

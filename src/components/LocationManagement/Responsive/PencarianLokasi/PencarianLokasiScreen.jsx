@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { ModalPostalCodeResponsive } from "@/components/LocationManagement/Responsive/ModalPostalCodeResponsive";
-import { useLocationContext } from "@/hooks/use-location";
+import { useLocationContext } from "@/hooks/use-location/use-location";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import SearchBarResponsiveLayout from "@/layout/ResponsiveLayout/SearchBarResponsiveLayout";
 import { normalizeUserSavedLocation } from "@/lib/normalizers/location";
@@ -10,13 +10,12 @@ import {
   useResponsiveNavigation,
   useResponsiveRouteParams,
 } from "@/lib/responsive-navigation";
-import { toast } from "@/lib/toast";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
 import { SavedLocationItem } from "./SavedLocationItem";
 import { SearchResultItem } from "./SearchResultItem";
 
-export const PencarianLokasiScreen = () => {
+const PencarianLokasiScreen = () => {
   const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
   console.log("🚀 ~ InnerPencarianLokasi ~ params:", params);
@@ -24,8 +23,9 @@ export const PencarianLokasiScreen = () => {
   const districtData = useLocationFormStore(
     (s) => s.formValues.dataLokasi?.district
   );
-  const validateLokasiOnSelect = useLocationFormStore(
-    (s) => s.validateLokasiOnSelect
+
+  const dataAddress = useLocationFormStore(
+    (s) => s.formValues.dataLokasi?.location?.name
   );
 
   const {
@@ -46,19 +46,12 @@ export const PencarianLokasiScreen = () => {
   const [isManualPostalCodeAutoComplete, setIsManualPostalCodeAutoComplete] =
     useState(false);
 
-  const onLocationSearchSelected = (location) => {
-    const error = validateLokasiOnSelect(
-      params.config.formMode,
-      params.config.index,
-      location.Title
-    );
+  const onLocationSearchSelected = async (location) => {
+    try {
+      params?.config?.validateLokasiOnSelect?.(location.Title);
 
-    if (error) {
-      toast.error(error);
-      return;
-    }
+      const result = await handleSelectSearchResult(location);
 
-    handleSelectSearchResult(location).then((result) => {
       // If districtData is automatically filled, then immediately navigate to FormLokasiBongkarMuat
       if (result?.district?.value) {
         params?.config?.afterLocationSelected?.();
@@ -67,13 +60,15 @@ export const PencarianLokasiScreen = () => {
       else {
         setIsManualPostalCodeAutoComplete(true);
       }
-    });
+    } catch (error) {
+      console.log("Error selecting search result", error);
+    }
   };
 
   useShallowCompareEffect(() => {
     // If districtData has been filled, then navigate to FormLokasiBongkarMuat
     if (districtData && isManualPostalCodeAutoComplete) {
-      params?.afterLocationSelected?.();
+      params?.config?.afterLocationSelected?.();
     }
   }, [districtData, isManualPostalCodeAutoComplete]);
 
@@ -81,26 +76,35 @@ export const PencarianLokasiScreen = () => {
 
   const [isManualPostalCodeGPS, setIsManualPostalCodeGPS] = useState(false);
 
-  const onGetCurrentLocation = () => {
-    handleGetCurrentLocation().then((result) => {
-      console.log("🚀 ~ handleGetCurrentLocation ~ result:", result);
+  const onGetCurrentLocation = async () => {
+    try {
+      const result = await handleGetCurrentLocation();
+
       // If districtData is automatically filled, then immediately navigate to FormLokasiBongkarMuat
       if (result?.district?.value) {
-        params?.afterLocationSelected?.();
+        params?.config?.validateLokasiOnSelect?.(result.location.name);
+        navigation.push("/PinPointMap", { ...params });
       }
       // If districtData is not automatically filled, then mark it as manual postal code, handle it later when user filled the postal code
       else {
         setIsManualPostalCodeGPS(true);
       }
-    });
+    } catch (error) {
+      console.log("Error getting current location", error);
+    }
   };
 
   useShallowCompareEffect(() => {
     // If districtData has been filled, then navigate to FormLokasiBongkarMuat
     if (districtData && isManualPostalCodeGPS) {
-      params?.afterLocationSelected?.();
+      try {
+        params?.config?.validateLokasiOnSelect?.(dataAddress);
+        navigation.push("/PinPointMap", { ...params });
+      } catch (error) {
+        console.log("Error getting current location", error);
+      }
     }
-  }, [districtData, isManualPostalCodeGPS]);
+  }, [districtData, dataAddress, isManualPostalCodeGPS]);
 
   // ======================================================================================================
 
@@ -139,8 +143,13 @@ export const PencarianLokasiScreen = () => {
   // ======================================================================================================
 
   const onSelectUserSavedLocation = (location) => {
-    handleSelectUserSavedLocation(location);
-    params?.afterLocationSelected?.();
+    try {
+      params?.config?.validateLokasiOnSelect?.(location.Address);
+      handleSelectUserSavedLocation(location);
+      params?.config?.afterLocationSelected?.();
+    } catch (error) {
+      console.log("Error selecting user saved location", error);
+    }
   };
 
   const handleEditSavedLocation = (location) => {
@@ -185,13 +194,7 @@ export const PencarianLokasiScreen = () => {
   }, []);
 
   return (
-    <SearchBarResponsiveLayout
-      placeholder={
-        params.config.formMode === "muat"
-          ? "Cari Lokasi Muat"
-          : "Cari Lokasi Bongkar"
-      }
-    >
+    <SearchBarResponsiveLayout placeholder={params.layout.title}>
       <div className="flex h-full flex-col gap-5 px-4 py-5">
         {autoCompleteSearchResult && autoCompleteSearchPhrase ? (
           <div className="flex h-full flex-col gap-4">
@@ -335,6 +338,8 @@ export const PencarianLokasiScreen = () => {
     </SearchBarResponsiveLayout>
   );
 };
+
+export default PencarianLokasiScreen;
 
 const recentSearches = [
   {

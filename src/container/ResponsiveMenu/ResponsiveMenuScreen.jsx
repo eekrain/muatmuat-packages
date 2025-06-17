@@ -13,9 +13,9 @@ import {
 import DefaultResponsiveLayout from "@/layout/ResponsiveLayout/DefaultResponsiveLayout";
 import { useNotificationCounterStore } from "@/store/notificationCounterStore";
 
-export const ResponsiveMenu = () => {
+const ResponsiveMenuScreen = () => {
   const [isSettingsExpanded, setIsSettingsExpanded] = useState(true);
-  const { notification, chat, order } = useNotificationCounterStore();
+  const { order } = useNotificationCounterStore();
 
   const navigationItems = [
     {
@@ -130,3 +130,5 @@ export const ResponsiveMenu = () => {
     </DefaultResponsiveLayout>
   );
 };
+
+export default ResponsiveMenuScreen;

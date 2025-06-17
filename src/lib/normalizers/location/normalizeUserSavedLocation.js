@@ -3,6 +3,16 @@ export const normalizeUserSavedLocation = (
   kecamatanList = [],
   postalCodeList = []
 ) => {
+  const district = {
+    name: data.District,
+    value: data.DistrictID.toString(),
+  };
+
+  const postalCode = {
+    name: data.PostalCode,
+    value: data.PostalCode,
+  };
+
   return {
     location: {
       name: data.Address,
@@ -12,10 +22,7 @@ export const normalizeUserSavedLocation = (
       latitude: data.Latitude,
       longitude: data.Longitude,
     },
-    district: {
-      name: data.District,
-      value: data.DistrictID.toString(),
-    },
+    district,
     city: {
       name: data.City,
       value: data.CityID,
@@ -24,11 +31,8 @@ export const normalizeUserSavedLocation = (
       name: data.Province,
       value: data.ProvinceID,
     },
-    postalCode: {
-      name: data.PostalCode,
-      value: data.PostalCode,
-    },
-    kecamatanList,
-    postalCodeList,
+    postalCode,
+    kecamatanList: kecamatanList.length > 0 ? kecamatanList : [district],
+    postalCodeList: postalCodeList.length > 0 ? postalCodeList : [postalCode],
   };
 };

@@ -11,6 +11,7 @@ const getLocationByLatLong = async (coordinates) => {
     Long: coordinates.longitude,
   });
   const getLocation = res1.data.Data;
+  console.log("🚀 ~ getLocationByLatLong ~ getLocation:", getLocation);
 
   const res2 = await fetcherMuatparts.post(
     "v1/district_by_token",

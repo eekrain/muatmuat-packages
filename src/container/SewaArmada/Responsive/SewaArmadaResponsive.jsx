@@ -2,24 +2,71 @@
 
 import { useEffect } from "react";
 
-import { FormSimpanLokasiScreen } from "@/components/LocationManagement/Responsive/FormSimpanLokasi/FormSimpanLokasiScreen";
-import { PencarianLokasiScreen } from "@/components/LocationManagement/Responsive/PencarianLokasi/PencarianLokasiScreen";
-import { PencarianLokasiTersimpanScreen } from "@/components/LocationManagement/Responsive/PencarianLokasiTersimpan/PencarianLokasiTersimpanScreen";
-import { ResponsiveMenu } from "@/container/ResponsiveMenu";
-import { LocationProvider } from "@/hooks/use-location";
-import { ResponsiveRoute } from "@/lib/responsive-navigation";
+import { LocationProvider } from "@/hooks/use-location/use-location";
+import {
+  ResponsiveProvider,
+  ResponsiveRoute,
+} from "@/lib/responsive-navigation";
+import { dynamicScreen } from "@/lib/utils/dynamic-screen";
 import { useSewaArmadaActions } from "@/store/forms/sewaArmadaStore";
+import { useLoadingAction } from "@/store/loadingStore";
 
-import { PinPointMapScreen } from "../../../components/LocationManagement/Responsive/PinPointMap/PinPointMapScreen";
-import CariNamaMuatan from "./CariNamaMuatan/CariNamaMuatan";
-import { FormLokasiBongkarMuat } from "./FormLokasiBongkarMuat";
-import { SewaArmadaHome } from "./Home";
-import InformasiMuatanScreen from "./InformasiMuatan/InformasiMuatanScreen";
-import InformasiPesanan from "./InformasiPesanan/InformasiPesanan";
-import { JenisCarrierScreen } from "./JenisCarrier/JenisCarrierScree";
-import LayananTambahan from "./LayananTambahan/LayananTambahan";
-import OpsiPembayaran from "./OpsiPembayaran/OpsiPembayaran";
-import OpsiPengiriman from "./OpsiPengiriman/OpsiPengiriman";
+// Import the default screen without dynamic import
+import SewaArmadaHomeScreen from "./Home/HomeScreen";
+
+// Dynamic import all the other screens, so that the user doesn't have to wait for the other screens to load
+// Screen components needs to be default exported
+const CariNamaMuatanScreen = dynamicScreen(
+  () => import("./CariNamaMuatan/CariNamaMuatanScreen")
+);
+const FormLokasiBongkarMuatScreen = dynamicScreen(
+  () => import("./FormLokasiBongkarMuat/FormLokasiBongkarMuatScreen")
+);
+const InformasiMuatanScreen = dynamicScreen(
+  () => import("./InformasiMuatan/InformasiMuatanScreen")
+);
+const JenisCarrierScreen = dynamicScreen(
+  () => import("./JenisCarrier/JenisCarrierScreen")
+);
+const LayananTambahanScreen = dynamicScreen(
+  () => import("./LayananTambahan/LayananTambahanScreen")
+);
+const OpsiPembayaranScreen = dynamicScreen(
+  () => import("./OpsiPembayaran/OpsiPembayaranScreen")
+);
+const OpsiPengirimanScreen = dynamicScreen(
+  () => import("./OpsiPengiriman/OpsiPengirimanScreen")
+);
+const InformasiPesananScreen = dynamicScreen(
+  () => import("./InformasiPesanan/InformasiPesananScreen")
+);
+const ResponsiveMenuScreen = dynamicScreen(
+  () => import("@/container/ResponsiveMenu/ResponsiveMenuScreen")
+);
+const PencarianLokasiScreen = dynamicScreen(
+  () =>
+    import(
+      "@/components/LocationManagement/Responsive/PencarianLokasi/PencarianLokasiScreen"
+    )
+);
+const PinPointMapScreen = dynamicScreen(
+  () =>
+    import(
+      "@/components/LocationManagement/Responsive/PinPointMap/PinPointMapScreen"
+    )
+);
+const PencarianLokasiTersimpanScreen = dynamicScreen(
+  () =>
+    import(
+      "@/components/LocationManagement/Responsive/PencarianLokasiTersimpan/PencarianLokasiTersimpanScreen"
+    )
+);
+const FormSimpanLokasiScreen = dynamicScreen(
+  () =>
+    import(
+      "@/components/LocationManagement/Responsive/FormSimpanLokasi/FormSimpanLokasiScreen"
+    )
+);
 
 const SewaArmadaResponsive = () => {
   // const navigation = useResponsiveNavigation();
@@ -27,30 +74,38 @@ const SewaArmadaResponsive = () => {
   //   navigation.replace("/JenisCarrier");
   // }, []);
   const { setOrderType } = useSewaArmadaActions();
+  const { setIsGlobalLoading } = useLoadingAction();
 
   useEffect(() => {
     setOrderType("INSTANT");
+    setIsGlobalLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <>
-      <ResponsiveRoute path="/" component={<SewaArmadaHome />} />
+    <ResponsiveProvider>
+      <ResponsiveRoute path="/" component={<SewaArmadaHomeScreen />} />
       <ResponsiveRoute
         path="/FormLokasiBongkarMuat"
-        component={<FormLokasiBongkarMuat />}
+        component={<FormLokasiBongkarMuatScreen />}
       />
 
       <ResponsiveRoute
         path="/InformasiMuatan"
         component={<InformasiMuatanScreen />}
       />
-      <ResponsiveRoute path="/CariNamaMuatan" component={<CariNamaMuatan />} />
+      <ResponsiveRoute
+        path="/CariNamaMuatan"
+        component={<CariNamaMuatanScreen />}
+      />
       <ResponsiveRoute
         path="/LayananTambahan"
-        component={<LayananTambahan />}
+        component={<LayananTambahanScreen />}
       />
-      <ResponsiveRoute path="/OpsiPengiriman" component={<OpsiPengiriman />} />
+      <ResponsiveRoute
+        path="/OpsiPengiriman"
+        component={<OpsiPengirimanScreen />}
+      />
 
       <LocationProvider>
         <ResponsiveRoute
@@ -77,16 +132,19 @@ const SewaArmadaResponsive = () => {
       {/* STEP 2 */}
       <ResponsiveRoute
         path="/InformasiPesanan"
-        component={<InformasiPesanan />}
+        component={<InformasiPesananScreen />}
       />
-      <ResponsiveRoute path="/OpsiPembayaran" component={<OpsiPembayaran />} />
+      <ResponsiveRoute
+        path="/OpsiPembayaran"
+        component={<OpsiPembayaranScreen />}
+      />
 
       <ResponsiveRoute
         path="/JenisCarrier"
         component={<JenisCarrierScreen />}
       />
-      <ResponsiveRoute path="/menu" component={<ResponsiveMenu />} />
-    </>
+      <ResponsiveRoute path="/menu" component={<ResponsiveMenuScreen />} />
+    </ResponsiveProvider>
   );
 };
 

@@ -6,7 +6,7 @@ import LightboxTrigger, {
 } from "@/components/Lightbox/Lighbox";
 import SearchBarResponsiveLayout from "@/layout/ResponsiveLayout/SearchBarResponsiveLayout";
 
-export const JenisCarrierScreen = () => {
+const JenisCarrierScreen = () => {
   return (
     <SearchBarResponsiveLayout placeholder="Cari Nama Muatan">
       <div className="bg-neutral-200">
@@ -67,6 +67,8 @@ export const JenisCarrierScreen = () => {
     </SearchBarResponsiveLayout>
   );
 };
+
+export default JenisCarrierScreen;
 
 const CarrierItem = ({ carrier }) => (
   <div className="flex items-center gap-3 py-2">

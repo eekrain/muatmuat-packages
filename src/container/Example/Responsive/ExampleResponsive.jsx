@@ -1,6 +1,6 @@
 "use client";
 
-import { ResponsiveMenu } from "@/container/ResponsiveMenu";
+import { ResponsiveMenu } from "@/container/ResponsiveMenu/ResponsiveMenuScreen";
 import DefaultResponsiveLayout from "@/layout/ResponsiveLayout/DefaultResponsiveLayout";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
 import SearchBarResponsiveLayout from "@/layout/ResponsiveLayout/SearchBarResponsiveLayout";

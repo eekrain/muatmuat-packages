@@ -7,30 +7,13 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { TimelineField } from "@/components/Timeline/timeline-field";
 import DefaultResponsiveLayout from "@/layout/ResponsiveLayout/DefaultResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import { toast } from "@/lib/toast";
+import { useLocationFormStore } from "@/store/forms/locationFormStore";
 import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 
 import { BannerCarousel } from "../../../../components/BannerCarousel/BannerCarousel";
 import { ModalFirstTimer } from "./ModalFirstTimer";
 import WaktuMuatBottomsheet from "./WaktuMuat/WaktuMuat";
-
-const FormLabelContainer = ({ children }) => {
-  return (
-    <div className="flex items-center gap-x-1 text-neutral-900">{children}</div>
-  );
-};
-
-const FormLabelOld = ({ className, title, required = true }) => {
-  return (
-    <>
-      <span className={`text-[14px] leading-[15.4px] ${className}`}>
-        {`${title}${required ? "*" : ""}`}
-      </span>
-      {!required ? (
-        <span className="text-[10px] leading-[10px]">{"(Opsional)"}</span>
-      ) : null}
-    </>
-  );
-};
 
 const banners = [
   {
@@ -53,7 +36,7 @@ const banners = [
   },
 ];
 
-export const SewaArmadaHome = () => {
+const SewaArmadaHomeScreen = () => {
   const navigation = useResponsiveNavigation();
   const { formValues, addLokasi, removeLokasi } = useSewaArmadaStore();
 
@@ -66,6 +49,10 @@ export const SewaArmadaHome = () => {
   const handleEditLayananTambahan = () => {
     navigation.push("/LayananTambahan");
   };
+
+  const validateLokasiOnSelect = useLocationFormStore(
+    (s) => s.validateLokasiOnSelect
+  );
 
   return (
     <DefaultResponsiveLayout mode="default">
@@ -120,8 +107,8 @@ export const SewaArmadaHome = () => {
               onEditLocation={(index) => {
                 const params = {
                   formMode: "muat",
-                  allSelectedLocations: formValues.lokasiBongkar,
-                  defaultValues: formValues.lokasiBongkar[index],
+                  allSelectedLocations: formValues.lokasiMuat,
+                  defaultValues: formValues.lokasiMuat[index],
                   index,
                 };
                 navigation.push("/PencarianLokasi", {
@@ -132,8 +119,26 @@ export const SewaArmadaHome = () => {
                         config: {
                           ...params,
                         },
+                        layout: {
+                          title: "Lokasi Muat",
+                        },
                       });
                     },
+                    validateLokasiOnSelect: (selectedAddress) => {
+                      const error = validateLokasiOnSelect(
+                        "muat",
+                        index,
+                        selectedAddress
+                      );
+
+                      if (error) {
+                        toast.error(error);
+                        throw new Error(error);
+                      }
+                    },
+                  },
+                  layout: {
+                    title: "Cari Lokasi Muat",
                   },
                 });
               }}
@@ -164,9 +169,29 @@ export const SewaArmadaHome = () => {
                     ...params,
                     afterLocationSelected: () => {
                       navigation.push("/FormLokasiBongkarMuat", {
-                        ...params,
+                        config: {
+                          ...params,
+                        },
+                        layout: {
+                          title: "Lokasi Bongkar",
+                        },
                       });
                     },
+                    validateLokasiOnSelect: (selectedAddress) => {
+                      const error = validateLokasiOnSelect(
+                        "bongkar",
+                        index,
+                        selectedAddress
+                      );
+
+                      if (error) {
+                        toast.error(error);
+                        throw new Error(error);
+                      }
+                    },
+                  },
+                  layout: {
+                    title: "Cari Lokasi Bongkar",
                   },
                 });
               }}
@@ -251,7 +276,7 @@ export const SewaArmadaHome = () => {
           </FormContainer>
 
           {/* Asuransi Barang Field */}
-          <div className="space-y-4">
+          <FormContainer>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1">
                 <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
@@ -271,17 +296,11 @@ export const SewaArmadaHome = () => {
                 Gratis perlindungan hingga Rp10.000.000
               </span>
             </div>
-          </div>
+          </FormContainer>
 
           {/* Layanan Tambahan Field */}
-          <div className="flex flex-col gap-y-4">
-            <FormLabelContainer>
-              <FormLabelOld
-                className="font-semibold"
-                title="Layanan Tambahan"
-                required={false}
-              />
-            </FormLabelContainer>
+          <FormContainer>
+            <FormLabel required={false}>Layanan Tambahan</FormLabel>
             <button
               className={
                 "flex h-8 items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-3"
@@ -296,7 +315,7 @@ export const SewaArmadaHome = () => {
               </div>
               <IconComponent src="/icons/chevron-right.svg" />
             </button>
-          </div>
+          </FormContainer>
         </div>
       </div>
 
@@ -335,3 +354,4 @@ export const SewaArmadaHome = () => {
     </DefaultResponsiveLayout>
   );
 };
+export default SewaArmadaHomeScreen;

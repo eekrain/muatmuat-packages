@@ -7,10 +7,10 @@ import SearchBarResponsiveLayout from "@/layout/ResponsiveLayout/SearchBarRespon
 import {
   useResponsiveNavigation,
   useResponsiveRouteParams,
-  useResponsiveSearch,
 } from "@/lib/responsive-navigation";
 import { searchFilter } from "@/lib/utils/filter";
 import { useInformasiMuatanStore } from "@/store/forms/informasiMuatanStore";
+import { useResponsiveSearchStore } from "@/store/zustand/responsiveSearchStore";
 
 const namaMuatanOptions = [
   { value: "71b8881a-66ff-454d-a0c6-66b26b84628d", label: "Furniture Kayu" },
@@ -32,10 +32,10 @@ const namaMuatanOptions = [
   },
 ];
 
-const CariNamaMuatan = () => {
+const CariNamaMuatanScreen = () => {
   const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
-  const { searchValue, setSearchValue } = useResponsiveSearch();
+  const { searchValue, setSearchValue } = useResponsiveSearchStore();
   const { updateInformasiMuatan } = useInformasiMuatanStore();
 
   useEffect(() => {
@@ -108,4 +108,4 @@ const CariNamaMuatan = () => {
   );
 };
 
-export default CariNamaMuatan;
+export default CariNamaMuatanScreen;

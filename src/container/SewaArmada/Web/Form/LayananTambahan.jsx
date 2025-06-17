@@ -6,14 +6,10 @@ import { FormContainer, FormLabel } from "@/components/Form/Form";
 import Input from "@/components/Form/Input";
 import { Select } from "@/components/Form/Select";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { InputLocationManagementDropdown } from "@/components/LocationManagement/Web/InputLocationManagementDropdown";
-import ModalFormSimpanLokasiWeb from "@/components/LocationManagement/Web/ModalFormSimpanLokasiWeb";
-import { ModalPostalCode } from "@/components/LocationManagement/Web/ModalPostalCode";
-import { ModalSavedLocationManagement } from "@/components/LocationManagement/Web/ModalSavedLocationManagement";
+import { InputLocationManagementDropdown } from "@/components/LocationManagement/Web/InputLocationManagementDropdown/InputLocationManagementDropdown";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import TextArea from "@/components/TextArea/TextArea";
-import { LocationProvider, useLocationContext } from "@/hooks/use-location";
-import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
+import { LocationProvider } from "@/hooks/use-location/use-location";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 import {
   useSewaArmadaActions,
@@ -21,119 +17,38 @@ import {
 } from "@/store/forms/sewaArmadaStore";
 
 export const LayananTambahan = () => {
-  return (
-    <LocationProvider>
-      <InnerLayananTambahan />
-    </LocationProvider>
-  );
-};
-
-const InnerLayananTambahan = () => {
   const kirimBuktiFisik = useSewaArmadaStore(
-    (state) => state.formValues.kirimBuktiFisik
+    (s) => s.formValues.kirimBuktiFisik
   );
   const bantuanTambahan = useSewaArmadaStore(
-    (state) => state.formValues.bantuanTambahan
+    (s) => s.formValues.bantuanTambahan
   );
-  const { setField } = useSewaArmadaActions();
+  const { setField: setSewaArmadaField } = useSewaArmadaActions();
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const [formData, setFormData] = useState({
-    namaPenerima: "",
-    nomorHandphone: "",
-    alamatTujuan: "",
-    detailAlamat: "",
-    kecamatan: "",
-    kota: "",
-    provinsi: "",
-    kodePos: "",
-  });
-
-  const [errors, setErrors] = useState({});
-  const [isKecamatanDropdownOpen, setIsKecamatanDropdownOpen] = useState(false);
-  const [isKodePosDropdownOpen, setIsKodePosDropdownOpen] = useState(false);
-
-  const handleInputChange = (field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors((prev) => ({
-        ...prev,
-        [field]: "",
-      }));
-    }
-
-    // Auto-populate kota and provinsi when kecamatan is selected
-    if (field === "kecamatan" && value) {
-      const location = locationMapping[value];
-      if (location) {
-        setFormData((prev) => ({
-          ...prev,
-          kecamatan: value,
-          kota: location.kota,
-          provinsi: location.provinsi,
-        }));
-      }
-    }
-  };
-
-  const handleKecamatanSelect = (value, label) => {
-    handleInputChange("kecamatan", value);
-    setIsKecamatanDropdownOpen(false);
-  };
-
-  const handleKodePosSelect = (value, label) => {
-    handleInputChange("kodePos", value);
-    setIsKodePosDropdownOpen(false);
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.namaPenerima.trim()) {
-      newErrors.namaPenerima = "Nama penerima wajib diisi";
-    }
-
-    if (!formData.nomorHandphone.trim()) {
-      newErrors.nomorHandphone = "Nomor handphone wajib diisi";
-    } else if (!/^08\d{8,12}$/.test(formData.nomorHandphone)) {
-      newErrors.nomorHandphone = "Format nomor handphone tidak valid";
-    }
-
-    if (!formData.alamatTujuan.trim()) {
-      newErrors.alamatTujuan = "Alamat tujuan wajib diisi";
-    }
-
-    if (!formData.detailAlamat.trim()) {
-      newErrors.detailAlamat = "Detail alamat tujuan wajib diisi";
-    }
-
-    if (!formData.kecamatan) {
-      newErrors.kecamatan = "Kecamatan wajib dipilih";
-    }
-
-    if (!formData.kodePos) {
-      newErrors.kodePos = "Kode pos wajib dipilih";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  const {
+    formValues: locationFormValues,
+    formErrors: locationFormErrors,
+    setField: setLocationField,
+    validateLayananTambahan,
+    setLocationPartial,
+    reset: resetLocationForm,
+  } = useLocationFormStore();
 
   const handleSubmit = () => {
-    if (validateForm()) {
-      onSubmit(formData);
-      onClose();
-    }
+    // Bikin validasi sendiri, soalnya validateSimpanLokasi ga ada validasi kodepos & kecamatan karena ga ada user selection
+    const isFormValid = validateLayananTambahan();
+    if (!isFormValid) return;
+
+    // Baru handle disini
+    console.log("🚀 ~ handleSubmit ~ locationFormValues:", locationFormValues);
+
+    setIsOpen(false);
+    resetLocationForm();
   };
 
   const dataLokasi = useLocationFormStore((s) => s.formValues.dataLokasi);
-  console.log("🚀 ~ InnerLayananTambahan ~ dataLokasi:", dataLokasi);
 
   return (
     <>
@@ -150,7 +65,7 @@ const InnerLayananTambahan = () => {
               <Checkbox
                 onChange={(e) => {
                   setIsOpen(true);
-                  setField("kirimBuktiFisik", e.checked);
+                  setSewaArmadaField("kirimBuktiFisik", e.checked);
                 }}
                 label="Kirim Bukti Fisik Penerimaan Barang"
                 checked={kirimBuktiFisik}
@@ -170,7 +85,9 @@ const InnerLayananTambahan = () => {
             {/* Container Checkbox dan Label */}
             <div className="flex h-[16px] flex-row items-center gap-[4px]">
               <Checkbox
-                onChange={(e) => setField("bantuanTambahan", e.checked)}
+                onChange={(e) =>
+                  setSewaArmadaField("bantuanTambahan", e.checked)
+                }
                 label="Bantuan Tambahan"
                 checked={bantuanTambahan}
                 value="bantuan_tambahan"
@@ -195,128 +112,148 @@ const InnerLayananTambahan = () => {
             </h2>
 
             {/* Form Container */}
-            <div className="mr-[-16px] flex max-h-[361px] w-[424px] flex-col gap-y-3 overflow-y-auto pr-[11px]">
-              {/* Nama Penerima Field */}
-              <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                Nama Penerima*
-              </label>
-              <Input
-                name="namaPenerima"
-                placeholder="Masukkan Nama Penerima"
-                type="text"
-                value={formData.namaPenerima}
-                onChange={(e) =>
-                  handleInputChange("namaPenerima", e.target.value)
-                }
-                errorMessage={errors.namaPenerima}
-                className="w-full"
-              />
+            <div className="relative mr-[-16px] max-h-[361px] w-[424px] overflow-y-auto pr-[11px]">
+              <div className="grid grid-cols-1 gap-y-3">
+                {/* Nama Penerima Field */}
+                <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                  Nama Penerima*
+                </label>
+                <Input
+                  name="namaPIC"
+                  placeholder="Masukkan Nama Penerima"
+                  type="text"
+                  value={locationFormValues.namaPIC}
+                  onChange={(e) => setLocationField("namaPIC", e.target.value)}
+                  errorMessage={locationFormErrors.namaPIC}
+                  className="w-full"
+                />
 
-              {/* Nomor Handphone Field */}
-              <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                Nomor Handphone Penerima*
-              </label>
-              <Input
-                name="nomorHandphone"
-                placeholder="Contoh: 08xxxxxxxx"
-                type="tel"
-                value={formData.nomorHandphone}
-                onChange={(e) =>
-                  handleInputChange("nomorHandphone", e.target.value)
-                }
-                errorMessage={errors.nomorHandphone}
-                className="w-full"
-              />
+                {/* Nomor Handphone Field */}
+                <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                  Nomor Handphone Penerima*
+                </label>
+                <Input
+                  name="noHPPIC"
+                  placeholder="Contoh: 08xxxxxxxx"
+                  type="tel"
+                  value={locationFormValues.noHPPIC}
+                  onChange={(e) => setLocationField("noHPPIC", e.target.value)}
+                  errorMessage={locationFormErrors.noHPPIC}
+                  className="w-full"
+                />
 
-              {/* Alamat Tujuan Field */}
-              <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                Alamat Tujuan*
-              </label>
+                {/* Alamat Tujuan Field */}
+                <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                  Alamat Tujuan*
+                </label>
 
-              <InputLocation />
-              {/* <Input
-              name="alamatTujuan"
-              placeholder="Masukkan Alamat Tujuan"
-              type="text"
-              value={formData.alamatTujuan}
-              onChange={(e) =>
-                handleInputChange("alamatTujuan", e.target.value)
-              }
-              icon={{ left: "/icons/marker-lokasi-muat.svg" }}
-              errorMessage={errors.alamatTujuan}
-              className="w-full"
-            /> */}
+                <LocationProvider>
+                  <InputLocationManagementDropdown />
+                </LocationProvider>
 
-              {/* Detail Alamat Field */}
-              <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                Detail Alamat Tujuan*
-              </label>
-              <TextArea
-                name="detailAlamat"
-                placeholder="Masukkan Detail Alamat Tujuan"
-                value={formData.detailAlamat}
-                onChange={(e) =>
-                  handleInputChange("detailAlamat", e.target.value)
-                }
-                maxLength={500}
-                height={80}
-                hasCharCount={true}
-                status={errors.detailAlamat ? "error" : null}
-                supportiveText={{
-                  title: errors.detailAlamat || "",
-                  desc: "",
-                }}
-                className="w-full"
-              />
+                {/* Detail Alamat Field */}
+                <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                  Detail Alamat Tujuan*
+                </label>
+                <TextArea
+                  name="detailLokasi"
+                  placeholder="Masukkan Detail Alamat Tujuan"
+                  value={locationFormValues.detailLokasi}
+                  onChange={(e) =>
+                    setLocationField("detailLokasi", e.target.value)
+                  }
+                  maxLength={500}
+                  height={80}
+                  hasCharCount={true}
+                  status={locationFormErrors.detailLokasi ? "error" : null}
+                  supportiveText={{
+                    title: locationFormErrors.detailLokasi || "",
+                    desc: "",
+                  }}
+                  className="w-full"
+                />
 
-              {/* Kecamatan Dropdown */}
-              <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                Kecamatan*
-              </label>
+                {/* Kecamatan Dropdown */}
+                <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                  Kecamatan*
+                </label>
 
-              <Select
-                placeholder="Pilih Satuan"
-                options={dataLokasi?.postalCodeList?.map(
-                  (item) =>
-                    ({
-                      label: item.name,
-                      value: item.value,
-                    }) || []
-                )}
-                value={formData.kecamatan}
-                onChange={(selected) =>
-                  handleInputChange("kecamatan", selected)
-                }
-              />
-              {/* Kota & Provinsi Display */}
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-[12px] font-medium text-neutral-600">
-                    Kota
-                  </span>
-                  <span className="text-[12px] font-medium text-neutral-900">
-                    {formData.kota || "-"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[12px] font-medium text-neutral-600">
-                    Provinsi
-                  </span>
-                  <span className="text-[12px] font-medium text-neutral-900">
-                    {formData.provinsi || "-"}
-                  </span>
-                </div>
+                <Select
+                  placeholder="Pilih Kecamatan Tujuan"
+                  options={
+                    dataLokasi?.kecamatanList &&
+                    dataLokasi?.kecamatanList.length > 0
+                      ? dataLokasi?.kecamatanList.map((item) => ({
+                          label: item.name,
+                          value: item.value,
+                        }))
+                      : []
+                  }
+                  value={locationFormValues?.dataLokasi?.district?.value}
+                  onChange={(selectedValue) => {
+                    const kecamatanFound = dataLokasi?.kecamatanList.find(
+                      (item) => item.value === selectedValue
+                    );
+                    setLocationPartial({
+                      district: {
+                        name: kecamatanFound.name,
+                        value: kecamatanFound.value,
+                      },
+                    });
+                  }}
+                />
+
+                {/* Kota & Provinsi Display */}
+
+                <span className="text-[12px] font-medium text-neutral-600">
+                  Kota
+                </span>
+                <span className="text-[12px] font-medium text-neutral-900">
+                  {dataLokasi?.city?.name || "-"}
+                </span>
+
+                <span className="text-[12px] font-medium text-neutral-600">
+                  Provinsi
+                </span>
+                <span className="text-[12px] font-medium text-neutral-900">
+                  {dataLokasi?.province?.name || "-"}
+                </span>
+
+                {/* Kode Pos Dropdown */}
+                <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                  Kode Pos*
+                </label>
+
+                <Select
+                  placeholder="Pilih Kode Pos"
+                  options={
+                    dataLokasi?.postalCodeList &&
+                    dataLokasi?.postalCodeList.length > 0
+                      ? dataLokasi?.postalCodeList.map((item) => ({
+                          label: item.name,
+                          value: item.value,
+                        }))
+                      : []
+                  }
+                  value={locationFormValues?.dataLokasi?.postalCode?.value}
+                  onChange={(selectedValue) => {
+                    const postalCodeFound = dataLokasi?.postalCodeList.find(
+                      (item) => item.value === selectedValue
+                    );
+                    setLocationPartial({
+                      postalCode: {
+                        name: postalCodeFound.name,
+                        value: postalCodeFound.value,
+                      },
+                    });
+                  }}
+                />
+
+                {/* Kode Pos Dropdown */}
+                <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                  Pilih Ekspedisi*
+                </label>
               </div>
-
-              {/* Kode Pos Dropdown */}
-              <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                Kode Pos*
-              </label>
-
-              {/* Kode Pos Dropdown */}
-              <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                Pilih Ekspedisi*
-              </label>
             </div>
 
             {/* Submit Button */}
@@ -330,149 +267,6 @@ const InnerLayananTambahan = () => {
           </div>
         </ModalContent>
       </Modal>
-    </>
-  );
-};
-
-const defaultModalConfig = {
-  open: false,
-  mode: "add",
-  title: "Detail Alamat",
-  defaultValues: null,
-};
-
-const useModalFormSimpanLokasiWeb = ({
-  setIsDropdownSearchOpen,
-  getLocationByPlaceId,
-  handleSelectSearchResult,
-}) => {
-  const [modalConfig, setModalConfig] = useState(defaultModalConfig);
-
-  const districtData = useLocationFormStore(
-    (s) => s.formValues.dataLokasi?.district
-  );
-  const [isManualPostalCode, setIsManualPostalCode] = useState(false);
-
-  const handleCloseModalFormSimpanLokasiWeb = () =>
-    setModalConfig(defaultModalConfig);
-
-  const handleAddToSavedLocation = (location) => {
-    setIsDropdownSearchOpen(false);
-
-    handleSelectSearchResult(location).then((result) => {
-      console.log("🚀 ~ handleSelectSearchResult ~ result:", result);
-      if (result?.district?.value) {
-        setModalConfig({
-          open: true,
-          mode: "add",
-          title: "Detail Alamat",
-          defaultValues: null,
-        });
-      } else {
-        setIsManualPostalCode(true);
-      }
-    });
-  };
-
-  useShallowCompareEffect(() => {
-    // If districtData has been filled, then navigate to FormLokasiBongkarMuat
-    if (districtData && isManualPostalCode) {
-      console.log("🚀 ~ useShallowCompareEffect ~ districtData:", districtData);
-      setModalConfig({
-        open: true,
-        mode: "add",
-        title: "Detail Alamat",
-        defaultValues: null,
-      });
-    }
-  }, [districtData, isManualPostalCode]);
-
-  return {
-    configFormSimpanLokasi: modalConfig,
-    handleAddToSavedLocation,
-    handleCloseModalFormSimpanLokasiWeb,
-  };
-};
-
-export const InputLocation = () => {
-  const [
-    isModalSavedLocationManagementOpen,
-    setIsModalSavedLocationManagementOpen,
-  ] = useState(false);
-
-  const {
-    autoCompleteSearchPhrase,
-    autoCompleteSearchResult,
-    isDropdownSearchOpen,
-    setIsDropdownSearchOpen,
-    handleSelectSearchResult,
-    setAutoCompleteSearchPhrase,
-
-    coordinates,
-    setCoordinates,
-    handleGetCurrentLocation,
-
-    isModalPostalCodeOpen,
-    locationPostalCodeSearchPhrase,
-    setLocationPostalCodeSearchPhrase,
-    postalCodeAutoCompleteResult,
-    handleSelectPostalCode,
-
-    userSavedLocationResult,
-    handleSelectUserSavedLocation,
-
-    getLocationByPlaceId,
-  } = useLocationContext();
-
-  const {
-    configFormSimpanLokasi,
-    handleAddToSavedLocation,
-    handleCloseModalFormSimpanLokasiWeb,
-  } = useModalFormSimpanLokasiWeb({
-    setIsDropdownSearchOpen,
-    getLocationByPlaceId,
-    handleSelectSearchResult,
-  });
-
-  return (
-    <>
-      <InputLocationManagementDropdown
-        className="mt-0"
-        isDropdownSearchOpen={isDropdownSearchOpen}
-        setIsDropdownSearchOpen={setIsDropdownSearchOpen}
-        locationAutoCompleteResult={autoCompleteSearchResult}
-        onSelectSearchResult={handleSelectSearchResult}
-        userSavedLocations={userSavedLocationResult}
-        searchLocationAutoComplete={autoCompleteSearchPhrase}
-        setSearchLocationAutoComplete={setAutoCompleteSearchPhrase}
-        handleGetCurrentLocation={handleGetCurrentLocation}
-        handleSelectUserSavedLocation={handleSelectUserSavedLocation}
-        onLocationManagementClicked={() => {
-          setIsModalSavedLocationManagementOpen(true);
-          setIsDropdownSearchOpen(false);
-        }}
-        handleAddToSavedLocation={handleAddToSavedLocation}
-      />
-
-      <ModalPostalCode
-        open={isModalPostalCodeOpen}
-        searchValue={locationPostalCodeSearchPhrase}
-        setSearchValue={setLocationPostalCodeSearchPhrase}
-        options={postalCodeAutoCompleteResult}
-        onSelectPostalCode={handleSelectPostalCode}
-      />
-
-      <ModalSavedLocationManagement
-        open={isModalSavedLocationManagementOpen}
-        onOpenChange={setIsModalSavedLocationManagementOpen}
-        userSavedLocations={userSavedLocationResult}
-        handleSelectUserSavedLocation={handleSelectUserSavedLocation}
-      />
-
-      <ModalFormSimpanLokasiWeb
-        {...configFormSimpanLokasi}
-        onOpenChange={handleCloseModalFormSimpanLokasiWeb}
-      />
     </>
   );
 };

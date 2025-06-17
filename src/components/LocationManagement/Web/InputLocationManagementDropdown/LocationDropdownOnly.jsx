@@ -5,7 +5,7 @@ import { Portal } from "@radix-ui/react-portal";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { cn } from "@/lib/utils";
 
-export const InputLocationManagementDropdown = ({
+export const LocationDropdownOnly = ({
   className,
   locationAutoCompleteResult,
   onSelectSearchResult,
@@ -118,42 +118,44 @@ export const InputLocationManagementDropdown = ({
           <div className="text-sm font-semibold text-gray-600">
             Hasil Pencarian
           </div>
-          {locationAutoCompleteResult.map((location) => (
-            <button
-              key={location.ID + location.Title}
-              onClick={() => {
-                onSelectSearchResult(location);
-                setIsDropdownSearchOpen(false);
-              }}
-              className="flex items-start gap-2"
-            >
-              <div className="h-[20px] w-[20px]">
-                <IconComponent
-                  className=""
-                  src="/icons/marker-outline.svg"
-                  width={20}
-                  height={20}
-                />
-              </div>
-              <p className="text-left text-sm leading-tight text-gray-800">
-                {location.Title}
-              </p>
-
-              <div
-                className="h-[20px] w-[20px] cursor-pointer hover:text-[#176CF7]"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAddToSavedLocation(location);
+          {locationAutoCompleteResult &&
+            locationAutoCompleteResult.length > 0 &&
+            locationAutoCompleteResult.map((location) => (
+              <button
+                key={location.ID + location.Title}
+                onClick={() => {
+                  onSelectSearchResult(location);
+                  setIsDropdownSearchOpen(false);
                 }}
+                className="flex items-start gap-2"
               >
-                <IconComponent
-                  src="/icons/bookmark.svg"
-                  width={20}
-                  height={20}
-                />
-              </div>
-            </button>
-          ))}
+                <div className="h-[20px] w-[20px]">
+                  <IconComponent
+                    className=""
+                    src="/icons/marker-outline.svg"
+                    width={20}
+                    height={20}
+                  />
+                </div>
+                <p className="text-left text-sm leading-tight text-gray-800">
+                  {location.Title}
+                </p>
+
+                <div
+                  className="h-[20px] w-[20px] cursor-pointer hover:text-[#176CF7]"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAddToSavedLocation(location);
+                  }}
+                >
+                  <IconComponent
+                    src="/icons/bookmark.svg"
+                    width={20}
+                    height={20}
+                  />
+                </div>
+              </button>
+            ))}
 
           <div className="flex w-full flex-row items-center gap-2.5 rounded-md border border-[#176CF7] px-3 py-2">
             <div className="flex items-center">
@@ -169,7 +171,7 @@ export const InputLocationManagementDropdown = ({
             </p>
           </div>
 
-          {userSavedLocations.length > 0 && (
+          {userSavedLocations && userSavedLocations.length > 0 && (
             <>
               <div className="text-[10px] text-sm font-medium leading-[1.3] text-neutral-600">
                 Manajemen Lokasi
@@ -236,7 +238,7 @@ export const InputLocationManagementDropdown = ({
           type="text"
           placeholder="Masukkan Lokasi Muat"
           value={searchLocationAutoComplete}
-          onFocus={() => setIsDropdownSearchOpen(true)}
+          onClick={() => setIsDropdownSearchOpen(true)}
           onChange={(e) => {
             setSearchLocationAutoComplete(e.currentTarget.value);
           }}

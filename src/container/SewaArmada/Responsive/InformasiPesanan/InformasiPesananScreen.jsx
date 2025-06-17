@@ -19,7 +19,7 @@ import {
   useSewaArmadaStore,
 } from "@/store/forms/sewaArmadaStore";
 
-const InformasiPesanan = () => {
+const InformasiPesananScreen = () => {
   const paymentMethods = [
     {
       title: "Transfer Virtual Account",
@@ -461,4 +461,4 @@ const InformasiPesanan = () => {
   );
 };
 
-export default InformasiPesanan;
+export default InformasiPesananScreen;

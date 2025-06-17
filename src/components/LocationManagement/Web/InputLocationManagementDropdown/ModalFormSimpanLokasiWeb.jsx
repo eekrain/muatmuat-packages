@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
 const errors = {};
-const ModalFormSimpanLokasiWeb = ({
+export const ModalFormSimpanLokasiWeb = ({
   open,
   mode = "add",
   title = "Detail Alamat",
@@ -206,5 +206,3 @@ const ModalFormSimpanLokasiWeb = ({
     </Modal>
   );
 };
-
-export default ModalFormSimpanLokasiWeb;

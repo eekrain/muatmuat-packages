@@ -17,7 +17,7 @@ const MODE_MAP = {
   bongkar: "lokasiBongkar",
 };
 
-export const FormLokasiBongkarMuat = () => {
+const FormLokasiBongkarMuatScreen = () => {
   const params = useResponsiveRouteParams();
   const navigation = useResponsiveNavigation();
   const { updateLokasi } = useSewaArmadaActions();
@@ -58,8 +58,7 @@ export const FormLokasiBongkarMuat = () => {
   return (
     <FormResponsiveLayout
       title={{
-        label:
-          params.config.formMode === "muat" ? "Lokasi Muat" : "Lokasi Bongkar",
+        label: params?.layout?.title || "Form Lokasi",
       }}
     >
       {/* Content Container */}
@@ -190,3 +189,5 @@ export const FormLokasiBongkarMuat = () => {
     </FormResponsiveLayout>
   );
 };
+
+export default FormLokasiBongkarMuatScreen;
