@@ -1,38 +1,31 @@
-// Data didapat dari:
-//  /api/v1/orders/{orderId}/fleet-search-detail
-//  /api/v1/orders/{orderId}/summary
-// Di normalize supaya bisa langsung dipakai di props component
 import {
   LocationTypeEnum,
   OrderStatusEnum,
 } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { PaymentInstructionTitle } from "@/lib/constants/detailpesanan/payment.enum";
 
-// Kita passing hasil dari API dataFleetSearchDetail dan dataSummary
-// Proses merging / normaliasi terjadi di sini
 export const normalizeDetailPesananOrderDetail = ({
-  dataFleetSearchDetail,
-  dataOrderDetail,
-  dataPaymentStatus,
-  dataPaymentCountdown,
-  dataPaymentInstruction,
+  general,
+  summary,
+  otherInformation,
+  paymentData,
+  documents,
 }) => {
   try {
     const dataStatusPesanan = {
-      orderCode: dataOrderDetail?.invoiceNumber,
-      orderStatus: dataOrderDetail?.orderStatus,
+      orderCode: general?.invoiceNumber,
+      orderStatus: general?.orderStatus,
       withShippingAdditionalService:
-        dataOrderDetail?.additionalServices &&
-        dataOrderDetail?.additionalServices.length > 0
+        summary?.additionalService && summary?.additionalService.length > 0
           ? true
           : false,
-      paymentDueDateTime: dataPaymentCountdown?.paymentDueDateTime,
+      paymentDueDateTime: summary?.payment?.paymentDueDateTime,
     };
 
     const route = { muat: [], bongkar: [] };
     const dataDetailPIC = { muat: [], bongkar: [] };
 
-    for (const location of dataOrderDetail?.locations) {
+    for (const location of summary?.locations) {
       if (location.locationType === LocationTypeEnum.PICKUP) {
         route.muat.push({
           fullAddress: location.fullAddress,
@@ -41,7 +34,6 @@ export const normalizeDetailPesananOrderDetail = ({
           sequence: location?.sequence,
           locationType: location?.locationType,
           fullAddress: location?.fullAddress,
-          // Di API tidak ada note, jadi diisi dengan dummy data
           detailAddress: location?.detailAddress,
           picName: location?.picName,
           picPhoneNumber: location?.picPhoneNumber,
@@ -54,7 +46,6 @@ export const normalizeDetailPesananOrderDetail = ({
           sequence: location?.sequence,
           locationType: location?.locationType,
           fullAddress: location?.fullAddress,
-          // Di API tidak ada note, jadi diisi dengan dummy data
           detailAddress: location?.detailAddress,
           picName: location?.picName,
           picPhoneNumber: location?.picPhoneNumber,
@@ -64,52 +55,50 @@ export const normalizeDetailPesananOrderDetail = ({
 
     const dataRingkasanPesanan = {
       route,
-      estimatedDistance: dataOrderDetail?.summary?.estimatedDistance,
+      estimatedDistance: summary?.distance,
       vehicle: {
-        name: `${dataOrderDetail?.carrier?.name} - ${dataOrderDetail?.truckType?.name}`,
+        name: `${summary?.carrier?.name} - ${summary?.truckType?.name}`,
         image: "/img/recommended1.png",
-        truckCount: dataOrderDetail?.truckCount,
+        truckCount: summary?.truckType?.totalUnit,
       },
       cargos:
-        dataOrderDetail?.cargo.map((val) => ({
+        summary?.cargo.map((val) => ({
           name: val.name,
           weight: val.weight,
           weightUnit: val.weightUnit,
         })) || [],
-      cargoPhotos: dataFleetSearchDetail?.cargoPhotos || [],
-      cargoDescription: dataOrderDetail?.cargoDescription || "",
-      isHalalLogistics: Boolean(dataOrderDetail?.isHalalLogistics),
-      loadTimeStart: dataOrderDetail?.loadTimeStart,
-      loadTimeEnd: dataOrderDetail?.loadTimeEnd,
-      deliveryOrderNumbers: dataOrderDetail?.documents.map(
-        (item) => item.doNumber
-      ),
+      cargoPhotos: otherInformation?.cargoPhotos || [],
+      cargoDescription: otherInformation?.cargoDescription || "",
+      isHalalLogistics: Boolean(summary?.isHalalLogistic),
+      loadTimeStart: summary?.loadTimeStart,
+      loadTimeEnd: summary?.loadTimeEnd,
+      deliveryOrderNumbers: [documents?.doNumber],
     };
 
     const dataRingkasanPembayaran = {
-      paymentMethod: dataOrderDetail?.paymentMethod,
-      vaNumber: dataPaymentStatus?.vaNumber,
-      paymentDueDateTime: dataPaymentCountdown?.paymentDueDateTime,
-      transportFee: dataOrderDetail?.transportFee,
-      insuranceFee: dataOrderDetail?.insuranceFee,
-      additionalServiceFee: dataOrderDetail?.additionalServiceFee,
-      voucherDiscount: dataOrderDetail?.voucherDiscount,
-      adminFee: dataOrderDetail?.adminFee,
-      taxAmount: dataOrderDetail?.taxAmount,
-      totalPrice: dataOrderDetail?.totalPrice,
-      orderStatus: dataOrderDetail?.orderStatus,
+      paymentMethod: summary?.payment?.paymentMethod,
+      vaNumber: paymentData?.vaNumber,
+      paymentDueDateTime: summary?.payment?.paymentDueDateTime,
+      transportFee: summary?.price?.transportFee,
+      insuranceFee: summary?.price?.insuranceFee,
+      additionalServiceFee: summary?.price?.additionalServiceFee,
+      voucherDiscount: summary?.price?.voucherDiscount,
+      adminFee: summary?.price?.adminFee,
+      taxAmount: summary?.price?.taxAmount,
+      totalPrice: summary?.price?.totalPrice,
+      orderStatus: general?.orderStatus,
     };
 
     let instructionFormatted = null;
     if (
-      dataOrderDetail?.orderStatus === OrderStatusEnum.PENDING_PAYMENT &&
-      dataPaymentInstruction?.paymentInstructions
+      general?.orderStatus === OrderStatusEnum.PENDING_PAYMENT &&
+      paymentData?.paymentInstructions
     ) {
-      const temp = Object.keys(dataPaymentInstruction?.paymentInstructions);
+      const temp = Object.keys(paymentData?.paymentInstructions);
       console.log("🚀 ~ temp:", temp);
       instructionFormatted = temp.map((key) => ({
         title: PaymentInstructionTitle[key],
-        item: dataPaymentInstruction?.paymentInstructions[key],
+        item: paymentData?.paymentInstructions[key],
       }));
     }
 

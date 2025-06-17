@@ -25,6 +25,7 @@ import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import DatetimePicker from "@/components/DatetimePicker/DatetimePicker";
 import Dropdown from "@/components/Dropdown/Dropdown";
+import { DropdownJasaPengiriman } from "@/components/Dropdown/DropdownJasaPengiriman";
 import DropdownRadioBottomsheeet from "@/components/Dropdown/DropdownRadioBottomsheeet";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import ExpandableTextArea from "@/components/ExpandableTextArea/ExpandableTextArea";
@@ -1233,6 +1234,89 @@ const ExampleLightbox = () => {
   );
 };
 
+// Demo Component
+const ExampleDropdownJasaPengiriman = () => {
+  const [selectedExpedition, setSelectedExpedition] = useState(null);
+  console.log(
+    "🚀 ~ ExampleDropdownJasaPengiriman ~ selectedExpedition:",
+    selectedExpedition
+  );
+
+  const customOptions = [
+    { id: "jne", name: "JNE", price: 145000 },
+    { id: "jet", name: "JET", price: 145000 },
+    { id: "pos", name: "Pos Indonesia", price: 145000 },
+    { id: "sicepat", name: "SiCepat", price: 150000 },
+    { id: "jnt", name: "J&T Express", price: 140000 },
+  ];
+
+  const handleExpeditionChange = (data) => {
+    setSelectedExpedition(data);
+    console.log("Expedition data:", data);
+  };
+
+  return (
+    <div className="min-h-screen p-8">
+      <div className="mx-auto max-w-md space-y-6">
+        <div>
+          <h2 className="mb-4 text-lg font-semibold">
+            Expedition Dropdown Component
+          </h2>
+
+          <div className="space-y-4">
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Choose Shipping Method
+              </label>
+              <DropdownJasaPengiriman
+                options={customOptions}
+                value={selectedExpedition}
+                onChange={handleExpeditionChange}
+                placeholder="Pilih Ekspedisi"
+                insurancePrice={14000}
+                insuranceText="Pakai Asuransi Pengiriman"
+              />
+            </div>
+
+            {selectedExpedition && (
+              <div className="rounded-md bg-blue-50 p-4">
+                <p className="mb-2 text-sm">
+                  <strong>Selected Expedition:</strong>{" "}
+                  {selectedExpedition.expedition?.name} -{" "}
+                  {selectedExpedition.expedition?.price}
+                </p>
+                <p className="mb-2 text-sm">
+                  <strong>Insurance:</strong>{" "}
+                  {selectedExpedition.hasInsurance
+                    ? `Yes (${selectedExpedition.insurancePrice})`
+                    : "No"}
+                </p>
+                <p className="text-sm">
+                  <strong>Total Cost:</strong>{" "}
+                  {selectedExpedition.hasInsurance
+                    ? selectedExpedition.expedition?.price +
+                      selectedExpedition.insurancePrice
+                    : selectedExpedition.expedition?.price}
+                </p>
+              </div>
+            )}
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Disabled State
+              </label>
+              <DropdownJasaPengiriman
+                disabled={true}
+                placeholder="Disabled dropdown"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ExampleInput = () => {
   const [selectValue, setSelectValue] = useState("");
   const [tags, setTags] = useState([]);
@@ -1585,6 +1669,8 @@ const ExampleInput = () => {
           </div>
         </div>
       </div>
+
+      <ExampleDropdownJasaPengiriman />
     </div>
   );
 };

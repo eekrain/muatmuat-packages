@@ -69,7 +69,9 @@ const useModalFormSimpanLokasiWeb = ({
   };
 };
 
-export const InputLocationManagementDropdown = () => {
+export const InputLocationManagementDropdown = ({
+  hideDropdownWhenTopIsLessThan,
+}) => {
   const [
     isModalSavedLocationManagementOpen,
     setIsModalSavedLocationManagementOpen,
@@ -128,6 +130,7 @@ export const InputLocationManagementDropdown = () => {
           setIsDropdownSearchOpen(false);
         }}
         handleAddToSavedLocation={handleAddToSavedLocation}
+        hideDropdownWhenTopIsLessThan={hideDropdownWhenTopIsLessThan}
       />
 
       <ModalPostalCode

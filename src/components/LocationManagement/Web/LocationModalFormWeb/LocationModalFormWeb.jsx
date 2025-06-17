@@ -1,6 +1,6 @@
 //  dependencies:
 // npm install zustand react-google-maps/api
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import {
@@ -21,11 +21,6 @@ const InnerLocationModalFormWeb = ({
   defaultValues,
   index,
 }) => {
-  const [
-    isModalSavedLocationManagementOpen,
-    setIsModalSavedLocationManagementOpen,
-  ] = useState(false);
-
   const {
     formValues,
     formErrors,
@@ -102,7 +97,9 @@ const InnerLocationModalFormWeb = ({
                   <label className="block text-[12px] font-medium text-neutral-600">
                     {formMode === "muat" ? "Lokasi Muat*" : "Lokasi Bongkar*"}
                   </label>
-                  <InputLocationManagementDropdown />
+                  <InputLocationManagementDropdown
+                    hideDropdownWhenTopIsLessThan={961}
+                  />
                   {formErrors?.dataLokasi && (
                     <span className="text-xs font-medium text-red-500">
                       {formErrors?.dataLokasi}

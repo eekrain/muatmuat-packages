@@ -148,7 +148,9 @@ export const LayananTambahan = () => {
                 </label>
 
                 <LocationProvider>
-                  <InputLocationManagementDropdown />
+                  <InputLocationManagementDropdown
+                    hideDropdownWhenTopIsLessThan={1225}
+                  />
                 </LocationProvider>
 
                 {/* Detail Alamat Field */}
