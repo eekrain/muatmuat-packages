@@ -255,7 +255,7 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
               </div>
               <div className="flex-1">
                 <div className="flex flex-wrap gap-2">
-                  {dataRingkasanPesanan.deliveryOrderNumbers.map(
+                  {dataRingkasanPesanan.numberDeliveryOrder.map(
                     (orderNumber) => (
                       <TagBubble key={orderNumber}>{orderNumber}</TagBubble>
                     )

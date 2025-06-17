@@ -169,7 +169,7 @@ const apiResultOrderDetail = {
         "/img/muatan4.png",
       ],
       cargoDescription: "",
-      numberDeliveryOrder: ["DO"],
+      numberDeliveryOrder: ["DO123456ABCD"],
     },
     changeCount: 0,
     isChangeable: true,

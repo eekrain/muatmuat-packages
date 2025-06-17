@@ -72,7 +72,7 @@ export const normalizeDetailPesananOrderDetail = ({
       isHalalLogistics: Boolean(summary?.isHalalLogistic),
       loadTimeStart: summary?.loadTimeStart,
       loadTimeEnd: summary?.loadTimeEnd,
-      deliveryOrderNumbers: [documents?.doNumber],
+      numberDeliveryOrder: otherInformation?.numberDeliveryOrder || [],
     };
 
     const dataRingkasanPembayaran = {
