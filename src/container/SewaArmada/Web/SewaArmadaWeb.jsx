@@ -1,13 +1,13 @@
 "use client";
 
-import Card from "@/components/Card/Card";
-// import SWRHandler from "@/services/useSWRHook";
-import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
+import { useEffect } from "react";
 
-import { BannerCarousel } from "../../../components/BannerCarousel/BannerCarousel";
-import { FirstTimer } from "./FirstTimer/FirstTimer";
+import { BannerCarousel } from "@/components/BannerCarousel/BannerCarousel";
+import Card from "@/components/Card/Card";
+import { FirstTimer } from "@/container/SewaArmada/Web/FirstTimer/FirstTimer";
 import {
   AsuransiBarang,
+  BadanUsahaPemesan,
   FotoMuatan,
   InformasiMuatan,
   JenisArmada,
@@ -18,12 +18,14 @@ import {
   NoDeliveryOrder,
   ServiceTypeSelect,
   TipeMuatan,
-  TipePemesan,
   WaktuMuat,
-} from "./Form";
-import DeskripsiMuatan from "./Form/DeskripsiMuatan";
-import { SummaryPanel } from "./SummaryPanel/SummaryPanel";
-import { WelcomeCard } from "./WelcomeCard/WelcomeCard";
+} from "@/container/SewaArmada/Web/Form";
+import DeskripsiMuatan from "@/container/SewaArmada/Web/Form/DeskripsiMuatan";
+import SertifikasiHalal from "@/container/SewaArmada/Web/Form/SertifikasiHalal";
+import { SummaryPanel } from "@/container/SewaArmada/Web/SummaryPanel/SummaryPanel";
+import { WelcomeCard } from "@/container/SewaArmada/Web/WelcomeCard/WelcomeCard";
+import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
+import { useLoadingAction } from "@/store/loadingStore";
 
 const banners = [
   {
@@ -48,6 +50,12 @@ const banners = [
 
 export default function SewaArmadaWeb() {
   const orderType = useSewaArmadaStore((state) => state.orderType);
+
+  const { setIsGlobalLoading } = useLoadingAction();
+  useEffect(() => {
+    setIsGlobalLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <main className="flex min-h-screen flex-col items-center gap-6 px-10">
@@ -75,6 +83,7 @@ export default function SewaArmadaWeb() {
                 <LokasiBongkar />
                 <TipeMuatan />
                 <JenisMuatan />
+                <SertifikasiHalal />
                 <InformasiMuatan />
                 <FotoMuatan />
                 <DeskripsiMuatan />
@@ -82,7 +91,7 @@ export default function SewaArmadaWeb() {
                 <AsuransiBarang />
                 <LayananTambahan />
                 <NoDeliveryOrder />
-                <TipePemesan />
+                <BadanUsahaPemesan />
               </div>
             </Card>
 

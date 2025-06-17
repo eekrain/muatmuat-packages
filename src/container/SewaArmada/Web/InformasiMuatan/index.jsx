@@ -10,11 +10,11 @@ import { DimensionInput } from "@/components/Form/DimensionInput";
 import { FormLabel } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import { NumberInput } from "@/components/Form/NumberInput";
+import { Select } from "@/components/Form/Select";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { useTranslation } from "@/hooks/use-translation";
 
-import { DropdownWithCheckIcon } from "./DropdownWithCheckIcon";
 import { DropdownSearch } from "./InformasiMuatanDropdown";
 import { ModalNamaMuatan } from "./ModalNamaMuatan";
 
@@ -293,8 +293,9 @@ export const InformasiMuatanModal = ({
                               control={control}
                               name={`informasiMuatan.${index}.beratMuatan.unit`}
                               render={({ field }) => (
-                                <DropdownWithCheckIcon
-                                  {...field}
+                                <Select
+                                  value={field.value}
+                                  onChange={field.onChange}
                                   options={weightUnits}
                                   placeholder="Pilih Unit"
                                 />
@@ -323,8 +324,9 @@ export const InformasiMuatanModal = ({
                               control={control}
                               name={`informasiMuatan.${index}.dimensiMuatan.unit`}
                               render={({ field, fieldState }) => (
-                                <DropdownWithCheckIcon
-                                  {...field}
+                                <Select
+                                  value={field.value}
+                                  onChange={field.onChange}
                                   options={dimensionUnits}
                                   placeholder="Pilih Unit"
                                 />

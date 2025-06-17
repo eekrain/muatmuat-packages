@@ -1,4 +1,3 @@
-// pages/shipping/form/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -6,38 +5,6 @@ import { useState } from "react";
 import Checkbox from "@/components/Checkbox/Checkbox";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
-
-// pages/shipping/form/page.tsx
-
-// pages/shipping/form/page.tsx
-
-// pages/shipping/form/page.tsx
-
-// pages/shipping/form/page.tsx
-
-// pages/shipping/form/page.tsx
-
-// pages/shipping/form/page.tsx
-
-// pages/shipping/form/page.tsx
-
-// pages/shipping/form/page.tsx
-
-// pages/shipping/form/page.tsx
-
-// pages/shipping/form/page.tsx
-
-// pages/shipping/form/page.tsx
-
-// pages/shipping/form/page.tsx
-
-// pages/shipping/form/page.tsx
-
-// pages/shipping/form/page.tsx
-
-// pages/shipping/form/page.tsx
-
-// pages/shipping/form/page.tsx
 
 const ShippingFormPage = () => {
   const [formData, setFormData] = useState({

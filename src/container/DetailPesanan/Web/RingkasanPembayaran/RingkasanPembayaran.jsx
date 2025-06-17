@@ -1,0 +1,50 @@
+// RingkasanPembayaran.jsx
+import Button from "@/components/Button/Button";
+import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+
+import { RingkasanPembayaranDefault } from "./RingkasanPembayaranDefault";
+import { RingkasanPembayaranPending } from "./RingkasanPembayaranPending";
+
+export const RingkasanPembayaran = ({ dataRingkasanPembayaran }) => {
+  return (
+    <div className="flex w-[338px] flex-col items-center gap-4">
+      {/* Card Ringkasan Pembayaran */}
+      {dataRingkasanPembayaran?.orderStatus ===
+      OrderStatusEnum.PENDING_PAYMENT ? (
+        <RingkasanPembayaranPending
+          dataRingkasanPembayaran={dataRingkasanPembayaran}
+        />
+      ) : (
+        <RingkasanPembayaranDefault
+          dataRingkasanPembayaran={dataRingkasanPembayaran}
+        />
+      )}
+
+      {/* Buttons Section */}
+      {dataRingkasanPembayaran?.orderStatus !==
+        OrderStatusEnum.PENDING_PAYMENT && (
+        <div className="flex w-full flex-col gap-4">
+          {dataRingkasanPembayaran?.orderStatus !==
+            OrderStatusEnum.SEARCHING_FLEET && (
+            <Button
+              variant="muatparts-primary-secondary"
+              className="h-8 w-full"
+              onClick={() => {}}
+              type="button"
+            >
+              Ubah Pesanan
+            </Button>
+          )}
+          <Button
+            variant="muattrans-error-secondary"
+            className="h-8 w-full"
+            onClick={() => {}}
+            type="button"
+          >
+            Batalkan Pesanan
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+};

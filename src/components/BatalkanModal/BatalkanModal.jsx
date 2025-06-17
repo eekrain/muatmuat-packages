@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { useSWRHook, useSWRMutateHook } from "@/hooks/use-swr";
+import { fetcherMuatparts } from "@/lib/axios";
 import { toast } from "@/lib/toast";
 import useBatalkanPesanan from "@/store/zustand/batalkanPesanan";
 
@@ -37,7 +38,7 @@ const BatalkanModal = ({ open, onOpenChange, data }) => {
       return;
     }
 
-    axios
+    fetcherMuatparts
       .post("v1/muatparts/orders/cancel", {
         orderID,
         cancelOptionID,
@@ -87,7 +88,7 @@ const BatalkanModal = ({ open, onOpenChange, data }) => {
                             <>
                               <Input
                                 maxLength="80"
-                                classname="w-[312px]"
+                                className="w-[312px]"
                                 changeEvent={(event) => {
                                   setValidateReason(false);
                                   setReason(event.target.value);

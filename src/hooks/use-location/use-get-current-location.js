@@ -6,13 +6,13 @@ import useDevice from "../use-device";
 import { fetcher } from "./fetcher";
 
 export const useGetCurrentLocation = ({
-  coordinates,
   setCoordinates,
   setAutoCompleteSearchPhrase,
   setIsModalPostalCodeOpen,
   setLocationPostalCodeSearchPhrase,
   dontTriggerPostalCodeModal,
   setDontTriggerPostalCodeModal,
+  setIsDropdownSearchOpen,
 }) => {
   const setLocationPartial = useLocationFormStore((s) => s.setLocationPartial);
   const { isMobile } = useDevice();
@@ -39,7 +39,9 @@ export const useGetCurrentLocation = ({
               setIsModalPostalCodeOpen(true);
               setLocationPostalCodeSearchPhrase(result.postalCode.value);
               setDontTriggerPostalCodeModal(true);
+              if (!isMobile) setAutoCompleteSearchPhrase(result.location.name);
             }
+            setIsDropdownSearchOpen(false);
             resolve(result);
           } catch (error) {
             console.error("Error getting location:", error);
@@ -53,31 +55,23 @@ export const useGetCurrentLocation = ({
       );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isMobile]);
 
-  // // Get newest location if the coordinates is changed
-  // // e.g: when the user move the marker on the map
-  // useShallowCompareEffect(() => {
-  //   // Skip if the coordinates is the default coordinates
-  //   // This is to prevent the postal code modal from being opened, when the user is not interacting with the map yet
-  //   if (equal(coordinates, DEFAULT_COORDINATES)) return;
-  //   if (coordinates?.latitude && coordinates?.longitude) {
-  //     fetcher.getLocationByLatLong(coordinates).then((result) => {
-  //       console.log("🚀 ~ fetcher.getLocationByLatLong ~ result:", result);
-  //       setLocationPartial(result);
-  //       setCoordinates(result.coordinates);
-  //       if (!result?.district?.value && !dontTriggerPostalCodeModal) {
-  //         setIsModalPostalCodeOpen(true);
-  //         setLocationPostalCodeSearchPhrase(result.postalCode.value);
-  //       }
-  //       if (result?.location?.name && !isMobile) {
-  //         setAutoCompleteSearchPhrase(result.location.name);
-  //       }
-  //     });
-  //   }
-  // }, [coordinates, dontTriggerPostalCodeModal]);
+  const handleChangeMarkerCoordinates = async (coordinates) => {
+    const result = await fetcher.getLocationByLatLong(coordinates);
+    setLocationPartial(result);
+    setCoordinates(result.coordinates);
+    if (!result?.district?.value && !dontTriggerPostalCodeModal) {
+      setIsModalPostalCodeOpen(true);
+      setLocationPostalCodeSearchPhrase(result.postalCode.value);
+    }
+    if (result?.location?.name && !isMobile) {
+      setAutoCompleteSearchPhrase(result.location.name);
+    }
+  };
 
   return {
     handleGetCurrentLocation,
+    handleChangeMarkerCoordinates,
   };
 };

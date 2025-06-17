@@ -104,7 +104,7 @@ export const BottomSheet = ({
 export const BottomSheetTrigger = ({ children, className }) => {
   const { open } = useBottomSheet();
   return (
-    <div onClick={open} className={className}>
+    <div onClick={open} className={cn("cursor-pointer", className)}>
       {children}
     </div>
   );

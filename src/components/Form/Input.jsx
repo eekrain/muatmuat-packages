@@ -47,34 +47,20 @@ const Input = forwardRef(
       disabled = false,
       icon = { left: null, right: null },
       text = { left: null, right: null },
-      errorMessage,
       className,
       appearance = {
         containerClassName: "",
         inputClassName: "",
       },
+      errorMessage,
       hideErrorMessage = false,
+      supportiveText,
       onChange,
       positiveOnly = false,
       ...props
     },
     ref
   ) => {
-    // const handleChange = (e) => {
-    //   let val = e.currentTarget.value;
-
-    //   if (type === "number") {
-    //     if (val === "") {
-    //       val = "";
-    //     }
-    //     if (positiveOnly && val === "-") {
-    //     }
-    //     onChange?.(val);
-    //   } else {
-    //     onChange?.(val);
-    //   }
-    // };
-
     return (
       <div className={cn("flex w-full flex-col gap-y-2", className)}>
         <div
@@ -141,11 +127,17 @@ const Input = forwardRef(
             </span>
           )}
         </div>
-        {!hideErrorMessage && errorMessage && (
+        <div className="flex w-full items-center">
           <span className="text-xs font-medium text-error-400">
             {errorMessage}
           </span>
-        )}
+
+          {supportiveText && (
+            <span className="ml-auto text-xs font-medium text-neutral-900">
+              {supportiveText}
+            </span>
+          )}
+        </div>
       </div>
     );
   }

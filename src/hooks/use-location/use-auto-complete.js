@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo } from "react";
 
-import { useResponsiveSearch } from "@/lib/responsive-navigation";
+import { fetcherMuatparts } from "@/lib/axios";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
+import { useResponsiveSearchStore } from "@/store/zustand/responsiveSearchStore";
 
 import { useDebounceCallback } from "../use-debounce-callback";
 import useDevice from "../use-device";
@@ -19,7 +20,9 @@ export const useAutoComplete = ({
   setIsDropdownSearchOpen,
 }) => {
   const { isMobile } = useDevice();
-  const { searchValue: responsiveSearchValue } = useResponsiveSearch();
+  const responsiveSearchValue = useResponsiveSearchStore(
+    (state) => state.searchValue
+  );
   useEffect(() => {
     if (isMobile) {
       setAutoCompleteSearchPhrase(responsiveSearchValue);
@@ -27,7 +30,9 @@ export const useAutoComplete = ({
   }, [isMobile, responsiveSearchValue, setAutoCompleteSearchPhrase]);
 
   const { data, trigger, isMutating } = useSWRMutateHook(
-    "v1/autocompleteStreet"
+    "v1/autocompleteStreet",
+    "POST",
+    fetcherMuatparts
   );
   const debouncedTrigger = useDebounceCallback(trigger, 500);
   const searchResult = useMemo(() => data?.slice(0, 3) || [], [data]);
@@ -52,6 +57,8 @@ export const useAutoComplete = ({
       if (!result?.district?.value) {
         setIsModalPostalCodeOpen(true);
         setLocationPostalCodeSearchPhrase(result.postalCode.value);
+      } else {
+        if (!isMobile) setAutoCompleteSearchPhrase(result.location.name);
       }
       setIsDropdownSearchOpen(false);
       return result;

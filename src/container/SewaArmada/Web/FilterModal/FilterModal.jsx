@@ -73,16 +73,36 @@ const TruckItem = ({
   title,
   src,
   onClick,
-  cost,
-  capacity,
-  dimension,
   onSelectImage,
+  // New props based on API response
+  description,
+  price,
+  maxWeight,
+  weightUnit,
+  dimensions,
 }) => {
+  // Format price to Indonesian Rupiah format
+  const formattedPrice = new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  })
+    .format(price || 0)
+    .replace("IDR", "Rp");
+
+  // Format capacity and dimensions from API data
+  const capacity =
+    maxWeight && weightUnit ? `${maxWeight} ${weightUnit}` : "N/A";
+  const dimension = dimensions
+    ? `${dimensions.length} x ${dimensions.width} x ${dimensions.height} ${dimensions.dimensionUnit}`
+    : "N/A";
+
   const details = [
     {
       iconSrc: "/icons/truck16.svg",
       title: "Harga per Unit : ",
-      value: cost,
+      value: formattedPrice,
     },
     {
       iconSrc: "/icons/estimasi-kapasitas16.svg",
@@ -95,6 +115,7 @@ const TruckItem = ({
       value: dimension,
     },
   ];
+
   return (
     <div
       className={
@@ -107,11 +128,13 @@ const TruckItem = ({
 
         <div className="flex w-[348px]">
           <div className="flex flex-col gap-y-3">
-            <span className={"text-[12px] font-bold leading-[14.4px]"}>
-              {title}
-            </span>
+            <div className="flex flex-col">
+              <span className={"text-[12px] font-bold leading-[14.4px]"}>
+                {title}
+              </span>
+            </div>
             <span className={"text-[14px] font-semibold leading-[15.4px]"}>
-              Rp200.000
+              {formattedPrice}
             </span>
             <div className="flex flex-col gap-y-2">
               {details.map((detail, key) => (
@@ -157,16 +180,29 @@ const SectionHeader = ({ recommended, type }) => {
 };
 
 // Main Popup Component
-const FilterModal = ({ data, isOpen, setIsOpen, onSelectArmada, type }) => {
+const FilterModal = ({
+  carrierData,
+  truckData,
+  isOpen,
+  setIsOpen,
+  onSelectArmada,
+  type,
+  isLoadingCarrier,
+  errorCarrier,
+  isLoadingTruck,
+  errorTruck,
+}) => {
   const [search, setSearch] = useState("");
+  const [selectedImageSrc, setSelectedImageSrc] = useState("");
+  const [isTruckImageModalOpen, setIsTruckImageModalOpen] = useState(false);
 
   useEffect(() => {
     setSearch("");
   }, [isOpen]);
 
-  const handleArmadaSelect = (title) => {
+  const handleArmadaSelect = (item) => {
     if (onSelectArmada) {
-      onSelectArmada(title);
+      onSelectArmada(item);
     }
     setIsOpen(false);
   };
@@ -185,9 +221,87 @@ const FilterModal = ({ data, isOpen, setIsOpen, onSelectArmada, type }) => {
   };
   const modalTitle = modalTitles[type] || modalTitles.carrier;
 
-  const filteredData = [...data.recommended, ...data.notRecommended].filter(
-    (data) => data.title.toLowerCase().includes(search.toLowerCase())
-  );
+  // Get current data based on type
+  const getCurrentData = () => {
+    if (type === "carrier") {
+      // Loading or error state for carrier data
+      if (isLoadingCarrier) {
+        return { recommended: [], notRecommended: [] };
+      }
+
+      if (errorCarrier) {
+        return { recommended: [], notRecommended: [] };
+      }
+
+      // Transform API carrier data to match component structure
+      if (carrierData) {
+        return {
+          recommended:
+            carrierData.recommendedCarriers?.map((carrier) => ({
+              id: carrier.carrierId,
+              title: carrier.name,
+              src: carrier.image,
+            })) || [],
+          notRecommended:
+            carrierData.nonRecommendedCarriers?.map((carrier) => ({
+              id: carrier.carrierId,
+              title: carrier.name,
+              src: carrier.image,
+            })) || [],
+        };
+      }
+
+      return { recommended: [], notRecommended: [] };
+    } else {
+      // For truck, use API data if available
+      if (isLoadingTruck) {
+        return { recommended: [], notRecommended: [] };
+      }
+
+      if (errorTruck) {
+        return { recommended: [], notRecommended: [] };
+      }
+
+      if (truckData && truckData.recommendedTrucks) {
+        // Transform API truck data
+        return {
+          recommended:
+            truckData.recommendedTrucks?.map((truck) => ({
+              id: truck.truckTypeId,
+              title: truck.name,
+              description: truck.description,
+              src: truck.image,
+              price: truck.price,
+              maxWeight: truck.maxWeight,
+              weightUnit: truck.weightUnit,
+              dimensions: truck.dimensions,
+            })) || [],
+          notRecommended:
+            truckData.nonRecommendedTrucks?.map((truck) => ({
+              id: truck.truckTypeId,
+              title: truck.name,
+              description: truck.description,
+              src: truck.image,
+              price: truck.price,
+              maxWeight: truck.maxWeight,
+              weightUnit: truck.weightUnit,
+              dimensions: truck.dimensions,
+            })) || [],
+        };
+      }
+
+      // Fallback to dummy data
+      return truckData;
+    }
+  };
+
+  const currentData = getCurrentData();
+
+  // Filter based on search
+  const filteredData = [
+    ...(currentData.recommended || []),
+    ...(currentData.notRecommended || []),
+  ].filter((item) => item?.title?.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <>
@@ -195,7 +309,7 @@ const FilterModal = ({ data, isOpen, setIsOpen, onSelectArmada, type }) => {
         <ModalContent>
           <div className="flex flex-col gap-y-4 px-6 py-9">
             {/* Header */}
-            <div className="text-center">
+            <div className="flex w-[424px] justify-center">
               <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
                 {modalTitle}
               </h1>
@@ -203,7 +317,7 @@ const FilterModal = ({ data, isOpen, setIsOpen, onSelectArmada, type }) => {
 
             {/* Search Field */}
             <Input
-              placeholder="Cari Jenis Carrier"
+              placeholder={`Cari Jenis ${type === "carrier" ? "Carrier" : "Truk"}`}
               icon={{
                 left: "/icons/search16.svg",
                 right: search ? (
@@ -226,62 +340,77 @@ const FilterModal = ({ data, isOpen, setIsOpen, onSelectArmada, type }) => {
                 <div className="mb-6">
                   <SectionHeader recommended type={type} />
 
-                  {data.recommended.map((item, key) => (
-                    <Fragment key={key}>
-                      {type === "carrier" ? (
-                        <CarrierItem
-                          title={item.title}
-                          src={item.src}
-                          onClick={() => handleArmadaSelect(item)}
-                          onSelectImage={handleSelectImage}
-                        />
-                      ) : (
-                        <TruckItem
-                          title={item.title}
-                          src={item.src}
-                          cost={item.cost}
-                          capacity={item.capacity}
-                          dimension={item.dimension}
-                          onClick={() => handleArmadaSelect(item)}
-                          onSelectImage={handleSelectImage}
-                        />
-                      )}
-                    </Fragment>
-                  ))}
+                  {currentData.recommended?.length > 0 ? (
+                    currentData.recommended.map((item, key) => (
+                      <Fragment key={key}>
+                        {type === "carrier" ? (
+                          <CarrierItem
+                            title={item.title}
+                            src={item.src}
+                            onClick={() => handleArmadaSelect(item)}
+                            onSelectImage={handleSelectImage}
+                          />
+                        ) : (
+                          <TruckItem
+                            title={item.title}
+                            description={item.description}
+                            src={item.src}
+                            price={item.price}
+                            maxWeight={item.maxWeight}
+                            weightUnit={item.weightUnit}
+                            dimensions={item.dimensions}
+                            onClick={() => handleArmadaSelect(item)}
+                            onSelectImage={handleSelectImage}
+                          />
+                        )}
+                      </Fragment>
+                    ))
+                  ) : (
+                    <div className="flex h-[92px] items-center justify-center">
+                      <p className="text-[12px] text-neutral-600">
+                        Tidak ada {type === "carrier" ? "carrier" : "truk"} yang
+                        direkomendasikan
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Tidak Direkomendasikan Section */}
-                <div>
-                  <SectionHeader recommended={false} type={type} />
+                {currentData.notRecommended?.length > 0 && (
+                  <div>
+                    <SectionHeader recommended={false} type={type} />
 
-                  <WarningBadge
-                    icon="/icons/warning14.svg"
-                    message="Pilihan carrier di bawah ini berisiko melebihi batas dimensi atau tidak sesuai dengan informasi muatan"
-                  />
+                    <WarningBadge
+                      icon="/icons/warning14.svg"
+                      message={`Pilihan ${type === "carrier" ? "carrier" : "truk"} di bawah ini berisiko melebihi batas dimensi atau tidak sesuai dengan informasi muatan`}
+                    />
 
-                  {data.notRecommended.map((item, key) => (
-                    <Fragment key={key}>
-                      {type === "carrier" ? (
-                        <CarrierItem
-                          title={item.title}
-                          src={item.src}
-                          onClick={() => handleArmadaSelect(item)}
-                          onSelectImage={handleSelectImage}
-                        />
-                      ) : (
-                        <TruckItem
-                          title={item.title}
-                          src={item.src}
-                          cost={item.cost}
-                          capacity={item.capacity}
-                          dimension={item.dimension}
-                          onClick={() => handleArmadaSelect(item)}
-                          onSelectImage={handleSelectImage}
-                        />
-                      )}
-                    </Fragment>
-                  ))}
-                </div>
+                    {currentData.notRecommended.map((item, key) => (
+                      <Fragment key={key}>
+                        {type === "carrier" ? (
+                          <CarrierItem
+                            title={item.title}
+                            src={item.src}
+                            onClick={() => handleArmadaSelect(item)}
+                            onSelectImage={handleSelectImage}
+                          />
+                        ) : (
+                          <TruckItem
+                            title={item.title}
+                            description={item.description}
+                            src={item.src}
+                            price={item.price}
+                            maxWeight={item.maxWeight}
+                            weightUnit={item.weightUnit}
+                            dimensions={item.dimensions}
+                            onClick={() => handleArmadaSelect(item)}
+                            onSelectImage={handleSelectImage}
+                          />
+                        )}
+                      </Fragment>
+                    ))}
+                  </div>
+                )}
               </div>
             ) : (
               <div>
@@ -312,10 +441,12 @@ const FilterModal = ({ data, isOpen, setIsOpen, onSelectArmada, type }) => {
                         ) : (
                           <TruckItem
                             title={item.title}
+                            description={item.description}
                             src={item.src}
-                            cost={item.cost}
-                            capacity={item.capacity}
-                            dimension={item.dimension}
+                            price={item.price}
+                            maxWeight={item.maxWeight}
+                            weightUnit={item.weightUnit}
+                            dimensions={item.dimensions}
                             onClick={() => handleArmadaSelect(item)}
                             onSelectImage={handleSelectImage}
                           />

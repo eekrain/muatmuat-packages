@@ -3,6 +3,7 @@ import {
   HeaderResponsiveDefault,
 } from "@/components/Header/Responsive";
 import { cn } from "@/lib/utils";
+import { useNotificationCounterStore } from "@/store/notificationCounterStore";
 
 /**
  * @typedef {Object} DefaultResponsiveLayoutProps
@@ -26,11 +27,17 @@ const DefaultResponsiveLayout = ({
   onClickMenuButton,
   className,
 }) => {
+  const { notification, chat } = useNotificationCounterStore();
+
   return (
     <div className="min-h-screen bg-background">
       <HeaderResponsiveContainer className="flex h-[62px] items-center border-b-2 border-b-muat-trans-secondary-900 px-4">
         <HeaderResponsiveDefault
           mode={mode}
+          notifCounter={{
+            notification,
+            chat,
+          }}
           onClickBackButton={onClickBackButton}
           onClickNotificationButton={onClickNotificationButton}
           onClickChatButton={onClickChatButton}

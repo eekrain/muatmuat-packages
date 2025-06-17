@@ -24,6 +24,9 @@ const defaultValues = {
   bantuanTambahan: false,
   noDO: [],
   isCompany: false,
+  companyName: "",
+  companyNpwp: "",
+  opsiPembayaran: null,
 };
 
 export const useSewaArmadaStore = create(
@@ -96,6 +99,7 @@ export const useSewaArmadaStore = create(
         })),
       reset: () =>
         set({ formValues: defaultValues, formErrors: defaultErrors }),
+      // VALIDASI BUAT YG DESKTOP KARENA JADI SATU HALAMAN
       validateForm: () => {
         const { startDate, endDate, showRangeOption, fotoMuatan, deskripsi } =
           get().formValues;
@@ -129,6 +133,56 @@ export const useSewaArmadaStore = create(
         set({ formErrors: newErrors });
         return Object.keys(newErrors).length === 0;
       },
+      // VALIDASI BUAT YG RESPONSIVE KARENA FORM UTAMANYA ADA 2 HALAMAN
+      validateSecondForm: () => {
+        const {
+          deskripsi,
+          fotoMuatan,
+          isCompany,
+          companyName,
+          companyNpwp,
+          opsiPembayaran,
+        } = get().formValues;
+        const newErrors = {};
+
+        // Validate uploaded images (at least one required)
+        const hasUploadedImage = fotoMuatan.some((image) => image !== null);
+        if (!hasUploadedImage) {
+          newErrors.fotoMuatan = "Pesanan harus memiliki minimal 1 foto";
+        }
+
+        // Validate description
+        if (!deskripsi.trim()) {
+          newErrors.deskripsi = "Deskripsi muatan wajib diisi";
+        } else if (deskripsi.trim().length < 3) {
+          newErrors.deskripsi = "Deskripsi muatan minimal 3 karakter";
+        }
+
+        // Validate badan usaha fields if checkbox is checked
+        if (isCompany) {
+          if (!companyName.trim()) {
+            newErrors.companyName = "Nama badan usaha/perusahaan wajib diisi";
+          } else if (companyName.trim().length < 3) {
+            newErrors.companyName =
+              "Nama badan usaha/perusahaan minimal 3 karakter";
+          } else if (/[^a-zA-Z]/.test(companyName)) {
+            newErrors.companyName = "Nama badan usaha/perusahaan tidak valid";
+          }
+
+          if (!companyNpwp.trim()) {
+            newErrors.companyNpwp = "Nomor NPWP wajib diisi";
+          } else if (companyNpwp.trim().length < 15) {
+            newErrors.companyNpwp = "Nomor NPWP minimal 15 digit";
+          }
+        }
+
+        if (!opsiPembayaran) {
+          newErrors.opsiPembayaran = "Metode pembayaran wajib diisi";
+        }
+
+        set({ formErrors: newErrors });
+        return Object.keys(newErrors).length === 0;
+      },
     }),
     {
       name: "sewa-armada-store",
@@ -146,6 +200,9 @@ export const useSewaArmadaActions = () => {
   const removeLokasi = useSewaArmadaStore((state) => state.removeLokasi);
   const reset = useSewaArmadaStore((state) => state.reset);
   const validateForm = useSewaArmadaStore((state) => state.validateForm);
+  const validateSecondForm = useSewaArmadaStore(
+    (state) => state.validateSecondForm
+  );
 
   return {
     setOrderType,
@@ -157,5 +214,6 @@ export const useSewaArmadaActions = () => {
     removeLokasi,
     reset,
     validateForm,
+    validateSecondForm,
   };
 };

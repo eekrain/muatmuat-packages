@@ -3,7 +3,7 @@
 import * as HoverCard from "@radix-ui/react-hover-card";
 
 import Button from "@/components/Button/Button";
-import ImageComponent from "@/components/ImageComponent/ImageComponent";
+import IconComponent from "@/components/IconComponent/IconComponent";
 import { useUser } from "@/hooks/use-auth";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
@@ -18,7 +18,7 @@ const DropdownMenuItem = ({ imgUrl, title, variant, onClick }) => {
       )}
       onClick={onClick}
     >
-      <ImageComponent src={imgUrl} width={16} height={16} alt="profile" />
+      <IconComponent src={imgUrl} width={16} height={16} alt="profile" />
       <span className="pt-1 text-xs">{title}</span>
     </button>
   );
@@ -28,7 +28,6 @@ export const UserDropdown = () => {
   const { t } = useTranslation();
   const accessToken = useAuthStore((state) => state.accessToken);
   const { dataUser } = useUser();
-  console.log("🚀 ~ UserDropdown ~ dataUser:", dataUser);
   return (
     <>
       {!accessToken ? (
@@ -43,9 +42,11 @@ export const UserDropdown = () => {
         <HoverCard.Root openDelay={0} closeDelay={200}>
           <HoverCard.Trigger asChild>
             <button className="flex items-center gap-x-2">
-              <div className="size-[20px] overflow-hidden rounded-[90px] border border-neutral-500">
-                <ImageComponent src={dataUser?.Avatar} width={20} height={20} />
-              </div>
+              <img
+                src={dataUser?.Avatar}
+                alt={`${dataUser?.name} profile`}
+                className="block size-[20px] overflow-hidden rounded-full border border-neutral-500"
+              />
               <span className="max-w-[104px] truncate text-[12px] font-medium leading-[12px]">
                 {dataUser?.name}
               </span>
@@ -54,27 +55,25 @@ export const UserDropdown = () => {
 
           <HoverCard.Portal>
             <HoverCard.Content
-              className="shadow-muat z-50 flex w-[160px] flex-col justify-between rounded-md border border-neutral-300 bg-neutral-50"
-              sideOffset={5}
-              align="center"
-              alignOffset={0}
+              className="shadow-muat z-20 flex w-[160px] flex-col justify-between rounded-md border border-neutral-300 bg-neutral-50"
+              side="bottom"
+              align="end"
             >
               <div className="flex flex-col py-2">
                 <DropdownMenuItem
-                  imgUrl="/img/user-icon.png"
+                  imgUrl="/icons/profil-user.svg"
                   title={t("HomeSellerIndexProfile")}
                 />
                 <DropdownMenuItem
-                  imgUrl="/img/logout-icon.png"
+                  imgUrl="/icons/profile-user-setting.svg"
+                  title="Pengaturan Akun"
+                />
+                <DropdownMenuItem
+                  imgUrl="/icons/profil-logout.svg"
                   title={t("buttonLogOut")}
                   variant="danger"
                 />
               </div>
-              <HoverCard.Arrow
-                className="h-3 w-5 fill-neutral-50"
-                width={20}
-                height={10}
-              />
             </HoverCard.Content>
           </HoverCard.Portal>
         </HoverCard.Root>

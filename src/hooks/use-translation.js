@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-import axios from "@/lib/axios";
+import { fetcherMuatparts } from "@/lib/axios";
 import {
   useSelectedLanguageActions,
   useSelectedLanguageStore,
@@ -44,7 +44,7 @@ export const useInitTranslation = () => {
     const initLanguageSelection = async () => {
       try {
         // First we fetch the list of language
-        const response = await axios.get(
+        const response = await fetcherMuatparts.get(
           "v1/bo/language/list?supermenuid=6&role=5",
           {
             headers: {

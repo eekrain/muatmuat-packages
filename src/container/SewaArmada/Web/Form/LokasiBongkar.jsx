@@ -1,5 +1,5 @@
 import { FormContainer, FormLabel } from "@/components/Form/Form";
-import { LocationModalFormWeb } from "@/components/LocationManagement/Web";
+import { LocationModalFormWeb } from "@/components/LocationManagement/Web/LocationModalFormWeb/LocationModalFormWeb";
 import { TimelineField } from "@/components/Timeline/timeline-field";
 import {
   useSewaArmadaActions,

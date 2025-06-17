@@ -16,9 +16,9 @@ export const ServiceTypeSelect = () => {
       <div
         className={cn(
           "flex h-[136px] w-[385px] cursor-pointer flex-col items-center justify-center gap-y-3 rounded-xl border border-neutral-400 bg-white p-6 hover:border-[#FFC217]",
-          orderType === "instan" && "border-[#FFC217] bg-[#FFF5C6]"
+          orderType === "INSTANT" && "border-[#FFC217] bg-[#FFF5C6]"
         )}
-        onClick={() => setOrderType("instan")}
+        onClick={() => setOrderType("INSTANT")}
       >
         <div className="relative h-8 w-8">
           <Image
@@ -39,9 +39,9 @@ export const ServiceTypeSelect = () => {
       <div
         className={cn(
           "flex h-[136px] w-[385px] cursor-pointer flex-col items-center justify-center gap-y-3 rounded-xl border border-neutral-400 bg-white p-6 hover:border-[#FFC217]",
-          orderType === "terjadwal" && "border-[#FFC217] bg-[#FFF5C6]"
+          orderType === "SCHEDULED" && "border-[#FFC217] bg-[#FFF5C6]"
         )}
-        onClick={() => setOrderType("terjadwal")}
+        onClick={() => setOrderType("SCHEDULED")}
       >
         <div className="relative h-8 w-8">
           <Image

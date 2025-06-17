@@ -132,10 +132,7 @@ export const ModalTrigger = ({ children }) => {
   const { open } = useModal();
 
   return (
-    <div
-      onClick={open}
-      className="rounded bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-    >
+    <div className="cursor-pointer" onClick={open}>
       {children}
     </div>
   );
@@ -149,10 +146,14 @@ export const ModalContent = ({
   type = "muattrans",
   children,
   className,
+  appearance = {
+    backgroudClassname: "",
+    wrapperClassname: "",
+    closeButtonClassname: "",
+  },
 }) => {
   const { close, isOpen, handleClickOutside, withCloseButton, dialogRef } =
     useModal();
-  const baseClass = "";
 
   const iconClassnames = {
     muatmuat: "icon-fill-primary-700",
@@ -168,14 +169,38 @@ export const ModalContent = ({
     <Portal>
       <div
         className={cn(
-          "fixed inset-0 z-50 flex items-center justify-center bg-black/25"
+          "fixed inset-0 z-50 flex items-center justify-center bg-black/25",
+          appearance.backgroudClassname
         )}
         onMouseDown={handleClickOutside}
       >
-        <div ref={dialogRef} className="relative rounded-xl bg-neutral-50">
+        {type === "lightbox" && (
+          <button
+            onClick={close}
+            className="absolute left-4 top-[55px] text-white"
+          >
+            <IconComponent
+              className="text-white"
+              src="/icons/close20.svg"
+              width={24}
+              height={24}
+            />
+          </button>
+        )}
+
+        <div
+          ref={dialogRef}
+          className={cn(
+            "relative rounded-xl bg-neutral-50",
+            appearance.wrapperClassname
+          )}
+        >
           {withCloseButton && (
             <button
-              className="absolute right-2 top-2 z-50 flex cursor-pointer items-center justify-center rounded-full bg-neutral-50"
+              className={cn(
+                "absolute right-2 top-2 z-50 flex cursor-pointer items-center justify-center rounded-full bg-neutral-50",
+                appearance.closeButtonClassname
+              )}
               onClick={close}
             >
               <IconComponent
@@ -186,7 +211,7 @@ export const ModalContent = ({
               />
             </button>
           )}
-          <div className={className ?? baseClass}>{children}</div>
+          <div className={cn("md:rounded-[12px]", className)}>{children}</div>
         </div>
       </div>
     </Portal>

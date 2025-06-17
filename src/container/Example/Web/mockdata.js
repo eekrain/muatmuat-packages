@@ -2,11 +2,40 @@ export const dataCollapsed = [
   {
     title:
       "Jl. Ngagel No.128, Ngagel, Kec. Wonokromo, Surabaya, Jawa Timur 60246",
-    subtitle: "Lihat Lokasi Muat Lainnya",
+    withButton: {
+      label: "Lihat Lokasi Muat Lainnya",
+      onClick: () => alert("Lihat Lokasi Muat Lainnya"),
+    },
   },
   {
     title: "Jl. Ahmad Yani No. 123, Kota Surabaya, Jawa Timur 60231",
-    subtitle: "Lihat Lokasi Bongkar Lainnya",
+    withButton: {
+      label: "Lihat Lokasi Bongkar Lainnya",
+      onClick: () => alert("Lihat Lokasi Bongkar Lainnya"),
+    },
+  },
+];
+
+export const dataCollapsedWithDate = [
+  {
+    title: "Antri di Lokasi Bongkar 1",
+    withDate: new Date("2025-01-04T05:20:00Z"),
+  },
+  {
+    title: "Tiba di Lokasi Bongkar 1",
+    withButton: {
+      label: "Lihat Bukti Muat Barang & POD",
+      onClick: () => alert("Lihat Bukti Muat Barang & POD"),
+    },
+    withDate: new Date("2025-02-04T05:20:00Z"),
+  },
+  {
+    title: "Menuju ke Lokasi Bongkar 1",
+    withButton: {
+      label: "Lihat Bukti Muat Barang & POD",
+      onClick: () => alert("Lihat Bukti Muat Barang & POD"),
+    },
+    withDate: new Date("2025-02-04T05:20:00Z"),
   },
 ];
 
