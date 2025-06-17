@@ -50,7 +50,7 @@ const FleetOrderConfirmationModal = ({ isOpen, setIsOpen, onOrderFleet }) => {
             <div className="flex flex-row justify-center gap-2">
               <Button
                 variant="muatparts-primary-secondary"
-                onClick={() => setIsModalConfirmationOpen(false)}
+                onClick={() => setIsOpen(false)}
               >
                 Kembali
               </Button>

@@ -6,58 +6,24 @@ import Button from "@/components/Button/Button";
 import Card from "@/components/Card/Card";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
+import FleetOrderConfirmationModal from "@/container/SewaArmada/Web/FleetOrderConfirmationModal/FleetOrderConfirmationModal";
+import { useSWRHook } from "@/hooks/use-swr";
+import { fetcherPayment } from "@/lib/axios";
 import { cn } from "@/lib/utils";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
 } from "@/store/forms/sewaArmadaStore";
 
-import FleetOrderConfirmationModal from "../FleetOrderConfirmationModal/FleetOrderConfirmationModal";
-
 export const SummaryPanel = () => {
-  const paymentMethods = [
-    {
-      title: "Transfer Virtual Account",
-      icon: "/icons/transfer24.svg",
-      options: [
-        {
-          id: "bca",
-          name: "BCA Virtual Account",
-          icon: "/icons/bca24.svg",
-        },
-        {
-          id: "mandiri",
-          name: "Mandiri Virtual Account",
-          icon: "/icons/bca24.svg",
-        },
-        {
-          id: "bni",
-          name: "BNI Virtual Account",
-          icon: "/icons/bca24.svg",
-        },
-        {
-          id: "bri",
-          name: "BRI Virtual Account",
-          icon: "/icons/bca24.svg",
-        },
-        {
-          id: "bsi",
-          name: "BSI Virtual Account",
-          icon: "/icons/bca24.svg",
-        },
-        {
-          id: "permata",
-          name: "Permata Virtual Account",
-          icon: "/icons/bca24.svg",
-        },
-        {
-          id: "cimb",
-          name: "CIMB Virtual Account",
-          icon: "/icons/bca24.svg",
-        },
-      ],
-    },
-  ];
+  // Fetch payment methods using SWR
+  const { data: paymentMethodsResponse } = useSWRHook(
+    "v1/payment/methods",
+    fetcherPayment
+  );
+
+  // Use the API data directly or fall back to an empty array
+  const paymentMethods = paymentMethodsResponse?.Data || [];
 
   const router = useRouter();
 
@@ -103,12 +69,13 @@ export const SummaryPanel = () => {
   const handleOrderFleet = () => {
     alert("Hore Berhasil Sewa Armada :)");
     setIsModalConfirmationOpen(false);
+    // ambil order id dari response API create order
     router.push("/daftarpesanan/detailpesanan/1");
   };
 
   const selectedOpsiPembayaran = opsiPembayaran
     ? paymentMethods
-        .flatMap((method) => method.options || [])
+        .flatMap((method) => method.methods || [])
         .find((item) => item.id === opsiPembayaran.id)
     : null;
 
@@ -213,7 +180,12 @@ export const SummaryPanel = () => {
                   onClick={() => setIsOpsiPembayaranModalOpen(true)}
                 >
                   <div className="flex items-center gap-x-2">
-                    <IconComponent src={selectedOpsiPembayaran.icon} />
+                    <Image
+                      src={selectedOpsiPembayaran.icon}
+                      width={16}
+                      height={16}
+                      className="size-[16px] object-cover"
+                    />
                     <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
                       {selectedOpsiPembayaran.name}
                     </span>
@@ -269,9 +241,14 @@ export const SummaryPanel = () => {
                       onClick={() => toggleSection(categoryKey)}
                     >
                       <div className="flex items-center gap-2">
-                        <IconComponent src={paymentMethod.icon} size="medium" />
+                        <Image
+                          src={paymentMethod.icon}
+                          width={24}
+                          height={24}
+                          className="size-[24px] object-cover"
+                        />
                         <span className="text-[12px] font-bold leading-[14.4px] text-neutral-900">
-                          {paymentMethod.title}
+                          {paymentMethod.category}
                         </span>
                       </div>
                       <IconComponent
@@ -292,7 +269,7 @@ export const SummaryPanel = () => {
                       }`}
                     >
                       <div className="flex flex-col pl-8">
-                        {paymentMethod.options.map((option, optionKey) => (
+                        {paymentMethod.methods.map((option, optionKey) => (
                           <button
                             key={optionKey}
                             className="flex h-12 w-[392px] cursor-pointer items-center justify-between border-b border-neutral-400 px-0 py-3 hover:bg-neutral-50"
@@ -300,11 +277,11 @@ export const SummaryPanel = () => {
                           >
                             <div className="flex items-center gap-2">
                               <div className="flex h-6 w-6 items-center justify-center rounded border">
-                                <IconComponent
+                                <Image
                                   src={option.icon}
                                   width={20}
                                   height={20}
-                                  className="object-contain"
+                                  className="size-[20px] object-cover"
                                 />
                               </div>
                               <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
