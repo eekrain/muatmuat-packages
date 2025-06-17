@@ -1,6 +1,6 @@
 import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
-import { ModalPostalCodeResponsive } from "@/components/LocationManagement/Responsive/ModalPostalCodeResponsive";
+import { ModalPostalCodeResponsive } from "@/components/LocationManagement/Responsive/ModalPostalCodeResponsive/ModalPostalCodeResponsive";
 import { MapContainer } from "@/components/MapContainer/MapContainer";
 import { useLocationContext } from "@/hooks/use-location/use-location";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";

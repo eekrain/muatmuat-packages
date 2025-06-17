@@ -2,11 +2,10 @@ import { useEffect, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { InputSearch } from "@/components/InputSearch/InputSearch";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { useLocationContext } from "@/hooks/use-location/use-location";
 import { useTranslation } from "@/hooks/use-translation";
-
-import { InputSearch } from "../../InputSearch/InputSearch";
 
 export const ModalPostalCodeResponsive = () => {
   const { t } = useTranslation();

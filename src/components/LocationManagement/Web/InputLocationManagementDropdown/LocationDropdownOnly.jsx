@@ -18,6 +18,7 @@ export const LocationDropdownOnly = ({
   isDropdownSearchOpen,
   setIsDropdownSearchOpen,
   handleAddToSavedLocation,
+  hideDropdownWhenTopIsLessThan = 250,
 }) => {
   console.log("🚀 ~ className:", className);
   const inputRef = useRef(null);
@@ -29,8 +30,13 @@ export const LocationDropdownOnly = ({
     if (isDropdownSearchOpen && inputRef.current) {
       const rect = inputRef.current.getBoundingClientRect();
       const top = rect.bottom + window.scrollY;
-      if (top < 250) {
-        setIsDropdownSearchOpen, false;
+      console.log(
+        "🚀 ~ updateDropdownPosition ~ top:",
+        top,
+        top < hideDropdownWhenTopIsLessThan
+      );
+      if (top < hideDropdownWhenTopIsLessThan) {
+        setIsDropdownSearchOpen(false);
         inputRef.current.blur();
       } else {
         setDropdownStyle({
