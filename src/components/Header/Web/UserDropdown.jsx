@@ -4,7 +4,6 @@ import * as HoverCard from "@radix-ui/react-hover-card";
 
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { useUser } from "@/hooks/use-auth";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
@@ -29,7 +28,6 @@ export const UserDropdown = () => {
   const { t } = useTranslation();
   const accessToken = useAuthStore((state) => state.accessToken);
   const { dataUser } = useUser();
-  console.log("🚀 ~ UserDropdown ~ dataUser:", dataUser);
   return (
     <>
       {!accessToken ? (
@@ -44,9 +42,11 @@ export const UserDropdown = () => {
         <HoverCard.Root openDelay={0} closeDelay={200}>
           <HoverCard.Trigger asChild>
             <button className="flex items-center gap-x-2">
-              <div className="size-[20px] overflow-hidden rounded-[90px] border border-neutral-500">
-                <ImageComponent src={dataUser?.Avatar} width={20} height={20} />
-              </div>
+              <img
+                src={dataUser?.Avatar}
+                alt={`${dataUser?.name} profile`}
+                className="block size-[20px] overflow-hidden rounded-full border border-neutral-500"
+              />
               <span className="max-w-[104px] truncate text-[12px] font-medium leading-[12px]">
                 {dataUser?.name}
               </span>

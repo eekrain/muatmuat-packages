@@ -1,18 +1,19 @@
-import axios from "@/lib/axios";
+import { fetcherMuatparts } from "@/lib/axios";
 import {
   normalizeAutoCompleteNotFound,
   normalizeDistrictData,
   normalizeLocationByLatLong,
-} from "@/lib/normalizers";
+} from "@/lib/normalizers/location";
 
 const getLocationByLatLong = async (coordinates) => {
-  const res1 = await axios.post("/v1/location_by_lat_long", {
+  const res1 = await fetcherMuatparts.post("/v1/location_by_lat_long", {
     Lat: coordinates.latitude,
     Long: coordinates.longitude,
   });
   const getLocation = res1.data.Data;
+  console.log("🚀 ~ getLocationByLatLong ~ getLocation:", getLocation);
 
-  const res2 = await axios.post(
+  const res2 = await fetcherMuatparts.post(
     "v1/district_by_token",
     new URLSearchParams({ placeId: getLocation.place_id })
   );
@@ -42,7 +43,7 @@ const getLocationByLatLong = async (coordinates) => {
 
 const getLocationByPlaceId = async (location) => {
   console.log("🚀 ~ getLocationByPlaceId ~ location:", location);
-  const res = await axios.post(
+  const res = await fetcherMuatparts.post(
     "v1/district_by_token",
     new URLSearchParams({ placeId: location.ID })
   );

@@ -1,26 +1,33 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
+import { zustandDevtools } from "@/lib/utils";
+
 const initialAuthState = {
   accessToken: "",
   refreshToken: "",
 };
 
 export const useAuthStore = create(
-  persist(
-    (set) => ({
-      ...initialAuthState,
-      setToken: (val) =>
-        set({ accessToken: val.accessToken, refreshToken: val.refreshToken }),
-      logout: () => set({ ...initialAuthState }),
-    }),
-    {
-      name: "t-ash",
-      storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({
-        accessToken: state.accessToken,
-        refreshToken: state.refreshToken,
+  zustandDevtools(
+    persist(
+      (set) => ({
+        ...initialAuthState,
+        setToken: (val) =>
+          set({ accessToken: val.accessToken, refreshToken: val.refreshToken }),
+        logout: () => set({ ...initialAuthState }),
       }),
+      {
+        name: "t-ash",
+        storage: createJSONStorage(() => localStorage),
+        partialize: (state) => ({
+          accessToken: state.accessToken,
+          refreshToken: state.refreshToken,
+        }),
+      }
+    ),
+    {
+      name: "auth-token-store",
     }
   )
 );

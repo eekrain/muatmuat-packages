@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { useState } from "react";
 
 import { TagBubble } from "@/components/Badge/TagBubble";
 import {
@@ -22,7 +22,7 @@ const NoDeliveryOrder = () => {
   const [type, setType] = useState("");
   const [tempNoDeliveryOrders, setTempNoDeliveryOrders] = useState([]);
   const [newDo, setNewDo] = useState("");
-
+  console.log("temp", tempNoDeliveryOrders);
   const handleAddTempNoDeliveryOrders = () => {
     setTempNoDeliveryOrders((prevState) => [...prevState, newDo]);
     setType("list");
@@ -56,6 +56,7 @@ const NoDeliveryOrder = () => {
               setIsBottomSheetOpen(true);
               if (formValues.noDO.length === 0) {
                 setNewDo("");
+                setTempNoDeliveryOrders(formValues.noDO);
                 setType("add");
               } else {
                 setTempNoDeliveryOrders(formValues.noDO);
@@ -70,17 +71,17 @@ const NoDeliveryOrder = () => {
         {formValues.noDO.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {formValues.noDO.map((item, key) => (
-              <Fragment key={key}>
-                <TagBubble
-                  tag={item}
-                  onRemove={() =>
-                    setTempNoDeliveryOrders((prevState) =>
-                      prevState.filter((_, i) => i !== key)
-                    )
-                  }
-                  className="!bg-primary-50"
-                />
-              </Fragment>
+              <TagBubble
+                key={item}
+                withRemove={{
+                  onRemove: () =>
+                    setField(
+                      "noDO",
+                      formValues.noDO.filter((_, i) => i !== key)
+                    ),
+                }}
+                className="!bg-primary-50"
+              />
             ))}
           </div>
         ) : null}

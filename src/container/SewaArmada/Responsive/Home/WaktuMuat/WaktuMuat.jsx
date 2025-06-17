@@ -165,8 +165,8 @@ const WaktuMuatBottomsheet = () => {
             <div className="flex flex-col gap-y-3">
               <RadioButton
                 name="orderType"
-                value="instan"
-                checked={bottomsheetFormValues.orderType === "instan"}
+                value="INSTANT"
+                checked={bottomsheetFormValues.orderType === "INSTANT"}
                 onClick={(data) =>
                   handleChangeBottomsheetFormValues("orderType", data.value)
                 }
@@ -182,8 +182,8 @@ const WaktuMuatBottomsheet = () => {
             <div className="flex flex-col gap-y-3">
               <RadioButton
                 name="orderType"
-                value="terjadwal"
-                checked={bottomsheetFormValues.orderType === "terjadwal"}
+                value="SCHEDULED"
+                checked={bottomsheetFormValues.orderType === "SCHEDULED"}
                 onClick={(data) =>
                   handleChangeBottomsheetFormValues("orderType", data.value)
                 }

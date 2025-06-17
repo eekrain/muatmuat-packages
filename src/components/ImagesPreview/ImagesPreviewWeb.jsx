@@ -2,7 +2,7 @@ import { Fragment, useEffect, useState } from "react";
 
 import ReactPlayer from "react-player";
 
-import { generateThumbnail } from "@/libs/services";
+import { generateThumbnail } from "@/lib/utils/services";
 
 import IconComponent from "../IconComponent/IconComponent";
 import ImageComponent from "../ImageComponent/ImageComponent";

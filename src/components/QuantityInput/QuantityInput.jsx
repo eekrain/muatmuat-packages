@@ -8,7 +8,7 @@ export default function QuantityInput({
   initialValue = 1,
   onChange,
 }) {
-  const [quantity, setQuantity] = useState();
+  const [quantity, setQuantity] = useState("");
 
   useEffect(() => {
     // Ensure initial value is within bounds

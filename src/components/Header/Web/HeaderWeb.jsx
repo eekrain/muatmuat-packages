@@ -14,7 +14,12 @@ import { UserDropdown } from "./UserDropdown";
  * Header komponen untuk Muatparts Seller Dashboard
  * Berdasarkan gambar header yang disediakan
  */
-const HeaderWeb = () => {
+const HeaderWeb = ({
+  notifCounter = {
+    notification: 0,
+    chat: 0,
+  },
+}) => {
   const accessToken = useAuthStore((state) => state.accessToken);
 
   const menuNotifications = [
@@ -24,11 +29,11 @@ const HeaderWeb = () => {
     // },
     {
       src: "/icons/messages.svg",
-      count: 4,
+      count: notifCounter.chat,
     },
     {
       src: "/icons/notifications.svg",
-      count: 12,
+      count: notifCounter.notification,
     },
   ];
 

@@ -2,10 +2,8 @@
 
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import {
-  useResponsiveNavigation,
-  useResponsiveSearch,
-} from "@/lib/responsive-navigation";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import { useResponsiveSearchStore } from "@/store/zustand/responsiveSearchStore";
 
 const DEFAULT_FUNCTION = () =>
   alert("Responsive SearchBar Header: No function provided");
@@ -30,7 +28,7 @@ export const HeaderResponsiveSearchBar = ({
     else navigation.pop();
   };
 
-  const { searchValue, setSearchValue } = useResponsiveSearch();
+  const { searchValue, setSearchValue } = useResponsiveSearchStore();
 
   return (
     <div className="flex w-full items-center gap-x-3">

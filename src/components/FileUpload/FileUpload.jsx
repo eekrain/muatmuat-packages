@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 
-import axios from "@/lib/axios";
-import SWRHandler from "@/services/useSWRHook";
+import { useSWRMutateHook } from "@/hooks/use-swr";
+import { fetcherMuatparts } from "@/lib/axios";
 
 import Button from "../Button/Button";
 import IconComponent from "../IconComponent/IconComponent";
@@ -30,12 +30,11 @@ const FileUpload = ({
   const [isUploading, setIsUploading] = useState(false);
   const fileRef = useRef(null);
 
-  const { useSWRMutateHook } = SWRHandler();
   const { trigger: triggerUploadPhoto } = useSWRMutateHook(
-    "1/muatparts/product/photo",
+    "v1/muatparts/product/photo",
     "POST",
     (url, arg) => {
-      return axios({
+      return fetcherMuatparts({
         url,
         method: "POST",
         data: arg,
@@ -68,10 +67,10 @@ const FileUpload = ({
       setIsUploading(true);
       const response = await triggerUploadPhoto(formData);
 
-      if (response.data.Message.Code === 200) {
+      if (response.data?.Message?.Code === 200) {
         onSuccess({
-          url: response.data.Data.url,
-          name: response.data.Data.name || file.name,
+          url: response.data?.Data?.url,
+          name: response.data?.Data?.name || file.name,
         });
       }
     } catch (error) {
@@ -121,7 +120,7 @@ const FileUpload = ({
       ) : (
         <div className="flex items-center">
           <Button
-            Class="self-center"
+            className="self-center"
             name="upload"
             color="primary"
             onClick={() => fileRef.current.click()}

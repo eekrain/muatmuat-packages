@@ -1,69 +1,80 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import PropTypes from "prop-types";
 
+import { cn } from "@/lib/utils";
+
 import IconComponent from "../IconComponent/IconComponent";
-import style from "./BreadCrumb.module.scss";
 
 const BreadCrumb = ({
-  data,
-  onclick = () => {},
-  onActive = () => {},
+  data = [],
   className,
   disableActive = false,
   disableClick = false,
   maxWidth,
 }) => {
-  const router = useRouter();
-  function handleClick(val) {
-    if (val) {
-      if (val.id == "home") {
-        router.push("/");
-        return;
-      }
-      if (disableClick) return;
-      onclick(val);
+  const handleClick = (val) => {
+    if (val && !disableClick) {
+      onClick(val);
       onActive(data[data.length - 1]);
     }
-  }
+  };
+
+  const getItemClasses = (idx) =>
+    cn(
+      "select-none text-xs font-medium capitalize text-neutral-600",
+      "hover:text-primary-700",
+      idx === data.length - 1
+        ? "!max-w-none"
+        : "overflow-hidden text-ellipsis whitespace-nowrap",
+      !disableActive && idx === data.length - 1 && "text-primary-700",
+      !disableClick && "cursor-pointer"
+    );
 
   return (
-    <div className={`${style.main} ${style.breadcrumb} ${className}`}>
-      {data?.map((val, idx) => {
-        return (
-          <div className="flex items-center gap-[5px]" key={idx}>
+    <div className={cn("mb-4 flex items-center gap-[5px]", className)}>
+      {data?.map((val, idx) => (
+        <div className="flex items-center gap-[5px]" key={idx}>
+          {val.href ? (
+            <Link
+              href={val.href}
+              className={getItemClasses(idx)}
+              onClick={() => handleClick(val)}
+            >
+              {val.name}
+            </Link>
+          ) : (
             <div
               style={{ maxWidth: maxWidth ? `${maxWidth}` : "86px" }}
-              className={`${`${style.list} hover:text-primary-700`} ${
-                idx === data.length - 1
-                  ? "!max-w-none"
-                  : "overflow-hidden text-ellipsis whitespace-nowrap"
-              } ${disableActive ? "" : "last:text-primary-700"} select-none ${!disableClick ? "cursor-pointer" : ""}`}
-              key={idx}
+              className={getItemClasses(idx)}
               onClick={() => handleClick(val)}
             >
               {val.name}
             </div>
-            {idx !== data.length - 1 && (
-              <IconComponent
-                src={"/icons/chevron-right.svg"}
-                className={style.Icon}
-              />
-            )}
-          </div>
-        );
-      })}
+          )}
+          {idx !== data.length - 1 && (
+            <IconComponent
+              src="/icons/chevron-right.svg"
+              className="[&>path]:stroke-[2px]"
+            />
+          )}
+        </div>
+      ))}
     </div>
   );
 };
 
 export default BreadCrumb;
+
 BreadCrumb.propTypes = {
-  data: PropTypes.array,
-  onclick: PropTypes.func,
-  onActive: PropTypes.func,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      href: PropTypes.string,
+    })
+  ),
   className: PropTypes.string,
   disableActive: PropTypes.bool,
   maxWidth: PropTypes.number,

@@ -44,6 +44,7 @@ export const Select = ({
   value,
   onChange,
   placeholder = "Select item...",
+  notFoundText = "No options available",
   disabled = false,
   className = "",
   width = "w-full",
@@ -99,7 +100,7 @@ export const Select = ({
           >
             {options.length === 0 ? (
               <div className="px-2.5 py-3 text-xs text-gray-500">
-                No options available
+                {notFoundText}
               </div>
             ) : (
               options.map((option) => (

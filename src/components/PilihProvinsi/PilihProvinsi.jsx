@@ -51,7 +51,8 @@ const PilihProvinsi = ({
   );
   const count = nonHiddenProvinces.length;
 
-  const filteredProvinces = useShallowCompareEffect(() => {
+  const filteredProvinces = useMemo(() => {
+    if (!provinces) return [];
     if (search) {
       return provinces.reduce((arr, item) => {
         const value = item.value.filter((item) =>

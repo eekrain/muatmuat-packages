@@ -156,6 +156,20 @@ export const useLocationFormStore = create(
             ? `Lokasi Muat ${index + 1} tidak boleh sama dengan Lokasi Muat ${foundLocationIndex + 1}`
             : `Lokasi bongkar ${index + 1} tidak boleh sama dengan Lokasi bongkar ${foundLocationIndex + 1}`;
       },
+      validateLayananTambahan: () => {
+        const { formValues } = get();
+
+        const errors = {
+          dataLokasi: validateDataLokasi(formValues.dataLokasi),
+          detailLokasi: validateDetailLokasi(formValues.detailLokasi),
+          namaPIC: validateNamaPIC(formValues.namaPIC),
+          noHPPIC: validateNoHPPIC(formValues.noHPPIC),
+        };
+
+        set({ formErrors: errors });
+        // return validateForm is valid if all errors are undefined
+        return Object.values(errors).every((error) => error === undefined);
+      },
     }),
     {
       name: "location-form-store",
@@ -166,6 +180,10 @@ export const useLocationFormStore = create(
 const validateNamaLokasi = (namaLokasi) => {
   if (!namaLokasi) return "Nama Lokasi harus diisi";
   if (namaLokasi.length < 3) return "Nama Lokasi minimal 3 karakter";
+};
+
+const validateDataLokasi = (dataLokasi) => {
+  if (!dataLokasi?.location?.name) return "Lokasi harus diisi";
 };
 
 const validateDetailLokasi = (detailLokasi) => {

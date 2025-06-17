@@ -1,3 +1,5 @@
+import MillionLint from "@million/lint";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   devIndicators: false,
@@ -9,14 +11,15 @@ const nextConfig = {
       {
         hostname: "azlogistik.s3.ap-southeast-3.amazonaws.com",
       },
+      {
+        hostname: "picsum.photos",
+      },
     ],
   },
   reactStrictMode: false,
 };
 
-export default nextConfig;
-
-// export default MillionLint.next({
-//   enabled: process.env.NODE_ENV === "development",
-//   rsc: process.env.NODE_ENV === "development",
-// })(nextConfig);
+export default MillionLint.next({
+  enabled: process.env.NODE_ENV === "development",
+  rsc: process.env.NODE_ENV === "development",
+})(nextConfig);
