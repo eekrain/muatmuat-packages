@@ -219,15 +219,13 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
               </div>
               <div className="grid flex-1 grid-cols-2 gap-4 md:grid-cols-4">
                 <LightboxProvider
-                  images={dataRingkasanPesanan.cargoPhotos.map(
-                    (item) => item?.photoUrl
-                  )}
+                  images={dataRingkasanPesanan.cargoPhotos}
                   title="Lampiran/Foto Muatan"
                 >
-                  {dataRingkasanPesanan.cargoPhotos.map((item, index) => (
+                  {dataRingkasanPesanan.cargoPhotos.map((image, index) => (
                     <LightboxTrigger
-                      key={item?.photoId}
-                      image={item?.photoUrl}
+                      key={image}
+                      image={image}
                       alt={`Foto muatan ${index + 1}`}
                       className="size-[124px]"
                       withZoom={true}
