@@ -12,6 +12,8 @@ import {
 } from "@/lib/constants/detailpesanan/detailpesanan.constants";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
+import DriverStatusCard from "./DriverStatusCard";
+
 // Header Component
 const StatusPesananHeader = ({ orderCode, orderStatus }) => {
   const orderStatusLabel = useMemo(() => {
@@ -62,6 +64,7 @@ const StatusPesananHeader = ({ orderCode, orderStatus }) => {
  * @param {StatusPesananProps} props.dataStatusPesanan
  */
 const StatusPesanan = ({ dataStatusPesanan }) => {
+  console.log("dataStatusPesanan", dataStatusPesanan);
   const stepperData = useMemo(() => {
     let timeline = null;
     if (dataStatusPesanan.withShippingAdditionalService) {
@@ -86,6 +89,16 @@ const StatusPesanan = ({ dataStatusPesanan }) => {
   const isShowTimeline =
     dataStatusPesanan.orderStatus !== OrderStatusEnum.SEARCHING_FLEET &&
     dataStatusPesanan.orderStatus !== OrderStatusEnum.PENDING_PAYMENT;
+  const showDriverStatuses = [
+    OrderStatusEnum.LOADING_PROCESS,
+    OrderStatusEnum.UNLOADING_PROCESS,
+    OrderStatusEnum.DOCUMENT_PREPARATION,
+    OrderStatusEnum.DOCUMENT_SHIPPING,
+    OrderStatusEnum.COMPLETED,
+  ];
+  const isShowDriver = showDriverStatuses.includes(
+    dataStatusPesanan.orderStatus
+  );
 
   return (
     <>
@@ -103,13 +116,17 @@ const StatusPesanan = ({ dataStatusPesanan }) => {
             />
 
             {/* Timeline Section */}
-            {isShowTimeline && (
-              <div className="w-full rounded-xl border border-neutral-400 px-4 py-5">
-                <Stepper
-                  steps={stepperData.timeline}
-                  currentStep={stepperData.activeIndex}
-                />
-              </div>
+            {!isShowDriver ? (
+              <DriverStatusCard stepperData={stepperData} />
+            ) : (
+              isShowTimeline && (
+                <div className="flex w-full flex-col gap-y-5 rounded-xl border border-neutral-400 px-4 py-5">
+                  <Stepper
+                    steps={stepperData.timeline}
+                    currentStep={stepperData.activeIndex}
+                  />
+                </div>
+              )
             )}
           </div>
         </CardContent>
