@@ -5,7 +5,7 @@ import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 
 import { DriverTimeline } from "./DriverTimeline";
 
-export const LeftPanel = ({ driverStatusTimeline }) => {
+export const LeftPanel = ({ dataDriverStatus }) => {
   const breadcrumbItems = [
     { name: "Daftar Pesanan", href: "#" },
     { name: "Detail Pesanan", href: "#" },
@@ -45,9 +45,9 @@ export const LeftPanel = ({ driverStatusTimeline }) => {
 
             {/* Driver Profile */}
             <AvatarDriver
-              name={driverStatusTimeline?.name}
-              image={driverStatusTimeline?.profileImage}
-              licensePlate={driverStatusTimeline?.licensePlate}
+              name={dataDriverStatus?.dataDriver?.name}
+              image={dataDriverStatus?.dataDriver?.profileImage}
+              licensePlate={dataDriverStatus?.dataDriver?.licensePlate}
             />
           </div>
 
@@ -71,7 +71,7 @@ export const LeftPanel = ({ driverStatusTimeline }) => {
             Detail Status Driver
           </h2>
 
-          <DriverTimeline driverStatusTimeline={driverStatusTimeline} />
+          <DriverTimeline dataDriverStatus={dataDriverStatus} />
         </div>
       </div>
     </div>

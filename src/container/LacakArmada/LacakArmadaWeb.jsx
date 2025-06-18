@@ -4,17 +4,17 @@ import { LeftPanel } from "./LeftPanel/LeftPanel";
 import { MapPanel } from "./MapPanel/MapPanel";
 
 const LacakArmadaWeb = () => {
-  const { data: driverStatusTimeline } = useGetDriverStatusTimeline({
+  const { data: dataDriverStatus } = useGetDriverStatusTimeline({
     orderId: "123",
     driverId: "456",
   });
   return (
     <>
       <div className="grid h-[calc(100vh-60px)] grid-cols-[480px_1fr]">
-        <LeftPanel driverStatusTimeline={driverStatusTimeline} />
+        <LeftPanel dataDriverStatus={dataDriverStatus} />
         <MapPanel />
       </div>
-      <pre>{JSON.stringify(driverStatusTimeline, null, 2)}</pre>
+      <pre>{JSON.stringify(dataDriverStatus, null, 2)}</pre>
     </>
   );
 };
