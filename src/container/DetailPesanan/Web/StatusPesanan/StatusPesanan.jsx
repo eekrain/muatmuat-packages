@@ -10,8 +10,10 @@ import LightboxTrigger, {
 } from "@/components/Lightbox/Lighbox";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import Stepper from "@/components/Stepper/Stepper";
-import { ALL_ORDER_STATUS } from "@/lib/constants/detailpesanan/detailpesanan.constants";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import {
+  OrderStatusEnum,
+  OrderStatusTitle,
+} from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
 import DriverStatusCard from "./DriverStatusCard";
 
@@ -22,7 +24,7 @@ const StatusPesananHeader = ({ orderCode, orderStatus }) => {
     setIsDocumentDeliveryEvidenceModalOpen,
   ] = useState(false);
   const orderStatusLabel = useMemo(() => {
-    return ALL_ORDER_STATUS.find((val) => val.status === orderStatus)?.label;
+    return OrderStatusTitle[orderStatus];
   }, [orderStatus]);
 
   const getVariantBadge = () => {
@@ -170,7 +172,7 @@ const StatusPesanan = ({ dataStatusPesanan }) => {
     OrderStatusEnum.COMPLETED,
   ];
   const showDriver = showDriverStatuses.includes(dataStatusPesanan.orderStatus);
-
+  console.log("dataStatusPesanan", dataStatusPesanan);
   return (
     <>
       <Card className="w-full rounded-xl border-none">

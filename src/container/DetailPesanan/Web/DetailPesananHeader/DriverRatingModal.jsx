@@ -76,7 +76,7 @@ const DriverRatingForm = ({ driver }) => {
         </div>
 
         {/* Review Column */}
-        <div className="flex w-[262px] flex-col gap-2">
+        <div className="flex min-w-[262px] flex-col gap-2">
           <span className="text-[12px] font-medium text-neutral-600">
             Berikan ulasan untuk driver {driver.hasReview ? "" : "(Opsional)"}
           </span>
@@ -132,12 +132,14 @@ const DriverRatingModal = ({ isOpen, setIsOpen, drivers }) => {
 
         {/* Content Container */}
         <div className="rounded-xl border border-neutral-400 px-4 py-5">
-          <div className="mr-[-12px] flex max-h-[304px] w-full flex-col gap-y-5 overflow-y-auto pr-[7px]">
-            {drivers.map((driver, key) => (
-              <Fragment key={key}>
-                <DriverRatingForm driver={driver} />
-              </Fragment>
-            ))}
+          <div className="mr-[-12px] flex max-h-[304px] overflow-y-auto pr-[7px]">
+            <div className="flex flex-col gap-y-5">
+              {drivers.map((driver, key) => (
+                <Fragment key={key}>
+                  <DriverRatingForm driver={driver} />
+                </Fragment>
+              ))}
+            </div>
           </div>
         </div>
       </ModalContent>
