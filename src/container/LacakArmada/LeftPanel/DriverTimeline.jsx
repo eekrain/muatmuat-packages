@@ -9,7 +9,7 @@ import {
 } from "@/components/Timeline";
 import { OrderStatusTitle } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
-export const DriverTimeline = ({ driverStatusTimeline }) => {
+export const DriverTimeline = ({ dataDriverStatus }) => {
   const [images, setImages] = useState({ packages: [], pods: [] });
   const [currentStatus, setCurrentStatus] = useState(null);
   const [lightboxActiveIndex, setLightboxActiveIndex] = useState(0);
@@ -26,15 +26,15 @@ export const DriverTimeline = ({ driverStatusTimeline }) => {
         images={[...images.packages, ...images.pods]}
         title={lightboxTitle()}
       >
-        {driverStatusTimeline?.statusDefinitions.map((parent, parentIndex) => (
+        {dataDriverStatus?.statusDefinitions.map((parent, parentIndex) => (
           <Fragment key={parent.mappedOrderStatus}>
             {parent.children.length > 0 ? (
               <TimelineContainer className="ml-[9px]">
-                {parent.children.map((driverStatus, index) => (
+                {parent.children.map((driverStatusItem, index) => (
                   <ItemWithLightbox
-                    key={driverStatus.statusCode}
+                    key={driverStatusItem.statusCode}
                     parent={parent}
-                    driverStatus={driverStatus}
+                    driverStatusItem={driverStatusItem}
                     index={index}
                     parentIndex={parentIndex}
                     setImages={setImages}
@@ -49,8 +49,7 @@ export const DriverTimeline = ({ driverStatusTimeline }) => {
               icon="/icons/stepper/stepper-box-opened.svg"
               title={OrderStatusTitle[parent.mappedOrderStatus]}
               withDivider={
-                parentIndex !==
-                driverStatusTimeline?.statusDefinitions.length - 1
+                parentIndex !== dataDriverStatus?.statusDefinitions.length - 1
               }
             />
           </Fragment>
@@ -62,7 +61,7 @@ export const DriverTimeline = ({ driverStatusTimeline }) => {
 
 const ItemWithLightbox = ({
   parent,
-  driverStatus,
+  driverStatusItem,
   index,
   parentIndex,
   setImages,
@@ -70,11 +69,11 @@ const ItemWithLightbox = ({
   setLightboxActiveIndex,
 }) => {
   const subtitle = () => {
-    if (driverStatus.statusCode.startsWith("MENUJU_")) {
+    if (driverStatusItem.statusCode.startsWith("MENUJU_")) {
       return "Lihat Bukti Muat Barang & POD";
     }
 
-    return `Lihat Bukti ${driverStatus.statusName}`;
+    return `Lihat Bukti ${driverStatusItem.statusName}`;
   };
 
   const { openLightbox, current } = useLightbox();
@@ -87,32 +86,32 @@ const ItemWithLightbox = ({
 
   return (
     <TimelineItem
-      key={driverStatus.statusCode}
+      key={driverStatusItem.statusCode}
       variant="bullet-driver-status"
       totalLength={parent.children.length}
       index={index}
       activeIndex={parentIndex === 0 ? 0 : -1}
     >
       <TimelineContentWithButtonDate
-        title={driverStatus.statusName}
+        title={driverStatusItem.statusName}
         withButton={
-          driverStatus.requiresPhoto
+          driverStatusItem.requiresPhoto
             ? {
                 label: subtitle(),
                 onClick: () => {
                   setImages({
-                    packages: driverStatus.photoEvidences.packages,
-                    pods: driverStatus.photoEvidences.pods,
+                    packages: driverStatusItem.photoEvidences.packages,
+                    pods: driverStatusItem.photoEvidences.pods,
                   });
-                  setCurrentStatus(driverStatus);
+                  setCurrentStatus(driverStatusItem);
                   openLightbox(0);
                 },
               }
             : null
         }
-        withDate={new Date(driverStatus.date)}
+        withDate={new Date(driverStatusItem.date)}
         onSubtitleClick={() =>
-          alert(`Tampilkan modal untuk ${driverStatus.subtitle}`)
+          alert(`Tampilkan modal untuk ${driverStatusItem.subtitle}`)
         }
       />
     </TimelineItem>
