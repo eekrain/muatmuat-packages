@@ -44,7 +44,7 @@ const Toaster = ({ className }) => {
     <Portal>
       <div
         className={cn(
-          "fixed left-0 z-50 flex w-full flex-col items-end gap-2 px-4 md:right-0 md:mx-0",
+          "fixed left-0 z-[51] flex w-full flex-col items-end gap-2 px-4 md:right-0 md:mx-0",
           "pointer-events-none"
         )}
         style={{

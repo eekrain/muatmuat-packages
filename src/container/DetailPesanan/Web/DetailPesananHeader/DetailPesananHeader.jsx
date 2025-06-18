@@ -47,6 +47,63 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
         "Saat driver akan melakukan proses muat atau bongkar, tunjukkan QR Code lokasi muat atau bongkar agar mereka bisa memindainya dan melanjutkan proses.",
     },
   ];
+  // Sample driver data
+  const drivers = [
+    {
+      driverId: "uuid-driver-1",
+      name: "Ahmad Rahman",
+      phoneNumber: "081234567891",
+      profileImage: "/img/avatar2.png",
+      licensePlate: "B 1234 CD",
+      hasReview: false,
+      canReview: true,
+      driverPerformance: {
+        onTimePickup: true,
+        onTimeDelivery: true,
+        cargoCondition: "GOOD",
+        communicationRating: "EXCELLENT",
+      },
+    },
+    {
+      driverId: "uuid-driver-2",
+      name: "Budi Santoso",
+      phoneNumber: "081234567892",
+      profileImage: "/img/avatar2.png",
+      licensePlate: "B 5678 EF",
+      hasReview: true,
+      canReview: false,
+      reviewedAt: "2025-02-11T16:00:00Z",
+      givenRating: 2,
+      givenReview: "Driver lambat dalam mengirim barang",
+    },
+    {
+      driverId: "uuid-driver-1",
+      name: "Ahmad Rahman",
+      phoneNumber: "081234567891",
+      profileImage: "/img/avatar2.png",
+      licensePlate: "B 1234 CD",
+      hasReview: false,
+      canReview: true,
+      driverPerformance: {
+        onTimePickup: true,
+        onTimeDelivery: true,
+        cargoCondition: "GOOD",
+        communicationRating: "EXCELLENT",
+      },
+    },
+    {
+      driverId: "uuid-driver-2",
+      name: "Budi Santoso",
+      phoneNumber: "081234567892",
+      profileImage: "/img/avatar2.png",
+      licensePlate: "B 5678 EF",
+      hasReview: true,
+      canReview: false,
+      reviewedAt: "2025-02-11T16:00:00Z",
+      givenRating: 5,
+      givenReview: "",
+    },
+  ];
 
   const [isDocumentReceivedModalOpen, setIsDocumentReceivedModalOpen] =
     useState(false);
@@ -57,6 +114,11 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
     alert("Hit API /base_url/v1/orders/{orderId}/document-received");
     setIsDocumentReceivedModalOpen(false);
   };
+
+  // Check if all drivers have been reviewed
+  const areAllDriversReviewed = drivers.every(
+    (driver) => driver.hasReview === true
+  );
 
   return (
     <>
@@ -123,7 +185,7 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
               onClick={() => setIsDriverRatingModalOpen(true)}
               type="button"
             >
-              Beri Ulasan
+              {areAllDriversReviewed ? "Lihat Ulasan" : "Beri Ulasan"}
             </Button>
           ) : null}
         </div>
@@ -139,6 +201,7 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
       <DriverRatingModal
         isOpen={isDriverRatingModalOpen}
         setIsOpen={setIsDriverRatingModalOpen}
+        drivers={drivers}
       />
     </>
   );
