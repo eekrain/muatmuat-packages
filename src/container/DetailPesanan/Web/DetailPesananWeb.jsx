@@ -1,5 +1,5 @@
 import { useParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
@@ -11,6 +11,7 @@ import {
   ModalTrigger,
 } from "@/components/Modal/Modal";
 import Slider from "@/components/Slider/Slider";
+import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { useGetDetailPesananData } from "@/services/detailpesanan/getDetailPesananData";
 import { useLoadingAction } from "@/store/loadingStore";
 
@@ -61,6 +62,9 @@ const DetailPesananWeb = () => {
     },
   ];
 
+  const [isDocumentReceivedModalOpen, setIsDocumentReceivedModalOpen] =
+    useState(false);
+
   const { data: dataDetailPesanan, isLoading: isLoadingDetailPesanan } =
     useGetDetailPesananData(params.orderId);
 
@@ -70,6 +74,12 @@ const DetailPesananWeb = () => {
     setIsGlobalLoading(isLoadingDetailPesanan);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoadingDetailPesanan]);
+
+  const handleReceiveDocument = () => {
+    // Hit API /base_url/v1/orders/{orderId}/document-received
+    alert("Hit API /base_url/v1/orders/{orderId}/document-received");
+    setIsDocumentReceivedModalOpen(false);
+  };
 
   return (
     <>
@@ -126,6 +136,17 @@ const DetailPesananWeb = () => {
                 >
                   Pesan Ulang
                 </Button>
+                {dataDetailPesanan?.dataStatusPesanan.orderStatus ===
+                OrderStatusEnum.DOCUMENT_SHIPPING ? (
+                  <Button
+                    variant="muatparts-primary"
+                    className="h-8"
+                    onClick={() => setIsDocumentReceivedModalOpen(true)}
+                    type="button"
+                  >
+                    Dokumen Diterima
+                  </Button>
+                ) : null}
               </div>
             </div>
             <div className="flex gap-x-4">
@@ -167,6 +188,45 @@ const DetailPesananWeb = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal Konfirmasi Dokumen Diterima */}
+      <Modal
+        closeOnOutsideClick={false}
+        open={isDocumentReceivedModalOpen}
+        onOpenChange={setIsDocumentReceivedModalOpen}
+      >
+        <ModalContent className="w-modal-small">
+          <ModalHeader size="small" />
+          <div className="flex flex-col items-center gap-y-6 px-6 py-9">
+            <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
+              Informasi
+            </h1>
+            <p className="text-center text-[14px] font-medium leading-[15.4px] text-neutral-900">
+              {
+                'Klik "Sudah", jika kamu sudah menerima bukti dokumen untuk menyelesaikan pesanan.'
+              }
+            </p>
+            <div className="flex items-center gap-x-2">
+              <Button
+                variant="muatparts-primary-secondary"
+                className="h-8"
+                onClick={() => setIsDocumentReceivedModalOpen(false)}
+                type="button"
+              >
+                Batal
+              </Button>
+              <Button
+                variant="muatparts-primary"
+                className="h-8"
+                onClick={handleReceiveDocument}
+                type="button"
+              >
+                Sudah
+              </Button>
+            </div>
+          </div>
+        </ModalContent>
+      </Modal>
 
       <pre>{JSON.stringify(dataDetailPesanan, null, 2)}</pre>
     </>
