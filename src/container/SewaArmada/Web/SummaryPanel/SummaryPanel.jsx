@@ -1,6 +1,6 @@
 // components/SummaryPanel/SummaryPanel.jsx
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
@@ -23,7 +23,7 @@ const Toast = ({ message, onClose }) => (
 export const SummaryPanel = () => {
   const token = "Bearer your_token_here";
   const { vouchers: voucherList, loading, error } = useVouchers(token);
-
+  const [validationErrors, setValidationErrors] = useState({});
   const [selectedVoucher, setSelectedVoucher] = useState(null);
   const [showVoucherPopup, setShowVoucherPopup] = useState(false);
   const [showInfoPopup, setShowInfoPopup] = useState(null);
@@ -31,18 +31,51 @@ export const SummaryPanel = () => {
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
-  const filteredVouchers = voucherList.filter((v) =>
-    v.title?.toLowerCase().includes(searchKeyword.toLowerCase())
+  const baseOrderAmount = 950000;
+  const [currentTotal, setCurrentTotal] = useState(baseOrderAmount);
+
+  const filteredVouchers = voucherList.filter(
+    (v) =>
+      v.code?.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+      v.description?.toLowerCase().includes(searchKeyword.toLowerCase())
   );
+
+  // Function to calculate discount amount based on voucher type
+  const calculateDiscountAmount = (voucher, total) => {
+    if (!voucher) return 0;
+
+    if (voucher.discountPercentage !== null) {
+      const pct = parseFloat(voucher.discountPercentage) || 0;
+      return total * (pct / 100);
+    } else {
+      // Use the fixed discountAmount key directly
+      return parseFloat(voucher.discountAmount) || 0;
+    }
+  };
+
+  useEffect(() => {
+    if (selectedVoucher) {
+      const discount = calculateDiscountAmount(
+        selectedVoucher,
+        baseOrderAmount
+      );
+      setCurrentTotal(baseOrderAmount - discount);
+    } else {
+      setCurrentTotal(baseOrderAmount);
+    }
+  }, [selectedVoucher, baseOrderAmount]);
 
   const handleVoucherSelect = async (voucher) => {
     try {
-      const totalAmount = 1077490;
+      // Clear previous validation errors for all vouchers
+      setValidationErrors({});
+
+      const totalAmountForValidation = baseOrderAmount;
       const res = await axios.post(
         "/v1/orders/vouchers/validate",
         {
           voucherId: voucher.id,
-          totalAmount: totalAmount,
+          totalAmount: totalAmountForValidation,
         },
         {
           headers: { Authorization: token },
@@ -50,18 +83,52 @@ export const SummaryPanel = () => {
       );
 
       const isValid = res.data.Data.isValid;
-      if (isValid) {
-        setSelectedVoucher(voucher);
+      if (isValid !== false) {
+        // Voucher is valid
+        const discountValue = calculateDiscountAmount(
+          voucher,
+          totalAmountForValidation
+        );
+
+        setSelectedVoucher({
+          ...voucher,
+          discountAmount: discountValue, // This 'discountAmount' will hold the FINAL numerical discount value
+        });
         setShowVoucherPopup(false);
       } else {
-        setToastMessage(
-          `Voucher tidak valid: ${res.data.data.validationMessages?.[0]}` || ""
-        );
+        // Voucher is invalid
+        // Set validation error for this specific voucher
+        const validationMessage =
+          res.data.Data.validationMessages || "Voucher tidak valid";
+        setValidationErrors({
+          ...validationErrors,
+          [voucher.id]: validationMessage,
+        });
+
+        // Keep the popup open so user can see the error
+        setSelectedVoucher(null);
       }
     } catch (err) {
-      const msg =
-        err?.response?.data?.message?.text || "Gagal validasi voucher.";
-      setToastMessage(msg);
+      console.log("error116", err);
+      setSelectedVoucher(null);
+
+      // Check if we have error response data (400 status code with validation message)
+      if (err.response && err.response.data && err.response.data.Data) {
+        const errorData = err.response.data.Data;
+        const validationMessage =
+          errorData.validationMessages || "Voucher tidak valid";
+
+        setValidationErrors({
+          ...validationErrors,
+          [voucher.id]: validationMessage,
+        });
+      } else {
+        // General error fallback
+        setValidationErrors({
+          ...validationErrors,
+          [voucher.id]: "Terjadi kesalahan. Silakan coba lagi.",
+        });
+      }
     }
   };
 
@@ -94,7 +161,9 @@ export const SummaryPanel = () => {
         <div className="space-y-3 text-sm text-gray-700">
           <div className="flex justify-between">
             <span>Biaya Pesan Jasa Angkut</span>
-            <span className="font-medium">Rp 950.000</span>
+            <span className="font-medium">
+              Rp {baseOrderAmount.toLocaleString("id-ID")}
+            </span>
           </div>
           <div className="flex justify-between">
             <span>Biaya Asuransi Barang</span>
@@ -102,7 +171,7 @@ export const SummaryPanel = () => {
           </div>
           {selectedVoucher && (
             <div className="flex justify-between">
-              <span>Diskon Voucher</span>
+              <span>Diskon Voucher ({selectedVoucher.code})</span>
               <span className="font-medium text-red-500">
                 -Rp {selectedVoucher.discountAmount?.toLocaleString("id-ID")}
               </span>
@@ -110,18 +179,13 @@ export const SummaryPanel = () => {
           )}
         </div>
 
-        {/* ✅ TOTAL DINAMIS */}
         <div className="my-4 flex items-center justify-between border-t border-gray-200 pt-4 text-base font-bold">
           <span>Total</span>
           <span className="text-xl">
-            Rp{" "}
-            {(950000 - (selectedVoucher?.discountAmount || 0)).toLocaleString(
-              "id-ID"
-            )}
+            Rp {currentTotal.toLocaleString("id-ID")}
           </span>
         </div>
 
-        {/* ✅ TOMBOL VOUCHER DENGAN ICON */}
         <div className="flex flex-col gap-2">
           <button
             onClick={() => setShowVoucherPopup(true)}
@@ -134,12 +198,17 @@ export const SummaryPanel = () => {
                 width={25}
                 height={25}
               />
-              <span>Makin hemat pakai voucher</span>
+              <span>
+                {selectedVoucher
+                  ? `Voucher Terpilih: ${selectedVoucher.code}`
+                  : "Makin hemat pakai voucher"}
+              </span>
             </div>
             <Image
               src="/icons/right-arrow-voucher.png"
               width={18}
               height={18}
+              alt="right-arrow"
             />
           </button>
 
@@ -154,7 +223,13 @@ export const SummaryPanel = () => {
 
       {/* MODAL PILIH VOUCHER */}
       <Modal open={showVoucherPopup} onOpenChange={setShowVoucherPopup}>
-        <ModalContent className="max-h-[80vh] w-[386px] overflow-y-auto rounded-xl bg-white px-6 py-6 shadow-2xl">
+        <ModalContent className="max-h-[80vh] min-h-fit w-[386px] rounded-xl bg-white px-6 py-6 shadow-2xl">
+          <button
+            onClick={() => setShowVoucherPopup(false)}
+            className="absolute right-4 top-4 text-gray-500 hover:text-gray-700 focus:outline-none"
+            aria-label="Close"
+          ></button>
+
           <h2 className="mb-4 text-center text-base font-semibold">
             Pilih Voucher
           </h2>
@@ -172,10 +247,6 @@ export const SummaryPanel = () => {
             />
           </div>
 
-          <p className="mb-4 text-center text-xs text-gray-500">
-            Hanya bisa dipilih 1 Voucher
-          </p>
-
           <div className="space-y-3 pb-6">
             {loading ? (
               <div className="text-center text-sm text-gray-500">
@@ -190,19 +261,30 @@ export const SummaryPanel = () => {
             ) : filteredVouchers.length === 0 ? (
               <VoucherEmptyState />
             ) : (
-              filteredVouchers.map((v) => (
-                <VoucherCard
-                  key={v.id}
-                  title={v.code}
-                  discountInfo={v.description}
-                  minTransaksi={v.minOrderAmount}
-                  kuota={v.quota}
-                  startDate={formatShortDate(v.validFrom)}
-                  endDate={formatDate(v.validTo)}
-                  isActive={selectedVoucher?.id === v.id}
-                  onSelect={() => handleVoucherSelect(v)}
-                />
-              ))
+              <>
+                <p className="mb-4 text-xs text-gray-500">
+                  Hanya bisa dipilih 1 Voucher
+                </p>
+                {filteredVouchers.map((v) => (
+                  <VoucherCard
+                    key={v.id}
+                    title={v.code}
+                    discountInfo={v.description}
+                    discountAmount={v.discountAmount}
+                    discountPercentage={v.discountPercentage}
+                    discountType={v.discountType}
+                    minTransaksi={v.minOrderAmount}
+                    kuota={v.quota}
+                    usagePercentage={v.usagePercentage || 0}
+                    isOutOfStock={v.isOutOfStock || false}
+                    startDate={formatShortDate(v.validFrom)}
+                    endDate={formatDate(v.validTo)}
+                    isActive={selectedVoucher?.id === v.id}
+                    onSelect={() => handleVoucherSelect(v)}
+                    validationError={validationErrors[v.id]}
+                  />
+                ))}
+              </>
             )}
           </div>
         </ModalContent>
