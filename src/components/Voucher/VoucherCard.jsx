@@ -41,7 +41,7 @@ export default function VoucherCard({
   return (
     <div>
       <div
-        className={`relative rounded-lg border ${validationError ? "border-red-500" : isActive ? "border-blue-500" : "border-gray-200"} ${isOutOfStock ? "opacity-70" : ""}`}
+        className={`relative rounded-lg border ${validationError ? "border-red-500" : isActive ? "border-blue-500 bg-primary-50" : "border-gray-200"} ${isOutOfStock ? "opacity-70" : ""}`}
         onClick={isOutOfStock || validationError ? null : onSelect}
       >
         <div className="flex pl-[12px] pr-[12px] pt-[12px]">
@@ -120,12 +120,12 @@ export default function VoucherCard({
                 : validationError
                   ? "cursor-default bg-transparent text-blue-500"
                   : isActive
-                    ? "bg-blue-600 text-white"
+                    ? "bg-transparent text-blue-500 hover:bg-blue-50"
                     : "bg-transparent text-blue-500 hover:bg-blue-50"
             }`}
             disabled={isOutOfStock || validationError}
           >
-            {isActive ? "Terpakai" : "Pakai"}
+            {isActive ? "Dipakai" : "Pakai"}
           </button>
         </div>
       </div>

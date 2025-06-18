@@ -189,20 +189,27 @@ export const SummaryPanel = () => {
         <div className="flex flex-col gap-2">
           <button
             onClick={() => setShowVoucherPopup(true)}
-            className="flex w-full items-center justify-between rounded-md border border-blue-600 bg-white px-4 py-3 text-sm text-blue-700 hover:bg-blue-50"
+            className="flex w-full items-center justify-between rounded-md border border-blue-600 bg-primary-50 px-4 py-3 text-sm text-blue-700 hover:bg-blue-50"
           >
             <div className="flex items-center gap-2">
-              <Image
-                src="/img/iconVoucher2.png"
-                alt="Voucher"
-                width={25}
-                height={25}
-              />
-              <span>
-                {selectedVoucher
-                  ? `Voucher Terpilih: ${selectedVoucher.code}`
-                  : "Makin hemat pakai voucher"}
-              </span>
+              {selectedVoucher ? (
+                <>
+                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-xs text-white">
+                    1
+                  </div>
+                  <span>1 Voucher Terpakai</span>
+                </>
+              ) : (
+                <>
+                  <Image
+                    src="/img/iconVoucher2.png"
+                    alt="Voucher"
+                    width={25}
+                    height={25}
+                  />
+                  <span>Makin hemat pakai voucher</span>
+                </>
+              )}
             </div>
             <Image
               src="/icons/right-arrow-voucher.png"
@@ -211,7 +218,6 @@ export const SummaryPanel = () => {
               alt="right-arrow"
             />
           </button>
-
           <button
             onClick={() => setShowConfirmPopup(true)}
             className="w-full rounded-md bg-blue-600 py-3 text-sm font-semibold text-white"
@@ -243,7 +249,7 @@ export const SummaryPanel = () => {
               placeholder="Cari Kode Voucher"
               value={searchKeyword}
               onChange={(e) => setSearchKeyword(e.target.value)}
-              className="h-10 w-full rounded-lg border border-gray-300 pl-10 pr-4 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="h-[32px] w-full rounded-lg border border-gray-300 pl-10 pr-4 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
