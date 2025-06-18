@@ -20,7 +20,7 @@ const defaultPathOptions = {
 };
 const defaultMapOptions = {
   disableDefaultUI: false,
-  zoomControl: true,
+  zoomControl: false,
   streetViewControl: false,
   mapTypeControl: false,
   cameraControl: false,

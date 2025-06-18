@@ -2,6 +2,19 @@ import useSWR from "swr";
 
 import { normalizeDetailPesananOrderDetail } from "@/lib/normalizers/detailpesanan";
 
+/**
+ * Notes dari mas friday
+ * /orders/{orderId}
+ * data status paling atas
+ * /orders/{orderId}/status-history
+ * buat stepper
+ * statusHistoryObject
+ *
+ * status driver
+ * driverStatus object
+ *
+ */
+
 const locations = [
   {
     locationId: "a1b2c3d4-e5f6-7890-1234-567890abcdef",
@@ -83,7 +96,7 @@ const apiResultOrderDetail = {
       orderId: "550e8400-e29b-41d4-a716-446655440000",
       transporterOrderCode: "MT.25.AA.001",
       invoiceNumber: "INV/12345678",
-      orderStatus: "CONFIRMED",
+      orderStatus: "UNLOADING",
       orderType: "INSTANT",
       createdAt: "2024-01-01T10:00:00Z",
       updatedAt: "2024-01-01T14:30:00Z",
@@ -240,11 +253,76 @@ const apiResultOrderDetail = {
   },
 };
 
+const apiResultOrderStatusHistory = {
+  Message: {
+    Code: 200,
+    Text: "Order status history retrieved successfully",
+  },
+  Data: {
+    statusHistory: [
+      {
+        statusHistoryId: "550e8400-e29b-41d4-a716-446655440020",
+        statusCode: "CONFIRMED",
+        statusName: "Pesanan Terkonfirmasi",
+      },
+      {
+        statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
+        statusCode: "LOADING",
+        statusName: "Proses Muat",
+      },
+      {
+        statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
+        statusCode: "UNLOADING",
+        statusName: "Proses Bongkar",
+      },
+      {
+        statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
+        statusCode: "COMPLETED",
+        statusName: "Selesai",
+      },
+    ],
+    driverStatus: [
+      {
+        driverId: "550e8400-e29b-41d4-a716-446655440021",
+        name: "Ahmad Rahman",
+        driverPhoto: "https://picsum.photos/50",
+        licensePlate: "B 1234 CD",
+        statusDriver: "UNLOADING_1",
+        statusTitle: "Menuju Lokasi Bongkar 1",
+        stepStatus: [
+          {
+            statusCode: "LOADING_1",
+            statusName: "Menuju Lokasi Muat 1",
+          },
+          {
+            statusCode: "LOADING_2",
+            statusName: "Menuju Lokasi Muat 2",
+          },
+          {
+            statusCode: "UNLOADING_1",
+            statusName: "Menuju Lokasi Bongkar 1",
+          },
+        ],
+      },
+    ],
+  },
+  Type: "ORDER_STATUS_HISTORY",
+};
+
 const fetcher = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  const data = normalizeDetailPesananOrderDetail(apiResultOrderDetail.Data);
+  const [orderDetail, orderStatusHistory] = await Promise.all([
+    apiResultOrderDetail,
+    apiResultOrderStatusHistory,
+  ]);
+
+  const data = normalizeDetailPesananOrderDetail({
+    dataOrderDetail: orderDetail.Data,
+    dataOrderStatusHistory: orderStatusHistory.Data,
+  });
+
   return data;
 };
 

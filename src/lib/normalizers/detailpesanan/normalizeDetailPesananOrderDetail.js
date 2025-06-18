@@ -1,31 +1,47 @@
 import {
   LocationTypeEnum,
   OrderStatusEnum,
+  OrderStatusIcon,
 } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { PaymentInstructionTitle } from "@/lib/constants/detailpesanan/payment.enum";
 
 export const normalizeDetailPesananOrderDetail = ({
-  general,
-  summary,
-  otherInformation,
-  paymentData,
-  documents,
+  dataOrderDetail,
+  dataOrderStatusHistory,
 }) => {
   try {
     const dataStatusPesanan = {
-      orderCode: general?.invoiceNumber,
-      orderStatus: general?.orderStatus,
+      orderId: dataOrderDetail.general?.orderId,
+      orderCode:
+        dataOrderDetail.general?.invoiceNumber ||
+        dataOrderDetail.general?.orderCode,
+      orderStatus: dataOrderDetail.general?.orderStatus,
+      orderStatusTitle: dataOrderStatusHistory?.statusHistory?.find(
+        (val) => val.statusCode === dataOrderDetail.general?.orderStatus
+      )?.statusName,
+      statusHistory: {
+        stepper: dataOrderStatusHistory?.statusHistory?.map((val) => ({
+          label: val.statusName,
+          status: val.statusCode,
+          icon: OrderStatusIcon[val.statusCode],
+        })),
+        activeIndex: dataOrderStatusHistory?.statusHistory?.findIndex(
+          (val) => val.statusCode === dataOrderDetail.general?.orderStatus
+        ),
+      },
       withShippingAdditionalService:
-        summary?.additionalService && summary?.additionalService.length > 0
+        dataOrderDetail.summary?.additionalService &&
+        dataOrderDetail.summary?.additionalService.length > 0
           ? true
           : false,
-      paymentDueDateTime: summary?.payment?.paymentDueDateTime,
+      paymentDueDateTime: dataOrderDetail.summary?.payment?.paymentDueDateTime,
+      driverStatus: dataOrderStatusHistory?.driverStatus,
     };
 
     const route = { muat: [], bongkar: [] };
     const dataDetailPIC = { muat: [], bongkar: [] };
 
-    for (const location of summary?.locations) {
+    for (const location of dataOrderDetail.summary?.locations) {
       if (location.locationType === LocationTypeEnum.PICKUP) {
         route.muat.push({
           fullAddress: location.fullAddress,
@@ -55,50 +71,56 @@ export const normalizeDetailPesananOrderDetail = ({
 
     const dataRingkasanPesanan = {
       route,
-      estimatedDistance: summary?.distance,
+      estimatedDistance: dataOrderDetail.summary?.distance,
       vehicle: {
-        name: `${summary?.carrier?.name} - ${summary?.truckType?.name}`,
+        name: `${dataOrderDetail.summary?.carrier?.name} - ${dataOrderDetail.summary?.truckType?.name}`,
         image: "/img/recommended1.png",
-        truckCount: summary?.truckType?.totalUnit,
+        truckCount: dataOrderDetail.summary?.truckType?.totalUnit,
       },
       cargos:
-        summary?.cargo.map((val) => ({
+        dataOrderDetail.summary?.cargo.map((val) => ({
           name: val.name,
           weight: val.weight,
           weightUnit: val.weightUnit,
         })) || [],
-      cargoPhotos: otherInformation?.cargoPhotos || [],
-      cargoDescription: otherInformation?.cargoDescription || "",
-      isHalalLogistics: Boolean(summary?.isHalalLogistic),
-      loadTimeStart: summary?.loadTimeStart,
-      loadTimeEnd: summary?.loadTimeEnd,
-      numberDeliveryOrder: otherInformation?.numberDeliveryOrder || [],
+      cargoPhotos: dataOrderDetail.otherInformation?.cargoPhotos || [],
+      cargoDescription:
+        dataOrderDetail.otherInformation?.cargoDescription || "",
+      isHalalLogistics: Boolean(dataOrderDetail.summary?.isHalalLogistic),
+      loadTimeStart: dataOrderDetail.summary?.loadTimeStart,
+      loadTimeEnd: dataOrderDetail.summary?.loadTimeEnd,
+      numberDeliveryOrder:
+        dataOrderDetail.otherInformation?.numberDeliveryOrder || [],
     };
 
     const dataRingkasanPembayaran = {
-      paymentMethod: summary?.payment?.paymentMethod,
-      vaNumber: paymentData?.vaNumber,
-      paymentDueDateTime: summary?.payment?.paymentDueDateTime,
-      transportFee: summary?.price?.transportFee,
-      insuranceFee: summary?.price?.insuranceFee,
-      additionalServiceFee: summary?.price?.additionalServiceFee,
-      voucherDiscount: summary?.price?.voucherDiscount,
-      adminFee: summary?.price?.adminFee,
-      taxAmount: summary?.price?.taxAmount,
-      totalPrice: summary?.price?.totalPrice,
-      orderStatus: general?.orderStatus,
+      paymentMethod: dataOrderDetail.summary?.payment?.paymentMethod,
+      vaNumber: dataOrderDetail.paymentData?.vaNumber,
+      paymentDueDateTime: dataOrderDetail.summary?.payment?.paymentDueDateTime,
+      transportFee: dataOrderDetail.summary?.price?.transportFee,
+      insuranceFee: dataOrderDetail.summary?.price?.insuranceFee,
+      additionalServiceFee:
+        dataOrderDetail.summary?.price?.additionalServiceFee,
+      voucherDiscount: dataOrderDetail.summary?.price?.voucherDiscount,
+      adminFee: dataOrderDetail.summary?.price?.adminFee,
+      taxAmount: dataOrderDetail.summary?.price?.taxAmount,
+      totalPrice: dataOrderDetail.summary?.price?.totalPrice,
+      orderStatus: dataOrderDetail.general?.orderStatus,
     };
 
     let instructionFormatted = null;
     if (
-      general?.orderStatus === OrderStatusEnum.PENDING_PAYMENT &&
-      paymentData?.paymentInstructions
+      dataOrderDetail.general?.orderStatus ===
+        OrderStatusEnum.PENDING_PAYMENT &&
+      dataOrderDetail.paymentData?.paymentInstructions
     ) {
-      const temp = Object.keys(paymentData?.paymentInstructions);
+      const temp = Object.keys(
+        dataOrderDetail.paymentData?.paymentInstructions
+      );
       console.log("🚀 ~ temp:", temp);
       instructionFormatted = temp.map((key) => ({
         title: PaymentInstructionTitle[key],
-        item: paymentData?.paymentInstructions[key],
+        item: dataOrderDetail.paymentData?.paymentInstructions[key],
       }));
     }
 

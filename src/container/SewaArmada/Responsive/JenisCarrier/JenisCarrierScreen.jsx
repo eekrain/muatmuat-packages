@@ -1,7 +1,8 @@
 import { Info } from "lucide-react";
 
 import { Alert } from "@/components/Badge/Alert";
-import LightboxTrigger, {
+import {
+  LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lighbox";
 import SearchBarResponsiveLayout from "@/layout/ResponsiveLayout/SearchBarResponsiveLayout";
@@ -77,7 +78,7 @@ const CarrierItem = ({ carrier }) => (
       title={carrier.name}
       images={carrier.images}
     >
-      <LightboxTrigger image={carrier.image} alt={carrier.name} />
+      <LightboxPreview image={carrier.image} alt={carrier.name} />
     </LightboxProvider>
     <h3 className="text-[14px] font-bold leading-[15px] text-black">
       {carrier.name}

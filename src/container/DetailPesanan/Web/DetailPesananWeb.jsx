@@ -83,7 +83,7 @@ const DetailPesananWeb = () => {
 
   return (
     <>
-      <div className="flex justify-center">
+      <div className="flex justify-center pt-8">
         <div className="mx-auto w-[1280px] px-10">
           <div className="flex flex-col gap-y-6">
             <BreadCrumb className="!mb-0" data={breadCrumbData} />

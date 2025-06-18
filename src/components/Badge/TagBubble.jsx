@@ -29,7 +29,6 @@ export const TagBubble = ({
           className={cn(
             "flex h-3.5 w-3.5 items-center justify-center rounded-full text-blue-600 transition-colors duration-150 hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-1 focus:ring-blue-600 disabled:cursor-not-allowed"
           )}
-          aria-label={`Remove ${tag} tag`}
         >
           <X size={10} strokeWidth={2.5} />
         </button>

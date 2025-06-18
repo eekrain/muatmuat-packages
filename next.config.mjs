@@ -1,5 +1,3 @@
-import MillionLint from "@million/lint";
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   devIndicators: false,
@@ -19,7 +17,10 @@ const nextConfig = {
   reactStrictMode: false,
 };
 
-export default MillionLint.next({
-  enabled: process.env.NODE_ENV === "development",
-  rsc: process.env.NODE_ENV === "development",
-})(nextConfig);
+export default nextConfig;
+
+// import MillionLint from "@million/lint";
+// export default MillionLint.next({
+//   enabled: process.env.NODE_ENV === "development",
+//   rsc: process.env.NODE_ENV === "development",
+// })(nextConfig);

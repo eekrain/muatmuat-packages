@@ -125,7 +125,7 @@ export const LightboxProvider = ({ title, images = [], image, children }) => {
   );
 };
 
-const useLightbox = () => {
+export const useLightbox = () => {
   const context = useContext(LightboxContext);
   if (!context)
     throw new Error("useLightbox must be used within a LightboxProvider");
@@ -133,7 +133,7 @@ const useLightbox = () => {
 };
 
 /**
- * @typedef {Object} LightboxTriggerProps
+ * @typedef {Object} LightboxPreviewProps
  * @property {string} image
  * @property {number} index
  * @property {string} alt
@@ -141,15 +141,15 @@ const useLightbox = () => {
  */
 
 /**
- * @param {LightboxTriggerProps} props
+ * @param {LightboxPreviewProps} props
  */
-export default function LightboxTrigger({
+export const LightboxPreview = ({
   image,
   index = 0,
   className,
   alt,
   withZoom = true,
-}) {
+}) => {
   const { openLightbox } = useLightbox();
 
   return (
@@ -172,4 +172,4 @@ export default function LightboxTrigger({
       </div>
     </div>
   );
-}
+};
