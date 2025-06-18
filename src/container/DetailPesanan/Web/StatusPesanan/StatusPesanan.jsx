@@ -10,11 +10,7 @@ import LightboxTrigger, {
 } from "@/components/Lightbox/Lighbox";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import Stepper from "@/components/Stepper/Stepper";
-import {
-  ALL_ORDER_STATUS,
-  ORDER_STATUS_TIMELINE_WITHOUT_ADDITIONAL_SERVICE,
-  ORDER_STATUS_TIMELINE_WITH_ADDITIONAL_SERVICE,
-} from "@/lib/constants/detailpesanan/detailpesanan.constants";
+import { ALL_ORDER_STATUS } from "@/lib/constants/detailpesanan/detailpesanan.constants";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
 import DriverStatusCard from "./DriverStatusCard";
@@ -151,6 +147,7 @@ const StatusPesananHeader = ({ orderCode, orderStatus }) => {
  * @property {string} orderCode - Kode Pesanan
  * @property {string} orderStatus - Status Pesanan
  * @property {boolean} withShippingAdditionalService - Apakah ada layanan tambahan
+ * @property {string} orderStatusTitle - Judul Status Pesanan
  */
 
 /**
@@ -158,48 +155,24 @@ const StatusPesananHeader = ({ orderCode, orderStatus }) => {
  * @param {StatusPesananProps} props.dataStatusPesanan
  */
 const StatusPesanan = ({ dataStatusPesanan }) => {
-  console.log("dataStatusPesanan", dataStatusPesanan);
-  const stepperData = useMemo(() => {
-    let timeline = null;
-    if (dataStatusPesanan.withShippingAdditionalService) {
-      timeline = ORDER_STATUS_TIMELINE_WITH_ADDITIONAL_SERVICE;
-    } else {
-      timeline = ORDER_STATUS_TIMELINE_WITHOUT_ADDITIONAL_SERVICE;
-    }
+  const showStepperOnly =
+    dataStatusPesanan.orderStatus === OrderStatusEnum.PREPARE_FLEET ||
+    dataStatusPesanan.orderStatus === OrderStatusEnum.WAITING_PAYMENT_1 ||
+    dataStatusPesanan.orderStatus === OrderStatusEnum.WAITING_PAYMENT_2;
 
-    const activeIndex = timeline.findIndex(
-      (step) => step.status === dataStatusPesanan.orderStatus
-    );
-
-    return {
-      timeline,
-      activeIndex,
-    };
-  }, [
-    dataStatusPesanan.withShippingAdditionalService,
-    dataStatusPesanan.orderStatus,
-  ]);
-
-  const isShowTimeline =
-    dataStatusPesanan.orderStatus !== OrderStatusEnum.SEARCHING_FLEET &&
-    dataStatusPesanan.orderStatus !== OrderStatusEnum.PENDING_PAYMENT;
   const showDriverStatuses = [
-    OrderStatusEnum.LOADING_PROCESS,
-    OrderStatusEnum.UNLOADING_PROCESS,
-    OrderStatusEnum.DOCUMENT_PREPARATION,
-    OrderStatusEnum.DOCUMENT_SHIPPING,
+    OrderStatusEnum.LOADING,
+    OrderStatusEnum.UNLOADING,
+    OrderStatusEnum.WAITING_REPAYMENT_1,
+    OrderStatusEnum.WAITING_REPAYMENT_2,
+    OrderStatusEnum.PREPARE_DOCUMENT,
+    OrderStatusEnum.DOCUMENT_DELIVERY,
     OrderStatusEnum.COMPLETED,
   ];
-  const isShowDriver = showDriverStatuses.includes(
-    dataStatusPesanan.orderStatus
-  );
+  const showDriver = showDriverStatuses.includes(dataStatusPesanan.orderStatus);
 
   return (
     <>
-      {/* <AlertStatusPesanan
-        orderStatus={dataStatusPesanan.orderStatus}
-        paymentDueDateTime={dataStatusPesanan?.paymentDueDateTime}
-      /> */}
       <Card className="w-full rounded-xl border-none">
         <CardContent className="px-9 py-6">
           <div className="flex flex-col items-end gap-6">
@@ -207,21 +180,26 @@ const StatusPesanan = ({ dataStatusPesanan }) => {
             <StatusPesananHeader
               orderCode={dataStatusPesanan.orderCode}
               orderStatus={dataStatusPesanan.orderStatus}
+              orderStatusTitle={dataStatusPesanan.orderStatusTitle}
             />
 
             {/* Timeline Section */}
-            {!isShowDriver ? (
-              <DriverStatusCard stepperData={stepperData} />
-            ) : (
-              isShowTimeline && (
-                <div className="flex w-full flex-col gap-y-5 rounded-xl border border-neutral-400 px-4 py-5">
-                  <Stepper
-                    steps={stepperData.timeline}
-                    currentStep={stepperData.activeIndex}
-                  />
-                </div>
-              )
-            )}
+            {showStepperOnly ? (
+              <div className="flex w-full flex-col gap-y-5 rounded-xl border border-neutral-400 px-4 py-5">
+                <Stepper
+                  steps={dataStatusPesanan.statusHistory.stepper}
+                  currentStep={dataStatusPesanan.statusHistory.activeIndex}
+                />
+              </div>
+            ) : showDriver ? (
+              dataStatusPesanan.driverStatus.map((driver) => (
+                <DriverStatusCard
+                  key={driver.driverId}
+                  dataStatusPesanan={dataStatusPesanan}
+                  dataDriver={driver}
+                />
+              ))
+            ) : null}
           </div>
         </CardContent>
       </Card>

@@ -6,7 +6,8 @@ import { TagBubble } from "@/components/Badge/TagBubble";
 import Card, { CardContent } from "@/components/Card/Card";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
-import LightboxTrigger, {
+import {
+  LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lighbox";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
@@ -62,7 +63,7 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
                   image={dataRingkasanPesanan?.vehicle?.image}
                   title={dataRingkasanPesanan?.vehicle?.name}
                 >
-                  <LightboxTrigger
+                  <LightboxPreview
                     image={dataRingkasanPesanan?.vehicle?.image}
                     alt="Jenis Carrier"
                     className="size-[68px]"
@@ -230,7 +231,7 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
                     title="Lampiran/Foto Muatan"
                   >
                     {dataRingkasanPesanan.cargoPhotos.map((image, index) => (
-                      <LightboxTrigger
+                      <LightboxPreview
                         key={image}
                         image={image}
                         alt={`Foto muatan ${index + 1}`}
