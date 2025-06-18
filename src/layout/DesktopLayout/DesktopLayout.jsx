@@ -17,7 +17,7 @@ export default function DesktopLayout({ children }) {
   return (
     <div className="relative min-h-screen">
       <HeaderWeb notifCounter={{ notification, chat }} />
-      <div className="py-8">{children}</div>
+      <div className="h-[calc(100dvh-60px)]">{children}</div>
       <FloatingButton />
 
       <img

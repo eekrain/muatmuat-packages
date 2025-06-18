@@ -58,7 +58,7 @@ export default function SewaArmadaWeb() {
   }, []);
 
   return (
-    <main className="flex min-h-screen flex-col items-center gap-6 px-10">
+    <main className="flex min-h-screen flex-col items-center gap-6 px-10 pt-8">
       {/* Carousel Banner */}
       <BannerCarousel banners={banners} />
 

@@ -192,6 +192,12 @@ input::-webkit-inner-spin-button {
   font-weight: 700;
 }
 
+.icon-fill-neutral-400 {
+  path {
+    fill: var(--neutral-400);
+  }
+}
+
 .icon-stroke-primary-700 {
   path {
     stroke: var(--primary-700);

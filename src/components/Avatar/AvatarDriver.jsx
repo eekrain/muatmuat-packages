@@ -1,6 +1,6 @@
 import IconComponent from "../IconComponent/IconComponent";
 
-export const AvatarDriver = ({ name, image, platNomor }) => {
+export const AvatarDriver = ({ name, image, licensePlate }) => {
   return (
     <div className="flex items-center gap-2">
       <img src={image} alt={name} className="h-10 w-10 rounded-full" />
@@ -16,7 +16,7 @@ export const AvatarDriver = ({ name, image, platNomor }) => {
             height={12}
           />
 
-          <span className="text-[10px] font-bold">{platNomor}</span>
+          <span className="text-[10px] font-bold">{licensePlate}</span>
         </div>
       </div>
     </div>

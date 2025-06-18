@@ -1,6 +1,9 @@
+import { useEffect } from "react";
+
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import RadioButton from "@/components/Radio/RadioButton";
+import { useSWRHook } from "@/hooks/use-swr";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -12,44 +15,68 @@ export const JenisMuatan = () => {
   );
   const { setField } = useSewaArmadaActions();
 
+  // Fetch cargo categories using SWR
+  const { data: cargoCategoriesResponse, error } = useSWRHook(
+    "v1/orders/cargos/categories"
+  );
+
+  // Extract cargo categories from response
+  const cargoCategories = cargoCategoriesResponse?.Data?.categories || [];
+  const isLoading = !cargoCategoriesResponse && !error;
+
+  // Set default value if cargoCategories is loaded and jenisMuatan is not set
+  useEffect(() => {
+    if (cargoCategories.length > 0 && !jenisMuatan && !isLoading) {
+      setField("jenisMuatan", cargoCategories[0].id);
+    }
+  }, [cargoCategories, jenisMuatan, isLoading, setField]);
+
+  // Generate tooltip content from cargo categories descriptions
+  const generateTooltipContent = () => {
+    if (cargoCategories.length === 0) {
+      return <p>Memuat informasi jenis muatan...</p>;
+    }
+
+    return (
+      <>
+        <ul>
+          {cargoCategories.map((category) => (
+            <li key={category.id}>
+              <b>{category.name} :</b> {category.description}
+            </li>
+          ))}
+        </ul>
+        <p>
+          Pemilihan jenis muatan yang tepat akan membantu dalam pengelolaan dan
+          pengiriman.
+        </p>
+      </>
+    );
+  };
+
   return (
     <FormContainer className="flex gap-8">
       <FormLabel
         required
         tooltip={
           <InfoTooltip className="w-[336px]" side="right">
-            <ul>
-              <li>
-                <b>Padat:</b> Muatan yang berbentuk solid.
-              </li>
-              <li>
-                <b>Cair:</b> Muatan dalam bentuk cairan, biasanya membutuhkan
-                penanganan khusus.
-              </li>
-              <li>
-                <b>Curah:</b> Muatan yang dikirim secara massal, seperti
-                biji-bijian atau pasir.
-              </li>
-              <li>
-                <b>Kendaraan:</b> Muatan berupa alat transportasi yang perlu
-                diangkut.
-              </li>
-              <li>
-                <b>Container:</b> Muatan yang dikemas dalam suatu container.
-              </li>
-            </ul>
-            <p>
-              Pemilihan jenis muatan yang tepat akan membantu dalam pengelolaan
-              dan pengiriman.
-            </p>
+            {generateTooltipContent()}
           </InfoTooltip>
         }
       >
         Jenis Muatan
       </FormLabel>
       <div className="flex flex-1 flex-wrap gap-3">
-        {false ? (
-          [].map((category) => (
+        {isLoading ? (
+          <div className="flex w-full items-center justify-center">
+            <span>Memuat data...</span>
+          </div>
+        ) : error ? (
+          <div className="flex w-full items-center justify-center text-error-400">
+            <span>Gagal memuat data. Silakan coba lagi.</span>
+          </div>
+        ) : (
+          cargoCategories.map((category) => (
             <div className="w-[250px]" key={category.id}>
               <RadioButton
                 name="jenisMuatan"
@@ -60,54 +87,6 @@ export const JenisMuatan = () => {
               />
             </div>
           ))
-        ) : (
-          <>
-            <div className="w-[250px]">
-              <RadioButton
-                name="jenisMuatan"
-                label="Padat"
-                checked={jenisMuatan === "padat"}
-                onClick={() => setField("jenisMuatan", "padat")}
-                value="padat"
-              />
-            </div>
-            <div className="w-[250px]">
-              <RadioButton
-                name="jenisMuatan"
-                label="Cair"
-                checked={jenisMuatan === "cair"}
-                onClick={() => setField("jenisMuatan", "cair")}
-                value="cair"
-              />
-            </div>
-            <div className="w-[250px]">
-              <RadioButton
-                name="jenisMuatan"
-                label="Curah"
-                checked={jenisMuatan === "curah"}
-                onClick={() => setField("jenisMuatan", "curah")}
-                value="curah"
-              />
-            </div>
-            <div className="w-[250px]">
-              <RadioButton
-                name="jenisMuatan"
-                label="Kendaraan"
-                checked={jenisMuatan === "kendaraan"}
-                onClick={() => setField("jenisMuatan", "kendaraan")}
-                value="kendaraan"
-              />
-            </div>
-            <div className="w-[250px]">
-              <RadioButton
-                name="jenisMuatan"
-                label="Container"
-                checked={jenisMuatan === "container"}
-                onClick={() => setField("jenisMuatan", "container")}
-                value="container"
-              />
-            </div>
-          </>
         )}
       </div>
     </FormContainer>

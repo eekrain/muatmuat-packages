@@ -41,7 +41,8 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageUploaderWeb from "@/components/ImageUploader/ImageUploaderWeb";
 import ImagesPreview from "@/components/ImagesPreview/ImagesPreview";
 import { InputSearch } from "@/components/InputSearch/InputSearch";
-import LightboxTrigger, {
+import {
+  LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lighbox";
 import { MapContainer } from "@/components/MapContainer/MapContainer";
@@ -576,7 +577,7 @@ const AlertBadge = () => {
           <AvatarDriver
             name="Noel Gallagher"
             image="https://picsum.photos/50"
-            platNomor="B 123456"
+            licensePlate="B 123456"
           />
         </div>
       </div>
@@ -1086,10 +1087,10 @@ const ExampleTimeline = () => {
                 >
                   <TimelineContentWithButtonDate
                     title={item.title}
-                    withButton={item.withButton}
-                    onSubtitleClick={() =>
-                      alert(`Tampilkan modal untuk ${item.subtitle}`)
-                    }
+                    withButton={{
+                      label: "Lihat Bukti Muat Barang & POD",
+                      onClick: () => alert("Lihat Bukti Muat Barang & POD"),
+                    }}
                   />
                 </TimelineItem>
               ))}
@@ -1202,7 +1203,7 @@ const ExampleLightbox = () => {
         <h1 className="mb-2 text-xl font-bold">Lightbox (Single Image)</h1>
 
         <LightboxProvider image={images[0]} title="Jenis Carrier">
-          <LightboxTrigger
+          <LightboxPreview
             image={images[0]}
             alt="Jenis Carrier"
             className="size-[100px] overflow-hidden rounded-md object-cover"
@@ -1217,7 +1218,7 @@ const ExampleLightbox = () => {
         <LightboxProvider images={images} title="Bukti Muat Barang di Lokasi 2">
           <div className="flex flex-wrap gap-2">
             {images.map((image, index) => (
-              <LightboxTrigger
+              <LightboxPreview
                 key={index}
                 image={image}
                 index={index}
