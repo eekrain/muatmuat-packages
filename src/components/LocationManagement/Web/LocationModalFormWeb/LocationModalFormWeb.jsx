@@ -98,7 +98,7 @@ const InnerLocationModalFormWeb = ({
                     {formMode === "muat" ? "Lokasi Muat*" : "Lokasi Bongkar*"}
                   </label>
                   <InputLocationManagementDropdown
-                    hideDropdownWhenTopIsLessThan={961}
+                    hideDropdownWhenTopIsLessThan={415}
                   />
                   {formErrors?.dataLokasi && (
                     <span className="text-xs font-medium text-red-500">

@@ -8,5 +8,18 @@ export function middleware(request) {
     return NextResponse.redirect(url);
   }
 
+  if (request.nextUrl.pathname === "/sewaarmada") {
+    const url = request.nextUrl.clone();
+    const searchParams = new URLSearchParams(url.search);
+
+    if (!searchParams.get("formid")) {
+      // Generate a random formid if not present
+      const randomId = Math.random().toString(36).substring(2, 15);
+      searchParams.set("formid", randomId);
+      url.search = searchParams.toString();
+      return NextResponse.redirect(url);
+    }
+  }
+
   return NextResponse.next();
 }

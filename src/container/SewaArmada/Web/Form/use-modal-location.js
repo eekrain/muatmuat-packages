@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
+import { useSewaArmadaActions } from "@/store/forms/sewaArmadaStore";
 
 const defaultModalConfig = {
   open: false,
@@ -17,7 +17,7 @@ const MODE_MAP = {
 
 export const useModalLocation = () => {
   const [modalConfig, setModalConfig] = useState(defaultModalConfig);
-  const updateLokasi = useSewaArmadaStore((state) => state.updateLokasi);
+  const { updateLokasi } = useSewaArmadaActions();
 
   const handleOpenModalLocation = ({
     formMode,

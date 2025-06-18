@@ -1,7 +1,6 @@
-import { ChevronLeft } from "lucide-react";
-
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
+import IconComponent from "@/components/IconComponent/IconComponent";
 
 import { DriverTimeline } from "./DriverTimeline";
 
@@ -19,13 +18,10 @@ export const LeftPanel = ({ dataDriverStatus }) => {
         <BreadCrumb data={breadcrumbItems} />
       </div>
 
-      {/* Header */}
-      <div className="flex items-center justify-between px-6 pb-6">
-        <div className="flex items-center gap-3">
-          <ChevronLeft className="h-6 w-6 cursor-pointer text-[#176CF7]" />
-          <h1 className="text-[20px] font-bold leading-[24px] text-black">
-            Lacak Armada
-          </h1>
+      <div className="flex items-center px-6 pb-6">
+        <IconComponent src="/icons/arrow-left24.svg" size="medium" />
+        <div className="ml-3 mt-1 text-[20px] font-bold leading-[24px] text-neutral-900">
+          Detail Pesanan
         </div>
       </div>
 

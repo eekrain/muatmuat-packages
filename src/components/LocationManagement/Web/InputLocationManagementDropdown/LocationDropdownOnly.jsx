@@ -30,23 +30,22 @@ export const LocationDropdownOnly = ({
     if (isDropdownSearchOpen && inputRef.current) {
       const rect = inputRef.current.getBoundingClientRect();
       const top = rect.bottom + window.scrollY;
-      console.log(
-        "🚀 ~ updateDropdownPosition ~ top:",
+      console.log("🚀 ~ updateDropdownPosition ~ top:", {
         top,
-        top < hideDropdownWhenTopIsLessThan
-      );
+        hideDropdownWhenTopIsLessThan,
+        isTrue: top < hideDropdownWhenTopIsLessThan,
+      });
       if (top < hideDropdownWhenTopIsLessThan) {
         setIsDropdownSearchOpen(false);
         inputRef.current.blur();
-      } else {
-        setDropdownStyle({
-          position: "absolute",
-          top: rect.bottom + window.scrollY,
-          left: rect.left + window.scrollX,
-          width: rect.width,
-          zIndex: 9999,
-        });
       }
+      setDropdownStyle({
+        position: "absolute",
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+        width: rect.width,
+        zIndex: 9999,
+      });
     }
   };
 
