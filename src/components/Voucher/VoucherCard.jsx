@@ -1,6 +1,10 @@
+// components/Voucher/VoucherCard.jsx
 import Image from "next/image";
+import { useState } from "react";
 
 import { idrFormat } from "@/lib/utils/formatters";
+
+import VoucherInfoPopup from "./VoucherInfoPopup";
 
 export default function VoucherCard({
   title,
@@ -18,6 +22,8 @@ export default function VoucherCard({
   onSelect,
   validationError,
 }) {
+  const [showInfoPopup, setShowInfoPopup] = useState(false);
+
   // This function is purely for text display in VoucherCard if needed,
   // the actual calculation happens in SummaryPanel.
   const getDiscountDisplay = () => {
@@ -37,6 +43,25 @@ export default function VoucherCard({
   // The description (discountInfo) and "Pakai" button are there.
 
   const bulletPoints = discountInfo?.split("\n") || [];
+
+  // Prepare voucher data for the info popup
+  const voucherData = {
+    code: title,
+    nominal: discountType === "fixed" ? discountAmount : 0,
+    validFrom: startDate,
+    validTo: endDate,
+    usagePercentage: usagePercentage,
+    minOrderAmount: minTransaksi,
+    termsAndConditions: [
+      `Maksimal berlaku untuk transaksi dengan ${discountText}`,
+      `Minimum belanja ${idrFormat(minTransaksi)}`,
+      "Pembayaran yang berlaku: BCA Virtual Account",
+      "1 promo berlaku untuk 2 kali transaksi selama periode promo",
+      "Promo tidak dapat digabungkan dengan promo lain",
+      "Promo berlaku di aplikasi Muatparts berbasis iOS dan/atau Android versi terbaru",
+    ],
+    usageInstructions: ["Masukkan kode Voucher Kamu dan pilih Voucher"],
+  };
 
   return (
     <div>
@@ -64,7 +89,7 @@ export default function VoucherCard({
                 className="text-blue-500"
                 onClick={(e) => {
                   e.stopPropagation();
-                  // Handle info button click
+                  setShowInfoPopup(true);
                 }}
               >
                 <Image
@@ -140,6 +165,13 @@ export default function VoucherCard({
           Kuota Voucher sudah habis
         </div>
       )}
+
+      {/* Voucher Info Popup */}
+      <VoucherInfoPopup
+        open={showInfoPopup}
+        onOpenChange={setShowInfoPopup}
+        voucher={voucherData}
+      />
     </div>
   );
 }

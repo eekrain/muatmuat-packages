@@ -24,6 +24,7 @@ export function formatDate(isoString) {
   const hours = String(date.getHours()).padStart(2, "0");
   const minutes = String(date.getMinutes()).padStart(2, "0");
 
+  //30 sept 2025 12:00 wib
   return `${day} ${month} ${year} ${hours}:${minutes} WIB`;
 }
 // 25. 03 - QC Plan - Web - Pengecekan Ronda Muatparts - Tahap 2 - LB - 0429
@@ -140,6 +141,44 @@ export function convertDate(dateString) {
   const formattedDate = WIBDate.toLocaleDateString("en-US", options);
   return formattedDate?.replace("GMT+7", "");
 }
+
+export const formatShortDate = (isoString) => {
+  // Handle missing or invalid input
+  if (!isoString) {
+    return "";
+  }
+
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "Mei",
+    "Jun",
+    "Jul",
+    "Agu",
+    "Sep",
+    "Okt",
+    "Nov",
+    "Des",
+  ];
+
+  // Create a valid date object
+  // Handle strings with or without the Z suffix
+  const date = new Date(isoString);
+
+  // Check if date is valid
+  if (isNaN(date.getTime())) {
+    return "";
+  }
+
+  const day = date.getDate();
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+
+  //result 1 JAN 2025
+  return `${day} ${month} ${year}`;
+};
 
 export const formatDateRange = (startDate, endDate) => {
   // Define month names in Indonesian
