@@ -7,8 +7,8 @@ import {
 } from "@/store/forms/sewaArmadaStore";
 
 const SertifikasiHalal = () => {
-  const sertifikasiHalal = useSewaArmadaStore(
-    (state) => state.formValues.sertifikasiHalal
+  const isHalalLogistics = useSewaArmadaStore(
+    (state) => state.formValues.isHalalLogistics
   );
   const { setField } = useSewaArmadaActions();
   return (
@@ -30,8 +30,8 @@ const SertifikasiHalal = () => {
       {/* Checkbox */}
       <Checkbox
         label="Centang opsi jika pengiriman memerlukan armada dengan sertifikat halal logistik"
-        checked={sertifikasiHalal}
-        onChange={({ checked }) => setField("sertifikasiHalal", checked)}
+        checked={isHalalLogistics}
+        onChange={({ checked }) => setField("isHalalLogistics", checked)}
       />
     </FormContainer>
   );

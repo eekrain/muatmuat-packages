@@ -22,7 +22,7 @@ const defaultInformasiMuatan = {
 const defaultFormValues = {
   tipeMuatan: "",
   jenisMuatan: "",
-  sertifikasiHalal: false,
+  isHalalLogistics: false,
   informasiMuatan: [defaultInformasiMuatan],
 };
 

@@ -259,8 +259,8 @@ const InformasiMuatanScreen = () => {
           {/* Checkbox Section */}
           <div className="flex gap-1">
             <Checkbox
-              checked={formValues.sertifikasiHalal}
-              onChange={(e) => setField("sertifikasiHalal", e.checked)}
+              checked={formValues.isHalalLogistics}
+              onChange={(e) => setField("isHalalLogistics", e.checked)}
               label="Centang opsi jika pengiriman memerlukan armada dengan sertifikat halal logistik"
               value="halal_certification"
               className="w-full"

@@ -12,7 +12,7 @@ const defaultValues = {
   lokasiBongkar: [null],
   tipeMuatan: "",
   jenisMuatan: "",
-  sertifikasiHalal: false,
+  isHalalLogistics: false,
   informasiMuatan: [],
   fotoMuatan: [null, null, null, null],
   deskripsi: "",
