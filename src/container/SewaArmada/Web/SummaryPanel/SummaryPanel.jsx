@@ -15,6 +15,7 @@ import { useSWRHook } from "@/hooks/use-swr";
 import { useVouchers } from "@/hooks/useVoucher";
 import { fetcherMuatrans, fetcherPayment } from "@/lib/axios";
 import { cn } from "@/lib/utils";
+import { formatDate, formatShortDate } from "@/lib/utils/dateFormat";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -210,25 +211,6 @@ export const SummaryPanel = () => {
         });
       }
     }
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  };
-
-  const formatShortDate = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "long",
-    });
   };
 
   const toggleSection = (categoryKey) => {
@@ -531,7 +513,7 @@ export const SummaryPanel = () => {
                     discountType={v.discountType}
                     minTransaksi={v.minOrderAmount}
                     kuota={v.quota}
-                    usagePercentage={v.usagePercentage || 0}
+                    usagePercentage={v.usage["globalPercentage"] || 0}
                     isOutOfStock={v.isOutOfStock || false}
                     startDate={formatShortDate(v.validFrom)}
                     endDate={formatDate(v.validTo)}
