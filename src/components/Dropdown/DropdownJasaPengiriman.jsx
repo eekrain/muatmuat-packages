@@ -4,25 +4,21 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 
 import { idrFormat } from "@/lib/utils/formatters";
 
-// Default options if none provided
-const defaultOptions = [
-  { id: "jne", name: "JNE", price: 145000 },
-  { id: "jet", name: "JET", price: 145000 },
-  { id: "pos", name: "Pos Indonesia", price: 145000 },
-];
-
 export const DropdownJasaPengiriman = ({
-  options = defaultOptions,
+  shippingOptions = [], // New prop for grouped shipping options
   value = null,
   onChange = () => {},
   placeholder = "Pilih Ekspedisi",
   className = "",
   disabled = false,
-  insurancePrice = 14000,
   insuranceText = "Pakai Asuransi Pengiriman",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(value);
+  console.log(
+    "🚀 ~ file: DropdownJasaPengiriman.jsx:18 ~ selectedOption:",
+    selectedOption
+  );
   const [hasInsurance, setHasInsurance] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -60,7 +56,7 @@ export const DropdownJasaPengiriman = ({
     onChange({
       expedition: option,
       hasInsurance: hasInsurance,
-      insurancePrice: insurancePrice,
+      insurancePrice: option.originalInsurance,
     });
   };
 
@@ -74,7 +70,7 @@ export const DropdownJasaPengiriman = ({
       onChange({
         expedition: selectedOption,
         hasInsurance: newInsuranceState,
-        insurancePrice: insurancePrice,
+        insurancePrice: selectedOption.originalInsurance,
       });
     }
   };
@@ -87,10 +83,10 @@ export const DropdownJasaPengiriman = ({
           {/* First row - Expedition name, price, and chevron */}
           <div className="flex h-4 items-center gap-2">
             <span className="flex-1 text-xs font-medium leading-[14px] text-neutral-900">
-              {selectedOption.name}
+              {selectedOption.courierName || selectedOption.name}
             </span>
             <span className="text-right text-xs font-medium leading-[14px] text-neutral-900">
-              {idrFormat(selectedOption.price)}
+              {idrFormat(selectedOption.originalCost || selectedOption.price)}
             </span>
             <button
               onClick={handleToggle}
@@ -115,7 +111,7 @@ export const DropdownJasaPengiriman = ({
             >
               {insuranceText}{" "}
               <span className="text-primary-700">
-                ({idrFormat(insurancePrice)})
+                ({idrFormat(selectedOption.originalInsurance)})
               </span>
             </label>
           </div>
@@ -124,7 +120,9 @@ export const DropdownJasaPengiriman = ({
     );
   }
 
-  const displayText = selectedOption ? selectedOption.name : placeholder;
+  const displayText = selectedOption
+    ? selectedOption.courierName || selectedOption.name
+    : placeholder;
 
   return (
     <div
@@ -160,33 +158,38 @@ export const DropdownJasaPengiriman = ({
       {isOpen && (
         <div className="absolute left-0 right-0 top-full z-50 mt-1">
           <div className="overflow-hidden rounded-md border border-neutral-300 bg-white shadow-lg">
-            {/* Header */}
-            <div className="px-2.5 py-3">
-              <span className="text-xs font-bold leading-[14px] text-neutral-900">
-                Reguler
-              </span>
-            </div>
+            {/* Use shippingOptions if available, otherwise fall back to options */}
+            <div className="max-h-64 overflow-y-auto">
+              {shippingOptions?.map((group, groupIndex) => (
+                <div key={groupIndex}>
+                  {/* Group Header */}
+                  <div className="border-b border-neutral-200 px-2.5 py-3">
+                    <span className="text-xs font-bold leading-[14px] text-neutral-900">
+                      {group.groupName}
+                    </span>
+                  </div>
 
-            {/* Options */}
-            <div className="max-h-32 overflow-y-auto">
-              {options.map((option) => (
-                <button
-                  key={option.id}
-                  type="button"
-                  onClick={() => handleSelect(option)}
-                  className={`flex w-full items-center justify-between px-2.5 py-3 pl-7 text-left transition-colors hover:bg-neutral-50 ${selectedOption?.id === option.id ? "bg-primary-50" : ""} `}
-                >
-                  <div className="flex-1">
-                    <span className="text-xs font-medium leading-[14px] text-neutral-900">
-                      {option.name}
-                    </span>
-                  </div>
-                  <div className="flex-1 text-right">
-                    <span className="text-xs font-medium leading-[14px] text-neutral-900">
-                      {idrFormat(option.price)}
-                    </span>
-                  </div>
-                </button>
+                  {/* Group Options */}
+                  {group.expeditions.map((expedition) => (
+                    <button
+                      key={expedition.id}
+                      type="button"
+                      onClick={() => handleSelect(expedition)}
+                      className={`flex w-full items-center justify-between px-2.5 py-3 pl-7 text-left transition-colors hover:bg-neutral-50 ${selectedOption?.id === expedition.id ? "bg-primary-50" : ""} `}
+                    >
+                      <div className="flex-1">
+                        <span className="text-xs font-medium leading-[14px] text-neutral-900">
+                          {expedition.courierName}
+                        </span>
+                      </div>
+                      <div className="flex-1 text-right">
+                        <span className="text-xs font-medium leading-[14px] text-neutral-900">
+                          {idrFormat(expedition.originalCost)}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
               ))}
             </div>
 

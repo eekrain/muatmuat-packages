@@ -1243,12 +1243,134 @@ const ExampleDropdownJasaPengiriman = () => {
     selectedExpedition
   );
 
-  const customOptions = [
-    { id: "jne", name: "JNE", price: 145000 },
-    { id: "jet", name: "JET", price: 145000 },
-    { id: "pos", name: "Pos Indonesia", price: 145000 },
-    { id: "sicepat", name: "SiCepat", price: 150000 },
-    { id: "jnt", name: "J&T Express", price: 140000 },
+  const jasaPengirimanOptions = [
+    {
+      groupName: "Reguler",
+      expeditions: [
+        {
+          id: "2e395ac7-9a91-4884-8ee2-e3a9a2d5cc78",
+          courierName: "J&T Express",
+          libraryID: 1,
+          rateID: 57,
+          minEstimatedDay: 2,
+          maxEstimatedDay: 3,
+          originAreaId: 30052,
+          destinationAreaId: 30169,
+          weight: 1,
+          originalCost: 6000,
+          originalInsurance: 25,
+          mustUseInsurance: false,
+        },
+        {
+          id: "a0fe91ff-2375-44d4-bd22-a52d5d290c17",
+          courierName: "Ninja Xpress",
+          libraryID: 1,
+          rateID: 228,
+          minEstimatedDay: 3,
+          maxEstimatedDay: 5,
+          originAreaId: 30052,
+          destinationAreaId: 30169,
+          weight: 1,
+          originalCost: 6000,
+          originalInsurance: 1000,
+          mustUseInsurance: false,
+        },
+        {
+          id: "f229affd-453b-4a6f-8151-7943322e76f9",
+          courierName: "SAPX Express",
+          libraryID: 1,
+          rateID: 349,
+          minEstimatedDay: 1,
+          maxEstimatedDay: 2,
+          originAreaId: 30052,
+          destinationAreaId: 30169,
+          weight: 1,
+          originalCost: 9000,
+          originalInsurance: 2030,
+          mustUseInsurance: false,
+        },
+        {
+          id: "3fdca0d2-1ec2-4b85-80a7-d0326a4ae759",
+          courierName: "SiCepat",
+          libraryID: 1,
+          rateID: 58,
+          minEstimatedDay: 1,
+          maxEstimatedDay: 2,
+          originAreaId: 30052,
+          destinationAreaId: 30169,
+          weight: 1,
+          originalCost: 7000,
+          originalInsurance: 25,
+          mustUseInsurance: false,
+        },
+        {
+          id: "f390c703-ce44-458a-8909-ce41a2369a42",
+          courierName: "SiCepat (BEST)",
+          libraryID: 1,
+          rateID: 59,
+          minEstimatedDay: 1,
+          maxEstimatedDay: 1,
+          originAreaId: 30052,
+          destinationAreaId: 30169,
+          weight: 1,
+          originalCost: 11000,
+          originalInsurance: 25,
+          mustUseInsurance: false,
+        },
+      ],
+    },
+    {
+      groupName: "Kargo",
+      expeditions: [
+        {
+          id: "d2a44f7b-b4a8-44e8-ad0c-0900ff737ca7",
+          courierName: "JNE Trucking (JTR)",
+          libraryID: 1,
+          rateID: 312,
+          minEstimatedDay: 3,
+          maxEstimatedDay: 4,
+          originAreaId: 30052,
+          destinationAreaId: 30169,
+          weight: 1,
+          originalCost: 40000,
+          originalInsurance: 25,
+          mustUseInsurance: false,
+        },
+      ],
+    },
+    {
+      groupName: "Instan",
+      expeditions: [
+        {
+          id: "b1900bbf-2127-407d-9971-914333f0c358",
+          courierName: "Gosend",
+          libraryID: 1,
+          rateID: 329,
+          minEstimatedDay: 0,
+          maxEstimatedDay: 0,
+          originAreaId: 30052,
+          destinationAreaId: 30169,
+          weight: 1,
+          originalCost: 23500,
+          originalInsurance: 0,
+          mustUseInsurance: false,
+        },
+        {
+          id: "1d302d7f-6ec5-46ba-a3c6-0740af86d773",
+          courierName: "Grab Express",
+          libraryID: 1,
+          rateID: 340,
+          minEstimatedDay: 0,
+          maxEstimatedDay: 0,
+          originAreaId: 30052,
+          destinationAreaId: 30169,
+          weight: 1,
+          originalCost: 50000,
+          originalInsurance: 0,
+          mustUseInsurance: false,
+        },
+      ],
+    },
   ];
 
   const handleExpeditionChange = (data) => {
@@ -1270,11 +1392,10 @@ const ExampleDropdownJasaPengiriman = () => {
                 Choose Shipping Method
               </label>
               <DropdownJasaPengiriman
-                options={customOptions}
+                shippingOptions={jasaPengirimanOptions}
                 value={selectedExpedition}
                 onChange={handleExpeditionChange}
                 placeholder="Pilih Ekspedisi"
-                insurancePrice={14000}
                 insuranceText="Pakai Asuransi Pengiriman"
               />
             </div>
@@ -1283,8 +1404,8 @@ const ExampleDropdownJasaPengiriman = () => {
               <div className="rounded-md bg-blue-50 p-4">
                 <p className="mb-2 text-sm">
                   <strong>Selected Expedition:</strong>{" "}
-                  {selectedExpedition.expedition?.name} -{" "}
-                  {selectedExpedition.expedition?.price}
+                  {selectedExpedition.expedition?.courierName} -{" "}
+                  {selectedExpedition.expedition?.originalCost}
                 </p>
                 <p className="mb-2 text-sm">
                   <strong>Insurance:</strong>{" "}
@@ -1295,9 +1416,9 @@ const ExampleDropdownJasaPengiriman = () => {
                 <p className="text-sm">
                   <strong>Total Cost:</strong>{" "}
                   {selectedExpedition.hasInsurance
-                    ? selectedExpedition.expedition?.price +
+                    ? selectedExpedition.expedition?.originalCost +
                       selectedExpedition.insurancePrice
-                    : selectedExpedition.expedition?.price}
+                    : selectedExpedition.expedition?.originalCost}
                 </p>
               </div>
             )}
