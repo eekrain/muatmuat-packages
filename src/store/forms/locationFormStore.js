@@ -162,8 +162,6 @@ export const useLocationFormStore = create(
         const errors = {
           dataLokasi: validateDataLokasi(formValues.dataLokasi),
           detailLokasi: validateDetailLokasi(formValues.detailLokasi),
-          namaPIC: validateNamaPIC(formValues.namaPIC),
-          noHPPIC: validateNoHPPIC(formValues.noHPPIC),
         };
 
         set({ formErrors: errors });

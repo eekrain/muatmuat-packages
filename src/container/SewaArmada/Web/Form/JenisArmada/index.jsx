@@ -168,7 +168,6 @@ export const JenisArmada = () => {
       const origin = getOriginCoordinates();
       const destination = getDestinationCoordinates();
       const { loadTimeStart, loadTimeEnd } = getLoadTimes();
-      const orderType = "INSTANT"; // Default orderType since it's not in formValues
 
       const requestPayload = {
         carrierId: jenisCarrier.id,

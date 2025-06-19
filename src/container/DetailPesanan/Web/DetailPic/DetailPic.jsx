@@ -49,9 +49,9 @@ const locationData = {
 };
 
 // Component untuk detail item individual
-const PICDetailItem = ({ icon, text, className = "", iconClassName }) => (
+const PICDetailItem = ({ icon, text, className = "" }) => (
   <div className={`flex items-center gap-2 ${className}`}>
-    <IconComponent src={icon} className={iconClassName} />
+    <IconComponent src={icon} className="icon-fill-muat-trans-secondary-900" />
     <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
       {text}
     </span>
@@ -85,23 +85,19 @@ const PICLocationCard = ({ locations, title }) => (
 
                 {/* Detail items */}
                 <PICDetailItem
-                  icon="/icons/location16.svg"
-                  iconClassName="icon-muat-trans-secondary-900"
+                  icon="/icons/lokasi16.svg"
                   text={location.fullAddress}
                 />
                 <PICDetailItem
                   icon="/icons/topik-amandemen16.svg"
-                  iconClassName="icon-fill-muat-trans-secondary-900"
                   text={location.detailAddress}
                 />
                 <PICDetailItem
                   icon="/icons/profile16.svg"
-                  iconClassName="icon-fill-muat-trans-secondary-900"
                   text={location.picName}
                 />
                 <PICDetailItem
                   icon="/icons/call16.svg"
-                  iconClassName="icon-fill-muat-trans-secondary-900"
                   text={location.picPhoneNumber}
                 />
               </div>
