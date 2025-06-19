@@ -36,10 +36,17 @@ const PencarianLokasiScreen = () => {
 
     userSavedLocationResult,
     handleSelectUserSavedLocation,
+    userRecentSearchedLocation,
+    userRecentTransactionLocation,
+    handleSelectRecentLocation,
 
     handleGetCurrentLocation,
     resetLocationContext,
   } = useLocationContext();
+  console.log(
+    "🚀 ~ file: PencarianLokasiScreen.jsx:40 ~ userRecentSearchedLocation:",
+    userRecentSearchedLocation
+  );
 
   // ======================================================================================================
 
@@ -111,7 +118,7 @@ const PencarianLokasiScreen = () => {
   const [isManualPostalCodeSaveLocation, setIsManualPostalCodeSaveLocation] =
     useState(false);
 
-  const onAddToSavedLocation = (location) => {
+  const onAddSearchToSavedLocation = (location) => {
     handleSelectSearchResult(location).then((result) => {
       console.log("🚀 ~ handleSelectSearchResultResponsive ~ result:", result);
       // If districtData is automatically filled, then immediately navigate to FormLokasiBongkarMuat
@@ -142,10 +149,33 @@ const PencarianLokasiScreen = () => {
 
   // ======================================================================================================
 
+  // ======================================================================================================
+
+  const onAddRecentLocationToSavedLocation = (location) => {
+    handleSelectRecentLocation(location);
+    navigation.push("/FormSimpanLokasi", {
+      ...params,
+      layout: { title: "Tambah Lokasi" },
+      mode: "add",
+    });
+  };
+
+  // ======================================================================================================
+
   const onSelectUserSavedLocation = (location) => {
     try {
       params?.config?.validateLokasiOnSelect?.(location.Address);
       handleSelectUserSavedLocation(location);
+      params?.config?.afterLocationSelected?.();
+    } catch (error) {
+      console.log("Error selecting user saved location", error);
+    }
+  };
+
+  const onSelectRecentLocation = (location) => {
+    try {
+      params?.config?.validateLokasiOnSelect?.(location.pencarian);
+      handleSelectRecentLocation(location);
       params?.config?.afterLocationSelected?.();
     } catch (error) {
       console.log("Error selecting user saved location", error);
@@ -214,7 +244,7 @@ const PencarianLokasiScreen = () => {
                       withBookmark={{
                         onClick: (e) => {
                           e.stopPropagation();
-                          onAddToSavedLocation(location);
+                          onAddSearchToSavedLocation(location);
                         },
                       }}
                     />
@@ -261,15 +291,17 @@ const PencarianLokasiScreen = () => {
               </h3>
 
               <div className="flex flex-col gap-3">
-                {recentSearches.map((location, index) => (
+                {userRecentSearchedLocation.map((location, index) => (
                   <SearchResultItem
                     key={index}
-                    location={location}
-                    onClick={() => onLocationSearchSelected(location)}
+                    location={{
+                      Title: location.pencarian,
+                    }}
+                    onClick={() => onSelectRecentLocation(location)}
                     withBookmark={{
                       onClick: (e) => {
                         e.stopPropagation();
-                        onAddToSavedLocation(location);
+                        onAddRecentLocationToSavedLocation(location);
                       },
                     }}
                   />
@@ -311,25 +343,30 @@ const PencarianLokasiScreen = () => {
               </div>
             ) : null}
 
-            {/* <div className="h-px w-full bg-neutral-400"></div>
+            <div className="h-px w-full bg-neutral-400"></div>
             <div className="flex flex-col gap-4">
               <h3 className="text-sm font-bold text-neutral-700">
                 Transaksi Terakhir
               </h3>
 
               <div className="flex flex-col gap-3">
-                {recentSearches.map((location, index) => (
-                  <RecentTransactionItem
+                {userRecentTransactionLocation.map((location, index) => (
+                  <SearchResultItem
                     key={index}
-                    location={location}
-                    onClick={() => alert("not implemented")}
+                    location={{
+                      Title: location.pencarian,
+                    }}
+                    onClick={() => onSelectRecentLocation(location)}
                     withBookmark={{
-                      onClick: () => alert("not implemented"),
+                      onClick: (e) => {
+                        e.stopPropagation();
+                        onAddRecentLocationToSavedLocation(location);
+                      },
                     }}
                   />
                 ))}
               </div>
-            </div> */}
+            </div>
           </>
         )}
 
