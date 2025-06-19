@@ -5,7 +5,6 @@ import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import DeliveryEvidenceModal from "@/container/SewaArmada/Web/Form/LayananTambahan/DeliveryEvidenceModal";
-import usePrevious from "@/hooks/use-previous";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -13,7 +12,6 @@ import {
 
 export const LayananTambahan = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const previousIsOpen = usePrevious(isOpen);
 
   const additionalServices = useSewaArmadaStore(
     (s) => s.formValues.additionalServices
@@ -106,7 +104,10 @@ export const LayananTambahan = () => {
                       className="icon-fill-muat-trans-secondary-900"
                       src="/icons/lokasi16.svg"
                     />
-                    <button className="flex items-center gap-x-2">
+                    <button
+                      className="flex items-center gap-x-2"
+                      onClick={() => setIsOpen(true)}
+                    >
                       <span className="text-[12px] font-medium leading-[14.4px] text-primary-700">
                         Ubah
                       </span>

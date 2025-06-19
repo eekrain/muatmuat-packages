@@ -256,6 +256,123 @@ export const SummaryPanel = () => {
   };
 
   const handleOrderFleet = () => {
+    // Contoh model data create order
+    // const data = {
+    //   orderType: "INSTANT",
+    //   loadTimeStart: "2025-05-22T09:00:00Z",
+    //   loadTimeEnd: "2025-05-22T13:00:00Z",
+    //   locations: [
+    //     {
+    //       locationType: "PICKUP",
+    //       sequence: 1,
+    //       fullAddress: "Jl. Sudirman No. 123, Jakarta Pusat",
+    //       detailAddress: "Gedung ABC Lantai 5",
+    //       latitude: -6.2088,
+    //       longitude: 106.8456,
+    //       district: "Tanah Abang",
+    //       districtId: 2,
+    //       city: "Jakarta Pusat",
+    //       cityId: 213,
+    //       province: "DKI Jakarta",
+    //       provinceId: 35,
+    //       postalCode: "10270",
+    //       picName: "Budi Santoso",
+    //       picPhoneNumber: "081234567890",
+    //     },
+    //     {
+    //       locationType: "DROPOFF",
+    //       sequence: 1,
+    //       fullAddress: "Jl. Gatot Subroto No. 456, Jakarta Selatan",
+    //       detailAddress: "Lobby Utama",
+    //       latitude: -6.25,
+    //       longitude: 106.83,
+    //       district: "Setiabudi",
+    //       districtId: 2,
+    //       city: "Jakarta Pusat",
+    //       cityId: 213,
+    //       province: "DKI Jakarta",
+    //       provinceId: 35,
+    //       postalCode: "12930",
+    //       picName: "Sari Dewi",
+    //       picPhoneNumber: "081234567891",
+    //     },
+    //   ],
+    //   cargos: [
+    //     {
+    //       cargoNameId: "550e8400-e29b-41d4-a716-446655440030",
+    //       customName: "Laptop dan Printer",
+    //       weight: 500,
+    //       weightUnit: "kg",
+    //       dimensions: {
+    //         length: 2,
+    //         width: 1.5,
+    //         height: 1,
+    //         dimensionUnit: "m",
+    //       },
+    //       sequence: 1,
+    //     },
+    //   ],
+    //   cargoTypeId: "550e8400-e29b-41d4-a716-446655440100",
+    //   cargoCategoryId: "550e8400-e29b-41d4-a716-446655440110",
+    //   cargoPhotos: [
+    //     "https://storage.muatrans.com/cargos/photo-123456.jpg",
+    //     "https://storage.muatrans.com/cargos/photo-123457.jpg",
+    //   ],
+    //   cargoDescription: "Elektronik dan peralatan kantor",
+    //   isHalalLogistics: true,
+    //   carrierId: "550e8400-e29b-41d4-a716-446655440050",
+    //   truckTypeId: "550e8400-e29b-41d4-a716-446655440060",
+    //   truckCount: 2,
+    //   estimatedDistance: 75.5,
+    //   estimatedTime: 120,
+    //   insurance: {
+    //     insuranceOptionId: "550e8400-e29b-41d4-a716-446655440071",
+    //     coverageAmount: 20000000,
+    //     premiumAmount: 20000,
+    //     isCustomAmount: false,
+    //     insurancePolicyAccepted: true,
+    //   },
+    //   additionalServices: [
+    //     {
+    //       serviceId: "550e8400-e29b-41d4-a716-446655440000",
+    //       withShipping: true,
+    //       shippingDetails: {
+    //         recipientName: "John Doe",
+    //         recipientPhone: "08123456789",
+    //         destinationAddress: "Jl. Contoh No. 123",
+    //         detailAddress: "Rumah cat putih",
+    //         district: "Tegalsari",
+    //         city: "Surabaya",
+    //         province: "Jawa Timur",
+    //         postalCode: "60261",
+    //         shippingOptionId: "0d5de669-e7ba-46f4-a8c6-0f3192ed7465",
+    //         withInsurance: true,
+    //       },
+    //     },
+    //     {
+    //       serviceId: "550e8400-e29b-41d4-a716-446655440001",
+    //       withShipping: false,
+    //     },
+    //   ],
+    //   deliveryOrderNumbers: ["DO123456", "DO123457"],
+    //   businessEntity: {
+    //     isBusinessEntity: true,
+    //     name: "PT Sukses Makmur",
+    //     taxId: "0123456789012345",
+    //   },
+    //   voucherId: "550e8400-e29b-41d4-a716-446655440000",
+    //   paymentMethodId: "va_bca",
+    //   pricing: {
+    //     transportFee: 1500000,
+    //     insuranceFee: 20000,
+    //     additionalServiceFee: 85000,
+    //     voucherDiscount: 100000,
+    //     adminFee: 10000,
+    //     taxAmount: 161000,
+    //     totalPrice: 1676000,
+    //   },
+    // };
+
     alert("Hore Berhasil Sewa Armada :)");
     setIsModalConfirmationOpen(false);
     // ambil order id dari response API create order

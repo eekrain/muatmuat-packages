@@ -1,23 +1,32 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import Button from "@/components/Button/Button";
+import { DropdownJasaPengiriman } from "@/components/Dropdown/DropdownJasaPengiriman";
 import Input from "@/components/Form/Input";
 import { Select } from "@/components/Form/Select";
 import { InputLocationManagementDropdown } from "@/components/LocationManagement/Web/InputLocationManagementDropdown/InputLocationManagementDropdown";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import TextArea from "@/components/TextArea/TextArea";
 import { LocationProvider } from "@/hooks/use-location/use-location";
+import usePrevious from "@/hooks/use-previous";
+import { useSWRHook } from "@/hooks/use-swr";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
+import { useSewaArmadaActions } from "@/store/forms/sewaArmadaStore";
 
 const DeliveryEvidenceModal = ({ isOpen, setIsOpen }) => {
-  const [layananTambahanFormValues, setLayananTambahanFormValues] = useState({
+  const [deliveryEvidenceFormValues, setDeliveryEvidenceFormValues] = useState({
     recipientName: "",
     recipientPhone: "",
+    shippingOptionId: null,
+    withInsurance: false,
   });
-  const [layananTambahanFormErrors, setLayananTambahanFormErrors] = useState(
+  const [deliveryEvidenceFormErrors, setDeliveryEvidenceFormErrors] = useState(
     {}
   );
 
+  const previousIsOpen = usePrevious(isOpen);
+
+  const { setField } = useSewaArmadaActions();
   const {
     formValues: locationFormValues,
     formErrors: locationFormErrors,
@@ -27,12 +36,44 @@ const DeliveryEvidenceModal = ({ isOpen, setIsOpen }) => {
     reset: resetLocationForm,
   } = useLocationFormStore();
 
+  const dataLokasi = useLocationFormStore((s) => s.formValues.dataLokasi);
+
+  // Fetch shipping options when location data is complete
+  const { data: shippingOptionsData } = useSWRHook(
+    isOpen ? "/api/v1/shipping-options" : null
+  );
+  const shippingOptions = shippingOptionsData?.Data;
+
+  const selectedShippingOptions = useMemo(() => {
+    if (!shippingOptions || shippingOptions?.length === 0) {
+      return null;
+    }
+    const shippingOption = shippingOptions
+      .flatMap((option) => option.expeditions)
+      .find(
+        (expedition) =>
+          expedition.id === deliveryEvidenceFormValues.shippingOptionId
+      );
+    if (!shippingOption) {
+      return null;
+    }
+    return {
+      expedition: shippingOption,
+      hasInsurance: deliveryEvidenceFormValues.withInsurance,
+      insurancePrice: shippingOption.originalInsurance,
+    };
+  }, [
+    JSON.stringify(shippingOptions),
+    deliveryEvidenceFormValues.shippingOptionId,
+    deliveryEvidenceFormValues.withInsurance,
+  ]);
+
   const handleChangeFormValues = ({ target: { name, value } }) => {
-    setLayananTambahanFormValues((prevState) => ({
+    setDeliveryEvidenceFormValues((prevState) => ({
       ...prevState,
       [name]: value,
     }));
-    setLayananTambahanFormErrors((prevState) => ({
+    setDeliveryEvidenceFormErrors((prevState) => ({
       ...prevState,
       [name]: undefined,
     }));
@@ -41,13 +82,14 @@ const DeliveryEvidenceModal = ({ isOpen, setIsOpen }) => {
   const validateForm = () => {
     const newErrors = {};
 
-    const { recipientName, recipientPhone } = layananTambahanFormValues;
+    const { recipientName, recipientPhone, shippingOptionId } =
+      deliveryEvidenceFormValues;
 
     if (!recipientName) {
       newErrors.recipientName = "Nama penerima wajib diisi";
     } else if (recipientName.length < 3) {
       newErrors.recipientName = "Nama penerima minimal 3 karakter";
-    } else if (/[^a-zA-Z]/.test(recipientName)) {
+    } else if (/[^a-zA-Z\s]/.test(recipientName)) {
       newErrors.recipientName = "Penulisan nama penerima tidak valid";
     }
 
@@ -59,25 +101,32 @@ const DeliveryEvidenceModal = ({ isOpen, setIsOpen }) => {
       newErrors.recipientPhone = "Nomor handphone penerima tidak valid";
     }
 
-    setLayananTambahanFormErrors(newErrors);
-    // return validateForm is valid if all errors are undefined
-    return Object.values(errors).every((error) => error === undefined);
+    if (!selectedShippingOptions) {
+      newErrors.shippingOption = "Ekspedisi wajib dipilih";
+    }
+
+    setDeliveryEvidenceFormErrors(newErrors);
+    // Return validateForm is valid if there are no errors
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = () => {
-    // Bikin validasi sendiri, soalnya validateSimpanLokasi ga ada validasi kodepos & kecamatan karena ga ada user selection
+    // Validasi form
     const isLocationFormValid = validateLayananTambahan();
     const isFormValid = validateForm();
     if (!isFormValid || !isLocationFormValid) return;
 
-    // Baru handle disini
+    // Handle submit
     console.log("🚀 ~ handleSubmit ~ locationFormValues:", locationFormValues);
+    const newShippingDetails = {
+      ...deliveryEvidenceFormValues,
+      location: locationFormValues,
+    };
+    setField("shippingDetails", newShippingDetails);
 
     setIsOpen(false);
     resetLocationForm();
   };
-
-  const dataLokasi = useLocationFormStore((s) => s.formValues.dataLokasi);
 
   return (
     <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick={false}>
@@ -98,9 +147,9 @@ const DeliveryEvidenceModal = ({ isOpen, setIsOpen }) => {
               <Input
                 name="recipientName"
                 placeholder="Masukkan Nama Penerima"
-                value={layananTambahanFormValues.recipientName}
+                value={deliveryEvidenceFormValues.recipientName}
                 onChange={handleChangeFormValues}
-                errorMessage={layananTambahanFormErrors.recipientName}
+                errorMessage={deliveryEvidenceFormErrors.recipientName}
                 className="w-full"
               />
 
@@ -112,9 +161,9 @@ const DeliveryEvidenceModal = ({ isOpen, setIsOpen }) => {
                 name="recipientPhone"
                 placeholder="Contoh: 08xxxxxxxx"
                 type="tel"
-                value={layananTambahanFormValues.recipientPhone}
+                value={deliveryEvidenceFormValues.recipientPhone}
                 onChange={handleChangeFormValues}
-                errorMessage={layananTambahanFormErrors.recipientPhone}
+                errorMessage={deliveryEvidenceFormErrors.recipientPhone}
                 className="w-full"
               />
 
@@ -227,10 +276,28 @@ const DeliveryEvidenceModal = ({ isOpen, setIsOpen }) => {
                 }}
               />
 
-              {/* Kode Pos Dropdown */}
+              {/* Ekspedisi Dropdown */}
               <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
                 Pilih Ekspedisi*
               </label>
+              <DropdownJasaPengiriman
+                shippingOptions={shippingOptions}
+                value={selectedShippingOptions}
+                onChange={({ expedition, hasInsurance }) => {
+                  setDeliveryEvidenceFormValues((prev) => ({
+                    ...prev,
+                    shippingOptionId: expedition.id,
+                    withInsurance: hasInsurance,
+                  }));
+                  setDeliveryEvidenceFormErrors((prevState) => ({
+                    ...prevState,
+                    shippingOption: undefined,
+                  }));
+                }}
+                placeholder="Pilih Ekspedisi"
+                insuranceText="Pakai Asuransi Pengiriman"
+                errorMessage={deliveryEvidenceFormErrors.shippingOption}
+              />
             </div>
           </div>
 

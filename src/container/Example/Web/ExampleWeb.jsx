@@ -1238,6 +1238,7 @@ const ExampleLightbox = () => {
 // Demo Component
 const ExampleDropdownJasaPengiriman = () => {
   const [selectedExpedition, setSelectedExpedition] = useState(null);
+  console.log("selectedExpedition", selectedExpedition);
   console.log(
     "🚀 ~ ExampleDropdownJasaPengiriman ~ selectedExpedition:",
     selectedExpedition
