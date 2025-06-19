@@ -22,7 +22,8 @@ const defaultValues = {
   useAsuransi: true,
   // layananTambahan: [],
   kirimBuktiFisik: false,
-  bantuanTambahan: false,
+  additionalServices: [],
+
   noDO: [],
   isCompany: false,
   companyName: "",

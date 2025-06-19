@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Checkbox/Checkbox";
@@ -10,6 +10,8 @@ import { InputLocationManagementDropdown } from "@/components/LocationManagement
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import TextArea from "@/components/TextArea/TextArea";
 import { LocationProvider } from "@/hooks/use-location/use-location";
+import { useSWRHook } from "@/hooks/use-swr";
+import { formatRupiah } from "@/lib/utils";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 import {
   useSewaArmadaActions,
@@ -17,6 +19,11 @@ import {
 } from "@/store/forms/sewaArmadaStore";
 
 export const LayananTambahan = () => {
+  // Fetch layanan tambahan dari API
+  const { data: additionalServices, error } = useSWRHook(
+    "v1/orders/additional-services"
+  );
+
   const kirimBuktiFisik = useSewaArmadaStore(
     (s) => s.formValues.kirimBuktiFisik
   );
@@ -26,6 +33,7 @@ export const LayananTambahan = () => {
   const { setField: setSewaArmadaField } = useSewaArmadaActions();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedServiceId, setSelectedServiceId] = useState(null);
 
   const {
     formValues: locationFormValues,
@@ -35,6 +43,15 @@ export const LayananTambahan = () => {
     setLocationPartial,
     reset: resetLocationForm,
   } = useLocationFormStore();
+
+  // Update state when API data is fetched
+  useEffect(() => {
+    if (additionalServices?.data?.length > 0) {
+      // Reset any previously selected services
+      setSewaArmadaField("kirimBuktiFisik", false);
+      setSewaArmadaField("bantuanTambahan", false);
+    }
+  }, [additionalServices, setSewaArmadaField]);
 
   const handleSubmit = () => {
     // Bikin validasi sendiri, soalnya validateSimpanLokasi ga ada validasi kodepos & kecamatan karena ga ada user selection
@@ -50,6 +67,25 @@ export const LayananTambahan = () => {
 
   const dataLokasi = useLocationFormStore((s) => s.formValues.dataLokasi);
 
+  // Function to handle checkbox change and set selected service ID
+  const handleServiceSelection = (serviceId, isChecked, field) => {
+    setSewaArmadaField(field, isChecked);
+    if (isChecked) {
+      setSelectedServiceId(serviceId);
+
+      // If this is the "Kirim Bukti Fisik" service, open the modal
+      if (field === "kirimBuktiFisik") {
+        setIsOpen(true);
+      }
+    } else {
+      setSelectedServiceId(null);
+    }
+  };
+
+  // If loading or error, show appropriate state
+  if (error) return <div>Error loading layanan tambahan</div>;
+  if (!additionalServices) return <div>Loading layanan tambahan...</div>;
+
   return (
     <>
       <FormContainer>
@@ -58,48 +94,55 @@ export const LayananTambahan = () => {
 
         {/* Container Opsi Layanan */}
         <div className="flex-grow-1 flex h-[44px] w-[576px] flex-col gap-[12px]">
-          {/* Opsi Layanan 1 - Kirim Bukti Fisik */}
-          <div className="flex h-[16px] w-full flex-row items-center justify-between gap-[4px]">
-            {/* Container Checkbox dan Label */}
-            <div className="flex h-[16px] flex-row items-center gap-[4px]">
-              <Checkbox
-                onChange={(e) => {
-                  setIsOpen(true);
-                  setSewaArmadaField("kirimBuktiFisik", e.checked);
-                }}
-                label="Kirim Bukti Fisik Penerimaan Barang"
-                checked={kirimBuktiFisik}
-                value="kirim_bukti_fisik"
-              />
-              <IconComponent src="/icons/info16.svg" width={16} height={16} />
+          {additionalServices?.data?.map((service, index) => (
+            <div
+              key={service.id}
+              className="flex h-[16px] w-full flex-row items-center justify-between gap-[4px]"
+            >
+              {/* Container Checkbox dan Label */}
+              <div className="flex h-[16px] flex-row items-center gap-[4px]">
+                <Checkbox
+                  onChange={(e) => {
+                    // Check if this is the "Kirim Bukti Fisik" service (assuming it's the first one)
+                    const isKirimBuktiFisik =
+                      service.name.includes("Kirim Bukti Fisik");
+                    const isBantuanTambahan =
+                      service.name.includes("Troli") ||
+                      service.name.includes("Bantuan");
+
+                    if (isKirimBuktiFisik) {
+                      handleServiceSelection(
+                        service.id,
+                        e.checked,
+                        "kirimBuktiFisik"
+                      );
+                    } else if (isBantuanTambahan) {
+                      handleServiceSelection(
+                        service.id,
+                        e.checked,
+                        "bantuanTambahan"
+                      );
+                    }
+                  }}
+                  label={service.name}
+                  checked={
+                    (service.name.includes("Kirim Bukti Fisik") &&
+                      kirimBuktiFisik) ||
+                    ((service.name.includes("Troli") ||
+                      service.name.includes("Bantuan")) &&
+                      bantuanTambahan)
+                  }
+                  value={service.id}
+                />
+                <IconComponent src="/icons/info16.svg" width={16} height={16} />
+              </div>
+
+              {/* Harga Opsi */}
+              <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                {service.price > 0 ? formatRupiah(service.price) : "Rp-"}
+              </span>
             </div>
-
-            {/* Harga Opsi 1 */}
-            <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-              Rp-
-            </span>
-          </div>
-
-          {/* Opsi Layanan 2 - Bantuan Tambahan */}
-          <div className="flex h-[16px] w-full flex-row items-center justify-between gap-[4px]">
-            {/* Container Checkbox dan Label */}
-            <div className="flex h-[16px] flex-row items-center gap-[4px]">
-              <Checkbox
-                onChange={(e) =>
-                  setSewaArmadaField("bantuanTambahan", e.checked)
-                }
-                label="Bantuan Tambahan"
-                checked={bantuanTambahan}
-                value="bantuan_tambahan"
-              />
-              <IconComponent src="/icons/info16.svg" width={16} height={16} />
-            </div>
-
-            {/* Harga Opsi 2 */}
-            <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-              Rp105.000
-            </span>
-          </div>
+          ))}
         </div>
       </FormContainer>
 

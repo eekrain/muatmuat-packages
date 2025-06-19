@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { useVouchers } from "@/hooks/useVouchers";
+import { useVouchers } from "@/hooks/useVoucher";
 
 export default function VoucherPopup({ token, onSelect, onClose }) {
   const { vouchers, loading, error } = useVouchers(token);
