@@ -10,7 +10,7 @@ export const RingkasanPembayaran = ({ dataRingkasanPembayaran }) => {
     <div className="flex w-[338px] flex-col items-center gap-4">
       {/* Card Ringkasan Pembayaran */}
       {dataRingkasanPembayaran?.orderStatus ===
-      OrderStatusEnum.PENDING_PAYMENT ? (
+      OrderStatusEnum.WAITING_PAYMENT_2 ? (
         <RingkasanPembayaranPending
           dataRingkasanPembayaran={dataRingkasanPembayaran}
         />
@@ -22,7 +22,7 @@ export const RingkasanPembayaran = ({ dataRingkasanPembayaran }) => {
 
       {/* Buttons Section */}
       {dataRingkasanPembayaran?.orderStatus !==
-        OrderStatusEnum.PENDING_PAYMENT && (
+        OrderStatusEnum.WAITING_PAYMENT_2 && (
         <div className="flex w-full flex-col gap-4">
           {dataRingkasanPembayaran?.orderStatus !==
             OrderStatusEnum.SEARCHING_FLEET && (

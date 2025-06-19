@@ -2,15 +2,17 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { useCountdown } from "@/hooks/use-countdown";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
-export const AlertStatusPesanan = ({ orderStatus, paymentDueDateTime }) => {
-  const { countdown } = useCountdown({
-    endingDate: paymentDueDateTime,
-    isNeedCountdown: orderStatus === OrderStatusEnum.PENDING_PAYMENT,
-  });
-
+export const AlertPendingPesanan = ({ orderStatus, expiredAt }) => {
   const isShowAlert =
-    orderStatus === OrderStatusEnum.SEARCHING_FLEET ||
-    orderStatus === OrderStatusEnum.PENDING_PAYMENT;
+    orderStatus === OrderStatusEnum.PREPARE_FLEET ||
+    orderStatus === OrderStatusEnum.WAITING_PAYMENT_1;
+
+  const { countdown } = useCountdown({
+    endingDate: expiredAt,
+    isNeedCountdown:
+      orderStatus === OrderStatusEnum.WAITING_PAYMENT_1 ||
+      orderStatus === OrderStatusEnum.WAITING_PAYMENT_2,
+  });
 
   if (!isShowAlert) return null;
 
@@ -33,16 +35,16 @@ export const AlertStatusPesanan = ({ orderStatus, paymentDueDateTime }) => {
 
       <div className="flex flex-col gap-y-3">
         <h3 className="text-lg font-semibold leading-[1.2] text-neutral-900">
-          {orderStatus === OrderStatusEnum.PENDING_PAYMENT
+          {orderStatus === OrderStatusEnum.WAITING_PAYMENT_1
             ? "Armada yang sesuai dengan pesanan kamu telah ditemukan"
             : "Sedang mempersiapkan armada yang sesuai untuk pesanan kamu"}
         </h3>
         <p className="text-sm font-medium leading-[1.2] text-neutral-900">
-          {orderStatus === OrderStatusEnum.PENDING_PAYMENT
+          {orderStatus === OrderStatusEnum.WAITING_PAYMENT_1
             ? "Mohon lakukan pembayaran dalam waktu "
             : "Terimakasih atas kesabaran kamu."}
 
-          {orderStatus === OrderStatusEnum.PENDING_PAYMENT && (
+          {orderStatus === OrderStatusEnum.WAITING_PAYMENT_1 && (
             <span className="font-bold"> {countdown}</span>
           )}
         </p>

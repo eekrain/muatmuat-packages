@@ -8,6 +8,7 @@ import { PaymentInstruction } from "@/container/DetailPesanan/Web/PaymentInstruc
 import { RingkasanPembayaran } from "@/container/DetailPesanan/Web/RingkasanPembayaran/RingkasanPembayaran";
 import RingkasanPesanan from "@/container/DetailPesanan/Web/RingkasanPesanan/RingkasanPesanan";
 import StatusPesanan from "@/container/DetailPesanan/Web/StatusPesanan/StatusPesanan";
+import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { useGetDetailPesananData } from "@/services/detailpesanan/getDetailPesananData";
 import { useLoadingAction } from "@/store/loadingStore";
 
@@ -15,7 +16,7 @@ const DetailPesananWeb = () => {
   const params = useParams();
 
   const breadCrumbData = [
-    { name: "Daftar Pesanan" },
+    { name: "Daftar Pesanan", href: "/daftarpesanan" },
     { name: "Detail Pesanan" },
   ];
 
@@ -65,7 +66,8 @@ const DetailPesananWeb = () => {
                     }
                   />
                 )}
-                {dataDetailPesanan?.dataPaymentInstruction && (
+                {dataDetailPesanan?.dataStatusPesanan.orderStatus ===
+                  OrderStatusEnum.WAITING_PAYMENT_2 && (
                   <PaymentInstruction
                     dataPaymentInstruction={
                       dataDetailPesanan.dataPaymentInstruction

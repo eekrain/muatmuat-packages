@@ -1,3 +1,5 @@
+import { useParams, useRouter } from "next/navigation";
+
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -5,9 +7,14 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { DriverTimeline } from "./DriverTimeline";
 
 export const LeftPanel = ({ dataDriverStatus }) => {
+  const router = useRouter();
+  const params = useParams();
   const breadcrumbItems = [
-    { name: "Daftar Pesanan", href: "#" },
-    { name: "Detail Pesanan", href: "#" },
+    { name: "Daftar Pesanan", href: "/daftarpesanan" },
+    {
+      name: "Detail Pesanan",
+      href: `/daftarpesanan/detailpesanan/${params.orderId}`,
+    },
     { name: "Lacak Armada" },
   ];
 
@@ -19,9 +26,11 @@ export const LeftPanel = ({ dataDriverStatus }) => {
       </div>
 
       <div className="flex items-center px-6 pb-6">
-        <IconComponent src="/icons/arrow-left24.svg" size="medium" />
+        <button onClick={() => router.back()}>
+          <IconComponent src="/icons/arrow-left24.svg" size="medium" />
+        </button>
         <div className="ml-3 mt-1 text-[20px] font-bold leading-[24px] text-neutral-900">
-          Detail Pesanan
+          Lacak Armada
         </div>
       </div>
 
@@ -34,7 +43,7 @@ export const LeftPanel = ({ dataDriverStatus }) => {
             <div className="w-fit">
               <div className="flex items-center justify-center rounded-md bg-[#E2F2FF] px-2 py-1">
                 <span className="text-[12px] font-semibold leading-[14.4px] text-[#176CF7]">
-                  Menuju ke Lokasi Bongkar 1
+                  {dataDriverStatus?.dataDriver?.statusTitle}
                 </span>
               </div>
             </div>

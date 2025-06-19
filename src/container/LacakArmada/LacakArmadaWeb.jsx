@@ -1,4 +1,4 @@
-import { useGetDriverStatusTimeline } from "@/services/detailpesanan/getDriverStatusTimeline";
+import { useGetDriverStatusTimeline } from "@/services/lacak-armada/getDriverStatusTimeline";
 
 import { LeftPanel } from "./LeftPanel/LeftPanel";
 import { MapPanel } from "./MapPanel/MapPanel";

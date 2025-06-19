@@ -15,10 +15,6 @@ export const DropdownJasaPengiriman = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(value);
-  console.log(
-    "🚀 ~ file: DropdownJasaPengiriman.jsx:18 ~ selectedOption:",
-    selectedOption
-  );
   const [hasInsurance, setHasInsurance] = useState(false);
   const dropdownRef = useRef(null);
 

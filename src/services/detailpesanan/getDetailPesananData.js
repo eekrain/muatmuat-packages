@@ -1,5 +1,7 @@
+import { addMinutes } from "date-fns";
 import useSWR from "swr";
 
+import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { normalizeDetailPesananOrderDetail } from "@/lib/normalizers/detailpesanan";
 
 /**
@@ -96,7 +98,7 @@ const apiResultOrderDetail = {
       orderId: "550e8400-e29b-41d4-a716-446655440000",
       transporterOrderCode: "MT.25.AA.001",
       invoiceNumber: "INV/12345678",
-      orderStatus: "UNLOADING",
+      orderStatus: OrderStatusEnum.UNLOADING,
       orderType: "INSTANT",
       createdAt: "2024-01-01T10:00:00Z",
       updatedAt: "2024-01-01T14:30:00Z",
@@ -139,11 +141,12 @@ const apiResultOrderDetail = {
       ],
       payment: {
         paymentMethod: "va_bca",
-        paymentDueDateTime: "2025-02-08T15:00:00Z",
+        paymentDueDateTime: addMinutes(new Date(), 30).toISOString(),
       },
       price: {
         totalPrice: 1500000.0,
         transportFee: 1200000.0,
+
         insuranceFee: 50000.0,
         additionalServiceFee: [
           {
@@ -247,7 +250,8 @@ const apiResultOrderDetail = {
       {
         type: "qr",
         date: "raw date",
-        label: "labelAlertMultibahasa",
+        label: "Harap tunjukan QR Code ke pihak driver",
+        info: "QR Code diperlukan agar driver dapat melanjutkan proses muat atau bongkar barang.",
       },
     ],
   },
@@ -309,18 +313,39 @@ const apiResultOrderStatusHistory = {
   Type: "ORDER_STATUS_HISTORY",
 };
 
+const apiResultPaymentData = {
+  Message: {
+    Code: 200,
+    Text: "Order detail retrieved successfully",
+  },
+  Data: {
+    payment: {
+      paymentId: "uuid-payment-123",
+      method: "va_bca",
+      vaNumber: "12345678901234567890",
+      amount: 1500000.0,
+      status: "PENDING",
+      expiredAt: addMinutes(new Date(), 30).toISOString(),
+    },
+  },
+  Type: "PAYMENT_ORDER_DETAIL",
+};
+
 const fetcher = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  const [orderDetail, orderStatusHistory] = await Promise.all([
-    apiResultOrderDetail,
-    apiResultOrderStatusHistory,
-  ]);
+  const [dataOrderDetail, dataOrderStatusHistory, dataPayment] =
+    await Promise.all([
+      apiResultOrderDetail,
+      apiResultOrderStatusHistory,
+      apiResultPaymentData,
+    ]);
 
   const data = normalizeDetailPesananOrderDetail({
-    dataOrderDetail: orderDetail.Data,
-    dataOrderStatusHistory: orderStatusHistory.Data,
+    dataOrderDetail: dataOrderDetail.Data,
+    dataOrderStatusHistory: dataOrderStatusHistory.Data,
+    dataPayment: dataPayment.Data,
   });
 
   return data;

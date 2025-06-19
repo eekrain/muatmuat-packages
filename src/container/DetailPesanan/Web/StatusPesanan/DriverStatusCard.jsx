@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { useParams, usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
@@ -10,12 +12,15 @@ import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enu
 import { useGetDriverQRCodeById } from "@/services/detailpesanan/getDriverQRCodeById";
 
 const DriverStatusCard = ({ dataStatusPesanan, dataDriver }) => {
+  const pathname = usePathname();
+  const params = useParams();
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
   const { qrData } = useGetDriverQRCodeById({
     orderId: dataStatusPesanan.orderId,
     driverId: dataStatusPesanan.driverStatus[0].driverId,
   });
+  console.log("🚀 ~ file: DriverStatusCard.jsx:20 ~ qrData:", qrData);
 
   const modalTitle = () => {
     const status = dataDriver.statusDriver.split("_");
@@ -60,9 +65,9 @@ const DriverStatusCard = ({ dataStatusPesanan, dataDriver }) => {
               <Button onClick={() => {}} variant="muatparts-primary-secondary">
                 Hubungi Driver
               </Button>
-              <Button onClick={() => {}} variant="muatparts-primary">
-                Lacak Armada
-              </Button>
+              <Link href={`${pathname}/lacak-armada/${dataDriver.driverId}`}>
+                <Button variant="muatparts-primary">Lacak Armada</Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -84,7 +89,10 @@ const DriverStatusCard = ({ dataStatusPesanan, dataDriver }) => {
               {modalTitle()}
             </h1>
             <div className="flex flex-col items-center gap-y-3">
-              <BadgeStatusPesanan className="w-fit" variant="error">
+              <BadgeStatusPesanan
+                className="w-fit"
+                variant={qrData?.driverInfo?.hasScan ? "success" : "error"}
+              >
                 {qrData?.driverInfo.statusScan}
               </BadgeStatusPesanan>
 
