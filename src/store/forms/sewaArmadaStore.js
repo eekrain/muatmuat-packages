@@ -21,6 +21,9 @@ const defaultValues = {
   jumlahArmada: 0,
   useAsuransi: true,
 
+  // Sementara, nanti diganti additionalServices
+  kirimBuktiFisik: false,
+  bantuanTambahan: false,
   additionalServices: [],
   // Data kirim bukti fisik
   shippingDetails: null,
@@ -114,6 +117,7 @@ export const useSewaArmadaStore = create(
               formValues: defaultValues,
               formErrors: {},
               formId: "",
+              orderType: "",
             }),
           // VALIDASI BUAT YG DESKTOP KARENA JADI SATU HALAMAN
           validateForm: () => {
