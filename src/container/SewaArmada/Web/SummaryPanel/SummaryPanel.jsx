@@ -66,6 +66,26 @@ export const SummaryPanel = () => {
   const [currentTotal, setCurrentTotal] = useState(0);
 
   // Method: Using flatMap and reduce
+  const detailPesanan = [
+    {
+      title: "Biaya Lainnya",
+      items: [
+        {
+          label: "Admin Layanan",
+          cost: 10000,
+        },
+        // Conditional item using spread operator
+        ...(isCompany
+          ? [
+              {
+                label: "Pajak",
+                cost: 21300,
+              },
+            ]
+          : []),
+      ],
+    },
+  ];
   // const totalCost = useMemo(() => {
   //   const detailPesanan = [
   //     {
