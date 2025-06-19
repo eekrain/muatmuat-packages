@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import Button from "@/components/Button/Button";
 import Card from "@/components/Card/Card";
@@ -62,35 +62,47 @@ export const SummaryPanel = () => {
     useState(false);
   const [expandedCategories, setExpandedCategories] = useState(new Set([0])); // Initialize with first category expanded
   const [isModalConfirmationOpen, setIsModalConfirmationOpen] = useState(false);
-  // const baseOrderAmount = 950000;
+  const baseOrderAmount = 950000;
   const [currentTotal, setCurrentTotal] = useState(0);
 
   // Method: Using flatMap and reduce
-  const totalCost = useMemo(() => {
-    const detailPesanan = [
-      {
-        title: "Biaya Lainnya",
-        items: [
-          {
-            label: "Admin Layanan",
-            cost: 10000,
-          },
-          // Conditional item using spread operator
-          ...(isCompany
-            ? [
-                {
-                  label: "Pajak",
-                  cost: 21300,
-                },
-              ]
-            : []),
-        ],
-      },
-    ];
-    return detailPesanan
-      .flatMap((section) => section.items)
-      .reduce((total, item) => total + item.cost, 0);
-  }, [isCompany]);
+  // const totalCost = useMemo(() => {
+  //   const detailPesanan = [
+  //     {
+  //       title: "Biaya Lainnya",
+  //       items: [
+  //         {
+  //           label: "Admin Layanan",
+  //           cost: 10000,
+  //         },
+  //         // Conditional item using spread operator
+  //         ...(isCompany
+  //           ? [
+  //               {
+  //                 label: "Pajak",
+  //                 cost: 21300,
+  //               },
+  //             ]
+  //           : []),
+  //       ],
+  //     },
+  //   ];
+  //   return detailPesanan
+  //     .flatMap((section) => section.items)
+  //     .reduce((total, item) => total + item.cost, 0);
+  // }, [isCompany]);
+
+  useEffect(() => {
+    if (selectedVoucher) {
+      const discount = calculateDiscountAmount(
+        selectedVoucher,
+        baseOrderAmount
+      );
+      setCurrentTotal(baseOrderAmount - discount);
+    } else {
+      setCurrentTotal(baseOrderAmount);
+    }
+  }, [selectedVoucher, baseOrderAmount]);
 
   const filteredVouchers = voucherList.filter(
     (v) =>
@@ -116,7 +128,7 @@ export const SummaryPanel = () => {
       // Clear previous validation errors for all vouchers
       setValidationErrors({});
 
-      const totalAmountForValidation = totalCost;
+      const totalAmountForValidation = baseOrderAmount;
       const res = await fetcherMuatrans.post(
         "/v1/orders/vouchers/validate",
         {
