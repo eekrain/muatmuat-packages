@@ -6,7 +6,9 @@ import {
 } from "@/store/forms/sewaArmadaStore";
 
 export const NoDeliveryOrder = () => {
-  const noDO = useSewaArmadaStore((state) => state.formValues.noDO);
+  const deliveryOrderNumbers = useSewaArmadaStore(
+    (state) => state.formValues.deliveryOrderNumbers
+  );
   const { setField } = useSewaArmadaActions();
 
   return (
@@ -14,8 +16,8 @@ export const NoDeliveryOrder = () => {
       <FormLabel>No. Delivery Order (DO)</FormLabel>
       <div className="flex-1">
         <TagInput
-          tags={noDO}
-          onTagsChange={(value) => setField("noDO", value)}
+          tags={deliveryOrderNumbers}
+          onTagsChange={(value) => setField("deliveryOrderNumbers", value)}
           placeholder="Masukkan No. Delivery Order (DO)"
         />
       </div>

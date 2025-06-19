@@ -20,11 +20,12 @@ const defaultValues = {
   jenisTruk: null,
   jumlahArmada: 0,
   useAsuransi: true,
-  // layananTambahan: [],
-  kirimBuktiFisik: false,
-  additionalServices: [],
 
-  noDO: [],
+  additionalServices: [],
+  // Data kirim bukti fisik
+  shippingDetails: null,
+
+  deliveryOrderNumbers: [],
   isCompany: false,
   companyName: "",
   companyNpwp: "",

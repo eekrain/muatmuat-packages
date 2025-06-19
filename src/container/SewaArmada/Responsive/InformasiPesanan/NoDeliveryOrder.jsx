@@ -15,6 +15,9 @@ import {
 } from "@/store/forms/sewaArmadaStore";
 
 const NoDeliveryOrder = () => {
+  const deliveryOrderNumbers = useSewaArmadaStore(
+    (state) => state.formValues.deliveryOrderNumbers
+  );
   const { formValues } = useSewaArmadaStore();
   const { setField } = useSewaArmadaActions();
 
@@ -22,14 +25,14 @@ const NoDeliveryOrder = () => {
   const [type, setType] = useState("");
   const [tempNoDeliveryOrders, setTempNoDeliveryOrders] = useState([]);
   const [newDo, setNewDo] = useState("");
-  console.log("temp", tempNoDeliveryOrders);
+
   const handleAddTempNoDeliveryOrders = () => {
     setTempNoDeliveryOrders((prevState) => [...prevState, newDo]);
     setType("list");
   };
 
   const handleChangeNoDeliveryOrders = () => {
-    setField("noDO", tempNoDeliveryOrders);
+    setField("deliveryOrderNumbers", tempNoDeliveryOrders);
     setIsBottomSheetOpen(false);
   };
 
@@ -54,12 +57,12 @@ const NoDeliveryOrder = () => {
           <button
             onClick={() => {
               setIsBottomSheetOpen(true);
-              if (formValues.noDO.length === 0) {
+              if (deliveryOrderNumbers.length === 0) {
                 setNewDo("");
-                setTempNoDeliveryOrders(formValues.noDO);
+                setTempNoDeliveryOrders(deliveryOrderNumbers);
                 setType("add");
               } else {
-                setTempNoDeliveryOrders(formValues.noDO);
+                setTempNoDeliveryOrders(deliveryOrderNumbers);
                 setType("list");
               }
             }}
@@ -68,16 +71,16 @@ const NoDeliveryOrder = () => {
             Tambah
           </button>
         </div>
-        {formValues.noDO.length > 0 ? (
+        {deliveryOrderNumbers.length > 0 ? (
           <div className="flex flex-wrap gap-2">
-            {formValues.noDO.map((item, key) => (
+            {deliveryOrderNumbers.map((item, key) => (
               <TagBubble
                 key={item}
                 withRemove={{
                   onRemove: () =>
                     setField(
-                      "noDO",
-                      formValues.noDO.filter((_, i) => i !== key)
+                      "deliveryOrderNumbers",
+                      deliveryOrderNumbers.filter((_, i) => i !== key)
                     ),
                 }}
                 className="!bg-primary-50"
