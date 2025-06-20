@@ -103,7 +103,10 @@ export const BadanUsahaPemesan = () => {
       </FormContainer>
       <Modal
         open={isModalOpen}
-        onOpenChange={setIsModalOpen}
+        onOpenChange={(value) => {
+          setIsModalOpen(value);
+          setField("isCompany", false);
+        }}
         closeOnOutsideClick={false}
       >
         <ModalContent type="muatmuat">

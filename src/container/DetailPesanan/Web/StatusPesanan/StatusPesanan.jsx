@@ -5,7 +5,8 @@ import { useMemo, useState } from "react";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Card, { CardContent } from "@/components/Card/Card";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import LightboxTrigger, {
+import {
+  LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lighbox";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
@@ -109,7 +110,7 @@ const StatusPesananHeader = ({ orderCode, orderStatus }) => {
                     title="Foto Bukti Pengiriman"
                   >
                     {dummyPhoto.map((image, index) => (
-                      <LightboxTrigger
+                      <LightboxPreview
                         key={image}
                         image={image}
                         alt={`Dokumen ${index + 1}`}

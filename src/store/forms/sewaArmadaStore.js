@@ -16,11 +16,16 @@ const defaultValues = {
   informasiMuatan: [],
   fotoMuatan: [null, null, null, null],
   deskripsi: "",
+
   jenisCarrier: null,
   jenisTruk: null,
   jumlahArmada: 0,
-  useAsuransi: true,
+  // baru
+  carrierId: null,
+  truckTypeId: null,
+  truckCount: 0,
 
+  useAsuransi: true,
   // Sementara, nanti diganti additionalServices
   kirimBuktiFisik: false,
   bantuanTambahan: false,

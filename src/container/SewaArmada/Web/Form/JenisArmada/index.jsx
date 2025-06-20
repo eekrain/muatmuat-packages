@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+
+import minBy from "lodash/minBy";
 
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import FilterModal from "@/container/SewaArmada/Web/Form/JenisArmada/FilterModal";
+import SelectArmadaModal from "@/container/SewaArmada/Web/Form/JenisArmada/SelectArmadaModal";
 import { SelectedTruck } from "@/container/SewaArmada/Web/Form/JenisArmada/SelectedTruck";
 import { useSWRHook, useSWRMutateHook } from "@/hooks/use-swr";
 import { cn } from "@/lib/utils";
@@ -12,11 +14,14 @@ import {
   useSewaArmadaStore,
 } from "@/store/forms/sewaArmadaStore";
 
+import RecommendedTruckModal from "./RecommendedTruckModal";
+
 export const JenisArmada = () => {
   const [isTruckImageModalOpen, setIsTruckImageModalOpen] = useState(false);
   const [selectedImageSrc, setSelectedImageSrc] = useState("");
   const [type, setType] = useState(""); // carrier or truck
   const [isArmadaPopupOpen, setIsArmadaPopupOpen] = useState(false);
+  const [isRecommendedTruckOpen, setIsRecommendedTruckOpen] = useState(false);
 
   const formValues = useSewaArmadaStore((state) => state.formValues);
   const showRangeOption = useSewaArmadaStore(
@@ -27,7 +32,7 @@ export const JenisArmada = () => {
   const jenisCarrier = formValues.jenisCarrier;
   const jenisTruk = formValues.jenisTruk;
   const { setField } = useSewaArmadaActions();
-
+  console.log("jenis", jenisTruk);
   const cargoCategoryId = "f483709a-de4c-4541-b29e-6f4d9a912332";
 
   // Fetch recommended carriers from API using SWR
@@ -37,11 +42,24 @@ export const JenisArmada = () => {
 
   // Menggunakan useSWRMutateHook untuk request POST truk
   const {
-    data: trucksData,
+    data: trucks,
     error: trucksError,
     trigger: fetchTrucks,
     isMutating: isLoadingTrucks,
   } = useSWRMutateHook("v1/orders/trucks/recommended", "POST");
+
+  const trucksData = trucks?.Data || [];
+
+  const recommendedTruckPriceDiff = useMemo(() => {
+    if (!jenisTruk || trucksData.length === 0) {
+      return 0;
+    }
+    const lowestRecommendedTruckPrice = minBy(
+      trucksData.recommendedTrucks,
+      "price"
+    );
+    return jenisTruk.price - lowestRecommendedTruckPrice?.price;
+  }, [JSON.stringify(jenisTruk), JSON.stringify(trucksData)]);
 
   const handleSelectArmada = (value) => {
     if (type === "carrier") {
@@ -63,7 +81,7 @@ export const JenisArmada = () => {
     setIsArmadaPopupOpen(true);
 
     // Jika tipe truck dan carrier sudah dipilih, fetch data truk
-    if (selectedType === "truck" && jenisCarrier?.id) {
+    if (selectedType === "truck" && jenisCarrier?.carrierId) {
       // Calculate total weight and convert to tons
       const calculateTotalWeight = () => {
         let totalWeight = 0;
@@ -178,7 +196,7 @@ export const JenisArmada = () => {
       const { loadTimeStart, loadTimeEnd } = getLoadTimes();
 
       const requestPayload = {
-        carrierId: jenisCarrier.id,
+        carrierId: jenisCarrier.carrierId,
         weight,
         weightUnit,
         dimensions,
@@ -214,7 +232,7 @@ export const JenisArmada = () => {
                 height={16}
               />
               <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                {jenisCarrier?.title || "Pilih Jenis Carrier"}
+                {jenisCarrier?.name || "Pilih Jenis Carrier"}
               </span>
               <IconComponent
                 src="/icons/chevron-right.svg"
@@ -246,12 +264,30 @@ export const JenisArmada = () => {
           {jenisTruk ? (
             <SelectedTruck {...jenisTruk} onSelectImage={handleSelectImage} />
           ) : null}
+          {jenisTruk?.isRecommended === false ? (
+            <button
+              className="flex h-10 w-full items-center justify-between self-start rounded-md border border-primary-700 bg-primary-50 px-3"
+              onClick={() => setIsRecommendedTruckOpen(true)}
+            >
+              <div className="flex items-center gap-x-2 font-medium text-neutral-900">
+                <IconComponent
+                  src="/icons/recommended-truck.svg"
+                  size="medium"
+                />
+                <span className="text-[14px] leading-[16.8px]">
+                  {"Pakai rekomendasi bisa hemat "}
+                  <span className="text-[12px] leading-[14.4px]">{`Rp${recommendedTruckPriceDiff.toLocaleString("id-ID")}`}</span>
+                </span>
+              </div>
+              <IconComponent src="/icons/chevron-right.svg" />
+            </button>
+          ) : null}
         </div>
       </FormContainer>
 
-      <FilterModal
+      <SelectArmadaModal
         carrierData={carriersData?.Data}
-        truckData={trucksData?.Data || []}
+        truckData={trucksData}
         isOpen={isArmadaPopupOpen}
         setIsOpen={setIsArmadaPopupOpen}
         onSelectArmada={handleSelectArmada}
@@ -260,6 +296,12 @@ export const JenisArmada = () => {
         errorCarrier={carriersError}
         isLoadingTruck={isLoadingTrucks && type === "truck"}
         errorTruck={trucksError}
+      />
+
+      <RecommendedTruckModal
+        isOpen={isRecommendedTruckOpen}
+        setIsOpen={setIsRecommendedTruckOpen}
+        recommendedTrucks={trucksData?.recommendedTrucks}
       />
     </>
   );
