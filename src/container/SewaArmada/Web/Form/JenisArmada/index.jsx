@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import FilterModal from "@/container/SewaArmada/Web/Form/JenisArmada/FilterModal";
 import { SelectedTruck } from "@/container/SewaArmada/Web/Form/JenisArmada/SelectedTruck";
 import { useSWRHook, useSWRMutateHook } from "@/hooks/use-swr";
 import { cn } from "@/lib/utils";
@@ -11,8 +12,6 @@ import {
   useSewaArmadaStore,
 } from "@/store/forms/sewaArmadaStore";
 
-import FilterModal from "../../FilterModal/FilterModal";
-
 export const JenisArmada = () => {
   const [isTruckImageModalOpen, setIsTruckImageModalOpen] = useState(false);
   const [selectedImageSrc, setSelectedImageSrc] = useState("");
@@ -20,8 +19,11 @@ export const JenisArmada = () => {
   const [isArmadaPopupOpen, setIsArmadaPopupOpen] = useState(false);
 
   const formValues = useSewaArmadaStore((state) => state.formValues);
+  const showRangeOption = useSewaArmadaStore(
+    (state) => state.formValues.showRangeOption
+  );
   const orderType = useSewaArmadaStore((state) => state.orderType);
-  console.log("form", formValues);
+
   const jenisCarrier = formValues.jenisCarrier;
   const jenisTruk = formValues.jenisTruk;
   const { setField } = useSewaArmadaActions();
@@ -157,10 +159,15 @@ export const JenisArmada = () => {
       const getLoadTimes = () => {
         const now = new Date().toISOString();
 
-        return {
+        const result = {
           loadTimeStart: formValues.startDate || now,
-          loadTimeEnd: formValues.endDate || now,
         };
+
+        if (showRangeOption) {
+          result.loadTimeEnd = formValues.endDate || now;
+        }
+
+        return result;
       };
 
       // Build the request payload
