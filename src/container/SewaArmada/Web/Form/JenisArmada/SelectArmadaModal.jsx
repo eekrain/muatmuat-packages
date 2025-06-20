@@ -179,15 +179,7 @@ const SelectArmadaModal = ({
                         ) : (
                           <TruckItem
                             {...item}
-                            // title={item.title}
-                            // description={item.description}
-                            // src={item.src}
-                            // price={item.price}
-                            // maxWeight={item.maxWeight}
-                            // weightUnit={item.weightUnit}
-                            // dimensions={item.dimensions}
                             onClick={() => handleArmadaSelect(item)}
-                            // onSelectImage={handleSelectImage}
                           />
                         )}
                       </Fragment>
@@ -222,15 +214,7 @@ const SelectArmadaModal = ({
                         ) : (
                           <TruckItem
                             {...item}
-                            // title={item.title}
-                            // description={item.description}
-                            // src={item.src}
-                            // price={item.price}
-                            // maxWeight={item.maxWeight}
-                            // weightUnit={item.weightUnit}
-                            // dimensions={item.dimensions}
                             onClick={() => handleArmadaSelect(item)}
-                            // onSelectImage={handleSelectImage}
                           />
                         )}
                       </Fragment>
@@ -265,15 +249,7 @@ const SelectArmadaModal = ({
                         ) : (
                           <TruckItem
                             {...item}
-                            // title={item.title}
-                            // description={item.description}
-                            // src={item.src}
-                            // price={item.price}
-                            // maxWeight={item.maxWeight}
-                            // weightUnit={item.weightUnit}
-                            // dimensions={item.dimensions}
                             onClick={() => handleArmadaSelect(item)}
-                            // onSelectImage={handleSelectImage}
                           />
                         )}
                       </Fragment>

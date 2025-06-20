@@ -3,7 +3,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import {
   LightboxPreview,
   LightboxProvider,
-} from "@/components/Lightbox/Lighbox";
+} from "@/components/Lightbox/Lightbox";
 
 // Warning Badge Component
 export const WarningBadge = ({ message }) => {

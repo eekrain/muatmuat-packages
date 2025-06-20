@@ -2,7 +2,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import {
   LightboxPreview,
   LightboxProvider,
-} from "@/components/Lightbox/Lighbox";
+} from "@/components/Lightbox/Lightbox";
 
 export const SelectedTruck = ({
   image,
