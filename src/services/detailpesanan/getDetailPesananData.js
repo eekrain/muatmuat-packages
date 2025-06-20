@@ -4,6 +4,11 @@ import useSWR from "swr";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { normalizeDetailPesananOrderDetail } from "@/lib/normalizers/detailpesanan";
 
+import { getAdditionalServices } from "./getAdditionalServices";
+import { getOrderAlerts } from "./getOrderAlerts";
+import { getOrderPaymentData } from "./getOrderPaymentData";
+import { getOrderStatusHistory } from "./getOrderStatusHistory";
+
 /**
  * Notes dari mas friday
  * /orders/{orderId}
@@ -98,7 +103,7 @@ const apiResultOrderDetail = {
       orderId: "550e8400-e29b-41d4-a716-446655440000",
       transporterOrderCode: "MT.25.AA.001",
       invoiceNumber: "INV/12345678",
-      orderStatus: OrderStatusEnum.UNLOADING,
+      orderStatus: OrderStatusEnum.LOADING,
       orderType: "INSTANT",
       createdAt: "2024-01-01T10:00:00Z",
       updatedAt: "2024-01-01T14:30:00Z",
@@ -164,18 +169,6 @@ const apiResultOrderDetail = {
         },
         overloadFee: 1000000,
       },
-      additionalService: [
-        {
-          name: "",
-          isShipping: true,
-          addressInformation: {
-            manlok: "sama seperti manlok",
-          },
-          courier: "JNE",
-          courierPrice: 200000,
-          insurancePrice: 10000000000000,
-        },
-      ],
     },
     otherInformation: {
       cargoPhotos: [
@@ -212,140 +205,38 @@ const apiResultOrderDetail = {
       name: "PT Sukses Makmur",
       taxId: "0123456789012345",
     },
-    paymentData: {
-      paymentId: "uuid-payment-123",
-      method: "va_bca",
-      vaNumber: "12345678901234567890",
-      amount: 1500000.0,
-      status: "PENDING",
-      expiredAt: "2025-02-08T15:00:00Z",
-    },
     config: {
       toleranceHours: 12,
       hourlyRate: 25000.0,
       alertHoursBefore: 1,
     },
-    detailWaitingTime: [
-      {
-        driverId: "uuid",
-        name: "hadi",
-        licensePlate: "abc",
-        startWaitingTime: "raw date",
-        endWaitingTime: "raw date",
-        waitingTime: 100,
-        waitingFee: 100000,
-      },
-    ],
-    detailOverload: [
-      {
-        driverId: "uuid",
-        name: "hadi",
-        licensePlate: "abc",
-        weight: 2000,
-        weightUnit: "ton",
-        overloadFee: 100000,
-      },
-    ],
-    alerts: [
-      {
-        type: "qr",
-        date: "raw date",
-        label: "Harap tunjukan QR Code ke pihak driver",
-        info: "QR Code diperlukan agar driver dapat melanjutkan proses muat atau bongkar barang.",
-      },
-    ],
   },
-};
-
-const apiResultOrderStatusHistory = {
-  Message: {
-    Code: 200,
-    Text: "Order status history retrieved successfully",
-  },
-  Data: {
-    statusHistory: [
-      {
-        statusHistoryId: "550e8400-e29b-41d4-a716-446655440020",
-        statusCode: "CONFIRMED",
-        statusName: "Pesanan Terkonfirmasi",
-      },
-      {
-        statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
-        statusCode: "LOADING",
-        statusName: "Proses Muat",
-      },
-      {
-        statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
-        statusCode: "UNLOADING",
-        statusName: "Proses Bongkar",
-      },
-      {
-        statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
-        statusCode: "COMPLETED",
-        statusName: "Selesai",
-      },
-    ],
-    driverStatus: [
-      {
-        driverId: "550e8400-e29b-41d4-a716-446655440021",
-        name: "Ahmad Rahman",
-        driverPhoto: "https://picsum.photos/50",
-        licensePlate: "B 1234 CD",
-        statusDriver: "UNLOADING_1",
-        statusTitle: "Menuju Lokasi Bongkar 1",
-        stepStatus: [
-          {
-            statusCode: "LOADING_1",
-            statusName: "Menuju Lokasi Muat 1",
-          },
-          {
-            statusCode: "LOADING_2",
-            statusName: "Menuju Lokasi Muat 2",
-          },
-          {
-            statusCode: "UNLOADING_1",
-            statusName: "Menuju Lokasi Bongkar 1",
-          },
-        ],
-      },
-    ],
-  },
-  Type: "ORDER_STATUS_HISTORY",
-};
-
-const apiResultPaymentData = {
-  Message: {
-    Code: 200,
-    Text: "Order detail retrieved successfully",
-  },
-  Data: {
-    payment: {
-      paymentId: "uuid-payment-123",
-      method: "va_bca",
-      vaNumber: "12345678901234567890",
-      amount: 1500000.0,
-      status: "PENDING",
-      expiredAt: addMinutes(new Date(), 30).toISOString(),
-    },
-  },
-  Type: "PAYMENT_ORDER_DETAIL",
 };
 
 const fetcher = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  const [dataOrderDetail, dataOrderStatusHistory, dataPayment] =
-    await Promise.all([
-      apiResultOrderDetail,
-      apiResultOrderStatusHistory,
-      apiResultPaymentData,
-    ]);
+  const [
+    dataOrderDetail,
+    dataOrderStatusHistory,
+    dataPayment,
+    dataAdditionalServices,
+    dataOrderAlerts,
+  ] = await Promise.all([
+    apiResultOrderDetail,
+    getOrderStatusHistory(orderId),
+    getOrderPaymentData(orderId),
+    getAdditionalServices(orderId),
+    getOrderAlerts(orderId),
+  ]);
 
   const data = normalizeDetailPesananOrderDetail({
     dataOrderDetail: dataOrderDetail.Data,
-    dataOrderStatusHistory: dataOrderStatusHistory.Data,
-    dataPayment: dataPayment.Data,
+    dataOrderStatusHistory: dataOrderStatusHistory,
+    dataPayment: dataPayment,
+    dataAlerts: dataOrderAlerts,
+    dataAdditionalServices: dataAdditionalServices,
   });
 
   return data;

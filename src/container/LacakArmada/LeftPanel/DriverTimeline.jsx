@@ -1,13 +1,16 @@
 import { Fragment, useEffect, useState } from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { LightboxProvider, useLightbox } from "@/components/Lightbox/Lighbox";
+import { LightboxProvider, useLightbox } from "@/components/Lightbox/Lightbox";
 import {
   TimelineContainer,
   TimelineContentWithButtonDate,
   TimelineItem,
 } from "@/components/Timeline";
-import { OrderStatusTitle } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import {
+  OrderStatusIcon,
+  OrderStatusTitle,
+} from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
 export const DriverTimeline = ({ dataDriverStatus }) => {
   const [images, setImages] = useState({ packages: [], pods: [] });
@@ -15,9 +18,15 @@ export const DriverTimeline = ({ dataDriverStatus }) => {
   const [lightboxActiveIndex, setLightboxActiveIndex] = useState(0);
 
   const lightboxTitle = () => {
+    const splitted = currentStatus?.beforeStatusCode?.split("_") || [];
+    if (splitted.length !== 5 || splitted[0] !== "SEDANG")
+      return `Bukti ${currentStatus?.beforeStatusName || currentStatus?.statusName}`;
+
     if (lightboxActiveIndex > images.packages.length - 1)
-      return `POD ${currentStatus?.statusName}`;
-    return `Bukti ${currentStatus?.beforeStatusName || currentStatus?.statusName}`;
+      return `POD ${splitted[1][0] + splitted[1].slice(1).toLowerCase()} di Lokasi ${splitted[4]}`;
+    else {
+      return `Bukti ${splitted[1][0] + splitted[1].slice(1).toLowerCase()} Barang di Lokasi ${splitted[4]}`;
+    }
   };
 
   return (
@@ -46,7 +55,7 @@ export const DriverTimeline = ({ dataDriverStatus }) => {
             ) : null}
 
             <ParentItem
-              icon="/icons/stepper/stepper-box-opened.svg"
+              icon={OrderStatusIcon[parent.mappedOrderStatus]}
               title={OrderStatusTitle[parent.mappedOrderStatus]}
               withDivider={
                 parentIndex !== dataDriverStatus?.statusDefinitions.length - 1
@@ -110,6 +119,10 @@ const ItemWithLightbox = ({
             : null
         }
         withDate={new Date(driverStatusItem.date)}
+        appearance={{
+          dateClassname:
+            parentIndex === 0 && index === 0 ? "text-neutral-900" : "",
+        }}
         onSubtitleClick={() =>
           alert(`Tampilkan modal untuk ${driverStatusItem.subtitle}`)
         }

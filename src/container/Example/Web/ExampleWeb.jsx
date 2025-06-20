@@ -44,7 +44,7 @@ import { InputSearch } from "@/components/InputSearch/InputSearch";
 import {
   LightboxPreview,
   LightboxProvider,
-} from "@/components/Lightbox/Lighbox";
+} from "@/components/Lightbox/Lightbox";
 import { MapContainer } from "@/components/MapContainer/MapContainer";
 import { MapWithPath } from "@/components/MapContainer/MapWithPath";
 import {

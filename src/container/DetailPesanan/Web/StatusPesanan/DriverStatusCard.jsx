@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
@@ -8,27 +8,39 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import Stepper from "@/components/Stepper/Stepper";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { useGetDriverQRCodeById } from "@/services/detailpesanan/getDriverQRCodeById";
 
 const DriverStatusCard = ({ dataStatusPesanan, dataDriver }) => {
   const pathname = usePathname();
-  const params = useParams();
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
   const { qrData } = useGetDriverQRCodeById({
     orderId: dataStatusPesanan.orderId,
     driverId: dataStatusPesanan.driverStatus[0].driverId,
   });
-  console.log("🚀 ~ file: DriverStatusCard.jsx:20 ~ qrData:", qrData);
 
-  const modalTitle = () => {
-    const status = dataDriver.statusDriver.split("_");
-    if (status[0] === OrderStatusEnum.LOADING) {
-      return `QR Code Lokasi Muat ${status[1]}`;
-    } else if (status[0] === OrderStatusEnum.UNLOADING) {
-      return `QR Code Lokasi Bongkar ${status[1]}`;
+  const statusScan = () => {
+    const splitStatus = qrData?.driverInfo.statusScan?.split?.("_") || [];
+    let hasScan = false;
+    let statusTitle = "";
+    let statusText = "";
+    if (splitStatus.length !== 4) return { hasScan, statusText, statusTitle };
+
+    statusTitle = `QR Code Lokasi ${splitStatus[2][0].toUpperCase()}${splitStatus[2].slice(1).toLowerCase()} ${splitStatus[3]}`;
+
+    if (splitStatus[0] === "BELUM" && splitStatus[1] === "SCAN") {
+      hasScan = false;
+    } else if (splitStatus[0] === "SUDAH" && splitStatus[1] === "SCAN") {
+      hasScan = true;
     }
+
+    if (hasScan) {
+      statusText = `Sudah Scan Lokasi ${splitStatus[2][0].toUpperCase()}${splitStatus[2].slice(1).toLowerCase()} ${splitStatus[3]}`;
+    } else {
+      statusText = `Belum Scan Lokasi ${splitStatus[2][0].toUpperCase()}${splitStatus[2].slice(1).toLowerCase()} ${splitStatus[3]}`;
+    }
+
+    return { statusTitle, hasScan, statusText };
   };
 
   return (
@@ -86,14 +98,15 @@ const DriverStatusCard = ({ dataStatusPesanan, dataDriver }) => {
           <ModalHeader size="big" />
           <div className="flex w-full flex-col items-center gap-y-6 px-6 py-9">
             <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
-              {modalTitle()}
+              {/* {statusScan().statusTitle} */}
+              QR Code Lokasi Muat & Bongkar
             </h1>
             <div className="flex flex-col items-center gap-y-3">
               <BadgeStatusPesanan
                 className="w-fit"
-                variant={qrData?.driverInfo?.hasScan ? "success" : "error"}
+                variant={statusScan().hasScan ? "success" : "error"}
               >
-                {qrData?.driverInfo.statusScan}
+                {statusScan().statusText}
               </BadgeStatusPesanan>
 
               <AvatarDriver

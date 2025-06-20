@@ -3,11 +3,13 @@ import { cn } from "@/lib/utils";
 import IconComponent from "../IconComponent/IconComponent";
 
 const alertVariants = {
-  warning: "bg-warning-100 [&_svg]:text-secondary-400 ",
+  warning: "bg-warning-100 [&_svg]:text-secondary-400",
+  secondary: "bg-secondary-100 [&_svg]:text-warning-900",
 };
 
 const icon = {
   warning: "/icons/warning24.svg",
+  secondary: "/icons/warning24.svg",
 };
 
 const alertSizes = {

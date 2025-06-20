@@ -9,7 +9,7 @@ import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import {
   LightboxPreview,
   LightboxProvider,
-} from "@/components/Lightbox/Lighbox";
+} from "@/components/Lightbox/Lightbox";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import {
   TimelineContainer,

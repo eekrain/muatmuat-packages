@@ -29,7 +29,7 @@ const StatusPesanan = ({ dataStatusPesanan }) => {
       {dataStatusPesanan.alerts.map((alert) => (
         <Alert
           key={alert.label}
-          variant="warning"
+          variant="secondary"
           size="big"
           className="w-full"
         >

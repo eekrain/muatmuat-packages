@@ -7,6 +7,8 @@ export const normalizeDetailPesananOrderDetail = ({
   dataOrderDetail,
   dataOrderStatusHistory,
   dataPayment,
+  dataAdditionalServices,
+  dataAlerts,
 }) => {
   try {
     const dataStatusPesanan = {
@@ -29,13 +31,12 @@ export const normalizeDetailPesananOrderDetail = ({
         ),
       },
       withShippingAdditionalService:
-        dataOrderDetail.summary?.additionalService &&
-        dataOrderDetail.summary?.additionalService.length > 0
+        dataAdditionalServices && dataAdditionalServices.length > 0
           ? true
           : false,
       expiredAt: dataPayment?.payment?.expiredAt,
       driverStatus: dataOrderStatusHistory?.driverStatus,
-      alerts: dataOrderDetail?.alerts || [],
+      alerts: dataAlerts.alerts,
     };
 
     const route = { muat: [], bongkar: [] };
