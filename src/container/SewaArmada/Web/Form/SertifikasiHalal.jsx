@@ -1,6 +1,7 @@
 import Checkbox from "@/components/Checkbox/Checkbox";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
+import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -31,7 +32,9 @@ const SertifikasiHalal = () => {
       <Checkbox
         label="Centang opsi jika pengiriman memerlukan armada dengan sertifikat halal logistik"
         checked={isHalalLogistics}
-        onChange={({ checked }) => setField("isHalalLogistics", checked)}
+        onChange={({ checked }) =>
+          handleFirstTime(() => setField("isHalalLogistics", checked))
+        }
       />
     </FormContainer>
   );

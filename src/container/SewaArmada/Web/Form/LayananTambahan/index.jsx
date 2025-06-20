@@ -5,6 +5,7 @@ import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import DeliveryEvidenceModal from "@/container/SewaArmada/Web/Form/LayananTambahan/DeliveryEvidenceModal";
+import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -61,29 +62,31 @@ export const LayananTambahan = () => {
                   {/* Container Checkbox dan Label */}
                   <div className="flex h-[16px] flex-row items-center gap-[4px]">
                     <Checkbox
-                      onChange={(e) => {
-                        if (e.checked) {
-                          // Add the service to the array if checked
-                          setSewaArmadaField("additionalServices", [
-                            ...additionalServices,
-                            service,
-                          ]);
+                      onChange={(e) =>
+                        handleFirstTime(() => {
+                          if (e.checked) {
+                            // Add the service to the array if checked
+                            setSewaArmadaField("additionalServices", [
+                              ...additionalServices,
+                              service,
+                            ]);
 
-                          // Open modal for specific service if needed
-                          if (isSendDeliveryEvidenceService) {
-                            setIsOpen(true);
+                            // Open modal for specific service if needed
+                            if (isSendDeliveryEvidenceService) {
+                              setIsOpen(true);
+                            }
+                          } else {
+                            // Remove the service from the array if unchecked
+                            setSewaArmadaField(
+                              "additionalServices",
+                              additionalServices.filter(
+                                (selectedService) =>
+                                  selectedService.id !== service.id
+                              )
+                            );
                           }
-                        } else {
-                          // Remove the service from the array if unchecked
-                          setSewaArmadaField(
-                            "additionalServices",
-                            additionalServices.filter(
-                              (selectedService) =>
-                                selectedService.id !== service.id
-                            )
-                          );
-                        }
-                      }}
+                        })
+                      }
                       label={service.name}
                       checked={isSelected}
                       value={service.id}

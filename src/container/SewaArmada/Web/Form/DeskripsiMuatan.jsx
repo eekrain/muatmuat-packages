@@ -1,5 +1,6 @@
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import TextArea from "@/components/TextArea/TextArea";
+import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -25,7 +26,9 @@ const DeskripsiMuatan = () => {
             "Lengkapi deskripsi informasi muatan Anda dengan rincian spesifik terkait barang yang dikirim, seperti bahan, penggunaan, atau karakteristik unik lainnya."
           }
           value={deskripsi}
-          onChange={(e) => setField("deskripsi", e.target.value)}
+          onChange={({ target: { value } }) =>
+            handleFirstTime(() => setField("deskripsi", value))
+          }
           status={formErrors.deskripsi ? "error" : ""}
         />
       </div>

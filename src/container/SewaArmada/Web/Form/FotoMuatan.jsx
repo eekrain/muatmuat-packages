@@ -2,6 +2,7 @@ import { Fragment } from "react";
 
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import ImageUploader from "@/components/ImageUploader/ImageUploader";
+import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -22,7 +23,9 @@ export const FotoMuatan = () => {
           {[...Array(4)].map((_, index) => (
             <Fragment key={index}>
               <ImageUploader
-                getImage={(value) => handleImageUpload(index, value)}
+                getImage={(value) =>
+                  handleFirstTime(() => handleImageUpload(index, value))
+                }
                 uploadText={index === 0 ? "Foto Utama" : `Foto ${index + 1}`}
                 maxSize={10}
                 className="!size-[124px]"

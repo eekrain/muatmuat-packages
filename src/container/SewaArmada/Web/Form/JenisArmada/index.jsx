@@ -2,15 +2,16 @@ import { useState } from "react";
 
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { SelectedTruck } from "@/container/SewaArmada/Web/Form/JenisArmada/SelectedTruck";
 import { useSWRHook, useSWRMutateHook } from "@/hooks/use-swr";
 import { cn } from "@/lib/utils";
+import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
 } from "@/store/forms/sewaArmadaStore";
 
 import FilterModal from "../../FilterModal/FilterModal";
-import { SelectedTruck } from "./SelectedTruck";
 
 export const JenisArmada = () => {
   const [isTruckImageModalOpen, setIsTruckImageModalOpen] = useState(false);
@@ -192,13 +193,13 @@ export const JenisArmada = () => {
   return (
     <>
       <FormContainer>
-        <FormLabel required>Jenis Armada*</FormLabel>
+        <FormLabel required>Jenis Armada</FormLabel>
 
         <div className="flex flex-1 flex-col gap-y-3.5">
           <div className="flex items-center gap-x-3.5">
             <button
               className="flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 px-3"
-              onClick={() => handleOpenModal("carrier")}
+              onClick={() => handleFirstTime(() => handleOpenModal("carrier"))}
             >
               <IconComponent
                 src="/icons/carrier16.svg"
@@ -221,7 +222,7 @@ export const JenisArmada = () => {
                 jenisCarrier && "cursor-pointer bg-neutral-50"
               )}
               disabled={!jenisCarrier}
-              onClick={() => handleOpenModal("truck")}
+              onClick={() => handleFirstTime(() => handleOpenModal("truck"))}
             >
               <IconComponent src="/icons/truck16.svg" width={16} height={16} />
               <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">

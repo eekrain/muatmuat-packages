@@ -4,6 +4,7 @@ import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import RadioButton from "@/components/Radio/RadioButton";
 import { useSWRHook } from "@/hooks/use-swr";
+import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -65,27 +66,19 @@ export const TipeMuatan = () => {
         Tipe Muatan
       </FormLabel>
       <div className="flex flex-1 flex-wrap gap-3">
-        {isLoading ? (
-          <div className="flex w-full items-center justify-center">
-            <span>Memuat data...</span>
+        {cargoTypes.map((type) => (
+          <div className="w-[250px]" key={type.id}>
+            <RadioButton
+              name="tipeMuatan"
+              label={type.name}
+              checked={tipeMuatan === type.id}
+              onClick={() =>
+                handleFirstTime(() => setField("tipeMuatan", type.id))
+              }
+              value={type.id}
+            />
           </div>
-        ) : error ? (
-          <div className="flex w-full items-center justify-center text-error-400">
-            <span>Gagal memuat data. Silakan coba lagi.</span>
-          </div>
-        ) : (
-          cargoTypes.map((type) => (
-            <div className="w-[250px]" key={type.id}>
-              <RadioButton
-                name="tipeMuatan"
-                label={type.name}
-                checked={tipeMuatan === type.id}
-                onClick={() => setField("tipeMuatan", type.id)}
-                value={type.id}
-              />
-            </div>
-          ))
-        )}
+        ))}
       </div>
     </FormContainer>
   );

@@ -1,9 +1,15 @@
 import Button from "@/components/Button/Button";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
+import {
+  useFirstTimerModalAction,
+  useFirstTimerModalStore,
+} from "@/store/first-timer/firstTimerModalStore";
 
-export const ModalLogin = ({ open, setOpen }) => {
+export const ModalLogin = ({}) => {
+  const isOpen = useFirstTimerModalStore((state) => state.isOpen);
+  const { setIsOpen } = useFirstTimerModalAction();
   return (
-    <Modal open={open} onOpenChange={setOpen} closeOnOutsideClick>
+    <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick>
       <ModalContent>
         <ModalHeader size="small" />
         <div className="w-modal-small px-6 py-9">
@@ -21,11 +27,7 @@ export const ModalLogin = ({ open, setOpen }) => {
             <a
               href={`${process.env.NEXT_PUBLIC_INTERNAL_WEB}login?from=muattrans`}
             >
-              <Button variant="muatparts-primary">
-                <span className="text-[14px] font-semibold leading-[1] text-neutral-50">
-                  Masuk
-                </span>
-              </Button>
+              <Button variant="muatparts-primary">Login Sekarang</Button>
             </a>
           </div>
         </div>

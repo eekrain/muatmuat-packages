@@ -5,8 +5,8 @@ import { useEffect } from "react";
 import { BannerCarousel } from "@/components/BannerCarousel/BannerCarousel";
 import Card from "@/components/Card/Card";
 import { FirstTimer } from "@/container/SewaArmada/Web/FirstTimer/FirstTimer";
+import { ModalLogin } from "@/container/SewaArmada/Web/FirstTimer/ModalLogin";
 import {
-  AsuransiBarang,
   BadanUsahaPemesan,
   FotoMuatan,
   InformasiMuatan,
@@ -58,48 +58,53 @@ export default function SewaArmadaWeb() {
   }, []);
 
   return (
-    <main className="flex min-h-screen flex-col items-center gap-6 px-10 pt-8">
-      {/* Carousel Banner */}
-      <BannerCarousel banners={banners} />
+    <>
+      <main className="flex min-h-screen flex-col items-center gap-6 px-10 py-8">
+        {/* Carousel Banner */}
+        <BannerCarousel banners={banners} />
 
-      {/* Main Content */}
-      {orderType === "" ? (
-        <FirstTimer />
-      ) : (
-        <>
-          {/* Welcome Section */}
-          <WelcomeCard />
+        {/* Main Content */}
+        {orderType === "" ? (
+          <FirstTimer />
+        ) : (
+          <>
+            {/* Welcome Section */}
+            <WelcomeCard />
 
-          <div className="flex w-full max-w-[1200px] gap-4">
-            {/* Form Container */}
-            <Card className="flex flex-1 flex-col gap-6 border-none p-8 shadow-md">
-              {/* Service Type Selection */}
-              <ServiceTypeSelect />
+            <div className="flex w-full max-w-[1200px] gap-4">
+              {/* Form Container */}
+              <Card className="flex flex-1 flex-col gap-6 border-none p-8 shadow-md">
+                {/* Service Type Selection */}
+                <ServiceTypeSelect />
 
-              {/* Form Fields */}
-              <div className="flex flex-col gap-6">
-                <WaktuMuat />
-                <LokasiMuat />
-                <LokasiBongkar />
-                <TipeMuatan />
-                <JenisMuatan />
-                <SertifikasiHalal />
-                <InformasiMuatan />
-                <FotoMuatan />
-                <DeskripsiMuatan />
-                <JenisArmada />
-                <AsuransiBarang />
-                <LayananTambahan />
-                <NoDeliveryOrder />
-                <BadanUsahaPemesan />
-              </div>
-            </Card>
+                {/* Form Fields */}
+                <div className="flex flex-col gap-6">
+                  <WaktuMuat />
+                  <LokasiMuat />
+                  <LokasiBongkar />
+                  <TipeMuatan />
+                  <JenisMuatan />
+                  <SertifikasiHalal />
+                  <InformasiMuatan />
+                  <FotoMuatan />
+                  <DeskripsiMuatan />
+                  <JenisArmada />
+                  {/* Asuransi dihide dulu */}
+                  {/* <AsuransiBarang /> */}
+                  <LayananTambahan />
+                  <NoDeliveryOrder />
+                  <BadanUsahaPemesan />
+                </div>
+              </Card>
 
-            {/* Summary Panel */}
-            <SummaryPanel />
-          </div>
-        </>
-      )}
-    </main>
+              {/* Summary Panel */}
+              <SummaryPanel />
+            </div>
+          </>
+        )}
+      </main>
+
+      <ModalLogin />
+    </>
   );
 }

@@ -1,6 +1,7 @@
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { LocationModalFormWeb } from "@/components/LocationManagement/Web/LocationModalFormWeb/LocationModalFormWeb";
 import { TimelineField } from "@/components/Timeline/timeline-field";
+import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -25,16 +26,20 @@ export const LokasiMuat = () => {
           values={
             lokasiMuat?.map((item) => item?.dataLokasi?.location || null) || []
           }
-          onAddLocation={() => addLokasi("lokasiMuat", null)}
+          onAddLocation={() =>
+            handleFirstTime(() => addLokasi("lokasiMuat", null))
+          }
           onDeleteLocation={(index) => removeLokasi("lokasiMuat", index)}
-          onEditLocation={(index) => {
-            handleOpenModalLocation({
-              formMode: "muat",
-              allSelectedLocations: lokasiMuat,
-              defaultValues: lokasiMuat[index],
-              index,
-            });
-          }}
+          onEditLocation={(index) =>
+            handleFirstTime(() => {
+              handleOpenModalLocation({
+                formMode: "muat",
+                allSelectedLocations: lokasiMuat,
+                defaultValues: lokasiMuat[index],
+                index,
+              });
+            })
+          }
         />
       </FormContainer>
 

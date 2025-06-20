@@ -1,5 +1,6 @@
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { TagInput } from "@/components/Form/TagInput";
+import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -17,7 +18,9 @@ export const NoDeliveryOrder = () => {
       <div className="flex-1">
         <TagInput
           tags={deliveryOrderNumbers}
-          onTagsChange={(value) => setField("deliveryOrderNumbers", value)}
+          onTagsChange={(value) =>
+            handleFirstTime(() => setField("deliveryOrderNumbers", value))
+          }
           placeholder="Masukkan No. Delivery Order (DO)"
         />
       </div>

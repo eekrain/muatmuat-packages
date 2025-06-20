@@ -6,6 +6,7 @@ import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 // import SWRHandler from "@/services/useSWRHook";
 import { getNowTimezone } from "@/lib/utils/dateTime";
+import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -39,7 +40,9 @@ export const WaktuMuat = () => {
           <div className="flex items-center gap-x-2">
             <DatetimePicker
               datetimeValue={startDate}
-              onApply={(date) => handleDateChange("start", date)}
+              onApply={(date) =>
+                handleFirstTime(() => handleDateChange("start", date))
+              }
               placeholder="Pilih Tanggal & Waktu Muat"
               status={formErrors.startDate ? "error" : null}
               className="w-[271px]"
@@ -52,7 +55,9 @@ export const WaktuMuat = () => {
                 </span>
                 <DatetimePicker
                   datetimeValue={endDate}
-                  onApply={(date) => handleDateChange("end", date)}
+                  onApply={(date) =>
+                    handleFirstTime(() => handleDateChange("end", date))
+                  }
                   placeholder="Pilih Tanggal & Waktu Muat"
                   disabled={!startDate}
                   status={formErrors.endDate ? "error" : null}
@@ -75,7 +80,9 @@ export const WaktuMuat = () => {
             label="Dengan Rentang Waktu"
             value="rentang_waktu"
             checked={showRangeOption}
-            onChange={(e) => setField("showRangeOption", e.checked)}
+            onChange={({ checked }) =>
+              handleFirstTime(() => setField("showRangeOption", checked))
+            }
           />
           <InfoTooltip>
             Jika kamu memilih opsi ini, kamu dapat menentukan pukul mulai dan

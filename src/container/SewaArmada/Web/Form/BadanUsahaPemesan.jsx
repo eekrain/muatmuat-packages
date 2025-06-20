@@ -6,6 +6,7 @@ import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import Input from "@/components/Form/Input";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
+import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -84,7 +85,9 @@ export const BadanUsahaPemesan = () => {
         <FormLabel variant="small">Tipe Pemesan</FormLabel>
         <div className="flex h-[16px] flex-row items-center gap-[4px]">
           <Checkbox
-            onChange={({ checked }) => handleToggleCheckbox(checked)}
+            onChange={({ checked }) =>
+              handleFirstTime(() => handleToggleCheckbox(checked))
+            }
             label="Centang jika kamu adalah suatu perusahaan/badan usaha"
             checked={isCompany}
             value="is_company"
