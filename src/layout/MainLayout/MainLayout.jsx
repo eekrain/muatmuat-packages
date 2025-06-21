@@ -11,8 +11,6 @@ import { useInitTranslation, useTranslation } from "@/hooks/use-translation";
 import { useLoadingAction } from "@/store/loadingStore";
 import { useNotificationCounterActions } from "@/store/notificationCounterStore";
 
-import DesktopLayout from "../DesktopLayout/DesktopLayout";
-
 const Script = () => {
   useInitAuthentication();
 
@@ -61,14 +59,14 @@ const MainLayout = ({ children }) => {
   }
 
   return (
-    <DesktopLayout>
+    <>
       <Suspense fallback={<LoadingStatic />}>
         <Script />
         <LoadingInteractive />
         {isTranslationsReady ? children : null}
       </Suspense>
       <Toaster />
-    </DesktopLayout>
+    </>
   );
 };
 

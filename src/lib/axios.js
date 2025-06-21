@@ -6,8 +6,7 @@ import { useUserStore } from "@/store/auth/userStore";
 const LIST_PUBLIC_ROUTES = [
   "/sewaarmada",
   "/example",
-  "/example/map",
-  "/example/pilihprovinsi",
+  /^\/orders\/[^\/]+\/[^\/]+\/qr-code$/,
 ];
 
 export const createAxios = (baseURL) => {
@@ -51,10 +50,24 @@ export const createAxios = (baseURL) => {
           useAuthStore.getState().logout();
           useUserStore.getState().removeUser();
           // If the user is not on the public routes, redirect to /sewaarmada
-          if (
-            window?.location &&
-            !LIST_PUBLIC_ROUTES.includes(window.location.pathname)
-          ) {
+          const isPublicRoutes = LIST_PUBLIC_ROUTES.some((route) => {
+            const pathname = window?.location?.pathname;
+            if (!pathname) return false;
+
+            // If route is a string, check if pathname starts with the route
+            // This allows subpaths to match (e.g., "/sewaarmada/something" matches "/sewaarmada")
+            if (typeof route === "string") {
+              return pathname === route || pathname.startsWith(route);
+            }
+
+            // If route is a regex pattern
+            if (route instanceof RegExp) {
+              return route.test(pathname);
+            }
+
+            return false;
+          });
+          if (window?.location && !isPublicRoutes) {
             window.location.replace("/sewaarmada");
           }
           return new Promise(() => {}); // Prevent further error propagation.

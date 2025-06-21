@@ -1,3 +1,5 @@
+"use client";
+
 import { usePathname } from "next/navigation";
 
 import FloatingButton from "@/components/FloatingButton/FloatingButton";
@@ -17,7 +19,7 @@ export default function DesktopLayout({ children }) {
   return (
     <div className="relative min-h-screen">
       <HeaderWeb notifCounter={{ notification, chat }} />
-      <div className="h-[calc(100dvh-60px)]">{children}</div>
+      <div className="min-h-[calc(100dvh-60px)]">{children}</div>
       <FloatingButton />
 
       <img
