@@ -6,7 +6,6 @@ import LoadingInteractive from "@/components/Loading/LoadingInteractive";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
 import Toaster from "@/components/Toaster/Toaster";
 import { useInitAuthentication } from "@/hooks/use-auth";
-import useDevice from "@/hooks/use-device";
 import { useInitTranslation, useTranslation } from "@/hooks/use-translation";
 import { useLoadingAction } from "@/store/loadingStore";
 import { useNotificationCounterActions } from "@/store/notificationCounterStore";
@@ -24,7 +23,6 @@ const Script = () => {
 };
 
 const MainLayout = ({ children }) => {
-  const { isMobile, mounted } = useDevice();
   const isTranslationsReady = useTranslation(
     (state) => state.isTranslationsReady
   );
@@ -42,21 +40,6 @@ const MainLayout = ({ children }) => {
     return () => clearTimeout(timer.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  if (!mounted) return null;
-
-  if (isMobile) {
-    return (
-      <>
-        <Suspense fallback={<LoadingStatic />}>
-          <Script />
-          <LoadingInteractive />
-          {isTranslationsReady ? children : null}
-        </Suspense>
-        <Toaster />
-      </>
-    );
-  }
 
   return (
     <>

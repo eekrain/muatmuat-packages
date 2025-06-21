@@ -6,6 +6,7 @@ import { useUserStore } from "@/store/auth/userStore";
 const LIST_PUBLIC_ROUTES = [
   "/sewaarmada",
   "/example",
+  // /orders/orderId/drivers/driverId/qr-code
   /^\/orders\/[^\/]+\/drivers\/[^\/]+\/qr-code$/,
 ];
 
