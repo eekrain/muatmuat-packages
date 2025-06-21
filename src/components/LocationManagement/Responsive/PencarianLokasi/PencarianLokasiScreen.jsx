@@ -284,92 +284,101 @@ const PencarianLokasiScreen = () => {
               </h2>
             </button>
 
-            <div className="h-px w-full bg-neutral-400"></div>
-            <div className="flex flex-col gap-4">
-              <h3 className="text-sm font-bold text-neutral-700">
-                Pencarian Terakhir
-              </h3>
+            {userRecentSearchedLocation.length > 0 ? (
+              <>
+                <div className="h-px w-full bg-neutral-400"></div>
+                <div className="flex flex-col gap-4">
+                  <h3 className="text-sm font-bold text-neutral-700">
+                    Pencarian Terakhir
+                  </h3>
 
-              <div className="flex flex-col gap-3">
-                {userRecentSearchedLocation.map((location, index) => (
-                  <SearchResultItem
-                    key={index}
-                    location={{
-                      Title: location.pencarian,
-                    }}
-                    onClick={() => onSelectRecentLocation(location)}
-                    withBookmark={{
-                      onClick: (e) => {
-                        e.stopPropagation();
-                        onAddRecentLocationToSavedLocation(location);
-                      },
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="h-px w-full bg-neutral-400" />
-            {userSavedLocationResult.length > 0 ? (
-              <div className="flex flex-col gap-4">
-                <h3 className="text-sm font-bold text-neutral-700">
-                  Manajemen Lokasi
-                </h3>
-
-                <div className="flex flex-col gap-3">
-                  {userSavedLocationResult
-                    .slice(0, 3)
-                    .map((location, index) => (
-                      <SavedLocationItem
+                  <div className="flex flex-col gap-3">
+                    {userRecentSearchedLocation.map((location, index) => (
+                      <SearchResultItem
                         key={index}
-                        location={location}
-                        onClick={() => onSelectUserSavedLocation(location)}
-                        withEdit={{
+                        location={{
+                          Title: location.pencarian,
+                        }}
+                        onClick={() => onSelectRecentLocation(location)}
+                        withBookmark={{
                           onClick: (e) => {
                             e.stopPropagation();
-                            handleEditSavedLocation(location);
+                            onAddRecentLocationToSavedLocation(location);
                           },
                         }}
                       />
                     ))}
+                  </div>
                 </div>
-
-                <button
-                  onClick={navigateToPencarianLokasiTersimpan}
-                  className="text-right text-xs font-semibold text-primary-700 hover:underline"
-                >
-                  Lihat Manajemen Lokasi
-                </button>
-              </div>
+              </>
             ) : null}
 
-            <div className="h-px w-full bg-neutral-400"></div>
-            <div className="flex flex-col gap-4">
-              <h3 className="text-sm font-bold text-neutral-700">
-                Transaksi Terakhir
-              </h3>
+            {userSavedLocationResult.length > 0 ? (
+              <>
+                <div className="h-px w-full bg-neutral-400" />
+                <div className="flex flex-col gap-4">
+                  <h3 className="text-sm font-bold text-neutral-700">
+                    Manajemen Lokasi
+                  </h3>
 
-              <div className="flex flex-col gap-3">
-                {userRecentTransactionLocation.map((location, index) => (
-                  <SearchResultItem
-                    key={index}
-                    location={{
-                      Title: location.pencarian,
-                    }}
-                    onClick={() => onSelectRecentLocation(location)}
-                    withBookmark={{
-                      onClick: (e) => {
-                        e.stopPropagation();
-                        onAddRecentLocationToSavedLocation(location);
-                      },
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
+                  <div className="flex flex-col gap-3">
+                    {userSavedLocationResult
+                      .slice(0, 3)
+                      .map((location, index) => (
+                        <SavedLocationItem
+                          key={index}
+                          location={location}
+                          onClick={() => onSelectUserSavedLocation(location)}
+                          withEdit={{
+                            onClick: (e) => {
+                              e.stopPropagation();
+                              handleEditSavedLocation(location);
+                            },
+                          }}
+                        />
+                      ))}
+                  </div>
+
+                  <button
+                    onClick={navigateToPencarianLokasiTersimpan}
+                    className="text-right text-xs font-semibold text-primary-700 hover:underline"
+                  >
+                    Lihat Manajemen Lokasi
+                  </button>
+                </div>
+              </>
+            ) : null}
+
+            {userRecentTransactionLocation.length > 0 ? (
+              <>
+                <div className="h-px w-full bg-neutral-400"></div>
+                <div className="flex flex-col gap-4">
+                  <h3 className="text-sm font-bold text-neutral-700">
+                    Transaksi Terakhir
+                  </h3>
+
+                  <div className="flex flex-col gap-3">
+                    {userRecentTransactionLocation.map((location, index) => (
+                      <SearchResultItem
+                        key={index}
+                        location={{
+                          Title: location.pencarian,
+                        }}
+                        onClick={() => onSelectRecentLocation(location)}
+                        withBookmark={{
+                          onClick: (e) => {
+                            e.stopPropagation();
+                            onAddRecentLocationToSavedLocation(location);
+                          },
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : null}
           </>
         )}
-
         <ModalPostalCodeResponsive />
       </div>
     </SearchBarResponsiveLayout>
@@ -377,24 +386,3 @@ const PencarianLokasiScreen = () => {
 };
 
 export default PencarianLokasiScreen;
-
-const recentSearches = [
-  {
-    ID: "ChIJx0YaJPNdxWgRM2hgerpFV4s",
-    Title:
-      "muatmuat, Jalan Kedung Doro, RT.001/RW.06, Kedungdoro, Surabaya, Jawa Timur, Indonesia",
-    Lev: 1,
-  },
-  {
-    ID: "ChIJXxTge35Xei4R0EgHwHkxCUM",
-    Title:
-      "Kampung Ramadhan Jogokariyan, Jalan Masjid Jogokariyan, Mantrijeron, Kota Yogyakarta, Daerah Istimewa Yogyakarta, Indonesia",
-    Lev: 1,
-  },
-  {
-    ID: "ChIJBU1uFwhXei4RFdOldI3Uopw",
-    Title:
-      "JOGOKARYAN MJ 3, Pandes, Panggungharjo, Kabupaten Bantul, Daerah Istimewa Yogyakarta, Indonesia",
-    Lev: 1,
-  },
-];

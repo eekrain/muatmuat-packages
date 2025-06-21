@@ -9,7 +9,10 @@ import DefaultResponsiveLayout from "@/layout/ResponsiveLayout/DefaultResponsive
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
-import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
+import {
+  useSewaArmadaActions,
+  useSewaArmadaStore,
+} from "@/store/forms/sewaArmadaStore";
 
 import { BannerCarousel } from "../../../../components/BannerCarousel/BannerCarousel";
 import { ModalFirstTimer } from "./ModalFirstTimer";
@@ -38,7 +41,8 @@ const banners = [
 
 const SewaArmadaHomeScreen = () => {
   const navigation = useResponsiveNavigation();
-  const { formValues, addLokasi, removeLokasi } = useSewaArmadaStore();
+  const { formValues } = useSewaArmadaStore();
+  const { addLokasi, removeLokasi } = useSewaArmadaActions();
 
   const isShowCostDetail = true; // nanti pakek usestate
 
