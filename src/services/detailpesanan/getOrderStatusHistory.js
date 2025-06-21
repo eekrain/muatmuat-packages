@@ -33,13 +33,9 @@ const apiResultOrderStatusHistory = {
         name: "Ahmad Rahman",
         driverPhoto: "https://picsum.photos/50",
         licensePlate: "B 1234 CD",
-        statusDriver: "LOADING_1",
-        statusTitle: "Sedang Muat di Lokasi 2",
+        statusDriver: "UNLOADING_2",
+        statusTitle: "Sedang Bongkar di Lokasi 2",
         stepStatus: [
-          {
-            statusCode: "LOADING_1",
-            statusName: "Menuju Lokasi Muat 1",
-          },
           {
             statusCode: "LOADING_1",
             statusName: "Menuju Lokasi Muat 1",
@@ -51,6 +47,10 @@ const apiResultOrderStatusHistory = {
           {
             statusCode: "UNLOADING_1",
             statusName: "Menuju Lokasi Bongkar 1",
+          },
+          {
+            statusCode: "UNLOADING_2",
+            statusName: "Menuju Lokasi Bongkar 2",
           },
         ],
       },

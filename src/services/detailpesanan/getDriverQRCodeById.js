@@ -17,7 +17,7 @@ const apiResultQRCode = {
       driverImage: "https://picsum.photos/50",
       name: "Ahmad Rahman",
       licensePlate: "B 1234 CD",
-      statusScan: "SUDAH_SCAN_MUAT_2",
+      statusScan: "BELUM_SCAN_BONGKAR_2",
     },
     shareLink: "https://app.muattrans.com/qr/ABC123XYZ789",
     expiryTime: addMinutes(new Date(), 15),

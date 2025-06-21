@@ -1,13 +1,25 @@
+"use client";
+
+import { useEffect } from "react";
+
 import { useGetDriverStatusTimeline } from "@/services/lacak-armada/getDriverStatusTimeline";
+import { useLoadingAction } from "@/store/loadingStore";
 
 import { LeftPanel } from "./LeftPanel/LeftPanel";
 import { MapPanel } from "./MapPanel/MapPanel";
 
 const LacakArmadaWeb = () => {
-  const { data: dataDriverStatus } = useGetDriverStatusTimeline({
+  const { setIsGlobalLoading } = useLoadingAction();
+  const { data: dataDriverStatus, isLoading } = useGetDriverStatusTimeline({
     orderId: "123",
     driverId: "456",
   });
+
+  useEffect(() => {
+    setIsGlobalLoading(isLoading);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading]);
+
   return (
     <>
       <div className="grid h-[calc(100vh-60px)] grid-cols-[480px_1fr]">

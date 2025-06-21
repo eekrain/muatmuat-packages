@@ -15,126 +15,123 @@ const apiResult = {
     statusTitle: "Antri di Lokasi Muat 2",
     licensePlate: "B 1234 CD",
     statusDefinitions: [
-      // {
-      //   mappedOrderStatus: "UNLOADING",
-      //   children: [
-      //     {
-      //       statusCode: "SEDANG_BONGKAR_DI_LOKASI_2",
-      //       statusName: "Sedang Bongkar di Lokasi 2",
-      //       date: sub(new Date(), { hours: 2 }).toISOString(),
-      //       requiresQRScan: false,
-      //       requiresPhoto: false,
-      //       triggersWaitingFee: false,
-      //       photoEvidences: {
-      //         packages: [],
-      //         pods: [],
-      //       },
-      //     },
-      //     {
-      //       statusCode: "ANTRI_DI_LOKASI_BONGKAR_2",
-      //       statusName: "Antri di Lokasi Bongkar 2",
-      //       date: sub(new Date(), { hours: 3 }).toISOString(),
-      //       requiresQRScan: false,
-      //       requiresPhoto: false,
-      //       triggersWaitingFee: false,
-      //       photoEvidences: {
-      //         packages: [],
-      //         pods: [],
-      //       },
-      //     },
-      //     {
-      //       statusCode: "TIBA_DI_LOKASI_BONGKAR_2",
-      //       statusName: "Tiba di Lokasi Bongkar 2",
-      //       date: sub(new Date(), { hours: 4 }).toISOString(),
-      //       requiresQRScan: false,
-      //       requiresPhoto: true,
-      //       triggersWaitingFee: false,
-      //       photoEvidences: {
-      //         packages: [
-      //           "https://picsum.photos/400/300?random=8",
-      //           "https://picsum.photos/400/300?random=9",
-      //         ],
-      //         pods: [],
-      //       },
-      //     },
-      //     {
-      //       statusCode: "MENUJU_LOKASI_BONGKAR_2",
-      //       statusName: "Menuju ke Lokasi Bongkar 2", // This statusName will be updated
-      //       date: sub(new Date(), { hours: 5 }).toISOString(),
-      //       requiresQRScan: false,
-      //       requiresPhoto: true,
-      //       triggersWaitingFee: false,
-      //       photoEvidences: {
-      //         packages: [
-      //           "https://picsum.photos/400/300?random=4",
-      //           "https://picsum.photos/400/300?random=5",
-      //         ],
-      //         pods: [
-      //           "https://picsum.photos/400/300?random=42",
-      //           "https://picsum.photos/400/300?random=43",
-      //         ],
-      //       },
-      //     },
+      {
+        mappedOrderStatus: "UNLOADING",
+        children: [
+          {
+            statusCode: "SEDANG_BONGKAR_DI_LOKASI_2",
+            statusName: "Sedang Bongkar di Lokasi 2",
+            date: sub(new Date(), { hours: 2 }).toISOString(),
+            requiresQRScan: false,
+            requiresPhoto: false,
+            triggersWaitingFee: false,
+            photoEvidences: {
+              packages: [],
+              pods: [],
+            },
+          },
+          {
+            statusCode: "ANTRI_DI_LOKASI_BONGKAR_2",
+            statusName: "Antri di Lokasi Bongkar 2",
+            date: sub(new Date(), { hours: 3 }).toISOString(),
+            requiresQRScan: false,
+            requiresPhoto: false,
+            triggersWaitingFee: false,
+            photoEvidences: {
+              packages: [],
+              pods: [],
+            },
+          },
+          {
+            statusCode: "TIBA_DI_LOKASI_BONGKAR_2",
+            statusName: "Tiba di Lokasi Bongkar 2",
+            date: sub(new Date(), { hours: 4 }).toISOString(),
+            requiresQRScan: false,
+            requiresPhoto: true,
+            triggersWaitingFee: false,
+            photoEvidences: {
+              packages: ["https://picsum.photos/400/300?random=8"],
+              pods: [],
+            },
+          },
+          {
+            statusCode: "MENUJU_LOKASI_BONGKAR_2",
+            statusName: "Menuju ke Lokasi Bongkar 2", // This statusName will be updated
+            date: sub(new Date(), { hours: 5 }).toISOString(),
+            requiresQRScan: false,
+            requiresPhoto: true,
+            triggersWaitingFee: false,
+            photoEvidences: {
+              packages: [
+                "https://picsum.photos/400/300?random=4",
+                "https://picsum.photos/400/300?random=5",
+              ],
+              pods: [
+                "https://picsum.photos/400/300?random=42",
+                "https://picsum.photos/400/300?random=43",
+              ],
+            },
+          },
 
-      //     {
-      //       statusCode: "SEDANG_BONGKAR_DI_LOKASI_1",
-      //       statusName: "Sedang Bongkar di Lokasi 1",
-      //       date: sub(new Date(), { hours: 7 }).toISOString(),
-      //       requiresQRScan: false,
-      //       requiresPhoto: false,
-      //       triggersWaitingFee: false,
-      //       photoEvidences: {
-      //         packages: [],
-      //         pods: [],
-      //       },
-      //     },
-      //     {
-      //       statusCode: "ANTRI_DI_LOKASI_BONGKAR_1",
-      //       statusName: "Antri di Lokasi Bongkar 1",
-      //       date: sub(new Date(), { hours: 8 }).toISOString(),
-      //       requiresQRScan: false,
-      //       requiresPhoto: false,
-      //       triggersWaitingFee: false,
-      //       photoEvidences: {
-      //         packages: [],
-      //         pods: [],
-      //       },
-      //     },
-      //     {
-      //       statusCode: "TIBA_DI_LOKASI_BONGKAR_1",
-      //       statusName: "Tiba di Lokasi Bongkar 1",
-      //       date: sub(new Date(), { hours: 9 }).toISOString(),
-      //       requiresQRScan: false,
-      //       requiresPhoto: true,
-      //       triggersWaitingFee: false,
-      //       photoEvidences: {
-      //         packages: [
-      //           "https://picsum.photos/400/300?random=4",
-      //           "https://picsum.photos/400/300?random=5",
-      //         ],
-      //         pods: [],
-      //       },
-      //     },
-      //     {
-      //       statusCode: "MENUJU_LOKASI_BONGKAR_1",
-      //       statusName: "Menuju ke Lokasi Bongkar 1", // This statusName will be updated
-      //       date: sub(new Date(), { hours: 10 }).toISOString(),
-      //       requiresQRScan: false,
-      //       requiresPhoto: true,
-      //       triggersWaitingFee: false,
-      //       photoEvidences: {
-      //         packages: [
-      //           "https://picsum.photos/400/300?random=4",
-      //           "https://picsum.photos/400/300?random=5",
-      //         ],
-      //         pods: [
-      //           "https://picsum.photos/400/300?random=34",
-      //           "https://picsum.photos/400/300?random=35",
-      //         ],
-      //       },
-      //     },
-      //   ],
-      // },
+          {
+            statusCode: "SEDANG_BONGKAR_DI_LOKASI_1",
+            statusName: "Sedang Bongkar di Lokasi 1",
+            date: sub(new Date(), { hours: 7 }).toISOString(),
+            requiresQRScan: false,
+            requiresPhoto: false,
+            triggersWaitingFee: false,
+            photoEvidences: {
+              packages: [],
+              pods: [],
+            },
+          },
+          {
+            statusCode: "ANTRI_DI_LOKASI_BONGKAR_1",
+            statusName: "Antri di Lokasi Bongkar 1",
+            date: sub(new Date(), { hours: 8 }).toISOString(),
+            requiresQRScan: false,
+            requiresPhoto: false,
+            triggersWaitingFee: false,
+            photoEvidences: {
+              packages: [],
+              pods: [],
+            },
+          },
+          {
+            statusCode: "TIBA_DI_LOKASI_BONGKAR_1",
+            statusName: "Tiba di Lokasi Bongkar 1",
+            date: sub(new Date(), { hours: 9 }).toISOString(),
+            requiresQRScan: false,
+            requiresPhoto: true,
+            triggersWaitingFee: false,
+            photoEvidences: {
+              packages: [
+                "https://picsum.photos/400/300?random=4",
+                "https://picsum.photos/400/300?random=5",
+              ],
+              pods: [],
+            },
+          },
+          {
+            statusCode: "MENUJU_LOKASI_BONGKAR_1",
+            statusName: "Menuju ke Lokasi Bongkar 1", // This statusName will be updated
+            date: sub(new Date(), { hours: 10 }).toISOString(),
+            requiresQRScan: false,
+            requiresPhoto: true,
+            triggersWaitingFee: false,
+            photoEvidences: {
+              packages: [
+                "https://picsum.photos/400/300?random=4",
+                "https://picsum.photos/400/300?random=5",
+              ],
+              pods: [
+                "https://picsum.photos/400/300?random=34",
+                "https://picsum.photos/400/300?random=35",
+              ],
+            },
+          },
+        ],
+      },
       {
         mappedOrderStatus: "LOADING",
         children: [
