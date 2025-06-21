@@ -5,7 +5,7 @@ import Stepper from "@/components/Stepper/Stepper";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
 import { AlertPendingPesanan } from "./AlertPendingPesanan";
-import DriverStatusCard from "./DriverStatusCard";
+import { DriverStatusCard } from "./DriverStatusCard";
 import { StatusPesananHeader } from "./StatusPesananHeader";
 
 const StatusPesanan = ({ dataStatusPesanan }) => {
@@ -70,13 +70,10 @@ const StatusPesanan = ({ dataStatusPesanan }) => {
                 />
               </div>
             ) : showDriver ? (
-              dataStatusPesanan.driverStatus.map((driver) => (
-                <DriverStatusCard
-                  key={driver.driverId}
-                  dataStatusPesanan={dataStatusPesanan}
-                  dataDriver={driver}
-                />
-              ))
+              <DriverStatusCard
+                dataStatusPesanan={dataStatusPesanan}
+                dataDriverStatus={dataStatusPesanan.driverStatus}
+              />
             ) : null}
           </div>
         </CardContent>

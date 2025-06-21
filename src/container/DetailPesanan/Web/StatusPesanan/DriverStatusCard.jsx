@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
+
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
@@ -9,9 +11,85 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import Stepper from "@/components/Stepper/Stepper";
 import { toast } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { useGetDriverQRCodeById } from "@/services/detailpesanan/getDriverQRCodeById";
 
-const DriverStatusCard = ({ dataStatusPesanan, dataDriver }) => {
+export const DriverStatusCard = ({ dataStatusPesanan, dataDriverStatus }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const sliderRef = useRef(null);
+
+  const nextSlide = () => {
+    if (isTransitioning || currentIndex >= dataDriverStatus.length - 1) return;
+
+    setIsTransitioning(true);
+    setCurrentIndex((prev) => prev + 1);
+    setTimeout(() => setIsTransitioning(false), 300);
+  };
+
+  const prevSlide = () => {
+    if (isTransitioning || currentIndex <= 0) return;
+
+    setIsTransitioning(true);
+    setCurrentIndex((prev) => prev - 1);
+    setTimeout(() => setIsTransitioning(false), 300);
+  };
+
+  return (
+    <div className="relative w-full">
+      {/* Navigation Arrows */}
+      {dataDriverStatus.length > 1 && (
+        <>
+          <button
+            onClick={prevSlide}
+            disabled={currentIndex === 0 || isTransitioning}
+            className={cn(
+              "absolute -left-4 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-lg transition-all duration-200",
+              currentIndex === 0 || isTransitioning
+                ? "cursor-not-allowed"
+                : "hover:bg-gray-50 hover:shadow-xl"
+            )}
+          >
+            <ChevronLeft className="h-5 w-5 text-gray-600" />
+          </button>
+
+          <button
+            onClick={nextSlide}
+            disabled={
+              currentIndex === dataDriverStatus.length - 1 || isTransitioning
+            }
+            className={cn(
+              "absolute -right-4 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-lg transition-all duration-200",
+              currentIndex === dataDriverStatus.length - 1 || isTransitioning
+                ? "cursor-not-allowed"
+                : "hover:bg-gray-50 hover:shadow-xl"
+            )}
+          >
+            <ChevronRight className="h-5 w-5 text-gray-600" />
+          </button>
+        </>
+      )}
+      <div ref={sliderRef} className="overflow-hidden rounded-xl">
+        <div
+          className="flex transition-transform duration-300 ease-in-out"
+          style={{
+            transform: `translateX(-${currentIndex * 100}%)`,
+          }}
+        >
+          {dataStatusPesanan.driverStatus.map((driver) => (
+            <DriverStatusCardItem
+              key={driver.driverId}
+              dataStatusPesanan={dataStatusPesanan}
+              dataDriver={driver}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const DriverStatusCardItem = ({ dataStatusPesanan, dataDriver }) => {
   const pathname = usePathname();
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
@@ -53,48 +131,53 @@ const DriverStatusCard = ({ dataStatusPesanan, dataDriver }) => {
 
   return (
     <>
-      <div
-        key={dataDriver.driverId}
-        className="flex w-full flex-col gap-y-5 rounded-xl border border-neutral-400 px-4 py-5"
-      >
-        <div className="flex flex-col gap-y-3">
-          <div className="flex items-center gap-x-3">
-            <BadgeStatusPesanan className="w-fit">
-              {dataDriver.statusTitle}
-            </BadgeStatusPesanan>
-            <button
-              className="flex items-center gap-x-1"
-              onClick={() => setIsQrModalOpen(true)}
-            >
-              <span className="text-[12px] font-medium leading-[14.4px] text-primary-700">
-                Tampilkan QR Code
-              </span>
-              <IconComponent
-                src="/icons/chevron-right.svg"
-                className="icon-blue"
-              />
-            </button>
-          </div>
-          <div className="flex items-center justify-between">
-            <AvatarDriver
-              name={dataDriver.name}
-              image={dataDriver.driverPhoto}
-              licensePlate={dataDriver.licensePlate}
-            />
+      <div className="w-full flex-shrink-0">
+        <div
+          key={dataDriver.driverId}
+          className="flex w-full flex-col gap-y-5 rounded-xl border border-neutral-400 px-4 py-5"
+        >
+          <div className="flex flex-col gap-y-3">
             <div className="flex items-center gap-x-3">
-              <Button onClick={() => {}} variant="muatparts-primary-secondary">
-                Hubungi Driver
-              </Button>
-              <Link href={`${pathname}/lacak-armada/${dataDriver.driverId}`}>
-                <Button variant="muatparts-primary">Lacak Armada</Button>
-              </Link>
+              <BadgeStatusPesanan className="w-fit">
+                {dataDriver.statusTitle}
+              </BadgeStatusPesanan>
+              <button
+                className="flex items-center gap-x-1"
+                onClick={() => setIsQrModalOpen(true)}
+              >
+                <span className="text-[12px] font-medium leading-[14.4px] text-primary-700">
+                  Tampilkan QR Code
+                </span>
+                <IconComponent
+                  src="/icons/chevron-right.svg"
+                  className="icon-blue"
+                />
+              </button>
+            </div>
+            <div className="flex items-center justify-between">
+              <AvatarDriver
+                name={dataDriver.name}
+                image={dataDriver.driverPhoto}
+                licensePlate={dataDriver.licensePlate}
+              />
+              <div className="flex items-center gap-x-3">
+                <Button
+                  onClick={() => {}}
+                  variant="muatparts-primary-secondary"
+                >
+                  Hubungi Driver
+                </Button>
+                <Link href={`${pathname}/lacak-armada/${dataDriver.driverId}`}>
+                  <Button variant="muatparts-primary">Lacak Armada</Button>
+                </Link>
+              </div>
             </div>
           </div>
+          <Stepper
+            steps={dataStatusPesanan.statusHistory.stepper}
+            currentStep={dataStatusPesanan.statusHistory.activeIndex}
+          />
         </div>
-        <Stepper
-          steps={dataStatusPesanan.statusHistory.stepper}
-          currentStep={dataStatusPesanan.statusHistory.activeIndex}
-        />
       </div>
       {/* Modal QR Code Supir */}
       <Modal
@@ -141,5 +224,3 @@ const DriverStatusCard = ({ dataStatusPesanan, dataDriver }) => {
     </>
   );
 };
-
-export default DriverStatusCard;
