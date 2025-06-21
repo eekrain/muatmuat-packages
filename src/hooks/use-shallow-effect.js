@@ -17,8 +17,5 @@ const shallowEqualDepsList = (prevDeps, nextDeps) =>
   prevDeps.every((dep, index) => isShallowEqual(dep, nextDeps[index]));
 
 export const useShallowCompareEffect = (effect, deps) => {
-  if (process.env.NODE_ENV !== "production") {
-  }
-
   useCustomCompareEffect(effect, deps, shallowEqualDepsList);
 };
