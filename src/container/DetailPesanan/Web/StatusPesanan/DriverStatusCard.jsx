@@ -8,6 +8,7 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import Stepper from "@/components/Stepper/Stepper";
+import { toast } from "@/lib/toast";
 import { useGetDriverQRCodeById } from "@/services/detailpesanan/getDriverQRCodeById";
 
 const DriverStatusCard = ({ dataStatusPesanan, dataDriver }) => {
@@ -41,6 +42,13 @@ const DriverStatusCard = ({ dataStatusPesanan, dataDriver }) => {
     }
 
     return { statusTitle, hasScan, statusText };
+  };
+
+  const handleCopyQrCode = () => {
+    navigator.clipboard.writeText(
+      `${process.env.NEXT_PUBLIC_ASSET_REVERSE}/orders/${dataStatusPesanan.orderId}/drivers/${dataDriver.driverId}/qr-code`
+    );
+    toast.success("Link QR Code berhasil disalin");
   };
 
   return (
@@ -122,7 +130,7 @@ const DriverStatusCard = ({ dataStatusPesanan, dataDriver }) => {
             </span>
             <Button
               iconLeft="/icons/salin-qrc16.svg"
-              onClick={() => {}}
+              onClick={handleCopyQrCode}
               variant="muatparts-primary"
             >
               Bagikan QR Code

@@ -1,13 +1,16 @@
+"use client";
+
 import { useParams } from "next/navigation";
+import { useEffect } from "react";
 
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
-import Button from "@/components/Button/Button";
 import { useGetDriverQRCodeById } from "@/services/detailpesanan/getDriverQRCodeById";
+import { useLoadingAction } from "@/store/loadingStore";
 
 const DriverQRCodeWebview = () => {
   const params = useParams();
-  const { qrData } = useGetDriverQRCodeById({
+  const { qrData, isLoading } = useGetDriverQRCodeById({
     orderId: params.orderId,
     driverId: params.driverId,
   });
@@ -36,6 +39,14 @@ const DriverQRCodeWebview = () => {
     return { statusTitle, hasScan, statusText };
   };
 
+  const { setIsGlobalLoading } = useLoadingAction();
+  useEffect(() => {
+    setIsGlobalLoading(isLoading);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading, qrData]);
+
+  if (!qrData) return null;
+
   return (
     <div className="flex justify-center px-4 pt-8">
       <div className="flex w-full max-w-[450px] flex-col items-center gap-y-6 border border-neutral-400 bg-neutral-50 px-6 py-9">
@@ -57,22 +68,19 @@ const DriverQRCodeWebview = () => {
             licensePlate={qrData?.driverInfo.licensePlate}
           />
         </div>
-        <img
-          src={qrData?.qrCodeImage}
-          className="h-[124px] w-[124px] object-contain"
-          alt="QR Code Lokasi Muat & Bongkar"
-        />
+        <div className="h-[124px] w-[124px]">
+          {qrData?.qrCodeImage && (
+            <img
+              src={qrData?.qrCodeImage}
+              className="h-full w-full object-contain"
+              alt="QR Code Lokasi Muat & Bongkar"
+            />
+          )}
+        </div>
         <span className="text-center text-[14px] font-medium leading-[16.8px] text-neutral-900">
           *Tunjukkan QR Code ini kepada pihak driver agar dapat melanjutkan ke
           proses muat.
         </span>
-        <Button
-          iconLeft="/icons/salin-qrc16.svg"
-          onClick={() => {}}
-          variant="muatparts-primary"
-        >
-          Bagikan QR Code
-        </Button>
       </div>
     </div>
   );

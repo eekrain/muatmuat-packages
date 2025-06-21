@@ -32,6 +32,7 @@ const exampleBody = {
 
 export const useGetDriverQRCodeById = (requestData = exampleBody) => {
   const [qrData, setQRData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const intervalRef = useRef(null);
 
   const generateQRCode = async () => {
@@ -40,6 +41,7 @@ export const useGetDriverQRCodeById = (requestData = exampleBody) => {
     // Fetch data from API with this orderId, driverId
     const response = apiResultQRCode;
     setQRData(response.data);
+    setIsLoading(false);
   };
 
   useShallowCompareEffect(() => {
@@ -59,5 +61,5 @@ export const useGetDriverQRCodeById = (requestData = exampleBody) => {
     return () => clearInterval(intervalRef.current);
   }, [requestData]);
 
-  return { qrData };
+  return { qrData, isLoading };
 };

@@ -6,7 +6,7 @@ import { useUserStore } from "@/store/auth/userStore";
 const LIST_PUBLIC_ROUTES = [
   "/sewaarmada",
   "/example",
-  /^\/orders\/[^\/]+\/[^\/]+\/qr-code$/,
+  /^\/orders\/[^\/]+\/drivers\/[^\/]+\/qr-code$/,
 ];
 
 export const createAxios = (baseURL) => {
