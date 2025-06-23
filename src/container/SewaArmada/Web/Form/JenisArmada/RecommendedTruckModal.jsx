@@ -33,6 +33,7 @@ const RecommendedTruckModal = ({ isOpen, setIsOpen, recommendedTrucks }) => {
             <Fragment key={key}>
               <TruckItem
                 {...item}
+                showBottomBorder={false}
                 isSelected={isSelected}
                 onClick={() => setSelectedTruck(item)}
               />

@@ -35,9 +35,9 @@ const BankItem = ({ bank, isSelected, onSelect }) => {
       </div>
       <RadioButton
         name="bankSelection"
-        value={bank}
+        value={bank.id}
         checked={isSelected}
-        onClick={({ checked, value }) => onSelect(value)}
+        onClick={({ value }) => onSelect(value)}
       />
     </div>
   );
@@ -50,10 +50,10 @@ const OpsiPembayaran = () => {
   const { setField } = useSewaArmadaActions();
 
   const [expandedCategories, setExpandedCategories] = useState(new Set([0])); // Initialize with first category expanded
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState(null);
 
-  const handlePaymentMethodSelect = (paymentMethod) => {
-    setSelectedPaymentMethod(paymentMethod);
+  const handlePaymentMethodSelect = (paymentMethodId) => {
+    setSelectedPaymentMethodId(paymentMethodId);
   };
 
   const toggleExpanded = (categoryKey) => {
@@ -68,11 +68,11 @@ const OpsiPembayaran = () => {
     });
   };
 
-  const handleSaveOpsiPembayaran = () => {
-    if (!selectedPaymentMethod) {
+  const handleSavePaymentMethod = () => {
+    if (!selectedPaymentMethodId) {
       return toast.error("Metode pembayaran wajib dipilih");
     }
-    setField("opsiPembayaran", selectedPaymentMethod);
+    setField("paymentMethodId", selectedPaymentMethodId);
     navigation.pop();
   };
 
@@ -127,8 +127,8 @@ const OpsiPembayaran = () => {
                       <BankItem
                         bank={option}
                         isSelected={
-                          selectedPaymentMethod
-                            ? selectedPaymentMethod.id === option.id
+                          selectedPaymentMethodId
+                            ? selectedPaymentMethodId === option.id
                             : false
                         }
                         onSelect={handlePaymentMethodSelect}
@@ -145,7 +145,7 @@ const OpsiPembayaran = () => {
         <Button
           variant="muatparts-primary"
           className="h-10 w-full"
-          onClick={handleSaveOpsiPembayaran}
+          onClick={handleSavePaymentMethod}
           type="button"
         >
           Simpan

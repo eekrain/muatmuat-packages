@@ -4,6 +4,7 @@ import {
   LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
+import { cn } from "@/lib/utils";
 
 // Warning Badge Component
 export const WarningBadge = ({ message }) => {
@@ -81,6 +82,8 @@ export const TruckItem = ({
   weightUnit,
   dimensions,
   onClick,
+  showBottomBorder = true,
+  isSelected = false,
 }) => {
   // Format capacity and dimensions from API data
   const capacity =
@@ -109,9 +112,12 @@ export const TruckItem = ({
 
   return (
     <div
-      className={
-        "flex h-[138px] w-[424px] cursor-pointer flex-row items-center border-b border-neutral-400 py-3 text-neutral-900 transition-colors hover:bg-neutral-100"
-      }
+      className={cn(
+        "flex h-[138px] w-[424px] cursor-pointer flex-row items-center py-3 text-neutral-900",
+        "transition-colors hover:bg-neutral-100",
+        showBottomBorder && "border-b border-b-neutral-400",
+        isSelected && "bg-primary-50"
+      )}
       onClick={() => onClick()}
     >
       <div className="flex gap-x-2">

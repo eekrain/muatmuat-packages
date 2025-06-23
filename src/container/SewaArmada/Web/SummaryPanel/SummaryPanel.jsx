@@ -32,13 +32,13 @@ const Toast = ({ message, onClose }) => (
 
 export const SummaryPanel = () => {
   // Fetch payment methods using SWR
-  const { data: paymentMethodsResponse } = useSWRHook(
+  const { data: paymentMethodsData, mutate: mutatePaymentMethods } = useSWRHook(
     "v1/payment/methods",
     fetcherPayment
   );
 
   // Use the API data directly or fall back to an empty array
-  const paymentMethods = paymentMethodsResponse?.Data || [];
+  const paymentMethods = paymentMethodsData?.Data || [];
 
   // Voucher related state and hooks
   const token = "Bearer your_token_here";
@@ -56,12 +56,12 @@ export const SummaryPanel = () => {
   const isBusinessEntity = useSewaArmadaStore(
     (state) => state.formValues.businessEntity.isBusinessEntity
   );
-  const opsiPembayaran = useSewaArmadaStore(
-    (state) => state.formValues.opsiPembayaran
+  const paymentMethodId = useSewaArmadaStore(
+    (state) => state.formValues.paymentMethodId
   );
   const { setField, validateForm } = useSewaArmadaActions();
 
-  const [isOpsiPembayaranModalOpen, setIsOpsiPembayaranModalOpen] =
+  const [isPaymentMethodsModalOpen, setIsPaymentMethodsModalOpen] =
     useState(false);
   const [expandedCategories, setExpandedCategories] = useState(new Set([0])); // Initialize with first category expanded
   const [isModalConfirmationOpen, setIsModalConfirmationOpen] = useState(false);
@@ -202,9 +202,9 @@ export const SummaryPanel = () => {
     });
   };
 
-  const handleSelectPaymentMethod = (paymentMethod) => {
-    setField("opsiPembayaran", paymentMethod);
-    setIsOpsiPembayaranModalOpen(false);
+  const handleSelectPaymentMethod = (paymentMethodId) => {
+    setField("paymentMethodId", paymentMethodId);
+    setIsPaymentMethodsModalOpen(false);
   };
 
   const handleValidateFleetOrder = () => {
@@ -338,10 +338,10 @@ export const SummaryPanel = () => {
     router.push("/daftarpesanan/detailpesanan/1");
   };
 
-  const selectedOpsiPembayaran = opsiPembayaran
+  const selectedOpsiPembayaran = paymentMethodId
     ? paymentMethods
         .flatMap((method) => method.methods || [])
-        .find((item) => item.id === opsiPembayaran.id)
+        .find((item) => item.id === paymentMethodId)
     : null;
 
   return (
@@ -427,7 +427,10 @@ export const SummaryPanel = () => {
               <div className="flex flex-col gap-y-4">
                 <button
                   className="flex h-8 items-center justify-between rounded-md border border-neutral-600 px-3"
-                  onClick={() => setIsOpsiPembayaranModalOpen(true)}
+                  onClick={() => {
+                    mutatePaymentMethods();
+                    setIsPaymentMethodsModalOpen(true);
+                  }}
                 >
                   <div className="flex items-center gap-x-2">
                     <Image
@@ -453,7 +456,7 @@ export const SummaryPanel = () => {
             ) : (
               <Button
                 variant="muatparts-primary"
-                onClick={() => setIsOpsiPembayaranModalOpen(true)}
+                onClick={() => setIsPaymentMethodsModalOpen(true)}
               >
                 Pilih Opsi Pembayaran
               </Button>
@@ -463,8 +466,8 @@ export const SummaryPanel = () => {
 
       {/* MODAL OPSI PEMBAYARAN */}
       <Modal
-        open={isOpsiPembayaranModalOpen}
-        onOpenChange={setIsOpsiPembayaranModalOpen}
+        open={isPaymentMethodsModalOpen}
+        onOpenChange={setIsPaymentMethodsModalOpen}
         closeOnOutsideClick={false}
       >
         <ModalContent>
@@ -521,24 +524,24 @@ export const SummaryPanel = () => {
                       }`}
                     >
                       <div className="flex flex-col pl-8">
-                        {paymentMethod.methods.map((option, optionKey) => (
+                        {paymentMethod.methods.map((method, key) => (
                           <button
-                            key={optionKey}
+                            key={key}
                             className="flex h-12 w-[392px] cursor-pointer items-center justify-between border-b border-neutral-400 px-0 py-3 hover:bg-neutral-50"
-                            onClick={() => handleSelectPaymentMethod(option)}
+                            onClick={() => handleSelectPaymentMethod(method.id)}
                           >
                             <div className="flex items-center gap-2">
                               <div className="flex h-6 w-6 items-center justify-center rounded border">
                                 <Image
-                                  src={option.icon}
+                                  src={method.icon}
                                   width={20}
                                   height={20}
                                   className="size-[20px] object-cover"
-                                  alt={option.name}
+                                  alt={method.name}
                                 />
                               </div>
                               <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
-                                {option.name}
+                                {method.name}
                               </span>
                             </div>
                           </button>

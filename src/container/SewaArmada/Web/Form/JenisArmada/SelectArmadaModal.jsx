@@ -27,8 +27,6 @@ const SelectArmadaModal = ({
   errorTruck,
 }) => {
   const [search, setSearch] = useState("");
-  const [selectedImageSrc, setSelectedImageSrc] = useState("");
-  const [isTruckImageModalOpen, setIsTruckImageModalOpen] = useState(false);
 
   useEffect(() => {
     setSearch("");
@@ -42,12 +40,6 @@ const SelectArmadaModal = ({
   };
 
   const handleSearchChange = (e) => setSearch(e.target.value);
-
-  const handleSelectImage = (src) => {
-    setIsTruckImageModalOpen(true);
-    setSelectedImageSrc(src);
-    setIsOpen(false);
-  };
 
   const modalTitles = {
     carrier: "Pilih Jenis Carrier",

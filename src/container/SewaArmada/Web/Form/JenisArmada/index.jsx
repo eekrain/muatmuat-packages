@@ -61,7 +61,7 @@ export const JenisArmada = () => {
     return jenisTruk.price - lowestRecommendedTruckPrice?.price;
   }, [JSON.stringify(jenisTruk), JSON.stringify(trucksData)]);
 
-  const handleSelectArmada = (value) => {
+  const handleSelectArmada = (type, value) => {
     if (type === "carrier") {
       setField("jenisCarrier", value);
     }

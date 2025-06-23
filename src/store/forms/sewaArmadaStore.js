@@ -7,7 +7,6 @@ import { zustandDevtools } from "@/lib/utils";
 const defaultValues = {
   loadTimeStart: null,
   loadTimeEnd: null,
-
   showRangeOption: false,
   lokasiMuat: [null],
   lokasiBongkar: [null],
@@ -40,8 +39,7 @@ const defaultValues = {
     name: "",
     taxId: "",
   },
-
-  opsiPembayaran: null,
+  paymentMethodId: null,
 };
 
 export const useSewaArmadaStore = create(
@@ -174,7 +172,7 @@ export const useSewaArmadaStore = create(
               cargoDescription,
               fotoMuatan,
               businessEntity,
-              opsiPembayaran,
+              paymentMethodId,
             } = get().formValues;
             const newErrors = {};
 
@@ -217,8 +215,8 @@ export const useSewaArmadaStore = create(
               }
             }
 
-            if (!opsiPembayaran) {
-              newErrors.opsiPembayaran = "Metode pembayaran wajib diisi";
+            if (!paymentMethodId) {
+              newErrors.paymentMethodId = "Metode pembayaran wajib diisi";
             }
 
             set({ formErrors: newErrors });

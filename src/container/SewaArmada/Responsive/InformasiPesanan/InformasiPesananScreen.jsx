@@ -69,8 +69,8 @@ const InformasiPesananScreen = () => {
   const {
     fotoMuatan,
     // deliveryOrder,
-    opsiPembayaran,
   } = formValues;
+
   const cargoDescription = useSewaArmadaStore(
     (state) => state.formValues.cargoDescription
   );
@@ -85,6 +85,9 @@ const InformasiPesananScreen = () => {
   );
   const taxId = useSewaArmadaStore(
     (state) => state.formValues.businessEntity.taxId
+  );
+  const paymentMethodId = useSewaArmadaStore(
+    (state) => state.formValues.paymentMethodId
   );
 
   // Get actions from Zustand store
@@ -110,12 +113,12 @@ const InformasiPesananScreen = () => {
     }
   };
 
-  const selectedOpsiPembayaran = opsiPembayaran
+  const selectedOpsiPembayaran = paymentMethodId
     ? paymentMethods
         .flatMap((method) => method.options || [])
-        .find((item) => item.id === opsiPembayaran.id)
+        .find((item) => item.id === paymentMethodId)
     : null;
-  console.log("formerr", formErrors);
+
   return (
     <FormResponsiveLayout
       title={{
@@ -338,9 +341,9 @@ const InformasiPesananScreen = () => {
               </span>
             </div>
           ) : null}
-          {formErrors.opsiPembayaran ? (
+          {formErrors?.paymentMethodId ? (
             <span className="text-[12px] font-medium leading-[13.2px] text-error-400">
-              Metode pembayaran wajib diisi
+              {formErrors.paymentMethodId}
             </span>
           ) : null}
         </div>
