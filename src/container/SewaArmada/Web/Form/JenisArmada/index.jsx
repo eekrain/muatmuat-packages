@@ -235,6 +235,15 @@ export const JenisArmada = () => {
     }
   };
 
+  const isTruckTypeIdDisabled =
+    !loadTimeStart ||
+    (showRangeOption && !loadTimeEnd) ||
+    !lokasiMuat ||
+    lokasiBongkar ||
+    !cargoCategoryId ||
+    informasiMuatan.length === 0 ||
+    !carrierId;
+
   return (
     <>
       <FormContainer>
@@ -265,16 +274,29 @@ export const JenisArmada = () => {
             </button>
             <button
               className={cn(
-                "flex h-8 w-full cursor-not-allowed items-center gap-x-2 rounded-md border border-neutral-600 bg-neutral-200 px-3",
-                selectedCarrier && "cursor-pointer bg-neutral-50"
+                "flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 bg-neutral-200 px-3",
+                selectedCarrier &&
+                  !isTruckTypeIdDisabled &&
+                  "cursor-pointer bg-neutral-50"
               )}
-              disabled={!selectedCarrier}
+              disabled={isTruckTypeIdDisabled}
               onClick={() =>
                 handleFirstTime(() => handleOpenModal("truckTypeId"))
               }
             >
-              <IconComponent src="/icons/truck16.svg" width={16} height={16} />
-              <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+              <IconComponent
+                src="/icons/transporter16.svg"
+                width={16}
+                height={16}
+              />
+              <span
+                className={cn(
+                  "text-[12px] font-medium leading-[14.4px]",
+                  isTruckTypeIdDisabled
+                    ? "text-neutral-600"
+                    : "text-neutral-900"
+                )}
+              >
                 {selectedTruck?.name || "Pilih Jenis Truck"}
               </span>
               <IconComponent
