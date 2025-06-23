@@ -274,7 +274,7 @@ export const JenisArmada = () => {
             </button>
             <button
               className={cn(
-                "flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 bg-neutral-200 px-3",
+                "flex h-8 w-full cursor-not-allowed items-center gap-x-2 rounded-md border border-neutral-600 bg-neutral-200 px-3",
                 selectedCarrier &&
                   !isTruckTypeIdDisabled &&
                   "cursor-pointer bg-neutral-50"
