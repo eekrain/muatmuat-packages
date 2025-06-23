@@ -5,8 +5,9 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { zustandDevtools } from "@/lib/utils";
 
 const defaultValues = {
-  startDate: null,
-  endDate: null,
+  loadTimeStart: null,
+  loadTimeEnd: null,
+
   showRangeOption: false,
   lokasiMuat: [null],
   lokasiBongkar: [null],
@@ -130,29 +131,29 @@ export const useSewaArmadaStore = create(
           // VALIDASI BUAT YG DESKTOP KARENA JADI SATU HALAMAN
           validateForm: () => {
             const {
-              startDate,
-              endDate,
+              loadTimeStart,
+              loadTimeEnd,
               showRangeOption,
               fotoMuatan,
               cargoDescription,
             } = get().formValues;
             const newErrors = {};
             const isValidFotoMuatan = fotoMuatan.some((item) => item !== null);
-            if (!startDate) {
-              newErrors.startDate = "Tanggal & waktu muat wajib diisi";
+            if (!loadTimeStart) {
+              newErrors.loadTimeStart = "Tanggal & waktu muat wajib diisi";
             }
-            if (startDate && showRangeOption) {
-              const start = new Date(startDate);
-              const end = new Date(endDate);
+            if (loadTimeStart && showRangeOption) {
+              const start = new Date(loadTimeStart);
+              const end = new Date(loadTimeEnd);
               const diffMs = end - start;
               const diffHours = diffMs / (1000 * 60 * 60);
               const eightHoursMs = 8 * 60 * 60 * 1000;
-              if (!endDate) {
-                newErrors.endDate = "Tanggal & waktu muat wajib diisi";
+              if (!loadTimeEnd) {
+                newErrors.loadTimeEnd = "Tanggal & waktu muat wajib diisi";
               } else if (diffHours < 1) {
-                newErrors.endDate = "Rentang waktu minimal 1 jam";
+                newErrors.loadTimeEnd = "Rentang waktu minimal 1 jam";
               } else if (diffMs > eightHoursMs) {
-                newErrors.endDate = "Rentang waktu maksimal 8 jam";
+                newErrors.loadTimeEnd = "Rentang waktu maksimal 8 jam";
               }
             }
             if (!isValidFotoMuatan) {

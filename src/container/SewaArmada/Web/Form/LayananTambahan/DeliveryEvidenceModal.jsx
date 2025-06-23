@@ -44,7 +44,7 @@ const DeliveryEvidenceModal = ({ isOpen, setIsOpen }) => {
 
   // Fetch shipping options when location data is complete
   // const { data: shippingOptionsData } = useSWRHook(
-  //   isOpen ? "/api/v1/shipping-options" : null
+  //   isOpen ? "v1/orders/shipping-options" : null
   // );
   // const shippingOptions = shippingOptionsData?.Data;
   const shippingOptions = [

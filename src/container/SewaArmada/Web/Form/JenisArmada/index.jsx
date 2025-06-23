@@ -178,13 +178,13 @@ export const JenisArmada = () => {
         const now = new Date().toISOString();
 
         const result = {
-          loadTimeStart: formValues.startDate || now,
+          loadTimeStart: formValues.loadTimeStart || now,
         };
 
         if (showRangeOption) {
-          result.loadTimeEnd = formValues.endDate || now;
+          result.loadTimeEnd = formValues.loadTimeEnd || now;
         }
-
+        console.log("ress", result);
         return result;
       };
 
