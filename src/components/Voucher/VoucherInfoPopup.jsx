@@ -130,7 +130,7 @@ export default function VoucherInfoPopup({
                     height={16}
                     className="object-contain"
                   />
-                  <span className="rounded border border-dashed border-purple-500 px-2 py-1 text-xs text-gray-600">
+                  <span className="rounded px-2 py-1 text-xs text-gray-600">
                     {label}
                   </span>
                 </div>
