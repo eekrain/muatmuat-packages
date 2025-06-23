@@ -12,6 +12,7 @@ import {
   TruckItem,
   WarningBadge,
 } from "@/container/SewaArmada/Web/Form/JenisArmada/ArmadaComponent";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSewaArmadaActions } from "@/store/forms/sewaArmadaStore";
 
 // Main Popup Component
@@ -21,10 +22,6 @@ const SelectArmadaModal = ({
   isOpen,
   setIsOpen,
   type,
-  isLoadingCarrier,
-  errorCarrier,
-  isLoadingTruck,
-  errorTruck,
 }) => {
   const [search, setSearch] = useState("");
 
@@ -48,17 +45,9 @@ const SelectArmadaModal = ({
   const modalTitle = modalTitles[type] || modalTitles.carrierId;
 
   // Get current data based on type
-  const getCurrentData = () => {
+  const currentData = useShallowMemo(() => {
+    const emptyData = { recommended: [], notRecommended: [] };
     if (type === "carrierId") {
-      // Loading or error state for carrier data
-      if (isLoadingCarrier) {
-        return { recommended: [], notRecommended: [] };
-      }
-
-      if (errorCarrier) {
-        return { recommended: [], notRecommended: [] };
-      }
-
       // Transform API carrier data to match component structure
       if (carrierData) {
         return {
@@ -66,32 +55,21 @@ const SelectArmadaModal = ({
           notRecommended: carrierData.nonRecommendedCarriers || [],
         };
       }
-
-      return { recommended: [], notRecommended: [] };
-    } else {
-      // For truck, use API data if available
-      if (isLoadingTruck) {
-        return { recommended: [], notRecommended: [] };
-      }
-
-      if (errorTruck) {
-        return { recommended: [], notRecommended: [] };
-      }
-
-      if (truckData && truckData.recommendedTrucks) {
+      return emptyData;
+    } else if (type === "truckTypeId") {
+      if (truckData) {
         // Transform API truck data
         return {
           recommended: truckData.recommendedTrucks || [],
           notRecommended: truckData.nonRecommendedTrucks || [],
         };
       }
-
+      return emptyData;
+    } else {
       // Fallback to dummy data
-      return truckData;
+      return emptyData;
     }
-  };
-
-  const currentData = getCurrentData();
+  }, [type, carrierData, truckData]);
 
   // Filter based on search
   const filteredData = [
