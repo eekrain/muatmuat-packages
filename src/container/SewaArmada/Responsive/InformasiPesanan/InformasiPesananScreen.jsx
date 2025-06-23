@@ -68,10 +68,12 @@ const InformasiPesananScreen = () => {
   const { formValues, formErrors } = useSewaArmadaStore();
   const {
     fotoMuatan,
-    deskripsi,
     // deliveryOrder,
     opsiPembayaran,
   } = formValues;
+  const cargoDescription = useSewaArmadaStore(
+    (state) => state.formValues.cargoDescription
+  );
   const businessEntity = useSewaArmadaStore(
     (state) => state.formValues.businessEntity
   );
@@ -220,18 +222,21 @@ const InformasiPesananScreen = () => {
             <div className="flex flex-col gap-3">
               <div className="w-full">
                 <TextArea
+                  name="cargoDescription"
                   maxLength={500}
                   hasCharCount
                   supportiveText={{
-                    title: formErrors.deskripsi,
+                    title: formErrors.cargoDescription,
                   }}
                   resize="none"
                   placeholder={
                     "Lengkapi deskripsi informasi muatan Anda dengan rincian spesifik terkait barang yang dikirim, seperti bahan, penggunaan, atau karakteristik unik lainnya."
                   }
-                  value={deskripsi}
-                  onChange={(e) => setField("deskripsi", e.target.value)}
-                  status={formErrors.deskripsi ? "error" : ""}
+                  value={cargoDescription}
+                  onChange={({ target: { name, value } }) =>
+                    setField(name, value)
+                  }
+                  status={formErrors.cargoDescription ? "error" : ""}
                 />
               </div>
             </div>

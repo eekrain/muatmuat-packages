@@ -15,7 +15,7 @@ const defaultValues = {
   isHalalLogistics: false,
   informasiMuatan: [],
   fotoMuatan: [null, null, null, null],
-  deskripsi: "",
+  cargoDescription: "",
 
   jenisCarrier: null,
   jenisTruk: null,
@@ -134,7 +134,7 @@ export const useSewaArmadaStore = create(
               endDate,
               showRangeOption,
               fotoMuatan,
-              deskripsi,
+              cargoDescription,
             } = get().formValues;
             const newErrors = {};
             const isValidFotoMuatan = fotoMuatan.some((item) => item !== null);
@@ -158,18 +158,23 @@ export const useSewaArmadaStore = create(
             if (!isValidFotoMuatan) {
               newErrors.fotoMuatan = "Mohon upload foto muatan";
             }
-            if (!deskripsi) {
-              newErrors.deskripsi = "Deskripsi Muatan wajib diisi";
-            } else if (deskripsi.length < 3) {
-              newErrors.deskripsi = "Deskripsi Muatan minimal 3 karakter";
+            if (!cargoDescription) {
+              newErrors.cargoDescription = "Deskripsi Muatan wajib diisi";
+            } else if (cargoDescription.length < 3) {
+              newErrors.cargoDescription =
+                "Deskripsi Muatan minimal 3 karakter";
             }
             set({ formErrors: newErrors });
             return Object.keys(newErrors).length === 0;
           },
           // VALIDASI BUAT YG RESPONSIVE KARENA FORM UTAMANYA ADA 2 HALAMAN
           validateSecondForm: () => {
-            const { deskripsi, fotoMuatan, businessEntity, opsiPembayaran } =
-              get().formValues;
+            const {
+              cargoDescription,
+              fotoMuatan,
+              businessEntity,
+              opsiPembayaran,
+            } = get().formValues;
             const newErrors = {};
 
             // Validate uploaded images (at least one required)
@@ -179,10 +184,11 @@ export const useSewaArmadaStore = create(
             }
 
             // Validate description
-            if (!deskripsi.trim()) {
-              newErrors.deskripsi = "Deskripsi muatan wajib diisi";
-            } else if (deskripsi.trim().length < 3) {
-              newErrors.deskripsi = "Deskripsi muatan minimal 3 karakter";
+            if (!cargoDescription.trim()) {
+              newErrors.cargoDescription = "Deskripsi muatan wajib diisi";
+            } else if (cargoDescription.trim().length < 3) {
+              newErrors.cargoDescription =
+                "Deskripsi muatan minimal 3 karakter";
             }
 
             // Validate badan usaha fields if checkbox is checked
