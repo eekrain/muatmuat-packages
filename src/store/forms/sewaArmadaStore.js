@@ -10,18 +10,12 @@ const defaultValues = {
   showRangeOption: false,
   lokasiMuat: [null],
   lokasiBongkar: [null],
-  // baru
   cargoTypeId: null,
   cargoCategoryId: null,
   isHalalLogistics: false,
   informasiMuatan: [],
   fotoMuatan: [null, null, null, null],
   cargoDescription: "",
-
-  jenisCarrier: null,
-  jenisTruk: null,
-  jumlahArmada: 0,
-  // baru
   carrierId: null,
   truckTypeId: null,
   truckCount: 0,

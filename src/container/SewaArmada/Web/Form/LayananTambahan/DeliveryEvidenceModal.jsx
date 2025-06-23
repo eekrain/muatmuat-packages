@@ -196,7 +196,7 @@ const DeliveryEvidenceModal = ({ isOpen, setIsOpen }) => {
       insurancePrice: shippingOption.originalInsurance,
     };
   }, [
-    JSON.stringify(shippingOptions),
+    shippingOptions,
     deliveryEvidenceFormValues.shippingOptionId,
     deliveryEvidenceFormValues.withInsurance,
   ]);

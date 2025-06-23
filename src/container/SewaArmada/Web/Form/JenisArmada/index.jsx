@@ -1,97 +1,124 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import minBy from "lodash/minBy";
 
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import RecommendedTruckModal from "@/container/SewaArmada/Web/Form/JenisArmada/RecommendedTruckModal";
 import SelectArmadaModal from "@/container/SewaArmada/Web/Form/JenisArmada/SelectArmadaModal";
 import { SelectedTruck } from "@/container/SewaArmada/Web/Form/JenisArmada/SelectedTruck";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook, useSWRMutateHook } from "@/hooks/use-swr";
 import { cn } from "@/lib/utils";
 import { handleFirstTime } from "@/lib/utils/form";
-import {
-  useSewaArmadaActions,
-  useSewaArmadaStore,
-} from "@/store/forms/sewaArmadaStore";
-
-import RecommendedTruckModal from "./RecommendedTruckModal";
+import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 
 export const JenisArmada = () => {
-  const [isTruckImageModalOpen, setIsTruckImageModalOpen] = useState(false);
-  const [selectedImageSrc, setSelectedImageSrc] = useState("");
   const [type, setType] = useState(""); // carrier or truck
   const [isArmadaPopupOpen, setIsArmadaPopupOpen] = useState(false);
   const [isRecommendedTruckOpen, setIsRecommendedTruckOpen] = useState(false);
 
-  const formValues = useSewaArmadaStore((state) => state.formValues);
+  const orderType = useSewaArmadaStore((state) => state.orderType);
+  const loadTimeStart = useSewaArmadaStore(
+    (state) => state.formValues.loadTimeStart
+  );
+  const loadTimeEnd = useSewaArmadaStore(
+    (state) => state.formValues.loadTimeEnd
+  );
   const showRangeOption = useSewaArmadaStore(
     (state) => state.formValues.showRangeOption
   );
-  const orderType = useSewaArmadaStore((state) => state.orderType);
-
-  const jenisCarrier = formValues.jenisCarrier;
-  const jenisTruk = formValues.jenisTruk;
-  const { setField } = useSewaArmadaActions();
-  console.log("jenis", jenisTruk);
-  const cargoCategoryId = "f483709a-de4c-4541-b29e-6f4d9a912332";
-
+  const lokasiMuat = useSewaArmadaStore((state) => state.formValues.lokasiMuat);
+  const lokasiBongkar = useSewaArmadaStore(
+    (state) => state.formValues.lokasiBongkar
+  );
+  const cargoCategoryId = useSewaArmadaStore(
+    (state) => state.formValues.cargoCategoryId
+  );
+  const informasiMuatan = useSewaArmadaStore(
+    (state) => state.formValues.informasiMuatan
+  );
+  const carrierId = useSewaArmadaStore((state) => state.formValues.carrierId);
+  const truckTypeId = useSewaArmadaStore(
+    (state) => state.formValues.truckTypeId
+  );
+  console.log("carrierId", carrierId);
   // Fetch recommended carriers from API using SWR
   const { data: carriersData, error: carriersError } = useSWRHook(
-    `v1/orders/carriers/recommended?cargoCategoryId=${cargoCategoryId}`
+    cargoCategoryId
+      ? `v1/orders/carriers/recommended?cargoCategoryId=${cargoCategoryId}`
+      : null
   );
 
   // Menggunakan useSWRMutateHook untuk request POST truk
   const {
-    data: trucks,
+    data: trucksData,
     error: trucksError,
     trigger: fetchTrucks,
     isMutating: isLoadingTrucks,
   } = useSWRMutateHook("v1/orders/trucks/recommended", "POST");
 
-  const trucksData = trucks?.Data || [];
+  const carriers = carriersData?.Data || [];
+  const trucks = trucksData?.Data || [];
 
-  const recommendedTruckPriceDiff = useMemo(() => {
-    if (!jenisTruk || trucksData.length === 0) {
+  const selectedCarrier = useShallowMemo(
+    () =>
+      carrierId
+        ? [
+            ...(carriers.recommendedCarriers || []),
+            ...(carriers.nonRecommendedCarriers || []),
+          ].find((item) => item.carrierId === carrierId)
+        : null,
+    [carrierId, carriers]
+  );
+
+  const selectedTruck = useShallowMemo(() => {
+    if (!truckTypeId) return null;
+
+    const recommendedTruck = trucks.recommendedTrucks?.find(
+      (item) => item.truckTypeId === truckTypeId
+    );
+
+    if (recommendedTruck) {
+      return { ...recommendedTruck, isRecommended: true };
+    }
+
+    const nonRecommendedTruck = trucks.nonRecommendedTrucks?.find(
+      (item) => item.truckTypeId === truckTypeId
+    );
+
+    if (nonRecommendedTruck) {
+      return { ...nonRecommendedTruck, isRecommended: false };
+    }
+
+    return null;
+  }, [truckTypeId, trucks]);
+
+  const recommendedTruckPriceDiff = useShallowMemo(() => {
+    if (!selectedTruck || trucks.length === 0) {
       return 0;
     }
     const lowestRecommendedTruckPrice = minBy(
-      trucksData.recommendedTrucks,
+      trucks.recommendedTrucks,
       "price"
     );
-    return jenisTruk.price - lowestRecommendedTruckPrice?.price;
-  }, [JSON.stringify(jenisTruk), JSON.stringify(trucksData)]);
-
-  const handleSelectArmada = (type, value) => {
-    if (type === "carrier") {
-      setField("jenisCarrier", value);
-    }
-    if (type === "truck") {
-      setField("jenisTruk", value);
-    }
-  };
-
-  const handleSelectImage = (src) => {
-    setSelectedImageSrc(src);
-    setIsTruckImageModalOpen(true);
-  };
+    return selectedTruck.price - lowestRecommendedTruckPrice?.price;
+  }, [selectedTruck, trucks]);
 
   // Ketika modal dibuka dan tipe adalah truck, fetch data truk
-  const handleOpenModal = async (selectedType) => {
-    setType(selectedType);
+  const handleOpenModal = async (type) => {
+    setType(type);
     setIsArmadaPopupOpen(true);
 
     // Jika tipe truck dan carrier sudah dipilih, fetch data truk
-    if (selectedType === "truck" && jenisCarrier?.carrierId) {
+    if (type === "truckTypeId" && carrierId) {
       // Calculate total weight and convert to tons
       const calculateTotalWeight = () => {
         let totalWeight = 0;
 
-        if (
-          formValues.informasiMuatan &&
-          formValues.informasiMuatan.length > 0
-        ) {
+        if (informasiMuatan && informasiMuatan.length > 0) {
           // Sum all weights with unit conversion
-          totalWeight = formValues.informasiMuatan.reduce((sum, item) => {
+          totalWeight = informasiMuatan.reduce((sum, item) => {
             const weight = item.beratMuatan?.berat || 0;
             const unit = item.beratMuatan?.unit || "kg";
 
@@ -119,11 +146,8 @@ export const JenisArmada = () => {
         let maxWidth = 0;
         let maxHeight = 0;
 
-        if (
-          formValues.informasiMuatan &&
-          formValues.informasiMuatan.length > 0
-        ) {
-          formValues.informasiMuatan.forEach((item) => {
+        if (informasiMuatan && informasiMuatan.length > 0) {
+          informasiMuatan.forEach((item) => {
             const length = item.dimensiMuatan?.panjang || 0;
             const width = item.dimensiMuatan?.lebar || 0;
             const height = item.dimensiMuatan?.tinggi || 0;
@@ -154,8 +178,8 @@ export const JenisArmada = () => {
 
       // Get coordinates for origin and destination
       const getOriginCoordinates = () => {
-        if (formValues.lokasiMuat && formValues.lokasiMuat.length > 0) {
-          return formValues.lokasiMuat.map((item) => ({
+        if (lokasiMuat && lokasiMuat.length > 0) {
+          return lokasiMuat.map((item) => ({
             lat: item?.dataLokasi?.coordinates?.latitude || 0,
             long: item?.dataLokasi?.coordinates?.longitude || 0,
           }));
@@ -164,8 +188,8 @@ export const JenisArmada = () => {
       };
 
       const getDestinationCoordinates = () => {
-        if (formValues.lokasiBongkar && formValues.lokasiBongkar.length > 0) {
-          return formValues.lokasiBongkar.map((item) => ({
+        if (lokasiBongkar && lokasiBongkar.length > 0) {
+          return lokasiBongkar.map((item) => ({
             lat: item?.dataLokasi?.coordinates?.latitude,
             long: item?.dataLokasi?.coordinates?.longitude,
           }));
@@ -176,15 +200,12 @@ export const JenisArmada = () => {
       // Get load time from startDate and endDate
       const getLoadTimes = () => {
         const now = new Date().toISOString();
-
         const result = {
-          loadTimeStart: formValues.loadTimeStart || now,
+          loadTimeStart: loadTimeStart || now,
         };
-
         if (showRangeOption) {
-          result.loadTimeEnd = formValues.loadTimeEnd || now;
+          result.loadTimeEnd = loadTimeEnd || now;
         }
-        console.log("ress", result);
         return result;
       };
 
@@ -193,18 +214,17 @@ export const JenisArmada = () => {
       const dimensions = getMaxDimensions();
       const origin = getOriginCoordinates();
       const destination = getDestinationCoordinates();
-      const { loadTimeStart, loadTimeEnd } = getLoadTimes();
+      const loadTime = getLoadTimes();
 
       const requestPayload = {
-        carrierId: jenisCarrier.carrierId,
+        orderType,
+        ...loadTime,
+        origin,
+        destination,
         weight,
         weightUnit,
         dimensions,
-        origin,
-        destination,
-        loadTimeStart,
-        loadTimeEnd,
-        orderType,
+        carrierId,
       };
 
       // Log the payload for debugging (can remove in production)
@@ -224,7 +244,9 @@ export const JenisArmada = () => {
           <div className="flex items-center gap-x-3.5">
             <button
               className="flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 px-3"
-              onClick={() => handleFirstTime(() => handleOpenModal("carrier"))}
+              onClick={() =>
+                handleFirstTime(() => handleOpenModal("carrierId"))
+              }
             >
               <IconComponent
                 src="/icons/carrier16.svg"
@@ -232,7 +254,7 @@ export const JenisArmada = () => {
                 height={16}
               />
               <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                {jenisCarrier?.name || "Pilih Jenis Carrier"}
+                {selectedCarrier?.name || "Pilih Jenis Carrier"}
               </span>
               <IconComponent
                 src="/icons/chevron-right.svg"
@@ -244,14 +266,16 @@ export const JenisArmada = () => {
             <button
               className={cn(
                 "flex h-8 w-full cursor-not-allowed items-center gap-x-2 rounded-md border border-neutral-600 bg-neutral-200 px-3",
-                jenisCarrier && "cursor-pointer bg-neutral-50"
+                selectedCarrier && "cursor-pointer bg-neutral-50"
               )}
-              disabled={!jenisCarrier}
-              onClick={() => handleFirstTime(() => handleOpenModal("truck"))}
+              disabled={!selectedCarrier}
+              onClick={() =>
+                handleFirstTime(() => handleOpenModal("truckTypeId"))
+              }
             >
               <IconComponent src="/icons/truck16.svg" width={16} height={16} />
               <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                {jenisTruk?.title || "Pilih Jenis Truck"}
+                {selectedTruck?.name || "Pilih Jenis Truck"}
               </span>
               <IconComponent
                 src="/icons/chevron-right.svg"
@@ -261,10 +285,8 @@ export const JenisArmada = () => {
               />
             </button>
           </div>
-          {jenisTruk ? (
-            <SelectedTruck {...jenisTruk} onSelectImage={handleSelectImage} />
-          ) : null}
-          {jenisTruk?.isRecommended === false ? (
+          {selectedTruck ? <SelectedTruck {...selectedTruck} /> : null}
+          {selectedTruck?.isRecommended === false ? (
             <button
               className="flex h-10 w-full items-center justify-between self-start rounded-md border border-primary-700 bg-primary-50 px-3"
               onClick={() => setIsRecommendedTruckOpen(true)}
@@ -286,22 +308,23 @@ export const JenisArmada = () => {
       </FormContainer>
 
       <SelectArmadaModal
-        carrierData={carriersData?.Data}
-        truckData={trucksData}
+        carrierData={carriers}
+        truckData={trucks}
         isOpen={isArmadaPopupOpen}
         setIsOpen={setIsArmadaPopupOpen}
-        onSelectArmada={handleSelectArmada}
         type={type}
-        isLoadingCarrier={!carriersData && !carriersError && type === "carrier"}
+        isLoadingCarrier={
+          !carriersData && !carriersError && type === "carrierId"
+        }
         errorCarrier={carriersError}
-        isLoadingTruck={isLoadingTrucks && type === "truck"}
+        isLoadingTruck={isLoadingTrucks && type === "truckTypeId"}
         errorTruck={trucksError}
       />
 
       <RecommendedTruckModal
         isOpen={isRecommendedTruckOpen}
         setIsOpen={setIsRecommendedTruckOpen}
-        recommendedTrucks={trucksData?.recommendedTrucks}
+        recommendedTrucks={trucks?.recommendedTrucks}
       />
     </>
   );

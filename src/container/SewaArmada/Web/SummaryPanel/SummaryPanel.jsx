@@ -11,6 +11,7 @@ import VoucherEmptyState from "@/components/Voucher/VoucherEmptyState";
 import VoucherPopup from "@/components/Voucher/VoucherPopup";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
 import FleetOrderConfirmationModal from "@/container/SewaArmada/Web/FleetOrderConfirmationModal/FleetOrderConfirmationModal";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook } from "@/hooks/use-swr";
 import { useVouchers } from "@/hooks/useVoucher";
 import { fetcherMuatrans, fetcherPayment } from "@/lib/axios";
@@ -52,7 +53,9 @@ export const SummaryPanel = () => {
 
   const router = useRouter();
 
-  const jenisTruk = useSewaArmadaStore((state) => state.formValues.jenisTruk);
+  const truckTypeId = useSewaArmadaStore(
+    (state) => state.formValues.truckTypeId
+  );
   const isBusinessEntity = useSewaArmadaStore(
     (state) => state.formValues.businessEntity.isBusinessEntity
   );
@@ -338,11 +341,15 @@ export const SummaryPanel = () => {
     router.push("/daftarpesanan/detailpesanan/1");
   };
 
-  const selectedOpsiPembayaran = paymentMethodId
-    ? paymentMethods
-        .flatMap((method) => method.methods || [])
-        .find((item) => item.id === paymentMethodId)
-    : null;
+  const selectedOpsiPembayaran = useShallowMemo(
+    () =>
+      paymentMethodId
+        ? paymentMethods
+            .flatMap((method) => method.methods || [])
+            .find((item) => item.id === paymentMethodId)
+        : null,
+    [paymentMethodId, paymentMethods]
+  );
 
   return (
     <>
@@ -422,7 +429,7 @@ export const SummaryPanel = () => {
               {`Rp${currentTotal.toLocaleString("id-ID")}`}
             </span>
           </div>
-          {jenisTruk &&
+          {truckTypeId &&
             (selectedOpsiPembayaran ? (
               <div className="flex flex-col gap-y-4">
                 <button

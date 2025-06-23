@@ -6,12 +6,15 @@ import {
   TruckItem,
   WarningBadge,
 } from "@/container/SewaArmada/Web/Form/JenisArmada/ArmadaComponent";
+import { useSewaArmadaActions } from "@/store/forms/sewaArmadaStore";
 
 const RecommendedTruckModal = ({ isOpen, setIsOpen, recommendedTrucks }) => {
-  // const [selected]
-  const [selectedTruck, setSelectedTruck] = useState(null);
+  const [selectedTruckTypeId, setSelectedTruckTypeId] = useState(null);
+
+  const { setField } = useSewaArmadaActions();
 
   const handleSelectRecommendedTruck = () => {
+    setField("truckTypeId", selectedTruckTypeId);
     setIsOpen(false);
   };
 
@@ -28,14 +31,14 @@ const RecommendedTruckModal = ({ isOpen, setIsOpen, recommendedTrucks }) => {
         </div>
         <WarningBadge message="Pastikan lokasi muat dan bongkar dapat dijangkau truk rekomendasi kami untuk kelancaran proses" />
         {recommendedTrucks?.map((item, key) => {
-          const isSelected = selectedTruck?.truckTypeId === item.truckTypeId;
+          const isSelected = selectedTruckTypeId === item.truckTypeId;
           return (
             <Fragment key={key}>
               <TruckItem
                 {...item}
                 showBottomBorder={false}
                 isSelected={isSelected}
-                onClick={() => setSelectedTruck(item)}
+                onClick={() => setSelectedTruckTypeId(item.truckTypeId)}
               />
             </Fragment>
           );

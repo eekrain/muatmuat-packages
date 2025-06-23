@@ -21,7 +21,6 @@ export const WaktuMuat = () => {
   const loadTimeStart = useSewaArmadaStore(
     (state) => state.formValues.loadTimeStart
   );
-  console.log("loadTimeStart", loadTimeStart);
   const loadTimeEnd = useSewaArmadaStore(
     (state) => state.formValues.loadTimeEnd
   );

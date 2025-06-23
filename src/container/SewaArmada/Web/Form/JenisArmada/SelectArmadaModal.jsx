@@ -12,6 +12,7 @@ import {
   TruckItem,
   WarningBadge,
 } from "@/container/SewaArmada/Web/Form/JenisArmada/ArmadaComponent";
+import { useSewaArmadaActions } from "@/store/forms/sewaArmadaStore";
 
 // Main Popup Component
 const SelectArmadaModal = ({
@@ -19,7 +20,6 @@ const SelectArmadaModal = ({
   truckData,
   isOpen,
   setIsOpen,
-  onSelectArmada,
   type,
   isLoadingCarrier,
   errorCarrier,
@@ -28,28 +28,28 @@ const SelectArmadaModal = ({
 }) => {
   const [search, setSearch] = useState("");
 
+  const { setField } = useSewaArmadaActions();
+
   useEffect(() => {
     setSearch("");
   }, [isOpen]);
 
   const handleArmadaSelect = (item) => {
-    if (onSelectArmada) {
-      onSelectArmada(item);
-    }
+    setField(type, item);
     setIsOpen(false);
   };
 
   const handleSearchChange = (e) => setSearch(e.target.value);
 
   const modalTitles = {
-    carrier: "Pilih Jenis Carrier",
-    truck: "Pilih Jenis Truk",
+    carrierId: "Pilih Jenis Carrier",
+    truckTypeId: "Pilih Jenis Truk",
   };
-  const modalTitle = modalTitles[type] || modalTitles.carrier;
+  const modalTitle = modalTitles[type] || modalTitles.carrierId;
 
   // Get current data based on type
   const getCurrentData = () => {
-    if (type === "carrier") {
+    if (type === "carrierId") {
       // Loading or error state for carrier data
       if (isLoadingCarrier) {
         return { recommended: [], notRecommended: [] };
@@ -81,32 +81,8 @@ const SelectArmadaModal = ({
       if (truckData && truckData.recommendedTrucks) {
         // Transform API truck data
         return {
-          recommended:
-            truckData.recommendedTrucks?.map((truck) => ({
-              ...truck,
-              // id: truck.truckTypeId,
-              // title: truck.name,
-              // description: truck.description,
-              // src: truck.image,
-              // price: truck.price,
-              // maxWeight: truck.maxWeight,
-              // weightUnit: truck.weightUnit,
-              // dimensions: truck.dimensions,
-              isRecommended: true,
-            })) || [],
-          notRecommended:
-            truckData.nonRecommendedTrucks?.map((truck) => ({
-              ...truck,
-              // id: truck.truckTypeId,
-              // title: truck.name,
-              // description: truck.description,
-              // src: truck.image,
-              // price: truck.price,
-              // maxWeight: truck.maxWeight,
-              // weightUnit: truck.weightUnit,
-              // dimensions: truck.dimensions,
-              isRecommended: false,
-            })) || [],
+          recommended: truckData.recommendedTrucks || [],
+          notRecommended: truckData.nonRecommendedTrucks || [],
         };
       }
 
@@ -137,7 +113,7 @@ const SelectArmadaModal = ({
 
             {/* Search Field */}
             <Input
-              placeholder={`Cari Jenis ${type === "carrier" ? "Carrier" : "Truk"}`}
+              placeholder={`Cari Jenis ${type === "carrierId" ? "Carrier" : "Truk"}`}
               icon={{
                 left: "/icons/search16.svg",
                 right: search ? (
@@ -163,24 +139,25 @@ const SelectArmadaModal = ({
                   {currentData.recommended?.length > 0 ? (
                     currentData.recommended.map((item, key) => (
                       <Fragment key={key}>
-                        {type === "carrier" ? (
+                        {type === "carrierId" ? (
                           <CarrierItem
                             {...item}
-                            onClick={() => handleArmadaSelect(item)}
+                            onClick={() => handleArmadaSelect(item.carrierId)}
                           />
-                        ) : (
+                        ) : null}
+                        {type === "truckTypeId" ? (
                           <TruckItem
                             {...item}
-                            onClick={() => handleArmadaSelect(item)}
+                            onClick={() => handleArmadaSelect(item.truckTypeId)}
                           />
-                        )}
+                        ) : null}
                       </Fragment>
                     ))
                   ) : (
                     <div className="flex h-[92px] items-center justify-center">
                       <p className="text-[12px] text-neutral-600">
-                        Tidak ada {type === "carrier" ? "carrier" : "truk"} yang
-                        direkomendasikan
+                        Tidak ada {type === "carrierId" ? "carrier" : "truk"}{" "}
+                        yang direkomendasikan
                       </p>
                     </div>
                   )}
@@ -198,17 +175,18 @@ const SelectArmadaModal = ({
 
                     {currentData.notRecommended.map((item, key) => (
                       <Fragment key={key}>
-                        {type === "carrier" ? (
+                        {type === "carrierId" ? (
                           <CarrierItem
                             {...item}
-                            onClick={() => handleArmadaSelect(item)}
+                            onClick={() => handleArmadaSelect(item.carrierId)}
                           />
-                        ) : (
+                        ) : null}
+                        {type === "truckTypeId" ? (
                           <TruckItem
                             {...item}
-                            onClick={() => handleArmadaSelect(item)}
+                            onClick={() => handleArmadaSelect(item.truckTypeId)}
                           />
-                        )}
+                        ) : null}
                       </Fragment>
                     ))}
                   </div>
@@ -233,17 +211,18 @@ const SelectArmadaModal = ({
                   <div className="mt-4">
                     {filteredData.map((item, key) => (
                       <Fragment key={key}>
-                        {type === "carrier" ? (
+                        {type === "carrierId" ? (
                           <CarrierItem
                             {...item}
-                            onClick={() => handleArmadaSelect(item)}
+                            onClick={() => handleArmadaSelect(item.carrierId)}
                           />
-                        ) : (
+                        ) : null}
+                        {type === "truckTypeId" ? (
                           <TruckItem
                             {...item}
-                            onClick={() => handleArmadaSelect(item)}
+                            onClick={() => handleArmadaSelect(item.truckTypeId)}
                           />
-                        )}
+                        ) : null}
                       </Fragment>
                     ))}
                   </div>
