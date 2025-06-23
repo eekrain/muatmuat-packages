@@ -24,6 +24,7 @@ export const LocationDropdownOnly = ({
   isDropdownSearchOpen,
   setIsDropdownSearchOpen,
   handleAddToSavedLocation,
+  handleEditLocation,
 }) => {
   console.log("🚀 ~ className:", className);
   const inputRef = useRef(null);
@@ -245,7 +246,7 @@ export const LocationDropdownOnly = ({
                     <div
                       onClick={(e) => {
                         e.stopPropagation();
-                        alert("not implemented");
+                        handleEditLocation(location);
                       }}
                       className="h-[20px] w-[20px] cursor-pointer hover:text-[#176CF7]"
                     >
@@ -285,7 +286,7 @@ export const LocationDropdownOnly = ({
           onChange={(e) => {
             setSearchLocationAutoComplete(e.currentTarget.value);
           }}
-          className="w-full rounded-[6px] border border-blue-300 py-[8.5px] pl-[38px] pr-3 text-xs font-medium placeholder:text-neutral-600 focus:border-blue-500"
+          className="w-full rounded-[6px] border border-blue-300 py-[8.5px] pl-[38px] pr-3 text-xs font-medium outline-none placeholder:text-neutral-600 focus:border-blue-500"
         />
         <IconComponent
           src="/icons/marker-lokasi-muat.svg"

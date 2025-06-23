@@ -1,8 +1,12 @@
 import { useCallback, useMemo, useState } from "react";
 
 import { fetcherMuatparts, fetcherMuatrans } from "@/lib/axios";
-import { normalizeUserSavedLocation } from "@/lib/normalizers/location";
+import {
+  normalizeLocationDataForSaving,
+  normalizeUserSavedLocation,
+} from "@/lib/normalizers/location";
 import { normalizeRecentHistoryLocation } from "@/lib/normalizers/location/normalizeRecentHistoryLocation";
+import { toast } from "@/lib/toast";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
 import { useSWRHook } from "../use-swr";
@@ -21,7 +25,7 @@ export const useSavedLocation = ({
   );
   const setField = useLocationFormStore((state) => state.setField);
 
-  const { data: savedResult } = useSWRHook(
+  const { data: savedResult, mutate: mutateSavedResult } = useSWRHook(
     "v1/muatparts/profile/location",
     fetcherMuatparts
   );
@@ -93,6 +97,48 @@ export const useSavedLocation = ({
     []
   );
 
+  const handleSaveLocation = useCallback(async (formValues) => {
+    try {
+      const response = await fetcherMuatparts.post(
+        "v1/muatparts/profile/location",
+        {
+          param: normalizeLocationDataForSaving(formValues),
+        }
+      );
+      mutateSavedResult();
+      setTimeout(() => {
+        toast.success("Lokasi berhasil ditambah");
+      }, 200);
+      return response;
+    } catch (error) {
+      console.error("Error when adding location:", error);
+      toast.error("Gagal menambah lokasi");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleUpdateLocation = useCallback(async (formValues, IDtoUpdate) => {
+    try {
+      const response = await fetcherMuatparts.put(
+        "v1/muatparts/profile/location",
+        {
+          param: {
+            ...normalizeLocationDataForSaving(formValues),
+            ID: IDtoUpdate,
+          },
+        }
+      );
+      mutateSavedResult();
+      setTimeout(() => {
+        toast.success("Lokasi berhasil diubah");
+      }, 200);
+      return response;
+    } catch (error) {
+      console.error("Error when adding location:", error);
+      toast.error("Gagal mengubah lokasi");
+    }
+  }, []);
+
   return {
     userSavedLocationResult,
     handleSelectUserSavedLocation,
@@ -100,5 +146,8 @@ export const useSavedLocation = ({
     userRecentSearchedLocation,
     userRecentTransactionLocation,
     handleSelectRecentLocation,
+
+    handleSaveLocation,
+    handleUpdateLocation,
   };
 };

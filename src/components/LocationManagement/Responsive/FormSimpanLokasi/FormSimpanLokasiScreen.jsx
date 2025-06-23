@@ -5,26 +5,23 @@ import Checkbox from "@/components/Checkbox/Checkbox";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import { FormLabel } from "@/components/Form/Form";
 import Input from "@/components/Form/Input";
+import { useLocationContext } from "@/hooks/use-location/use-location";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
-import { fetcherMuatparts } from "@/lib/axios";
-import { normalizeLocationDataForSaving } from "@/lib/normalizers/location";
 import {
   useResponsiveNavigation,
   useResponsiveRouteParams,
 } from "@/lib/responsive-navigation";
-import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
 const FormSimpanLokasiScreen = () => {
   const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
-  console.log("🚀 ~ FormSimpanLokasi ~ params:", params);
   const { formValues, formErrors, setField, reset, validateSimpanLokasi } =
     useLocationFormStore();
 
-  formValues.dataLokasi.coordinates.latitude;
+  const { handleSaveLocation, handleUpdateLocation } = useLocationContext();
 
   useShallowCompareEffect(() => {
     if (params.defaultValues) {
@@ -37,41 +34,13 @@ const FormSimpanLokasiScreen = () => {
     if (!isValid) return;
 
     if (params.mode === "add") {
-      fetcherMuatparts
-        .post("v1/muatparts/profile/location", {
-          param: normalizeLocationDataForSaving(formValues),
-        })
-        .then((response) => {
-          console.log("🚀 ~ handleSave ~ response:", response);
-          navigation.pop();
-          setTimeout(() => {
-            toast.success("Lokasi berhasil ditambah");
-          }, 200);
-        })
-        .catch((error) => {
-          console.error("Error when adding location:", error);
-          toast.error("Gagal menambah lokasi");
-        });
+      handleSaveLocation(formValues).then(() => {
+        navigation.pop();
+      });
     } else if (params.mode === "update") {
-      console.log("update");
-      fetcherMuatparts
-        .put("v1/muatparts/profile/location", {
-          param: {
-            ...normalizeLocationDataForSaving(formValues),
-            ID: params.idToUpdate,
-          },
-        })
-        .then((response) => {
-          console.log("🚀 ~ handleSave ~ response:", response);
-          navigation.pop();
-          setTimeout(() => {
-            toast.success("Lokasi berhasil diubah");
-          }, 200);
-        })
-        .catch((error) => {
-          console.error("Error when saving location:", error);
-          toast.error("Gagal mengubah lokasi");
-        });
+      handleUpdateLocation(formValues, params.idToUpdate).then(() => {
+        navigation.pop();
+      });
     }
   };
 
