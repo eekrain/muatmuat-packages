@@ -4,11 +4,11 @@ import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Checkbox/Checkbox";
 import Input from "@/components/Form/Input";
 import { Select } from "@/components/Form/Select";
+import { MyTextArea } from "@/components/Form/TextArea";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { useLocationContext } from "@/hooks/use-location/use-location";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { normalizeUserSavedLocation } from "@/lib/normalizers/location";
-import { cn } from "@/lib/utils";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
 const errors = {};
@@ -113,23 +113,18 @@ export const ModalFormSimpanLokasiWeb = ({
               <label className="text-[10px] font-semibold leading-[12px] text-[#868686]">
                 Alamat
               </label>
-              <textarea
+
+              <MyTextArea
                 value={formValues.detailLokasi}
-                onChange={(e) => {
-                  setField("detailLokasi", e.currentTarget.value);
+                onChange={(e) => setField("detailLokasi", e.target.value)}
+                placeholder="Masukkan Detail Lokasi"
+                maxLength={500}
+                errorMessage={formErrors?.detailLokasi}
+                appearance={{
+                  inputClassName: "resize-none h-[80px]",
                 }}
-                placeholder="Masukkan alamat lengkap dengan detail. Contoh : Nama Jalan (bila tidak ditemukan), Gedung, No. Rumah/Patokan, Blok/Unit"
-                rows={4}
-                className={cn(
-                  "w-full resize-none rounded-md border border-[#868686] bg-white px-2 py-2.5 text-[12px] font-medium leading-[14px] text-[#1B1B1B] outline-none placeholder:text-[#868686] hover:border-primary-700 focus:border-primary-700 focus:outline-none",
-                  formErrors.detailLokasi && "border-red-500"
-                )}
+                withCharCount
               />
-              {formErrors.detailLokasi && (
-                <span className="text-[10px] text-red-500">
-                  {formErrors.detailLokasi}
-                </span>
-              )}
             </div>
 
             {/* Kecamatan */}
@@ -138,7 +133,7 @@ export const ModalFormSimpanLokasiWeb = ({
                 Kecamatan
               </label>
               <span className="text-[12px] font-semibold leading-[14px] text-[#1B1B1B]">
-                {formValues?.district?.name}
+                {formValues?.dataLokasi?.district?.name}
               </span>
             </div>
 
@@ -148,7 +143,7 @@ export const ModalFormSimpanLokasiWeb = ({
                 Kota
               </label>
               <span className="text-[12px] font-semibold leading-[14px] text-[#1B1B1B]">
-                {formValues?.city?.name}
+                {formValues?.dataLokasi?.city?.name}
               </span>
             </div>
 
@@ -158,7 +153,7 @@ export const ModalFormSimpanLokasiWeb = ({
                 Provinsi
               </label>
               <span className="text-[12px] font-semibold leading-[14px] text-[#1B1B1B]">
-                {formValues?.province?.name}
+                {formValues?.dataLokasi?.province?.name}
               </span>
             </div>
 
