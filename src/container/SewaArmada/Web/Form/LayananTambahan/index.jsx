@@ -18,7 +18,7 @@ export const LayananTambahan = () => {
     (s) => s.formValues.additionalServices
   );
   const { setField: setSewaArmadaField } = useSewaArmadaActions();
-
+  console.log("additionalServices", additionalServices);
   // Fetch layanan tambahan dari API
   // Nanti dulu belum ada data
   // https://claude.ai/chat/ef9b6ad4-0d1c-46f3-b8f9-e63d29cc0db1

@@ -34,9 +34,12 @@ const defaultValues = {
   shippingDetails: null,
 
   deliveryOrderNumbers: [],
-  isCompany: false,
-  companyName: "",
-  companyNpwp: "",
+  businessEntity: {
+    isBusinessEntity: false,
+    name: "",
+    taxId: "",
+  },
+
   opsiPembayaran: null,
 };
 
@@ -165,14 +168,8 @@ export const useSewaArmadaStore = create(
           },
           // VALIDASI BUAT YG RESPONSIVE KARENA FORM UTAMANYA ADA 2 HALAMAN
           validateSecondForm: () => {
-            const {
-              deskripsi,
-              fotoMuatan,
-              isCompany,
-              companyName,
-              companyNpwp,
-              opsiPembayaran,
-            } = get().formValues;
+            const { deskripsi, fotoMuatan, businessEntity, opsiPembayaran } =
+              get().formValues;
             const newErrors = {};
 
             // Validate uploaded images (at least one required)
@@ -189,22 +186,27 @@ export const useSewaArmadaStore = create(
             }
 
             // Validate badan usaha fields if checkbox is checked
-            if (isCompany) {
-              if (!companyName.trim()) {
-                newErrors.companyName =
+            console.log(
+              "businessEntity.isBusinessEntity",
+              businessEntity.isBusinessEntity
+            );
+            if (businessEntity.isBusinessEntity) {
+              newErrors.businessEntity = {};
+              if (!businessEntity.name.trim()) {
+                newErrors.businessEntity.name =
                   "Nama badan usaha/perusahaan wajib diisi";
-              } else if (companyName.trim().length < 3) {
-                newErrors.companyName =
+              } else if (businessEntity.name.trim().length < 3) {
+                newErrors.businessEntity.name =
                   "Nama badan usaha/perusahaan minimal 3 karakter";
-              } else if (/[^a-zA-Z]/.test(companyName)) {
-                newErrors.companyName =
+              } else if (/[^a-zA-Z]/.test(businessEntity.name)) {
+                newErrors.businessEntity.name =
                   "Nama badan usaha/perusahaan tidak valid";
               }
 
-              if (!companyNpwp.trim()) {
-                newErrors.companyNpwp = "Nomor NPWP wajib diisi";
-              } else if (companyNpwp.trim().length < 15) {
-                newErrors.companyNpwp = "Nomor NPWP minimal 15 digit";
+              if (!businessEntity.taxId.trim()) {
+                newErrors.businessEntity.taxId = "Nomor NPWP wajib diisi";
+              } else if (businessEntity.taxId.trim().length < 15) {
+                newErrors.businessEntity.taxId = "Nomor NPWP minimal 15 digit";
               }
             }
 

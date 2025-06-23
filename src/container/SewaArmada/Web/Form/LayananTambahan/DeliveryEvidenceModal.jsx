@@ -8,10 +8,12 @@ import { InputLocationManagementDropdown } from "@/components/LocationManagement
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import TextArea from "@/components/TextArea/TextArea";
 import { LocationProvider } from "@/hooks/use-location/use-location";
-import usePrevious from "@/hooks/use-previous";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
-import { useSewaArmadaActions } from "@/store/forms/sewaArmadaStore";
+import {
+  useSewaArmadaActions,
+  useSewaArmadaStore,
+} from "@/store/forms/sewaArmadaStore";
 
 const DeliveryEvidenceModal = ({ isOpen, setIsOpen }) => {
   const [deliveryEvidenceFormValues, setDeliveryEvidenceFormValues] = useState({
@@ -24,7 +26,9 @@ const DeliveryEvidenceModal = ({ isOpen, setIsOpen }) => {
     {}
   );
 
-  const previousIsOpen = usePrevious(isOpen);
+  const additionalServices = useSewaArmadaStore(
+    (s) => s.formValues.additionalServices
+  );
 
   const { setField } = useSewaArmadaActions();
   const {
@@ -258,7 +262,17 @@ const DeliveryEvidenceModal = ({ isOpen, setIsOpen }) => {
   };
 
   return (
-    <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick={false}>
+    <Modal
+      open={isOpen}
+      onOpenChange={(value) => {
+        setField(
+          "additionalServices",
+          additionalServices.filter((item) => item.price !== 0)
+        );
+        setIsOpen(value);
+      }}
+      closeOnOutsideClick={false}
+    >
       <ModalContent className="max-h-[598px] overflow-y-auto" type="muatmuat">
         {/* Modal Header */}
         <div className="flex w-[472px] flex-col items-center gap-4 px-6 py-8">

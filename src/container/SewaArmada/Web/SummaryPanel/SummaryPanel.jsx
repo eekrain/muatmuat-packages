@@ -53,7 +53,9 @@ export const SummaryPanel = () => {
   const router = useRouter();
 
   const jenisTruk = useSewaArmadaStore((state) => state.formValues.jenisTruk);
-  const isCompany = useSewaArmadaStore((state) => state.formValues.isCompany);
+  const isBusinessEntity = useSewaArmadaStore(
+    (state) => state.formValues.businessEntity.isBusinessEntity
+  );
   const opsiPembayaran = useSewaArmadaStore(
     (state) => state.formValues.opsiPembayaran
   );
@@ -76,7 +78,7 @@ export const SummaryPanel = () => {
           cost: 10000,
         },
         // Conditional item using spread operator
-        ...(isCompany
+        ...(isBusinessEntity
           ? [
               {
                 label: "Pajak",
@@ -87,31 +89,6 @@ export const SummaryPanel = () => {
       ],
     },
   ];
-  // const totalCost = useMemo(() => {
-  //   const detailPesanan = [
-  //     {
-  //       title: "Biaya Lainnya",
-  //       items: [
-  //         {
-  //           label: "Admin Layanan",
-  //           cost: 10000,
-  //         },
-  //         // Conditional item using spread operator
-  //         ...(isCompany
-  //           ? [
-  //               {
-  //                 label: "Pajak",
-  //                 cost: 21300,
-  //               },
-  //             ]
-  //           : []),
-  //       ],
-  //     },
-  //   ];
-  //   return detailPesanan
-  //     .flatMap((section) => section.items)
-  //     .reduce((total, item) => total + item.cost, 0);
-  // }, [isCompany]);
 
   useEffect(() => {
     if (selectedVoucher) {

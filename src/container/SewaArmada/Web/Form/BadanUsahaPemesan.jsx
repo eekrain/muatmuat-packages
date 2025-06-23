@@ -13,19 +13,25 @@ import {
 } from "@/store/forms/sewaArmadaStore";
 
 export const BadanUsahaPemesan = () => {
-  const isCompany = useSewaArmadaStore((state) => state.formValues.isCompany);
-  const companyName = useSewaArmadaStore(
-    (state) => state.formValues.companyName
+  const businessEntity = useSewaArmadaStore(
+    (state) => state.formValues.businessEntity
   );
-  const companyNpwp = useSewaArmadaStore(
-    (state) => state.formValues.companyNpwp
+  const isBusinessEntity = useSewaArmadaStore(
+    (state) => state.formValues.businessEntity.isBusinessEntity
   );
+  const name = useSewaArmadaStore(
+    (state) => state.formValues.businessEntity.name
+  );
+  const taxId = useSewaArmadaStore(
+    (state) => state.formValues.businessEntity.taxId
+  );
+
   const { setField } = useSewaArmadaActions();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
-    companyName: "",
-    companyNpwp: "",
+    name: "",
+    taxId: "",
   });
   const [formErrors, setFormErrors] = useState({});
 
@@ -41,44 +47,53 @@ export const BadanUsahaPemesan = () => {
   };
 
   const handleToggleCheckbox = (checked) => {
-    setField("isCompany", checked);
+    setField("businessEntity", {
+      ...businessEntity,
+      isBusinessEntity: checked,
+    });
     if (checked) {
-      setFormData({ companyName, companyNpwp });
+      setFormData({ name, taxId });
       setIsModalOpen(true);
     } else {
-      setField("companyName", "");
-      setField("companyNpwp", "");
+      setField("businessEntity", {
+        ...businessEntity,
+        name: "",
+        taxId: "",
+      });
     }
   };
 
   const handleSimpan = () => {
     const newErrors = {};
-    const { companyName, companyNpwp } = formData;
-    if (!companyName) {
-      newErrors.companyName = "Nama badan usaha/perusahaan wajib diisi";
-    } else if (companyName.length < 3) {
-      newErrors.companyName = "Nama badan usaha/perusahaan minimal 3 karakter";
-    } else if (/[^a-zA-Z]/.test(companyName)) {
-      newErrors.companyName = "Nama badan usaha/perusahaan tidak valid";
+    const { name, taxId } = formData;
+    if (!name) {
+      newErrors.name = "Nama badan usaha/perusahaan wajib diisi";
+    } else if (name.length < 3) {
+      newErrors.name = "Nama badan usaha/perusahaan minimal 3 karakter";
+    } else if (/[^a-zA-Z]/.test(name)) {
+      newErrors.name = "Nama badan usaha/perusahaan tidak valid";
     }
 
-    if (!companyNpwp) {
-      newErrors.companyNpwp = "Nomor NPWP wajib diisi";
-    } else if (companyNpwp.length < 15) {
-      newErrors.companyNpwp = "Nomor NPWP minimal 15 digit";
-    } else if (companyNpwp.length > 15) {
-      newErrors.companyNpwp = "Nomor NPWP maksimal 16 digit";
+    if (!taxId) {
+      newErrors.taxId = "Nomor NPWP wajib diisi";
+    } else if (taxId.length < 15) {
+      newErrors.taxId = "Nomor NPWP minimal 15 digit";
+    } else if (taxId.length > 15) {
+      newErrors.taxId = "Nomor NPWP maksimal 16 digit";
     }
 
     if (Object.keys(newErrors).length === 0) {
-      setField("companyName", companyName);
-      setField("companyNpwp", companyNpwp);
+      setField("businessEntity", {
+        ...businessEntity,
+        name,
+        taxId,
+      });
       setIsModalOpen(false);
     } else {
       setFormErrors(newErrors);
     }
   };
-  // setField("isCompany", e.checked)
+
   return (
     <>
       <FormContainer>
@@ -89,8 +104,8 @@ export const BadanUsahaPemesan = () => {
               handleFirstTime(() => handleToggleCheckbox(checked))
             }
             label="Centang jika kamu adalah suatu perusahaan/badan usaha"
-            checked={isCompany}
-            value="is_company"
+            checked={isBusinessEntity}
+            value="isBusinessEntity"
           />
           {/* <IconComponent src="/icons/info16.svg" width={16} height={16} /> */}
           <InfoTooltip className="w-[336px]" side="right">
@@ -104,8 +119,11 @@ export const BadanUsahaPemesan = () => {
       <Modal
         open={isModalOpen}
         onOpenChange={(value) => {
+          setField("businessEntity", {
+            ...businessEntity,
+            isBusinessEntity: false,
+          });
           setIsModalOpen(value);
-          setField("isCompany", false);
         }}
         closeOnOutsideClick={false}
       >
@@ -124,11 +142,11 @@ export const BadanUsahaPemesan = () => {
                   Nama Badan Usaha/Perusahaan*
                 </label>
                 <Input
-                  name="companyName"
+                  name="name"
                   placeholder="Masukkan Nama Badan Usaha/Perusahaan"
-                  value={formData.companyName}
+                  value={formData.name}
                   onChange={handleInputChange}
-                  errorMessage={formErrors.companyName}
+                  errorMessage={formErrors.name}
                 />
               </div>
 
@@ -138,11 +156,11 @@ export const BadanUsahaPemesan = () => {
                   Nomor NPWP*
                 </label>
                 <Input
-                  name="companyNpwp"
+                  name="taxId"
                   placeholder="Masukkan Nomor NPWP"
-                  value={formData.companyNpwp}
+                  value={formData.taxId}
                   onChange={handleInputChange}
-                  errorMessage={formErrors.companyNpwp}
+                  errorMessage={formErrors.taxId}
                 />
               </div>
             </div>
