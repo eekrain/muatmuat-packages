@@ -163,13 +163,14 @@ export const TagInput = ({
             {currentTags.map((tag, index) => (
               <TagBubble
                 key={`${tag}-${index}`}
-                tag={tag}
                 disabled={disabled}
                 appearance={appearance.tagClassName}
                 withRemove={{
                   onRemove: () => removeTag(index),
                 }}
-              />
+              >
+                {tag}
+              </TagBubble>
             ))}
 
             <input
