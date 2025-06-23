@@ -13,13 +13,10 @@ import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
-import {
-  useResponsiveNavigation,
-  useResponsiveRouteParams,
-} from "@/lib/responsive-navigation";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
 import { useInformasiMuatanStore } from "@/store/forms/informasiMuatanStore";
-import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
+import { useSewaArmadaActions } from "@/store/forms/sewaArmadaStore";
 
 const beratMuatanOptions = [
   {
@@ -48,7 +45,6 @@ const dimensiMuatanOptions = [
 
 const InformasiMuatanScreen = () => {
   const navigation = useResponsiveNavigation();
-  const params = useResponsiveRouteParams();
   const {
     formValues,
     formErrors,
@@ -59,7 +55,7 @@ const InformasiMuatanScreen = () => {
     updateDimensiMuatan,
     validateForm,
   } = useInformasiMuatanStore();
-  const { setField: setSewaArmadaField } = useSewaArmadaStore();
+  const { setField: setSewaArmadaField } = useSewaArmadaActions();
 
   const handleSaveInformasiMuatan = () => {
     console.log("🚀 ~ handleSaveInformasiMuatan ~ formValues:", formValues);
@@ -464,7 +460,7 @@ const InformasiMuatanScreen = () => {
           onClick={handleSaveInformasiMuatan}
           type="button"
         >
-          Tambah Nama Muatan
+          Simpan
         </Button>
       </ResponsiveFooter>
     </FormResponsiveLayout>
