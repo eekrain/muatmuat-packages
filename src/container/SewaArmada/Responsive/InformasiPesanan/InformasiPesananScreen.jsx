@@ -12,6 +12,7 @@ import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import ImageUploader from "@/components/ImageUploader/ImageUploader";
 import TextArea from "@/components/TextArea/TextArea";
 import NoDeliveryOrder from "@/container/SewaArmada/Responsive/InformasiPesanan/NoDeliveryOrder";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import {
@@ -113,11 +114,15 @@ const InformasiPesananScreen = () => {
     }
   };
 
-  const selectedOpsiPembayaran = paymentMethodId
-    ? paymentMethods
-        .flatMap((method) => method.options || [])
-        .find((item) => item.id === paymentMethodId)
-    : null;
+  const selectedOpsiPembayaran = useShallowMemo(
+    () =>
+      paymentMethodId
+        ? paymentMethods
+            .flatMap((method) => method.options || [])
+            .find((item) => item.id === paymentMethodId)
+        : null,
+    [paymentMethodId, paymentMethods]
+  );
 
   return (
     <FormResponsiveLayout

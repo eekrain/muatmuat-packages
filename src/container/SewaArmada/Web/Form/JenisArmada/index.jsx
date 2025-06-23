@@ -42,7 +42,7 @@ export const JenisArmada = () => {
   const truckTypeId = useSewaArmadaStore(
     (state) => state.formValues.truckTypeId
   );
-  console.log("carrierId", carrierId);
+
   // Fetch recommended carriers from API using SWR
   const { data: carriersData, error: carriersError } = useSWRHook(
     cargoCategoryId

@@ -123,6 +123,7 @@ export const BadanUsahaPemesan = () => {
             ...businessEntity,
             isBusinessEntity: false,
           });
+          setFormErrors({});
           setIsModalOpen(value);
         }}
         closeOnOutsideClick={false}

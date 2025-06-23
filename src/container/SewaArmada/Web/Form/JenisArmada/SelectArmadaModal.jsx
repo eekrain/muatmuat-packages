@@ -80,7 +80,7 @@ const SelectArmadaModal = ({
   return (
     <>
       <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick={false}>
-        <ModalContent>
+        <ModalContent type="muatmuat">
           <div className="flex flex-col gap-y-4 px-6 py-9">
             {/* Header */}
             <div className="flex w-[424px] justify-center">

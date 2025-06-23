@@ -1,8 +1,7 @@
-import { useEffect } from "react";
-
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import RadioButton from "@/components/Radio/RadioButton";
+import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useSWRHook } from "@/hooks/use-swr";
 import { handleFirstTime } from "@/lib/utils/form";
 import {
@@ -26,7 +25,7 @@ export const TipeMuatan = () => {
   const isLoading = !cargoTypesResponse && !error;
 
   // Set default value if cargoTypes is loaded and tipeMuatan is not set
-  useEffect(() => {
+  useShallowCompareEffect(() => {
     if (cargoTypes.length > 0 && !cargoTypeId && !isLoading) {
       setField("cargoTypeId", cargoTypes[0].id);
     }
