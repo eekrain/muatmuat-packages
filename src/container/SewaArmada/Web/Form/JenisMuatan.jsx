@@ -11,8 +11,8 @@ import {
 } from "@/store/forms/sewaArmadaStore";
 
 export const JenisMuatan = () => {
-  const jenisMuatan = useSewaArmadaStore(
-    (state) => state.formValues.jenisMuatan
+  const cargoCategoryId = useSewaArmadaStore(
+    (state) => state.formValues.cargoCategoryId
   );
   const { setField } = useSewaArmadaActions();
 
@@ -27,10 +27,10 @@ export const JenisMuatan = () => {
 
   // Set default value if cargoCategories is loaded and jenisMuatan is not set
   useEffect(() => {
-    if (cargoCategories.length > 0 && !jenisMuatan && !isLoading) {
-      setField("jenisMuatan", cargoCategories[0].id);
+    if (cargoCategories.length > 0 && !cargoCategoryId && !isLoading) {
+      setField("cargoCategoryId", cargoCategories[0].id);
     }
-  }, [cargoCategories, jenisMuatan, isLoading, setField]);
+  }, [cargoCategories, cargoCategoryId, isLoading, setField]);
 
   // Generate tooltip content from cargo categories descriptions
   const generateTooltipContent = () => {
@@ -71,11 +71,11 @@ export const JenisMuatan = () => {
         {cargoCategories.map((category) => (
           <div className="w-[250px]" key={category.id}>
             <RadioButton
-              name="jenisMuatan"
+              name="cargoCategoryId"
               label={category.name}
-              checked={jenisMuatan === category.id}
-              onClick={() =>
-                handleFirstTime(() => setField("jenisMuatan", category.id))
+              checked={cargoCategoryId === category.id}
+              onClick={({ value }) =>
+                handleFirstTime(() => setField("cargoCategoryId", value))
               }
               value={category.id}
             />

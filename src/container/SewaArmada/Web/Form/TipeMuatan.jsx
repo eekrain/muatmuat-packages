@@ -11,7 +11,9 @@ import {
 } from "@/store/forms/sewaArmadaStore";
 
 export const TipeMuatan = () => {
-  const tipeMuatan = useSewaArmadaStore((state) => state.formValues.tipeMuatan);
+  const cargoTypeId = useSewaArmadaStore(
+    (state) => state.formValues.cargoTypeId
+  );
   const { setField } = useSewaArmadaActions();
 
   // Fetch cargo types using SWR
@@ -25,10 +27,10 @@ export const TipeMuatan = () => {
 
   // Set default value if cargoTypes is loaded and tipeMuatan is not set
   useEffect(() => {
-    if (cargoTypes.length > 0 && !tipeMuatan && !isLoading) {
-      setField("tipeMuatan", cargoTypes[0].id);
+    if (cargoTypes.length > 0 && !cargoTypeId && !isLoading) {
+      setField("cargoTypeId", cargoTypes[0].id);
     }
-  }, [cargoTypes, tipeMuatan, isLoading, setField]);
+  }, [cargoTypes, cargoTypeId, isLoading, setField]);
 
   // Generate tooltip content from cargo types descriptions
   const generateTooltipContent = () => {
@@ -69,11 +71,11 @@ export const TipeMuatan = () => {
         {cargoTypes.map((type) => (
           <div className="w-[250px]" key={type.id}>
             <RadioButton
-              name="tipeMuatan"
+              name="cargoTypeId"
               label={type.name}
-              checked={tipeMuatan === type.id}
-              onClick={() =>
-                handleFirstTime(() => setField("tipeMuatan", type.id))
+              checked={cargoTypeId === type.id}
+              onClick={({ value }) =>
+                handleFirstTime(() => setField("cargoTypeId", value))
               }
               value={type.id}
             />

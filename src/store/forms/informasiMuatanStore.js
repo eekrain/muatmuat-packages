@@ -20,8 +20,8 @@ const defaultInformasiMuatan = {
 };
 
 const defaultFormValues = {
-  tipeMuatan: "",
-  jenisMuatan: "",
+  cargoTypeId: null,
+  cargoCategoryId: null,
   isHalalLogistics: false,
   informasiMuatan: [defaultInformasiMuatan],
 };
@@ -115,14 +115,15 @@ export const useInformasiMuatanStore = create(
           formErrors: {},
         }),
       validateForm: () => {
-        const { tipeMuatan, jenisMuatan, informasiMuatan } = get().formValues;
+        const { cargoTypeId, cargoCategoryId, informasiMuatan } =
+          get().formValues;
         const newErrors = {};
 
-        if (!tipeMuatan) {
-          newErrors.tipeMuatan = "Tipe muatan harus diisi";
+        if (!cargoTypeId) {
+          newErrors.cargoTypeId = "Tipe muatan harus diisi";
         }
-        if (!jenisMuatan) {
-          newErrors.jenisMuatan = "Jenis muatan harus diisi";
+        if (!cargoCategoryId) {
+          newErrors.cargoCategoryId = "Jenis muatan harus diisi";
         }
 
         informasiMuatan.forEach((muatan, index) => {

@@ -120,37 +120,37 @@ const InformasiMuatanScreen = () => {
           <div>
             <div className="flex flex-col gap-y-4">
               <RadioButton
-                name="tipeMuatan"
+                name="cargoTypeId"
                 label="Bahan Mentah"
-                checked={formValues.tipeMuatan === "bahan-mentah"}
-                onClick={() => setField("tipeMuatan", "bahan-mentah")}
+                checked={formValues.cargoTypeId === "bahan-mentah"}
+                onClick={({ value }) => setField("cargoTypeId", value)}
                 value="bahan-mentah"
               />
               <RadioButton
-                name="tipeMuatan"
+                name="cargoTypeId"
                 label="Barang Setengah Jadi"
-                checked={formValues.tipeMuatan === "barang-setengah-jadi"}
-                onClick={() => setField("tipeMuatan", "barang-setengah-jadi")}
+                checked={formValues.cargoTypeId === "barang-setengah-jadi"}
+                onClick={({ value }) => setField("cargoTypeId", value)}
                 value="barang-setengah-jadi"
               />
               <RadioButton
-                name="tipeMuatan"
+                name="cargoTypeId"
                 label="Barang Jadi"
-                checked={formValues.tipeMuatan === "barang-jadi"}
-                onClick={() => setField("tipeMuatan", "barang-jadi")}
+                checked={formValues.cargoTypeId === "barang-jadi"}
+                onClick={({ value }) => setField("cargoTypeId", value)}
                 value="barang-jadi"
               />
               <RadioButton
-                name="tipeMuatan"
+                name="cargoTypeId"
                 label="Lainnya"
-                checked={formValues.tipeMuatan === "lainnya"}
-                onClick={() => setField("tipeMuatan", "lainnya")}
+                checked={formValues.cargoTypeId === "lainnya"}
+                onClick={({ value }) => setField("cargoTypeId", value)}
                 value="lainnya"
               />
             </div>
-            {formErrors.tipeMuatan && (
+            {formErrors?.cargoTypeId && (
               <span className="mt-3 block text-xs font-medium text-red-500">
-                {formErrors.tipeMuatan}
+                {formErrors.cargoTypeId}
               </span>
             )}
           </div>
@@ -196,44 +196,44 @@ const InformasiMuatanScreen = () => {
           <div>
             <div className="flex flex-col gap-y-4">
               <RadioButton
-                name="jenisMuatan"
+                name="cargoCategoryId"
                 label="Padat"
-                checked={formValues.jenisMuatan === "padat"}
-                onClick={() => setField("jenisMuatan", "padat")}
+                checked={formValues.cargoCategoryId === "padat"}
+                onClick={({ value }) => setField("cargoCategoryId", value)}
                 value="padat"
               />
               <RadioButton
-                name="jenisMuatan"
+                name="cargoCategoryId"
                 label="Cair"
-                checked={formValues.jenisMuatan === "cair"}
-                onClick={() => setField("jenisMuatan", "cair")}
+                checked={formValues.cargoCategoryId === "cair"}
+                onClick={({ value }) => setField("cargoCategoryId", value)}
                 value="cair"
               />
               <RadioButton
-                name="jenisMuatan"
+                name="cargoCategoryId"
                 label="Curah"
-                checked={formValues.jenisMuatan === "curah"}
-                onClick={() => setField("jenisMuatan", "curah")}
+                checked={formValues.cargoCategoryId === "curah"}
+                onClick={({ value }) => setField("cargoCategoryId", value)}
                 value="curah"
               />
               <RadioButton
-                name="jenisMuatan"
+                name="cargoCategoryId"
                 label="Kendaraan"
-                checked={formValues.jenisMuatan === "kendaraan"}
-                onClick={() => setField("jenisMuatan", "kendaraan")}
+                checked={formValues.cargoCategoryId === "kendaraan"}
+                onClick={({ value }) => setField("cargoCategoryId", value)}
                 value="kendaraan"
               />
               <RadioButton
-                name="jenisMuatan"
+                name="cargoCategoryId"
                 label="Container"
-                checked={formValues.jenisMuatan === "container"}
-                onClick={() => setField("jenisMuatan", "container")}
+                checked={formValues.cargoCategoryId === "container"}
+                onClick={({ value }) => setField("cargoCategoryId", value)}
                 value="container"
               />
             </div>
-            {formErrors.jenisMuatan && (
+            {formErrors?.cargoCategoryId && (
               <span className="mt-3 block text-xs font-medium text-red-500">
-                {formErrors.jenisMuatan}
+                {formErrors.cargoCategoryId}
               </span>
             )}
           </div>

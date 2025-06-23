@@ -10,8 +10,9 @@ const defaultValues = {
   showRangeOption: false,
   lokasiMuat: [null],
   lokasiBongkar: [null],
-  tipeMuatan: "",
-  jenisMuatan: "",
+  // baru
+  cargoTypeId: null,
+  cargoCategoryId: null,
   isHalalLogistics: false,
   informasiMuatan: [],
   fotoMuatan: [null, null, null, null],
