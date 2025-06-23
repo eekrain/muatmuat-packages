@@ -3,12 +3,12 @@
 import { useEffect, useRef } from "react";
 
 import Input from "@/components/Form/Input";
+import { MyTextArea } from "@/components/Form/TextArea";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import {
   LocationProvider,
   useLocationContext,
 } from "@/hooks/use-location/use-location";
-import { cn } from "@/lib/utils";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
 import { MapContainer } from "../../../MapContainer/MapContainer";
@@ -111,22 +111,17 @@ const InnerLocationModalFormWeb = ({
                   <label className="block text-[12px] font-medium text-neutral-600">
                     Detail Lokasi (Optional)
                   </label>
-                  <textarea
+                  <MyTextArea
                     value={formValues.detailLokasi}
                     onChange={(e) => setField("detailLokasi", e.target.value)}
                     placeholder="Masukkan Detail Lokasi"
-                    className={cn(
-                      "w-full rounded-[6px] border p-2 text-xs font-medium outline-none",
-                      formErrors?.detailLokasi && "border-red-500"
-                    )}
                     maxLength={500}
-                    rows={4}
+                    errorMessage={formErrors?.detailLokasi}
+                    appearance={{
+                      inputClassName: "resize-none h-[80px]",
+                    }}
+                    withCharCount
                   />
-                  {formErrors?.detailLokasi && (
-                    <span className="text-xs font-medium text-red-500">
-                      {formErrors?.detailLokasi}
-                    </span>
-                  )}
                 </div>
                 <div>
                   <label className="block text-[12px] font-medium text-neutral-600">

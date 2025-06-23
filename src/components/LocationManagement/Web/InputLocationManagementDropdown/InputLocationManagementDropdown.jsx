@@ -32,6 +32,10 @@ const useModalFormSimpanLokasiWeb = ({
     setModalConfig(defaultModalConfig);
 
   const handleAddToSavedLocation = (location) => {
+    console.log(
+      "🚀 ~ file: InputLocationManagementDropdown.jsx:35 ~ location:",
+      location
+    );
     setIsDropdownSearchOpen(false);
 
     handleSelectSearchResult(location).then((result) => {
@@ -59,6 +63,13 @@ const useModalFormSimpanLokasiWeb = ({
   };
 
   useShallowCompareEffect(() => {
+    console.log(
+      "🚀 ~ file: InputLocationManagementDropdown.jsx:68 ~ districtData && isManualPostalCode:",
+      districtData,
+      isManualPostalCode,
+      districtData && isManualPostalCode
+    );
+
     // If districtData has been filled, then navigate to FormLokasiBongkarMuat
     if (districtData && isManualPostalCode) {
       setModalConfig({

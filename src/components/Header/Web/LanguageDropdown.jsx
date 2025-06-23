@@ -38,7 +38,7 @@ const LanguageDropdown = () => {
       />
       {/* toggle bahasa */}
       {open && (
-        <div className="shadow-muat shadow-muat absolute left-0 top-6 z-50 flex w-[216px] cursor-pointer flex-col rounded-md border border-neutral-300 bg-neutral-50">
+        <div className="shadow-muat absolute left-0 top-6 z-50 flex w-[216px] cursor-pointer flex-col rounded-md border border-neutral-300 bg-neutral-50">
           {listLanguages?.map((language, index) => {
             return (
               <span
