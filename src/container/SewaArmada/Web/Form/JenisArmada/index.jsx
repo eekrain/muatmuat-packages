@@ -7,11 +7,15 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import RecommendedTruckModal from "@/container/SewaArmada/Web/Form/JenisArmada/RecommendedTruckModal";
 import SelectArmadaModal from "@/container/SewaArmada/Web/Form/JenisArmada/SelectArmadaModal";
 import { SelectedTruck } from "@/container/SewaArmada/Web/Form/JenisArmada/SelectedTruck";
+import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook, useSWRMutateHook } from "@/hooks/use-swr";
 import { cn } from "@/lib/utils";
 import { handleFirstTime } from "@/lib/utils/form";
-import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
+import {
+  useSewaArmadaActions,
+  useSewaArmadaStore,
+} from "@/store/forms/sewaArmadaStore";
 
 export const JenisArmada = () => {
   const [type, setType] = useState(""); // carrier or truck
@@ -42,6 +46,7 @@ export const JenisArmada = () => {
   const truckTypeId = useSewaArmadaStore(
     (state) => state.formValues.truckTypeId
   );
+  const { setField } = useSewaArmadaActions();
 
   // Fetch recommended carriers from API using SWR
   const { data: carriersData, error: carriersError } = useSWRHook(
@@ -60,6 +65,18 @@ export const JenisArmada = () => {
 
   const carriers = carriersData?.Data || [];
   const trucks = trucksData?.Data || [];
+
+  useShallowCompareEffect(() => {
+    if (trucksData) {
+      // console.log("trucksdata", trucksData);
+      setField("distance", trucksData.Data.priceComponents.estimatedDistance);
+      setField("distanceUnit", trucksData.Data.priceComponents.distanceUnit);
+      setField(
+        "estimatedTime",
+        trucksData.Data.priceComponents.preparationTime
+      );
+    }
+  }, [trucksData]);
 
   const selectedCarrier = useShallowMemo(
     () =>
@@ -239,7 +256,7 @@ export const JenisArmada = () => {
     !loadTimeStart ||
     (showRangeOption && !loadTimeEnd) ||
     !lokasiMuat ||
-    lokasiBongkar ||
+    !lokasiBongkar ||
     !cargoCategoryId ||
     informasiMuatan.length === 0 ||
     !carrierId;

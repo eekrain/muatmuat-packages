@@ -19,6 +19,9 @@ const defaultValues = {
   carrierId: null,
   truckTypeId: null,
   truckCount: 0,
+  distance: 0,
+  distanceUnit: "",
+  estimatedTime: 0,
 
   useAsuransi: true,
   // Sementara, nanti diganti additionalServices

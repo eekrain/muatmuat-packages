@@ -270,7 +270,7 @@ export const LayananTambahan = () => {
                       className="icon-fill-muat-trans-secondary-900"
                       src="/icons/lokasi16.svg"
                     />
-                    <div className="flex w-[442px] flex-col gap-y-3 text-neutral-900">
+                    <div className="flex flex-1 flex-col gap-y-3 text-neutral-900">
                       <span className="text-[12px] font-bold leading-[14.4px]">
                         {shippingDetails.destinationAddress}
                       </span>
