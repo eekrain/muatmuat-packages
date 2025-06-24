@@ -172,6 +172,7 @@ export const InputLocationManagementDropdown = ({
         onOpenChange={setIsModalSavedLocationManagementOpen}
         userSavedLocations={userSavedLocationResult}
         handleSelectUserSavedLocation={handleSelectUserSavedLocation}
+        handleEditLocation={handleEditLocation}
       />
 
       <ModalFormSimpanLokasiWeb

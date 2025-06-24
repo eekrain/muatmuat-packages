@@ -10,6 +10,7 @@ export const ModalSavedLocationManagement = ({
   open,
   handleSelectUserSavedLocation,
   onOpenChange,
+  handleEditLocation,
 }) => {
   const { t } = useTranslation();
 
@@ -53,8 +54,8 @@ export const ModalSavedLocationManagement = ({
           </div>
 
           <div className="max-h-96 space-y-4 overflow-auto p-4 pt-0">
-            {filteredUserSavedLocations.map((item) => (
-              <div key={item.ID} className="flex w-full flex-col text-xs">
+            {filteredUserSavedLocations.map((location) => (
+              <div key={location.ID} className="flex w-full flex-col text-xs">
                 <div className="flex w-full items-start gap-3 font-bold leading-3 text-black">
                   <IconComponent
                     src={"/icons/map-with-marker-outline.svg"}
@@ -65,17 +66,17 @@ export const ModalSavedLocationManagement = ({
                   <div
                     className="flex min-w-[240px] flex-1 shrink basis-0 cursor-pointer items-start gap-2"
                     onClick={() => {
-                      handleSelectUserSavedLocation(item);
+                      handleSelectUserSavedLocation(location);
                       onOpenChange(false);
                     }}
                   >
                     <div className="my-auto flex-1 shrink basis-0 text-ellipsis text-xs font-bold leading-3 text-black">
-                      <div className="line-clamp-1">{item.Name}</div>
+                      <div className="line-clamp-1">{location.Name}</div>
                       <div className="mt-2 w-full flex-1 shrink gap-2.5 self-stretch text-ellipsis font-medium leading-tight text-neutral-500">
-                        {item.Address}
+                        {location.Address}
                       </div>
                     </div>
-                    {item.IsMainAddress === 1 && (
+                    {location.IsMainAddress === 1 && (
                       <div className="gap-1 whitespace-nowrap rounded bg-primary-700 p-1 text-xs font-semibold leading-tight text-white">
                         {t("labelMainLocation")}
                       </div>
@@ -86,7 +87,10 @@ export const ModalSavedLocationManagement = ({
                     alt="edit"
                     width={20}
                     height={20}
-                    onClick={() => {}}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEditLocation(location);
+                    }}
                   />
                 </div>
               </div>

@@ -4,12 +4,12 @@ import * as HoverCard from "@radix-ui/react-hover-card";
 
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { useUser } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
-import { useAuthStore } from "@/store/auth/authStore";
+import { useTokenStore } from "@/store/auth/tokenStore";
 
-const DropdownMenuItem = ({ imgUrl, title, variant, onClick }) => {
+const MenuItem = ({ imgUrl, title, variant, onClick }) => {
   return (
     <button
       className={cn(
@@ -26,8 +26,8 @@ const DropdownMenuItem = ({ imgUrl, title, variant, onClick }) => {
 
 export const UserDropdown = () => {
   const { t } = useTranslation();
-  const accessToken = useAuthStore((state) => state.accessToken);
-  const { dataUser } = useUser();
+  const accessToken = useTokenStore((state) => state.accessToken);
+  const { dataUser, logout } = useAuth();
   return (
     <>
       {!accessToken ? (
@@ -60,18 +60,19 @@ export const UserDropdown = () => {
               align="end"
             >
               <div className="flex flex-col py-2">
-                <DropdownMenuItem
+                <MenuItem
                   imgUrl="/icons/profil-user.svg"
                   title={t("HomeSellerIndexProfile")}
                 />
-                <DropdownMenuItem
+                <MenuItem
                   imgUrl="/icons/profile-user-setting.svg"
                   title="Pengaturan Akun"
                 />
-                <DropdownMenuItem
+                <MenuItem
                   imgUrl="/icons/profil-logout.svg"
                   title={t("buttonLogOut")}
                   variant="danger"
+                  onClick={logout}
                 />
               </div>
             </HoverCard.Content>

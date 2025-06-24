@@ -9,9 +9,11 @@ export const useUserStore = create(
       (set) => ({
         dataUser: null,
         dataMatrix: null,
-        setUser: (val) => set({ dataUser: val }),
-        setDataMatrix: (data) => set({ dataMatrix: data }),
-        removeUser: () => set({ dataUser: null, dataMatrix: null }),
+        actions: {
+          setUser: (val) => set({ dataUser: val }),
+          setDataMatrix: (data) => set({ dataMatrix: data }),
+          clearUser: () => set({ dataUser: null, dataMatrix: null }),
+        },
       }),
       {
         name: "t-ng",
@@ -29,8 +31,8 @@ export const useUserStore = create(
 );
 
 export const useUserActions = () => {
-  const setUser = useUserStore((state) => state.setUser);
-  const setDataMatrix = useUserStore((state) => state.setDataMatrix);
-  const removeUser = useUserStore((state) => state.removeUser);
-  return { setUser, setDataMatrix, removeUser };
+  const { setUser, setDataMatrix, clearUser } = useUserStore(
+    (state) => state.actions
+  );
+  return { setUser, setDataMatrix, clearUser };
 };

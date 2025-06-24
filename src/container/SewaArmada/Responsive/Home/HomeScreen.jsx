@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import { Shield, Truck } from "lucide-react";
 
 import Button from "@/components/Button/Button";
@@ -5,6 +7,7 @@ import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { TimelineField } from "@/components/Timeline/timeline-field";
+import { useSWRHook } from "@/hooks/use-swr";
 import DefaultResponsiveLayout from "@/layout/ResponsiveLayout/DefaultResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
@@ -17,27 +20,6 @@ import {
 import { BannerCarousel } from "../../../../components/BannerCarousel/BannerCarousel";
 import { ModalFirstTimer } from "./ModalFirstTimer";
 import WaktuMuatBottomsheet from "./WaktuMuat/WaktuMuat";
-
-const banners = [
-  {
-    id: 1,
-    imageUrl: "/img/truck-banner.png",
-    altText: "Promo Muatrans",
-    linkUrl: "/promo/1",
-  },
-  {
-    id: 2,
-    imageUrl: "/img/truck-banner2.png",
-    altText: "Layanan Pengiriman",
-    linkUrl: "/services",
-  },
-  {
-    id: 3,
-    imageUrl: "/img/truck-banner3.png",
-    altText: "Download Aplikasi",
-    linkUrl: "/download",
-  },
-];
 
 const SewaArmadaHomeScreen = () => {
   const navigation = useResponsiveNavigation();
@@ -57,6 +39,18 @@ const SewaArmadaHomeScreen = () => {
   const validateLokasiOnSelect = useLocationFormStore(
     (s) => s.validateLokasiOnSelect
   );
+
+  const { data: dataBanner } = useSWRHook("v1/orders/banner-ads");
+  const banners = useMemo(() => {
+    const data = dataBanner?.Data?.banners;
+    if (!data) return [];
+    return data?.map((item) => ({
+      id: item.id,
+      imageUrl: item.imageUrlApp,
+      altText: "Banner Muatrans",
+      linkUrl: item.link,
+    }));
+  }, [dataBanner]);
 
   return (
     <DefaultResponsiveLayout mode="default">
