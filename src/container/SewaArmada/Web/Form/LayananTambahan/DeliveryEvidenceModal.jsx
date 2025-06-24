@@ -124,12 +124,12 @@ const DeliveryEvidenceModal = ({
     console.log("🚀 ~ handleSubmit ~ locationFormValues:", locationFormValues);
 
     const sendDeliveryEvidenceService = additionalServicesOptions.find(
-      (item) => item.name === "Kirim Bukti Fisik Penerimaan Barang"
+      (item) => item.withShipping
     );
 
     const newAdditionalService = {
-      serviceId: sendDeliveryEvidenceService.id,
-      withShipping: sendDeliveryEvidenceService.price === 0,
+      serviceId: sendDeliveryEvidenceService.additionalServiceId,
+      withShipping: sendDeliveryEvidenceService.withShipping,
       shippingDetails: {
         ...deliveryEvidenceFormValues,
         destinationAddress: dataLokasi.location.name,

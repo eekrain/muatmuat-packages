@@ -24,31 +24,32 @@ export const LayananTambahan = () => {
   // Fetch layanan tambahan dari API
   // Nanti dulu belum ada data
   // https://claude.ai/chat/ef9b6ad4-0d1c-46f3-b8f9-e63d29cc0db1
-  // const { data: additionalServices, error } = useSWRHook(
-  //   "v1/orders/additional-services"
-  // );
+  const { data: additionalServicesData } = useSWRHook(
+    "v1/orders/additional-services"
+  );
 
   // Fetch shipping options when location data is complete
   const { data: shippingOptionsData } = useSWRHook(
     "v1/orders/shipping-options"
   );
   // const shippingOptions = shippingOptionsData?.Data;
-
-  const additionalServicesOptions = [
-    {
-      id: "550e8400-e29b-41d4-a716-446655440000",
-      name: "Kirim Bukti Fisik Penerimaan Barang",
-      description:
-        "Layanan untuk mengirim bukti fisik penerimaan barang ke alamat yang ditentukan",
-      price: 0,
-    },
-    {
-      id: "550e8400-e29b-41d4-a716-446655440001",
-      name: "Troli",
-      description: "Troli",
-      price: 25000,
-    },
-  ];
+  // console.log("additionalServices", additionalServices);
+  const additionalServicesOptions = additionalServicesData?.Data.services || [];
+  // [
+  //   {
+  //     id: "550e8400-e29b-41d4-a716-446655440000",
+  //     name: "Kirim Bukti Fisik Penerimaan Barang",
+  //     description:
+  //       "Layanan untuk mengirim bukti fisik penerimaan barang ke alamat yang ditentukan",
+  //     price: 0,
+  //   },
+  //   {
+  //     id: "550e8400-e29b-41d4-a716-446655440001",
+  //     name: "Troli",
+  //     description: "Troli",
+  //     price: 25000,
+  //   },
+  // ];
 
   const shippingOptions = [
     {
@@ -189,7 +190,15 @@ export const LayananTambahan = () => {
 
     return sendDeliveryEvidenceService?.shippingDetails ?? null;
   }, [additionalServices]);
+  console.log("shippingDetails", shippingDetails);
+  const shippingOption = useShallowMemo(() => {
+    if (!shippingDetails) return null;
 
+    return shippingOptions
+      .flatMap((option) => option.expeditions)
+      .find((item) => item.id === shippingDetails.shippingOptionId);
+  }, [shippingDetails, shippingOptions]);
+  console.log("bobobo", additionalServices);
   return (
     <>
       <FormContainer>
@@ -199,11 +208,12 @@ export const LayananTambahan = () => {
         {/* Container Opsi Layanan */}
         <div className="flex-grow-1 flex flex-col gap-y-3">
           {additionalServicesOptions?.map((service, key) => {
-            const isSendDeliveryEvidenceService =
-              service.name === "Kirim Bukti Fisik Penerimaan Barang";
+            console.log("serpic", service);
+            const isSendDeliveryEvidenceService = service.withShipping;
             // Check if this service is already in the additionalServices array
             const isSelected = additionalServices.some(
-              (selectedService) => selectedService.serviceId === service.id
+              (selectedService) =>
+                selectedService.serviceId === service.additionalServiceId
             );
             return (
               <Fragment key={key}>
@@ -223,8 +233,8 @@ export const LayananTambahan = () => {
                               setSewaArmadaField("additionalServices", [
                                 ...additionalServices,
                                 {
-                                  serviceId: service.id,
-                                  withShipping: service.price === 0,
+                                  serviceId: service.additionalServiceId,
+                                  withShipping: service.withShipping,
                                 },
                               ]);
                             }
@@ -234,7 +244,8 @@ export const LayananTambahan = () => {
                               "additionalServices",
                               additionalServices.filter(
                                 (selectedService) =>
-                                  selectedService.serviceId !== service.id
+                                  selectedService.serviceId !==
+                                  service.additionalServiceId
                               )
                             );
                           }
@@ -252,22 +263,24 @@ export const LayananTambahan = () => {
                   {/* Biaya Layanan */}
                   <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
                     {`Rp${
-                      service.price === 0
-                        ? isSelected
-                          ? shippingOptions
-                              .flatMap((option) => option.expeditions)
-                              .find(
-                                (expedition) =>
-                                  expedition.id ===
-                                  shippingDetails?.shippingOptionId
+                      Number(service.price) === 0
+                        ? isSelected && shippingDetails
+                          ? (
+                              Number(shippingOption?.originalCost) +
+                              Number(
+                                shippingDetails.withInsurance
+                                  ? shippingOption.originalInsurance
+                                  : 0
                               )
-                              ?.originalCost.toLocaleString("id-ID")
+                            ).toLocaleString("id-ID")
                           : "-"
-                        : service.price.toLocaleString("id-ID")
+                        : Number(service.price).toLocaleString("id-ID")
                     }`}
                   </span>
                 </div>
-                {isSendDeliveryEvidenceService && isSelected ? (
+                {isSendDeliveryEvidenceService &&
+                isSelected &&
+                shippingDetails ? (
                   <div className="ml-6 flex gap-x-2 rounded-md border border-primary-700 bg-primary-50 p-3">
                     <IconComponent
                       className="icon-fill-muat-trans-secondary-900"
@@ -294,13 +307,7 @@ export const LayananTambahan = () => {
                         {
                           iconSrc: "/icons/transporter16.svg",
                           label: "Ekspedisi Pengiriman : ",
-                          value: shippingOptions
-                            .flatMap((option) => option.expeditions)
-                            .find(
-                              (expedition) =>
-                                expedition.id ===
-                                shippingDetails.shippingOptionId
-                            )?.courierName,
+                          value: shippingOption?.courierName,
                         },
                       ].map((item, key) => (
                         <div className="flex items-center gap-x-2" key={key}>
