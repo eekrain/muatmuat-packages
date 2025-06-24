@@ -69,35 +69,21 @@ export const SummaryPanel = () => {
   // const showRangeOption = useSewaArmadaStore(
   //   (state) => state.formValues.showRangeOption
   // );
-  const cargoTypeId = useSewaArmadaStore(
-    (state) => state.formValues.cargoTypeId
-  );
-  const cargoCategoryId = useSewaArmadaStore(
-    (state) => state.formValues.cargoCategoryId
-  );
-  const isHalalLogistics = useSewaArmadaStore(
-    (state) => state.formValues.isHalalLogistics
-  );
-  const cargoDescription = useSewaArmadaStore(
-    (state) => state.formValues.cargoDescription
-  );
-  const carrierId = useSewaArmadaStore((state) => state.formValues.carrierId);
-  const truckTypeId = useSewaArmadaStore(
-    (state) => state.formValues.truckTypeId
-  );
-  const additionalServices = useSewaArmadaStore(
-    (s) => s.formValues.additionalServices
-  );
-  const deliveryOrderNumbers = useSewaArmadaStore(
-    (state) => state.formValues.deliveryOrderNumbers
-  );
-  const businessEntity = useSewaArmadaStore((s) => s.formValues.businessEntity);
-  const isBusinessEntity = useSewaArmadaStore(
-    (state) => state.formValues.businessEntity.isBusinessEntity
-  );
-  const paymentMethodId = useSewaArmadaStore(
-    (state) => state.formValues.paymentMethodId
-  );
+  const {
+    cargoTypeId,
+    cargoCategoryId,
+    isHalalLogistics,
+    cargoDescription,
+    carrierId,
+    truckTypeId,
+    additionalServices,
+    deliveryOrderNumbers,
+    businessEntity,
+    paymentMethodId,
+  } = useSewaArmadaStore((state) => state.formValues);
+
+  const isBusinessEntity = businessEntity.isBusinessEntity;
+
   const { setField, validateForm } = useSewaArmadaActions();
 
   const [isPaymentMethodsModalOpen, setIsPaymentMethodsModalOpen] =
@@ -263,6 +249,7 @@ export const SummaryPanel = () => {
 
   const handleValidateFleetOrder = () => {
     const isValidForm = validateForm();
+
     if (isValidForm) {
       setIsModalConfirmationOpen(true);
     }

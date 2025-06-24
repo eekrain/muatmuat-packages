@@ -23,29 +23,17 @@ export const JenisArmada = () => {
   const [isRecommendedTruckOpen, setIsRecommendedTruckOpen] = useState(false);
 
   const orderType = useSewaArmadaStore((state) => state.orderType);
-  const loadTimeStart = useSewaArmadaStore(
-    (state) => state.formValues.loadTimeStart
-  );
-  const loadTimeEnd = useSewaArmadaStore(
-    (state) => state.formValues.loadTimeEnd
-  );
-  const showRangeOption = useSewaArmadaStore(
-    (state) => state.formValues.showRangeOption
-  );
-  const lokasiMuat = useSewaArmadaStore((state) => state.formValues.lokasiMuat);
-  const lokasiBongkar = useSewaArmadaStore(
-    (state) => state.formValues.lokasiBongkar
-  );
-  const cargoCategoryId = useSewaArmadaStore(
-    (state) => state.formValues.cargoCategoryId
-  );
-  const informasiMuatan = useSewaArmadaStore(
-    (state) => state.formValues.informasiMuatan
-  );
-  const carrierId = useSewaArmadaStore((state) => state.formValues.carrierId);
-  const truckTypeId = useSewaArmadaStore(
-    (state) => state.formValues.truckTypeId
-  );
+  const {
+    loadTimeStart,
+    loadTimeEnd,
+    showRangeOption,
+    lokasiMuat,
+    lokasiBongkar,
+    cargoCategoryId,
+    informasiMuatan,
+    carrierId,
+    truckTypeId,
+  } = useSewaArmadaStore((state) => state.formValues);
   const { setField } = useSewaArmadaActions();
 
   // Fetch recommended carriers from API using SWR
