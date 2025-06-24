@@ -47,16 +47,12 @@ export const BadanUsahaPemesan = () => {
   };
 
   const handleToggleCheckbox = (checked) => {
-    setField("businessEntity", {
-      ...businessEntity,
-      isBusinessEntity: checked,
-    });
     if (checked) {
       setFormData({ name, taxId });
       setIsModalOpen(true);
     } else {
       setField("businessEntity", {
-        ...businessEntity,
+        isBusinessEntity: checked,
         name: "",
         taxId: "",
       });
@@ -84,7 +80,7 @@ export const BadanUsahaPemesan = () => {
 
     if (Object.keys(newErrors).length === 0) {
       setField("businessEntity", {
-        ...businessEntity,
+        isBusinessEntity: true,
         name,
         taxId,
       });

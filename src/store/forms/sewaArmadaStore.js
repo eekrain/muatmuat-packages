@@ -25,8 +25,6 @@ const defaultValues = {
   kirimBuktiFisik: false,
   bantuanTambahan: false,
   additionalServices: [],
-  // Data kirim bukti fisik
-  shippingDetails: null,
 
   deliveryOrderNumbers: [],
   businessEntity: {

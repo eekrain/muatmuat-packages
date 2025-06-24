@@ -102,7 +102,8 @@ export const StatusPesananHeader = ({ orderCode, orderStatus }) => {
                 </span>
                 <div className="flex items-center gap-x-4">
                   <LightboxProvider
-                    images={dummyPhoto}
+                    image={dummyPhoto.length === 1 ? dummyPhoto[0] : undefined}
+                    images={dummyPhoto.length > 1 ? dummyPhoto : undefined}
                     title="Foto Bukti Pengiriman"
                   >
                     {dummyPhoto.map((image, index) => (
