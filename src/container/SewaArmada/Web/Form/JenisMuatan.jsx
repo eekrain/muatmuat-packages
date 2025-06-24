@@ -1,58 +1,38 @@
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import RadioButton from "@/components/Radio/RadioButton";
-import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
-import { useSWRHook } from "@/hooks/use-swr";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
 } from "@/store/forms/sewaArmadaStore";
 
-export const JenisMuatan = () => {
+export const JenisMuatan = ({ cargoCategories }) => {
   const cargoCategoryId = useSewaArmadaStore(
     (state) => state.formValues.cargoCategoryId
   );
   const { setField } = useSewaArmadaActions();
 
-  // Fetch cargo categories using SWR
-  const { data: cargoCategoriesResponse, error } = useSWRHook(
-    "v1/orders/cargos/categories"
-  );
-
-  // Extract cargo categories from response
-  const cargoCategories = cargoCategoriesResponse?.Data?.categories || [];
-  const isLoading = !cargoCategoriesResponse && !error;
-
-  // Set default value if cargoCategories is loaded and jenisMuatan is not set
-  useShallowCompareEffect(() => {
-    if (cargoCategories.length > 0 && !cargoCategoryId && !isLoading) {
-      setField("cargoCategoryId", cargoCategories[0].id);
-    }
-  }, [cargoCategories, cargoCategoryId, isLoading, setField]);
-
   // Generate tooltip content from cargo categories descriptions
-  const generateTooltipContent = () => {
-    if (cargoCategories.length === 0) {
-      return <p>Memuat informasi jenis muatan...</p>;
-    }
-
-    return (
+  const generateTooltipContent = useShallowMemo(
+    () => (
       <>
         <ul>
-          {cargoCategories.map((category) => (
-            <li key={category.id}>
-              <b>{category.name} :</b> {category.description}
+          {cargoTypes.map((type) => (
+            <li key={type.id}>
+              <b>{type.name} :</b> {type.description}
             </li>
           ))}
         </ul>
         <p>
-          Pemilihan jenis muatan yang tepat akan membantu dalam pengelolaan dan
+          Pemilihan tipe muatan yang tepat akan membantu dalam pengelolaan dan
           pengiriman.
         </p>
       </>
-    );
-  };
+    ),
+    [cargoTypes]
+  );
 
   return (
     <FormContainer className="flex gap-8">

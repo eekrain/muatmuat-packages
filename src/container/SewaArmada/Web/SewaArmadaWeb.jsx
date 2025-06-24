@@ -48,7 +48,7 @@ const banners = [
   },
 ];
 
-export default function SewaArmadaWeb() {
+export default function SewaArmadaWeb({ cargoTypes, cargoCategories }) {
   const orderType = useSewaArmadaStore((state) => state.orderType);
 
   const { setIsGlobalLoading } = useLoadingAction();
@@ -82,8 +82,8 @@ export default function SewaArmadaWeb() {
                   <WaktuMuat />
                   <LokasiMuat />
                   <LokasiBongkar />
-                  <TipeMuatan />
-                  <JenisMuatan />
+                  <TipeMuatan cargoTypes={cargoTypes} />
+                  <JenisMuatan cargoCategories={cargoCategories} />
                   <SertifikasiHalal />
                   <InformasiMuatan />
                   <FotoMuatan />

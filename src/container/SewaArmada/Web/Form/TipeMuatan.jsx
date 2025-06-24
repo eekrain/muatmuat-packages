@@ -1,35 +1,17 @@
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import RadioButton from "@/components/Radio/RadioButton";
-import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
-import { useSWRHook } from "@/hooks/use-swr";
 import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
 } from "@/store/forms/sewaArmadaStore";
 
-export const TipeMuatan = () => {
+export const TipeMuatan = ({ cargoTypes }) => {
   const cargoTypeId = useSewaArmadaStore(
     (state) => state.formValues.cargoTypeId
   );
   const { setField } = useSewaArmadaActions();
-
-  // Fetch cargo types using SWR
-  const { data: cargoTypesResponse, error } = useSWRHook(
-    "v1/orders/cargos/types"
-  );
-
-  // Extract cargo types from response
-  const cargoTypes = cargoTypesResponse?.Data?.types || [];
-  const isLoading = !cargoTypesResponse && !error;
-
-  // Set default value if cargoTypes is loaded and tipeMuatan is not set
-  useShallowCompareEffect(() => {
-    if (cargoTypes.length > 0 && !cargoTypeId && !isLoading) {
-      setField("cargoTypeId", cargoTypes[0].id);
-    }
-  }, [cargoTypes, cargoTypeId, isLoading, setField]);
 
   // Generate tooltip content from cargo types descriptions
   const generateTooltipContent = () => {

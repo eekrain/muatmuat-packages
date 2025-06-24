@@ -6,6 +6,7 @@ import {
   TruckItem,
   WarningBadge,
 } from "@/container/SewaArmada/Web/Form/JenisArmada/ArmadaComponent";
+import { toast } from "@/lib/toast";
 import { useSewaArmadaActions } from "@/store/forms/sewaArmadaStore";
 
 const RecommendedTruckModal = ({ isOpen, setIsOpen, recommendedTrucks }) => {
@@ -16,6 +17,7 @@ const RecommendedTruckModal = ({ isOpen, setIsOpen, recommendedTrucks }) => {
   const handleSelectRecommendedTruck = () => {
     setField("truckTypeId", selectedTruckTypeId);
     setIsOpen(false);
+    toast.success("Jenis armada telah berhasil diubah");
   };
 
   return (

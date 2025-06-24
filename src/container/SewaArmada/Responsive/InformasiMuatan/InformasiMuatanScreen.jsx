@@ -43,7 +43,7 @@ const dimensiMuatanOptions = [
   },
 ];
 
-const InformasiMuatanScreen = () => {
+const InformasiMuatanScreen = ({ cargoTypes, cargoCategories }) => {
   const navigation = useResponsiveNavigation();
   const {
     formValues,
@@ -115,34 +115,17 @@ const InformasiMuatanScreen = () => {
           {/* Radio Button Group */}
           <div>
             <div className="flex flex-col gap-y-4">
-              <RadioButton
-                name="cargoTypeId"
-                label="Bahan Mentah"
-                checked={formValues.cargoTypeId === "bahan-mentah"}
-                onClick={({ value }) => setField("cargoTypeId", value)}
-                value="bahan-mentah"
-              />
-              <RadioButton
-                name="cargoTypeId"
-                label="Barang Setengah Jadi"
-                checked={formValues.cargoTypeId === "barang-setengah-jadi"}
-                onClick={({ value }) => setField("cargoTypeId", value)}
-                value="barang-setengah-jadi"
-              />
-              <RadioButton
-                name="cargoTypeId"
-                label="Barang Jadi"
-                checked={formValues.cargoTypeId === "barang-jadi"}
-                onClick={({ value }) => setField("cargoTypeId", value)}
-                value="barang-jadi"
-              />
-              <RadioButton
-                name="cargoTypeId"
-                label="Lainnya"
-                checked={formValues.cargoTypeId === "lainnya"}
-                onClick={({ value }) => setField("cargoTypeId", value)}
-                value="lainnya"
-              />
+              {cargoTypes.map((cargoType, key) => (
+                <Fragment key={key}>
+                  <RadioButton
+                    name="cargoTypeId"
+                    label={cargoType.name}
+                    checked={formValues.cargoTypeId === cargoType.id}
+                    onClick={({ value }) => setField("cargoTypeId", value)}
+                    value={cargoType.id}
+                  />
+                </Fragment>
+              ))}
             </div>
             {formErrors?.cargoTypeId && (
               <span className="mt-3 block text-xs font-medium text-red-500">
@@ -191,41 +174,17 @@ const InformasiMuatanScreen = () => {
           {/* Radio Button Group */}
           <div>
             <div className="flex flex-col gap-y-4">
-              <RadioButton
-                name="cargoCategoryId"
-                label="Padat"
-                checked={formValues.cargoCategoryId === "padat"}
-                onClick={({ value }) => setField("cargoCategoryId", value)}
-                value="padat"
-              />
-              <RadioButton
-                name="cargoCategoryId"
-                label="Cair"
-                checked={formValues.cargoCategoryId === "cair"}
-                onClick={({ value }) => setField("cargoCategoryId", value)}
-                value="cair"
-              />
-              <RadioButton
-                name="cargoCategoryId"
-                label="Curah"
-                checked={formValues.cargoCategoryId === "curah"}
-                onClick={({ value }) => setField("cargoCategoryId", value)}
-                value="curah"
-              />
-              <RadioButton
-                name="cargoCategoryId"
-                label="Kendaraan"
-                checked={formValues.cargoCategoryId === "kendaraan"}
-                onClick={({ value }) => setField("cargoCategoryId", value)}
-                value="kendaraan"
-              />
-              <RadioButton
-                name="cargoCategoryId"
-                label="Container"
-                checked={formValues.cargoCategoryId === "container"}
-                onClick={({ value }) => setField("cargoCategoryId", value)}
-                value="container"
-              />
+              {cargoCategories.map((cargoCategory, key) => (
+                <Fragment key={key}>
+                  <RadioButton
+                    name="cargoCategoryId"
+                    label={cargoCategory.name}
+                    checked={formValues.cargoCategoryId === cargoCategory.id}
+                    onClick={({ value }) => setField("cargoCategoryId", value)}
+                    value={cargoCategory.id}
+                  />
+                </Fragment>
+              ))}
             </div>
             {formErrors?.cargoCategoryId && (
               <span className="mt-3 block text-xs font-medium text-red-500">
