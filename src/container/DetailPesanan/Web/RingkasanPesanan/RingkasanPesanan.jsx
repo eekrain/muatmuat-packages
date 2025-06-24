@@ -315,7 +315,14 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
                       index={index}
                       activeIndex={0}
                     >
-                      <TimelineContentAddress title={item.fullAddress} />
+                      <TimelineContentAddress
+                        title={item.fullAddress}
+                        className={
+                          index === dataRingkasanPesanan?.route?.muat.length - 1
+                            ? "pb-0"
+                            : ""
+                        }
+                      />
                     </TimelineItem>
                   ))}
                 </TimelineContainer>
@@ -347,7 +354,15 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
                     index={index}
                     activeIndex={0}
                   >
-                    <TimelineContentAddress title={item.fullAddress} />
+                    <TimelineContentAddress
+                      title={item.fullAddress}
+                      className={
+                        index ===
+                        dataRingkasanPesanan?.route?.bongkar.length - 1
+                          ? "pb-0"
+                          : ""
+                      }
+                    />
                   </TimelineItem>
                 ))}
               </TimelineContainer>

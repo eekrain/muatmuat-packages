@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { ChevronDown } from "lucide-react";
@@ -9,7 +10,6 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { useUser } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
-import { useAuthStore } from "@/store/auth/authStore";
 
 import { DownloadPopover } from "./DownloadPopover";
 import LanguageDropdown from "./LanguageDropdown";
@@ -25,10 +25,8 @@ const HeaderWeb = ({
     chat: 0,
   },
 }) => {
-  const accessToken = useAuthStore((state) => state.accessToken);
-
+  const pathname = usePathname();
   const { dataUser } = useUser();
-  console.log("🚀 ~ file: HeaderWeb.jsx:31 ~ dataUser:", dataUser);
 
   const menuNotifications = [
     // {
@@ -96,7 +94,11 @@ const HeaderWeb = ({
 
           <Link
             href="/sewaarmada"
-            className="flex h-8 items-center gap-1 border-b-2 border-muat-trans-primary-400"
+            className={cn(
+              "flex h-8 items-center gap-1 border-b-2 border-transparent",
+              pathname.startsWith("/sewaarmada") &&
+                "border-muat-trans-primary-400"
+            )}
           >
             <IconComponent src="/icons/header-pesan-jasa-angkut.svg" />
             <span>Pesan Jasa Angkut</span>
@@ -104,7 +106,11 @@ const HeaderWeb = ({
 
           <Link
             href="/daftarpesanan"
-            className="flex h-8 items-center gap-1 border-b-2 border-transparent"
+            className={cn(
+              "flex h-8 items-center gap-1 border-b-2 border-transparent",
+              pathname.startsWith("/daftarpesanan") &&
+                "border-muat-trans-primary-400"
+            )}
           >
             <IconComponent src="/icons/header-daftar-pesanan.svg" />
             <span>Daftar Pesanan</span>
