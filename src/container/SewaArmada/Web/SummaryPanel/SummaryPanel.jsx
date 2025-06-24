@@ -81,6 +81,7 @@ export const SummaryPanel = () => {
     businessEntity,
     paymentMethodId,
   } = useSewaArmadaStore((state) => state.formValues);
+  const formErrors = useSewaArmadaStore((state) => state.formErrors);
 
   const isBusinessEntity = businessEntity.isBusinessEntity;
 
@@ -248,8 +249,8 @@ export const SummaryPanel = () => {
   };
 
   const handleValidateFleetOrder = () => {
+    console.log("formErrors", formErrors);
     const isValidForm = validateForm();
-
     if (isValidForm) {
       setIsModalConfirmationOpen(true);
     }

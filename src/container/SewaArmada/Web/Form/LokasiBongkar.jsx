@@ -15,6 +15,9 @@ export const LokasiBongkar = () => {
   const lokasiBongkar = useSewaArmadaStore(
     (state) => state.formValues.lokasiBongkar
   );
+  const errorLokasiBongkar = useSewaArmadaStore(
+    (state) => state.formErrors?.lokasiBongkar
+  );
   const { addLokasi, removeLokasi } = useSewaArmadaActions();
 
   return (
@@ -42,6 +45,7 @@ export const LokasiBongkar = () => {
               });
             })
           }
+          errorMessage={errorLokasiBongkar}
         />
       </FormContainer>
 

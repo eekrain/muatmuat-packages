@@ -22,6 +22,7 @@ export const TimelineField = ({
   onDeleteLocation,
   onEditLocation,
   className,
+  errorMessage,
 }) => {
   const getVariant = () => {
     const selected = {};
@@ -40,65 +41,79 @@ export const TimelineField = ({
   };
 
   return (
-    <div
-      className={cn(
-        "rounded-[6px] border border-[#7B7B7B] p-3 md:rounded-xl",
-        className
-      )}
-    >
-      <TimelineContainer>
-        {values.map((item, index) => (
-          <TimelineItem
-            key={index}
-            variant={getVariant().variant}
-            totalLength={values.length}
-            index={index}
-            activeIndex={getVariant().activeIndex}
-          >
-            <div>
-              <div className="flex min-w-0 items-center">
-                <TimelineContentAddress
-                  title={
-                    item?.name ||
-                    (variant === "muat"
-                      ? "Masukkan Lokasi Muat"
-                      : "Masukkan Lokasi Bongkar")
-                  }
-                  className="min-w-0 flex-shrink cursor-pointer p-0 font-medium"
-                  onClick={() => onEditLocation(index)}
-                />
+    <div className="flex flex-col gap-2">
+      <div
+        className={cn(
+          "rounded-[6px] border border-[#7B7B7B] p-3 md:rounded-xl",
+          errorMessage && "border-error-400",
+          className
+        )}
+      >
+        <TimelineContainer>
+          {values.map((item, index) => (
+            <TimelineItem
+              key={index}
+              variant={getVariant().variant}
+              totalLength={values.length}
+              index={index}
+              activeIndex={getVariant().activeIndex}
+            >
+              <div>
+                <div className="flex min-w-0 items-center">
+                  <TimelineContentAddress
+                    title={
+                      item?.name ||
+                      (variant === "muat"
+                        ? "Masukkan Lokasi Muat"
+                        : "Masukkan Lokasi Bongkar")
+                    }
+                    className="min-w-0 flex-shrink cursor-pointer p-0 font-medium"
+                    onClick={() => onEditLocation(index)}
+                  />
 
-                <button
-                  className="flex flex-shrink-0 items-center pl-2"
-                  onClick={() => onDeleteLocation(index)}
-                >
-                  <IconComponent src="/icons/min-square24.svg" size="medium" />
-                </button>
+                  {item !== null && (
+                    <button
+                      className="flex flex-shrink-0 items-center pl-2"
+                      onClick={() => onDeleteLocation(index)}
+                    >
+                      <IconComponent
+                        src="/icons/min-square24.svg"
+                        size="medium"
+                      />
+                    </button>
+                  )}
+                </div>
+                {values.length > 1 && (
+                  <hr className="my-3 block border-[#C4C4C4]" />
+                )}
               </div>
-              {values.length > 1 && (
-                <hr className="my-3 block border-[#C4C4C4]" />
-              )}
-            </div>
-          </TimelineItem>
-        ))}
-      </TimelineContainer>
-      {values.length === 1 && <hr className="my-3 block border-[#C4C4C4]" />}
-      {values.length < maxLocation && (
-        <div className="flex justify-center">
-          <button
-            className="flex items-center gap-2 text-sm font-semibold text-[#176CF7]"
-            onClick={onAddLocation}
-          >
-            <IconComponent
-              width={20}
-              height={20}
-              src="/icons/plus-square24.svg"
-              className="-mt-[2px] text-[#176CF7]"
-              size="medium"
-            />
-            <span>Tambah Lokasi</span>
-          </button>
-        </div>
+            </TimelineItem>
+          ))}
+        </TimelineContainer>
+        {values.length === 1 && <hr className="my-3 block border-[#C4C4C4]" />}
+        {values.length < maxLocation && (
+          <div className="flex justify-center">
+            <button
+              className="flex items-center gap-2 text-sm font-semibold text-[#176CF7]"
+              onClick={onAddLocation}
+            >
+              <IconComponent
+                width={20}
+                height={20}
+                src="/icons/plus-square24.svg"
+                className="-mt-[2px] text-[#176CF7]"
+                size="medium"
+              />
+              <span>Tambah Lokasi</span>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {errorMessage && (
+        <span className="text-xs font-medium text-error-400">
+          {errorMessage}
+        </span>
       )}
     </div>
   );

@@ -130,7 +130,10 @@ export const useSewaArmadaStore = create(
               showRangeOption,
               fotoMuatan,
               cargoDescription,
+              lokasiMuat,
+              lokasiBongkar,
             } = get().formValues;
+
             const newErrors = {};
             const isValidFotoMuatan = fotoMuatan.some((item) => item !== null);
             if (!loadTimeStart) {
@@ -159,6 +162,15 @@ export const useSewaArmadaStore = create(
               newErrors.cargoDescription =
                 "Deskripsi Muatan minimal 3 karakter";
             }
+
+            if (lokasiMuat.some((item) => item === null)) {
+              newErrors.lokasiMuat = "Lokasi Muat wajib diisi";
+            }
+
+            if (lokasiBongkar.some((item) => item === null)) {
+              newErrors.lokasiBongkar = "Lokasi Bongkar wajib diisi";
+            }
+
             set({ formErrors: newErrors });
             return Object.keys(newErrors).length === 0;
           },

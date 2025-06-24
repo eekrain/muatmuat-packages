@@ -13,6 +13,9 @@ export const LokasiMuat = () => {
   const { modalConfig, handleOpenModalLocation, handleCloseModalLocation } =
     useModalLocation();
   const lokasiMuat = useSewaArmadaStore((state) => state.formValues.lokasiMuat);
+  const errorLokasiMuat = useSewaArmadaStore(
+    (state) => state.formErrors?.lokasiMuat
+  );
   const { addLokasi, removeLokasi } = useSewaArmadaActions();
 
   return (
@@ -40,6 +43,7 @@ export const LokasiMuat = () => {
               });
             })
           }
+          errorMessage={errorLokasiMuat}
         />
       </FormContainer>
 
