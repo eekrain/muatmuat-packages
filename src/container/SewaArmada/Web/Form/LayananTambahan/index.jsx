@@ -33,23 +33,8 @@ export const LayananTambahan = () => {
     "v1/orders/shipping-options"
   );
   // const shippingOptions = shippingOptionsData?.Data;
-  // console.log("additionalServices", additionalServices);
+
   const additionalServicesOptions = additionalServicesData?.Data.services || [];
-  // [
-  //   {
-  //     id: "550e8400-e29b-41d4-a716-446655440000",
-  //     name: "Kirim Bukti Fisik Penerimaan Barang",
-  //     description:
-  //       "Layanan untuk mengirim bukti fisik penerimaan barang ke alamat yang ditentukan",
-  //     price: 0,
-  //   },
-  //   {
-  //     id: "550e8400-e29b-41d4-a716-446655440001",
-  //     name: "Troli",
-  //     description: "Troli",
-  //     price: 25000,
-  //   },
-  // ];
 
   const shippingOptions = [
     {
@@ -190,7 +175,7 @@ export const LayananTambahan = () => {
 
     return sendDeliveryEvidenceService?.shippingDetails ?? null;
   }, [additionalServices]);
-  console.log("shippingDetails", shippingDetails);
+
   const shippingOption = useShallowMemo(() => {
     if (!shippingDetails) return null;
 
@@ -198,7 +183,7 @@ export const LayananTambahan = () => {
       .flatMap((option) => option.expeditions)
       .find((item) => item.id === shippingDetails.shippingOptionId);
   }, [shippingDetails, shippingOptions]);
-  console.log("bobobo", additionalServices);
+
   return (
     <>
       <FormContainer>
@@ -208,7 +193,6 @@ export const LayananTambahan = () => {
         {/* Container Opsi Layanan */}
         <div className="flex-grow-1 flex flex-col gap-y-3">
           {additionalServicesOptions?.map((service, key) => {
-            console.log("serpic", service);
             const isSendDeliveryEvidenceService = service.withShipping;
             // Check if this service is already in the additionalServices array
             const isSelected = additionalServices.some(

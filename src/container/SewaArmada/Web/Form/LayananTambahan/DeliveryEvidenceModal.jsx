@@ -120,9 +120,6 @@ const DeliveryEvidenceModal = ({
     const isFormValid = validateForm();
     if (!isFormValid || !isLocationFormValid) return;
 
-    // Handle submit
-    console.log("🚀 ~ handleSubmit ~ locationFormValues:", locationFormValues);
-
     const sendDeliveryEvidenceService = additionalServicesOptions.find(
       (item) => item.withShipping
     );

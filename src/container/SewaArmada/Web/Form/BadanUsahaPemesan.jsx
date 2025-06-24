@@ -92,7 +92,7 @@ export const BadanUsahaPemesan = () => {
       setFormErrors(newErrors);
     }
   };
-  console.log("isbu", isBusinessEntity);
+
   return (
     <>
       <FormContainer>
