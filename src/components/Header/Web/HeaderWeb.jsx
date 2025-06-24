@@ -8,7 +8,7 @@ import { ChevronDown } from "lucide-react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
-import { useUser } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 import { DownloadPopover } from "./DownloadPopover";
@@ -26,7 +26,7 @@ const HeaderWeb = ({
   },
 }) => {
   const pathname = usePathname();
-  const { dataUser } = useUser();
+  const { dataUser } = useAuth();
 
   const menuNotifications = [
     // {

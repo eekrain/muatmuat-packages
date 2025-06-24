@@ -1,6 +1,6 @@
 import xior from "xior";
 
-import { useAuthStore } from "@/store/auth/authStore";
+import { useTokenStore } from "@/store/auth/tokenStore";
 import { useUserStore } from "@/store/auth/userStore";
 
 const LIST_PUBLIC_ROUTES = [
@@ -19,7 +19,7 @@ export const createAxios = (baseURL) => {
   // Request interceptor
   fetcher.interceptors.request.use(
     (config) => {
-      const token = useAuthStore.getState();
+      const token = useTokenStore.getState();
       config.headers.Authorization = `Bearer ${token?.accessToken}`;
       config.headers.refreshToken = token?.refreshToken;
       return config;
@@ -48,8 +48,8 @@ export const createAxios = (baseURL) => {
         }
         // Handle other HTTP error codes (4xx, 5xx other than 503)
         if (error.response.status === 401 || error.response.status === 403) {
-          useAuthStore.getState().logout();
-          useUserStore.getState().removeUser();
+          useTokenStore.getState().actions.clearToken();
+          useUserStore.getState().actions.clearUser();
           // If the user is not on the public routes, redirect to /sewaarmada
           const isPublicRoutes = LIST_PUBLIC_ROUTES.some((route) => {
             const pathname = window?.location?.pathname;
