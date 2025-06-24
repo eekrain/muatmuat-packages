@@ -19,7 +19,7 @@ export const JenisMuatan = ({ cargoCategories }) => {
     () => (
       <>
         <ul>
-          {cargoTypes.map((type) => (
+          {cargoCategories.map((type) => (
             <li key={type.id}>
               <b>{type.name} :</b> {type.description}
             </li>
@@ -31,7 +31,7 @@ export const JenisMuatan = ({ cargoCategories }) => {
         </p>
       </>
     ),
-    [cargoTypes]
+    [cargoCategories]
   );
 
   return (
@@ -40,7 +40,7 @@ export const JenisMuatan = ({ cargoCategories }) => {
         required
         tooltip={
           <InfoTooltip className="w-[336px]" side="right">
-            {generateTooltipContent()}
+            {generateTooltipContent}
           </InfoTooltip>
         }
       >

@@ -1,6 +1,7 @@
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import RadioButton from "@/components/Radio/RadioButton";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
@@ -14,11 +15,7 @@ export const TipeMuatan = ({ cargoTypes }) => {
   const { setField } = useSewaArmadaActions();
 
   // Generate tooltip content from cargo types descriptions
-  const generateTooltipContent = () => {
-    if (cargoTypes.length === 0) {
-      return <p>Memuat informasi tipe muatan...</p>;
-    }
-
+  const generateTooltipContent = useShallowMemo(() => {
     return (
       <>
         <ul>
@@ -34,7 +31,7 @@ export const TipeMuatan = ({ cargoTypes }) => {
         </p>
       </>
     );
-  };
+  }, [cargoTypes]);
 
   return (
     <FormContainer className="flex gap-8">
@@ -42,7 +39,7 @@ export const TipeMuatan = ({ cargoTypes }) => {
         required
         tooltip={
           <InfoTooltip className="w-[336px]" side="right">
-            {generateTooltipContent()}
+            {generateTooltipContent}
           </InfoTooltip>
         }
       >
