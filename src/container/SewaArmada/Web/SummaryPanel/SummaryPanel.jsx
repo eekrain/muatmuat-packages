@@ -213,9 +213,8 @@ export const SummaryPanel = () => {
           validationMessage = "labelAlertVoucherMTExpired";
         } else if (validationMessage == "labelAlertVoucherMTMinimumOrder") {
           console.log("err order");
-          validationMessage = "Minimal Transaksi ".idrFormat(
-            voucher.minOrderAmount
-          );
+          validationMessage = `Minimal Transaksi ${idrFormat(voucher.minOrderAmount)}
+          `;
         } else if (validationMessage == "labelAlertVoucherMTKuotaHabis") {
           console.log("err qty");
           validationMessage = "labelAlertVoucherMTKuotaHabis";
@@ -598,7 +597,13 @@ export const SummaryPanel = () => {
           <h3 className="text-base font-bold text-black">
             Ringkasan Transaksi
           </h3>
-          <button onClick={() => handleOrderFleet(true)} className="">
+          <button
+            onClick={() => {
+              //handleOrderFleet(true)
+              router.push("/daftarpesanan/detailpesanan/1");
+            }}
+            className=""
+          >
             Test
           </button>
           <div className="scrollbar-custombadanusaha mr-[-12px] flex max-h-[263px] flex-col gap-y-6 overflow-y-auto pr-2">
