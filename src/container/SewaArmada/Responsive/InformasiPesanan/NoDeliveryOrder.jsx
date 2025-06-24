@@ -18,7 +18,6 @@ const NoDeliveryOrder = () => {
   const deliveryOrderNumbers = useSewaArmadaStore(
     (state) => state.formValues.deliveryOrderNumbers
   );
-  const { formValues } = useSewaArmadaStore();
   const { setField } = useSewaArmadaActions();
 
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);

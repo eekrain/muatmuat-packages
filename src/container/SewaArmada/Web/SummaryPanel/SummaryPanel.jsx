@@ -59,9 +59,39 @@ export const SummaryPanel = () => {
 
   const router = useRouter();
 
+  const orderType = useSewaArmadaStore((state) => state.orderType);
+  // const loadTimeStart = useSewaArmadaStore(
+  //   (state) => state.formValues.loadTimeStart
+  // );
+  // const loadTimeEnd = useSewaArmadaStore(
+  //   (state) => state.formValues.loadTimeEnd
+  // );
+  // const showRangeOption = useSewaArmadaStore(
+  //   (state) => state.formValues.showRangeOption
+  // );
+  const cargoTypeId = useSewaArmadaStore(
+    (state) => state.formValues.cargoTypeId
+  );
+  const cargoCategoryId = useSewaArmadaStore(
+    (state) => state.formValues.cargoCategoryId
+  );
+  const isHalalLogistics = useSewaArmadaStore(
+    (state) => state.formValues.isHalalLogistics
+  );
+  const cargoDescription = useSewaArmadaStore(
+    (state) => state.formValues.cargoDescription
+  );
+  const carrierId = useSewaArmadaStore((state) => state.formValues.carrierId);
   const truckTypeId = useSewaArmadaStore(
     (state) => state.formValues.truckTypeId
   );
+  const additionalServices = useSewaArmadaStore(
+    (s) => s.formValues.additionalServices
+  );
+  const deliveryOrderNumbers = useSewaArmadaStore(
+    (state) => state.formValues.deliveryOrderNumbers
+  );
+  const businessEntity = useSewaArmadaStore((s) => s.formValues.businessEntity);
   const isBusinessEntity = useSewaArmadaStore(
     (state) => state.formValues.businessEntity.isBusinessEntity
   );
@@ -419,7 +449,7 @@ export const SummaryPanel = () => {
     // };
 
     const sampleOrderData = {
-      orderType: "INSTANT",
+      orderType,
       loadTimeStart: "2025-06-24T09:00:00Z",
       loadTimeEnd: "2025-07-24T09:00:00Z",
       locations: [
@@ -473,16 +503,16 @@ export const SummaryPanel = () => {
           sequence: 1,
         },
       ],
-      cargoTypeId: "550e8400-e29b-41d4-a716-446655440100",
-      cargoCategoryId: "550e8400-e29b-41d4-a716-446655440110",
+      cargoTypeId,
+      cargoCategoryId,
       cargoPhotos: [
         "https://storage.muatrans.com/cargos/photo-123456.jpg",
         "https://storage.muatrans.com/cargos/photo-123457.jpg",
       ],
       cargoDescription: "Elektronik dan peralatan kantor",
-      isHalalLogistics: true,
-      carrierId: "550e8400-e29b-41d4-a716-446655440050",
-      truckTypeId: "f483709a-de4c-4541-b29e-6f4d9a912332",
+      isHalalLogistics,
+      carrierId,
+      truckTypeId,
       truckCount: 2,
       estimatedDistance: 75.5,
       estimatedTime: 120,
@@ -493,36 +523,11 @@ export const SummaryPanel = () => {
       //   isCustomAmount: false,
       //   insurancePolicyAccepted: true,
       // },
-      additionalServices: [
-        {
-          serviceId: "550e8400-e29b-41d4-a716-446655440000",
-          withShipping: true,
-          shippingDetails: {
-            recipientName: "John Doe",
-            recipientPhone: "08123456789",
-            destinationAddress: "Jl. Contoh No. 123",
-            detailAddress: "Rumah cat putih",
-            district: "Tegalsari",
-            city: "Surabaya",
-            province: "Jawa Timur",
-            postalCode: "60261",
-            shippingOptionId: "0d5de669-e7ba-46f4-a8c6-0f3192ed7465",
-            withInsurance: true,
-          },
-        },
-        {
-          serviceId: "550e8400-e29b-41d4-a716-446655440001",
-          withShipping: false,
-        },
-      ],
-      deliveryOrderNumbers: ["DO123456", "DO123457"],
-      businessEntity: {
-        isBusinessEntity: true,
-        name: "PT Sukses Makmur",
-        taxId: "0123456789012345",
-      },
+      additionalServices,
+      deliveryOrderNumbers,
+      businessEntity,
       voucherId: selectedVoucher ?? "",
-      paymentMethodId: "550e8400-e29b-41d4-a716-446655440000",
+      paymentMethodId,
       pricing: {
         transportFee: 1500000,
         insuranceFee: 20000,
