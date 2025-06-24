@@ -63,7 +63,10 @@ export const useGetCurrentLocation = ({
     setCoordinates(result.coordinates);
     if (!result?.district?.value && !dontTriggerPostalCodeModal) {
       setIsModalPostalCodeOpen(true);
-      setLocationPostalCodeSearchPhrase(result.postalCode.value);
+
+      if (result.postalCode.value === "00000")
+        setLocationPostalCodeSearchPhrase("");
+      else setLocationPostalCodeSearchPhrase(result.postalCode.value);
     }
     if (result?.location?.name && !isMobile) {
       setAutoCompleteSearchPhrase(result.location.name);

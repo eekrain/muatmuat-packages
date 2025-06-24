@@ -127,6 +127,10 @@ export const InputLocationManagementDropdown = ({
     handleSelectSearchResult,
   });
 
+  const onSelectSearchResult = async (location) => {
+    return handleSelectSearchResult(location);
+  };
+
   // useEffect(() => {
   //   // Untuk menghapus data lokasi jika user menghapus text di inputan
   //   if (!searchLocationAutoComplete) onAddressSelected(null);

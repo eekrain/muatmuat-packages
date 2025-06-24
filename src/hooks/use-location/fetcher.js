@@ -1,4 +1,4 @@
-import { fetcherMuatparts } from "@/lib/axios";
+import { fetcherMuatparts, fetcherMuatrans } from "@/lib/axios";
 import {
   normalizeAutoCompleteNotFound,
   normalizeDistrictData,
@@ -71,7 +71,26 @@ const getLocationByPlaceId = async (location) => {
   return result;
 };
 
+const saveRecentSearchedLocation = async (result) =>
+  fetcherMuatrans
+    .post("v1/orders/save-search-location", {
+      q: result.location.name,
+      Latitude: result.coordinates.latitude,
+      Longitude: result.coordinates.longitude,
+      Province: result.province.name,
+      ProvinceID: result.province.value,
+      City: result.city.name,
+      CityID: result.city.value,
+      District: result.district.name,
+      DistrictID: result.district.value,
+      PostalCode: result.postalCode.value,
+    })
+    .catch((err) => {
+      console.warn("Failed to save recently searched location:", err.message);
+    });
+
 export const fetcher = {
   getLocationByLatLong,
   getLocationByPlaceId,
+  saveRecentSearchedLocation,
 };

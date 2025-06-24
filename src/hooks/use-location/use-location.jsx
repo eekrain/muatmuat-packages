@@ -26,6 +26,12 @@ export const LocationProvider = ({ children }) => {
   const [dontTriggerPostalCodeModal, setDontTriggerPostalCodeModal] =
     useState(false);
 
+  const savedLocation = useSavedLocation({
+    setCoordinates,
+    setAutoCompleteSearchPhrase,
+    setIsDropdownSearchOpen,
+    setDontTriggerPostalCodeModal,
+  });
   const autoComplete = useAutoComplete({
     autoCompleteSearchPhrase,
     setAutoCompleteSearchPhrase,
@@ -35,6 +41,7 @@ export const LocationProvider = ({ children }) => {
     setTempLocation,
     setDontTriggerPostalCodeModal,
     setIsDropdownSearchOpen,
+    refetchHistoryResult: savedLocation.refetchHistoryResult,
   });
   const getCurrentLocation = useGetCurrentLocation({
     setCoordinates,
@@ -50,12 +57,6 @@ export const LocationProvider = ({ children }) => {
     locationPostalCodeSearchPhrase,
     tempLocation,
     setAutoCompleteSearchPhrase,
-  });
-  const savedLocation = useSavedLocation({
-    setCoordinates,
-    setAutoCompleteSearchPhrase,
-    setIsDropdownSearchOpen,
-    setDontTriggerPostalCodeModal,
   });
 
   const resetLocationContext = () => {

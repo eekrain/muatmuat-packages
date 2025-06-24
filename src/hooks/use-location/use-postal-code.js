@@ -7,6 +7,7 @@ import { useLocationFormStore } from "@/store/forms/locationFormStore";
 import { useDebounceCallback } from "../use-debounce-callback";
 import useDevice from "../use-device";
 import { useSWRMutateHook } from "../use-swr";
+import { fetcher } from "./fetcher";
 
 export const usePostalCode = ({
   setIsModalPostalCodeOpen,
@@ -50,6 +51,8 @@ export const usePostalCode = ({
       if (tempLocation?.location?.name && !isMobile)
         setAutoCompleteSearchPhrase(tempLocation.location.name);
       setIsModalPostalCodeOpen(false);
+
+      fetcher.saveRecentSearchedLocation(result);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [tempLocation]
