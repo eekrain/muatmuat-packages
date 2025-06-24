@@ -96,15 +96,15 @@ const SelectArmadaModal = ({
             isBusinessEntity,
           },
         };
-        console.log("babi", requestPayload);
+
         // Panggil API calculate-price
         const priceResult = await calculatePrice(requestPayload);
 
         // Jika berhasil, simpan hasil perhitungan ke store
-        if (priceResult?.data?.price) {
-          // Update price data di store
-          setField("calculatedPrice", priceResult.data.price);
-        }
+        // if (priceResult?.data?.price) {
+        //   Update price data di store
+        //   setField("calculatedPrice", priceResult.data.price);
+        // }
       } catch (error) {
         console.error("Error calculating price:", error);
         // Opsional: Set error message di store
@@ -155,6 +155,11 @@ const SelectArmadaModal = ({
     ...(currentData.recommended || []),
     ...(currentData.notRecommended || []),
   ].filter((item) => item?.name?.toLowerCase().includes(search.toLowerCase()));
+  console.log("tru", type, truckData);
+  const isTruckOptionsEmpty =
+    type === "truckTypeId" &&
+    [...(currentData.recommended || []), ...(currentData.notRecommended || [])]
+      .length === 0;
 
   return (
     <>
@@ -168,8 +173,13 @@ const SelectArmadaModal = ({
               </h1>
             </div>
 
+            {isTruckOptionsEmpty ? (
+              <WarningBadge message="Untuk sementara kami belum menyediakan truk yang sesuai dengan informasi berat dan dimensi muatan yang kamu isikan." />
+            ) : null}
+
             {/* Search Field */}
             <Input
+              disabled={isTruckOptionsEmpty}
               placeholder={`Cari Jenis ${type === "carrierId" ? "Carrier" : "Truk"}`}
               icon={{
                 left: "/icons/search16.svg",
@@ -206,19 +216,21 @@ const SelectArmadaModal = ({
                           <TruckItem
                             {...item}
                             onClick={() => handleArmadaSelect(item.truckTypeId)}
-                            isLoading={isCalculatingPrice}
                           />
                         ) : null}
                       </Fragment>
                     ))
-                  ) : (
-                    <div className="flex h-[92px] items-center justify-center">
-                      <p className="text-[12px] text-neutral-600">
-                        Tidak ada {type === "carrierId" ? "carrier" : "truk"}{" "}
-                        yang direkomendasikan
-                      </p>
+                  ) : isTruckOptionsEmpty ? (
+                    <div className="flex h-[267px] items-center justify-center">
+                      <DataNotFound
+                        className="gap-y-3"
+                        textClass="text-[#868686]"
+                        title="Tidak ada rekomendasi truk"
+                        width={96}
+                        height={77}
+                      />
                     </div>
-                  )}
+                  ) : null}
                 </div>
 
                 {/* Tidak Direkomendasikan Section */}
@@ -227,7 +239,6 @@ const SelectArmadaModal = ({
                     <SectionHeader recommended={false} type={type} />
 
                     <WarningBadge
-                      icon="/icons/warning14.svg"
                       message={`Pilihan ${type === "carrier" ? "carrier" : "truk"} di bawah ini berisiko melebihi batas dimensi atau tidak sesuai dengan informasi muatan`}
                     />
 
@@ -243,7 +254,6 @@ const SelectArmadaModal = ({
                           <TruckItem
                             {...item}
                             onClick={() => handleArmadaSelect(item.truckTypeId)}
-                            isLoading={isCalculatingPrice}
                           />
                         ) : null}
                       </Fragment>
@@ -280,7 +290,6 @@ const SelectArmadaModal = ({
                           <TruckItem
                             {...item}
                             onClick={() => handleArmadaSelect(item.truckTypeId)}
-                            isLoading={isCalculatingPrice}
                           />
                         ) : null}
                       </Fragment>
