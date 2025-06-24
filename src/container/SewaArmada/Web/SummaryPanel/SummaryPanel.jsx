@@ -43,7 +43,13 @@ export const SummaryPanel = () => {
 
   // Voucher related state and hooks
   const token = "Bearer your_token_here";
-  const { vouchers: voucherList, loading, error } = useVouchers(token);
+  const MOCK_EMPTY = false;
+
+  let { vouchers: voucherList, loading, error } = useVouchers(token);
+
+  if (MOCK_EMPTY && !loading && !error) {
+    voucherList = [];
+  }
   const [validationErrors, setValidationErrors] = useState({});
   const [selectedVoucher, setSelectedVoucher] = useState(null);
   const [showVoucherPopup, setShowVoucherPopup] = useState(false);
@@ -161,6 +167,7 @@ export const SummaryPanel = () => {
         // Set validation error for this specific voucher
         const validationMessage =
           res.data.Data.validationMessages || "Voucher tidak valid";
+
         setValidationErrors({
           ...validationErrors,
           [voucher.id]: validationMessage,
@@ -178,6 +185,20 @@ export const SummaryPanel = () => {
         const errorData = err.response.data.Data;
         const validationMessage =
           errorData.validationMessages || "Voucher tidak valid";
+        // labelAlertVoucherMTExpired
+        // labelAlertVoucherMTMinimumOrder
+        // labelAlertVoucherMTKuotaHabis
+        if (validationMessage == "labelAlertVoucherMTExpired") {
+          console.log("err expired");
+          validationMessage = "labelAlertVoucherMTExpired";
+        } else if (validationMessage == "labelAlertVoucherMTMinimumOrder") {
+          console.log("err order");
+          validationMessage = `Minimal Transaksi ${idrFormat(voucher.minOrderAmount)}
+          `;
+        } else if (validationMessage == "labelAlertVoucherMTKuotaHabis") {
+          console.log("err qty");
+          validationMessage = "labelAlertVoucherMTKuotaHabis";
+        }
 
         setValidationErrors({
           ...validationErrors,
@@ -217,7 +238,69 @@ export const SummaryPanel = () => {
     }
   };
 
+  const validateOrderData = (orderData) => {
+    const errors = [];
+
+    // Basic validations
+    if (!orderData.loadTimeStart) {
+      errors.push({
+        field: "loadTimeStart",
+        message: "Waktu muat tidak boleh kosong",
+      });
+    }
+
+    if (!orderData.loadTimeEnd) {
+      errors.push({
+        field: "loadTimeEnd",
+        message: "Waktu muat akhir tidak boleh kosong",
+      });
+    }
+
+    // Check for pickup and dropoff locations
+    const pickupLocations = orderData.locations.filter(
+      (loc) => loc.locationType === "PICKUP"
+    );
+    const dropoffLocations = orderData.locations.filter(
+      (loc) => loc.locationType === "DROPOFF"
+    );
+
+    if (pickupLocations.length === 0 || dropoffLocations.length === 0) {
+      errors.push({
+        field: "locations",
+        message: "Minimal harus ada 1 lokasi pickup dan 1 lokasi dropoff",
+      });
+    }
+
+    // Check for cargos
+    if (!orderData.cargos || orderData.cargos.length === 0) {
+      errors.push({
+        field: "cargos",
+        message: "Minimal harus ada 1 muatan",
+      });
+    } else {
+      orderData.cargos.forEach((cargo, index) => {
+        if (!cargo.weight || cargo.weight <= 0) {
+          errors.push({
+            field: `cargos.${index}.weight`,
+            message: "Berat muatan harus lebih dari 0",
+          });
+        }
+      });
+    }
+
+    // Check for payment method
+    if (!orderData.paymentMethodId) {
+      errors.push({
+        field: "paymentMethodId",
+        message: "Metode pembayaran wajib dipilih",
+      });
+    }
+
+    return errors;
+  };
+
   const handleOrderFleet = () => {
+    //validateOrderData();
     // Contoh model data create order
     // const data = {
     //   orderType: "INSTANT",
@@ -335,10 +418,150 @@ export const SummaryPanel = () => {
     //   },
     // };
 
-    alert("Hore Berhasil Sewa Armada :)");
+    const sampleOrderData = {
+      orderType: "INSTANT",
+      loadTimeStart: "2025-06-24T09:00:00Z",
+      loadTimeEnd: "2025-07-24T09:00:00Z",
+      locations: [
+        {
+          locationType: "PICKUP",
+          sequence: 1,
+          fullAddress: "Jl. Sudirman No. 123, Jakarta Pusat",
+          detailAddress: "Gedung ABC Lantai 5",
+          latitude: -6.2088,
+          longitude: 106.8456,
+          district: "Tanah Abang",
+          districtId: 2,
+          city: "Jakarta Pusat",
+          cityId: 213,
+          province: "DKI Jakarta",
+          provinceId: 35,
+          postalCode: "10270",
+          picName: "Budi Santoso",
+          picPhoneNumber: "081234567890",
+        },
+        {
+          locationType: "DROPOFF",
+          sequence: 1,
+          fullAddress: "Jl. Gatot Subroto No. 456, Jakarta Selatan",
+          detailAddress: "Lobby Utama",
+          latitude: -6.25,
+          longitude: 106.83,
+          district: "Setiabudi",
+          districtId: 2,
+          city: "Jakarta Pusat",
+          cityId: 213,
+          province: "DKI Jakarta",
+          provinceId: 35,
+          postalCode: "12930",
+          picName: "Sari Dewi",
+          picPhoneNumber: "081234567891",
+        },
+      ],
+      cargos: [
+        {
+          cargoNameId: "550e8400-e29b-41d4-a716-446655440030",
+          customName: "Laptop dan Printer",
+          weight: 500.0,
+          weightUnit: "kg",
+          dimensions: {
+            length: 2.0,
+            width: 1.5,
+            height: 1.0,
+            dimensionUnit: "m",
+          },
+          sequence: 1,
+        },
+      ],
+      cargoTypeId: "550e8400-e29b-41d4-a716-446655440100",
+      cargoCategoryId: "550e8400-e29b-41d4-a716-446655440110",
+      cargoPhotos: [
+        "https://storage.muatrans.com/cargos/photo-123456.jpg",
+        "https://storage.muatrans.com/cargos/photo-123457.jpg",
+      ],
+      cargoDescription: "Elektronik dan peralatan kantor",
+      isHalalLogistics: true,
+      carrierId: "550e8400-e29b-41d4-a716-446655440050",
+      truckTypeId: "f483709a-de4c-4541-b29e-6f4d9a912332",
+      truckCount: 2,
+      estimatedDistance: 75.5,
+      estimatedTime: 120,
+      // insurance: {
+      //   insuranceOptionId: "550e8400-e29b-41d4-a716-446655440071",
+      //   coverageAmount: 20000000,
+      //   premiumAmount: 20000,
+      //   isCustomAmount: false,
+      //   insurancePolicyAccepted: true,
+      // },
+      additionalServices: [
+        {
+          serviceId: "550e8400-e29b-41d4-a716-446655440000",
+          withShipping: true,
+          shippingDetails: {
+            recipientName: "John Doe",
+            recipientPhone: "08123456789",
+            destinationAddress: "Jl. Contoh No. 123",
+            detailAddress: "Rumah cat putih",
+            district: "Tegalsari",
+            city: "Surabaya",
+            province: "Jawa Timur",
+            postalCode: "60261",
+            shippingOptionId: "0d5de669-e7ba-46f4-a8c6-0f3192ed7465",
+            withInsurance: true,
+          },
+        },
+        {
+          serviceId: "550e8400-e29b-41d4-a716-446655440001",
+          withShipping: false,
+        },
+      ],
+      deliveryOrderNumbers: ["DO123456", "DO123457"],
+      businessEntity: {
+        isBusinessEntity: true,
+        name: "PT Sukses Makmur",
+        taxId: "0123456789012345",
+      },
+      voucherId: selectedVoucher ?? "",
+      paymentMethodId: "550e8400-e29b-41d4-a716-446655440000",
+      pricing: {
+        transportFee: 1500000,
+        insuranceFee: 20000,
+        additionalServiceFee: 85000,
+        voucherDiscount: 100000,
+        adminFee: 10000,
+        taxAmount: 161000,
+        totalPrice: 1676000,
+      },
+    };
+
+    const result = validateOrderData(sampleOrderData);
+    console.log("here", result);
+
+    try {
+      // Panggil API untuk membuat pesanan
+      const response = fetcherMuatrans.post(
+        "/v1/orders/create",
+        sampleOrderData,
+        {
+          headers: { Authorization: token },
+        }
+      );
+      if (response.data.Message.Code == 200) {
+        alert("Hore Berhasil Sewa Armada :)");
+      } else {
+        alert("Validation err");
+      }
+
+      // Handle sukses
+      //router.push(`/daftarpesanan/detailpesanan/${response.data.data.orderId}`);
+    } catch (error) {
+      console.error("Error creating order:", error);
+      // Handle error
+    }
+
     setIsModalConfirmationOpen(false);
     // ambil order id dari response API create order
-    router.push("/daftarpesanan/detailpesanan/1");
+    //router.push("/daftarpesanan/detailpesanan/1");
   };
 
   const selectedOpsiPembayaran = useShallowMemo(
@@ -358,7 +581,15 @@ export const SummaryPanel = () => {
           <h3 className="text-base font-bold text-black">
             Ringkasan Transaksi
           </h3>
-
+          <button
+            onClick={() => {
+              //handleOrderFleet(true)
+              router.push("/daftarpesanan/detailpesanan/1");
+            }}
+            className=""
+          >
+            Test
+          </button>
           <div className="scrollbar-custombadanusaha mr-[-12px] flex max-h-[263px] flex-col gap-y-6 overflow-y-auto pr-2">
             <button
               onClick={() => setShowVoucherPopup(true)}
@@ -581,6 +812,7 @@ export const SummaryPanel = () => {
               <IconComponent src="/icons/search.svg" width={20} height={20} />
             </div>
             <input
+              disabled={filteredVouchers.length === 0 ? true : false}
               type="text"
               placeholder="Cari Kode Voucher"
               value={searchKeyword}
