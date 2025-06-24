@@ -7,15 +7,21 @@ import { fetcherMuatrans } from "@/lib/axios";
  * Reusable SWR data fetching hook using axios.
  * @template T
  * @param {string | null} key - The SWR key (usually the API endpoint).
+ * @param {import('xior').Xior} [customFetcher=fetcherMuatrans] - The custom axios instance.
  * @param {import('swr').SWRConfiguration} [options] - SWR options.
  * @returns {import('swr').SWRResponse<T, any>}
  */
-export function useSWRHook(key, customFetcher = fetcherMuatrans, options = {}) {
+export function useSWRHook(
+  key,
+  customFetcher = fetcherMuatrans,
+  axiosOptions = {},
+  swrOptions = {}
+) {
   const fetcher = async (url) => {
-    const res = await customFetcher.get(url, {});
+    const res = await customFetcher.get(url, axiosOptions);
     return res.data;
   };
-  return useSWR(key, fetcher, options);
+  return useSWR(key, fetcher, swrOptions);
 }
 
 /**
@@ -36,16 +42,21 @@ export function useSWRMutateHook(
   key,
   method = "POST",
   customFetcher = fetcherMuatrans,
-  options = {}
+  axiosOptions = {},
+  swrOptions = {}
 ) {
   const fetcher = async (url, { arg }) => {
-    const res = await customFetcher[method.toLowerCase()](url, arg);
+    const res = await customFetcher[method.toLowerCase()](
+      url,
+      arg,
+      axiosOptions
+    );
     return res.data;
   };
   const { trigger, isMutating, data, error, reset } = useSWRMutation(
     key,
     fetcher,
-    options
+    swrOptions
   );
   return { trigger, isMutating, data, error, reset };
 }
