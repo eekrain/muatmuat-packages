@@ -15,6 +15,7 @@ import {
 
 export const LayananTambahan = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [modalType, setModalType] = useState("");
 
   const additionalServices = useSewaArmadaStore(
     (s) => s.formValues.additionalServices
@@ -204,13 +205,6 @@ export const LayananTambahan = () => {
             const isSelected = additionalServices.some(
               (selectedService) => selectedService.serviceId === service.id
             );
-
-            console.log(
-              "is",
-              service.name,
-              isSendDeliveryEvidenceService,
-              isSelected
-            );
             return (
               <Fragment key={key}>
                 <div className="flex h-[16px] w-full flex-row items-center justify-between gap-[4px]">
@@ -222,6 +216,7 @@ export const LayananTambahan = () => {
                           if (e.checked) {
                             // Open modal for specific service if needed
                             if (isSendDeliveryEvidenceService) {
+                              setModalType("create");
                               setIsOpen(true);
                             } else {
                               // Add the service to the array if checked
@@ -256,11 +251,24 @@ export const LayananTambahan = () => {
 
                   {/* Biaya Layanan */}
                   <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                    {`Rp${service.price === 0 ? "-" : service.price.toLocaleString("id-ID")}`}
+                    {`Rp${
+                      service.price === 0
+                        ? isSelected
+                          ? shippingOptions
+                              .flatMap((option) => option.expeditions)
+                              .find(
+                                (expedition) =>
+                                  expedition.id ===
+                                  shippingDetails?.shippingOptionId
+                              )
+                              ?.originalCost.toLocaleString("id-ID")
+                          : "-"
+                        : service.price.toLocaleString("id-ID")
+                    }`}
                   </span>
                 </div>
                 {isSendDeliveryEvidenceService && isSelected ? (
-                  <div className="flex gap-x-2 rounded-md border border-primary-700 bg-primary-50 p-3">
+                  <div className="ml-6 flex gap-x-2 rounded-md border border-primary-700 bg-primary-50 p-3">
                     <IconComponent
                       className="icon-fill-muat-trans-secondary-900"
                       src="/icons/lokasi16.svg"
@@ -309,7 +317,10 @@ export const LayananTambahan = () => {
                     </div>
                     <button
                       className="flex items-center gap-x-2 self-start"
-                      onClick={() => setIsOpen(true)}
+                      onClick={() => {
+                        setModalType("edit");
+                        setIsOpen(true);
+                      }}
                     >
                       <span className="text-[12px] font-medium leading-[14.4px] text-primary-700">
                         Ubah
@@ -329,6 +340,7 @@ export const LayananTambahan = () => {
       <DeliveryEvidenceModal
         isOpen={isOpen}
         setIsOpen={setIsOpen}
+        modalType={modalType}
         additionalServicesOptions={additionalServicesOptions}
         shippingOptions={shippingOptions}
       />

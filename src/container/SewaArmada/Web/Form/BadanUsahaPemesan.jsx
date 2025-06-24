@@ -19,12 +19,12 @@ export const BadanUsahaPemesan = () => {
   const isBusinessEntity = useSewaArmadaStore(
     (state) => state.formValues.businessEntity.isBusinessEntity
   );
-  const name = useSewaArmadaStore(
-    (state) => state.formValues.businessEntity.name
-  );
-  const taxId = useSewaArmadaStore(
-    (state) => state.formValues.businessEntity.taxId
-  );
+  // const name = useSewaArmadaStore(
+  //   (state) => state.formValues.businessEntity.name
+  // );
+  // const taxId = useSewaArmadaStore(
+  //   (state) => state.formValues.businessEntity.taxId
+  // );
 
   const { setField } = useSewaArmadaActions();
 
@@ -47,12 +47,15 @@ export const BadanUsahaPemesan = () => {
   };
 
   const handleToggleCheckbox = (checked) => {
+    setField("businessEntity", {
+      isBusinessEntity: checked,
+      name: "",
+      taxId: "",
+    });
     if (checked) {
-      setFormData({ name, taxId });
       setIsModalOpen(true);
     } else {
-      setField("businessEntity", {
-        isBusinessEntity: checked,
+      setFormData({
         name: "",
         taxId: "",
       });
@@ -89,7 +92,7 @@ export const BadanUsahaPemesan = () => {
       setFormErrors(newErrors);
     }
   };
-
+  console.log("isbu", isBusinessEntity);
   return (
     <>
       <FormContainer>

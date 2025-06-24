@@ -18,6 +18,7 @@ import {
 const DeliveryEvidenceModal = ({
   isOpen,
   setIsOpen,
+  modalType,
   additionalServicesOptions,
   shippingOptions,
 }) => {
@@ -152,10 +153,12 @@ const DeliveryEvidenceModal = ({
     <Modal
       open={isOpen}
       onOpenChange={(value) => {
-        setField(
-          "additionalServices",
-          additionalServices.filter((item) => item.price !== 0)
-        );
+        if (modalType === "create") {
+          setField(
+            "additionalServices",
+            additionalServices.filter((item) => !item.withShipping)
+          );
+        }
         setIsOpen(value);
       }}
       closeOnOutsideClick={false}
