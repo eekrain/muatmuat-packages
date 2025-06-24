@@ -12,7 +12,7 @@ import { fetcherMuatrans } from "@/lib/axios";
  */
 export function useSWRHook(key, customFetcher = fetcherMuatrans, options = {}) {
   const fetcher = async (url) => {
-    const res = await customFetcher.get(url);
+    const res = await customFetcher.get(url, {});
     return res.data;
   };
   return useSWR(key, fetcher, options);

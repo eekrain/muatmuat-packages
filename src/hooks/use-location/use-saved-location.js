@@ -25,12 +25,12 @@ export const useSavedLocation = ({
   );
   const setField = useLocationFormStore((state) => state.setField);
 
-  const { data: savedResult, mutate: mutateSavedResult } = useSWRHook(
+  const { data: savedResult, mutate: refetchSavedResult } = useSWRHook(
     "v1/muatparts/profile/location",
     fetcherMuatparts
   );
 
-  const { data: historyResult } = useSWRHook(
+  const { data: historyResult, mutate: refetchHistoryResult } = useSWRHook(
     `v1/orders/history-locations?locationType=${historyLocationType}`,
     fetcherMuatrans
   );
@@ -105,7 +105,7 @@ export const useSavedLocation = ({
           param: normalizeLocationDataForSaving(formValues),
         }
       );
-      mutateSavedResult();
+      refetchSavedResult();
       setTimeout(() => {
         toast.success("Lokasi berhasil ditambah");
       }, 200);
@@ -128,7 +128,7 @@ export const useSavedLocation = ({
           },
         }
       );
-      mutateSavedResult();
+      refetchSavedResult();
       setTimeout(() => {
         toast.success("Lokasi berhasil diubah");
       }, 200);
@@ -146,6 +146,7 @@ export const useSavedLocation = ({
     userRecentSearchedLocation,
     userRecentTransactionLocation,
     handleSelectRecentLocation,
+    refetchHistoryResult,
 
     handleSaveLocation,
     handleUpdateLocation,
