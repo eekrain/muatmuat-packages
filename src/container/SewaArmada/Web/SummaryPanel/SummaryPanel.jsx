@@ -436,9 +436,9 @@ export const SummaryPanel = () => {
     // };
 
     const sampleOrderData = {
-      orderType,
-      loadTimeStart: "2025-06-24T09:00:00Z",
-      loadTimeEnd: "2025-07-24T09:00:00Z",
+      orderType: "INSTANT",
+      loadTimeStart: "2025-06-26T09:00:00Z",
+      loadTimeEnd: "2025-07-27T09:00:00Z",
       locations: [
         {
           locationType: "PICKUP",
@@ -516,13 +516,13 @@ export const SummaryPanel = () => {
       voucherId: selectedVoucher ?? "",
       paymentMethodId,
       pricing: {
-        transportFee: 1500000,
-        insuranceFee: 20000,
-        additionalServiceFee: 85000,
-        voucherDiscount: 100000,
+        transportFee: 5000000,
+        insuranceFee: 0,
+        additionalServiceFee: 0,
+        voucherDiscount: 0,
         adminFee: 10000,
-        taxAmount: 161000,
-        totalPrice: 1676000,
+        taxAmount: 0,
+        totalPrice: 5010000,
       },
     };
 
@@ -575,8 +575,8 @@ export const SummaryPanel = () => {
           </h3>
           <button
             onClick={() => {
-              //handleOrderFleet(true)
-              router.push("/daftarpesanan/detailpesanan/1");
+              handleOrderFleet(true);
+              //router.push("/daftarpesanan/detailpesanan/1");
             }}
             className=""
           >

@@ -4,7 +4,7 @@
 import DetailPesananWeb from "@/container/DetailPesanan/Web/DetailPesananWeb";
 
 const Page = () => {
-  const { isMobile, mounted } = useDevice();
+  //const { isMobile, mounted } = useDevice();
 
   // if (!mounted) {
   //   return null;
