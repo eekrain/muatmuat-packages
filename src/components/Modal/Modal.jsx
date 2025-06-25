@@ -12,7 +12,6 @@ import React, {
 import { Portal } from "@radix-ui/react-portal";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
-import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { cn } from "@/lib/utils";
 
 /**
@@ -55,6 +54,16 @@ export const Modal = ({
 }) => {
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   const dialogRef = useRef(null);
+
+  // Track allowed nodes (e.g., dropdowns rendered via portal)
+  const allowedRefs = useRef(new Set());
+
+  const registerAllowedNode = useCallback((node) => {
+    if (node) allowedRefs.current.add(node);
+  }, []);
+  const unregisterAllowedNode = useCallback((node) => {
+    if (node) allowedRefs.current.delete(node);
+  }, []);
 
   const isControlled = controlledOpen !== undefined;
   const isOpen = isControlled ? controlledOpen : uncontrolledOpen;
@@ -106,13 +115,16 @@ export const Modal = ({
     }
   }, [isOpen]);
 
+  // Updated handleClickOutside to check allowedRefs
   const handleClickOutside = useCallback(
     (e) => {
-      if (
-        closeOnOutsideClick &&
-        dialogRef.current &&
-        !dialogRef.current.contains(e.target)
-      ) {
+      if (!closeOnOutsideClick) return;
+      const isInsideDialog =
+        dialogRef.current && dialogRef.current.contains(e.target);
+      const isInsideAllowed = Array.from(allowedRefs.current).some(
+        (node) => node && node.contains(e.target)
+      );
+      if (!isInsideDialog && !isInsideAllowed) {
         close();
       }
     },
@@ -128,6 +140,8 @@ export const Modal = ({
         handleClickOutside,
         withCloseButton,
         dialogRef,
+        registerAllowedNode,
+        unregisterAllowedNode,
       }}
     >
       {children}
@@ -158,7 +172,6 @@ export const ModalContent = ({
   className,
   appearance = {
     backgroudClassname: "",
-    wrapperClassname: "",
     closeButtonClassname: "",
   },
 }) => {
@@ -226,10 +239,7 @@ export const ModalContent = ({
 
         <div
           ref={dialogRef}
-          className={cn(
-            "relative rounded-xl bg-neutral-50",
-            appearance.wrapperClassname
-          )}
+          className={cn("relative rounded-xl bg-neutral-50", className)}
         >
           {withCloseButton && (
             <button
@@ -247,34 +257,32 @@ export const ModalContent = ({
               />
             </button>
           )}
-          <div className={cn("md:rounded-[12px]", className)}>{children}</div>
+          {children}
         </div>
       </div>
     </Portal>
   );
 };
 
+const widthStyles = {
+  big: "w-modal-big",
+  small: "w-modal-small",
+};
 /**
  * @param {{ children: React.ReactNode, className?: string }} props
  */
 export const ModalHeader = ({
-  children,
   className,
   type = "muattrans",
   size = "small",
 }) => {
-  const widths = {
-    big: 454,
-    small: 386,
-  };
   return (
-    <div className="overflow-hidden rounded-t-xl">
-      <ImageComponent
-        src={`/img/${type}-header-${size}.png`}
-        width={widths[size] || widths.small}
-        height={70}
-      />
-    </div>
+    <img
+      src={`/img/${type}-header-${size}.png`}
+      height={70}
+      className={cn("w-f rounded-t-xl", widthStyles[size], className)}
+      alt="Modal Header"
+    />
   );
 };
 

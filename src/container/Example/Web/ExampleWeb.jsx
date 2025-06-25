@@ -850,7 +850,7 @@ const ButtonBottomsheetTooltipForm = () => {
               <ModalTrigger>
                 <Button variant="muattrans-primary">Open Modal</Button>
               </ModalTrigger>
-              <ModalContent>
+              <ModalContent className="w-modal-big">
                 <ModalHeader size="big" />
                 <div className="px-6 py-9">
                   <div className="flex w-[406px] max-w-[510px] flex-col items-center justify-center gap-6">

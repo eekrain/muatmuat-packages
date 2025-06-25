@@ -166,6 +166,53 @@ export const useLocationFormStore = create(
 
         set({ formErrors: errors });
         // return validateForm is valid if all errors are undefined
+        if (!formValues.namaPIC) {
+          errors.namaPIC = "Nama Penerima wajib diisi";
+        } else if (formValues.namaPIC.length < 3) {
+          errors.namaPIC = "Nama Penerima minimal 3 karakter";
+        } else if (!/^[a-zA-Z' ]+$/.test(formValues.namaPIC)) {
+          errors.namaPIC = "Penulisan Nama Penerima tidak valid";
+        }
+
+        if (!formValues.noHPPIC) {
+          errors.noHPPIC = "Nomor Handphone Penerima wajib diisi";
+        } else if (formValues.noHPPIC.length < 8) {
+          errors.noHPPIC = "Nomor Handphone Penerima minimal 8 digit";
+        } else if (/[^0-9]/.test(formValues.noHPPIC)) {
+          errors.noHPPIC = "Nomor handphone Penerima tidak valid";
+        } else if (
+          formValues.noHPPIC
+            .split("")
+            ?.every((char) => char === formValues.noHPPIC[0])
+        ) {
+          errors.noHPPIC = "Format No. HP Penerima salah";
+        } else if (
+          !formValues.noHPPIC.startsWith("0") &&
+          !formValues.noHPPIC.startsWith("62")
+        ) {
+          errors.noHPPIC = "Format No. HP Penerima salah";
+        }
+
+        if (!formValues.dataLokasi?.location?.name) {
+          errors.dataLokasi = "Alamat Tujuan wajib diisi";
+        }
+
+        if (!formValues.detailLokasi) {
+          errors.detailLokasi = "Detail Alamat Tujuan wajib diisi";
+        } else if (formValues.detailLokasi.length < 3) {
+          errors.detailLokasi = "Detail Alamat Tujuan minimal 3 karakter";
+        }
+
+        // Kecamatan wajib diisi
+        if (!formValues.dataLokasi?.district?.value) {
+          errors.district = "Kecamatan wajib diisi";
+        }
+
+        // Kode Pos wajib diisi
+        if (!formValues.dataLokasi?.postalCode?.value) {
+          errors.postalCode = "Kode Pos wajib diisi";
+        }
+
         return Object.values(errors).every((error) => error === undefined);
       },
     }),

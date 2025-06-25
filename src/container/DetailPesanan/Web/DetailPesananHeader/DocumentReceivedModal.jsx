@@ -11,9 +11,8 @@ const DocumentReceivedModal = ({ isOpen, setIsOpen, onReceiveDocument }) => {
             Informasi
           </h1>
           <p className="text-center text-[14px] font-medium leading-[15.4px] text-neutral-900">
-            {
-              'Klik "Sudah", jika kamu sudah menerima bukti dokumen untuk menyelesaikan pesanan.'
-            }
+            Klik &quot;Sudah&quot;, jika kamu sudah menerima bukti dokumen untuk
+            menyelesaikan pesanan.
           </p>
           <div className="flex items-center gap-x-2">
             <Button

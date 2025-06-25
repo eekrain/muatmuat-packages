@@ -66,7 +66,6 @@ export const LightboxProvider = ({ title, images = [], image, children }) => {
         <ModalContent
           appearance={{
             backgroudClassname: "bg-black md:bg-black/25",
-            wrapperClassname: "bg-neutral-50",
           }}
           className={cn(
             "flex h-full w-screen flex-col items-center md:w-[592px] md:bg-white md:px-6 md:pb-3 md:pt-8",

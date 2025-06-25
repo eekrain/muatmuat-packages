@@ -20,8 +20,7 @@ export const MyTextArea = ({
       <textarea
         {...inputProps}
         className={cn(
-          "w-full rounded-[6px] border border-neutral-600 p-3 text-xs leading-[1.2] outline-none",
-          "text-neutral-900 placeholder:text-neutral-600 focus-within:border-primary-700 hover:border-primary-700",
+          "w-full rounded-[6px] border border-neutral-600 p-3 text-xs font-medium leading-[1.2] text-neutral-900 outline-none placeholder:text-neutral-600 focus-within:border-primary-700 hover:border-primary-700",
           errorMessage && "border-error-400",
           appearance.inputClassName
         )}

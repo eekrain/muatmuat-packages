@@ -5,31 +5,14 @@ import { Suspense, useEffect, useRef } from "react";
 import LoadingInteractive from "@/components/Loading/LoadingInteractive";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
 import Toaster from "@/components/Toaster/Toaster";
-import { useInitAuthentication } from "@/hooks/use-auth";
-import { useInitTranslation, useTranslation } from "@/hooks/use-translation";
+import { InitializeAuthentication } from "@/hooks/use-auth";
+import { TranslationProvider } from "@/hooks/use-translation";
 import { useLoadingAction } from "@/store/loadingStore";
 import { useNotificationCounterActions } from "@/store/notificationCounterStore";
 
-const Script = () => {
-  useInitAuthentication();
-
-  const { fetchSidebarData } = useNotificationCounterActions();
-  useEffect(() => {
-    fetchSidebarData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return <></>;
-};
-
 const MainLayout = ({ children }) => {
-  const isTranslationsReady = useTranslation(
-    (state) => state.isTranslationsReady
-  );
   const { setIsGlobalLoading } = useLoadingAction();
   const timer = useRef();
-
-  useInitTranslation();
 
   useEffect(() => {
     // Jaga jaga kalau pada lupa untuk menutup loading, secara default loading selalu muncul dan akan reset menjadi false selama 2 detik
@@ -41,12 +24,20 @@ const MainLayout = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const { fetchSidebarData } = useNotificationCounterActions();
+  useEffect(() => {
+    fetchSidebarData().catch((error) => {
+      console.warn("Error fetching sidebar data", error);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <>
       <Suspense fallback={<LoadingStatic />}>
-        <Script />
+        <InitializeAuthentication />
         <LoadingInteractive />
-        {isTranslationsReady ? children : null}
+        <TranslationProvider>{children}</TranslationProvider>
       </Suspense>
       <Toaster />
     </>

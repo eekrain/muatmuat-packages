@@ -53,10 +53,10 @@ const BatalkanModal = ({ open, onOpenChange, data }) => {
 
   return (
     <Modal open={open} onOpenChange={onOpenChange} closeOnOutsideClick>
-      <ModalContent>
+      <ModalContent className="w-modal-small">
         <ModalHeader size="small" />
 
-        <div className="grid w-modal-small grid-cols-1 items-center gap-6 px-6 py-9">
+        <div className="grid grid-cols-1 items-center gap-6 px-6 py-9">
           <div className="flex flex-col items-center justify-center text-center text-[16px] font-[700] leading-[19.2px] text-[#000000]">
             Pilih Alasan Pembatalan
           </div>

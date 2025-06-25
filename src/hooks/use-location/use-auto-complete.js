@@ -6,6 +6,7 @@ import { useResponsiveSearchStore } from "@/store/zustand/responsiveSearchStore"
 
 import { useDebounceCallback } from "../use-debounce-callback";
 import useDevice from "../use-device";
+import { useShallowCompareEffect } from "../use-shallow-effect";
 import { useSWRMutateHook } from "../use-swr";
 import { fetcher } from "./fetcher";
 
@@ -30,21 +31,24 @@ export const useAutoComplete = ({
     }
   }, [isMobile, responsiveSearchValue, setAutoCompleteSearchPhrase]);
 
-  const { data, trigger, isMutating } = useSWRMutateHook(
+  const { data, trigger, isMutating, reset } = useSWRMutateHook(
     "v1/autocompleteStreet",
     "POST",
     fetcherMuatparts
   );
+
   const debouncedTrigger = useDebounceCallback(trigger, 500);
   const searchResult = useMemo(() => data?.slice(0, 3) || [], [data]);
 
-  useEffect(() => {
-    if (autoCompleteSearchPhrase) {
+  useShallowCompareEffect(() => {
+    if (autoCompleteSearchPhrase.length >= 3) {
       debouncedTrigger(
         new URLSearchParams({ phrase: autoCompleteSearchPhrase })
       );
+    } else if (autoCompleteSearchPhrase.length < 3 && searchResult.length > 0) {
+      reset();
     }
-  }, [autoCompleteSearchPhrase, debouncedTrigger]);
+  }, [autoCompleteSearchPhrase, debouncedTrigger, searchResult]);
 
   const setLocationPartial = useLocationFormStore((s) => s.setLocationPartial);
 

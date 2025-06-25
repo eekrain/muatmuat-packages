@@ -36,10 +36,10 @@ export const ModalNamaMuatan = ({ open, onOpenChange, onSubmit }) => {
 
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
-      <ModalContent>
+      <ModalContent className="w-modal-small">
         <ModalHeader size="small" />
         <div className="px-6 py-9">
-          <div className="flex w-[386] flex-col items-center justify-center gap-6">
+          <div className="flex flex-col items-center justify-center gap-6">
             {/* Judul Modal */}
             <h2 className="w-full text-center text-[16px] font-bold leading-[19.2px] text-neutral-900">
               {t("Masukkan Nama Muatan")}

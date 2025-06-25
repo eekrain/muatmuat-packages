@@ -27,14 +27,29 @@ export const LayananTambahan = () => {
   const { data: additionalServicesData } = useSWRHook(
     "v1/orders/additional-services"
   );
+  const additionalServicesOptions = additionalServicesData?.Data.services || [
+    {
+      id: "550e8400-e29b-41d4-a716-446655440000",
+      name: "Kirim Bukti Fisik Penerimaan Barang",
+      description:
+        "Layanan untuk mengirim bukti fisik penerimaan barang ke alamat yang ditentukan",
+      price: 0,
+      withShipping: true,
+    },
+    {
+      id: "550e8400-e29b-41d4-a716-446655440001",
+      name: "Troli",
+      description: "Troli",
+      price: 25000,
+      withShipping: false,
+    },
+  ];
 
   // Fetch shipping options when location data is complete
   const { data: shippingOptionsData } = useSWRHook(
     "v1/orders/shipping-options"
   );
   // const shippingOptions = shippingOptionsData?.Data;
-
-  const additionalServicesOptions = additionalServicesData?.Data.services || [];
 
   const shippingOptions = [
     {

@@ -165,7 +165,7 @@ module.exports = {
       },
       width: {
         "modal-small": "386px",
-        "modal-big": "450px",
+        "modal-big": "454px",
       },
       boxShadow: {
         button: "0 -4px 6px rgba(0, 0, 0, 0.1)",

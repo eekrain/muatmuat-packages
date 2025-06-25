@@ -5,7 +5,7 @@ import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 const FleetOrderConfirmationModal = ({ isOpen, setIsOpen, onOrderFleet }) => {
   return (
     <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick={false}>
-      <ModalContent>
+      <ModalContent className="w-modal-big">
         <ModalHeader size="big" />
         <div className="px-6 py-9">
           <div className="flex w-[406px] max-w-[510px] flex-col items-center justify-center gap-6">

@@ -185,7 +185,7 @@ const DriverStatusCardItem = ({ dataStatusPesanan, dataDriver }) => {
         open={isQrModalOpen && qrData}
         onOpenChange={setIsQrModalOpen}
       >
-        <ModalContent className="w-modal-small">
+        <ModalContent className="w-modal-big">
           <ModalHeader size="big" />
           <div className="flex w-full flex-col items-center gap-y-6 px-6 py-9">
             <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">

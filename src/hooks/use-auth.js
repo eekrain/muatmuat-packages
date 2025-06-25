@@ -7,7 +7,7 @@ import { fetcherMuatparts } from "@/lib/axios";
 import { useTokenActions, useTokenStore } from "@/store/auth/tokenStore";
 import { useUserActions, useUserStore } from "@/store/auth/userStore";
 
-export const useInitAuthentication = () => {
+export const InitializeAuthentication = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const refreshTokenParam = searchParams.get("refreshToken");
@@ -58,6 +58,8 @@ export const useInitAuthentication = () => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  return null;
 };
 
 export const useAuth = () => {

@@ -1,18 +1,70 @@
-import { useCallback, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
+import { createStore, useStore } from "zustand";
+import { useShallow } from "zustand/react/shallow";
 
 import { fetcherMuatparts } from "@/lib/axios";
 import {
   useSelectedLanguageActions,
   useSelectedLanguageStore,
-  useTranslationActions,
-  useTranslationStore,
-} from "@/store/translationStore";
+} from "@/store/selectedLanguageStore";
 
-export const useTranslation = () => {
-  const translation = useTranslationStore((state) => state.translation);
-  const isTranslationsReady = useTranslationStore(
-    (state) => state.isTranslationsReady
+const createTranslationStore = () =>
+  createStore((set) => ({
+    // State
+    translation: {},
+    listLanguages: [],
+    isTranslationsReady: false,
+    // Actions grouped in an actions object
+    actions: {
+      setListLanguages: (listLanguages) => set({ listLanguages }),
+
+      updateTranslations: async (languageUrl) => {
+        if (!languageUrl) return console.error("Locale is not defined");
+
+        const envProd = process.env.NEXT_PUBLIC_ENVIRONMENT;
+        const s3url = process.env.NEXT_PUBLIC_S3_URL;
+        const url = `${s3url}content-general/locales/${envProd}/${languageUrl}/common.json`;
+
+        try {
+          const response = await fetch(url, {
+            headers: {
+              "Content-Type": "application/json",
+              "Cache-Control":
+                "public, max-age=86400, stale-while-revalidate=3600",
+            },
+          });
+          if (!response.ok) {
+            throw new Error(`Failed to fetch ${languageUrl} translations`);
+          }
+          const data = await response.json();
+          set({ translation: data, isTranslationsReady: true });
+        } catch (error) {
+          console.error(
+            `Error fetching ${languageUrl} translations: ${error.message}`
+          );
+          set({ translation: {}, isTranslationsReady: true });
+        }
+      },
+    },
+  }));
+
+const TranslationContext = createContext(null);
+
+export const TranslationProvider = ({ children }) => {
+  const store = useRef(createTranslationStore()).current;
+  const translation = useStore(
+    store,
+    useShallow((s) => s.translation)
   );
+  const isTranslationsReady = useStore(store, (s) => s.isTranslationsReady);
 
   const t = useCallback(
     (key) => {
@@ -21,19 +73,41 @@ export const useTranslation = () => {
     [translation]
   );
 
+  useInitTranslation(store);
+
+  return (
+    <TranslationContext.Provider value={{ ...store, t }}>
+      {isTranslationsReady && children}
+    </TranslationContext.Provider>
+  );
+};
+
+export const useTranslation = () => {
+  const store = useContext(TranslationContext);
+  if (!store) {
+    throw new Error("useTranslation must be used within a TranslationProvider");
+  }
+  const listLanguages = useStore(
+    store,
+    useShallow((s) => s.listLanguages)
+  );
+
   return {
-    t,
-    isTranslationsReady,
+    t: store.t,
+    listLanguages,
   };
 };
 
-export const useInitTranslation = () => {
+const useInitTranslation = (store) => {
   const selectedLanguageUrl = useSelectedLanguageStore(
     (state) => state.selectedLanguage?.url
   );
 
   const { setSelectedLanguage } = useSelectedLanguageActions();
-  const { setListLanguages, updateTranslations } = useTranslationActions();
+  const { setListLanguages, updateTranslations } = useStore(
+    store,
+    (s) => s.actions
+  );
 
   const [hasSetupSelectedLanguage, setHasSetupSelectedLanguage] =
     useState(false);

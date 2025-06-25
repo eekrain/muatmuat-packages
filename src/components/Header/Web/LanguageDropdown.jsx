@@ -2,18 +2,18 @@ import { useState } from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
+import { useTranslation } from "@/hooks/use-translation";
 import {
   useSelectedLanguageActions,
   useSelectedLanguageStore,
-  useTranslationStore,
-} from "@/store/translationStore";
+} from "@/store/selectedLanguageStore";
 
 const LanguageDropdown = () => {
   const [open, setOpen] = useState(false);
   const selectedLanguage = useSelectedLanguageStore(
     (state) => state.selectedLanguage
   );
-  const listLanguages = useTranslationStore((state) => state.listLanguages);
+  const { listLanguages } = useTranslation();
   const { setSelectedLanguage } = useSelectedLanguageActions();
 
   return (

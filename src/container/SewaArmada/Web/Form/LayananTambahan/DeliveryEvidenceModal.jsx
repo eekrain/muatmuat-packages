@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import { DropdownJasaPengiriman } from "@/components/Dropdown/DropdownJasaPengiriman";
@@ -23,8 +23,6 @@ const DeliveryEvidenceModal = ({
   shippingOptions,
 }) => {
   const [deliveryEvidenceFormValues, setDeliveryEvidenceFormValues] = useState({
-    recipientName: "",
-    recipientPhone: "",
     shippingOptionId: null,
     withInsurance: false,
   });
@@ -87,24 +85,6 @@ const DeliveryEvidenceModal = ({
   const validateForm = () => {
     const newErrors = {};
 
-    const { recipientName, recipientPhone } = deliveryEvidenceFormValues;
-
-    if (!recipientName) {
-      newErrors.recipientName = "Nama penerima wajib diisi";
-    } else if (recipientName.length < 3) {
-      newErrors.recipientName = "Nama penerima minimal 3 karakter";
-    } else if (/[^a-zA-Z\s]/.test(recipientName)) {
-      newErrors.recipientName = "Penulisan nama penerima tidak valid";
-    }
-
-    if (!recipientPhone) {
-      newErrors.recipientPhone = "Nomor handphone penerima wajib diisi";
-    } else if (recipientPhone.length < 8) {
-      newErrors.recipientPhone = "Nomor handphone penerima minimal 8 digit";
-    } else if (/[^0-9]/.test(recipientPhone)) {
-      newErrors.recipientPhone = "Nomor handphone penerima tidak valid";
-    }
-
     if (!selectedShippingOptions) {
       newErrors.shippingOption = "Ekspedisi wajib dipilih";
     }
@@ -129,6 +109,8 @@ const DeliveryEvidenceModal = ({
       withShipping: sendDeliveryEvidenceService.withShipping,
       shippingDetails: {
         ...deliveryEvidenceFormValues,
+        recipientName: locationFormValues.namaPIC,
+        recipientPhone: locationFormValues.noHPPIC,
         destinationAddress: dataLokasi.location.name,
         detailAddress: detailLokasi,
         district: dataLokasi.district.name,
@@ -143,8 +125,12 @@ const DeliveryEvidenceModal = ({
     ]);
 
     setIsOpen(false);
-    resetLocationForm();
   };
+
+  useEffect(() => {
+    if (!isOpen) resetLocationForm();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   return (
     <Modal
@@ -158,7 +144,7 @@ const DeliveryEvidenceModal = ({
         }
         setIsOpen(value);
       }}
-      closeOnOutsideClick={false}
+      closeOnOutsideClick
     >
       <ModalContent className="max-h-[598px] overflow-y-auto" type="muatmuat">
         {/* Modal Header */}
@@ -175,11 +161,11 @@ const DeliveryEvidenceModal = ({
                 Nama Penerima*
               </label>
               <Input
-                name="recipientName"
+                name="namaPIC"
                 placeholder="Masukkan Nama Penerima"
-                value={deliveryEvidenceFormValues.recipientName}
-                onChange={handleChangeFormValues}
-                errorMessage={deliveryEvidenceFormErrors.recipientName}
+                value={locationFormValues.namaPIC}
+                onChange={(e) => setLocationField("namaPIC", e.target.value)}
+                errorMessage={locationFormErrors.namaPIC}
                 className="w-full"
               />
 
@@ -188,15 +174,14 @@ const DeliveryEvidenceModal = ({
                 Nomor Handphone Penerima*
               </label>
               <Input
-                name="recipientPhone"
+                name="noHPPIC"
                 placeholder="Contoh: 08xxxxxxxx"
                 type="tel"
-                value={deliveryEvidenceFormValues.recipientPhone}
-                onChange={handleChangeFormValues}
-                errorMessage={deliveryEvidenceFormErrors.recipientPhone}
+                value={locationFormValues.noHPPIC}
+                onChange={(e) => setLocationField("noHPPIC", e.target.value)}
+                errorMessage={locationFormErrors.noHPPIC}
                 className="w-full"
               />
-
               {/* Alamat Tujuan Field */}
               <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
                 Alamat Tujuan*
@@ -204,7 +189,7 @@ const DeliveryEvidenceModal = ({
 
               <LocationProvider>
                 <InputLocationManagementDropdown
-                  hideDropdownWhenTopIsLessThan={1225}
+                  errorMessage={locationFormErrors.dataLokasi}
                 />
               </LocationProvider>
 
@@ -258,6 +243,7 @@ const DeliveryEvidenceModal = ({
                     },
                   });
                 }}
+                errorMessage={locationFormErrors.district}
               />
 
               {/* Kota & Provinsi Display */}
@@ -304,6 +290,7 @@ const DeliveryEvidenceModal = ({
                     },
                   });
                 }}
+                errorMessage={locationFormErrors.postalCode}
               />
 
               {/* Ekspedisi Dropdown */}

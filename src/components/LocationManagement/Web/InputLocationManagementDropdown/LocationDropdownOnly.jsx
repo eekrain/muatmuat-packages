@@ -9,6 +9,8 @@ import {
 import { Portal } from "@radix-ui/react-portal";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useModal } from "@/components/Modal/Modal";
+import { useRegisterModalPortalNode } from "@/components/Modal/useRegisterModalPortalNode";
 import { cn } from "@/lib/utils";
 
 export const LocationDropdownOnly = ({
@@ -25,12 +27,20 @@ export const LocationDropdownOnly = ({
   setIsDropdownSearchOpen,
   handleAddToSavedLocation,
   handleEditLocation,
+  errorMessage,
 }) => {
-  console.log("🚀 ~ className:", className);
   const inputRef = useRef(null);
+  const [dropdownNode, setDropdownNode] = useState(null);
   const dropdownRef = useRef(null);
   const [dropdownStyle, setDropdownStyle] = useState(null);
   const scrollParentRef = useRef(null);
+  const { registerAllowedNode, unregisterAllowedNode } = useModal?.() || {};
+  const setDropdownRef = useCallback((node) => {
+    console.log("setDropdownRef called with node:", node);
+    dropdownRef.current = node;
+    setDropdownNode(node);
+  }, []);
+  useRegisterModalPortalNode(dropdownNode, [isDropdownSearchOpen]);
 
   // Function to find the first scrollable parent
   const getScrollParent = useCallback((node) => {
@@ -286,7 +296,10 @@ export const LocationDropdownOnly = ({
           onChange={(e) => {
             setSearchLocationAutoComplete(e.currentTarget.value);
           }}
-          className="w-full rounded-[6px] border border-blue-300 py-[8.5px] pl-[38px] pr-3 text-xs font-medium outline-none placeholder:text-neutral-600 focus:border-blue-500"
+          className={cn(
+            "w-full rounded-[6px] border border-blue-300 py-[8.5px] pl-[38px] pr-3 text-xs font-medium outline-none placeholder:text-neutral-600 focus:border-blue-500",
+            errorMessage && "border-error-400"
+          )}
         />
         <IconComponent
           src="/icons/marker-lokasi-muat.svg"
@@ -295,11 +308,21 @@ export const LocationDropdownOnly = ({
           className="absolute left-3 top-1/2 -translate-y-1/2"
         />
       </div>
-      {isDropdownSearchOpen && dropdownStyle && (
-        <Portal>
-          <div>{dropdown}</div>
-        </Portal>
+      {errorMessage && (
+        <span className="block pt-2 text-xs font-medium text-error-400">
+          {errorMessage}
+        </span>
       )}
+      {isDropdownSearchOpen &&
+        dropdownStyle &&
+        ((() => {
+          console.log("Rendering dropdown portal");
+          return null;
+        })() || (
+          <Portal>
+            <div ref={setDropdownRef}>{dropdown}</div>
+          </Portal>
+        ))}
     </div>
   );
 };

@@ -9,7 +9,10 @@ import {
 import { Portal } from "@radix-ui/react-portal";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
+import { cn } from "@/lib/utils";
 import { idrFormat } from "@/lib/utils/formatters";
+
+import { useRegisterModalPortalNode } from "../Modal/useRegisterModalPortalNode";
 
 export const DropdownJasaPengiriman = ({
   shippingOptions = [], // New prop for grouped shipping options
@@ -19,6 +22,7 @@ export const DropdownJasaPengiriman = ({
   className = "",
   disabled = false,
   insuranceText = "Pakai Asuransi Pengiriman",
+  errorMessage = null,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(value);
@@ -27,6 +31,7 @@ export const DropdownJasaPengiriman = ({
   const buttonRef = useRef(null);
   const dropdownRef = useRef(null);
   const scrollParentRef = useRef(null);
+  useRegisterModalPortalNode(dropdownRef, [isOpen]);
 
   // Function to find the first scrollable parent
   const getScrollParent = useCallback((node) => {
@@ -276,13 +281,14 @@ export const DropdownJasaPengiriman = ({
         type="button"
         onClick={handleToggle}
         disabled={disabled}
-        className={`flex h-8 w-full items-center justify-between gap-2 rounded-md border bg-white px-3 py-0 text-left text-xs font-medium leading-[120%] transition-colors ${
-          disabled
-            ? "cursor-not-allowed border-neutral-300 text-neutral-400"
-            : isOpen
-              ? "border-primary-700 text-neutral-900"
-              : "border-primary-700 text-neutral-600 hover:text-neutral-900"
-        } focus:outline-none focus:ring-2 focus:ring-primary-700 focus:ring-opacity-20`}
+        className={cn(
+          "flex h-8 w-full items-center justify-between gap-2 rounded-md border bg-white px-3 py-0 text-left text-xs font-medium leading-[120%] transition-colors",
+          disabled && "cursor-not-allowed border-neutral-300 text-neutral-400",
+          isOpen && "border-primary-700 text-neutral-900",
+          !isOpen &&
+            "border-primary-700 text-neutral-600 hover:text-neutral-900",
+          errorMessage && "border-red-500 focus:border-red-500"
+        )}
       >
         <span className="flex-1 truncate text-xs leading-[14px]">
           {displayText}
@@ -295,6 +301,10 @@ export const DropdownJasaPengiriman = ({
           )}
         </div>
       </button>
+
+      {errorMessage && (
+        <span className="mt-2 text-xs text-red-500">{errorMessage}</span>
+      )}
 
       {/* Portal Dropdown */}
       {isOpen && dropdownStyle && (

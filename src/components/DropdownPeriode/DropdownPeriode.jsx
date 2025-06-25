@@ -133,9 +133,9 @@ const DropdownPeriode = ({
       )}
 
       <Modal open={isPeriode} onOpenChange={setIsPeriode} closeOnOutsideClick>
-        <ModalContent>
+        <ModalContent className="w-modal-small">
           <ModalHeader size="small" />
-          <div className="flex w-modal-small flex-col items-center gap-6 px-4 py-7">
+          <div className="flex flex-col items-center gap-6 px-4 py-7">
             <h3 className="bold-base text-center">
               {t("AppMuatpartsAnalisaProdukPilihPeriode")}
             </h3>

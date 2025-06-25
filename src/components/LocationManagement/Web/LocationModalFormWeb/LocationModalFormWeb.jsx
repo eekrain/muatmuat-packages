@@ -74,7 +74,7 @@ const InnerLocationModalFormWeb = ({
   }, [open, defaultValues]);
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange} closeOnOutsideClick={false}>
+    <Modal open={open} onOpenChange={onOpenChange} closeOnOutsideClick>
       <ModalContent>
         <div className="h-[420px] w-[919px]">
           <div className="flex h-full w-full flex-row items-center gap-4 p-4">
