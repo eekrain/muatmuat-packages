@@ -127,7 +127,15 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
                           ? {
                               label: "Lihat Lokasi Muat Lainnya",
                               onClick: () => {
-                                setModalData(dataRingkasanPesanan?.route?.muat);
+                                setModalData(
+                                  dataRingkasanPesanan?.route?.muat.map(
+                                    (item, index) => ({
+                                      ...item,
+                                      index,
+                                      isPickup: true,
+                                    })
+                                  )
+                                );
                                 setIsPickup(true);
                                 setIsLokasiMuatBongkarModalOpen(true);
                               },
@@ -155,7 +163,13 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
                               label: "Lihat Lokasi Bongkar Lainnya",
                               onClick: () => {
                                 setModalData(
-                                  dataRingkasanPesanan?.route?.bongkar
+                                  dataRingkasanPesanan?.route?.bongkar.map(
+                                    (item, index) => ({
+                                      ...item,
+                                      index,
+                                      isPickup: false,
+                                    })
+                                  )
                                 );
                                 setIsPickup(false);
                                 setIsLokasiMuatBongkarModalOpen(true);
@@ -309,7 +323,7 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
         isOpen={isLokasiMuatBongkarModalOpen}
         setIsOpen={setIsLokasiMuatBongkarModalOpen}
         data={modalData}
-        isPickup={isPickup}
+        title={isPickup ? "Lokasi Muat" : "Lokasi Bongkar"}
       />
     </>
   );

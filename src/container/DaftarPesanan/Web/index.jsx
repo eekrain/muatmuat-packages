@@ -12,6 +12,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import Pagination from "@/components/Pagination/Pagination";
 import DocumentReceivedModal from "@/container/DetailPesanan/Web/DetailPesananHeader/DocumentReceivedModal";
+import MuatBongkarModal from "@/container/DetailPesanan/Web/RingkasanPesanan/MuatBongkarModal";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +24,8 @@ const DaftarPesananWeb = () => {
   const [pageSize, setPageSize] = useState(10);
 
   const [isDocumentReceivedModalOpen, setIsDocumentReceivedModalOpen] =
+    useState(false);
+  const [isLokasiMuatBongkarModalOpen, setIsLokasiMuatBongkarModalOpen] =
     useState(false);
 
   const tabs = [
@@ -68,6 +71,40 @@ const DaftarPesananWeb = () => {
       status: "Proses Pengiriman Dokumen",
       alertMessage: "20 Sep 2024 13:00 WIB",
       hasWarning: true, // This row has a warning
+    },
+  ];
+
+  const dummyLokasiMuatBongkarData = [
+    {
+      fullAddress:
+        "Jl. Diponegoro No. 45, Gunungsari, Kecamatan Gubeng, Surabaya",
+      // isPickup: true,
+      index: 0,
+      isBullet: true,
+    },
+    // {
+    //   fullAddress:
+    //     "Jl. Diponegoro No. 45, Gunungsari, Kecamatan Gubeng, Surabaya",
+    //   isPickup: true,
+    //   index: 0,
+    // },
+    // {
+    //   fullAddress:
+    //     "Jl. Diponegoro No. 45, Gunungsari, Kecamatan Gubeng, Surabaya",
+    //   isPickup: true,
+    //   index: 1,
+    // },
+    {
+      fullAddress:
+        "Jl. Diponegoro No. 45, Gunungsari, Kecamatan Gubeng, Surabaya",
+      isPickup: false,
+      index: 0,
+    },
+    {
+      fullAddress:
+        "Jl. Diponegoro No. 45, Gunungsari, Kecamatan Gubeng, Surabaya",
+      isPickup: false,
+      index: 1,
     },
   ];
 
@@ -220,12 +257,14 @@ const DaftarPesananWeb = () => {
                                     {pesanan.lokasi[1].nama}
                                   </span>
                                 </div>
-                                <a
-                                  href="#"
+                                <button
+                                  onClick={() =>
+                                    setIsLokasiMuatBongkarModalOpen(true)
+                                  }
                                   className="text-[12px] font-medium text-primary-700"
                                 >
                                   Lihat Lokasi Lainnya
-                                </a>
+                                </button>
                               </div>
                             </td>
 
@@ -402,11 +441,20 @@ const DaftarPesananWeb = () => {
           ) : null}
         </div>
       </main>
+
       {/* Modal Konfirmasi Dokumen Diterima */}
       <DocumentReceivedModal
         isOpen={isDocumentReceivedModalOpen}
         setIsOpen={setIsDocumentReceivedModalOpen}
         onReceiveDocument={handleReceiveDocument}
+      />
+
+      {/* Modal Lokasi Muat dan Bongkar */}
+      <MuatBongkarModal
+        isOpen={isLokasiMuatBongkarModalOpen}
+        setIsOpen={setIsLokasiMuatBongkarModalOpen}
+        data={dummyLokasiMuatBongkarData}
+        title="Lokasi"
       />
     </>
   );
