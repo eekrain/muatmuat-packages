@@ -18,7 +18,6 @@ const Pagination = ({
   perPage = 10,
   variants,
 }) => {
-  console.log("perpage", perPage);
   const perPageOptions = [10, 20, 40];
   const buttonClassname = buttonVariants[variants] || buttonVariants.muatrans;
 

@@ -5,22 +5,33 @@ import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import DeliveryEvidenceModal from "@/container/SewaArmada/Web/Form/LayananTambahan/DeliveryEvidenceModal";
+import {
+  LocationProvider,
+  useLocationContext,
+} from "@/hooks/use-location/use-location";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook } from "@/hooks/use-swr";
 import { handleFirstTime } from "@/lib/utils/form";
+import { useLocationFormStore } from "@/store/forms/locationFormStore";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
 } from "@/store/forms/sewaArmadaStore";
 
-export const LayananTambahan = () => {
+const LayananTambahan = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [modalType, setModalType] = useState("");
 
   const additionalServices = useSewaArmadaStore(
     (s) => s.formValues.additionalServices
   );
+  const shippingDetailsLocation = useSewaArmadaStore(
+    (s) => s.formValues?.shippingDetailsLocation
+  );
   const { setField: setSewaArmadaField } = useSewaArmadaActions();
+  const { reset } = useLocationFormStore();
+  const { setAutoCompleteSearchPhrase, setLocationPostalCodeSearchPhrase } =
+    useLocationContext();
   // Fetch layanan tambahan dari API
   // Nanti dulu belum ada data
   // https://claude.ai/chat/ef9b6ad4-0d1c-46f3-b8f9-e63d29cc0db1
@@ -324,6 +335,13 @@ export const LayananTambahan = () => {
                     <button
                       className="flex items-center gap-x-2 self-start"
                       onClick={() => {
+                        setAutoCompleteSearchPhrase(
+                          shippingDetails.destinationAddress
+                        );
+                        setLocationPostalCodeSearchPhrase(
+                          shippingDetails.postalCode
+                        );
+                        reset(shippingDetailsLocation);
                         setModalType("edit");
                         setIsOpen(true);
                       }}
@@ -353,3 +371,13 @@ export const LayananTambahan = () => {
     </>
   );
 };
+
+const LayananTambahanLocation = () => {
+  return (
+    <LocationProvider>
+      <LayananTambahan />
+    </LocationProvider>
+  );
+};
+
+export default LayananTambahanLocation;

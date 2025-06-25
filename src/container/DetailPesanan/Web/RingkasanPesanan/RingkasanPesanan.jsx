@@ -13,16 +13,18 @@ import {
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import {
   TimelineContainer,
-  TimelineContentAddress,
   TimelineContentWithButtonDate,
   TimelineItem,
 } from "@/components/Timeline";
 import { formatDate } from "@/lib/utils/dateFormat";
 
+import MuatBongkarModal from "./MuatBongkarModal";
+
 const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
-  const [isLokasiMuatModalOpen, setIsLokasiMuatModalOpen] = useState(false);
-  const [isLokasiBongkarModalOpen, setIsLokasiBongkarModalOpen] =
+  const [isLokasiMuatBongkarModalOpen, setIsLokasiMuatBongkarModalOpen] =
     useState(false);
+  const [modalData, setModalData] = useState(null);
+  const [isPickup, setIsPickup] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -124,7 +126,11 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
                         dataRingkasanPesanan?.route?.muat.length > 1
                           ? {
                               label: "Lihat Lokasi Muat Lainnya",
-                              onClick: () => setIsLokasiMuatModalOpen(true),
+                              onClick: () => {
+                                setModalData(dataRingkasanPesanan?.route?.muat);
+                                setIsPickup(true);
+                                setIsLokasiMuatBongkarModalOpen(true);
+                              },
                             }
                           : undefined
                       }
@@ -147,7 +153,13 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
                         dataRingkasanPesanan?.route?.bongkar.length > 1
                           ? {
                               label: "Lihat Lokasi Bongkar Lainnya",
-                              onClick: () => setIsLokasiBongkarModalOpen(true),
+                              onClick: () => {
+                                setModalData(
+                                  dataRingkasanPesanan?.route?.bongkar
+                                );
+                                setIsPickup(false);
+                                setIsLokasiMuatBongkarModalOpen(true);
+                              },
                             }
                           : undefined
                       }
@@ -292,84 +304,13 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
         </CardContent>
       </Card>
 
-      {/* Modal Lokasi Muat */}
-      <Modal
-        closeOnOutsideClick={false}
-        open={isLokasiMuatModalOpen}
-        onOpenChange={setIsLokasiMuatModalOpen}
-      >
-        <ModalContent>
-          <div className="flex flex-col gap-y-3 p-6">
-            {/* Header */}
-            <h2 className="text-center text-[16px] font-bold leading-[19.2px] text-neutral-900">
-              Lokasi Muat
-            </h2>
-            <div className="mr-[-12px] max-h-[388px] overflow-y-auto pr-[7px]">
-              <div className="flex w-[600px] flex-col items-start gap-2 rounded-xl border border-neutral-400 px-4 py-5">
-                <TimelineContainer>
-                  {dataRingkasanPesanan?.route?.muat.map((item, index) => (
-                    <TimelineItem
-                      key={index}
-                      variant="number-muat"
-                      totalLength={dataRingkasanPesanan?.route?.muat.length}
-                      index={index}
-                      activeIndex={0}
-                    >
-                      <TimelineContentAddress
-                        title={item.fullAddress}
-                        className={
-                          index === dataRingkasanPesanan?.route?.muat.length - 1
-                            ? "pb-0"
-                            : ""
-                        }
-                      />
-                    </TimelineItem>
-                  ))}
-                </TimelineContainer>
-              </div>
-            </div>
-          </div>
-        </ModalContent>
-      </Modal>
-
-      {/* Modal Lokasi Bongkar */}
-      <Modal
-        closeOnOutsideClick={false}
-        open={isLokasiBongkarModalOpen}
-        onOpenChange={setIsLokasiBongkarModalOpen}
-      >
-        <ModalContent>
-          <div className="flex flex-col gap-y-3 p-6">
-            {/* Header */}
-            <h2 className="text-center text-[16px] font-bold leading-[19.2px] text-neutral-900">
-              Lokasi Bongkar
-            </h2>
-            <div className="mr-[-12px] flex max-h-[600px] w-[600px] flex-col items-start gap-2 overflow-y-auto rounded-xl border border-neutral-400 px-4 py-5 pr-[7px]">
-              <TimelineContainer>
-                {dataRingkasanPesanan?.route?.bongkar.map((item, index) => (
-                  <TimelineItem
-                    key={index}
-                    variant="number-bongkar"
-                    totalLength={dataRingkasanPesanan?.route?.bongkar.length}
-                    index={index}
-                    activeIndex={0}
-                  >
-                    <TimelineContentAddress
-                      title={item.fullAddress}
-                      className={
-                        index ===
-                        dataRingkasanPesanan?.route?.bongkar.length - 1
-                          ? "pb-0"
-                          : ""
-                      }
-                    />
-                  </TimelineItem>
-                ))}
-              </TimelineContainer>
-            </div>
-          </div>
-        </ModalContent>
-      </Modal>
+      {/* Modal Lokasi Muat dan Bongkar */}
+      <MuatBongkarModal
+        isOpen={isLokasiMuatBongkarModalOpen}
+        setIsOpen={setIsLokasiMuatBongkarModalOpen}
+        data={modalData}
+        isPickup={isPickup}
+      />
     </>
   );
 };

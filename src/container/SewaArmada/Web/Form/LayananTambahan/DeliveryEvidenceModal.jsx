@@ -7,7 +7,6 @@ import { Select } from "@/components/Form/Select";
 import { InputLocationManagementDropdown } from "@/components/LocationManagement/Web/InputLocationManagementDropdown/InputLocationManagementDropdown";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import TextArea from "@/components/TextArea/TextArea";
-import { LocationProvider } from "@/hooks/use-location/use-location";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 import {
@@ -71,17 +70,6 @@ const DeliveryEvidenceModal = ({
     deliveryEvidenceFormValues.withInsurance,
   ]);
 
-  const handleChangeFormValues = ({ target: { name, value } }) => {
-    setDeliveryEvidenceFormValues((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-    setDeliveryEvidenceFormErrors((prevState) => ({
-      ...prevState,
-      [name]: undefined,
-    }));
-  };
-
   const validateForm = () => {
     const newErrors = {};
 
@@ -123,6 +111,7 @@ const DeliveryEvidenceModal = ({
       newAdditionalService,
       ...additionalServices,
     ]);
+    setField("shippingDetailsLocation", locationFormValues);
 
     setIsOpen(false);
   };
@@ -188,11 +177,9 @@ const DeliveryEvidenceModal = ({
                 Alamat Tujuan*
               </label>
 
-              <LocationProvider>
-                <InputLocationManagementDropdown
-                  errorMessage={locationFormErrors.dataLokasi}
-                />
-              </LocationProvider>
+              <InputLocationManagementDropdown
+                errorMessage={locationFormErrors.dataLokasi}
+              />
 
               {/* Detail Alamat Field */}
               <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">

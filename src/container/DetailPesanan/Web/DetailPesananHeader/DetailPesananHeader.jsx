@@ -167,7 +167,7 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
           >
             Pesan Ulang
           </Button>
-          {dataStatusPesanan?.orderStatus ===
+          {dataStatusPesanan?.orderStatus !==
           OrderStatusEnum.DOCUMENT_SHIPPING ? (
             <Button
               variant="muatparts-primary"
@@ -193,8 +193,8 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
 
       {/* Modal Konfirmasi Dokumen Diterima */}
       <DocumentReceivedModal
-        isOpen={isDriverRatingModalOpen}
-        setIsOpen={setIsDriverRatingModalOpen}
+        isOpen={isDocumentReceivedModalOpen}
+        setIsOpen={setIsDocumentReceivedModalOpen}
         onReceiveDocument={handleReceiveDocument}
       />
 

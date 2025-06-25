@@ -5,7 +5,7 @@ export * from "./FotoMuatan";
 export * from "./InformasiMuatan";
 export * from "./JenisArmada";
 export * from "./JenisMuatan";
-export * from "./LayananTambahan";
+export { default as LayananTambahan } from "./LayananTambahan";
 export * from "./LokasiBongkar";
 export * from "./LokasiMuat";
 export * from "./NoDeliveryOrder";
