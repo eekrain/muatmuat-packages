@@ -28,9 +28,6 @@ const ModalContext = createContext(undefined);
  */
 export const useModal = () => {
   const context = useContext(ModalContext);
-  if (!context) {
-    throw new Error("useModal must be used within a Modal component");
-  }
   return context;
 };
 
@@ -119,10 +116,20 @@ export const Modal = ({
   const handleClickOutside = useCallback(
     (e) => {
       if (!closeOnOutsideClick) return;
+
+      // Check if this modal is the topmost one
+      const modals = Array.from(document.querySelectorAll(".modal-parent"));
+      const topmost = modals[modals.length - 1];
+      const thisModalParent = dialogRef.current?.parentElement;
+
+      // Only handle outside click if this modal is the topmost one
+      if (thisModalParent !== topmost) return;
+
       const isInsideDialog =
         dialogRef.current && dialogRef.current.contains(e.target);
       const isInsideAllowed = Array.from(allowedRefs.current).some(
-        (node) => node && node.contains(e.target)
+        (node) =>
+          node && typeof node.contains === "function" && node.contains(e.target)
       );
       if (!isInsideDialog && !isInsideAllowed) {
         close();
@@ -189,24 +196,24 @@ export const ModalContent = ({
     // Delay to ensure all modals are mounted in the DOM
     const timeout = setTimeout(() => {
       const modals = Array.from(document.querySelectorAll(".modal-parent"));
-      modals.forEach((modal, idx) => {
-        modal.classList.remove("invisible");
-        if (idx < modals.length - 1) {
-          modal.classList.add("invisible");
-        }
-      });
+      // modals.forEach((modal, idx) => {
+      //   modal.classList.remove("invisible");
+      //   if (idx < modals.length - 1) {
+      //     modal.classList.add("invisible");
+      //   }
+      // });
     }, 10); // 10ms is usually enough
 
     // Cleanup: when this modal unmounts, re-check visibility
     return () => {
       clearTimeout(timeout);
       const modals = Array.from(document.querySelectorAll(".modal-parent"));
-      modals.forEach((modal, idx) => {
-        modal.classList.remove("invisible");
-        if (idx < modals.length - 1) {
-          modal.classList.add("invisible");
-        }
-      });
+      // modals.forEach((modal, idx) => {
+      //   modal.classList.remove("invisible");
+      //   if (idx < modals.length - 1) {
+      //     modal.classList.add("invisible");
+      //   }
+      // });
     };
   }, [isOpen]);
 
