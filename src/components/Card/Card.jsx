@@ -1,5 +1,7 @@
 import propTypes from "prop-types";
 
+import { cn } from "@/lib/utils";
+
 import IconComponent from "../IconComponent/IconComponent";
 import style from "./Card.module.scss";
 
@@ -12,7 +14,11 @@ const Card = ({ className, keys, children }) => {
   return (
     <div
       key={keys}
-      className={`h-full w-full rounded-md border border-neutral-600 bg-white text-neutral-900 ${style.shadowmuat} ${className}`}
+      className={cn(
+        "h-full w-full rounded-md border border-neutral-600 bg-white text-neutral-900",
+        style.shadowmuat,
+        className
+      )}
     >
       {children}
     </div>
@@ -35,7 +41,7 @@ export const CardHeader = ({ className, children }) => {
 // props className, valuenya berupa string jika anda ingin menambah custom class pada cardnya ("flex flex-col justify-between")
 // props children, valuenya berupa tag elemen html yang akan dirender di dalam cardnya. disini anda juga dapat mengisi fungsi export dari komponen lainnya ("<span>Data card</span>") / (<div><Badges>Tolak</Badges><Button>Detail</Button></div>)
 export const CardContent = ({ className, children }) => {
-  return <div className={`px-8 py-5 ${className}`}>{children}</div>;
+  return <div className={cn("px-8 py-5", className)}>{children}</div>;
 };
 
 // props className, valuenya berupa string jika anda ingin menambah custom class pada cardnya ("flex flex-col justify-between")

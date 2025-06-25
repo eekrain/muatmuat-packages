@@ -11,19 +11,18 @@ import styles from "./CropperWeb.module.scss";
 import "./cropper_az.css";
 
 export default function CropperWeb({
-  imageSource = "",
+  imageFile,
+  imageSource,
   result,
   isOpen,
   setIsOpen,
   onClose,
   isCircle = false,
-  fileType,
   title = "Unggah Gambar",
 }) {
   const cropperRef = useRef(null);
   const modalRef = useRef(null);
   const defaultRatioRef = useRef(null);
-  // const { t } = useTranslation();
 
   useEffect(() => {
     const handleEscape = (e) => {
@@ -53,14 +52,27 @@ export default function CropperWeb({
   }, [isOpen]);
 
   const getCropData = () => {
-    if (typeof cropperRef.current?.cropper !== "undefined") {
-      result(
-        cropperRef.current?.cropper.getCroppedCanvas().toDataURL(fileType, 1.0)
-      );
-    }
     const cropper = cropperRef.current?.cropper;
-    cropper.reset();
-    setIsOpen(false);
+    if (cropper) {
+      // Get filename from imageFile or generate one
+      let fileName =
+        imageFile?.name ||
+        `cropped_image_${Date.now()}.${imageFile?.type?.split("/")[1] || "jpeg"}`;
+
+      // Ensure the filename doesn't have spaces or special characters
+      fileName = fileName.replace(/[^a-zA-Z0-9.-]/g, "_");
+
+      cropper.getCroppedCanvas().toBlob(
+        (blob) => {
+          const file = new File([blob], fileName, { type: imageFile?.type });
+          result(file); // Pass actual File object
+          cropper.reset();
+          setIsOpen(false);
+        },
+        imageFile?.type,
+        0.7
+      ); // compress at 70%
+    }
   };
 
   const cancelCrop = () => {
@@ -163,7 +175,6 @@ export default function CropperWeb({
               className="flex h-8 min-w-[112px] items-center justify-center rounded-full border border-[#176CF7] bg-white px-3 outline-none"
             >
               <span className="text-[14px] font-semibold leading-[16.8px] text-[#176CF7]">
-                {/* {t("buttonCancel")} */}
                 Batal
               </span>
             </button>
@@ -174,7 +185,6 @@ export default function CropperWeb({
               autoFocus
             >
               <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-50">
-                {/* {t("labelSimpanNav")} */}
                 Simpan
               </span>
             </button>

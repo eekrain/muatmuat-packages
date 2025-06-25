@@ -4,11 +4,13 @@ import { usePathname } from "next/navigation";
 
 import FloatingButton from "@/components/FloatingButton/FloatingButton";
 import HeaderWeb from "@/components/Header/Web/HeaderWeb";
+import { useTokenStore } from "@/store/auth/tokenStore";
 import { useNotificationCounterStore } from "@/store/notificationCounterStore";
 
 export default function DesktopLayout({ children }) {
   const pathname = usePathname();
 
+  const isLoggedIn = useTokenStore((state) => state.accessToken);
   const { notification, chat } = useNotificationCounterStore();
 
   const arr = ["/register/otp"];
@@ -19,7 +21,13 @@ export default function DesktopLayout({ children }) {
   return (
     <div className="relative min-h-screen">
       <HeaderWeb notifCounter={{ notification, chat }} />
-      <div className="min-h-[calc(100dvh-60px)]">{children}</div>
+      <div
+        className={
+          isLoggedIn ? "min-h-[calc(100dvh-92px)]" : "min-h-[calc(100dvh-60px)]"
+        }
+      >
+        {children}
+      </div>
       <FloatingButton />
 
       <img

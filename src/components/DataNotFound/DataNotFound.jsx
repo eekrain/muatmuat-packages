@@ -1,5 +1,6 @@
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { useTranslation } from "@/hooks/use-translation";
+import { cn } from "@/lib/utils";
 
 const DataNotFound = ({
   title,
@@ -37,7 +38,10 @@ const DataNotFound = ({
           children
         ) : (
           <p
-            className={`${textClass} w-[257px] text-center text-[16px] font-[600] text-neutral-600`}
+            className={cn(
+              "w-[257px] text-center text-[16px] font-[600] text-neutral-600",
+              textClass
+            )}
           >
             {renderTitle}
           </p>

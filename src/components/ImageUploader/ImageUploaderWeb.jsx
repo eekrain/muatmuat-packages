@@ -11,25 +11,6 @@ import styles from "./ImageUploader.module.scss";
 
 // import { useTranslation } from "@/context/TranslationProvider";
 
-function base64ToFile(base64String, filename, mimeType) {
-  // Decode base64 string to binary data
-  const byteCharacters = atob(base64String.split(",")[1]); // Remove data URL prefix if present
-
-  // Create a byte array from the binary data
-  const byteArrays = [];
-  for (let offset = 0; offset < byteCharacters.length; offset++) {
-    byteArrays.push(byteCharacters.charCodeAt(offset));
-  }
-
-  // Create a Blob from the byte array
-  const blob = new Blob([new Uint8Array(byteArrays)], { type: mimeType });
-
-  // Create a File from the Blob
-  const file = new File([blob], filename, { type: mimeType });
-
-  return file;
-}
-
 export default function ImageUploaderWeb({
   className, // CLASSNAME KOMPONEN IMAGE UPLOADER, GANTI UKURAN KOTAKNYA PAKEK INI SAJA
   getImage, //get image
@@ -53,7 +34,7 @@ export default function ImageUploaderWeb({
   const [image, setImage] = useState(null); //set image source for cropper
   const [isOpen, setIsOpen] = useState(false); //open cropper modal
   const base64Image = value;
-  const [imageFiles, setImageFiles] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
   const [error, setError] = useState(false);
   // const { t } = useTranslation();
 
@@ -73,10 +54,10 @@ export default function ImageUploaderWeb({
     let file;
     if (e.dataTransfer) {
       files = e.dataTransfer.files;
-      setImageFiles(files[0]);
+      setImageFile(files[0]);
     } else if (e.target) {
       files = e.target.files;
-      setImageFiles(files[0]);
+      setImageFile(files[0]);
     }
     file = files[0];
 
@@ -175,14 +156,26 @@ export default function ImageUploaderWeb({
     // }
   };
 
-  const getCroppedData = (value) => {
-    const file = base64ToFile(value, imageFiles.name, imageFiles.type);
+  const getCroppedData = (file) => {
+    // Log file information
+    console.log(`File size: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
+    console.log(`File name: ${file.name}`);
+    console.log(`File type: ${file.type}`);
+
     onFinishCrop(file);
-    if (value) {
-      getImage(value);
-      onUpload(value);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result; // dataURL for preview/upload
+
+      // You can also log the base64 string length as an approximate size indicator
+      console.log(`Base64 data length: ${base64.length} characters`);
+
+      getImage(base64);
+      onUpload(base64);
       imageRef.current.value = null;
-    }
+    };
+    reader.readAsDataURL(file); // get base64 if needed
   };
 
   const clearInput = (value) => {
@@ -289,6 +282,7 @@ export default function ImageUploaderWeb({
       </div>
       {isOpen ? (
         <CropperImage
+          imageFile={imageFile}
           imageSource={image}
           isOpen={isOpen}
           setIsOpen={setIsOpen}
@@ -296,7 +290,6 @@ export default function ImageUploaderWeb({
           onClose={clearInput}
           required={true}
           isCircle={isCircle}
-          fileType={imageFiles?.type}
           title={cropperTitle}
         />
       ) : null}
