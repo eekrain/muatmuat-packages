@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
+import { useRegisterModalPortalNode } from "@/components/Modal/useRegisterModalPortalNode";
 import { useTranslation } from "@/hooks/use-translation";
 
 import { InputSearch } from "../../../InputSearch/InputSearch";
@@ -15,6 +16,16 @@ export const ModalPostalCode = ({
 }) => {
   const { t } = useTranslation();
   const [errorMessage, setErrorMessage] = useState("");
+
+  const dropdownRef = useRef(null);
+
+  const isDropdownSearchOpen =
+    searchValue && searchValue.length > 0 && options.length > 0;
+
+  // Get the callback ref from the hook
+  const setDropdownRef = useRegisterModalPortalNode(dropdownRef, [
+    isDropdownSearchOpen,
+  ]);
 
   return (
     <Modal
@@ -49,6 +60,7 @@ export const ModalPostalCode = ({
             options={options}
             getOptionLabel={(option) => option.Description}
             onSelectValue={onSelectPostalCode}
+            dropdownRef={setDropdownRef}
           />
         </div>
       </ModalContent>
