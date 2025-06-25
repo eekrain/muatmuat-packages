@@ -6,12 +6,13 @@ import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Checkbox/Checkbox";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
+import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import ImageUploader from "@/components/ImageUploader/ImageUploader";
-import Input from "@/components/Input/Input";
 import TextArea from "@/components/TextArea/TextArea";
 import NoDeliveryOrder from "@/container/SewaArmada/Responsive/InformasiPesanan/NoDeliveryOrder";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import {
@@ -68,13 +69,27 @@ const InformasiPesananScreen = () => {
   const { formValues, formErrors } = useSewaArmadaStore();
   const {
     fotoMuatan,
-    deskripsi,
     // deliveryOrder,
-    isCompany,
-    companyName,
-    companyNpwp,
-    opsiPembayaran,
   } = formValues;
+
+  const cargoDescription = useSewaArmadaStore(
+    (state) => state.formValues.cargoDescription
+  );
+  const businessEntity = useSewaArmadaStore(
+    (state) => state.formValues.businessEntity
+  );
+  const isBusinessEntity = useSewaArmadaStore(
+    (state) => state.formValues.businessEntity.isBusinessEntity
+  );
+  const name = useSewaArmadaStore(
+    (state) => state.formValues.businessEntity.name
+  );
+  const taxId = useSewaArmadaStore(
+    (state) => state.formValues.businessEntity.taxId
+  );
+  const paymentMethodId = useSewaArmadaStore(
+    (state) => state.formValues.paymentMethodId
+  );
 
   // Get actions from Zustand store
   const { setField, setFotoMuatan, validateSecondForm } =
@@ -82,6 +97,14 @@ const InformasiPesananScreen = () => {
 
   // Event handlers
   const handleImageUpload = (index, img) => setFotoMuatan(index, img);
+
+  const handleToggleCheckbox = (checked) => {
+    setField("businessEntity", {
+      isBusinessEntity: checked,
+      name: "",
+      taxId: "",
+    });
+  };
 
   const handleSubmit = () => {
     if (validateSecondForm()) {
@@ -91,11 +114,15 @@ const InformasiPesananScreen = () => {
     }
   };
 
-  const selectedOpsiPembayaran = opsiPembayaran
-    ? paymentMethods
-        .flatMap((method) => method.options || [])
-        .find((item) => item.id === opsiPembayaran.id)
-    : null;
+  const selectedOpsiPembayaran = useShallowMemo(
+    () =>
+      paymentMethodId
+        ? paymentMethods
+            .flatMap((method) => method.options || [])
+            .find((item) => item.id === paymentMethodId)
+        : null,
+    [paymentMethodId, paymentMethods]
+  );
 
   return (
     <FormResponsiveLayout
@@ -203,18 +230,21 @@ const InformasiPesananScreen = () => {
             <div className="flex flex-col gap-3">
               <div className="w-full">
                 <TextArea
+                  name="cargoDescription"
                   maxLength={500}
                   hasCharCount
                   supportiveText={{
-                    title: formErrors.deskripsi,
+                    title: formErrors.cargoDescription,
                   }}
                   resize="none"
                   placeholder={
                     "Lengkapi deskripsi informasi muatan Anda dengan rincian spesifik terkait barang yang dikirim, seperti bahan, penggunaan, atau karakteristik unik lainnya."
                   }
-                  value={deskripsi}
-                  onChange={(e) => setField("deskripsi", e.target.value)}
-                  status={formErrors.deskripsi ? "error" : ""}
+                  value={cargoDescription}
+                  onChange={({ target: { name, value } }) =>
+                    setField(name, value)
+                  }
+                  status={formErrors.cargoDescription ? "error" : ""}
                 />
               </div>
             </div>
@@ -245,12 +275,12 @@ const InformasiPesananScreen = () => {
           {/* Checkbox */}
           <Checkbox
             label="Centang opsi jika kamu merupakan suatu badan usaha/perusahaan"
-            checked={isCompany}
-            onChange={({ checked }) => setField("isCompany", checked)}
+            checked={isBusinessEntity}
+            onChange={({ checked }) => handleToggleCheckbox(checked)}
           />
 
           {/* Form Fields - Only show when checkbox is checked */}
-          {isCompany && (
+          {isBusinessEntity && (
             <div className="mt-2 flex flex-col gap-4">
               {/* Field Nama Badan Usaha */}
               <div className="flex flex-col gap-3">
@@ -258,14 +288,16 @@ const InformasiPesananScreen = () => {
                   Nama Badan Usaha/Perusahaan*
                 </label>
                 <Input
-                  type="text"
-                  name="companyName"
+                  name="name"
                   placeholder="Masukkan Nama Badan Usaha/Perusahaan"
-                  value={companyName}
-                  onChange={(e) => setField(e.target.name, e.target.value)}
-                  className="w-full"
-                  status={formErrors.companyName ? "error" : null}
-                  supportiveText={{ title: formErrors?.companyName ?? "" }}
+                  value={name}
+                  onChange={({ target: { name, value } }) =>
+                    setField("businessEntity", {
+                      ...businessEntity,
+                      [name]: value,
+                    })
+                  }
+                  errorMessage={formErrors?.businessEntity?.name}
                 />
               </div>
 
@@ -275,14 +307,16 @@ const InformasiPesananScreen = () => {
                   Nomor NPWP*
                 </label>
                 <Input
-                  type="text"
-                  name="companyNpwp"
+                  name="taxId"
                   placeholder="Masukkan Nomor NPWP Perusahaan"
-                  value={companyNpwp}
-                  onChange={(e) => setField(e.target.name, e.target.value)}
-                  className="w-full"
-                  status={formErrors.companyNpwp ? "error" : null}
-                  supportiveText={{ title: formErrors?.companyNpwp ?? "" }}
+                  value={taxId}
+                  onChange={({ target: { name, value } }) =>
+                    setField("businessEntity", {
+                      ...businessEntity,
+                      [name]: value,
+                    })
+                  }
+                  errorMessage={formErrors?.businessEntity?.taxId}
                 />
               </div>
             </div>
@@ -312,9 +346,9 @@ const InformasiPesananScreen = () => {
               </span>
             </div>
           ) : null}
-          {formErrors.opsiPembayaran ? (
+          {formErrors?.paymentMethodId ? (
             <span className="text-[12px] font-medium leading-[13.2px] text-error-400">
-              Metode pembayaran wajib diisi
+              {formErrors.paymentMethodId}
             </span>
           ) : null}
         </div>

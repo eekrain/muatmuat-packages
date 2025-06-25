@@ -82,7 +82,7 @@ const FormLokasiBongkarMuatScreen = () => {
             </div>
 
             {/* Location Details */}
-            <div className="flex items-start gap-2">
+            <div className="flex items-center gap-2">
               <MapPin className="mt-0.5 h-6 w-6 flex-shrink-0 text-[#461B02]" />
               <p className="flex-1 text-[14px] font-medium leading-[15px] text-black">
                 {formValues.dataLokasi?.location?.name}

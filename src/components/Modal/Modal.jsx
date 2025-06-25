@@ -76,14 +76,24 @@ export const Modal = ({
   }, [isControlled, onOpenChange]);
 
   useEffect(() => {
+    if (!isOpen) return;
+
     const handleKeyDown = (e) => {
-      if (e.key === "Escape" && isOpen) {
-        close();
+      if (e.key === "Escape") {
+        // Check if this modal is the topmost
+        const modals = Array.from(document.querySelectorAll(".modal-parent"));
+        const topmost = modals[modals.length - 1];
+        // dialogRef.current is the inner dialog, so get its parent
+        const thisModalParent = dialogRef.current?.parentElement;
+        if (thisModalParent === topmost) {
+          close();
+        }
       }
     };
+
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, close]);
+  }, [isOpen, close, dialogRef]);
 
   // Prevent background scroll when modal is open
   useEffect(() => {
@@ -160,6 +170,32 @@ export const ModalContent = ({
     muatparts: "icon-fill-muat-parts-non-800",
     muattrans: "icon-fill-muat-trans-secondary-900",
   };
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Delay to ensure all modals are mounted in the DOM
+    const timeout = setTimeout(() => {
+      const modals = Array.from(document.querySelectorAll(".modal-parent"));
+      modals.forEach((modal, idx) => {
+        modal.classList.remove("invisible");
+        if (idx < modals.length - 1) {
+          modal.classList.add("invisible");
+        }
+      });
+    }, 10); // 10ms is usually enough
+
+    // Cleanup: when this modal unmounts, re-check visibility
+    return () => {
+      clearTimeout(timeout);
+      const modals = Array.from(document.querySelectorAll(".modal-parent"));
+      modals.forEach((modal, idx) => {
+        modal.classList.remove("invisible");
+        if (idx < modals.length - 1) {
+          modal.classList.add("invisible");
+        }
+      });
+    };
+  }, [isOpen]);
 
   if (!isOpen || typeof window === "undefined") {
     return null;
@@ -169,7 +205,7 @@ export const ModalContent = ({
     <Portal>
       <div
         className={cn(
-          "fixed inset-0 z-50 flex items-center justify-center bg-black/25",
+          "modal-parent fixed inset-0 z-50 flex items-center justify-center bg-black/25",
           appearance.backgroudClassname
         )}
         onMouseDown={handleClickOutside}

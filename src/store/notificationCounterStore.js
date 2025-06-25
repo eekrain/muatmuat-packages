@@ -11,11 +11,12 @@ export const useNotificationCounterStore = create(
       order: 0,
       actions: {
         fetchSidebarData: async () => {
-          const res = await fetcherMuatrans.get("v1/orders/sidebar-count");
+          const response = await fetcherMuatrans.get("v1/orders/sidebar-count");
+          const data = response.data?.Data;
           set({
-            notification: res.data?.Data?.notification || 0,
-            chat: res.data?.Data?.chat || 0,
-            order: res.data?.Data?.order || 0,
+            notification: data?.notification || 0,
+            chat: data?.chat || 0,
+            order: data?.order || 0,
           });
         },
       },

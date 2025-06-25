@@ -3,13 +3,13 @@ import { useEffect, useRef, useState } from "react";
 import Checkbox from "@/components/Checkbox/Checkbox";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
-import { useUser } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth";
 import { useFirstTimerSewaArmadaApp } from "@/store/first-timer/sewaArmadaApp";
 
 export const ModalFirstTimer = ({}) => {
   const [open, setOpen] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-  const { dataUser } = useUser();
+  const { dataUser } = useAuth();
   const { dontShowAgain, userId, setDontShowAgain } =
     useFirstTimerSewaArmadaApp();
 

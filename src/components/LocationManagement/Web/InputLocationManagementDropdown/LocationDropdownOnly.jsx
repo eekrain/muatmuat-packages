@@ -1,4 +1,10 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
 import { Portal } from "@radix-ui/react-portal";
 
@@ -18,32 +24,64 @@ export const LocationDropdownOnly = ({
   isDropdownSearchOpen,
   setIsDropdownSearchOpen,
   handleAddToSavedLocation,
-  hideDropdownWhenTopIsLessThan = 250,
+  handleEditLocation,
 }) => {
   console.log("🚀 ~ className:", className);
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
   const [dropdownStyle, setDropdownStyle] = useState(null);
+  const scrollParentRef = useRef(null);
+
+  // Function to find the first scrollable parent
+  const getScrollParent = useCallback((node) => {
+    if (node == null) {
+      return document.documentElement;
+    }
+    const { overflow, overflowY } = window.getComputedStyle(node);
+    const isScrollable =
+      overflow.includes("auto") ||
+      overflow.includes("scroll") ||
+      overflowY.includes("auto") ||
+      overflowY.includes("scroll");
+
+    if (isScrollable && node.scrollHeight > node.clientHeight) {
+      return node;
+    } else {
+      if (node.parentNode === document.body) {
+        return document.documentElement;
+      }
+      return getScrollParent(node.parentNode);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      scrollParentRef.current = getScrollParent(inputRef.current);
+    }
+  }, [getScrollParent, isDropdownSearchOpen]);
 
   // Function to update dropdown position
   const updateDropdownPosition = () => {
     if (isDropdownSearchOpen && inputRef.current) {
-      const rect = inputRef.current.getBoundingClientRect();
-      const top = rect.bottom + window.scrollY;
-      console.log("🚀 ~ updateDropdownPosition ~ top:", {
-        top,
-        hideDropdownWhenTopIsLessThan,
-        isTrue: top < hideDropdownWhenTopIsLessThan,
-      });
-      if (top < hideDropdownWhenTopIsLessThan) {
+      const inputRect = inputRef.current.getBoundingClientRect();
+      const scrollParent = scrollParentRef.current || document.documentElement;
+      const scrollParentRect = scrollParent.getBoundingClientRect();
+
+      // Check if the button is outside the scrollable parent's viewport
+      if (
+        inputRect.bottom < scrollParentRect.top ||
+        inputRect.top > scrollParentRect.bottom
+      ) {
         setIsDropdownSearchOpen(false);
         inputRef.current.blur();
+        return;
       }
+
       setDropdownStyle({
-        position: "absolute",
-        top: rect.bottom + window.scrollY,
-        left: rect.left + window.scrollX,
-        width: rect.width,
+        position: "fixed",
+        top: inputRect.bottom,
+        left: inputRect.left,
+        width: inputRect.width,
         zIndex: 9999,
       });
     }
@@ -58,13 +96,14 @@ export const LocationDropdownOnly = ({
   // Update dropdown position on scroll and resize
   useEffect(() => {
     if (!isDropdownSearchOpen) return;
+    const scrollParent = scrollParentRef.current || window;
     const handleScrollOrResize = () => {
       updateDropdownPosition();
     };
-    window.addEventListener("scroll", handleScrollOrResize, true);
+    scrollParent.addEventListener("scroll", handleScrollOrResize, true);
     window.addEventListener("resize", handleScrollOrResize);
     return () => {
-      window.removeEventListener("scroll", handleScrollOrResize, true);
+      scrollParent.removeEventListener("scroll", handleScrollOrResize, true);
       window.removeEventListener("resize", handleScrollOrResize);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -103,7 +142,7 @@ export const LocationDropdownOnly = ({
         <button
           onClick={async () => {
             await handleGetCurrentLocation();
-            setIsDropdownSearchOpen, false;
+            setIsDropdownSearchOpen(false);
           }}
           className="flex w-full items-center gap-2 px-[20px] py-[12px] text-[10px] font-medium text-[#176CF7]"
         >
@@ -207,7 +246,7 @@ export const LocationDropdownOnly = ({
                     <div
                       onClick={(e) => {
                         e.stopPropagation();
-                        alert("not implemented");
+                        handleEditLocation(location);
                       }}
                       className="h-[20px] w-[20px] cursor-pointer hover:text-[#176CF7]"
                     >
@@ -247,7 +286,7 @@ export const LocationDropdownOnly = ({
           onChange={(e) => {
             setSearchLocationAutoComplete(e.currentTarget.value);
           }}
-          className="w-full rounded-[6px] border border-blue-300 py-[8.5px] pl-[38px] pr-3 text-xs font-medium placeholder:text-neutral-600 focus:border-blue-500"
+          className="w-full rounded-[6px] border border-blue-300 py-[8.5px] pl-[38px] pr-3 text-xs font-medium outline-none placeholder:text-neutral-600 focus:border-blue-500"
         />
         <IconComponent
           src="/icons/marker-lokasi-muat.svg"

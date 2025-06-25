@@ -1,7 +1,12 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 
-import { fetcherMuatparts } from "@/lib/axios";
-import { normalizeUserSavedLocation } from "@/lib/normalizers/location";
+import { fetcherMuatparts, fetcherMuatrans } from "@/lib/axios";
+import {
+  normalizeLocationDataForSaving,
+  normalizeUserSavedLocation,
+} from "@/lib/normalizers/location";
+import { normalizeRecentHistoryLocation } from "@/lib/normalizers/location/normalizeRecentHistoryLocation";
+import { toast } from "@/lib/toast";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
 import { useSWRHook } from "../use-swr";
@@ -13,16 +18,53 @@ export const useSavedLocation = ({
   setIsDropdownSearchOpen,
   setDontTriggerPostalCodeModal,
 }) => {
+  const [historyLocationType, setHistoryLocationType] = useState("PICKUP");
+
   const setLocationPartial = useLocationFormStore(
     (state) => state.setLocationPartial
   );
   const setField = useLocationFormStore((state) => state.setField);
 
-  const { data } = useSWRHook(
+  const { data: savedResult, mutate: refetchSavedResult } = useSWRHook(
     "v1/muatparts/profile/location",
     fetcherMuatparts
   );
-  const userSavedLocationResult = useMemo(() => data?.Data || [], [data]);
+
+  const { data: historyResult, mutate: refetchHistoryResult } = useSWRHook(
+    `v1/orders/history-locations?locationType=${historyLocationType}`,
+    fetcherMuatrans
+  );
+
+  const userSavedLocationResult = useMemo(
+    () => savedResult?.Data || [],
+    [savedResult]
+  );
+
+  const userRecentSearchedLocation = useMemo(
+    () => historyResult?.Data?.TerakhirDicari || [],
+    [historyResult]
+  );
+
+  const userRecentTransactionLocation = useMemo(
+    () => historyResult?.Data?.TransaksiTerakhir || [],
+    [historyResult]
+  );
+
+  const handleSelectRecentLocation = useCallback(
+    async (location) => {
+      setLocationPartial(normalizeRecentHistoryLocation(location));
+
+      setDontTriggerPostalCodeModal(true);
+      setCoordinates({
+        latitude: location.Latitude,
+        longitude: location.Longitude,
+      });
+      setAutoCompleteSearchPhrase(location.Address);
+      setIsDropdownSearchOpen(false);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   const handleSelectUserSavedLocation = useCallback(
     async (location) => {
@@ -55,8 +97,58 @@ export const useSavedLocation = ({
     []
   );
 
+  const handleSaveLocation = useCallback(async (formValues) => {
+    try {
+      const response = await fetcherMuatparts.post(
+        "v1/muatparts/profile/location",
+        {
+          param: normalizeLocationDataForSaving(formValues),
+        }
+      );
+      refetchSavedResult();
+      setTimeout(() => {
+        toast.success("Lokasi berhasil ditambah");
+      }, 200);
+      return response;
+    } catch (error) {
+      console.error("Error when adding location:", error);
+      toast.error("Gagal menambah lokasi");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleUpdateLocation = useCallback(async (formValues, IDtoUpdate) => {
+    try {
+      const response = await fetcherMuatparts.put(
+        "v1/muatparts/profile/location",
+        {
+          param: {
+            ...normalizeLocationDataForSaving(formValues),
+            ID: IDtoUpdate,
+          },
+        }
+      );
+      refetchSavedResult();
+      setTimeout(() => {
+        toast.success("Lokasi berhasil diubah");
+      }, 200);
+      return response;
+    } catch (error) {
+      console.error("Error when adding location:", error);
+      toast.error("Gagal mengubah lokasi");
+    }
+  }, []);
+
   return {
     userSavedLocationResult,
     handleSelectUserSavedLocation,
+
+    userRecentSearchedLocation,
+    userRecentTransactionLocation,
+    handleSelectRecentLocation,
+    refetchHistoryResult,
+
+    handleSaveLocation,
+    handleUpdateLocation,
   };
 };

@@ -91,7 +91,7 @@ export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
                 Waktu Pembayaran
               </span>
               <span className="text-right text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                {formatDate(dataRingkasanPembayaran?.paymentDueDateTime)}
+                {formatDate(dataRingkasanPembayaran?.expiredAt)}
               </span>
             </div>
 

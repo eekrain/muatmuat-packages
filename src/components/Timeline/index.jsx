@@ -124,17 +124,30 @@ export const TimelineContentWithButtonDate = ({
   className,
   withButton = null,
   withDate = null,
+  appearance = {
+    titleClassname: "",
+    dateClassname: "",
+    buttonClassname: "",
+  },
 }) => {
   return (
     <div className={cn("flex items-center justify-between pb-5", className)}>
       <div className="flex flex-col gap-2">
-        <span className="line-clamp-1 text-xs font-medium leading-[1.2] text-neutral-900">
+        <span
+          className={cn(
+            "line-clamp-1 text-xs font-medium leading-[1.2] text-neutral-900",
+            appearance?.titleClassname
+          )}
+        >
           {title}
         </span>
         {withButton && (
           <button
             onClick={withButton.onClick}
-            className="w-fit text-xs font-medium leading-[1.2] text-primary-700"
+            className={cn(
+              "w-fit text-xs font-medium leading-[1.2] text-primary-700",
+              appearance?.buttonClassname
+            )}
           >
             {withButton.label}
           </button>
@@ -142,7 +155,12 @@ export const TimelineContentWithButtonDate = ({
       </div>
 
       {withDate && (
-        <span className="block text-xs font-medium leading-[1.2] text-neutral-500">
+        <span
+          className={cn(
+            "block text-xs font-medium leading-[1.2] text-neutral-500",
+            appearance?.dateClassname
+          )}
+        >
           {formatDate(withDate)}
         </span>
       )}

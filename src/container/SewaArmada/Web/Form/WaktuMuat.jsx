@@ -18,8 +18,12 @@ const timezone = {
 };
 
 export const WaktuMuat = () => {
-  const startDate = useSewaArmadaStore((state) => state.formValues.startDate);
-  const endDate = useSewaArmadaStore((state) => state.formValues.endDate);
+  const loadTimeStart = useSewaArmadaStore(
+    (state) => state.formValues.loadTimeStart
+  );
+  const loadTimeEnd = useSewaArmadaStore(
+    (state) => state.formValues.loadTimeEnd
+  );
   const showRangeOption = useSewaArmadaStore(
     (state) => state.formValues.showRangeOption
   );
@@ -29,7 +33,7 @@ export const WaktuMuat = () => {
   const handleDateChange = (field, value) => {
     const newDate = new Date(value);
     newDate.setSeconds(0, 0);
-    setField(field === "start" ? "startDate" : "endDate", newDate);
+    setField(field, newDate);
   };
 
   return (
@@ -39,12 +43,12 @@ export const WaktuMuat = () => {
         <div className="flex flex-col gap-y-2">
           <div className="flex items-center gap-x-2">
             <DatetimePicker
-              datetimeValue={startDate}
+              datetimeValue={loadTimeStart}
               onApply={(date) =>
-                handleFirstTime(() => handleDateChange("start", date))
+                handleFirstTime(() => handleDateChange("loadTimeStart", date))
               }
               placeholder="Pilih Tanggal & Waktu Muat"
-              status={formErrors.startDate ? "error" : null}
+              status={formErrors.loadTimeStart ? "error" : null}
               className="w-[271px]"
               minDate={getNowTimezone(timezone)}
             />
@@ -54,23 +58,23 @@ export const WaktuMuat = () => {
                   s/d
                 </span>
                 <DatetimePicker
-                  datetimeValue={endDate}
+                  datetimeValue={loadTimeEnd}
                   onApply={(date) =>
-                    handleFirstTime(() => handleDateChange("end", date))
+                    handleFirstTime(() => handleDateChange("loadTimeEnd", date))
                   }
                   placeholder="Pilih Tanggal & Waktu Muat"
-                  disabled={!startDate}
-                  status={formErrors.endDate ? "error" : null}
+                  disabled={!loadTimeStart}
+                  status={formErrors.loadTimeEnd ? "error" : null}
                   className="w-[271px]"
                   minDate={getNowTimezone(timezone)}
                 />
               </>
             ) : null}
           </div>
-          {formErrors.startDate || formErrors.endDate ? (
+          {formErrors.loadTimeStart || formErrors.loadTimeEnd ? (
             <div className="flex items-center gap-x-[34px] text-[12px] font-medium leading-[14.4px] text-error-400">
-              <div className="w-[271px]">{formErrors.startDate}</div>
-              <div className="w-[271px]">{formErrors.endDate}</div>
+              <div className="w-[271px]">{formErrors.loadTimeStart}</div>
+              <div className="w-[271px]">{formErrors.loadTimeEnd}</div>
             </div>
           ) : null}
         </div>

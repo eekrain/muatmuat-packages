@@ -79,7 +79,7 @@ export const BannerCarousel = ({
             <img
               src={banner.imageUrl}
               alt={banner.altText || "Banner image"}
-              className="h-full object-cover"
+              className="h-full w-full object-cover"
             />
           </a>
         ))}

@@ -18,6 +18,7 @@ export const useAutoComplete = ({
   setTempLocation,
   setDontTriggerPostalCodeModal,
   setIsDropdownSearchOpen,
+  refetchHistoryResult,
 }) => {
   const { isMobile } = useDevice();
   const responsiveSearchValue = useResponsiveSearchStore(
@@ -56,9 +57,14 @@ export const useAutoComplete = ({
       setTempLocation(result);
       if (!result?.district?.value) {
         setIsModalPostalCodeOpen(true);
-        setLocationPostalCodeSearchPhrase(result.postalCode.value);
+        if (result.postalCode.value === "00000")
+          setLocationPostalCodeSearchPhrase("");
+        else setLocationPostalCodeSearchPhrase(result.postalCode.value);
       } else {
         if (!isMobile) setAutoCompleteSearchPhrase(result.location.name);
+        fetcher.saveRecentSearchedLocation(result).then(() => {
+          refetchHistoryResult();
+        });
       }
       setIsDropdownSearchOpen(false);
       return result;

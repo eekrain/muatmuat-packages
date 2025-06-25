@@ -11,6 +11,7 @@ import VoucherEmptyState from "@/components/Voucher/VoucherEmptyState";
 import VoucherPopup from "@/components/Voucher/VoucherPopup";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
 import FleetOrderConfirmationModal from "@/container/SewaArmada/Web/FleetOrderConfirmationModal/FleetOrderConfirmationModal";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook } from "@/hooks/use-swr";
 import { useVouchers } from "@/hooks/useVoucher";
 import { fetcherMuatrans, fetcherPayment } from "@/lib/axios";
@@ -32,13 +33,13 @@ const Toast = ({ message, onClose }) => (
 
 export const SummaryPanel = () => {
   // Fetch payment methods using SWR
-  const { data: paymentMethodsResponse } = useSWRHook(
+  const { data: paymentMethodsData, mutate: mutatePaymentMethods } = useSWRHook(
     "v1/payment/methods",
     fetcherPayment
   );
 
   // Use the API data directly or fall back to an empty array
-  const paymentMethods = paymentMethodsResponse?.Data || [];
+  const paymentMethods = paymentMethodsData?.Data || [];
 
   // Voucher related state and hooks
   const token = "Bearer your_token_here";
@@ -58,14 +59,34 @@ export const SummaryPanel = () => {
 
   const router = useRouter();
 
-  const jenisTruk = useSewaArmadaStore((state) => state.formValues.jenisTruk);
-  const isCompany = useSewaArmadaStore((state) => state.formValues.isCompany);
-  const opsiPembayaran = useSewaArmadaStore(
-    (state) => state.formValues.opsiPembayaran
-  );
+  const orderType = useSewaArmadaStore((state) => state.orderType);
+  // const loadTimeStart = useSewaArmadaStore(
+  //   (state) => state.formValues.loadTimeStart
+  // );
+  // const loadTimeEnd = useSewaArmadaStore(
+  //   (state) => state.formValues.loadTimeEnd
+  // );
+  // const showRangeOption = useSewaArmadaStore(
+  //   (state) => state.formValues.showRangeOption
+  // );
+  const {
+    cargoTypeId,
+    cargoCategoryId,
+    isHalalLogistics,
+    cargoDescription,
+    carrierId,
+    truckTypeId,
+    additionalServices,
+    deliveryOrderNumbers,
+    businessEntity,
+    paymentMethodId,
+  } = useSewaArmadaStore((state) => state.formValues);
+
+  const isBusinessEntity = businessEntity.isBusinessEntity;
+
   const { setField, validateForm } = useSewaArmadaActions();
 
-  const [isOpsiPembayaranModalOpen, setIsOpsiPembayaranModalOpen] =
+  const [isPaymentMethodsModalOpen, setIsPaymentMethodsModalOpen] =
     useState(false);
   const [expandedCategories, setExpandedCategories] = useState(new Set([0])); // Initialize with first category expanded
   const [isModalConfirmationOpen, setIsModalConfirmationOpen] = useState(false);
@@ -82,7 +103,7 @@ export const SummaryPanel = () => {
           cost: 10000,
         },
         // Conditional item using spread operator
-        ...(isCompany
+        ...(isBusinessEntity
           ? [
               {
                 label: "Pajak",
@@ -93,31 +114,6 @@ export const SummaryPanel = () => {
       ],
     },
   ];
-  // const totalCost = useMemo(() => {
-  //   const detailPesanan = [
-  //     {
-  //       title: "Biaya Lainnya",
-  //       items: [
-  //         {
-  //           label: "Admin Layanan",
-  //           cost: 10000,
-  //         },
-  //         // Conditional item using spread operator
-  //         ...(isCompany
-  //           ? [
-  //               {
-  //                 label: "Pajak",
-  //                 cost: 21300,
-  //               },
-  //             ]
-  //           : []),
-  //       ],
-  //     },
-  //   ];
-  //   return detailPesanan
-  //     .flatMap((section) => section.items)
-  //     .reduce((total, item) => total + item.cost, 0);
-  // }, [isCompany]);
 
   useEffect(() => {
     if (selectedVoucher) {
@@ -246,13 +242,14 @@ export const SummaryPanel = () => {
     });
   };
 
-  const handleSelectPaymentMethod = (paymentMethod) => {
-    setField("opsiPembayaran", paymentMethod);
-    setIsOpsiPembayaranModalOpen(false);
+  const handleSelectPaymentMethod = (paymentMethodId) => {
+    setField("paymentMethodId", paymentMethodId);
+    setIsPaymentMethodsModalOpen(false);
   };
 
   const handleValidateFleetOrder = () => {
     const isValidForm = validateForm();
+
     if (isValidForm) {
       setIsModalConfirmationOpen(true);
     }
@@ -440,8 +437,8 @@ export const SummaryPanel = () => {
 
     const sampleOrderData = {
       orderType: "INSTANT",
-      loadTimeStart: "2025-06-25T09:00:00Z",
-      loadTimeEnd: "2025-07-26T09:00:00Z",
+      loadTimeStart: "2025-06-26T09:00:00Z",
+      loadTimeEnd: "2025-07-27T09:00:00Z",
       locations: [
         {
           locationType: "PICKUP",
@@ -493,16 +490,16 @@ export const SummaryPanel = () => {
           sequence: 1,
         },
       ],
-      cargoTypeId: "550e8400-e29b-41d4-a716-446655440100",
-      cargoCategoryId: "550e8400-e29b-41d4-a716-446655440110",
+      cargoTypeId,
+      cargoCategoryId,
       cargoPhotos: [
         "https://storage.muatrans.com/cargos/photo-123456.jpg",
         "https://storage.muatrans.com/cargos/photo-123457.jpg",
       ],
       cargoDescription: "Elektronik dan peralatan kantor",
-      isHalalLogistics: true,
-      carrierId: "550e8400-e29b-41d4-a716-446655440050",
-      truckTypeId: "f483709a-de4c-4541-b29e-6f4d9a912332",
+      isHalalLogistics,
+      carrierId,
+      truckTypeId,
       truckCount: 2,
       estimatedDistance: 75.5,
       estimatedTime: 120,
@@ -513,36 +510,11 @@ export const SummaryPanel = () => {
       //   isCustomAmount: false,
       //   insurancePolicyAccepted: true,
       // },
-      additionalServices: [
-        {
-          serviceId: "550e8400-e29b-41d4-a716-446655440000",
-          withShipping: true,
-          shippingDetails: {
-            recipientName: "John Doe",
-            recipientPhone: "08123456789",
-            destinationAddress: "Jl. Contoh No. 123",
-            detailAddress: "Rumah cat putih",
-            district: "Tegalsari",
-            city: "Surabaya",
-            province: "Jawa Timur",
-            postalCode: "60261",
-            shippingOptionId: "0d5de669-e7ba-46f4-a8c6-0f3192ed7465",
-            withInsurance: true,
-          },
-        },
-        {
-          serviceId: "550e8400-e29b-41d4-a716-446655440001",
-          withShipping: false,
-        },
-      ],
-      deliveryOrderNumbers: ["DO123456", "DO123457"],
-      businessEntity: {
-        isBusinessEntity: true,
-        name: "PT Sukses Makmur",
-        taxId: "0123456789012345",
-      },
+      additionalServices,
+      deliveryOrderNumbers,
+      businessEntity,
       voucherId: selectedVoucher ?? "",
-      paymentMethodId: "550e8400-e29b-41d4-a716-446655440000",
+      paymentMethodId,
       pricing: {
         transportFee: 5000000,
         insuranceFee: 0,
@@ -550,7 +522,7 @@ export const SummaryPanel = () => {
         voucherDiscount: 0,
         adminFee: 10000,
         taxAmount: 0,
-        totalPrice: 5110000,
+        totalPrice: 5010000,
       },
     };
 
@@ -584,11 +556,15 @@ export const SummaryPanel = () => {
     //router.push("/daftarpesanan/detailpesanan/1");
   };
 
-  const selectedOpsiPembayaran = opsiPembayaran
-    ? paymentMethods
-        .flatMap((method) => method.methods || [])
-        .find((item) => item.id === opsiPembayaran.id)
-    : null;
+  const selectedOpsiPembayaran = useShallowMemo(
+    () =>
+      paymentMethodId
+        ? paymentMethods
+            .flatMap((method) => method.methods || [])
+            .find((item) => item.id === paymentMethodId)
+        : null,
+    [paymentMethodId, paymentMethods]
+  );
 
   return (
     <>
@@ -676,12 +652,15 @@ export const SummaryPanel = () => {
               {`Rp${currentTotal.toLocaleString("id-ID")}`}
             </span>
           </div>
-          {jenisTruk &&
+          {truckTypeId &&
             (selectedOpsiPembayaran ? (
               <div className="flex flex-col gap-y-4">
                 <button
                   className="flex h-8 items-center justify-between rounded-md border border-neutral-600 px-3"
-                  onClick={() => setIsOpsiPembayaranModalOpen(true)}
+                  onClick={() => {
+                    mutatePaymentMethods();
+                    setIsPaymentMethodsModalOpen(true);
+                  }}
                 >
                   <div className="flex items-center gap-x-2">
                     <Image
@@ -707,7 +686,7 @@ export const SummaryPanel = () => {
             ) : (
               <Button
                 variant="muatparts-primary"
-                onClick={() => setIsOpsiPembayaranModalOpen(true)}
+                onClick={() => setIsPaymentMethodsModalOpen(true)}
               >
                 Pilih Opsi Pembayaran
               </Button>
@@ -717,8 +696,8 @@ export const SummaryPanel = () => {
 
       {/* MODAL OPSI PEMBAYARAN */}
       <Modal
-        open={isOpsiPembayaranModalOpen}
-        onOpenChange={setIsOpsiPembayaranModalOpen}
+        open={isPaymentMethodsModalOpen}
+        onOpenChange={setIsPaymentMethodsModalOpen}
         closeOnOutsideClick={false}
       >
         <ModalContent>
@@ -775,24 +754,24 @@ export const SummaryPanel = () => {
                       }`}
                     >
                       <div className="flex flex-col pl-8">
-                        {paymentMethod.methods.map((option, optionKey) => (
+                        {paymentMethod.methods.map((method, key) => (
                           <button
-                            key={optionKey}
+                            key={key}
                             className="flex h-12 w-[392px] cursor-pointer items-center justify-between border-b border-neutral-400 px-0 py-3 hover:bg-neutral-50"
-                            onClick={() => handleSelectPaymentMethod(option)}
+                            onClick={() => handleSelectPaymentMethod(method.id)}
                           >
                             <div className="flex items-center gap-2">
                               <div className="flex h-6 w-6 items-center justify-center rounded border">
                                 <Image
-                                  src={option.icon}
+                                  src={method.icon}
                                   width={20}
                                   height={20}
                                   className="size-[20px] object-cover"
-                                  alt={option.name}
+                                  alt={method.name}
                                 />
                               </div>
                               <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
-                                {option.name}
+                                {method.name}
                               </span>
                             </div>
                           </button>

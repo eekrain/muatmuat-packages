@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import { BannerCarousel } from "@/components/BannerCarousel/BannerCarousel";
 import Card from "@/components/Card/Card";
@@ -24,31 +24,11 @@ import DeskripsiMuatan from "@/container/SewaArmada/Web/Form/DeskripsiMuatan";
 import SertifikasiHalal from "@/container/SewaArmada/Web/Form/SertifikasiHalal";
 import { SummaryPanel } from "@/container/SewaArmada/Web/SummaryPanel/SummaryPanel";
 import { WelcomeCard } from "@/container/SewaArmada/Web/WelcomeCard/WelcomeCard";
+import { useSWRHook } from "@/hooks/use-swr";
 import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 import { useLoadingAction } from "@/store/loadingStore";
 
-const banners = [
-  {
-    id: 1,
-    imageUrl: "/img/truck-banner.png",
-    altText: "Promo Muatrans",
-    linkUrl: "/promo/1",
-  },
-  {
-    id: 2,
-    imageUrl: "/img/truck-banner2.png",
-    altText: "Layanan Pengiriman",
-    linkUrl: "/services",
-  },
-  {
-    id: 3,
-    imageUrl: "/img/truck-banner3.png",
-    altText: "Download Aplikasi",
-    linkUrl: "/download",
-  },
-];
-
-export default function SewaArmadaWeb() {
+export default function SewaArmadaWeb({ cargoTypes, cargoCategories }) {
   const orderType = useSewaArmadaStore((state) => state.orderType);
 
   const { setIsGlobalLoading } = useLoadingAction();
@@ -56,6 +36,18 @@ export default function SewaArmadaWeb() {
     setIsGlobalLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const { data: dataBanner } = useSWRHook("v1/orders/banner-ads");
+  const banners = useMemo(() => {
+    const data = dataBanner?.Data?.banners;
+    if (!data) return [];
+    return data?.map((item) => ({
+      id: item.id,
+      imageUrl: item.imageUrl,
+      altText: "Banner Muatrans",
+      linkUrl: item.link,
+    }));
+  }, [dataBanner]);
 
   return (
     <>
@@ -82,8 +74,8 @@ export default function SewaArmadaWeb() {
                   <WaktuMuat />
                   <LokasiMuat />
                   <LokasiBongkar />
-                  <TipeMuatan />
-                  <JenisMuatan />
+                  <TipeMuatan cargoTypes={cargoTypes} />
+                  <JenisMuatan cargoCategories={cargoCategories} />
                   <SertifikasiHalal />
                   <InformasiMuatan />
                   <FotoMuatan />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 import { TagBubble } from "@/components/Badge/TagBubble";
 import {
@@ -18,7 +18,6 @@ const NoDeliveryOrder = () => {
   const deliveryOrderNumbers = useSewaArmadaStore(
     (state) => state.formValues.deliveryOrderNumbers
   );
-  const { formValues } = useSewaArmadaStore();
   const { setField } = useSewaArmadaActions();
 
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
@@ -74,17 +73,20 @@ const NoDeliveryOrder = () => {
         {deliveryOrderNumbers.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {deliveryOrderNumbers.map((item, key) => (
-              <TagBubble
-                key={item}
-                withRemove={{
-                  onRemove: () =>
-                    setField(
-                      "deliveryOrderNumbers",
-                      deliveryOrderNumbers.filter((_, i) => i !== key)
-                    ),
-                }}
-                className="!bg-primary-50"
-              />
+              <Fragment key={key}>
+                <TagBubble
+                  withRemove={{
+                    onRemove: () =>
+                      setField(
+                        "deliveryOrderNumbers",
+                        deliveryOrderNumbers.filter((_, i) => i !== key)
+                      ),
+                  }}
+                  className="!bg-primary-50"
+                >
+                  {item}
+                </TagBubble>
+              </Fragment>
             ))}
           </div>
         ) : null}

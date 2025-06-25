@@ -1,20 +1,21 @@
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
+
+import { useShallow } from "zustand/react/shallow";
 
 import { fetcherMuatparts } from "@/lib/axios";
-import { useAuthStore } from "@/store/auth/authStore";
-import { useUserStore } from "@/store/auth/userStore";
+import { useTokenActions, useTokenStore } from "@/store/auth/tokenStore";
+import { useUserActions, useUserStore } from "@/store/auth/userStore";
 
 export const useInitAuthentication = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const refreshTokenParam = searchParams.get("refreshToken");
   const accessTokenParam = searchParams.get("accessToken");
-  const setToken = useAuthStore((state) => state.setToken);
+  const { setToken } = useTokenActions();
   const hasInitAuth = useRef(false);
 
-  const setUser = useUserStore((state) => state.setUser);
-  const setDataMatrix = useUserStore((state) => state.setDataMatrix);
+  const { setUser, setDataMatrix } = useUserActions();
 
   // Setting token from URL params on first render
   useEffect(() => {
@@ -59,8 +60,28 @@ export const useInitAuthentication = () => {
   }, []);
 };
 
-export const useUser = () => {
-  const dataMatrix = useUserStore((state) => state.dataMatrix);
-  const dataUser = useUserStore((state) => state.dataUser);
-  return { dataMatrix, dataUser };
+export const useAuth = () => {
+  const dataMatrix = useUserStore(useShallow((state) => state.dataMatrix));
+  const dataUser = useUserStore(useShallow((state) => state.dataUser));
+
+  const logout = useCallback(async () => {
+    const authStore = useTokenStore.getState();
+    const userStore = useUserStore.getState();
+
+    await fetcherMuatparts
+      .post("v1/muatparts/auth/revoke-refresh-token", {
+        refreshToken: authStore?.refreshToken,
+      })
+      .catch((err) => {
+        console.warn("Error revoking refresh token", err);
+      });
+
+    authStore.actions.clearToken();
+    userStore.actions.clearUser();
+    window.location.replace(
+      `${process.env.NEXT_PUBLIC_INTERNAL_WEB}login/signout`
+    );
+  }, []);
+
+  return { dataMatrix, dataUser, logout };
 };

@@ -5,6 +5,7 @@ import { useEffect, useMemo } from "react";
 import {
   GoogleMap,
   Marker,
+  OverlayView,
   Polyline,
   useLoadScript,
 } from "@react-google-maps/api";
@@ -14,9 +15,9 @@ const defaultMapContainerStyle = { width: "100%", height: "400px" };
 const defaultCenter = { lat: -7.2575, lng: 112.7521 }; // Default to Surabaya
 const defaultZoom = 13;
 const defaultPathOptions = {
-  strokeColor: "#FF6B35",
+  strokeColor: "#DD7B02",
   strokeOpacity: 1,
-  strokeWeight: 4,
+  strokeWeight: 6,
 };
 const defaultMapOptions = {
   disableDefaultUI: false,
@@ -53,7 +54,8 @@ const calculateBearing = (start, end) => {
     Math.sin(startLat) * Math.cos(endLat) * Math.cos(dLng);
 
   let bearing = Math.atan2(y, x) * (180 / Math.PI);
-  return (bearing + 360) % 360; // Normalize to 0-360 degrees
+  const result = (bearing + 360) % 360;
+  return result; // Normalize to 0-360 degrees
 };
 
 export const MapWithPath = ({
@@ -61,15 +63,15 @@ export const MapWithPath = ({
   mapContainerStyle = defaultMapContainerStyle,
   center = defaultCenter,
   zoom = defaultZoom,
-  waypoints = [], // Regular waypoints for connecting locations
-  truckWaypoints = [], // Separate truck waypoints from backend
-  markers = [],
+  locationMarkers = [],
+  locationPolyline = [], // Regular waypoints for connecting locations
+  encodedTruckPolyline = "", // Separate truck waypoints from backend
   pathOptions = defaultPathOptions,
   truckPathOptions = {
     // Separate styling for truck path
-    strokeColor: "#4CAF50",
+    strokeColor: "#FFC217",
     strokeOpacity: 0.8,
-    strokeWeight: 3,
+    strokeWeight: 6,
     strokeDashArray: "10,5", // Dashed line to differentiate
   },
   mapOptions = {},
@@ -81,26 +83,42 @@ export const MapWithPath = ({
     libraries: ["places", "geometry"],
   });
 
+  const truckPolyline = useMemo(() => {
+    if (!encodedTruckPolyline || !isLoaded) {
+      return [];
+    }
+    return window.google.maps.geometry.encoding.decodePath(
+      encodedTruckPolyline
+    );
+  }, [encodedTruckPolyline, isLoaded]);
+
   // Calculate truck position and rotation based on truck waypoints
   const truckMarker = useMemo(() => {
-    if (!truckWaypoints || truckWaypoints.length < 2 || !showTruck) return null;
+    if (!truckPolyline || truckPolyline.length < 2 || !showTruck || !isLoaded) {
+      return null;
+    }
 
-    const lastPoint = truckWaypoints[truckWaypoints.length - 1];
-    const secondLastPoint = truckWaypoints[truckWaypoints.length - 2];
+    const lastPoint = truckPolyline[truckPolyline.length - 1];
+    const secondLastPoint = truckPolyline[truckPolyline.length - 2];
 
-    // Calculate bearing from second last to last point
-    const bearing = calculateBearing(secondLastPoint, lastPoint);
+    const startCoords = {
+      lat: secondLastPoint.lat(),
+      lng: secondLastPoint.lng(),
+    };
+    const endCoords = { lat: lastPoint.lat(), lng: lastPoint.lng() };
+
+    const bearing = calculateBearing(startCoords, endCoords);
 
     return {
       position: lastPoint,
       rotation: bearing,
     };
-  }, [truckWaypoints, showTruck]);
+  }, [truckPolyline, showTruck, isLoaded]);
 
   // Process markers with proper icons when Google Maps is loaded
   const processedMarkers = useMemo(() => {
-    if (!isLoaded || !window.google) return markers;
-    return markers.map((marker) => ({
+    if (!isLoaded || !window.google) return locationMarkers;
+    return locationMarkers.map((marker) => ({
       ...marker,
       icon: {
         url: process.env.NEXT_PUBLIC_ASSET_REVERSE + marker.icon,
@@ -109,22 +127,7 @@ export const MapWithPath = ({
         anchor: new window.google.maps.Point(22.5, 48), // Center bottom of the marker
       },
     }));
-  }, [markers, isLoaded]);
-
-  // Process truck marker with rotation
-  const processedTruckMarker = useMemo(() => {
-    if (!isLoaded || !window.google || !truckMarker) return null;
-
-    return {
-      position: truckMarker.position,
-      icon: {
-        url: process.env.NEXT_PUBLIC_ASSET_REVERSE + truckIcon,
-        scaledSize: new window.google.maps.Size(60, 60),
-        anchor: new window.google.maps.Point(30, 30), // Center of the truck icon
-        rotation: truckMarker.rotation,
-      },
-    };
-  }, [truckMarker, truckIcon, isLoaded]);
+  }, [locationMarkers, isLoaded]);
 
   // Add styles for marker labels
   useEffect(() => {
@@ -199,19 +202,22 @@ export const MapWithPath = ({
         options={combinedMapOptions}
       >
         {/* Render path between waypoints (location connections) */}
-        {waypoints.length >= 2 && (
-          <Polyline path={waypoints} options={pathOptions} />
+        {locationPolyline.length >= 2 && (
+          <Polyline path={locationPolyline} options={pathOptions} />
         )}
 
         {/* Render truck path (separate from location connections) */}
-        {truckWaypoints.length >= 2 && (
-          <Polyline path={truckWaypoints} options={truckPathOptions} />
+        {truckPolyline.length >= 2 && (
+          <Polyline
+            path={truckPolyline}
+            options={{ ...truckPathOptions, strokeColor: "#FFC217" }}
+          />
         )}
 
         {/* Render custom markers */}
         {processedMarkers.map((marker, index) => (
           <Marker
-            key={marker.id || index}
+            key={marker.title}
             position={marker.position}
             icon={marker.icon}
             onClick={() => marker.onClick?.(marker)}
@@ -223,12 +229,29 @@ export const MapWithPath = ({
         ))}
 
         {/* Render truck marker at the end of the path */}
-        {processedTruckMarker && (
-          <Marker
-            position={processedTruckMarker.position}
-            icon={processedTruckMarker.icon}
-            zIndex={1000} // Ensure truck appears on top
-          />
+        {truckMarker && (
+          <OverlayView
+            position={truckMarker.position}
+            mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+            getPixelPositionOffset={(width, height) => ({
+              x: -(width / 2),
+              y: -(height / 2),
+            })}
+          >
+            <div
+              style={{
+                transform: `rotate(${truckMarker.rotation}deg)`,
+                transformOrigin: "center center",
+              }}
+            >
+              <img
+                src={truckIcon}
+                alt="Truck"
+                width={30}
+                style={{ objectFit: "contain", transform: "translateX(5px)" }}
+              />
+            </div>
+          </OverlayView>
         )}
       </GoogleMap>
     </div>

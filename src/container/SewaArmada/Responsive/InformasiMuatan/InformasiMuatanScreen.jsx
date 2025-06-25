@@ -13,13 +13,10 @@ import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
-import {
-  useResponsiveNavigation,
-  useResponsiveRouteParams,
-} from "@/lib/responsive-navigation";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
 import { useInformasiMuatanStore } from "@/store/forms/informasiMuatanStore";
-import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
+import { useSewaArmadaActions } from "@/store/forms/sewaArmadaStore";
 
 const beratMuatanOptions = [
   {
@@ -46,9 +43,8 @@ const dimensiMuatanOptions = [
   },
 ];
 
-const InformasiMuatanScreen = () => {
+const InformasiMuatanScreen = ({ cargoTypes, cargoCategories }) => {
   const navigation = useResponsiveNavigation();
-  const params = useResponsiveRouteParams();
   const {
     formValues,
     formErrors,
@@ -59,7 +55,7 @@ const InformasiMuatanScreen = () => {
     updateDimensiMuatan,
     validateForm,
   } = useInformasiMuatanStore();
-  const { setField: setSewaArmadaField } = useSewaArmadaStore();
+  const { setField: setSewaArmadaField } = useSewaArmadaActions();
 
   const handleSaveInformasiMuatan = () => {
     console.log("🚀 ~ handleSaveInformasiMuatan ~ formValues:", formValues);
@@ -119,38 +115,21 @@ const InformasiMuatanScreen = () => {
           {/* Radio Button Group */}
           <div>
             <div className="flex flex-col gap-y-4">
-              <RadioButton
-                name="tipeMuatan"
-                label="Bahan Mentah"
-                checked={formValues.tipeMuatan === "bahan-mentah"}
-                onClick={() => setField("tipeMuatan", "bahan-mentah")}
-                value="bahan-mentah"
-              />
-              <RadioButton
-                name="tipeMuatan"
-                label="Barang Setengah Jadi"
-                checked={formValues.tipeMuatan === "barang-setengah-jadi"}
-                onClick={() => setField("tipeMuatan", "barang-setengah-jadi")}
-                value="barang-setengah-jadi"
-              />
-              <RadioButton
-                name="tipeMuatan"
-                label="Barang Jadi"
-                checked={formValues.tipeMuatan === "barang-jadi"}
-                onClick={() => setField("tipeMuatan", "barang-jadi")}
-                value="barang-jadi"
-              />
-              <RadioButton
-                name="tipeMuatan"
-                label="Lainnya"
-                checked={formValues.tipeMuatan === "lainnya"}
-                onClick={() => setField("tipeMuatan", "lainnya")}
-                value="lainnya"
-              />
+              {cargoTypes.map((cargoType, key) => (
+                <Fragment key={key}>
+                  <RadioButton
+                    name="cargoTypeId"
+                    label={cargoType.name}
+                    checked={formValues.cargoTypeId === cargoType.id}
+                    onClick={({ value }) => setField("cargoTypeId", value)}
+                    value={cargoType.id}
+                  />
+                </Fragment>
+              ))}
             </div>
-            {formErrors.tipeMuatan && (
+            {formErrors?.cargoTypeId && (
               <span className="mt-3 block text-xs font-medium text-red-500">
-                {formErrors.tipeMuatan}
+                {formErrors.cargoTypeId}
               </span>
             )}
           </div>
@@ -195,45 +174,21 @@ const InformasiMuatanScreen = () => {
           {/* Radio Button Group */}
           <div>
             <div className="flex flex-col gap-y-4">
-              <RadioButton
-                name="jenisMuatan"
-                label="Padat"
-                checked={formValues.jenisMuatan === "padat"}
-                onClick={() => setField("jenisMuatan", "padat")}
-                value="padat"
-              />
-              <RadioButton
-                name="jenisMuatan"
-                label="Cair"
-                checked={formValues.jenisMuatan === "cair"}
-                onClick={() => setField("jenisMuatan", "cair")}
-                value="cair"
-              />
-              <RadioButton
-                name="jenisMuatan"
-                label="Curah"
-                checked={formValues.jenisMuatan === "curah"}
-                onClick={() => setField("jenisMuatan", "curah")}
-                value="curah"
-              />
-              <RadioButton
-                name="jenisMuatan"
-                label="Kendaraan"
-                checked={formValues.jenisMuatan === "kendaraan"}
-                onClick={() => setField("jenisMuatan", "kendaraan")}
-                value="kendaraan"
-              />
-              <RadioButton
-                name="jenisMuatan"
-                label="Container"
-                checked={formValues.jenisMuatan === "container"}
-                onClick={() => setField("jenisMuatan", "container")}
-                value="container"
-              />
+              {cargoCategories.map((cargoCategory, key) => (
+                <Fragment key={key}>
+                  <RadioButton
+                    name="cargoCategoryId"
+                    label={cargoCategory.name}
+                    checked={formValues.cargoCategoryId === cargoCategory.id}
+                    onClick={({ value }) => setField("cargoCategoryId", value)}
+                    value={cargoCategory.id}
+                  />
+                </Fragment>
+              ))}
             </div>
-            {formErrors.jenisMuatan && (
+            {formErrors?.cargoCategoryId && (
               <span className="mt-3 block text-xs font-medium text-red-500">
-                {formErrors.jenisMuatan}
+                {formErrors.cargoCategoryId}
               </span>
             )}
           </div>
@@ -464,7 +419,7 @@ const InformasiMuatanScreen = () => {
           onClick={handleSaveInformasiMuatan}
           type="button"
         >
-          Tambah Nama Muatan
+          Simpan
         </Button>
       </ResponsiveFooter>
     </FormResponsiveLayout>

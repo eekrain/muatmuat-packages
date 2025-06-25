@@ -14,6 +14,9 @@ export function InfoTooltip({
   align = "center",
   sideOffset = 8,
   className,
+  appearance = {
+    iconColor: "text-neutral-600",
+  },
   children,
 }) {
   return (
@@ -29,7 +32,7 @@ export function InfoTooltip({
                 src={{ src: icon }}
                 height={16}
                 width={16}
-                className="text-neutral-600"
+                className={cn("text-neutral-600", appearance.iconColor)}
               />
             </div>
           )}

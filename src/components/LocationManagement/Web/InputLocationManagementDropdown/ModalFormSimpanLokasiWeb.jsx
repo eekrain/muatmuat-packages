@@ -1,10 +1,14 @@
-import { ChevronDown, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 
 import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Checkbox/Checkbox";
 import Input from "@/components/Form/Input";
+import { Select } from "@/components/Form/Select";
+import { MyTextArea } from "@/components/Form/TextArea";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
-import { cn } from "@/lib/utils";
+import { useLocationContext } from "@/hooks/use-location/use-location";
+import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
+import { normalizeUserSavedLocation } from "@/lib/normalizers/location";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
 const errors = {};
@@ -15,9 +19,48 @@ export const ModalFormSimpanLokasiWeb = ({
   onOpenChange,
   defaultValues,
 }) => {
-  console.log("🚀 ~ defaultValues:", defaultValues);
-  const { formValues, formErrors, setField, reset, validateSimpanLokasi } =
-    useLocationFormStore();
+  const {
+    formValues,
+    formErrors,
+    setField,
+    validateSimpanLokasi,
+    setLocationPartial,
+    reset,
+  } = useLocationFormStore();
+
+  const { handleSaveLocation, handleUpdateLocation } = useLocationContext();
+
+  useShallowCompareEffect(() => {
+    if (mode === "edit" && defaultValues) {
+      setLocationPartial(normalizeUserSavedLocation(defaultValues));
+      setField("namaLokasi", defaultValues.Name);
+      setField("detailLokasi", defaultValues.AddressDetail);
+      setField("namaPIC", defaultValues.PicName);
+      setField("noHPPIC", defaultValues.PicNoTelp);
+      setField("isMainAddress", Boolean(defaultValues.IsMainAddress));
+    }
+  }, [defaultValues, mode]);
+
+  const handleSave = () => {
+    const isValid = validateSimpanLokasi();
+    console.log(
+      "🚀 ~ file: ModalFormSimpanLokasiWeb.jsx:45 ~ isValid:",
+      isValid
+    );
+    if (!isValid) return;
+
+    if (mode === "add") {
+      handleSaveLocation(formValues).then((res) => {
+        reset();
+        onOpenChange();
+      });
+    } else if (mode === "edit") {
+      handleUpdateLocation(formValues, defaultValues.ID).then((res) => {
+        reset();
+        onOpenChange();
+      });
+    }
+  };
 
   return (
     <Modal
@@ -70,23 +113,18 @@ export const ModalFormSimpanLokasiWeb = ({
               <label className="text-[10px] font-semibold leading-[12px] text-[#868686]">
                 Alamat
               </label>
-              <textarea
+
+              <MyTextArea
                 value={formValues.detailLokasi}
-                onChange={(e) => {
-                  setField("detailLokasi", e.currentTarget.value);
+                onChange={(e) => setField("detailLokasi", e.target.value)}
+                placeholder="Masukkan Detail Lokasi"
+                maxLength={500}
+                errorMessage={formErrors?.detailLokasi}
+                appearance={{
+                  inputClassName: "resize-none h-[80px]",
                 }}
-                placeholder="Masukkan alamat lengkap dengan detail. Contoh : Nama Jalan (bila tidak ditemukan), Gedung, No. Rumah/Patokan, Blok/Unit"
-                rows={4}
-                className={cn(
-                  "w-full resize-none rounded-md border border-[#868686] bg-white px-2 py-2.5 text-[12px] font-medium leading-[14px] text-[#1B1B1B] outline-none placeholder:text-[#868686] hover:border-primary-700 focus:border-primary-700 focus:outline-none",
-                  formErrors.detailLokasi && "border-red-500"
-                )}
+                withCharCount
               />
-              {formErrors.detailLokasi && (
-                <span className="text-[10px] text-red-500">
-                  {formErrors.detailLokasi}
-                </span>
-              )}
             </div>
 
             {/* Kecamatan */}
@@ -95,7 +133,7 @@ export const ModalFormSimpanLokasiWeb = ({
                 Kecamatan
               </label>
               <span className="text-[12px] font-semibold leading-[14px] text-[#1B1B1B]">
-                {defaultValues?.district?.name}
+                {formValues?.dataLokasi?.district?.name}
               </span>
             </div>
 
@@ -105,7 +143,7 @@ export const ModalFormSimpanLokasiWeb = ({
                 Kota
               </label>
               <span className="text-[12px] font-semibold leading-[14px] text-[#1B1B1B]">
-                {defaultValues?.city?.name}
+                {formValues?.dataLokasi?.city?.name}
               </span>
             </div>
 
@@ -115,7 +153,7 @@ export const ModalFormSimpanLokasiWeb = ({
                 Provinsi
               </label>
               <span className="text-[12px] font-semibold leading-[14px] text-[#1B1B1B]">
-                {defaultValues?.province?.name}
+                {formValues?.dataLokasi?.province?.name}
               </span>
             </div>
 
@@ -124,18 +162,31 @@ export const ModalFormSimpanLokasiWeb = ({
               <label className="text-[10px] font-semibold leading-[12px] text-[#868686]">
                 Kode Pos*
               </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={""}
-                  onChange={(e) => {}}
-                  placeholder="Masukkan kode pos"
-                  className={`h-8 w-full rounded-md border bg-white px-3 py-3 pr-10 text-[12px] font-medium leading-[120%] text-black placeholder:text-[#868686] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#176CF7] ${
-                    errors.kodePos ? "border-red-500" : "border-[#7B7B7B]"
-                  }`}
-                />
-                <ChevronDown className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-[#555555]" />
-              </div>
+              <Select
+                placeholder="Masukkan kode pos"
+                options={
+                  formValues?.dataLokasi?.postalCodeList &&
+                  formValues?.dataLokasi?.postalCodeList.length > 0
+                    ? formValues?.dataLokasi?.postalCodeList.map((item) => ({
+                        label: item.name,
+                        value: item.value,
+                      }))
+                    : []
+                }
+                value={formValues?.dataLokasi?.postalCode?.value}
+                onChange={(selectedValue) => {
+                  const postalCodeFound =
+                    formValues?.dataLokasi?.postalCodeList.find(
+                      (item) => item.value === selectedValue
+                    );
+                  setLocationPartial({
+                    postalCode: {
+                      name: postalCodeFound.name,
+                      value: postalCodeFound.value,
+                    },
+                  });
+                }}
+              />
               {errors.kodePos && (
                 <span className="text-[10px] text-red-500">
                   {errors.kodePos}
@@ -195,7 +246,7 @@ export const ModalFormSimpanLokasiWeb = ({
             </Button>
             <Button
               variant="muatparts-primary"
-              onClick={() => {}}
+              onClick={handleSave}
               type="button"
             >
               Simpan

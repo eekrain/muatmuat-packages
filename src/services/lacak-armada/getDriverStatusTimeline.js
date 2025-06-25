@@ -11,8 +11,8 @@ const apiResult = {
     name: "Ahmad Rahman",
     phoneNumber: "081234567891",
     profileImage: "https://picsum.photos/50",
-    statusDriver: "SEDANG_BONGKAR_DI_LOKASI_2",
-    statusTitle: "Sedang Bongkar di Lokasi 2",
+    statusDriver: "MENUJU_LOKASI_MUAT_1",
+    statusTitle: "Antri di Lokasi Muat 2",
     licensePlate: "B 1234 CD",
     statusDefinitions: [
       {
@@ -50,10 +50,7 @@ const apiResult = {
             requiresPhoto: true,
             triggersWaitingFee: false,
             photoEvidences: {
-              packages: [
-                "https://picsum.photos/400/300?random=8",
-                "https://picsum.photos/400/300?random=9",
-              ],
+              packages: ["https://picsum.photos/400/300?random=8"],
               pods: [],
             },
           },
@@ -170,10 +167,7 @@ const apiResult = {
             requiresPhoto: true,
             triggersWaitingFee: false,
             photoEvidences: {
-              packages: [
-                "https://picsum.photos/400/300?random=1",
-                "https://picsum.photos/400/300?random=2",
-              ],
+              packages: ["https://picsum.photos/400/300?random=1"],
               pods: [],
             },
           },
@@ -213,10 +207,10 @@ const apiResult = {
             statusName: "Antri di Lokasi Muat 1",
             date: sub(new Date(), { hours: 18 }).toISOString(),
             requiresQRScan: false,
-            requiresPhoto: false,
+            requiresPhoto: true,
             triggersWaitingFee: false,
             photoEvidences: {
-              packages: [],
+              packages: ["https://picsum.photos/400/300?random=5"],
               pods: [],
             },
           },
@@ -286,8 +280,6 @@ const transformDriverStatusData = (data) => {
       if (index + 1 < allStatuses.length) {
         const nextStatus = allStatuses[index + 1];
 
-        // Update current statusName as per your example
-        currentStatus.statusName = nextStatus.statusName;
         // Add new properties: beforeStatusCode and beforeStatusName
         currentStatus.beforeStatusCode = nextStatus.statusCode;
         currentStatus.beforeStatusName = nextStatus.statusName.replace(

@@ -10,7 +10,7 @@ export const AvatarDriver = ({ name, image, licensePlate }) => {
 
         <div className="-mb-1 flex items-center gap-[2.5px]">
           <IconComponent
-            src="/icons/truck16.svg"
+            src="/icons/transporter16.svg"
             className="mb-[2px] text-muat-trans-secondary-900"
             width={12}
             height={12}

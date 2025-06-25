@@ -7,7 +7,9 @@ import {
 } from "@/store/forms/sewaArmadaStore";
 
 const DeskripsiMuatan = () => {
-  const deskripsi = useSewaArmadaStore((state) => state.formValues.deskripsi);
+  const cargoDescription = useSewaArmadaStore(
+    (state) => state.formValues.cargoDescription
+  );
   const formErrors = useSewaArmadaStore((state) => state.formErrors);
   const { setField } = useSewaArmadaActions();
 
@@ -16,18 +18,19 @@ const DeskripsiMuatan = () => {
       <FormLabel required>Deskripsi Muatan</FormLabel>
       <div className="flex flex-1 flex-col gap-2">
         <TextArea
+          name="cargoDescription"
           maxLength={500}
           hasCharCount
           supportiveText={{
-            title: formErrors.deskripsi,
+            title: formErrors.cargoDescription,
           }}
           resize="none"
           placeholder={
             "Lengkapi deskripsi informasi muatan Anda dengan rincian spesifik terkait barang yang dikirim, seperti bahan, penggunaan, atau karakteristik unik lainnya."
           }
-          value={deskripsi}
-          onChange={({ target: { value } }) =>
-            handleFirstTime(() => setField("deskripsi", value))
+          value={cargoDescription}
+          onChange={({ target: { name, value } }) =>
+            handleFirstTime(() => setField(name, value))
           }
           status={formErrors.deskripsi ? "error" : ""}
         />

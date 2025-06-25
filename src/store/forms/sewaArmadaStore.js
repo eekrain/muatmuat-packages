@@ -5,34 +5,37 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { zustandDevtools } from "@/lib/utils";
 
 const defaultValues = {
-  startDate: null,
-  endDate: null,
+  loadTimeStart: null,
+  loadTimeEnd: null,
   showRangeOption: false,
   lokasiMuat: [null],
   lokasiBongkar: [null],
-  tipeMuatan: "",
-  jenisMuatan: "",
+  cargoTypeId: null,
+  cargoCategoryId: null,
   isHalalLogistics: false,
   informasiMuatan: [],
   fotoMuatan: [null, null, null, null],
-  deskripsi: "",
-  jenisCarrier: null,
-  jenisTruk: null,
-  jumlahArmada: 0,
-  useAsuransi: true,
+  cargoDescription: "",
+  carrierId: null,
+  truckTypeId: null,
+  truckCount: 0,
+  distance: 0,
+  distanceUnit: "",
+  estimatedTime: 0,
 
+  useAsuransi: true,
   // Sementara, nanti diganti additionalServices
   kirimBuktiFisik: false,
   bantuanTambahan: false,
   additionalServices: [],
-  // Data kirim bukti fisik
-  shippingDetails: null,
 
   deliveryOrderNumbers: [],
-  isCompany: false,
-  companyName: "",
-  companyNpwp: "",
-  opsiPembayaran: null,
+  businessEntity: {
+    isBusinessEntity: false,
+    name: "",
+    taxId: "",
+  },
+  paymentMethodId: null,
 };
 
 export const useSewaArmadaStore = create(
@@ -122,38 +125,39 @@ export const useSewaArmadaStore = create(
           // VALIDASI BUAT YG DESKTOP KARENA JADI SATU HALAMAN
           validateForm: () => {
             const {
-              startDate,
-              endDate,
+              loadTimeStart,
+              loadTimeEnd,
               showRangeOption,
               fotoMuatan,
-              deskripsi,
+              cargoDescription,
             } = get().formValues;
             const newErrors = {};
             const isValidFotoMuatan = fotoMuatan.some((item) => item !== null);
-            if (!startDate) {
-              newErrors.startDate = "Tanggal & waktu muat wajib diisi";
+            if (!loadTimeStart) {
+              newErrors.loadTimeStart = "Tanggal & waktu muat wajib diisi";
             }
-            if (startDate && showRangeOption) {
-              const start = new Date(startDate);
-              const end = new Date(endDate);
+            if (loadTimeStart && showRangeOption) {
+              const start = new Date(loadTimeStart);
+              const end = new Date(loadTimeEnd);
               const diffMs = end - start;
               const diffHours = diffMs / (1000 * 60 * 60);
               const eightHoursMs = 8 * 60 * 60 * 1000;
-              if (!endDate) {
-                newErrors.endDate = "Tanggal & waktu muat wajib diisi";
+              if (!loadTimeEnd) {
+                newErrors.loadTimeEnd = "Tanggal & waktu muat wajib diisi";
               } else if (diffHours < 1) {
-                newErrors.endDate = "Rentang waktu minimal 1 jam";
+                newErrors.loadTimeEnd = "Rentang waktu minimal 1 jam";
               } else if (diffMs > eightHoursMs) {
-                newErrors.endDate = "Rentang waktu maksimal 8 jam";
+                newErrors.loadTimeEnd = "Rentang waktu maksimal 8 jam";
               }
             }
             if (!isValidFotoMuatan) {
               newErrors.fotoMuatan = "Mohon upload foto muatan";
             }
-            if (!deskripsi) {
-              newErrors.deskripsi = "Deskripsi Muatan wajib diisi";
-            } else if (deskripsi.length < 3) {
-              newErrors.deskripsi = "Deskripsi Muatan minimal 3 karakter";
+            if (!cargoDescription) {
+              newErrors.cargoDescription = "Deskripsi Muatan wajib diisi";
+            } else if (cargoDescription.length < 3) {
+              newErrors.cargoDescription =
+                "Deskripsi Muatan minimal 3 karakter";
             }
             set({ formErrors: newErrors });
             return Object.keys(newErrors).length === 0;
@@ -161,12 +165,10 @@ export const useSewaArmadaStore = create(
           // VALIDASI BUAT YG RESPONSIVE KARENA FORM UTAMANYA ADA 2 HALAMAN
           validateSecondForm: () => {
             const {
-              deskripsi,
+              cargoDescription,
               fotoMuatan,
-              isCompany,
-              companyName,
-              companyNpwp,
-              opsiPembayaran,
+              businessEntity,
+              paymentMethodId,
             } = get().formValues;
             const newErrors = {};
 
@@ -177,34 +179,40 @@ export const useSewaArmadaStore = create(
             }
 
             // Validate description
-            if (!deskripsi.trim()) {
-              newErrors.deskripsi = "Deskripsi muatan wajib diisi";
-            } else if (deskripsi.trim().length < 3) {
-              newErrors.deskripsi = "Deskripsi muatan minimal 3 karakter";
+            if (!cargoDescription.trim()) {
+              newErrors.cargoDescription = "Deskripsi muatan wajib diisi";
+            } else if (cargoDescription.trim().length < 3) {
+              newErrors.cargoDescription =
+                "Deskripsi muatan minimal 3 karakter";
             }
 
             // Validate badan usaha fields if checkbox is checked
-            if (isCompany) {
-              if (!companyName.trim()) {
-                newErrors.companyName =
+            console.log(
+              "businessEntity.isBusinessEntity",
+              businessEntity.isBusinessEntity
+            );
+            if (businessEntity.isBusinessEntity) {
+              newErrors.businessEntity = {};
+              if (!businessEntity.name.trim()) {
+                newErrors.businessEntity.name =
                   "Nama badan usaha/perusahaan wajib diisi";
-              } else if (companyName.trim().length < 3) {
-                newErrors.companyName =
+              } else if (businessEntity.name.trim().length < 3) {
+                newErrors.businessEntity.name =
                   "Nama badan usaha/perusahaan minimal 3 karakter";
-              } else if (/[^a-zA-Z]/.test(companyName)) {
-                newErrors.companyName =
+              } else if (/[^a-zA-Z]/.test(businessEntity.name)) {
+                newErrors.businessEntity.name =
                   "Nama badan usaha/perusahaan tidak valid";
               }
 
-              if (!companyNpwp.trim()) {
-                newErrors.companyNpwp = "Nomor NPWP wajib diisi";
-              } else if (companyNpwp.trim().length < 15) {
-                newErrors.companyNpwp = "Nomor NPWP minimal 15 digit";
+              if (!businessEntity.taxId.trim()) {
+                newErrors.businessEntity.taxId = "Nomor NPWP wajib diisi";
+              } else if (businessEntity.taxId.trim().length < 15) {
+                newErrors.businessEntity.taxId = "Nomor NPWP minimal 15 digit";
               }
             }
 
-            if (!opsiPembayaran) {
-              newErrors.opsiPembayaran = "Metode pembayaran wajib diisi";
+            if (!paymentMethodId) {
+              newErrors.paymentMethodId = "Metode pembayaran wajib diisi";
             }
 
             set({ formErrors: newErrors });

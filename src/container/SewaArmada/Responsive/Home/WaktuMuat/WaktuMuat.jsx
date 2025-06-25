@@ -25,14 +25,23 @@ const WaktuMuatBottomsheet = () => {
     id: "Asia/Jakarta",
     offset: "+07:00",
   };
-  const { formValues, orderType } = useSewaArmadaStore();
+  const orderType = useSewaArmadaStore((state) => state.orderType);
+  const loadTimeStart = useSewaArmadaStore(
+    (state) => state.formValues.loadTimeStart
+  );
+  const loadTimeEnd = useSewaArmadaStore(
+    (state) => state.formValues.loadTimeEnd
+  );
+  const showRangeOption = useSewaArmadaStore(
+    (state) => state.formValues.showRangeOption
+  );
   const { setField, setOrderType } = useSewaArmadaActions();
   const [isBottomsheetOpen, setIsBottomsheetOpen] = useState(false);
   const previousIsBottomsheetOpen = usePrevious(isBottomsheetOpen);
   const [bottomsheetFormValues, setBottomsheetFormValues] = useState({
     orderType: "",
-    startDate: null,
-    endDate: null,
+    loadTimeStart: null,
+    loadTimeEnd: null,
     showRangeOption: false,
   });
   const [bottomsheetFormErrors, setBottomsheetFormErrors] = useState({});
@@ -41,23 +50,23 @@ const WaktuMuatBottomsheet = () => {
     if (isBottomsheetOpen && !previousIsBottomsheetOpen) {
       const data = {
         orderType,
-        startDate: formValues.startDate,
-        endDate: formValues.endDate,
-        showRangeOption: formValues.showRangeOption,
+        loadTimeStart,
+        loadTimeEnd,
+        showRangeOption,
       };
       setBottomsheetFormValues(data);
     }
   }, [
     isBottomsheetOpen,
     previousIsBottomsheetOpen,
-    formValues.startDate,
-    formValues.endDate,
-    formValues.showRangeOption,
+    loadTimeStart,
+    loadTimeEnd,
+    showRangeOption,
     orderType,
   ]);
 
   const handleChangeBottomsheetFormValues = (field, value) => {
-    if (field === "startDate" || field === "endDate") {
+    if (field === "loadTimeStart" || field === "loadTimeEnd") {
       const newDate = new Date(value);
       newDate.setSeconds(0, 0);
       setBottomsheetFormValues((prevState) => ({
@@ -74,24 +83,25 @@ const WaktuMuatBottomsheet = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!bottomsheetFormValues.startDate) {
-      newErrors.startDate = "Tanggal & waktu muat wajib diisi";
+    if (!bottomsheetFormValues.loadTimeStart) {
+      newErrors.loadTimeStart = "Tanggal & waktu muat wajib diisi";
     }
     if (
-      bottomsheetFormValues.startDate &&
+      bottomsheetFormValues.loadTimeStart &&
       bottomsheetFormValues.showRangeOption
     ) {
-      const start = new Date(bottomsheetFormValues.startDate);
-      const end = new Date(bottomsheetFormValues.endDate);
+      const start = new Date(bottomsheetFormValues.loadTimeStart);
+      const end = new Date(bottomsheetFormValues.loadTimeEnd);
       const diffMs = end - start;
       const diffHours = diffMs / (1000 * 60 * 60);
       const eightHoursMs = 8 * 60 * 60 * 1000;
-      if (!bottomsheetFormValues.endDate) {
-        newErrors.endDate = "Rentang waktu muat awal & akhir wajib diisi";
+      if (!bottomsheetFormValues.loadTimeEnd) {
+        newErrors.loadTimeEnd = "Rentang waktu muat awal & akhir wajib diisi";
       } else if (diffHours < 1) {
-        newErrors.endDate = "Rentang waktu muat awal & akhir minimal 1 jam";
+        newErrors.loadTimeEnd = "Rentang waktu muat awal & akhir minimal 1 jam";
       } else if (diffMs > eightHoursMs) {
-        newErrors.endDate = "Rentang waktu muat awal & akhir maksimal 8 jam";
+        newErrors.loadTimeEnd =
+          "Rentang waktu muat awal & akhir maksimal 8 jam";
       }
     }
     setBottomsheetFormErrors(newErrors);
@@ -124,8 +134,8 @@ const WaktuMuatBottomsheet = () => {
         >
           <IconComponent src="/icons/calendar16.svg" />
           <span className="text-[14px] font-semibold leading-[15.4px]">
-            {formValues.startDate ? (
-              <span className="text-neutral-900">{`${format(formValues.startDate, dateFormat)} WIB`}</span>
+            {loadTimeStart ? (
+              <span className="text-neutral-900">{`${format(loadTimeStart, dateFormat)} WIB`}</span>
             ) : (
               <span className="text-neutral-600">
                 {"Pilih Tanggal & Waktu Muat"}
@@ -133,7 +143,7 @@ const WaktuMuatBottomsheet = () => {
             )}
           </span>
         </button>
-        {formValues.showRangeOption ? (
+        {showRangeOption ? (
           <>
             <span className="text-[12px] font-semibold leading-[13.2px] text-neutral-600">
               Sampai dengan
@@ -144,8 +154,8 @@ const WaktuMuatBottomsheet = () => {
             >
               <IconComponent src="/icons/calendar16.svg" />
               <span className="text-[14px] font-semibold leading-[15.4px]">
-                {formValues.endDate ? (
-                  <span className="text-neutral-900">{`${format(formValues.endDate, dateFormat)} WIB`}</span>
+                {loadTimeEnd ? (
+                  <span className="text-neutral-900">{`${format(loadTimeEnd, dateFormat)} WIB`}</span>
                 ) : (
                   <span className="text-neutral-600">
                     {"Pilih Tanggal & Waktu Muat"}
@@ -203,18 +213,18 @@ const WaktuMuatBottomsheet = () => {
           <div className="flex flex-col gap-y-3">
             {/* Field Tanggal Mulai */}
             <DatetimePicker
-              datetimeValue={bottomsheetFormValues.startDate}
+              datetimeValue={bottomsheetFormValues.loadTimeStart}
               onApply={(date) =>
-                handleChangeBottomsheetFormValues("startDate", date)
+                handleChangeBottomsheetFormValues("loadTimeStart", date)
               }
               placeholder="Pilih Tanggal & Waktu Muat"
-              status={bottomsheetFormErrors.startDate ? "error" : null}
+              status={bottomsheetFormErrors.loadTimeStart ? "error" : null}
               className="w-full"
               minDate={getNowTimezone(timezone)}
             />
-            {bottomsheetFormErrors.startDate ? (
+            {bottomsheetFormErrors.loadTimeStart ? (
               <span className="text-[12px] font-medium leading-[13.2px] text-error-400">
-                {bottomsheetFormErrors.startDate}
+                {bottomsheetFormErrors.loadTimeStart}
               </span>
             ) : null}
 
@@ -227,19 +237,19 @@ const WaktuMuatBottomsheet = () => {
 
                 {/* Field Tanggal Akhir */}
                 <DatetimePicker
-                  datetimeValue={bottomsheetFormValues.endDate}
+                  datetimeValue={bottomsheetFormValues.loadTimeEnd}
                   onApply={(date) =>
-                    handleChangeBottomsheetFormValues("endDate", date)
+                    handleChangeBottomsheetFormValues("loadTimeEnd", date)
                   }
                   placeholder="Pilih Tanggal & Waktu Muat"
-                  disabled={!bottomsheetFormErrors.startDate}
-                  status={bottomsheetFormErrors.endDate ? "error" : null}
+                  disabled={!bottomsheetFormErrors.loadTimeStart}
+                  status={bottomsheetFormErrors.loadTimeEnd ? "error" : null}
                   className="w-full"
                   minDate={getNowTimezone(timezone)}
                 />
-                {bottomsheetFormErrors.endDate ? (
+                {bottomsheetFormErrors.loadTimeEnd ? (
                   <span className="text-[12px] font-medium leading-[13.2px] text-error-400">
-                    {bottomsheetFormErrors.endDate}
+                    {bottomsheetFormErrors.loadTimeEnd}
                   </span>
                 ) : null}
               </>

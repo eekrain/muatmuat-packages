@@ -8,14 +8,19 @@ const initialAuthState = {
   refreshToken: "",
 };
 
-export const useAuthStore = create(
+export const useTokenStore = create(
   zustandDevtools(
     persist(
       (set) => ({
         ...initialAuthState,
-        setToken: (val) =>
-          set({ accessToken: val.accessToken, refreshToken: val.refreshToken }),
-        logout: () => set({ ...initialAuthState }),
+        actions: {
+          setToken: (val) =>
+            set({
+              accessToken: val.accessToken,
+              refreshToken: val.refreshToken,
+            }),
+          clearToken: () => set({ ...initialAuthState }),
+        },
       }),
       {
         name: "t-ash",
@@ -32,8 +37,7 @@ export const useAuthStore = create(
   )
 );
 
-export const useAuthActions = () => {
-  const setToken = useAuthStore((state) => state.setToken);
-  const logout = useAuthStore((state) => state.logout);
-  return { setToken, logout };
+export const useTokenActions = () => {
+  const { setToken, clearToken } = useTokenStore((state) => state.actions);
+  return { setToken, clearToken };
 };

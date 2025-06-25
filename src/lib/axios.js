@@ -1,13 +1,13 @@
 import xior from "xior";
 
-import { useAuthStore } from "@/store/auth/authStore";
+import { useTokenStore } from "@/store/auth/tokenStore";
 import { useUserStore } from "@/store/auth/userStore";
 
 const LIST_PUBLIC_ROUTES = [
   "/sewaarmada",
   "/example",
-  "/example/map",
-  "/example/pilihprovinsi",
+  // /orders/orderId/drivers/driverId/qr-code
+  /^\/orders\/[^\/]+\/drivers\/[^\/]+\/qr-code$/,
 ];
 
 export const createAxios = (baseURL) => {
@@ -19,7 +19,7 @@ export const createAxios = (baseURL) => {
   // Request interceptor
   fetcher.interceptors.request.use(
     (config) => {
-      const token = useAuthStore.getState();
+      const token = useTokenStore.getState();
       config.headers.Authorization = `Bearer ${token?.accessToken}`;
       config.headers.refreshToken = token?.refreshToken;
       return config;
@@ -48,13 +48,27 @@ export const createAxios = (baseURL) => {
         }
         // Handle other HTTP error codes (4xx, 5xx other than 503)
         if (error.response.status === 401 || error.response.status === 403) {
-          useAuthStore.getState().logout();
-          useUserStore.getState().removeUser();
+          useTokenStore.getState().actions.clearToken();
+          useUserStore.getState().actions.clearUser();
           // If the user is not on the public routes, redirect to /sewaarmada
-          if (
-            window?.location &&
-            !LIST_PUBLIC_ROUTES.includes(window.location.pathname)
-          ) {
+          const isPublicRoutes = LIST_PUBLIC_ROUTES.some((route) => {
+            const pathname = window?.location?.pathname;
+            if (!pathname) return false;
+
+            // If route is a string, check if pathname starts with the route
+            // This allows subpaths to match (e.g., "/sewaarmada/something" matches "/sewaarmada")
+            if (typeof route === "string") {
+              return pathname === route || pathname.startsWith(route);
+            }
+
+            // If route is a regex pattern
+            if (route instanceof RegExp) {
+              return route.test(pathname);
+            }
+
+            return false;
+          });
+          if (window?.location && !isPublicRoutes) {
             window.location.replace("/sewaarmada");
           }
           return new Promise(() => {}); // Prevent further error propagation.

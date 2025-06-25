@@ -2,68 +2,14 @@ import { useState } from "react";
 
 import { ChevronDown } from "lucide-react";
 
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
-export const PaymentInstruction = ({ dataPaymentInstruction }) => {
-  const [expandedItem, setExpandedItem] = useState(0); // First item expanded by default
+import { resPaymentInstruction } from "./resPaymentInstruction";
 
-  const paymentMethods = [
-    {
-      title: "ATM",
-      content: (
-        <div className="px-3 pb-4 pr-11">
-          <div className="text-[12px] font-normal leading-[14.4px] text-[#1B1B1B]">
-            <ol className="list-inside list-decimal space-y-1">
-              <li>Masukkan Kartu ATM BCA & PIN</li>
-              <li>
-                Pilih menu Transaksi Lainnya {">"} Transfer {">"} Virtual
-                Account
-              </li>
-              <li>Masukkan Nomor Virtual Account di atas</li>
-              <li>
-                Di halaman konfirmasi, pastikan detail pembayaran sudah sesuai
-                seperti No. VA, Nama Perus/Produk, dan Total Tagihan
-              </li>
-              <li>Masukkan Jumlah Transfer sesuai dengan Total Tagihan</li>
-              <li>Ikuti instruksi untuk menyelesaikan transaksi</li>
-              <li>Simpan struk transaksi sebagai bukti pembayaran</li>
-            </ol>
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: "Internet Banking",
-      content: (
-        <div className="px-3 pb-4 pr-11">
-          <div className="text-[12px] font-normal leading-[14.4px] text-[#1B1B1B]">
-            Instruksi untuk Internet Banking akan ditampilkan di sini.
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: "Mobile Banking (m-BCA)",
-      content: (
-        <div className="px-3 pb-4 pr-11">
-          <div className="text-[12px] font-normal leading-[14.4px] text-[#1B1B1B]">
-            Instruksi untuk Mobile Banking akan ditampilkan di sini.
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: "Kantor Bank BCA",
-      content: (
-        <div className="px-3 pb-4 pr-11">
-          <div className="text-[12px] font-normal leading-[14.4px] text-[#1B1B1B]">
-            Instruksi untuk pembayaran di Kantor Bank BCA akan ditampilkan di
-            sini.
-          </div>
-        </div>
-      ),
-    },
-  ];
+export const PaymentInstruction = ({}) => {
+  const { t } = useTranslation();
+  const [expandedItem, setExpandedItem] = useState(0); // First item expanded by default
 
   const toggleAccordion = (index) => {
     setExpandedItem(expandedItem === index ? -1 : index);
@@ -78,20 +24,23 @@ export const PaymentInstruction = ({ dataPaymentInstruction }) => {
     >
       {/* Header */}
       <h2 className="text-[16px] font-bold leading-[19.2px] text-black">
-        Cara Pembayaran
+        {t ? t("Cara Pembayaran") : "Cara Pembayaran"}
       </h2>
 
       {/* Accordion Container */}
       <div className="flex h-auto w-full flex-col">
-        {dataPaymentInstruction.map((method, index) => (
+        {resPaymentInstruction.Data.map((instruction, index) => (
           <div key={index} className="w-full">
             {/* Accordion Header */}
             <div
-              className={`flex cursor-pointer flex-row items-center justify-center gap-2.5 border-b border-[#C4C4C4] bg-white px-4 transition-all duration-300 ease-in-out ${expandedItem === index ? "py-3 pb-6" : "py-3"} ${index === paymentMethods.length - 1 && expandedItem !== index ? "border-b-0" : ""} `}
+              className={cn(
+                "flex cursor-pointer flex-row items-center justify-center gap-2.5 border-b border-[#C4C4C4] bg-white px-4 py-3 transition-all duration-300 ease-in-out",
+                expandedItem === index && "border-b-0"
+              )}
               onClick={() => toggleAccordion(index)}
             >
               <span className="flex-1 text-[14px] font-medium leading-[16.8px] text-black">
-                {method.title}
+                {t(instruction.category)}
               </span>
 
               {/* Icon */}
@@ -117,14 +66,16 @@ export const PaymentInstruction = ({ dataPaymentInstruction }) => {
                   : "max-h-0 opacity-0"
               )}
             >
-              <div className="border-b border-[#C4C4C4] bg-white">
-                <div className="px-3 pb-4 pr-11 pt-3">
+              <div
+                className={cn(
+                  "border-b border-[#C4C4C4] bg-white",
+                  index === resPaymentInstruction.Data.length - 1 &&
+                    "border-b-0"
+                )}
+              >
+                <div className="px-4 pb-4 pr-11 pt-3">
                   <div className="text-[12px] font-normal leading-[14.4px] text-[#1B1B1B]">
-                    <ol className="list-decimal space-y-1 pl-6">
-                      {method.item.map((item, index) => (
-                        <li key={index}>{item}</li>
-                      ))}
-                    </ol>
+                    {t(instruction.guide)}
                   </div>
                 </div>
               </div>

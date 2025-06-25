@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import Button from "@/components/Button/Button";
 import { DropdownJasaPengiriman } from "@/components/Dropdown/DropdownJasaPengiriman";
@@ -8,12 +8,20 @@ import { InputLocationManagementDropdown } from "@/components/LocationManagement
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import TextArea from "@/components/TextArea/TextArea";
 import { LocationProvider } from "@/hooks/use-location/use-location";
-import usePrevious from "@/hooks/use-previous";
-import { useSWRHook } from "@/hooks/use-swr";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
-import { useSewaArmadaActions } from "@/store/forms/sewaArmadaStore";
+import {
+  useSewaArmadaActions,
+  useSewaArmadaStore,
+} from "@/store/forms/sewaArmadaStore";
 
-const DeliveryEvidenceModal = ({ isOpen, setIsOpen }) => {
+const DeliveryEvidenceModal = ({
+  isOpen,
+  setIsOpen,
+  modalType,
+  additionalServicesOptions,
+  shippingOptions,
+}) => {
   const [deliveryEvidenceFormValues, setDeliveryEvidenceFormValues] = useState({
     recipientName: "",
     recipientPhone: "",
@@ -24,7 +32,9 @@ const DeliveryEvidenceModal = ({ isOpen, setIsOpen }) => {
     {}
   );
 
-  const previousIsOpen = usePrevious(isOpen);
+  const additionalServices = useSewaArmadaStore(
+    (s) => s.formValues.additionalServices
+  );
 
   const { setField } = useSewaArmadaActions();
   const {
@@ -37,14 +47,9 @@ const DeliveryEvidenceModal = ({ isOpen, setIsOpen }) => {
   } = useLocationFormStore();
 
   const dataLokasi = useLocationFormStore((s) => s.formValues.dataLokasi);
+  const detailLokasi = useLocationFormStore((s) => s.formValues.detailLokasi);
 
-  // Fetch shipping options when location data is complete
-  const { data: shippingOptionsData } = useSWRHook(
-    isOpen ? "/api/v1/shipping-options" : null
-  );
-  const shippingOptions = shippingOptionsData?.Data;
-
-  const selectedShippingOptions = useMemo(() => {
+  const selectedShippingOptions = useShallowMemo(() => {
     if (!shippingOptions || shippingOptions?.length === 0) {
       return null;
     }
@@ -63,7 +68,7 @@ const DeliveryEvidenceModal = ({ isOpen, setIsOpen }) => {
       insurancePrice: shippingOption.originalInsurance,
     };
   }, [
-    JSON.stringify(shippingOptions),
+    shippingOptions,
     deliveryEvidenceFormValues.shippingOptionId,
     deliveryEvidenceFormValues.withInsurance,
   ]);
@@ -82,8 +87,7 @@ const DeliveryEvidenceModal = ({ isOpen, setIsOpen }) => {
   const validateForm = () => {
     const newErrors = {};
 
-    const { recipientName, recipientPhone, shippingOptionId } =
-      deliveryEvidenceFormValues;
+    const { recipientName, recipientPhone } = deliveryEvidenceFormValues;
 
     if (!recipientName) {
       newErrors.recipientName = "Nama penerima wajib diisi";
@@ -116,20 +120,46 @@ const DeliveryEvidenceModal = ({ isOpen, setIsOpen }) => {
     const isFormValid = validateForm();
     if (!isFormValid || !isLocationFormValid) return;
 
-    // Handle submit
-    console.log("🚀 ~ handleSubmit ~ locationFormValues:", locationFormValues);
-    const newShippingDetails = {
-      ...deliveryEvidenceFormValues,
-      location: locationFormValues,
+    const sendDeliveryEvidenceService = additionalServicesOptions.find(
+      (item) => item.withShipping
+    );
+
+    const newAdditionalService = {
+      serviceId: sendDeliveryEvidenceService.additionalServiceId,
+      withShipping: sendDeliveryEvidenceService.withShipping,
+      shippingDetails: {
+        ...deliveryEvidenceFormValues,
+        destinationAddress: dataLokasi.location.name,
+        detailAddress: detailLokasi,
+        district: dataLokasi.district.name,
+        city: dataLokasi.city.name,
+        province: dataLokasi.province.name,
+        postalCode: dataLokasi.postalCode.name,
+      },
     };
-    setField("shippingDetails", newShippingDetails);
+    setField("additionalServices", [
+      newAdditionalService,
+      ...additionalServices,
+    ]);
 
     setIsOpen(false);
     resetLocationForm();
   };
 
   return (
-    <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick={false}>
+    <Modal
+      open={isOpen}
+      onOpenChange={(value) => {
+        if (modalType === "create") {
+          setField(
+            "additionalServices",
+            additionalServices.filter((item) => !item.withShipping)
+          );
+        }
+        setIsOpen(value);
+      }}
+      closeOnOutsideClick={false}
+    >
       <ModalContent className="max-h-[598px] overflow-y-auto" type="muatmuat">
         {/* Modal Header */}
         <div className="flex w-[472px] flex-col items-center gap-4 px-6 py-8">

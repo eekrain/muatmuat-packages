@@ -18,7 +18,7 @@ const Stepper = ({ steps, currentStep }) => {
           <div
             className="absolute left-[16px] top-4 z-10 h-0.5 bg-[#FFC217] transition-all duration-300"
             style={{
-              width: `${(currentStep / (steps.length - 1)) * 100}%`,
+              width: `${(currentStep / (steps.length - 1)) * 100 - 2}%`,
               maxWidth: "calc(100% - 32px)",
             }}
           />

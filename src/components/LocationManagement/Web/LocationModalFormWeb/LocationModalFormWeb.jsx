@@ -2,12 +2,13 @@
 // npm install zustand react-google-maps/api
 import { useEffect, useRef } from "react";
 
+import Input from "@/components/Form/Input";
+import { MyTextArea } from "@/components/Form/TextArea";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import {
   LocationProvider,
   useLocationContext,
 } from "@/hooks/use-location/use-location";
-import { cn } from "@/lib/utils";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
 import { MapContainer } from "../../../MapContainer/MapContainer";
@@ -110,50 +111,36 @@ const InnerLocationModalFormWeb = ({
                   <label className="block text-[12px] font-medium text-neutral-600">
                     Detail Lokasi (Optional)
                   </label>
-                  <textarea
+                  <MyTextArea
                     value={formValues.detailLokasi}
                     onChange={(e) => setField("detailLokasi", e.target.value)}
                     placeholder="Masukkan Detail Lokasi"
-                    className={cn(
-                      "w-full rounded-[6px] border p-2 text-xs font-medium",
-                      formErrors?.detailLokasi && "border-red-500"
-                    )}
                     maxLength={500}
-                    rows={4}
+                    errorMessage={formErrors?.detailLokasi}
+                    appearance={{
+                      inputClassName: "resize-none h-[80px]",
+                    }}
+                    withCharCount
                   />
-                  {formErrors?.detailLokasi && (
-                    <span className="text-xs font-medium text-red-500">
-                      {formErrors?.detailLokasi}
-                    </span>
-                  )}
                 </div>
                 <div>
                   <label className="block text-[12px] font-medium text-neutral-600">
                     Nama PIC{" "}
                     {formMode === "muat" ? "Lokasi Muat" : "Lokasi Bongkar"}*
                   </label>
-                  <input
-                    type="text"
+                  <Input
                     value={formValues.namaPIC}
-                    onChange={(e) => setField("namaPIC", e.target.value)}
                     placeholder="Masukkan Nama PIC Lokasi Muat"
-                    className={cn(
-                      "w-full rounded-[6px] border p-2 text-xs font-medium",
-                      formErrors?.namaPIC && "border-red-500"
-                    )}
+                    onChange={(e) => setField("namaPIC", e.target.value)}
+                    errorMessage={formErrors?.namaPIC}
                   />
-                  {formErrors?.namaPIC && (
-                    <span className="text-xs font-medium text-red-500">
-                      {formErrors?.namaPIC}
-                    </span>
-                  )}
                 </div>
                 <div>
                   <label className="block text-[12px] font-medium text-neutral-600">
                     No. HP PIC{" "}
                     {formMode === "muat" ? "Lokasi Muat" : "Lokasi Bongkar"}*
                   </label>
-                  <input
+                  <Input
                     type="number"
                     value={formValues.noHPPIC}
                     onChange={(e) => {
@@ -162,16 +149,8 @@ const InnerLocationModalFormWeb = ({
                       setField("noHPPIC", val);
                     }}
                     placeholder="Masukkan No. HP PIC Lokasi Muat"
-                    className={cn(
-                      "w-full rounded-[6px] border p-2 text-xs font-medium",
-                      formErrors?.noHPPIC && "border-red-500"
-                    )}
+                    errorMessage={formErrors?.noHPPIC}
                   />
-                  {formErrors?.noHPPIC && (
-                    <span className="text-xs font-medium text-red-500">
-                      {formErrors?.noHPPIC}
-                    </span>
-                  )}
                 </div>
 
                 <button

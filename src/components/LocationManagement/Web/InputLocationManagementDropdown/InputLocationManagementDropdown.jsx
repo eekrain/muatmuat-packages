@@ -32,10 +32,13 @@ const useModalFormSimpanLokasiWeb = ({
     setModalConfig(defaultModalConfig);
 
   const handleAddToSavedLocation = (location) => {
+    console.log(
+      "🚀 ~ file: InputLocationManagementDropdown.jsx:35 ~ location:",
+      location
+    );
     setIsDropdownSearchOpen(false);
 
     handleSelectSearchResult(location).then((result) => {
-      console.log("🚀 ~ handleSelectSearchResult ~ result:", result);
       if (result?.district?.value) {
         setModalConfig({
           open: true,
@@ -49,10 +52,26 @@ const useModalFormSimpanLokasiWeb = ({
     });
   };
 
+  const handleEditLocation = (location) => {
+    setIsDropdownSearchOpen(false);
+    setModalConfig({
+      open: true,
+      mode: "edit",
+      title: "Detail Alamat",
+      defaultValues: location,
+    });
+  };
+
   useShallowCompareEffect(() => {
+    console.log(
+      "🚀 ~ file: InputLocationManagementDropdown.jsx:68 ~ districtData && isManualPostalCode:",
+      districtData,
+      isManualPostalCode,
+      districtData && isManualPostalCode
+    );
+
     // If districtData has been filled, then navigate to FormLokasiBongkarMuat
     if (districtData && isManualPostalCode) {
-      console.log("🚀 ~ useShallowCompareEffect ~ districtData:", districtData);
       setModalConfig({
         open: true,
         mode: "add",
@@ -65,6 +84,7 @@ const useModalFormSimpanLokasiWeb = ({
   return {
     configFormSimpanLokasi: modalConfig,
     handleAddToSavedLocation,
+    handleEditLocation,
     handleCloseModalFormSimpanLokasiWeb,
   };
 };
@@ -101,10 +121,15 @@ export const InputLocationManagementDropdown = ({
     configFormSimpanLokasi,
     handleAddToSavedLocation,
     handleCloseModalFormSimpanLokasiWeb,
+    handleEditLocation,
   } = useModalFormSimpanLokasiWeb({
     setIsDropdownSearchOpen,
     handleSelectSearchResult,
   });
+
+  const onSelectSearchResult = async (location) => {
+    return handleSelectSearchResult(location);
+  };
 
   // useEffect(() => {
   //   // Untuk menghapus data lokasi jika user menghapus text di inputan
@@ -130,6 +155,7 @@ export const InputLocationManagementDropdown = ({
           setIsDropdownSearchOpen(false);
         }}
         handleAddToSavedLocation={handleAddToSavedLocation}
+        handleEditLocation={handleEditLocation}
         hideDropdownWhenTopIsLessThan={hideDropdownWhenTopIsLessThan}
       />
 
@@ -146,6 +172,7 @@ export const InputLocationManagementDropdown = ({
         onOpenChange={setIsModalSavedLocationManagementOpen}
         userSavedLocations={userSavedLocationResult}
         handleSelectUserSavedLocation={handleSelectUserSavedLocation}
+        handleEditLocation={handleEditLocation}
       />
 
       <ModalFormSimpanLokasiWeb

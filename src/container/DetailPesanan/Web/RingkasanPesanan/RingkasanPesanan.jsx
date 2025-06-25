@@ -9,7 +9,7 @@ import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import {
   LightboxPreview,
   LightboxProvider,
-} from "@/components/Lightbox/Lighbox";
+} from "@/components/Lightbox/Lightbox";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import {
   TimelineContainer,
@@ -315,7 +315,14 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
                       index={index}
                       activeIndex={0}
                     >
-                      <TimelineContentAddress title={item.fullAddress} />
+                      <TimelineContentAddress
+                        title={item.fullAddress}
+                        className={
+                          index === dataRingkasanPesanan?.route?.muat.length - 1
+                            ? "pb-0"
+                            : ""
+                        }
+                      />
                     </TimelineItem>
                   ))}
                 </TimelineContainer>
@@ -347,7 +354,15 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
                     index={index}
                     activeIndex={0}
                   >
-                    <TimelineContentAddress title={item.fullAddress} />
+                    <TimelineContentAddress
+                      title={item.fullAddress}
+                      className={
+                        index ===
+                        dataRingkasanPesanan?.route?.bongkar.length - 1
+                          ? "pb-0"
+                          : ""
+                      }
+                    />
                   </TimelineItem>
                 ))}
               </TimelineContainer>

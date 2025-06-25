@@ -69,7 +69,7 @@ export const LightboxProvider = ({ title, images = [], image, children }) => {
             wrapperClassname: "bg-neutral-50",
           }}
           className={cn(
-            "flex h-full w-screen flex-col items-center md:h-[377px] md:w-[592px] md:bg-white md:px-6 md:pb-3 md:pt-8",
+            "flex h-full w-screen flex-col items-center md:w-[592px] md:bg-white md:px-6 md:pb-3 md:pt-8",
             memoizedImages.length > 1 && "md:h-[445px]"
           )}
           type="lightbox"

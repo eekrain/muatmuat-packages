@@ -1,13 +1,14 @@
 import {
   LocationTypeEnum,
-  OrderStatusEnum,
   OrderStatusIcon,
 } from "@/lib/constants/detailpesanan/detailpesanan.enum";
-import { PaymentInstructionTitle } from "@/lib/constants/detailpesanan/payment.enum";
 
 export const normalizeDetailPesananOrderDetail = ({
   dataOrderDetail,
   dataOrderStatusHistory,
+  dataPayment,
+  dataAdditionalServices,
+  dataAlerts,
 }) => {
   try {
     const dataStatusPesanan = {
@@ -30,12 +31,12 @@ export const normalizeDetailPesananOrderDetail = ({
         ),
       },
       withShippingAdditionalService:
-        dataOrderDetail.summary?.additionalService &&
-        dataOrderDetail.summary?.additionalService.length > 0
+        dataAdditionalServices && dataAdditionalServices.length > 0
           ? true
           : false,
-      paymentDueDateTime: dataOrderDetail.summary?.payment?.paymentDueDateTime,
+      expiredAt: dataPayment?.payment?.expiredAt,
       driverStatus: dataOrderStatusHistory?.driverStatus,
+      alerts: dataAlerts.alerts,
     };
 
     const route = { muat: [], bongkar: [] };
@@ -94,42 +95,25 @@ export const normalizeDetailPesananOrderDetail = ({
     };
 
     const dataRingkasanPembayaran = {
-      paymentMethod: dataOrderDetail.summary?.payment?.paymentMethod,
-      vaNumber: dataOrderDetail.paymentData?.vaNumber,
-      paymentDueDateTime: dataOrderDetail.summary?.payment?.paymentDueDateTime,
+      paymentMethod: dataPayment?.payment?.method,
+      vaNumber: dataPayment?.payment?.vaNumber,
+      expiredAt: dataPayment?.payment?.expiredAt,
       transportFee: dataOrderDetail.summary?.price?.transportFee,
       insuranceFee: dataOrderDetail.summary?.price?.insuranceFee,
-      additionalServiceFee:
-        dataOrderDetail.summary?.price?.additionalServiceFee,
       voucherDiscount: dataOrderDetail.summary?.price?.voucherDiscount,
+      additionalServiceFee:
+        dataOrderDetail.summary?.price?.additionalServiceFee[0]?.price || 0,
       adminFee: dataOrderDetail.summary?.price?.adminFee,
       taxAmount: dataOrderDetail.summary?.price?.taxAmount,
       totalPrice: dataOrderDetail.summary?.price?.totalPrice,
       orderStatus: dataOrderDetail.general?.orderStatus,
     };
 
-    let instructionFormatted = null;
-    if (
-      dataOrderDetail.general?.orderStatus ===
-        OrderStatusEnum.PENDING_PAYMENT &&
-      dataOrderDetail.paymentData?.paymentInstructions
-    ) {
-      const temp = Object.keys(
-        dataOrderDetail.paymentData?.paymentInstructions
-      );
-      console.log("🚀 ~ temp:", temp);
-      instructionFormatted = temp.map((key) => ({
-        title: PaymentInstructionTitle[key],
-        item: dataOrderDetail.paymentData?.paymentInstructions[key],
-      }));
-    }
-
     return {
       dataStatusPesanan,
       dataRingkasanPesanan,
       dataDetailPIC,
       dataRingkasanPembayaran,
-      dataPaymentInstruction: instructionFormatted,
     };
   } catch (error) {
     console.error("🚀 ~ normalizeDetailPesananOrderDetail ~ error:", error);

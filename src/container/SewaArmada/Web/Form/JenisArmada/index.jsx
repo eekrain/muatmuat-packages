@@ -1,9 +1,14 @@
 import { useState } from "react";
 
+import minBy from "lodash/minBy";
+
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import FilterModal from "@/container/SewaArmada/Web/Form/JenisArmada/FilterModal";
+import RecommendedTruckModal from "@/container/SewaArmada/Web/Form/JenisArmada/RecommendedTruckModal";
+import SelectArmadaModal from "@/container/SewaArmada/Web/Form/JenisArmada/SelectArmadaModal";
 import { SelectedTruck } from "@/container/SewaArmada/Web/Form/JenisArmada/SelectedTruck";
+import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook, useSWRMutateHook } from "@/hooks/use-swr";
 import { cn } from "@/lib/utils";
 import { handleFirstTime } from "@/lib/utils/form";
@@ -13,26 +18,29 @@ import {
 } from "@/store/forms/sewaArmadaStore";
 
 export const JenisArmada = () => {
-  const [isTruckImageModalOpen, setIsTruckImageModalOpen] = useState(false);
-  const [selectedImageSrc, setSelectedImageSrc] = useState("");
   const [type, setType] = useState(""); // carrier or truck
   const [isArmadaPopupOpen, setIsArmadaPopupOpen] = useState(false);
+  const [isRecommendedTruckOpen, setIsRecommendedTruckOpen] = useState(false);
 
-  const formValues = useSewaArmadaStore((state) => state.formValues);
-  const showRangeOption = useSewaArmadaStore(
-    (state) => state.formValues.showRangeOption
-  );
   const orderType = useSewaArmadaStore((state) => state.orderType);
-
-  const jenisCarrier = formValues.jenisCarrier;
-  const jenisTruk = formValues.jenisTruk;
+  const {
+    loadTimeStart,
+    loadTimeEnd,
+    showRangeOption,
+    lokasiMuat,
+    lokasiBongkar,
+    cargoCategoryId,
+    informasiMuatan,
+    carrierId,
+    truckTypeId,
+  } = useSewaArmadaStore((state) => state.formValues);
   const { setField } = useSewaArmadaActions();
-
-  const cargoCategoryId = "f483709a-de4c-4541-b29e-6f4d9a912332";
 
   // Fetch recommended carriers from API using SWR
   const { data: carriersData, error: carriersError } = useSWRHook(
-    `v1/orders/carriers/recommended?cargoCategoryId=${cargoCategoryId}`
+    cargoCategoryId
+      ? `v1/orders/carriers/recommended?cargoCategoryId=${cargoCategoryId}`
+      : null
   );
 
   // Menggunakan useSWRMutateHook untuk request POST truk
@@ -43,37 +51,79 @@ export const JenisArmada = () => {
     isMutating: isLoadingTrucks,
   } = useSWRMutateHook("v1/orders/trucks/recommended", "POST");
 
-  const handleSelectArmada = (value) => {
-    if (type === "carrier") {
-      setField("jenisCarrier", value);
-    }
-    if (type === "truck") {
-      setField("jenisTruk", value);
-    }
-  };
+  const carriers = carriersData?.Data || [];
+  const trucks = trucksData?.Data || [];
 
-  const handleSelectImage = (src) => {
-    setSelectedImageSrc(src);
-    setIsTruckImageModalOpen(true);
-  };
+  useShallowCompareEffect(() => {
+    if (trucksData) {
+      // console.log("trucksdata", trucksData);
+      setField("distance", trucksData.Data.priceComponents.estimatedDistance);
+      setField("distanceUnit", trucksData.Data.priceComponents.distanceUnit);
+      setField(
+        "estimatedTime",
+        trucksData.Data.priceComponents.preparationTime
+      );
+    }
+  }, [trucksData]);
+
+  const selectedCarrier = useShallowMemo(
+    () =>
+      carrierId
+        ? [
+            ...(carriers.recommendedCarriers || []),
+            ...(carriers.nonRecommendedCarriers || []),
+          ].find((item) => item.carrierId === carrierId)
+        : null,
+    [carrierId, carriers]
+  );
+
+  const selectedTruck = useShallowMemo(() => {
+    if (!truckTypeId) return null;
+
+    const recommendedTruck = trucks.recommendedTrucks?.find(
+      (item) => item.truckTypeId === truckTypeId
+    );
+
+    if (recommendedTruck) {
+      return { ...recommendedTruck, isRecommended: true };
+    }
+
+    const nonRecommendedTruck = trucks.nonRecommendedTrucks?.find(
+      (item) => item.truckTypeId === truckTypeId
+    );
+
+    if (nonRecommendedTruck) {
+      return { ...nonRecommendedTruck, isRecommended: false };
+    }
+
+    return null;
+  }, [truckTypeId, trucks]);
+
+  const recommendedTruckPriceDiff = useShallowMemo(() => {
+    if (!selectedTruck || trucks.length === 0) {
+      return 0;
+    }
+    const lowestRecommendedTruckPrice = minBy(
+      trucks.recommendedTrucks,
+      "price"
+    );
+    return selectedTruck.price - lowestRecommendedTruckPrice?.price;
+  }, [selectedTruck, trucks]);
 
   // Ketika modal dibuka dan tipe adalah truck, fetch data truk
-  const handleOpenModal = async (selectedType) => {
-    setType(selectedType);
+  const handleOpenModal = async (type) => {
+    setType(type);
     setIsArmadaPopupOpen(true);
 
     // Jika tipe truck dan carrier sudah dipilih, fetch data truk
-    if (selectedType === "truck" && jenisCarrier?.id) {
+    if (type === "truckTypeId" && carrierId) {
       // Calculate total weight and convert to tons
       const calculateTotalWeight = () => {
         let totalWeight = 0;
 
-        if (
-          formValues.informasiMuatan &&
-          formValues.informasiMuatan.length > 0
-        ) {
+        if (informasiMuatan && informasiMuatan.length > 0) {
           // Sum all weights with unit conversion
-          totalWeight = formValues.informasiMuatan.reduce((sum, item) => {
+          totalWeight = informasiMuatan.reduce((sum, item) => {
             const weight = item.beratMuatan?.berat || 0;
             const unit = item.beratMuatan?.unit || "kg";
 
@@ -101,11 +151,8 @@ export const JenisArmada = () => {
         let maxWidth = 0;
         let maxHeight = 0;
 
-        if (
-          formValues.informasiMuatan &&
-          formValues.informasiMuatan.length > 0
-        ) {
-          formValues.informasiMuatan.forEach((item) => {
+        if (informasiMuatan && informasiMuatan.length > 0) {
+          informasiMuatan.forEach((item) => {
             const length = item.dimensiMuatan?.panjang || 0;
             const width = item.dimensiMuatan?.lebar || 0;
             const height = item.dimensiMuatan?.tinggi || 0;
@@ -136,8 +183,8 @@ export const JenisArmada = () => {
 
       // Get coordinates for origin and destination
       const getOriginCoordinates = () => {
-        if (formValues.lokasiMuat && formValues.lokasiMuat.length > 0) {
-          return formValues.lokasiMuat.map((item) => ({
+        if (lokasiMuat && lokasiMuat.length > 0) {
+          return lokasiMuat.map((item) => ({
             lat: item?.dataLokasi?.coordinates?.latitude || 0,
             long: item?.dataLokasi?.coordinates?.longitude || 0,
           }));
@@ -146,8 +193,8 @@ export const JenisArmada = () => {
       };
 
       const getDestinationCoordinates = () => {
-        if (formValues.lokasiBongkar && formValues.lokasiBongkar.length > 0) {
-          return formValues.lokasiBongkar.map((item) => ({
+        if (lokasiBongkar && lokasiBongkar.length > 0) {
+          return lokasiBongkar.map((item) => ({
             lat: item?.dataLokasi?.coordinates?.latitude,
             long: item?.dataLokasi?.coordinates?.longitude,
           }));
@@ -158,15 +205,12 @@ export const JenisArmada = () => {
       // Get load time from startDate and endDate
       const getLoadTimes = () => {
         const now = new Date().toISOString();
-
         const result = {
-          loadTimeStart: formValues.startDate || now,
+          loadTimeStart: loadTimeStart || now,
         };
-
         if (showRangeOption) {
-          result.loadTimeEnd = formValues.endDate || now;
+          result.loadTimeEnd = loadTimeEnd || now;
         }
-
         return result;
       };
 
@@ -175,18 +219,17 @@ export const JenisArmada = () => {
       const dimensions = getMaxDimensions();
       const origin = getOriginCoordinates();
       const destination = getDestinationCoordinates();
-      const { loadTimeStart, loadTimeEnd } = getLoadTimes();
+      const loadTime = getLoadTimes();
 
       const requestPayload = {
-        carrierId: jenisCarrier.id,
+        orderType,
+        ...loadTime,
+        origin,
+        destination,
         weight,
         weightUnit,
         dimensions,
-        origin,
-        destination,
-        loadTimeStart,
-        loadTimeEnd,
-        orderType,
+        carrierId,
       };
 
       // Log the payload for debugging (can remove in production)
@@ -197,6 +240,15 @@ export const JenisArmada = () => {
     }
   };
 
+  const isTruckTypeIdDisabled =
+    !loadTimeStart ||
+    (showRangeOption && !loadTimeEnd) ||
+    !lokasiMuat ||
+    !lokasiBongkar ||
+    !cargoCategoryId ||
+    informasiMuatan.length === 0 ||
+    !carrierId;
+
   return (
     <>
       <FormContainer>
@@ -206,7 +258,9 @@ export const JenisArmada = () => {
           <div className="flex items-center gap-x-3.5">
             <button
               className="flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 px-3"
-              onClick={() => handleFirstTime(() => handleOpenModal("carrier"))}
+              onClick={() =>
+                handleFirstTime(() => handleOpenModal("carrierId"))
+              }
             >
               <IconComponent
                 src="/icons/carrier16.svg"
@@ -214,7 +268,7 @@ export const JenisArmada = () => {
                 height={16}
               />
               <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                {jenisCarrier?.title || "Pilih Jenis Carrier"}
+                {selectedCarrier?.name || "Pilih Jenis Carrier"}
               </span>
               <IconComponent
                 src="/icons/chevron-right.svg"
@@ -226,14 +280,29 @@ export const JenisArmada = () => {
             <button
               className={cn(
                 "flex h-8 w-full cursor-not-allowed items-center gap-x-2 rounded-md border border-neutral-600 bg-neutral-200 px-3",
-                jenisCarrier && "cursor-pointer bg-neutral-50"
+                selectedCarrier &&
+                  !isTruckTypeIdDisabled &&
+                  "cursor-pointer bg-neutral-50"
               )}
-              disabled={!jenisCarrier}
-              onClick={() => handleFirstTime(() => handleOpenModal("truck"))}
+              disabled={isTruckTypeIdDisabled}
+              onClick={() =>
+                handleFirstTime(() => handleOpenModal("truckTypeId"))
+              }
             >
-              <IconComponent src="/icons/truck16.svg" width={16} height={16} />
-              <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                {jenisTruk?.title || "Pilih Jenis Truck"}
+              <IconComponent
+                src="/icons/transporter16.svg"
+                width={16}
+                height={16}
+              />
+              <span
+                className={cn(
+                  "text-[12px] font-medium leading-[14.4px]",
+                  isTruckTypeIdDisabled
+                    ? "text-neutral-600"
+                    : "text-neutral-900"
+                )}
+              >
+                {selectedTruck?.name || "Pilih Jenis Truck"}
               </span>
               <IconComponent
                 src="/icons/chevron-right.svg"
@@ -243,23 +312,46 @@ export const JenisArmada = () => {
               />
             </button>
           </div>
-          {jenisTruk ? (
-            <SelectedTruck {...jenisTruk} onSelectImage={handleSelectImage} />
+          {selectedTruck ? <SelectedTruck {...selectedTruck} /> : null}
+          {selectedTruck?.isRecommended === false ? (
+            <button
+              className="flex h-10 w-full items-center justify-between self-start rounded-md border border-primary-700 bg-primary-50 px-3"
+              onClick={() => setIsRecommendedTruckOpen(true)}
+            >
+              <div className="flex items-center gap-x-2 font-medium text-neutral-900">
+                <IconComponent
+                  src="/icons/recommended-truck.svg"
+                  size="medium"
+                />
+                <span className="text-[14px] leading-[16.8px]">
+                  {"Pakai rekomendasi bisa hemat "}
+                  <span className="text-[12px] leading-[14.4px]">{`Rp${recommendedTruckPriceDiff.toLocaleString("id-ID")}`}</span>
+                </span>
+              </div>
+              <IconComponent src="/icons/chevron-right.svg" />
+            </button>
           ) : null}
         </div>
       </FormContainer>
 
-      <FilterModal
-        carrierData={carriersData?.Data}
-        truckData={trucksData?.Data || []}
+      <SelectArmadaModal
+        carrierData={carriers}
+        truckData={trucks}
         isOpen={isArmadaPopupOpen}
         setIsOpen={setIsArmadaPopupOpen}
-        onSelectArmada={handleSelectArmada}
         type={type}
-        isLoadingCarrier={!carriersData && !carriersError && type === "carrier"}
+        isLoadingCarrier={
+          !carriersData && !carriersError && type === "carrierId"
+        }
         errorCarrier={carriersError}
-        isLoadingTruck={isLoadingTrucks && type === "truck"}
+        isLoadingTruck={isLoadingTrucks && type === "truckTypeId"}
         errorTruck={trucksError}
+      />
+
+      <RecommendedTruckModal
+        isOpen={isRecommendedTruckOpen}
+        setIsOpen={setIsRecommendedTruckOpen}
+        recommendedTrucks={trucks?.recommendedTrucks}
       />
     </>
   );

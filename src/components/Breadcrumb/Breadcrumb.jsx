@@ -15,13 +15,6 @@ const BreadCrumb = ({
   disableClick = false,
   maxWidth,
 }) => {
-  const handleClick = (val) => {
-    if (val && !disableClick) {
-      onClick(val);
-      onActive(data[data.length - 1]);
-    }
-  };
-
   const getItemClasses = (idx) =>
     cn(
       "select-none text-xs font-medium capitalize text-neutral-600",
@@ -30,7 +23,7 @@ const BreadCrumb = ({
         ? "!max-w-none"
         : "overflow-hidden text-ellipsis whitespace-nowrap",
       !disableActive && idx === data.length - 1 && "text-primary-700",
-      !disableClick && "cursor-pointer"
+      !disableClick && idx !== data.length - 1 && "cursor-pointer"
     );
 
   return (
@@ -38,18 +31,13 @@ const BreadCrumb = ({
       {data?.map((val, idx) => (
         <div className="flex items-center gap-[5px]" key={idx}>
           {val.href ? (
-            <Link
-              href={val.href}
-              className={getItemClasses(idx)}
-              onClick={() => handleClick(val)}
-            >
+            <Link href={val.href} className={getItemClasses(idx)}>
               {val.name}
             </Link>
           ) : (
             <div
               style={{ maxWidth: maxWidth ? `${maxWidth}` : "86px" }}
               className={getItemClasses(idx)}
-              onClick={() => handleClick(val)}
             >
               {val.name}
             </div>

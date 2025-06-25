@@ -68,7 +68,7 @@ const FormSimpanLokasiScreen = dynamicScreen(
     )
 );
 
-const SewaArmadaResponsive = () => {
+const SewaArmadaResponsive = ({ cargoTypes, cargoCategories }) => {
   // const navigation = useResponsiveNavigation();
   // useEffect(() => {
   //   navigation.replace("/JenisCarrier");
@@ -92,7 +92,12 @@ const SewaArmadaResponsive = () => {
 
       <ResponsiveRoute
         path="/InformasiMuatan"
-        component={<InformasiMuatanScreen />}
+        component={
+          <InformasiMuatanScreen
+            cargoTypes={cargoTypes}
+            cargoCategories={cargoCategories}
+          />
+        }
       />
       <ResponsiveRoute
         path="/CariNamaMuatan"

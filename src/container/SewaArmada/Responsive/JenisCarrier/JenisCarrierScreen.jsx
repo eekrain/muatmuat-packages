@@ -4,7 +4,7 @@ import { Alert } from "@/components/Badge/Alert";
 import {
   LightboxPreview,
   LightboxProvider,
-} from "@/components/Lightbox/Lighbox";
+} from "@/components/Lightbox/Lightbox";
 import SearchBarResponsiveLayout from "@/layout/ResponsiveLayout/SearchBarResponsiveLayout";
 
 const JenisCarrierScreen = () => {
