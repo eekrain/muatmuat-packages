@@ -4,6 +4,7 @@ import { useEffect, useMemo } from "react";
 
 import { BannerCarousel } from "@/components/BannerCarousel/BannerCarousel";
 import Card from "@/components/Card/Card";
+import NeedConfirmationWarning from "@/components/NeedConfirmationWarning/NeedConfirmationWarning";
 import { FirstTimer } from "@/container/SewaArmada/Web/FirstTimer/FirstTimer";
 import { ModalLogin } from "@/container/SewaArmada/Web/FirstTimer/ModalLogin";
 import {
@@ -54,6 +55,11 @@ export default function SewaArmadaWeb({ cargoTypes, cargoCategories }) {
       <main className="flex min-h-screen flex-col items-center gap-6 px-10 py-8">
         {/* Carousel Banner */}
         <BannerCarousel banners={banners} />
+
+        {/* Ganti pakek logic kalo ada yg perlu dikonfirmasi dari API /base_url/v1/orders/requiring-confirmation/count */}
+        {true ? (
+          <NeedConfirmationWarning className="mt-0 w-full max-w-[1200px]" />
+        ) : null}
 
         {/* Main Content */}
         {orderType === "" ? (

@@ -97,9 +97,9 @@ const ButuhKonfirmasiAndaWeb = () => {
 
   return (
     <main className="flex justify-center px-10 py-8">
-      <div className="mx-auto flex max-w-[1280px] flex-col gap-y-6">
+      <div className="mx-auto flex max-w-[1280px] flex-col">
         <BreadCrumb className="mb-0" data={breadcrumbData} />
-        <div className="flex h-8 items-center gap-x-3">
+        <div className="mt-6 flex h-8 items-center gap-x-3">
           <IconComponent
             onClick={() => router.back()}
             src="/icons/arrow-left24.svg"
