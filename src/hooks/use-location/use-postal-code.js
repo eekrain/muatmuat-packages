@@ -46,6 +46,7 @@ export const usePostalCode = ({
         ...tempLocation,
         ...normalizePostalCodeData(option),
       };
+
       setLocationPartial(result);
 
       if (tempLocation?.location?.name && !isMobile)

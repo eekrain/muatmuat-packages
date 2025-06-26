@@ -10,7 +10,6 @@ import { StatusPesananHeader } from "./StatusPesananHeader";
 
 const StatusPesanan = ({ dataStatusPesanan }) => {
   const showStepperOnly =
-    dataStatusPesanan.orderStatus === OrderStatusEnum.PREPARE_FLEET ||
     dataStatusPesanan.orderStatus === OrderStatusEnum.CONFIRMED;
 
   const showDriverStatuses = [

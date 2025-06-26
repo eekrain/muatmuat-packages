@@ -7,10 +7,17 @@ export const normalizeDetailPesananOrderDetail = ({
   dataOrderDetail,
   dataOrderStatusHistory,
   dataPayment,
-  dataAdditionalServices,
+  dataAdditionalServices = [],
   dataAlerts,
 }) => {
   try {
+    const foundDocumentShipping = dataAdditionalServices.find(
+      (val) => val.isShipping
+    );
+    const foundOtherAdditionalService = dataAdditionalServices.find(
+      (val) => !val.isShipping
+    );
+
     const dataStatusPesanan = {
       orderId: dataOrderDetail.general?.orderId,
       orderCode:
@@ -21,22 +28,20 @@ export const normalizeDetailPesananOrderDetail = ({
         (val) => val.statusCode === dataOrderDetail.general?.orderStatus
       )?.statusName,
       statusHistory: {
-        stepper: dataOrderStatusHistory?.statusHistory?.map((val) => ({
-          label: val.statusName,
-          status: val.statusCode,
-          icon: OrderStatusIcon[val.statusCode],
-        })),
+        stepper:
+          dataOrderStatusHistory?.statusHistory?.map((val) => ({
+            label: val.statusName,
+            status: val.statusCode,
+            icon: OrderStatusIcon[val.statusCode],
+          })) || [],
         activeIndex: dataOrderStatusHistory?.statusHistory?.findIndex(
           (val) => val.statusCode === dataOrderDetail.general?.orderStatus
         ),
       },
-      withShippingAdditionalService:
-        dataAdditionalServices && dataAdditionalServices.length > 0
-          ? true
-          : false,
+      withDocumentShipping: Boolean(foundDocumentShipping),
       expiredAt: dataPayment?.payment?.expiredAt,
       driverStatus: dataOrderStatusHistory?.driverStatus,
-      alerts: dataAlerts.alerts,
+      alerts: dataAlerts?.alerts || [],
     };
 
     const route = { muat: [], bongkar: [] };
@@ -101,12 +106,30 @@ export const normalizeDetailPesananOrderDetail = ({
       transportFee: dataOrderDetail.summary?.price?.transportFee,
       insuranceFee: dataOrderDetail.summary?.price?.insuranceFee,
       voucherDiscount: dataOrderDetail.summary?.price?.voucherDiscount,
-      additionalServiceFee:
-        dataOrderDetail.summary?.price?.additionalServiceFee[0]?.price || 0,
       adminFee: dataOrderDetail.summary?.price?.adminFee,
       taxAmount: dataOrderDetail.summary?.price?.taxAmount,
       totalPrice: dataOrderDetail.summary?.price?.totalPrice,
       orderStatus: dataOrderDetail.general?.orderStatus,
+      documentShippingDetail: {
+        recipientName: foundDocumentShipping?.recipientName,
+        recipientPhone: foundDocumentShipping?.recipientPhone,
+        fullAddress: foundDocumentShipping?.addressInformation?.fullAddress,
+        detailAddress: foundDocumentShipping?.addressInformation?.detailAddress,
+        district: foundDocumentShipping?.addressInformation?.district,
+        city: foundDocumentShipping?.addressInformation?.city,
+        province: foundDocumentShipping?.addressInformation?.province,
+        postalCode: foundDocumentShipping?.addressInformation?.postalCode,
+
+        courier: foundDocumentShipping?.courier,
+        courierPrice: foundDocumentShipping?.courierPrice,
+        insurancePrice: foundDocumentShipping?.insurancePrice,
+        totalPrice:
+          (Number(foundDocumentShipping?.courierPrice) || 0) +
+          (Number(foundDocumentShipping?.insurancePrice) || 0),
+      },
+      otherAdditionalService: {
+        totalPrice: foundOtherAdditionalService?.courierPrice,
+      },
     };
 
     return {
@@ -115,7 +138,5 @@ export const normalizeDetailPesananOrderDetail = ({
       dataDetailPIC,
       dataRingkasanPembayaran,
     };
-  } catch (error) {
-    console.error("🚀 ~ normalizeDetailPesananOrderDetail ~ error:", error);
-  }
+  } catch (error) {}
 };

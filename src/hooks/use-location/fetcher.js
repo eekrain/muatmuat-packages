@@ -11,7 +11,6 @@ const getLocationByLatLong = async (coordinates) => {
     Long: coordinates.longitude,
   });
   const getLocation = res1.data.Data;
-  console.log("🚀 ~ getLocationByLatLong ~ getLocation:", getLocation);
 
   const res2 = await fetcherMuatparts.post(
     "v1/district_by_token",
@@ -42,12 +41,10 @@ const getLocationByLatLong = async (coordinates) => {
 };
 
 const getLocationByPlaceId = async (location) => {
-  console.log("🚀 ~ getLocationByPlaceId ~ location:", location);
   const res = await fetcherMuatparts.post(
     "v1/district_by_token",
     new URLSearchParams({ placeId: location.ID })
   );
-  console.log("🚀 ~ getLocationByPlaceId ~ res:", res);
   const dataDistrict = res.data.Data;
   const dataNotFound = res.data?.Data?.Message?.Data;
 
@@ -59,13 +56,11 @@ const getLocationByPlaceId = async (location) => {
     };
   } else if (dataNotFound) {
     const temp = normalizeAutoCompleteNotFound(location, dataNotFound);
-    console.log("🚀 ~ getLocationByPlaceId ~ temp:", temp);
     const getDetailedLocation = await getLocationByLatLong(temp.coordinates);
     result = {
       ...getDetailedLocation,
       location: { name: temp.location.name, value: temp.location.value },
     };
-    console.log("🚀 ~ getLocationByPlaceId ~ result:", result);
   }
 
   return result;

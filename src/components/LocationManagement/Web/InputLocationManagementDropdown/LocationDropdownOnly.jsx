@@ -27,6 +27,7 @@ export const LocationDropdownOnly = ({
   handleAddToSavedLocation,
   handleEditLocation,
   errorMessage,
+  markerIcon = "/icons/marker-lokasi-muat.svg",
 }) => {
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
@@ -298,7 +299,7 @@ export const LocationDropdownOnly = ({
           )}
         />
         <IconComponent
-          src="/icons/marker-lokasi-muat.svg"
+          src={markerIcon}
           width={16}
           height={16}
           className="absolute left-3 top-1/2 -translate-y-1/2"

@@ -7,8 +7,8 @@ import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
 
 export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
-  const informationFields = useMemo(() => {
-    const data = dataRingkasanPembayaran?.additionalServiceDetail;
+  const documentShippingFields = useMemo(() => {
+    const data = dataRingkasanPembayaran?.documentShippingDetail;
     if (!data) return [];
 
     return [
@@ -27,13 +27,13 @@ export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
       {
         id: "alamat-tujuan",
         label: "Alamat Tujuan",
-        value: data.destinationAddress,
+        value: data.fullAddress,
         width: "w-full",
       },
       {
         id: "detail-alamat",
         label: "Detail Alamat Tujuan",
-        value: data.detailDestinationAddress,
+        value: data.detailAddress,
         width: "w-full",
       },
       {
@@ -57,7 +57,7 @@ export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
       {
         id: "kode-pos",
         label: "Kode Pos",
-        value: data.kodePos,
+        value: data.postalCode,
         width: "w-full",
       },
     ];
@@ -156,7 +156,9 @@ export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
                 Nominal Kirim Bukti Fisik Penerimaan Barang
               </span>
               <span className="text-right text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                {idrFormat(dataRingkasanPembayaran?.additionalServiceFee)}
+                {idrFormat(
+                  dataRingkasanPembayaran?.documentShippingDetail?.totalPrice
+                )}
               </span>
             </div>
 
@@ -176,7 +178,7 @@ export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
                   {/* Content */}
                   <div className="flex flex-col items-start gap-4 p-0">
                     {/* Information Fields */}
-                    {informationFields.map((field, index) => (
+                    {documentShippingFields.map((field, index) => (
                       <div
                         key={field.id}
                         className="flex w-[424px] flex-col items-start gap-3 p-0"
@@ -204,14 +206,14 @@ export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
                         <div className="flex h-2 w-[424px] flex-row items-center justify-between">
                           <span className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
                             {
-                              dataRingkasanPembayaran?.additionalServiceDetail
-                                ?.shippingOption
+                              dataRingkasanPembayaran?.documentShippingDetail
+                                ?.courier
                             }
                           </span>
                           <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
                             {idrFormat(
-                              dataRingkasanPembayaran?.additionalServiceDetail
-                                ?.shippingCost
+                              dataRingkasanPembayaran?.documentShippingDetail
+                                ?.courierPrice
                             )}
                           </span>
                         </div>
@@ -223,8 +225,8 @@ export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
                           </span>
                           <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
                             {idrFormat(
-                              dataRingkasanPembayaran?.additionalServiceDetail
-                                ?.insurance
+                              dataRingkasanPembayaran?.documentShippingDetail
+                                ?.insurancePrice
                             )}
                           </span>
                         </div>
@@ -241,7 +243,9 @@ export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
                 Nominal Bantuan Tambahan
               </span>
               <span className="text-right text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                {idrFormat(dataRingkasanPembayaran?.additionalServiceFee)}
+                {idrFormat(
+                  dataRingkasanPembayaran?.otherAdditionalService?.totalPrice
+                )}
               </span>
             </div>
           </div>

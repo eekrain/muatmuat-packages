@@ -83,6 +83,11 @@ const InnerLocationModalFormWeb = ({
               coordinates={coordinates}
               onPositionChange={handleChangeMarkerCoordinates}
               className="h-[380px] w-[604px]"
+              markerIcon={
+                formMode === "muat"
+                  ? "/icons/marker-lokasi-muat.svg"
+                  : "/icons/marker-lokasi-bongkar.svg"
+              }
             />
 
             <div className="w-full flex-1">
@@ -99,7 +104,11 @@ const InnerLocationModalFormWeb = ({
                     {formMode === "muat" ? "Lokasi Muat*" : "Lokasi Bongkar*"}
                   </label>
                   <InputLocationManagementDropdown
-                    hideDropdownWhenTopIsLessThan={415}
+                    markerIcon={
+                      formMode === "muat"
+                        ? "/icons/marker-lokasi-muat.svg"
+                        : "/icons/marker-lokasi-bongkar.svg"
+                    }
                   />
                   {formErrors?.dataLokasi && (
                     <span className="text-xs font-medium text-red-500">

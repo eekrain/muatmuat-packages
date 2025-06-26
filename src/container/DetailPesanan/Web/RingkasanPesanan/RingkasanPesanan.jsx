@@ -93,7 +93,9 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
               <div className="flex-1">
                 <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
                   {formatDate(dataRingkasanPesanan?.loadTimeStart)} s/d{" "}
-                  {formatDate(dataRingkasanPesanan?.loadTimeEnd)}
+                  {dataRingkasanPesanan?.loadTimeEnd
+                    ? `s/d ${formatDate(dataRingkasanPesanan?.loadTimeEnd)}`
+                    : null}
                 </span>
               </div>
             </div>

@@ -1,4 +1,5 @@
 // /api/v1/orders/{orderId}/additional-services
+import { fetcherMuatrans } from "@/lib/axios";
 
 const apiResult = {
   Message: {
@@ -33,9 +34,17 @@ const apiResult = {
 };
 
 export const getAdditionalServices = async (cacheKey) => {
-  const result = apiResult;
-  return result.Data;
+  const orderId = cacheKey.split("/")[1];
+
+  // const result = apiResult;
+  // return result.Data;
+
+  const result = await fetcherMuatrans.get(
+    `v1/orders/${orderId}/additional-services`
+  );
+
+  return result?.data?.Data?.additionalService || [];
 };
 
 export const useGetAdditionalServices = (orderId) =>
-  useSWR(orderId ? `additional-services/${orderId}` : null, fetcher);
+  useSWR(`additional-services/${orderId}`, fetcher);

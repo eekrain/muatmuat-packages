@@ -52,7 +52,11 @@ export const StatusPesananHeader = ({ orderCode, orderStatus }) => {
                 orderStatus === OrderStatusEnum.WAITING_PAYMENT_1 ||
                 orderStatus === OrderStatusEnum.WAITING_PAYMENT_2
                   ? "warning"
-                  : "primary"
+                  : orderStatus === OrderStatusEnum.CANCELED_BY_SHIPPER ||
+                      orderStatus === OrderStatusEnum.CANCELED_BY_SYSTEM ||
+                      orderStatus === OrderStatusEnum.CANCELED_BY_TRANSPORTER
+                    ? "error"
+                    : "primary"
               }
               className="w-fit"
             >

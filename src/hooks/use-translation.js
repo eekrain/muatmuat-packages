@@ -100,7 +100,7 @@ export const useTranslation = () => {
 
 const useInitTranslation = (store) => {
   const selectedLanguageUrl = useSelectedLanguageStore(
-    (state) => state.selectedLanguage?.url
+    (s) => s.selectedLanguage?.url
   );
 
   const { setSelectedLanguage } = useSelectedLanguageActions();
