@@ -57,9 +57,9 @@ const LayananTambahan = () => {
   ];
 
   // Fetch shipping options when location data is complete
-  const { data: shippingOptionsData } = useSWRHook(
-    "v1/orders/shipping-options"
-  );
+  // const { data: shippingOptionsData } = useSWRHook(
+  //   "v1/orders/shipping-options"
+  // );
   // const shippingOptions = shippingOptionsData?.Data;
 
   const shippingOptions = [

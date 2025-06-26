@@ -4,18 +4,11 @@ import Checkbox from "@/components/Checkbox/Checkbox";
 import DatetimePicker from "@/components/DatetimePicker/DatetimePicker";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
-// import SWRHandler from "@/services/useSWRHook";
-import { getNowTimezone } from "@/lib/utils/dateTime";
 import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
 } from "@/store/forms/sewaArmadaStore";
-
-const timezone = {
-  id: "Asia/Jakarta",
-  offset: "+07:00",
-};
 
 export const WaktuMuat = () => {
   const loadTimeStart = useSewaArmadaStore(
@@ -29,12 +22,15 @@ export const WaktuMuat = () => {
   );
   const formErrors = useSewaArmadaStore((state) => state.formErrors);
   const { setField } = useSewaArmadaActions();
-
+  console.log("load", loadTimeStart);
   const handleDateChange = (field, value) => {
     const newDate = new Date(value);
     newDate.setSeconds(0, 0);
     setField(field, newDate);
   };
+
+  // Use current date for minimum date
+  const minDate = new Date();
 
   return (
     <FormContainer>
@@ -50,7 +46,7 @@ export const WaktuMuat = () => {
               placeholder="Pilih Tanggal & Waktu Muat"
               status={formErrors.loadTimeStart ? "error" : null}
               className="w-[271px]"
-              minDate={getNowTimezone(timezone)}
+              minDate={minDate}
             />
             {showRangeOption ? (
               <>
@@ -66,7 +62,7 @@ export const WaktuMuat = () => {
                   disabled={!loadTimeStart}
                   status={formErrors.loadTimeEnd ? "error" : null}
                   className="w-[271px]"
-                  minDate={getNowTimezone(timezone)}
+                  minDate={minDate}
                 />
               </>
             ) : null}

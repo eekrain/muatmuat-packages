@@ -1,18 +1,3 @@
-// by MGE - v1.0
-// 24. THP 2 - MOD001 - MP - 022 - QC Plan - Web - MuatParts - Promo
-// LB - 0019
-// LB - 0051
-// LB - 0093
-// LB - 0118
-// LB - 0123
-// LB - 0130
-// LB - 0131
-// LB - 0132
-// LB - 0146
-// LB - 0150
-// LB - 0152
-// LB - 0154
-// LB - 0161
 import { useEffect, useRef, useState } from "react";
 
 import { format, setHours, setMinutes } from "date-fns";
@@ -25,6 +10,28 @@ import { cn } from "@/lib/utils";
 import ImageComponent from "../ImageComponent/ImageComponent";
 import style from "./DatetimePicker.module.scss";
 
+// Helper function to ensure we're working with a proper Date object
+const ensureDate = (dateValue) => {
+  if (!dateValue) return null;
+
+  // If it's already a Date object
+  if (dateValue instanceof Date && !isNaN(dateValue)) {
+    return dateValue;
+  }
+
+  // If it's an ISO string or other date string
+  try {
+    const newDate = new Date(dateValue);
+    if (!isNaN(newDate.getTime())) {
+      return newDate;
+    }
+  } catch (e) {
+    console.error("Error parsing date:", e);
+  }
+
+  return null;
+};
+
 const TimePicker = ({ selectedDate, onChange, minDate, maxDate }) => {
   const hoursRef = useRef(null);
   const minutesRef = useRef(null);
@@ -32,8 +39,11 @@ const TimePicker = ({ selectedDate, onChange, minDate, maxDate }) => {
 
   const [scrollTimeout, setScrollTimeout] = useState(null);
 
-  const currentHour = selectedDate.getHours();
-  const currentMinute = selectedDate.getMinutes();
+  // Ensure selectedDate is a valid Date object
+  const dateObj = ensureDate(selectedDate) || new Date();
+
+  const currentHour = dateObj.getHours();
+  const currentMinute = dateObj.getMinutes();
 
   // Constants
   const ITEM_HEIGHT = 32;
@@ -74,6 +84,12 @@ const TimePicker = ({ selectedDate, onChange, minDate, maxDate }) => {
     generateTimeSet(currentMinute, false)
   );
 
+  // Update time sets when selectedDate changes
+  useEffect(() => {
+    setHourItems(generateTimeSet(dateObj.getHours(), true));
+    setMinuteItems(generateTimeSet(dateObj.getMinutes(), false));
+  }, [selectedDate]);
+
   const handleTimeScroll = (container, isHours) => {
     const scrollTop = container.scrollTop;
     const baseScrollTop = MIDDLE_INDEX * ITEM_HEIGHT;
@@ -103,19 +119,23 @@ const TimePicker = ({ selectedDate, onChange, minDate, maxDate }) => {
       );
 
       // Check if new time would be within bounds
-      const testDate = new Date(selectedDate);
+      const testDate = new Date(dateObj);
       if (isHours) {
-        testDate.setHours(newCenterValue, selectedDate.getMinutes());
+        testDate.setHours(newCenterValue, dateObj.getMinutes());
       } else {
-        testDate.setHours(selectedDate.getHours(), newCenterValue);
+        testDate.setHours(dateObj.getHours(), newCenterValue);
       }
 
       // Generate new set centered around new value
       const newItems = generateTimeSet(newCenterValue, isHours);
 
       // Update state only if within bounds or no bounds set
+      const minDateObj = ensureDate(minDate);
+      const maxDateObj = ensureDate(maxDate);
+
       const isWithinBounds =
-        (!minDate || testDate >= minDate) && (!maxDate || testDate <= maxDate);
+        (!minDateObj || testDate >= minDateObj) &&
+        (!maxDateObj || testDate <= maxDateObj);
 
       if (isWithinBounds || true) {
         // Update state
@@ -168,21 +188,27 @@ const TimePicker = ({ selectedDate, onChange, minDate, maxDate }) => {
     const isTimeDisabled = (value) => {
       if (!minDate && !maxDate) return false;
 
-      const testDate = new Date(selectedDate);
+      const testDate = new Date(dateObj);
       if (isHours) {
-        testDate.setHours(value, selectedDate.getMinutes());
+        testDate.setHours(value, dateObj.getMinutes());
       } else {
-        testDate.setHours(selectedDate.getHours(), value);
+        testDate.setHours(dateObj.getHours(), value);
       }
 
-      return (minDate && testDate < minDate) || (maxDate && testDate > maxDate);
+      const minDateObj = ensureDate(minDate);
+      const maxDateObj = ensureDate(maxDate);
+
+      return (
+        (minDateObj && testDate < minDateObj) ||
+        (maxDateObj && testDate > maxDateObj)
+      );
     };
 
     const handleTimeClick = (value, disabled) => {
       if (!disabled) {
         const newDate = isHours
-          ? setHours(selectedDate, value)
-          : setMinutes(selectedDate, value);
+          ? setHours(dateObj, value)
+          : setMinutes(dateObj, value);
         onChange(newDate);
 
         // Update the scroll position to center the clicked value
@@ -255,21 +281,22 @@ const DatetimePicker = ({
   status = null,
   ...props
 }) => {
-  // """Keep existing state management code"""
-  const [selectedDate, setSelectedDate] = useState(datetimeValue || new Date());
+  // Ensure we always have a valid Date object
+  const initialDate = ensureDate(datetimeValue) || new Date();
+  const [selectedDate, setSelectedDate] = useState(initialDate);
   const [selectedDateStr, setSelectedDateStr] = useState(
-    format(datetimeValue || new Date(), dateFormat)
+    format(initialDate, dateFormat)
   );
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [appliedDateStr, setAppliedDateStr] = useState(
-    format(datetimeValue || new Date(), dateFormat)
+    format(initialDate, dateFormat)
   );
   const [dropdownPosition, setDropdownPosition] = useState({});
   const pickerRef = useRef(null);
-  // console.log("start", selectedDate, new Date());
+
   registerLocale("id", id);
 
-  // """Keep existing useEffect hooks for click outside and positioning"""
+  // Click outside detection
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (pickerRef.current && !pickerRef.current.contains(event.target)) {
@@ -283,10 +310,10 @@ const DatetimePicker = ({
     };
   }, []);
 
+  // Update positioning when picker opens
   useEffect(() => {
     setSelectedDateStr(appliedDateStr);
     if (isPickerOpen && pickerRef.current) {
-      // """Keep existing dropdown positioning code"""
       const pickerRect = pickerRef.current.getBoundingClientRect();
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight;
@@ -311,21 +338,21 @@ const DatetimePicker = ({
 
       setDropdownPosition(position);
     }
-  }, [isPickerOpen]);
+  }, [isPickerOpen, appliedDateStr]);
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setSelectedDate(new Date(selectedDateStr));
-  //   }, 1);
-  // }, [selectedDateStr]);
+  // Keep datetimeValue in sync with props
+  useEffect(() => {
+    if (datetimeValue) {
+      const dateObj = ensureDate(datetimeValue);
+      if (dateObj) {
+        setSelectedDate(dateObj);
+        setSelectedDateStr(format(dateObj, dateFormat));
+        setAppliedDateStr(format(dateObj, dateFormat));
+      }
+    }
+  }, [datetimeValue, dateFormat]);
 
-  // useEffect(() => {
-  //   setSelectedDate(datetimeValue);
-  //   setSelectedDateStr(format(datetimeValue, dateFormat));
-  //   setAppliedDateStr(format(datetimeValue, dateFormat));
-  // }, [datetimeValue, dateFormat]);
-
-  // """Keep existing CustomHeader component"""
+  // Custom calendar header component
   const CustomHeader = ({
     date,
     decreaseMonth,
@@ -369,15 +396,18 @@ const DatetimePicker = ({
   );
 
   const handleDateChange = (date) => {
-    setSelectedDate(date);
-    setSelectedDateStr(format(date, dateFormat));
+    if (date) {
+      setSelectedDate(date);
+      setSelectedDateStr(format(date, dateFormat));
+    }
   };
 
-  // """Keep existing handle functions"""
   const handleApply = (dateValue) => {
-    setAppliedDateStr(format(dateValue, dateFormat));
-    setIsPickerOpen(false);
-    onApply(dateValue);
+    if (dateValue) {
+      setAppliedDateStr(format(dateValue, dateFormat));
+      setIsPickerOpen(false);
+      onApply(dateValue);
+    }
   };
 
   const handleCancel = (dateValue) => {
@@ -388,8 +418,13 @@ const DatetimePicker = ({
 
   const isTimeDisabled = (date) => {
     if (!minDate && !maxDate) return false;
-    return (minDate && date < minDate) || (maxDate && date > maxDate);
+    const minDateObj = ensureDate(minDate);
+    const maxDateObj = ensureDate(maxDate);
+    return (
+      (minDateObj && date < minDateObj) || (maxDateObj && date > maxDateObj)
+    );
   };
+
   return (
     <div
       className={`${style.DateTimePickerContainer} relative ${className}`}
@@ -429,8 +464,8 @@ const DatetimePicker = ({
               onChange={handleDateChange}
               inline
               dateFormat={dateFormat}
-              minDate={minDate}
-              maxDate={maxDate}
+              minDate={ensureDate(minDate)}
+              maxDate={ensureDate(maxDate)}
               renderCustomHeader={CustomHeader}
               calendarClassName="!border-0"
               dayClassName={() => "rounded-lg"}
@@ -444,8 +479,8 @@ const DatetimePicker = ({
             <TimePicker
               selectedDate={selectedDate}
               onChange={handleDateChange}
-              minDate={minDate}
-              maxDate={maxDate}
+              minDate={ensureDate(minDate)}
+              maxDate={ensureDate(maxDate)}
             />
           </div>
           <div className="flex justify-end gap-2 border-t p-4">
