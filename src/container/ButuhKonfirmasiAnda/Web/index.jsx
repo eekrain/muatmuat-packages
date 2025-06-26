@@ -1,14 +1,18 @@
-"use client";
-
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
-import Button from "@/components/Button/Button";
+import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import Pagination from "@/components/Pagination/Pagination";
 import PesananTable from "@/components/Table/PesananTable";
 
-const DaftarPesananWeb = () => {
+const ButuhKonfirmasiAndaWeb = () => {
+  const breadcrumbData = [
+    { name: "Daftar Pesanan", href: "/daftarpesanan" },
+    { name: "Butuh Konfirmasi Anda" },
+  ];
+
+  const router = useRouter();
+
   const [tempSearch, setTempSearch] = useState("");
   const [queryParams, setQueryParams] = useState({
     page: 1,
@@ -92,69 +96,31 @@ const DaftarPesananWeb = () => {
   const hasOrders = orders.length > 0;
 
   return (
-    <>
-      <main className="flex justify-center px-10 py-8">
-        <div className="mx-auto flex max-w-[1280px] flex-col">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <h1 className="text-[20px] font-bold leading-[120%] text-neutral-900">
-              Daftar Pesanan
-            </h1>
-            <Button
-              variant="muattrans-primary-secondary"
-              className="w-[202px]"
-              iconRight="/icons/chevron-down.svg"
-            >
-              Semua Periode
-            </Button>
-          </div>
-
-          {true ? (
-            <div className="mt-6 flex h-14 items-center gap-x-3 rounded-xl bg-secondary-100 px-6 py-4">
-              <IconComponent
-                className="icon-stroke-warning-900"
-                src="/icons/warning24.svg"
-                size="medium"
-              />
-              <div className="flex items-center gap-x-1 text-[12px] font-semibold leading-[14.4px] text-neutral-900">
-                <span>Terdapat pesanan yang membutuhkan konfirmasi</span>
-                <Link
-                  className="text-primary-700"
-                  href="/daftarpesanan/butuhkonfirmasianda"
-                >
-                  Lihat Pesanan
-                </Link>
-              </div>
-            </div>
-          ) : null}
-
-          <PesananTable
-            queryParams={queryParams}
-            onChangeQueryParams={handleChangeQueryParams}
-            tempSearch={tempSearch}
-            setTempSearch={setTempSearch}
-            orders={orders}
-            hasOrders={hasOrders}
+    <main className="flex justify-center px-10 py-8">
+      <div className="mx-auto flex max-w-[1280px] flex-col gap-y-6">
+        <BreadCrumb className="mb-0" data={breadcrumbData} />
+        <div className="flex h-8 items-center gap-x-3">
+          <IconComponent
+            onClick={() => router.back()}
+            src="/icons/arrow-left24.svg"
+            size="medium"
           />
-
-          {/* Pagination */}
-          {hasOrders ? (
-            <div className="mt-4 flex items-center justify-between">
-              <Pagination
-                currentPage={queryParams.page}
-                totalPages={2}
-                perPage={queryParams.limit}
-                onPageChange={(value) => handleChangeQueryParams("page", value)}
-                onPerPageChange={(value) =>
-                  handleChangeQueryParams("limit", value)
-                }
-              />
-            </div>
-          ) : null}
+          <h1 className="text-[20px] font-bold leading-[24px] text-neutral-900">
+            Butuh Konfirmasi Anda
+          </h1>
         </div>
-      </main>
-    </>
+        <PesananTable
+          queryParams={queryParams}
+          onChangeQueryParams={handleChangeQueryParams}
+          tempSearch={tempSearch}
+          setTempSearch={setTempSearch}
+          orders={orders}
+          hasOrders={hasOrders}
+          searchOnly={true}
+        />
+      </div>
+    </main>
   );
 };
 
-export default DaftarPesananWeb;
+export default ButuhKonfirmasiAndaWeb;

@@ -8,7 +8,10 @@ import {
   ResponsiveRoute,
 } from "@/lib/responsive-navigation";
 import { dynamicScreen } from "@/lib/utils/dynamic-screen";
-import { useSewaArmadaActions } from "@/store/forms/sewaArmadaStore";
+import {
+  useSewaArmadaActions,
+  useSewaArmadaStore,
+} from "@/store/forms/sewaArmadaStore";
 import { useLoadingAction } from "@/store/loadingStore";
 
 // Import the default screen without dynamic import
@@ -73,14 +76,20 @@ const SewaArmadaResponsive = ({ cargoTypes, cargoCategories }) => {
   // useEffect(() => {
   //   navigation.replace("/JenisCarrier");
   // }, []);
+  const orderType = useSewaArmadaStore((state) => state.orderType);
   const { setOrderType } = useSewaArmadaActions();
   const { setIsGlobalLoading } = useLoadingAction();
 
   useEffect(() => {
-    setOrderType("INSTANT");
     setIsGlobalLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (!orderType) {
+      setOrderType("INSTANT");
+    }
+  }, [orderType]);
 
   return (
     <ResponsiveProvider>

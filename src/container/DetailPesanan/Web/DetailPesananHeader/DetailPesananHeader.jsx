@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import Button from "@/components/Button/Button";
@@ -105,6 +106,7 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
     },
   ];
 
+  const router = useRouter();
   const [isDocumentReceivedModalOpen, setIsDocumentReceivedModalOpen] =
     useState(false);
   const [isReorderFleetModalOpen, setIsReorderFleetModalOpen] = useState(false);
@@ -120,7 +122,7 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
     if (id) {
       alert("Pesan ulang");
     } else {
-      alert("Pesan Baru");
+      router.push("/sewaarmada");
     }
     setIsReorderFleetModalOpen(false);
   };
