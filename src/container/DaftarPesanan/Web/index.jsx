@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Fragment, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Button from "@/components/Button/Button";
@@ -10,8 +10,8 @@ import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import Pagination from "@/components/Pagination/Pagination";
-import DocumentReceivedModal from "@/container/DetailPesanan/Web/DetailPesananHeader/DocumentReceivedModal";
 import MuatBongkarModal from "@/container/DetailPesanan/Web/RingkasanPesanan/MuatBongkarModal";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -19,12 +19,46 @@ import { cn } from "@/lib/utils";
 const DaftarPesananWeb = () => {
   const router = useRouter();
 
-  const [activeTab, setActiveTab] = useState("Semua");
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [tempSearch, setTempSearch] = useState("");
+  const [queryParams, setQueryParams] = useState({
+    page: 1,
+    limit: 10,
+    search: "",
+    status: "Semua",
+    sort: "",
+    order: "",
+  });
 
+  // Transform state into query string using useMemo
+  const queryString = useMemo(() => {
+    const params = new URLSearchParams();
+
+    // Only add parameters with valid values
+    if (queryParams.page && queryParams.page > 0) {
+      params.append("page", queryParams.page);
+    }
+    if (queryParams.limit && queryParams.limit > 0) {
+      params.append("limit", queryParams.limit);
+    }
+    if (queryParams.search) {
+      params.append("search", queryParams.search);
+    }
+    if (queryParams.status) {
+      params.append("status", queryParams.status);
+    }
+    if (queryParams.sort) {
+      params.append("sort", queryParams.sort);
+    }
+    if (queryParams.order) {
+      params.append("order", queryParams.order);
+    }
+
+    return params.toString();
+  }, [queryParams]);
+  console.log("query", queryString);
   const [isDocumentReceivedModalOpen, setIsDocumentReceivedModalOpen] =
     useState(false);
+  const [isReorderFleetModalOpen, setIsReorderFleetModalOpen] = useState(false);
   const [isLokasiMuatBongkarModalOpen, setIsLokasiMuatBongkarModalOpen] =
     useState(false);
 
@@ -108,11 +142,66 @@ const DaftarPesananWeb = () => {
     },
   ];
 
+  const handleChangeQueryParams = (field, value) =>
+    setQueryParams((prevState) => ({ ...prevState, [field]: value }));
+
   const handleReceiveDocument = () => {
     // Hit API /base_url/v1/orders/{orderId}/document-received
     alert("Hit API /base_url/v1/orders/{orderId}/document-received");
     setIsDocumentReceivedModalOpen(false);
     toast.success("Pesanan berhasil diselesaikan");
+  };
+
+  const handleReorderFleet = (id) => {
+    if (id) {
+      alert("Pesan ulang");
+    } else {
+      alert("Pesan Baru");
+    }
+    setIsReorderFleetModalOpen(false);
+  };
+
+  const handleSearch = (e) => {
+    if (e.key === "Enter") {
+      handleChangeQueryParams("search", tempSearch);
+    }
+  };
+
+  const handleClearSearch = () => {
+    handleChangeQueryParams("search", "");
+    setTempSearch("");
+  };
+
+  // Generic function to handle sorting for any column
+  const handleSort = (columnName) => {
+    // If sort is empty or not the current column, set to current column and order to desc
+    if (queryParams.sort !== columnName) {
+      handleChangeQueryParams("sort", columnName);
+      handleChangeQueryParams("order", "desc");
+    }
+    // If sort is the current column and order is desc, change to asc
+    else if (queryParams.sort === columnName && queryParams.order === "desc") {
+      handleChangeQueryParams("order", "asc");
+    }
+    // If sort is the current column and order is asc, reset sort and order
+    else {
+      handleChangeQueryParams("sort", "");
+      handleChangeQueryParams("order", "");
+    }
+  };
+
+  // Handlers for specific columns
+  const handleKodePesananSort = () => handleSort("invoice");
+  const handleTanggalMuatSort = () => handleSort("loadTimeStart");
+
+  // Function to get the appropriate sort icon based on current sort state
+  const getSortIcon = (columnName) => {
+    if (queryParams.sort === columnName) {
+      return queryParams.order === "desc"
+        ? "/icons/sort-descending16.svg"
+        : "/icons/sort-ascending16.svg";
+    }
+    return "/icons/sorting16.svg";
   };
 
   const hasOrders = pesananData.length > 0;
@@ -145,7 +234,18 @@ const DaftarPesananWeb = () => {
                     className="gap-0"
                     appearance={{ containerClassName: "w-[262px]" }}
                     placeholder="Cari Pesanan"
-                    icon={{ left: "/icons/search16.svg" }}
+                    icon={{
+                      left: "/icons/search16.svg",
+                      right: tempSearch ? (
+                        <IconComponent
+                          src="/icons/silang16.svg"
+                          onClick={handleClearSearch}
+                        />
+                      ) : null,
+                    }}
+                    value={tempSearch}
+                    onChange={({ target: { value } }) => setTempSearch(value)}
+                    onKeyUp={handleSearch}
                   />
                   {/* <Button
                   variant="muattrans-primary-secondary"
@@ -159,13 +259,13 @@ const DaftarPesananWeb = () => {
                   <span className="text-[12px] font-bold leading-[14.4px] text-neutral-900">
                     Tampilkan:
                   </span>
-                  {tabs.map((tab) => (
+                  {tabs.map((tab, key) => (
                     <div
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
+                      key={key}
+                      onClick={() => handleChangeQueryParams("status", tab.id)}
                       className={cn(
                         "cursor-pointer rounded-full px-3 py-[6px] text-[10px] font-semibold",
-                        activeTab === tab.id
+                        queryParams.status === tab.id
                           ? "border border-primary-700 bg-[#E2F2FF] text-primary-700"
                           : "bg-[#F1F1F1] text-neutral-900"
                       )}
@@ -186,8 +286,13 @@ const DaftarPesananWeb = () => {
                           <div className="flex items-center gap-x-2">
                             <span>Kode Pesanan</span>
                             <IconComponent
-                              src="/icons/sorting16.svg"
-                              onClick={() => {}}
+                              src={getSortIcon("invoice")}
+                              onClick={handleKodePesananSort}
+                              className={
+                                queryParams.sort === "invoice"
+                                  ? "icon-blue"
+                                  : ""
+                              }
                             />
                           </div>
                         </th>
@@ -195,8 +300,13 @@ const DaftarPesananWeb = () => {
                           <div className="flex items-center gap-x-2">
                             <span>Tanggal Muat</span>
                             <IconComponent
-                              src="/icons/sorting16.svg"
-                              onClick={() => {}}
+                              src={getSortIcon("loadTimeStart")}
+                              onClick={handleTanggalMuatSort}
+                              className={
+                                queryParams.sort === "loadTimeStart"
+                                  ? "icon-blue"
+                                  : ""
+                              }
                             />
                           </div>
                         </th>
@@ -342,6 +452,9 @@ const DaftarPesananWeb = () => {
                                   <Button
                                     variant="muatparts-primary"
                                     className="w-full"
+                                    onClick={() => {
+                                      setIsReorderFleetModalOpen(true);
+                                    }}
                                   >
                                     Pesan Ulang
                                   </Button>
@@ -431,11 +544,13 @@ const DaftarPesananWeb = () => {
           {hasOrders ? (
             <div className="mt-4 flex items-center justify-between">
               <Pagination
-                currentPage={page}
+                currentPage={queryParams.page}
                 totalPages={2}
-                perPage={pageSize}
-                onPageChange={(value) => setPage(value)}
-                onPerPageChange={(value) => setPageSize(value)}
+                perPage={queryParams.limit}
+                onPageChange={(value) => handleChangeQueryParams("page", value)}
+                onPerPageChange={(value) =>
+                  handleChangeQueryParams("limit", value)
+                }
               />
             </div>
           ) : null}
@@ -443,10 +558,40 @@ const DaftarPesananWeb = () => {
       </main>
 
       {/* Modal Konfirmasi Dokumen Diterima */}
-      <DocumentReceivedModal
+      <ConfirmationModal
         isOpen={isDocumentReceivedModalOpen}
         setIsOpen={setIsDocumentReceivedModalOpen}
-        onReceiveDocument={handleReceiveDocument}
+        title={{
+          text: "Informasi",
+        }}
+        description={{
+          text: 'Klik "Sudah", jika kamu sudah menerima bukti dokumen untuk menyelesaikan pesanan.',
+        }}
+        cancel={{
+          text: "Belum",
+        }}
+        confirm={{
+          text: "Sudah",
+          onClick: handleReceiveDocument,
+        }}
+      />
+
+      {/* Modal Pesan Ulang */}
+      <ConfirmationModal
+        isOpen={isReorderFleetModalOpen}
+        setIsOpen={setIsReorderFleetModalOpen}
+        description={{
+          text: "Apakah kamu ingin menyalin pesanan ini untuk digunakan kembali atau membuat pesanan baru dengan detail yang berbeda?",
+          className: "leading-[16.8px]",
+        }}
+        cancel={{
+          text: "Pesan Baru",
+          onClick: () => handleReorderFleet(),
+        }}
+        confirm={{
+          text: "Pesan Ulang",
+          onClick: () => handleReorderFleet(1),
+        }}
       />
 
       {/* Modal Lokasi Muat dan Bongkar */}

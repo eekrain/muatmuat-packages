@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import {
   Modal,
   ModalContent,
@@ -9,7 +10,6 @@ import {
   ModalTrigger,
 } from "@/components/Modal/Modal";
 import Slider from "@/components/Slider/Slider";
-import DocumentReceivedModal from "@/container/DetailPesanan/Web/DetailPesananHeader/DocumentReceivedModal";
 import DriverRatingModal from "@/container/DetailPesanan/Web/DetailPesananHeader/DriverRatingModal";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
@@ -107,12 +107,22 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
 
   const [isDocumentReceivedModalOpen, setIsDocumentReceivedModalOpen] =
     useState(false);
+  const [isReorderFleetModalOpen, setIsReorderFleetModalOpen] = useState(false);
   const [isDriverRatingModalOpen, setIsDriverRatingModalOpen] = useState(false);
 
   const handleReceiveDocument = () => {
     // Hit API /base_url/v1/orders/{orderId}/document-received
     alert("Hit API /base_url/v1/orders/{orderId}/document-received");
     setIsDocumentReceivedModalOpen(false);
+  };
+
+  const handleReorderFleet = (id) => {
+    if (id) {
+      alert("Pesan ulang");
+    } else {
+      alert("Pesan Baru");
+    }
+    setIsReorderFleetModalOpen(false);
   };
 
   // Check if all drivers have been reviewed
@@ -162,7 +172,7 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
           <Button
             variant="muatparts-primary-secondary"
             className="h-8"
-            onClick={() => {}}
+            onClick={() => setIsReorderFleetModalOpen(true)}
             type="button"
           >
             Pesan Ulang
@@ -192,10 +202,40 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
       </div>
 
       {/* Modal Konfirmasi Dokumen Diterima */}
-      <DocumentReceivedModal
+      <ConfirmationModal
         isOpen={isDocumentReceivedModalOpen}
         setIsOpen={setIsDocumentReceivedModalOpen}
-        onReceiveDocument={handleReceiveDocument}
+        title={{
+          text: "Informasi",
+        }}
+        description={{
+          text: 'Klik "Sudah", jika kamu sudah menerima bukti dokumen untuk menyelesaikan pesanan.',
+        }}
+        cancel={{
+          text: "Belum",
+        }}
+        confirm={{
+          text: "Sudah",
+          onClick: handleReceiveDocument,
+        }}
+      />
+
+      {/* Modal Pesan Ulang */}
+      <ConfirmationModal
+        isOpen={isReorderFleetModalOpen}
+        setIsOpen={setIsReorderFleetModalOpen}
+        description={{
+          text: "Apakah kamu ingin menyalin pesanan ini untuk digunakan kembali atau membuat pesanan baru dengan detail yang berbeda?",
+          className: "leading-[16.8px]",
+        }}
+        cancel={{
+          text: "Pesan Baru",
+          onClick: () => handleReorderFleet(),
+        }}
+        confirm={{
+          text: "Pesan Ulang",
+          onClick: () => handleReorderFleet(1),
+        }}
       />
 
       <DriverRatingModal
