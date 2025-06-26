@@ -51,6 +51,7 @@ export const LocationProvider = ({ children }) => {
     dontTriggerPostalCodeModal,
     setDontTriggerPostalCodeModal,
     setIsDropdownSearchOpen,
+    setTempLocation,
   });
   const postalCode = usePostalCode({
     setIsModalPostalCodeOpen,

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
 // Utility for combining classNames
-import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import * as v from "valibot";
 
 import Button from "@/components/Button/Button";
@@ -107,12 +107,6 @@ export const InformasiMuatanModal = ({
     formState: { errors },
     setValue,
   } = formMethods;
-
-  const values = useWatch({
-    control,
-    name: "informasiMuatan.0",
-  });
-  console.log("🚀 ~ values:", values);
 
   const { fields, append, remove } = useFieldArray({
     control,

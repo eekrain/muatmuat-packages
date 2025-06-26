@@ -13,6 +13,7 @@ export const MapContainer = ({
   textLabel,
   draggableMarker = true,
   onPositionChange = () => {},
+  markerIcon = "/icons/marker-lokasi-muat.svg",
 }) => {
   const [map, setMap] = useState(null);
   const [infoWindow, setInfoWindow] = useState(null);
@@ -169,7 +170,7 @@ export const MapContainer = ({
           draggable={!viewOnly && draggableMarker}
           onDragEnd={handleMarkerDragEnd}
           icon={{
-            url: "/img/marker-kuning.png",
+            url: markerIcon,
             scaledSize: new window.google.maps.Size(45, 58),
             anchor: new window.google.maps.Point(22.5, 29),
           }}
