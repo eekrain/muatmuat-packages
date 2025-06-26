@@ -21,9 +21,14 @@ const apiResultPaymentData = {
 
 export const getOrderPaymentData = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
+
   const result = apiResultPaymentData;
   return result.Data;
+
+  // const result = await fetcherMuatrans.get(`v1/orders/${orderId}/payment`);
+
+  // return result?.data?.Data || null;
 };
 
 export const useGetOrderPaymentData = (orderId) =>
-  useSWR(orderId ? `order-payment/${orderId}` : null, getOrderPaymentData);
+  useSWR(`order-payment/${orderId}`, getOrderPaymentData);

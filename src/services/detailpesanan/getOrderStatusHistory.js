@@ -87,12 +87,17 @@ const apiResultOrderStatusHistory = {
 
 export const getOrderStatusHistory = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
+
   const result = apiResultOrderStatusHistory;
+
   return result.Data;
+
+  // const result = await fetcherMuatrans.get(
+  //   `v1/orders/${orderId}/status-history`
+  // );
+
+  // return result?.data?.Data || null;
 };
 
 export const useGetOrderStatusHistory = (orderId) =>
-  useSWR(
-    orderId ? `order-status-history/${orderId}` : null,
-    getOrderStatusHistory
-  );
+  useSWR(`order-status-history/${orderId}`, getOrderStatusHistory);

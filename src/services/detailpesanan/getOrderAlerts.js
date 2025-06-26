@@ -1,10 +1,12 @@
+import { fetcherMuatrans } from "@/lib/axios";
+
 // GET /api/v1/orders/{orderId}/alerts
 const apiResult = {
-  message: {
+  Message: {
     code: 200,
     text: "Success",
   },
-  data: {
+  Data: {
     alerts: [
       {
         type: "DELIVERY_DELAY",
@@ -14,14 +16,18 @@ const apiResult = {
       },
     ],
   },
-  type: "ORDER_ALERTS",
+  Type: "ORDER_ALERTS",
 };
 
 export const getOrderAlerts = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
-  const result = apiResult;
-  return result.data;
+  // const result = apiResult;
+  // return result.data;
+
+  const result = await fetcherMuatrans.get(`v1/orders/${orderId}/alerts`);
+
+  return result?.data?.Data || [];
 };
 
 export const useGetOrderAlerts = (orderId) =>
-  useSWR(orderId ? `order-alerts/${orderId}` : null, getOrderAlerts);
+  useSWR(`order-alerts/${orderId}`, getOrderAlerts);

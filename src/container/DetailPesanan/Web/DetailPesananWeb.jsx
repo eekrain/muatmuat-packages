@@ -30,103 +30,86 @@ const DetailPesananWeb = () => {
   }, [isLoadingDetailPesanan]);
 
   return (
-    <div className="flex justify-center pt-8">
-      <div className="mx-auto w-[1280px] px-10">
-        <div className="flex flex-col gap-y-6">
-          <div className="flex items-center justify-between">
-            <BreadCrumb className="!mb-0" data={breadCrumbData} />
-          </div>
-
-          <DetailPesananHeader
-            dataStatusPesanan={dataDetailPesanan?.dataStatusPesanan}
-            orderCode={dataDetailPesanan?.orderCode || "INV/MT25AA001"}
-            driverInfo={{
-              name: "Noel Gallagher",
-              id: "AE 666 LBA",
-            }}
-            statusLabel="Dokumen Sedang Disiapkan"
-          />
-
-          <div className="flex gap-x-4">
-            <div className="flex flex-1 flex-col gap-y-4">
-              {dataDetailPesanan?.dataStatusPesanan && (
-                <StatusPesanan
-                  dataStatusPesanan={dataDetailPesanan.dataStatusPesanan}
-                  currentStatus="Dokumen Sedang Disiapkan"
-                  statusList={[
-                    { label: "Pesanan Terkonfirmasi", isCompleted: true },
-                    { label: "Proses Muat", isCompleted: true },
-                    { label: "Proses Bongkar", isCompleted: true },
-                    {
-                      label: "Dokumen Sedang Disiapkan",
-                      isCompleted: true,
-                      isCurrent: true,
-                    },
-                    { label: "Selesai", isCompleted: false },
-                  ]}
-                />
-              )}
-
-              {dataDetailPesanan?.dataRingkasanPesanan && (
-                <RingkasanPesanan
-                  dataRingkasanPesanan={dataDetailPesanan.dataRingkasanPesanan}
-                  useHalalLogistik={true}
-                  vehicleInfo={{
-                    type: "Box - Colt Diesel Engkel",
-                    quantity: "1 Unit",
-                  }}
-                />
-              )}
-
-              {dataDetailPesanan?.dataDetailPIC && (
-                <DetailPIC dataDetailPIC={dataDetailPesanan?.dataDetailPIC} />
-              )}
+    <>
+      <div className="flex justify-center py-8">
+        <div className="mx-auto w-[1280px] px-10">
+          <div className="flex flex-col gap-y-6">
+            <div className="flex items-center justify-between">
+              <BreadCrumb className="!mb-0" data={breadCrumbData} />
             </div>
 
-            <div className="flex w-[360px] flex-col gap-y-4">
-              {dataDetailPesanan?.dataRingkasanPembayaran && (
-                <RingkasanPembayaran
-                  dataRingkasanPembayaran={
-                    dataDetailPesanan.dataRingkasanPembayaran
-                  }
-                  paymentInfo={{
-                    waktuPembayaran: "06 Jun 2024 19:00 WIB",
-                    opsiPembayaran: "BCA Virtual Account",
-                    biayaJasaAngkut: {
-                      nominal: "Rp950.000",
-                      unit: "(1 Unit)",
-                    },
-                    biayaAsuransi: {
-                      nominal: "Rp0",
-                      unit: "(1 Unit)",
-                    },
-                    biayaLayananTambahan: [
-                      {
-                        label: "Nominal Kirim Buku Fisik Penerimaan Barang",
-                        nominal: "Rp150.000",
-                      },
-                      {
-                        label: "Nominal Bantuan Tambahan",
-                        nominal: "Rp105.000",
-                      },
-                    ],
-                    total: "Rp1.077",
-                  }}
-                />
-              )}
+            <DetailPesananHeader
+              dataStatusPesanan={dataDetailPesanan?.dataStatusPesanan}
+              orderCode={dataDetailPesanan?.orderCode || "INV/MT25AA001"}
+              driverInfo={{
+                name: "Noel Gallagher",
+                id: "AE 666 LBA",
+              }}
+              statusLabel="Dokumen Sedang Disiapkan"
+            />
 
-              {dataDetailPesanan?.dataPaymentInstruction && (
-                <PaymentInstruction
-                  dataPaymentInstruction={
-                    dataDetailPesanan.dataPaymentInstruction
-                  }
-                />
-              )}
+            <div className="flex gap-x-4">
+              <div className="flex flex-1 flex-col gap-y-4">
+                {dataDetailPesanan?.dataStatusPesanan && (
+                  <StatusPesanan
+                    dataStatusPesanan={dataDetailPesanan.dataStatusPesanan}
+                    currentStatus="Dokumen Sedang Disiapkan"
+                    statusList={[
+                      { label: "Pesanan Terkonfirmasi", isCompleted: true },
+                      { label: "Proses Muat", isCompleted: true },
+                      { label: "Proses Bongkar", isCompleted: true },
+                      {
+                        label: "Dokumen Sedang Disiapkan",
+                        isCompleted: true,
+                        isCurrent: true,
+                      },
+                      { label: "Selesai", isCompleted: false },
+                    ]}
+                  />
+                )}
+
+                {dataDetailPesanan?.dataRingkasanPesanan && (
+                  <RingkasanPesanan
+                    dataRingkasanPesanan={
+                      dataDetailPesanan.dataRingkasanPesanan
+                    }
+                    useHalalLogistik={true}
+                    vehicleInfo={{
+                      type: "Box - Colt Diesel Engkel",
+                      quantity: "1 Unit",
+                    }}
+                  />
+                )}
+
+                {dataDetailPesanan?.dataDetailPIC && (
+                  <DetailPIC dataDetailPIC={dataDetailPesanan?.dataDetailPIC} />
+                )}
+              </div>
+
+              <div className="flex w-[360px] flex-col gap-y-4">
+                {dataDetailPesanan?.dataRingkasanPembayaran && (
+                  <RingkasanPembayaran
+                    dataRingkasanPembayaran={
+                      dataDetailPesanan.dataRingkasanPembayaran
+                    }
+                  />
+                )}
+
+                {dataDetailPesanan?.dataPaymentInstruction && (
+                  <PaymentInstruction
+                    dataPaymentInstruction={
+                      dataDetailPesanan.dataPaymentInstruction
+                    }
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+
+      <pre>{JSON.stringify(dataDetailPesanan, null, 2)}</pre>
+    </>
   );
 };
 

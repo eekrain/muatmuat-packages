@@ -1,6 +1,7 @@
 import { addMinutes } from "date-fns";
 import useSWR from "swr";
 
+import { fetcherMuatrans } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { normalizeDetailPesananOrderDetail } from "@/lib/normalizers/detailpesanan";
 
@@ -215,7 +216,6 @@ const apiResultOrderDetail = {
 
 const fetcher = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
-  await new Promise((resolve) => setTimeout(resolve, 1000));
 
   const [
     dataOrderDetail,
@@ -224,15 +224,15 @@ const fetcher = async (cacheKey) => {
     dataAdditionalServices,
     dataOrderAlerts,
   ] = await Promise.all([
-    apiResultOrderDetail,
-    getOrderStatusHistory(orderId),
-    getOrderPaymentData(orderId),
-    getAdditionalServices(orderId),
-    getOrderAlerts(orderId),
+    fetcherMuatrans.get(`/v1/orders/${orderId}`),
+    getOrderStatusHistory(cacheKey),
+    getOrderPaymentData(cacheKey),
+    getAdditionalServices(cacheKey),
+    getOrderAlerts(cacheKey),
   ]);
 
   const data = normalizeDetailPesananOrderDetail({
-    dataOrderDetail: dataOrderDetail.Data,
+    dataOrderDetail: dataOrderDetail.data.Data,
     dataOrderStatusHistory: dataOrderStatusHistory,
     dataPayment: dataPayment,
     dataAlerts: dataOrderAlerts,
@@ -243,4 +243,4 @@ const fetcher = async (cacheKey) => {
 };
 
 export const useGetDetailPesananData = (orderId) =>
-  useSWR(orderId ? `detailPesanan/${orderId}` : null, fetcher);
+  useSWR(`detailPesanan/${orderId}`, fetcher);
