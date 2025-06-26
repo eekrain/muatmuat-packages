@@ -202,15 +202,49 @@ export const JenisArmada = () => {
         return []; // Default coordinates set to 0
       };
 
-      // Get load time from startDate and endDate
+      // Get load time from startDate and endDate, preserving the exact time
       const getLoadTimes = () => {
-        const now = new Date().toISOString();
-        const result = {
-          loadTimeStart: loadTimeStart || now,
+        const now = new Date();
+
+        // Helper function to format date to ISO string with Z (UTC) format
+        // while preserving the exact time values (not adjusting for timezone)
+        const formatToISOPreserveTime = (date) => {
+          if (!date) return now.toISOString();
+
+          try {
+            // Ensure we're working with a Date object
+            const dateObj = date instanceof Date ? date : new Date(date);
+
+            // Check if the date is valid
+            if (isNaN(dateObj.getTime())) {
+              console.error("Invalid date:", date);
+              return now.toISOString();
+            }
+
+            // Format the date manually to preserve time
+            const year = dateObj.getFullYear();
+            const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+            const day = String(dateObj.getDate()).padStart(2, "0");
+            const hours = String(dateObj.getHours()).padStart(2, "0");
+            const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+            const seconds = String(dateObj.getSeconds()).padStart(2, "0");
+
+            // Create ISO string with Z suffix (indicating UTC) but with local time values
+            return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}Z`;
+          } catch (error) {
+            console.error("Error formatting date:", error);
+            return now.toISOString();
+          }
         };
-        if (showRangeOption) {
-          result.loadTimeEnd = loadTimeEnd || now;
+
+        const result = {
+          loadTimeStart: formatToISOPreserveTime(loadTimeStart),
+        };
+
+        if (showRangeOption && loadTimeEnd) {
+          result.loadTimeEnd = formatToISOPreserveTime(loadTimeEnd);
         }
+
         return result;
       };
 

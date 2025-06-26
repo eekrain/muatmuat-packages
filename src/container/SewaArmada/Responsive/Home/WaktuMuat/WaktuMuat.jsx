@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 
 import { format } from "date-fns";
@@ -13,7 +15,6 @@ import DatetimePicker from "@/components/DatetimePicker/DatetimePicker";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
 import usePrevious from "@/hooks/use-previous";
-import { getNowTimezone } from "@/lib/utils/dateTime";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -21,10 +22,10 @@ import {
 
 const WaktuMuatBottomsheet = () => {
   const dateFormat = "dd MMM yyyy HH:mm";
-  const timezone = {
-    id: "Asia/Jakarta",
-    offset: "+07:00",
-  };
+
+  // Use current date as minDate instead of getNowTimezone
+  const minDate = new Date();
+
   const orderType = useSewaArmadaStore((state) => state.orderType);
   const loadTimeStart = useSewaArmadaStore(
     (state) => state.formValues.loadTimeStart
@@ -125,6 +126,20 @@ const WaktuMuatBottomsheet = () => {
     setOrderType(bottomsheetFormValues.orderType);
     setIsBottomsheetOpen(false);
   };
+
+  // Helper function to safely format dates
+  const formatDate = (date) => {
+    try {
+      if (!date) return null;
+      const dateObj = new Date(date);
+      if (isNaN(dateObj.getTime())) return null;
+      return format(dateObj, dateFormat);
+    } catch (e) {
+      console.error("Error formatting date:", e);
+      return null;
+    }
+  };
+
   return (
     <BottomSheet open={isBottomsheetOpen} onOpenChange={setIsBottomsheetOpen}>
       <div className="flex flex-col gap-y-3">
@@ -135,7 +150,7 @@ const WaktuMuatBottomsheet = () => {
           <IconComponent src="/icons/calendar16.svg" />
           <span className="text-[14px] font-semibold leading-[15.4px]">
             {loadTimeStart ? (
-              <span className="text-neutral-900">{`${format(loadTimeStart, dateFormat)} WIB`}</span>
+              <span className="text-neutral-900">{`${formatDate(loadTimeStart)} WIB`}</span>
             ) : (
               <span className="text-neutral-600">
                 {"Pilih Tanggal & Waktu Muat"}
@@ -155,7 +170,7 @@ const WaktuMuatBottomsheet = () => {
               <IconComponent src="/icons/calendar16.svg" />
               <span className="text-[14px] font-semibold leading-[15.4px]">
                 {loadTimeEnd ? (
-                  <span className="text-neutral-900">{`${format(loadTimeEnd, dateFormat)} WIB`}</span>
+                  <span className="text-neutral-900">{`${formatDate(loadTimeEnd)} WIB`}</span>
                 ) : (
                   <span className="text-neutral-600">
                     {"Pilih Tanggal & Waktu Muat"}
@@ -220,7 +235,7 @@ const WaktuMuatBottomsheet = () => {
               placeholder="Pilih Tanggal & Waktu Muat"
               status={bottomsheetFormErrors.loadTimeStart ? "error" : null}
               className="w-full"
-              minDate={getNowTimezone(timezone)}
+              minDate={minDate}
             />
             {bottomsheetFormErrors.loadTimeStart ? (
               <span className="text-[12px] font-medium leading-[13.2px] text-error-400">
@@ -242,10 +257,10 @@ const WaktuMuatBottomsheet = () => {
                     handleChangeBottomsheetFormValues("loadTimeEnd", date)
                   }
                   placeholder="Pilih Tanggal & Waktu Muat"
-                  disabled={!bottomsheetFormErrors.loadTimeStart}
+                  disabled={!bottomsheetFormValues.loadTimeStart}
                   status={bottomsheetFormErrors.loadTimeEnd ? "error" : null}
                   className="w-full"
-                  minDate={getNowTimezone(timezone)}
+                  minDate={bottomsheetFormValues.loadTimeStart || minDate}
                 />
                 {bottomsheetFormErrors.loadTimeEnd ? (
                   <span className="text-[12px] font-medium leading-[13.2px] text-error-400">
