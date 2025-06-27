@@ -10,6 +10,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import MuatBongkarModal from "@/container/DetailPesanan/Web/RingkasanPesanan/MuatBongkarModal";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
@@ -20,49 +21,10 @@ const PesananTable = ({
   setTempSearch,
   hasOrders,
   orders,
+  isOrdersLoading,
   searchOnly = false,
+  countByStatus,
 }) => {
-  const tabs = [
-    { id: "Semua", label: "Semua" },
-    { id: "Pembayaran", label: "Menunggu Pembayaran (5)" },
-    { id: "Pelunasan", label: "Menunggu Pelunasan (5)" },
-    { id: "Dokumen", label: "Proses Pengiriman Dokumen (5)" },
-  ];
-
-  const dummyLokasiMuatBongkarData = [
-    {
-      fullAddress:
-        "Jl. Diponegoro No. 45, Gunungsari, Kecamatan Gubeng, Surabaya",
-      // isPickup: true,
-      index: 0,
-      isBullet: true,
-    },
-    // {
-    //   fullAddress:
-    //     "Jl. Diponegoro No. 45, Gunungsari, Kecamatan Gubeng, Surabaya",
-    //   isPickup: true,
-    //   index: 0,
-    // },
-    // {
-    //   fullAddress:
-    //     "Jl. Diponegoro No. 45, Gunungsari, Kecamatan Gubeng, Surabaya",
-    //   isPickup: true,
-    //   index: 1,
-    // },
-    {
-      fullAddress:
-        "Jl. Diponegoro No. 45, Gunungsari, Kecamatan Gubeng, Surabaya",
-      isPickup: false,
-      index: 0,
-    },
-    {
-      fullAddress:
-        "Jl. Diponegoro No. 45, Gunungsari, Kecamatan Gubeng, Surabaya",
-      isPickup: false,
-      index: 1,
-    },
-  ];
-
   const router = useRouter();
 
   const [isDocumentReceivedModalOpen, setIsDocumentReceivedModalOpen] =
@@ -70,6 +32,26 @@ const PesananTable = ({
   const [isReorderFleetModalOpen, setIsReorderFleetModalOpen] = useState(false);
   const [isLokasiMuatBongkarModalOpen, setIsLokasiMuatBongkarModalOpen] =
     useState(false);
+  const [selectedLocations, setSelectedLocations] = useState([]);
+
+  const tabs = useShallowMemo(
+    () => [
+      { id: "Semua", label: "Semua" },
+      {
+        id: "Pembayaran",
+        label: `Menunggu Pembayaran (${countByStatus?.waitingPayment ?? 0})`,
+      },
+      {
+        id: "Pelunasan",
+        label: `Menunggu Pelunasan (${countByStatus?.awaitingSettlement ?? 0})`,
+      },
+      {
+        id: "Dokumen",
+        label: `Proses Pengiriman Dokumen (${countByStatus?.documentProcess ?? 0})`,
+      },
+    ],
+    [countByStatus]
+  );
 
   const handleSearch = (e) => {
     if (e.key === "Enter") {
@@ -91,6 +73,7 @@ const PesananTable = ({
     }
     return "/icons/sorting16.svg";
   };
+
   // Generic function to handle sorting for any column
   const handleSort = (columnName) => {
     // If sort is empty or not the current column, set to current column and order to desc
@@ -129,6 +112,37 @@ const PesananTable = ({
     setIsReorderFleetModalOpen(false);
   };
 
+  const openLocationModal = (order) => {
+    // Prepare locations data from API response
+    const locationData = [];
+
+    // Add pickup locations
+    if (order.locations?.pickup) {
+      order.locations.pickup.forEach((loc, index) => {
+        locationData.push({
+          fullAddress: loc.fullAddress,
+          isPickup: true,
+          index: index,
+          isBullet: index === 0 && order.locations.pickup.length === 1,
+        });
+      });
+    }
+
+    // Add dropoff locations
+    if (order.locations?.dropoff) {
+      order.locations.dropoff.forEach((loc, index) => {
+        locationData.push({
+          fullAddress: loc.fullAddress,
+          isPickup: false,
+          index: index,
+        });
+      });
+    }
+
+    setSelectedLocations(locationData);
+    setIsLokasiMuatBongkarModalOpen(true);
+  };
+
   return (
     <>
       <Card className="shadow-muat mt-6 h-auto w-[1232px] border-none">
@@ -153,13 +167,6 @@ const PesananTable = ({
                 onChange={({ target: { value } }) => setTempSearch(value)}
                 onKeyUp={handleSearch}
               />
-              {/* <Button
-                  variant="muattrans-primary-secondary"
-                  className="w-[104px]"
-                  iconRight="/icons/filter16.svg"
-                >
-                  Filter
-                </Button> */}
             </div>
             {searchOnly ? null : (
               <div className="flex items-center gap-x-3">
@@ -185,7 +192,9 @@ const PesananTable = ({
           </div>
 
           {/* Table Component with proper structure */}
-          {hasOrders ? (
+          {isOrdersLoading ? (
+            <div className="flex min-h-[358px] w-full animate-pulse bg-neutral-200"></div>
+          ) : hasOrders ? (
             <div className="w-full overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
@@ -234,7 +243,7 @@ const PesananTable = ({
                       {/* Main row - conditional border based on whether it has a warning */}
                       <tr
                         className={
-                          !order.hasWarning
+                          !order.paymentDeadline
                             ? "border-b border-neutral-400"
                             : "border-b-0"
                         }
@@ -242,14 +251,35 @@ const PesananTable = ({
                         {/* Kode Pesanan */}
                         <td className="w-[156px] px-6 pb-4 pt-5 align-top">
                           <span className="text-[12px] font-medium text-neutral-900">
-                            {order.id}
+                            {order.invoice}
                           </span>
                         </td>
 
                         {/* Tanggal Muat */}
                         <td className="w-[156px] pb-4 pl-0 pr-6 pt-5 align-top">
                           <span className="text-[12px] font-medium text-neutral-900">
-                            {order.tanggalMuat}
+                            {new Date(order.loadTimeStart).toLocaleDateString(
+                              "id-ID",
+                              {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}{" "}
+                            WIB s/d{" "}
+                            {new Date(order.loadTimeEnd).toLocaleDateString(
+                              "id-ID",
+                              {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}{" "}
+                            WIB
                           </span>
                         </td>
 
@@ -262,7 +292,7 @@ const PesananTable = ({
                                 <div className="h-[6px] w-[6px] rounded-full bg-[#461B02]"></div>
                               </div>
                               <span className="text-[10px] font-semibold text-neutral-900">
-                                {order.lokasi[0].nama}
+                                {order.locations?.pickup[0]?.city || "N/A"}
                               </span>
                             </div>
                             <div className="flex items-center gap-3">
@@ -270,17 +300,19 @@ const PesananTable = ({
                                 <div className="h-[6px] w-[6px] rounded-full bg-white"></div>
                               </div>
                               <span className="text-[10px] font-semibold text-neutral-900">
-                                {order.lokasi[1].nama}
+                                {order.locations?.dropoff[0]?.city || "N/A"}
                               </span>
                             </div>
-                            <button
-                              onClick={() =>
-                                setIsLokasiMuatBongkarModalOpen(true)
-                              }
-                              className="text-[12px] font-medium text-primary-700"
-                            >
-                              Lihat Lokasi Lainnya
-                            </button>
+                            {/* Only show "Lihat Lokasi Lainnya" if there are multiple pickup or dropoff locations */}
+                            {(order.locations?.hasMultiplePickup ||
+                              order.locations?.hasMultipleDropoff) && (
+                              <button
+                                onClick={() => openLocationModal(order)}
+                                className="text-[12px] font-medium text-primary-700"
+                              >
+                                Lihat Lokasi Lainnya
+                              </button>
+                            )}
                           </div>
                         </td>
 
@@ -289,7 +321,7 @@ const PesananTable = ({
                           <div className="flex gap-2">
                             <div className="h-12 w-12 overflow-hidden rounded bg-neutral-50">
                               <ImageComponent
-                                src={order.armada.image}
+                                src="/img/truck.png"
                                 width={48}
                                 height={48}
                                 alt="Truck image"
@@ -297,14 +329,14 @@ const PesananTable = ({
                             </div>
                             <div className="flex flex-col gap-2">
                               <span className="text-[12px] font-bold text-neutral-900">
-                                {order.armada.nama}
+                                {order.vehicle?.truckTypeName || "N/A"}
                               </span>
                               <div className="flex items-center gap-1">
                                 <span className="text-[10px] font-medium text-neutral-600">
                                   Carrier :
                                 </span>
                                 <span className="text-[10px] font-medium text-neutral-900">
-                                  {order.armada.carrier}
+                                  {order.vehicle?.carrierName || "N/A"}
                                 </span>
                               </div>
                               <div className="flex items-center gap-2">
@@ -316,7 +348,7 @@ const PesananTable = ({
                                     className="text-[#461B02]"
                                   />
                                   <span className="text-[10px] font-medium text-neutral-900">
-                                    {order.armada.unit} Unit
+                                    {order.vehicle?.truckCount || 0} Unit
                                   </span>
                                 </div>
                                 <div className="h-[2px] w-[2px] rounded-full bg-neutral-600"></div>
@@ -328,7 +360,7 @@ const PesananTable = ({
                                     className="text-[#461B02]"
                                   />
                                   <span className="text-[10px] font-medium text-neutral-900">
-                                    {order.armada.kapasitas}
+                                    2.500 kg
                                   </span>
                                 </div>
                               </div>
@@ -340,13 +372,14 @@ const PesananTable = ({
                         <td className="w-[232px] pb-4 pl-0 pr-6 pt-5 align-top">
                           <BadgeStatusPesanan
                             variant={
-                              order.status === "Menunggu Pembayaran"
+                              order.statusInfo?.[0]?.statusCode ===
+                              "WAITING_PAYMENT"
                                 ? "warning"
                                 : "info"
                             }
                             className="w-fit"
                           >
-                            {order.status}
+                            {order.statusInfo?.[0]?.statusLabel || "N/A"}
                           </BadgeStatusPesanan>
                         </td>
 
@@ -354,7 +387,8 @@ const PesananTable = ({
                         <td className="w-[174px] pb-4 pl-0 pr-6 pt-5 align-top">
                           <div className="flex flex-col gap-y-3">
                             {/* Conditional button based on status */}
-                            {order.status === "Menunggu Pembayaran" ? (
+                            {order.statusInfo?.[0]?.statusCode ===
+                            "WAITING_PAYMENT" ? (
                               <Button
                                 variant="muatparts-primary"
                                 className="w-full"
@@ -364,27 +398,31 @@ const PesananTable = ({
                               >
                                 Pesan Ulang
                               </Button>
-                            ) : order.status === "Proses Pengiriman Dokumen" ? (
+                            ) : order.statusInfo?.[0]?.statusCode ===
+                              "DOCUMENT_PROCESSING" ? (
                               <Button
-                                onClick={() => {
-                                  setIsDocumentReceivedModalOpen(true);
-                                }}
+                                onClick={() =>
+                                  setIsDocumentReceivedModalOpen(true)
+                                }
                                 variant="muatparts-primary"
                                 className="w-full"
                               >
                                 Selesaikan Pesanan
                               </Button>
-                            ) : (
+                            ) : !order.hasReview ? (
                               <Button
                                 variant="muatparts-primary"
                                 className="w-full"
                               >
                                 Beri Ulasan
                               </Button>
-                            )}
+                            ) : null}
                             <Button
                               variant="muatparts-primary-secondary"
                               className="w-full"
+                              onClick={() =>
+                                router.push(`/pesanan/${order.orderId}`)
+                              }
                             >
                               Detail
                             </Button>
@@ -392,26 +430,37 @@ const PesananTable = ({
                         </td>
                       </tr>
 
-                      {/* Conditional Alert Row - Only shown if the pesanan has a warning */}
-                      {order.hasWarning && (
-                        <tr className="border-b border-neutral-400">
-                          <td colSpan={6} className="px-6 pb-4">
-                            <div className="flex h-12 items-center gap-x-3 rounded-xl bg-secondary-100 px-4">
-                              <IconComponent
-                                className="icon-stroke-warning-900"
-                                src="/icons/warning24.svg"
-                                size="medium"
-                              />
-                              <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
-                                {"Lakukan pembayaran sebelum "}
-                                <span className="font-bold">
-                                  {order.alertMessage}
+                      {/* Conditional Alert Row - Only shown if the pesanan has a payment deadline */}
+                      {order.paymentDeadline &&
+                        order.statusInfo?.[0]?.statusCode ===
+                          "WAITING_PAYMENT" && (
+                          <tr className="border-b border-neutral-400">
+                            <td colSpan={6} className="px-6 pb-4">
+                              <div className="flex h-12 items-center gap-x-3 rounded-xl bg-secondary-100 px-4">
+                                <IconComponent
+                                  className="icon-stroke-warning-900"
+                                  src="/icons/warning24.svg"
+                                  size="medium"
+                                />
+                                <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+                                  {"Lakukan pembayaran sebelum "}
+                                  <span className="font-bold">
+                                    {new Date(
+                                      order.paymentDeadline
+                                    ).toLocaleDateString("id-ID", {
+                                      day: "numeric",
+                                      month: "short",
+                                      year: "numeric",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}{" "}
+                                    WIB
+                                  </span>
                                 </span>
-                              </span>
-                            </div>
-                          </td>
-                        </tr>
-                      )}
+                              </div>
+                            </td>
+                          </tr>
+                        )}
                     </Fragment>
                   ))}
                 </tbody>
@@ -485,7 +534,7 @@ const PesananTable = ({
       <MuatBongkarModal
         isOpen={isLokasiMuatBongkarModalOpen}
         setIsOpen={setIsLokasiMuatBongkarModalOpen}
-        data={dummyLokasiMuatBongkarData}
+        data={selectedLocations}
         title="Lokasi"
       />
     </>
