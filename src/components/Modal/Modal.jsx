@@ -170,6 +170,25 @@ export const ModalTrigger = ({ children }) => {
 };
 
 /**
+ * @param {{ children: React.ReactNode }} props
+ */
+export const ModalClose = ({ children, onClick }) => {
+  const { close } = useModal();
+
+  return (
+    <div
+      className="cursor-pointer"
+      onClick={() => {
+        onClick?.();
+        close();
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+/**
  * @param {{ children: React.ReactNode, className?: string }} props
  */
 export const ModalContent = ({
@@ -196,24 +215,24 @@ export const ModalContent = ({
     // Delay to ensure all modals are mounted in the DOM
     const timeout = setTimeout(() => {
       const modals = Array.from(document.querySelectorAll(".modal-parent"));
-      // modals.forEach((modal, idx) => {
-      //   modal.classList.remove("invisible");
-      //   if (idx < modals.length - 1) {
-      //     modal.classList.add("invisible");
-      //   }
-      // });
+      modals.forEach((modal, idx) => {
+        modal.classList.remove("invisible");
+        if (idx < modals.length - 1) {
+          modal.classList.add("invisible");
+        }
+      });
     }, 10); // 10ms is usually enough
 
     // Cleanup: when this modal unmounts, re-check visibility
     return () => {
       clearTimeout(timeout);
       const modals = Array.from(document.querySelectorAll(".modal-parent"));
-      // modals.forEach((modal, idx) => {
-      //   modal.classList.remove("invisible");
-      //   if (idx < modals.length - 1) {
-      //     modal.classList.add("invisible");
-      //   }
-      // });
+      modals.forEach((modal, idx) => {
+        modal.classList.remove("invisible");
+        if (idx < modals.length - 1) {
+          modal.classList.add("invisible");
+        }
+      });
     };
   }, [isOpen]);
 
@@ -222,61 +241,65 @@ export const ModalContent = ({
   }
 
   return (
-    <Portal>
+    <Portal
+      className={cn(
+        "modal-parent fixed inset-0 z-50 flex items-center justify-center bg-black/25",
+        appearance.backgroudClassname
+      )}
+      onMouseDown={handleClickOutside}
+    >
+      {type === "lightbox" && (
+        <button
+          onClick={close}
+          className="absolute left-4 top-[55px] text-white"
+        >
+          <IconComponent
+            className="text-white"
+            src="/icons/close20.svg"
+            width={24}
+            height={24}
+          />
+        </button>
+      )}
+
       <div
-        className={cn(
-          "modal-parent fixed inset-0 z-50 flex items-center justify-center bg-black/25",
-          appearance.backgroudClassname
-        )}
-        onMouseDown={handleClickOutside}
+        ref={dialogRef}
+        className={cn("relative rounded-xl bg-neutral-50", className)}
       >
-        {type === "lightbox" && (
+        {withCloseButton && (
           <button
+            className={cn(
+              "absolute right-2 top-2 z-50 flex cursor-pointer items-center justify-center rounded-full bg-neutral-50",
+              appearance.closeButtonClassname
+            )}
             onClick={close}
-            className="absolute left-4 top-[55px] text-white"
           >
             <IconComponent
-              className="text-white"
+              className={iconClassnames[type] || iconClassnames.muattrans}
               src="/icons/close20.svg"
-              width={24}
-              height={24}
+              width={20}
+              height={20}
             />
           </button>
         )}
 
-        <div
-          ref={dialogRef}
-          className={cn("relative rounded-xl bg-neutral-50", className)}
-        >
-          {withCloseButton && (
-            <button
-              className={cn(
-                "absolute right-2 top-2 z-50 flex cursor-pointer items-center justify-center rounded-full bg-neutral-50",
-                appearance.closeButtonClassname
-              )}
-              onClick={close}
-            >
-              <IconComponent
-                className={iconClassnames[type] || iconClassnames.muattrans}
-                src="/icons/close20.svg"
-                width={20}
-                height={20}
-              />
-            </button>
-          )}
-          {children}
-        </div>
+        <div className="md:rounded-xl">{children}</div>
       </div>
     </Portal>
   );
 };
 
 const widthStyles = {
+  xl: "w-modal-xl",
   big: "w-modal-big",
   small: "w-modal-small",
 };
 /**
- * @param {{ children: React.ReactNode, className?: string }} props
+ * @param {{
+ *  type: "muattrans" | "muatparts",
+ *  size: "small" | "big" | "xl",
+ *  className?: string,
+ * }} props
  */
 export const ModalHeader = ({
   className,
@@ -284,12 +307,14 @@ export const ModalHeader = ({
   size = "small",
 }) => {
   return (
-    <img
-      src={`/img/${type}-header-${size}.png`}
-      height={70}
-      className={cn("w-f rounded-t-xl", widthStyles[size], className)}
-      alt="Modal Header"
-    />
+    <div className="overflow-hidden rounded-t-xl">
+      <img
+        src={`/img/${type}-header-${size}.png`}
+        height={70}
+        className={cn("rounded-t-xl", widthStyles[size], className)}
+        alt="Modal Header"
+      />
+    </div>
   );
 };
 

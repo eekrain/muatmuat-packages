@@ -5,6 +5,7 @@ import DefaultResponsiveLayout from "@/layout/ResponsiveLayout/DefaultResponsive
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
 import SearchBarResponsiveLayout from "@/layout/ResponsiveLayout/SearchBarResponsiveLayout";
 import {
+  ResponsiveProvider,
   ResponsiveRoute,
   useResponsiveNavigation,
 } from "@/lib/responsive-navigation";
@@ -85,7 +86,7 @@ const ExampleFormWithMenuLayout = () => {
 
 const ExampleResponsive = ({}) => {
   return (
-    <div>
+    <ResponsiveProvider>
       <ResponsiveRoute path="/" component={<ExampleDefaultLayout />} />
       <ResponsiveRoute path="/menu" component={<ResponsiveMenu />} />
       <ResponsiveRoute
@@ -97,7 +98,7 @@ const ExampleResponsive = ({}) => {
         path="/form-with-menu"
         component={<ExampleFormWithMenuLayout />}
       />
-    </div>
+    </ResponsiveProvider>
   );
 };
 

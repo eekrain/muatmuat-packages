@@ -1,7 +1,7 @@
 import Button from "@/components/Button/Button";
-import Checkbox from "@/components/Checkbox/Checkbox";
 import DropdownRadioBottomsheeet from "@/components/Dropdown/DropdownRadioBottomsheeet";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
+import Checkbox from "@/components/Form/Checkbox";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
 import Input from "@/components/Form/Input";

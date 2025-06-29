@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { differenceInSeconds } from "date-fns";
 
 export const useCountdown = ({ endingDate, isNeedCountdown }) => {
+  const [isCountdownFinished, setIsCountdownFinished] = useState(false);
   const [countdown, setCountdown] = useState("");
   const intervalRef = useRef();
 
@@ -15,6 +16,7 @@ export const useCountdown = ({ endingDate, isNeedCountdown }) => {
 
         if (diffInSeconds <= 0) {
           setCountdown("00:00");
+          setIsCountdownFinished(true);
           clearInterval(intervalRef.current);
           return;
         }
@@ -49,5 +51,5 @@ export const useCountdown = ({ endingDate, isNeedCountdown }) => {
     };
   }, [endingDate, isNeedCountdown]);
 
-  return { countdown };
+  return { countdown, isCountdownFinished };
 };

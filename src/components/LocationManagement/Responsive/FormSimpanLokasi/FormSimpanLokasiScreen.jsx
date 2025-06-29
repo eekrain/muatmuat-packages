@@ -1,8 +1,8 @@
 import { MapPin } from "lucide-react";
 
 import Button from "@/components/Button/Button";
-import Checkbox from "@/components/Checkbox/Checkbox";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
+import Checkbox from "@/components/Form/Checkbox";
 import { FormLabel } from "@/components/Form/Form";
 import Input from "@/components/Form/Input";
 import { useLocationContext } from "@/hooks/use-location/use-location";

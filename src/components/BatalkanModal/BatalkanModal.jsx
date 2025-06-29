@@ -1,135 +1,83 @@
-import { useState } from "react";
-
-import { useSWRHook, useSWRMutateHook } from "@/hooks/use-swr";
-import { fetcherMuatparts } from "@/lib/axios";
-import { toast } from "@/lib/toast";
-import useBatalkanPesanan from "@/store/zustand/batalkanPesanan";
+import { useEffect, useState } from "react";
 
 import Button from "../Button/Button";
 import Input from "../Form/Input";
 import { Modal, ModalContent, ModalHeader } from "../Modal/Modal";
 import RadioButton from "../Radio/RadioButton";
 
-const BatalkanModal = ({ open, onOpenChange, data }) => {
-  const [value, setValue] = useState();
-  const [reason, setReason] = useState("");
+const BatalkanModal = ({
+  open,
+  onOpenChange,
+  labelTitle = "Batalkan Pesanan",
+  cancelReasons,
+  errors,
+  onSubmit,
+}) => {
+  const [selectedReason, setSelectedReason] = useState(null);
 
-  const { data: dataOptionBatalkan } = useSWRHook(
-    "v1/muatparts/transaction/cancel_options"
-  );
+  const isOtherReason =
+    selectedReason === cancelReasons[cancelReasons.length - 1]?.value;
+  const [customReason, setCustomReason] = useState("");
 
-  const { data: swrSave, trigger: triggerSaveBatalkan } = useSWRMutateHook(
-    "v1/muatparts/orders/cancel"
-  );
-  const {
-    setModalBatal,
-    modalBatal,
-    validateReason,
-    setValidateReason,
-    activeReason,
-    setActiveReason,
-  } = useBatalkanPesanan();
-
-  const onSave = () => {
-    let orderID = data?.orderID;
-    let cancelOptionID = value;
-    if (activeReason && !reason) {
-      setValidateReason(true);
-      return;
+  useEffect(() => {
+    if (!isOtherReason) {
+      setCustomReason("");
     }
-
-    fetcherMuatparts
-      .post("v1/muatparts/orders/cancel", {
-        orderID,
-        cancelOptionID,
-        reason,
-      })
-      .then((res) => {
-        toast.success("Berhasil membatalkan pesanan");
-      });
-
-    // router.push("/daftarpesanan?tab=6");
-  };
+  }, [isOtherReason]);
 
   return (
     <Modal open={open} onOpenChange={onOpenChange} closeOnOutsideClick>
       <ModalContent className="w-modal-small">
-        <ModalHeader size="small" />
+        <ModalHeader type="muattrans" size="small" />
+        <div className="flex flex-col items-center justify-center gap-6 px-6 py-9">
+          {/* Title */}
+          <h2 className="max- w-full text-center text-[16px] font-bold leading-[19.2px] text-black">
+            {labelTitle}
+          </h2>
 
-        <div className="grid grid-cols-1 items-center gap-6 px-6 py-9">
-          <div className="flex flex-col items-center justify-center text-center text-[16px] font-[700] leading-[19.2px] text-[#000000]">
-            Pilih Alasan Pembatalan
+          {/* Radio Button Options */}
+          <div className="flex w-full flex-col items-start gap-4">
+            {cancelReasons.map((reason, index) => (
+              <div
+                key={reason.value}
+                className="flex w-full flex-col items-start gap-1"
+              >
+                <RadioButton
+                  name="cancel_reason"
+                  value={reason.value}
+                  checked={selectedReason === reason.value}
+                  onClick={() => {
+                    console.log("reason.value", reason.value);
+                    setSelectedReason(reason.value);
+                  }}
+                  label={reason.label}
+                />
+
+                {index === cancelReasons.length - 1 &&
+                  selectedReason ===
+                    cancelReasons[cancelReasons.length - 1]?.value && (
+                    <Input
+                      placeholder="Masukkan Alasan Pembatalan"
+                      className="w-full pl-[21px]"
+                      value={customReason}
+                      onChange={(e) => setCustomReason(e.target.value)}
+                      errorMessage={errors?.customReason}
+                    />
+                  )}
+              </div>
+            ))}
           </div>
 
-          <div className="flex flex-col gap-4">
-            {dataOptionBatalkan?.Data && dataOptionBatalkan?.Data.length > 0
-              ? dataOptionBatalkan?.Data?.map((item) => (
-                  <>
-                    <label className="flex cursor-pointer items-start gap-[2px]">
-                      <RadioButton
-                        name="option-batalkan"
-                        onClick={(e) => {
-                          if (item.value !== "Lainnya") {
-                            setActiveReason(false);
-                            setReason("");
-                          } else setActiveReason(true);
-                          setValue(e.value);
-                        }}
-                        value={item.id}
-                      />
-                      <div className="flex text-start">
-                        <div
-                          className={
-                            "flex flex-col gap-1 text-xs font-medium text-neutral-900"
-                          }
-                        >
-                          {item.value}
-                          {activeReason && item.value == "Lainnya" && (
-                            <>
-                              <Input
-                                maxLength="80"
-                                className="w-[312px]"
-                                changeEvent={(event) => {
-                                  setValidateReason(false);
-                                  setReason(event.target.value);
-                                }}
-                                supportiveText={{
-                                  title: `${
-                                    validateReason
-                                      ? "Alasan Pembatalan Wajib diisi"
-                                      : ""
-                                  }`,
-                                  desc: ` ${reason.length}/80`,
-                                }}
-                                status={`${validateReason ? "error" : ""}`}
-                                placeholder={"Masukkan alasan pembatalan"}
-                              />
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </label>
-                  </>
-                ))
-              : null}
-          </div>
-
-          <div className="flex justify-center gap-4">
-            <Button
-              onClick={() => onOpenChange(false)}
-              className="w-[112px]"
-              variant="muatparts-primary-secondary"
-            >
-              Batal
-            </Button>
-            <Button
-              onClick={onSave}
-              className="w-[112px]"
-              variant="muatparts-primary"
-            >
-              Simpan
-            </Button>
-          </div>
+          {/* Action Button */}
+          <Button
+            variant="muatparts-primary"
+            onClick={() =>
+              onSubmit({ selectedReason, isOtherReason, customReason })
+            }
+            className={"h-8 min-w-[112px]"}
+          >
+            Batalkan Pesanan
+          </Button>
         </div>
       </ModalContent>
     </Modal>

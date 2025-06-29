@@ -35,6 +35,7 @@
     "cropperjs": "^1.6.2",
     "date-fns": "^4.1.0",
     "fast-shallow-equal": "^1.0.0",
+    "input-otp": "^1.4.2",
     "lodash": "^4.17.21",
     "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.511.0",
@@ -52,6 +53,7 @@
     "sass": "^1.89.0",
     "swr": "^2.3.3",
     "tailwind-merge": "^3.3.0",
+    "tailwindcss-animate": "^1.0.7",
     "valibot": "^1.1.0",
     "xior": "^0.7.8",
     "zustand": "^5.0.5"

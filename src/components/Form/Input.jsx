@@ -1,5 +1,6 @@
 import { forwardRef } from "react";
 
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 import IconComponent from "../IconComponent/IconComponent";
@@ -61,6 +62,8 @@ const Input = forwardRef(
     },
     ref
   ) => {
+    const { t } = useTranslation();
+
     return (
       <div className={cn("flex w-full flex-col gap-y-2", className)}>
         <div
@@ -127,17 +130,19 @@ const Input = forwardRef(
             </span>
           )}
         </div>
-        <div className="flex w-full items-center">
-          <span className="text-xs font-medium text-error-400">
-            {errorMessage}
-          </span>
-
-          {supportiveText && (
-            <span className="ml-auto text-xs font-medium text-neutral-900">
-              {supportiveText}
+        {errorMessage || supportiveText ? (
+          <div className="flex w-full items-center">
+            <span className="text-xs font-medium text-error-400">
+              {t(errorMessage)}
             </span>
-          )}
-        </div>
+
+            {supportiveText && (
+              <span className="ml-auto text-xs font-medium text-neutral-900">
+                {supportiveText}
+              </span>
+            )}
+          </div>
+        ) : null}
       </div>
     );
   }

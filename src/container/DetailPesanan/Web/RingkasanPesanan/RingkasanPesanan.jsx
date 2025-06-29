@@ -154,6 +154,7 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
                     activeIndex={0}
                   >
                     <TimelineContentWithButtonDate
+                      className="pb-0"
                       title={
                         dataRingkasanPesanan?.route?.bongkar?.[0]
                           ?.fullAddress || ""

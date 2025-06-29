@@ -166,6 +166,7 @@ module.exports = {
       width: {
         "modal-small": "386px",
         "modal-big": "454px",
+        "modal-xl": "486px",
       },
       boxShadow: {
         button: "0 -4px 6px rgba(0, 0, 0, 0.1)",
@@ -181,12 +182,18 @@ module.exports = {
           "0%": { transform: "scale(1)", opacity: 1 },
           "100%": { transform: "scale(0.9)", opacity: 0 },
         },
+
+        "caret-blink": {
+          "0%,70%,100%": { opacity: "1" },
+          "20%,50%": { opacity: "0" },
+        },
       },
       animation: {
         enter: "enter 200ms ease-out",
         leave: "leave 150ms ease-in forwards",
+        "caret-blink": "caret-blink 1s ease-in-out infinite",
       },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 };

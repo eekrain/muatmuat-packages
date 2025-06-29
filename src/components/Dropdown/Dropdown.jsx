@@ -9,7 +9,7 @@ import DatePicker from "react-datepicker";
 
 import { useTranslation } from "@/hooks/use-translation";
 
-import Checkbox from "../Checkbox/Checkbox";
+import Checkbox from "../Form/Checkbox";
 import IconComponent from "../IconComponent/IconComponent";
 import style from "./Dropdown.module.scss";
 

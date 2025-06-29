@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import Checkbox from "@/components/Checkbox/Checkbox";
+import Checkbox from "@/components/Form/Checkbox";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 

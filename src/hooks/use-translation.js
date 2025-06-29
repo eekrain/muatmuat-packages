@@ -64,7 +64,6 @@ export const TranslationProvider = ({ children }) => {
     store,
     useShallow((s) => s.translation)
   );
-  const isTranslationsReady = useStore(store, (s) => s.isTranslationsReady);
 
   const t = useCallback(
     (key) => {
@@ -77,7 +76,7 @@ export const TranslationProvider = ({ children }) => {
 
   return (
     <TranslationContext.Provider value={{ ...store, t }}>
-      {isTranslationsReady && children}
+      {children}
     </TranslationContext.Provider>
   );
 };
@@ -95,6 +94,7 @@ export const useTranslation = () => {
   return {
     t: store.t,
     listLanguages,
+    isTranslationsReady: store.isTranslationsReady,
   };
 };
 

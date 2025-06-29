@@ -5,7 +5,6 @@ import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import { Alert } from "@/components/Badge/Alert";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import { BannerCarousel } from "@/components/BannerCarousel/BannerCarousel";
-import BatalkanModal from "@/components/BatalkanModal/BatalkanModal";
 import {
   BottomSheet,
   BottomSheetContent,
@@ -20,7 +19,6 @@ import Card, {
   CardHeader,
   ListContent,
 } from "@/components/Card/Card";
-import Checkbox from "@/components/Checkbox/Checkbox";
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import DatetimePicker from "@/components/DatetimePicker/DatetimePicker";
@@ -30,6 +28,7 @@ import DropdownRadioBottomsheeet from "@/components/Dropdown/DropdownRadioBottom
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import ExpandableTextArea from "@/components/ExpandableTextArea/ExpandableTextArea";
 import FileUpload from "@/components/FileUpload/FileUpload";
+import Checkbox from "@/components/Form/Checkbox";
 import { DimensionInput } from "@/components/Form/DimensionInput";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
@@ -53,7 +52,6 @@ import {
   ModalHeader,
   ModalTrigger,
 } from "@/components/Modal/Modal";
-import OtpRekeningWeb from "@/components/OtpRekeningWeb/OtpRekeningWeb";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import QuantityInput from "@/components/QuantityInput/QuantityInput";
 import RadioButton from "@/components/Radio/RadioButton";
@@ -69,6 +67,7 @@ import {
 } from "@/components/Timeline";
 import { TimelineField } from "@/components/Timeline/timeline-field";
 import ToogleButton from "@/components/ToogleButton/ToogleButton";
+import RequestOtp from "@/container/RequestOtp/RequestOtp";
 import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 
@@ -543,16 +542,7 @@ const ExampleWeb = () => {
 
       <div>
         <h1 className="mb-2 text-xl font-bold">OTP Rekening Web Example</h1>
-        <OtpRekeningWeb
-          notification={otpNotification}
-          onResendCode={() => {
-            setOtpNotification({
-              status: "success",
-              message: "Kode OTP telah dikirim ulang!",
-            });
-            setTimeout(() => setOtpNotification(null), 3000);
-          }}
-        />
+        <RequestOtp />
       </div>
     </div>
   );
@@ -925,11 +915,11 @@ const ButtonBottomsheetTooltipForm = () => {
                 Batalkan Modal
               </Button>
 
-              <BatalkanModal
+              {/* <BatalkanModal
                 open={batalkanModal}
                 onOpenChange={setBatalkanModal}
                 onConfirm={() => setBatalkanModal(false)}
-              />
+              /> */}
             </div>
           </div>
         </div>

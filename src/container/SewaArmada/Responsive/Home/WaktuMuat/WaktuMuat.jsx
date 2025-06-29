@@ -10,8 +10,8 @@ import {
   BottomSheetHeader,
 } from "@/components/Bottomsheet/Bottomsheet";
 import Button from "@/components/Button/Button";
-import Checkbox from "@/components/Checkbox/Checkbox";
 import DatetimePicker from "@/components/DatetimePicker/DatetimePicker";
+import Checkbox from "@/components/Form/Checkbox";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
 import usePrevious from "@/hooks/use-previous";

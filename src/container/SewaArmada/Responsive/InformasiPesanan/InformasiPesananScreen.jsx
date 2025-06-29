@@ -3,8 +3,8 @@
 import { Fragment } from "react";
 
 import Button from "@/components/Button/Button";
-import Checkbox from "@/components/Checkbox/Checkbox";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
+import Checkbox from "@/components/Form/Checkbox";
 import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
