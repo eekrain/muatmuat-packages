@@ -14,6 +14,7 @@ const DaftarPesananWeb = ({
   pagination,
   countByStatus,
   isOrdersLoading,
+  requiringConfirmationCount,
 }) => {
   const [tempSearch, setTempSearch] = useState("");
 
@@ -37,8 +38,12 @@ const DaftarPesananWeb = ({
             </Button>
           </div>
 
-          {/* Notification if confirmation needed */}
-          {true ? <NeedConfirmationWarning /> : null}
+          {requiringConfirmationCount &&
+          requiringConfirmationCount.hasConfirmationRequired > 0 ? (
+            <NeedConfirmationWarning
+              breakdown={requiringConfirmationCount.breakdown}
+            />
+          ) : null}
 
           <PesananTable
             queryParams={queryParams}

@@ -29,7 +29,11 @@ import { useSWRHook } from "@/hooks/use-swr";
 import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 import { useLoadingAction } from "@/store/loadingStore";
 
-export default function SewaArmadaWeb({ cargoTypes, cargoCategories }) {
+export default function SewaArmadaWeb({
+  cargoTypes,
+  cargoCategories,
+  requiringConfirmationCount,
+}) {
   const orderType = useSewaArmadaStore((state) => state.orderType);
 
   const { setIsGlobalLoading } = useLoadingAction();
@@ -56,9 +60,12 @@ export default function SewaArmadaWeb({ cargoTypes, cargoCategories }) {
         {/* Carousel Banner */}
         <BannerCarousel banners={banners} />
 
-        {/* Ganti pakek logic kalo ada yg perlu dikonfirmasi dari API /base_url/v1/orders/requiring-confirmation/count */}
-        {true ? (
-          <NeedConfirmationWarning className="mt-0 w-full max-w-[1200px]" />
+        {requiringConfirmationCount &&
+        requiringConfirmationCount.hasConfirmationRequired > 0 ? (
+          <NeedConfirmationWarning
+            className="mt-0 w-full max-w-[1200px]"
+            breakdown={requiringConfirmationCount.breakdown}
+          />
         ) : null}
 
         {/* Main Content */}

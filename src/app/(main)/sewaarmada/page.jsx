@@ -26,6 +26,9 @@ const Page = () => {
   );
   const { setField, setFormId, reset } = useSewaArmadaActions();
 
+  const { data: requiringConfirmationCountData } = useSWRHook(
+    "v1/orders/requiring-confirmation/count"
+  );
   // Fetch cargo types using SWR
   const { data: cargoTypesData } = useSWRHook("v1/orders/cargos/types");
   // Fetch cargo categories using SWR
@@ -33,6 +36,8 @@ const Page = () => {
     "v1/orders/cargos/categories"
   );
 
+  const requiringConfirmationCount =
+    requiringConfirmationCountData?.Data || null;
   // Extract cargo types from response
   const cargoTypes = cargoTypesData?.Data?.types || [];
   // Extract cargo categories from response
@@ -71,7 +76,11 @@ const Page = () => {
     );
 
   return (
-    <SewaArmadaWeb cargoTypes={cargoTypes} cargoCategories={cargoCategories} />
+    <SewaArmadaWeb
+      cargoTypes={cargoTypes}
+      cargoCategories={cargoCategories}
+      requiringConfirmationCount={requiringConfirmationCount}
+    />
   );
 };
 

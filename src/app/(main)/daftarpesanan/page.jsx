@@ -50,12 +50,18 @@ const Page = () => {
     return params.toString();
   }, [queryParams]);
   console.log("querystr", queryString);
+
+  const { data: requiringConfirmationCountData } = useSWRHook(
+    "v1/orders/requiring-confirmation/count"
+  );
   // Fetch orders data
   const { data: ordersData, isOrdersLoading } = useSWRHook(
     `v1/orders/list?${queryString}`
   );
   const { data: countByStatusData } = useSWRHook("v1/orders/count-by-status");
 
+  const requiringConfirmationCount =
+    requiringConfirmationCountData?.Data || null;
   const orders = ordersData?.Data?.orders || [];
   const countByStatus = countByStatusData?.Data?.statusCounts || {};
 
@@ -91,6 +97,7 @@ const Page = () => {
       pagination={pagination}
       countByStatus={countByStatus}
       isOrdersLoading={isOrdersLoading}
+      requiringConfirmationCount={requiringConfirmationCount}
     />
   );
 };
