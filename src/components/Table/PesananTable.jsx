@@ -11,6 +11,7 @@ import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import MuatBongkarModal from "@/container/DetailPesanan/Web/RingkasanPesanan/MuatBongkarModal";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
@@ -238,231 +239,272 @@ const PesananTable = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {orders.map((order, key) => (
-                    <Fragment key={key}>
-                      {/* Main row - conditional border based on whether it has a warning */}
-                      <tr
-                        className={
-                          !order.paymentDeadline
-                            ? "border-b border-neutral-400"
-                            : "border-b-0"
-                        }
-                      >
-                        {/* Kode Pesanan */}
-                        <td className="w-[156px] px-6 pb-4 pt-5 align-top">
-                          <span className="text-[12px] font-medium text-neutral-900">
-                            {order.invoice}
-                          </span>
-                        </td>
+                  {orders.map((order, key) => {
+                    // Convert OrderStatusEnum to an array of keys to determine the order
+                    const statusOrder = Object.keys(OrderStatusEnum);
 
-                        {/* Tanggal Muat */}
-                        <td className="w-[156px] pb-4 pl-0 pr-6 pt-5 align-top">
-                          <span className="text-[12px] font-medium text-neutral-900">
-                            {new Date(order.loadTimeStart).toLocaleDateString(
-                              "id-ID",
-                              {
-                                day: "numeric",
-                                month: "short",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              }
-                            )}{" "}
-                            WIB s/d{" "}
-                            {new Date(order.loadTimeEnd).toLocaleDateString(
-                              "id-ID",
-                              {
-                                day: "numeric",
-                                month: "short",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              }
-                            )}{" "}
-                            WIB
-                          </span>
-                        </td>
+                    // Sort the array based on the index in statusOrder
+                    const sortedArray = [...order.statusInfo].sort((a, b) => {
+                      const indexA = statusOrder.indexOf(a.statusCode);
+                      const indexB = statusOrder.indexOf(b.statusCode);
+                      return indexA - indexB;
+                    });
 
-                        {/* Lokasi */}
-                        <td className="w-[156px] pb-4 pl-0 pr-6 pt-5 align-top">
-                          <div className="relative flex flex-col gap-3">
-                            <div className="absolute bottom-0 left-2 top-5 h-[30px] w-0 border-l-[1.5px] border-dashed border-neutral-400"></div>
-                            <div className="flex items-center gap-3">
-                              <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#FFC217]">
-                                <div className="h-[6px] w-[6px] rounded-full bg-[#461B02]"></div>
-                              </div>
-                              <span className="text-[10px] font-semibold text-neutral-900">
-                                {order.locations?.pickup[0]?.city || "N/A"}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#461B02]">
-                                <div className="h-[6px] w-[6px] rounded-full bg-white"></div>
-                              </div>
-                              <span className="text-[10px] font-semibold text-neutral-900">
-                                {order.locations?.dropoff[0]?.city || "N/A"}
-                              </span>
-                            </div>
-                            {/* Only show "Lihat Lokasi Lainnya" if there are multiple pickup or dropoff locations */}
-                            {(order.locations?.hasMultiplePickup ||
-                              order.locations?.hasMultipleDropoff) && (
-                              <button
-                                onClick={() => openLocationModal(order)}
-                                className="text-[12px] font-medium text-primary-700"
-                              >
-                                Lihat Lokasi Lainnya
-                              </button>
-                            )}
-                          </div>
-                        </td>
+                    // Get the first item (earliest in the enum)
+                    const latestStatus = sortedArray[0];
+                    return (
+                      <Fragment key={key}>
+                        {/* Main row - conditional border based on whether it has a warning */}
+                        <tr
+                          className={
+                            !order.paymentDeadline
+                              ? "border-b border-neutral-400"
+                              : "border-b-0"
+                          }
+                        >
+                          {/* Kode Pesanan */}
+                          <td className="w-[156px] px-6 pb-4 pt-5 align-top">
+                            <span className="text-[12px] font-medium text-neutral-900">
+                              {order.invoice}
+                            </span>
+                          </td>
 
-                        {/* Armada */}
-                        <td className="w-[200px] pb-4 pl-0 pr-6 pt-5 align-top">
-                          <div className="flex gap-2">
-                            <div className="h-12 w-12 overflow-hidden rounded bg-neutral-50">
-                              <ImageComponent
-                                src="/img/truck.png"
-                                width={48}
-                                height={48}
-                                alt="Truck image"
-                              />
-                            </div>
-                            <div className="flex flex-col gap-2">
-                              <span className="text-[12px] font-bold text-neutral-900">
-                                {order.vehicle?.truckTypeName || "N/A"}
-                              </span>
-                              <div className="flex items-center gap-1">
-                                <span className="text-[10px] font-medium text-neutral-600">
-                                  Carrier :
-                                </span>
-                                <span className="text-[10px] font-medium text-neutral-900">
-                                  {order.vehicle?.carrierName || "N/A"}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <div className="flex items-center gap-1">
-                                  <IconComponent
-                                    className="icon-fill-muat-trans-secondary-900"
-                                    src="/icons/transporter14.svg"
-                                    width={14}
-                                    height={14}
-                                  />
-                                  <span className="text-[10px] font-medium text-neutral-900">
-                                    {order.vehicle?.truckCount || 0} Unit
-                                  </span>
-                                </div>
-                                <div className="h-[2px] w-[2px] rounded-full bg-neutral-600"></div>
-                                <div className="flex items-center gap-1">
-                                  <IconComponent
-                                    className="icon-fill-muat-trans-secondary-900"
-                                    src="/icons/estimasi-kapasitas14.svg"
-                                    width={14}
-                                    height={14}
-                                  />
-                                  <span className="text-[10px] font-medium text-neutral-900">
-                                    2.500 kg
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-
-                        {/* Status */}
-                        <td className="w-[232px] pb-4 pl-0 pr-6 pt-5 align-top">
-                          <BadgeStatusPesanan
-                            variant={
-                              order.statusInfo?.[0]?.statusCode ===
-                              "WAITING_PAYMENT"
-                                ? "warning"
-                                : "info"
-                            }
-                            className="w-fit"
-                          >
-                            {order.statusInfo?.[0]?.statusLabel || "N/A"}
-                          </BadgeStatusPesanan>
-                        </td>
-
-                        {/* Action Button */}
-                        <td className="w-[174px] pb-4 pl-0 pr-6 pt-5 align-top">
-                          <div className="flex flex-col gap-y-3">
-                            {/* Conditional button based on status */}
-                            {order.statusInfo?.[0]?.statusCode ===
-                            "WAITING_PAYMENT" ? (
-                              <Button
-                                variant="muatparts-primary"
-                                className="w-full"
-                                onClick={() => {
-                                  setIsReorderFleetModalOpen(true);
-                                }}
-                              >
-                                Pesan Ulang
-                              </Button>
-                            ) : order.statusInfo?.[0]?.statusCode ===
-                              "DOCUMENT_PROCESSING" ? (
-                              <Button
-                                onClick={() =>
-                                  setIsDocumentReceivedModalOpen(true)
+                          {/* Tanggal Muat */}
+                          <td className="w-[156px] pb-4 pl-0 pr-6 pt-5 align-top">
+                            <span className="text-[12px] font-medium text-neutral-900">
+                              {new Date(order.loadTimeStart).toLocaleDateString(
+                                "id-ID",
+                                {
+                                  day: "numeric",
+                                  month: "short",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
                                 }
-                                variant="muatparts-primary"
-                                className="w-full"
-                              >
-                                Selesaikan Pesanan
-                              </Button>
-                            ) : !order.hasReview ? (
-                              <Button
-                                variant="muatparts-primary"
-                                className="w-full"
-                              >
-                                Beri Ulasan
-                              </Button>
-                            ) : null}
-                            <Button
-                              variant="muatparts-primary-secondary"
-                              className="w-full"
-                              onClick={() =>
-                                router.push(`/pesanan/${order.orderId}`)
-                              }
-                            >
-                              Detail
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
+                              )}{" "}
+                              WIB s/d{" "}
+                              {new Date(order.loadTimeEnd).toLocaleDateString(
+                                "id-ID",
+                                {
+                                  day: "numeric",
+                                  month: "short",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                }
+                              )}{" "}
+                              WIB
+                            </span>
+                          </td>
 
-                      {/* Conditional Alert Row - Only shown if the pesanan has a payment deadline */}
-                      {order.paymentDeadline &&
-                        order.statusInfo?.[0]?.statusCode ===
-                          "WAITING_PAYMENT" && (
-                          <tr className="border-b border-neutral-400">
-                            <td colSpan={6} className="px-6 pb-4">
-                              <div className="flex h-12 items-center gap-x-3 rounded-xl bg-secondary-100 px-4">
-                                <IconComponent
-                                  className="icon-stroke-warning-900"
-                                  src="/icons/warning24.svg"
-                                  size="medium"
-                                />
-                                <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
-                                  {"Lakukan pembayaran sebelum "}
-                                  <span className="font-bold">
-                                    {new Date(
-                                      order.paymentDeadline
-                                    ).toLocaleDateString("id-ID", {
-                                      day: "numeric",
-                                      month: "short",
-                                      year: "numeric",
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                    })}{" "}
-                                    WIB
-                                  </span>
+                          {/* Lokasi */}
+                          <td className="w-[156px] pb-4 pl-0 pr-6 pt-5 align-top">
+                            <div className="relative flex flex-col gap-3">
+                              <div className="absolute bottom-0 left-2 top-5 h-[30px] w-0 border-l-[1.5px] border-dashed border-neutral-400"></div>
+                              <div className="flex items-center gap-3">
+                                <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#FFC217]">
+                                  <div className="h-[6px] w-[6px] rounded-full bg-[#461B02]"></div>
+                                </div>
+                                <span className="text-[10px] font-semibold text-neutral-900">
+                                  {order.locations?.pickup[0]?.city || "N/A"}
                                 </span>
                               </div>
-                            </td>
-                          </tr>
-                        )}
-                    </Fragment>
-                  ))}
+                              <div className="flex items-center gap-3">
+                                <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#461B02]">
+                                  <div className="h-[6px] w-[6px] rounded-full bg-white"></div>
+                                </div>
+                                <span className="text-[10px] font-semibold text-neutral-900">
+                                  {order.locations?.dropoff[0]?.city || "N/A"}
+                                </span>
+                              </div>
+                              {/* Only show "Lihat Lokasi Lainnya" if there are multiple pickup or dropoff locations */}
+                              {(order.locations?.hasMultiplePickup ||
+                                order.locations?.hasMultipleDropoff) && (
+                                <button
+                                  onClick={() => openLocationModal(order)}
+                                  className="text-[12px] font-medium text-primary-700"
+                                >
+                                  Lihat Lokasi Lainnya
+                                </button>
+                              )}
+                            </div>
+                          </td>
+
+                          {/* Armada */}
+                          <td className="w-[200px] pb-4 pl-0 pr-6 pt-5 align-top">
+                            <div className="flex gap-2">
+                              <div className="h-12 w-12 overflow-hidden rounded bg-neutral-50">
+                                <ImageComponent
+                                  src="/img/truck.png"
+                                  width={48}
+                                  height={48}
+                                  alt="Truck image"
+                                />
+                              </div>
+                              <div className="flex flex-col gap-2">
+                                <span className="text-[12px] font-bold text-neutral-900">
+                                  {order.vehicle?.truckTypeName || "N/A"}
+                                </span>
+                                <div className="flex items-center gap-1">
+                                  <span className="text-[10px] font-medium text-neutral-600">
+                                    Carrier :
+                                  </span>
+                                  <span className="text-[10px] font-medium text-neutral-900">
+                                    {order.vehicle?.carrierName || "N/A"}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <div className="flex items-center gap-1">
+                                    <IconComponent
+                                      className="icon-fill-muat-trans-secondary-900"
+                                      src="/icons/transporter14.svg"
+                                      width={14}
+                                      height={14}
+                                    />
+                                    <span className="text-[10px] font-medium text-neutral-900">
+                                      {order.vehicle?.truckCount || 0} Unit
+                                    </span>
+                                  </div>
+                                  <div className="h-[2px] w-[2px] rounded-full bg-neutral-600"></div>
+                                  <div className="flex items-center gap-1">
+                                    <IconComponent
+                                      className="icon-fill-muat-trans-secondary-900"
+                                      src="/icons/estimasi-kapasitas14.svg"
+                                      width={14}
+                                      height={14}
+                                    />
+                                    <span className="text-[10px] font-medium text-neutral-900">
+                                      2.500 kg
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+
+                          {/* Status */}
+                          <td className="w-[232px] pb-4 pl-0 pr-6 pt-5 align-top">
+                            <div className="flex flex-col gap-y-3">
+                              <BadgeStatusPesanan
+                                variant={
+                                  latestStatus ===
+                                    OrderStatusEnum.WAITING_PAYMENT_1 ||
+                                  latestStatus ===
+                                    OrderStatusEnum.WAITING_PAYMENT_2 ||
+                                  latestStatus ===
+                                    OrderStatusEnum.WAITING_REPAYMENT_1 ||
+                                  latestStatus ===
+                                    OrderStatusEnum.WAITING_REPAYMENT_2
+                                    ? "warning"
+                                    : latestStatus ===
+                                          OrderStatusEnum.CANCELED_BY_SHIPPER ||
+                                        latestStatus ===
+                                          OrderStatusEnum.CANCELED_BY_SYSTEM ||
+                                        latestStatus ===
+                                          OrderStatusEnum.CANCELED_BY_TRANSPORTER
+                                      ? "error"
+                                      : latestStatus ===
+                                          OrderStatusEnum.COMPLETED
+                                        ? "success"
+                                        : "primary"
+                                }
+                                className="w-fit"
+                              >
+                                {`${latestStatus?.statusLabel}${order.vehicle?.truckCount > 1 ? ` : ${order.vehicle?.truckCount} Unit` : ""}`}
+                              </BadgeStatusPesanan>
+                              {order.vehicle?.truckCount > 1 ? (
+                                <button className="self-start text-[12px] font-medium leading-[14.4px] text-primary-700">
+                                  Lihat Status Lainnya
+                                </button>
+                              ) : null}
+                            </div>
+                          </td>
+
+                          {/* Action Button */}
+                          <td className="w-[174px] pb-4 pl-0 pr-6 pt-5 align-top">
+                            <div className="flex flex-col gap-y-3">
+                              {/* Conditional button based on status */}
+                              {latestStatus === OrderStatusEnum.LOADING ||
+                              latestStatus ===
+                                OrderStatusEnum.PREPARE_DOCUMENT ||
+                              latestStatus === OrderStatusEnum.FLEET_CHANGE ? (
+                                <Button
+                                  variant="muatparts-primary"
+                                  className="w-full"
+                                  onClick={() => {
+                                    setIsReorderFleetModalOpen(true);
+                                  }}
+                                >
+                                  Pesan Ulang
+                                </Button>
+                              ) : latestStatus ===
+                                OrderStatusEnum.DOCUMENT_DELIVERY ? (
+                                <Button
+                                  onClick={() =>
+                                    setIsDocumentReceivedModalOpen(true)
+                                  }
+                                  variant="muatparts-primary"
+                                  className="w-full"
+                                >
+                                  Selesaikan Pesanan
+                                </Button>
+                              ) : latestStatus === OrderStatusEnum.COMPLETED ? (
+                                <Button
+                                  variant="muatparts-primary"
+                                  className="w-full"
+                                >
+                                  Beri Ulasan
+                                </Button>
+                              ) : null}
+                              <Button
+                                variant="muatparts-primary-secondary"
+                                className="w-full"
+                                onClick={() =>
+                                  router.push(
+                                    `/daftarpesanan/detailpesanan/${order.orderId}`
+                                  )
+                                }
+                              >
+                                Detail
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+
+                        {/* Conditional Alert Row - Only shown if the pesanan has a payment deadline */}
+                        {order.paymentDeadline &&
+                          order.statusInfo?.[0]?.statusCode ===
+                            "WAITING_PAYMENT" && (
+                            <tr className="border-b border-neutral-400">
+                              <td colSpan={6} className="px-6 pb-4">
+                                <div className="flex h-12 items-center gap-x-3 rounded-xl bg-secondary-100 px-4">
+                                  <IconComponent
+                                    className="icon-stroke-warning-900"
+                                    src="/icons/warning24.svg"
+                                    size="medium"
+                                  />
+                                  <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+                                    {"Lakukan pembayaran sebelum "}
+                                    <span className="font-bold">
+                                      {new Date(
+                                        order.paymentDeadline
+                                      ).toLocaleDateString("id-ID", {
+                                        day: "numeric",
+                                        month: "short",
+                                        year: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      })}{" "}
+                                      WIB
+                                    </span>
+                                  </span>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                      </Fragment>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

@@ -8,6 +8,7 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Input from "@/components/Input/Input";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
+import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useTranslation } from "@/hooks/use-translation";
 import { formatDateInput } from "@/lib/utils/dateFormat";
 
@@ -52,6 +53,10 @@ const DropdownPeriode = ({
     end_date: "",
   });
   const dropdownRef = useRef(null);
+
+  useShallowCompareEffect(() => {
+    setSelected(options[0]);
+  }, [options]);
 
   const handleSelect = (option, range) => {
     if (range) {

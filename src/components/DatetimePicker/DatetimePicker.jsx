@@ -441,7 +441,10 @@ const DatetimePicker = ({
           className={cn(
             "flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 px-3 hover:cursor-pointer",
             status === "error" ? "border-error-400" : "",
-            "hover:border-primary-700"
+            "hover:border-primary-700",
+            disabled
+              ? "bg-neutral-200 hover:cursor-not-allowed hover:border-neutral-600"
+              : ""
           )}
         >
           <ImageComponent src="/icons/calendar16.svg" width={16} height={16} />

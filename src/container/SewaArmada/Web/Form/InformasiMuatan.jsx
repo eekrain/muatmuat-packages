@@ -30,14 +30,14 @@ export const InformasiMuatan = () => {
           />
         ) : (
           <div
-            className="flex h-8 flex-1 cursor-pointer items-center rounded-md border border-neutral-600 bg-neutral-200 px-3"
+            className="flex h-8 flex-1 cursor-pointer items-center rounded-md border border-neutral-600 px-3"
             onClick={() =>
               handleFirstTime(() => setIsInformasiMuatanModalOpen(true))
             }
           >
-            <IconComponent src="/icons/lock.svg" width={16} height={16} />
+            <IconComponent src="/icons/muatan16.svg" />
             <span className="ml-2 text-xs font-medium text-neutral-600">
-              Isi informasi ini setelah mengisi jenis armada
+              Masukkan Informasi Muatan
             </span>
           </div>
         )}
