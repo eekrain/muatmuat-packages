@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import Checkbox from "@/components/Checkbox/Checkbox";
+import Checkbox from "@/components/Form/Checkbox";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { useAuth } from "@/hooks/use-auth";

@@ -1,7 +1,7 @@
 import { MapPin } from "lucide-react";
 
 import Button from "@/components/Button/Button";
-import Checkbox from "@/components/Checkbox/Checkbox";
+import Checkbox from "@/components/Form/Checkbox";
 import Input from "@/components/Form/Input";
 import { Select } from "@/components/Form/Select";
 import { MyTextArea } from "@/components/Form/TextArea";

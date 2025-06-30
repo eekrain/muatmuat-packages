@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 
 import Button from "@/components/Button/Button";
-import Checkbox from "@/components/Checkbox/Checkbox";
+import Checkbox from "@/components/Form/Checkbox";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useSWRHook } from "@/hooks/use-swr";

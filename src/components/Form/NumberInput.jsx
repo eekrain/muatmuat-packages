@@ -3,6 +3,7 @@ import { forwardRef, useCallback, useEffect, useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { NumericFormat } from "react-number-format";
 
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 /**
@@ -62,6 +63,7 @@ export const NumberInput = forwardRef(
     },
     ref
   ) => {
+    const { t } = useTranslation();
     const [value, setValue] = useState(controlledValue ?? defaultValue);
 
     const handleIncrement = useCallback(() => {
@@ -183,7 +185,7 @@ export const NumberInput = forwardRef(
         </div>
         {!hideErrorMessage && errorMessage && (
           <div className="flex items-center justify-between text-xs font-medium text-error-400">
-            <span>{errorMessage}</span>
+            <span>{t(errorMessage)}</span>
           </div>
         )}
       </div>

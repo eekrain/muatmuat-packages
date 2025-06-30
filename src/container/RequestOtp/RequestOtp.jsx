@@ -1,37 +1,109 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+
+import { isAfter } from "date-fns";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
+
 import Button from "@/components/Button/Button";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/Form/OtpInput";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import ImageComponent from "@/components/ImageComponent/ImageComponent";
+import { useCountdown } from "@/hooks/use-countdown";
+import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useTranslation } from "@/hooks/use-translation";
-import { useCustomRouter } from "@/lib/utils/custom-route";
-import { formatTime } from "@/lib/utils/timeUtils";
-import { otpInputZustand } from "@/store/zustand/otpInput";
-import { otpRekeningZustand } from "@/store/zustand/otpRekening";
+import { toast } from "@/lib/toast";
+import { cn } from "@/lib/utils";
+import {
+  useRequestOtpActions,
+  useRequestOtpStore,
+} from "@/store/forms/requestOtpStore";
+import { useLoadingAction } from "@/store/loadingStore";
 
-import { OtpInput } from "./OtpInput";
-import styles from "./OtpRekeningWeb.module.scss";
+const RequestOtp = ({ onVerifySuccess = () => {} }) => {
+  const router = useRouter();
+  const { t, isTranslationsReady } = useTranslation();
+  const [otp, setOtp] = useState("");
 
-const OtpRekeningWeb = ({ notification, onResendCode }) => {
-  const router = useCustomRouter();
-  const { email, telpon } = otpRekeningZustand();
-  const { isTimerActive, timeLeft } = otpInputZustand();
-  const { t } = useTranslation();
+  const { formValues, params } = useRequestOtpStore();
+  const { sendRequestOtp, verifyOtp } = useRequestOtpActions();
+
+  const { countdown, isCountdownFinished } = useCountdown({
+    endingDate: formValues?.expiresIn,
+    isNeedCountdown: Boolean(formValues?.expiresIn),
+  });
+
+  const { setIsGlobalLoading } = useLoadingAction();
+  useEffect(() => {
+    if (isTranslationsReady) setIsGlobalLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTranslationsReady]);
+
+  const [isReady, setIsReady] = useState(false);
+  useShallowCompareEffect(() => {
+    // This is to prevent the page to be accessed if there are no correct data
+    const timer = setTimeout(() => {
+      if (!formValues?.verificationMethod || !formValues?.verificationData) {
+        router.push("/");
+        return;
+      }
+      setIsReady(true);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [formValues]);
+
+  const handleRequestOtp = (formValues) => {
+    if (!formValues?.expiresIn || isAfter(Date.now(), formValues?.expiresIn)) {
+      sendRequestOtp().catch((error) => {
+        toast.error("Gagal meminta request OTP");
+      });
+    }
+  };
+
+  const hasFetchedOtp = useRef(false);
+  useShallowCompareEffect(() => {
+    if (!isReady) return;
+    if (hasFetchedOtp.current) return;
+    handleRequestOtp(formValues);
+    hasFetchedOtp.current = true;
+  }, [isReady, formValues]);
+
+  const [notification, setNotification] = useState(null);
+  useEffect(() => {
+    // Verify OTP if the OTP is 6 digits
+    if (otp.length === 6) {
+      setNotification(null);
+
+      verifyOtp(otp)
+        .then(() => {
+          router.push(params?.redirectUrl || "/daftarpesanan");
+        })
+        .catch((error) => {
+          setNotification({
+            status: "error",
+            message: error?.message,
+          });
+        });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [otp]);
 
   return (
     <div className="relative flex min-h-screen bg-primary-700">
       {/* Left meteor */}
       <div className="absolute left-0 top-0">
-        <ImageComponent
-          src="/img/meteor1.png"
-          alt="meteor1"
-          width={160}
-          height={160}
-        />
+        <img src="/img/meteor1.png" alt="meteor1" width={160} height={160} />
       </div>
       <div className="absolute left-[48px] top-[25px] z-[2]">
         <button
           onClick={() => router.push("/pengaturanmerchant/rekeningpencairan")}
         >
-          <ImageComponent
+          <img
             src="/img/arrow_left.png"
             alt="arrow-left"
             width={24}
@@ -46,13 +118,13 @@ const OtpRekeningWeb = ({ notification, onResendCode }) => {
           {/* Section 1: Logo and Tagline */}
           <div className="flex w-full flex-col items-center text-center text-neutral-50">
             <div className="relative w-[200px]">
-              <ImageComponent
+              <img
                 src="/img/muatmuat.png"
                 alt="Brand banner"
                 width={200}
                 height={40}
                 className="object-contain"
-                priority
+                loading="eager"
               />
             </div>
             <div className="mt-[6px] text-[12px] font-bold leading-[14.4px]">
@@ -61,23 +133,23 @@ const OtpRekeningWeb = ({ notification, onResendCode }) => {
           </div>
 
           {/* Section 2: Verification Image */}
-          {telpon ? (
-            <ImageComponent
+          {formValues?.verificationMethod === "whatsapp" ? (
+            <img
               src="/img/security.png"
               alt="security"
               width={108}
               height={108}
               className="object-contain"
-              priority
+              loading="eager"
             />
           ) : (
-            <ImageComponent
+            <img
               src="/img/email.png"
               alt="email"
               width={100}
               height={100}
               className="object-contain"
-              priority
+              loading="eager"
             />
           )}
 
@@ -92,16 +164,16 @@ const OtpRekeningWeb = ({ notification, onResendCode }) => {
             >
               <IconComponent
                 className={
-                  notification.status === "error" ? styles.icon_error : ""
+                  notification.status === "error" ? "text-[#F71717]" : ""
                 }
                 src={
                   notification.status === "error"
-                    ? "/icons/Info.svg"
+                    ? "/icons/info16.svg"
                     : "/icons/success-toast.svg"
                 }
               />
               <span className="text-[12px] font-semibold leading-[14.4px]">
-                {notification.message}
+                {t(notification.message)}
               </span>
             </div>
           ) : null}
@@ -109,7 +181,7 @@ const OtpRekeningWeb = ({ notification, onResendCode }) => {
           {/* Section 3: Main Form Content */}
           <div className="flex w-full flex-col items-center">
             {/* Email verification message */}
-            {telpon ? (
+            {formValues?.verificationMethod === "whatsapp" ? (
               <div className="max-w-[444px] text-center text-[16px] font-medium leading-[19.2px] text-neutral-50">
                 {t("descWhatsAppOTP")}
               </div>
@@ -124,10 +196,12 @@ const OtpRekeningWeb = ({ notification, onResendCode }) => {
               <div className="flex w-full flex-wrap items-center justify-center gap-6">
                 <div className="flex items-center gap-3">
                   <div className="text-[14px] font-bold leading-[16.8px] text-neutral-50">
-                    {`${telpon ? t("labelOTPPhoneNumber") : t("labelOtpIsSendToEmail")}`}
+                    {`${formValues?.verificationMethod === "whatsapp" ? t("labelOTPPhoneNumber") : t("labelOtpIsSendToEmail")}`}
                   </div>
                   <div className="max-w-[176px] truncate text-[14px] font-semibold leading-[16.8px] text-[#EBEBEB]">
-                    {telpon ? telpon.replace(/-/g, "") : email}
+                    {formValues?.verificationMethod === "whatsapp"
+                      ? formValues?.verificationData.replace(/-/g, "")
+                      : formValues?.verificationData}
                   </div>
                 </div>
               </div>
@@ -136,12 +210,26 @@ const OtpRekeningWeb = ({ notification, onResendCode }) => {
                 <label className="w-[102px] text-[14px] font-bold leading-[16.8px] text-neutral-50">
                   {t("labelEnterOTP")}
                 </label>
-                <OtpInput />
+                <InputOTP
+                  maxLength={6}
+                  value={otp}
+                  onChange={(value) => setOtp(value)}
+                  pattern={REGEXP_ONLY_DIGITS}
+                >
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
               </div>
             </div>
 
             {/* Warning message */}
-            {email ? (
+            {formValues?.verificationMethod === "email" ? (
               <div className="mt-6 max-w-[319px] rounded-md bg-[#FFF1A5] px-4 py-3 text-center text-[12px] font-medium leading-[14.4px] text-neutral-900">
                 {`${t("labelIfOtpNotFound")} `}
                 <span className="font-bold">{t("labelSpam")}</span>,{" "}
@@ -155,17 +243,24 @@ const OtpRekeningWeb = ({ notification, onResendCode }) => {
             {/* Timer message */}
             <div className="mt-6 text-center text-[16px] font-medium leading-[19.2px] text-neutral-50">
               {`${t("labelOtpCodeExpiredIn")} `}
-              <span className="font-bold">{formatTime(timeLeft)}</span>
+              <span className="font-bold">{countdown}</span>
             </div>
           </div>
 
           {/* Resend button */}
           <Button
-            variant={isTimerActive ? "secondary" : "muattrans-primary"}
+            variant={
+              isCountdownFinished
+                ? "muattrans-primary"
+                : "muatparts-primary-secondary"
+            }
             name="resend"
-            onClick={onResendCode}
-            disabled={isTimerActive}
-            className={`mt-[10px] flex h-8 w-full max-w-[319px] items-center ${isTimerActive ? "!bg-[#EBEBEB] !text-[#868686]" : "!bg-[#FFC217] !text-primary-700"} `}
+            onClick={() => handleRequestOtp(formValues)}
+            disabled={!isCountdownFinished}
+            className={cn(
+              "mt-[10px] flex h-8 w-full max-w-[319px] items-center !bg-[#EBEBEB] !text-[#868686]",
+              isCountdownFinished && "!bg-[#FFC217] !text-primary-700"
+            )}
           >
             {t("btnResend")}
           </Button>
@@ -174,15 +269,10 @@ const OtpRekeningWeb = ({ notification, onResendCode }) => {
 
       {/* Right meteor */}
       <div className="absolute bottom-[118px] right-[7px]">
-        <ImageComponent
-          src="/img/meteor2.png"
-          alt="meteor2"
-          width={160}
-          height={160}
-        />
+        <img src="/img/meteor2.png" alt="meteor2" width={160} height={160} />
       </div>
     </div>
   );
 };
 
-export default OtpRekeningWeb;
+export default RequestOtp;

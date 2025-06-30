@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import Button from "@/components/Button/Button";
-import Checkbox from "@/components/Checkbox/Checkbox";
+import Checkbox from "@/components/Form/Checkbox";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import Input from "@/components/Form/Input";

@@ -2,6 +2,7 @@
 import Button from "@/components/Button/Button";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
+import { ModalBatalkanPesanan } from "./ModalBatalkanPesanan";
 import { RingkasanPembayaranDefault } from "./RingkasanPembayaranDefault";
 import { RingkasanPembayaranPending } from "./RingkasanPembayaranPending";
 
@@ -35,14 +36,8 @@ export const RingkasanPembayaran = ({ dataRingkasanPembayaran }) => {
               Ubah Pesanan
             </Button>
           )}
-          <Button
-            variant="muattrans-error-secondary"
-            className="h-8 w-full"
-            onClick={() => {}}
-            type="button"
-          >
-            Batalkan Pesanan
-          </Button>
+
+          <ModalBatalkanPesanan />
         </div>
       )}
     </div>

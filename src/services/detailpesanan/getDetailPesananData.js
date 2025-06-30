@@ -214,6 +214,61 @@ const apiResultOrderDetail = {
   },
 };
 
+const tes = {
+  Message: { Code: 200, Text: "OK" },
+  Data: {
+    orders: [
+      {
+        orderId: "fdf71f98-4978-4e85-994e-0c5208e4ea0f",
+        invoice: "MT25AA006",
+        orderType: "INSTANT",
+        loadTimeStart: "2025-06-25T15:00:00.000Z",
+        loadTimeEnd: "",
+        locations: {
+          pickup: [
+            {
+              sequence: 1,
+              fullAddress: "Jl. Sudirman No. 123, Jakarta Pusat",
+              city: "Jakarta Pusat",
+            },
+          ],
+          dropoff: [
+            {
+              sequence: 1,
+              fullAddress: "Jl. Gatot Subroto No. 456, Jakarta Selatan",
+              city: "Jakarta Pusat",
+            },
+          ],
+          hasMultiplePickup: false,
+          hasMultipleDropoff: false,
+        },
+        vehicle: {
+          carrierName: "Box",
+          truckTypeName: "Cold Diesel Double",
+          truckCount: 1,
+        },
+        statusInfo: [
+          { statusLabel: "Mempersiapkan Armada", statusCode: "PREPARE_FLEET" },
+        ],
+        totalUnit: 1,
+        paymentDeadline: "",
+        requiresConfirmation: false,
+        isRefundProcessing: false,
+        createdAt: "2025-06-25T05:23:03.913Z",
+        hasReview: false,
+        additionalCost: 125000,
+      },
+    ],
+    pagination: {
+      currentPage: 1,
+      totalPages: 1,
+      totalItems: 1,
+      itemsPerPage: 10,
+    },
+  },
+  Type: "/v1/orders/list",
+};
+
 const fetcher = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
 
@@ -238,6 +293,7 @@ const fetcher = async (cacheKey) => {
     dataAlerts: dataOrderAlerts,
     dataAdditionalServices: dataAdditionalServices,
   });
+  console.log("🚀 ~ file: getDetailPesananData.js:290 ~ data:", data);
 
   return data;
 };

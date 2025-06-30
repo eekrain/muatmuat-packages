@@ -1,5 +1,6 @@
 import React, { useCallback, useRef, useState } from "react";
 
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 import { TagBubble } from "../Badge/TagBubble";
@@ -40,6 +41,7 @@ export const TagInput = ({
     inputClassName: "",
   },
 }) => {
+  const { t } = useTranslation();
   const [inputValue, setInputValue] = useState("");
   const [internalTags, setInternalTags] = useState(tags);
 
@@ -208,7 +210,7 @@ export const TagInput = ({
       </div>
 
       {errorMessage && (
-        <p className="mt-2 text-sm text-red-500">{errorMessage}</p>
+        <span className="mt-2 text-sm text-red-500">{t(errorMessage)}</span>
       )}
     </div>
   );

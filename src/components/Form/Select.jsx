@@ -5,6 +5,7 @@ import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { ChevronDownIcon } from "lucide-react";
 
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 import IconComponent from "../IconComponent/IconComponent";
@@ -46,13 +47,14 @@ export const Select = ({
   placeholder = "Select item...",
   notFoundText = "No options available",
   disabled = false,
-  className = "",
-  width = "w-full",
+  className = "w-full",
   errorMessage = null,
   ...props
 }) => {
+  const { t } = useTranslation();
+
   return (
-    <div className="">
+    <div className="relative flex flex-col gap-2">
       <SelectPrimitive.Root
         data-slot="select"
         value={value}
@@ -69,7 +71,6 @@ export const Select = ({
             "border-neutral-600 hover:border-primary-700 data-[state=open]:border-primary-700",
             errorMessage && "border-red-500 focus:border-red-500",
             disabled && "cursor-not-allowed bg-gray-50 opacity-50",
-            width,
             className
           )}
         >
@@ -88,8 +89,7 @@ export const Select = ({
             data-slot="select-content"
             className={cn(
               "z-50 overflow-hidden rounded-md border border-neutral-300 bg-white text-xs font-medium shadow-lg",
-              "max-h-64",
-              width
+              "max-h-64"
             )}
             position="popper"
             sideOffset={4}
@@ -115,7 +115,9 @@ export const Select = ({
         </SelectPrimitive.Portal>
       </SelectPrimitive.Root>
       {errorMessage && (
-        <span className="text-xs text-red-500">{errorMessage}</span>
+        <span className="text-xs font-medium text-error-400">
+          {t(errorMessage)}
+        </span>
       )}
     </div>
   );

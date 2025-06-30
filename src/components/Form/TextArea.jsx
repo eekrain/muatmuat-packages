@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 export const MyTextArea = ({
@@ -15,6 +16,7 @@ export const MyTextArea = ({
   disabled = false,
   ...inputProps
 }) => {
+  const { t } = useTranslation();
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       <textarea
@@ -36,7 +38,7 @@ export const MyTextArea = ({
           errorMessage && "text-error-400"
         )}
       >
-        <div className="flex-1">{errorMessage}</div>
+        <div className="flex-1">{t(errorMessage)}</div>
         {withCharCount && (
           <div>
             {value?.length || 0}/{maxLength || 0}

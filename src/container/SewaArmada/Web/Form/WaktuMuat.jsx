@@ -1,7 +1,7 @@
 "use client";
 
-import Checkbox from "@/components/Checkbox/Checkbox";
 import DatetimePicker from "@/components/DatetimePicker/DatetimePicker";
+import Checkbox from "@/components/Form/Checkbox";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import { handleFirstTime } from "@/lib/utils/form";

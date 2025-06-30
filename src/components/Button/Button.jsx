@@ -51,16 +51,16 @@ const buttonVariants = cva(
 );
 
 const iconColorVariants = {
-  "muattrans-primary": "icon-stroke-neutral-900",
-  "muattrans-primary-secondary": "icon-stroke-muat-trans-secondary-900",
-  "muattrans-error": "icon-fill-white",
-  "muattrans-error-secondary": "icon-error-400",
-  "muattrans-warning": "icon-blue",
-  "muatparts-primary": "icon-fill-white",
-  "muatparts-primary-secondary": "icon-stroke-primary-700",
-  "muatparts-error": "icon-fill-white",
-  "muatparts-error-secondary": "icon-error-400",
-  "muatparts-warning": "icon-blue",
+  "muattrans-primary": "text-neutral-900",
+  "muattrans-primary-secondary": "text-muat-trans-secondary-900",
+  "muattrans-error": "text-white",
+  "muattrans-error-secondary": "text-error-400",
+  "muattrans-warning": "text-primary-700",
+  "muatparts-primary": "text-white",
+  "muatparts-primary-secondary": "text-primary-700",
+  "muatparts-error": "text-white",
+  "muatparts-error-secondary": "text-error-400",
+  "muatparts-warning": "text-primary-700",
 };
 
 /**
