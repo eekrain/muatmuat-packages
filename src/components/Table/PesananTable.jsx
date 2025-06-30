@@ -543,6 +543,7 @@ const PesananTable = ({
           text: "Informasi",
         }}
         description={{
+          // eslint-disable-next-line quotes
           text: 'Klik "Sudah", jika kamu sudah menerima bukti dokumen untuk menyelesaikan pesanan.',
         }}
         cancel={{

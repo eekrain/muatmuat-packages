@@ -1,4 +1,5 @@
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
 import Button from "@/components/Button/Button";
@@ -15,6 +16,7 @@ import DriverRatingModal from "@/container/DetailPesanan/Web/DetailPesananHeader
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
 const DetailPesananHeader = ({ dataStatusPesanan }) => {
+  const params = useParams();
   const slides = [
     {
       title: "Status Pesanan",
@@ -153,53 +155,85 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
                 <Slider
                   slides={slides}
                   onComplete={() => console.log("Slider completed!")}
-                  onSlideChange={(index) =>
-                    console.log("Current slide:", index)
-                  }
                 />
               </div>
             </ModalContent>
           </Modal>
         </div>
         <div className="flex items-center gap-x-3">
-          <Button
-            iconLeft="/icons/download16.svg"
-            variant="muatparts-primary-secondary"
-            className="h-8"
-            onClick={() => {}}
-            type="button"
-          >
-            Unduh
-          </Button>
-          <Button
-            variant="muatparts-primary-secondary"
-            className="h-8"
-            onClick={() => setIsReorderFleetModalOpen(true)}
-            type="button"
-          >
-            Pesan Ulang
-          </Button>
-          {dataStatusPesanan?.orderStatus !==
-          OrderStatusEnum.DOCUMENT_SHIPPING ? (
-            <Button
-              variant="muatparts-primary"
-              className="h-8"
-              onClick={() => setIsDocumentReceivedModalOpen(true)}
-              type="button"
-            >
-              Dokumen Diterima
-            </Button>
-          ) : null}
-          {dataStatusPesanan?.orderStatus !== OrderStatusEnum.COMPLETED ? (
-            <Button
-              variant="muatparts-primary"
-              className="h-8"
-              onClick={() => setIsDriverRatingModalOpen(true)}
-              type="button"
-            >
-              {areAllDriversReviewed ? "Lihat Ulasan" : "Beri Ulasan"}
-            </Button>
-          ) : null}
+          {dataStatusPesanan?.orderStatus.startsWith("CANCELED") ? (
+            <>
+              <Link
+                href={`/daftarpesanan/detailpesanan/${params.orderId}/detail-refund`}
+              >
+                <Button
+                  variant="muatparts-primary-secondary"
+                  className="h-8"
+                  type="button"
+                >
+                  Detail Refund
+                </Button>
+              </Link>
+              <Button
+                iconLeft="/icons/download16.svg"
+                variant="muatparts-primary-secondary"
+                className="h-8"
+                onClick={() => {}}
+                type="button"
+              >
+                Unduh
+              </Button>
+              <Button
+                variant="muatparts-primary"
+                className="h-8"
+                onClick={() => setIsDriverRatingModalOpen(true)}
+                type="button"
+              >
+                Pesan Ulang
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                iconLeft="/icons/download16.svg"
+                variant="muatparts-primary-secondary"
+                className="h-8"
+                onClick={() => {}}
+                type="button"
+              >
+                Unduh
+              </Button>
+              <Button
+                variant="muatparts-primary-secondary"
+                className="h-8"
+                onClick={() => setIsReorderFleetModalOpen(true)}
+                type="button"
+              >
+                Pesan Ulang
+              </Button>
+              {dataStatusPesanan?.orderStatus !==
+              OrderStatusEnum.DOCUMENT_SHIPPING ? (
+                <Button
+                  variant="muatparts-primary"
+                  className="h-8"
+                  onClick={() => setIsDocumentReceivedModalOpen(true)}
+                  type="button"
+                >
+                  Dokumen Diterima
+                </Button>
+              ) : null}
+              {dataStatusPesanan?.orderStatus !== OrderStatusEnum.COMPLETED ? (
+                <Button
+                  variant="muatparts-primary"
+                  className="h-8"
+                  onClick={() => setIsDriverRatingModalOpen(true)}
+                  type="button"
+                >
+                  {areAllDriversReviewed ? "Lihat Ulasan" : "Beri Ulasan"}
+                </Button>
+              ) : null}
+            </>
+          )}
         </div>
       </div>
 
@@ -211,6 +245,7 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
           text: "Informasi",
         }}
         description={{
+          // eslint-disable-next-line quotes
           text: 'Klik "Sudah", jika kamu sudah menerima bukti dokumen untuk menyelesaikan pesanan.',
         }}
         cancel={{

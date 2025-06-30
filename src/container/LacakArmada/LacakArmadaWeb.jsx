@@ -14,7 +14,6 @@ const LacakArmadaWeb = () => {
     orderId: "123",
     driverId: "456",
   });
-
   useEffect(() => {
     setIsGlobalLoading(isLoading);
     // eslint-disable-next-line react-hooks/exhaustive-deps

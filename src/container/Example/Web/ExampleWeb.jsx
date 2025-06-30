@@ -57,7 +57,7 @@ import QuantityInput from "@/components/QuantityInput/QuantityInput";
 import RadioButton from "@/components/Radio/RadioButton";
 import Slider from "@/components/Slider/Slider";
 import SortingDropdown from "@/components/SortingDropdown/SortingDropdown";
-import Stepper from "@/components/Stepper/Stepper";
+import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
 import TextArea from "@/components/TextArea/TextArea";
 import {
   TimelineContainer,
@@ -708,8 +708,8 @@ const BreadcrumbCardStepper = () => {
         <PageTitle>Contoh Judul Halaman</PageTitle>
 
         <h1 className="mb-2 mt-4 text-xl font-bold">Stepper</h1>
-        <Stepper
-          steps={[
+        <StepperContainer activeIndex={0} totalStep={6}>
+          {[
             {
               label: "Armada Dijadwalkan",
               icon: "/icons/stepper-scheduled.svg",
@@ -734,9 +734,10 @@ const BreadcrumbCardStepper = () => {
               label: "Selesai",
               icon: "/icons/stepper-done.svg",
             },
-          ]}
-          currentStep={2}
-        />
+          ].map((step, index) => (
+            <StepperItem key={step.status} step={step} index={index} />
+          ))}
+        </StepperContainer>
       </div>
 
       <div>

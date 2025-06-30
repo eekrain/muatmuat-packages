@@ -31,3 +31,21 @@ export const PaymentInstructionTitle = {
   [PaymentInstructionEnum.MOBILE_BANKING]: "Mobile Banking",
   [PaymentInstructionEnum.BANK_OFFICE]: "Bank Office",
 };
+
+export const PaymentMethodIconFromMethod = {
+  [PaymentMethodEnum.VA_BCA]: "/icons/payment/va_bca.svg",
+  [PaymentMethodEnum.VA_BNI]: "/icons/payment/va_bni.svg",
+  [PaymentMethodEnum.VA_BRI]: "/icons/payment/va_bri.svg",
+  [PaymentMethodEnum.VA_BSI]: "/icons/payment/va_bsi.svg",
+  [PaymentMethodEnum.VA_CIMB]: "/icons/payment/va_cimb.svg",
+  [PaymentMethodEnum.VA_MANDIRI]: "/icons/payment/va_mandiri.svg",
+  [PaymentMethodEnum.VA_PERMATA]: "/icons/payment/va_permata.svg",
+};
+
+export const PaymentMethodIconFromTitle = {
+  "Permata Virtual Account": "/icons/payment/va_permata.svg",
+  "BRI Virtual Account": "/icons/payment/va_bri.svg",
+  "BCA Virtual Account": "/icons/payment/va_bca.svg",
+  "Mandiri Virtual Account": "/icons/payment/va_mandiri.svg",
+  "BNI Virtual Account": "/icons/payment/va_bni.svg",
+};

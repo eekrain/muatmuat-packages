@@ -6,13 +6,26 @@ import {
   LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
-import { Modal, ModalContent } from "@/components/Modal/Modal";
+import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import {
   OrderStatusEnum,
   OrderStatusTitle,
 } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { formatDate } from "@/lib/utils/dateFormat";
 
-export const StatusPesananHeader = ({ orderCode, orderStatus }) => {
+const cancellationData = {
+  title: "Alasan Pembatalan",
+  cancellationTime: "12 Nov 2024 11:25 WIB",
+  cancelledBy: "Shipper",
+  reason:
+    "Kami terpaksa membatalkan pemesanan jasa angkut truk karena terjadi perubahan rencana logistik yang tidak terduga. Terima kasih atas pengertiannya.",
+};
+
+export const StatusPesananHeader = ({
+  orderCode,
+  orderStatus,
+  cancellationHistory,
+}) => {
   const [
     isDocumentDeliveryEvidenceModalOpen,
     setIsDocumentDeliveryEvidenceModalOpen,
@@ -47,21 +60,83 @@ export const StatusPesananHeader = ({ orderCode, orderStatus }) => {
             Status Pesanan
           </span>
           <div className="flex items-center gap-x-2">
-            <BadgeStatusPesanan
-              variant={
-                orderStatus === OrderStatusEnum.WAITING_PAYMENT_1 ||
-                orderStatus === OrderStatusEnum.WAITING_PAYMENT_2
-                  ? "warning"
-                  : orderStatus === OrderStatusEnum.CANCELED_BY_SHIPPER ||
-                      orderStatus === OrderStatusEnum.CANCELED_BY_SYSTEM ||
-                      orderStatus === OrderStatusEnum.CANCELED_BY_TRANSPORTER
-                    ? "error"
-                    : "primary"
-              }
-              className="w-fit"
-            >
-              {orderStatusLabel}
-            </BadgeStatusPesanan>
+            <div className="flex items-center gap-5">
+              <BadgeStatusPesanan
+                variant={
+                  orderStatus === OrderStatusEnum.WAITING_PAYMENT_1 ||
+                  orderStatus === OrderStatusEnum.WAITING_PAYMENT_2
+                    ? "warning"
+                    : orderStatus.startsWith("CANCELED")
+                      ? "error"
+                      : "primary"
+                }
+                className="w-fit"
+              >
+                {orderStatusLabel}
+              </BadgeStatusPesanan>
+              {orderStatus.startsWith("CANCELED") && cancellationHistory && (
+                <Modal>
+                  <ModalTrigger>
+                    <button className="text-xs font-medium leading-[1.2] text-primary-700">
+                      Lihat Alasan Pembatalan
+                    </button>
+                  </ModalTrigger>
+                  <ModalContent>
+                    <div className="relative flex w-[472px] flex-col items-start gap-[10px] rounded-xl bg-white px-6 py-8">
+                      {/* Content Container */}
+                      <div className="flex flex-row items-start gap-2">
+                        <div className="flex flex-col items-center gap-6">
+                          {/* Title */}
+                          <h2 className="w-[424px] text-center text-[16px] font-bold leading-[19.2px] text-black">
+                            Alasan Pembatalan
+                          </h2>
+
+                          {/* Details Section */}
+                          <div className="flex flex-col items-start gap-4">
+                            {/* Cancellation Time */}
+                            <div className="flex w-[133px] flex-col items-start gap-3">
+                              <div className="flex w-[105px] flex-row items-center gap-2">
+                                <span className="text-[12px] font-semibold leading-[14.4px] text-black">
+                                  Waktu Pembatalan
+                                </span>
+                              </div>
+                              <span className="w-[133px] text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                                {formatDate(cancellationHistory.cancelledAt)}
+                              </span>
+                            </div>
+
+                            {/* Cancelled By */}
+                            <div className="flex w-[91px] flex-col items-start gap-3">
+                              <div className="flex w-[91px] flex-row items-center gap-2">
+                                <span className="text-[12px] font-semibold leading-[14.4px] text-black">
+                                  Dibatalkan Oleh
+                                </span>
+                              </div>
+                              <span className="w-11 text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                                {cancellationHistory.cancelledBy}
+                              </span>
+                            </div>
+
+                            {/* Cancellation Reason */}
+                            <div className="flex w-[424px] flex-col items-start gap-3">
+                              <div className="flex w-[106px] flex-row items-center gap-2">
+                                <span className="text-[12px] font-semibold leading-[14.4px] text-black">
+                                  Alasan Pembatalan
+                                </span>
+                              </div>
+                              <p className="w-[424px] text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                                {cancellationHistory.reason?.additionalInfo ||
+                                  cancellationHistory.reason?.reasonName}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </ModalContent>
+                </Modal>
+              )}
+            </div>
             {orderStatus === OrderStatusEnum.DOCUMENT_SHIPPING ? (
               <button
                 className="flex items-center gap-x-1"

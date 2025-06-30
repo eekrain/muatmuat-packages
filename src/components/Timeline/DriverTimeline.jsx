@@ -11,8 +11,10 @@ import {
   OrderStatusIcon,
   OrderStatusTitle,
 } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { cn } from "@/lib/utils";
+import { formatDate } from "@/lib/utils/dateFormat";
 
-export const DriverTimeline = ({ dataDriverStatus }) => {
+export const DriverTimeline = ({ dataDriverStatus, className }) => {
   const [images, setImages] = useState({ packages: [], pods: [] });
   const [currentStatus, setCurrentStatus] = useState(null);
   const [lightboxActiveIndex, setLightboxActiveIndex] = useState(0);
@@ -30,15 +32,15 @@ export const DriverTimeline = ({ dataDriverStatus }) => {
   };
 
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto p-4 pt-0">
+    <div className={cn("min-h-0 flex-1 overflow-y-auto p-4 pt-0", className)}>
       <LightboxProvider
         images={[...images.packages, ...images.pods]}
         title={lightboxTitle()}
       >
         {dataDriverStatus?.statusDefinitions.map((parent, parentIndex) => (
           <Fragment key={parent.mappedOrderStatus}>
-            {parent.children.length > 0 ? (
-              <TimelineContainer className="ml-[9px]">
+            {parent?.children && parent.children.length > 0 ? (
+              <TimelineContainer>
                 {parent.children.map((driverStatusItem, index) => (
                   <ItemWithLightbox
                     key={driverStatusItem.statusCode}
@@ -59,6 +61,18 @@ export const DriverTimeline = ({ dataDriverStatus }) => {
               title={OrderStatusTitle[parent.mappedOrderStatus]}
               withDivider={
                 parentIndex !== dataDriverStatus?.statusDefinitions.length - 1
+              }
+              variant={
+                parent.mappedOrderStatus.startsWith("CANCELED")
+                  ? "canceled"
+                  : parentIndex === 0
+                    ? "active"
+                    : "inactive"
+              }
+              canceledAt={
+                parent.mappedOrderStatus.startsWith("CANCELED")
+                  ? parent.date
+                  : null
               }
             />
           </Fragment>
@@ -100,6 +114,7 @@ const ItemWithLightbox = ({
       totalLength={parent.children.length}
       index={index}
       activeIndex={parentIndex === 0 ? 0 : -1}
+      className="grid-cols-[32px_1fr] gap-3"
     >
       <TimelineContentWithButtonDate
         title={driverStatusItem.statusName}
@@ -131,20 +146,44 @@ const ItemWithLightbox = ({
   );
 };
 
-const ParentItem = ({ icon, title, withDivider = true }) => {
+const iconStyles = {
+  canceled: "bg-error-400 text-neutral-50",
+  active: "bg-muat-trans-primary-400 text-muat-trans-primary-900",
+  inactive: "bg-neutral-200 text-neutral-600 border-neutral-400",
+};
+
+const ParentItem = ({
+  icon,
+  title,
+  withDivider = true,
+  variant = "inactive",
+  canceledAt = null,
+}) => {
   return (
     <>
       <div className="mt-5 grid grid-cols-[32px_1fr] items-center gap-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full border bg-muat-trans-primary-400">
-          <IconComponent
-            src={icon}
-            width={16}
-            height={16}
-            className="text-muat-trans-primary-900"
-          />
+        <div
+          className={cn(
+            "flex h-8 w-8 items-center justify-center rounded-full border border-transparent",
+            iconStyles[variant]
+          )}
+        >
+          <IconComponent src={icon} width={16} height={16} />
         </div>
 
-        <div className="text-sm font-bold leading-[1.2]">{title}</div>
+        <div className="flex justify-between text-sm font-bold leading-[1.2]">
+          <span>{title}</span>
+          {canceledAt && (
+            <span
+              className={cn(
+                "block text-xs font-medium leading-[1.2] text-neutral-600",
+                variant === "active" && "text-neutral-900"
+              )}
+            >
+              {formatDate(canceledAt)}
+            </span>
+          )}
+        </div>
       </div>
 
       {withDivider && (

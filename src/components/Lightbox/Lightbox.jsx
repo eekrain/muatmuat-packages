@@ -68,8 +68,7 @@ export const LightboxProvider = ({ title, images = [], image, children }) => {
             backgroudClassname: "bg-black md:bg-black/25",
           }}
           className={cn(
-            "flex h-full w-screen flex-col items-center md:w-[592px] md:bg-white md:px-6 md:pb-3 md:pt-8",
-            memoizedImages.length > 1 && "md:h-[445px]"
+            "flex w-screen flex-col items-center md:w-[592px] md:bg-white md:px-6 md:pb-3 md:pt-8"
           )}
           type="lightbox"
         >
@@ -103,7 +102,7 @@ export const LightboxProvider = ({ title, images = [], image, children }) => {
 
           {/* Previews of images */}
           {memoizedImages.length > 1 && (
-            <div className="mt-3 hidden flex-row gap-2 md:flex">
+            <div className="mt-3 hidden justify-center gap-2 md:flex md:flex-row">
               {memoizedImages.map((image, index) => (
                 <img
                   key={image}
