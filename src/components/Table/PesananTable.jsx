@@ -342,10 +342,10 @@ const PesananTable = ({
                               <div className="flex items-center gap-2">
                                 <div className="flex items-center gap-1">
                                   <IconComponent
-                                    src="/icons/truck16.svg"
+                                    className="icon-fill-muat-trans-secondary-900"
+                                    src="/icons/transporter14.svg"
                                     width={14}
                                     height={14}
-                                    className="text-[#461B02]"
                                   />
                                   <span className="text-[10px] font-medium text-neutral-900">
                                     {order.vehicle?.truckCount || 0} Unit
@@ -354,10 +354,10 @@ const PesananTable = ({
                                 <div className="h-[2px] w-[2px] rounded-full bg-neutral-600"></div>
                                 <div className="flex items-center gap-1">
                                   <IconComponent
-                                    src="/icons/weight16.svg"
+                                    className="icon-fill-muat-trans-secondary-900"
+                                    src="/icons/estimasi-kapasitas14.svg"
                                     width={14}
                                     height={14}
-                                    className="text-[#461B02]"
                                   />
                                   <span className="text-[10px] font-medium text-neutral-900">
                                     2.500 kg

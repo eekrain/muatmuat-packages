@@ -11,8 +11,10 @@ const Page = () => {
   const [queryParams, setQueryParams] = useState({
     page: 1,
     limit: 10,
-    search: "",
     status: "Semua",
+    search: "",
+    startDate: null,
+    endDate: null,
     sort: "",
     order: "",
   });
@@ -28,9 +30,6 @@ const Page = () => {
     if (queryParams.limit && queryParams.limit > 0) {
       params.append("limit", queryParams.limit);
     }
-    if (queryParams.search) {
-      params.append("search", queryParams.search);
-    }
     if (queryParams.status && queryParams.status !== "Semua") {
       // Map frontend status to API status
       const statusMap = {
@@ -39,6 +38,20 @@ const Page = () => {
         Dokumen: "DOCUMENT_SHIPPING",
       };
       params.append("status", statusMap[queryParams.status] || "");
+    }
+    if (queryParams.search) {
+      params.append("search", queryParams.search);
+    }
+    // Handle dates - both can be provided individually
+    if (queryParams.startDate) {
+      // Log the actual date being sent to the API
+      console.log("Start date sent to API:", queryParams.startDate);
+      params.append("startDate", queryParams.startDate);
+    }
+    if (queryParams.endDate) {
+      // Log the actual date being sent to the API
+      console.log("End date sent to API:", queryParams.endDate);
+      params.append("endDate", queryParams.endDate);
     }
     if (queryParams.sort) {
       params.append("sort", queryParams.sort);
@@ -49,7 +62,6 @@ const Page = () => {
 
     return params.toString();
   }, [queryParams]);
-  console.log("querystr", queryString);
 
   const { data: requiringConfirmationCountData } = useSWRHook(
     "v1/orders/requiring-confirmation/count"

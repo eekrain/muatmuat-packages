@@ -4,13 +4,31 @@ import { Plus } from "lucide-react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
+import Button from "@/components/Button/Button";
+import IconComponent from "@/components/IconComponent/IconComponent";
+import Input from "@/components/Input/Input";
+import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import { useTranslation } from "@/hooks/use-translation";
 import { formatDateInput } from "@/lib/utils/dateFormat";
 
-import Button from "../Button/Button";
-import IconComponent from "../IconComponent/IconComponent";
-import Input from "../Input/Input";
-import { Modal, ModalContent, ModalHeader } from "../Modal/Modal";
+// Helper function to convert DD-MM-YYYY to YYYY-MM-DD
+const formatToISODate = (dateStr) => {
+  if (!dateStr) return "";
+
+  // Handle DD-MM-YYYY format
+  const dashParts = dateStr.split("-");
+  if (dashParts.length === 3) {
+    return `${dashParts[2]}-${dashParts[1]}-${dashParts[0]}`;
+  }
+
+  // Handle DD/MM/YYYY format
+  const slashParts = dateStr.split("/");
+  if (slashParts.length === 3) {
+    return `${slashParts[2]}-${slashParts[1]}-${slashParts[0]}`;
+  }
+
+  return dateStr; // Return as is if already in correct format or unrecognized
+};
 
 const DropdownPeriode = ({
   options = [],
@@ -36,27 +54,52 @@ const DropdownPeriode = ({
   const dropdownRef = useRef(null);
 
   const handleSelect = (option, range) => {
-    if (range)
-      setSelected({
+    if (range) {
+      // Format dates to YYYY-MM-DD before sending to parent
+      const formattedOption = {
         ...option,
         start_date: option?.start_date ?? inputDateCustom?.start_date,
         end_date: option?.end_date ?? inputDateCustom.end_date,
+        // Convert to ISO format YYYY-MM-DD before passing to parent
+        iso_start_date: formatToISODate(
+          option?.start_date ?? inputDateCustom?.start_date
+        ),
+        iso_end_date: formatToISODate(
+          option?.end_date ?? inputDateCustom.end_date
+        ),
         range: true,
-      });
-    else setSelected(option);
-    setIsOpen(false);
-    if (onSelect) onSelect(option); // Callback for parent
+      };
+
+      setSelected(formattedOption);
+      setIsOpen(false);
+      if (onSelect) onSelect(formattedOption); // Callback for parent with ISO dates included
+    } else {
+      setSelected(option);
+      setIsOpen(false);
+      if (onSelect) onSelect(option); // Callback for parent
+    }
   };
 
-  //24. THP 2 - MOD001 - MP - 035 - QC Plan - Web - MuatParts - General - Daftar Pesanan LB - 0026
   const resetValue = () => {
     setInputDateCustom({
       status: "",
       start_date: "",
       end_date: "",
     });
+    setValidate({
+      start_date: false,
+      end_date: false,
+    });
   };
 
+  // Reset values when modal is opened
+  useEffect(() => {
+    if (isPeriode) {
+      resetValue();
+    }
+  }, [isPeriode]);
+
+  // Add outside click handler in a separate useEffect
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -66,6 +109,7 @@ const DropdownPeriode = ({
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
+
   return (
     <div className={"relative w-[202px] text-neutral-900"} ref={dropdownRef}>
       <button
@@ -141,7 +185,6 @@ const DropdownPeriode = ({
             </h3>
 
             <div className="relative flex items-center gap-2">
-              {/* 24. THP 2 - MOD001 - MP - 035 - QC Plan - Web - MuatParts - General - Daftar Pesanan  LB - 0024 LB - 0026 */}
               <Input
                 value={inputDateCustom?.start_date}
                 onFocus={() =>
@@ -202,6 +245,7 @@ const DropdownPeriode = ({
             </div>
 
             <Button
+              variant="muatparts-primary"
               className="!h-8 w-[112px]"
               onClick={() => {
                 let next = true;
@@ -214,16 +258,20 @@ const DropdownPeriode = ({
                   next = false;
                 }
                 if (!next) return;
-                handleSelect(
-                  {
-                    name: `${inputDateCustom.start_date} - ${inputDateCustom.end_date}`,
-                    value: `${inputDateCustom.start_date} - ${inputDateCustom.end_date}`,
-                    start_date: inputDateCustom.start_date,
-                    end_date: inputDateCustom.end_date,
-                    range: true,
-                  },
-                  true
-                );
+
+                // Create the option object with both display and ISO formats
+                const customOption = {
+                  name: `${inputDateCustom.start_date} - ${inputDateCustom.end_date}`,
+                  value: `${inputDateCustom.start_date} - ${inputDateCustom.end_date}`,
+                  start_date: inputDateCustom.start_date,
+                  end_date: inputDateCustom.end_date,
+                  // Add ISO formatted dates
+                  iso_start_date: formatToISODate(inputDateCustom.start_date),
+                  iso_end_date: formatToISODate(inputDateCustom.end_date),
+                  range: true,
+                };
+
+                handleSelect(customOption, true);
                 setIsPeriode(false);
               }}
             >
