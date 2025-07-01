@@ -13,6 +13,7 @@ import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { TimelineField } from "@/components/Timeline/timeline-field";
+import VoucherCard from "@/components/Voucher/VoucherCard";
 import VoucherEmptyState from "@/components/Voucher/VoucherEmptyState";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
 import usePrevious from "@/hooks/use-previous";
@@ -21,6 +22,7 @@ import { useVouchers } from "@/hooks/useVoucher";
 import DefaultResponsiveLayout from "@/layout/ResponsiveLayout/DefaultResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
+import { formatDate, formatShortDate } from "@/lib/utils/dateFormat";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 import {
   useSewaArmadaActions,
@@ -76,7 +78,7 @@ const SewaArmadaHomeScreen = () => {
   const [tempSelectedVoucher, setTempSelectedVoucher] = useState(null);
   const [selectedVoucher, setSelectedVoucher] = useState(null); // Added this to store the final selected voucher
   const previousIsBottomsheetOpen = usePrevious(isBottomsheetOpen);
-
+  const [validationErrors, setValidationErrors] = useState({});
   useEffect(() => {
     if (isBottomsheetOpen && !previousIsBottomsheetOpen) {
       // Reset search when bottomsheet opens
@@ -94,16 +96,89 @@ const SewaArmadaHomeScreen = () => {
   };
 
   // Apply selected voucher (confirm selection when closing the bottomsheet)
-  const handleApplyVoucher = () => {
-    // Set the final selected voucher
-    setSelectedVoucher(tempSelectedVoucher);
-    setIsBottomsheetOpen(false);
+  const handleVoucherSelect = async (voucher) => {
+    try {
+      // Clear previous validation errors for all vouchers
+      setValidationErrors({});
 
-    // Here you would typically update your store
-    // For example: setField("voucherId", tempSelectedVoucher?.id || null);
-    console.log("Selected voucher:", tempSelectedVoucher);
+      const totalAmountForValidation = baseOrderAmount;
+      const res = await fetcherMuatrans.post(
+        "/v1/orders/vouchers/validate",
+        {
+          voucherId: voucher.id,
+          totalAmount: totalAmountForValidation,
+        },
+        {
+          headers: { Authorization: token },
+        }
+      );
+
+      const isValid = res.data.Data.isValid;
+      if (isValid !== false) {
+        // Voucher is valid
+        const discountValue = calculateDiscountAmount(
+          voucher,
+          totalAmountForValidation
+        );
+
+        setCurrentTotal(res.data.Data.finalAmount);
+
+        setSelectedVoucher({
+          ...voucher,
+          discountAmount: discountValue, // This 'discountAmount' will hold the FINAL numerical discount value
+        });
+        setShowVoucherPopup(false);
+      } else {
+        // Voucher is invalid
+        // Set validation error for this specific voucher
+        const validationMessage =
+          res.data.Data.validationMessages || "Voucher tidak valid";
+
+        setValidationErrors({
+          ...validationErrors,
+          [voucher.id]: validationMessage,
+        });
+
+        // Keep the popup open so user can see the error
+        setSelectedVoucher(null);
+      }
+    } catch (err) {
+      console.log("error116", err);
+      setSelectedVoucher(null);
+
+      // Check if we have error response data (400 status code with validation message)
+      if (err.response && err.response.data && err.response.data.Data) {
+        const errorData = err.response.data.Data;
+        const validationMessage =
+          errorData.validationMessages || "Voucher tidak valid";
+        // labelAlertVoucherMTExpired
+        // labelAlertVoucherMTMinimumOrder
+        // labelAlertVoucherMTKuotaHabis
+        if (validationMessage == "labelAlertVoucherMTExpired") {
+          console.log("err expired");
+          validationMessage = "labelAlertVoucherMTExpired";
+        } else if (validationMessage == "labelAlertVoucherMTMinimumOrder") {
+          console.log("err order");
+          validationMessage = `Minimal Transaksi ${idrFormat(voucher.minOrderAmount)}
+          `;
+        } else if (validationMessage == "labelAlertVoucherMTKuotaHabis") {
+          console.log("err qty");
+          validationMessage = "labelAlertVoucherMTKuotaHabis";
+        }
+
+        setValidationErrors({
+          ...validationErrors,
+          [voucher.id]: validationMessage,
+        });
+      } else {
+        // General error fallback
+        setValidationErrors({
+          ...validationErrors,
+          [voucher.id]: "Terjadi kesalahan. Silakan coba lagi.",
+        });
+      }
+    }
   };
-
   // Filter voucherList based on search query
   const filteredVouchers =
     voucherList?.filter((voucher) =>
@@ -494,65 +569,24 @@ const SewaArmadaHomeScreen = () => {
                 <VoucherEmptyState />
               ) : (
                 <div className="space-y-3">
-                  {filteredVouchers.map((voucher) => (
-                    <div
-                      key={voucher.id}
-                      className="relative rounded-md border border-neutral-400 p-3"
-                    >
-                      <div className="absolute right-0 top-0">
-                        <div className="flex h-[18px] items-center rounded-bl-md rounded-tr-md bg-primary-100 px-2">
-                          <span className="text-[10px] font-medium text-primary-500">
-                            {voucher.daysLeft > 3
-                              ? `Sisa ${voucher.daysLeft} hari lagi`
-                              : `Berakhir ${voucher.daysLeft} hari lagi`}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start justify-between">
-                        <div className="flex gap-x-2">
-                          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100">
-                            <IconComponent src="/icons/voucher16.svg" />
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="text-[14px] font-semibold text-neutral-900">
-                              {voucher.code}
-                            </span>
-                            <ul className="mt-1">
-                              <li className="flex items-center gap-x-1">
-                                <div className="h-1 w-1 rounded-full bg-neutral-900"></div>
-                                <span className="text-[12px] font-medium text-neutral-900">
-                                  Diskon 50%, maks. potongan Rp100.000
-                                </span>
-                              </li>
-                              <li className="flex items-center gap-x-1">
-                                <div className="h-1 w-1 rounded-full bg-neutral-900"></div>
-                                <span className="text-[12px] font-medium text-neutral-900">
-                                  Min. Transaksi Rp
-                                  {voucher.minOrderAmount?.toLocaleString()}
-                                </span>
-                              </li>
-                            </ul>
-                            <div className="mt-1">
-                              <span className="text-[12px] font-medium text-primary-500">
-                                Terpakai: {voucher.usagePercentage || "20%"}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <button
-                          className={`h-8 rounded-md px-3 text-[12px] font-semibold ${
-                            tempSelectedVoucher?.id === voucher.id
-                              ? "bg-primary-500 text-white"
-                              : "border border-primary-500 text-primary-500"
-                          }`}
-                          onClick={() => handleSelectVoucher(voucher)}
-                        >
-                          Pakai
-                        </button>
-                      </div>
-                    </div>
+                  {filteredVouchers.map((v) => (
+                    <VoucherCard
+                      key={v.id}
+                      title={v.code}
+                      discountInfo={v.description}
+                      discountAmount={v.discountAmount}
+                      discountPercentage={v.discountPercentage}
+                      discountType={v.discountType}
+                      minTransaksi={v.minOrderAmount}
+                      kuota={v.quota}
+                      usagePercentage={v.usage["globalPercentage"] || 0}
+                      isOutOfStock={v.isOutOfStock || false}
+                      startDate={formatShortDate(v.validFrom)}
+                      endDate={formatDate(v.validTo)}
+                      isActive={selectedVoucher?.id === v.id}
+                      onSelect={() => handleVoucherSelect(v)}
+                      validationError={validationErrors[v.id]}
+                    />
                   ))}
                 </div>
               )}
