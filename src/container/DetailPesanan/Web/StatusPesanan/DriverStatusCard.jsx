@@ -42,6 +42,8 @@ export const DriverStatusCard = ({ dataStatusPesanan, dataDriverStatus }) => {
     setTimeout(() => setIsTransitioning(false), 300);
   };
 
+  if (dataDriverStatus.length === 0) return null;
+
   return (
     <div className="relative w-full">
       {/* Navigation Arrows */}

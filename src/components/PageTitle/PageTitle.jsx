@@ -1,6 +1,6 @@
 import { useRouter } from "next/navigation";
 
-const PageTitle = ({ children }) => {
+const PageTitle = ({ href = null, children }) => {
   const router = useRouter();
 
   return (
@@ -11,7 +11,13 @@ const PageTitle = ({ children }) => {
         height={24}
         className="cursor-pointer"
         alt="Back"
-        onClick={() => router.back()}
+        onClick={() => {
+          if (href) {
+            router.push(href);
+          } else {
+            router.back();
+          }
+        }}
       />
       <h1 className="text-xl font-bold">{children}</h1>
     </div>

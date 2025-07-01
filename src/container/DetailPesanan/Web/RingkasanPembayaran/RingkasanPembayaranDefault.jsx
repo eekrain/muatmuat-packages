@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
+import CardPayment from "@/components/Card/CardPayment";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
-import { PaymentMethodTitle } from "@/lib/constants/detailpesanan/payment.enum";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
 
@@ -64,105 +64,54 @@ export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
   }, [dataRingkasanPembayaran]);
 
   return (
-    <div className="flex w-full flex-col items-start rounded-xl bg-white shadow-md">
-      {/* Top Section */}
-      <div className="flex h-[298px] w-full flex-col items-start gap-6 overflow-y-auto p-6 pb-0 pt-6">
-        <span className="w-full text-[16px] font-bold leading-[19.2px] text-neutral-900">
-          Ringkasan Pembayaran
-        </span>
+    <CardPayment.Root className="h-[300px] w-full">
+      <CardPayment.Header>Ringkasan Pembayaran</CardPayment.Header>
 
-        {/* Detail Pesanan Section */}
-        <div className="flex w-full flex-col items-start gap-3">
-          <div className="flex w-full flex-row items-center justify-between">
-            <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
-              Detail Pesanan
-            </span>
-            <IconComponent
-              src="/icons/chevron-right.svg"
-              width={16}
-              height={16}
-            />
-          </div>
+      <CardPayment.Container>
+        <CardPayment.Collapsible title="Detail Pesanan">
+          <CardPayment.CollapsibleItem
+            label="Waktu Pembayaran"
+            value={formatDate(dataRingkasanPembayaran?.expiredAt)}
+          />
 
-          <div className="flex w-full flex-col gap-4">
-            {/* Waktu Pembayaran */}
-            <div className="flex w-full items-start justify-between">
-              <span className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                Waktu Pembayaran
-              </span>
-              <span className="text-right text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                {formatDate(dataRingkasanPembayaran?.expiredAt)}
-              </span>
-            </div>
-
-            {/* Opsi Pembayaran */}
-            <div className="flex w-full items-center justify-between">
-              <span className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                Opsi Pembayaran
-              </span>
-              <div className="flex items-center gap-2">
+          <CardPayment.CollapsibleItem
+            label="Opsi Pembayaran"
+            value={
+              <>
                 <IconComponent
                   src="/icons/payment/va_bca.svg"
                   width={16}
                   height={16}
                   className="bg-white"
                 />
-                <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                  {PaymentMethodTitle[dataRingkasanPembayaran?.paymentMethod]}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+                <span>BCA Virtual Account</span>
+              </>
+            }
+          />
+        </CardPayment.Collapsible>
 
-        {/* Biaya Pesan Jasa Angkut Section */}
-        <div className="flex w-full flex-col items-start gap-3">
-          <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
-            Biaya Pesan Jasa Angkut
-          </span>
-          <div className="flex w-full items-start justify-between">
-            <span className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-              Nominal Pesan Jasa Angkut (1 Unit)
-            </span>
-            <span className="text-right text-[12px] font-medium leading-[14.4px] text-neutral-900">
-              {idrFormat(dataRingkasanPembayaran?.transportFee)}
-            </span>
-          </div>
-        </div>
+        <CardPayment.Collapsible title="Biaya Pesan Jasa Angkut">
+          <CardPayment.CollapsibleItem
+            label="Nominal Pesan Jasa Angkut (1 Unit)"
+            value={idrFormat(dataRingkasanPembayaran?.transportFee)}
+          />
+        </CardPayment.Collapsible>
 
-        {/* Biaya Asuransi Barang Section */}
-        <div className="flex w-full flex-col items-start gap-3">
-          <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
-            Biaya Asuransi Barang
-          </span>
-          <div className="flex w-full items-start justify-between">
-            <span className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-              Nominal Premi Asuransi (1 Unit)
-            </span>
-            <span className="text-right text-[12px] font-medium leading-[14.4px] text-neutral-900">
-              {idrFormat(dataRingkasanPembayaran?.insuranceFee)}
-            </span>
-          </div>
-        </div>
+        <CardPayment.Collapsible title="Biaya Asuransi Barang">
+          <CardPayment.CollapsibleItem
+            label="Nominal Premi Asuransi (1 Unit)"
+            value={idrFormat(dataRingkasanPembayaran?.insuranceFee)}
+          />
+        </CardPayment.Collapsible>
 
-        {/* Biaya Layanan Tambahan Section */}
-        <div className="flex w-full flex-col items-start gap-4">
-          <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
-            Biaya Layanan Tambahan
-          </span>
-          <div className="flex w-full flex-col items-start gap-3">
-            <div className="flex w-full items-start justify-between">
-              <span className="w-[180px] text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                Nominal Kirim Bukti Fisik Penerimaan Barang
-              </span>
-              <span className="text-right text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                {idrFormat(
-                  dataRingkasanPembayaran?.documentShippingDetail?.totalPrice
-                )}
-              </span>
-            </div>
+        <CardPayment.Collapsible title="Biaya Layanan Tambahan">
+          <div className="flex flex-col gap-3">
+            <CardPayment.CollapsibleItem
+              label="Nominal Kirim Bukti Fisik Penerimaan Barang"
+              value={idrFormat(dataRingkasanPembayaran?.documentShippingFee)}
+            />
 
-            <Modal closeOnOutsideClick={false}>
+            <Modal closeOnOutsideClick>
               <ModalTrigger>
                 <button className="text-[12px] font-medium leading-[14.4px] text-primary-700">
                   Lihat Detail Pengiriman Dokumen
@@ -236,88 +185,47 @@ export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
                 </div>
               </ModalContent>
             </Modal>
-
-            <div className="flex w-full items-start justify-between">
-              <span className="w-[180px] text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                {/* TODO: Data ini ga ada di API Kontrak */}
-                Nominal Bantuan Tambahan
-              </span>
-              <span className="text-right text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                {idrFormat(
-                  dataRingkasanPembayaran?.otherAdditionalService?.totalPrice
-                )}
-              </span>
-            </div>
           </div>
-        </div>
 
-        {/* Diskon Voucher Section */}
+          <CardPayment.CollapsibleItem
+            label="Nominal Bantuan Tambahan"
+            value={idrFormat(
+              dataRingkasanPembayaran?.otherAdditionalService?.totalPrice
+            )}
+          />
+        </CardPayment.Collapsible>
+
         {dataRingkasanPembayaran?.voucherDiscount &&
         dataRingkasanPembayaran?.voucherDiscount > 0 ? (
-          <div className="flex w-full flex-col items-start gap-3">
-            <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
-              Diskon Voucher
-            </span>
-            <div className="flex w-full items-start justify-between">
-              <span className="w-[180px] text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                Voucher (DISKONPENGGUNABARU)
-              </span>
-              <span className="text-right text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                {idrFormat(dataRingkasanPembayaran?.voucherDiscount)}
-              </span>
-            </div>
-          </div>
+          <CardPayment.Collapsible title="Diskon Voucher">
+            <CardPayment.CollapsibleItem
+              label="Voucher (DISKONPENGGUNABARU)"
+              value={idrFormat(dataRingkasanPembayaran?.voucherDiscount)}
+            />
+          </CardPayment.Collapsible>
         ) : null}
 
-        {/* Biaya Lainnya Section */}
-        <div className="flex w-full flex-col items-start gap-4">
-          <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
-            Biaya Lainnya
-          </span>
-          <div className="flex w-full flex-col items-start gap-3">
-            <div className="flex w-full items-start justify-between">
-              <span className="w-[180px] text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                Admin Layanan
-              </span>
-              <span className="text-right text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                {idrFormat(dataRingkasanPembayaran?.adminFee)}
-              </span>
-            </div>
+        <CardPayment.Collapsible title="Biaya Lainnya">
+          <div className="flex flex-col gap-3">
+            <CardPayment.CollapsibleItem
+              label="Admin Layanan"
+              value={idrFormat(dataRingkasanPembayaran?.adminFee)}
+            />
 
-            <div className="flex w-full items-start justify-between">
-              <span className="w-[180px] text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                Pajak
-              </span>
-              <span className="text-right text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                {idrFormat(dataRingkasanPembayaran?.taxAmount)}
-              </span>
-            </div>
+            <CardPayment.CollapsibleItem
+              label="Pajak"
+              value={idrFormat(dataRingkasanPembayaran?.tax)}
+            />
           </div>
-        </div>
+        </CardPayment.Collapsible>
 
-        {/* Subtotal Section */}
-        <div className="flex w-full items-center justify-between">
-          <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
-            Subtotal
-          </span>
+        <CardPayment.Subtotal
+          label="Subtotal"
+          value={idrFormat(dataRingkasanPembayaran?.totalPrice)}
+        />
+      </CardPayment.Container>
 
-          <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
-            {idrFormat(dataRingkasanPembayaran?.totalPrice)}
-          </span>
-        </div>
-      </div>
-
-      {/* Total Section */}
-      <div className="flex w-full flex-col items-start p-6">
-        <div className="flex w-full items-start justify-between">
-          <span className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
-            Total
-          </span>
-          <span className="text-right text-[16px] font-bold leading-[19.2px] text-neutral-900">
-            {idrFormat(dataRingkasanPembayaran?.totalPrice)}
-          </span>
-        </div>
-      </div>
-    </div>
+      <CardPayment.FooterTotal label="Total" value="Rp 100.000" />
+    </CardPayment.Root>
   );
 };

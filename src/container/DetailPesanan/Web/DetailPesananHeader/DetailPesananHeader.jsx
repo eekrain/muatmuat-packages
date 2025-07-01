@@ -3,6 +3,12 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
 import Button from "@/components/Button/Button";
+import {
+  SimpleDropdown,
+  SimpleDropdownContent,
+  SimpleDropdownItem,
+  SimpleDropdownTrigger,
+} from "@/components/Dropdown/SimpleDropdownMenu";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import {
@@ -14,6 +20,18 @@ import {
 import Slider from "@/components/Slider/Slider";
 import DriverRatingModal from "@/container/DetailPesanan/Web/DetailPesananHeader/DriverRatingModal";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+
+const ALLOW_LIST = {
+  DetailRefund: [
+    OrderStatusEnum.CANCELED_BY_SHIPPER,
+    OrderStatusEnum.CANCELED_BY_SYSTEM,
+    OrderStatusEnum.CANCELED_BY_TRANSPORTER,
+  ],
+  Unduh: "ALL",
+  PesanUlang: "ALL",
+  DokumenDiterima: [OrderStatusEnum.DOCUMENT_DELIVERY],
+  BeriUlasan: [OrderStatusEnum.COMPLETED],
+};
 
 const DetailPesananHeader = ({ dataStatusPesanan }) => {
   const params = useParams();
@@ -134,6 +152,21 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
     (driver) => driver.hasReview === true
   );
 
+  const unduhMenu = [
+    {
+      label: "Unduh Bukti Pembayaran",
+      onClick: () => {
+        alert("Handle unduh bukti pembayaran");
+      },
+    },
+    {
+      label: "Unduh Dokumen Delivery Order",
+      onClick: () => {
+        alert("Handle unduh dokumen delivery order");
+      },
+    },
+  ];
+
   return (
     <>
       <div className="flex items-center justify-between">
@@ -161,78 +194,80 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
           </Modal>
         </div>
         <div className="flex items-center gap-x-3">
-          {dataStatusPesanan?.orderStatus.startsWith("CANCELED") ? (
-            <>
-              <Link
-                href={`/daftarpesanan/detailpesanan/${params.orderId}/detail-refund`}
+          {ALLOW_LIST.DetailRefund.includes(dataStatusPesanan?.orderStatus) && (
+            <Link
+              href={`/daftarpesanan/detailpesanan/${params.orderId}/detail-refund`}
+            >
+              <Button
+                variant="muatparts-primary-secondary"
+                className="h-8"
+                type="button"
               >
+                Detail Refund
+              </Button>
+            </Link>
+          )}
+
+          {ALLOW_LIST.Unduh === "ALL" && (
+            <SimpleDropdown>
+              <SimpleDropdownTrigger asChild>
                 <Button
+                  iconLeft="/icons/download16.svg"
                   variant="muatparts-primary-secondary"
                   className="h-8"
                   type="button"
                 >
-                  Detail Refund
+                  Unduh
                 </Button>
-              </Link>
-              <Button
-                iconLeft="/icons/download16.svg"
-                variant="muatparts-primary-secondary"
-                className="h-8"
-                onClick={() => {}}
-                type="button"
-              >
-                Unduh
-              </Button>
-              <Button
-                variant="muatparts-primary"
-                className="h-8"
-                onClick={() => setIsDriverRatingModalOpen(true)}
-                type="button"
-              >
-                Pesan Ulang
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                iconLeft="/icons/download16.svg"
-                variant="muatparts-primary-secondary"
-                className="h-8"
-                onClick={() => {}}
-                type="button"
-              >
-                Unduh
-              </Button>
-              <Button
-                variant="muatparts-primary-secondary"
-                className="h-8"
-                onClick={() => setIsReorderFleetModalOpen(true)}
-                type="button"
-              >
-                Pesan Ulang
-              </Button>
-              {dataStatusPesanan?.orderStatus !==
-              OrderStatusEnum.DOCUMENT_SHIPPING ? (
-                <Button
-                  variant="muatparts-primary"
-                  className="h-8"
-                  onClick={() => setIsDocumentReceivedModalOpen(true)}
-                  type="button"
-                >
-                  Dokumen Diterima
-                </Button>
-              ) : null}
-              {dataStatusPesanan?.orderStatus !== OrderStatusEnum.COMPLETED ? (
-                <Button
-                  variant="muatparts-primary"
-                  className="h-8"
-                  onClick={() => setIsDriverRatingModalOpen(true)}
-                  type="button"
-                >
-                  {areAllDriversReviewed ? "Lihat Ulasan" : "Beri Ulasan"}
-                </Button>
-              ) : null}
-            </>
+              </SimpleDropdownTrigger>
+
+              <SimpleDropdownContent className="w-[200px]">
+                {unduhMenu.map((menu, key) => (
+                  <SimpleDropdownItem key={key} onClick={menu.onClick}>
+                    {menu.label}
+                  </SimpleDropdownItem>
+                ))}
+              </SimpleDropdownContent>
+            </SimpleDropdown>
+          )}
+
+          {ALLOW_LIST.PesanUlang === "ALL" && (
+            <Button
+              variant={
+                dataStatusPesanan?.orderStatus.startsWith("CANCELED")
+                  ? "muatparts-primary"
+                  : "muatparts-primary-secondary"
+              }
+              className="h-8"
+              onClick={() => setIsReorderFleetModalOpen(true)}
+              type="button"
+            >
+              Pesan Ulang
+            </Button>
+          )}
+
+          {ALLOW_LIST.DokumenDiterima.includes(
+            dataStatusPesanan?.orderStatus
+          ) && (
+            <Button
+              variant="muatparts-primary"
+              className="h-8"
+              onClick={() => setIsDocumentReceivedModalOpen(true)}
+              type="button"
+            >
+              Dokumen Diterima
+            </Button>
+          )}
+
+          {ALLOW_LIST.BeriUlasan.includes(dataStatusPesanan?.orderStatus) && (
+            <Button
+              variant="muatparts-primary"
+              className="h-8"
+              onClick={() => setIsDriverRatingModalOpen(true)}
+              type="button"
+            >
+              {areAllDriversReviewed ? "Lihat Ulasan" : "Beri Ulasan"}
+            </Button>
           )}
         </div>
       </div>

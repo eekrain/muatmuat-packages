@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -13,13 +13,11 @@ import {
 } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { formatDate } from "@/lib/utils/dateFormat";
 
-const cancellationData = {
-  title: "Alasan Pembatalan",
-  cancellationTime: "12 Nov 2024 11:25 WIB",
-  cancelledBy: "Shipper",
-  reason:
-    "Kami terpaksa membatalkan pemesanan jasa angkut truk karena terjadi perubahan rencana logistik yang tidak terduga. Terima kasih atas pengertiannya.",
-};
+const warningVariantStatus = [
+  OrderStatusEnum.PREPARE_FLEET,
+  OrderStatusEnum.WAITING_PAYMENT_1,
+  OrderStatusEnum.WAITING_PAYMENT_2,
+];
 
 export const StatusPesananHeader = ({
   orderCode,
@@ -30,9 +28,7 @@ export const StatusPesananHeader = ({
     isDocumentDeliveryEvidenceModalOpen,
     setIsDocumentDeliveryEvidenceModalOpen,
   ] = useState(false);
-  const orderStatusLabel = useMemo(() => {
-    return OrderStatusTitle[orderStatus];
-  }, [orderStatus]);
+  const orderStatusLabel = OrderStatusTitle[orderStatus];
 
   const dummyPhoto = [
     "/img/muatan1.png",
@@ -63,8 +59,7 @@ export const StatusPesananHeader = ({
             <div className="flex items-center gap-5">
               <BadgeStatusPesanan
                 variant={
-                  orderStatus === OrderStatusEnum.WAITING_PAYMENT_1 ||
-                  orderStatus === OrderStatusEnum.WAITING_PAYMENT_2
+                  warningVariantStatus.includes(orderStatus)
                     ? "warning"
                     : orderStatus.startsWith("CANCELED")
                       ? "error"
