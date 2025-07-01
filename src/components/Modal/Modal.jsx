@@ -105,10 +105,27 @@ export const Modal = ({
   useEffect(() => {
     if (isOpen) {
       const originalOverflow = document.body.style.overflow;
+      const originalPaddingRight = document.body.style.paddingRight;
+
+      // Calculate scrollbar width BEFORE hiding the scrollbar
+      const scrollbarWidth =
+        window.innerWidth - document.documentElement.clientWidth;
+
+      // Prevent background scroll
       document.body.style.overflow = "hidden";
+
+      // Add padding to prevent layout shift when scrollbar disappears
+      if (scrollbarWidth > 0) {
+        document.body.style.paddingRight = `${scrollbarWidth}px`;
+      }
+
       return () => {
         document.body.style.overflow = originalOverflow;
+        document.body.style.paddingRight = originalPaddingRight;
       };
+    } else {
+      // Reset padding when modal is not open
+      document.body.style.paddingRight = "";
     }
   }, [isOpen]);
 

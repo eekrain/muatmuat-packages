@@ -154,7 +154,7 @@ export const useSewaArmadaStore = create(
               }
             }
             if (!isValidFotoMuatan) {
-              newErrors.fotoMuatan = "Mohon upload foto muatan";
+              newErrors.fotoMuatan = "Muatan harus memiliki minimal 1 foto";
             }
             if (!cargoDescription) {
               newErrors.cargoDescription = "Deskripsi Muatan wajib diisi";

@@ -18,7 +18,7 @@ export const RingkasanPembayaranPending = ({ dataRingkasanPembayaran }) => {
   };
 
   return (
-    <div className="flex w-full flex-col gap-6 rounded-xl bg-white px-6 py-5 shadow-md">
+    <div className="flex w-full flex-col gap-6 overflow-hidden rounded-xl bg-white px-6 py-5 shadow-md">
       <div className="flex h-[92px] items-start justify-between rounded-xl bg-warning-100 px-4 py-6">
         <div>
           <div className="text-base font-bold leading-[1.2] text-secondary-900">
@@ -82,7 +82,7 @@ export const RingkasanPembayaranPending = ({ dataRingkasanPembayaran }) => {
         </div>
       </div>
 
-      <div className="w-full">
+      <div className="w-full shadow-[0px_4px_11px_0px_#41414140]">
         <div className="mb-2 text-xs leading-[1.2] text-neutral-600">
           Total Tagihan
         </div>

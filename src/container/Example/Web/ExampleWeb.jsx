@@ -26,7 +26,6 @@ import Dropdown from "@/components/Dropdown/Dropdown";
 import { DropdownJasaPengiriman } from "@/components/Dropdown/DropdownJasaPengiriman";
 import DropdownRadioBottomsheeet from "@/components/Dropdown/DropdownRadioBottomsheeet";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
-import ExpandableTextArea from "@/components/ExpandableTextArea/ExpandableTextArea";
 import FileUpload from "@/components/FileUpload/FileUpload";
 import Checkbox from "@/components/Form/Checkbox";
 import { DimensionInput } from "@/components/Form/DimensionInput";
@@ -36,6 +35,7 @@ import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import { NumberInput } from "@/components/Form/NumberInput";
 import { Select } from "@/components/Form/Select";
 import { TagInput } from "@/components/Form/TagInput";
+import MyTextArea from "@/components/Form/TextArea";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageUploaderWeb from "@/components/ImageUploader/ImageUploaderWeb";
 import ImagesPreview from "@/components/ImagesPreview/ImagesPreview";
@@ -1552,7 +1552,7 @@ const ExampleInput = () => {
 
       <div className="w-[400px]">
         <h1 className="mb-2 text-xl font-bold">Expandable Text Area</h1>
-        <ExpandableTextArea
+        <MyTextArea
           value={expandableValue}
           onChange={(e) => setExpandableValue(e.target.value)}
           placeholder="Type something here..."

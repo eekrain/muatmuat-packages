@@ -4,20 +4,23 @@ import { useMemo, useState } from "react";
 
 import DaftarPesananWeb from "@/container/DaftarPesanan/Web";
 import useDevice from "@/hooks/use-device";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook } from "@/hooks/use-swr";
 
 const Page = () => {
   const { isMobile, mounted } = useDevice();
-  const [queryParams, setQueryParams] = useState({
+  const defaultQueryParams = {
     page: 1,
     limit: 10,
-    status: "Semua",
+    status: "",
     search: "",
     startDate: null,
     endDate: null,
     sort: "",
     order: "",
-  });
+  };
+  const [queryParams, setQueryParams] = useState(defaultQueryParams);
+  const [lastFilterField, setLastFilterField] = useState("");
 
   // Transform state into query string using useMemo
   const queryString = useMemo(() => {
@@ -30,27 +33,17 @@ const Page = () => {
     if (queryParams.limit && queryParams.limit > 0) {
       params.append("limit", queryParams.limit);
     }
-    if (queryParams.status && queryParams.status !== "Semua") {
-      // Map frontend status to API status
-      const statusMap = {
-        Pembayaran: "WAITING_PAYMENT",
-        Pelunasan: "WAITING_REPAYMENT",
-        Dokumen: "DOCUMENT_SHIPPING",
-      };
-      params.append("status", statusMap[queryParams.status] || "");
+    if (queryParams.status && queryParams.status !== "") {
+      // params.append("status", queryParams.status);
     }
     if (queryParams.search) {
       params.append("search", queryParams.search);
     }
     // Handle dates - both can be provided individually
     if (queryParams.startDate) {
-      // Log the actual date being sent to the API
-      console.log("Start date sent to API:", queryParams.startDate);
       params.append("startDate", queryParams.startDate);
     }
     if (queryParams.endDate) {
-      // Log the actual date being sent to the API
-      console.log("End date sent to API:", queryParams.endDate);
       params.append("endDate", queryParams.endDate);
     }
     if (queryParams.sort) {
@@ -85,14 +78,53 @@ const Page = () => {
     itemsPerPage: 10,
   };
 
+  const tabs = useShallowMemo(
+    () => [
+      { value: "", label: "Semua" },
+      {
+        value: "WAITING_PAYMENT",
+        label: `Menunggu Pembayaran (${countByStatus?.waitingPayment ?? 0})`,
+      },
+      {
+        value: "WAITING_REPAYMENT",
+        label: `Menunggu Pelunasan (${countByStatus?.awaitingSettlement ?? 0})`,
+      },
+      {
+        value: "DOCUMENT_SHIPPING",
+        label: `Proses Pengiriman Dokumen (${countByStatus?.documentProcess ?? 0})`,
+      },
+    ],
+    [countByStatus]
+  );
+
+  const isFirstTimer = useShallowMemo(
+    () =>
+      JSON.stringify(defaultQueryParams) === JSON.stringify(queryParams) ||
+      (lastFilterField === "status" &&
+        Object.keys(defaultQueryParams).every((key) => {
+          if (key === "status") {
+            return tabs.some((item) => item.value === queryParams[key]);
+          }
+          return (
+            JSON.stringify(queryParams[key]) ===
+            JSON.stringify(defaultQueryParams[key])
+          );
+        })),
+    [defaultQueryParams, queryParams, lastFilterField, tabs]
+  );
+
   const handleChangeQueryParams = (field, value) => {
     setQueryParams((prevState) => {
       // Reset to page 1 when changing filters
       if (field !== "page") {
+        if (field === "search") {
+          return { ...defaultQueryParams, [field]: value, page: 1 };
+        }
         return { ...prevState, [field]: value, page: 1 };
       }
       return { ...prevState, [field]: value };
     });
+    setLastFilterField(field);
   };
 
   if (!mounted) {
@@ -107,9 +139,11 @@ const Page = () => {
       onChangeQueryParams={handleChangeQueryParams}
       orders={orders}
       pagination={pagination}
-      countByStatus={countByStatus}
       isOrdersLoading={isOrdersLoading}
       requiringConfirmationCount={requiringConfirmationCount}
+      isFirstTimer={isFirstTimer}
+      lastFilterField={lastFilterField}
+      tabs={tabs}
     />
   );
 };

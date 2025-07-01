@@ -8,8 +8,8 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Input from "@/components/Input/Input";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
-import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useTranslation } from "@/hooks/use-translation";
+import { cn } from "@/lib/utils";
 import { formatDateInput } from "@/lib/utils/dateFormat";
 
 // Helper function to convert DD-MM-YYYY to YYYY-MM-DD
@@ -54,9 +54,9 @@ const DropdownPeriode = ({
   });
   const dropdownRef = useRef(null);
 
-  useShallowCompareEffect(() => {
+  useEffect(() => {
     setSelected(options[0]);
-  }, [options]);
+  }, [JSON.stringify(options)]);
 
   const handleSelect = (option, range) => {
     if (range) {
@@ -119,7 +119,13 @@ const DropdownPeriode = ({
     <div className={"relative w-[202px] text-neutral-900"} ref={dropdownRef}>
       <button
         disabled={disable}
-        className={`flex h-8 w-full items-center justify-between border ${!disable ? "bg-neutral-50 text-neutral-900" : "bg-neutral-200 text-neutral-600"} rounded-lg px-3 py-2 shadow-sm ${isOpen ? "border-primary-700" : "border-neutral-600"}`}
+        className={cn(
+          "flex h-8 w-full items-center justify-between rounded-lg border px-3 py-2",
+          !disable
+            ? "bg-neutral-50 text-neutral-900"
+            : "cursor-not-allowed bg-neutral-200 text-neutral-600",
+          isOpen ? "border-primary-700" : "border-neutral-600"
+        )}
         onClick={() => (!disable ? setIsOpen(!isOpen) : "")}
       >
         <span className="medium-xs line-clamp-1 text-left">
@@ -139,7 +145,10 @@ const DropdownPeriode = ({
               <div className="flex w-full items-center justify-between">
                 <span className="line-clamp-1">{option.name}</span>
                 {selected?.value === option?.value && (
-                  <IconComponent src={"/icons/check-circle.svg"} />
+                  <IconComponent
+                    className="icon-stroke-primary-700"
+                    src="/icons/check16.svg"
+                  />
                 )}
               </div>
             </li>

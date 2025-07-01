@@ -259,3 +259,6 @@ const fetcher = async (cacheKey) => {
 
 export const useGetDetailPesananData = (orderId) =>
   useSWR(`detailPesanan/${orderId}`, fetcher);
+
+export const useGetSalinDetailPesananData = (orderId) =>
+  useSWR(orderId ? `detailPesanan/${orderId}` : null, fetcher);

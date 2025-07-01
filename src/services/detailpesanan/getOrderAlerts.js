@@ -22,11 +22,12 @@ const apiResult = {
 export const getOrderAlerts = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
   const result = apiResult;
-  return result.data.Data.alerts;
+  // return result.data.Data.alerts;
+  return [];
 
   // const result = await fetcherMuatrans.get(`v1/orders/${orderId}/alerts`);
 
-  // return result?.data?.Data || [];
+  // return result?.data?.Data?.alerts || [];
 };
 
 export const useGetOrderAlerts = (orderId) =>
