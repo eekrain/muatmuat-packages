@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
@@ -17,20 +19,48 @@ export const MyTextArea = ({
   ...inputProps
 }) => {
   const { t } = useTranslation();
+  const textareaRef = useRef(null);
+  const [isGrow, setIsGrow] = useState(false);
+
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      // Reset height to get the correct scrollHeight
+      textarea.style.height = "12px";
+
+      // Calculate new height
+      const newHeight = Math.min(Math.max(textarea.scrollHeight, 12), 100);
+      setIsGrow(newHeight > 16);
+      textarea.style.height = `${newHeight}px`;
+    }
+  }, [value]);
+
   return (
-    <div className={cn("flex flex-col gap-2", className)}>
-      <textarea
-        {...inputProps}
+    <div className={cn("flex w-full flex-col gap-2", className)}>
+      <div
         className={cn(
-          "w-full rounded-[6px] border border-neutral-600 p-3 text-xs font-medium leading-[1.2] text-neutral-900 outline-none placeholder:text-neutral-600 focus-within:border-primary-700 hover:border-primary-700",
+          "flex max-h-[100px] min-h-[32px] w-full items-center rounded-[6px] border border-neutral-600",
+          isGrow ? "p-3" : "px-3",
           errorMessage && "border-error-400",
-          appearance.inputClassName
+          "focus-within:border-primary-700 hover:border-primary-700"
         )}
-        maxLength={maxLength}
-        value={value}
-        placeholder={placeholder}
-        disabled={disabled}
-      />
+      >
+        <textarea
+          {...inputProps}
+          ref={textareaRef}
+          className={cn(
+            "my-auto max-h-[76px] min-h-[12px] w-full resize-none overflow-y-auto text-xs font-medium leading-[1.2] text-neutral-900 outline-none placeholder:text-neutral-600",
+            appearance.inputClassName
+          )}
+          maxLength={maxLength}
+          value={value}
+          placeholder={placeholder}
+          disabled={disabled}
+          style={{
+            height: "12px",
+          }}
+        />
+      </div>
 
       <div
         className={cn(
@@ -48,3 +78,5 @@ export const MyTextArea = ({
     </div>
   );
 };
+
+export default MyTextArea;

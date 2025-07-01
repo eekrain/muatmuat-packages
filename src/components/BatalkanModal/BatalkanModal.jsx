@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import Button from "../Button/Button";
-import Input from "../Form/Input";
+import MyTextArea from "../Form/TextArea";
 import { Modal, ModalContent, ModalHeader } from "../Modal/Modal";
 import RadioButton from "../Radio/RadioButton";
 
@@ -56,12 +56,17 @@ const BatalkanModal = ({
                 {index === cancelReasons.length - 1 &&
                   selectedReason ===
                     cancelReasons[cancelReasons.length - 1]?.value && (
-                    <Input
-                      placeholder="Masukkan Alasan Pembatalan"
-                      className="w-full pl-[21px]"
+                    <MyTextArea
                       value={customReason}
                       onChange={(e) => setCustomReason(e.target.value)}
+                      placeholder="Masukkan Detail Lokasi"
+                      maxLength={500}
                       errorMessage={errors?.customReason}
+                      appearance={{
+                        inputClassName: "resize-none h-8",
+                      }}
+                      className="mt-1"
+                      withCharCount
                     />
                   )}
               </div>

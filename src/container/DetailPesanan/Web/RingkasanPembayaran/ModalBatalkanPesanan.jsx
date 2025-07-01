@@ -96,9 +96,9 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran }) => {
 
     if (isOtherReason && !customReason)
       errors.customReason = "Alasan pembatalan harus diisi";
+    setCancelFormErrors(errors);
 
     if (Object.keys(errors).length > 0) {
-      setCancelFormErrors(errors);
       return;
     }
 
@@ -110,20 +110,22 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran }) => {
       return;
     }
 
-    // Implement cancel order
-    const body = {
-      reasonId: selectedReason,
-      additionalInfo: isOtherReason ? customReason : "",
-    };
+    // // Implement cancel order
+    // const body = {
+    //   reasonId: selectedReason,
+    //   additionalInfo: isOtherReason ? customReason : "",
+    // };
 
-    fetcherMuatrans
-      .post(`v1/orders/${routerParams.orderId}/cancel`, body)
-      .then((response) => {
-        toast.success(response.data?.Data?.message);
-      })
-      .catch((error) => {
-        toast.error(error.response.data?.Data?.message);
-      });
+    // fetcherMuatrans
+    //   .post(`v1/orders/${routerParams.orderId}/cancel`, body)
+    //   .then((response) => {
+    //     toast.success(response.data?.Data?.Message);
+    //   })
+    //   .catch((error) => {
+    //     toast.error(error.response.data?.Data?.Message);
+    //   });
+    toast.success("Pesanan kamu berhasil dibatalkan");
+    setIsModalReasonOpen(false);
   };
 
   const { params: otpParams, formValues: otpValues } = useRequestOtpStore();
@@ -222,8 +224,8 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran }) => {
             {/* Action Button */}
             <Button
               variant="muatparts-primary-secondary"
+              disabled={!isAgreed}
               type="button"
-              className={`h-8 min-w-[112px] ${!isAgreed ? "cursor-not-allowed opacity-50" : ""}`}
               onClick={() => {
                 setIsModalBatalkanOpen(false);
                 setIsModalReasonOpen(true);

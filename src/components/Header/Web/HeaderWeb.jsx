@@ -3,9 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { ChevronDown } from "lucide-react";
 
+import {
+  SimpleDropdown,
+  SimpleDropdownContent,
+  SimpleDropdownItem,
+  SimpleDropdownTrigger,
+} from "@/components/Dropdown/SimpleDropdownMenu";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { useAuth } from "@/hooks/use-auth";
@@ -29,10 +34,6 @@ const HeaderWeb = ({
   const { dataUser } = useAuth();
 
   const menuNotifications = [
-    // {
-    //   src: "/icons/orders.svg",
-    //   count: 32,
-    // },
     {
       src: "/icons/messages.svg",
       count: notifCounter.chat,
@@ -40,6 +41,21 @@ const HeaderWeb = ({
     {
       src: "/icons/notifications.svg",
       count: notifCounter.notification,
+    },
+  ];
+
+  const settingsMenu = [
+    {
+      label: "Manajemen Lokasi",
+      onClick: () => {
+        alert("Handle redirect general manajemen lokasi");
+      },
+    },
+    {
+      label: "Rekening Bank",
+      onClick: () => {
+        alert("Handle redirect general rekening bank");
+      },
     },
   ];
 
@@ -116,50 +132,23 @@ const HeaderWeb = ({
             <span>Daftar Pesanan</span>
           </Link>
 
-          <DropdownMenuPrimitive.Root data-slot="dropdown-menu">
-            <DropdownMenuPrimitive.Trigger
-              data-slot="dropdown-menu-trigger"
-              asChild
-            >
+          <SimpleDropdown>
+            <SimpleDropdownTrigger asChild>
               <button className="flex h-8 items-center gap-1 border-b-2 border-transparent outline-none">
                 <IconComponent src="/icons/header-pengaturan.svg" />
                 <span>Pengaturan</span>
                 <ChevronDown className="h-4 w-4" />
               </button>
-            </DropdownMenuPrimitive.Trigger>
-            <DropdownMenuPrimitive.Portal data-slot="dropdown-menu-portal">
-              <DropdownMenuPrimitive.Content
-                data-slot="dropdown-menu-content"
-                className="shadow-muat z-50 mt-1 flex w-[194px] flex-col rounded-md border border-neutral-300 bg-neutral-50"
-                side="bottom"
-                align="start"
-              >
-                <DropdownMenuPrimitive.Item
-                  data-slot="dropdown-menu-item"
-                  className={cn(
-                    "cursor-pointer px-2.5 py-3 text-xs font-medium leading-[1.2] outline-none hover:bg-neutral-100"
-                  )}
-                  onClick={() => {
-                    alert("Handle redirect general manajemen lokasi");
-                  }}
-                >
-                  Manajemen Lokasi
-                </DropdownMenuPrimitive.Item>
+            </SimpleDropdownTrigger>
 
-                <DropdownMenuPrimitive.Item
-                  data-slot="dropdown-menu-item"
-                  className={cn(
-                    "cursor-pointer px-2.5 py-3 text-xs font-medium leading-[1.2] outline-none hover:bg-neutral-100"
-                  )}
-                  onClick={() => {
-                    alert("Handle redirect general rekening bank");
-                  }}
-                >
-                  Rekening Bank
-                </DropdownMenuPrimitive.Item>
-              </DropdownMenuPrimitive.Content>
-            </DropdownMenuPrimitive.Portal>
-          </DropdownMenuPrimitive.Root>
+            <SimpleDropdownContent>
+              {settingsMenu.map((menu, key) => (
+                <SimpleDropdownItem key={key} onClick={menu.onClick}>
+                  {menu.label}
+                </SimpleDropdownItem>
+              ))}
+            </SimpleDropdownContent>
+          </SimpleDropdown>
         </div>
       )}
     </header>
