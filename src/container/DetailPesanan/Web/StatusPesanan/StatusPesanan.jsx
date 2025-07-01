@@ -65,7 +65,7 @@ const StatusPesanan = ({ dataStatusPesanan }) => {
             />
 
             {/* Timeline Section */}
-            {showStepperOnly ? (
+            {showStepperOnly && dataStatusPesanan.driverStatus?.length > 0 ? (
               <div className="flex w-full flex-col gap-y-5 rounded-xl border border-neutral-400 px-4 py-5">
                 <StepperContainer
                   activeIndex={dataStatusPesanan.statusHistory.activeIndex}
@@ -82,7 +82,7 @@ const StatusPesanan = ({ dataStatusPesanan }) => {
                   )}
                 </StepperContainer>
               </div>
-            ) : showDriver ? (
+            ) : showDriver && dataStatusPesanan.driverStatus?.length > 0 ? (
               <DriverStatusCard
                 dataStatusPesanan={dataStatusPesanan}
                 dataDriverStatus={dataStatusPesanan.driverStatus}

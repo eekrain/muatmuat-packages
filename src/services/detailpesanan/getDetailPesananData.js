@@ -104,7 +104,7 @@ const apiResultOrderDetail = {
         orderId: "550e8400-e29b-41d4-a716-446655440000",
         transporterOrderCode: "MT.25.AA.001",
         invoiceNumber: "INV/12345678",
-        orderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
+        orderStatus: OrderStatusEnum.CONFIRMED,
         orderTitle: "Dimuat",
         orderType: "INSTANT",
         createdAt: "2024-01-01T10:00:00Z",

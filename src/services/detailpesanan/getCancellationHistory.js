@@ -19,7 +19,7 @@ const apiResult = {
           "Kami terpaksa membatalkan pemesanan jasa angkut truk karena terjadi perubahan rencana logistik yang tidak terduga. Terima kasih atas pengertiannya.",
       },
       hasRefund: true,
-      refundStatus: "PROCESSING",
+      refundStatus: "REFUND_PROCESSING",
     },
     Type: "CANCELLATION_HISTORY",
   },

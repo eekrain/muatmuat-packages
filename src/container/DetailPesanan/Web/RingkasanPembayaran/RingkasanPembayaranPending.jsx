@@ -1,4 +1,5 @@
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
+import CardPayment from "@/components/Card/CardPayment";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useCountdown } from "@/hooks/use-countdown";
 import { PaymentMethodTitle } from "@/lib/constants/detailpesanan/payment.enum";
@@ -18,61 +19,58 @@ export const RingkasanPembayaranPending = ({ dataRingkasanPembayaran }) => {
   };
 
   return (
-    <div className="flex w-full flex-col gap-6 overflow-hidden rounded-xl bg-white px-6 py-5 shadow-md">
-      <div className="flex h-[92px] items-start justify-between rounded-xl bg-warning-100 px-4 py-6">
-        <div>
-          <div className="text-base font-bold leading-[1.2] text-secondary-900">
-            Bayar Sebelum
-          </div>
-          <span className="text-xs leading-[1.1] text-neutral-900">
-            {formatDate(dataRingkasanPembayaran?.expiredAt)}
-          </span>
-        </div>
-
-        <BadgeStatusPesanan
-          variant="error"
-          icon={{ iconLeft: "/icons/clock.svg" }}
-          className={"w-fit"}
-        >
-          {countdown}
-        </BadgeStatusPesanan>
-      </div>
-
-      <div className="w-full">
-        <div className="mb-2 text-xs leading-[1.2] text-neutral-600">
-          Opsi Pembayaran
-        </div>
-
-        <div className="w-full">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold leading-[1.2] text-neutral-900">
-              Bank {PaymentMethodTitle[dataRingkasanPembayaran?.paymentMethod]}
+    <CardPayment.Root className="w-full">
+      <CardPayment.Content className="pb-6 pt-6">
+        <div className="flex h-[92px] items-start justify-between rounded-xl bg-warning-100 px-4 py-6">
+          <div className="text-xs font-medium leading-[1.2]">
+            <div className="text-base font-bold text-secondary-900">
+              Bayar Sebelum
+            </div>
+            <span className="text-neutral-900">
+              {formatDate(dataRingkasanPembayaran?.expiredAt)}
             </span>
+          </div>
 
-            <IconComponent
-              src={`/icons/payment/${dataRingkasanPembayaran?.paymentMethod}.svg`}
-              width={16}
-              height={16}
-              className="bg-white"
-            />
+          <BadgeStatusPesanan
+            variant="error"
+            icon={{ iconLeft: "/icons/clock.svg" }}
+            className={"w-fit"}
+          >
+            {countdown}
+          </BadgeStatusPesanan>
+        </div>
+
+        <div className="text-xs font-medium leading-[1.2]">
+          <div className="mb-2 text-neutral-600">Opsi Pembayaran</div>
+
+          <div className="w-full">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-neutral-900">
+                Bank{" "}
+                {PaymentMethodTitle[dataRingkasanPembayaran?.paymentMethod]}
+              </span>
+
+              <IconComponent
+                src={`/icons/payment/${dataRingkasanPembayaran?.paymentMethod}.svg`}
+                width={16}
+                height={16}
+                className="bg-white"
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="w-full">
-        <span className="mb-2 text-xs leading-[1.2] text-neutral-600">
-          Nomor Virtual Account
-        </span>
+        <div className="text-xs font-medium leading-[1.2]">
+          <div className="mb-2 text-neutral-600">Nomor Virtual Account</div>
 
-        <div className="w-full">
           <div className="flex items-center justify-between">
-            <div className="text-xs font-bold leading-[1.2] text-neutral-900">
+            <div className="font-bold text-neutral-900">
               {dataRingkasanPembayaran?.vaNumber}
             </div>
 
             <button
               onClick={handleCopyVA}
-              className="flex items-center gap-1 text-[12px] font-semibold leading-[14.4px] text-primary-700"
+              className="flex items-center gap-1 font-semibold text-primary-700"
             >
               <span className="-mb-[2px]">Salin</span>
 
@@ -80,17 +78,15 @@ export const RingkasanPembayaranPending = ({ dataRingkasanPembayaran }) => {
             </button>
           </div>
         </div>
-      </div>
 
-      <div className="w-full shadow-[0px_4px_11px_0px_#41414140]">
-        <div className="mb-2 text-xs leading-[1.2] text-neutral-600">
-          Total Tagihan
-        </div>
+        <div className="text-xs font-medium leading-[1.2]">
+          <div className="mb-2 text-neutral-600">Total Tagihan</div>
 
-        <div className="text-xs font-bold leading-[1.2] text-neutral-900">
-          {idrFormat(dataRingkasanPembayaran?.totalPrice)}
+          <div className="font-bold text-neutral-900">
+            {idrFormat(dataRingkasanPembayaran?.totalPrice)}
+          </div>
         </div>
-      </div>
-    </div>
+      </CardPayment.Content>
+    </CardPayment.Root>
   );
 };
