@@ -92,7 +92,7 @@ export const SummaryPanel = () => {
   const [isModalConfirmationOpen, setIsModalConfirmationOpen] = useState(false);
   const baseOrderAmount = 950000;
   const [currentTotal, setCurrentTotal] = useState(0);
-
+  const [showInfoPopup, setShowInfoPopup] = useState(null);
   // Method: Using flatMap and reduce
   const detailPesanan = [
     {
