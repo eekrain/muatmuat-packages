@@ -2,6 +2,7 @@ import { Fragment } from "react";
 
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import ImageUploader from "@/components/ImageUploader/ImageUploader";
+import { cn } from "@/lib/utils";
 import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
@@ -34,9 +35,14 @@ export const FotoMuatan = () => {
               />
             </Fragment>
           ))}
-          <p className="w-full text-xs font-medium text-neutral-600">
-            Maksimal unggah 4 foto muatan dengan format .jpg/.jpeg/.png, besar
-            file maks. 10MB
+          <p
+            className={cn(
+              "w-full text-[12px] font-medium leading-[14.4px]",
+              formErrors?.fotoMuatan ? "text-error-400" : "text-neutral-600"
+            )}
+          >
+            {formErrors?.fotoMuatan ??
+              "Maksimal unggah 4 foto muatan dengan format .jpg/.jpeg/.png, besar file maks. 10MB"}
           </p>
         </div>
       </div>

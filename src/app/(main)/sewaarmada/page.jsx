@@ -8,6 +8,7 @@ import SewaArmadaWeb from "@/container/SewaArmada/Web/SewaArmadaWeb";
 import useDevice from "@/hooks/use-device";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useSWRHook } from "@/hooks/use-swr";
+import { useGetSalinDetailPesananData } from "@/services/detailpesanan/getDetailPesananData";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -17,6 +18,7 @@ const Page = () => {
   const { isMobile, mounted } = useDevice();
   const searchParams = useSearchParams();
   const urlFormId = searchParams.get("formid");
+  const copyOrderId = searchParams.get("orderId");
   const localFormId = useSewaArmadaStore((state) => state.formId);
   const cargoTypeId = useSewaArmadaStore(
     (state) => state.formValues.cargoTypeId
@@ -26,6 +28,9 @@ const Page = () => {
   );
   const { setField, setFormId, reset } = useSewaArmadaActions();
 
+  const { data: dataDetailPesanan, isLoading: isLoadingDetailPesanan } =
+    useGetSalinDetailPesananData(copyOrderId);
+  console.log("dataDetailPesanan", dataDetailPesanan);
   const { data: requiringConfirmationCountData } = useSWRHook(
     "v1/orders/requiring-confirmation/count"
   );

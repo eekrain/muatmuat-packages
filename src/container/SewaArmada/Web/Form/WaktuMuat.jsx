@@ -22,7 +22,7 @@ export const WaktuMuat = () => {
   );
   const formErrors = useSewaArmadaStore((state) => state.formErrors);
   const { setField } = useSewaArmadaActions();
-  console.log("load", loadTimeStart);
+
   const handleDateChange = (field, value) => {
     const newDate = new Date(value);
     newDate.setSeconds(0, 0);
@@ -70,7 +70,9 @@ export const WaktuMuat = () => {
           {formErrors.loadTimeStart || formErrors.loadTimeEnd ? (
             <div className="flex items-center gap-x-[34px] text-[12px] font-medium leading-[14.4px] text-error-400">
               <div className="w-[271px]">{formErrors.loadTimeStart}</div>
-              <div className="w-[271px]">{formErrors.loadTimeEnd}</div>
+              {showRangeOption ? (
+                <div className="w-[271px]">{formErrors.loadTimeEnd}</div>
+              ) : null}
             </div>
           ) : null}
         </div>
@@ -81,7 +83,10 @@ export const WaktuMuat = () => {
             value="rentang_waktu"
             checked={showRangeOption}
             onChange={({ checked }) =>
-              handleFirstTime(() => setField("showRangeOption", checked))
+              handleFirstTime(() => {
+                setField("showRangeOption", checked);
+                setField("loadTimeEnd", null);
+              })
             }
           />
           <InfoTooltip>

@@ -138,9 +138,9 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
     setIsDocumentReceivedModalOpen(false);
   };
 
-  const handleReorderFleet = (id) => {
-    if (id) {
-      alert("Pesan ulang");
+  const handleReorderFleet = (orderId) => {
+    if (orderId) {
+      router.push(`/sewaarmada?orderId=${orderId}`);
     } else {
       router.push("/sewaarmada");
     }
@@ -306,7 +306,7 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
         }}
         confirm={{
           text: "Pesan Ulang",
-          onClick: () => handleReorderFleet(1),
+          onClick: () => handleReorderFleet(params.orderId),
         }}
       />
 
