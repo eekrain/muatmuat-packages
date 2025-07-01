@@ -53,7 +53,6 @@ export const SummaryPanel = () => {
   const [validationErrors, setValidationErrors] = useState({});
   const [selectedVoucher, setSelectedVoucher] = useState(null);
   const [showVoucherPopup, setShowVoucherPopup] = useState(false);
-  const [showInfoPopup, setShowInfoPopup] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [toastMessage, setToastMessage] = useState("");
 
