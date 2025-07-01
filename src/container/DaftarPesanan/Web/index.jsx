@@ -16,6 +16,8 @@ const DaftarPesananWeb = ({
   countByStatus,
   isOrdersLoading,
   requiringConfirmationCount,
+  isFirstTimer,
+  lastFilterField,
 }) => {
   const { t } = useTranslation();
   const [tempSearch, setTempSearch] = useState("");
@@ -137,7 +139,14 @@ const DaftarPesananWeb = ({
       format: "year",
     },
   ];
-
+  console.log(
+    "abc",
+    !hasOrders,
+    isFirstTimer,
+    !queryParams.startDate,
+    !queryParams.endDate,
+    isFirstTimer || (!queryParams.startDate && !queryParams.endDate)
+  );
   return (
     <>
       <main className="flex justify-center px-10 py-8">
@@ -148,6 +157,11 @@ const DaftarPesananWeb = ({
               Daftar Pesanan
             </h1>
             <DropdownPeriode
+              disable={
+                !hasOrders &&
+                (isFirstTimer ||
+                  (!queryParams.startDate && !queryParams.endDate))
+              }
               options={periodOptions}
               onSelect={handleSelectSort}
               recentSelections={getRecentOptionsSort}
@@ -170,6 +184,8 @@ const DaftarPesananWeb = ({
             isOrdersLoading={isOrdersLoading}
             hasOrders={hasOrders}
             countByStatus={countByStatus}
+            isFirstTimer={isFirstTimer}
+            lastFilterField={lastFilterField}
           />
 
           {/* Pagination */}

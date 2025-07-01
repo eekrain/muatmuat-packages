@@ -5,6 +5,7 @@ import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Button from "@/components/Button/Button";
 import Card, { CardContent } from "@/components/Card/Card";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
+import Filter from "@/components/Filter/Filter";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
@@ -14,6 +15,8 @@ import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+
+import { TagBubble } from "../Badge/TagBubble";
 
 const PesananTable = ({
   queryParams,
@@ -25,7 +28,25 @@ const PesananTable = ({
   isOrdersLoading,
   searchOnly = false,
   countByStatus,
+  isFirstTimer,
+  lastFilterField,
 }) => {
+  // Updated options with new structure
+  const options = [
+    {
+      key: "status",
+      label: "Status",
+      children: [
+        { value: "CONFIRMED", label: "Pesanan Terkonfirmasi" },
+        { value: "SCHEDULED_FLEET", label: "Armada Dijadwalkan" },
+        { value: "LOADING", label: "Proses Muat" },
+        { value: "UNLOADING", label: "Proses Bongkar" },
+        { value: "PREPARE_DOCUMENT", label: "Dokumen Sedang Disiapkan" },
+        { value: "COMPLETED", label: "Selesai" },
+        { value: "CANCELED", label: "Dibatalkan" },
+      ],
+    },
+  ];
   const router = useRouter();
 
   const [isDocumentReceivedModalOpen, setIsDocumentReceivedModalOpen] =
@@ -37,21 +58,29 @@ const PesananTable = ({
 
   const tabs = useShallowMemo(
     () => [
-      { id: "Semua", label: "Semua" },
+      { value: "", label: "Semua" },
       {
-        id: "Pembayaran",
+        value: "WAITING_PAYMENT",
         label: `Menunggu Pembayaran (${countByStatus?.waitingPayment ?? 0})`,
       },
       {
-        id: "Pelunasan",
+        value: "WAITING_REPAYMENT",
         label: `Menunggu Pelunasan (${countByStatus?.awaitingSettlement ?? 0})`,
       },
       {
-        id: "Dokumen",
+        value: "DOCUMENT_SHIPPING",
         label: `Proses Pengiriman Dokumen (${countByStatus?.documentProcess ?? 0})`,
       },
     ],
     [countByStatus]
+  );
+
+  const selectedFilter = useShallowMemo(
+    () =>
+      options
+        .flatMap((item) => item.children || [])
+        .find((item) => item.value === queryParams.status),
+    [options, queryParams]
   );
 
   const handleSearch = (e) => {
@@ -149,53 +178,89 @@ const PesananTable = ({
       <Card className="shadow-muat mt-6 h-auto w-[1232px] border-none">
         <CardContent className="p-0">
           {/* Table Filter */}
-          <div className="flex items-center justify-between p-6 pt-5">
-            <div className="flex items-center gap-x-3">
-              <Input
-                className="gap-0"
-                appearance={{ containerClassName: "w-[262px]" }}
-                placeholder="Cari Pesanan"
-                icon={{
-                  left: "/icons/search16.svg",
-                  right: tempSearch ? (
-                    <IconComponent
-                      src="/icons/silang16.svg"
-                      onClick={handleClearSearch}
-                    />
-                  ) : null,
-                }}
-                value={tempSearch}
-                onChange={({ target: { value } }) => setTempSearch(value)}
-                onKeyUp={handleSearch}
-              />
-            </div>
-            {searchOnly ? null : (
+          <div className="flex flex-col gap-y-6 p-6 pt-5">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-x-3">
-                <span className="text-[12px] font-bold leading-[14.4px] text-neutral-900">
-                  Tampilkan:
-                </span>
-                {tabs.map((tab, key) => (
-                  <div
-                    key={key}
-                    onClick={() => onChangeQueryParams("status", tab.id)}
-                    className={cn(
-                      "cursor-pointer rounded-full px-3 py-[6px] text-[10px] font-semibold",
-                      queryParams.status === tab.id
-                        ? "border border-primary-700 bg-[#E2F2FF] text-primary-700"
-                        : "bg-[#F1F1F1] text-neutral-900"
-                    )}
-                  >
-                    {tab.label}
-                  </div>
-                ))}
+                <Input
+                  className="gap-0"
+                  appearance={{ containerClassName: "w-[262px]" }}
+                  placeholder="Cari Pesanan"
+                  icon={{
+                    left: "/icons/search16.svg",
+                    right: tempSearch ? (
+                      <IconComponent
+                        src="/icons/silang16.svg"
+                        onClick={handleClearSearch}
+                      />
+                    ) : null,
+                  }}
+                  value={tempSearch}
+                  onChange={({ target: { value } }) => setTempSearch(value)}
+                  onKeyUp={handleSearch}
+                />
+                <Filter
+                  options={options}
+                  value={queryParams.status}
+                  onChange={({ name, value }) =>
+                    onChangeQueryParams(name, value)
+                  }
+                />
               </div>
-            )}
+              {searchOnly ? null : (
+                <div className="flex items-center gap-x-3">
+                  <span className="text-[12px] font-bold leading-[14.4px] text-neutral-900">
+                    Tampilkan:
+                  </span>
+                  {tabs.map((tab, key) => {
+                    // Check if this is the "Semua" tab (empty value) and if the current queryParams.status
+                    // isn't one of the specific tab values
+                    const isActiveAllTab =
+                      tab.value === "" &&
+                      queryParams.status !== "WAITING_PAYMENT" &&
+                      queryParams.status !== "WAITING_REPAYMENT" &&
+                      queryParams.status !== "DOCUMENT_SHIPPING";
+
+                    return (
+                      <div
+                        key={key}
+                        onClick={() => onChangeQueryParams("status", tab.value)}
+                        className={cn(
+                          "cursor-pointer rounded-full px-3 py-[6px] text-[10px] font-semibold",
+                          queryParams.status === tab.value || isActiveAllTab
+                            ? "border border-primary-700 bg-[#E2F2FF] text-primary-700"
+                            : "bg-[#F1F1F1] text-neutral-900"
+                        )}
+                      >
+                        {tab.label}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+            {selectedFilter ? (
+              <div className="flex items-center gap-x-3">
+                <button
+                  className="text-[12px] font-bold leading-[14.4px] text-primary-700"
+                  onClick={() => onChangeQueryParams("status", "")}
+                >
+                  Hapus Semua Filter
+                </button>
+                <TagBubble
+                  withRemove={{
+                    onRemove: () => onChangeQueryParams("status", ""),
+                  }}
+                >
+                  {selectedFilter.label}
+                </TagBubble>
+              </div>
+            ) : null}
           </div>
 
           {/* Table Component with proper structure */}
           {isOrdersLoading ? (
             <div className="flex min-h-[358px] w-full animate-pulse bg-neutral-200"></div>
-          ) : hasOrders ? (
+          ) : hasOrders || !isFirstTimer ? (
             <div className="w-full overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
@@ -507,14 +572,43 @@ const PesananTable = ({
                   })}
                 </tbody>
               </table>
+              {!hasOrders ? (
+                <div className="flex w-full pb-6">
+                  <div
+                    className={cn(
+                      "flex w-full items-center justify-center",
+                      lastFilterField === "search" ? "h-[193px]" : "h-[145px]"
+                    )}
+                  >
+                    {lastFilterField === "search" ? (
+                      <DataNotFound
+                        className="gap-y-5"
+                        textClass="text-[#868686] leading-[19.2px] w-[197px]"
+                        title="Keyword Tidak Ditemukan"
+                        width={142}
+                        height={122}
+                        type="search"
+                      />
+                    ) : (
+                      <DataNotFound
+                        className="gap-y-3"
+                        textClass="text-[#868686] w-[117px]"
+                        title="Tidak ada data"
+                        width={96}
+                        height={77}
+                      />
+                    )}
+                  </div>
+                </div>
+              ) : null}
             </div>
-          ) : (
+          ) : isFirstTimer ? (
             <div className="flex min-h-[358px] w-full justify-center pb-6">
               <div className="flex flex-col items-center justify-center gap-y-3">
                 <DataNotFound
                   className="gap-y-3"
                   textClass="text-[#868686] leading-[19.2px] w-[289px]"
-                  title="Oops, daftar pesananmu masih kosong "
+                  title="Oops, daftar pesananmu masih kosong"
                   width={96}
                   height={77}
                 />
@@ -531,7 +625,7 @@ const PesananTable = ({
                 </Button>
               </div>
             </div>
-          )}
+          ) : null}
         </CardContent>
       </Card>
 
