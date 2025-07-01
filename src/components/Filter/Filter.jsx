@@ -5,7 +5,7 @@ import RadioButton from "@/components/Radio/RadioButton";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { cn } from "@/lib/utils";
 
-const MultilevelSelect = ({ options, value, onChange }) => {
+const MultilevelSelect = ({ options, value, onChange, disabled }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeFirstLevelItem, setActiveFirstLevelItem] = useState(null);
   const dropdownRef = useRef(null);
@@ -149,9 +149,13 @@ const MultilevelSelect = ({ options, value, onChange }) => {
       {/* Select Button */}
       <button
         className={cn(
-          "flex h-8 w-[110px] cursor-pointer items-center justify-between rounded-md border bg-neutral-50 px-3",
-          isActive ? "border-primary-700" : "border-neutral-600"
+          "flex h-8 w-[110px] items-center justify-between rounded-md border bg-neutral-50 px-3",
+          isActive ? "border-primary-700" : "border-neutral-600",
+          disabled
+            ? "bg-neutral-200 hover:cursor-not-allowed"
+            : "hover:cursor-pointer"
         )}
+        disabled={disabled}
         onClick={() => {
           // Toggle dropdown and reset active item when closing
           const newIsOpen = !isOpen;
@@ -171,7 +175,10 @@ const MultilevelSelect = ({ options, value, onChange }) => {
           Filter
         </div>
         <IconComponent
-          className={cn(isActive ? "icon-blue" : "")}
+          className={cn(
+            isActive ? "icon-blue" : "",
+            disabled ? "icon-gray" : ""
+          )}
           src="/icons/filter16.svg"
         />
       </button>

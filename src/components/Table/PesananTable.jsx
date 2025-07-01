@@ -27,9 +27,9 @@ const PesananTable = ({
   orders,
   isOrdersLoading,
   searchOnly = false,
-  countByStatus,
   isFirstTimer,
   lastFilterField,
+  tabs,
 }) => {
   // Updated options with new structure
   const options = [
@@ -55,25 +55,6 @@ const PesananTable = ({
   const [isLokasiMuatBongkarModalOpen, setIsLokasiMuatBongkarModalOpen] =
     useState(false);
   const [selectedLocations, setSelectedLocations] = useState([]);
-
-  const tabs = useShallowMemo(
-    () => [
-      { value: "", label: "Semua" },
-      {
-        value: "WAITING_PAYMENT",
-        label: `Menunggu Pembayaran (${countByStatus?.waitingPayment ?? 0})`,
-      },
-      {
-        value: "WAITING_REPAYMENT",
-        label: `Menunggu Pelunasan (${countByStatus?.awaitingSettlement ?? 0})`,
-      },
-      {
-        value: "DOCUMENT_SHIPPING",
-        label: `Proses Pengiriman Dokumen (${countByStatus?.documentProcess ?? 0})`,
-      },
-    ],
-    [countByStatus]
-  );
 
   const selectedFilter = useShallowMemo(
     () =>
@@ -183,6 +164,7 @@ const PesananTable = ({
               <div className="flex items-center gap-x-3">
                 <Input
                   className="gap-0"
+                  disabled={!hasOrders && (isFirstTimer || !queryParams.search)}
                   appearance={{ containerClassName: "w-[262px]" }}
                   placeholder="Cari Pesanan"
                   icon={{
@@ -198,13 +180,18 @@ const PesananTable = ({
                   onChange={({ target: { value } }) => setTempSearch(value)}
                   onKeyUp={handleSearch}
                 />
-                <Filter
-                  options={options}
-                  value={queryParams.status}
-                  onChange={({ name, value }) =>
-                    onChangeQueryParams(name, value)
-                  }
-                />
+                {searchOnly ? null : (
+                  <Filter
+                    disabled={
+                      !hasOrders && (isFirstTimer || !queryParams.status)
+                    }
+                    options={options}
+                    value={queryParams.status}
+                    onChange={({ name, value }) =>
+                      onChangeQueryParams(name, value)
+                    }
+                  />
+                )}
               </div>
               {searchOnly ? null : (
                 <div className="flex items-center gap-x-3">
@@ -239,7 +226,7 @@ const PesananTable = ({
               )}
             </div>
             {selectedFilter ? (
-              <div className="flex items-center gap-x-3">
+              <div className="flex h-8 items-center gap-x-3">
                 <button
                   className="text-[12px] font-bold leading-[14.4px] text-primary-700"
                   onClick={() => onChangeQueryParams("status", "")}
@@ -317,6 +304,15 @@ const PesananTable = ({
 
                     // Get the first item (earliest in the enum)
                     const latestStatus = sortedArray[0];
+
+                    const beforeLoadingStatus = [
+                      OrderStatusEnum.PREPARE_FLEET,
+                      OrderStatusEnum.WAITING_PAYMENT_1,
+                      OrderStatusEnum.WAITING_PAYMENT_2,
+                      OrderStatusEnum.SCHEDULED_FLEET,
+                      OrderStatusEnum.CONFIRMED,
+                    ];
+
                     return (
                       <Fragment key={key}>
                         {/* Main row - conditional border based on whether it has a warning */}
@@ -489,21 +485,8 @@ const PesananTable = ({
                           <td className="w-[174px] pb-4 pl-0 pr-6 pt-5 align-top">
                             <div className="flex flex-col gap-y-3">
                               {/* Conditional button based on status */}
-                              {latestStatus === OrderStatusEnum.LOADING ||
-                              latestStatus ===
-                                OrderStatusEnum.PREPARE_DOCUMENT ||
-                              latestStatus === OrderStatusEnum.FLEET_CHANGE ? (
-                                <Button
-                                  variant="muatparts-primary"
-                                  className="w-full"
-                                  onClick={() => {
-                                    setIsReorderFleetModalOpen(true);
-                                  }}
-                                >
-                                  Pesan Ulang
-                                </Button>
-                              ) : latestStatus ===
-                                OrderStatusEnum.DOCUMENT_DELIVERY ? (
+                              {latestStatus ==
+                              OrderStatusEnum.DOCUMENT_DELIVERY ? (
                                 <Button
                                   onClick={() =>
                                     setIsDocumentReceivedModalOpen(true)
@@ -519,6 +502,16 @@ const PesananTable = ({
                                   className="w-full"
                                 >
                                   Beri Ulasan
+                                </Button>
+                              ) : beforeLoadingStatus.includes(latestStatus) ? (
+                                <Button
+                                  variant="muatparts-primary"
+                                  className="w-full"
+                                  onClick={() => {
+                                    setIsReorderFleetModalOpen(true);
+                                  }}
+                                >
+                                  Pesan Ulang
                                 </Button>
                               ) : null}
                               <Button

@@ -18,6 +18,7 @@ const DaftarPesananWeb = ({
   requiringConfirmationCount,
   isFirstTimer,
   lastFilterField,
+  tabs,
 }) => {
   const { t } = useTranslation();
   const [tempSearch, setTempSearch] = useState("");
@@ -183,9 +184,9 @@ const DaftarPesananWeb = ({
             orders={orders}
             isOrdersLoading={isOrdersLoading}
             hasOrders={hasOrders}
-            countByStatus={countByStatus}
             isFirstTimer={isFirstTimer}
             lastFilterField={lastFilterField}
+            tabs={tabs}
           />
 
           {/* Pagination */}

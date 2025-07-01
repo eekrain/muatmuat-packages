@@ -71,9 +71,9 @@ const Input = forwardRef(
             "flex h-8 w-full items-center rounded-md border border-neutral-600 bg-neutral-50 px-3 transition-colors",
             "focus-within:border-primary-700 hover:border-primary-700",
             errorMessage && "border-error-400",
+            appearance.containerClassName,
             disabled &&
-              "cursor-not-allowed border-neutral-400 bg-neutral-100 opacity-50",
-            appearance.containerClassName
+              "border-neutral-600 bg-neutral-200 hover:cursor-not-allowed hover:border-neutral-600"
           )}
         >
           {icon.left && (

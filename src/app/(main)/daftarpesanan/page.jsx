@@ -33,8 +33,8 @@ const Page = () => {
     if (queryParams.limit && queryParams.limit > 0) {
       params.append("limit", queryParams.limit);
     }
-    if (queryParams.status && queryParams.status !== "Semua") {
-      params.append("status", queryParams.status || "");
+    if (queryParams.status && queryParams.status !== "") {
+      // params.append("status", queryParams.status);
     }
     if (queryParams.search) {
       params.append("search", queryParams.search);
@@ -55,22 +55,6 @@ const Page = () => {
 
     return params.toString();
   }, [queryParams]);
-
-  const isFirstTimer = useShallowMemo(
-    () =>
-      JSON.stringify(defaultQueryParams) === JSON.stringify(queryParams) ||
-      (lastFilterField === "status" &&
-        Object.keys(defaultQueryParams).every((key) => {
-          if (key === "status") {
-            return true; // Skip checking status
-          }
-          return (
-            JSON.stringify(queryParams[key]) ===
-            JSON.stringify(defaultQueryParams[key])
-          );
-        })),
-    [defaultQueryParams, queryParams, lastFilterField]
-  );
 
   const { data: requiringConfirmationCountData } = useSWRHook(
     "v1/orders/requiring-confirmation/count"
@@ -93,6 +77,41 @@ const Page = () => {
     totalItems: 0,
     itemsPerPage: 10,
   };
+
+  const tabs = useShallowMemo(
+    () => [
+      { value: "", label: "Semua" },
+      {
+        value: "WAITING_PAYMENT",
+        label: `Menunggu Pembayaran (${countByStatus?.waitingPayment ?? 0})`,
+      },
+      {
+        value: "WAITING_REPAYMENT",
+        label: `Menunggu Pelunasan (${countByStatus?.awaitingSettlement ?? 0})`,
+      },
+      {
+        value: "DOCUMENT_SHIPPING",
+        label: `Proses Pengiriman Dokumen (${countByStatus?.documentProcess ?? 0})`,
+      },
+    ],
+    [countByStatus]
+  );
+
+  const isFirstTimer = useShallowMemo(
+    () =>
+      JSON.stringify(defaultQueryParams) === JSON.stringify(queryParams) ||
+      (lastFilterField === "status" &&
+        Object.keys(defaultQueryParams).every((key) => {
+          if (key === "status") {
+            return tabs.some((item) => item.value === queryParams[key]);
+          }
+          return (
+            JSON.stringify(queryParams[key]) ===
+            JSON.stringify(defaultQueryParams[key])
+          );
+        })),
+    [defaultQueryParams, queryParams, lastFilterField, tabs]
+  );
 
   const handleChangeQueryParams = (field, value) => {
     setQueryParams((prevState) => {
@@ -120,11 +139,11 @@ const Page = () => {
       onChangeQueryParams={handleChangeQueryParams}
       orders={orders}
       pagination={pagination}
-      countByStatus={countByStatus}
       isOrdersLoading={isOrdersLoading}
       requiringConfirmationCount={requiringConfirmationCount}
       isFirstTimer={isFirstTimer}
       lastFilterField={lastFilterField}
+      tabs={tabs}
     />
   );
 };
