@@ -1,13 +1,23 @@
-import { useMemo } from "react";
+import Image from "next/image";
+import { useEffect, useMemo, useState } from "react";
 
 import { Shield, Truck } from "lucide-react";
 
+import {
+  BottomSheet,
+  BottomSheetContent,
+  BottomSheetHeader,
+} from "@/components/Bottomsheet/Bottomsheet";
 import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { TimelineField } from "@/components/Timeline/timeline-field";
+import VoucherEmptyState from "@/components/Voucher/VoucherEmptyState";
+import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
+import usePrevious from "@/hooks/use-previous";
 import { useSWRHook } from "@/hooks/use-swr";
+import { useVouchers } from "@/hooks/useVoucher";
 import DefaultResponsiveLayout from "@/layout/ResponsiveLayout/DefaultResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
@@ -35,6 +45,7 @@ const SewaArmadaHomeScreen = () => {
   const handleEditLayananTambahan = () => {
     navigation.push("/LayananTambahan");
   };
+  console.log("hihi", isShowCostDetail);
 
   const validateLokasiOnSelect = useLocationFormStore(
     (s) => s.validateLokasiOnSelect
@@ -52,6 +63,56 @@ const SewaArmadaHomeScreen = () => {
     }));
   }, [dataBanner]);
 
+  /* voucher */
+  const token = "Bearer your_token_here";
+  let { vouchers: voucherList, loading, error } = useVouchers(token);
+  const MOCK_EMPTY = false;
+
+  if (MOCK_EMPTY && !loading && !error) {
+    voucherList = [];
+  }
+  const [isBottomsheetOpen, setIsBottomsheetOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [tempSelectedVoucher, setTempSelectedVoucher] = useState(null);
+  const [selectedVoucher, setSelectedVoucher] = useState(null); // Added this to store the final selected voucher
+  const previousIsBottomsheetOpen = usePrevious(isBottomsheetOpen);
+
+  useEffect(() => {
+    if (isBottomsheetOpen && !previousIsBottomsheetOpen) {
+      // Reset search when bottomsheet opens
+      setSearchQuery("");
+      // Set temp selected voucher to current selected voucher when opening
+      setTempSelectedVoucher(selectedVoucher);
+    }
+  }, [isBottomsheetOpen, previousIsBottomsheetOpen, selectedVoucher]);
+
+  // Handle voucher selection (temporary selection in the bottomsheet)
+  const handleSelectVoucher = (voucher) => {
+    setTempSelectedVoucher(
+      voucher.id === tempSelectedVoucher?.id ? null : voucher
+    );
+  };
+
+  // Apply selected voucher (confirm selection when closing the bottomsheet)
+  const handleApplyVoucher = () => {
+    // Set the final selected voucher
+    setSelectedVoucher(tempSelectedVoucher);
+    setIsBottomsheetOpen(false);
+
+    // Here you would typically update your store
+    // For example: setField("voucherId", tempSelectedVoucher?.id || null);
+    console.log("Selected voucher:", tempSelectedVoucher);
+  };
+
+  // Filter voucherList based on search query
+  const filteredVouchers =
+    voucherList?.filter((voucher) =>
+      voucher.code.toLowerCase().includes(searchQuery.toLowerCase())
+    ) || [];
+  useEffect(() => {
+    console.log("voucherList:", voucherList);
+  }, [voucherList]);
+  /* end voucher */
   return (
     <DefaultResponsiveLayout mode="default">
       <div
@@ -316,26 +377,59 @@ const SewaArmadaHomeScreen = () => {
           </FormContainer>
         </div>
       </div>
+      {/*
+  <div className="flex w-full items-center justify-between">
+        <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
+          Total Biaya
+        </span>
+        <span className="text-[14px] font-bold leading-[15.4px] text-neutral-900">
+          Rp1.123.233
+        </span>
+      </div>
+            <Button
+        variant="muatparts-primary-secondary"
+        className="flex-1"
+        onClick={() => {}}
+        type="button"
+      >
+        Lihat Detail Biaya
+      </Button>
+      
+  */}
 
       {isShowCostDetail ? (
-        <ResponsiveFooter className="flex flex-col gap-y-4">
-          <div className="flex w-full items-center justify-between">
-            <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
-              Total Biaya
-            </span>
-            <span className="text-[14px] font-bold leading-[15.4px] text-neutral-900">
-              Rp1.123.233
-            </span>
+        <ResponsiveFooter className="z-[1000] flex flex-col gap-y-4">
+          {/* Total Biaya section with integrated voucher */}
+          <div className="flex w-full flex-col rounded bg-primary-50">
+            {/* Voucher section inside Total Biaya div - conditionally rendered based on bottomsheet state */}
+            {!isBottomsheetOpen && (
+              <div
+                className="flex cursor-pointer items-center justify-between p-[12px]"
+                onClick={() => setIsBottomsheetOpen(true)}
+              >
+                <div className="flex items-center">
+                  <Image
+                    src="/img/iconVoucher2.png"
+                    alt="Voucher"
+                    width={25}
+                    height={25}
+                  />
+                  <span className="ml-[12px] text-sm font-medium text-blue-600">
+                    Makin hemat pakai voucher
+                  </span>
+                  <Image
+                    src="/icons/right-arrow-voucher.png"
+                    width={18}
+                    height={18}
+                    alt="right-arrow"
+                  />
+                </div>
+              </div>
+            )}
           </div>
+
+          {/* Action buttons */}
           <div className="flex items-center gap-x-2">
-            <Button
-              variant="muatparts-primary-secondary"
-              className="flex-1"
-              onClick={() => {}}
-              type="button"
-            >
-              Lihat Detail Biaya
-            </Button>
             <Button
               variant="muatparts-primary"
               className="flex-1"
@@ -347,6 +441,138 @@ const SewaArmadaHomeScreen = () => {
           </div>
         </ResponsiveFooter>
       ) : null}
+
+      <BottomSheet open={isBottomsheetOpen} onOpenChange={setIsBottomsheetOpen}>
+        <BottomSheetContent>
+          <BottomSheetHeader>Pilih Voucher</BottomSheetHeader>
+          <div className="flex h-[577px] w-full flex-col gap-4 overflow-y-auto bg-white px-4 py-6">
+            {/* Search bar */}
+            <div className="relative flex items-center rounded-md border border-neutral-400">
+              <div className="absolute left-3">
+                <IconComponent src="/icons/search16.svg" />
+              </div>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Cari Kode Voucher"
+                className="h-10 w-full rounded-md bg-transparent pl-10 pr-3 text-[14px] outline-none"
+                disabled={!voucherList || voucherList.length === 0}
+              />
+              {searchQuery && (
+                <button
+                  className="absolute right-3"
+                  onClick={() => setSearchQuery("")}
+                >
+                  <IconComponent src="/icons/close.svg" />
+                </button>
+              )}
+            </div>
+
+            {/* Voucher selection note */}
+            <p className="text-[12px] font-medium text-neutral-600">
+              Hanya bisa dipilih 1 Voucher
+            </p>
+
+            {/* Voucher list */}
+            <div className="flex-1 overflow-y-auto">
+              {loading ? (
+                <div className="flex items-center justify-center py-8">
+                  <span className="text-[14px] font-medium text-neutral-600">
+                    Memuat voucher...
+                  </span>
+                </div>
+              ) : error ? (
+                <div className="flex items-center justify-center py-8 text-red-500">
+                  <span className="text-[14px] font-medium">
+                    Gagal memuat voucher.
+                  </span>
+                </div>
+              ) : searchQuery && filteredVouchers.length === 0 ? (
+                <VoucherSearchEmpty />
+              ) : voucherList?.length === 0 ? (
+                <VoucherEmptyState />
+              ) : (
+                <div className="space-y-3">
+                  {filteredVouchers.map((voucher) => (
+                    <div
+                      key={voucher.id}
+                      className="relative rounded-md border border-neutral-400 p-3"
+                    >
+                      <div className="absolute right-0 top-0">
+                        <div className="flex h-[18px] items-center rounded-bl-md rounded-tr-md bg-primary-100 px-2">
+                          <span className="text-[10px] font-medium text-primary-500">
+                            {voucher.daysLeft > 3
+                              ? `Sisa ${voucher.daysLeft} hari lagi`
+                              : `Berakhir ${voucher.daysLeft} hari lagi`}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start justify-between">
+                        <div className="flex gap-x-2">
+                          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100">
+                            <IconComponent src="/icons/voucher16.svg" />
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-[14px] font-semibold text-neutral-900">
+                              {voucher.code}
+                            </span>
+                            <ul className="mt-1">
+                              <li className="flex items-center gap-x-1">
+                                <div className="h-1 w-1 rounded-full bg-neutral-900"></div>
+                                <span className="text-[12px] font-medium text-neutral-900">
+                                  Diskon 50%, maks. potongan Rp100.000
+                                </span>
+                              </li>
+                              <li className="flex items-center gap-x-1">
+                                <div className="h-1 w-1 rounded-full bg-neutral-900"></div>
+                                <span className="text-[12px] font-medium text-neutral-900">
+                                  Min. Transaksi Rp
+                                  {voucher.minOrderAmount?.toLocaleString()}
+                                </span>
+                              </li>
+                            </ul>
+                            <div className="mt-1">
+                              <span className="text-[12px] font-medium text-primary-500">
+                                Terpakai: {voucher.usagePercentage || "20%"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <button
+                          className={`h-8 rounded-md px-3 text-[12px] font-semibold ${
+                            tempSelectedVoucher?.id === voucher.id
+                              ? "bg-primary-500 text-white"
+                              : "border border-primary-500 text-primary-500"
+                          }`}
+                          onClick={() => handleSelectVoucher(voucher)}
+                        >
+                          Pakai
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Apply button */}
+          </div>
+        </BottomSheetContent>
+      </BottomSheet>
+
+      {/* Display selected voucher if any */}
+      {selectedVoucher && (
+        <div className="mt-2 rounded-md bg-blue-50 p-2 text-sm">
+          <div className="font-medium">Voucher applied:</div>
+          <div>{selectedVoucher.code}</div>
+          <div>
+            Discount: Rp{selectedVoucher.discountAmount?.toLocaleString()}
+          </div>
+        </div>
+      )}
 
       <ModalFirstTimer />
     </DefaultResponsiveLayout>
