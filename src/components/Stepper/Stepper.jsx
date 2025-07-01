@@ -1,4 +1,11 @@
-import { createContext, useContext, useMemo } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -8,16 +15,21 @@ const Context = createContext({
   activeWidthPercent: 0,
 });
 
-export const StepperContainer = ({
-  totalStep,
-  activeIndex,
-  children,
-  titleWidth = 110,
-}) => {
-  const activeWidthPercent = (activeIndex / (totalStep - 1)) * 100;
+export const StepperContainer = ({ totalStep, activeIndex, children }) => {
+  const containerRef = useRef(null);
+
+  const [titleWidth, setTitleWidth] = useState(110);
+
+  useEffect(() => {
+    // get width of container
+    const width = containerRef.current.offsetWidth;
+    setTitleWidth(width / totalStep);
+  }, [totalStep]);
+
   return (
     <Context.Provider value={{ titleWidth, activeIndex }}>
       <div
+        ref={containerRef}
         className="h-[64px]"
         style={{
           paddingLeft: `calc(${titleWidth}px / 2 - 16px)`,
@@ -33,7 +45,7 @@ export const StepperContainer = ({
             <div
               className="absolute left-0 top-4 z-10 h-0.5 bg-[#FFC217] transition-all duration-300"
               style={{
-                width: `${activeWidthPercent}%`,
+                width: `${(activeIndex / (totalStep - 1)) * 100}%`,
                 maxWidth: "calc(100% - 32px)",
               }}
             />
