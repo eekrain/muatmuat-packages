@@ -51,7 +51,10 @@ export function InfoTooltip({
             }}
           >
             {/* Styles in globals.scss */}
-            <div className="info-tooltip-content">{children}</div>
+            <div
+              className="info-tooltip-content"
+              dangerouslySetInnerHTML={{ __html: children }}
+            />
             <TooltipPrimitive.Arrow
               className="h-[11px] w-4 fill-white"
               style={{

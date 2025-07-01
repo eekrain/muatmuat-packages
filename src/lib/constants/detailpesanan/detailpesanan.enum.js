@@ -62,6 +62,9 @@ export const OrderStatusIcon = {
   [OrderStatusEnum.DOCUMENT_DELIVERY]:
     "/icons/stepper/stepper-document-preparing.svg",
   [OrderStatusEnum.COMPLETED]: "/icons/stepper/stepper-completed.svg",
+  [OrderStatusEnum.CANCELED_BY_SYSTEM]: "/icons/close20.svg",
+  [OrderStatusEnum.CANCELED_BY_SHIPPER]: "/icons/close20.svg",
+  [OrderStatusEnum.CANCELED_BY_TRANSPORTER]: "/icons/close20.svg",
 };
 
 export const PaymentStatusEnum = {

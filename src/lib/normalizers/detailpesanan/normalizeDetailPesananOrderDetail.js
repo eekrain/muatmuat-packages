@@ -9,6 +9,7 @@ export const normalizeDetailPesananOrderDetail = ({
   dataPayment,
   dataAdditionalServices = [],
   dataAlerts,
+  dataCancellationHistory,
 }) => {
   try {
     const foundDocumentShipping = dataAdditionalServices.find(
@@ -41,7 +42,8 @@ export const normalizeDetailPesananOrderDetail = ({
       withDocumentShipping: Boolean(foundDocumentShipping),
       expiredAt: dataPayment?.payment?.expiredAt,
       driverStatus: dataOrderStatusHistory?.driverStatus,
-      alerts: dataAlerts?.alerts || [],
+      alerts: dataAlerts || [],
+      cancellationHistory: dataCancellationHistory,
     };
 
     const route = { muat: [], bongkar: [] };
@@ -138,5 +140,10 @@ export const normalizeDetailPesananOrderDetail = ({
       dataDetailPIC,
       dataRingkasanPembayaran,
     };
-  } catch (error) {}
+  } catch (error) {
+    console.error(
+      "🚀 ~ file: normalizeDetailPesananOrderDetail.js:141 ~ error:",
+      error
+    );
+  }
 };

@@ -1,11 +1,10 @@
-import { addMinutes } from "date-fns";
 import useSWR from "swr";
 
-import { fetcherMuatrans } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { normalizeDetailPesananOrderDetail } from "@/lib/normalizers/detailpesanan";
 
 import { getAdditionalServices } from "./getAdditionalServices";
+import { getCancellationHistory } from "./getCancellationHistory";
 import { getOrderAlerts } from "./getOrderAlerts";
 import { getOrderPaymentData } from "./getOrderPaymentData";
 import { getOrderStatusHistory } from "./getOrderStatusHistory";
@@ -95,207 +94,167 @@ const locations = [
 ];
 
 const apiResultOrderDetail = {
-  Message: {
-    Code: 200,
-    Text: "Order detail retrieved successfully",
-  },
-  Data: {
-    general: {
-      orderId: "550e8400-e29b-41d4-a716-446655440000",
-      transporterOrderCode: "MT.25.AA.001",
-      invoiceNumber: "INV/12345678",
-      orderStatus: OrderStatusEnum.LOADING,
-      orderType: "INSTANT",
-      createdAt: "2024-01-01T10:00:00Z",
-      updatedAt: "2024-01-01T14:30:00Z",
+  data: {
+    Message: {
+      Code: 200,
+      Text: "Order detail retrieved successfully",
     },
-    summary: {
-      distance: 12,
-      carrier: {
-        carrierId: "uuid-carrier-1",
-        name: "Box Container",
-        image: "https://example.com/box.jpg",
-      },
-      truckType: {
-        truckTypeId: "uuid-truck-1",
-        name: "Medium Truck 4x2 Box",
-        image: "https://example.com/truck.jpg",
-        totalUnit: 2,
-      },
-      loadTimeStart: "2025-02-08T09:00:00Z",
-      loadTimeEnd: "2025-02-08T12:00:00Z",
-      locations: locations,
-      isHalalLogistic: true,
-      canReview: true,
-      isEdit: true,
-      cargo: [
-        {
-          cargoId: "550e8400-e29b-41d4-a716-446655440004",
-          cargoTypeName: "Elektronik",
-          cargoCategoryName: "Peralatan",
-          name: "Electronics",
-          weight: 500.0,
-          weightUnit: "kg",
-          dimensions: {
-            length: 2.0,
-            width: 1.0,
-            height: 1.5,
-            unit: "m",
-          },
-          sequence: 1,
-        },
-      ],
-      payment: {
-        paymentMethod: "va_bca",
-        paymentDueDateTime: addMinutes(new Date(), 30).toISOString(),
-      },
-      price: {
-        totalPrice: 1500000.0,
-        transportFee: 1200000.0,
-
-        insuranceFee: 50000.0,
-        additionalServiceFee: [
-          {
-            name: "",
-            price: 100000,
-          },
-        ],
-        voucherDiscount: 0.0,
-        adminFee: 25000.0,
-        taxAmount: 125000.0,
-        waitingFee: {
-          totalAmount: 0.0,
-          totalHours: 0,
-          isChargeable: false,
-        },
-        overloadFee: 1000000,
-      },
-    },
-    otherInformation: {
-      cargoPhotos: [
-        "/img/muatan1.png",
-        "/img/muatan2.png",
-        "/img/muatan3.png",
-        "/img/muatan4.png",
-      ],
-      cargoDescription:
-        "tolong kirim muatan dengan hati hati, jangan sampai rusak dan hancur, terimakasih",
-      numberDeliveryOrder: ["DO123456ABCD"],
-    },
-    changeCount: 0,
-    isChangeable: true,
-    isCancellable: true,
-    cancellationDeadline: "2025-02-06T09:00:00Z",
-    hasCancellationPenalty: false,
-    drivers: [
-      {
-        driverId: "uuid-driver-1",
-        name: "Ahmad Rahman",
-        phoneNumber: "081234567891",
-        profileImage: "https://example.com/driver1.jpg",
-        driverStatus: "Menuju ke Lokasi Muat",
-        licensePlate: "B 1234 CD",
-      },
-    ],
-    documents: {
-      doNumber: "DO123456",
-      doUrl: "https://example.com/do.pdf",
-    },
-    businessEntity: {
-      isBusinessEntity: true,
-      name: "PT Sukses Makmur",
-      taxId: "0123456789012345",
-    },
-    config: {
-      toleranceHours: 12,
-      hourlyRate: 25000.0,
-      alertHoursBefore: 1,
-    },
-  },
-};
-
-const tes = {
-  Message: { Code: 200, Text: "OK" },
-  Data: {
-    orders: [
-      {
-        orderId: "fdf71f98-4978-4e85-994e-0c5208e4ea0f",
-        invoice: "MT25AA006",
+    Data: {
+      general: {
+        orderId: "550e8400-e29b-41d4-a716-446655440000",
+        transporterOrderCode: "MT.25.AA.001",
+        invoiceNumber: "INV/12345678",
+        orderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
+        orderTitle: "Dimuat",
         orderType: "INSTANT",
-        loadTimeStart: "2025-06-25T15:00:00.000Z",
-        loadTimeEnd: "",
-        locations: {
-          pickup: [
-            {
-              sequence: 1,
-              fullAddress: "Jl. Sudirman No. 123, Jakarta Pusat",
-              city: "Jakarta Pusat",
-            },
-          ],
-          dropoff: [
-            {
-              sequence: 1,
-              fullAddress: "Jl. Gatot Subroto No. 456, Jakarta Selatan",
-              city: "Jakarta Pusat",
-            },
-          ],
-          hasMultiplePickup: false,
-          hasMultipleDropoff: false,
-        },
-        vehicle: {
-          carrierName: "Box",
-          truckTypeName: "Cold Diesel Double",
-          truckCount: 1,
-        },
-        statusInfo: [
-          { statusLabel: "Mempersiapkan Armada", statusCode: "PREPARE_FLEET" },
-        ],
-        totalUnit: 1,
-        paymentDeadline: "",
-        requiresConfirmation: false,
-        isRefundProcessing: false,
-        createdAt: "2025-06-25T05:23:03.913Z",
-        hasReview: false,
-        additionalCost: 125000,
+        createdAt: "2024-01-01T10:00:00Z",
+        updatedAt: "2024-01-01T14:30:00Z",
       },
-    ],
-    pagination: {
-      currentPage: 1,
-      totalPages: 1,
-      totalItems: 1,
-      itemsPerPage: 10,
+      summary: {
+        distance: 12,
+        carrier: {
+          carrierId: "uuid-carrier-1",
+          name: "Box Container",
+          image: "https://example.com/box.jpg",
+        },
+        truckType: {
+          truckTypeId: "uuid-truck-1",
+          name: "Medium Truck 4x2 Box",
+          image: "https://example.com/truck.jpg",
+          totalUnit: 2,
+        },
+        loadTimeStart: "2025-02-08T09:00:00Z",
+        loadTimeEnd: "2025-02-08T12:00:00Z",
+        locations: locations,
+        isHalalLogistic: true,
+        canReview: true,
+        isEdit: true,
+        cargo: [
+          {
+            cargoId: "550e8400-e29b-41d4-a716-446655440004",
+            cargoTypeName: "Elektronik",
+            cargoCategoryName: "Peralatan",
+            name: "Electronics",
+            weight: 500.0,
+            weightUnit: "kg",
+            dimensions: {
+              length: 2.0,
+              width: 1.0,
+              height: 1.5,
+              unit: "m",
+            },
+            sequence: 1,
+          },
+        ],
+        payment: {
+          paymentMethod: "va_bca",
+          paymentDueDateTime: "2025-06-30T03:52:13.000Z",
+        },
+        price: {
+          totalPrice: 1500000.0,
+          transportFee: 1200000.0,
+          insuranceFee: 50000.0,
+          additionalServiceFee: [
+            {
+              name: "",
+              price: 100000,
+            },
+          ],
+          voucherDiscount: 0.0,
+          adminFee: 25000.0,
+          taxAmount: 125000.0,
+          waitingFee: {
+            totalAmount: 0.0,
+            totalHours: 0,
+            isChargeable: false,
+          },
+          overloadFee: 1000000,
+        },
+      },
+      otherInformation: {
+        cargoPhotos: [
+          "/img/muatan1.png",
+          "/img/muatan2.png",
+          "/img/muatan3.png",
+          "/img/muatan4.png",
+        ],
+        cargoDescription:
+          "tolong kirim muatan dengan hati hati, jangan sampai rusak dan hancur, terimakasih",
+        numberDeliveryOrder: ["DO123456ABCD"],
+      },
+      changeCount: 0,
+      isChangeable: true,
+      isCancellable: true,
+      cancellationDeadline: "2025-02-06T09:00:00Z",
+      hasCancellationPenalty: false,
+      drivers: [
+        {
+          driverId: "uuid-driver-1",
+          name: "Ahmad Rahman",
+          phoneNumber: "081234567891",
+          profileImage: "https://example.com/driver1.jpg",
+          driverStatus: "Menuju ke Lokasi Muat",
+          licensePlate: "B 1234 CD",
+        },
+      ],
+      documents: {
+        doNumber: "DO123456",
+        doUrl: "https://example.com/do.pdf",
+      },
+      businessEntity: {
+        isBusinessEntity: true,
+        name: "PT Sukses Makmur",
+        taxId: "0123456789012345",
+      },
+      config: {
+        toleranceHours: 12,
+        hourlyRate: 25000.0,
+      },
+      pendingChanges: {
+        hasPendingChanges: false,
+      },
     },
+    Type: "/v1/orders/550e8400-e29b-41d4-a716-446655440000",
   },
-  Type: "/v1/orders/list",
 };
 
 const fetcher = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
 
-  const [
-    dataOrderDetail,
-    dataOrderStatusHistory,
-    dataPayment,
-    dataAdditionalServices,
-    dataOrderAlerts,
-  ] = await Promise.all([
-    fetcherMuatrans.get(`/v1/orders/${orderId}`),
-    getOrderStatusHistory(cacheKey),
-    getOrderPaymentData(cacheKey),
-    getAdditionalServices(cacheKey),
-    getOrderAlerts(cacheKey),
-  ]);
+  try {
+    const [
+      dataOrderDetail,
+      dataOrderStatusHistory,
+      dataPayment,
+      dataAdditionalServices,
+      dataOrderAlerts,
+      dataCancellationHistory,
+    ] = await Promise.all([
+      // fetcherMuatrans.get(`/v1/orders/${orderId}`),
+      apiResultOrderDetail,
+      getOrderStatusHistory(cacheKey),
+      getOrderPaymentData(cacheKey),
+      getAdditionalServices(cacheKey),
+      getOrderAlerts(cacheKey),
+      getCancellationHistory(cacheKey),
+    ]);
 
-  const data = normalizeDetailPesananOrderDetail({
-    dataOrderDetail: dataOrderDetail.data.Data,
-    dataOrderStatusHistory: dataOrderStatusHistory,
-    dataPayment: dataPayment,
-    dataAlerts: dataOrderAlerts,
-    dataAdditionalServices: dataAdditionalServices,
-  });
-  console.log("🚀 ~ file: getDetailPesananData.js:290 ~ data:", data);
+    const data = normalizeDetailPesananOrderDetail({
+      dataOrderDetail: dataOrderDetail.data.Data,
+      dataOrderStatusHistory: dataOrderStatusHistory,
+      dataPayment: dataPayment,
+      dataAlerts: dataOrderAlerts,
+      dataAdditionalServices: dataAdditionalServices,
+      dataCancellationHistory: dataCancellationHistory,
+    });
 
-  return data;
+    return data;
+  } catch (error) {
+    console.error(
+      "🚀 ~ file: getDetailPesananData.js:280 ~ fetcher ~ error:",
+      error
+    );
+  }
 };
 
 export const useGetDetailPesananData = (orderId) =>

@@ -3,8 +3,7 @@ import { useParams, useRouter } from "next/navigation";
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import IconComponent from "@/components/IconComponent/IconComponent";
-
-import { DriverTimeline } from "./DriverTimeline";
+import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
 
 export const LeftPanel = ({ dataDriverStatus }) => {
   const router = useRouter();

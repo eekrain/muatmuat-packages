@@ -8,11 +8,18 @@ import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
-import Stepper from "@/components/Stepper/Stepper";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTrigger,
+} from "@/components/Modal/Modal";
+import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useGetDriverQRCodeById } from "@/services/detailpesanan/getDriverQRCodeById";
+
+import ModalDetailStatusDriver from "./ModalDetailStatusDriver";
 
 export const DriverStatusCard = ({ dataStatusPesanan, dataDriverStatus }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -91,7 +98,6 @@ export const DriverStatusCard = ({ dataStatusPesanan, dataDriverStatus }) => {
 
 const DriverStatusCardItem = ({ dataStatusPesanan, dataDriver }) => {
   const pathname = usePathname();
-  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
   const { qrData } = useGetDriverQRCodeById({
     orderId: dataStatusPesanan.orderId,
@@ -141,18 +147,63 @@ const DriverStatusCardItem = ({ dataStatusPesanan, dataDriver }) => {
               <BadgeStatusPesanan className="w-fit">
                 {dataDriver.statusTitle}
               </BadgeStatusPesanan>
-              <button
-                className="flex items-center gap-x-1"
-                onClick={() => setIsQrModalOpen(true)}
-              >
-                <span className="text-[12px] font-medium leading-[14.4px] text-primary-700">
-                  Tampilkan QR Code
-                </span>
-                <IconComponent
-                  src="/icons/chevron-right.svg"
-                  className="icon-blue"
-                />
-              </button>
+
+              {/* Modal QR Code Supir */}
+              {qrData && (
+                <Modal closeOnOutsideClick={false}>
+                  <ModalTrigger>
+                    <button className="flex items-center gap-x-1">
+                      <span className="text-[12px] font-medium leading-[14.4px] text-primary-700">
+                        Tampilkan QR Code
+                      </span>
+                      <IconComponent
+                        src="/icons/chevron-right.svg"
+                        className="icon-blue"
+                      />
+                    </button>
+                  </ModalTrigger>
+                  <ModalContent className="w-modal-big">
+                    <ModalHeader size="big" />
+                    <div className="flex w-full flex-col items-center gap-y-6 px-6 py-9">
+                      <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
+                        {/* {statusScan().statusTitle} */}
+                        QR Code Lokasi Muat & Bongkar
+                      </h1>
+                      <div className="flex flex-col items-center gap-y-3">
+                        <BadgeStatusPesanan
+                          className="w-fit"
+                          variant={statusScan().hasScan ? "success" : "error"}
+                        >
+                          {statusScan().statusText}
+                        </BadgeStatusPesanan>
+
+                        <AvatarDriver
+                          name={qrData?.driverInfo.name}
+                          image={qrData?.driverInfo.driverImage}
+                          licensePlate={qrData?.driverInfo.licensePlate}
+                        />
+                      </div>
+                      <img
+                        src={qrData?.qrCodeImage}
+                        width={124}
+                        height={124}
+                        alt=""
+                      />
+                      <span className="text-center text-[14px] font-medium leading-[16.8px] text-neutral-900">
+                        *Tunjukkan QR Code ini kepada pihak driver agar dapat
+                        melanjutkan ke proses muat.
+                      </span>
+                      <Button
+                        iconLeft="/icons/salin-qrc16.svg"
+                        onClick={handleCopyQrCode}
+                        variant="muatparts-primary"
+                      >
+                        Bagikan QR Code
+                      </Button>
+                    </div>
+                  </ModalContent>
+                </Modal>
+              )}
             </div>
             <div className="flex items-center justify-between">
               <AvatarDriver
@@ -161,66 +212,37 @@ const DriverStatusCardItem = ({ dataStatusPesanan, dataDriver }) => {
                 licensePlate={dataDriver.licensePlate}
               />
               <div className="flex items-center gap-x-3">
-                <Button
-                  onClick={() => {}}
-                  variant="muatparts-primary-secondary"
-                >
-                  Hubungi Driver
-                </Button>
-                <Link href={`${pathname}/lacak-armada/${dataDriver.driverId}`}>
-                  <Button variant="muatparts-primary">Lacak Armada</Button>
-                </Link>
+                {dataStatusPesanan.orderStatus.startsWith("CANCELED") ? (
+                  <ModalDetailStatusDriver />
+                ) : (
+                  <>
+                    <Button
+                      onClick={() => {}}
+                      variant="muatparts-primary-secondary"
+                    >
+                      Hubungi Driver
+                    </Button>
+                    <Link
+                      href={`${pathname}/lacak-armada/${dataDriver.driverId}`}
+                    >
+                      <Button variant="muatparts-primary">Lacak Armada</Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
-          <Stepper
-            steps={dataStatusPesanan.statusHistory.stepper}
-            currentStep={dataStatusPesanan.statusHistory.activeIndex}
-          />
+
+          <StepperContainer
+            activeIndex={dataStatusPesanan.statusHistory.activeIndex || 0}
+            totalStep={dataStatusPesanan.statusHistory.stepper.length || 0}
+          >
+            {dataStatusPesanan?.statusHistory?.stepper?.map((step, index) => (
+              <StepperItem key={step.status} step={step} index={index} />
+            ))}
+          </StepperContainer>
         </div>
       </div>
-      {/* Modal QR Code Supir */}
-      <Modal
-        closeOnOutsideClick={false}
-        open={isQrModalOpen && qrData}
-        onOpenChange={setIsQrModalOpen}
-      >
-        <ModalContent className="w-modal-big">
-          <ModalHeader size="big" />
-          <div className="flex w-full flex-col items-center gap-y-6 px-6 py-9">
-            <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
-              {/* {statusScan().statusTitle} */}
-              QR Code Lokasi Muat & Bongkar
-            </h1>
-            <div className="flex flex-col items-center gap-y-3">
-              <BadgeStatusPesanan
-                className="w-fit"
-                variant={statusScan().hasScan ? "success" : "error"}
-              >
-                {statusScan().statusText}
-              </BadgeStatusPesanan>
-
-              <AvatarDriver
-                name={qrData?.driverInfo.name}
-                image={qrData?.driverInfo.driverImage}
-                licensePlate={qrData?.driverInfo.licensePlate}
-              />
-            </div>
-            <img src={qrData?.qrCodeImage} width={124} height={124} alt="" />
-            <span className="text-center text-[14px] font-medium leading-[16.8px] text-neutral-900">
-              *Tunjukkan QR Code ini kepada pihak driver agar dapat melanjutkan
-              ke proses muat.
-            </span>
-            <Button
-              iconLeft="/icons/salin-qrc16.svg"
-              onClick={handleCopyQrCode}
-              variant="muatparts-primary"
-            >
-              Bagikan QR Code
-            </Button>
-          </div>
-        </ModalContent>
-      </Modal>
     </>
   );
 };

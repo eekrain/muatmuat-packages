@@ -1,7 +1,7 @@
 import { Alert } from "@/components/Badge/Alert";
 import Card, { CardContent } from "@/components/Card/Card";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
-import Stepper from "@/components/Stepper/Stepper";
+import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
 import { AlertPendingPesanan } from "./AlertPendingPesanan";
@@ -20,6 +20,9 @@ const StatusPesanan = ({ dataStatusPesanan }) => {
     OrderStatusEnum.PREPARE_DOCUMENT,
     OrderStatusEnum.DOCUMENT_DELIVERY,
     OrderStatusEnum.COMPLETED,
+    OrderStatusEnum.CANCELED_BY_SYSTEM,
+    OrderStatusEnum.CANCELED_BY_SHIPPER,
+    OrderStatusEnum.CANCELED_BY_TRANSPORTER,
   ];
   const showDriver = showDriverStatuses.includes(dataStatusPesanan.orderStatus);
 
@@ -58,15 +61,26 @@ const StatusPesanan = ({ dataStatusPesanan }) => {
             <StatusPesananHeader
               orderCode={dataStatusPesanan.orderCode}
               orderStatus={dataStatusPesanan.orderStatus}
+              cancellationHistory={dataStatusPesanan.cancellationHistory}
             />
 
             {/* Timeline Section */}
             {showStepperOnly ? (
               <div className="flex w-full flex-col gap-y-5 rounded-xl border border-neutral-400 px-4 py-5">
-                <Stepper
-                  steps={dataStatusPesanan.statusHistory.stepper}
-                  currentStep={dataStatusPesanan.statusHistory.activeIndex}
-                />
+                <StepperContainer
+                  activeIndex={dataStatusPesanan.statusHistory.activeIndex}
+                  totalStep={dataStatusPesanan.statusHistory.stepper.length}
+                >
+                  {dataStatusPesanan?.statusHistory?.stepper?.map(
+                    (step, index) => (
+                      <StepperItem
+                        key={step.status}
+                        step={step}
+                        index={index}
+                      />
+                    )
+                  )}
+                </StepperContainer>
               </div>
             ) : showDriver ? (
               <DriverStatusCard

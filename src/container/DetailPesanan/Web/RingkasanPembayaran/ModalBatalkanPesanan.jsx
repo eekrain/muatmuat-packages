@@ -1,5 +1,5 @@
 // RingkasanPembayaran.jsx
-import { usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import useSWR from "swr";
@@ -38,6 +38,7 @@ const cancelReasons = new Array(6).fill(0).map((_, index) => index);
 export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const routerParams = useParams();
   const [isModalBatalkanOpen, setIsModalBatalkanOpen] = useState(false);
   const [isAgreed, setIsAgreed] = useState(false);
   const [isModalReasonOpen, setIsModalReasonOpen] = useState(false);
@@ -101,6 +102,7 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran }) => {
       return;
     }
 
+    // If there is no rekening, show modal to add rekening
     if (dataRekening.length === 0) {
       setIsModalBatalkanOpen(false);
       setIsModalReasonOpen(false);
@@ -109,9 +111,22 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran }) => {
     }
 
     // Implement cancel order
+    const body = {
+      reasonId: selectedReason,
+      additionalInfo: isOtherReason ? customReason : "",
+    };
+
+    fetcherMuatrans
+      .post(`v1/orders/${routerParams.orderId}/cancel`, body)
+      .then((response) => {
+        toast.success(response.data?.Data?.message);
+      })
+      .catch((error) => {
+        toast.error(error.response.data?.Data?.message);
+      });
   };
 
-  const { params, formValues: otpValues } = useRequestOtpStore();
+  const { params: otpParams, formValues: otpValues } = useRequestOtpStore();
   const { setParams, reset: resetOtp } = useRequestOtpActions();
   const handleTempSaveRekening = (data) => {
     setParams({
@@ -128,7 +143,7 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran }) => {
 
   const handleAddNewRekeningPencairan = () => {
     fetcherMuatparts
-      .post("v1/muatparts/bankAccount", params.data)
+      .post("v1/muatparts/bankAccount", otpParams.data)
       .then((response) => {
         toast.success(response.data?.Data?.Message);
       })
@@ -141,8 +156,8 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran }) => {
   const hasAddedNewRekening = useRef(false);
   useEffect(() => {
     if (
-      params?.mode === "add-rekening" &&
-      params.data &&
+      otpParams?.mode === "add-rekening" &&
+      otpParams.data &&
       otpValues?.hasVerified
     ) {
       if (hasAddedNewRekening.current) return;
@@ -150,7 +165,7 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran }) => {
       hasAddedNewRekening.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params?.mode, otpValues?.hasVerified]);
+  }, [otpParams?.mode, otpValues?.hasVerified]);
 
   return (
     <>

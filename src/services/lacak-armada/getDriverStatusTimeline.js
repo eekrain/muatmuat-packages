@@ -1,6 +1,8 @@
 import { sub } from "date-fns";
 import useSWR from "swr";
 
+import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+
 const apiResult = {
   Message: {
     Code: 200,
@@ -15,6 +17,10 @@ const apiResult = {
     statusTitle: "Antri di Lokasi Muat 2",
     licensePlate: "B 1234 CD",
     statusDefinitions: [
+      {
+        mappedOrderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
+        date: new Date().toISOString(),
+      },
       {
         mappedOrderStatus: "UNLOADING",
         children: [
@@ -271,6 +277,7 @@ const transformDriverStatusData = (data) => {
 
   // 4. Iterate through the flattened array to apply transformations
   allStatuses.forEach((currentStatus, index) => {
+    if (!currentStatus) return;
     // Check if the current status is a "MENUJU_" type and requires a photo
     if (
       currentStatus.statusCode.startsWith("MENUJU_") &&
@@ -302,9 +309,13 @@ const fetcher = async (cacheKey) => {
   const driverId = cacheKey.split("/")[2];
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  const result = transformDriverStatusData(apiResult.Data);
+  try {
+    const result = transformDriverStatusData(apiResult.Data);
 
-  return result;
+    return result;
+  } catch (error) {
+    console.error("Error fetching driver status timeline", error);
+  }
 };
 
 export const useGetDriverStatusTimeline = ({ orderId, driverId }) =>
