@@ -12,6 +12,7 @@ const apiResult = {
           date: "2025-05-21T14:30:00+07:00",
           // label: "Pengembalian dana sedang dalam proses.",
           // info: "Pengembalian dana sedang dalam proses, jumlah dana akan disesuakan setelah dikurangi <b>Admin Pembatalan</b> dan <b>Tambahan Biaya</b>. Info lebih lanjut hubungi Customer Service.",
+
           label: "Pengembalian dana berhasil diproses.",
           info: "Proses pengembalian dana telah berhasil dicairkan ke rekening kamu. Info lebih lanjut hubungi Customer Service.",
         },

@@ -15,8 +15,10 @@ const apiResult = {
         reasonId: "550e8400-e29b-41d4-a716-446655440030",
         reasonName: "Perubahan jadwal mendadak",
         reasonCategory: "CUSTOMER",
+        // additionalInfo:
+        //   "Kami terpaksa membatalkan pemesanan jasa angkut truk karena terjadi perubahan rencana logistik yang tidak terduga. Terima kasih atas pengertiannya.",
         additionalInfo:
-          "Kami terpaksa membatalkan pemesanan jasa angkut truk karena terjadi perubahan rencana logistik yang tidak terduga. Terima kasih atas pengertiannya.",
+          "Pembayaran tidak dilakukan sampai melewati batas waktu yang telah ditetapkan.",
       },
       hasRefund: true,
       refundStatus: "REFUND_PROCESSING",

@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 import { resPaymentInstruction } from "./resPaymentInstruction";
 
-export const PaymentInstruction = ({}) => {
+export const PaymentInstruction = () => {
   const { t } = useTranslation();
   const [expandedItem, setExpandedItem] = useState(0); // First item expanded by default
 
@@ -24,7 +24,7 @@ export const PaymentInstruction = ({}) => {
     >
       {/* Header */}
       <h2 className="text-[16px] font-bold leading-[19.2px] text-black">
-        {t ? t("Cara Pembayaran") : "Cara Pembayaran"}
+        {t("Cara Pembayaran")}
       </h2>
 
       {/* Accordion Container */}
