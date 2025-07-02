@@ -145,68 +145,72 @@ const DriverStatusCardItem = ({ dataStatusPesanan, dataDriver }) => {
           className="flex w-full flex-col gap-y-5 rounded-xl border border-neutral-400 px-4 py-5"
         >
           <div className="flex flex-col gap-y-3">
-            <div className="flex items-center gap-x-3">
-              <BadgeStatusPesanan className="w-fit">
-                {dataDriver.statusTitle}
-              </BadgeStatusPesanan>
+            {!dataStatusPesanan.orderStatus.startsWith("WAITING") && (
+              <div className="flex items-center gap-x-3">
+                {dataDriver.statusTitle && (
+                  <BadgeStatusPesanan className="w-fit">
+                    {dataDriver.statusTitle}
+                  </BadgeStatusPesanan>
+                )}
 
-              {/* Modal QR Code Supir */}
-              {qrData && (
-                <Modal closeOnOutsideClick={false}>
-                  <ModalTrigger>
-                    <button className="flex items-center gap-x-1">
-                      <span className="text-[12px] font-medium leading-[14.4px] text-primary-700">
-                        Tampilkan QR Code
-                      </span>
-                      <IconComponent
-                        src="/icons/chevron-right.svg"
-                        className="icon-blue"
-                      />
-                    </button>
-                  </ModalTrigger>
-                  <ModalContent className="w-modal-big">
-                    <ModalHeader size="big" />
-                    <div className="flex w-full flex-col items-center gap-y-6 px-6 py-9">
-                      <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
-                        {/* {statusScan().statusTitle} */}
-                        QR Code Lokasi Muat & Bongkar
-                      </h1>
-                      <div className="flex flex-col items-center gap-y-3">
-                        <BadgeStatusPesanan
-                          className="w-fit"
-                          variant={statusScan().hasScan ? "success" : "error"}
-                        >
-                          {statusScan().statusText}
-                        </BadgeStatusPesanan>
-
-                        <AvatarDriver
-                          name={qrData?.driverInfo.name}
-                          image={qrData?.driverInfo.driverImage}
-                          licensePlate={qrData?.driverInfo.licensePlate}
+                {/* Modal QR Code Supir */}
+                {qrData && (
+                  <Modal closeOnOutsideClick={false}>
+                    <ModalTrigger>
+                      <button className="flex items-center gap-x-1">
+                        <span className="text-[12px] font-medium leading-[14.4px] text-primary-700">
+                          Tampilkan QR Code
+                        </span>
+                        <IconComponent
+                          src="/icons/chevron-right.svg"
+                          className="icon-blue"
                         />
+                      </button>
+                    </ModalTrigger>
+                    <ModalContent className="w-modal-big">
+                      <ModalHeader size="big" />
+                      <div className="flex w-full flex-col items-center gap-y-6 px-6 py-9">
+                        <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
+                          {/* {statusScan().statusTitle} */}
+                          QR Code Lokasi Muat & Bongkar
+                        </h1>
+                        <div className="flex flex-col items-center gap-y-3">
+                          <BadgeStatusPesanan
+                            className="w-fit"
+                            variant={statusScan().hasScan ? "success" : "error"}
+                          >
+                            {statusScan().statusText}
+                          </BadgeStatusPesanan>
+
+                          <AvatarDriver
+                            name={qrData?.driverInfo.name}
+                            image={qrData?.driverInfo.driverImage}
+                            licensePlate={qrData?.driverInfo.licensePlate}
+                          />
+                        </div>
+                        <img
+                          src={qrData?.qrCodeImage}
+                          width={124}
+                          height={124}
+                          alt=""
+                        />
+                        <span className="text-center text-[14px] font-medium leading-[16.8px] text-neutral-900">
+                          *Tunjukkan QR Code ini kepada pihak driver agar dapat
+                          melanjutkan ke proses muat.
+                        </span>
+                        <Button
+                          iconLeft="/icons/salin-qrc16.svg"
+                          onClick={handleCopyQrCode}
+                          variant="muatparts-primary"
+                        >
+                          Bagikan QR Code
+                        </Button>
                       </div>
-                      <img
-                        src={qrData?.qrCodeImage}
-                        width={124}
-                        height={124}
-                        alt=""
-                      />
-                      <span className="text-center text-[14px] font-medium leading-[16.8px] text-neutral-900">
-                        *Tunjukkan QR Code ini kepada pihak driver agar dapat
-                        melanjutkan ke proses muat.
-                      </span>
-                      <Button
-                        iconLeft="/icons/salin-qrc16.svg"
-                        onClick={handleCopyQrCode}
-                        variant="muatparts-primary"
-                      >
-                        Bagikan QR Code
-                      </Button>
-                    </div>
-                  </ModalContent>
-                </Modal>
-              )}
-            </div>
+                    </ModalContent>
+                  </Modal>
+                )}
+              </div>
+            )}
             <div className="flex items-center justify-between">
               <AvatarDriver
                 name={dataDriver.name}

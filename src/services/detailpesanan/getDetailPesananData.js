@@ -105,7 +105,7 @@ const apiResultOrderDetail = {
         transporterOrderCode: "MT.25.AA.001",
         invoiceNumber: "INV/12345678",
         // orderStatus: OrderStatusEnum.LOADING,
-        orderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
+        orderStatus: OrderStatusEnum.WAITING_REPAYMENT_1,
         orderTitle: "Dimuat",
         orderType: "INSTANT",
         createdAt: "2024-01-01T10:00:00Z",
@@ -169,7 +169,7 @@ const apiResultOrderDetail = {
             totalHours: 0,
             isChargeable: false,
           },
-          overloadFee: 1000000,
+          overloadFee: 100000,
         },
       },
       otherInformation: {

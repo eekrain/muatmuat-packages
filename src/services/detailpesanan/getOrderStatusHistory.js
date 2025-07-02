@@ -18,11 +18,17 @@ const apiResultOrderStatusHistory = {
         statusCode: OrderStatusEnum.LOADING,
         statusName: "Proses Muat",
       },
-      // {
-      //   statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
-      //   statusCode: "UNLOADING",
-      //   statusName: "Proses Bongkar",
-      // },
+      {
+        statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
+        statusCode: OrderStatusEnum.UNLOADING,
+        statusName: "Proses Bongkar",
+      },
+
+      {
+        statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
+        statusCode: OrderStatusEnum.WAITING_REPAYMENT_1,
+        statusName: "Menunggu Pelunasan",
+      },
       // {
       //   statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
       //   statusCode: OrderStatusEnum.PREPARE_DOCUMENT,
@@ -33,16 +39,16 @@ const apiResultOrderStatusHistory = {
       //   statusCode: OrderStatusEnum.DOCUMENT_DELIVERY,
       //   statusName: "Proses Pengiriman Dokumen",
       // },
-      // {
-      //   statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
-      //   statusCode: "COMPLETED",
-      //   statusName: "Selesai",
-      // },
       {
         statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
-        statusCode: OrderStatusEnum.CANCELED_BY_SHIPPER,
-        statusName: "Dibatalkan",
+        statusCode: OrderStatusEnum.COMPLETED,
+        statusName: "Selesai",
       },
+      // {
+      //   statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
+      //   statusCode: OrderStatusEnum.CANCELED_BY_SHIPPER,
+      //   statusName: "Dibatalkan",
+      // },
     ],
     driverStatus: [
       {

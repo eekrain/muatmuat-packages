@@ -2,6 +2,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -20,11 +21,30 @@ export const StepperContainer = ({ totalStep, activeIndex, children }) => {
 
   const [titleWidth, setTitleWidth] = useState(110);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // get width of container
     const width = containerRef.current.offsetWidth;
     setTitleWidth(width / totalStep);
   }, [totalStep]);
+
+  useEffect(() => {
+    const updateTitleWidth = () => {
+      const width = containerRef.current.offsetWidth;
+      setTitleWidth(width / totalStep);
+    };
+
+    // Initial check
+    updateTitleWidth();
+
+    // Add event listener
+    window.addEventListener("resize", updateTitleWidth);
+
+    // Clean up
+    return () => {
+      window.removeEventListener("resize", updateTitleWidth);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Context.Provider value={{ titleWidth, activeIndex }}>

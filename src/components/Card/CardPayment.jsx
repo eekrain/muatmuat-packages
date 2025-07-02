@@ -103,7 +103,7 @@ const Item = ({
   return (
     <div
       className={cn(
-        "flex items-center justify-between text-xs font-medium leading-tight",
+        "flex justify-between text-xs font-medium leading-tight",
         className
       )}
     >
@@ -134,16 +134,20 @@ const Subtotal = ({ className, label, value }) => {
   );
 };
 
-const FooterTotal = ({ className, label, value }) => {
+const FooterTotal = ({ className, label, value, children }) => {
   return (
-    <div
-      className={cn(
-        "flex min-h-[59px] w-full items-center justify-between px-5 text-base font-bold leading-[1.2] text-neutral-900 shadow-[0px_4px_11px_0px_#41414140]",
-        className
-      )}
-    >
-      <span className="h-[11px]">{label}</span>
-      <span className="h-[11px]">{value}</span>
+    <div className="w-full px-5 py-6 shadow-[0px_4px_11px_0px_#41414140]">
+      <div
+        className={cn(
+          "flex justify-between text-base font-bold leading-[1.2] text-neutral-900",
+          className
+        )}
+      >
+        <span>{label}</span>
+        <span>{value}</span>
+      </div>
+
+      {children}
     </div>
   );
 };

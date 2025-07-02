@@ -2,10 +2,10 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import Button from "@/components/Button/Button";
 import Card from "@/components/Card/Card";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
+import { ModalOpsiPembayaran } from "@/components/Modal/ModalOpsiPembayaran";
 import VoucherCard from "@/components/Voucher/VoucherCard";
 import VoucherEmptyState from "@/components/Voucher/VoucherEmptyState";
 import VoucherPopup from "@/components/Voucher/VoucherPopup";
@@ -15,7 +15,6 @@ import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook } from "@/hooks/use-swr";
 import { useVouchers } from "@/hooks/useVoucher";
 import { fetcherMuatrans, fetcherPayment } from "@/lib/axios";
-import { cn } from "@/lib/utils";
 import { formatDate, formatShortDate } from "@/lib/utils/dateFormat";
 import {
   useSewaArmadaActions,
@@ -653,139 +652,16 @@ export const SummaryPanel = () => {
               {`Rp${currentTotal.toLocaleString("id-ID")}`}
             </span>
           </div>
-          {truckTypeId &&
-            (selectedOpsiPembayaran ? (
-              <div className="flex flex-col gap-y-4">
-                <button
-                  className="flex h-8 items-center justify-between rounded-md border border-neutral-600 px-3"
-                  onClick={() => {
-                    mutatePaymentMethods();
-                    setIsPaymentMethodsModalOpen(true);
-                  }}
-                >
-                  <div className="flex items-center gap-x-2">
-                    <Image
-                      src={selectedOpsiPembayaran.icon}
-                      width={16}
-                      height={16}
-                      className="size-[16px] object-cover"
-                      alt={selectedOpsiPembayaran.name}
-                    />
-                    <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                      {selectedOpsiPembayaran.name}
-                    </span>
-                  </div>
-                  <IconComponent src="/icons/chevron-right.svg" />
-                </button>
-                <Button
-                  variant="muatparts-primary"
-                  onClick={handleValidateFleetOrder}
-                >
-                  Lanjut Pembayaran
-                </Button>
-              </div>
-            ) : (
-              <Button
-                variant="muatparts-primary"
-                onClick={() => setIsPaymentMethodsModalOpen(true)}
-              >
-                Pilih Opsi Pembayaran
-              </Button>
-            ))}
+          {truckTypeId && (
+            <ModalOpsiPembayaran
+              paymentMethods={paymentMethodsData?.Data}
+              selectedPaymentMethodId={paymentMethodId}
+              onSelectedPaymentMethodId={handleSelectPaymentMethod}
+              onProceedPayment={handleValidateFleetOrder}
+            />
+          )}
         </div>
       </Card>
-
-      {/* MODAL OPSI PEMBAYARAN */}
-      <Modal
-        open={isPaymentMethodsModalOpen}
-        onOpenChange={setIsPaymentMethodsModalOpen}
-        closeOnOutsideClick={false}
-      >
-        <ModalContent>
-          <div className="flex flex-col gap-y-4 px-6 py-8">
-            <div className="flex w-[424px] justify-center">
-              <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
-                Opsi Pembayaran
-              </h1>
-            </div>
-            {/* Content Container */}
-            <div className="mr-[-16px] flex max-h-[321px] flex-col overflow-y-auto pr-[11px]">
-              {/* Section Title */}
-              <h2 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
-                Semua Metode
-              </h2>
-
-              {/* Payment Options List */}
-              {paymentMethods.map((paymentMethod, categoryKey) => {
-                const isExpanded = expandedCategories.has(categoryKey);
-
-                return (
-                  <div key={categoryKey}>
-                    <div
-                      className="flex h-12 w-full cursor-pointer items-center justify-between border-b border-neutral-400 px-0 py-3"
-                      onClick={() => toggleSection(categoryKey)}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Image
-                          src={paymentMethod.icon}
-                          width={24}
-                          height={24}
-                          className="size-[24px] object-cover"
-                          alt={paymentMethod.category}
-                        />
-                        <span className="text-[12px] font-bold leading-[14.4px] text-neutral-900">
-                          {paymentMethod.category}
-                        </span>
-                      </div>
-                      <IconComponent
-                        src="/icons/chevron-down.svg"
-                        className={cn(
-                          "transition-transform duration-300",
-                          isExpanded ? "rotate-180" : "rotate-0"
-                        )}
-                      />
-                    </div>
-
-                    {/* Payment Method Options */}
-                    <div
-                      className={`w-full overflow-hidden transition-all duration-300 ${
-                        isExpanded
-                          ? "max-h-[calc(100vh_-_124px)] opacity-100"
-                          : "max-h-0 opacity-0"
-                      }`}
-                    >
-                      <div className="flex flex-col pl-8">
-                        {paymentMethod.methods.map((method, key) => (
-                          <button
-                            key={key}
-                            className="flex h-12 w-[392px] cursor-pointer items-center justify-between border-b border-neutral-400 px-0 py-3 hover:bg-neutral-50"
-                            onClick={() => handleSelectPaymentMethod(method.id)}
-                          >
-                            <div className="flex items-center gap-2">
-                              <div className="flex h-6 w-6 items-center justify-center rounded border">
-                                <Image
-                                  src={method.icon}
-                                  width={20}
-                                  height={20}
-                                  className="size-[20px] object-cover"
-                                  alt={method.name}
-                                />
-                              </div>
-                              <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
-                                {method.name}
-                              </span>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </ModalContent>
-      </Modal>
 
       {/* MODAL PILIH VOUCHER */}
       <Modal open={showVoucherPopup} onOpenChange={setShowVoucherPopup}>

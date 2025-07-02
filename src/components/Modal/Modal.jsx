@@ -176,11 +176,11 @@ export const Modal = ({
 /**
  * @param {{ children: React.ReactNode }} props
  */
-export const ModalTrigger = ({ children }) => {
+export const ModalTrigger = ({ className, children }) => {
   const { open } = useModal();
 
   return (
-    <div className="cursor-pointer" onClick={open}>
+    <div className={cn("cursor-pointer", className)} onClick={open}>
       {children}
     </div>
   );
