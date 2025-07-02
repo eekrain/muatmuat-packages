@@ -29,7 +29,6 @@ const Page = () => {
   const { data: reorderData, isLoading: isLoadingReorderData } = useSWRHook(
     copyOrderId ? `v1/orders/${copyOrderId}/reorder` : null
   );
-  // console.log("reorderData", reorderData);
   const { data: requiringConfirmationCountData } = useSWRHook(
     "v1/orders/requiring-confirmation/count"
   );
@@ -71,6 +70,25 @@ const Page = () => {
         setField(
           "cargoCategoryId",
           reorderData?.Data.otherInformation.cargoCategoryId
+        );
+        setField(
+          "informasiMuatan",
+          reorderData?.Data.cargos.map((item) => ({
+            beratMuatan: {
+              berat: item.weight,
+              unit: item.weightUnit,
+            },
+            dimensiMuatan: {
+              panjang: item.dimensions.length,
+              lebar: item.dimensions.width,
+              tinggi: item.dimensions.heigth,
+              unit: item.dimensions.unit,
+            },
+            namaMuatan: {
+              label: item.cargoName,
+              value: item.cargoNameId,
+            },
+          }))
         );
         setField(
           "fotoMuatan",

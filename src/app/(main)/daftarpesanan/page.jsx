@@ -34,7 +34,7 @@ const Page = () => {
       params.append("limit", queryParams.limit);
     }
     if (queryParams.status && queryParams.status !== "") {
-      // params.append("status", queryParams.status);
+      params.append("status", queryParams.status);
     }
     if (queryParams.search) {
       params.append("search", queryParams.search);

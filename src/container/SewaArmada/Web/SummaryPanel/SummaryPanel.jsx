@@ -575,7 +575,8 @@ export const SummaryPanel = () => {
           </h3>
           <button
             onClick={() => {
-              handleOrderFleet(true);
+              handleValidateFleetOrder();
+              // handleOrderFleet(true);
               //router.push("/daftarpesanan/detailpesanan/1");
             }}
             className=""

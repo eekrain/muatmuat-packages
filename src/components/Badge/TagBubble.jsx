@@ -11,11 +11,11 @@ export const TagBubble = ({
   return (
     <div
       className={cn(
-        "group box-border flex h-7 max-w-[204px] flex-row items-center gap-1 rounded-2xl border border-blue-600 bg-white px-3 py-1.5 transition-colors duration-150 hover:bg-blue-50",
+        "group box-border flex h-7 max-w-[204px] flex-row items-center gap-1 rounded-2xl border border-primary-700 bg-white px-3 py-1.5 transition-colors duration-150 hover:bg-blue-50",
         className
       )}
     >
-      <span className="flex-1 truncate text-xs font-semibold leading-[130%] text-blue-600">
+      <span className="flex-1 truncate text-[10px] font-semibold leading-[13px] text-primary-700">
         {children}
       </span>
       {withRemove && (
@@ -27,10 +27,10 @@ export const TagBubble = ({
           }}
           disabled={disabled}
           className={cn(
-            "flex h-3.5 w-3.5 items-center justify-center rounded-full text-blue-600 transition-colors duration-150 hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-1 focus:ring-blue-600 disabled:cursor-not-allowed"
+            "flex h-3.5 w-3.5 items-center justify-center rounded-full text-primary-700 transition-colors duration-150 hover:bg-primary-700 hover:text-white focus:outline-none focus:ring-1 focus:ring-primary-700 disabled:cursor-not-allowed"
           )}
         >
-          <X size={10} strokeWidth={2.5} />
+          <X size={14} strokeWidth={2.5} />
         </button>
       )}
     </div>

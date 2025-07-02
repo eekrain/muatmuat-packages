@@ -183,7 +183,11 @@ const PesananTable = ({
                 {searchOnly ? null : (
                   <Filter
                     disabled={
-                      !hasOrders && (isFirstTimer || !queryParams.status)
+                      !hasOrders &&
+                      (isFirstTimer ||
+                        options
+                          .flatMap((item) => item.children)
+                          .some((item) => item.value !== queryParams.status))
                     }
                     options={options}
                     value={queryParams.status}
@@ -312,13 +316,14 @@ const PesananTable = ({
                       OrderStatusEnum.SCHEDULED_FLEET,
                       OrderStatusEnum.CONFIRMED,
                     ];
-
                     return (
                       <Fragment key={key}>
                         {/* Main row - conditional border based on whether it has a warning */}
                         <tr
                           className={
-                            !order.paymentDeadline
+                            !order.paymentDeadline &&
+                            !order.requiresConfirmation &&
+                            !order.isRefundProcessing
                               ? "border-b border-neutral-400"
                               : "border-b-0"
                           }
@@ -560,6 +565,40 @@ const PesananTable = ({
                               </td>
                             </tr>
                           )}
+                        {/* Pesanan Membutuhkan Konfirmasi */}
+                        {order.requiresConfirmation && (
+                          <tr className="border-b border-neutral-400">
+                            <td colSpan={6} className="px-6 pb-4">
+                              <div className="flex h-12 items-center gap-x-3 rounded-xl bg-secondary-100 px-4">
+                                <IconComponent
+                                  className="icon-stroke-warning-900"
+                                  src="/icons/warning24.svg"
+                                  size="medium"
+                                />
+                                <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+                                  Pesanan membutuhkan konfirmasi
+                                </span>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                        {/* Pengembalian dana sedang dalam proses. */}
+                        {order.isRefundProcessing && (
+                          <tr className="border-b border-neutral-400">
+                            <td colSpan={6} className="px-6 pb-4">
+                              <div className="flex h-12 items-center gap-x-3 rounded-xl bg-secondary-100 px-4">
+                                <IconComponent
+                                  className="icon-stroke-warning-900"
+                                  src="/icons/warning24.svg"
+                                  size="medium"
+                                />
+                                <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+                                  Pengembalian dana sedang dalam proses.
+                                </span>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
                       </Fragment>
                     );
                   })}

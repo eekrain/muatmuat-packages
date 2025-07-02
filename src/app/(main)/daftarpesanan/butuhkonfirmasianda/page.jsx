@@ -32,7 +32,6 @@ const Page = () => {
 
     return params.toString();
   }, [queryParams]);
-  console.log("querystr", queryString);
   // Fetch orders data
   const { data: ordersData } = useSWRHook(`v1/orders/list?${queryString}`);
 

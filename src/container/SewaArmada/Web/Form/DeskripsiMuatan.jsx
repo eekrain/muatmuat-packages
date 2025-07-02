@@ -32,7 +32,7 @@ const DeskripsiMuatan = () => {
           onChange={({ target: { name, value } }) =>
             handleFirstTime(() => setField(name, value))
           }
-          status={formErrors.deskripsi ? "error" : ""}
+          status={formErrors.cargoDescription ? "error" : ""}
         />
       </div>
     </FormContainer>
