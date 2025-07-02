@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import minBy from "lodash/minBy";
 
+import ButtonPlusMinus from "@/components/Form/ButtonPlusMinus";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RecommendedTruckModal from "@/container/SewaArmada/Web/Form/JenisArmada/RecommendedTruckModal";
@@ -33,6 +34,7 @@ export const JenisArmada = () => {
     informasiMuatan,
     carrierId,
     truckTypeId,
+    truckCount,
   } = useSewaArmadaStore((state) => state.formValues);
   const { setField } = useSewaArmadaActions();
 
@@ -367,6 +369,20 @@ export const JenisArmada = () => {
           ) : null}
         </div>
       </FormContainer>
+      {orderType === "SCHEDULED" ? (
+        <FormContainer>
+          <FormLabel required>Jumlah Armada</FormLabel>
+          <div className="">
+            <ButtonPlusMinus
+              disabled={!truckTypeId}
+              onChange={(value) => setField("truckCount", value)}
+              minValue={2}
+              maxValue={10}
+              value={truckCount}
+            />
+          </div>
+        </FormContainer>
+      ) : null}
 
       <SelectArmadaModal
         carrierData={carriers}

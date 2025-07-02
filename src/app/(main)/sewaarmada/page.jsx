@@ -1,14 +1,12 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
 
 import SewaArmadaResponsive from "@/container/SewaArmada/Responsive/SewaArmadaResponsive";
 import SewaArmadaWeb from "@/container/SewaArmada/Web/SewaArmadaWeb";
 import useDevice from "@/hooks/use-device";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useSWRHook } from "@/hooks/use-swr";
-import { useGetSalinDetailPesananData } from "@/services/detailpesanan/getDetailPesananData";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -26,11 +24,12 @@ const Page = () => {
   const cargoCategoryId = useSewaArmadaStore(
     (state) => state.formValues.cargoCategoryId
   );
-  const { setField, setFormId, reset } = useSewaArmadaActions();
+  const { setField, setFormId, setOrderType, reset } = useSewaArmadaActions();
 
-  const { data: dataDetailPesanan, isLoading: isLoadingDetailPesanan } =
-    useGetSalinDetailPesananData(copyOrderId);
-  console.log("dataDetailPesanan", dataDetailPesanan);
+  const { data: reorderData, isLoading: isLoadingReorderData } = useSWRHook(
+    copyOrderId ? `v1/orders/${copyOrderId}/reorder` : null
+  );
+  // console.log("reorderData", reorderData);
   const { data: requiringConfirmationCountData } = useSWRHook(
     "v1/orders/requiring-confirmation/count"
   );
@@ -62,14 +61,31 @@ const Page = () => {
     }
   }, [cargoCategories, cargoCategoryId, isMobile]);
 
-  useEffect(() => {
-    if (urlFormId !== localFormId) {
-      reset();
-      setFormId(urlFormId);
+  useShallowCompareEffect(() => {
+    if (!copyOrderId || !isLoadingReorderData) {
+      if (reorderData) {
+        const cargoPhotos =
+          reorderData?.Data.otherInformation.cargoPhotos || [];
+        setOrderType("INSTANT");
+        setField("cargoTypeId", reorderData?.Data.otherInformation.cargoTypeId);
+        setField(
+          "cargoCategoryId",
+          reorderData?.Data.otherInformation.cargoCategoryId
+        );
+        setField(
+          "fotoMuatan",
+          cargoPhotos.concat(Array(4 - cargoPhotos.length).fill(null))
+        );
+        setField(
+          "cargoDescription",
+          reorderData?.Data.otherInformation.cargoDescription
+        );
+      } else if (urlFormId !== localFormId) {
+        reset();
+        setFormId(urlFormId);
+      }
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlFormId, localFormId]);
+  }, [urlFormId, localFormId, copyOrderId, reorderData, isLoadingReorderData]);
 
   if (!mounted) return null;
   if (isMobile)

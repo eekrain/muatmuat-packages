@@ -151,9 +151,7 @@ const MultilevelSelect = ({ options, value, onChange, disabled }) => {
         className={cn(
           "flex h-8 w-[110px] items-center justify-between rounded-md border bg-neutral-50 px-3",
           isActive ? "border-primary-700" : "border-neutral-600",
-          disabled
-            ? "bg-neutral-200 hover:cursor-not-allowed"
-            : "hover:cursor-pointer"
+          disabled ? "cursor-not-allowed bg-neutral-200" : "cursor-pointer"
         )}
         disabled={disabled}
         onClick={() => {

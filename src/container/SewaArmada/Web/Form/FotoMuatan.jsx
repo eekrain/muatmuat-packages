@@ -21,16 +21,16 @@ export const FotoMuatan = () => {
       <FormLabel required>Lampiran/Foto Muatan</FormLabel>
       <div className="flex-1">
         <div className="flex flex-wrap gap-4">
-          {[...Array(4)].map((_, index) => (
-            <Fragment key={index}>
+          {[...Array(4)].map((_, key) => (
+            <Fragment key={key}>
               <ImageUploader
                 getImage={(value) =>
-                  handleFirstTime(() => handleImageUpload(index, value))
+                  handleFirstTime(() => handleImageUpload(key, value))
                 }
-                uploadText={index === 0 ? "Foto Utama" : `Foto ${index + 1}`}
+                uploadText={key === 0 ? "Foto Utama" : `Foto ${key + 1}`}
                 maxSize={10}
                 className="!size-[124px]"
-                value={fotoMuatan[index]}
+                value={fotoMuatan[key]}
                 isNull={formErrors.fotoMuatan}
               />
             </Fragment>

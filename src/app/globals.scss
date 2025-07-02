@@ -198,6 +198,12 @@ input::-webkit-inner-spin-button {
   }
 }
 
+.icon-stroke-neutral-500 {
+  path {
+    stroke: var(--neutral-500);
+  }
+}
+
 .icon-stroke-primary-700 {
   path {
     stroke: var(--primary-700);

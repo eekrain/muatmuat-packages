@@ -56,7 +56,7 @@ const SelectArmadaModal = ({
     data: priceData,
     error: priceError,
   } = useSWRMutateHook("v1/orders/calculate-price");
-  console.log("priceddata", priceData);
+  // console.log("priceddata", priceData);
   useEffect(() => {
     setSearch("");
   }, [isOpen]);
@@ -155,7 +155,7 @@ const SelectArmadaModal = ({
     ...(currentData.recommended || []),
     ...(currentData.notRecommended || []),
   ].filter((item) => item?.name?.toLowerCase().includes(search.toLowerCase()));
-  console.log("tru", type, truckData);
+
   const isTruckOptionsEmpty =
     type === "truckTypeId" &&
     [...(currentData.recommended || []), ...(currentData.notRecommended || [])]
