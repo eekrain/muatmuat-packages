@@ -68,8 +68,10 @@ export const ModalOpsiPembayaran = ({
               </Button>
             </div>
           ) : (
-            <ModalTrigger>
-              <Button variant="muatparts-primary">Pilih Opsi Pembayaran</Button>
+            <ModalTrigger className="w-full">
+              <Button variant="muatparts-primary" className="w-full">
+                Pilih Opsi Pembayaran
+              </Button>
             </ModalTrigger>
           )}
         </div>
