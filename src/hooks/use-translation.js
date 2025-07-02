@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 
+import xior from "xior";
 import { createStore, useStore } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 
@@ -34,18 +35,15 @@ const createTranslationStore = () =>
         const url = `${s3url}content-general/locales/${envProd}/${languageUrl}/common.json`;
 
         try {
-          const response = await fetch(url, {
+          const response = await xior.get(url, {
             headers: {
               "Content-Type": "application/json",
+              // Cache for 1 week, but allow revalidation for every 1 hour
               "Cache-Control":
-                "public, max-age=86400, stale-while-revalidate=3600",
+                "public, max-age=604800, stale-while-revalidate=3600",
             },
           });
-          if (!response.ok) {
-            throw new Error(`Failed to fetch ${languageUrl} translations`);
-          }
-          const data = await response.json();
-          set({ translation: data, isTranslationsReady: true });
+          set({ translation: response.data, isTranslationsReady: true });
         } catch (error) {
           console.error(
             `Error fetching ${languageUrl} translations: ${error.message}`
@@ -90,11 +88,12 @@ export const useTranslation = () => {
     store,
     useShallow((s) => s.listLanguages)
   );
+  const isTranslationsReady = useStore(store, (s) => s.isTranslationsReady);
 
   return {
     t: store.t,
     listLanguages,
-    isTranslationsReady: store.isTranslationsReady,
+    isTranslationsReady,
   };
 };
 

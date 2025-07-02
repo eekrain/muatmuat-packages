@@ -42,7 +42,7 @@ const DetailRefundPesananWeb = () => {
           {/* Refund Status */}
           <div className="rounded-xl bg-white px-8 py-6 shadow-sm">
             <div className="rounded-xl border px-4 py-5">
-              <StepperContainer activeIndex={1} totalStep={2} titleWidth={367}>
+              <StepperContainer activeIndex={1} totalStep={2}>
                 {[
                   {
                     label: "Pengembalian Dana Diproses",
@@ -165,25 +165,30 @@ const DetailRefundPesananWeb = () => {
                           </div>
 
                           {/* Expandable Content */}
-                          {isDriverExpanded && (
-                            <div className="mt-3 text-xs font-medium leading-[1.2]">
-                              {/* Loading Location Details */}
-                              <div className="space-y-1">
-                                <div className="flex items-center justify-between">
-                                  <span className="text-neutral-900">
-                                    Lokasi Muat 1 : 1 Jam 59 Menit
-                                  </span>
-                                  <span className="text-neutral-900">
-                                    Rp100.000
-                                  </span>
-                                </div>
-                                <div className="text-neutral-600">
-                                  22 Nov 2024 15:00 WIB s/d 22 Nov 2024 16:59
-                                  WIB
-                                </div>
+                          <div
+                            className={cn(
+                              "overflow-hidden transition-all duration-300 ease-in-out",
+                              isDriverExpanded
+                                ? "mt-3 max-h-[200px] opacity-100"
+                                : "mt-0 max-h-0 opacity-0",
+                              "text-xs font-medium leading-[1.2]"
+                            )}
+                          >
+                            {/* Loading Location Details */}
+                            <div className="space-y-1">
+                              <div className="flex items-center justify-between">
+                                <span className="text-neutral-900">
+                                  Lokasi Muat 1 : 1 Jam 59 Menit
+                                </span>
+                                <span className="text-neutral-900">
+                                  Rp100.000
+                                </span>
+                              </div>
+                              <div className="text-neutral-600">
+                                22 Nov 2024 15:00 WIB s/d 22 Nov 2024 16:59 WIB
                               </div>
                             </div>
-                          )}
+                          </div>
                         </div>
 
                         <hr className="border-neutral-400" />

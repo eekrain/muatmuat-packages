@@ -8,7 +8,7 @@ const Root = ({ className, children }) => {
   return (
     <div
       className={cn(
-        "grid grid-cols-1 grid-rows-[59px_1fr_59px] overflow-hidden rounded-xl bg-white shadow-md",
+        "flex flex-col overflow-hidden rounded-xl bg-white shadow-md",
         className
       )}
     >
@@ -19,7 +19,7 @@ const Root = ({ className, children }) => {
 
 const Header = ({ className, children }) => {
   return (
-    <div className={cn("flex items-center px-5", className)}>
+    <div className={cn("flex min-h-[59px] items-center px-5", className)}>
       <span className="w-full text-base font-bold leading-[1.2] text-neutral-900">
         {children}
       </span>
@@ -27,7 +27,7 @@ const Header = ({ className, children }) => {
   );
 };
 
-const Container = ({ className, children }) => {
+const Content = ({ className, children }) => {
   return (
     <div
       className={cn(
@@ -40,11 +40,11 @@ const Container = ({ className, children }) => {
   );
 };
 
-const Collapsible = ({ title, className, children }) => {
+const ContainerCollapsible = ({ title, className, children }) => {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <div className={cn("mx-auto w-full max-w-sm bg-white", className)}>
+    <div className={cn("w-full max-w-sm bg-white", className)}>
       {/* Header */}
       <button
         onClick={() => setIsOpen((prev) => !prev)}
@@ -54,7 +54,7 @@ const Collapsible = ({ title, className, children }) => {
         aria-expanded={isOpen}
         aria-controls="collapsible-content"
       >
-        <h3 className="text-sm font-semibold leading-tight text-black">
+        <h3 className="text-sm font-semibold leading-[1.2] text-black">
           {title}
         </h3>
         <div className="flex-shrink-0">
@@ -70,8 +70,8 @@ const Collapsible = ({ title, className, children }) => {
       <div
         id="collapsible-content"
         className={cn(
-          "flex max-h-96 flex-col gap-4 overflow-hidden pt-3 opacity-100 transition-all duration-300 ease-in-out",
-          !isOpen && "max-h-0 opacity-0"
+          "flex flex-col gap-6 overflow-hidden opacity-100 transition-all duration-300 ease-in-out",
+          isOpen ? "max-h-[1000px] pt-3 opacity-100" : "max-h-0 opacity-0"
         )}
       >
         {children}
@@ -80,7 +80,26 @@ const Collapsible = ({ title, className, children }) => {
   );
 };
 
-const CollapsibleItem = ({ className, label, value }) => {
+const ContainerItem = ({ title, className, children }) => {
+  return (
+    <div className={cn("flex flex-col gap-3", className)}>
+      <h3 className="text-sm font-semibold leading-[1.2] text-black">
+        {title}
+      </h3>
+      {children}
+    </div>
+  );
+};
+
+const Item = ({
+  appearance = {
+    labelClassName: "",
+    valueClassName: "",
+  },
+  className,
+  label,
+  value,
+}) => {
   return (
     <div
       className={cn(
@@ -88,8 +107,14 @@ const CollapsibleItem = ({ className, label, value }) => {
         className
       )}
     >
-      <div className="max-w-[190px] text-gray-500">{label}</div>
-      <div className="flex gap-2 text-black">{value}</div>
+      <div
+        className={cn("max-w-[190px] text-gray-500", appearance.labelClassName)}
+      >
+        {label}
+      </div>
+      <div className={cn("flex gap-2 text-black", appearance.valueClassName)}>
+        {value}
+      </div>
     </div>
   );
 };
@@ -113,7 +138,7 @@ const FooterTotal = ({ className, label, value }) => {
   return (
     <div
       className={cn(
-        "flex w-full items-center justify-between px-5 text-base font-bold leading-[1.2] text-neutral-900 shadow-[0px_4px_11px_0px_#41414140]",
+        "flex min-h-[59px] w-full items-center justify-between px-5 text-base font-bold leading-[1.2] text-neutral-900 shadow-[0px_4px_11px_0px_#41414140]",
         className
       )}
     >
@@ -126,9 +151,10 @@ const FooterTotal = ({ className, label, value }) => {
 const CardPayment = {
   Root,
   Header,
-  Container,
-  Collapsible,
-  CollapsibleItem,
+  Content,
+  ContainerCollapsible,
+  ContainerItem,
+  Item,
   Subtotal,
   FooterTotal,
 };

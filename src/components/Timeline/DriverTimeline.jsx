@@ -51,6 +51,7 @@ export const DriverTimeline = ({ dataDriverStatus, className }) => {
                     setImages={setImages}
                     setCurrentStatus={setCurrentStatus}
                     setLightboxActiveIndex={setLightboxActiveIndex}
+                    totalLength={parent.children.length}
                   />
                 ))}
               </TimelineContainer>
@@ -90,6 +91,7 @@ const ItemWithLightbox = ({
   setImages,
   setCurrentStatus,
   setLightboxActiveIndex,
+  totalLength,
 }) => {
   const subtitle = () => {
     if (driverStatusItem.statusCode.startsWith("MENUJU_")) {
@@ -134,6 +136,7 @@ const ItemWithLightbox = ({
             : null
         }
         withDate={new Date(driverStatusItem.date)}
+        className={index === totalLength - 1 ? "pb-0" : ""}
         appearance={{
           dateClassname:
             parentIndex === 0 && index === 0 ? "text-neutral-900" : "",

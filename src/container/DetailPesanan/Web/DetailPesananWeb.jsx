@@ -8,6 +8,7 @@ import { PaymentInstruction } from "@/container/DetailPesanan/Web/PaymentInstruc
 import { RingkasanPembayaran } from "@/container/DetailPesanan/Web/RingkasanPembayaran/RingkasanPembayaran";
 import RingkasanPesanan from "@/container/DetailPesanan/Web/RingkasanPesanan/RingkasanPesanan";
 import StatusPesanan from "@/container/DetailPesanan/Web/StatusPesanan/StatusPesanan";
+import { toast } from "@/lib/toast";
 import { useGetDetailPesananData } from "@/services/detailpesanan/getDetailPesananData";
 import { useLoadingAction } from "@/store/loadingStore";
 
@@ -108,6 +109,9 @@ const DetailPesananWeb = () => {
         </div>
       </div>
 
+      <button onClick={() => toast.success("Pesanan kamu berhasil dibatalkan")}>
+        tes toast
+      </button>
       <pre>{JSON.stringify(dataDetailPesanan, null, 2)}</pre>
     </>
   );
