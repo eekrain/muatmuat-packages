@@ -542,7 +542,7 @@ const ExampleWeb = () => {
 
       <div>
         <h1 className="mb-2 text-xl font-bold">OTP Rekening Web Example</h1>
-        <RequestOtp />
+        <RequestOtp dontRedirect />
       </div>
     </div>
   );
@@ -735,7 +735,7 @@ const BreadcrumbCardStepper = () => {
               icon: "/icons/stepper-done.svg",
             },
           ].map((step, index) => (
-            <StepperItem key={step.status} step={step} index={index} />
+            <StepperItem key={step.label} step={step} index={index} />
           ))}
         </StepperContainer>
       </div>

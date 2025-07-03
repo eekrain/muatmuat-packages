@@ -24,7 +24,7 @@ import {
 } from "@/store/forms/requestOtpStore";
 import { useLoadingAction } from "@/store/loadingStore";
 
-const RequestOtp = ({ onVerifySuccess = () => {} }) => {
+const RequestOtp = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
   const router = useRouter();
   const { t, isTranslationsReady } = useTranslation();
   const [otp, setOtp] = useState("");
