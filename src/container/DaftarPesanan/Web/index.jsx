@@ -161,26 +161,17 @@ const DaftarPesananWeb = ({
             <h1 className="text-[20px] font-bold leading-[120%] text-neutral-900">
               Daftar Pesanan
             </h1>
-            <div className="flex items-center gap-4">
-              {/* Example button to reset the period dropdown */}
-              <button
-                onClick={resetPeriodDropdown}
-                className="text-sm text-primary-700 hover:underline"
-              >
-                Reset Periode
-              </button>
-              <DropdownPeriode
-                disable={
-                  !hasOrders &&
-                  (isFirstTimer ||
-                    (!queryParams.startDate && !queryParams.endDate))
-                }
-                options={periodOptions}
-                onSelect={handleSelectPeriod}
-                recentSelections={recentPeriodOptions}
-                value={currentPeriodValue} // Pass the current value to control the dropdown
-              />
-            </div>
+            <DropdownPeriode
+              disable={
+                !hasOrders &&
+                (isFirstTimer ||
+                  (!queryParams.startDate && !queryParams.endDate))
+              }
+              options={periodOptions}
+              onSelect={handleSelectPeriod}
+              recentSelections={recentPeriodOptions}
+              value={currentPeriodValue} // Pass the current value to control the dropdown
+            />
           </div>
 
           {requiringConfirmationCount &&
