@@ -7,6 +7,7 @@ import SewaArmadaWeb from "@/container/SewaArmada/Web/SewaArmadaWeb";
 import useDevice from "@/hooks/use-device";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useSWRHook } from "@/hooks/use-swr";
+import { usePaymentRepaymentModalAction } from "@/store/forms/paymentRepaymentModal";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -25,6 +26,7 @@ const Page = () => {
     (state) => state.formValues.cargoCategoryId
   );
   const { setField, setFormId, setOrderType, reset } = useSewaArmadaActions();
+  const { setPaymentRepaymentCount } = usePaymentRepaymentModalAction();
 
   const { data: reorderData, isLoading: isLoadingReorderData } = useSWRHook(
     copyOrderId ? `v1/orders/${copyOrderId}/reorder` : null
@@ -45,20 +47,29 @@ const Page = () => {
   const cargoTypes = cargoTypesData?.Data?.types || [];
   // Extract cargo categories from response
   const cargoCategories = cargoCategoriesData?.Data?.categories || [];
-
+  console.log("requiringConfirmationCount", requiringConfirmationCount);
   // Set default value if cargoTypes is loaded and tipeMuatan is not set
   useShallowCompareEffect(() => {
-    if (cargoTypes.length > 0 && !cargoTypeId && !isMobile) {
+    if (cargoTypes.length > 0 && !cargoTypeId) {
       setField("cargoTypeId", cargoTypes[0].id);
     }
   }, [cargoTypes, cargoTypeId, isMobile]);
 
   // Set default value if cargoCategories is loaded and jenisMuatan is not set
   useShallowCompareEffect(() => {
-    if (cargoCategories.length > 0 && !cargoCategoryId && !isMobile) {
+    if (cargoCategories.length > 0 && !cargoCategoryId) {
       setField("cargoCategoryId", cargoCategories[0].id);
     }
   }, [cargoCategories, cargoCategoryId, isMobile]);
+
+  useShallowCompareEffect(() => {
+    if (requiringConfirmationCount?.breakdown?.paymentRepaymentCount > 0) {
+      setPaymentRepaymentCount(
+        // requiringConfirmationCount.breakdown.paymentRepaymentCount
+        2
+      );
+    }
+  }, [requiringConfirmationCount]);
 
   useShallowCompareEffect(() => {
     if (!copyOrderId || !isLoadingReorderData) {

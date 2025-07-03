@@ -27,11 +27,12 @@ export const FotoMuatan = () => {
                 getImage={(value) =>
                   handleFirstTime(() => handleImageUpload(key, value))
                 }
-                uploadText={key === 0 ? "Foto Utama" : `Foto ${key + 1}`}
+                uploadText={key === 0 ? "Foto Utama" : `Foto ${key}`}
                 maxSize={10}
                 className="!size-[124px]"
                 value={fotoMuatan[key]}
                 isNull={formErrors.fotoMuatan}
+                cropperTitle="Upload Foto Muatan"
               />
             </Fragment>
           ))}

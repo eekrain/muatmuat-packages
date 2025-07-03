@@ -293,7 +293,12 @@ export const JenisArmada = () => {
         <div className="flex flex-1 flex-col gap-y-3.5">
           <div className="flex items-center gap-x-3.5">
             <button
-              className="flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 px-3"
+              className={cn(
+                "flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 px-3",
+                informasiMuatan?.length > 0
+                  ? "cursor-pointer bg-neutral-50"
+                  : "cursor-not-allowed bg-neutral-200"
+              )}
               onClick={() =>
                 handleFirstTime(() => handleOpenModal("carrierId"))
               }
@@ -303,7 +308,14 @@ export const JenisArmada = () => {
                 width={16}
                 height={16}
               />
-              <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+              <span
+                className={cn(
+                  "text-[12px] font-medium leading-[14.4px]",
+                  informasiMuatan?.length === 0
+                    ? "text-neutral-600"
+                    : "text-neutral-900"
+                )}
+              >
                 {selectedCarrier?.name || "Pilih Jenis Carrier"}
               </span>
               <IconComponent
@@ -315,10 +327,10 @@ export const JenisArmada = () => {
             </button>
             <button
               className={cn(
-                "flex h-8 w-full cursor-not-allowed items-center gap-x-2 rounded-md border border-neutral-600 bg-neutral-200 px-3",
-                selectedCarrier &&
-                  !isTruckTypeIdDisabled &&
-                  "cursor-pointer bg-neutral-50"
+                "flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 px-3",
+                selectedCarrier && !isTruckTypeIdDisabled
+                  ? "cursor-pointer bg-neutral-50"
+                  : "cursor-not-allowed bg-neutral-200"
               )}
               disabled={isTruckTypeIdDisabled}
               onClick={() =>

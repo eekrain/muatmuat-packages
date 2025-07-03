@@ -1,6 +1,7 @@
 "use client";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { cn } from "@/lib/utils";
 
 const ButtonPlusMinus = ({
   value = 0,
@@ -84,7 +85,10 @@ const ButtonPlusMinus = ({
 
       <input
         type="number"
-        className="w-full max-w-4 select-none text-[12px] font-medium leading-[14.4px] text-neutral-900 outline-none"
+        className={cn(
+          "w-full max-w-4 select-none text-[12px] font-medium leading-[14.4px] outline-none",
+          disabled ? "text-neutral-500" : "text-neutral-900"
+        )}
         value={numericValue}
         onChange={handleInputChange}
         onBlur={handleInputBlur}

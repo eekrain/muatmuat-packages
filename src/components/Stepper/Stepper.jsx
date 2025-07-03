@@ -97,7 +97,7 @@ export const StepperItem = ({ step, index }) => {
   const { titleWidth, activeIndex } = useContext(Context);
 
   const status = useMemo(() => {
-    if (step.status.startsWith("CANCELED")) return "canceled";
+    if (step.status?.startsWith("CANCELED")) return "canceled";
     if (index < activeIndex) return "completed";
     if (index === activeIndex) return "active";
     return "inactive";

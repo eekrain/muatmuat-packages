@@ -13,17 +13,17 @@ const DaftarPesananWeb = ({
   onChangeQueryParams,
   orders,
   pagination,
-  countByStatus,
   isOrdersLoading,
   requiringConfirmationCount,
   isFirstTimer,
   lastFilterField,
   tabs,
+  currentPeriodValue,
+  setCurrentPeriodValue,
 }) => {
   const { t } = useTranslation();
   const [tempSearch, setTempSearch] = useState("");
-
-  const [getRecentOptionsSort, setRecentOptionsSort] = useState([]);
+  const [recentPeriodOptions, setRecentPeriodOptions] = useState([]);
 
   const hasOrders = orders.length > 0;
 
@@ -47,7 +47,7 @@ const DaftarPesananWeb = ({
     return dateStr;
   };
 
-  const handleSelectSort = (selectedOption) => {
+  const handleSelectPeriod = (selectedOption) => {
     // For custom date range option
     if (selectedOption?.range) {
       // Use string manipulation, not Date object with toISOString()
@@ -57,23 +57,23 @@ const DaftarPesananWeb = ({
       onChangeQueryParams("startDate", formattedStartDate);
       onChangeQueryParams("endDate", formattedEndDate);
 
-      // Update recent selections
+      // Update recent selections - only add if not already in the array
       if (
-        getRecentOptionsSort?.some((s) => s?.value === selectedOption?.value)
+        !recentPeriodOptions?.some((s) => s?.value === selectedOption?.value)
       ) {
-        setRecentOptionsSort(
-          getRecentOptionsSort?.filter(
-            (z) => z?.value !== selectedOption?.value
-          )
-        );
-      } else {
-        setRecentOptionsSort((prev) => [...prev, selectedOption]);
+        setRecentPeriodOptions((prev) => [...prev, selectedOption]);
       }
+
+      // Update the current period value
+      setCurrentPeriodValue(selectedOption);
     }
     // For default "Semua Periode" option
     else if (selectedOption?.value === "") {
       onChangeQueryParams("startDate", null);
       onChangeQueryParams("endDate", null);
+
+      // Update the current period value
+      setCurrentPeriodValue(selectedOption);
     }
     // For predefined period options (today, last 7 days, etc.)
     else if (selectedOption?.value !== undefined) {
@@ -105,7 +105,18 @@ const DaftarPesananWeb = ({
 
       onChangeQueryParams("startDate", startDate);
       onChangeQueryParams("endDate", endDate);
+
+      // Update the current period value
+      setCurrentPeriodValue(selectedOption);
     }
+  };
+
+  // Example function to reset the period dropdown
+  const resetPeriodDropdown = () => {
+    // Reset to default option (first option in the list)
+    setCurrentPeriodValue(periodOptions[0]);
+    onChangeQueryParams("startDate", null);
+    onChangeQueryParams("endDate", null);
   };
 
   const periodOptions = [
@@ -140,14 +151,7 @@ const DaftarPesananWeb = ({
       format: "year",
     },
   ];
-  console.log(
-    "abc",
-    !hasOrders,
-    isFirstTimer,
-    !queryParams.startDate,
-    !queryParams.endDate,
-    isFirstTimer || (!queryParams.startDate && !queryParams.endDate)
-  );
+
   return (
     <>
       <main className="flex justify-center px-10 py-8">
@@ -157,16 +161,26 @@ const DaftarPesananWeb = ({
             <h1 className="text-[20px] font-bold leading-[120%] text-neutral-900">
               Daftar Pesanan
             </h1>
-            <DropdownPeriode
-              disable={
-                !hasOrders &&
-                (isFirstTimer ||
-                  (!queryParams.startDate && !queryParams.endDate))
-              }
-              options={periodOptions}
-              onSelect={handleSelectSort}
-              recentSelections={getRecentOptionsSort}
-            />
+            <div className="flex items-center gap-4">
+              {/* Example button to reset the period dropdown */}
+              <button
+                onClick={resetPeriodDropdown}
+                className="text-sm text-primary-700 hover:underline"
+              >
+                Reset Periode
+              </button>
+              <DropdownPeriode
+                disable={
+                  !hasOrders &&
+                  (isFirstTimer ||
+                    (!queryParams.startDate && !queryParams.endDate))
+                }
+                options={periodOptions}
+                onSelect={handleSelectPeriod}
+                recentSelections={recentPeriodOptions}
+                value={currentPeriodValue} // Pass the current value to control the dropdown
+              />
+            </div>
           </div>
 
           {requiringConfirmationCount &&
@@ -178,7 +192,13 @@ const DaftarPesananWeb = ({
 
           <PesananTable
             queryParams={queryParams}
-            onChangeQueryParams={onChangeQueryParams}
+            onChangeQueryParams={(field, value) => {
+              // Example: When changing certain filters, also reset the period dropdown
+              if (field === "someSpecificFilter") {
+                resetPeriodDropdown();
+              }
+              onChangeQueryParams(field, value);
+            }}
             tempSearch={tempSearch}
             setTempSearch={setTempSearch}
             orders={orders}

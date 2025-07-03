@@ -89,7 +89,7 @@ export const WaktuMuat = () => {
               })
             }
           />
-          <InfoTooltip>
+          <InfoTooltip className="w-[336px]">
             Jika kamu memilih opsi ini, kamu dapat menentukan pukul mulai dan
             pukul akhir untuk penjemputan muatan.
           </InfoTooltip>

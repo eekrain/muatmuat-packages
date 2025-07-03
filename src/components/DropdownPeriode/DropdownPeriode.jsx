@@ -36,6 +36,7 @@ const DropdownPeriode = ({
   recentSelections = [],
   onSelect,
   disable = false,
+  value = null, // New prop to control the component externally
 }) => {
   const { t } = useTranslation();
   const [selected, setSelected] = useState(
@@ -54,9 +55,30 @@ const DropdownPeriode = ({
   });
   const dropdownRef = useRef(null);
 
+  // Initial setup of selected option
   useEffect(() => {
     setSelected(options[0]);
   }, [JSON.stringify(options)]);
+
+  // Effect to handle external value changes
+  useEffect(() => {
+    if (value !== null) {
+      // If value is explicitly provided, update the selected state
+      if (typeof value === "string") {
+        // Find the option with matching value
+        const matchingOption = options.find((opt) => opt.value === value);
+        if (matchingOption) {
+          setSelected(matchingOption);
+        } else if (value === "") {
+          // Handle the default/empty case
+          setSelected(options[0] || { name: "Select an option", value: "" });
+        }
+      } else if (typeof value === "object") {
+        // If value is an object (like a custom date range), set it directly
+        setSelected(value);
+      }
+    }
+  }, [value, options]);
 
   const handleSelect = (option, range) => {
     if (range) {
@@ -180,7 +202,10 @@ const DropdownPeriode = ({
                   <div className="flex w-full items-center justify-between">
                     <span className="line-clamp-1">{option.name}</span>
                     {selected?.value === option?.value && (
-                      <IconComponent src={"/icons/check-circle.svg"} />
+                      <IconComponent
+                        className="icon-stroke-primary-700"
+                        src="/icons/check16.svg"
+                      />
                     )}
                   </div>
                 </li>

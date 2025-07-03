@@ -185,7 +185,7 @@ export const TagInput = ({
               disabled={disabled || currentTags.length >= maxTags}
               maxLength={maxLength}
               className={cn(
-                "h-7 min-w-[120px] flex-1 border-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none disabled:cursor-not-allowed",
+                "h-8 min-w-[120px] flex-1 border-none bg-transparent text-[12px] font-medium leading-[14.4px] text-neutral-900 placeholder-neutral-600 outline-none disabled:cursor-not-allowed",
                 appearance.inputClassName
               )}
               aria-label="Add new tag"

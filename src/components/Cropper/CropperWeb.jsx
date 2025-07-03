@@ -113,7 +113,7 @@ export default function CropperWeb({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-10 overflow-y-auto bg-gray-500 bg-opacity-75 transition-opacity">
+    <div className="fixed inset-0 z-[20] overflow-y-auto bg-gray-500 bg-opacity-75 transition-opacity">
       <div className="flex min-h-full items-center justify-center p-4 text-center max-[600px]:items-center">
         <div
           ref={modalRef}

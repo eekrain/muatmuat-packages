@@ -21,6 +21,7 @@ const Page = () => {
   };
   const [queryParams, setQueryParams] = useState(defaultQueryParams);
   const [lastFilterField, setLastFilterField] = useState("");
+  const [currentPeriodValue, setCurrentPeriodValue] = useState(null); // Track currently selected period
 
   // Transform state into query string using useMemo
   const queryString = useMemo(() => {
@@ -124,6 +125,11 @@ const Page = () => {
       }
       return { ...prevState, [field]: value };
     });
+    setCurrentPeriodValue((prevState) =>
+      field === "search"
+        ? { name: "Semua Periode (Default)", value: "", format: "day" }
+        : prevState
+    );
     setLastFilterField(field);
   };
 
@@ -144,6 +150,8 @@ const Page = () => {
       isFirstTimer={isFirstTimer}
       lastFilterField={lastFilterField}
       tabs={tabs}
+      currentPeriodValue={currentPeriodValue}
+      setCurrentPeriodValue={setCurrentPeriodValue}
     />
   );
 };

@@ -23,6 +23,7 @@ import DefaultResponsiveLayout from "@/layout/ResponsiveLayout/DefaultResponsive
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
 import { formatDate, formatShortDate } from "@/lib/utils/dateFormat";
+import { useInformasiMuatanStore } from "@/store/forms/informasiMuatanStore";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 import {
   useSewaArmadaActions,
@@ -37,10 +38,12 @@ const SewaArmadaHomeScreen = () => {
   const navigation = useResponsiveNavigation();
   const { formValues } = useSewaArmadaStore();
   const { addLokasi, removeLokasi } = useSewaArmadaActions();
-
+  const { setField: setInformasiMuatanField } = useInformasiMuatanStore();
   const isShowCostDetail = true; // nanti pakek usestate
 
   const handleEditInformasiMuatan = () => {
+    setInformasiMuatanField("cargoTypeId", formValues.cargoTypeId);
+    setInformasiMuatanField("cargoCategoryId", formValues.cargoCategoryId);
     navigation.push("/InformasiMuatan");
   };
 
