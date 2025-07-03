@@ -4,6 +4,8 @@ import Button from "@/components/Button/Button";
 import CardPayment from "@/components/Card/CardPayment";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
+import { ModalDetailOverloadMuatan } from "@/components/Modal/ModalDetailOverloadMuatan";
+import { ModalDetailWaktuTunggu } from "@/components/Modal/ModalDetailWaktuTunggu";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
@@ -13,10 +15,12 @@ import { ModalBatalkanPesanan } from "./ModalBatalkanPesanan";
 export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
   const showButtons =
     !dataRingkasanPembayaran?.orderStatus.startsWith("CANCELED") &&
-    dataRingkasanPembayaran?.orderStatus !== OrderStatusEnum.WAITING_PAYMENT_2;
+    dataRingkasanPembayaran?.orderStatus !==
+      OrderStatusEnum.WAITING_PAYMENT_2 &&
+    dataRingkasanPembayaran?.orderStatus !== OrderStatusEnum.COMPLETED;
 
   return (
-    <div className="flex max-h-[453px] w-full flex-col gap-4">
+    <div className="flex w-full flex-col gap-4">
       <CardPayment.Root className="w-full">
         <CardPayment.Header>Ringkasan Pembayaran</CardPayment.Header>
 
@@ -99,6 +103,64 @@ export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
                   value={idrFormat(dataRingkasanPembayaran?.tax)}
                 />
               </div>
+            </CardPayment.ContainerItem>
+          </CardPayment.ContainerCollapsible>
+
+          <CardPayment.ContainerCollapsible title="Detail Tambahan Biaya">
+            <div className="flex flex-col gap-3">
+              <CardPayment.Item
+                label="Waktu Pembayaran"
+                value={formatDate(dataRingkasanPembayaran?.expiredAt)}
+              />
+
+              <CardPayment.Item
+                label="Opsi Pembayaran"
+                value={
+                  <>
+                    <IconComponent
+                      src="/icons/payment/va_bca.svg"
+                      width={16}
+                      height={16}
+                      className="bg-white"
+                    />
+                    <span>BCA Virtual Account</span>
+                  </>
+                }
+              />
+            </div>
+
+            <CardPayment.ContainerItem title="Biaya Waktu Tunggu">
+              <CardPayment.Item
+                label="Nominal Waktu Tunggu (1 Driver)"
+                value={idrFormat(200000)}
+              />
+              <ModalDetailWaktuTunggu
+                driver={{
+                  name: "Daffa Toldo",
+                  detail: "Lokasi Muat 1 : 1 Jam 59 Menit",
+                  startDate: "22 Nov 2024 15:00 WIB",
+                  endDate: "22 Nov 2024 16:59 WIB",
+                  totalPrice: "Rp100.000",
+                }}
+              />
+            </CardPayment.ContainerItem>
+
+            <CardPayment.ContainerItem title="Biaya Overload Muatan">
+              <CardPayment.Item
+                label="Nominal Overload Muatan (2.000 kg)"
+                value={idrFormat(100000)}
+                className="h-auto"
+              />
+              <ModalDetailOverloadMuatan
+                dataRingkasanPembayaran={dataRingkasanPembayaran}
+              />
+            </CardPayment.ContainerItem>
+
+            <CardPayment.ContainerItem title="Biaya Lainnya">
+              <CardPayment.Item
+                label="Admin Layanan"
+                value={idrFormat(10000)}
+              />
             </CardPayment.ContainerItem>
           </CardPayment.ContainerCollapsible>
 

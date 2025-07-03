@@ -38,11 +38,13 @@ export const ModalDetailWaktuTunggu = ({
 
         {/* Driver Section */}
         <div className="space-y-6">
-          <div>
+          <div className="w-full">
             {/* Driver Header */}
             <button
               type="button"
-              className={"flex cursor-pointer items-center justify-between"}
+              className={
+                "flex w-full cursor-pointer items-center justify-between"
+              }
               onClick={() => setIsDriverExpanded(!isDriverExpanded)}
             >
               <h3 className="text-sm font-semibold text-neutral-900">
@@ -59,13 +61,24 @@ export const ModalDetailWaktuTunggu = ({
             {/* Expandable Content */}
             <div
               className={cn(
-                "overflow-hidden transition-all duration-300 ease-in-out",
+                "flex flex-col gap-3 overflow-hidden transition-all duration-300 ease-in-out",
                 isDriverExpanded
                   ? "mt-3 max-h-96 opacity-100"
                   : "mt-0 max-h-0 opacity-0",
                 "text-xs font-medium leading-[1.2]"
               )}
             >
+              {/* Loading Location Details */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-neutral-900">{driver.detail}</span>
+                  <span className="text-neutral-900">Rp100.000</span>
+                </div>
+                <div className="text-neutral-600">
+                  {driver.startDate} s/d {driver.endDate}
+                </div>
+              </div>
+
               {/* Loading Location Details */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between">

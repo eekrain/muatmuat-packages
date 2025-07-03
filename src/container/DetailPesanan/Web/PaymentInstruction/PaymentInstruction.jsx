@@ -17,7 +17,7 @@ export const PaymentInstruction = () => {
 
   return (
     <div
-      className="flex h-auto w-[338px] flex-col gap-6 rounded-xl bg-white p-6"
+      className="flex h-auto w-full flex-col gap-6 rounded-xl bg-white p-6"
       style={{
         boxShadow: "0px 4px 11px rgba(65, 65, 65, 0.25)",
       }}

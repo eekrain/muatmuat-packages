@@ -29,16 +29,16 @@ const apiResultOrderStatusHistory = {
         statusCode: OrderStatusEnum.WAITING_REPAYMENT_1,
         statusName: "Menunggu Pelunasan",
       },
-      // {
-      //   statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
-      //   statusCode: OrderStatusEnum.PREPARE_DOCUMENT,
-      //   statusName: "Dokumen Sedang Disiapkan",
-      // },
-      // {
-      //   statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
-      //   statusCode: OrderStatusEnum.DOCUMENT_DELIVERY,
-      //   statusName: "Proses Pengiriman Dokumen",
-      // },
+      {
+        statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
+        statusCode: OrderStatusEnum.PREPARE_DOCUMENT,
+        statusName: "Dokumen Sedang Disiapkan",
+      },
+      {
+        statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
+        statusCode: OrderStatusEnum.DOCUMENT_DELIVERY,
+        statusName: "Proses Pengiriman Dokumen",
+      },
       {
         statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
         statusCode: OrderStatusEnum.COMPLETED,
