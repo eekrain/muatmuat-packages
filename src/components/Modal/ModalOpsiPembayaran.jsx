@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 import Button from "../Button/Button";
 import IconComponent from "../IconComponent/IconComponent";
-import { Modal, ModalContent, ModalTrigger } from "./Modal";
+import { Modal, ModalContent } from "./Modal";
 
 export const ModalOpsiPembayaran = ({
   paymentMethods = [],
@@ -14,6 +14,7 @@ export const ModalOpsiPembayaran = ({
   onProceedPayment = () => {},
   className,
 }) => {
+  const [isOpen, setIsOpen] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState(new Set([0])); // Initialize with first category expanded
   const toggleSection = (categoryKey) => {
     setExpandedCategories((prev) => {
@@ -25,6 +26,11 @@ export const ModalOpsiPembayaran = ({
       }
       return newSet;
     });
+  };
+
+  const handleSelectPaymentMethod = (methodId) => {
+    onSelectedPaymentMethodId(methodId);
+    setIsOpen(false);
   };
 
   const selectedOpsiPembayaran = useShallowMemo(
@@ -39,40 +45,41 @@ export const ModalOpsiPembayaran = ({
 
   return (
     <>
-      <Modal closeOnOutsideClick>
+      <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick>
         <div className={cn("w-full", className)}>
           {selectedOpsiPembayaran ? (
             <div className="flex flex-col gap-y-4">
-              <ModalTrigger>
-                <button
-                  className="flex h-8 w-full items-center justify-between rounded-md border border-neutral-600 px-3"
-                  type="button"
-                >
-                  <div className="flex items-center gap-x-2">
-                    <img
-                      src={selectedOpsiPembayaran.icon}
-                      width={16}
-                      height={16}
-                      className="size-[16px] bg-white object-contain"
-                      alt={selectedOpsiPembayaran.name}
-                    />
-                    <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                      {selectedOpsiPembayaran.name}
-                    </span>
-                  </div>
-                  <IconComponent src="/icons/chevron-right.svg" />
-                </button>
-              </ModalTrigger>
+              <button
+                className="flex h-8 w-full items-center justify-between rounded-md border border-neutral-600 px-3"
+                type="button"
+                onClick={() => setIsOpen(true)}
+              >
+                <div className="flex items-center gap-x-2">
+                  <img
+                    src={selectedOpsiPembayaran.icon}
+                    width={16}
+                    height={16}
+                    className="size-[16px] bg-white object-contain"
+                    alt={selectedOpsiPembayaran.name}
+                  />
+                  <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                    {selectedOpsiPembayaran.name}
+                  </span>
+                </div>
+                <IconComponent src="/icons/chevron-right.svg" />
+              </button>
               <Button variant="muatparts-primary" onClick={onProceedPayment}>
                 Lanjut Pembayaran
               </Button>
             </div>
           ) : (
-            <ModalTrigger className="w-full">
-              <Button variant="muatparts-primary" className="w-full">
-                Pilih Opsi Pembayaran
-              </Button>
-            </ModalTrigger>
+            <Button
+              variant="muatparts-primary"
+              className="w-full"
+              onClick={() => setIsOpen(true)}
+            >
+              Pilih Opsi Pembayaran
+            </Button>
           )}
         </div>
         <ModalContent>
@@ -133,7 +140,7 @@ export const ModalOpsiPembayaran = ({
                           <button
                             key={key}
                             className="flex h-12 w-[392px] cursor-pointer items-center justify-between border-b border-neutral-400 px-0 py-3 hover:bg-neutral-50"
-                            onClick={() => onSelectedPaymentMethodId(method.id)}
+                            onClick={() => handleSelectPaymentMethod(method.id)}
                           >
                             <div className="flex items-center gap-2">
                               <div className="flex h-6 w-6 items-center justify-center rounded border">

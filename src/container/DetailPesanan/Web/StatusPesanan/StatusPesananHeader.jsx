@@ -39,6 +39,14 @@ export const StatusPesananHeader = ({
     "/img/muatan4.png",
   ];
 
+  const statusVariant = warningVariantStatus.includes(orderStatus)
+    ? "warning"
+    : orderStatus.startsWith("CANCELED")
+      ? "error"
+      : orderStatus === OrderStatusEnum.COMPLETED
+        ? "success"
+        : "primary";
+
   return (
     <>
       <div className="flex w-full items-center gap-x-3">
@@ -59,16 +67,7 @@ export const StatusPesananHeader = ({
           </span>
           <div className="flex items-center gap-x-2">
             <div className="flex items-center gap-5">
-              <BadgeStatusPesanan
-                variant={
-                  warningVariantStatus.includes(orderStatus)
-                    ? "warning"
-                    : orderStatus.startsWith("CANCELED")
-                      ? "error"
-                      : "primary"
-                }
-                className="w-fit"
-              >
+              <BadgeStatusPesanan variant={statusVariant} className="w-fit">
                 {orderStatusLabel}
               </BadgeStatusPesanan>
               {orderStatus.startsWith("CANCELED") && cancellationHistory && (

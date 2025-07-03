@@ -24,13 +24,13 @@ export const StepperContainer = ({ totalStep, activeIndex, children }) => {
   useLayoutEffect(() => {
     // get width of container
     const width = containerRef.current.offsetWidth;
-    setTitleWidth(width / totalStep);
+    setTitleWidth(width / totalStep - 10);
   }, [totalStep]);
 
   useEffect(() => {
     const updateTitleWidth = () => {
       const width = containerRef.current.offsetWidth;
-      setTitleWidth(width / totalStep);
+      setTitleWidth(width / totalStep - 10);
     };
 
     // Initial check
@@ -54,6 +54,7 @@ export const StepperContainer = ({ totalStep, activeIndex, children }) => {
         style={{
           paddingLeft: `calc(${titleWidth}px / 2 - 16px)`,
           paddingRight: `calc(${titleWidth}px / 2 - 16px)`,
+          height: totalStep > 5 ? "80px" : "64px",
         }}
       >
         <div className="relative flex items-start justify-between gap-4">
@@ -97,7 +98,7 @@ export const StepperItem = ({ step, index }) => {
   const { titleWidth, activeIndex } = useContext(Context);
 
   const status = useMemo(() => {
-    if (step.status.startsWith("CANCELED")) return "canceled";
+    if (step?.status && step.status.startsWith("CANCELED")) return "canceled";
     if (index < activeIndex) return "completed";
     if (index === activeIndex) return "active";
     return "inactive";
@@ -127,7 +128,7 @@ export const StepperItem = ({ step, index }) => {
 
         {/* Step Label */}
         <div
-          className="absolute -bottom-2 left-1/2 -translate-x-1/2 translate-y-full text-center text-[12px] font-medium leading-[14.4px] text-[#000000]"
+          className="absolute -bottom-2 left-1/2 -translate-x-1/2 translate-y-full text-center text-[12px] font-medium leading-[1.2] text-[#000000]"
           style={{ width: titleWidth }}
         >
           <span className="block h-2 font-semibold">{step.label}</span>
