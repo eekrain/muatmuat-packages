@@ -24,7 +24,7 @@ export const RingkasanPembayaranTambahanBiaya = ({
       <CardPayment.Root className="w-full">
         <CardPayment.Header>Detail Tambahan Biaya</CardPayment.Header>
 
-        <CardPayment.Content>
+        <CardPayment.Content noScroll>
           <CardPayment.ContainerItem title="Biaya Waktu Tunggu">
             <CardPayment.Item
               label="Nominal Waktu Tunggu (1 Driver)"

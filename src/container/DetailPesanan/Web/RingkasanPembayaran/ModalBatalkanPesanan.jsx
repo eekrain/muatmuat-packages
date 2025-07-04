@@ -1,12 +1,12 @@
 // RingkasanPembayaran.jsx
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import useSWR from "swr";
 
-import BatalkanModal from "@/components/BatalkanModal/BatalkanModal";
 import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Form/Checkbox";
+import { ModalAlasanPembatalan } from "@/components/Modal/BatalkanModal";
 import {
   Modal,
   ModalContent,
@@ -16,6 +16,7 @@ import {
 import { ModalFormRekeningPencairan } from "@/components/RekeningPencairan/ModalFormRekeningPencairan";
 import { ModalFormRequestOtp } from "@/components/RekeningPencairan/ModalFormRequestOtp";
 import { fetcherMuatparts, fetcherMuatrans } from "@/lib/axios";
+import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 import {
   useRequestOtpActions,
@@ -38,7 +39,6 @@ const cancelReasons = new Array(6).fill(0).map((_, index) => index);
 export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const routerParams = useParams();
   const [isModalBatalkanOpen, setIsModalBatalkanOpen] = useState(false);
   const [isAgreed, setIsAgreed] = useState(false);
   const [isModalReasonOpen, setIsModalReasonOpen] = useState(false);
@@ -63,14 +63,14 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran }) => {
     async (url) => {
       const res = await fetcherMuatparts.get(url);
       const data = res.data?.Data?.accounts;
-      return data || [];
+      // return data || [];
+      return [];
     }
   );
 
   const { data: bankOptions } = useSWR("v1/muatparts/banks", async (url) => {
     const res = await fetcherMuatparts.get(url);
     const data = res.data?.Data;
-    console.log("🚀 ~ file: ModalBatalkanPesanan.jsx:58 ~ data:", data);
     if (!data) return [];
     return data.map((val) => ({
       value: val?.id,
@@ -189,37 +189,12 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran }) => {
               Batalkan Pesanan
             </h2>
 
-            {/* Description */}
-            <p className="w-full text-center text-[14px] font-medium leading-[15.4px] text-black">
-              Pembatalan pesanan akan dikenakan biaya admin sebesar
-              Rp75.000/unit.
-              <br />
-              <br />
-              Apakah kamu yakin ingin membatalkan pesanan?
-            </p>
-
-            {/* Checkbox with Terms */}
-            <div className="flex w-[292px] flex-row items-center gap-2">
-              <Checkbox
-                checked={false}
-                onChange={(e) => setIsAgreed(e.checked)}
-                value="terms_agreement"
-                label=""
-              >
-                <span className="text-[12px] font-medium leading-[14.4px] text-black">
-                  Saya menyetujui{" "}
-                  <a
-                    href="https://faq.muatmuat.com/pusat-bantuan"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="cursor-pointer text-primary-700"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    Syarat dan Ketentuan Muatrans
-                  </a>
-                </span>
-              </Checkbox>
-            </div>
+            {dataRingkasanPembayaran?.orderStatus ===
+            OrderStatusEnum.PREPARE_FLEET ? (
+              <CancelContentWhenPrepareFleet setIsAgreed={setIsAgreed} />
+            ) : (
+              <CancelContentWhenNotPrepareFleet setIsAgreed={setIsAgreed} />
+            )}
 
             {/* Action Button */}
             <Button
@@ -237,12 +212,13 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran }) => {
         </ModalContent>
       </Modal>
 
-      <BatalkanModal
+      <ModalAlasanPembatalan
         open={isModalReasonOpen}
         onOpenChange={setIsModalReasonOpen}
         cancelReasons={cancelReasons || []}
         errors={cancelFormErrors}
         onSubmit={handleProceedCancelOrder}
+        title="Alasan Pembatalan"
       />
 
       <ModalFormRekeningPencairan
@@ -259,6 +235,78 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran }) => {
         onOpenChange={setIsModalOtpOpen}
         onSubmit={handleRequestOtp}
       />
+    </>
+  );
+};
+
+const CancelContentWhenPrepareFleet = ({ setIsAgreed }) => {
+  return (
+    <>
+      {/* Description */}
+      <p className="w-full text-center text-[14px] font-medium leading-[15.4px] text-black">
+        Apakah Anda yakin ingin membatalkan pesanan? Sebelum melakukan
+        pembatalan pesanan, pastikan Anda sudah membaca{" "}
+        <a
+          href="https://faq.muatmuat.com/pusat-bantuan"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="cursor-pointer text-primary-700"
+          onClick={(e) => e.stopPropagation()}
+        >
+          Syarat dan Ketentuan kami.
+        </a>
+      </p>
+
+      {/* Checkbox with Terms */}
+      <div className="flex w-[318px] flex-row items-center gap-2">
+        <Checkbox
+          checked={false}
+          onChange={(e) => setIsAgreed(e.checked)}
+          value="terms_agreement"
+          label=""
+        >
+          <span className="text-[12px] font-medium leading-[14.4px] text-black">
+            Ya, Saya setuju dengan syarat dan ketentuan tersebut
+          </span>
+        </Checkbox>
+      </div>
+    </>
+  );
+};
+
+const CancelContentWhenNotPrepareFleet = ({ setIsAgreed }) => {
+  return (
+    <>
+      {/* Description */}
+      <p className="w-full text-center text-[14px] font-medium leading-[15.4px] text-black">
+        Pembatalan pesanan akan dikenakan biaya admin sebesar Rp75.000/unit.
+        <br />
+        <br />
+        Apakah kamu yakin ingin membatalkan pesanan?
+      </p>
+
+      {/* Checkbox with Terms */}
+      <div className="flex w-[292px] flex-row items-center gap-2">
+        <Checkbox
+          checked={false}
+          onChange={(e) => setIsAgreed(e.checked)}
+          value="terms_agreement"
+          label=""
+        >
+          <span className="text-[12px] font-medium leading-[14.4px] text-black">
+            Saya menyetujui{" "}
+            <a
+              href="https://faq.muatmuat.com/pusat-bantuan"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="cursor-pointer text-primary-700"
+              onClick={(e) => e.stopPropagation()}
+            >
+              Syarat dan Ketentuan Muatrans
+            </a>
+          </span>
+        </Checkbox>
+      </div>
     </>
   );
 };

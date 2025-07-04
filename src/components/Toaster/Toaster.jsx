@@ -57,7 +57,7 @@ const Toaster = ({ className }) => {
           <div
             key={toast.id}
             className={cn(
-              "pointer-events-auto flex h-[48px] w-full items-center justify-between gap-3 rounded-lg border px-3 md:h-auto md:w-[440px] md:py-[15px]",
+              "pointer-events-auto flex h-[48px] w-full items-center justify-between gap-3 rounded-lg border px-3 md:w-[440px]",
               toast.type === "success" && "border-success-400 bg-success-50",
               toast.type === "error" && "border-error-400 bg-error-50",
               toast.isLeaving ? "animate-leave" : "animate-enter",
@@ -87,7 +87,7 @@ const Toaster = ({ className }) => {
                   aria-hidden="true"
                 />
               </div>
-              <span className="flex-1 text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+              <span className="flex-1 text-xs font-semibold leading-[1.2] tracking-tight text-neutral-900">
                 {toast.message}
               </span>
             </div>

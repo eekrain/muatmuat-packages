@@ -73,6 +73,7 @@ export const ModalFormRekeningPencairan = ({
                   setField("bankId", selectedValue);
                 }}
                 errorMessage={formErrors.bankId}
+                placeholder="Pilih Bank"
               />
             </div>
 

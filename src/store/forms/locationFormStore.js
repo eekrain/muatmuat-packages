@@ -100,8 +100,8 @@ export const useLocationFormStore = create(
         const validateLocation = () => {
           if (!formValues.dataLokasi?.location)
             return formMode === "muat"
-              ? "Lokasi muat harus diisi"
-              : "Lokasi bongkar harus diisi";
+              ? "Lokasi Muat wajib diisi"
+              : "Lokasi Bongkar wajib diisi";
 
           const foundLocationIndex = allSelectedLocations.findIndex(
             (item) =>
@@ -118,7 +118,7 @@ export const useLocationFormStore = create(
         const errors = {
           dataLokasi: validateLocation(),
           namaPIC: validateNamaPIC(formValues.namaPIC),
-          noHPPIC: validateNoHPPIC(formValues.noHPPIC),
+          noHPPIC: validateNoHPPIC(formValues.noHPPIC, formMode),
         };
 
         set({ formErrors: errors });
@@ -223,32 +223,32 @@ export const useLocationFormStore = create(
 );
 
 const validateNamaLokasi = (namaLokasi) => {
-  if (!namaLokasi) return "Nama Lokasi harus diisi";
+  if (!namaLokasi) return "Nama Lokasi wajib diisi";
   if (namaLokasi.length < 3) return "Nama Lokasi minimal 3 karakter";
 };
 
 const validateDataLokasi = (dataLokasi) => {
-  if (!dataLokasi?.location?.name) return "Lokasi harus diisi";
+  if (!dataLokasi?.location?.name) return "Lokasi wajib diisi";
 };
 
 const validateDetailLokasi = (detailLokasi) => {
-  if (!detailLokasi) return "Detail Lokasi harus diisi";
+  if (!detailLokasi) return "Detail Lokasi wajib diisi";
   if (detailLokasi.length < 3) return "Detail Lokasi minimal 3 karakter";
 };
 
 const validateNamaPIC = (namaPIC) => {
-  if (!namaPIC) return "Nama PIC harus diisi";
+  if (!namaPIC) return "Nama PIC wajib diisi";
   if (namaPIC.length < 3) return "Nama PIC minimal 3 karakter";
   // validate it name only alphabet and "'"
   if (!/^[a-zA-Z' ]+$/.test(namaPIC)) return "Penulisan Nama PIC tidak valid";
 };
 
-const validateNoHPPIC = (noHPPIC) => {
-  if (!noHPPIC) return "No. HP PIC harus diisi";
+const validateNoHPPIC = (noHPPIC, formMode) => {
+  if (!noHPPIC) return "No. HP PIC wajib diisi";
   if (!/^[0-9]+$/.test(noHPPIC)) return "No. HP PIC tidak valid";
   if (noHPPIC.length < 8) return "No. HP PIC minimal 8 digit";
   if (noHPPIC.split("")?.every((char) => char === noHPPIC[0]))
-    return "Format No. HP PIC muat salah";
+    return `Format No. HP PIC lokasi ${formMode === "muat" ? "muat" : "bongkar"} salah`;
   if (!noHPPIC.startsWith("0") && !noHPPIC.startsWith("62"))
-    return "Format No. HP PIC muat salah";
+    return `Format No. HP PIC lokasi ${formMode === "muat" ? "muat" : "bongkar"} salah`;
 };

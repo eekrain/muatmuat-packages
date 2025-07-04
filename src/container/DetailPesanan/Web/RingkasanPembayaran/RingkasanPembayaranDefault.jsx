@@ -20,12 +20,22 @@ export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
     dataRingkasanPembayaran?.orderStatus !== OrderStatusEnum.COMPLETED &&
     !dataRingkasanPembayaran?.orderStatus?.includes("DOCUMENT");
 
+  const isRingkasanTransaksi =
+    dataRingkasanPembayaran?.orderStatus === OrderStatusEnum.COMPLETED ||
+    dataRingkasanPembayaran?.orderStatus ===
+      OrderStatusEnum.WAITING_PAYMENT_1 ||
+    dataRingkasanPembayaran?.orderStatus?.startsWith("CANCELED");
+
   return (
     <div className="flex h-[453px] w-full flex-col gap-4">
       <CardPayment.Root>
-        <CardPayment.Header>Ringkasan Pembayaran</CardPayment.Header>
+        <CardPayment.Header>
+          {isRingkasanTransaksi
+            ? "Ringkasan Transaksi"
+            : "Ringkasan Pembayaran"}
+        </CardPayment.Header>
 
-        <CardPayment.Content>
+        <CardPayment.Content noScroll>
           <CardPayment.ContainerCollapsible title="Detail Pesanan">
             <div className="flex flex-col gap-3">
               <CardPayment.Item
@@ -87,7 +97,7 @@ export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
                   appearance={{
                     valueClassName: "text-error-400",
                   }}
-                  value={idrFormat(dataRingkasanPembayaran?.voucherDiscount)}
+                  value={`-${idrFormat(dataRingkasanPembayaran?.voucherDiscount)}`}
                 />
               </CardPayment.ContainerItem>
             ) : null}
@@ -177,8 +187,18 @@ export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
       {/* Buttons Section */}
       {showButtons && (
         <div className="flex w-full flex-col gap-4">
-          {dataRingkasanPembayaran?.orderStatus !==
-            OrderStatusEnum.SEARCHING_FLEET && (
+          {dataRingkasanPembayaran?.orderStatus ===
+          OrderStatusEnum.WAITING_PAYMENT_1 ? (
+            <Button
+              variant="muatparts-primary"
+              className="h-8 w-full"
+              onClick={() => {}}
+              type="button"
+            >
+              Lanjut Pembayaran
+            </Button>
+          ) : dataRingkasanPembayaran?.orderStatus !==
+            OrderStatusEnum.PREPARE_FLEET ? (
             <Button
               variant="muatparts-primary-secondary"
               className="h-8 w-full"
@@ -187,9 +207,11 @@ export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
             >
               Ubah Pesanan
             </Button>
-          )}
+          ) : null}
 
-          <ModalBatalkanPesanan />
+          <ModalBatalkanPesanan
+            dataRingkasanPembayaran={dataRingkasanPembayaran}
+          />
         </div>
       )}
     </div>

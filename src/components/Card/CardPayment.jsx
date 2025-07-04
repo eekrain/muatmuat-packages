@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { ChevronUp } from "lucide-react";
 
@@ -27,15 +27,41 @@ const Header = ({ className, children }) => {
   );
 };
 
-const Content = ({ className, children }) => {
+const Content = ({ noScroll = false, className, children }) => {
+  const containerRef = useRef(null);
+  const [maxHeight, setMaxHeight] = useState(0);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      setMaxHeight(containerRef.current.clientHeight);
+    }
+  }, []);
+
+  if (!maxHeight || noScroll)
+    return (
+      <div
+        ref={containerRef}
+        className={cn(
+          "flex w-full max-w-sm flex-col gap-6 overflow-x-hidden bg-white pb-4 pl-5",
+          noScroll ? "pr-5" : "overflow-y-scroll",
+          className
+        )}
+      >
+        {children}
+      </div>
+    );
+
   return (
-    <div
-      className={cn(
-        "mx-auto flex w-full max-w-sm flex-col gap-6 overflow-y-auto overflow-x-hidden bg-white px-5 pb-4",
-        className
-      )}
-    >
-      {children}
+    <div className="pr-[8px]" style={{ maxHeight }}>
+      <div
+        className={cn(
+          "flex w-full max-w-sm flex-col gap-6 overflow-x-hidden overflow-y-scroll bg-white pb-4 pl-5 pr-[8px]",
+          className
+        )}
+        style={{ maxHeight }}
+      >
+        {children}
+      </div>
     </div>
   );
 };

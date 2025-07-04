@@ -105,7 +105,7 @@ const apiResultOrderDetail = {
         transporterOrderCode: "MT.25.AA.001",
         invoiceNumber: "INV/12345678",
         // orderStatus: OrderStatusEnum.LOADING,
-        orderStatus: OrderStatusEnum.PREPARE_DOCUMENT,
+        orderStatus: OrderStatusEnum.WAITING_REPAYMENT_1,
         orderTitle: "Dimuat",
         orderType: "INSTANT",
         createdAt: "2024-01-01T10:00:00Z",
@@ -161,7 +161,7 @@ const apiResultOrderDetail = {
               price: 100000,
             },
           ],
-          voucherDiscount: 0.0,
+          voucherDiscount: 150000,
           adminFee: 25000.0,
           taxAmount: 125000.0,
           waitingFee: {
@@ -239,6 +239,10 @@ const fetcher = async (cacheKey) => {
       getOrderAlerts(cacheKey),
       getCancellationHistory(cacheKey),
     ]);
+    console.log(
+      "🔍 ~  ~ src/services/detailpesanan/getDetailPesananData.js:230 ~ dataAdditionalServices:",
+      dataAdditionalServices
+    );
 
     const data = normalizeDetailPesananOrderDetail({
       dataOrderDetail: dataOrderDetail.data.Data,

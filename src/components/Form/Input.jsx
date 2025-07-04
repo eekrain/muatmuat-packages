@@ -52,6 +52,7 @@ const Input = forwardRef(
       appearance = {
         containerClassName: "",
         inputClassName: "",
+        errorMessageClassName: "",
       },
       errorMessage,
       hideErrorMessage = false,
@@ -133,7 +134,12 @@ const Input = forwardRef(
         </div>
         {errorMessage || supportiveText ? (
           <div className="flex w-full items-center">
-            <span className="text-xs font-medium text-error-400">
+            <span
+              className={cn(
+                "text-xs font-medium text-error-400",
+                appearance.errorMessageClassName
+              )}
+            >
               {t(errorMessage)}
             </span>
 

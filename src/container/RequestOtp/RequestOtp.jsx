@@ -47,7 +47,10 @@ const RequestOtp = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
   useShallowCompareEffect(() => {
     // This is to prevent the page to be accessed if there are no correct data
     const timer = setTimeout(() => {
-      if (!formValues?.verificationMethod || !formValues?.verificationData) {
+      if (
+        (!formValues?.verificationMethod || !formValues?.verificationData) &&
+        !dontRedirect
+      ) {
         router.push("/");
         return;
       }
