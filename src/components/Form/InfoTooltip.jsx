@@ -15,7 +15,7 @@ export function InfoTooltip({
   sideOffset = 8,
   className,
   appearance = {
-    iconColor: "text-neutral-600",
+    iconClassName: "text-neutral-600",
   },
   children,
 }) {
@@ -26,13 +26,14 @@ export function InfoTooltip({
           {trigger ? (
             trigger
           ) : (
-            <div className="size-4">
+            <div className={cn("h-4 w-4", appearance.iconClassName)}>
               <IconComponent
                 loader={false}
                 src={{ src: icon }}
-                height={16}
-                width={16}
-                className={cn("text-neutral-600", appearance.iconColor)}
+                className={cn(
+                  "h-4 w-4 text-neutral-600",
+                  appearance.iconClassName
+                )}
               />
             </div>
           )}

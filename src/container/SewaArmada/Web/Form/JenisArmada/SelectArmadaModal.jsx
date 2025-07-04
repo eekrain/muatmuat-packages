@@ -165,7 +165,7 @@ const SelectArmadaModal = ({
     <>
       <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick={false}>
         <ModalContent type="muatmuat">
-          <div className="flex flex-col gap-y-4 px-6 py-9">
+          <div className="flex h-[460px] flex-col gap-y-4 px-6 py-8">
             {/* Header */}
             <div className="flex w-[424px] justify-center">
               <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
@@ -174,7 +174,10 @@ const SelectArmadaModal = ({
             </div>
 
             {isTruckOptionsEmpty ? (
-              <WarningBadge message="Untuk sementara kami belum menyediakan truk yang sesuai dengan informasi berat dan dimensi muatan yang kamu isikan." />
+              <WarningBadge
+                className="bg-warning-100"
+                message="Untuk sementara kami belum menyediakan truk yang sesuai dengan informasi berat dan dimensi muatan yang kamu isikan."
+              />
             ) : null}
 
             {/* Search Field */}
@@ -197,14 +200,26 @@ const SelectArmadaModal = ({
               onChange={handleSearchChange}
             />
 
-            {search.length < 3 ? (
-              <div className="mr-[-15px] max-h-[320px] overflow-y-auto pr-2.5">
-                {/* Rekomendasi Section */}
-                <div className="mb-6">
-                  <SectionHeader recommended type={type} />
+            {isTruckOptionsEmpty ? (
+              <div className="flex h-[267px] items-center justify-center">
+                <DataNotFound
+                  className="gap-y-3"
+                  textClass="text-[#868686]"
+                  title="Tidak ada rekomendasi truk"
+                  width={96}
+                  height={77}
+                />
+              </div>
+            ) : null}
 
-                  {currentData.recommended?.length > 0 ? (
-                    currentData.recommended.map((item, key) => (
+            {search.length < 3 ? (
+              <div className="mr-[-15px] flex h-[320px] flex-col gap-y-4 overflow-y-auto pr-2.5">
+                {/* Rekomendasi Section */}
+                {currentData.recommended?.length > 0 ? (
+                  <div>
+                    <SectionHeader recommended type={type} />
+
+                    {currentData.recommended.map((item, key) => (
                       <Fragment key={key}>
                         {type === "carrierId" ? (
                           <CarrierItem
@@ -219,19 +234,9 @@ const SelectArmadaModal = ({
                           />
                         ) : null}
                       </Fragment>
-                    ))
-                  ) : isTruckOptionsEmpty ? (
-                    <div className="flex h-[267px] items-center justify-center">
-                      <DataNotFound
-                        className="gap-y-3"
-                        textClass="text-[#868686]"
-                        title="Tidak ada rekomendasi truk"
-                        width={96}
-                        height={77}
-                      />
-                    </div>
-                  ) : null}
-                </div>
+                    ))}
+                  </div>
+                ) : null}
 
                 {/* Tidak Direkomendasikan Section */}
                 {currentData.notRecommended?.length > 0 && (
@@ -239,7 +244,12 @@ const SelectArmadaModal = ({
                     <SectionHeader recommended={false} type={type} />
 
                     <WarningBadge
-                      message={`Pilihan ${type === "carrier" ? "carrier" : "truk"} di bawah ini berisiko melebihi batas dimensi atau tidak sesuai dengan informasi muatan`}
+                      className="mt-3"
+                      message={
+                        type === "carrierId"
+                          ? "Pilihan carrier di bawah ini berisiko melebihi batas dimensi atau tidak sesuai dengan informasi muatan"
+                          : "Pilihan truk di bawah ini berisiko kelebihan muatan atau tidak sesuai dengan informasi muatan"
+                      }
                     />
 
                     {currentData.notRecommended.map((item, key) => (

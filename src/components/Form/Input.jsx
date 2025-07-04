@@ -72,8 +72,9 @@ const Input = forwardRef(
             "focus-within:border-primary-700 hover:border-primary-700",
             errorMessage && "border-error-400",
             appearance.containerClassName,
-            disabled &&
-              "cursor-not-allowed border-neutral-600 bg-neutral-200 hover:border-neutral-600"
+            disabled
+              ? "cursor-not-allowed border-neutral-600 bg-neutral-200 hover:border-neutral-600"
+              : "cursor-pointer"
           )}
         >
           {icon.left && (
