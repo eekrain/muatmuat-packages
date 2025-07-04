@@ -245,8 +245,8 @@ const validateNamaPIC = (namaPIC) => {
 
 const validateNoHPPIC = (noHPPIC) => {
   if (!noHPPIC) return "No. HP PIC harus diisi";
-  if (noHPPIC.length < 8) return "No. HP PIC minimal 8 digit";
   if (!/^[0-9]+$/.test(noHPPIC)) return "No. HP PIC tidak valid";
+  if (noHPPIC.length < 8) return "No. HP PIC minimal 8 digit";
   if (noHPPIC.split("")?.every((char) => char === noHPPIC[0]))
     return "Format No. HP PIC muat salah";
   if (!noHPPIC.startsWith("0") && !noHPPIC.startsWith("62"))

@@ -29,14 +29,12 @@ const StatusPesanan = ({ dataStatusPesanan }) => {
   return (
     <>
       {dataStatusPesanan.alerts.map((alert) => (
-        <Alert
-          key={alert.label}
-          variant="secondary"
-          size="big"
-          className="w-full"
-        >
+        <Alert key={alert.label} variant="secondary" size="big">
           <div className="flex items-center gap-2">
-            <span className="block">{alert.label}</span>
+            <span
+              className="block"
+              dangerouslySetInnerHTML={{ __html: alert.label }}
+            />
 
             {alert?.info && (
               <InfoTooltip
@@ -54,7 +52,8 @@ const StatusPesanan = ({ dataStatusPesanan }) => {
         orderStatus={dataStatusPesanan.orderStatus}
         expiredAt={dataStatusPesanan.expiredAt}
       />
-      <Card className="w-full rounded-xl border-none">
+
+      <Card className="rounded-xl border-none">
         <CardContent className="px-9 py-6">
           <div className="flex flex-col items-end gap-6">
             {/* Header Section */}
@@ -66,7 +65,7 @@ const StatusPesanan = ({ dataStatusPesanan }) => {
 
             {/* Timeline Section */}
             {showStepperOnly && dataStatusPesanan.driverStatus?.length > 0 ? (
-              <div className="flex w-full flex-col gap-y-5 rounded-xl border border-neutral-400 px-4 py-5">
+              <div className="flex flex-col gap-y-5 rounded-xl border border-neutral-400 px-4 py-5">
                 <StepperContainer
                   activeIndex={dataStatusPesanan.statusHistory.activeIndex}
                   totalStep={dataStatusPesanan.statusHistory.stepper.length}

@@ -26,7 +26,7 @@ const apiResultOrderStatusHistory = {
 
       {
         statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
-        statusCode: OrderStatusEnum.WAITING_REPAYMENT_1,
+        statusCode: OrderStatusEnum.WAITING_REPAYMENT_2,
         statusName: "Menunggu Pelunasan",
       },
       {
@@ -56,8 +56,8 @@ const apiResultOrderStatusHistory = {
         name: "Ahmad Rahman",
         driverPhoto: "https://picsum.photos/50",
         licensePlate: "B 1234 CD",
-        statusDriver: "CANCELED_BY_SHIPPER",
-        statusTitle: "Menuju Lokasi Muat 1",
+        statusDriver: "LOADING",
+        statusTitle: "Proses Muat",
         stepStatus: [
           {
             statusCode: "MENUJU_LOKASI_MUAT_1",
@@ -77,32 +77,32 @@ const apiResultOrderStatusHistory = {
           // },
         ],
       },
-      // {
-      //   driverId: "550e8400-e29b-41d4-a716-446655440022",
-      //   name: "Ardian Eka",
-      //   driverPhoto: "https://picsum.photos/50",
-      //   licensePlate: "B 1234 CD",
-      //   statusDriver: "LOADING_2",
-      //   statusTitle: "Sedang Bongkar di Lokasi 2",
-      //   stepStatus: [
-      //     {
-      //       statusCode: "LOADING_1",
-      //       statusName: "Menuju Lokasi Muat 1",
-      //     },
-      //     {
-      //       statusCode: "LOADING_2",
-      //       statusName: "Menuju Lokasi Muat 2",
-      //     },
-      //     {
-      //       statusCode: "UNLOADING_1",
-      //       statusName: "Menuju Lokasi Bongkar 1",
-      //     },
-      //     {
-      //       statusCode: "UNLOADING_2",
-      //       statusName: "Menuju Lokasi Bongkar 2",
-      //     },
-      //   ],
-      // },
+      {
+        driverId: "550e8400-e29b-41d4-a716-446655440022",
+        name: "Ardian Eka",
+        driverPhoto: "https://picsum.photos/50",
+        licensePlate: "B 1234 CD",
+        statusDriver: "LOADING_2",
+        statusTitle: "Sedang Bongkar di Lokasi 2",
+        stepStatus: [
+          {
+            statusCode: "LOADING_1",
+            statusName: "Menuju Lokasi Muat 1",
+          },
+          {
+            statusCode: "LOADING_2",
+            statusName: "Menuju Lokasi Muat 2",
+          },
+          {
+            statusCode: "UNLOADING_1",
+            statusName: "Menuju Lokasi Bongkar 1",
+          },
+          {
+            statusCode: "UNLOADING_2",
+            statusName: "Menuju Lokasi Bongkar 2",
+          },
+        ],
+      },
     ],
   },
   Type: "ORDER_STATUS_HISTORY",

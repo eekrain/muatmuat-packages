@@ -169,7 +169,7 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
 
   return (
     <>
-      <div className="flex items-center justify-between">
+      <div className="my-6 flex items-center justify-between">
         <div className="flex items-center">
           <IconComponent src="/icons/arrow-left24.svg" size="medium" />
           <div className="ml-3 text-[20px] font-bold leading-[24px] text-neutral-900">

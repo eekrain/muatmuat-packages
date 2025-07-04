@@ -17,11 +17,12 @@ export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
     !dataRingkasanPembayaran?.orderStatus.startsWith("CANCELED") &&
     dataRingkasanPembayaran?.orderStatus !==
       OrderStatusEnum.WAITING_PAYMENT_2 &&
-    dataRingkasanPembayaran?.orderStatus !== OrderStatusEnum.COMPLETED;
+    dataRingkasanPembayaran?.orderStatus !== OrderStatusEnum.COMPLETED &&
+    !dataRingkasanPembayaran?.orderStatus?.includes("DOCUMENT");
 
   return (
-    <div className="flex w-full flex-col gap-4">
-      <CardPayment.Root className="w-full">
+    <div className="flex h-[453px] w-full flex-col gap-4">
+      <CardPayment.Root>
         <CardPayment.Header>Ringkasan Pembayaran</CardPayment.Header>
 
         <CardPayment.Content>

@@ -97,69 +97,71 @@ const InnerLocationModalFormWeb = ({
 
               <form
                 onSubmit={handleSubmit}
-                className="flex h-[calc(380px-43px)] flex-col gap-4 overflow-y-auto"
+                // className="flex h-[calc(380px-43px)] flex-col gap-4 overflow-y-auto"
+                className="flex h-[calc(380px-43px)] flex-col gap-4"
               >
-                <div className="w-full">
-                  <label className="block text-[12px] font-medium text-neutral-600">
-                    {formMode === "muat" ? "Lokasi Muat*" : "Lokasi Bongkar*"}
-                  </label>
-                  <InputLocationManagementDropdown
-                    markerIcon={
-                      formMode === "muat"
-                        ? "/icons/marker-lokasi-muat.svg"
-                        : "/icons/marker-lokasi-bongkar.svg"
-                    }
-                  />
-                  {formErrors?.dataLokasi && (
-                    <span className="text-xs font-medium text-red-500">
-                      {formErrors?.dataLokasi}
-                    </span>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-[12px] font-medium text-neutral-600">
-                    Detail Lokasi (Optional)
-                  </label>
-                  <MyTextArea
-                    value={formValues.detailLokasi}
-                    onChange={(e) => setField("detailLokasi", e.target.value)}
-                    placeholder="Masukkan Detail Lokasi"
-                    maxLength={500}
-                    errorMessage={formErrors?.detailLokasi}
-                    appearance={{
-                      inputClassName: "resize-none h-[80px]",
-                    }}
-                    withCharCount
-                  />
-                </div>
-                <div>
-                  <label className="block text-[12px] font-medium text-neutral-600">
-                    Nama PIC{" "}
-                    {formMode === "muat" ? "Lokasi Muat" : "Lokasi Bongkar"}*
-                  </label>
-                  <Input
-                    value={formValues.namaPIC}
-                    placeholder="Masukkan Nama PIC Lokasi Muat"
-                    onChange={(e) => setField("namaPIC", e.target.value)}
-                    errorMessage={formErrors?.namaPIC}
-                  />
-                </div>
-                <div>
-                  <label className="block text-[12px] font-medium text-neutral-600">
-                    No. HP PIC{" "}
-                    {formMode === "muat" ? "Lokasi Muat" : "Lokasi Bongkar"}*
-                  </label>
-                  <Input
-                    type="number"
-                    value={formValues.noHPPIC}
-                    onChange={(e) => {
-                      const val = e.currentTarget.value;
-                      if (val.length > 14) return;
-                      setField("noHPPIC", val);
-                    }}
-                    placeholder="Masukkan No. HP PIC Lokasi Muat"
-                    errorMessage={formErrors?.noHPPIC}
-                  />
+                <div className="flex w-full flex-col gap-4 overflow-y-auto">
+                  <div className="w-full">
+                    <label className="mb-3 block text-[12px] font-medium text-neutral-600">
+                      {formMode === "muat" ? "Lokasi Muat*" : "Lokasi Bongkar*"}
+                    </label>
+                    <InputLocationManagementDropdown
+                      markerIcon={
+                        formMode === "muat"
+                          ? "/icons/marker-lokasi-muat.svg"
+                          : "/icons/marker-lokasi-bongkar.svg"
+                      }
+                    />
+                    {formErrors?.dataLokasi && (
+                      <span className="text-xs font-medium text-red-500">
+                        {formErrors?.dataLokasi}
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <label className="mb-3 block text-[12px] font-medium text-neutral-600">
+                      Detail Lokasi (Optional)
+                    </label>
+                    <MyTextArea
+                      value={formValues.detailLokasi}
+                      onChange={(e) => setField("detailLokasi", e.target.value)}
+                      placeholder="Masukkan Detail Lokasi"
+                      maxLength={500}
+                      errorMessage={formErrors?.detailLokasi}
+                      appearance={{
+                        inputClassName: "resize-none h-[80px]",
+                      }}
+                      withCharCount
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-3 block text-[12px] font-medium text-neutral-600">
+                      Nama PIC{" "}
+                      {formMode === "muat" ? "Lokasi Muat" : "Lokasi Bongkar"}*
+                    </label>
+                    <Input
+                      value={formValues.namaPIC}
+                      placeholder="Masukkan Nama PIC Lokasi Muat"
+                      onChange={(e) => setField("namaPIC", e.target.value)}
+                      errorMessage={formErrors?.namaPIC}
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-3 block text-[12px] font-medium text-neutral-600">
+                      No. HP PIC{" "}
+                      {formMode === "muat" ? "Lokasi Muat" : "Lokasi Bongkar"}*
+                    </label>
+                    <Input
+                      value={formValues.noHPPIC}
+                      onChange={(e) => {
+                        const val = e.currentTarget.value;
+                        if (val.length > 14) return;
+                        setField("noHPPIC", val);
+                      }}
+                      placeholder="Masukkan No. HP PIC Lokasi Muat"
+                      errorMessage={formErrors?.noHPPIC}
+                    />
+                  </div>
                 </div>
 
                 <button

@@ -17,7 +17,7 @@ const apiResult = {
           // info: "Proses pengembalian dana telah berhasil dicairkan ke rekening kamu. Info lebih lanjut hubungi Customer Service.",
 
           label:
-            "Pesanan kamu memiliki tambahan biaya. Mohon selesaikan pembayaran sebelum tanggal 20 Mei 2024",
+            "Pesanan kamu memiliki tambahan biaya. Mohon selesaikan pembayaran sebelum tanggal <b>20 Mei 2024</b>",
           info: "",
         },
       ],

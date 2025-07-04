@@ -26,7 +26,10 @@ import SertifikasiHalal from "@/container/SewaArmada/Web/Form/SertifikasiHalal";
 import { SummaryPanel } from "@/container/SewaArmada/Web/SummaryPanel/SummaryPanel";
 import { WelcomeCard } from "@/container/SewaArmada/Web/WelcomeCard/WelcomeCard";
 import { useSWRHook } from "@/hooks/use-swr";
-import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
+import {
+  useSewaArmadaActions,
+  useSewaArmadaStore,
+} from "@/store/forms/sewaArmadaStore";
 import { useLoadingAction } from "@/store/loadingStore";
 
 export default function SewaArmadaWeb({
@@ -56,16 +59,22 @@ export default function SewaArmadaWeb({
     }));
   }, [dataBanner]);
 
+  const { validateForm } = useSewaArmadaActions();
+  const testSubmit = () => {
+    const isValidForm = validateForm();
+    console.log("🚀 ~ file: SewaArmadaWeb.jsx:61 ~ isValidForm:", isValidForm);
+  };
+
   return (
     <>
-      <main className="flex min-h-screen flex-col items-center gap-6 px-10 py-8">
+      <main className="mx-auto flex min-h-full max-w-[1280px] flex-col items-center gap-6 px-10 py-8">
         {/* Carousel Banner */}
         <BannerCarousel banners={banners} />
 
         {requiringConfirmationCount &&
         requiringConfirmationCount.hasConfirmationRequired > 0 ? (
           <NeedConfirmationWarning
-            className="mt-0 w-full max-w-[1200px]"
+            className="mt-0 w-full"
             breakdown={requiringConfirmationCount.breakdown}
           />
         ) : null}
@@ -78,7 +87,7 @@ export default function SewaArmadaWeb({
             {/* Welcome Section */}
             <WelcomeCard />
 
-            <div className="flex w-full max-w-[1200px] gap-4">
+            <div className="flex w-full gap-4">
               {/* Form Container */}
               <Card className="flex flex-1 flex-col gap-6 border-none p-8 shadow-md">
                 {/* Service Type Selection */}
@@ -115,6 +124,8 @@ export default function SewaArmadaWeb({
       </main>
 
       <ModalLogin />
+
+      <button onClick={testSubmit}>Test Submit</button>
     </>
   );
 }
