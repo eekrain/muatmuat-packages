@@ -123,7 +123,7 @@ export const useSewaArmadaStore = create(
               orderType: "",
             }),
           // VALIDASI BUAT YG DESKTOP KARENA JADI SATU HALAMAN
-          validateForm: () => {
+          validateForm: (settingsTime) => {
             const {
               loadTimeStart,
               loadTimeEnd,
@@ -144,13 +144,14 @@ export const useSewaArmadaStore = create(
               const end = new Date(loadTimeEnd);
               const diffMs = end - start;
               const diffHours = diffMs / (1000 * 60 * 60);
-              const eightHoursMs = 8 * 60 * 60 * 1000;
+              const eightHoursMs =
+                settingsTime.loadingTime.maxRangeHours * 60 * 60 * 1000;
               if (!loadTimeEnd) {
                 newErrors.loadTimeEnd = "Tanggal & waktu muat wajib diisi";
-              } else if (diffHours < 1) {
-                newErrors.loadTimeEnd = "Rentang waktu minimal 1 jam";
+              } else if (diffHours < settingsTime.loadingTime.minRangeHours) {
+                newErrors.loadTimeEnd = `Rentang waktu minimal ${settingsTime.loadingTime.minRangeHours} jam`;
               } else if (diffMs > eightHoursMs) {
-                newErrors.loadTimeEnd = "Rentang waktu maksimal 8 jam";
+                newErrors.loadTimeEnd = `Rentang waktu maksimal ${settingsTime.loadingTime.maxRangeHours} jam`;
               }
             }
             if (!isValidFotoMuatan) {
@@ -211,7 +212,7 @@ export const useSewaArmadaStore = create(
               } else if (businessEntity.name.trim().length < 3) {
                 newErrors.businessEntity.name =
                   "Nama badan usaha/perusahaan minimal 3 karakter";
-              } else if (/[^a-zA-Z]/.test(businessEntity.name)) {
+              } else if (/[^a-zA-Z\s]/.test(businessEntity.name)) {
                 newErrors.businessEntity.name =
                   "Nama badan usaha/perusahaan tidak valid";
               }

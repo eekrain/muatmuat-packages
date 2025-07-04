@@ -12,9 +12,8 @@ import VoucherPopup from "@/components/Voucher/VoucherPopup";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
 import FleetOrderConfirmationModal from "@/container/SewaArmada/Web/FleetOrderConfirmationModal/FleetOrderConfirmationModal";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
-import { useSWRHook } from "@/hooks/use-swr";
 import { useVouchers } from "@/hooks/useVoucher";
-import { fetcherMuatrans, fetcherPayment } from "@/lib/axios";
+import { fetcherMuatrans } from "@/lib/axios";
 import { formatDate, formatShortDate } from "@/lib/utils/dateFormat";
 import {
   useSewaArmadaActions,
@@ -30,16 +29,7 @@ const Toast = ({ message, onClose }) => (
   </div>
 );
 
-export const SummaryPanel = () => {
-  // Fetch payment methods using SWR
-  const { data: paymentMethodsData, mutate: mutatePaymentMethods } = useSWRHook(
-    "v1/payment/methods",
-    fetcherPayment
-  );
-
-  // Use the API data directly or fall back to an empty array
-  const paymentMethods = paymentMethodsData?.Data || [];
-
+export const SummaryPanel = ({ settingsTime, paymentMethods }) => {
   // Voucher related state and hooks
   const token = "Bearer your_token_here";
   const MOCK_EMPTY = false;
@@ -85,8 +75,6 @@ export const SummaryPanel = () => {
 
   const { setField, validateForm } = useSewaArmadaActions();
 
-  const [isPaymentMethodsModalOpen, setIsPaymentMethodsModalOpen] =
-    useState(false);
   const [expandedCategories, setExpandedCategories] = useState(new Set([0])); // Initialize with first category expanded
   const [isModalConfirmationOpen, setIsModalConfirmationOpen] = useState(false);
   const baseOrderAmount = 950000;
@@ -243,12 +231,11 @@ export const SummaryPanel = () => {
 
   const handleSelectPaymentMethod = (paymentMethodId) => {
     setField("paymentMethodId", paymentMethodId);
-    setIsPaymentMethodsModalOpen(false);
   };
 
   const handleValidateFleetOrder = () => {
     console.log("formErrors", formErrors);
-    const isValidForm = validateForm();
+    const isValidForm = validateForm(settingsTime);
     if (isValidForm) {
       setIsModalConfirmationOpen(true);
     }
@@ -435,7 +422,7 @@ export const SummaryPanel = () => {
     // };
 
     const sampleOrderData = {
-      orderType: "INSTANT",
+      orderType,
       loadTimeStart: "2025-06-26T09:00:00Z",
       loadTimeEnd: "2025-07-27T09:00:00Z",
       locations: [
@@ -572,7 +559,7 @@ export const SummaryPanel = () => {
           <h3 className="text-base font-bold text-black">
             Ringkasan Transaksi
           </h3>
-          <button
+          {/* <button
             onClick={() => {
               handleValidateFleetOrder();
               // handleOrderFleet(true);
@@ -581,7 +568,7 @@ export const SummaryPanel = () => {
             className=""
           >
             Test
-          </button>
+          </button> */}
           <div className="scrollbar-custombadanusaha mr-[-12px] flex max-h-[263px] flex-col gap-y-6 overflow-y-auto pr-2">
             <button
               onClick={() => setShowVoucherPopup(true)}
@@ -654,7 +641,7 @@ export const SummaryPanel = () => {
           </div>
           {truckTypeId && (
             <ModalOpsiPembayaran
-              paymentMethods={paymentMethodsData?.Data}
+              paymentMethods={paymentMethods}
               selectedPaymentMethodId={paymentMethodId}
               onSelectedPaymentMethodId={handleSelectPaymentMethod}
               onProceedPayment={handleValidateFleetOrder}

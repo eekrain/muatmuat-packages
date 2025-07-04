@@ -7,6 +7,7 @@ import SewaArmadaWeb from "@/container/SewaArmada/Web/SewaArmadaWeb";
 import useDevice from "@/hooks/use-device";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useSWRHook } from "@/hooks/use-swr";
+import { fetcherPayment } from "@/lib/axios";
 import { usePaymentRepaymentModalAction } from "@/store/forms/paymentRepaymentModal";
 import {
   useSewaArmadaActions,
@@ -40,6 +41,12 @@ const Page = () => {
   const { data: cargoCategoriesData } = useSWRHook(
     "v1/orders/cargos/categories"
   );
+  // Fetch payment methods using SWR
+  const { data: paymentMethodsData } = useSWRHook(
+    "v1/payment/methods",
+    fetcherPayment
+  );
+  const { data: settingsTimeData } = useSWRHook("v1/orders/settings/time");
 
   const requiringConfirmationCount =
     requiringConfirmationCountData?.Data || null;
@@ -47,7 +54,11 @@ const Page = () => {
   const cargoTypes = cargoTypesData?.Data?.types || [];
   // Extract cargo categories from response
   const cargoCategories = cargoCategoriesData?.Data?.categories || [];
+  // Use the API data directly or fall back to an empty array
+  const paymentMethods = paymentMethodsData?.Data || [];
   console.log("requiringConfirmationCount", requiringConfirmationCount);
+  const settingsTime = settingsTimeData?.Data || null;
+
   // Set default value if cargoTypes is loaded and tipeMuatan is not set
   useShallowCompareEffect(() => {
     if (cargoTypes.length > 0 && !cargoTypeId) {
@@ -122,14 +133,17 @@ const Page = () => {
       <SewaArmadaResponsive
         cargoTypes={cargoTypes}
         cargoCategories={cargoCategories}
+        paymentMethods={paymentMethods}
       />
     );
 
   return (
     <SewaArmadaWeb
+      requiringConfirmationCount={requiringConfirmationCount}
+      settingsTime={settingsTime}
       cargoTypes={cargoTypes}
       cargoCategories={cargoCategories}
-      requiringConfirmationCount={requiringConfirmationCount}
+      paymentMethods={paymentMethods}
     />
   );
 };

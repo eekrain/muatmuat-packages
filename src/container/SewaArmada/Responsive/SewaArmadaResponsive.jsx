@@ -71,7 +71,11 @@ const FormSimpanLokasiScreen = dynamicScreen(
     )
 );
 
-const SewaArmadaResponsive = ({ cargoTypes, cargoCategories }) => {
+const SewaArmadaResponsive = ({
+  cargoTypes,
+  cargoCategories,
+  paymentMethods,
+}) => {
   // const navigation = useResponsiveNavigation();
   // useEffect(() => {
   //   navigation.replace("/JenisCarrier");
@@ -146,11 +150,11 @@ const SewaArmadaResponsive = ({ cargoTypes, cargoCategories }) => {
       {/* STEP 2 */}
       <ResponsiveRoute
         path="/InformasiPesanan"
-        component={<InformasiPesananScreen />}
+        component={<InformasiPesananScreen paymentMethods={paymentMethods} />}
       />
       <ResponsiveRoute
         path="/OpsiPembayaran"
-        component={<OpsiPembayaranScreen />}
+        component={<OpsiPembayaranScreen paymentMethods={paymentMethods} />}
       />
 
       <ResponsiveRoute

@@ -69,7 +69,7 @@ export const BadanUsahaPemesan = () => {
       newErrors.name = "Nama badan usaha/perusahaan wajib diisi";
     } else if (name.length < 3) {
       newErrors.name = "Nama badan usaha/perusahaan minimal 3 karakter";
-    } else if (/[^a-zA-Z]/.test(name)) {
+    } else if (/[^a-zA-Z\s]/.test(name)) {
       newErrors.name = "Nama badan usaha/perusahaan tidak valid";
     }
 

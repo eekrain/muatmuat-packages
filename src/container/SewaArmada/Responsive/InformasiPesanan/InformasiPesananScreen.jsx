@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Fragment } from "react";
 
 import Button from "@/components/Button/Button";
@@ -20,50 +21,50 @@ import {
   useSewaArmadaStore,
 } from "@/store/forms/sewaArmadaStore";
 
-const InformasiPesananScreen = () => {
-  const paymentMethods = [
-    {
-      title: "Transfer Virtual Account",
-      icon: "/icons/transfer24.svg",
-      options: [
-        {
-          id: "bca",
-          name: "BCA Virtual Account",
-          icon: "/icons/bca24.svg",
-        },
-        {
-          id: "mandiri",
-          name: "Mandiri Virtual Account",
-          icon: "/icons/bca24.svg",
-        },
-        {
-          id: "bni",
-          name: "BNI Virtual Account",
-          icon: "/icons/bca24.svg",
-        },
-        {
-          id: "bri",
-          name: "BRI Virtual Account",
-          icon: "/icons/bca24.svg",
-        },
-        {
-          id: "bsi",
-          name: "BSI Virtual Account",
-          icon: "/icons/bca24.svg",
-        },
-        {
-          id: "permata",
-          name: "Permata Virtual Account",
-          icon: "/icons/bca24.svg",
-        },
-        {
-          id: "cimb",
-          name: "CIMB Virtual Account",
-          icon: "/icons/bca24.svg",
-        },
-      ],
-    },
-  ];
+const InformasiPesananScreen = ({ paymentMethods }) => {
+  // const paymentMethods = [
+  //   {
+  //     title: "Transfer Virtual Account",
+  //     icon: "/icons/transfer24.svg",
+  //     options: [
+  //       {
+  //         id: "bca",
+  //         name: "BCA Virtual Account",
+  //         icon: "/icons/bca24.svg",
+  //       },
+  //       {
+  //         id: "mandiri",
+  //         name: "Mandiri Virtual Account",
+  //         icon: "/icons/bca24.svg",
+  //       },
+  //       {
+  //         id: "bni",
+  //         name: "BNI Virtual Account",
+  //         icon: "/icons/bca24.svg",
+  //       },
+  //       {
+  //         id: "bri",
+  //         name: "BRI Virtual Account",
+  //         icon: "/icons/bca24.svg",
+  //       },
+  //       {
+  //         id: "bsi",
+  //         name: "BSI Virtual Account",
+  //         icon: "/icons/bca24.svg",
+  //       },
+  //       {
+  //         id: "permata",
+  //         name: "Permata Virtual Account",
+  //         icon: "/icons/bca24.svg",
+  //       },
+  //       {
+  //         id: "cimb",
+  //         name: "CIMB Virtual Account",
+  //         icon: "/icons/bca24.svg",
+  //       },
+  //     ],
+  //   },
+  // ];
   const navigation = useResponsiveNavigation();
   // Get state from Zustand store
   const { formValues, formErrors } = useSewaArmadaStore();
@@ -118,8 +119,8 @@ const InformasiPesananScreen = () => {
     () =>
       paymentMethodId
         ? paymentMethods
-            .flatMap((method) => method.options || [])
-            .find((item) => item.id === paymentMethodId)
+            .flatMap((channel) => channel.methods || [])
+            .find((method) => method.id === paymentMethodId)
         : null,
     [paymentMethodId, paymentMethods]
   );
@@ -331,16 +332,19 @@ const InformasiPesananScreen = () => {
             </h2>
             <button
               className="text-[14px] font-semibold text-primary-700"
-              onClick={() =>
-                navigation.push("/OpsiPembayaran", { paymentMethods })
-              }
+              onClick={() => navigation.push("/OpsiPembayaran")}
             >
               Pilih
             </button>
           </div>
           {selectedOpsiPembayaran ? (
             <div className="flex items-center gap-x-2">
-              <IconComponent src={selectedOpsiPembayaran.icon} size="medium" />
+              <Image
+                width={24}
+                height={24}
+                src={selectedOpsiPembayaran.icon}
+                alt="Example image"
+              />
               <span className="text-[12px] font-semibold leading-[13.2px] text-neutral-900">
                 {selectedOpsiPembayaran.name}
               </span>

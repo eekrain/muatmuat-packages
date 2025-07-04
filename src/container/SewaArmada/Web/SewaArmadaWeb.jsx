@@ -30,9 +30,11 @@ import { useSewaArmadaStore } from "@/store/forms/sewaArmadaStore";
 import { useLoadingAction } from "@/store/loadingStore";
 
 export default function SewaArmadaWeb({
+  requiringConfirmationCount,
+  settingsTime,
   cargoTypes,
   cargoCategories,
-  requiringConfirmationCount,
+  paymentMethods,
 }) {
   const orderType = useSewaArmadaStore((state) => state.orderType);
 
@@ -103,7 +105,10 @@ export default function SewaArmadaWeb({
               </Card>
 
               {/* Summary Panel */}
-              <SummaryPanel />
+              <SummaryPanel
+                settingsTime={settingsTime}
+                paymentMethods={paymentMethods}
+              />
             </div>
           </>
         )}

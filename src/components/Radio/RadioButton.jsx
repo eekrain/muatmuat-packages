@@ -2,6 +2,8 @@ import { useRef } from "react";
 
 import PropTypes from "prop-types";
 
+import { cn } from "@/lib/utils";
+
 import style from "./RadioButton.module.scss";
 
 const RadioButton = ({
@@ -33,7 +35,11 @@ const RadioButton = ({
 
   return (
     <div
-      className={`${style.container_radio} ${className} flex cursor-pointer items-center gap-[8px]`}
+      className={cn(
+        style.container_radio,
+        "flex cursor-pointer items-center gap-[8px]",
+        className
+      )}
       onClick={checkedClick}
     >
       <input

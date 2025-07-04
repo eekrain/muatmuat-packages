@@ -22,36 +22,33 @@ const RecommendedTruckModal = ({ isOpen, setIsOpen, recommendedTrucks }) => {
 
   return (
     <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick={false}>
-      <ModalContent
-        className="flex flex-col items-center gap-y-4 px-6 py-9"
-        type="muatmuat"
-      >
-        <div className="flex w-[424px] justify-center">
+      <ModalContent type="muatmuat">
+        <div className="flex flex-col items-center gap-y-4 px-6 py-9">
           <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
             Rekomendasi Kami
           </h1>
+          <WarningBadge message="Pastikan lokasi muat dan bongkar dapat dijangkau truk rekomendasi kami untuk kelancaran proses" />
+          {recommendedTrucks?.map((item, key) => {
+            const isSelected = selectedTruckTypeId === item.truckTypeId;
+            return (
+              <Fragment key={key}>
+                <TruckItem
+                  {...item}
+                  showBottomBorder={false}
+                  isSelected={isSelected}
+                  onClick={() => setSelectedTruckTypeId(item.truckTypeId)}
+                />
+              </Fragment>
+            );
+          })}
+          <Button
+            className="w-[112px]"
+            variant="muatparts-primary"
+            onClick={handleSelectRecommendedTruck}
+          >
+            Terapkan
+          </Button>
         </div>
-        <WarningBadge message="Pastikan lokasi muat dan bongkar dapat dijangkau truk rekomendasi kami untuk kelancaran proses" />
-        {recommendedTrucks?.map((item, key) => {
-          const isSelected = selectedTruckTypeId === item.truckTypeId;
-          return (
-            <Fragment key={key}>
-              <TruckItem
-                {...item}
-                showBottomBorder={false}
-                isSelected={isSelected}
-                onClick={() => setSelectedTruckTypeId(item.truckTypeId)}
-              />
-            </Fragment>
-          );
-        })}
-        <Button
-          className="w-[112px]"
-          variant="muatparts-primary"
-          onClick={handleSelectRecommendedTruck}
-        >
-          Terapkan
-        </Button>
       </ModalContent>
     </Modal>
   );

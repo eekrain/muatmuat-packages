@@ -87,7 +87,7 @@ const Toaster = ({ className }) => {
                   aria-hidden="true"
                 />
               </div>
-              <span className="flex-1 text-xs font-semibold text-neutral-900">
+              <span className="flex-1 text-[12px] font-semibold leading-[14.4px] text-neutral-900">
                 {toast.message}
               </span>
             </div>

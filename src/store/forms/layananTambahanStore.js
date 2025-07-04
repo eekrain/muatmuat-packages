@@ -41,7 +41,7 @@ export const useLayananTambahanStore = create(
           newErrors.namaPenerima = "Nama penerima wajib diisi";
         } else if (namaPenerima.length < 3) {
           newErrors.namaPenerima = "Nama penerima minimal 3 karakter";
-        } else if (/[^a-zA-Z]/.test(namaPenerima)) {
+        } else if (/[^a-zA-Z\s]/.test(namaPenerima)) {
           newErrors.namaPenerima = "Penulisan nama penerima tidak valid";
         }
 

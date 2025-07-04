@@ -8,34 +8,32 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import RadioButton from "@/components/Radio/RadioButton";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
-import {
-  useResponsiveNavigation,
-  useResponsiveRouteParams,
-} from "@/lib/responsive-navigation";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { useSewaArmadaActions } from "@/store/forms/sewaArmadaStore";
 
 // Bank Item Component
-const BankItem = ({ bank, isSelected, onSelect }) => {
+const PaymentMethodItem = ({ method, isSelected, onSelect }) => {
   return (
     <div className="flex h-6 items-center justify-between">
       <div className="flex flex-1 items-center gap-2">
         <div className="flex h-6 w-6 items-center justify-center rounded bg-white">
           <ImageComponent
-            src={bank.icon}
+            src={method.icon}
             width={20}
             height={20}
-            alt={`${bank.name} logo`}
+            alt={`${method.name} logo`}
             className="object-contain"
           />
         </div>
         <span className="flex-1 text-[14px] font-semibold leading-[15.4px] text-neutral-900">
-          {bank.name}
+          {method.name}
         </span>
       </div>
       <RadioButton
-        name="bankSelection"
-        value={bank.id}
+        className="gap-0"
+        value={method.id}
         checked={isSelected}
         onClick={({ value }) => onSelect(value)}
       />
@@ -43,8 +41,7 @@ const BankItem = ({ bank, isSelected, onSelect }) => {
   );
 };
 
-const OpsiPembayaran = () => {
-  const params = useResponsiveRouteParams();
+const OpsiPembayaran = ({ paymentMethods }) => {
   const navigation = useResponsiveNavigation();
 
   const { setField } = useSewaArmadaActions();
@@ -82,13 +79,19 @@ const OpsiPembayaran = () => {
         label: "Pilih Opsi Pembayaran",
       }}
     >
-      <div className="px-4 pt-3">
+      <div className="flex flex-col gap-y-3 px-4 pt-3">
         {/* Container Utama */}
-        {params.paymentMethods.map((paymentMethod, key) => {
+        {paymentMethods.map((paymentMethod, key) => {
           const isExpanded = expandedCategories.has(key);
 
           return (
-            <div className="flex flex-col items-start gap-3" key={key}>
+            <div
+              className={cn(
+                "flex flex-col items-start",
+                isExpanded ? "gap-3" : "gap-0"
+              )}
+              key={key}
+            >
               {/* Header Section */}
               <div
                 className="flex w-full cursor-pointer items-center gap-6 pb-3"
@@ -97,7 +100,7 @@ const OpsiPembayaran = () => {
                 <div className="flex flex-1 items-center gap-2">
                   <IconComponent src={paymentMethod.icon} size="medium" />
                   <span className="flex-1 text-[14px] font-bold leading-[15.4px] text-neutral-900">
-                    {paymentMethod.title}
+                    {paymentMethod.category}
                   </span>
                 </div>
                 <IconComponent
@@ -119,16 +122,16 @@ const OpsiPembayaran = () => {
                 }`}
               >
                 <div className="flex flex-col gap-3 pl-8">
-                  {paymentMethod.options.map((option, optionKey) => (
+                  {paymentMethod.methods.map((method, key) => (
                     <div
-                      className={`${paymentMethod.options.length - 1 === optionKey ? "" : "border-b border-b-neutral-400 pb-3"}`}
-                      key={optionKey}
+                      className={`${paymentMethod.methods.length - 1 === key ? "" : "border-b border-b-neutral-400 pb-3"}`}
+                      key={key}
                     >
-                      <BankItem
-                        bank={option}
+                      <PaymentMethodItem
+                        method={method}
                         isSelected={
                           selectedPaymentMethodId
-                            ? selectedPaymentMethodId === option.id
+                            ? selectedPaymentMethodId === method.id
                             : false
                         }
                         onSelect={handlePaymentMethodSelect}
