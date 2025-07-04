@@ -367,7 +367,10 @@ const SewaArmadaHomeScreen = () => {
           {/* Jenis Armada Field */}
           <FormContainer>
             <FormLabel required>Jenis Armada</FormLabel>
-            <div className="space-y-2">
+            <div
+              className="space-y-2"
+              onClick={() => navigation.push("/JenisCarrier")}
+            >
               {/* Pilih Jenis Carrier */}
               <div className="flex h-8 w-full items-center gap-2 rounded-md border border-neutral-600 bg-neutral-200 px-3 py-2">
                 <Truck className="h-4 w-4 text-neutral-600" />
