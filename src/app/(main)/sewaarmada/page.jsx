@@ -6,13 +6,13 @@ import SewaArmadaResponsive from "@/container/SewaArmada/Responsive/SewaArmadaRe
 import SewaArmadaWeb from "@/container/SewaArmada/Web/SewaArmadaWeb";
 import useDevice from "@/hooks/use-device";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
-import { useSWRHook } from "@/hooks/use-swr";
+import { useSWRHook, useSWRMutateHook } from "@/hooks/use-swr";
 import { fetcherPayment } from "@/lib/axios";
-import { usePaymentRepaymentModalAction } from "@/store/forms/paymentRepaymentModal";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
 } from "@/store/forms/sewaArmadaStore";
+import { useWaitingSettlementModalAction } from "@/store/forms/waitingSettlementModal";
 
 const Page = () => {
   const { isMobile, mounted } = useDevice();
@@ -20,20 +20,26 @@ const Page = () => {
   const urlFormId = searchParams.get("formid");
   const copyOrderId = searchParams.get("orderId");
   const localFormId = useSewaArmadaStore((state) => state.formId);
-  const cargoTypeId = useSewaArmadaStore(
-    (state) => state.formValues.cargoTypeId
-  );
-  const cargoCategoryId = useSewaArmadaStore(
-    (state) => state.formValues.cargoCategoryId
-  );
+  const orderType = useSewaArmadaStore((state) => state.orderType);
+  const {
+    cargoTypeId,
+    cargoCategoryId,
+    carrierId,
+    truckTypeId,
+    truckCount,
+    distance,
+    distanceUnit,
+    additionalServices,
+    businessEntity,
+  } = useSewaArmadaStore((state) => state.formValues);
   const { setField, setFormId, setOrderType, reset } = useSewaArmadaActions();
-  const { setPaymentRepaymentCount } = usePaymentRepaymentModalAction();
+  const { setWaitingSettlementOrderId } = useWaitingSettlementModalAction();
 
   const { data: reorderData, isLoading: isLoadingReorderData } = useSWRHook(
     copyOrderId ? `v1/orders/${copyOrderId}/reorder` : null
   );
-  const { data: requiringConfirmationCountData } = useSWRHook(
-    "v1/orders/requiring-confirmation/count"
+  const { data: settlementAlertInfoData } = useSWRHook(
+    "v1/orders/settlement/alert-info"
   );
   // Fetch cargo types using SWR
   const { data: cargoTypesData } = useSWRHook("v1/orders/cargos/types");
@@ -41,6 +47,14 @@ const Page = () => {
   const { data: cargoCategoriesData } = useSWRHook(
     "v1/orders/cargos/categories"
   );
+  // Setup SWR mutation hook untuk API calculate-price
+  const {
+    trigger: calculatePrice,
+    isMutating: isCalculatingPrice,
+    data: priceData,
+    error: priceError,
+  } = useSWRMutateHook("v1/orders/calculate-price");
+  console.log("priceddata", priceData);
   // Fetch payment methods using SWR
   const { data: paymentMethodsData } = useSWRHook(
     "v1/payment/methods",
@@ -48,15 +62,13 @@ const Page = () => {
   );
   const { data: settingsTimeData } = useSWRHook("v1/orders/settings/time");
 
-  const requiringConfirmationCount =
-    requiringConfirmationCountData?.Data || null;
+  const settlementAlertInfo = settlementAlertInfoData?.Data || [];
   // Extract cargo types from response
   const cargoTypes = cargoTypesData?.Data?.types || [];
   // Extract cargo categories from response
   const cargoCategories = cargoCategoriesData?.Data?.categories || [];
   // Use the API data directly or fall back to an empty array
   const paymentMethods = paymentMethodsData?.Data || [];
-  console.log("requiringConfirmationCount", requiringConfirmationCount);
   const settingsTime = settingsTimeData?.Data || null;
 
   // Set default value if cargoTypes is loaded and tipeMuatan is not set
@@ -73,14 +85,70 @@ const Page = () => {
     }
   }, [cargoCategories, cargoCategoryId, isMobile]);
 
+  // useShallowCompareEffect(async () => {
+  //   // Jika user memilih jenis truk, kita perlu menghitung harga
+  //   // Nanti dibuat function biar bisa diakses di tempat2 yg perlu calculate harga
+  //   if (truckTypeId) {
+  //     try {
+  //       // Prepare request payload berdasarkan dokumentasi API
+  //       const requestPayload = {
+  //         calculationType: "FULL_ORDER_PRICING", // FULL_ORDER_PRICING atau UPDATE_ORDER_PRICING
+  //         truckData: {
+  //           carrierId,
+  //           truckTypeId,
+  //           distance,
+  //           distanceUnit,
+  //           orderType,
+  //           truckCount, //sementara
+  //         },
+  //         // Blm ada asuransi
+  //         // insuranceData: useAsuransi
+  //         //   ? {
+  //         //       // Nilai default untuk insurance jika tidak ada data spesifik
+  //         //       insuranceOptionId: null,
+  //         //       coverageAmount: 0,
+  //         //     }
+  //         //   : null,
+  //         additionalServices,
+  //         // Blm bisa akses voucher karena state nya cuma ada di SummaryPanel.jsx
+  //         // voucherData: {
+  //         //   voucherId: null,
+  //         //   applyDiscount: false,
+  //         // },
+  //         businessEntity: {
+  //           isBusinessEntity: businessEntity.isBusinessEntity,
+  //         },
+  //       };
+
+  //       // Panggil API calculate-price
+  //       // const priceResult = await calculatePrice(requestPayload);
+
+  //       // Jika berhasil, simpan hasil perhitungan ke store
+  //       // if (priceResult?.data?.price) {
+  //       //   Update price data di store
+  //       //   setField("calculatedPrice", priceResult.data.price);
+  //       // }
+  //     } catch (error) {
+  //       console.error("Error calculating price:", error);
+  //       // Opsional: Set error message di store
+  //       // setError("price", "Gagal menghitung harga. Silahkan coba lagi.");
+  //     }
+  //   }
+  // }, [
+  //   orderType,
+  //   carrierId,
+  //   truckTypeId,
+  //   truckCount,
+  //   distance,
+  //   distanceUnit,
+  //   businessEntity.isBusinessEntity,
+  // ]);
+
   useShallowCompareEffect(() => {
-    if (requiringConfirmationCount?.breakdown?.paymentRepaymentCount > 0) {
-      setPaymentRepaymentCount(
-        // requiringConfirmationCount.breakdown.paymentRepaymentCount
-        2
-      );
+    if (settlementAlertInfo.length > 0) {
+      setWaitingSettlementOrderId(settlementAlertInfo[1].orderId);
     }
-  }, [requiringConfirmationCount]);
+  }, [settlementAlertInfo]);
 
   useShallowCompareEffect(() => {
     if (!copyOrderId || !isLoadingReorderData) {
@@ -139,7 +207,7 @@ const Page = () => {
 
   return (
     <SewaArmadaWeb
-      requiringConfirmationCount={requiringConfirmationCount}
+      settlementAlertInfo={settlementAlertInfo}
       settingsTime={settingsTime}
       cargoTypes={cargoTypes}
       cargoCategories={cargoCategories}

@@ -6,7 +6,8 @@ import { BannerCarousel } from "@/components/BannerCarousel/BannerCarousel";
 import Card from "@/components/Card/Card";
 import NeedConfirmationWarning from "@/components/NeedConfirmationWarning/NeedConfirmationWarning";
 import { FirstTimer } from "@/container/SewaArmada/Web/FirstTimer/FirstTimer";
-import { ModalLogin } from "@/container/SewaArmada/Web/FirstTimer/ModalLogin";
+import LoginModal from "@/container/SewaArmada/Web/FirstTimer/LoginModal";
+import WaitingSettlementModal from "@/container/SewaArmada/Web/FirstTimer/WaitingSettlementModal";
 import {
   BadanUsahaPemesan,
   FotoMuatan,
@@ -33,7 +34,7 @@ import {
 import { useLoadingAction } from "@/store/loadingStore";
 
 export default function SewaArmadaWeb({
-  requiringConfirmationCount,
+  settlementAlertInfo,
   settingsTime,
   cargoTypes,
   cargoCategories,
@@ -71,11 +72,10 @@ export default function SewaArmadaWeb({
         {/* Carousel Banner */}
         <BannerCarousel banners={banners} />
 
-        {requiringConfirmationCount &&
-        requiringConfirmationCount.hasConfirmationRequired > 0 ? (
+        {settlementAlertInfo.length > 0 ? (
           <NeedConfirmationWarning
             className="mt-0 w-full"
-            breakdown={requiringConfirmationCount.breakdown}
+            settlementAlertInfo={settlementAlertInfo}
           />
         ) : null}
 
@@ -123,7 +123,8 @@ export default function SewaArmadaWeb({
         )}
       </main>
 
-      <ModalLogin />
+      <LoginModal />
+      <WaitingSettlementModal />
 
       <button onClick={testSubmit}>Test Submit</button>
     </>

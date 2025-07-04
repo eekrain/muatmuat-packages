@@ -13,7 +13,6 @@ import {
   WarningBadge,
 } from "@/container/SewaArmada/Web/Form/JenisArmada/ArmadaComponent";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
-import { useSWRMutateHook } from "@/hooks/use-swr";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -49,69 +48,12 @@ const SelectArmadaModal = ({
 
   const { setField } = useSewaArmadaActions();
 
-  // Setup SWR mutation hook untuk API calculate-price
-  const {
-    trigger: calculatePrice,
-    isMutating: isCalculatingPrice,
-    data: priceData,
-    error: priceError,
-  } = useSWRMutateHook("v1/orders/calculate-price");
-  // console.log("priceddata", priceData);
   useEffect(() => {
     setSearch("");
   }, [isOpen]);
 
   const handleArmadaSelect = async (item) => {
     setField(type, item);
-    // Jika user memilih jenis truk, kita perlu menghitung harga
-    // Nanti dibuat function biar bisa diakses di tempat2 yg perlu calculate harga
-    if (type === "truckTypeId" && carrierId) {
-      try {
-        // Prepare request payload berdasarkan dokumentasi API
-        const requestPayload = {
-          calculationType: "FULL_ORDER_PRICING",
-          truckData: {
-            carrierId,
-            truckTypeId: item,
-            distance: distance || 0,
-            distanceUnit: distanceUnit || "km",
-            orderType,
-            truckCount: 1, //sementara
-          },
-          // Blm ada asuransi
-          // insuranceData: useAsuransi
-          //   ? {
-          //       // Nilai default untuk insurance jika tidak ada data spesifik
-          //       insuranceOptionId: null,
-          //       coverageAmount: 0,
-          //     }
-          //   : null,
-          additionalServices,
-          // Blm bisa akses voucher karena state nya cuma ada di SummaryPanel.jsx
-          // voucherData: {
-          //   voucherId: null,
-          //   applyDiscount: false,
-          // },
-          businessEntity: {
-            isBusinessEntity,
-          },
-        };
-
-        // Panggil API calculate-price
-        const priceResult = await calculatePrice(requestPayload);
-
-        // Jika berhasil, simpan hasil perhitungan ke store
-        // if (priceResult?.data?.price) {
-        //   Update price data di store
-        //   setField("calculatedPrice", priceResult.data.price);
-        // }
-      } catch (error) {
-        console.error("Error calculating price:", error);
-        // Opsional: Set error message di store
-        // setError("price", "Gagal menghitung harga. Silahkan coba lagi.");
-      }
-    }
-
     setIsOpen(false);
   };
 

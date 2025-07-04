@@ -6,7 +6,7 @@ import usePendingOrdersPage from "@/services/pendingOrder/getPendingOrder";
 const Page = () => {
   const { isMobile, mounted, queryParams, orders, handleChangeQueryParams } =
     usePendingOrdersPage({
-      requiresConfirmation: true,
+      status: "WAITING_PAYMENT",
     });
 
   if (!mounted) {
@@ -19,7 +19,7 @@ const Page = () => {
 
   return (
     <PendingOrderWeb
-      title="Butuh Konfirmasi Anda"
+      title="Pesanan Menunggu Pembayaran"
       queryParams={queryParams}
       onChangeQueryParams={handleChangeQueryParams}
       orders={orders}

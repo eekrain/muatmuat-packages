@@ -14,7 +14,7 @@ const DaftarPesananWeb = ({
   orders,
   pagination,
   isOrdersLoading,
-  requiringConfirmationCount,
+  settlementAlertInfo,
   isFirstTimer,
   lastFilterField,
   tabs,
@@ -174,10 +174,9 @@ const DaftarPesananWeb = ({
             />
           </div>
 
-          {requiringConfirmationCount &&
-          requiringConfirmationCount.hasConfirmationRequired > 0 ? (
+          {settlementAlertInfo.length > 0 ? (
             <NeedConfirmationWarning
-              breakdown={requiringConfirmationCount.breakdown}
+              settlementAlertInfo={settlementAlertInfo}
             />
           ) : null}
 

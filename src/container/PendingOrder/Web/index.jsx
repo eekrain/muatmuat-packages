@@ -5,14 +5,15 @@ import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import PesananTable from "@/components/Table/PesananTable";
 
-const ButuhKonfirmasiAndaWeb = ({
+const PendingOrderWeb = ({
   queryParams,
   onChangeQueryParams,
   orders,
+  title,
 }) => {
   const breadcrumbData = [
     { name: "Daftar Pesanan", href: "/daftarpesanan" },
-    { name: "Butuh Konfirmasi Anda" },
+    { name: title },
   ];
 
   const router = useRouter();
@@ -49,4 +50,4 @@ const ButuhKonfirmasiAndaWeb = ({
   );
 };
 
-export default ButuhKonfirmasiAndaWeb;
+export default PendingOrderWeb;
