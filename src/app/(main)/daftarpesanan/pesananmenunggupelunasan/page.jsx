@@ -4,10 +4,16 @@ import PendingOrderWeb from "@/container/PendingOrder/Web";
 import usePendingOrdersPage from "@/services/pendingOrder/getPendingOrder";
 
 const Page = () => {
-  const { isMobile, mounted, queryParams, orders, handleChangeQueryParams } =
-    usePendingOrdersPage({
-      status: "WAITING_REPAYMENT",
-    });
+  const {
+    isMobile,
+    mounted,
+    queryParams,
+    lastFilterField,
+    orders,
+    handleChangeQueryParams,
+  } = usePendingOrdersPage({
+    status: "WAITING_REPAYMENT",
+  });
 
   if (!mounted) {
     return null;
@@ -21,6 +27,7 @@ const Page = () => {
     <PendingOrderWeb
       title="Pesanan Menunggu Pelunasan"
       queryParams={queryParams}
+      lastFilterField={lastFilterField}
       onChangeQueryParams={handleChangeQueryParams}
       orders={orders}
     />

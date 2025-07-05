@@ -2,6 +2,7 @@ import { useRouter } from "next/navigation";
 import { Fragment, useState } from "react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
+import { TagBubble } from "@/components/Badge/TagBubble";
 import Button from "@/components/Button/Button";
 import Card, { CardContent } from "@/components/Card/Card";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
@@ -10,13 +11,20 @@ import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
+import { Modal, ModalContent } from "@/components/Modal/Modal";
+import {
+  TimelineContainer,
+  TimelineContentAddress,
+  TimelineItem,
+} from "@/components/Timeline";
 import MuatBongkarModal from "@/container/DetailPesanan/Web/RingkasanPesanan/MuatBongkarModal";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import {
+  OrderStatusEnum,
+  OrderStatusTitle,
+} from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-
-import { TagBubble } from "../Badge/TagBubble";
 
 const PesananTable = ({
   queryParams,
@@ -54,7 +62,12 @@ const PesananTable = ({
   const [isReorderFleetModalOpen, setIsReorderFleetModalOpen] = useState(false);
   const [isLokasiMuatBongkarModalOpen, setIsLokasiMuatBongkarModalOpen] =
     useState(false);
+  const [isAllDriverStatusModalOpen, setIsAllDriverStatusModalOpen] =
+    useState(false);
   const [selectedLocations, setSelectedLocations] = useState([]);
+  const [selectedGroupedStatusInfo, setSelecetedGroupedStatusInfo] = useState(
+    []
+  );
 
   const selectedFilter = useShallowMemo(
     () =>
@@ -134,7 +147,7 @@ const PesananTable = ({
           fullAddress: loc.fullAddress,
           isPickup: true,
           index: index,
-          isBullet: index === 0 && order.locations.pickup.length === 1,
+          isBullet: false,
         });
       });
     }
@@ -146,6 +159,7 @@ const PesananTable = ({
           fullAddress: loc.fullAddress,
           isPickup: false,
           index: index,
+          isBullet: false,
         });
       });
     }
@@ -296,6 +310,10 @@ const PesananTable = ({
                 </thead>
                 <tbody>
                   {orders.map((order, key) => {
+                    const firstPickupDropoff = [
+                      ...order.locations.pickup,
+                      ...order.locations.dropoff,
+                    ];
                     // Convert OrderStatusEnum to an array of keys to determine the order
                     const statusOrder = Object.keys(OrderStatusEnum);
 
@@ -366,26 +384,30 @@ const PesananTable = ({
                           {/* Lokasi */}
                           <td className="w-[156px] pb-4 pl-0 pr-6 pt-5 align-top">
                             <div className="relative flex flex-col gap-3">
-                              <div className="absolute bottom-0 left-2 top-5 h-[30px] w-0 border-l-[1.5px] border-dashed border-neutral-400"></div>
-                              <div className="flex items-center gap-3">
-                                <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#FFC217]">
-                                  <div className="h-[6px] w-[6px] rounded-full bg-[#461B02]"></div>
-                                </div>
-                                <span className="text-[10px] font-semibold text-neutral-900">
-                                  {order.locations?.pickup[0]?.city || "N/A"}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-3">
-                                <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#461B02]">
-                                  <div className="h-[6px] w-[6px] rounded-full bg-white"></div>
-                                </div>
-                                <span className="text-[10px] font-semibold text-neutral-900">
-                                  {order.locations?.dropoff[0]?.city || "N/A"}
-                                </span>
-                              </div>
+                              <TimelineContainer>
+                                {firstPickupDropoff.map((item, key) => (
+                                  <Fragment key={key}>
+                                    <TimelineItem
+                                      variant="bullet"
+                                      totalLength={firstPickupDropoff.length}
+                                      index={key}
+                                      activeIndex={0}
+                                    >
+                                      <TimelineContentAddress
+                                        title={item.fullAddress}
+                                        className={`text-[10px] font-bold leading-[13px] ${
+                                          key === firstPickupDropoff?.length - 1
+                                            ? "pb-0"
+                                            : ""
+                                        }`}
+                                      />
+                                    </TimelineItem>
+                                  </Fragment>
+                                ))}
+                              </TimelineContainer>
                               {/* Only show "Lihat Lokasi Lainnya" if there are multiple pickup or dropoff locations */}
-                              {(order.locations?.hasMultiplePickup ||
-                                order.locations?.hasMultipleDropoff) && (
+                              {(order.locations.pickup.length > 1 ||
+                                order.locations.dropoff.length > 1) && (
                                 <button
                                   onClick={() => openLocationModal(order)}
                                   className="text-[12px] font-medium text-primary-700"
@@ -450,7 +472,79 @@ const PesananTable = ({
 
                           {/* Status */}
                           <td className="w-[232px] pb-4 pl-0 pr-6 pt-5 align-top">
-                            <div className="flex flex-col gap-y-3">
+                            {order.vehicle?.truckCount > 1 ? (
+                              <button
+                                onClick={() => {
+                                  // Create an empty result object
+                                  const result = {};
+
+                                  // First pass: group by statusLabel and count
+                                  order.statusInfo.forEach((item) => {
+                                    const { statusLabel } = item;
+
+                                    if (!result[statusLabel]) {
+                                      result[statusLabel] = {
+                                        statusLabel,
+                                        statusCode: item.statusCode,
+                                        count: 1,
+                                      };
+                                    } else {
+                                      result[statusLabel].count++;
+                                    }
+                                  });
+
+                                  // Convert to array for sorting
+                                  const resultArray = Object.values(result);
+
+                                  // Create ordering map (status code -> index in OrderStatusTitle)
+                                  const orderIndices = {};
+                                  Object.keys(OrderStatusTitle).forEach(
+                                    (code, index) => {
+                                      orderIndices[code] = index;
+                                    }
+                                  );
+
+                                  // Sort based on the ordering
+                                  resultArray.sort((a, b) => {
+                                    return (
+                                      orderIndices[a.statusCode] -
+                                      orderIndices[b.statusCode]
+                                    );
+                                  });
+
+                                  setSelecetedGroupedStatusInfo(resultArray);
+                                  setIsAllDriverStatusModalOpen(true);
+                                }}
+                              >
+                                <BadgeStatusPesanan
+                                  variant={
+                                    latestStatus?.statusLabel ===
+                                      OrderStatusEnum.WAITING_PAYMENT_1 ||
+                                    latestStatus?.statusLabel ===
+                                      OrderStatusEnum.WAITING_PAYMENT_2 ||
+                                    latestStatus?.statusLabel ===
+                                      OrderStatusEnum.WAITING_REPAYMENT_1 ||
+                                    latestStatus?.statusLabel ===
+                                      OrderStatusEnum.WAITING_REPAYMENT_2
+                                      ? "warning"
+                                      : latestStatus?.statusLabel ===
+                                            OrderStatusEnum.CANCELED_BY_SHIPPER ||
+                                          latestStatus?.statusLabel ===
+                                            OrderStatusEnum.CANCELED_BY_SYSTEM ||
+                                          latestStatus?.statusLabel ===
+                                            OrderStatusEnum.CANCELED_BY_TRANSPORTER
+                                        ? "error"
+                                        : latestStatus?.statusLabel ===
+                                            OrderStatusEnum.COMPLETED
+                                          ? "success"
+                                          : "primary"
+                                  }
+                                  className="w-fit"
+                                >
+                                  {`${latestStatus?.statusLabel} : ${order.vehicle?.truckCount} Unit`}
+                                </BadgeStatusPesanan>
+                              </button>
+                            ) : (
                               <BadgeStatusPesanan
                                 variant={
                                   latestStatus ===
@@ -476,14 +570,9 @@ const PesananTable = ({
                                 }
                                 className="w-fit"
                               >
-                                {`${latestStatus?.statusLabel}${order.vehicle?.truckCount > 1 ? ` : ${order.vehicle?.truckCount} Unit` : ""}`}
+                                {latestStatus?.statusLabel}
                               </BadgeStatusPesanan>
-                              {order.vehicle?.truckCount > 1 ? (
-                                <button className="self-start text-[12px] font-medium leading-[14.4px] text-primary-700">
-                                  Lihat Status Lainnya
-                                </button>
-                              ) : null}
-                            </div>
+                            )}
                           </td>
 
                           {/* Action Button */}
@@ -535,19 +624,21 @@ const PesananTable = ({
                         </tr>
 
                         {/* Conditional Alert Row - Only shown if the pesanan has a payment deadline */}
-                        {order.paymentDeadline &&
-                          order.statusInfo?.[0]?.statusCode ===
-                            "WAITING_PAYMENT" && (
-                            <tr className="border-b border-neutral-400">
-                              <td colSpan={6} className="px-6 pb-4">
-                                <div className="flex h-12 items-center gap-x-3 rounded-xl bg-secondary-100 px-4">
+                        {order.paymentDeadline && (
+                          <tr className="border-b border-neutral-400">
+                            <td colSpan={6} className="px-6 pb-4">
+                              <div className="flex h-12 items-center justify-between rounded-xl bg-secondary-100 px-4">
+                                <div className="flex items-center gap-x-3">
                                   <IconComponent
                                     className="icon-stroke-warning-900"
                                     src="/icons/warning24.svg"
                                     size="medium"
                                   />
                                   <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
-                                    {"Lakukan pembayaran sebelum "}
+                                    {order.statusInfo?.[0]?.statusCode ===
+                                    "WAITING_PAYMENT"
+                                      ? "Lakukan pembayaran sebelum "
+                                      : "Lakukan pelunasan sebelum "}
                                     <span className="font-bold">
                                       {new Date(
                                         order.paymentDeadline
@@ -557,14 +648,21 @@ const PesananTable = ({
                                         year: "numeric",
                                         hour: "2-digit",
                                         minute: "2-digit",
-                                      })}{" "}
-                                      WIB
+                                      })}
                                     </span>
                                   </span>
                                 </div>
-                              </td>
-                            </tr>
-                          )}
+                                {order.statusInfo?.[0]?.statusCode ===
+                                "WAITING_REPAYMENT" ? (
+                                  <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+                                    {"Tambahan Biaya "}
+                                    <span className="font-bold">{`Rp${order.additionalCost.toLocaleString("id-ID")}`}</span>
+                                  </span>
+                                ) : null}
+                              </div>
+                            </td>
+                          </tr>
+                        )}
                         {/* Pesanan Membutuhkan Konfirmasi */}
                         {order.requiresConfirmation && (
                           <tr className="border-b border-neutral-400">
@@ -706,6 +804,52 @@ const PesananTable = ({
         data={selectedLocations}
         title="Lokasi"
       />
+
+      <Modal
+        closeOnOutsideClick={true}
+        open={isAllDriverStatusModalOpen}
+        onOpenChange={setIsAllDriverStatusModalOpen}
+      >
+        <ModalContent>
+          <div className="flex w-[320px] flex-col items-center gap-y-6 px-6 py-8">
+            <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
+              Status Lainnya
+            </h1>
+            <div className="flex w-full flex-col gap-y-2">
+              {selectedGroupedStatusInfo.map((status, key) => (
+                <Fragment key={key}>
+                  <BadgeStatusPesanan
+                    variant={
+                      status?.statusLabel ===
+                        OrderStatusEnum.WAITING_PAYMENT_1 ||
+                      status?.statusLabel ===
+                        OrderStatusEnum.WAITING_PAYMENT_2 ||
+                      status?.statusLabel ===
+                        OrderStatusEnum.WAITING_REPAYMENT_1 ||
+                      status?.statusLabel ===
+                        OrderStatusEnum.WAITING_REPAYMENT_2
+                        ? "warning"
+                        : status?.statusLabel ===
+                              OrderStatusEnum.CANCELED_BY_SHIPPER ||
+                            status?.statusLabel ===
+                              OrderStatusEnum.CANCELED_BY_SYSTEM ||
+                            status?.statusLabel ===
+                              OrderStatusEnum.CANCELED_BY_TRANSPORTER
+                          ? "error"
+                          : status?.statusLabel === OrderStatusEnum.COMPLETED
+                            ? "success"
+                            : "primary"
+                    }
+                    className="w-full"
+                  >
+                    {`${status.statusLabel} : ${status.count} Unit`}
+                  </BadgeStatusPesanan>
+                </Fragment>
+              ))}
+            </div>
+          </div>
+        </ModalContent>
+      </Modal>
     </>
   );
 };

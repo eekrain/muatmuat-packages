@@ -22,7 +22,7 @@ const DetailPesananWeb = () => {
   const params = useParams();
 
   const breadCrumbData = [
-    { name: "Daftar Pesanan", path: "/daftar-pesanan" },
+    { name: "Daftar Pesanan", href: "/daftarpesanan" },
     { name: "Detail Pesanan" },
   ];
 

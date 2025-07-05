@@ -15,6 +15,7 @@ export default function usePendingOrdersPage(options = {}) {
   const { requiresConfirmation = false, status = null } = options;
 
   const { isMobile, mounted } = useDevice();
+  const [lastFilterField, setLastFilterField] = useState("");
   const [queryParams, setQueryParams] = useState({
     search: "",
     sort: "",
@@ -59,12 +60,14 @@ export default function usePendingOrdersPage(options = {}) {
       }
       return { ...prevState, [field]: value };
     });
+    setLastFilterField(field);
   };
 
   return {
     isMobile,
     mounted,
     queryParams,
+    lastFilterField,
     orders,
     handleChangeQueryParams,
   };

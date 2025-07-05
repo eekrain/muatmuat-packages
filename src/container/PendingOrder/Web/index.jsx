@@ -8,6 +8,7 @@ import PesananTable from "@/components/Table/PesananTable";
 const PendingOrderWeb = ({
   queryParams,
   onChangeQueryParams,
+  lastFilterField,
   orders,
   title,
 }) => {
@@ -33,12 +34,13 @@ const PendingOrderWeb = ({
             size="medium"
           />
           <h1 className="text-[20px] font-bold leading-[24px] text-neutral-900">
-            Butuh Konfirmasi Anda
+            {title}
           </h1>
         </div>
         <PesananTable
           queryParams={queryParams}
           onChangeQueryParams={onChangeQueryParams}
+          lastFilterField={lastFilterField}
           tempSearch={tempSearch}
           setTempSearch={setTempSearch}
           orders={orders}
