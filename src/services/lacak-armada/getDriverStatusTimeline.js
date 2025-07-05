@@ -1,8 +1,6 @@
 import { sub } from "date-fns";
 import useSWR from "swr";
 
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
-
 const apiResult = {
   Message: {
     Code: 200,
@@ -17,10 +15,10 @@ const apiResult = {
     statusTitle: "Antri di Lokasi Muat 2",
     licensePlate: "B 1234 CD",
     statusDefinitions: [
-      {
-        mappedOrderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
-        date: new Date().toISOString(),
-      },
+      // {
+      //   mappedOrderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
+      //   date: new Date().toISOString(),
+      // },
       // {
       //   mappedOrderStatus: "UNLOADING",
       //   children: [
@@ -208,18 +206,18 @@ const apiResult = {
           //     pods: [],
           //   },
           // },
-          {
-            statusCode: "ANTRI_DI_LOKASI_MUAT_1",
-            statusName: "Antri di Lokasi Muat 1",
-            date: sub(new Date(), { hours: 18 }).toISOString(),
-            requiresQRScan: false,
-            requiresPhoto: false,
-            triggersWaitingFee: false,
-            photoEvidences: {
-              packages: [],
-              pods: [],
-            },
-          },
+          // {
+          //   statusCode: "ANTRI_DI_LOKASI_MUAT_1",
+          //   statusName: "Antri di Lokasi Muat 1",
+          //   date: sub(new Date(), { hours: 18 }).toISOString(),
+          //   requiresQRScan: false,
+          //   requiresPhoto: false,
+          //   triggersWaitingFee: false,
+          //   photoEvidences: {
+          //     packages: [],
+          //     pods: [],
+          //   },
+          // },
           {
             statusCode: "TIBA_DI_LOKASI_MUAT_1",
             statusName: "Tiba di Lokasi Muat 1",

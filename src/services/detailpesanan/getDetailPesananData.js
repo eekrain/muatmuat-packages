@@ -105,7 +105,7 @@ const apiResultOrderDetail = {
         transporterOrderCode: "MT.25.AA.001",
         invoiceNumber: "INV/12345678",
         // orderStatus: OrderStatusEnum.LOADING,
-        orderStatus: OrderStatusEnum.WAITING_REPAYMENT_1,
+        orderStatus: OrderStatusEnum.LOADING,
         orderTitle: "Dimuat",
         orderType: "INSTANT",
         createdAt: "2024-01-01T10:00:00Z",

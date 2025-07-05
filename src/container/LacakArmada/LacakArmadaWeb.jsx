@@ -20,13 +20,10 @@ const LacakArmadaWeb = () => {
   }, [isLoading]);
 
   return (
-    <>
-      <div className="grid h-[calc(100vh-60px)] grid-cols-[480px_1fr]">
-        <LeftPanel dataDriverStatus={dataDriverStatus} />
-        <MapPanel />
-      </div>
-      <pre>{JSON.stringify(dataDriverStatus, null, 2)}</pre>
-    </>
+    <div className="grid h-[calc(100dvh-92px)] grid-cols-[480px_1fr]">
+      <LeftPanel dataDriverStatus={dataDriverStatus} />
+      <MapPanel />
+    </div>
   );
 };
 

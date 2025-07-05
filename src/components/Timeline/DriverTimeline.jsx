@@ -79,7 +79,9 @@ export const DriverTimeline = ({ dataDriverStatus, className }) => {
                   ? parent.date
                   : null
               }
-              className={parentIndex === 0 ? "mt-0" : ""}
+              className={
+                parentIndex === 0 && !Boolean(parent?.children) ? "mt-0" : ""
+              }
             />
           </Fragment>
         ))}

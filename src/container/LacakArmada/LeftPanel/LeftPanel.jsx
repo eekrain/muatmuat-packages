@@ -18,7 +18,7 @@ export const LeftPanel = ({ dataDriverStatus }) => {
   ];
 
   return (
-    <div className="flex h-[calc(100vh-60px)] w-[480px] flex-col bg-white shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
+    <div className="flex flex-col bg-white shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
       {/* Breadcrumb */}
       <div className="px-6 pb-2 pt-8">
         <BreadCrumb data={breadcrumbItems} />
@@ -35,7 +35,7 @@ export const LeftPanel = ({ dataDriverStatus }) => {
 
       {/* Main Content */}
       <div className="flex min-h-0 flex-1 flex-col px-6 pb-6">
-        <div className="flex min-h-0 flex-1 flex-col rounded-xl border border-[#C4C4C4] bg-white">
+        <div className="flex flex-col rounded-xl border border-[#C4C4C4] bg-white">
           {dataDriverStatus ? (
             <>
               {/* Driver Info Section */}

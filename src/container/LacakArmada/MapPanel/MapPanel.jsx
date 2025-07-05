@@ -1,15 +1,25 @@
+import { useEffect, useRef, useState } from "react";
+
 import { MapWithPath } from "@/components/MapContainer/MapWithPath";
 import { useGetTrackingLocations } from "@/services/lacak-armada/getTrackingLocations";
 
 export const MapPanel = ({}) => {
+  const containerRef = useRef(null);
+  const [height, setHeight] = useState(0);
   const { data } = useGetTrackingLocations({
     orderId: "123",
     driverId: "456",
   });
 
+  useEffect(() => {
+    if (containerRef.current) {
+      setHeight(containerRef.current.clientHeight);
+    }
+  }, [containerRef]);
+
   return (
-    <div className="relative flex-1 bg-gray-100">
-      {data && (
+    <div ref={containerRef} className="relative flex-1 bg-gray-100">
+      {data && height > 0 && (
         <MapWithPath
           apiKey="AIzaSyDw_9D9-4zTechHn1wMEILZqiBv51Q7jHU"
           locationMarkers={data.locationMarkers}
@@ -19,7 +29,7 @@ export const MapPanel = ({}) => {
           zoom={13}
           mapContainerStyle={{
             width: "100%",
-            height: "calc(100vh - 60px)",
+            height: height,
           }}
           showTruck={true}
           truckIcon="/icons/marker-truck.svg"
