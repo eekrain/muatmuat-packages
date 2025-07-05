@@ -18,7 +18,7 @@ export function formatDate(isoString) {
 
   // Konversi ke zona waktu WIB (GMT+7)
 
-  const day = date.getDate();
+  const day = String(date.getDate()).padStart(2, "0");
   const month = months[date.getMonth()];
   const year = date.getFullYear();
   const hours = String(date.getHours()).padStart(2, "0");

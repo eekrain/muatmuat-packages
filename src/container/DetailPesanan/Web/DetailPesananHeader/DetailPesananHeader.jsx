@@ -194,57 +194,72 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
           </Modal>
         </div>
         <div className="flex items-center gap-x-3">
-          {ALLOW_LIST.DetailRefund.includes(dataStatusPesanan?.orderStatus) && (
-            <Link
-              href={`/daftarpesanan/detailpesanan/${params.orderId}/detail-refund`}
-            >
-              <Button
-                variant="muatparts-primary-secondary"
-                className="h-8"
-                type="button"
+          {ALLOW_LIST.DetailRefund.includes(dataStatusPesanan?.orderStatus) &&
+            dataStatusPesanan?.hasPreparedFleet && (
+              <Link
+                href={`/daftarpesanan/detailpesanan/${params.orderId}/detail-refund`}
               >
-                Detail Refund
-              </Button>
-            </Link>
-          )}
-
-          {ALLOW_LIST.Unduh === "ALL" && (
-            <SimpleDropdown>
-              <SimpleDropdownTrigger asChild>
                 <Button
-                  iconLeft="/icons/download16.svg"
                   variant="muatparts-primary-secondary"
                   className="h-8"
                   type="button"
                 >
-                  Unduh
+                  Detail Refund
                 </Button>
-              </SimpleDropdownTrigger>
+              </Link>
+            )}
 
-              <SimpleDropdownContent className="w-[200px]">
-                {unduhMenu.map((menu, key) => (
-                  <SimpleDropdownItem key={key} onClick={menu.onClick}>
-                    {menu.label}
-                  </SimpleDropdownItem>
-                ))}
-              </SimpleDropdownContent>
-            </SimpleDropdown>
-          )}
-
-          {ALLOW_LIST.PesanUlang === "ALL" && (
+          {dataStatusPesanan?.orderStatus.includes("WAITING_REPAYMENT") && (
             <Button
-              variant={
-                dataStatusPesanan?.orderStatus.startsWith("CANCELED")
-                  ? "muatparts-primary"
-                  : "muatparts-primary-secondary"
-              }
+              variant="muatparts-primary-secondary"
               className="h-8"
-              onClick={() => setIsReorderFleetModalOpen(true)}
               type="button"
             >
-              Pesan Ulang
+              Detail Pembayaran
             </Button>
           )}
+          {ALLOW_LIST.Unduh === "ALL" &&
+            dataStatusPesanan?.hasPreparedFleet &&
+            !dataStatusPesanan?.orderStatus.includes("WAITING_PAYMENT") && (
+              <SimpleDropdown>
+                <SimpleDropdownTrigger asChild>
+                  <Button
+                    iconLeft="/icons/download16.svg"
+                    variant="muatparts-primary-secondary"
+                    className="h-8"
+                    type="button"
+                  >
+                    Unduh
+                  </Button>
+                </SimpleDropdownTrigger>
+
+                <SimpleDropdownContent className="w-[200px]">
+                  {unduhMenu.map((menu, key) => (
+                    <SimpleDropdownItem key={key} onClick={menu.onClick}>
+                      {menu.label}
+                    </SimpleDropdownItem>
+                  ))}
+                </SimpleDropdownContent>
+              </SimpleDropdown>
+            )}
+
+          {ALLOW_LIST.PesanUlang === "ALL" &&
+            !dataStatusPesanan?.orderStatus.includes("WAITING_PAYMENT") &&
+            !dataStatusPesanan?.orderStatus.includes("WAITING_REPAYMENT") && (
+              <Button
+                variant={
+                  dataStatusPesanan?.orderStatus.startsWith("CANCELED") &&
+                  dataStatusPesanan?.hasPreparedFleet
+                    ? "muatparts-primary"
+                    : "muatparts-primary-secondary"
+                }
+                className="h-8"
+                onClick={() => setIsReorderFleetModalOpen(true)}
+                type="button"
+              >
+                Pesan Ulang
+              </Button>
+            )}
 
           {ALLOW_LIST.DokumenDiterima.includes(
             dataStatusPesanan?.orderStatus

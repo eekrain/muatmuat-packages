@@ -41,7 +41,7 @@ export const UserDropdown = () => {
       ) : (
         <HoverCard.Root openDelay={0} closeDelay={200}>
           <HoverCard.Trigger asChild>
-            <button className="flex items-center gap-x-2">
+            <button className="flex cursor-pointer items-center gap-x-2">
               <img
                 src={dataUser?.Avatar}
                 alt={`${dataUser?.name} profile`}

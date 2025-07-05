@@ -58,7 +58,11 @@ export const DriverTimeline = ({ dataDriverStatus, className }) => {
             ) : null}
 
             <ParentItem
-              icon={OrderStatusIcon[parent.mappedOrderStatus]}
+              icon={
+                parent.mappedOrderStatus?.startsWith("CANCELED")
+                  ? "/icons/close-circle.svg"
+                  : OrderStatusIcon[parent.mappedOrderStatus]
+              }
               title={OrderStatusTitle[parent.mappedOrderStatus]}
               withDivider={
                 parentIndex !== dataDriverStatus?.statusDefinitions.length - 1
@@ -75,6 +79,7 @@ export const DriverTimeline = ({ dataDriverStatus, className }) => {
                   ? parent.date
                   : null
               }
+              className={parentIndex === 0 ? "mt-0" : ""}
             />
           </Fragment>
         ))}
@@ -139,7 +144,13 @@ const ItemWithLightbox = ({
         className={index === totalLength - 1 ? "pb-0" : ""}
         appearance={{
           dateClassname:
-            parentIndex === 0 && index === 0 ? "text-neutral-900" : "",
+            parentIndex === 0 && index === 0
+              ? "text-neutral-900"
+              : "text-neutral-600",
+          titleClassname:
+            parentIndex === 0 && index === 0
+              ? "text-neutral-900"
+              : "text-neutral-600",
         }}
         onSubtitleClick={() =>
           alert(`Tampilkan modal untuk ${driverStatusItem.subtitle}`)
@@ -161,10 +172,16 @@ const ParentItem = ({
   withDivider = true,
   variant = "inactive",
   canceledAt = null,
+  className,
 }) => {
   return (
     <>
-      <div className="mt-5 grid grid-cols-[32px_1fr] items-center gap-3">
+      <div
+        className={cn(
+          "mt-5 grid grid-cols-[32px_1fr] items-center gap-3",
+          className
+        )}
+      >
         <div
           className={cn(
             "flex h-8 w-8 items-center justify-center rounded-full border border-transparent",
@@ -174,15 +191,17 @@ const ParentItem = ({
           <IconComponent src={icon} width={16} height={16} />
         </div>
 
-        <div className="flex justify-between text-sm font-bold leading-[1.2]">
+        <div
+          className={cn(
+            "flex justify-between text-sm font-bold leading-[1.2] text-neutral-600",
+            variant === "active" || variant === "canceled"
+              ? "text-neutral-900"
+              : ""
+          )}
+        >
           <span>{title}</span>
           {canceledAt && (
-            <span
-              className={cn(
-                "block text-xs font-medium leading-[1.2] text-neutral-600",
-                variant === "active" && "text-neutral-900"
-              )}
-            >
+            <span className={cn("block text-xs font-medium leading-[1.2]")}>
               {formatDate(canceledAt)}
             </span>
           )}
@@ -192,7 +211,7 @@ const ParentItem = ({
       {withDivider && (
         <div className="my-5 grid grid-cols-[32px_1fr] items-center gap-3">
           <div />
-          <hr />
+          <hr className="border-neutral-400" />
         </div>
       )}
     </>

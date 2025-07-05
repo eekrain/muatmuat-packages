@@ -77,7 +77,7 @@ export const StatusPesananHeader = ({
                       Lihat Alasan Pembatalan
                     </button>
                   </ModalTrigger>
-                  <ModalContent>
+                  <ModalContent type="muatmuat">
                     <div className="relative flex w-[472px] flex-col items-start gap-[10px] rounded-xl bg-white px-6 py-8">
                       {/* Content Container */}
                       <div className="flex flex-row items-start gap-2">
@@ -92,7 +92,7 @@ export const StatusPesananHeader = ({
                             {/* Cancellation Time */}
                             <div className="flex w-[133px] flex-col items-start gap-3">
                               <div className="flex w-[105px] flex-row items-center gap-2">
-                                <span className="text-[12px] font-semibold leading-[14.4px] text-black">
+                                <span className="h-[8px] text-[12px] font-semibold leading-[14.4px] text-black">
                                   Waktu Pembatalan
                                 </span>
                               </div>
@@ -104,7 +104,7 @@ export const StatusPesananHeader = ({
                             {/* Cancelled By */}
                             <div className="flex w-[91px] flex-col items-start gap-3">
                               <div className="flex w-[91px] flex-row items-center gap-2">
-                                <span className="text-[12px] font-semibold leading-[14.4px] text-black">
+                                <span className="h-[8px] text-[12px] font-semibold leading-[14.4px] text-black">
                                   Dibatalkan Oleh
                                 </span>
                               </div>
@@ -116,7 +116,7 @@ export const StatusPesananHeader = ({
                             {/* Cancellation Reason */}
                             <div className="flex w-[424px] flex-col items-start gap-3">
                               <div className="flex w-[106px] flex-row items-center gap-2">
-                                <span className="text-[12px] font-semibold leading-[14.4px] text-black">
+                                <span className="h-[8px] text-[12px] font-semibold leading-[14.4px] text-black">
                                   Alasan Pembatalan
                                 </span>
                               </div>

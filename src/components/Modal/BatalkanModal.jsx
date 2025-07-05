@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 
 import Button from "../Button/Button";
-import MyTextArea from "../Form/TextArea";
-import { Modal, ModalContent, ModalHeader } from "../Modal/Modal";
+import { ExpandableTextArea } from "../Form/ExpandableTextArea";
 import RadioButton from "../Radio/RadioButton";
+import { Modal, ModalContent, ModalHeader } from "./Modal";
 
-const BatalkanModal = ({
+export const ModalAlasanPembatalan = ({
   open,
   onOpenChange,
-  labelTitle = "Batalkan Pesanan",
+  labelTitle = "Alasan Pembatalan",
   cancelReasons,
   errors,
   onSubmit,
@@ -36,7 +36,7 @@ const BatalkanModal = ({
           </h2>
 
           {/* Radio Button Options */}
-          <div className="flex w-full flex-col items-start gap-4">
+          <div className="flex w-full flex-col items-start gap-6">
             {cancelReasons.map((reason, index) => (
               <div
                 key={reason.value}
@@ -56,16 +56,16 @@ const BatalkanModal = ({
                 {index === cancelReasons.length - 1 &&
                   selectedReason ===
                     cancelReasons[cancelReasons.length - 1]?.value && (
-                    <MyTextArea
+                    <ExpandableTextArea
                       value={customReason}
                       onChange={(e) => setCustomReason(e.target.value)}
-                      placeholder="Masukkan Detail Lokasi"
-                      maxLength={500}
+                      placeholder="Masukkan Alasan Pembatalan"
+                      maxLength={200}
                       errorMessage={errors?.customReason}
                       appearance={{
                         inputClassName: "resize-none h-8",
                       }}
-                      className="mt-1"
+                      className="mt-1 pl-[24px]"
                       withCharCount
                     />
                   )}
@@ -88,5 +88,3 @@ const BatalkanModal = ({
     </Modal>
   );
 };
-
-export default BatalkanModal;

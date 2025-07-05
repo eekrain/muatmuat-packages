@@ -17,29 +17,29 @@ const ModalDetailStatusDriver = () => {
           Detail Status Driver
         </Button>
       </ModalTrigger>
-      <ModalContent className="w-[800px] p-6">
+      <ModalContent className="w-[800px] p-6" type="muatmuat">
         <h2 className="mb-3 text-center text-[16px] font-bold leading-[19.2px] text-black">
           Detail Status Driver
         </h2>
 
-        <div className="grid h-[388px] grid-cols-1 grid-rows-[64px_1fr] rounded-xl border border-neutral-400 pt-5">
-          <div className="relative px-4">
+        <div className="flex max-h-[353px] min-h-[317px] flex-col rounded-xl border border-neutral-400 pr-[4px] pt-5">
+          <div className="relative pl-4 pr-[7px]">
             <AvatarDriver
               name={"Ardian Eka"}
               image={"https://picsum.photos/50"}
               licensePlate={"B 1234 CD"}
             />
+          </div>
 
-            <div className="absolute bottom-0 left-0 w-full px-4">
-              <hr />
-            </div>
+          <div className="my-6 w-full px-4">
+            <hr className="border-neutral-400" />
           </div>
 
           <div className="overflow-y-auto">
             {dataDriverStatus && (
               <DriverTimeline
                 dataDriverStatus={dataDriverStatus}
-                className="px-4 pb-5 pt-6"
+                className="pb-5 pl-4 pr-[12px]"
               />
             )}
           </div>

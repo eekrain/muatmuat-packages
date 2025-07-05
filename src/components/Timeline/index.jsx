@@ -24,9 +24,9 @@ export const bulletVariants = cva(
     variants: {
       variant: {
         "bullet-inactive":
-          "top-0 size-[16px] border-[4px] border-[#461B02] bg-white",
+          "top-[2px] size-[16px] border-[4px] border-[#461B02] bg-white",
         "bullet-active":
-          "top-0 size-[16px] border-[4px] border-[#FFC217] bg-[#461B02]",
+          "top-[2px] size-[16px] border-[4px] border-[#FFC217] bg-[#461B02]",
         "number-muat": "top-0 size-4 bg-[#FFC217] text-[#461B02]",
         "number-bongkar": "top-0 size-4 bg-[#461B02] text-white",
         "field-muat": "top-[2px] size-4 bg-[#FFC217] text-[#461B02]",
@@ -109,7 +109,7 @@ export const TimelineItem = ({
           )}
         >
           {!variant.startsWith("bullet") && (
-            <div className="mt-[4px]">{index + 1}</div>
+            <div className="-ml-[1px] mt-[2px]">{index + 1}</div>
           )}
         </span>
       </div>
@@ -172,7 +172,7 @@ export const TimelineContentAddress = ({ title, className, ...props }) => {
   return (
     <div
       className={cn(
-        "w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap pb-4 text-base font-semibold leading-tight text-gray-700",
+        "w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap pb-4 text-xs font-medium leading-[1.2] text-neutral-900",
         className
       )}
       {...props}

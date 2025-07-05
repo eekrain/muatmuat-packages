@@ -35,7 +35,7 @@ import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import { NumberInput } from "@/components/Form/NumberInput";
 import { Select } from "@/components/Form/Select";
 import { TagInput } from "@/components/Form/TagInput";
-import MyTextArea from "@/components/Form/TextArea";
+import { MyTextArea } from "@/components/Form/TextArea";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageUploaderWeb from "@/components/ImageUploader/ImageUploaderWeb";
 import ImagesPreview from "@/components/ImagesPreview/ImagesPreview";

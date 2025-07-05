@@ -25,7 +25,10 @@ export const ModalDetailWaktuTunggu = ({
           Lihat Detail Waktu Tunggu
         </button>
       </ModalTrigger>
-      <ModalContent className="flex w-[578px] flex-col gap-y-4 p-6">
+      <ModalContent
+        className="flex w-[578px] flex-col gap-y-4 p-6"
+        type="muatmuat"
+      >
         {/* Header */}
         <h2 className="text-center text-[16px] font-bold leading-[19.2px] text-neutral-900">
           Detail Waktu Tunggu

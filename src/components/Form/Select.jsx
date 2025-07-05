@@ -71,13 +71,14 @@ export const Select = ({
             "border-neutral-600 hover:border-primary-700 data-[state=open]:border-primary-700",
             errorMessage && "border-red-500 focus:border-red-500",
             disabled && "cursor-not-allowed bg-gray-50 opacity-50",
+            !value && "text-neutral-600",
             className
           )}
         >
           <SelectPrimitive.Value
             data-slot="select-value"
             placeholder={placeholder}
-            className="flex-1 truncate text-left"
+            className="flex-1 truncate text-left placeholder:text-neutral-600"
           />
           <SelectPrimitive.Icon asChild>
             <ChevronDownIcon className="size-4 opacity-50 transition-transform duration-200 data-[state=open]:rotate-180" />

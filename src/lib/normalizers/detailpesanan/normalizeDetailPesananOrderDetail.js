@@ -15,6 +15,11 @@ export const normalizeDetailPesananOrderDetail = ({
     const foundDocumentShipping = dataAdditionalServices.find(
       (val) => val.isShipping
     );
+    console.log(
+      "🔍 ~  ~ src/lib/normalizers/detailpesanan/normalizeDetailPesananOrderDetail.js:15 ~ foundDocumentShipping:",
+      foundDocumentShipping
+    );
+
     const foundOtherAdditionalService = dataAdditionalServices.find(
       (val) => !val.isShipping
     );
@@ -44,6 +49,9 @@ export const normalizeDetailPesananOrderDetail = ({
       driverStatus: dataOrderStatusHistory?.driverStatus,
       alerts: dataAlerts || [],
       cancellationHistory: dataCancellationHistory,
+      hasPreparedFleet:
+        dataOrderStatusHistory?.driverStatus &&
+        dataOrderStatusHistory?.driverStatus?.length > 0,
     };
 
     const route = { muat: [], bongkar: [] };

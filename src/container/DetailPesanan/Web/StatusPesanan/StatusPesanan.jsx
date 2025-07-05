@@ -4,7 +4,7 @@ import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
-import { AlertPendingPesanan } from "./AlertPendingPesanan";
+import { AlertPendingPrepareFleet } from "./AlertPendingPrepareFleet";
 import { DriverStatusCard } from "./DriverStatusCard";
 import { StatusPesananHeader } from "./StatusPesananHeader";
 
@@ -32,7 +32,8 @@ const StatusPesanan = ({ dataStatusPesanan }) => {
         <Alert key={alert.label} variant="secondary" size="big">
           <div className="flex items-center gap-2">
             <span
-              className="block"
+              className="info-alert-content block"
+              style={{ "& b": { fontWeight: 600 } }}
               dangerouslySetInnerHTML={{ __html: alert.label }}
             />
 
@@ -40,15 +41,15 @@ const StatusPesanan = ({ dataStatusPesanan }) => {
               <InfoTooltip
                 side="right"
                 appearance={{ iconColor: "!text-neutral-700" }}
-              >
-                {alert.info}
-              </InfoTooltip>
+                render={alert.info}
+                className="w-[336px]"
+              />
             )}
           </div>
         </Alert>
       ))}
 
-      <AlertPendingPesanan
+      <AlertPendingPrepareFleet
         orderStatus={dataStatusPesanan.orderStatus}
         expiredAt={dataStatusPesanan.expiredAt}
       />

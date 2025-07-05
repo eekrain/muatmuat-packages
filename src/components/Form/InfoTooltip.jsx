@@ -18,10 +18,13 @@ export function InfoTooltip({
     iconClassName: "text-neutral-600",
   },
   children,
+  render,
+  open,
 }) {
   return (
     <TooltipPrimitive.Provider delayDuration={100}>
       <TooltipPrimitive.Root>
+        {/* <TooltipPrimitive.Root open={true}> */}
         <TooltipPrimitive.Trigger asChild>
           {trigger ? (
             trigger
@@ -43,7 +46,7 @@ export function InfoTooltip({
             side={side}
             align={align}
             className={cn(
-              "relative z-50 max-w-sm rounded-xl border border-gray-200 bg-white p-3 text-sm shadow-xl",
+              "relative z-50 max-w-sm rounded-xl border border-gray-200 bg-white p-3 text-sm leading-[1.2] shadow-xl",
               className
             )}
             sideOffset={sideOffset}
@@ -52,12 +55,15 @@ export function InfoTooltip({
             }}
           >
             {/* Styles in globals.scss */}
-            <div
-              className="info-tooltip-content"
-              // dangerouslySetInnerHTML={{ __html: children }}
-            >
-              {children}
-            </div>
+            {render ? (
+              <div
+                className="info-tooltip-content"
+                dangerouslySetInnerHTML={{ __html: render }}
+              />
+            ) : (
+              <div className="info-tooltip-content">{children}</div>
+            )}
+
             <TooltipPrimitive.Arrow
               className="h-[11px] w-4 fill-white"
               style={{

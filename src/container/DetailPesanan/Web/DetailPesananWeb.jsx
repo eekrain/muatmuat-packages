@@ -3,6 +3,7 @@ import { useEffect } from "react";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { toast } from "@/lib/toast";
 import { useGetDetailPesananData } from "@/services/detailpesanan/getDetailPesananData";
 import { useLoadingAction } from "@/store/loadingStore";
 
@@ -108,10 +109,17 @@ const DetailPesananWeb = () => {
         </div>
       </div>
 
-      {/* <button onClick={() => toast.success("Pesanan kamu berhasil dibatalkan")}>
+      <button
+        onClick={() => {
+          // toast.error(
+          //   "Minimal pilih 1 alasan pembatalan untuk membatalkan pesanan"
+          // );
+          toast.success("Pesanan kamu berhasil dibatalkan");
+        }}
+      >
         tes toast
       </button>
-      <pre>{JSON.stringify(dataDetailPesanan, null, 2)}</pre> */}
+      <pre>{JSON.stringify(dataDetailPesanan, null, 2)}</pre>
     </>
   );
 };

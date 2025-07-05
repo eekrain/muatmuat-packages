@@ -26,7 +26,7 @@ const apiResult = {
         },
         courier: "JNE",
         courierPrice: 200000,
-        insurancePrice: 10000000000000,
+        insurancePrice: 10000,
       },
     ],
   },
