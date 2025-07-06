@@ -197,11 +197,11 @@ const PesananTable = ({
                 {searchOnly ? null : (
                   <Filter
                     disabled={
-                      !hasOrders &&
-                      (isFirstTimer ||
-                        options
+                      (!hasOrders && isFirstTimer) ||
+                      (!isFirstTimer &&
+                        !options
                           .flatMap((item) => item.children)
-                          .some((item) => item.value !== queryParams.status))
+                          .some((item) => item.value === queryParams.status))
                     }
                     options={options}
                     value={queryParams.status}

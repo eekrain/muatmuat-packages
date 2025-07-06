@@ -107,6 +107,22 @@ const DeliveryEvidenceModal = ({
         postalCode: dataLokasi.postalCode.name,
       },
     };
+    const existingIndex = additionalServices.findIndex(
+      (service) => service.serviceId === newAdditionalService.serviceId
+    );
+
+    if (existingIndex !== -1) {
+      // Update existing service
+      const updatedServices = [...additionalServices];
+      updatedServices[existingIndex] = newAdditionalService;
+      setField("additionalServices", updatedServices);
+    } else {
+      // Add new service
+      setField("additionalServices", [
+        newAdditionalService,
+        ...additionalServices,
+      ]);
+    }
     setField("additionalServices", [
       newAdditionalService,
       ...additionalServices,

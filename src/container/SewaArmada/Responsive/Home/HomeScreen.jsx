@@ -479,7 +479,7 @@ const SewaArmadaHomeScreen = () => {
   */}
 
       {isShowCostDetail ? (
-        <ResponsiveFooter className="z-[1000] flex flex-col gap-y-4">
+        <ResponsiveFooter className="flex flex-col gap-y-4">
           {/* Total Biaya section with integrated voucher */}
           <div className="flex w-full flex-col rounded bg-primary-50">
             {/* Voucher section inside Total Biaya div - conditionally rendered based on bottomsheet state */}

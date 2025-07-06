@@ -22,7 +22,7 @@ const Page = () => {
   if (isMobile) {
     return <div>Responsive sementara</div>;
   }
-  console.log("lastFilterField", lastFilterField);
+
   return (
     <PendingOrderWeb
       title="Butuh Konfirmasi Anda"

@@ -47,6 +47,10 @@ const Page = () => {
   const { data: cargoCategoriesData } = useSWRHook(
     "v1/orders/cargos/categories"
   );
+  // Fetch layanan tambahan dari API
+  const { data: additionalServicesData } = useSWRHook(
+    "v1/orders/additional-services"
+  );
   // Setup SWR mutation hook untuk API calculate-price
   const {
     trigger: calculatePrice,
@@ -67,6 +71,7 @@ const Page = () => {
   const cargoTypes = cargoTypesData?.Data?.types || [];
   // Extract cargo categories from response
   const cargoCategories = cargoCategoriesData?.Data?.categories || [];
+  const additionalServicesOptions = additionalServicesData?.Data.services;
   // Use the API data directly or fall back to an empty array
   const paymentMethods = paymentMethodsData?.Data || [];
   const settingsTime = settingsTimeData?.Data || null;
@@ -211,6 +216,7 @@ const Page = () => {
       settingsTime={settingsTime}
       cargoTypes={cargoTypes}
       cargoCategories={cargoCategories}
+      additionalServicesOptions={additionalServicesOptions}
       paymentMethods={paymentMethods}
     />
   );

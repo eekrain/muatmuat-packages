@@ -38,6 +38,7 @@ export default function SewaArmadaWeb({
   settingsTime,
   cargoTypes,
   cargoCategories,
+  additionalServicesOptions,
   paymentMethods,
 }) {
   const orderType = useSewaArmadaStore((state) => state.orderType);
@@ -107,7 +108,9 @@ export default function SewaArmadaWeb({
                   <JenisArmada />
                   {/* Asuransi dihide dulu */}
                   {/* <AsuransiBarang /> */}
-                  <LayananTambahan />
+                  <LayananTambahan
+                    additionalServicesOptions={additionalServicesOptions}
+                  />
                   <NoDeliveryOrder />
                   <BadanUsahaPemesan />
                 </div>

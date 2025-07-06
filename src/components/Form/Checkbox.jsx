@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 
 import PropTypes from "prop-types";
 
@@ -21,21 +21,16 @@ const Checkbox = ({
   checked = false,
   ...props
 }) => {
-  const [checkedState, setChecked] = useState(checked);
   const checkedRef = useRef(null);
-  useEffect(() => {
-    setChecked(checked);
-  }, [checked]);
 
   const checkedClick = () => {
     if (disabled) {
       return;
     }
     onChange({
-      checked: !checkedState,
+      checked: !checked,
       value,
     });
-    setChecked(!checkedState);
   };
 
   return (
@@ -50,7 +45,7 @@ const Checkbox = ({
         key={key}
         type="checkbox"
         ref={checkedRef}
-        checked={checkedState}
+        checked={checked}
         value={value}
         onChange={() => checkedClick()}
         disabled={disabled}
@@ -64,15 +59,15 @@ const Checkbox = ({
           "border border-neutral-600 transition-all duration-300 ease-in-out",
           "hover:border-primary-700",
           // Checked state
-          checkedState && "border-primary-700 bg-primary-700",
+          checked && "border-primary-700 bg-primary-700",
           // Disabled states
           disabled &&
-            checkedState &&
+            checked &&
             "cursor-not-allowed !border-neutral-500 !bg-neutral-400",
-          disabled && !checkedState && "cursor-not-allowed !border-neutral-500",
+          disabled && !checked && "cursor-not-allowed !border-neutral-500",
           // Checkmark styles
           "after:hidden",
-          checkedState && "after:block",
+          checked && "after:block",
           "after:absolute after:left-[5px] after:top-[2px] after:h-[8px] after:w-[4px]",
           "after:rotate-45 after:border-b after:border-r after:border-white",
           disabled && "after:border-neutral-500"
@@ -98,4 +93,5 @@ Checkbox.propTypes = {
   value: PropTypes.string,
   children: PropTypes.element,
   disabled: PropTypes.bool,
+  checked: PropTypes.bool.isRequired,
 };

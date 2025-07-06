@@ -10,7 +10,6 @@ import {
   useLocationContext,
 } from "@/hooks/use-location/use-location";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
-import { useSWRHook } from "@/hooks/use-swr";
 import { handleFirstTime } from "@/lib/utils/form";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 import {
@@ -18,7 +17,7 @@ import {
   useSewaArmadaStore,
 } from "@/store/forms/sewaArmadaStore";
 
-const LayananTambahan = () => {
+const LayananTambahan = ({ additionalServicesOptions }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [modalType, setModalType] = useState("");
 
@@ -32,29 +31,6 @@ const LayananTambahan = () => {
   const { reset } = useLocationFormStore();
   const { setAutoCompleteSearchPhrase, setLocationPostalCodeSearchPhrase } =
     useLocationContext();
-  // Fetch layanan tambahan dari API
-  // Nanti dulu belum ada data
-  // https://claude.ai/chat/ef9b6ad4-0d1c-46f3-b8f9-e63d29cc0db1
-  const { data: additionalServicesData } = useSWRHook(
-    "v1/orders/additional-services"
-  );
-  const additionalServicesOptions = additionalServicesData?.Data.services || [
-    {
-      id: "550e8400-e29b-41d4-a716-446655440000",
-      name: "Kirim Bukti Fisik Penerimaan Barang",
-      description:
-        "Layanan untuk mengirim bukti fisik penerimaan barang ke alamat yang ditentukan",
-      price: 0,
-      withShipping: true,
-    },
-    {
-      id: "550e8400-e29b-41d4-a716-446655440001",
-      name: "Troli",
-      description: "Troli",
-      price: 25000,
-      withShipping: false,
-    },
-  ];
 
   // Fetch shipping options when location data is complete
   // const { data: shippingOptionsData } = useSWRHook(
@@ -238,16 +214,15 @@ const LayananTambahan = () => {
                             if (isSendDeliveryEvidenceService) {
                               setModalType("create");
                               setIsOpen(true);
-                            } else {
-                              // Add the service to the array if checked
-                              setSewaArmadaField("additionalServices", [
-                                ...additionalServices,
-                                {
-                                  serviceId: service.additionalServiceId,
-                                  withShipping: service.withShipping,
-                                },
-                              ]);
                             }
+                            // Add the service to the array if checked
+                            setSewaArmadaField("additionalServices", [
+                              ...additionalServices,
+                              {
+                                serviceId: service.additionalServiceId,
+                                withShipping: service.withShipping,
+                              },
+                            ]);
                           } else {
                             // Remove the service from the array if unchecked
                             setSewaArmadaField(
@@ -372,10 +347,10 @@ const LayananTambahan = () => {
   );
 };
 
-const LayananTambahanLocation = () => {
+const LayananTambahanLocation = ({ additionalServicesOptions }) => {
   return (
     <LocationProvider>
-      <LayananTambahan />
+      <LayananTambahan additionalServicesOptions={additionalServicesOptions} />
     </LocationProvider>
   );
 };

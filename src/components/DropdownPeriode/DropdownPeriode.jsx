@@ -146,14 +146,21 @@ const DropdownPeriode = ({
           !disable
             ? "bg-neutral-50 text-neutral-900"
             : "cursor-not-allowed bg-neutral-200 text-neutral-600",
-          isOpen ? "border-primary-700" : "border-neutral-600"
+          isOpen ? "border-primary-700" : "border-neutral-600",
+          "hover:border-primary-700"
         )}
         onClick={() => (!disable ? setIsOpen(!isOpen) : "")}
       >
         <span className="medium-xs line-clamp-1 text-left">
           {selected.name.replace("(Default)", "")}
         </span>
-        <IconComponent src={"/icons/calendar16.svg"} />
+        <IconComponent
+          className={cn(
+            "transition-transform duration-200 ease-in-out",
+            isOpen && "rotate-180"
+          )}
+          src="/icons/chevron-down.svg"
+        />
       </button>
 
       {isOpen && (
