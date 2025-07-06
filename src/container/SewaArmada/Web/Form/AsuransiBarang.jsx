@@ -8,7 +8,7 @@ export const AsuransiBarang = () => {
 
   return (
     <FormContainer>
-      <FormLabel>Asuransi Barang</FormLabel>
+      <FormLabel optional>Asuransi Barang</FormLabel>
       <div
         className="flex h-[32px] flex-1 cursor-pointer items-center justify-between rounded-md border border-neutral-600 bg-white px-3"
         onClick={() => setIsAsuransiModalOpen(true)}

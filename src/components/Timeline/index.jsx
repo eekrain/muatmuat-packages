@@ -1,7 +1,7 @@
 import { cva } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
-import { formatDate } from "@/lib/utils/formatters";
+import { formatDate } from "@/lib/utils/dateFormat";
 
 export const lineVariants = cva(
   "absolute left-1/2 top-1 block h-full -translate-x-1/2 border-l-[2px] border-dashed",
@@ -132,10 +132,10 @@ export const TimelineContentWithButtonDate = ({
 }) => {
   return (
     <div className={cn("flex items-center justify-between pb-5", className)}>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-[2px]">
         <span
           className={cn(
-            "line-clamp-1 text-xs font-medium leading-[1.2] text-neutral-900",
+            "line-clamp-1 text-[14px] font-medium leading-[1.2] text-neutral-900",
             appearance?.titleClassname
           )}
         >
@@ -145,7 +145,7 @@ export const TimelineContentWithButtonDate = ({
           <button
             onClick={withButton.onClick}
             className={cn(
-              "w-fit text-xs font-medium leading-[1.2] text-primary-700",
+              "h-2 w-fit text-xs font-medium leading-[1.2] text-primary-700",
               appearance?.buttonClassname
             )}
           >

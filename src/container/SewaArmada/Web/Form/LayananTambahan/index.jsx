@@ -214,7 +214,9 @@ const LayananTambahan = () => {
     <>
       <FormContainer>
         {/* Label Bagian */}
-        <FormLabel variant="small">Layanan Tambahan</FormLabel>
+        <FormLabel optional variant="small">
+          Layanan Tambahan
+        </FormLabel>
 
         {/* Container Opsi Layanan */}
         <div className="flex-grow-1 flex flex-col gap-y-3">

@@ -54,7 +54,7 @@ export const InformasiMuatan = () => {
       <InformasiMuatanModal
         open={isInformasiMuatanModalOpen}
         onOpenChange={setIsInformasiMuatanModalOpen}
-        maxInformasiMuatan={5}
+        maxInformasiMuatan={10}
         onSaveInformasiMuatan={(data) => setField("informasiMuatan", data)}
         defaultValues={informasiMuatan}
       />

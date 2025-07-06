@@ -14,7 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";
 
-export const DriverTimeline = ({ dataDriverStatus, className }) => {
+export const DriverTimeline = ({ dataDriverStatus }) => {
   const [images, setImages] = useState({ packages: [], pods: [] });
   const [currentStatus, setCurrentStatus] = useState(null);
   const [lightboxActiveIndex, setLightboxActiveIndex] = useState(0);
@@ -32,7 +32,7 @@ export const DriverTimeline = ({ dataDriverStatus, className }) => {
   };
 
   return (
-    <div className={cn("min-h-0 flex-1 overflow-y-auto p-4 pt-0", className)}>
+    <div>
       <LightboxProvider
         images={[...images.packages, ...images.pods]}
         title={lightboxTitle()}
@@ -151,7 +151,7 @@ const ItemWithLightbox = ({
               : "text-neutral-600",
           titleClassname:
             parentIndex === 0 && index === 0
-              ? "text-neutral-900"
+              ? "text-neutral-900 font-semibold"
               : "text-neutral-600",
         }}
         onSubtitleClick={() =>

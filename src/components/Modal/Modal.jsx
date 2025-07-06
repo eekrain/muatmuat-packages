@@ -205,9 +205,6 @@ export const ModalClose = ({ children, onClick }) => {
   );
 };
 
-/**
- * @param {{ children: React.ReactNode, className?: string }} props
- */
 export const ModalContent = ({
   size = "small",
   type = "muattrans",

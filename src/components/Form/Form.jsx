@@ -14,6 +14,7 @@ export const FormContainer = ({ children, className }) => (
 export const FormLabel = ({
   variant = "big",
   required = false,
+  optional = false,
   className,
   children,
   tooltip,
@@ -28,7 +29,15 @@ export const FormLabel = ({
     {typeof children === "string" ? (
       <label className="mt-[2px]">
         {children}
-        {required ? "*" : " (Opsional)"}
+        {required && <span>*</span>}
+        {optional && (
+          <>
+            &nbsp;
+            <span className="text-[10px] md:text-xs md:font-medium md:italic md:text-neutral-500">
+              (Opsional)
+            </span>
+          </>
+        )}
       </label>
     ) : (
       children

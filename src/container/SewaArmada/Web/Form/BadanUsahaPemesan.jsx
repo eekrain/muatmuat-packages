@@ -96,7 +96,9 @@ export const BadanUsahaPemesan = () => {
   return (
     <>
       <FormContainer>
-        <FormLabel variant="small">Tipe Pemesan</FormLabel>
+        <FormLabel variant="small" optional>
+          Tipe Pemesan
+        </FormLabel>
         <div className="flex h-[16px] flex-row items-center gap-[4px]">
           <Checkbox
             onChange={({ checked }) =>
