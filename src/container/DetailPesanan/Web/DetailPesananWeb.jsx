@@ -119,7 +119,7 @@ const DetailPesananWeb = () => {
       >
         tes toast
       </button>
-      <pre>{JSON.stringify(dataDetailPesanan, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(dataDetailPesanan, null, 2)}</pre> */}
     </>
   );
 };

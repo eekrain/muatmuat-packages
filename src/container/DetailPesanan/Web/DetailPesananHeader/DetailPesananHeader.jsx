@@ -20,6 +20,7 @@ import {
 import Slider from "@/components/Slider/Slider";
 import DriverRatingModal from "@/container/DetailPesanan/Web/DetailPesananHeader/DriverRatingModal";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { cn } from "@/lib/utils";
 
 const ALLOW_LIST = {
   DetailRefund: [
@@ -253,7 +254,10 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
                     ? "muatparts-primary"
                     : "muatparts-primary-secondary"
                 }
-                className="h-8"
+                className={cn(
+                  "h-8",
+                  !Boolean(dataStatusPesanan?.hasPreparedFleet) && "w-[162px]"
+                )}
                 onClick={() => setIsReorderFleetModalOpen(true)}
                 type="button"
               >
