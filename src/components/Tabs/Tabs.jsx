@@ -80,7 +80,8 @@ export const TabsTrigger = ({
         // Inactive state
         "text-neutral-700 hover:text-neutral-900",
         // Active state
-        isActive && "border-b-2 border-primary-700 font-bold text-primary-700",
+        isActive &&
+          "border-b-2 border-muat-trans-secondary-900 font-bold text-muat-trans-secondary-900",
         // Disabled state
         disabled && "cursor-not-allowed opacity-50",
         className
@@ -105,7 +106,7 @@ export const TabsContent = ({ value, className, children, ...props }) => {
   return (
     <div
       className={cn(
-        "mt-4 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2",
+        "focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2",
         className
       )}
       {...props}
@@ -137,7 +138,7 @@ export const TabsTriggerWithSeparator = ({
           "text-neutral-700 hover:text-neutral-900",
           // Active state
           isActive &&
-            "border-b-2 border-muat-trans-secondary-900 font-bold text-primary-700",
+            "border-b-2 border-muat-trans-secondary-900 font-bold text-muat-trans-secondary-900",
           // Disabled state
           disabled && "cursor-not-allowed opacity-50",
           className
