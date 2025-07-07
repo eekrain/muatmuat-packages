@@ -111,7 +111,7 @@ const Button = ({
       ) : (
         iconLeft
       )}
-      <span className="mt-1">{children}</span>
+      <span className="md:mt-1">{children}</span>
       {typeof iconRight === "string" ? (
         <IconComponent
           loader={false}

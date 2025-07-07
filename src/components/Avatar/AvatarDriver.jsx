@@ -6,7 +6,9 @@ export const AvatarDriver = ({ name, image, licensePlate }) => {
       <img src={image} alt={name} className="h-10 w-10 rounded-full" />
 
       <div className="flex flex-1 flex-col justify-between">
-        <p className="text-sm font-bold">{name}</p>
+        <p className="text-base font-semibold md:text-sm md:font-bold">
+          {name}
+        </p>
 
         <div className="-mb-1 flex items-center gap-[2.5px]">
           <IconComponent

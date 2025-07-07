@@ -16,8 +16,8 @@ const TabsInfo = () => {
         <TabsTriggerWithSeparator value="ringkasan">
           Ringkasan
         </TabsTriggerWithSeparator>
-        <TabsTriggerWithSeparator value="muatan">
-          Muatan
+        <TabsTriggerWithSeparator value="informasi-lainnya">
+          Informasi Lainnya
         </TabsTriggerWithSeparator>
         <TabsTriggerWithSeparator value="detail-pic" showSeparator={false}>
           Detail PIC
@@ -54,7 +54,7 @@ const TabsInfo = () => {
         </div>
       </TabsContent>
 
-      <TabsContent value="muatan" className="p-4">
+      <TabsContent value="informasi-lainnya" className="p-4">
         <div className="py-8 text-center">
           <p className="text-neutral-500">
             Informasi muatan akan ditampilkan di sini

@@ -7,8 +7,11 @@ const DriverInfo = () => {
     <div className="box-border flex w-full flex-col items-center justify-center border-b-2 border-[#461B02] bg-white p-5">
       <div className="flex w-full flex-col items-start gap-4">
         {/* Status Badge */}
-        <BadgeStatusPesanan variant="primary" className="text-sm font-semibold">
-          Antri di Lokasi Muat 1
+        <BadgeStatusPesanan
+          variant="primary"
+          className="w-fit text-sm font-semibold"
+        >
+          Menuju ke Lokasi Muat 1
         </BadgeStatusPesanan>
 
         <AvatarDriver

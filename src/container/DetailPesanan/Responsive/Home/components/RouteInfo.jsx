@@ -1,3 +1,5 @@
+import { HalalLogistik } from "@/components/HalalLogistik/HalalLogistik";
+import IconComponent from "@/components/IconComponent/IconComponent";
 import {
   TimelineContainer,
   TimelineContentWithButtonDate,
@@ -6,8 +8,29 @@ import {
 import { dataCollapsed } from "@/container/Example/Web/mockdata";
 
 const RouteInfo = () => {
+  const muatan = [
+    {
+      name: "Furniture Kayu",
+      weight: "500 kg",
+    },
+    {
+      name: "Elektronik Rumah Tangga",
+      weight: "300 kg",
+    },
+  ];
+
+  const MuatanList = () => {
+    return muatan.map((item, index) => (
+      <div key={index} className="flex items-center gap-2">
+        <IconComponent src="/icons/box16.svg" />
+        <span className="text-sm font-medium">{item.name}</span>
+        <span className="text-sm text-neutral-500">({item.weight})</span>
+      </div>
+    ));
+  };
+
   return (
-    <div className="divide-y-neutral-200 divide-y rounded-lg bg-white px-4 py-5 shadow-sm">
+    <div className="divide-y-neutral-200 space-y-1 divide-y rounded-lg bg-white px-4 py-5 shadow-sm">
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold">Rute</h3>
@@ -34,8 +57,12 @@ const RouteInfo = () => {
         </TimelineContainer>
       </div>
 
-      <div className="">
+      <div className="flex flex-col gap-4 pt-6">
         <h3 className="text-sm font-semibold">Informasi Muatan</h3>
+
+        <HalalLogistik />
+
+        <MuatanList />
       </div>
     </div>
   );

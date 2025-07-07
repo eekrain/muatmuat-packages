@@ -5,6 +5,8 @@ import {
   BottomSheetContent,
   BottomSheetHeader,
 } from "@/components/Bottomsheet/Bottomsheet";
+import Button from "@/components/Button/Button";
+import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
@@ -43,6 +45,17 @@ const DetailPesananScreen = () => {
           <MenuList />
         </BottomSheetContent>
       </BottomSheet>
+
+      <ResponsiveFooter className="flex gap-3">
+        <Button
+          variant="muatparts-primary"
+          className="flex-1"
+          onClick={() => alert("Simpan")}
+          type="button"
+        >
+          Pesan Ulang
+        </Button>
+      </ResponsiveFooter>
     </FormResponsiveLayout>
   );
 };

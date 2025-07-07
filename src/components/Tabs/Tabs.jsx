@@ -133,7 +133,7 @@ export const TabsTriggerWithSeparator = ({
       <button
         className={cn(
           // Base styles
-          "flex flex-1 items-center justify-center px-4 py-2 text-sm font-semibold transition-colors focus:outline-none",
+          "mt-1 flex h-9 flex-1 items-center justify-center px-4 text-sm font-semibold transition-colors focus:outline-none",
           // Inactive state
           "text-neutral-700 hover:text-neutral-900",
           // Active state
