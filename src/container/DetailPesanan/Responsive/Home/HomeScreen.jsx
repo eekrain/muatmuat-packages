@@ -10,7 +10,8 @@ import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
 import DriverInfo from "./DriverInfo";
 import MenuList from "./MenuList";
-import OrderStatus from "./OrderInfo";
+import OrderInfo from "./OrderInfo";
+import RouteInfo from "./RouteInfo";
 import TabsInfo from "./TabsInfo";
 
 const DetailPesananScreen = () => {
@@ -30,9 +31,10 @@ const DetailPesananScreen = () => {
       onClickBackButton={() => alert("onClickBackButton")}
     >
       <div className="space-y-2 bg-neutral-200">
-        <OrderStatus />
+        <OrderInfo />
         <DriverInfo />
         <TabsInfo />
+        <RouteInfo />
       </div>
 
       <BottomSheet open={isOpenBottomsheet} onOpenChange={setIsOpenBottomsheet}>

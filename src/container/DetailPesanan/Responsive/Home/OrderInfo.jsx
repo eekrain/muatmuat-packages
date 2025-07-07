@@ -3,7 +3,7 @@ import { ChevronRight } from "lucide-react";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
-const OrderStatus = () => {
+const OrderInfo = () => {
   const navigation = useResponsiveNavigation();
 
   // Toggle QR code visibility
@@ -61,4 +61,4 @@ const OrderStatus = () => {
   );
 };
 
-export default OrderStatus;
+export default OrderInfo;
