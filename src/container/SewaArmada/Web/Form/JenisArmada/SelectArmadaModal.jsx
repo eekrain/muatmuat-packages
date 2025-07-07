@@ -14,37 +14,19 @@ import {
 } from "@/container/SewaArmada/Web/Form/JenisArmada/ArmadaComponent";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import {
-  useSewaArmadaActions,
-  useSewaArmadaStore,
-} from "@/store/forms/sewaArmadaStore";
+  useSelectArmadaModalAction,
+  useSelectArmadaModalStore,
+} from "@/store/forms/selectArmadaModalStore";
+import { useSewaArmadaActions } from "@/store/forms/sewaArmadaStore";
 
 // Main Popup Component
-const SelectArmadaModal = ({
-  carrierData,
-  truckData,
-  isOpen,
-  setIsOpen,
-  type,
-}) => {
+const SelectArmadaModal = ({ carrierData, truckData }) => {
   const [search, setSearch] = useState("");
 
-  // Mendapatkan nilai-nilai yang dibutuhkan dari zustand store
-  const orderType = useSewaArmadaStore((state) => state.orderType);
-  const carrierId = useSewaArmadaStore((state) => state.formValues.carrierId);
-  const distance = useSewaArmadaStore((state) => state.formValues.distance);
-  const distanceUnit = useSewaArmadaStore(
-    (state) => state.formValues.distanceUnit
-  );
-  const truckCount = useSewaArmadaStore((state) => state.formValues.truckCount);
-  const additionalServices = useSewaArmadaStore(
-    (state) => state.formValues.additionalServices
-  );
-  const isBusinessEntity = useSewaArmadaStore(
-    (state) => state.formValues.isBusinessEntity
-  );
-  // const useAsuransi = useSewaArmadaStore(
-  //   (state) => state.formValues.useAsuransi
-  // );
+  const { isOpen, isDimensionOrWeightChanged, type } =
+    useSelectArmadaModalStore();
+  const { setIsOpen, setIsDimensionOrWeightChanged } =
+    useSelectArmadaModalAction();
 
   const { setField } = useSewaArmadaActions();
 
@@ -54,6 +36,7 @@ const SelectArmadaModal = ({
 
   const handleArmadaSelect = async (item) => {
     setField(type, item);
+    setIsDimensionOrWeightChanged(false);
     setIsOpen(false);
   };
 
@@ -120,6 +103,9 @@ const SelectArmadaModal = ({
                 className="bg-warning-100"
                 message="Untuk sementara kami belum menyediakan truk yang sesuai dengan informasi berat dan dimensi muatan yang kamu isikan."
               />
+            ) : null}
+            {isDimensionOrWeightChanged ? (
+              <WarningBadge message="Berat / dimensi muatan melebihi kapasitas truk yang telah dipilih. Mohon pilih truk dengan kapasitas yang sesuai." />
             ) : null}
 
             {/* Search Field */}

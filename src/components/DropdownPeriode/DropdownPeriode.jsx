@@ -142,7 +142,7 @@ const DropdownPeriode = ({
       <button
         disabled={disable}
         className={cn(
-          "flex h-8 w-full items-center justify-between rounded-lg border px-3 py-2",
+          "flex h-8 w-full items-center justify-between gap-x-2 rounded-lg border px-3 py-2",
           !disable
             ? "bg-neutral-50 text-neutral-900"
             : "cursor-not-allowed bg-neutral-200 text-neutral-600",
@@ -151,7 +151,7 @@ const DropdownPeriode = ({
         )}
         onClick={() => (!disable ? setIsOpen(!isOpen) : "")}
       >
-        <span className="medium-xs line-clamp-1 text-left">
+        <span className="medium-xs truncate">
           {selected.name.replace("(Default)", "")}
         </span>
         <IconComponent

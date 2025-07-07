@@ -23,6 +23,7 @@ import {
   WaktuMuat,
 } from "@/container/SewaArmada/Web/Form";
 import DeskripsiMuatan from "@/container/SewaArmada/Web/Form/DeskripsiMuatan";
+import SelectArmadaModal from "@/container/SewaArmada/Web/Form/JenisArmada/SelectArmadaModal";
 import SertifikasiHalal from "@/container/SewaArmada/Web/Form/SertifikasiHalal";
 import { SummaryPanel } from "@/container/SewaArmada/Web/SummaryPanel/SummaryPanel";
 import { WelcomeCard } from "@/container/SewaArmada/Web/WelcomeCard/WelcomeCard";
@@ -38,8 +39,11 @@ export default function SewaArmadaWeb({
   settingsTime,
   cargoTypes,
   cargoCategories,
+  carriers,
+  trucks,
   additionalServicesOptions,
   paymentMethods,
+  onFetchTrucks,
 }) {
   const orderType = useSewaArmadaStore((state) => state.orderType);
 
@@ -102,10 +106,14 @@ export default function SewaArmadaWeb({
                   <TipeMuatan cargoTypes={cargoTypes} />
                   <JenisMuatan cargoCategories={cargoCategories} />
                   <SertifikasiHalal />
-                  <InformasiMuatan />
+                  <InformasiMuatan onFetchTrucks={onFetchTrucks} />
                   <FotoMuatan />
                   <DeskripsiMuatan />
-                  <JenisArmada />
+                  <JenisArmada
+                    carriers={carriers}
+                    trucks={trucks}
+                    onFetchTrucks={onFetchTrucks}
+                  />
                   {/* Asuransi dihide dulu */}
                   {/* <AsuransiBarang /> */}
                   <LayananTambahan
@@ -128,6 +136,7 @@ export default function SewaArmadaWeb({
 
       <LoginModal />
       <WaitingSettlementModal />
+      <SelectArmadaModal carrierData={carriers} truckData={trucks} />
 
       <button onClick={testSubmit}>Test Submit</button>
     </>

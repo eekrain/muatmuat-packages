@@ -18,6 +18,7 @@ const defaultValues = {
   cargoDescription: "",
   carrierId: null,
   truckTypeId: null,
+  tempTrucks: null,
   truckCount: 0,
   distance: 0,
   distanceUnit: "",

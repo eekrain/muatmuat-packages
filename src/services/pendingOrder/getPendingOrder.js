@@ -14,7 +14,7 @@ import { useSWRHook } from "@/hooks/use-swr";
 export default function usePendingOrdersPage(options = {}) {
   const { requiresConfirmation = false, status = null } = options;
 
-  const { isMobile, mounted } = useDevice();
+  const { isMobile } = useDevice();
   const [lastFilterField, setLastFilterField] = useState("");
   const [queryParams, setQueryParams] = useState({
     search: "",
@@ -65,7 +65,6 @@ export default function usePendingOrdersPage(options = {}) {
 
   return {
     isMobile,
-    mounted,
     queryParams,
     lastFilterField,
     orders,

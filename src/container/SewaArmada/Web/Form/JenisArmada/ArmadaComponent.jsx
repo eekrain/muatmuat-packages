@@ -11,7 +11,7 @@ export const WarningBadge = ({ className, message }) => {
   return (
     <div
       className={cn(
-        "flex h-[38px] w-[424px] items-center gap-x-1 rounded-lg bg-secondary-100 px-2",
+        "flex min-h-[38px] w-[424px] items-center gap-x-1 rounded-lg bg-secondary-100 px-2",
         className
       )}
     >

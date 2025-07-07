@@ -4,7 +4,9 @@ import { ChevronRight } from "lucide-react";
 
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { compareArraysByNameOnly } from "@/lib/utils/array";
 import { handleFirstTime } from "@/lib/utils/form";
+import { useSelectArmadaModalAction } from "@/store/forms/selectArmadaModalStore";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -20,6 +22,8 @@ export const InformasiMuatan = () => {
     (state) => state.formValues.informasiMuatan
   );
   const { setField } = useSewaArmadaActions();
+  const { setIsOpen, setIsDimensionOrWeightChanged, setType } =
+    useSelectArmadaModalAction();
 
   return (
     <>
@@ -55,7 +59,19 @@ export const InformasiMuatan = () => {
         open={isInformasiMuatanModalOpen}
         onOpenChange={setIsInformasiMuatanModalOpen}
         maxInformasiMuatan={5}
-        onSaveInformasiMuatan={(data) => setField("informasiMuatan", data)}
+        onSaveInformasiMuatan={(data) => {
+          if (JSON.stringify(informasiMuatan) !== JSON.stringify(data)) {
+            if (compareArraysByNameOnly(informasiMuatan, data)) {
+              setType("truckTypeId");
+              setIsDimensionOrWeightChanged(true);
+              setIsOpen(true);
+            } else {
+              setField("carrierId", null);
+              setField("truckTypeId", null);
+            }
+          }
+          setField("informasiMuatan", data);
+        }}
         defaultValues={informasiMuatan}
       />
     </>

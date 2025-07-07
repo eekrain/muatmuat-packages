@@ -6,7 +6,6 @@ import usePendingOrdersPage from "@/services/pendingOrder/getPendingOrder";
 const Page = () => {
   const {
     isMobile,
-    mounted,
     queryParams,
     lastFilterField,
     orders,
@@ -14,10 +13,6 @@ const Page = () => {
   } = usePendingOrdersPage({
     requiresConfirmation: true,
   });
-
-  if (!mounted) {
-    return null;
-  }
 
   if (isMobile) {
     return <div>Responsive sementara</div>;

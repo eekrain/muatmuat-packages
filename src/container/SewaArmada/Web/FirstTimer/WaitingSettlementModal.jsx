@@ -5,7 +5,7 @@ import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import {
   useWaitingSettlementModalAction,
   useWaitingSettlementModalStore,
-} from "@/store/forms/waitingSettlementModal";
+} from "@/store/forms/waitingSettlementModalStore";
 
 const WaitingSettlementModal = ({}) => {
   const isOpen = useWaitingSettlementModalStore((state) => state.isOpen);
