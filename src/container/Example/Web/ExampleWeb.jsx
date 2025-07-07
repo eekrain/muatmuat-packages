@@ -55,9 +55,15 @@ import {
 import PageTitle from "@/components/PageTitle/PageTitle";
 import QuantityInput from "@/components/QuantityInput/QuantityInput";
 import RadioButton from "@/components/Radio/RadioButton";
-import Slider from "@/components/Slider/Slider";
 import SortingDropdown from "@/components/SortingDropdown/SortingDropdown";
 import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  TabsTriggerWithSeparator,
+} from "@/components/Tabs/Tabs";
 import TextArea from "@/components/TextArea/TextArea";
 import {
   TimelineContainer,
@@ -498,7 +504,7 @@ const ExampleWeb = () => {
 
       <MapExample />
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      {/* <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="w-[700px]">
           <h1 className="mb-2 text-xl font-bold">Pilih Provinsi Example</h1>
           <iframe
@@ -538,12 +544,14 @@ const ExampleWeb = () => {
             onSlideChange={(index) => console.log("Current slide:", index)}
           />
         </div>
-      </div>
+      </div> */}
 
       <div>
         <h1 className="mb-2 text-xl font-bold">OTP Rekening Web Example</h1>
         <RequestOtp dontRedirect />
       </div>
+
+      <TabsExample />
     </div>
   );
 };
@@ -1958,6 +1966,92 @@ const MapExample = () => {
             </li>
           </ul>
         </div>
+      </div>
+    </div>
+  );
+};
+
+// Example usage component
+export const TabsExample = () => {
+  const [activeTab, setActiveTab] = useState("ringkasan");
+
+  return (
+    <div className="mx-auto w-full max-w-md">
+      {/* Basic Usage */}
+      <Tabs defaultValue="account" className="w-[400px]">
+        <TabsList>
+          <TabsTrigger value="account">Account</TabsTrigger>
+          <TabsTrigger value="password">Password</TabsTrigger>
+        </TabsList>
+        <TabsContent value="account">
+          Make changes to your account here.
+        </TabsContent>
+        <TabsContent value="password">Change your password here.</TabsContent>
+      </Tabs>
+
+      {/* Design-based Usage (similar to your mockup) */}
+      <div className="mt-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="w-full">
+            <TabsTriggerWithSeparator value="ringkasan">
+              Ringkasan
+            </TabsTriggerWithSeparator>
+            <TabsTriggerWithSeparator value="muatan">
+              Muatan
+            </TabsTriggerWithSeparator>
+            <TabsTriggerWithSeparator value="detail-pic" showSeparator={false}>
+              Detail PIC
+            </TabsTriggerWithSeparator>
+          </TabsList>
+
+          <TabsContent value="ringkasan" className="p-4">
+            <div className="space-y-4">
+              <div>
+                <h3 className="mb-2 text-sm font-semibold text-neutral-900">
+                  Informasi Armada
+                </h3>
+                <div className="flex items-center gap-3">
+                  <div className="flex h-16 w-16 items-center justify-center rounded border border-neutral-300 bg-neutral-50">
+                    <span className="text-xs text-neutral-500">Truck</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-neutral-900">
+                      Box - Colt Diesel Engkel
+                    </p>
+                    <p className="text-sm text-neutral-600">
+                      Kebutuhan : 1 Unit
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="mb-2 text-sm font-semibold text-neutral-900">
+                  Waktu Muat
+                </h3>
+                <p className="text-xs font-semibold text-neutral-900">
+                  03 Okt 2024 18:00 WIB s/d 04 Okt 2024 08:00 WIB
+                </p>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="muatan" className="p-4">
+            <div className="py-8 text-center">
+              <p className="text-neutral-500">
+                Informasi muatan akan ditampilkan di sini
+              </p>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="detail-pic" className="p-4">
+            <div className="py-8 text-center">
+              <p className="text-neutral-500">
+                Detail PIC akan ditampilkan di sini
+              </p>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
