@@ -40,9 +40,9 @@ const StatusPesanan = ({ dataStatusPesanan }) => {
             {alert?.info && (
               <InfoTooltip
                 side="right"
-                appearance={{ iconColor: "!text-neutral-700" }}
                 render={alert.info}
                 className="w-[336px]"
+                appearance={{ iconColor: "text-neutral-700" }}
               />
             )}
           </div>
