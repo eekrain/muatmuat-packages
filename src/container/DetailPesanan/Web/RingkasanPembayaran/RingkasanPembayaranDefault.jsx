@@ -35,7 +35,7 @@ export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
             : "Ringkasan Pembayaran"}
         </CardPayment.Header>
 
-        <CardPayment.Content noScroll>
+        <CardPayment.Content>
           <CardPayment.ContainerCollapsible title="Detail Pesanan">
             <div className="flex flex-col gap-3">
               <CardPayment.Item

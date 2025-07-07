@@ -2,35 +2,35 @@ import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { thousandSeparator } from "@/lib/utils/formatters";
 
-const FormLabel = ({ title, required = false }) => (
-  <span
-    className={"block text-[12px] font-bold leading-[14.4px] text-neutral-600"}
-  >
-    {`${title}${required ? "*" : " (Opsional)"}`}
-  </span>
+const Label = ({ children, tooltip }) => (
+  <div className="flex h-[16px] items-center gap-1">
+    <div className="mt-[2px] h-4 text-[12px] font-bold leading-[1.2] text-neutral-600">
+      {children}
+    </div>
+    <div className="flex-shrink-0">{tooltip}</div>
+  </div>
 );
 
 export const InformasiMuatanTable = ({ informasiMuatan, onClickUpdate }) => {
   return (
     <div className="rounded-xl border px-4 py-5">
-      <table className="w-full table-auto">
-        <thead className="border-b">
-          <tr className="h-9 align-top font-bold">
-            <th className="w-[209px] text-left">
-              <FormLabel title={"Nama Muatan"} required />
-            </th>
-            <th className="w-[113px]">
-              <div className="flex items-end gap-x-2">
-                <FormLabel title={"Berat Muatan"} required />
-                <InfoTooltip>
-                  Masukkan berat keseluruhan atau total dari seluruh muatan yang
-                  akan dikirim.
-                </InfoTooltip>
-              </div>
-            </th>
-            <th className="w-[190px]">
-              <div className="flex items-end gap-x-2">
-                <FormLabel title={"Dimensi Muatan"} />
+      <div className="h-[36px] border-b border-neutral-400">
+        <div className="grid h-[16px] grid-cols-[209px_113px_1fr] gap-x-4">
+          <Label>Nama Muatan</Label>
+          <Label
+            tooltip={
+              <InfoTooltip>
+                Masukkan berat keseluruhan atau total dari seluruh muatan yang
+                akan dikirim.
+              </InfoTooltip>
+            }
+          >
+            Berat Muatan
+          </Label>
+
+          <div className="flex items-center justify-between">
+            <Label
+              tooltip={
                 <InfoTooltip>
                   <ul>
                     <li>
@@ -48,63 +48,58 @@ export const InformasiMuatanTable = ({ informasiMuatan, onClickUpdate }) => {
                     dan pengiriman.
                   </p>
                 </InfoTooltip>
+              }
+            >
+              Dimensi Muatan
+            </Label>
+
+            <button
+              onClick={onClickUpdate}
+              className="flex w-[54px] items-end justify-center gap-2 text-primary-700"
+            >
+              <span className="cursor-pointer text-[12px] font-medium leading-[14.4px]">
+                Ubah
+              </span>
+              <div className="flex h-4 w-4 items-center justify-center">
+                <IconComponent
+                  src="/icons/pencil-outline.svg"
+                  width={16}
+                  height={16}
+                />
               </div>
-            </th>
-            <th className="pb-5 text-right text-primary-700">
-              <button
-                onClick={onClickUpdate}
-                className="flex w-[54px] items-end justify-center gap-2"
-              >
-                <span className="cursor-pointer text-[12px] font-medium leading-[14.4px]">
-                  Ubah
-                </span>
-                <div className="flex h-4 w-4 items-center justify-center">
-                  <IconComponent
-                    src="/icons/pencil-outline.svg"
-                    width={16}
-                    height={16}
-                  />
-                </div>
-              </button>
-            </th>
-          </tr>
-        </thead>
-        {/* Table Body */}
-        <tbody>
-          {informasiMuatan.map((item, index) => (
-            <tr key={index}>
-              <td className="py-2 pr-4">
-                <div className="w-[209px]">
-                  <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                    {item.namaMuatan.label}
-                  </span>
-                </div>
-              </td>
-              <td className="py-2 pr-4">
-                <div className="w-[113px]">
-                  <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                    {thousandSeparator(item.beratMuatan.berat)}{" "}
-                    {item.beratMuatan.unit}
-                  </span>
-                </div>
-              </td>
-              <td className="py-2 pr-4">
-                <div className="w-[190px]">
-                  <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                    {thousandSeparator(item.dimensiMuatan.panjang)} x{" "}
-                    {thousandSeparator(item.dimensiMuatan.lebar)} x{" "}
-                    {thousandSeparator(item.dimensiMuatan.tinggi)}{" "}
-                    {item.dimensiMuatan.unit}
-                  </span>
-                </div>
-              </td>
-              <td className="py-2">
-                <div className="w-[54px]"></div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-5 flex flex-col gap-y-2">
+        {informasiMuatan.map((item, index) => (
+          <div
+            key={`${item.namaMuatan.label}${item.beratMuatan.berat}${item.dimensiMuatan.panjang}`}
+            className="grid grid-cols-[209px_113px_190px] gap-x-4"
+          >
+            <div className="w-[209px]">
+              <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                {item.namaMuatan.label}
+              </span>
+            </div>
+            <div className="w-[113px]">
+              <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                {thousandSeparator(item.beratMuatan.berat)}{" "}
+                {item.beratMuatan.unit}
+              </span>
+            </div>
+            <div className="w-[190px]">
+              <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                {thousandSeparator(item.dimensiMuatan.panjang)} x{" "}
+                {thousandSeparator(item.dimensiMuatan.lebar)} x{" "}
+                {thousandSeparator(item.dimensiMuatan.tinggi)}{" "}
+                {item.dimensiMuatan.unit}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

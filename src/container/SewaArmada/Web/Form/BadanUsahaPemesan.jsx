@@ -93,7 +93,9 @@ export const BadanUsahaPemesan = () => {
   return (
     <>
       <FormContainer>
-        <FormLabel variant="small">Tipe Pemesan</FormLabel>
+        <FormLabel variant="small" optional>
+          Tipe Pemesan
+        </FormLabel>
         <div className="flex flex-col gap-y-3">
           <div className="flex h-[16px] flex-row items-center gap-[4px]">
             <Checkbox

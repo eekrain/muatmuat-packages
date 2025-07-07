@@ -12,10 +12,9 @@ import { cn } from "@/lib/utils";
 
 /**
  * DimensionInput component for handling 3D measurements (panjang x lebar x tinggi)
- * Designed to work with react-hook-form
+ * Designed to work with react-hook-form Controller
  *
  * @param {Object} props
- * @param {{ panjang: Object, lebar: Object, tinggi: Object }} props.register - react-hook-form register object for panjang, lebar, and tinggi
  * @param {{panjang: ManualInputProps, lebar: ManualInputProps, tinggi: ManualInputProps}} props.manual - Manual input props for panjang, lebar, and tinggi
  * @param {string} [props.className] - Additional class for the container
  * @param {Object} [props.appearance] - Custom appearance options
@@ -23,7 +22,6 @@ import { cn } from "@/lib/utils";
  * @param {string} [props.appearance.inputClassName] - Additional classes for the input fields
  */
 export const DimensionInput = ({
-  register,
   manual,
   className,
   appearance = {
@@ -32,40 +30,17 @@ export const DimensionInput = ({
 }) => {
   // Common input props
   const getInputProps = useCallback(
-    ({ value, setValue, register }) => {
-      const defaultProps = {
-        placeholder: "0",
+    ({ value, setValue }) => {
+      return {
         allowNegative: false,
-        decimalScale: 0,
+        decimalScale: 2,
+        thousandSeparator: ".",
+        decimalSeparator: ",",
         className: cn(
           "w-full min-w-0 cursor-pointer text-center text-xs font-medium placeholder:text-neutral-600 focus:outline-none",
           appearance.inputClassName
         ),
-      };
-      if (register) {
-        // Extract name and ref, and other props from register
-        const { ref, onChange, ...rest } = register;
-
-        return {
-          ...defaultProps,
-          getInputRef: ref,
-          onValueChange: (values) => {
-            const val = values.floatValue;
-            // Only call onChange if it exists
-            onChange?.({
-              target: {
-                name,
-                value: val === undefined ? "" : val,
-              },
-            });
-          },
-          ...rest,
-        };
-      }
-
-      return {
-        ...defaultProps,
-        value,
+        value: value || "",
         onValueChange: (values) => {
           const val = values.floatValue;
           setValue(val === undefined ? "" : val);
@@ -85,32 +60,26 @@ export const DimensionInput = ({
     >
       <NumericFormat
         {...getInputProps({
-          ...(register?.panjang && { register: register.panjang }),
-          ...(manual?.panjang && {
-            value: manual.panjang.value,
-            setValue: manual.panjang.setValue,
-          }),
+          value: manual?.panjang?.value,
+          setValue: manual?.panjang?.setValue,
         })}
+        placeholder="p"
       />
       <span className="text-xs text-neutral-600">x</span>
       <NumericFormat
         {...getInputProps({
-          ...(register?.lebar && { register: register.lebar }),
-          ...(manual?.lebar && {
-            value: manual.lebar.value,
-            setValue: manual.lebar.setValue,
-          }),
+          value: manual?.lebar?.value,
+          setValue: manual?.lebar?.setValue,
         })}
+        placeholder="l"
       />
       <span className="text-xs text-neutral-600">x</span>
       <NumericFormat
         {...getInputProps({
-          ...(register?.tinggi && { register: register.tinggi }),
-          ...(manual?.tinggi && {
-            value: manual.tinggi.value,
-            setValue: manual.tinggi.setValue,
-          }),
+          value: manual?.tinggi?.value,
+          setValue: manual?.tinggi?.setValue,
         })}
+        placeholder="t"
       />
     </div>
   );

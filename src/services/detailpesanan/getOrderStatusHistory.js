@@ -56,7 +56,7 @@ const apiResultOrderStatusHistory = {
         name: "Ahmad Rahman",
         driverPhoto: "https://picsum.photos/50",
         licensePlate: "B 1234 CD",
-        statusDriver: OrderStatusEnum.COMPLETED,
+        statusDriver: OrderStatusEnum.WAITING_REPAYMENT_1,
         statusTitle: "Dibatalkan",
         stepStatus: [
           {

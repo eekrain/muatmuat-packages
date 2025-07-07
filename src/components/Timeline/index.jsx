@@ -1,7 +1,7 @@
 import { cva } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
-import { formatDate } from "@/lib/utils/formatters";
+import { formatDate } from "@/lib/utils/dateFormat";
 
 export const lineVariants = cva(
   "absolute left-1/2 top-1 block h-full -translate-x-1/2 border-l-[2px] border-dashed",
@@ -24,13 +24,13 @@ export const bulletVariants = cva(
     variants: {
       variant: {
         "bullet-inactive":
-          "top-[2px] size-[16px] border-[4px] border-[#461B02] bg-white",
+          "top-0 size-[16px] border-[4px] border-[#461B02] bg-white",
         "bullet-active":
-          "top-[2px] size-[16px] border-[4px] border-[#FFC217] bg-[#461B02]",
+          "top-0 size-[16px] border-[4px] border-[#FFC217] bg-[#461B02]",
         "number-muat": "top-0 size-4 bg-[#FFC217] text-[#461B02]",
         "number-bongkar": "top-0 size-4 bg-[#461B02] text-white",
-        "field-muat": "top-[2px] size-4 bg-[#FFC217] text-[#461B02]",
-        "field-bongkar": "top-[2px] size-4 bg-[#461B02] text-white",
+        "field-muat": "top-0 size-4 bg-[#FFC217] text-[#461B02]",
+        "field-bongkar": "top-0 size-4 bg-[#461B02] text-white",
         "bullet-driver-status-inactive":
           "top-0 size-[16px] border-[4px] border-neutral-200 bg-neutral-600",
         "bullet-driver-status-active":
@@ -132,10 +132,10 @@ export const TimelineContentWithButtonDate = ({
 }) => {
   return (
     <div className={cn("flex items-center justify-between pb-5", className)}>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-[2px]">
         <span
           className={cn(
-            "line-clamp-1 text-xs font-medium leading-[1.2] text-neutral-900",
+            "line-clamp-1 text-[14px] font-medium leading-[1.2] text-neutral-900",
             appearance?.titleClassname
           )}
         >
@@ -145,7 +145,7 @@ export const TimelineContentWithButtonDate = ({
           <button
             onClick={withButton.onClick}
             className={cn(
-              "w-fit text-xs font-medium leading-[1.2] text-primary-700",
+              "h-2 w-fit text-xs font-medium leading-[1.2] text-primary-700",
               appearance?.buttonClassname
             )}
           >

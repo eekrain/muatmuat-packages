@@ -14,7 +14,7 @@ const defaultValues = {
   troli: false,
 
   // UI state
-  showOtherAdditionalServices: false,
+  showOtherAdditionalServices: true,
 };
 
 export const useLayananTambahanStore = create(

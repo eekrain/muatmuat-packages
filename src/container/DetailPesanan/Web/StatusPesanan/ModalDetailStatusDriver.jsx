@@ -1,17 +1,24 @@
+import { useRef, useState } from "react";
+
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import Button from "@/components/Button/Button";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
+import { useClientHeight } from "@/hooks/use-client-height";
 import { useGetDriverStatusTimeline } from "@/services/lacak-armada/getDriverStatusTimeline";
 
 const ModalDetailStatusDriver = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const { data: dataDriverStatus, isLoading } = useGetDriverStatusTimeline({
     orderId: "123",
     driverId: "456",
   });
 
+  const contentRef = useRef(null);
+  const contentHeight = useClientHeight({ ref: contentRef, deps: [isOpen] });
+
   return (
-    <Modal closeOnOutsideClick>
+    <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick>
       <ModalTrigger>
         <Button variant="muatparts-primary-secondary">
           Detail Status Driver
@@ -22,7 +29,13 @@ const ModalDetailStatusDriver = () => {
           Detail Status Driver
         </h2>
 
-        <div className="flex max-h-[353px] min-h-[317px] flex-col rounded-xl border border-neutral-400 pr-[4px] pt-5">
+        <div
+          className="flex flex-col rounded-xl border border-neutral-400 pb-5 pt-5"
+          style={{
+            ...(!contentHeight && { height: "353px" }),
+            ...(contentHeight && { maxHeight: "353px" }),
+          }}
+        >
           <div className="relative pl-4 pr-[7px]">
             <AvatarDriver
               name={"Ardian Eka"}
@@ -35,13 +48,24 @@ const ModalDetailStatusDriver = () => {
             <hr className="border-neutral-400" />
           </div>
 
-          <div className="overflow-y-auto">
-            {dataDriverStatus && (
-              <DriverTimeline
-                dataDriverStatus={dataDriverStatus}
-                className="pb-5 pl-4 pr-[12px]"
-              />
-            )}
+          <div
+            ref={contentRef}
+            className="pr-[4px]"
+            style={{
+              ...(!contentHeight && { flex: 1 }),
+              ...(contentHeight && { maxHeight: contentHeight }),
+            }}
+          >
+            {contentHeight && dataDriverStatus ? (
+              <div
+                className="overflow-y-auto pl-4 pr-[8px]"
+                style={{
+                  ...(contentHeight ? { maxHeight: contentHeight } : {}),
+                }}
+              >
+                <DriverTimeline dataDriverStatus={dataDriverStatus} />
+              </div>
+            ) : null}
           </div>
         </div>
       </ModalContent>

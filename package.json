@@ -62,6 +62,7 @@
     "@eslint/eslintrc": "^3",
     "@eslint/js": "^9.27.0",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "@types/react": "19.1.8",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.27.0",
     "eslint-config-next": "15.3.2",

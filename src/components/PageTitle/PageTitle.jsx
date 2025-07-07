@@ -1,10 +1,12 @@
 import { useRouter } from "next/navigation";
 
-const PageTitle = ({ href = null, children }) => {
+import { cn } from "@/lib/utils";
+
+const PageTitle = ({ className, href = null, children }) => {
   const router = useRouter();
 
   return (
-    <div className="mb-4 flex items-center gap-3">
+    <div className={cn("mb-4 flex items-center gap-3", className)}>
       <img
         src="/icons/arrow-left24.svg"
         width={24}

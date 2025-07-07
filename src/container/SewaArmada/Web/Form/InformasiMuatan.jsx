@@ -58,7 +58,7 @@ export const InformasiMuatan = () => {
       <InformasiMuatanModal
         open={isInformasiMuatanModalOpen}
         onOpenChange={setIsInformasiMuatanModalOpen}
-        maxInformasiMuatan={5}
+        maxInformasiMuatan={10}
         onSaveInformasiMuatan={(data) => {
           if (JSON.stringify(informasiMuatan) !== JSON.stringify(data)) {
             if (compareArraysByNameOnly(informasiMuatan, data)) {

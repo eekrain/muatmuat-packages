@@ -1,4 +1,4 @@
-export function formatDate(isoString) {
+export function formatDate(isoString, padDay = false) {
   const months = [
     "Jan",
     "Feb",
@@ -18,7 +18,7 @@ export function formatDate(isoString) {
 
   // Konversi ke zona waktu WIB (GMT+7)
 
-  const day = String(date.getDate()).padStart(2, "0");
+  const day = padDay ? String(date.getDate()).padStart(2, "0") : date.getDate();
   const month = months[date.getMonth()];
   const year = date.getFullYear();
   const hours = String(date.getHours()).padStart(2, "0");
