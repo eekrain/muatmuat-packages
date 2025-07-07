@@ -9,6 +9,16 @@ const badgeVariants = {
   success: "bg-success-50 text-success-400",
 };
 
+/**
+ * BadgeStatusPesanan component displays a status badge with optional icon and custom styles.
+ *
+ * @param {Object} props - Component props.
+ * @param {"primary"|"secondary"|"success"|"warning"|"danger"} [props.variant="primary"] - The visual style of the badge. Autocomplete: "primary", "secondary", "success", "warning", "danger".
+ * @param {string} [props.className] - Additional CSS classes to apply to the badge.
+ * @param {{ iconLeft: string }} [props.icon={ iconLeft: "" }] - Icon configuration object. `iconLeft` is the source URL or path for the left icon.
+ * @param {React.ReactNode} props.children - The content to display inside the badge.
+ * @returns {JSX.Element} The rendered badge component.
+ */
 export const BadgeStatusPesanan = ({
   variant = "primary",
   className,
@@ -26,7 +36,7 @@ export const BadgeStatusPesanan = ({
       {typeof icon.iconLeft === "string" && (
         <IconComponent src={icon.iconLeft} width={14} height={14} />
       )}
-      <span className="block">{children}</span>
+      <span className="block pt-0.5">{children}</span>
     </div>
   );
 };

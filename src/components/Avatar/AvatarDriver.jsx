@@ -16,7 +16,9 @@ export const AvatarDriver = ({ name, image, licensePlate }) => {
             height={12}
           />
 
-          <span className="text-[10px] font-medium">{licensePlate}</span>
+          <span className="text-xs font-medium md:text-[10px]">
+            {licensePlate}
+          </span>
         </div>
       </div>
     </div>
