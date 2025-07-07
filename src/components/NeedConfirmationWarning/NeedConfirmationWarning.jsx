@@ -65,6 +65,10 @@ const NeedConfirmationWarning = ({ className, settlementAlertInfo }) => {
     );
   }
 
+  if (statusPendingIndex === -1) {
+    return null;
+  }
+
   return (
     <div
       className={cn(
