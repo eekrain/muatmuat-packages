@@ -8,8 +8,6 @@ import {
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
-import MenuList from "../Home/MenuList";
-
 const QRCodeScreen = () => {
   const [isOpenBottomsheet, setIsOpenBottomsheet] = useState(false);
   const navigation = useResponsiveNavigation();
@@ -30,7 +28,6 @@ const QRCodeScreen = () => {
       <BottomSheet open={isOpenBottomsheet} onOpenChange={setIsOpenBottomsheet}>
         <BottomSheetContent>
           <BottomSheetHeader>Menu</BottomSheetHeader>
-          <MenuList />
         </BottomSheetContent>
       </BottomSheet>
     </FormResponsiveLayout>

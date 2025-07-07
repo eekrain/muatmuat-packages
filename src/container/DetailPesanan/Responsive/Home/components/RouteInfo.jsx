@@ -34,7 +34,9 @@ const RouteInfo = () => {
         </TimelineContainer>
       </div>
 
-      <div className="">a</div>
+      <div className="">
+        <h3 className="text-sm font-semibold">Informasi Muatan</h3>
+      </div>
     </div>
   );
 };

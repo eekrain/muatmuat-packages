@@ -8,11 +8,11 @@ import {
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
-import DriverInfo from "./DriverInfo";
-import MenuList from "./MenuList";
-import OrderInfo from "./OrderInfo";
-import RouteInfo from "./RouteInfo";
-import TabsInfo from "./TabsInfo";
+import DriverInfo from "./components/DriverInfo";
+import MenuList from "./components/MenuList";
+import OrderInfo from "./components/OrderInfo";
+import RouteInfo from "./components/RouteInfo";
+import TabsInfo from "./components/TabsInfo";
 
 const DetailPesananScreen = () => {
   const navigation = useResponsiveNavigation();
