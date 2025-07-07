@@ -43,6 +43,7 @@ export default function SewaArmadaWeb({
   trucks,
   additionalServicesOptions,
   paymentMethods,
+  calculatedPrice,
   onFetchTrucks,
 }) {
   const orderType = useSewaArmadaStore((state) => state.orderType);
@@ -128,6 +129,7 @@ export default function SewaArmadaWeb({
               <SummaryPanel
                 settingsTime={settingsTime}
                 paymentMethods={paymentMethods}
+                calculatedPrice={calculatedPrice}
               />
             </div>
           </>

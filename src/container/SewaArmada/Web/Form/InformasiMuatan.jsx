@@ -15,7 +15,7 @@ import {
 import { InformasiMuatanModal } from "../InformasiMuatan";
 import { InformasiMuatanTable } from "../InformasiMuatan/InformasiMuatanTable";
 
-export const InformasiMuatan = () => {
+export const InformasiMuatan = ({ onFetchTrucks }) => {
   const [isInformasiMuatanModalOpen, setIsInformasiMuatanModalOpen] =
     useState(false);
   const informasiMuatan = useSewaArmadaStore(
@@ -59,9 +59,10 @@ export const InformasiMuatan = () => {
         open={isInformasiMuatanModalOpen}
         onOpenChange={setIsInformasiMuatanModalOpen}
         maxInformasiMuatan={10}
-        onSaveInformasiMuatan={(data) => {
+        onSaveInformasiMuatan={async (data) => {
           if (JSON.stringify(informasiMuatan) !== JSON.stringify(data)) {
             if (compareArraysByNameOnly(informasiMuatan, data)) {
+              await onFetchTrucks();
               setType("truckTypeId");
               setIsDimensionOrWeightChanged(true);
               setIsOpen(true);

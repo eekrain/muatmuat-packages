@@ -30,6 +30,7 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
     informasiMuatan,
     carrierId,
     truckTypeId,
+    minTruckCount,
     truckCount,
   } = useSewaArmadaStore((state) => state.formValues);
   const { setField } = useSewaArmadaActions();
@@ -201,7 +202,7 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
             <ButtonPlusMinus
               disabled={!truckTypeId}
               onChange={(value) => setField("truckCount", value)}
-              minValue={2}
+              minValue={minTruckCount}
               maxValue={10}
               value={truckCount}
             />

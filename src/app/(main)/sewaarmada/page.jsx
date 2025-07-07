@@ -70,13 +70,9 @@ const Page = () => {
     "v1/orders/additional-services"
   );
   // Setup SWR mutation hook untuk API calculate-price
-  const {
-    trigger: calculatePrice,
-    isMutating: isCalculatingPrice,
-    data: priceData,
-    error: priceError,
-  } = useSWRMutateHook("v1/orders/calculate-price");
-  console.log("priceddata", priceData);
+  const { trigger: calculatePrice, data: calculatedPriceData } =
+    useSWRMutateHook("v1/orders/calculate-price");
+  // console.log("priceddata", priceData);
   // Fetch payment methods using SWR
   const { data: paymentMethodsData } = useSWRHook(
     "v1/payment/methods",
@@ -94,6 +90,7 @@ const Page = () => {
   const additionalServicesOptions = additionalServicesData?.Data.services || [];
   // Use the API data directly or fall back to an empty array
   const paymentMethods = paymentMethodsData?.Data || [];
+  const calculatedPrice = calculatedPriceData?.Data.price || null;
   const settingsTime = settingsTimeData?.Data || null;
 
   // Set default value if cargoTypes is loaded and tipeMuatan is not set
@@ -119,64 +116,73 @@ const Page = () => {
     }
   }, [trucks]);
 
-  // useShallowCompareEffect(async () => {
-  //   // Jika user memilih jenis truk, kita perlu menghitung harga
-  //   // Nanti dibuat function biar bisa diakses di tempat2 yg perlu calculate harga
-  //   if (truckTypeId) {
-  //     try {
-  //       // Prepare request payload berdasarkan dokumentasi API
-  //       const requestPayload = {
-  //         calculationType: "FULL_ORDER_PRICING", // FULL_ORDER_PRICING atau UPDATE_ORDER_PRICING
-  //         truckData: {
-  //           carrierId,
-  //           truckTypeId,
-  //           distance,
-  //           distanceUnit,
-  //           orderType,
-  //           truckCount, //sementara
-  //         },
-  //         // Blm ada asuransi
-  //         // insuranceData: useAsuransi
-  //         //   ? {
-  //         //       // Nilai default untuk insurance jika tidak ada data spesifik
-  //         //       insuranceOptionId: null,
-  //         //       coverageAmount: 0,
-  //         //     }
-  //         //   : null,
-  //         additionalServices,
-  //         // Blm bisa akses voucher karena state nya cuma ada di SummaryPanel.jsx
-  //         // voucherData: {
-  //         //   voucherId: null,
-  //         //   applyDiscount: false,
-  //         // },
-  //         businessEntity: {
-  //           isBusinessEntity: businessEntity.isBusinessEntity,
-  //         },
-  //       };
+  useShallowCompareEffect(() => {
+    const handleCalculatePrice = async () => {
+      // Jika user memilih jenis truk, kita perlu menghitung harga
+      // Nanti dibuat function biar bisa diakses di tempat2 yg perlu calculate harga
+      if (truckTypeId) {
+        try {
+          console.log("additionalServices", additionalServices);
+          // Prepare request payload berdasarkan dokumentasi API
+          const requestPayload = {
+            calculationType: "FULL_ORDER_PRICING", // FULL_ORDER_PRICING atau UPDATE_ORDER_PRICING
+            truckData: {
+              carrierId,
+              truckTypeId,
+              distance,
+              distanceUnit,
+              orderType,
+              truckCount, //sementara
+            },
+            // Blm ada asuransi
+            // insuranceData: useAsuransi
+            //   ? {
+            //       // Nilai default untuk insurance jika tidak ada data spesifik
+            //       insuranceOptionId: null,
+            //       coverageAmount: 0,
+            //     }
+            //   : null,
+            additionalServices: additionalServices.map((item) => ({
+              serviceId: item.serviceId,
+              withShipping: item.withShipping,
+            })),
+            // Blm bisa akses voucher karena state nya cuma ada di SummaryPanel.jsx
+            // voucherData: {
+            //   voucherId: null,
+            //   applyDiscount: false,
+            // },
+            businessEntity: {
+              isBusinessEntity: businessEntity.isBusinessEntity,
+            },
+          };
 
-  //       // Panggil API calculate-price
-  //       // const priceResult = await calculatePrice(requestPayload);
+          // Panggil API calculate-price
+          const priceResult = await calculatePrice(requestPayload);
+          console.log("priceResult", priceResult);
 
-  //       // Jika berhasil, simpan hasil perhitungan ke store
-  //       // if (priceResult?.data?.price) {
-  //       //   Update price data di store
-  //       //   setField("calculatedPrice", priceResult.data.price);
-  //       // }
-  //     } catch (error) {
-  //       console.error("Error calculating price:", error);
-  //       // Opsional: Set error message di store
-  //       // setError("price", "Gagal menghitung harga. Silahkan coba lagi.");
-  //     }
-  //   }
-  // }, [
-  //   orderType,
-  //   carrierId,
-  //   truckTypeId,
-  //   truckCount,
-  //   distance,
-  //   distanceUnit,
-  //   businessEntity.isBusinessEntity,
-  // ]);
+          // Jika berhasil, simpan hasil perhitungan ke store
+          // if (priceResult?.data?.price) {
+          //   Update price data di store
+          //   setField("calculatedPrice", priceResult.data.price);
+          // }
+        } catch (error) {
+          console.error("Error calculating price:", error);
+          // Opsional: Set error message di store
+          // setError("price", "Gagal menghitung harga. Silahkan coba lagi.");
+        }
+      }
+    };
+    handleCalculatePrice();
+  }, [
+    orderType,
+    carrierId,
+    truckTypeId,
+    truckCount,
+    distance,
+    distanceUnit,
+    additionalServices,
+    businessEntity.isBusinessEntity,
+  ]);
 
   useShallowCompareEffect(() => {
     if (settlementAlertInfo.length > 0) {
@@ -381,9 +387,6 @@ const Page = () => {
         carrierId,
       };
 
-      // Log the payload for debugging (can remove in production)
-      console.log("Sending truck request with payload:", requestPayload);
-
       // Send the API request
       await fetchTrucks(requestPayload);
     }
@@ -408,6 +411,7 @@ const Page = () => {
       trucks={trucks}
       additionalServicesOptions={additionalServicesOptions}
       paymentMethods={paymentMethods}
+      calculatedPrice={calculatedPrice}
       onFetchTrucks={handleFetchTrucks}
     />
   );

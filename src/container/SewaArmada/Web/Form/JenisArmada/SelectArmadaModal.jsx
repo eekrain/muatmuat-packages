@@ -34,20 +34,6 @@ const SelectArmadaModal = ({ carrierData, truckData }) => {
     setSearch("");
   }, [isOpen]);
 
-  const handleArmadaSelect = async (item) => {
-    setField(type, item);
-    setIsDimensionOrWeightChanged(false);
-    setIsOpen(false);
-  };
-
-  const handleSearchChange = (e) => setSearch(e.target.value);
-
-  const modalTitles = {
-    carrierId: "Pilih Jenis Carrier",
-    truckTypeId: "Pilih Jenis Truk",
-  };
-  const modalTitle = modalTitles[type] || modalTitles.carrierId;
-
   // Get current data based on type
   const currentData = useShallowMemo(() => {
     const emptyData = { recommended: [], notRecommended: [] };
@@ -74,6 +60,30 @@ const SelectArmadaModal = ({ carrierData, truckData }) => {
       return emptyData;
     }
   }, [type, carrierData, truckData]);
+
+  const handleArmadaSelect = async (item) => {
+    if (type === "truckTypeId") {
+      const selectedTruck = [
+        ...(currentData.recommended || []),
+        ...(currentData.notRecommended || []),
+      ].find((truck) => {
+        return truck.truckTypeId === item;
+      });
+      setField("truckCount", selectedTruck.unit);
+      setField("minTruckCount", selectedTruck.unit);
+    }
+    setField(type, item);
+    setIsDimensionOrWeightChanged(false);
+    setIsOpen(false);
+  };
+
+  const handleSearchChange = (e) => setSearch(e.target.value);
+
+  const modalTitles = {
+    carrierId: "Pilih Jenis Carrier",
+    truckTypeId: "Pilih Jenis Truk",
+  };
+  const modalTitle = modalTitles[type] || modalTitles.carrierId;
 
   // Filter based on search
   const filteredData = [

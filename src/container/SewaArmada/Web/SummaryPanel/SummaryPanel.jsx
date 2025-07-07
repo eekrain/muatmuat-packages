@@ -29,7 +29,11 @@ const Toast = ({ message, onClose }) => (
   </div>
 );
 
-export const SummaryPanel = ({ settingsTime, paymentMethods }) => {
+export const SummaryPanel = ({
+  settingsTime,
+  paymentMethods,
+  calculatedPrice,
+}) => {
   // Voucher related state and hooks
   const token = "Bearer your_token_here";
   const MOCK_EMPTY = false;
@@ -75,32 +79,10 @@ export const SummaryPanel = ({ settingsTime, paymentMethods }) => {
 
   const { setField, validateForm } = useSewaArmadaActions();
 
-  const [expandedCategories, setExpandedCategories] = useState(new Set([0])); // Initialize with first category expanded
   const [isModalConfirmationOpen, setIsModalConfirmationOpen] = useState(false);
   const baseOrderAmount = 950000;
   const [currentTotal, setCurrentTotal] = useState(0);
   const [showInfoPopup, setShowInfoPopup] = useState(null);
-  // Method: Using flatMap and reduce
-  const detailPesanan = [
-    {
-      title: "Biaya Lainnya",
-      items: [
-        {
-          label: "Admin Layanan",
-          cost: 10000,
-        },
-        // Conditional item using spread operator
-        ...(isBusinessEntity
-          ? [
-              {
-                label: "Pajak",
-                cost: 21300,
-              },
-            ]
-          : []),
-      ],
-    },
-  ];
 
   useEffect(() => {
     if (selectedVoucher) {
@@ -113,6 +95,56 @@ export const SummaryPanel = ({ settingsTime, paymentMethods }) => {
       setCurrentTotal(baseOrderAmount);
     }
   }, [selectedVoucher, baseOrderAmount]);
+
+  const priceSummary = useShallowMemo(() => {
+    if (!calculatedPrice || !truckTypeId) {
+      return [];
+    }
+    return [
+      {
+        title: "Biaya Pesan Jasa Angkut",
+        items: [
+          {
+            label: "Nominal Pesan Jasa Angkut (1 Unit)",
+            price: calculatedPrice.transportFee,
+          },
+        ],
+      },
+      {
+        title: "Biaya Asuransi Barang",
+        items: [
+          {
+            label: "Nominal Premi Asuransi (1 Unit)",
+            price: calculatedPrice.insuranceFee,
+          },
+        ],
+      },
+      ...(calculatedPrice.additionalServiceFee.length > 0
+        ? [
+            {
+              title: "Biaya Layanan Tambahan",
+              items: calculatedPrice.additionalServiceFee.map((item) => ({
+                label: item.name,
+                price: item.totalCost,
+              })),
+            },
+          ]
+        : []),
+      {
+        title: "Biaya Lainnya",
+        items: [
+          {
+            label: "Admin Layanan",
+            price: calculatedPrice.adminFee,
+          },
+          {
+            label: "Pajak",
+            price: calculatedPrice.taxAmount,
+          },
+        ],
+      },
+    ];
+  }, [calculatedPrice, truckTypeId]);
 
   const filteredVouchers = voucherList.filter(
     (v) =>
@@ -215,18 +247,6 @@ export const SummaryPanel = ({ settingsTime, paymentMethods }) => {
         });
       }
     }
-  };
-
-  const toggleSection = (categoryKey) => {
-    setExpandedCategories((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(categoryKey)) {
-        newSet.delete(categoryKey);
-      } else {
-        newSet.add(categoryKey);
-      }
-      return newSet;
-    });
   };
 
   const handleSelectPaymentMethod = (paymentMethodId) => {
@@ -542,21 +562,11 @@ export const SummaryPanel = ({ settingsTime, paymentMethods }) => {
     //router.push("/daftarpesanan/detailpesanan/1");
   };
 
-  const selectedOpsiPembayaran = useShallowMemo(
-    () =>
-      paymentMethodId
-        ? paymentMethods
-            .flatMap((method) => method.methods || [])
-            .find((item) => item.id === paymentMethodId)
-        : null,
-    [paymentMethodId, paymentMethods]
-  );
-
   return (
     <>
-      <Card className="shadow-muat flex w-[338px] flex-col gap-6 rounded-xl border-none bg-white">
-        <div className="flex flex-col gap-y-6 px-5 pt-6">
-          <h3 className="text-base font-bold text-black">
+      <Card className="shadow-muat flex w-[338px] flex-col gap-0 rounded-xl border-none bg-white">
+        <div className="flex flex-col gap-y-6 px-5 py-6">
+          <h3 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
             Ringkasan Transaksi
           </h3>
           {/* <button
@@ -602,17 +612,17 @@ export const SummaryPanel = ({ settingsTime, paymentMethods }) => {
               />
             </button>
             {/* Nanti ganti dengan kondisi kalo sdh ada detail pesanan */}
-            {true ? (
+            {priceSummary.length > 0 ? (
               <>
                 <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
                   Detail Pesanan
                 </span>
-                {detailPesanan.map(({ title, items }, key) => (
+                {priceSummary.map(({ title, items }, key) => (
                   <div className="flex flex-col gap-y-3" key={key}>
                     <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
                       {title}
                     </span>
-                    {items.map(({ label, cost }, key) => (
+                    {items.map(({ label, price }, key) => (
                       <div
                         className="flex items-center justify-between"
                         key={key}
@@ -621,12 +631,20 @@ export const SummaryPanel = ({ settingsTime, paymentMethods }) => {
                           {label}
                         </span>
                         <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                          {`Rp${cost.toLocaleString("id-ID")}`}
+                          {`Rp${price.toLocaleString("id-ID")}`}
                         </span>
                       </div>
                     ))}
                   </div>
                 ))}
+                <div className="flex items-center justify-between">
+                  <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
+                    Sub Total
+                  </span>
+                  <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
+                    {`Rp${calculatedPrice.totalPrice.toLocaleString("id-ID")}`}
+                  </span>
+                </div>
               </>
             ) : null}
           </div>
