@@ -1,15 +1,15 @@
-import { useState } from "react";
-
 import { ChevronRight } from "lucide-react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
 const OrderStatus = () => {
-  const [showQR, setShowQR] = useState(false);
+  const navigation = useResponsiveNavigation();
 
   // Toggle QR code visibility
   const toggleQR = () => {
-    setShowQR(!showQR);
+    console.log("jalan");
+    navigation.push("/qr");
   };
 
   return (
@@ -57,15 +57,6 @@ const OrderStatus = () => {
           </BadgeStatusPesanan>
         </div>
       </div>
-
-      {/* QR Code would be displayed here if showQR is true */}
-      {showQR && (
-        <div className="mt-4 flex w-full justify-center rounded-md border border-[#E2F2FF] p-4">
-          <div className="flex h-32 w-32 items-center justify-center bg-[#F5F5F5]">
-            <span className="text-xs text-[#7B7B7B]">QR Code Placeholder</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
