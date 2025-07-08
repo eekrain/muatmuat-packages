@@ -56,18 +56,6 @@ const DetailPesananWeb = () => {
             {dataDetailPesanan?.dataStatusPesanan && (
               <StatusPesanan
                 dataStatusPesanan={dataDetailPesanan.dataStatusPesanan}
-                currentStatus="Dokumen Sedang Disiapkan"
-                statusList={[
-                  { label: "Pesanan Terkonfirmasi", isCompleted: true },
-                  { label: "Proses Muat", isCompleted: true },
-                  { label: "Proses Bongkar", isCompleted: true },
-                  {
-                    label: "Dokumen Sedang Disiapkan",
-                    isCompleted: true,
-                    isCurrent: true,
-                  },
-                  { label: "Selesai", isCompleted: false },
-                ]}
               />
             )}
 
@@ -119,7 +107,7 @@ const DetailPesananWeb = () => {
       >
         tes toast
       </button>
-      {/* <pre>{JSON.stringify(dataDetailPesanan, null, 2)}</pre> */}
+      <pre>{JSON.stringify(dataDetailPesanan, null, 2)}</pre>
     </>
   );
 };

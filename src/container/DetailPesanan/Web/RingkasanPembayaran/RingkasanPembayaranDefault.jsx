@@ -61,17 +61,25 @@ export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
 
             <CardPayment.ContainerItem title="Biaya Pesan Jasa Angkut">
               <CardPayment.Item
-                label="Biaya Pesan Jasa Angkut"
+                label={
+                  <span>
+                    Nominal Pesan Jasa Angkut <br />
+                    (1 Unit)
+                  </span>
+                }
                 value={idrFormat(dataRingkasanPembayaran?.transportFee)}
               />
             </CardPayment.ContainerItem>
 
-            <CardPayment.ContainerItem title="Biaya Asuransi Barang">
-              <CardPayment.Item
-                label="Biaya Asuransi Barang"
-                value={idrFormat(dataRingkasanPembayaran?.insuranceFee)}
-              />
-            </CardPayment.ContainerItem>
+            {dataRingkasanPembayaran?.insuranceFee &&
+            dataRingkasanPembayaran?.insuranceFee > 0 ? (
+              <CardPayment.ContainerItem title="Biaya Asuransi Barang">
+                <CardPayment.Item
+                  label="Nominal Premi Asuransi (1 Unit)"
+                  value={idrFormat(dataRingkasanPembayaran?.insuranceFee)}
+                />
+              </CardPayment.ContainerItem>
+            ) : null}
 
             <CardPayment.ContainerItem title="Biaya Layanan Tambahan">
               <CardPayment.Item

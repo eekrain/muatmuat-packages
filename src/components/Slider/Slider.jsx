@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
+import { cn } from "@/lib/utils";
+
 /**
  * @typedef {Object} SlideProps
  * @property {string} title - The title of the slide
@@ -19,7 +21,15 @@ import { useCallback, useEffect, useState } from "react";
  * @param {OnboardingSliderProps} props
  */
 
-export default function Slider({ slides, onComplete, onSlideChange }) {
+export default function Slider({
+  slides,
+  onComplete,
+  onSlideChange,
+  appearance = {
+    titleClassname: "",
+    contentClassname: "",
+  },
+}) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [nextSlideIndex, setNextSlideIndex] = useState(null);
   const [direction, setDirection] = useState(null); // 'left' or 'right'
@@ -50,12 +60,7 @@ export default function Slider({ slides, onComplete, onSlideChange }) {
    * @param {string} dir - Animation direction ('left' or 'right')
    */
   const handleSlideChange = (index, dir) => {
-    if (
-      isAnimating ||
-      index === currentSlide ||
-      index < 0 ||
-      index >= slides.length
-    ) {
+    if (isAnimating || index === currentSlide) {
       return;
     }
 
@@ -73,21 +78,19 @@ export default function Slider({ slides, onComplete, onSlideChange }) {
   };
 
   /**
-   * Navigate to the next slide
+   * Navigate to the next slide with infinite scrolling
    */
   const nextSlide = () => {
-    if (currentSlide < slides.length - 1) {
-      handleSlideChange(currentSlide + 1, "left");
-    }
+    const nextIndex = currentSlide === slides.length - 1 ? 0 : currentSlide + 1;
+    handleSlideChange(nextIndex, "left");
   };
 
   /**
-   * Navigate to the previous slide
+   * Navigate to the previous slide with infinite scrolling
    */
   const prevSlide = () => {
-    if (currentSlide > 0) {
-      handleSlideChange(currentSlide - 1, "right");
-    }
+    const prevIndex = currentSlide === 0 ? slides.length - 1 : currentSlide - 1;
+    handleSlideChange(prevIndex, "right");
   };
 
   /**
@@ -127,10 +130,16 @@ export default function Slider({ slides, onComplete, onSlideChange }) {
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
 
-    if (isLeftSwipe && currentSlide < slides.length - 1) {
-      handleSlideChange(currentSlide + 1, "left");
-    } else if (isRightSwipe && currentSlide > 0) {
-      handleSlideChange(currentSlide - 1, "right");
+    if (isLeftSwipe) {
+      // Go to next slide (with infinite scrolling)
+      const nextIndex =
+        currentSlide === slides.length - 1 ? 0 : currentSlide + 1;
+      handleSlideChange(nextIndex, "left");
+    } else if (isRightSwipe) {
+      // Go to previous slide (with infinite scrolling)
+      const prevIndex =
+        currentSlide === 0 ? slides.length - 1 : currentSlide - 1;
+      handleSlideChange(prevIndex, "right");
     }
 
     // Reset states
@@ -264,20 +273,18 @@ export default function Slider({ slides, onComplete, onSlideChange }) {
           </div>
         ))}
 
-        {/* Navigation arrows */}
+        {/* Navigation arrows - always visible for infinite scrolling */}
         <button
           onClick={prevSlide}
-          disabled={currentSlide === 0 || isAnimating}
+          disabled={isAnimating}
           className={`absolute left-0 top-1/2 hidden h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full bg-white lg:flex ${
-            currentSlide === 0 || isAnimating
+            isAnimating
               ? "cursor-not-allowed opacity-50"
               : "opacity-100 hover:bg-gray-100"
           }`}
         >
           <svg
-            className={`h-6 w-6 ${
-              currentSlide === 0 ? "text-gray-600" : "text-primary-700"
-            }`}
+            className="h-6 w-6 text-primary-700"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -293,19 +300,15 @@ export default function Slider({ slides, onComplete, onSlideChange }) {
 
         <button
           onClick={nextSlide}
-          disabled={currentSlide === slides.length - 1 || isAnimating}
+          disabled={isAnimating}
           className={`absolute right-0 top-1/2 hidden h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full bg-white lg:flex ${
-            currentSlide === slides.length - 1 || isAnimating
+            isAnimating
               ? "cursor-not-allowed opacity-50"
               : "opacity-100 hover:bg-gray-100"
           }`}
         >
           <svg
-            className={`h-6 w-6 ${
-              currentSlide === slides.length - 1
-                ? "text-gray-600"
-                : "text-primary-700"
-            }`}
+            className="h-6 w-6 text-primary-700"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -320,23 +323,33 @@ export default function Slider({ slides, onComplete, onSlideChange }) {
         </button>
       </div>
 
-      <h2 className="mb-3 hidden text-center text-lg font-bold leading-[1.2] lg:mt-6 lg:block">
+      <h2
+        className={cn(
+          "mb-1 hidden text-center text-lg font-bold leading-[1.2] lg:mt-6 lg:block",
+          appearance.titleClassname
+        )}
+      >
         {slides[currentSlide]?.title}
       </h2>
 
-      <div className="mx-auto flex max-w-[328px] flex-col justify-between lg:mt-0 lg:h-[122px]">
+      <div
+        className={cn(
+          "flex h-[81px] max-w-[337px] flex-col justify-between",
+          appearance.contentClassname
+        )}
+      >
         <div className="flex justify-center text-sm font-medium leading-[1.2] text-neutral-900">
           {slides[currentSlide]?.content}
         </div>
         {/* Dots navigation */}
-        <div className="mt-[18px] flex h-4 items-center justify-center lg:mt-0">
+        <div className="flex h-4 items-center justify-center lg:mt-0">
           {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
               disabled={isAnimating}
               className={`mx-1 h-2 w-2 rounded-full ${
-                currentSlide === index ? "h-3 w-3 bg-blue-500" : "bg-gray-300"
+                currentSlide === index ? "bg-primary-700" : "bg-neutral-400"
               } transition-all duration-200`}
               aria-label={`Go to slide ${index + 1}`}
             />

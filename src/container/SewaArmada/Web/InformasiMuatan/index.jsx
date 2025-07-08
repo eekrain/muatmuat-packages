@@ -216,51 +216,107 @@ export const InformasiMuatanModal = ({
                   </div>
                 </div>
 
-                <div className="pr-[6px]">
-                  <div className="flex max-h-[265px] flex-col gap-5 overflow-y-auto py-5">
-                    {fields.map((field, index) => (
-                      <div
-                        key={field.id}
-                        className="grid min-h-[32px] grid-cols-[209px_168px_341px] gap-4"
-                      >
+                <div className="flex max-h-[265px] flex-col gap-5 py-5">
+                  {fields.map((field, index) => (
+                    <div
+                      key={field.id}
+                      className="grid min-h-[32px] grid-cols-[209px_168px_341px] gap-4"
+                    >
+                      <Controller
+                        control={control}
+                        name={`informasiMuatan.${index}.namaMuatan`}
+                        render={({ field }) => (
+                          <DropdownSearch
+                            placeholder="Pilih Muatan"
+                            options={listNamaMuatan}
+                            value={field.value}
+                            onChange={field.onChange}
+                            onAddNew={() => setOpenModalNamaMuatan(true)}
+                            addNewText="Tambah Nama Muatan"
+                            className="w-52"
+                            errorMessage={
+                              errors?.informasiMuatan?.[index]?.namaMuatan
+                                ?.label.message
+                            }
+                          />
+                        )}
+                      />
+
+                      <div className="flex gap-2">
                         <Controller
                           control={control}
-                          name={`informasiMuatan.${index}.namaMuatan`}
+                          name={`informasiMuatan.${index}.beratMuatan.berat`}
+                          render={({ field }) => {
+                            return (
+                              <NumberInput
+                                {...field}
+                                min={0}
+                                stepper={1}
+                                placeholder="0"
+                                errorMessage={
+                                  errors?.informasiMuatan?.[index]?.beratMuatan
+                                    ?.berat?.message
+                                }
+                                appearance={{
+                                  containerClassName: "w-[80px]",
+                                  inputClassName: "cursor-pointer ",
+                                }}
+                              />
+                            );
+                          }}
+                        />
+
+                        <Controller
+                          control={control}
+                          name={`informasiMuatan.${index}.beratMuatan.unit`}
                           render={({ field }) => (
-                            <DropdownSearch
-                              placeholder="Pilih Muatan"
-                              options={listNamaMuatan}
+                            <Select
                               value={field.value}
                               onChange={field.onChange}
-                              onAddNew={() => setOpenModalNamaMuatan(true)}
-                              addNewText="Tambah Nama Muatan"
-                              className="w-52"
-                              errorMessage={
-                                errors?.informasiMuatan?.[index]?.namaMuatan
-                                  ?.label.message
-                              }
+                              options={weightUnits}
+                              placeholder="Pilih Unit"
+                              className="w-[80px]"
                             />
                           )}
                         />
+                      </div>
 
-                        <div className="flex gap-2">
+                      <div className="flex h-fit gap-4">
+                        <div className="flex items-center gap-2">
                           <Controller
                             control={control}
-                            name={`informasiMuatan.${index}.beratMuatan.berat`}
+                            name={`informasiMuatan.${index}.dimensiMuatan`}
                             render={({ field }) => {
+                              // Reusable function to update dimension values
+                              const updateDimensionValue = (
+                                dimension,
+                                value
+                              ) => {
+                                const newValue = {
+                                  ...field.value,
+                                  [dimension]: value,
+                                };
+                                field.onChange(newValue);
+                              };
                               return (
-                                <NumberInput
-                                  {...field}
-                                  min={0}
-                                  stepper={1}
-                                  placeholder="0"
-                                  errorMessage={
-                                    errors?.informasiMuatan?.[index]
-                                      ?.beratMuatan?.berat?.message
-                                  }
-                                  appearance={{
-                                    containerClassName: "w-[80px]",
-                                    inputClassName: "cursor-pointer ",
+                                <DimensionInput
+                                  className="w-[173px]"
+                                  manual={{
+                                    panjang: {
+                                      value: field.value?.panjang || "",
+                                      setValue: (value) =>
+                                        updateDimensionValue("panjang", value),
+                                    },
+                                    lebar: {
+                                      value: field.value?.lebar || "",
+                                      setValue: (value) =>
+                                        updateDimensionValue("lebar", value),
+                                    },
+                                    tinggi: {
+                                      value: field.value?.tinggi || "",
+                                      setValue: (value) =>
+                                        updateDimensionValue("tinggi", value),
+                                    },
                                   }}
                                 />
                               );
@@ -269,12 +325,12 @@ export const InformasiMuatanModal = ({
 
                           <Controller
                             control={control}
-                            name={`informasiMuatan.${index}.beratMuatan.unit`}
-                            render={({ field }) => (
+                            name={`informasiMuatan.${index}.dimensiMuatan.unit`}
+                            render={({ field, fieldState }) => (
                               <Select
                                 value={field.value}
                                 onChange={field.onChange}
-                                options={weightUnits}
+                                options={dimensionUnits}
                                 placeholder="Pilih Unit"
                                 className="w-[80px]"
                               />
@@ -282,97 +338,33 @@ export const InformasiMuatanModal = ({
                           />
                         </div>
 
-                        <div className="flex h-fit gap-4">
-                          <div className="flex items-center gap-2">
-                            <Controller
-                              control={control}
-                              name={`informasiMuatan.${index}.dimensiMuatan`}
-                              render={({ field }) => {
-                                // Reusable function to update dimension values
-                                const updateDimensionValue = (
-                                  dimension,
-                                  value
-                                ) => {
-                                  const newValue = {
-                                    ...field.value,
-                                    [dimension]: value,
-                                  };
-                                  field.onChange(newValue);
-                                };
-                                return (
-                                  <DimensionInput
-                                    className="w-[173px]"
-                                    manual={{
-                                      panjang: {
-                                        value: field.value?.panjang || "",
-                                        setValue: (value) =>
-                                          updateDimensionValue(
-                                            "panjang",
-                                            value
-                                          ),
-                                      },
-                                      lebar: {
-                                        value: field.value?.lebar || "",
-                                        setValue: (value) =>
-                                          updateDimensionValue("lebar", value),
-                                      },
-                                      tinggi: {
-                                        value: field.value?.tinggi || "",
-                                        setValue: (value) =>
-                                          updateDimensionValue("tinggi", value),
-                                      },
-                                    }}
-                                  />
-                                );
-                              }}
-                            />
-
-                            <Controller
-                              control={control}
-                              name={`informasiMuatan.${index}.dimensiMuatan.unit`}
-                              render={({ field, fieldState }) => (
-                                <Select
-                                  value={field.value}
-                                  onChange={field.onChange}
-                                  options={dimensionUnits}
-                                  placeholder="Pilih Unit"
-                                  className="w-[80px]"
-                                />
-                              )}
-                            />
-                          </div>
-
-                          <div className="flex items-center gap-2">
-                            {fields.length > 1 && (
+                        <div className="flex items-center gap-2">
+                          {fields.length > 1 && (
+                            <button type="button" onClick={() => remove(index)}>
+                              <IconComponent
+                                src="/icons/min-square24.svg"
+                                width={24}
+                                height={24}
+                              />
+                            </button>
+                          )}
+                          {index + 1 === fields.length &&
+                            fields.length < maxInformasiMuatan && (
                               <button
                                 type="button"
-                                onClick={() => remove(index)}
+                                onClick={() => append(defaultInformasiMuatan)}
                               >
                                 <IconComponent
-                                  src="/icons/min-square24.svg"
+                                  src="/icons/plus-square24.svg"
                                   width={24}
                                   height={24}
                                 />
                               </button>
                             )}
-                            {index + 1 === fields.length &&
-                              fields.length < maxInformasiMuatan && (
-                                <button
-                                  type="button"
-                                  onClick={() => append(defaultInformasiMuatan)}
-                                >
-                                  <IconComponent
-                                    src="/icons/plus-square24.svg"
-                                    width={24}
-                                    height={24}
-                                  />
-                                </button>
-                              )}
-                          </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ))}
                 </div>
               </div>
               {/* Submit button for demo */}
