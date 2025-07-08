@@ -47,6 +47,8 @@ export default function SewaArmadaWeb({
   shippingOption,
   calculatedPrice,
   paymentMethods,
+  selectedVoucher,
+  setSelectedVoucher,
   onFetchTrucks,
 }) {
   const orderType = useSewaArmadaStore((state) => state.orderType);
@@ -136,6 +138,8 @@ export default function SewaArmadaWeb({
                 settingsTime={settingsTime}
                 paymentMethods={paymentMethods}
                 calculatedPrice={calculatedPrice}
+                selectedVoucher={selectedVoucher}
+                setSelectedVoucher={setSelectedVoucher}
               />
             </div>
           </>

@@ -37,13 +37,15 @@ export const SummaryPanel = ({
   settingsTime,
   paymentMethods,
   calculatedPrice,
+  selectedVoucher,
+  setSelectedVoucher,
 }) => {
   // Voucher related state and hooks
   const token = "Bearer your_token_here";
   const MOCK_EMPTY = false;
   const useMockData = false; // Flag untuk menggunakan mock data - ubah ke false untuk menggunakan API real
 
-  let {
+  const {
     vouchers: voucherList,
     loading,
     error,
@@ -57,7 +59,6 @@ export const SummaryPanel = ({
 
   // No need to override voucherList here since hook handles MOCK_EMPTY
   const [validationErrors, setValidationErrors] = useState({});
-  const [selectedVoucher, setSelectedVoucher] = useState(null);
   const [showVoucherPopup, setShowVoucherPopup] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [toastMessage, setToastMessage] = useState("");
@@ -133,6 +134,19 @@ export const SummaryPanel = ({
             },
           ]
         : []),
+      ...(selectedVoucher && voucherDiscount > 0
+        ? [
+            {
+              title: "Diskon Voucher",
+              items: [
+                {
+                  label: `Voucher (${selectedVoucher.code})`,
+                  price: calculatedPrice.voucher,
+                },
+              ],
+            },
+          ]
+        : []),
       {
         title: "Biaya Lainnya",
         items: [
@@ -147,8 +161,8 @@ export const SummaryPanel = ({
         ],
       },
     ];
-  }, [calculatedPrice, truckTypeId, truckCount]);
-
+  }, [calculatedPrice, truckTypeId, truckCount, selectedVoucher]);
+  console.log("price", priceSummary);
   // Also create detailPesanan structure for new logic integration
   const detailPesanan = [
     {
@@ -268,7 +282,7 @@ export const SummaryPanel = ({
         try {
           validationResult = await muatTransValidateVoucher({
             voucherId: voucher.id,
-            totalAmount: baseOrderAmount,
+            totalAmount: calculatedPrice.totalPrice ?? baseOrderAmount,
             token: token,
           });
         } catch (serviceError) {
@@ -277,7 +291,7 @@ export const SummaryPanel = ({
             "/v1/orders/vouchers/validate",
             {
               voucherId: voucher.id,
-              totalAmount: baseOrderAmount,
+              totalAmount: calculatedPrice.totalPrice ?? baseOrderAmount,
             },
             {
               headers: { Authorization: token },

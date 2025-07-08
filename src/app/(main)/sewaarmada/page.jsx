@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 import SewaArmadaResponsive from "@/container/SewaArmada/Responsive/SewaArmadaResponsive";
 import SewaArmadaWeb from "@/container/SewaArmada/Web/SewaArmadaWeb";
@@ -40,6 +41,7 @@ const Page = () => {
     additionalServices,
     businessEntity,
   } = useSewaArmadaStore((state) => state.formValues);
+  const [selectedVoucher, setSelectedVoucher] = useState(null);
   const { setField, setFormId, setOrderType, reset } = useSewaArmadaActions();
   const { setWaitingSettlementOrderId } = useWaitingSettlementModalAction();
 
@@ -310,11 +312,12 @@ const Page = () => {
                     withShipping: item.withShipping,
                   }
             ),
-            // Blm bisa akses voucher karena state nya cuma ada di SummaryPanel.jsx
-            // voucherData: {
-            //   voucherId: null,
-            //   applyDiscount: false,
-            // },
+            ...(selectedVoucher && {
+              voucherData: {
+                voucherId: selectedVoucher.id,
+                applyDiscount: true,
+              },
+            }),
             businessEntity: {
               isBusinessEntity: businessEntity.isBusinessEntity,
             },
@@ -338,6 +341,7 @@ const Page = () => {
     additionalServices,
     shippingOption,
     businessEntity.isBusinessEntity,
+    selectedVoucher,
   ]);
 
   useShallowCompareEffect(() => {
@@ -571,6 +575,8 @@ const Page = () => {
       shippingOption={shippingOption}
       calculatedPrice={calculatedPrice}
       paymentMethods={paymentMethods}
+      selectedVoucher={selectedVoucher}
+      setSelectedVoucher={setSelectedVoucher}
       onFetchTrucks={handleFetchTrucks}
     />
   );
