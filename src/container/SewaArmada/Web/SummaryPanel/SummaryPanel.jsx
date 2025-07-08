@@ -134,7 +134,7 @@ export const SummaryPanel = ({
             },
           ]
         : []),
-      ...(selectedVoucher && voucherDiscount > 0
+      ...(selectedVoucher
         ? [
             {
               title: "Diskon Voucher",
@@ -162,7 +162,7 @@ export const SummaryPanel = ({
       },
     ];
   }, [calculatedPrice, truckTypeId, truckCount, selectedVoucher]);
-  console.log("price", priceSummary);
+
   // Also create detailPesanan structure for new logic integration
   const detailPesanan = [
     {
