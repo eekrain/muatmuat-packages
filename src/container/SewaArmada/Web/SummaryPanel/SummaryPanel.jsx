@@ -11,6 +11,7 @@ import VoucherEmptyState from "@/components/Voucher/VoucherEmptyState";
 import VoucherPopup from "@/components/Voucher/VoucherPopup";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
 import FleetOrderConfirmationModal from "@/container/SewaArmada/Web/FleetOrderConfirmationModal/FleetOrderConfirmationModal";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useVouchers } from "@/hooks/useVoucher";
 import { fetcherMuatrans } from "@/lib/axios";
 import { cn } from "@/lib/utils";
@@ -49,6 +50,11 @@ export const SummaryPanel = ({
     refetch,
   } = useVouchers(token, useMockData, MOCK_EMPTY); // Pass MOCK_EMPTY to hook
 
+  // Keep the MOCK_EMPTY override logic from old file for backward compatibility
+  if (MOCK_EMPTY && !loading && !error) {
+    voucherList = [];
+  }
+
   // No need to override voucherList here since hook handles MOCK_EMPTY
   const [validationErrors, setValidationErrors] = useState({});
   const [selectedVoucher, setSelectedVoucher] = useState(null);
@@ -82,7 +88,9 @@ export const SummaryPanel = ({
   const { setField, validateForm } = useSewaArmadaActions();
 
   const [isModalConfirmationOpen, setIsModalConfirmationOpen] = useState(false);
-  const baseOrderAmount = 5000000; // 5 juta untuk transport fee
+
+  // Use baseOrderAmount from old file (950000 instead of 5000000)
+  const baseOrderAmount = 950000;
   const adminFee = 10000;
   const taxAmount = isBusinessEntity ? 21300 : 0;
 
@@ -90,23 +98,58 @@ export const SummaryPanel = ({
   const [currentTotal, setCurrentTotal] = useState(baseTotal);
   const [showInfoPopup, setShowInfoPopup] = useState(null);
 
-  // Calculate total when voucher or base amounts change
-  useEffect(() => {
-    const newTotal = baseTotal - voucherDiscount;
-    setCurrentTotal(newTotal);
-  }, [baseTotal, voucherDiscount]);
-
-  // Update voucher discount when selectedVoucher changes
-  useEffect(() => {
-    if (selectedVoucher && selectedVoucher.isValid) {
-      const discount = calculateDiscountAmount(selectedVoucher, baseTotal);
-      console.log("testdiscount", discount);
-      setVoucherDiscount(discount);
-    } else {
-      setVoucherDiscount(0);
+  // Keep priceSummary logic from old file with useShallowMemo
+  const priceSummary = useShallowMemo(() => {
+    if (!calculatedPrice || !truckTypeId) {
+      return [];
     }
-  }, [selectedVoucher, baseTotal]);
+    return [
+      {
+        title: "Biaya Pesan Jasa Angkut",
+        items: [
+          {
+            label: `Nominal Pesan Jasa Angkut (${truckCount} Unit)`,
+            price: calculatedPrice.transportFee,
+          },
+        ],
+      },
+      {
+        title: "Biaya Asuransi Barang",
+        items: [
+          {
+            label: "Nominal Premi Asuransi (1 Unit)",
+            price: calculatedPrice.insuranceFee,
+          },
+        ],
+      },
+      ...(calculatedPrice.additionalServiceFee.length > 0
+        ? [
+            {
+              title: "Biaya Layanan Tambahan",
+              items: calculatedPrice.additionalServiceFee.map((item) => ({
+                label: item.name,
+                price: item.totalCost,
+              })),
+            },
+          ]
+        : []),
+      {
+        title: "Biaya Lainnya",
+        items: [
+          {
+            label: "Admin Layanan",
+            price: calculatedPrice.adminFee,
+          },
+          {
+            label: "Pajak",
+            price: calculatedPrice.taxAmount,
+          },
+        ],
+      },
+    ];
+  }, [calculatedPrice, truckTypeId, truckCount]);
 
+  // Also create detailPesanan structure for new logic integration
   const detailPesanan = [
     {
       title: "Detail Pesanan",
@@ -142,46 +185,68 @@ export const SummaryPanel = ({
     },
   ];
 
+  // Calculate total when voucher or base amounts change (from old file logic)
+  useEffect(() => {
+    if (selectedVoucher) {
+      const discount = calculateDiscountAmount(
+        selectedVoucher,
+        baseOrderAmount
+      );
+      setCurrentTotal(baseOrderAmount - discount);
+      setVoucherDiscount(discount);
+    } else {
+      setCurrentTotal(baseOrderAmount);
+      setVoucherDiscount(0);
+    }
+  }, [selectedVoucher, baseOrderAmount]);
+
+  // Update voucher discount when selectedVoucher changes (enhanced from new logic)
+  useEffect(() => {
+    if (selectedVoucher && selectedVoucher.isValid) {
+      const discount = calculateDiscountAmount(selectedVoucher, baseTotal);
+      setVoucherDiscount(discount);
+    } else {
+      setVoucherDiscount(0);
+    }
+  }, [selectedVoucher, baseTotal]);
+
+  // Update current total when base amounts change
+  useEffect(() => {
+    const newTotal = baseTotal - voucherDiscount;
+    setCurrentTotal(newTotal);
+  }, [baseTotal, voucherDiscount]);
+
   const filteredVouchers = voucherList.filter(
     (v) =>
       v.code?.toLowerCase().includes(searchKeyword.toLowerCase()) ||
       v.description?.toLowerCase().includes(searchKeyword.toLowerCase())
   );
 
-  // Function to calculate discount amount based on voucher type
+  // Function to calculate discount amount based on voucher type (from old file)
   const calculateDiscountAmount = (voucher, total) => {
-    if (!voucher || !total) return 0;
+    if (!voucher) return 0;
 
-    // Handle different discount types (support both formats for consistency)
-    if (
-      voucher.discountType === "PERCENTAGE" ||
-      voucher.discountType === "percentage"
-    ) {
-      const discountAmount = (total * voucher.discountPercentage) / 100;
-      console.log("total", total, "discountamount", discountAmount);
-      return Math.min(
-        discountAmount,
-        voucher.maxDiscountAmount || discountAmount
-      );
-    } else if (
-      voucher.discountType === "FIXED_AMOUNT" ||
-      voucher.discountType === "fixed"
-    ) {
-      return voucher.discountAmount;
+    // Handle different discount types from old file logic
+    if (voucher.discountPercentage !== null) {
+      const pct = parseFloat(voucher.discountPercentage) || 0;
+      return total * (pct / 100);
+    } else {
+      // Use the fixed discountAmount key directly
+      return parseFloat(voucher.discountAmount) || 0;
     }
-
-    return voucher.discountAmount || 0;
   };
 
   const handleVoucherSelect = async (voucher) => {
-    console.log("here", voucher);
     try {
       // Clear previous validation errors for all vouchers
       setValidationErrors({});
       setValidatingVoucher(voucher.id);
 
-      // Client-side validation first
-      const clientValidation = validateVoucherClientSide(voucher, baseTotal);
+      // Client-side validation first (from new logic)
+      const clientValidation = validateVoucherClientSide(
+        voucher,
+        baseOrderAmount
+      );
       if (!clientValidation.isValid) {
         setValidationErrors({
           [voucher.id]: clientValidation.errorMessage,
@@ -189,48 +254,107 @@ export const SummaryPanel = ({
         return;
       }
 
-      // Server-side validation if client validation passes
-      const validationResult = useMockData
-        ? await mockValidateVoucher({
+      // Server-side validation using fetcherMuatrans (from old file) or service functions (new)
+      let validationResult;
+
+      if (useMockData) {
+        // Use mock service for testing
+        validationResult = await mockValidateVoucher({
+          voucherId: voucher.id,
+          totalAmount: baseOrderAmount,
+        });
+      } else {
+        // Try new service function first, fallback to direct fetcherMuatrans
+        try {
+          validationResult = await muatTransValidateVoucher({
             voucherId: voucher.id,
-            totalAmount: baseTotal,
-          })
-        : await muatTransValidateVoucher({
-            voucherId: voucher.id,
-            totalAmount: baseTotal,
+            totalAmount: baseOrderAmount,
             token: token,
           });
+        } catch (serviceError) {
+          // Fallback to direct fetcherMuatrans call (from old file)
+          const res = await fetcherMuatrans.post(
+            "/v1/orders/vouchers/validate",
+            {
+              voucherId: voucher.id,
+              totalAmount: baseOrderAmount,
+            },
+            {
+              headers: { Authorization: token },
+            }
+          );
 
-      console.log("validationResult", validationResult);
+          validationResult = {
+            isValid: res.data.Data.isValid !== false,
+            validationMessages: res.data.Data.validationMessages,
+            finalAmount: res.data.Data.finalAmount,
+          };
+        }
+      }
 
       if (validationResult.isValid) {
         // Voucher is valid, proceed with selection
+        const discountValue = calculateDiscountAmount(voucher, baseOrderAmount);
+
+        // Use finalAmount from API if available, otherwise calculate manually
+        if (validationResult.finalAmount) {
+          setCurrentTotal(validationResult.finalAmount);
+        }
+
         const validatedVoucher = {
           ...voucher,
           isValid: true,
           validationResult: validationResult,
+          discountAmount: discountValue, // This will hold the FINAL numerical discount value
         };
 
         setSelectedVoucher(validatedVoucher);
         setShowVoucherPopup(false);
 
-        // Show success toast and highlight
+        // Show success toast and highlight (from new logic)
         setToastMessage(`Voucher ${voucher.code} berhasil diterapkan!`);
         setShowVoucherSuccess(true);
         setTimeout(() => setToastMessage(""), 3000);
-        setTimeout(() => setShowVoucherSuccess(false), 5000); // Remove highlight after 5 seconds
+        setTimeout(() => setShowVoucherSuccess(false), 5000);
       } else {
-        // Voucher is invalid, show server error
+        // Voucher is invalid, show server error with new error messages
+        const validationMessage =
+          validationResult.validationMessages?.join(", ") ||
+          "Voucher tidak valid";
+
         setValidationErrors({
-          [voucher.id]:
-            validationResult.validationMessages?.join(", ") ||
-            "Voucher tidak valid",
+          [voucher.id]: validationMessage,
         });
+        setSelectedVoucher(null);
       }
     } catch (err) {
       console.error("Error validating voucher:", err);
+      setSelectedVoucher(null);
+
+      // Enhanced error handling from old file with new error messages
+      let errorMessage = "Gagal memvalidasi voucher";
+
+      if (err.response && err.response.data && err.response.data.Data) {
+        const errorData = err.response.data.Data;
+        const validationMessage =
+          errorData.validationMessages || "Voucher tidak valid";
+
+        // Use new error message format instead of label codes
+        if (validationMessage === "labelAlertVoucherMTExpired") {
+          errorMessage = "Voucher sudah tidak berlaku";
+        } else if (validationMessage === "labelAlertVoucherMTMinimumOrder") {
+          errorMessage = `Minimal Transaksi Rp ${voucher.minOrderAmount?.toLocaleString("id-ID") || "0"}`;
+        } else if (validationMessage === "labelAlertVoucherMTKuotaHabis") {
+          errorMessage = "Kuota voucher sudah habis";
+        } else {
+          errorMessage = validationMessage;
+        }
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
       setValidationErrors({
-        [voucher.id]: err.message || "Gagal memvalidasi voucher",
+        [voucher.id]: errorMessage,
       });
     } finally {
       setValidatingVoucher(null);
@@ -311,6 +435,7 @@ export const SummaryPanel = ({
   };
 
   const handleOrderFleet = () => {
+    // Enhanced sample order data from old file
     const sampleOrderData = {
       orderType,
       loadTimeStart: "2025-06-26T09:00:00Z",
@@ -384,23 +509,48 @@ export const SummaryPanel = ({
       businessEntity,
       voucherId: selectedVoucher?.id || "",
       paymentMethodId,
-      pricing: {
-        transportFee: baseOrderAmount,
-        insuranceFee: 0,
-        additionalServiceFee: 0,
-        voucherDiscount: voucherDiscount,
-        adminFee: adminFee,
-        taxAmount: taxAmount,
-        totalPrice: currentTotal,
-      },
+      pricing: calculatedPrice
+        ? {
+            // Use calculatedPrice if available (from old file logic)
+            transportFee: calculatedPrice.transportFee,
+            insuranceFee: calculatedPrice.insuranceFee,
+            additionalServiceFee:
+              calculatedPrice.additionalServiceFee?.reduce(
+                (sum, item) => sum + item.totalCost,
+                0
+              ) || 0,
+            voucherDiscount: voucherDiscount,
+            adminFee: calculatedPrice.adminFee,
+            taxAmount: calculatedPrice.taxAmount,
+            totalPrice: calculatedPrice.totalPrice - voucherDiscount,
+          }
+        : {
+            // Fallback to simple pricing structure
+            transportFee: baseOrderAmount,
+            insuranceFee: 0,
+            additionalServiceFee: 0,
+            voucherDiscount: voucherDiscount,
+            adminFee: adminFee,
+            taxAmount: taxAmount,
+            totalPrice: currentTotal,
+          },
     };
 
+    // Validate order data before sending
     const result = validateOrderData(sampleOrderData);
     console.log("Validation result:", result);
     console.log("Order data with voucher:", sampleOrderData);
 
+    // Show validation errors if any
+    if (result.length > 0) {
+      const errorMessages = result.map((err) => err.message).join("\n");
+      alert(`Validation errors:\n${errorMessages}`);
+      setIsModalConfirmationOpen(false);
+      return;
+    }
+
     try {
-      // Panggil API untuk membuat pesanan
+      // Panggil API untuk membuat pesanan using fetcherMuatrans
       const response = fetcherMuatrans.post(
         "/v1/orders/create",
         sampleOrderData,
@@ -408,13 +558,22 @@ export const SummaryPanel = ({
           headers: { Authorization: token },
         }
       );
+
       if (response.data.Message.Code == 200) {
         alert("Hore Berhasil Sewa Armada :)");
+        // Handle sukses - bisa redirect ke detail pesanan
+        // router.push(`/daftarpesanan/detailpesanan/${response.data.data.orderId}`);
       } else {
-        alert("Validation err");
+        alert("Validation error from server");
       }
     } catch (error) {
       console.error("Error creating order:", error);
+      // Enhanced error handling
+      if (error.response && error.response.data) {
+        alert(`Error: ${error.response.data.Message?.Text || "Unknown error"}`);
+      } else {
+        alert("Terjadi kesalahan. Silakan coba lagi.");
+      }
     }
 
     setIsModalConfirmationOpen(false);
@@ -495,53 +654,114 @@ export const SummaryPanel = ({
               </div>
             )}
 
-            {/* Detail Pesanan */}
-            {detailPesanan.map(({ title, items }, key) => (
-              <div className="flex flex-col gap-y-3" key={key}>
+            {/* Detail Pesanan - Integrated from old file logic */}
+            {priceSummary.length > 0 ? (
+              <>
                 <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
-                  {title}
+                  Detail Pesanan
                 </span>
-                {items.map(({ label, cost, isDiscount }, itemKey) => (
-                  <div
-                    className="flex items-center justify-between"
-                    key={itemKey}
-                  >
-                    <span
-                      className={`text-[12px] font-medium leading-[14.4px] ${isDiscount ? "text-green-600" : "text-neutral-600"}`}
-                    >
-                      {label}
+                {priceSummary.map(({ title, items }, key) => (
+                  <div className="flex flex-col gap-y-3" key={key}>
+                    <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
+                      {title}
                     </span>
-                    <span
-                      className={`text-[12px] font-medium leading-[14.4px] ${isDiscount ? "text-green-600" : "text-neutral-900"}`}
-                    >
-                      {isDiscount ? "-" : ""}Rp
-                      {Math.abs(cost).toLocaleString("id-ID")}
-                    </span>
+                    {items.map(({ label, price }, itemKey) => (
+                      <div
+                        className="flex items-center justify-between"
+                        key={itemKey}
+                      >
+                        <span className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                          {label}
+                        </span>
+                        <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                          {`Rp${price.toLocaleString("id-ID")}`}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 ))}
+
+                {/* Show voucher discount if applied */}
+                {selectedVoucher && voucherDiscount > 0 && (
+                  <div className="flex flex-col gap-y-3">
+                    <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
+                      Diskon
+                    </span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[12px] font-medium leading-[14.4px] text-green-600">
+                        Voucher ({selectedVoucher.code})
+                      </span>
+                      <span className="text-[12px] font-medium leading-[14.4px] text-green-600">
+                        -Rp{voucherDiscount.toLocaleString("id-ID")}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex items-center justify-between">
                   <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
                     Sub Total
                   </span>
                   <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
-                    Rp{currentTotal.toLocaleString("id-ID")}
+                    {calculatedPrice
+                      ? `Rp${calculatedPrice.totalPrice.toLocaleString("id-ID")}`
+                      : `Rp${currentTotal.toLocaleString("id-ID")}`}
                   </span>
                 </div>
-              </div>
-            ))}
+              </>
+            ) : (
+              // Fallback to detailPesanan structure when no calculatedPrice
+              detailPesanan.map(({ title, items }, key) => (
+                <div className="flex flex-col gap-y-3" key={key}>
+                  <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
+                    {title}
+                  </span>
+                  {items.map(({ label, cost, isDiscount }, itemKey) => (
+                    <div
+                      className="flex items-center justify-between"
+                      key={itemKey}
+                    >
+                      <span
+                        className={`text-[12px] font-medium leading-[14.4px] ${isDiscount ? "text-green-600" : "text-neutral-600"}`}
+                      >
+                        {label}
+                      </span>
+                      <span
+                        className={`text-[12px] font-medium leading-[14.4px] ${isDiscount ? "text-green-600" : "text-neutral-900"}`}
+                      >
+                        {isDiscount ? "-" : ""}Rp
+                        {Math.abs(cost).toLocaleString("id-ID")}
+                      </span>
+                    </div>
+                  ))}
+                  <div className="flex items-center justify-between">
+                    <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
+                      Sub Total
+                    </span>
+                    <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
+                      Rp{currentTotal.toLocaleString("id-ID")}
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
         <div
           className={cn(
             "flex flex-col gap-y-6 rounded-b-xl px-5",
-            detailPesanan.length > 0 ? "shadow-muat py-6" : "pb-6"
+            priceSummary.length > 0 || detailPesanan.length > 0
+              ? "shadow-muat py-6"
+              : "pb-6"
           )}
         >
           <div className="flex items-center justify-between">
             <span className="text-base font-bold text-black">Total</span>
             <span className="text-base font-bold text-black">
-              Rp{currentTotal.toLocaleString("id-ID")}
+              {calculatedPrice && priceSummary.length > 0
+                ? `Rp${(calculatedPrice.totalPrice - voucherDiscount).toLocaleString("id-ID")}`
+                : `Rp${currentTotal.toLocaleString("id-ID")}`}
             </span>
           </div>
           {truckTypeId && (
@@ -573,7 +793,7 @@ export const SummaryPanel = ({
               <IconComponent src="/icons/search.svg" width={20} height={20} />
             </div>
             <input
-              disabled={loading || error || voucherList.length === 0}
+              disabled={loading || error || filteredVouchers.length === 0}
               type="text"
               placeholder="Cari Kode Voucher"
               value={searchKeyword}
