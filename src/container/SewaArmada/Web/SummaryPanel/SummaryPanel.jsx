@@ -282,7 +282,7 @@ export const SummaryPanel = ({
         try {
           validationResult = await muatTransValidateVoucher({
             voucherId: voucher.id,
-            totalAmount: calculatedPrice.totalPrice ?? baseOrderAmount,
+            totalAmount: calculatedPrice?.totalPrice ?? baseOrderAmount,
             token: token,
           });
         } catch (serviceError) {
@@ -291,7 +291,7 @@ export const SummaryPanel = ({
             "/v1/orders/vouchers/validate",
             {
               voucherId: voucher.id,
-              totalAmount: calculatedPrice.totalPrice ?? baseOrderAmount,
+              totalAmount: calculatedPrice?.totalPrice ?? baseOrderAmount,
             },
             {
               headers: { Authorization: token },
