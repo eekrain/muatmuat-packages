@@ -118,6 +118,30 @@ function UserList() {
     </ul>
   );
 }
+
+// Contoh Penggunaan GET
+const response = fetcherMuatrans.post("/v1/orders/create", sampleOrderData, {
+  headers: { Authorization: token },
+});
+if (response.data.Message.Code == 200) {
+  alert("Hore Berhasil Sewa Armada :)");
+} else {
+  alert("Validation err");
+}
+
+// Contoh Penggunaan POST
+export const getAdditionalServices = async (cacheKey) => {
+  const orderId = cacheKey.split("/")[1];
+
+  // const result = apiResult;
+  // return result.Data;
+
+  const result = await fetcherMuatrans.get(
+    `v1/orders/${orderId}/additional-services`
+  );
+
+  return result?.data?.Data?.additionalService || [];
+};
 ```
 
 ---

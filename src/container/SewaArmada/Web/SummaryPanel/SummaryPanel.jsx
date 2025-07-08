@@ -11,11 +11,13 @@ import VoucherEmptyState from "@/components/Voucher/VoucherEmptyState";
 import VoucherPopup from "@/components/Voucher/VoucherPopup";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
 import FleetOrderConfirmationModal from "@/container/SewaArmada/Web/FleetOrderConfirmationModal/FleetOrderConfirmationModal";
-import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useVouchers } from "@/hooks/useVoucher";
 import { fetcherMuatrans } from "@/lib/axios";
 import { cn } from "@/lib/utils";
 import { formatDate, formatShortDate } from "@/lib/utils/dateFormat";
+import { validateVoucherClientSide } from "@/lib/utils/voucherValidation";
+import { mockValidateVoucher } from "@/services/voucher/mockVoucherService";
+import { muatTransValidateVoucher } from "@/services/voucher/muatTransVoucherService";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -38,30 +40,28 @@ export const SummaryPanel = ({
   // Voucher related state and hooks
   const token = "Bearer your_token_here";
   const MOCK_EMPTY = false;
+  const useMockData = false; // Flag untuk menggunakan mock data - ubah ke false untuk menggunakan API real
 
-  let { vouchers: voucherList, loading, error } = useVouchers(token);
+  let {
+    vouchers: voucherList,
+    loading,
+    error,
+    refetch,
+  } = useVouchers(token, useMockData, MOCK_EMPTY); // Pass MOCK_EMPTY to hook
 
-  if (MOCK_EMPTY && !loading && !error) {
-    voucherList = [];
-  }
+  // No need to override voucherList here since hook handles MOCK_EMPTY
   const [validationErrors, setValidationErrors] = useState({});
   const [selectedVoucher, setSelectedVoucher] = useState(null);
   const [showVoucherPopup, setShowVoucherPopup] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [toastMessage, setToastMessage] = useState("");
+  const [voucherDiscount, setVoucherDiscount] = useState(0);
+  const [showVoucherSuccess, setShowVoucherSuccess] = useState(false);
+  const [validatingVoucher, setValidatingVoucher] = useState(null);
 
   const router = useRouter();
 
   const orderType = useSewaArmadaStore((state) => state.orderType);
-  // const loadTimeStart = useSewaArmadaStore(
-  //   (state) => state.formValues.loadTimeStart
-  // );
-  // const loadTimeEnd = useSewaArmadaStore(
-  //   (state) => state.formValues.loadTimeEnd
-  // );
-  // const showRangeOption = useSewaArmadaStore(
-  //   (state) => state.formValues.showRangeOption
-  // );
   const {
     cargoTypeId,
     cargoCategoryId,
@@ -82,71 +82,65 @@ export const SummaryPanel = ({
   const { setField, validateForm } = useSewaArmadaActions();
 
   const [isModalConfirmationOpen, setIsModalConfirmationOpen] = useState(false);
-  const baseOrderAmount = 950000;
-  const [currentTotal, setCurrentTotal] = useState(0);
+  const baseOrderAmount = 5000000; // 5 juta untuk transport fee
+  const adminFee = 10000;
+  const taxAmount = isBusinessEntity ? 21300 : 0;
+
+  const baseTotal = baseOrderAmount + adminFee + taxAmount;
+  const [currentTotal, setCurrentTotal] = useState(baseTotal);
   const [showInfoPopup, setShowInfoPopup] = useState(null);
 
+  // Calculate total when voucher or base amounts change
   useEffect(() => {
-    if (selectedVoucher) {
-      const discount = calculateDiscountAmount(
-        selectedVoucher,
-        baseOrderAmount
-      );
-      setCurrentTotal(baseOrderAmount - discount);
-    } else {
-      setCurrentTotal(baseOrderAmount);
-    }
-  }, [selectedVoucher, baseOrderAmount]);
+    const newTotal = baseTotal - voucherDiscount;
+    setCurrentTotal(newTotal);
+  }, [baseTotal, voucherDiscount]);
 
-  const priceSummary = useShallowMemo(() => {
-    if (!calculatedPrice || !truckTypeId) {
-      return [];
+  // Update voucher discount when selectedVoucher changes
+  useEffect(() => {
+    if (selectedVoucher && selectedVoucher.isValid) {
+      const discount = calculateDiscountAmount(selectedVoucher, baseTotal);
+      console.log("testdiscount", discount);
+      setVoucherDiscount(discount);
+    } else {
+      setVoucherDiscount(0);
     }
-    return [
-      {
-        title: "Biaya Pesan Jasa Angkut",
-        items: [
-          {
-            label: `Nominal Pesan Jasa Angkut (${truckCount} Unit)`,
-            price: calculatedPrice.transportFee,
-          },
-        ],
-      },
-      {
-        title: "Biaya Asuransi Barang",
-        items: [
-          {
-            label: "Nominal Premi Asuransi (1 Unit)",
-            price: calculatedPrice.insuranceFee,
-          },
-        ],
-      },
-      ...(calculatedPrice.additionalServiceFee.length > 0
-        ? [
-            {
-              title: "Biaya Layanan Tambahan",
-              items: calculatedPrice.additionalServiceFee.map((item) => ({
-                label: item.name,
-                price: item.totalCost,
-              })),
-            },
-          ]
-        : []),
-      {
-        title: "Biaya Lainnya",
-        items: [
-          {
-            label: "Admin Layanan",
-            price: calculatedPrice.adminFee,
-          },
-          {
-            label: "Pajak",
-            price: calculatedPrice.taxAmount,
-          },
-        ],
-      },
-    ];
-  }, [calculatedPrice, truckTypeId]);
+  }, [selectedVoucher, baseTotal]);
+
+  const detailPesanan = [
+    {
+      title: "Detail Pesanan",
+      items: [
+        {
+          label: "Biaya Transport",
+          cost: baseOrderAmount,
+        },
+        {
+          label: "Admin Layanan",
+          cost: adminFee,
+        },
+        // Conditional item using spread operator
+        ...(isBusinessEntity
+          ? [
+              {
+                label: "Pajak",
+                cost: taxAmount,
+              },
+            ]
+          : []),
+        // Voucher discount
+        ...(selectedVoucher && voucherDiscount > 0
+          ? [
+              {
+                label: `Diskon Voucher (${selectedVoucher.code})`,
+                cost: -voucherDiscount,
+                isDiscount: true,
+              },
+            ]
+          : []),
+      ],
+    },
+  ];
 
   const filteredVouchers = voucherList.filter(
     (v) =>
@@ -156,98 +150,90 @@ export const SummaryPanel = ({
 
   // Function to calculate discount amount based on voucher type
   const calculateDiscountAmount = (voucher, total) => {
-    if (!voucher) return 0;
+    if (!voucher || !total) return 0;
 
-    if (voucher.discountPercentage !== null) {
-      const pct = parseFloat(voucher.discountPercentage) || 0;
-      return total * (pct / 100);
-    } else {
-      // Use the fixed discountAmount key directly
-      return parseFloat(voucher.discountAmount) || 0;
+    // Handle different discount types (support both formats for consistency)
+    if (
+      voucher.discountType === "PERCENTAGE" ||
+      voucher.discountType === "percentage"
+    ) {
+      const discountAmount = (total * voucher.discountPercentage) / 100;
+      console.log("total", total, "discountamount", discountAmount);
+      return Math.min(
+        discountAmount,
+        voucher.maxDiscountAmount || discountAmount
+      );
+    } else if (
+      voucher.discountType === "FIXED_AMOUNT" ||
+      voucher.discountType === "fixed"
+    ) {
+      return voucher.discountAmount;
     }
+
+    return voucher.discountAmount || 0;
   };
 
   const handleVoucherSelect = async (voucher) => {
+    console.log("here", voucher);
     try {
       // Clear previous validation errors for all vouchers
       setValidationErrors({});
+      setValidatingVoucher(voucher.id);
 
-      const totalAmountForValidation = baseOrderAmount;
-      const res = await fetcherMuatrans.post(
-        "/v1/orders/vouchers/validate",
-        {
-          voucherId: voucher.id,
-          totalAmount: totalAmountForValidation,
-        },
-        {
-          headers: { Authorization: token },
-        }
-      );
-
-      const isValid = res.data.Data.isValid;
-      if (isValid !== false) {
-        // Voucher is valid
-        const discountValue = calculateDiscountAmount(
-          voucher,
-          totalAmountForValidation
-        );
-
-        setCurrentTotal(res.data.Data.finalAmount);
-
-        setSelectedVoucher({
-          ...voucher,
-          discountAmount: discountValue, // This 'discountAmount' will hold the FINAL numerical discount value
-        });
-        setShowVoucherPopup(false);
-      } else {
-        // Voucher is invalid
-        // Set validation error for this specific voucher
-        const validationMessage =
-          res.data.Data.validationMessages || "Voucher tidak valid";
-
+      // Client-side validation first
+      const clientValidation = validateVoucherClientSide(voucher, baseTotal);
+      if (!clientValidation.isValid) {
         setValidationErrors({
-          ...validationErrors,
-          [voucher.id]: validationMessage,
+          [voucher.id]: clientValidation.errorMessage,
         });
+        return;
+      }
 
-        // Keep the popup open so user can see the error
-        setSelectedVoucher(null);
+      // Server-side validation if client validation passes
+      const validationResult = useMockData
+        ? await mockValidateVoucher({
+            voucherId: voucher.id,
+            totalAmount: baseTotal,
+          })
+        : await muatTransValidateVoucher({
+            voucherId: voucher.id,
+            totalAmount: baseTotal,
+            token: token,
+          });
+
+      console.log("validationResult", validationResult);
+
+      if (validationResult.isValid) {
+        // Voucher is valid, proceed with selection
+        const validatedVoucher = {
+          ...voucher,
+          isValid: true,
+          validationResult: validationResult,
+        };
+
+        setSelectedVoucher(validatedVoucher);
+        setShowVoucherPopup(false);
+
+        // Show success toast and highlight
+        setToastMessage(`Voucher ${voucher.code} berhasil diterapkan!`);
+        setShowVoucherSuccess(true);
+        setTimeout(() => setToastMessage(""), 3000);
+        setTimeout(() => setShowVoucherSuccess(false), 5000); // Remove highlight after 5 seconds
+      } else {
+        // Voucher is invalid, show server error
+        setValidationErrors({
+          [voucher.id]:
+            validationResult.validationMessages?.join(", ") ||
+            "Voucher tidak valid",
+        });
       }
     } catch (err) {
-      console.log("error116", err);
-      setSelectedVoucher(null);
-
-      // Check if we have error response data (400 status code with validation message)
-      if (err.response && err.response.data && err.response.data.Data) {
-        const errorData = err.response.data.Data;
-        const validationMessage =
-          errorData.validationMessages || "Voucher tidak valid";
-        // labelAlertVoucherMTExpired
-        // labelAlertVoucherMTMinimumOrder
-        // labelAlertVoucherMTKuotaHabis
-        if (validationMessage == "labelAlertVoucherMTExpired") {
-          console.log("err expired");
-          validationMessage = "labelAlertVoucherMTExpired";
-        } else if (validationMessage == "labelAlertVoucherMTMinimumOrder") {
-          console.log("err order");
-          validationMessage = `Minimal Transaksi ${idrFormat(voucher.minOrderAmount)}
-          `;
-        } else if (validationMessage == "labelAlertVoucherMTKuotaHabis") {
-          console.log("err qty");
-          validationMessage = "labelAlertVoucherMTKuotaHabis";
-        }
-
-        setValidationErrors({
-          ...validationErrors,
-          [voucher.id]: validationMessage,
-        });
-      } else {
-        // General error fallback
-        setValidationErrors({
-          ...validationErrors,
-          [voucher.id]: "Terjadi kesalahan. Silakan coba lagi.",
-        });
-      }
+      console.error("Error validating voucher:", err);
+      setValidationErrors({
+        [voucher.id]: err.message || "Gagal memvalidasi voucher",
+      });
+    } finally {
+      setValidatingVoucher(null);
     }
   };
 
@@ -325,124 +311,6 @@ export const SummaryPanel = ({
   };
 
   const handleOrderFleet = () => {
-    //validateOrderData();
-    // Contoh model data create order
-    // const data = {
-    //   orderType: "INSTANT",
-    //   loadTimeStart: "2025-05-22T09:00:00Z",
-    //   loadTimeEnd: "2025-05-22T13:00:00Z",
-    //   locations: [
-    //     {
-    //       locationType: "PICKUP",
-    //       sequence: 1,
-    //       fullAddress: "Jl. Sudirman No. 123, Jakarta Pusat",
-    //       detailAddress: "Gedung ABC Lantai 5",
-    //       latitude: -6.2088,
-    //       longitude: 106.8456,
-    //       district: "Tanah Abang",
-    //       districtId: 2,
-    //       city: "Jakarta Pusat",
-    //       cityId: 213,
-    //       province: "DKI Jakarta",
-    //       provinceId: 35,
-    //       postalCode: "10270",
-    //       picName: "Budi Santoso",
-    //       picPhoneNumber: "081234567890",
-    //     },
-    //     {
-    //       locationType: "DROPOFF",
-    //       sequence: 1,
-    //       fullAddress: "Jl. Gatot Subroto No. 456, Jakarta Selatan",
-    //       detailAddress: "Lobby Utama",
-    //       latitude: -6.25,
-    //       longitude: 106.83,
-    //       district: "Setiabudi",
-    //       districtId: 2,
-    //       city: "Jakarta Pusat",
-    //       cityId: 213,
-    //       province: "DKI Jakarta",
-    //       provinceId: 35,
-    //       postalCode: "12930",
-    //       picName: "Sari Dewi",
-    //       picPhoneNumber: "081234567891",
-    //     },
-    //   ],
-    //   cargos: [
-    //     {
-    //       cargoNameId: "550e8400-e29b-41d4-a716-446655440030",
-    //       customName: "Laptop dan Printer",
-    //       weight: 500,
-    //       weightUnit: "kg",
-    //       dimensions: {
-    //         length: 2,
-    //         width: 1.5,
-    //         height: 1,
-    //         dimensionUnit: "m",
-    //       },
-    //       sequence: 1,
-    //     },
-    //   ],
-    //   cargoTypeId: "550e8400-e29b-41d4-a716-446655440100",
-    //   cargoCategoryId: "550e8400-e29b-41d4-a716-446655440110",
-    //   cargoPhotos: [
-    //     "https://storage.muatrans.com/cargos/photo-123456.jpg",
-    //     "https://storage.muatrans.com/cargos/photo-123457.jpg",
-    //   ],
-    //   cargoDescription: "Elektronik dan peralatan kantor",
-    //   isHalalLogistics: true,
-    //   carrierId: "550e8400-e29b-41d4-a716-446655440050",
-    //   truckTypeId: "550e8400-e29b-41d4-a716-446655440060",
-    //   truckCount: 2,
-    //   estimatedDistance: 75.5,
-    //   estimatedTime: 120,
-    //   insurance: {
-    //     insuranceOptionId: "550e8400-e29b-41d4-a716-446655440071",
-    //     coverageAmount: 20000000,
-    //     premiumAmount: 20000,
-    //     isCustomAmount: false,
-    //     insurancePolicyAccepted: true,
-    //   },
-    //   additionalServices: [
-    //     {
-    //       serviceId: "550e8400-e29b-41d4-a716-446655440000",
-    //       withShipping: true,
-    //       shippingDetails: {
-    //         recipientName: "John Doe",
-    //         recipientPhone: "08123456789",
-    //         destinationAddress: "Jl. Contoh No. 123",
-    //         detailAddress: "Rumah cat putih",
-    //         district: "Tegalsari",
-    //         city: "Surabaya",
-    //         province: "Jawa Timur",
-    //         postalCode: "60261",
-    //         shippingOptionId: "0d5de669-e7ba-46f4-a8c6-0f3192ed7465",
-    //         withInsurance: true,
-    //       },
-    //     },
-    //     {
-    //       serviceId: "550e8400-e29b-41d4-a716-446655440001",
-    //       withShipping: false,
-    //     },
-    //   ],
-    //   deliveryOrderNumbers: ["DO123456", "DO123457"],
-    //   businessEntity: {
-    //     isBusinessEntity: true,
-    //     name: "PT Sukses Makmur",
-    //     taxId: "0123456789012345",
-    //   },
-    //   voucherId: "550e8400-e29b-41d4-a716-446655440000",
-    //   paymentMethodId: "va_bca",
-    //   pricing: {
-    //     transportFee: 1500000,
-    //     insuranceFee: 20000,
-    //     additionalServiceFee: 85000,
-    //     voucherDiscount: 100000,
-    //     adminFee: 10000,
-    //     taxAmount: 161000,
-    //     totalPrice: 1676000,
-    //   },
-    // };
-
     const sampleOrderData = {
       orderType,
       loadTimeStart: "2025-06-26T09:00:00Z",
@@ -511,31 +379,25 @@ export const SummaryPanel = ({
       truckCount: 2,
       estimatedDistance: 75.5,
       estimatedTime: 120,
-      // insurance: {
-      //   insuranceOptionId: "550e8400-e29b-41d4-a716-446655440071",
-      //   coverageAmount: 20000000,
-      //   premiumAmount: 20000,
-      //   isCustomAmount: false,
-      //   insurancePolicyAccepted: true,
-      // },
       additionalServices,
       deliveryOrderNumbers,
       businessEntity,
-      voucherId: selectedVoucher ?? "",
+      voucherId: selectedVoucher?.id || "",
       paymentMethodId,
       pricing: {
-        transportFee: 5000000,
+        transportFee: baseOrderAmount,
         insuranceFee: 0,
         additionalServiceFee: 0,
-        voucherDiscount: 0,
-        adminFee: 10000,
-        taxAmount: 0,
-        totalPrice: 5010000,
+        voucherDiscount: voucherDiscount,
+        adminFee: adminFee,
+        taxAmount: taxAmount,
+        totalPrice: currentTotal,
       },
     };
 
     const result = validateOrderData(sampleOrderData);
-    console.log("here", result);
+    console.log("Validation result:", result);
+    console.log("Order data with voucher:", sampleOrderData);
 
     try {
       // Panggil API untuk membuat pesanan
@@ -551,17 +413,11 @@ export const SummaryPanel = ({
       } else {
         alert("Validation err");
       }
-
-      // Handle sukses
-      //router.push(`/daftarpesanan/detailpesanan/${response.data.data.orderId}`);
     } catch (error) {
       console.error("Error creating order:", error);
-      // Handle error
     }
 
     setIsModalConfirmationOpen(false);
-    // ambil order id dari response API create order
-    //router.push("/daftarpesanan/detailpesanan/1");
   };
 
   return (
@@ -571,16 +427,6 @@ export const SummaryPanel = ({
           <h3 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
             Ringkasan Transaksi
           </h3>
-          {/* <button
-            onClick={() => {
-              handleValidateFleetOrder();
-              // handleOrderFleet(true);
-              //router.push("/daftarpesanan/detailpesanan/1");
-            }}
-            className=""
-          >
-            Test
-          </button> */}
           <div className="scrollbar-custombadanusaha mr-[-12px] flex max-h-[263px] flex-col gap-y-6 overflow-y-auto pr-2">
             <button
               onClick={() => setShowVoucherPopup(true)}
@@ -613,30 +459,64 @@ export const SummaryPanel = ({
                 alt="right-arrow"
               />
             </button>
-            {/* Nanti ganti dengan kondisi kalo sdh ada detail pesanan */}
-            {priceSummary.length > 0 ? (
-              <>
-                <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
-                  Detail Pesanan
-                </span>
-                {priceSummary.map(({ title, items }, key) => (
-                  <div className="flex flex-col gap-y-3" key={key}>
-                    <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
-                      {title}
+
+            {/* Selected Voucher Info */}
+            {selectedVoucher && (
+              <div
+                className={`hidden items-center justify-between rounded-md border px-3 py-2 transition-all duration-500 ${
+                  showVoucherSuccess
+                    ? "scale-105 transform border-green-400 bg-green-100 shadow-md"
+                    : "border-green-200 bg-green-50"
+                }`}
+              >
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium text-green-800">
+                    {selectedVoucher.code}
+                  </span>
+                  <span className="text-xs text-green-600">
+                    Hemat Rp {voucherDiscount.toLocaleString("id-ID")}
+                  </span>
+                  {showVoucherSuccess && (
+                    <span className="animate-pulse text-xs font-semibold text-green-700">
+                      ✅ Berhasil diterapkan!
                     </span>
-                    {items.map(({ label, price }, key) => (
-                      <div
-                        className="flex items-center justify-between"
-                        key={key}
-                      >
-                        <span className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                          {label}
-                        </span>
-                        <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                          {`Rp${price.toLocaleString("id-ID")}`}
-                        </span>
-                      </div>
-                    ))}
+                  )}
+                </div>
+                <button
+                  onClick={() => {
+                    setSelectedVoucher(null);
+                    setVoucherDiscount(0);
+                    setShowVoucherSuccess(false);
+                  }}
+                  className="text-sm text-red-500 hover:text-red-700"
+                >
+                  Hapus
+                </button>
+              </div>
+            )}
+
+            {/* Detail Pesanan */}
+            {detailPesanan.map(({ title, items }, key) => (
+              <div className="flex flex-col gap-y-3" key={key}>
+                <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
+                  {title}
+                </span>
+                {items.map(({ label, cost, isDiscount }, itemKey) => (
+                  <div
+                    className="flex items-center justify-between"
+                    key={itemKey}
+                  >
+                    <span
+                      className={`text-[12px] font-medium leading-[14.4px] ${isDiscount ? "text-green-600" : "text-neutral-600"}`}
+                    >
+                      {label}
+                    </span>
+                    <span
+                      className={`text-[12px] font-medium leading-[14.4px] ${isDiscount ? "text-green-600" : "text-neutral-900"}`}
+                    >
+                      {isDiscount ? "-" : ""}Rp
+                      {Math.abs(cost).toLocaleString("id-ID")}
+                    </span>
                   </div>
                 ))}
                 <div className="flex items-center justify-between">
@@ -644,24 +524,24 @@ export const SummaryPanel = ({
                     Sub Total
                   </span>
                   <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
-                    {`Rp${calculatedPrice.totalPrice.toLocaleString("id-ID")}`}
+                    Rp{currentTotal.toLocaleString("id-ID")}
                   </span>
                 </div>
-              </>
-            ) : null}
+              </div>
+            ))}
           </div>
         </div>
 
         <div
           className={cn(
             "flex flex-col gap-y-6 rounded-b-xl px-5",
-            priceSummary.length > 0 ? "shadow-muat py-6" : "pb-6"
+            detailPesanan.length > 0 ? "shadow-muat py-6" : "pb-6"
           )}
         >
           <div className="flex items-center justify-between">
             <span className="text-base font-bold text-black">Total</span>
             <span className="text-base font-bold text-black">
-              {`Rp${currentTotal.toLocaleString("id-ID")}`}
+              Rp{currentTotal.toLocaleString("id-ID")}
             </span>
           </div>
           {truckTypeId && (
@@ -693,7 +573,7 @@ export const SummaryPanel = ({
               <IconComponent src="/icons/search.svg" width={20} height={20} />
             </div>
             <input
-              disabled={filteredVouchers.length === 0 ? true : false}
+              disabled={loading || error || voucherList.length === 0}
               type="text"
               placeholder="Cari Kode Voucher"
               value={searchKeyword}
@@ -704,12 +584,36 @@ export const SummaryPanel = ({
 
           <div className="space-y-3 pb-6">
             {loading ? (
-              <div className="text-center text-sm text-gray-500">
-                Memuat voucher...
+              <div className="flex flex-col items-center justify-center py-8">
+                <div className="mb-3 h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
+                <span className="text-sm text-gray-500">Memuat voucher...</span>
               </div>
             ) : error ? (
-              <div className="text-center text-sm text-red-500">
-                Gagal memuat voucher.
+              <div className="flex flex-col items-center justify-center py-8 text-red-500">
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+                  <svg
+                    className="h-6 w-6 text-red-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z"
+                    />
+                  </svg>
+                </div>
+                <span className="mb-2 text-center text-sm font-medium">
+                  {error}
+                </span>
+                <button
+                  onClick={refetch}
+                  className="text-xs text-blue-600 underline hover:text-blue-800"
+                >
+                  Coba Lagi
+                </button>
               </div>
             ) : searchKeyword.length > 0 && filteredVouchers.length === 0 ? (
               <VoucherSearchEmpty />
@@ -730,13 +634,14 @@ export const SummaryPanel = ({
                     discountType={v.discountType}
                     minTransaksi={v.minOrderAmount}
                     kuota={v.quota}
-                    usagePercentage={v.usage["globalPercentage"] || 0}
+                    usagePercentage={v.usage?.globalPercentage || 0}
                     isOutOfStock={v.isOutOfStock || false}
                     startDate={formatShortDate(v.validFrom)}
                     endDate={formatDate(v.validTo)}
                     isActive={selectedVoucher?.id === v.id}
                     onSelect={() => handleVoucherSelect(v)}
                     validationError={validationErrors[v.id]}
+                    isValidating={validatingVoucher === v.id}
                   />
                 ))}
               </>
