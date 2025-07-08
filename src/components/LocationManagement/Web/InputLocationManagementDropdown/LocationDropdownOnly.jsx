@@ -8,6 +8,7 @@ import {
 
 import { Portal } from "@radix-ui/react-portal";
 
+import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useRegisterModalPortalNode } from "@/components/Modal/useRegisterModalPortalNode";
 import { cn } from "@/lib/utils";
@@ -29,6 +30,7 @@ export const LocationDropdownOnly = ({
   errorMessage,
   markerIcon = "/icons/marker-lokasi-muat.svg",
 }) => {
+  const containerRef = useRef(null);
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
   const [dropdownStyle, setDropdownStyle] = useState(null);
@@ -62,15 +64,15 @@ export const LocationDropdownOnly = ({
   }, []);
 
   useEffect(() => {
-    if (inputRef.current) {
-      scrollParentRef.current = getScrollParent(inputRef.current);
+    if (containerRef.current) {
+      scrollParentRef.current = getScrollParent(containerRef.current);
     }
   }, [getScrollParent, isDropdownSearchOpen]);
 
   // Function to update dropdown position
   const updateDropdownPosition = () => {
-    if (isDropdownSearchOpen && inputRef.current) {
-      const inputRect = inputRef.current.getBoundingClientRect();
+    if (isDropdownSearchOpen && containerRef.current) {
+      const inputRect = containerRef.current.getBoundingClientRect();
       const scrollParent = scrollParentRef.current || document.documentElement;
       const scrollParentRect = scrollParent.getBoundingClientRect();
 
@@ -121,8 +123,8 @@ export const LocationDropdownOnly = ({
     if (!isDropdownSearchOpen) return;
     function handleClickOutside(event) {
       if (
-        inputRef.current &&
-        !inputRef.current.contains(event.target) &&
+        containerRef.current &&
+        !containerRef.current.contains(event.target) &&
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target)
       ) {
@@ -282,34 +284,22 @@ export const LocationDropdownOnly = ({
   );
 
   return (
-    <div className={cn("relative mx-auto mt-4 w-full", className)}>
-      <div className="relative">
-        <input
-          ref={inputRef}
-          type="text"
-          placeholder="Masukkan Lokasi Muat"
-          value={searchLocationAutoComplete}
-          onClick={() => setIsDropdownSearchOpen(true)}
-          onChange={(e) => {
-            setSearchLocationAutoComplete(e.currentTarget.value);
-          }}
-          className={cn(
-            "w-full rounded-[6px] border border-blue-300 py-[8.5px] pl-[38px] pr-3 text-xs font-medium outline-none placeholder:text-neutral-600 focus:border-blue-500",
-            errorMessage && "border-error-400"
-          )}
-        />
-        <IconComponent
-          src={markerIcon}
-          width={16}
-          height={16}
-          className="absolute left-3 top-1/2 -translate-y-1/2"
-        />
-      </div>
-      {errorMessage && (
-        <span className="block pt-2 text-xs font-medium text-error-400">
-          {errorMessage}
-        </span>
-      )}
+    <div
+      ref={containerRef}
+      className={cn("relative mx-auto mt-4 w-full", className)}
+    >
+      <Input
+        ref={inputRef}
+        type="text"
+        placeholder="Masukkan Lokasi Muat"
+        value={searchLocationAutoComplete}
+        onClick={() => setIsDropdownSearchOpen(true)}
+        onChange={(e) => {
+          setSearchLocationAutoComplete(e.currentTarget.value);
+        }}
+        icon={{ left: markerIcon }}
+        errorMessage={errorMessage}
+      />
       {isDropdownSearchOpen && dropdownStyle && (
         <Portal>
           <div ref={setDropdownRef}>{dropdown}</div>
