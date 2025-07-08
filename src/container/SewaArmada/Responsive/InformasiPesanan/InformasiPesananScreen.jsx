@@ -1,8 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 
+import {
+  BottomSheet,
+  BottomSheetContent,
+  BottomSheetHeader,
+} from "@/components/Bottomsheet/Bottomsheet";
 import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import Checkbox from "@/components/Form/Checkbox";
@@ -12,60 +17,56 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import ImageUploader from "@/components/ImageUploader/ImageUploader";
 import TextArea from "@/components/TextArea/TextArea";
+import VoucherCard from "@/components/Voucher/VoucherCard";
+import VoucherEmptyState from "@/components/Voucher/VoucherEmptyState";
+import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
 import NoDeliveryOrder from "@/container/SewaArmada/Responsive/InformasiPesanan/NoDeliveryOrder";
+import usePrevious from "@/hooks/use-previous";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useVouchers } from "@/hooks/useVoucher";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import { formatDate, formatShortDate } from "@/lib/utils/dateFormat";
+import { validateVoucherClientSide } from "@/lib/utils/voucherValidation";
+import { mockValidateVoucher } from "@/services/voucher/mockVoucherService";
+import { muatTransValidateVoucher } from "@/services/voucher/muatTransVoucherService";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
 } from "@/store/forms/sewaArmadaStore";
 
 const InformasiPesananScreen = ({ paymentMethods }) => {
-  // const paymentMethods = [
-  //   {
-  //     title: "Transfer Virtual Account",
-  //     icon: "/icons/transfer24.svg",
-  //     options: [
-  //       {
-  //         id: "bca",
-  //         name: "BCA Virtual Account",
-  //         icon: "/icons/bca24.svg",
-  //       },
-  //       {
-  //         id: "mandiri",
-  //         name: "Mandiri Virtual Account",
-  //         icon: "/icons/bca24.svg",
-  //       },
-  //       {
-  //         id: "bni",
-  //         name: "BNI Virtual Account",
-  //         icon: "/icons/bca24.svg",
-  //       },
-  //       {
-  //         id: "bri",
-  //         name: "BRI Virtual Account",
-  //         icon: "/icons/bca24.svg",
-  //       },
-  //       {
-  //         id: "bsi",
-  //         name: "BSI Virtual Account",
-  //         icon: "/icons/bca24.svg",
-  //       },
-  //       {
-  //         id: "permata",
-  //         name: "Permata Virtual Account",
-  //         icon: "/icons/bca24.svg",
-  //       },
-  //       {
-  //         id: "cimb",
-  //         name: "CIMB Virtual Account",
-  //         icon: "/icons/bca24.svg",
-  //       },
-  //     ],
-  //   },
-  // ];
   const navigation = useResponsiveNavigation();
+
+  /* voucher state and logic - from HomeScreen */
+  const token = "Bearer your_token_here";
+  const MOCK_EMPTY = false;
+  const useMockData = false; // Flag untuk menggunakan mock data - ubah ke false untuk menggunakan API real
+
+  // Gunakan hook voucher untuk mendapatkan data
+  let {
+    vouchers: voucherList,
+    loading,
+    error,
+    refetch,
+  } = useVouchers(token, useMockData, MOCK_EMPTY);
+
+  // Add missing variables for voucher functionality
+  const baseOrderAmount = 950000; // Same as transactionData.biayaPesanJasaAngkut
+  const adminFee = 10000;
+  const taxAmount = 0; // Will be calculated based on business entity
+  const baseTotal = baseOrderAmount + adminFee + taxAmount;
+  const [currentTotal, setCurrentTotal] = useState(baseTotal);
+  const [voucherDiscount, setVoucherDiscount] = useState(0);
+
+  const [isBottomsheetOpen, setIsBottomsheetOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [tempSelectedVoucher, setTempSelectedVoucher] = useState(null);
+  const [selectedVoucher, setSelectedVoucher] = useState(null);
+  const previousIsBottomsheetOpen = usePrevious(isBottomsheetOpen);
+  const [validationErrors, setValidationErrors] = useState({});
+  const [validatingVoucher, setValidatingVoucher] = useState(null);
+  /* end voucher state */
   // Get state from Zustand store
   const { formValues, formErrors } = useSewaArmadaStore();
   const {
@@ -95,6 +96,153 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
   // Get actions from Zustand store
   const { setField, setFotoMuatan, validateSecondForm } =
     useSewaArmadaActions();
+
+  // Voucher useEffect hooks and calculations
+  useEffect(() => {
+    const newTotal = baseTotal - voucherDiscount;
+    setCurrentTotal(newTotal);
+  }, [baseTotal, voucherDiscount]);
+
+  useEffect(() => {
+    if (selectedVoucher && selectedVoucher.isValid) {
+      const discount = calculateDiscountAmount(selectedVoucher, baseTotal);
+      setVoucherDiscount(discount);
+    } else {
+      setVoucherDiscount(0);
+    }
+  }, [selectedVoucher, baseTotal]);
+
+  useEffect(() => {
+    if (isBottomsheetOpen && !previousIsBottomsheetOpen) {
+      // Reset search when bottomsheet opens
+      setSearchQuery("");
+      // Set temp selected voucher to current selected voucher when opening
+      setTempSelectedVoucher(selectedVoucher);
+    }
+  }, [isBottomsheetOpen, previousIsBottomsheetOpen, selectedVoucher]);
+
+  // Function to calculate discount amount based on voucher type
+  const calculateDiscountAmount = (voucher, total) => {
+    if (!voucher || !total) return 0;
+
+    // Handle different discount types (support both formats for consistency)
+    if (
+      voucher.discountType === "PERCENTAGE" ||
+      voucher.discountType === "percentage"
+    ) {
+      const discountAmount = (total * voucher.discountPercentage) / 100;
+      return Math.min(
+        discountAmount,
+        voucher.maxDiscountAmount || discountAmount
+      );
+    } else if (
+      voucher.discountType === "FIXED_AMOUNT" ||
+      voucher.discountType === "fixed"
+    ) {
+      return voucher.discountAmount;
+    }
+
+    return voucher.discountAmount || 0;
+  };
+
+  // Handle voucher selection with validation (when user actually selects voucher)
+  const handleConfirmVoucherSelection = async (voucher) => {
+    await handleVoucherSelect(voucher);
+  };
+
+  // Apply selected voucher (confirm selection when closing the bottomsheet)
+  const handleVoucherSelect = async (voucher) => {
+    try {
+      // Clear previous validation errors for all vouchers
+      setValidationErrors({});
+      setValidatingVoucher(voucher.id); // Show loading state
+
+      // Client-side validation first
+      const clientValidation = validateVoucherClientSide(voucher, baseTotal);
+      if (!clientValidation.isValid) {
+        setValidationErrors({
+          [voucher.id]: clientValidation.errorMessage,
+        });
+        return;
+      }
+
+      // Server-side validation if client validation passes
+      const validationResult = useMockData
+        ? await mockValidateVoucher({
+            voucherId: voucher.id,
+            totalAmount: baseTotal,
+          })
+        : await muatTransValidateVoucher({
+            voucherId: voucher.id,
+            totalAmount: baseTotal,
+            token: token,
+          });
+
+      if (validationResult.isValid) {
+        // Voucher is valid, proceed with selection
+        const validatedVoucher = {
+          ...voucher,
+          isValid: true,
+          validationResult: validationResult,
+        };
+
+        setTempSelectedVoucher(validatedVoucher);
+        // Langsung apply voucher jika validasi berhasil
+        setSelectedVoucher(validatedVoucher);
+        setIsBottomsheetOpen(false);
+      } else {
+        // Voucher is invalid, show server error
+        setValidationErrors({
+          [voucher.id]:
+            validationResult.validationMessages?.join(", ") ||
+            "Voucher tidak valid",
+        });
+      }
+    } catch (err) {
+      console.error("Error validating voucher:", err);
+      setValidationErrors({
+        [voucher.id]: err.message || "Gagal memvalidasi voucher",
+      });
+    } finally {
+      setValidatingVoucher(null); // Hide loading state
+    }
+  };
+
+  // Apply voucher (confirm selection)
+  const handleApplyVoucher = () => {
+    if (tempSelectedVoucher) {
+      setSelectedVoucher(tempSelectedVoucher);
+      setIsBottomsheetOpen(false);
+    } else {
+      setSelectedVoucher(null);
+      setIsBottomsheetOpen(false);
+    }
+  };
+
+  // Remove voucher
+  const handleRemoveVoucher = () => {
+    setSelectedVoucher(null);
+    setTempSelectedVoucher(null);
+    setVoucherDiscount(0);
+  };
+
+  // Filter voucherList based on search query
+  const filteredVouchers =
+    voucherList?.filter((voucher) =>
+      voucher.code.toLowerCase().includes(searchQuery.toLowerCase())
+    ) || [];
+
+  // Format currency helper
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })
+      .format(amount)
+      .replace("IDR", "Rp");
+  };
 
   // Event handlers
   const handleImageUpload = (index, img) => setFotoMuatan(index, img);
@@ -429,12 +577,25 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
                 Diskon Voucher
               </h3>
               <div className="flex items-start justify-between gap-3">
-                <span className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                  -
-                </span>
-                <span className="text-right text-[12px] font-medium leading-[14.4px] text-error-400">
-                  -
-                </span>
+                {selectedVoucher && voucherDiscount > 0 ? (
+                  <>
+                    <span className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                      Voucher ({selectedVoucher.code})
+                    </span>
+                    <span className="text-right text-[12px] font-medium leading-[14.4px] text-error-400">
+                      -{formatCurrency(voucherDiscount)}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                      -
+                    </span>
+                    <span className="text-right text-[12px] font-medium leading-[14.4px] text-error-400">
+                      -
+                    </span>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -458,7 +619,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
                   Pajak
                 </span>
                 <span className="text-right text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                  -
+                  {isBusinessEntity ? formatCurrency(21300) : "-"}
                 </span>
               </div>
             </div>
@@ -470,18 +631,37 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
               Total Biaya
             </span>
             <span className="text-right text-[14px] font-semibold leading-[15.4px] text-neutral-900">
-              Rp1.123.233
+              {formatCurrency(
+                baseOrderAmount +
+                  10000 + // Biaya Asuransi
+                  35000 + // Biaya Layanan Tambahan 1
+                  100000 + // Biaya Layanan Tambahan 2
+                  10000 + // Admin Layanan
+                  (isBusinessEntity ? 21300 : 0) - // Pajak
+                  voucherDiscount // Diskon Voucher
+              )}
             </span>
           </div>
         </div>
       </div>
 
       <ResponsiveFooter className="flex flex-col gap-y-2.5">
-        <button className="flex h-[44px] items-center justify-between rounded-md bg-primary-50 px-4">
+        <button
+          className="flex h-[44px] items-center justify-between rounded-md bg-primary-50 px-4"
+          onClick={() => setIsBottomsheetOpen(true)}
+        >
           <div className="flex items-center gap-x-3">
-            <IconComponent src="/icons/voucher24.svg" size="medium" />
+            {selectedVoucher ? (
+              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs text-white">
+                ✓
+              </div>
+            ) : (
+              <IconComponent src="/icons/voucher24.svg" size="medium" />
+            )}
             <span className="text-[14px] font-semibold leading-[15.4px] text-primary-700">
-              Makin hemat pakai voucher
+              {selectedVoucher
+                ? "1 Voucher Terpakai"
+                : "Makin hemat pakai voucher"}
             </span>
           </div>
           <IconComponent src="/icons/chevron-right24.svg" size="medium" />
@@ -495,6 +675,125 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
           Lanjut
         </Button>
       </ResponsiveFooter>
+
+      {/* Voucher BottomSheet */}
+      <BottomSheet open={isBottomsheetOpen} onOpenChange={setIsBottomsheetOpen}>
+        <BottomSheetContent
+          className={
+            "animate-slideUp fixed bottom-0 left-0 right-0 z-50 mx-auto max-h-[90vh] w-full overflow-y-auto rounded-t-2xl bg-white shadow-2xl"
+          }
+        >
+          <BottomSheetHeader>Pilih Voucher</BottomSheetHeader>
+          <div className="flex h-[577px] w-full flex-col gap-4 overflow-y-auto bg-white px-4 py-6">
+            {/* Search bar */}
+            <div className="relative flex items-center rounded-md border border-neutral-400">
+              <div className="absolute left-3">
+                <IconComponent src="/icons/search16.svg" />
+              </div>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Cari Kode Voucher"
+                className="h-10 w-full rounded-md bg-transparent pl-10 pr-3 text-[14px] outline-none"
+                disabled={
+                  loading || error || !voucherList || voucherList.length === 0
+                }
+              />
+              {searchQuery && (
+                <button
+                  className="absolute right-3"
+                  onClick={() => setSearchQuery("")}
+                >
+                  <IconComponent src="/icons/close.svg" />
+                </button>
+              )}
+            </div>
+
+            {/* Voucher selection note */}
+            <p className="text-[12px] font-medium text-neutral-600">
+              Hanya bisa dipilih 1 Voucher
+            </p>
+
+            {/* Voucher list */}
+            <div className="flex-1 overflow-y-auto">
+              {loading ? (
+                <div className="flex flex-col items-center justify-center py-8">
+                  <div className="mb-3 h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
+                  <span className="text-[14px] font-medium text-neutral-600">
+                    Memuat voucher...
+                  </span>
+                </div>
+              ) : error ? (
+                <div className="flex flex-col items-center justify-center py-8 text-red-500">
+                  <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+                    <svg
+                      className="h-6 w-6 text-red-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z"
+                      />
+                    </svg>
+                  </div>
+                  <span className="mb-2 text-center text-[14px] font-medium">
+                    {error}
+                  </span>
+                  <button
+                    onClick={refetch}
+                    className="text-[12px] text-blue-600 underline hover:text-blue-800"
+                  >
+                    Coba Lagi
+                  </button>
+                </div>
+              ) : searchQuery && filteredVouchers.length === 0 ? (
+                <VoucherSearchEmpty />
+              ) : voucherList?.length === 0 ? (
+                <VoucherEmptyState />
+              ) : (
+                <div className="space-y-3">
+                  {filteredVouchers.map((v) => (
+                    <VoucherCard
+                      key={v.id}
+                      title={v.code}
+                      discountInfo={v.description}
+                      discountAmount={v.discountAmount}
+                      discountPercentage={v.discountPercentage}
+                      discountType={v.discountType}
+                      minTransaksi={v.minOrderAmount}
+                      kuota={v.quota}
+                      usagePercentage={v.usage?.globalPercentage || 0}
+                      isOutOfStock={v.isOutOfStock || false}
+                      startDate={formatShortDate(v.validFrom)}
+                      endDate={formatDate(v.validTo)}
+                      isActive={tempSelectedVoucher?.id === v.id}
+                      onSelect={() => handleConfirmVoucherSelection(v)}
+                      validationError={validationErrors[v.id]}
+                      isValidating={validatingVoucher === v.id}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Apply button */}
+            <div className="sticky bottom-0 flex items-center bg-white pt-4">
+              <Button
+                variant="muatparts-primary"
+                className="flex-1"
+                onClick={handleApplyVoucher}
+              >
+                {tempSelectedVoucher ? "Terapkan" : "Lewati"}
+              </Button>
+            </div>
+          </div>
+        </BottomSheetContent>
+      </BottomSheet>
     </FormResponsiveLayout>
   );
 };
