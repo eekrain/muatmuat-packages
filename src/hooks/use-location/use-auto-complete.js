@@ -41,11 +41,15 @@ export const useAutoComplete = ({
   const searchResult = useMemo(() => data?.slice(0, 3) || [], [data]);
 
   useShallowCompareEffect(() => {
-    if (autoCompleteSearchPhrase.length >= 3) {
+    if (autoCompleteSearchPhrase && autoCompleteSearchPhrase?.length >= 3) {
       debouncedTrigger(
         new URLSearchParams({ phrase: autoCompleteSearchPhrase })
       );
-    } else if (autoCompleteSearchPhrase.length < 3 && searchResult.length > 0) {
+    } else if (
+      (!autoCompleteSearchPhrase ||
+        (autoCompleteSearchPhrase && autoCompleteSearchPhrase.length < 3)) &&
+      searchResult.length > 0
+    ) {
       reset();
     }
   }, [autoCompleteSearchPhrase, debouncedTrigger, searchResult]);
