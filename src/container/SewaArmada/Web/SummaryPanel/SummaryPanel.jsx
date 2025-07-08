@@ -14,6 +14,7 @@ import FleetOrderConfirmationModal from "@/container/SewaArmada/Web/FleetOrderCo
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useVouchers } from "@/hooks/useVoucher";
 import { fetcherMuatrans } from "@/lib/axios";
+import { cn } from "@/lib/utils";
 import { formatDate, formatShortDate } from "@/lib/utils/dateFormat";
 import {
   useSewaArmadaActions,
@@ -68,6 +69,7 @@ export const SummaryPanel = ({
     cargoDescription,
     carrierId,
     truckTypeId,
+    truckCount,
     additionalServices,
     deliveryOrderNumbers,
     businessEntity,
@@ -105,7 +107,7 @@ export const SummaryPanel = ({
         title: "Biaya Pesan Jasa Angkut",
         items: [
           {
-            label: "Nominal Pesan Jasa Angkut (1 Unit)",
+            label: `Nominal Pesan Jasa Angkut (${truckCount} Unit)`,
             price: calculatedPrice.transportFee,
           },
         ],
@@ -650,7 +652,12 @@ export const SummaryPanel = ({
           </div>
         </div>
 
-        <div className="shadow-muat flex flex-col gap-y-6 rounded-b-xl px-5 py-6">
+        <div
+          className={cn(
+            "flex flex-col gap-y-6 rounded-b-xl px-5",
+            priceSummary.length > 0 ? "shadow-muat py-6" : "pb-6"
+          )}
+        >
           <div className="flex items-center justify-between">
             <span className="text-base font-bold text-black">Total</span>
             <span className="text-base font-bold text-black">

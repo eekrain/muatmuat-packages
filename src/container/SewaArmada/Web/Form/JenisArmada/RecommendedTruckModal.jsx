@@ -15,6 +15,11 @@ const RecommendedTruckModal = ({ isOpen, setIsOpen, recommendedTrucks }) => {
   const { setField } = useSewaArmadaActions();
 
   const handleSelectRecommendedTruck = () => {
+    const selectedTruck = recommendedTrucks.find(
+      (item) => item.truckTypeId === selectedTruckTypeId
+    );
+    setField("truckCount", selectedTruck.unit);
+    setField("minTruckCount", selectedTruck.unit);
     setField("truckTypeId", selectedTruckTypeId);
     setIsOpen(false);
     toast.success("Jenis armada telah berhasil diubah");

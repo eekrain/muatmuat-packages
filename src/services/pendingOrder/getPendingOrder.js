@@ -53,13 +53,7 @@ export default function usePendingOrdersPage(options = {}) {
   const orders = ordersData?.Data?.orders || [];
 
   const handleChangeQueryParams = (field, value) => {
-    setQueryParams((prevState) => {
-      // Reset to page 1 when changing filters
-      if (field !== "page") {
-        return { ...prevState, [field]: value, page: 1 };
-      }
-      return { ...prevState, [field]: value };
-    });
+    setQueryParams((prevState) => ({ ...prevState, [field]: value }));
     setLastFilterField(field);
   };
 

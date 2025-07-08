@@ -24,7 +24,6 @@ export const BadanUsahaPemesan = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState("");
   const [formData, setFormData] = useState({
-    isBusinessEntity: true,
     name: "",
     taxId: "",
   });
@@ -42,19 +41,20 @@ export const BadanUsahaPemesan = () => {
   };
 
   const handleToggleCheckbox = (checked) => {
-    console.log("checked", checked);
     if (checked) {
-      setFormData((prevState) => ({ ...prevState, isBusinessEntity: true }));
+      setFormData((prevState) => ({ ...prevState }));
       setModalType("create");
       setIsModalOpen(true);
     } else {
       const defaultData = {
-        isBusinessEntity: false,
         name: "",
         taxId: "",
       };
       setFormData(defaultData);
-      setField("businessEntity", defaultData);
+      setField("businessEntity", {
+        ...defaultData,
+        isBusinessEntity: false,
+      });
     }
   };
 
@@ -83,7 +83,6 @@ export const BadanUsahaPemesan = () => {
         name,
         taxId,
       });
-      setFormData((prevState) => ({ ...prevState, isBusinessEntity: false }));
       setIsModalOpen(false);
     } else {
       setFormErrors(newErrors);
@@ -103,9 +102,7 @@ export const BadanUsahaPemesan = () => {
                 handleFirstTime(() => handleToggleCheckbox(checked))
               }
               label="Centang jika kamu adalah suatu perusahaan/badan usaha"
-              checked={
-                isBusinessEntity || (isModalOpen && formData.isBusinessEntity)
-              }
+              checked={isBusinessEntity || isModalOpen}
               value="isBusinessEntity"
             />
             <InfoTooltip className="w-[336px]" side="right">
@@ -139,10 +136,6 @@ export const BadanUsahaPemesan = () => {
               <button
                 className="flex items-center gap-x-2 self-start"
                 onClick={() => {
-                  setFormData((prevState) => ({
-                    ...prevState,
-                    isBusinessEntity: false,
-                  }));
                   setModalType("edit");
                   setIsModalOpen(true);
                 }}
@@ -162,10 +155,12 @@ export const BadanUsahaPemesan = () => {
       <Modal
         open={isModalOpen}
         onOpenChange={(value) => {
-          setField("businessEntity", {
-            ...businessEntity,
-            isBusinessEntity: false,
-          });
+          if (modalType === "create") {
+            setField("businessEntity", {
+              ...businessEntity,
+              isBusinessEntity: false,
+            });
+          }
           setFormErrors({});
           setIsModalOpen(value);
         }}

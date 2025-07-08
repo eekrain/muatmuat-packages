@@ -141,7 +141,6 @@ const DeliveryEvidenceModal = ({
     <Modal
       open={isOpen}
       onOpenChange={(value) => {
-        console.log("🚀 ~ file: DeliveryEvidenceModal.jsx:139 ~ value:", value);
         if (modalType === "create") {
           setField(
             "additionalServices",
