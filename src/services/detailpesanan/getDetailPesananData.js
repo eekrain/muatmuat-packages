@@ -215,7 +215,20 @@ const apiResultOrderDetail = {
   },
 };
 
-const fetcher = async (cacheKey) => {
+export const fetcherOrderDetail = async (cacheKey) => {
+  const orderId = cacheKey.split("/")[1];
+  const result = apiResultOrderDetail;
+  return result.data.Data;
+
+  // const result = await fetcherMuatrans.get(`v1/orders/${orderId}/alerts`);
+
+  // return result?.data?.Data?.alerts || [];
+};
+
+export const useGetOrderDetail = (orderId) =>
+  useSWR(`order-detail/${orderId}`, fetcherOrderDetail);
+
+const completeFetcher = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
 
   try {
@@ -258,7 +271,4 @@ const fetcher = async (cacheKey) => {
 };
 
 export const useGetDetailPesananData = (orderId) =>
-  useSWR(`detailPesanan/${orderId}`, fetcher);
-
-export const useGetSalinDetailPesananData = (orderId) =>
-  useSWR(orderId ? `detailPesanan/${orderId}` : null, fetcher);
+  useSWR(`detailPesanan/${orderId}`, completeFetcher);

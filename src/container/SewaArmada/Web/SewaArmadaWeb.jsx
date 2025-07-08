@@ -140,6 +140,7 @@ export default function SewaArmadaWeb({
       <WaitingSettlementModal />
       <SelectArmadaModal carrierData={carriers} truckData={trucks} />
 
+      <div className="box-content h-[7px] w-[7px] flex-shrink-0 rounded-full border-[5px] border-[#FFC217] bg-[#461B02]"></div>
       <button onClick={testSubmit}>Test Submit</button>
     </>
   );
