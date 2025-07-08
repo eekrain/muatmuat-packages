@@ -45,7 +45,7 @@ export const SummaryPanel = ({
   const MOCK_EMPTY = false;
   const useMockData = false; // Flag untuk menggunakan mock data - ubah ke false untuk menggunakan API real
 
-  const {
+  let {
     vouchers: voucherList,
     loading,
     error,
@@ -674,43 +674,44 @@ export const SummaryPanel = ({
                 <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
                   Detail Pesanan
                 </span>
-                {priceSummary.map(({ title, items }, key) => (
-                  <div className="flex flex-col gap-y-3" key={key}>
-                    <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
-                      {title}
-                    </span>
-                    {items.map(({ label, price }, itemKey) => (
-                      <div
-                        className="flex items-center justify-between"
-                        key={itemKey}
+                {priceSummary.map(({ title, items }, key) => {
+                  const isDiscountSection = title
+                    .toLowerCase()
+                    .includes("diskon");
+                  return (
+                    <div className="flex flex-col gap-y-3" key={key}>
+                      <span
+                        className={
+                          "text-[14px] font-semibold leading-[16.8px] text-neutral-900"
+                        }
                       >
-                        <span className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                          {label}
-                        </span>
-                        <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
-                          {`Rp${price.toLocaleString("id-ID")}`}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                ))}
-
-                {/* Show voucher discount if applied */}
-                {selectedVoucher && voucherDiscount > 0 && (
-                  <div className="flex flex-col gap-y-3">
-                    <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
-                      Diskon
-                    </span>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[12px] font-medium leading-[14.4px] text-green-600">
-                        Voucher ({selectedVoucher.code})
+                        {title}
                       </span>
-                      <span className="text-[12px] font-medium leading-[14.4px] text-green-600">
-                        -Rp{voucherDiscount.toLocaleString("id-ID")}
-                      </span>
+                      {items.map(({ label, price }, itemKey) => (
+                        <div
+                          className={
+                            "flex items-center justify-between text-neutral-900"
+                          }
+                          key={itemKey}
+                        >
+                          <span
+                            className={
+                              "leading-[14.4px]text-neutral-600 text-[12px] font-medium"
+                            }
+                          >
+                            {label}
+                          </span>
+                          <span
+                            className={`text-[12px] font-medium leading-[14.4px] ${isDiscountSection ? "text-[#EE4343]" : "text-neutral-900"}`}
+                          >
+                            {isDiscountSection ? "-" : ""}Rp
+                            {price.toLocaleString("id-ID")}
+                          </span>
+                        </div>
+                      ))}
                     </div>
-                  </div>
-                )}
+                  );
+                })}
 
                 <div className="flex items-center justify-between">
                   <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
@@ -736,12 +737,12 @@ export const SummaryPanel = ({
                       key={itemKey}
                     >
                       <span
-                        className={`text-[12px] font-medium leading-[14.4px] ${isDiscount ? "text-green-600" : "text-neutral-600"}`}
+                        className={`text-[12px] font-medium leading-[14.4px] ${isDiscount ? "text-[#EE4343]" : "text-neutral-600"}`}
                       >
                         {label}
                       </span>
                       <span
-                        className={`text-[12px] font-medium leading-[14.4px] ${isDiscount ? "text-green-600" : "text-neutral-900"}`}
+                        className={`text-[12px] font-medium leading-[14.4px] ${isDiscount ? "text-[#EE4343]" : "text-neutral-900"}`}
                       >
                         {isDiscount ? "-" : ""}Rp
                         {Math.abs(cost).toLocaleString("id-ID")}
