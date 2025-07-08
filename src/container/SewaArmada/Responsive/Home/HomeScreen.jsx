@@ -23,6 +23,9 @@ import DefaultResponsiveLayout from "@/layout/ResponsiveLayout/DefaultResponsive
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
 import { formatDate, formatShortDate } from "@/lib/utils/dateFormat";
+import { validateVoucherClientSide } from "@/lib/utils/voucherValidation";
+import { mockValidateVoucher } from "@/services/voucher/mockVoucherService";
+import { muatTransValidateVoucher } from "@/services/voucher/muatTransVoucherService";
 import { useInformasiMuatanStore } from "@/store/forms/informasiMuatanStore";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 import {
@@ -70,18 +73,82 @@ const SewaArmadaHomeScreen = () => {
 
   /* voucher */
   const token = "Bearer your_token_here";
-  let { vouchers: voucherList, loading, error } = useVouchers(token);
   const MOCK_EMPTY = false;
+  const useMockData = false; // Flag untuk menggunakan mock data - ubah ke false untuk menggunakan API real
 
-  if (MOCK_EMPTY && !loading && !error) {
-    voucherList = [];
-  }
+  // Gunakan hook voucher untuk mendapatkan data
+  let {
+    vouchers: voucherList,
+    loading,
+    error,
+    refetch,
+  } = useVouchers(token, useMockData, MOCK_EMPTY); // Pass MOCK_EMPTY to hook
+
+  // No need to override voucherList here since hook handles MOCK_EMPTY
+
+  // Add missing variables for voucher functionality
+  const baseOrderAmount = 5000000; // 5 juta untuk transport fee
+  const adminFee = 10000;
+  const taxAmount = 21300; // Business entity tax
+  const baseTotal = baseOrderAmount + adminFee + taxAmount;
+  const [currentTotal, setCurrentTotal] = useState(baseTotal);
+  const [voucherDiscount, setVoucherDiscount] = useState(0);
+
   const [isBottomsheetOpen, setIsBottomsheetOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [tempSelectedVoucher, setTempSelectedVoucher] = useState(null);
   const [selectedVoucher, setSelectedVoucher] = useState(null); // Added this to store the final selected voucher
   const previousIsBottomsheetOpen = usePrevious(isBottomsheetOpen);
   const [validationErrors, setValidationErrors] = useState({});
+  const [showTransactionSummary, setShowTransactionSummary] = useState(false);
+  const [validatingVoucher, setValidatingVoucher] = useState(null); // Track which voucher is being validated
+
+  // Data dummy untuk ringkasan transaksi sesuai screenshot
+  const transactionData = {
+    biayaPesanJasaAngkut: 950000,
+    biayaAsuransiBarang: 10000,
+    biayaLayananTambahan: 35000,
+    nominalBantuanTambahan: 100000,
+    adminLayanan: 10000,
+    pajak: -21300, // Pajak negatif sesuai screenshot
+  };
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })
+      .format(amount)
+      .replace("IDR", "Rp");
+  };
+
+  const finalTotal =
+    transactionData.biayaPesanJasaAngkut +
+    transactionData.biayaAsuransiBarang +
+    transactionData.biayaLayananTambahan +
+    transactionData.nominalBantuanTambahan +
+    transactionData.adminLayanan +
+    transactionData.pajak -
+    voucherDiscount;
+
+  // Update total when voucher discount changes
+  useEffect(() => {
+    const newTotal = baseTotal - voucherDiscount;
+    setCurrentTotal(newTotal);
+  }, [baseTotal, voucherDiscount]);
+
+  // Calculate discount when voucher changes
+  useEffect(() => {
+    if (selectedVoucher && selectedVoucher.isValid) {
+      const discount = calculateDiscountAmount(selectedVoucher, baseTotal);
+      setVoucherDiscount(discount);
+    } else {
+      setVoucherDiscount(0);
+    }
+  }, [selectedVoucher, baseTotal]);
+
   useEffect(() => {
     if (isBottomsheetOpen && !previousIsBottomsheetOpen) {
       // Reset search when bottomsheet opens
@@ -91,11 +158,42 @@ const SewaArmadaHomeScreen = () => {
     }
   }, [isBottomsheetOpen, previousIsBottomsheetOpen, selectedVoucher]);
 
-  // Handle voucher selection (temporary selection in the bottomsheet)
+  // Handle voucher selection (temporary selection in the bottomsheet for UI only)
   const handleSelectVoucher = (voucher) => {
+    // Hanya untuk UI selection, tidak melakukan validasi
     setTempSelectedVoucher(
       voucher.id === tempSelectedVoucher?.id ? null : voucher
     );
+  };
+
+  // Handle voucher selection with validation (when user actually selects voucher)
+  const handleConfirmVoucherSelection = async (voucher) => {
+    // This function is now called from VoucherCard onSelect for actual selection
+    await handleVoucherSelect(voucher);
+  };
+
+  // Function to calculate discount amount based on voucher type
+  const calculateDiscountAmount = (voucher, total) => {
+    if (!voucher || !total) return 0;
+
+    // Handle different discount types (support both formats for consistency)
+    if (
+      voucher.discountType === "PERCENTAGE" ||
+      voucher.discountType === "percentage"
+    ) {
+      const discountAmount = (total * voucher.discountPercentage) / 100;
+      return Math.min(
+        discountAmount,
+        voucher.maxDiscountAmount || discountAmount
+      );
+    } else if (
+      voucher.discountType === "FIXED_AMOUNT" ||
+      voucher.discountType === "fixed"
+    ) {
+      return voucher.discountAmount;
+    }
+
+    return voucher.discountAmount || 0;
   };
 
   // Apply selected voucher (confirm selection when closing the bottomsheet)
@@ -103,94 +201,109 @@ const SewaArmadaHomeScreen = () => {
     try {
       // Clear previous validation errors for all vouchers
       setValidationErrors({});
+      setValidatingVoucher(voucher.id); // Show loading state
 
-      const totalAmountForValidation = baseOrderAmount;
-      const res = await fetcherMuatrans.post(
-        "/v1/orders/vouchers/validate",
-        {
-          voucherId: voucher.id,
-          totalAmount: totalAmountForValidation,
-        },
-        {
-          headers: { Authorization: token },
-        }
-      );
-
-      const isValid = res.data.Data.isValid;
-      if (isValid !== false) {
-        // Voucher is valid
-        const discountValue = calculateDiscountAmount(
-          voucher,
-          totalAmountForValidation
-        );
-
-        setCurrentTotal(res.data.Data.finalAmount);
-
-        setSelectedVoucher({
-          ...voucher,
-          discountAmount: discountValue, // This 'discountAmount' will hold the FINAL numerical discount value
-        });
-        setShowVoucherPopup(false);
-      } else {
-        // Voucher is invalid
-        // Set validation error for this specific voucher
-        const validationMessage =
-          res.data.Data.validationMessages || "Voucher tidak valid";
-
+      // Client-side validation first
+      const clientValidation = validateVoucherClientSide(voucher, baseTotal);
+      if (!clientValidation.isValid) {
         setValidationErrors({
-          ...validationErrors,
-          [voucher.id]: validationMessage,
+          [voucher.id]: clientValidation.errorMessage,
         });
+        return;
+      }
 
-        // Keep the popup open so user can see the error
-        setSelectedVoucher(null);
+      // Server-side validation if client validation passes
+      const validationResult = useMockData
+        ? await mockValidateVoucher({
+            voucherId: voucher.id,
+            totalAmount: baseTotal,
+          })
+        : await muatTransValidateVoucher({
+            voucherId: voucher.id,
+            totalAmount: baseTotal,
+            token: token,
+          });
+
+      if (validationResult.isValid) {
+        // Voucher is valid, proceed with selection
+        const validatedVoucher = {
+          ...voucher,
+          isValid: true,
+          validationResult: validationResult,
+        };
+
+        setTempSelectedVoucher(validatedVoucher);
+        // Langsung apply voucher jika validasi berhasil
+        setSelectedVoucher(validatedVoucher);
+        setIsBottomsheetOpen(false);
+        toast.success(`Voucher ${voucher.code} berhasil diterapkan!`);
+        // Otomatis tampilkan ringkasan transaksi
+        setTimeout(() => {
+          setShowTransactionSummary(true);
+        }, 500);
+      } else {
+        // Voucher is invalid, show server error
+        setValidationErrors({
+          [voucher.id]:
+            validationResult.validationMessages?.join(", ") ||
+            "Voucher tidak valid",
+        });
       }
     } catch (err) {
-      console.log("error116", err);
-      setSelectedVoucher(null);
-
-      // Check if we have error response data (400 status code with validation message)
-      if (err.response && err.response.data && err.response.data.Data) {
-        const errorData = err.response.data.Data;
-        const validationMessage =
-          errorData.validationMessages || "Voucher tidak valid";
-        // labelAlertVoucherMTExpired
-        // labelAlertVoucherMTMinimumOrder
-        // labelAlertVoucherMTKuotaHabis
-        if (validationMessage == "labelAlertVoucherMTExpired") {
-          console.log("err expired");
-          validationMessage = "labelAlertVoucherMTExpired";
-        } else if (validationMessage == "labelAlertVoucherMTMinimumOrder") {
-          console.log("err order");
-          validationMessage = `Minimal Transaksi ${idrFormat(voucher.minOrderAmount)}
-          `;
-        } else if (validationMessage == "labelAlertVoucherMTKuotaHabis") {
-          console.log("err qty");
-          validationMessage = "labelAlertVoucherMTKuotaHabis";
-        }
-
-        setValidationErrors({
-          ...validationErrors,
-          [voucher.id]: validationMessage,
-        });
-      } else {
-        // General error fallback
-        setValidationErrors({
-          ...validationErrors,
-          [voucher.id]: "Terjadi kesalahan. Silakan coba lagi.",
-        });
-      }
+      console.error("Error validating voucher:", err);
+      setValidationErrors({
+        [voucher.id]: err.message || "Gagal memvalidasi voucher",
+      });
+    } finally {
+      setValidatingVoucher(null); // Hide loading state
     }
   };
+
+  // Apply voucher (confirm selection)
+  const handleApplyVoucher = () => {
+    if (tempSelectedVoucher) {
+      setSelectedVoucher(tempSelectedVoucher);
+      setIsBottomsheetOpen(false);
+      toast.success(`Voucher ${tempSelectedVoucher.code} berhasil diterapkan!`);
+      // Otomatis tampilkan ringkasan transaksi setelah voucher diterapkan
+      setTimeout(() => {
+        setShowTransactionSummary(true);
+      }, 500); // Delay sedikit untuk smooth transition
+    } else {
+      setSelectedVoucher(null);
+      setIsBottomsheetOpen(false);
+    }
+  };
+
+  // Remove voucher
+  const handleRemoveVoucher = () => {
+    setSelectedVoucher(null);
+    setTempSelectedVoucher(null);
+    setVoucherDiscount(0);
+    setShowTransactionSummary(false);
+    toast.success("Voucher berhasil dihapus");
+  };
+
+  // Show transaction summary
+  const handleShowTransactionSummary = () => {
+    if (selectedVoucher) {
+      setShowTransactionSummary(true);
+    } else {
+      setIsBottomsheetOpen(true);
+    }
+  };
+
   // Filter voucherList based on search query
   const filteredVouchers =
     voucherList?.filter((voucher) =>
       voucher.code.toLowerCase().includes(searchQuery.toLowerCase())
     ) || [];
+
   useEffect(() => {
     console.log("voucherList:", voucherList);
   }, [voucherList]);
   /* end voucher */
+
   return (
     <DefaultResponsiveLayout mode="default">
       <div
@@ -211,9 +324,6 @@ const SewaArmadaHomeScreen = () => {
               alt="muatrans"
               className="h-4 w-20"
             />
-            {/* <div className="flex h-4 w-20 items-center justify-center rounded bg-gradient-to-r from-blue-600 to-yellow-500 text-xs font-bold text-white">
-              muatrans
-            </div> */}
             <p className="text-right text-[10px] font-semibold leading-[10px] text-[#461B02]">
               Cargo Land Transportation Company
             </p>
@@ -455,46 +565,48 @@ const SewaArmadaHomeScreen = () => {
           </FormContainer>
         </div>
       </div>
-      {/*
-  <div className="flex w-full items-center justify-between">
-        <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
-          Total Biaya
-        </span>
-        <span className="text-[14px] font-bold leading-[15.4px] text-neutral-900">
-          Rp1.123.233
-        </span>
-      </div>
-            <Button
-        variant="muatparts-primary-secondary"
-        className="flex-1"
-        onClick={() => {}}
-        type="button"
-      >
-        Lihat Detail Biaya
-      </Button>
-      
-  */}
 
       {isShowCostDetail ? (
         <ResponsiveFooter className="z-[1000] flex flex-col gap-y-4">
           {/* Total Biaya section with integrated voucher */}
           <div className="flex w-full flex-col rounded bg-primary-50">
             {/* Voucher section inside Total Biaya div - conditionally rendered based on bottomsheet state */}
-            {!isBottomsheetOpen && (
+            {!isBottomsheetOpen && !showTransactionSummary && (
               <div
                 className="flex cursor-pointer items-center justify-between p-[12px]"
-                onClick={() => setIsBottomsheetOpen(true)}
+                onClick={handleShowTransactionSummary}
               >
                 <div className="flex items-center">
-                  <Image
-                    src="/img/iconVoucher2.png"
-                    alt="Voucher"
-                    width={25}
-                    height={25}
-                  />
+                  {selectedVoucher ? (
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs text-white">
+                      ✓
+                    </div>
+                  ) : (
+                    <Image
+                      src="/img/iconVoucher2.png"
+                      alt="Voucher"
+                      width={25}
+                      height={25}
+                    />
+                  )}
                   <span className="ml-[12px] text-sm font-medium text-blue-600">
-                    Makin hemat pakai voucher
+                    {selectedVoucher
+                      ? `Diskon ${selectedVoucher.code}`
+                      : "Makin hemat pakai voucher"}
                   </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {selectedVoucher && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveVoucher();
+                      }}
+                      className="text-xs text-red-500 hover:text-red-700"
+                    >
+                      Hapus
+                    </button>
+                  )}
                   <Image
                     src="/icons/right-arrow-voucher.png"
                     width={18}
@@ -502,6 +614,34 @@ const SewaArmadaHomeScreen = () => {
                     alt="right-arrow"
                   />
                 </div>
+              </div>
+            )}
+
+            {/* Show voucher discount if selected */}
+            {selectedVoucher && (
+              <div
+                className="flex cursor-pointer items-center justify-between rounded-lg bg-blue-50 p-3 transition-colors hover:bg-blue-100"
+                onClick={() => setIsBottomsheetOpen(true)}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-white">
+                    <Image
+                      src="/img/iconVoucher2.png"
+                      alt="Voucher"
+                      width={25}
+                      height={25}
+                    />
+                  </div>
+                  <span className="text-xs font-medium text-blue-900">
+                    1 Voucher Terpakai
+                  </span>
+                </div>
+                <Image
+                  src="/icons/right-arrow-voucher.png"
+                  width={18}
+                  height={18}
+                  alt="right-arrow"
+                />
               </div>
             )}
           </div>
@@ -521,7 +661,11 @@ const SewaArmadaHomeScreen = () => {
       ) : null}
 
       <BottomSheet open={isBottomsheetOpen} onOpenChange={setIsBottomsheetOpen}>
-        <BottomSheetContent>
+        <BottomSheetContent
+          className={
+            "animate-slideUp fixed bottom-0 left-0 right-0 z-50 mx-auto max-h-[90vh] w-full overflow-y-auto rounded-t-2xl bg-white shadow-2xl"
+          }
+        >
           <BottomSheetHeader>Pilih Voucher</BottomSheetHeader>
           <div className="flex h-[577px] w-full flex-col gap-4 overflow-y-auto bg-white px-4 py-6">
             {/* Search bar */}
@@ -535,7 +679,9 @@ const SewaArmadaHomeScreen = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Cari Kode Voucher"
                 className="h-10 w-full rounded-md bg-transparent pl-10 pr-3 text-[14px] outline-none"
-                disabled={!voucherList || voucherList.length === 0}
+                disabled={
+                  loading || error || !voucherList || voucherList.length === 0
+                }
               />
               {searchQuery && (
                 <button
@@ -555,16 +701,38 @@ const SewaArmadaHomeScreen = () => {
             {/* Voucher list */}
             <div className="flex-1 overflow-y-auto">
               {loading ? (
-                <div className="flex items-center justify-center py-8">
+                <div className="flex flex-col items-center justify-center py-8">
+                  <div className="mb-3 h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
                   <span className="text-[14px] font-medium text-neutral-600">
                     Memuat voucher...
                   </span>
                 </div>
               ) : error ? (
-                <div className="flex items-center justify-center py-8 text-red-500">
-                  <span className="text-[14px] font-medium">
-                    Gagal memuat voucher.
+                <div className="flex flex-col items-center justify-center py-8 text-red-500">
+                  <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+                    <svg
+                      className="h-6 w-6 text-red-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z"
+                      />
+                    </svg>
+                  </div>
+                  <span className="mb-2 text-center text-[14px] font-medium">
+                    {error}
                   </span>
+                  <button
+                    onClick={refetch}
+                    className="text-[12px] text-blue-600 underline hover:text-blue-800"
+                  >
+                    Coba Lagi
+                  </button>
                 </div>
               ) : searchQuery && filteredVouchers.length === 0 ? (
                 <VoucherSearchEmpty />
@@ -582,13 +750,14 @@ const SewaArmadaHomeScreen = () => {
                       discountType={v.discountType}
                       minTransaksi={v.minOrderAmount}
                       kuota={v.quota}
-                      usagePercentage={v.usage["globalPercentage"] || 0}
+                      usagePercentage={v.usage?.globalPercentage || 0}
                       isOutOfStock={v.isOutOfStock || false}
                       startDate={formatShortDate(v.validFrom)}
                       endDate={formatDate(v.validTo)}
-                      isActive={selectedVoucher?.id === v.id}
-                      onSelect={() => handleVoucherSelect(v)}
+                      isActive={tempSelectedVoucher?.id === v.id}
+                      onSelect={() => handleConfirmVoucherSelection(v)}
                       validationError={validationErrors[v.id]}
+                      isValidating={validatingVoucher === v.id}
                     />
                   ))}
                 </div>
@@ -596,20 +765,210 @@ const SewaArmadaHomeScreen = () => {
             </div>
 
             {/* Apply button */}
+            <div className="sticky bottom-0 bg-white pt-4">
+              <div className="flex gap-2">
+                <Button
+                  variant="secondary"
+                  className="flex-1"
+                  onClick={() => {
+                    setTempSelectedVoucher(null);
+                    setIsBottomsheetOpen(false);
+                  }}
+                >
+                  Batal
+                </Button>
+                <Button
+                  variant="muatparts-primary"
+                  className="flex-1"
+                  onClick={handleApplyVoucher}
+                >
+                  {tempSelectedVoucher ? "Pakai Voucher" : "Lewati"}
+                </Button>
+              </div>
+            </div>
           </div>
         </BottomSheetContent>
       </BottomSheet>
 
-      {/* Display selected voucher if any */}
-      {selectedVoucher && (
-        <div className="mt-2 rounded-md bg-blue-50 p-2 text-sm">
-          <div className="font-medium">Voucher applied:</div>
-          <div>{selectedVoucher.code}</div>
-          <div>
-            Discount: Rp{selectedVoucher.discountAmount?.toLocaleString()}
+      {/* Transaction Summary BottomSheet */}
+      <BottomSheet
+        open={showTransactionSummary}
+        onOpenChange={setShowTransactionSummary}
+      >
+        <BottomSheetContent
+          className={
+            "animate-slideUp fixed bottom-0 left-0 right-0 z-50 mx-auto max-h-[90vh] w-full overflow-y-auto rounded-t-2xl bg-white shadow-2xl"
+          }
+        >
+          <BottomSheetHeader>Ringkasan Transaksi</BottomSheetHeader>
+          <div className="flex h-[577px] w-full flex-col gap-4 overflow-y-auto bg-white px-4 py-6">
+            {/* Biaya Pesan Jasa Angkut */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-gray-900">
+                Biaya Pesan Jasa Angkut
+              </h3>
+              <div className="flex justify-between">
+                <span className="text-xs text-gray-600">
+                  Nominal Pesan Jasa Angkut
+                  <br />
+                  (1 Unit)
+                </span>
+                <span className="text-xs font-medium text-gray-900">
+                  {formatCurrency(transactionData.biayaPesanJasaAngkut)}
+                </span>
+              </div>
+            </div>
+
+            {/* Biaya Asuransi Barang */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-gray-900">
+                Biaya Asuransi Barang
+              </h3>
+              <div className="flex justify-between">
+                <span className="text-xs text-gray-600">
+                  Nominal Premi Asuransi (1 Unit)
+                </span>
+                <span className="text-xs font-medium text-gray-900">
+                  {formatCurrency(transactionData.biayaAsuransiBarang)}
+                </span>
+              </div>
+            </div>
+
+            {/* Biaya Layanan Tambahan */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-gray-900">
+                Biaya Layanan Tambahan
+              </h3>
+              <div className="space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-xs text-gray-600">
+                    Nominal Kirim Bukti Fisik
+                    <br />
+                    Penerimaan Barang
+                  </span>
+                  <span className="text-xs font-medium text-gray-900">
+                    {formatCurrency(transactionData.biayaLayananTambahan)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <button className="text-left text-xs text-blue-600 hover:text-blue-800">
+                    Lihat Detail Pengiriman Dokumen
+                  </button>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-xs text-gray-600">
+                    Nominal Bantuan Tambahan
+                  </span>
+                  <span className="text-xs font-medium text-gray-900">
+                    {formatCurrency(transactionData.nominalBantuanTambahan)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Diskon Voucher */}
+            {selectedVoucher && voucherDiscount > 0 && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-semibold text-gray-900">
+                    Diskon
+                  </h3>
+                  <span className="rounded bg-yellow-200 px-2 py-1 text-xs font-medium text-yellow-800">
+                    Voucher
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-xs text-blue-600">
+                    Voucher
+                    <br />({selectedVoucher.code})
+                  </span>
+                  <span className="text-xs font-medium text-red-600">
+                    -{formatCurrency(voucherDiscount)}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Biaya Lainnya */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-gray-900">
+                Biaya Lainnya
+              </h3>
+              <div className="space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-xs text-gray-600">Admin Layanan</span>
+                  <span className="text-xs font-medium text-gray-900">
+                    {formatCurrency(transactionData.adminLayanan)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-xs text-gray-600">Pajak</span>
+                  <span className="text-xs font-medium text-red-600">
+                    {formatCurrency(transactionData.pajak)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Total Biaya */}
+            <div className="space-y-2 border-t pt-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-bold text-gray-900">
+                  Total Biaya
+                </span>
+                <span className="text-sm font-bold text-gray-900">
+                  {formatCurrency(finalTotal)}
+                </span>
+              </div>
+            </div>
+
+            {/* Status Voucher */}
+            {selectedVoucher && (
+              <div className="mt-4">
+                <div className="flex items-center justify-between rounded-lg bg-blue-50 p-3">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-white">
+                      <svg
+                        className="h-3 w-3"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-xs font-medium text-blue-900">
+                      1 Voucher Terpakai
+                    </span>
+                  </div>
+                  <IconComponent
+                    src="/icons/arrow-right.svg"
+                    width={12}
+                    height={12}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Action Button */}
+            <div className="sticky bottom-0 bg-white pt-4">
+              <Button
+                variant="muatparts-primary"
+                className="w-full"
+                onClick={() => {
+                  setShowTransactionSummary(false);
+                  navigation.push("/InformasiPesanan");
+                }}
+              >
+                Lanjut
+              </Button>
+            </div>
           </div>
-        </div>
-      )}
+        </BottomSheetContent>
+      </BottomSheet>
 
       <ModalFirstTimer />
     </DefaultResponsiveLayout>

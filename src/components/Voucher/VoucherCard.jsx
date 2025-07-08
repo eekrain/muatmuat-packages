@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useState } from "react";
 
 import { idrFormat } from "@/lib/utils/formatters";
+import { isVoucherExpiringSoon } from "@/lib/utils/voucherValidation";
 
 import VoucherInfoPopup from "./VoucherInfoPopup";
 
@@ -21,6 +22,7 @@ export default function VoucherCard({
   isOutOfStock = false,
   onSelect,
   validationError,
+  isValidating = false, // Loading state for validation
 }) {
   const [showInfoPopup, setShowInfoPopup] = useState(false);
 
@@ -135,7 +137,7 @@ export default function VoucherCard({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              if (!validationError) {
+              if (!validationError && !isValidating) {
                 onSelect();
               }
             }}
@@ -144,13 +146,24 @@ export default function VoucherCard({
                 ? "cursor-not-allowed bg-gray-300 text-gray-500"
                 : validationError
                   ? "cursor-default bg-transparent text-blue-500"
-                  : isActive
-                    ? "bg-transparent text-blue-500 hover:bg-blue-50"
-                    : "bg-transparent text-blue-500 hover:bg-blue-50"
+                  : isValidating
+                    ? "cursor-default bg-gray-100 text-gray-500"
+                    : isActive
+                      ? "bg-transparent text-blue-500 hover:bg-blue-50"
+                      : "bg-transparent text-blue-500 hover:bg-blue-50"
             }`}
-            disabled={isOutOfStock || validationError}
+            disabled={isOutOfStock || validationError || isValidating}
           >
-            {isActive ? "Dipakai" : "Pakai"}
+            {isValidating ? (
+              <div className="flex items-center gap-1">
+                <div className="h-3 w-3 animate-spin rounded-full border border-gray-400 border-t-transparent"></div>
+                Validasi...
+              </div>
+            ) : isActive ? (
+              "Dipakai"
+            ) : (
+              "Pakai"
+            )}
           </button>
         </div>
       </div>
@@ -165,6 +178,15 @@ export default function VoucherCard({
           Kuota Voucher sudah habis
         </div>
       )}
+
+      {/* Expired warning - show if voucher is expiring within 3 days */}
+      {!validationError &&
+        !isOutOfStock &&
+        isVoucherExpiringSoon(endDate, 3) && (
+          <div className="w-full py-1 text-xs font-medium text-red-500">
+            ⚠️ Voucher akan berakhir dalam 3 hari
+          </div>
+        )}
 
       {/* Voucher Info Popup */}
       <VoucherInfoPopup
