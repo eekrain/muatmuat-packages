@@ -58,17 +58,17 @@ export const StepperContainer = ({ totalStep, activeIndex, children }) => {
                 paddingRight: `calc(${titleWidth}px / 2 - 16px)`,
                 height: `${32 + 8 + maxTitleHeight - 6}px`,
               }
-            : undefined
+            : { width: "100%", height: "auto" }
         }
       >
         <div className="relative flex items-start justify-between gap-4">
           {/* Background line */}
-          <div className="absolute left-0 top-4 h-0.5 w-full bg-[#C4C4C4]" />
+          <div className="absolute left-0 top-3 h-0.5 w-full bg-[#C4C4C4] md:top-4" />
 
           {/* Active progress line */}
           {activeIndex > 0 && (
             <div
-              className="absolute left-0 top-4 h-0.5 bg-[#FFC217] transition-all duration-300"
+              className="absolute left-0 top-3 h-0.5 bg-[#FFC217] transition-all duration-300 md:top-4"
               style={{
                 width: `${(activeIndex / (totalStep - 1)) * 100}%`,
                 maxWidth: !isMobile ? "calc(100% - 32px)" : undefined,
