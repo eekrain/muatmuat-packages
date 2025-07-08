@@ -164,40 +164,40 @@ export const SummaryPanel = ({
   }, [calculatedPrice, truckTypeId, truckCount, selectedVoucher]);
 
   // Also create detailPesanan structure for new logic integration
-  const detailPesanan = [
-    {
-      title: "Detail Pesanan",
-      items: [
-        {
-          label: "Biaya Transport",
-          cost: baseOrderAmount,
-        },
-        {
-          label: "Admin Layanan",
-          cost: adminFee,
-        },
-        // Conditional item using spread operator
-        ...(isBusinessEntity
-          ? [
-              {
-                label: "Pajak",
-                cost: taxAmount,
-              },
-            ]
-          : []),
-        // Voucher discount
-        ...(selectedVoucher && voucherDiscount > 0
-          ? [
-              {
-                label: `Diskon Voucher (${selectedVoucher.code})`,
-                cost: -voucherDiscount,
-                isDiscount: true,
-              },
-            ]
-          : []),
-      ],
-    },
-  ];
+  // const detailPesanan = [
+  //   {
+  //     title: "Detail Pesanan",
+  //     items: [
+  //       {
+  //         label: "Biaya Transport",
+  //         cost: baseOrderAmount,
+  //       },
+  //       {
+  //         label: "Admin Layanan",
+  //         cost: adminFee,
+  //       },
+  //       // Conditional item using spread operator
+  //       ...(isBusinessEntity
+  //         ? [
+  //             {
+  //               label: "Pajak",
+  //               cost: taxAmount,
+  //             },
+  //           ]
+  //         : []),
+  //       // Voucher discount
+  //       ...(selectedVoucher && voucherDiscount > 0
+  //         ? [
+  //             {
+  //               label: `Diskon Voucher (${selectedVoucher.code})`,
+  //               cost: -voucherDiscount,
+  //               isDiscount: true,
+  //             },
+  //           ]
+  //         : []),
+  //     ],
+  //   },
+  // ];
 
   // Calculate total when voucher or base amounts change (from old file logic)
   useEffect(() => {
@@ -669,104 +669,112 @@ export const SummaryPanel = ({
             )}
 
             {/* Detail Pesanan - Integrated from old file logic */}
-            {priceSummary.length > 0 ? (
-              <>
-                <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
-                  Detail Pesanan
-                </span>
-                {priceSummary.map(({ title, items }, key) => {
-                  const isDiscountSection = title
-                    .toLowerCase()
-                    .includes("diskon");
-                  return (
-                    <div className="flex flex-col gap-y-3" key={key}>
-                      <span
-                        className={
-                          "text-[14px] font-semibold leading-[16.8px] text-neutral-900"
-                        }
-                      >
-                        {title}
-                      </span>
-                      {items.map(({ label, price }, itemKey) => (
-                        <div
+            {
+              priceSummary.length > 0 ? (
+                <>
+                  <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
+                    Detail Pesanan
+                  </span>
+                  {priceSummary.map(({ title, items }, key) => {
+                    const isDiscountSection = title
+                      .toLowerCase()
+                      .includes("diskon");
+                    return (
+                      <div className="flex flex-col gap-y-3" key={key}>
+                        <span
                           className={
-                            "flex items-center justify-between text-neutral-900"
+                            "text-[14px] font-semibold leading-[16.8px] text-neutral-900"
                           }
-                          key={itemKey}
                         >
-                          <span
+                          {title}
+                        </span>
+                        {items.map(({ label, price }, itemKey) => (
+                          <div
                             className={
-                              "leading-[14.4px]text-neutral-600 text-[12px] font-medium"
+                              "flex items-center justify-between text-neutral-900"
                             }
+                            key={itemKey}
                           >
-                            {label}
-                          </span>
-                          <span
-                            className={`text-[12px] font-medium leading-[14.4px] ${isDiscountSection ? "text-[#EE4343]" : "text-neutral-900"}`}
-                          >
-                            {isDiscountSection ? "-" : ""}Rp
-                            {price.toLocaleString("id-ID")}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  );
-                })}
+                            <span
+                              className={
+                                "text-[12px] font-medium leading-[14.4px] text-neutral-600"
+                              }
+                            >
+                              {label}
+                            </span>
+                            <span
+                              className={`text-[12px] font-medium leading-[14.4px] ${isDiscountSection ? "text-[#EE4343]" : "text-neutral-900"}`}
+                            >
+                              {isDiscountSection ? "-" : ""}Rp
+                              {price.toLocaleString("id-ID")}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })}
 
-                <div className="flex items-center justify-between">
-                  <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
-                    Sub Total
-                  </span>
-                  <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
-                    {calculatedPrice
-                      ? `Rp${calculatedPrice.totalPrice.toLocaleString("id-ID")}`
-                      : `Rp${currentTotal.toLocaleString("id-ID")}`}
-                  </span>
-                </div>
-              </>
-            ) : (
-              // Fallback to detailPesanan structure when no calculatedPrice
-              detailPesanan.map(({ title, items }, key) => (
-                <div className="flex flex-col gap-y-3" key={key}>
-                  <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
-                    {title}
-                  </span>
-                  {items.map(({ label, cost, isDiscount }, itemKey) => (
-                    <div
-                      className="flex items-center justify-between"
-                      key={itemKey}
-                    >
-                      <span
-                        className={`text-[12px] font-medium leading-[14.4px] ${isDiscount ? "text-[#EE4343]" : "text-neutral-600"}`}
-                      >
-                        {label}
-                      </span>
-                      <span
-                        className={`text-[12px] font-medium leading-[14.4px] ${isDiscount ? "text-[#EE4343]" : "text-neutral-900"}`}
-                      >
-                        {isDiscount ? "-" : ""}Rp
-                        {Math.abs(cost).toLocaleString("id-ID")}
-                      </span>
-                    </div>
-                  ))}
                   <div className="flex items-center justify-between">
                     <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
                       Sub Total
                     </span>
                     <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
-                      Rp{currentTotal.toLocaleString("id-ID")}
+                      {
+                        calculatedPrice
+                          ? `Rp${calculatedPrice.totalPrice.toLocaleString("id-ID")}`
+                          : "Rp0"
+                        // `Rp${currentTotal.toLocaleString("id-ID")}`
+                      }
                     </span>
                   </div>
-                </div>
-              ))
-            )}
+                </>
+              ) : null
+              // (
+              //   // Fallback to detailPesanan structure when no calculatedPrice
+              //   detailPesanan.map(({ title, items }, key) => (
+              //     <div className="flex flex-col gap-y-3" key={key}>
+              //       <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
+              //         {title}
+              //       </span>
+              //       {items.map(({ label, cost, isDiscount }, itemKey) => (
+              //         <div
+              //           className="flex items-center justify-between"
+              //           key={itemKey}
+              //         >
+              //           <span
+              //             className={`text-[12px] font-medium leading-[14.4px] ${isDiscount ? "text-[#EE4343]" : "text-neutral-600"}`}
+              //           >
+              //             {label}
+              //           </span>
+              //           <span
+              //             className={`text-[12px] font-medium leading-[14.4px] ${isDiscount ? "text-[#EE4343]" : "text-neutral-900"}`}
+              //           >
+              //             {isDiscount ? "-" : ""}Rp
+              //             {Math.abs(cost).toLocaleString("id-ID")}
+              //           </span>
+              //         </div>
+              //       ))}
+              //       <div className="flex items-center justify-between">
+              //         <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
+              //           Sub Total
+              //         </span>
+              //         <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
+              //           {calculatedPrice
+              //             ? `Rp${calculatedPrice.totalPrice.toLocaleString("id-ID")}`
+              //             : `Rp${currentTotal.toLocaleString("id-ID")}`}
+              //         </span>
+              //       </div>
+              //     </div>
+              //   ))
+              // )
+            }
           </div>
         </div>
 
         <div
           className={cn(
             "flex flex-col gap-y-6 rounded-b-xl px-5",
-            priceSummary.length > 0 || detailPesanan.length > 0
+            priceSummary.length > 0 /*|| detailPesanan.length > 0*/
               ? "shadow-muat py-6"
               : "pb-6"
           )}
@@ -774,9 +782,12 @@ export const SummaryPanel = ({
           <div className="flex items-center justify-between">
             <span className="text-base font-bold text-black">Total</span>
             <span className="text-base font-bold text-black">
-              {calculatedPrice && priceSummary.length > 0
-                ? `Rp${(calculatedPrice.totalPrice - voucherDiscount).toLocaleString("id-ID")}`
-                : `Rp${currentTotal.toLocaleString("id-ID")}`}
+              {
+                calculatedPrice
+                  ? `Rp${calculatedPrice.totalPrice.toLocaleString("id-ID")}`
+                  : "Rp0"
+                // `Rp${currentTotal.toLocaleString("id-ID")}`
+              }
             </span>
           </div>
           {truckTypeId && (
