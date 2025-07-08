@@ -21,10 +21,10 @@ export function InfoTooltip({
   render,
   open,
 }) {
-  console.log(
-    "🔍 ~ InfoTooltip ~ src/components/Form/InfoTooltip.jsx:23 ~ appearance:",
-    appearance
-  );
+  // console.log(
+  //   "🔍 ~ InfoTooltip ~ src/components/Form/InfoTooltip.jsx:23 ~ appearance:",
+  //   appearance
+  // );
 
   return (
     <TooltipPrimitive.Provider delayDuration={100}>

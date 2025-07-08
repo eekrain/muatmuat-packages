@@ -113,6 +113,7 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
                   ? "cursor-pointer bg-neutral-50"
                   : "cursor-not-allowed bg-neutral-200"
               )}
+              disabled={informasiMuatan?.length === 0}
               onClick={() =>
                 handleFirstTime(() => handleOpenModal("carrierId"))
               }

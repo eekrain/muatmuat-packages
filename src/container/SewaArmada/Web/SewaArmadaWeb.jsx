@@ -42,8 +42,11 @@ export default function SewaArmadaWeb({
   carriers,
   trucks,
   additionalServicesOptions,
-  paymentMethods,
+  shippingDetails,
+  shippingOptions,
+  shippingOption,
   calculatedPrice,
+  paymentMethods,
   onFetchTrucks,
 }) {
   const orderType = useSewaArmadaStore((state) => state.orderType);
@@ -119,6 +122,9 @@ export default function SewaArmadaWeb({
                   {/* <AsuransiBarang /> */}
                   <LayananTambahan
                     additionalServicesOptions={additionalServicesOptions}
+                    shippingDetails={shippingDetails}
+                    shippingOptions={shippingOptions}
+                    shippingOption={shippingOption}
                   />
                   <NoDeliveryOrder />
                   <BadanUsahaPemesan />

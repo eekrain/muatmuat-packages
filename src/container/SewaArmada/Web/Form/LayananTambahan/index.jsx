@@ -9,7 +9,6 @@ import {
   LocationProvider,
   useLocationContext,
 } from "@/hooks/use-location/use-location";
-import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { handleFirstTime } from "@/lib/utils/form";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 import {
@@ -17,7 +16,12 @@ import {
   useSewaArmadaStore,
 } from "@/store/forms/sewaArmadaStore";
 
-const LayananTambahan = ({ additionalServicesOptions }) => {
+const LayananTambahan = ({
+  additionalServicesOptions,
+  shippingDetails,
+  shippingOptions,
+  shippingOption,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [modalType, setModalType] = useState("");
 
@@ -31,160 +35,6 @@ const LayananTambahan = ({ additionalServicesOptions }) => {
   const { reset } = useLocationFormStore();
   const { setAutoCompleteSearchPhrase, setLocationPostalCodeSearchPhrase } =
     useLocationContext();
-
-  // Fetch shipping options when location data is complete
-  // const { data: shippingOptionsData } = useSWRHook(
-  //   "v1/orders/shipping-options"
-  // );
-  // const shippingOptions = shippingOptionsData?.Data;
-
-  const shippingOptions = [
-    {
-      groupName: "Reguler",
-      expeditions: [
-        {
-          id: "2e395ac7-9a91-4884-8ee2-e3a9a2d5cc78",
-          courierName: "J&T Express",
-          libraryID: 1,
-          rateID: 57,
-          minEstimatedDay: 2,
-          maxEstimatedDay: 3,
-          originAreaId: 30052,
-          destinationAreaId: 30169,
-          weight: 1,
-          originalCost: 6000,
-          originalInsurance: 25,
-          mustUseInsurance: false,
-        },
-        {
-          id: "a0fe91ff-2375-44d4-bd22-a52d5d290c17",
-          courierName: "Ninja Xpress",
-          libraryID: 1,
-          rateID: 228,
-          minEstimatedDay: 3,
-          maxEstimatedDay: 5,
-          originAreaId: 30052,
-          destinationAreaId: 30169,
-          weight: 1,
-          originalCost: 6000,
-          originalInsurance: 1000,
-          mustUseInsurance: false,
-        },
-        {
-          id: "f229affd-453b-4a6f-8151-7943322e76f9",
-          courierName: "SAPX Express",
-          libraryID: 1,
-          rateID: 349,
-          minEstimatedDay: 1,
-          maxEstimatedDay: 2,
-          originAreaId: 30052,
-          destinationAreaId: 30169,
-          weight: 1,
-          originalCost: 9000,
-          originalInsurance: 2030,
-          mustUseInsurance: false,
-        },
-        {
-          id: "3fdca0d2-1ec2-4b85-80a7-d0326a4ae759",
-          courierName: "SiCepat",
-          libraryID: 1,
-          rateID: 58,
-          minEstimatedDay: 1,
-          maxEstimatedDay: 2,
-          originAreaId: 30052,
-          destinationAreaId: 30169,
-          weight: 1,
-          originalCost: 7000,
-          originalInsurance: 25,
-          mustUseInsurance: false,
-        },
-        {
-          id: "f390c703-ce44-458a-8909-ce41a2369a42",
-          courierName: "SiCepat (BEST)",
-          libraryID: 1,
-          rateID: 59,
-          minEstimatedDay: 1,
-          maxEstimatedDay: 1,
-          originAreaId: 30052,
-          destinationAreaId: 30169,
-          weight: 1,
-          originalCost: 11000,
-          originalInsurance: 25,
-          mustUseInsurance: false,
-        },
-      ],
-    },
-    {
-      groupName: "Kargo",
-      expeditions: [
-        {
-          id: "d2a44f7b-b4a8-44e8-ad0c-0900ff737ca7",
-          courierName: "JNE Trucking (JTR)",
-          libraryID: 1,
-          rateID: 312,
-          minEstimatedDay: 3,
-          maxEstimatedDay: 4,
-          originAreaId: 30052,
-          destinationAreaId: 30169,
-          weight: 1,
-          originalCost: 40000,
-          originalInsurance: 25,
-          mustUseInsurance: false,
-        },
-      ],
-    },
-    {
-      groupName: "Instan",
-      expeditions: [
-        {
-          id: "b1900bbf-2127-407d-9971-914333f0c358",
-          courierName: "Gosend",
-          libraryID: 1,
-          rateID: 329,
-          minEstimatedDay: 0,
-          maxEstimatedDay: 0,
-          originAreaId: 30052,
-          destinationAreaId: 30169,
-          weight: 1,
-          originalCost: 23500,
-          originalInsurance: 0,
-          mustUseInsurance: false,
-        },
-        {
-          id: "1d302d7f-6ec5-46ba-a3c6-0740af86d773",
-          courierName: "Grab Express",
-          libraryID: 1,
-          rateID: 340,
-          minEstimatedDay: 0,
-          maxEstimatedDay: 0,
-          originAreaId: 30052,
-          destinationAreaId: 30169,
-          weight: 1,
-          originalCost: 50000,
-          originalInsurance: 0,
-          mustUseInsurance: false,
-        },
-      ],
-    },
-  ];
-
-  const shippingDetails = useShallowMemo(() => {
-    if (additionalServices.length === 0) return null;
-
-    const sendDeliveryEvidenceService = additionalServices.find(
-      (item) => item.withShipping
-    );
-
-    return sendDeliveryEvidenceService?.shippingDetails ?? null;
-  }, [additionalServices]);
-
-  const shippingOption = useShallowMemo(() => {
-    if (!shippingDetails) return null;
-
-    return shippingOptions
-      .flatMap((option) => option.expeditions)
-      .find((item) => item.id === shippingDetails.shippingOptionId);
-  }, [shippingDetails, shippingOptions]);
 
   return (
     <>
@@ -216,15 +66,16 @@ const LayananTambahan = ({ additionalServicesOptions }) => {
                             if (isSendDeliveryEvidenceService) {
                               setModalType("create");
                               setIsOpen(true);
+                            } else {
+                              // Add the service to the array if checked
+                              setSewaArmadaField("additionalServices", [
+                                ...additionalServices,
+                                {
+                                  serviceId: service.additionalServiceId,
+                                  withShipping: service.withShipping,
+                                },
+                              ]);
                             }
-                            // Add the service to the array if checked
-                            setSewaArmadaField("additionalServices", [
-                              ...additionalServices,
-                              {
-                                serviceId: service.additionalServiceId,
-                                withShipping: service.withShipping,
-                              },
-                            ]);
                           } else {
                             // Remove the service from the array if unchecked
                             setSewaArmadaField(
@@ -239,7 +90,9 @@ const LayananTambahan = ({ additionalServicesOptions }) => {
                         })
                       }
                       label={service.name}
-                      checked={isSelected}
+                      checked={
+                        isSelected || (isSendDeliveryEvidenceService && isOpen)
+                      }
                       value={service.id}
                     />
                     <InfoTooltip side="right">
@@ -349,10 +202,20 @@ const LayananTambahan = ({ additionalServicesOptions }) => {
   );
 };
 
-const LayananTambahanLocation = ({ additionalServicesOptions }) => {
+const LayananTambahanLocation = ({
+  additionalServicesOptions,
+  shippingDetails,
+  shippingOptions,
+  shippingOption,
+}) => {
   return (
     <LocationProvider>
-      <LayananTambahan additionalServicesOptions={additionalServicesOptions} />
+      <LayananTambahan
+        additionalServicesOptions={additionalServicesOptions}
+        shippingDetails={shippingDetails}
+        shippingOptions={shippingOptions}
+        shippingOption={shippingOption}
+      />
     </LocationProvider>
   );
 };

@@ -123,10 +123,6 @@ const DeliveryEvidenceModal = ({
         ...additionalServices,
       ]);
     }
-    setField("additionalServices", [
-      newAdditionalService,
-      ...additionalServices,
-    ]);
     setField("shippingDetailsLocation", locationFormValues);
 
     setIsOpen(false);
