@@ -6,7 +6,8 @@ import { BannerCarousel } from "@/components/BannerCarousel/BannerCarousel";
 import Card from "@/components/Card/Card";
 import NeedConfirmationWarning from "@/components/NeedConfirmationWarning/NeedConfirmationWarning";
 import { FirstTimer } from "@/container/SewaArmada/Web/FirstTimer/FirstTimer";
-import { ModalLogin } from "@/container/SewaArmada/Web/FirstTimer/ModalLogin";
+import LoginModal from "@/container/SewaArmada/Web/FirstTimer/LoginModal";
+import WaitingSettlementModal from "@/container/SewaArmada/Web/FirstTimer/WaitingSettlementModal";
 import {
   BadanUsahaPemesan,
   FotoMuatan,
@@ -22,6 +23,7 @@ import {
   WaktuMuat,
 } from "@/container/SewaArmada/Web/Form";
 import DeskripsiMuatan from "@/container/SewaArmada/Web/Form/DeskripsiMuatan";
+import SelectArmadaModal from "@/container/SewaArmada/Web/Form/JenisArmada/SelectArmadaModal";
 import SertifikasiHalal from "@/container/SewaArmada/Web/Form/SertifikasiHalal";
 import { SummaryPanel } from "@/container/SewaArmada/Web/SummaryPanel/SummaryPanel";
 import { WelcomeCard } from "@/container/SewaArmada/Web/WelcomeCard/WelcomeCard";
@@ -33,11 +35,16 @@ import {
 import { useLoadingAction } from "@/store/loadingStore";
 
 export default function SewaArmadaWeb({
-  requiringConfirmationCount,
+  settlementAlertInfo,
   settingsTime,
   cargoTypes,
   cargoCategories,
+  carriers,
+  trucks,
+  additionalServicesOptions,
   paymentMethods,
+  calculatedPrice,
+  onFetchTrucks,
 }) {
   const orderType = useSewaArmadaStore((state) => state.orderType);
 
@@ -71,11 +78,10 @@ export default function SewaArmadaWeb({
         {/* Carousel Banner */}
         <BannerCarousel banners={banners} />
 
-        {requiringConfirmationCount &&
-        requiringConfirmationCount.hasConfirmationRequired > 0 ? (
+        {settlementAlertInfo.length > 0 ? (
           <NeedConfirmationWarning
             className="mt-0 w-full"
-            breakdown={requiringConfirmationCount.breakdown}
+            settlementAlertInfo={settlementAlertInfo}
           />
         ) : null}
 
@@ -101,13 +107,19 @@ export default function SewaArmadaWeb({
                   <TipeMuatan cargoTypes={cargoTypes} />
                   <JenisMuatan cargoCategories={cargoCategories} />
                   <SertifikasiHalal />
-                  <InformasiMuatan />
+                  <InformasiMuatan onFetchTrucks={onFetchTrucks} />
                   <FotoMuatan />
                   <DeskripsiMuatan />
-                  <JenisArmada />
+                  <JenisArmada
+                    carriers={carriers}
+                    trucks={trucks}
+                    onFetchTrucks={onFetchTrucks}
+                  />
                   {/* Asuransi dihide dulu */}
                   {/* <AsuransiBarang /> */}
-                  <LayananTambahan />
+                  <LayananTambahan
+                    additionalServicesOptions={additionalServicesOptions}
+                  />
                   <NoDeliveryOrder />
                   <BadanUsahaPemesan />
                 </div>
@@ -117,13 +129,16 @@ export default function SewaArmadaWeb({
               <SummaryPanel
                 settingsTime={settingsTime}
                 paymentMethods={paymentMethods}
+                calculatedPrice={calculatedPrice}
               />
             </div>
           </>
         )}
       </main>
 
-      <ModalLogin />
+      <LoginModal />
+      <WaitingSettlementModal />
+      <SelectArmadaModal carrierData={carriers} truckData={trucks} />
 
       <button onClick={testSubmit}>Test Submit</button>
     </>

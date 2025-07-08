@@ -1,6 +1,12 @@
-import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
+import {
+  SimpleDropdown,
+  SimpleDropdownContent,
+  SimpleDropdownItem,
+  SimpleDropdownTrigger,
+} from "@/components/Dropdown/SimpleDropdownMenu";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import {
   LightboxPreview,
@@ -11,7 +17,6 @@ import {
   OrderStatusEnum,
   OrderStatusTitle,
 } from "@/lib/constants/detailpesanan/detailpesanan.enum";
-import { formatDate } from "@/lib/utils/dateFormat";
 
 const warningVariantStatus = [
   OrderStatusEnum.PREPARE_FLEET,
@@ -21,16 +26,11 @@ const warningVariantStatus = [
   OrderStatusEnum.WAITING_REPAYMENT_2,
 ];
 
-export const StatusPesananHeader = ({
-  orderCode,
-  orderStatus,
-  cancellationHistory,
-}) => {
-  const [
-    isDocumentDeliveryEvidenceModalOpen,
-    setIsDocumentDeliveryEvidenceModalOpen,
-  ] = useState(false);
-  const orderStatusLabel = OrderStatusTitle[orderStatus];
+export const StatusPesananHeader = ({ dataStatusPesanan }) => {
+  const orderStatusLabel =
+    dataStatusPesanan.unitFleetStatus > 1
+      ? `${OrderStatusTitle[dataStatusPesanan.orderStatus]}: ${dataStatusPesanan.unitFleetStatus} Unit`
+      : OrderStatusTitle[dataStatusPesanan.orderStatus];
 
   const dummyPhoto = [
     "/img/muatan1.png",
@@ -39,45 +39,45 @@ export const StatusPesananHeader = ({
     "/img/muatan4.png",
   ];
 
-  const statusVariant = warningVariantStatus.includes(orderStatus)
+  const statusVariant = warningVariantStatus.includes(
+    dataStatusPesanan.orderStatus
+  )
     ? "warning"
-    : orderStatus.startsWith("CANCELED")
+    : dataStatusPesanan.orderStatus.startsWith("CANCELED")
       ? "error"
-      : orderStatus === OrderStatusEnum.COMPLETED
+      : dataStatusPesanan.orderStatus === OrderStatusEnum.COMPLETED
         ? "success"
         : "primary";
 
   return (
-    <>
-      <div className="flex w-full items-center gap-x-3">
-        {/* Kode Pesanan */}
-        <div className="flex w-[220px] flex-col gap-y-2">
-          <span className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-            Kode Pesanan
-          </span>
-          <span className="text-[14px] font-bold leading-[16.8px] text-neutral-900">
-            {orderCode}
-          </span>
-        </div>
+    <div className="flex items-end gap-x-3">
+      <div className="grid flex-1 grid-cols-[220px_1fr] items-center gap-x-3 gap-y-2">
+        <span className="text-[12px] font-medium leading-[1.2] text-neutral-600">
+          Kode Pesanan
+        </span>
 
-        {/* Status Pesanan */}
-        <div className="flex flex-col gap-y-2">
-          <span className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-            Status Pesanan
-          </span>
-          <div className="flex items-center gap-x-2">
-            <div className="flex items-center gap-5">
-              <BadgeStatusPesanan variant={statusVariant} className="w-fit">
-                {orderStatusLabel}
-              </BadgeStatusPesanan>
-              {orderStatus.startsWith("CANCELED") && cancellationHistory && (
+        <span className="text-[12px] font-medium leading-[1.2] text-neutral-600">
+          Status Pesanan
+        </span>
+
+        <span className="text-[14px] font-bold leading-[16.8px] text-neutral-900">
+          {dataStatusPesanan.orderCode}
+        </span>
+
+        <div className="flex items-center gap-x-2">
+          <div className="flex items-center gap-5">
+            <BadgeStatusPesanan variant={statusVariant} className="w-fit">
+              {orderStatusLabel}
+            </BadgeStatusPesanan>
+            {dataStatusPesanan.orderStatus.startsWith("CANCELED") &&
+              dataStatusPesanan.cancellationHistory && (
                 <Modal>
                   <ModalTrigger>
                     <button className="text-xs font-medium leading-[1.2] text-primary-700">
                       Lihat Alasan Pembatalan
                     </button>
                   </ModalTrigger>
-                  <ModalContent>
+                  <ModalContent type="muatmuat">
                     <div className="relative flex w-[472px] flex-col items-start gap-[10px] rounded-xl bg-white px-6 py-8">
                       {/* Content Container */}
                       <div className="flex flex-row items-start gap-2">
@@ -92,37 +92,45 @@ export const StatusPesananHeader = ({
                             {/* Cancellation Time */}
                             <div className="flex w-[133px] flex-col items-start gap-3">
                               <div className="flex w-[105px] flex-row items-center gap-2">
-                                <span className="text-[12px] font-semibold leading-[14.4px] text-black">
+                                <span className="h-[8px] text-[12px] font-semibold leading-[14.4px] text-black">
                                   Waktu Pembatalan
                                 </span>
                               </div>
                               <span className="w-[133px] text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                                {formatDate(cancellationHistory.cancelledAt)}
+                                {formatDate(
+                                  dataStatusPesanan.cancellationHistory
+                                    .cancelledAt
+                                )}
                               </span>
                             </div>
 
                             {/* Cancelled By */}
                             <div className="flex w-[91px] flex-col items-start gap-3">
                               <div className="flex w-[91px] flex-row items-center gap-2">
-                                <span className="text-[12px] font-semibold leading-[14.4px] text-black">
+                                <span className="h-[8px] text-[12px] font-semibold leading-[14.4px] text-black">
                                   Dibatalkan Oleh
                                 </span>
                               </div>
                               <span className="w-11 text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                                {cancellationHistory.cancelledBy}
+                                {
+                                  dataStatusPesanan.cancellationHistory
+                                    .cancelledBy
+                                }
                               </span>
                             </div>
 
                             {/* Cancellation Reason */}
                             <div className="flex w-[424px] flex-col items-start gap-3">
                               <div className="flex w-[106px] flex-row items-center gap-2">
-                                <span className="text-[12px] font-semibold leading-[14.4px] text-black">
+                                <span className="h-[8px] text-[12px] font-semibold leading-[14.4px] text-black">
                                   Alasan Pembatalan
                                 </span>
                               </div>
                               <p className="w-[424px] text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                                {cancellationHistory.reason?.additionalInfo ||
-                                  cancellationHistory.reason?.reasonName}
+                                {dataStatusPesanan.cancellationHistory.reason
+                                  ?.additionalInfo ||
+                                  dataStatusPesanan.cancellationHistory.reason
+                                    ?.reasonName}
                               </p>
                             </div>
                           </div>
@@ -132,87 +140,105 @@ export const StatusPesananHeader = ({
                   </ModalContent>
                 </Modal>
               )}
-            </div>
-            {orderStatus === OrderStatusEnum.DOCUMENT_SHIPPING ? (
-              <button
-                className="flex items-center gap-x-1"
-                onClick={() => setIsDocumentDeliveryEvidenceModalOpen(true)}
-              >
-                <span className="text-[12px] font-medium leading-[14.4px] text-primary-700">
-                  Lihat Bukti Pengiriman
-                </span>
-                <IconComponent
-                  src="/icons/chevron-right.svg"
-                  className="icon-blue"
-                />
-              </button>
-            ) : null}
           </div>
+          {dataStatusPesanan.orderStatus ===
+          OrderStatusEnum.DOCUMENT_SHIPPING ? (
+            <Modal closeOnOutsideClick>
+              <ModalTrigger>
+                <button className="flex items-center gap-x-1">
+                  <span className="text-[12px] font-medium leading-[14.4px] text-primary-700">
+                    Lihat Bukti Pengiriman
+                  </span>
+                  <IconComponent
+                    src="/icons/chevron-right.svg"
+                    className="icon-blue"
+                  />
+                </button>
+              </ModalTrigger>
+              <ModalContent type="muatmuat">
+                <div className="flex w-[472px] flex-col gap-y-6 px-6 py-8">
+                  <h1 className="text-center text-[16px] font-bold leading-[19.2px] text-neutral-900">
+                    Bukti Pengiriman Dokumen
+                  </h1>
+                  <div className="flex flex-col gap-y-4">
+                    <div className="flex flex-col gap-y-3">
+                      <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+                        Tanggal
+                      </span>
+                      <span className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                        04 Okt 2024 18:00 WIB
+                      </span>
+                    </div>
+                    <div className="flex flex-col gap-y-3">
+                      <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+                        Foto Bukti Pengiriman
+                      </span>
+                      <div className="flex items-center gap-x-4">
+                        <LightboxProvider
+                          image={
+                            dummyPhoto.length === 1 ? dummyPhoto[0] : undefined
+                          }
+                          images={
+                            dummyPhoto.length > 1 ? dummyPhoto : undefined
+                          }
+                          title="Foto Bukti Pengiriman"
+                        >
+                          {dummyPhoto.map((image, index) => (
+                            <LightboxPreview
+                              key={image}
+                              image={image}
+                              alt={`Dokumen ${index + 1}`}
+                              className="size-[56px]"
+                              withZoom={true}
+                            />
+                          ))}
+                        </LightboxProvider>
+                      </div>
+                    </div>
+                    {/* LOGIC BUAT ADA CATATAN ATAU TIDAK */}
+                    {true ? (
+                      <div className="flex flex-col gap-y-3">
+                        <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+                          Catatan
+                        </span>
+                        <p className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                          Kami informasikan bahwa dokumen telah kami kirim dan
+                          saat ini sudah diterima oleh Bapak Ervin Sudjatmiko.
+                          Mohon konfirmasi apabila ada hal yang perlu
+                          ditindaklanjuti lebih lanjut. Kami siap membantu
+                          apabila dibutuhkan klarifikasi atau kelengkapan
+                          tambahan. Terima kasih atas perhatian dan kerja
+                          samanya.
+                        </p>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              </ModalContent>
+            </Modal>
+          ) : null}
         </div>
       </div>
 
-      {/* Modal Bukti Pengiriman Dokumen */}
-      <Modal
-        closeOnOutsideClick={false}
-        open={isDocumentDeliveryEvidenceModalOpen}
-        onOpenChange={setIsDocumentDeliveryEvidenceModalOpen}
-      >
-        <ModalContent>
-          <div className="flex w-[472px] flex-col gap-y-6 px-6 py-8">
-            <h1 className="text-center text-[16px] font-bold leading-[19.2px] text-neutral-900">
-              Bukti Pengiriman Dokumen
-            </h1>
-            <div className="flex flex-col gap-y-4">
-              <div className="flex flex-col gap-y-3">
-                <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
-                  Tanggal
-                </span>
-                <span className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                  04 Okt 2024 18:00 WIB
-                </span>
-              </div>
-              <div className="flex flex-col gap-y-3">
-                <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
-                  Foto Bukti Pengiriman
-                </span>
-                <div className="flex items-center gap-x-4">
-                  <LightboxProvider
-                    image={dummyPhoto.length === 1 ? dummyPhoto[0] : undefined}
-                    images={dummyPhoto.length > 1 ? dummyPhoto : undefined}
-                    title="Foto Bukti Pengiriman"
-                  >
-                    {dummyPhoto.map((image, index) => (
-                      <LightboxPreview
-                        key={image}
-                        image={image}
-                        alt={`Dokumen ${index + 1}`}
-                        className="size-[56px]"
-                        withZoom={true}
-                      />
-                    ))}
-                  </LightboxProvider>
-                </div>
-              </div>
-              {/* LOGIC BUAT ADA CATATAN ATAU TIDAK */}
-              {true ? (
-                <div className="flex flex-col gap-y-3">
-                  <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
-                    Catatan
-                  </span>
-                  <p className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                    Kami informasikan bahwa dokumen telah kami kirim dan saat
-                    ini sudah diterima oleh Bapak Ervin Sudjatmiko. Mohon
-                    konfirmasi apabila ada hal yang perlu ditindaklanjuti lebih
-                    lanjut. Kami siap membantu apabila dibutuhkan klarifikasi
-                    atau kelengkapan tambahan. Terima kasih atas perhatian dan
-                    kerja samanya.
-                  </p>
-                </div>
-              ) : null}
-            </div>
-          </div>
-        </ModalContent>
-      </Modal>
-    </>
+      <div className="w-[127px]">
+        <SimpleDropdown>
+          <SimpleDropdownTrigger asChild>
+            <button className="flex h-8 flex-row items-center justify-between gap-2 rounded-md border border-neutral-600 bg-white px-3 py-2 shadow-sm transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none">
+              <span className="text-xs font-medium leading-tight text-black">
+                Menu Lainnya
+              </span>
+              <ChevronDown className="h-4 w-4 text-neutral-700" />
+            </button>
+          </SimpleDropdownTrigger>
+
+          <SimpleDropdownContent className="w-[198px]">
+            <SimpleDropdownItem>Lihat Semua Driver</SimpleDropdownItem>
+            <SimpleDropdownItem>
+              Bagikan QR Code Semua Driver
+            </SimpleDropdownItem>
+          </SimpleDropdownContent>
+        </SimpleDropdown>
+      </div>
+    </div>
   );
 };

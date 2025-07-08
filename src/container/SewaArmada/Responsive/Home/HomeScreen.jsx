@@ -477,7 +477,10 @@ const SewaArmadaHomeScreen = () => {
           {/* Jenis Armada Field */}
           <FormContainer>
             <FormLabel required>Jenis Armada</FormLabel>
-            <div className="space-y-2">
+            <div
+              className="space-y-2"
+              onClick={() => navigation.push("/JenisCarrier")}
+            >
               {/* Pilih Jenis Carrier */}
               <div className="flex h-8 w-full items-center gap-2 rounded-md border border-neutral-600 bg-neutral-200 px-3 py-2">
                 <Truck className="h-4 w-4 text-neutral-600" />
@@ -567,55 +570,10 @@ const SewaArmadaHomeScreen = () => {
       </div>
 
       {isShowCostDetail ? (
-        <ResponsiveFooter className="z-[1000] flex flex-col gap-y-4">
+        <ResponsiveFooter className="flex flex-col gap-y-4">
           {/* Total Biaya section with integrated voucher */}
           <div className="flex w-full flex-col rounded bg-primary-50">
             {/* Voucher section inside Total Biaya div - conditionally rendered based on bottomsheet state */}
-            {!isBottomsheetOpen && !showTransactionSummary && (
-              <div
-                className="flex cursor-pointer items-center justify-between p-[12px]"
-                onClick={handleShowTransactionSummary}
-              >
-                <div className="flex items-center">
-                  {selectedVoucher ? (
-                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs text-white">
-                      ✓
-                    </div>
-                  ) : (
-                    <Image
-                      src="/img/iconVoucher2.png"
-                      alt="Voucher"
-                      width={25}
-                      height={25}
-                    />
-                  )}
-                  <span className="ml-[12px] text-sm font-medium text-blue-600">
-                    {selectedVoucher
-                      ? `Diskon ${selectedVoucher.code}`
-                      : "Makin hemat pakai voucher"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  {selectedVoucher && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveVoucher();
-                      }}
-                      className="text-xs text-red-500 hover:text-red-700"
-                    >
-                      Hapus
-                    </button>
-                  )}
-                  <Image
-                    src="/icons/right-arrow-voucher.png"
-                    width={18}
-                    height={18}
-                    alt="right-arrow"
-                  />
-                </div>
-              </div>
-            )}
 
             {/* Show voucher discount if selected */}
             {selectedVoucher && (
@@ -624,13 +582,8 @@ const SewaArmadaHomeScreen = () => {
                 onClick={() => setIsBottomsheetOpen(true)}
               >
                 <div className="flex items-center gap-2">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-white">
-                    <Image
-                      src="/img/iconVoucher2.png"
-                      alt="Voucher"
-                      width={25}
-                      height={25}
-                    />
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs text-white">
+                    ✓
                   </div>
                   <span className="text-xs font-medium text-blue-900">
                     1 Voucher Terpakai
@@ -765,26 +718,14 @@ const SewaArmadaHomeScreen = () => {
             </div>
 
             {/* Apply button */}
-            <div className="sticky bottom-0 bg-white pt-4">
-              <div className="flex gap-2">
-                <Button
-                  variant="secondary"
-                  className="flex-1"
-                  onClick={() => {
-                    setTempSelectedVoucher(null);
-                    setIsBottomsheetOpen(false);
-                  }}
-                >
-                  Batal
-                </Button>
-                <Button
-                  variant="muatparts-primary"
-                  className="flex-1"
-                  onClick={handleApplyVoucher}
-                >
-                  {tempSelectedVoucher ? "Pakai Voucher" : "Lewati"}
-                </Button>
-              </div>
+            <div className="sticky bottom-0 flex items-center bg-white pt-4">
+              <Button
+                variant="muatparts-primary"
+                className="flex-1"
+                onClick={handleApplyVoucher}
+              >
+                {tempSelectedVoucher ? "Terapkan" : "Lewati"}
+              </Button>
             </div>
           </div>
         </BottomSheetContent>

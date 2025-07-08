@@ -13,7 +13,7 @@ const apiResultPaymentData = {
       vaNumber: "12345678901234567890",
       amount: 1500000.0,
       status: "PENDING",
-      expiredAt: addMinutes(new Date(), 30).toISOString(),
+      expiredAt: addMinutes(new Date(), 90).toISOString(),
     },
   },
   Type: "PAYMENT_ORDER_DETAIL",

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import {
@@ -20,6 +20,7 @@ import {
 import Slider from "@/components/Slider/Slider";
 import DriverRatingModal from "@/container/DetailPesanan/Web/DetailPesananHeader/DriverRatingModal";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { cn } from "@/lib/utils";
 
 const ALLOW_LIST = {
   DetailRefund: [
@@ -167,6 +168,46 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
     },
   ];
 
+  const showButtonConfig = useMemo(() => {
+    const config = {};
+
+    if (
+      ALLOW_LIST.DetailRefund.includes(dataStatusPesanan?.orderStatus) &&
+      dataStatusPesanan?.hasFoundFleet
+    ) {
+      config.DetailRefund = true;
+    }
+
+    if (
+      ALLOW_LIST.Unduh === "ALL" &&
+      dataStatusPesanan?.hasFoundFleet &&
+      !dataStatusPesanan?.orderStatus.includes("WAITING_PAYMENT")
+    ) {
+      config.Unduh = true;
+    }
+    if (dataStatusPesanan?.orderStatus === OrderStatusEnum.SCHEDULED_FLEET) {
+      config.Unduh = true;
+    }
+
+    if (
+      ALLOW_LIST.PesanUlang === "ALL" &&
+      !dataStatusPesanan?.orderStatus.includes("WAITING_PAYMENT") &&
+      !dataStatusPesanan?.orderStatus.includes("WAITING_REPAYMENT")
+    ) {
+      config.PesanUlang = true;
+    }
+
+    if (ALLOW_LIST.DokumenDiterima.includes(dataStatusPesanan?.orderStatus)) {
+      config.DokumenDiterima = true;
+    }
+
+    if (ALLOW_LIST.BeriUlasan.includes(dataStatusPesanan?.orderStatus)) {
+      config.BeriUlasan = true;
+    }
+
+    return config;
+  }, [dataStatusPesanan?.hasFoundFleet, dataStatusPesanan?.orderStatus]);
+
   return (
     <>
       <div className="my-6 flex items-center justify-between">
@@ -194,7 +235,7 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
           </Modal>
         </div>
         <div className="flex items-center gap-x-3">
-          {ALLOW_LIST.DetailRefund.includes(dataStatusPesanan?.orderStatus) && (
+          {showButtonConfig?.DetailRefund && (
             <Link
               href={`/daftarpesanan/detailpesanan/${params.orderId}/detail-refund`}
             >
@@ -208,7 +249,16 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
             </Link>
           )}
 
-          {ALLOW_LIST.Unduh === "ALL" && (
+          {showButtonConfig?.DetailPembayaran && (
+            <Button
+              variant="muatparts-primary-secondary"
+              className="h-8"
+              type="button"
+            >
+              Detail Pembayaran
+            </Button>
+          )}
+          {showButtonConfig?.Unduh && (
             <SimpleDropdown>
               <SimpleDropdownTrigger asChild>
                 <Button
@@ -231,14 +281,22 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
             </SimpleDropdown>
           )}
 
-          {ALLOW_LIST.PesanUlang === "ALL" && (
+          {showButtonConfig?.PesanUlang && (
             <Button
               variant={
-                dataStatusPesanan?.orderStatus.startsWith("CANCELED")
+                dataStatusPesanan?.orderStatus.startsWith("CANCELED") &&
+                dataStatusPesanan?.hasFoundFleet
                   ? "muatparts-primary"
                   : "muatparts-primary-secondary"
               }
-              className="h-8"
+              className={cn(
+                "h-8",
+                !Boolean(dataStatusPesanan?.hasFoundFleet) &&
+                  dataStatusPesanan?.orderStatus !==
+                    OrderStatusEnum.SCHEDULED_FLEET
+                  ? "w-[162px]"
+                  : ""
+              )}
               onClick={() => setIsReorderFleetModalOpen(true)}
               type="button"
             >
@@ -246,9 +304,7 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
             </Button>
           )}
 
-          {ALLOW_LIST.DokumenDiterima.includes(
-            dataStatusPesanan?.orderStatus
-          ) && (
+          {showButtonConfig?.DokumenDiterima && (
             <Button
               variant="muatparts-primary"
               className="h-8"
@@ -259,7 +315,7 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
             </Button>
           )}
 
-          {ALLOW_LIST.BeriUlasan.includes(dataStatusPesanan?.orderStatus) && (
+          {showButtonConfig?.BeriUlasan && (
             <Button
               variant="muatparts-primary"
               className="h-8"

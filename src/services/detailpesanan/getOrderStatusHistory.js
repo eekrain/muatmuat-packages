@@ -7,99 +7,90 @@ const apiResultOrderStatusHistory = {
     Text: "Order status history retrieved successfully",
   },
   Data: {
-    statusHistory: [
-      {
-        statusHistoryId: "550e8400-e29b-41d4-a716-446655440020",
-        statusCode: OrderStatusEnum.CONFIRMED,
-        statusName: "Pesanan Terkonfirmasi",
-      },
-      {
-        statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
-        statusCode: OrderStatusEnum.LOADING,
-        statusName: "Proses Muat",
-      },
-      {
-        statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
-        statusCode: OrderStatusEnum.UNLOADING,
-        statusName: "Proses Bongkar",
-      },
-
-      {
-        statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
-        statusCode: OrderStatusEnum.WAITING_REPAYMENT_2,
-        statusName: "Menunggu Pelunasan",
-      },
-      {
-        statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
-        statusCode: OrderStatusEnum.PREPARE_DOCUMENT,
-        statusName: "Dokumen Sedang Disiapkan",
-      },
-      {
-        statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
-        statusCode: OrderStatusEnum.DOCUMENT_DELIVERY,
-        statusName: "Proses Pengiriman Dokumen",
-      },
-      {
-        statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
-        statusCode: OrderStatusEnum.COMPLETED,
-        statusName: "Selesai",
-      },
-      // {
-      //   statusHistoryId: "550e8400-e29b-41d4-a716-446655440021",
-      //   statusCode: OrderStatusEnum.CANCELED_BY_SHIPPER,
-      //   statusName: "Dibatalkan",
-      // },
-    ],
     driverStatus: [
       {
         driverId: "550e8400-e29b-41d4-a716-446655440021",
         name: "Ahmad Rahman",
-        driverPhoto: "https://picsum.photos/50",
+        driverImage: "https://picsum.photos/50",
         licensePlate: "B 1234 CD",
-        statusDriver: "LOADING",
-        statusTitle: "Proses Muat",
+        orderStatus: OrderStatusEnum.LOADING,
+        orderStatusTitle: "Proses Muat",
+        driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
+        driverStatusTitle: "Menuju ke Lokasi Muat 1",
         stepStatus: [
           {
-            statusCode: "MENUJU_LOKASI_MUAT_1",
-            statusName: "Menuju Lokasi Muat 1",
+            statusCode: OrderStatusEnum.CONFIRMED,
+            statusName: "Pesanan Terkonfirmasi",
           },
-          // {
-          //   statusCode: "MENUJU_LOKASI_MUAT_2",
-          //   statusName: "Menuju Lokasi Muat 2",
-          // },
-          // {
-          //   statusCode: "MENUJU_LOKASI_BONGKAR_1",
-          //   statusName: "Menuju Lokasi Bongkar 1",
-          // },
-          // {
-          //   statusCode: "MENUJU_LOKASI_BONGKAR_2",
-          //   statusName: "Menuju Lokasi Bongkar 2",
-          // },
+          {
+            statusCode: OrderStatusEnum.LOADING,
+            statusName: "Proses Muat",
+          },
+          {
+            statusCode: OrderStatusEnum.UNLOADING,
+            statusName: "Proses Bongkar",
+          },
+          {
+            statusCode: OrderStatusEnum.COMPLETED,
+            statusName: "Selesai",
+          },
         ],
       },
+
       {
-        driverId: "550e8400-e29b-41d4-a716-446655440022",
+        driverId: "550e8400-e29b-41d4-a716-446655440021",
         name: "Ardian Eka",
-        driverPhoto: "https://picsum.photos/50",
+        driverImage: "https://picsum.photos/50",
         licensePlate: "B 1234 CD",
-        statusDriver: "LOADING_2",
-        statusTitle: "Sedang Bongkar di Lokasi 2",
+        orderStatus: OrderStatusEnum.LOADING,
+        orderStatusTitle: "Proses Muat",
+        driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
+        driverStatusTitle: "Menuju ke Lokasi Muat 1",
         stepStatus: [
           {
-            statusCode: "LOADING_1",
-            statusName: "Menuju Lokasi Muat 1",
+            statusCode: OrderStatusEnum.CONFIRMED,
+            statusName: "Pesanan Terkonfirmasi",
           },
           {
-            statusCode: "LOADING_2",
-            statusName: "Menuju Lokasi Muat 2",
+            statusCode: OrderStatusEnum.LOADING,
+            statusName: "Proses Muat",
           },
           {
-            statusCode: "UNLOADING_1",
-            statusName: "Menuju Lokasi Bongkar 1",
+            statusCode: OrderStatusEnum.UNLOADING,
+            statusName: "Proses Bongkar",
           },
           {
-            statusCode: "UNLOADING_2",
-            statusName: "Menuju Lokasi Bongkar 2",
+            statusCode: OrderStatusEnum.COMPLETED,
+            statusName: "Selesai",
+          },
+        ],
+      },
+
+      {
+        driverId: "550e8400-e29b-41d4-a716-446655440021",
+        name: "Cakra",
+        driverImage: "https://picsum.photos/50",
+        licensePlate: "B 1234 CD",
+        orderStatus: OrderStatusEnum.LOADING,
+        orderStatusTitle: "Proses Muat",
+        driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
+        driverStatusTitle: "Menuju ke Lokasi Muat 1",
+        stepStatus: [
+          {
+            statusCode: OrderStatusEnum.CONFIRMED,
+            statusName: "Pesanan Terkonfirmasi",
+          },
+          {
+            statusCode: OrderStatusEnum.LOADING,
+            statusName: "Proses Muat",
+          },
+          {
+            statusCode: OrderStatusEnum.UNLOADING,
+            statusName: "Proses Bongkar",
+          },
+          {
+            statusCode: OrderStatusEnum.COMPLETED,
+            statusName: "Selesai",
           },
         ],
       },

@@ -312,6 +312,7 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories }) => {
                 {/* Dimensi Muatan Field */}
                 <FormContainer>
                   <FormLabel
+                    optional
                     tooltip={
                       <InfoBottomsheet title="Tipe Muatan yang Akan Dikirimkan">
                         <ul>

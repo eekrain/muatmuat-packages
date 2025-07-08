@@ -205,9 +205,6 @@ export const ModalClose = ({ children, onClick }) => {
   );
 };
 
-/**
- * @param {{ children: React.ReactNode, className?: string }} props
- */
 export const ModalContent = ({
   size = "small",
   type = "muattrans",
@@ -268,7 +265,7 @@ export const ModalContent = ({
       {type === "lightbox" && (
         <button
           onClick={close}
-          className="absolute left-4 top-[55px] text-white"
+          className="absolute left-4 top-[55px] block text-white md:hidden"
         >
           <IconComponent
             className="text-white"

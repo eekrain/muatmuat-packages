@@ -5,8 +5,11 @@ import MainLayout from "@/layout/MainLayout/MainLayout";
 import "./globals.scss";
 
 export const metadata = {
-  title: "MuatTrans Shipper",
-  description: "MuatTrans Shipper",
+  title: "Muatrans Shipper",
+  description: "",
+  icons: {
+    icon: "https://buyer.muatmuat.com/_resources/themes/muat/image/icon/icon-01.png",
+  },
 };
 
 const Avenir = localFont({
@@ -14,12 +17,12 @@ const Avenir = localFont({
     {
       path: "../fonts/AvenirNextLTPro-Bold.otf",
       weight: "700",
-      style: "bolder",
+      style: "normal",
     },
     {
       path: "../fonts/AvenirNextLTPro-Demi.otf",
       weight: "600",
-      style: "bold",
+      style: "normal",
     },
     {
       path: "../fonts/AvenirNextLTPro-Medium.otf",
@@ -29,7 +32,7 @@ const Avenir = localFont({
     {
       path: "../fonts/AvenirNextLTPro-Regular.otf",
       weight: "400",
-      style: "lighter",
+      style: "normal",
     },
   ],
 });

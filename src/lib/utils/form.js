@@ -1,21 +1,28 @@
 import { useTokenStore } from "@/store/auth/tokenStore";
 import { useFirstTimerModalStore } from "@/store/first-timer/firstTimerModalStore";
-import { usePaymentRepaymentModalStore } from "@/store/forms/paymentRepaymentModal";
+import { useWaitingSettlementModalStore } from "@/store/forms/waitingSettlementModalStore";
 
 export const handleFirstTime = (callback) => {
   const accessToken = useTokenStore.getState().accessToken;
   const setIsFirstTimerModalOpen =
     useFirstTimerModalStore.getState().actions.setIsOpen;
-  const paymentRepaymentCount =
-    usePaymentRepaymentModalStore.getState().paymentRepaymentCount;
-  const setIsPaymentRepaymentModalOpen =
-    usePaymentRepaymentModalStore.getState().actions.setIsOpen;
-  if (accessToken) {
-    if (paymentRepaymentCount) {
-      setIsPaymentRepaymentModalOpen(true);
-    }
-    callback();
-  } else {
+  const waitingSettlementOrderId =
+    useWaitingSettlementModalStore.getState().waitingSettlementOrderId;
+  const setIsWaitingSettlementModalOpen =
+    useWaitingSettlementModalStore.getState().actions.setIsOpen;
+
+  // Early exit: if no access token, show first timer modal and return
+  if (!accessToken) {
     setIsFirstTimerModalOpen(true);
+    return;
   }
+
+  // At this point, we know we have an accessToken
+  if (waitingSettlementOrderId.length > 0) {
+    setIsWaitingSettlementModalOpen(true);
+    return;
+  }
+
+  // Execute callback
+  return callback();
 };

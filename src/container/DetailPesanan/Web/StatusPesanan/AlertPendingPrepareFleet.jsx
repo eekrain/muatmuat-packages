@@ -2,7 +2,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { useCountdown } from "@/hooks/use-countdown";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
-export const AlertPendingPesanan = ({ orderStatus, expiredAt }) => {
+export const AlertPendingPrepareFleet = ({ orderStatus, expiredAt }) => {
   const isShowAlert =
     orderStatus === OrderStatusEnum.PREPARE_FLEET ||
     orderStatus === OrderStatusEnum.WAITING_PAYMENT_1;

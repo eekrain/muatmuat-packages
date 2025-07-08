@@ -11,9 +11,9 @@ import VoucherEmptyState from "@/components/Voucher/VoucherEmptyState";
 import VoucherPopup from "@/components/Voucher/VoucherPopup";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
 import FleetOrderConfirmationModal from "@/container/SewaArmada/Web/FleetOrderConfirmationModal/FleetOrderConfirmationModal";
-import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useVouchers } from "@/hooks/useVoucher";
 import { fetcherMuatrans } from "@/lib/axios";
+import { cn } from "@/lib/utils";
 import { formatDate, formatShortDate } from "@/lib/utils/dateFormat";
 import { validateVoucherClientSide } from "@/lib/utils/voucherValidation";
 import { mockValidateVoucher } from "@/services/voucher/mockVoucherService";
@@ -32,7 +32,11 @@ const Toast = ({ message, onClose }) => (
   </div>
 );
 
-export const SummaryPanel = ({ settingsTime, paymentMethods }) => {
+export const SummaryPanel = ({
+  settingsTime,
+  paymentMethods,
+  calculatedPrice,
+}) => {
   // Voucher related state and hooks
   const token = "Bearer your_token_here";
   const MOCK_EMPTY = false;
@@ -65,6 +69,7 @@ export const SummaryPanel = ({ settingsTime, paymentMethods }) => {
     cargoDescription,
     carrierId,
     truckTypeId,
+    truckCount,
     additionalServices,
     deliveryOrderNumbers,
     businessEntity,
@@ -76,7 +81,6 @@ export const SummaryPanel = ({ settingsTime, paymentMethods }) => {
 
   const { setField, validateForm } = useSewaArmadaActions();
 
-  const [expandedCategories, setExpandedCategories] = useState(new Set([0]));
   const [isModalConfirmationOpen, setIsModalConfirmationOpen] = useState(false);
   const baseOrderAmount = 5000000; // 5 juta untuk transport fee
   const adminFee = 10000;
@@ -231,26 +235,6 @@ export const SummaryPanel = ({ settingsTime, paymentMethods }) => {
     } finally {
       setValidatingVoucher(null);
     }
-  };
-
-  const handleRemoveVoucher = () => {
-    setSelectedVoucher(null);
-    setVoucherDiscount(0);
-    setShowVoucherSuccess(false);
-    setToastMessage("Voucher berhasil dihapus");
-    setTimeout(() => setToastMessage(""), 3000);
-  };
-
-  const toggleSection = (categoryKey) => {
-    setExpandedCategories((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(categoryKey)) {
-        newSet.delete(categoryKey);
-      } else {
-        newSet.add(categoryKey);
-      }
-      return newSet;
-    });
   };
 
   const handleSelectPaymentMethod = (paymentMethodId) => {
@@ -436,93 +420,80 @@ export const SummaryPanel = ({ settingsTime, paymentMethods }) => {
     setIsModalConfirmationOpen(false);
   };
 
-  const selectedOpsiPembayaran = useShallowMemo(
-    () =>
-      paymentMethodId
-        ? paymentMethods
-            .flatMap((method) => method.methods || [])
-            .find((item) => item.id === paymentMethodId)
-        : null,
-    [paymentMethodId, paymentMethods]
-  );
-
   return (
     <>
-      <Card className="shadow-muat flex w-[338px] flex-col gap-6 rounded-xl border-none bg-white">
-        <div className="flex flex-col gap-y-6 px-5 pt-6">
-          <h3 className="text-base font-bold text-black">
+      <Card className="shadow-muat flex w-[338px] flex-col gap-0 rounded-xl border-none bg-white">
+        <div className="flex flex-col gap-y-6 px-5 py-6">
+          <h3 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
             Ringkasan Transaksi
           </h3>
           <div className="scrollbar-custombadanusaha mr-[-12px] flex max-h-[263px] flex-col gap-y-6 overflow-y-auto pr-2">
-            {/* Voucher Section */}
-            <div className="flex flex-col gap-2">
-              <button
-                onClick={() => setShowVoucherPopup(true)}
-                className={`flex w-full items-center justify-between rounded-md border px-4 py-3 text-sm transition-all duration-300 ${
+            <button
+              onClick={() => setShowVoucherPopup(true)}
+              className="flex w-full items-center justify-between rounded-md border border-blue-600 bg-primary-50 px-4 py-3 text-sm text-blue-700 hover:bg-blue-50"
+            >
+              <div className="flex items-center gap-2">
+                {selectedVoucher ? (
+                  <>
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-xs text-white">
+                      1
+                    </div>
+                    <span>1 Voucher Terpakai</span>
+                  </>
+                ) : (
+                  <>
+                    <Image
+                      src="/img/iconVoucher2.png"
+                      alt="Voucher"
+                      width={25}
+                      height={25}
+                    />
+                    <span>Makin hemat pakai voucher</span>
+                  </>
+                )}
+              </div>
+              <Image
+                src="/icons/right-arrow-voucher.png"
+                width={18}
+                height={18}
+                alt="right-arrow"
+              />
+            </button>
+
+            {/* Selected Voucher Info */}
+            {selectedVoucher && (
+              <div
+                className={`hidden items-center justify-between rounded-md border px-3 py-2 transition-all duration-500 ${
                   showVoucherSuccess
-                    ? "scale-105 border-green-500 bg-green-50 text-green-700 shadow-lg"
-                    : "border-blue-600 bg-primary-50 text-blue-700 hover:bg-blue-50"
+                    ? "scale-105 transform border-green-400 bg-green-100 shadow-md"
+                    : "border-green-200 bg-green-50"
                 }`}
               >
-                <div className="flex items-center gap-2">
-                  {selectedVoucher ? (
-                    <>
-                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-xs text-white">
-                        1
-                      </div>
-                      <span>1 Voucher Terpakai</span>
-                    </>
-                  ) : (
-                    <>
-                      <Image
-                        src="/img/iconVoucher2.png"
-                        alt="Voucher"
-                        width={25}
-                        height={25}
-                      />
-                      <span>Makin hemat pakai voucher</span>
-                    </>
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium text-green-800">
+                    {selectedVoucher.code}
+                  </span>
+                  <span className="text-xs text-green-600">
+                    Hemat Rp {voucherDiscount.toLocaleString("id-ID")}
+                  </span>
+                  {showVoucherSuccess && (
+                    <span className="animate-pulse text-xs font-semibold text-green-700">
+                      ✅ Berhasil diterapkan!
+                    </span>
                   )}
                 </div>
-                <Image
-                  src="/icons/right-arrow-voucher.png"
-                  width={18}
-                  height={18}
-                  alt="right-arrow"
-                />
-              </button>
-
-              {/* Selected Voucher Info */}
-              {selectedVoucher && (
-                <div
-                  className={`flex items-center justify-between rounded-md border px-3 py-2 transition-all duration-500 ${
-                    showVoucherSuccess
-                      ? "scale-105 transform border-green-400 bg-green-100 shadow-md"
-                      : "border-green-200 bg-green-50"
-                  }`}
+                <button
+                  onClick={() => {
+                    setSelectedVoucher(null);
+                    setVoucherDiscount(0);
+                    setShowVoucherSuccess(false);
+                  }}
+                  className="text-sm text-red-500 hover:text-red-700"
                 >
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium text-green-800">
-                      {selectedVoucher.code}
-                    </span>
-                    <span className="text-xs text-green-600">
-                      Hemat Rp {voucherDiscount.toLocaleString("id-ID")}
-                    </span>
-                    {showVoucherSuccess && (
-                      <span className="animate-pulse text-xs font-semibold text-green-700">
-                        ✅ Berhasil diterapkan!
-                      </span>
-                    )}
-                  </div>
-                  <button
-                    onClick={handleRemoveVoucher}
-                    className="text-sm text-red-500 hover:text-red-700"
-                  >
-                    Hapus
-                  </button>
-                </div>
-              )}
-            </div>
+                  Hapus
+                </button>
+              </div>
+            )}
 
             {/* Detail Pesanan */}
             {detailPesanan.map(({ title, items }, key) => (
@@ -548,12 +519,25 @@ export const SummaryPanel = ({ settingsTime, paymentMethods }) => {
                     </span>
                   </div>
                 ))}
+                <div className="flex items-center justify-between">
+                  <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
+                    Sub Total
+                  </span>
+                  <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
+                    Rp{currentTotal.toLocaleString("id-ID")}
+                  </span>
+                </div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="shadow-muat flex flex-col gap-y-6 rounded-b-xl px-5 py-6">
+        <div
+          className={cn(
+            "flex flex-col gap-y-6 rounded-b-xl px-5",
+            detailPesanan.length > 0 ? "shadow-muat py-6" : "pb-6"
+          )}
+        >
           <div className="flex items-center justify-between">
             <span className="text-base font-bold text-black">Total</span>
             <span className="text-base font-bold text-black">

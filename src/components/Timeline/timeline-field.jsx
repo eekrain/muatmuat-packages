@@ -44,7 +44,7 @@ export const TimelineField = ({
     <div className="flex flex-col gap-2">
       <div
         className={cn(
-          "rounded-[6px] border border-[#7B7B7B] p-3 md:rounded-xl",
+          "rounded-[6px] border border-[#7B7B7B] p-3 md:rounded-md",
           errorMessage && "border-error-400",
           className
         )}
@@ -67,7 +67,10 @@ export const TimelineField = ({
                         ? "Masukkan Lokasi Muat"
                         : "Masukkan Lokasi Bongkar")
                     }
-                    className="min-w-0 flex-shrink cursor-pointer p-0 font-medium"
+                    className={cn(
+                      "cursor-pointer pb-0 font-medium",
+                      !item?.name && "mt-1"
+                    )}
                     onClick={() => onEditLocation(index)}
                   />
 
@@ -94,7 +97,7 @@ export const TimelineField = ({
         {values.length < maxLocation && (
           <div className="flex justify-center">
             <button
-              className="flex items-center gap-2 text-sm font-semibold text-[#176CF7]"
+              className="flex items-center gap-2 text-xs font-semibold leading-[1.2] text-[#176CF7]"
               onClick={onAddLocation}
             >
               <IconComponent

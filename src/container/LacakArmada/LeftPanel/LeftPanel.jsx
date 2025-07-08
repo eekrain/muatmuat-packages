@@ -1,9 +1,14 @@
 import { useParams, useRouter } from "next/navigation";
+import { useRef } from "react";
 
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
+import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
-import IconComponent from "@/components/IconComponent/IconComponent";
+import PageTitle from "@/components/PageTitle/PageTitle";
 import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
+import { useClientHeight } from "@/hooks/use-client-height";
+
+const IS_SHOW_ESTIMATE_ARRIVAL = false;
 
 export const LeftPanel = ({ dataDriverStatus }) => {
   const router = useRouter();
@@ -17,69 +22,82 @@ export const LeftPanel = ({ dataDriverStatus }) => {
     { name: "Lacak Armada" },
   ];
 
+  const containerRef = useRef(null);
+  const containerHeight = useClientHeight({ ref: containerRef });
+  const contentRef = useRef(null);
+  const contentHeight = useClientHeight({ ref: contentRef });
+
   return (
-    <div className="flex h-[calc(100vh-60px)] w-[480px] flex-col bg-white shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
-      {/* Breadcrumb */}
-      <div className="px-6 pb-2 pt-8">
-        <BreadCrumb data={breadcrumbItems} />
-      </div>
+    <div className="grid grid-cols-1 grid-rows-[16px_24px_1fr] gap-6 bg-white px-6 pb-6 pt-8 shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
+      <BreadCrumb data={breadcrumbItems} />
 
-      <div className="flex items-center px-6 pb-6">
-        <button onClick={() => router.back()}>
-          <IconComponent src="/icons/arrow-left24.svg" size="medium" />
-        </button>
-        <div className="ml-3 mt-1 text-[20px] font-bold leading-[24px] text-neutral-900">
-          Lacak Armada
-        </div>
-      </div>
+      <PageTitle className="mb-0">Lacak Armada</PageTitle>
 
-      {/* Main Content */}
-      <div className="flex min-h-0 flex-1 flex-col px-6 pb-6">
-        <div className="flex min-h-0 flex-1 flex-col rounded-xl border border-[#C4C4C4] bg-white">
-          {dataDriverStatus ? (
-            <>
-              {/* Driver Info Section */}
-              <div className="flex flex-col gap-4 p-4 pb-0">
-                {/* Status Badge */}
-                <div className="w-fit">
-                  <div className="flex items-center justify-center rounded-md bg-[#E2F2FF] px-2 py-1">
-                    <span className="text-[12px] font-semibold leading-[14.4px] text-[#176CF7]">
-                      {dataDriverStatus?.dataDriver?.statusTitle}
-                    </span>
-                  </div>
-                </div>
+      <div
+        ref={containerRef}
+        className="relative"
+        style={{
+          ...(containerHeight && {
+            maxHeight: containerHeight,
+          }),
+        }}
+      >
+        <div
+          className="flex flex-col gap-4 rounded-xl border border-[#C4C4C4] pt-5"
+          style={{
+            ...(!contentHeight && { height: "100%" }),
+          }}
+        >
+          <div className="px-4">
+            <div className="flex flex-col gap-3 border-b border-neutral-400 pb-4">
+              {/* Status Badge */}
+              <BadgeStatusPesanan className="h-6 w-fit" variant="primary">
+                {dataDriverStatus?.dataDriver?.statusTitle}
+              </BadgeStatusPesanan>
 
-                {/* Driver Profile */}
-                <AvatarDriver
-                  name={dataDriverStatus?.dataDriver?.name}
-                  image={dataDriverStatus?.dataDriver?.profileImage}
-                  licensePlate={dataDriverStatus?.dataDriver?.licensePlate}
-                />
+              {/* Driver Profile */}
+              <AvatarDriver
+                name={dataDriverStatus?.dataDriver?.name}
+                image={dataDriverStatus?.dataDriver?.profileImage}
+                licensePlate={dataDriverStatus?.dataDriver?.licensePlate}
+              />
+            </div>
+          </div>
+          {dataDriverStatus?.dataDriver?.statusDriver?.startsWith("MENUJU") && (
+            <div className="px-4">
+              <div className="flex h-[45px] items-center justify-between bg-[#F1F1F1] px-3 text-[12px] leading-[1.1]">
+                <span className="max-w-[120px] font-medium text-[#7B7B7B]">
+                  Estimasi Tiba di Lokasi Bongkar 2
+                </span>
+                <span className="font-semibold text-black">
+                  4 Okt 2024 05:30 WIB
+                </span>
               </div>
+            </div>
+          )}
 
-              {/* Divider */}
-              <div className="my-3 h-px w-full bg-[#C4C4C4]"></div>
+          <h2 className="h-[8px] px-4 text-[12px] font-semibold leading-[14.4px] text-black">
+            Detail Status Driver
+          </h2>
 
-              {/* Estimated Arrival */}
-              <div className="rounded-none bg-[#F1F1F1] p-3">
-                <div className="flex items-center justify-between">
-                  <span className="max-w-[120px] text-[12px] font-medium leading-[13.2px] text-[#7B7B7B]">
-                    Estimasi Tiba di Lokasi Bongkar 1
-                  </span>
-                  <span className="text-[12px] font-semibold leading-[13.2px] text-black">
-                    4 Okt 2024 05:30 WIB
-                  </span>
-                </div>
+          <div
+            ref={contentRef}
+            className="pl-4 pr-[6px]"
+            style={{
+              ...(!contentHeight && { height: "100%" }),
+            }}
+          >
+            {contentHeight && (
+              <div
+                className="overflow-y-auto pb-5 pr-[8px]"
+                style={{
+                  ...(contentHeight && { maxHeight: contentHeight }),
+                }}
+              >
+                <DriverTimeline dataDriverStatus={dataDriverStatus} />
               </div>
-
-              {/* Detail Status Title */}
-              <h2 className="my-4 px-4 text-[12px] font-semibold leading-[14.4px] text-black">
-                Detail Status Driver
-              </h2>
-
-              <DriverTimeline dataDriverStatus={dataDriverStatus} />
-            </>
-          ) : null}
+            )}
+          </div>
         </div>
       </div>
     </div>

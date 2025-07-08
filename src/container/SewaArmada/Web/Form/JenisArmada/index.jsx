@@ -6,21 +6,17 @@ import ButtonPlusMinus from "@/components/Form/ButtonPlusMinus";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RecommendedTruckModal from "@/container/SewaArmada/Web/Form/JenisArmada/RecommendedTruckModal";
-import SelectArmadaModal from "@/container/SewaArmada/Web/Form/JenisArmada/SelectArmadaModal";
 import { SelectedTruck } from "@/container/SewaArmada/Web/Form/JenisArmada/SelectedTruck";
-import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
-import { useSWRHook, useSWRMutateHook } from "@/hooks/use-swr";
 import { cn } from "@/lib/utils";
 import { handleFirstTime } from "@/lib/utils/form";
+import { useSelectArmadaModalAction } from "@/store/forms/selectArmadaModalStore";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
 } from "@/store/forms/sewaArmadaStore";
 
-export const JenisArmada = () => {
-  const [type, setType] = useState(""); // carrier or truck
-  const [isArmadaPopupOpen, setIsArmadaPopupOpen] = useState(false);
+export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
   const [isRecommendedTruckOpen, setIsRecommendedTruckOpen] = useState(false);
 
   const orderType = useSewaArmadaStore((state) => state.orderType);
@@ -34,43 +30,16 @@ export const JenisArmada = () => {
     informasiMuatan,
     carrierId,
     truckTypeId,
+    minTruckCount,
     truckCount,
   } = useSewaArmadaStore((state) => state.formValues);
   const { setField } = useSewaArmadaActions();
-
-  // Fetch recommended carriers from API using SWR
-  const { data: carriersData, error: carriersError } = useSWRHook(
-    cargoCategoryId
-      ? `v1/orders/carriers/recommended?cargoCategoryId=${cargoCategoryId}`
-      : null
-  );
-
-  // Menggunakan useSWRMutateHook untuk request POST truk
-  const {
-    data: trucksData,
-    error: trucksError,
-    trigger: fetchTrucks,
-    isMutating: isLoadingTrucks,
-  } = useSWRMutateHook("v1/orders/trucks/recommended", "POST");
-
-  const carriers = carriersData?.Data || [];
-  const trucks = trucksData?.Data || [];
-
-  useShallowCompareEffect(() => {
-    if (trucksData) {
-      // console.log("trucksdata", trucksData);
-      setField("distance", trucksData.Data.priceComponents.estimatedDistance);
-      setField("distanceUnit", trucksData.Data.priceComponents.distanceUnit);
-      setField(
-        "estimatedTime",
-        trucksData.Data.priceComponents.preparationTime
-      );
-    }
-  }, [trucksData]);
+  const { setIsOpen: setSelectArmadaModalOpen, setType } =
+    useSelectArmadaModalAction();
 
   const selectedCarrier = useShallowMemo(
     () =>
-      carrierId
+      carrierId && carriers
         ? [
             ...(carriers.recommendedCarriers || []),
             ...(carriers.nonRecommendedCarriers || []),
@@ -80,7 +49,7 @@ export const JenisArmada = () => {
   );
 
   const selectedTruck = useShallowMemo(() => {
-    if (!truckTypeId) return null;
+    if (!truckTypeId || !trucks) return null;
 
     const recommendedTruck = trucks.recommendedTrucks?.find(
       (item) => item.truckTypeId === truckTypeId
@@ -115,164 +84,9 @@ export const JenisArmada = () => {
   // Ketika modal dibuka dan tipe adalah truck, fetch data truk
   const handleOpenModal = async (type) => {
     setType(type);
-    setIsArmadaPopupOpen(true);
-
-    // Jika tipe truck dan carrier sudah dipilih, fetch data truk
-    if (type === "truckTypeId" && carrierId) {
-      // Calculate total weight and convert to tons
-      const calculateTotalWeight = () => {
-        let totalWeight = 0;
-
-        if (informasiMuatan && informasiMuatan.length > 0) {
-          // Sum all weights with unit conversion
-          totalWeight = informasiMuatan.reduce((sum, item) => {
-            const weight = item.beratMuatan?.berat || 0;
-            const unit = item.beratMuatan?.unit || "kg";
-
-            // Convert to tons
-            if (unit === "kg") {
-              return sum + weight * 0.001; // kg to ton
-            } else if (unit === "ton") {
-              return sum + weight;
-            } else {
-              // For other units (like liters), convert based on estimation or just use as-is
-              return sum + weight;
-            }
-          }, 0);
-        }
-
-        return {
-          weight: totalWeight || 0,
-          weightUnit: "ton", // Always use ton as per requirement
-        };
-      };
-
-      // Get max dimensions from informasiMuatan and convert to meters
-      const getMaxDimensions = () => {
-        let maxLength = 0;
-        let maxWidth = 0;
-        let maxHeight = 0;
-
-        if (informasiMuatan && informasiMuatan.length > 0) {
-          informasiMuatan.forEach((item) => {
-            const length = item.dimensiMuatan?.panjang || 0;
-            const width = item.dimensiMuatan?.lebar || 0;
-            const height = item.dimensiMuatan?.tinggi || 0;
-            const unit = item.dimensiMuatan?.unit || "m";
-
-            // Convert to meters if needed
-            const conversionFactor = unit === "cm" ? 0.01 : 1; // cm to m
-
-            // Calculate max for each dimension independently
-            const convertedLength = length * conversionFactor;
-            const convertedWidth = width * conversionFactor;
-            const convertedHeight = height * conversionFactor;
-
-            // Update max values independently
-            if (convertedLength > maxLength) maxLength = convertedLength;
-            if (convertedWidth > maxWidth) maxWidth = convertedWidth;
-            if (convertedHeight > maxHeight) maxHeight = convertedHeight;
-          });
-        }
-
-        return {
-          length: maxLength,
-          width: maxWidth,
-          height: maxHeight,
-          dimensionUnit: "m", // Always use meters as per requirement
-        };
-      };
-
-      // Get coordinates for origin and destination
-      const getOriginCoordinates = () => {
-        if (lokasiMuat && lokasiMuat.length > 0) {
-          return lokasiMuat.map((item) => ({
-            lat: item?.dataLokasi?.coordinates?.latitude || 0,
-            long: item?.dataLokasi?.coordinates?.longitude || 0,
-          }));
-        }
-        return [{ lat: 0, long: 0 }]; // Default coordinates set to 0
-      };
-
-      const getDestinationCoordinates = () => {
-        if (lokasiBongkar && lokasiBongkar.length > 0) {
-          return lokasiBongkar.map((item) => ({
-            lat: item?.dataLokasi?.coordinates?.latitude,
-            long: item?.dataLokasi?.coordinates?.longitude,
-          }));
-        }
-        return []; // Default coordinates set to 0
-      };
-
-      // Get load time from startDate and endDate, preserving the exact time
-      const getLoadTimes = () => {
-        const now = new Date();
-
-        // Helper function to format date to ISO string with Z (UTC) format
-        // while preserving the exact time values (not adjusting for timezone)
-        const formatToISOPreserveTime = (date) => {
-          if (!date) return now.toISOString();
-
-          try {
-            // Ensure we're working with a Date object
-            const dateObj = date instanceof Date ? date : new Date(date);
-
-            // Check if the date is valid
-            if (isNaN(dateObj.getTime())) {
-              console.error("Invalid date:", date);
-              return now.toISOString();
-            }
-
-            // Format the date manually to preserve time
-            const year = dateObj.getFullYear();
-            const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-            const day = String(dateObj.getDate()).padStart(2, "0");
-            const hours = String(dateObj.getHours()).padStart(2, "0");
-            const minutes = String(dateObj.getMinutes()).padStart(2, "0");
-            const seconds = String(dateObj.getSeconds()).padStart(2, "0");
-
-            // Create ISO string with Z suffix (indicating UTC) but with local time values
-            return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}Z`;
-          } catch (error) {
-            console.error("Error formatting date:", error);
-            return now.toISOString();
-          }
-        };
-
-        const result = {
-          loadTimeStart: formatToISOPreserveTime(loadTimeStart),
-        };
-
-        if (showRangeOption && loadTimeEnd) {
-          result.loadTimeEnd = formatToISOPreserveTime(loadTimeEnd);
-        }
-
-        return result;
-      };
-
-      // Build the request payload
-      const { weight, weightUnit } = calculateTotalWeight();
-      const dimensions = getMaxDimensions();
-      const origin = getOriginCoordinates();
-      const destination = getDestinationCoordinates();
-      const loadTime = getLoadTimes();
-
-      const requestPayload = {
-        orderType,
-        ...loadTime,
-        origin,
-        destination,
-        weight,
-        weightUnit,
-        dimensions,
-        carrierId,
-      };
-
-      // Log the payload for debugging (can remove in production)
-      console.log("Sending truck request with payload:", requestPayload);
-
-      // Send the API request
-      await fetchTrucks(requestPayload);
+    setSelectArmadaModalOpen(true);
+    if (type === "truckTypeId") {
+      await onFetchTrucks();
     }
   };
 
@@ -388,27 +202,13 @@ export const JenisArmada = () => {
             <ButtonPlusMinus
               disabled={!truckTypeId}
               onChange={(value) => setField("truckCount", value)}
-              minValue={2}
+              minValue={minTruckCount}
               maxValue={10}
               value={truckCount}
             />
           </div>
         </FormContainer>
       ) : null}
-
-      <SelectArmadaModal
-        carrierData={carriers}
-        truckData={trucks}
-        isOpen={isArmadaPopupOpen}
-        setIsOpen={setIsArmadaPopupOpen}
-        type={type}
-        isLoadingCarrier={
-          !carriersData && !carriersError && type === "carrierId"
-        }
-        errorCarrier={carriersError}
-        isLoadingTruck={isLoadingTrucks && type === "truckTypeId"}
-        errorTruck={trucksError}
-      />
 
       <RecommendedTruckModal
         isOpen={isRecommendedTruckOpen}

@@ -5,7 +5,7 @@ import {
   useFirstTimerModalStore,
 } from "@/store/first-timer/firstTimerModalStore";
 
-export const ModalLogin = ({}) => {
+const LoginModal = ({}) => {
   const isOpen = useFirstTimerModalStore((state) => state.isOpen);
   const { setIsOpen } = useFirstTimerModalAction();
   return (
@@ -13,7 +13,7 @@ export const ModalLogin = ({}) => {
       <ModalContent className="w-modal-small">
         <ModalHeader size="small" />
         <div className="px-6 py-9">
-          <div className="flex flex-col items-center justify-center gap-6">
+          <div className="flex flex-col items-center justify-center gap-y-6">
             {/* Judul Modal */}
             <h2 className="w-full text-center text-[16px] font-bold leading-[19.2px] text-neutral-900">
               Informasi
@@ -35,3 +35,5 @@ export const ModalLogin = ({}) => {
     </Modal>
   );
 };
+
+export default LoginModal;

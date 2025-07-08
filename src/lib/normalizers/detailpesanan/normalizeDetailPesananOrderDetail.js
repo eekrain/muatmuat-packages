@@ -10,6 +10,7 @@ export const normalizeDetailPesananOrderDetail = ({
   dataAdditionalServices = [],
   dataAlerts,
   dataCancellationHistory,
+  dataLegendStatus,
 }) => {
   try {
     const foundDocumentShipping = dataAdditionalServices.find(
@@ -18,6 +19,10 @@ export const normalizeDetailPesananOrderDetail = ({
     const foundOtherAdditionalService = dataAdditionalServices.find(
       (val) => !val.isShipping
     );
+    console.log(
+      "🔍 ~  ~ src/lib/normalizers/detailpesanan/normalizeDetailPesananOrderDetail.js:13 ~ dataLegendStatus:",
+      dataLegendStatus
+    );
 
     const dataStatusPesanan = {
       orderId: dataOrderDetail.general?.orderId,
@@ -25,25 +30,38 @@ export const normalizeDetailPesananOrderDetail = ({
         dataOrderDetail.general?.invoiceNumber ||
         dataOrderDetail.general?.orderCode,
       orderStatus: dataOrderDetail.general?.orderStatus,
-      orderStatusTitle: dataOrderStatusHistory?.statusHistory?.find(
-        (val) => val.statusCode === dataOrderDetail.general?.orderStatus
-      )?.statusName,
-      statusHistory: {
-        stepper:
-          dataOrderStatusHistory?.statusHistory?.map((val) => ({
-            label: val.statusName,
-            status: val.statusCode,
-            icon: OrderStatusIcon[val.statusCode],
-          })) || [],
-        activeIndex: dataOrderStatusHistory?.statusHistory?.findIndex(
-          (val) => val.statusCode === dataOrderDetail.general?.orderStatus
+      unitFleetStatus: dataOrderDetail.general?.unitFleetStatus || 1,
+      driverStatus:
+        dataOrderStatusHistory?.driverStatus?.map(
+          ({ stepStatus, ...item }) => ({
+            ...item,
+            stepperData: stepStatus.map((step) => ({
+              label: step.statusName,
+              status: step.statusCode,
+              icon: OrderStatusIcon[step.statusCode],
+            })),
+            activeIndex: stepStatus.findIndex(
+              (step) => step.statusCode === item.orderStatus
+            ),
+          })
+        ) || [],
+      legendStatus: {
+        stepperData: dataLegendStatus?.map((legend) => ({
+          label: legend.statusName,
+          status: legend.statusCode,
+          icon: OrderStatusIcon[legend.statusCode],
+        })),
+        activeIndex: dataLegendStatus?.findIndex(
+          (legend) => legend.statusCode === dataOrderDetail.general?.orderStatus
         ),
       },
       withDocumentShipping: Boolean(foundDocumentShipping),
       expiredAt: dataPayment?.payment?.expiredAt,
-      driverStatus: dataOrderStatusHistory?.driverStatus,
       alerts: dataAlerts || [],
       cancellationHistory: dataCancellationHistory,
+      hasFoundFleet:
+        dataOrderStatusHistory?.driverStatus &&
+        dataOrderStatusHistory?.driverStatus?.length > 0,
     };
 
     const route = { muat: [], bongkar: [] };

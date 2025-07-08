@@ -1,5 +1,4 @@
-import Image from "next/image";
-
+import IconComponent from "@/components/IconComponent/IconComponent";
 import { cn } from "@/lib/utils";
 import {
   useSewaArmadaActions,
@@ -20,10 +19,9 @@ export const ServiceTypeSelect = () => {
         )}
         onClick={() => setOrderType("INSTANT")}
       >
-        <div className="relative h-8 w-8">
-          <Image
+        <div className="flex size-8 items-center justify-center">
+          <IconComponent
             src="/icons/muattrans-instan.svg"
-            alt="Instan"
             width={32}
             height={32}
           />
@@ -43,10 +41,9 @@ export const ServiceTypeSelect = () => {
         )}
         onClick={() => setOrderType("SCHEDULED")}
       >
-        <div className="relative h-8 w-8">
-          <Image
+        <div className="flex size-8 items-center justify-center">
+          <IconComponent
             src="/icons/muattrans-terjadwal32.svg"
-            alt="Terjadwal"
             width={32}
             height={32}
           />

@@ -5,6 +5,7 @@ import Checkbox from "@/components/Form/Checkbox";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import Input from "@/components/Form/Input";
+import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { handleFirstTime } from "@/lib/utils/form";
 import {
@@ -16,19 +17,12 @@ export const BadanUsahaPemesan = () => {
   const businessEntity = useSewaArmadaStore(
     (state) => state.formValues.businessEntity
   );
-  const isBusinessEntity = useSewaArmadaStore(
-    (state) => state.formValues.businessEntity.isBusinessEntity
-  );
-  // const name = useSewaArmadaStore(
-  //   (state) => state.formValues.businessEntity.name
-  // );
-  // const taxId = useSewaArmadaStore(
-  //   (state) => state.formValues.businessEntity.taxId
-  // );
+  const { isBusinessEntity, name, taxId } = businessEntity;
 
   const { setField } = useSewaArmadaActions();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     taxId: "",
@@ -47,17 +41,19 @@ export const BadanUsahaPemesan = () => {
   };
 
   const handleToggleCheckbox = (checked) => {
-    setField("businessEntity", {
-      isBusinessEntity: checked,
-      name: "",
-      taxId: "",
-    });
     if (checked) {
+      setFormData((prevState) => ({ ...prevState }));
+      setModalType("create");
       setIsModalOpen(true);
     } else {
-      setFormData({
+      const defaultData = {
         name: "",
         taxId: "",
+      };
+      setFormData(defaultData);
+      setField("businessEntity", {
+        ...defaultData,
+        isBusinessEntity: false,
       });
     }
   };
@@ -96,32 +92,75 @@ export const BadanUsahaPemesan = () => {
   return (
     <>
       <FormContainer>
-        <FormLabel variant="small">Tipe Pemesan</FormLabel>
-        <div className="flex h-[16px] flex-row items-center gap-[4px]">
-          <Checkbox
-            onChange={({ checked }) =>
-              handleFirstTime(() => handleToggleCheckbox(checked))
-            }
-            label="Centang jika kamu adalah suatu perusahaan/badan usaha"
-            checked={isBusinessEntity}
-            value="isBusinessEntity"
-          />
-          {/* <IconComponent src="/icons/info16.svg" width={16} height={16} /> */}
-          <InfoTooltip className="w-[336px]" side="right">
-            <p>
-              Jika kamu mencentang opsi ini kamu akan dikenakan PPh 23 terhadap
-              pembayaran sewa jasa angkut yang kamu lakukan
-            </p>
-          </InfoTooltip>
+        <FormLabel variant="small" optional>
+          Tipe Pemesan
+        </FormLabel>
+        <div className="flex flex-col gap-y-3">
+          <div className="flex h-[16px] flex-row items-center gap-[4px]">
+            <Checkbox
+              onChange={({ checked }) =>
+                handleFirstTime(() => handleToggleCheckbox(checked))
+              }
+              label="Centang jika kamu adalah suatu perusahaan/badan usaha"
+              checked={isBusinessEntity || isModalOpen}
+              value="isBusinessEntity"
+            />
+            <InfoTooltip className="w-[336px]" side="right">
+              <p>
+                Jika kamu mencentang opsi ini kamu akan dikenakan PPh 23
+                terhadap pembayaran sewa jasa angkut yang kamu lakukan
+              </p>
+            </InfoTooltip>
+          </div>
+          {isBusinessEntity && name && taxId ? (
+            <div className="ml-6 flex gap-x-2 rounded-md border border-primary-700 bg-primary-50 p-3">
+              <IconComponent src="/icons/profil-perusahaan16.svg" />
+              <div className="flex flex-1 flex-col py-1">
+                <div className="flex w-full flex-col gap-y-3">
+                  <h4 className="text-[12px] font-bold leading-[14.4px] text-neutral-900">
+                    {name}
+                  </h4>
+                  <div className="flex items-center gap-x-2">
+                    <IconComponent src="/icons/nomor-amandemen16.svg" />
+                    <div>
+                      <div className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                        {"Nomor NPWP :"}
+                      </div>
+                      <div className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+                        {taxId}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button
+                className="flex items-center gap-x-2 self-start"
+                onClick={() => {
+                  setModalType("edit");
+                  setIsModalOpen(true);
+                }}
+              >
+                <span className="text-[12px] font-medium leading-[14.4px] text-primary-700">
+                  Ubah
+                </span>
+                <IconComponent
+                  className="icon-fill-primary-700"
+                  src="/icons/edit16.svg"
+                />
+              </button>
+            </div>
+          ) : null}
         </div>
       </FormContainer>
       <Modal
         open={isModalOpen}
         onOpenChange={(value) => {
-          setField("businessEntity", {
-            ...businessEntity,
-            isBusinessEntity: false,
-          });
+          if (modalType === "create") {
+            setField("businessEntity", {
+              ...businessEntity,
+              isBusinessEntity: false,
+            });
+          }
           setFormErrors({});
           setIsModalOpen(value);
         }}

@@ -15,7 +15,7 @@ export const FotoMuatan = () => {
   const { setFotoMuatan } = useSewaArmadaActions();
 
   const handleImageUpload = (index, img) => setFotoMuatan(index, img);
-  console.log("fotoMuatan", fotoMuatan);
+
   return (
     <FormContainer>
       <FormLabel required>Lampiran/Foto Muatan</FormLabel>

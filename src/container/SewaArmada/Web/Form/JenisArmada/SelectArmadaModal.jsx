@@ -13,115 +13,26 @@ import {
   WarningBadge,
 } from "@/container/SewaArmada/Web/Form/JenisArmada/ArmadaComponent";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
-import { useSWRMutateHook } from "@/hooks/use-swr";
 import {
-  useSewaArmadaActions,
-  useSewaArmadaStore,
-} from "@/store/forms/sewaArmadaStore";
+  useSelectArmadaModalAction,
+  useSelectArmadaModalStore,
+} from "@/store/forms/selectArmadaModalStore";
+import { useSewaArmadaActions } from "@/store/forms/sewaArmadaStore";
 
 // Main Popup Component
-const SelectArmadaModal = ({
-  carrierData,
-  truckData,
-  isOpen,
-  setIsOpen,
-  type,
-}) => {
+const SelectArmadaModal = ({ carrierData, truckData }) => {
   const [search, setSearch] = useState("");
 
-  // Mendapatkan nilai-nilai yang dibutuhkan dari zustand store
-  const orderType = useSewaArmadaStore((state) => state.orderType);
-  const carrierId = useSewaArmadaStore((state) => state.formValues.carrierId);
-  const distance = useSewaArmadaStore((state) => state.formValues.distance);
-  const distanceUnit = useSewaArmadaStore(
-    (state) => state.formValues.distanceUnit
-  );
-  const truckCount = useSewaArmadaStore((state) => state.formValues.truckCount);
-  const additionalServices = useSewaArmadaStore(
-    (state) => state.formValues.additionalServices
-  );
-  const isBusinessEntity = useSewaArmadaStore(
-    (state) => state.formValues.isBusinessEntity
-  );
-  // const useAsuransi = useSewaArmadaStore(
-  //   (state) => state.formValues.useAsuransi
-  // );
+  const { isOpen, isDimensionOrWeightChanged, type } =
+    useSelectArmadaModalStore();
+  const { setIsOpen, setIsDimensionOrWeightChanged } =
+    useSelectArmadaModalAction();
 
   const { setField } = useSewaArmadaActions();
 
-  // Setup SWR mutation hook untuk API calculate-price
-  const {
-    trigger: calculatePrice,
-    isMutating: isCalculatingPrice,
-    data: priceData,
-    error: priceError,
-  } = useSWRMutateHook("v1/orders/calculate-price");
-  // console.log("priceddata", priceData);
   useEffect(() => {
     setSearch("");
   }, [isOpen]);
-
-  const handleArmadaSelect = async (item) => {
-    setField(type, item);
-    // Jika user memilih jenis truk, kita perlu menghitung harga
-    // Nanti dibuat function biar bisa diakses di tempat2 yg perlu calculate harga
-    if (type === "truckTypeId" && carrierId) {
-      try {
-        // Prepare request payload berdasarkan dokumentasi API
-        const requestPayload = {
-          calculationType: "FULL_ORDER_PRICING",
-          truckData: {
-            carrierId,
-            truckTypeId: item,
-            distance: distance || 0,
-            distanceUnit: distanceUnit || "km",
-            orderType,
-            truckCount: 1, //sementara
-          },
-          // Blm ada asuransi
-          // insuranceData: useAsuransi
-          //   ? {
-          //       // Nilai default untuk insurance jika tidak ada data spesifik
-          //       insuranceOptionId: null,
-          //       coverageAmount: 0,
-          //     }
-          //   : null,
-          additionalServices,
-          // Blm bisa akses voucher karena state nya cuma ada di SummaryPanel.jsx
-          // voucherData: {
-          //   voucherId: null,
-          //   applyDiscount: false,
-          // },
-          businessEntity: {
-            isBusinessEntity,
-          },
-        };
-
-        // Panggil API calculate-price
-        const priceResult = await calculatePrice(requestPayload);
-
-        // Jika berhasil, simpan hasil perhitungan ke store
-        // if (priceResult?.data?.price) {
-        //   Update price data di store
-        //   setField("calculatedPrice", priceResult.data.price);
-        // }
-      } catch (error) {
-        console.error("Error calculating price:", error);
-        // Opsional: Set error message di store
-        // setError("price", "Gagal menghitung harga. Silahkan coba lagi.");
-      }
-    }
-
-    setIsOpen(false);
-  };
-
-  const handleSearchChange = (e) => setSearch(e.target.value);
-
-  const modalTitles = {
-    carrierId: "Pilih Jenis Carrier",
-    truckTypeId: "Pilih Jenis Truk",
-  };
-  const modalTitle = modalTitles[type] || modalTitles.carrierId;
 
   // Get current data based on type
   const currentData = useShallowMemo(() => {
@@ -150,6 +61,30 @@ const SelectArmadaModal = ({
     }
   }, [type, carrierData, truckData]);
 
+  const handleArmadaSelect = async (item) => {
+    if (type === "truckTypeId") {
+      const selectedTruck = [
+        ...(currentData.recommended || []),
+        ...(currentData.notRecommended || []),
+      ].find((truck) => {
+        return truck.truckTypeId === item;
+      });
+      setField("truckCount", selectedTruck.unit);
+      setField("minTruckCount", selectedTruck.unit);
+    }
+    setField(type, item);
+    setIsDimensionOrWeightChanged(false);
+    setIsOpen(false);
+  };
+
+  const handleSearchChange = (e) => setSearch(e.target.value);
+
+  const modalTitles = {
+    carrierId: "Pilih Jenis Carrier",
+    truckTypeId: "Pilih Jenis Truk",
+  };
+  const modalTitle = modalTitles[type] || modalTitles.carrierId;
+
   // Filter based on search
   const filteredData = [
     ...(currentData.recommended || []),
@@ -165,7 +100,7 @@ const SelectArmadaModal = ({
     <>
       <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick={false}>
         <ModalContent type="muatmuat">
-          <div className="flex flex-col gap-y-4 px-6 py-9">
+          <div className="flex h-[460px] flex-col gap-y-4 px-6 py-8">
             {/* Header */}
             <div className="flex w-[424px] justify-center">
               <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
@@ -174,7 +109,13 @@ const SelectArmadaModal = ({
             </div>
 
             {isTruckOptionsEmpty ? (
-              <WarningBadge message="Untuk sementara kami belum menyediakan truk yang sesuai dengan informasi berat dan dimensi muatan yang kamu isikan." />
+              <WarningBadge
+                className="bg-warning-100"
+                message="Untuk sementara kami belum menyediakan truk yang sesuai dengan informasi berat dan dimensi muatan yang kamu isikan."
+              />
+            ) : null}
+            {isDimensionOrWeightChanged ? (
+              <WarningBadge message="Berat / dimensi muatan melebihi kapasitas truk yang telah dipilih. Mohon pilih truk dengan kapasitas yang sesuai." />
             ) : null}
 
             {/* Search Field */}
@@ -197,14 +138,26 @@ const SelectArmadaModal = ({
               onChange={handleSearchChange}
             />
 
-            {search.length < 3 ? (
-              <div className="mr-[-15px] max-h-[320px] overflow-y-auto pr-2.5">
-                {/* Rekomendasi Section */}
-                <div className="mb-6">
-                  <SectionHeader recommended type={type} />
+            {isTruckOptionsEmpty ? (
+              <div className="flex h-[267px] items-center justify-center">
+                <DataNotFound
+                  className="gap-y-3"
+                  textClass="text-[#868686]"
+                  title="Tidak ada rekomendasi truk"
+                  width={96}
+                  height={77}
+                />
+              </div>
+            ) : null}
 
-                  {currentData.recommended?.length > 0 ? (
-                    currentData.recommended.map((item, key) => (
+            {search.length < 3 ? (
+              <div className="mr-[-15px] flex h-[320px] flex-col gap-y-4 overflow-y-auto pr-2.5">
+                {/* Rekomendasi Section */}
+                {currentData.recommended?.length > 0 ? (
+                  <div>
+                    <SectionHeader recommended type={type} />
+
+                    {currentData.recommended.map((item, key) => (
                       <Fragment key={key}>
                         {type === "carrierId" ? (
                           <CarrierItem
@@ -219,19 +172,9 @@ const SelectArmadaModal = ({
                           />
                         ) : null}
                       </Fragment>
-                    ))
-                  ) : isTruckOptionsEmpty ? (
-                    <div className="flex h-[267px] items-center justify-center">
-                      <DataNotFound
-                        className="gap-y-3"
-                        textClass="text-[#868686]"
-                        title="Tidak ada rekomendasi truk"
-                        width={96}
-                        height={77}
-                      />
-                    </div>
-                  ) : null}
-                </div>
+                    ))}
+                  </div>
+                ) : null}
 
                 {/* Tidak Direkomendasikan Section */}
                 {currentData.notRecommended?.length > 0 && (
@@ -239,7 +182,12 @@ const SelectArmadaModal = ({
                     <SectionHeader recommended={false} type={type} />
 
                     <WarningBadge
-                      message={`Pilihan ${type === "carrier" ? "carrier" : "truk"} di bawah ini berisiko melebihi batas dimensi atau tidak sesuai dengan informasi muatan`}
+                      className="mt-3"
+                      message={
+                        type === "carrierId"
+                          ? "Pilihan carrier di bawah ini berisiko melebihi batas dimensi atau tidak sesuai dengan informasi muatan"
+                          : "Pilihan truk di bawah ini berisiko kelebihan muatan atau tidak sesuai dengan informasi muatan"
+                      }
                     />
 
                     {currentData.notRecommended.map((item, key) => (

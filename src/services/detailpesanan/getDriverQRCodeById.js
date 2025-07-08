@@ -36,12 +36,16 @@ export const useGetDriverQRCodeById = (requestData = exampleBody) => {
   const intervalRef = useRef(null);
 
   const generateQRCode = async () => {
+    console.log(
+      "🔍 ~  ~ src/services/detailpesanan/getDriverQRCodeById.js:39 ~ requestData:",
+      requestData
+    );
     if (!requestData) return;
     await new Promise((resolve) => setTimeout(resolve, 1000));
     // Fetch data from API with this orderId, driverId
     const response = apiResultQRCode;
-    // setQRData(response.data);
-    setQRData(null);
+    setQRData(response.data);
+    // setQRData(null);
     setIsLoading(false);
   };
 

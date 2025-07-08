@@ -3,6 +3,7 @@ import { useEffect } from "react";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { toast } from "@/lib/toast";
 import { useGetDetailPesananData } from "@/services/detailpesanan/getDetailPesananData";
 import { useLoadingAction } from "@/store/loadingStore";
 
@@ -22,7 +23,7 @@ const DetailPesananWeb = () => {
   const params = useParams();
 
   const breadCrumbData = [
-    { name: "Daftar Pesanan", path: "/daftar-pesanan" },
+    { name: "Daftar Pesanan", href: "/daftarpesanan" },
     { name: "Detail Pesanan" },
   ];
 
@@ -55,18 +56,6 @@ const DetailPesananWeb = () => {
             {dataDetailPesanan?.dataStatusPesanan && (
               <StatusPesanan
                 dataStatusPesanan={dataDetailPesanan.dataStatusPesanan}
-                currentStatus="Dokumen Sedang Disiapkan"
-                statusList={[
-                  { label: "Pesanan Terkonfirmasi", isCompleted: true },
-                  { label: "Proses Muat", isCompleted: true },
-                  { label: "Proses Bongkar", isCompleted: true },
-                  {
-                    label: "Dokumen Sedang Disiapkan",
-                    isCompleted: true,
-                    isCurrent: true,
-                  },
-                  { label: "Selesai", isCompleted: false },
-                ]}
               />
             )}
 
@@ -108,10 +97,17 @@ const DetailPesananWeb = () => {
         </div>
       </div>
 
-      {/* <button onClick={() => toast.success("Pesanan kamu berhasil dibatalkan")}>
+      <button
+        onClick={() => {
+          // toast.error(
+          //   "Minimal pilih 1 alasan pembatalan untuk membatalkan pesanan"
+          // );
+          toast.success("Pesanan kamu berhasil dibatalkan");
+        }}
+      >
         tes toast
       </button>
-      <pre>{JSON.stringify(dataDetailPesanan, null, 2)}</pre> */}
+      <pre>{JSON.stringify(dataDetailPesanan, null, 2)}</pre>
     </>
   );
 };

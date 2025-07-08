@@ -2,9 +2,14 @@ import { cn } from "@/lib/utils";
 
 import IconComponent from "../IconComponent/IconComponent";
 
-const alertVariants = {
-  warning: "bg-warning-100 [&_svg]:text-secondary-400",
-  secondary: "bg-secondary-100 [&_svg]:text-warning-900",
+const bgVariants = {
+  warning: "bg-warning-100",
+  secondary: "bg-secondary-100",
+};
+
+const iconVariants = {
+  warning: "text-secondary-400",
+  secondary: "text-warning-900",
 };
 
 const icon = {
@@ -27,7 +32,7 @@ export const Alert = ({
     <div
       className={cn(
         "flex items-center gap-2 rounded-md text-[12px] font-medium leading-[1.2] text-neutral-900",
-        alertVariants[variant],
+        bgVariants[variant],
         alertSizes[size],
         className
       )}
@@ -37,9 +42,15 @@ export const Alert = ({
           src={icon[variant]}
           width={size === "big" ? 24 : 20}
           height={size === "big" ? 24 : 20}
+          className={iconVariants[variant]}
         />
       )}
-      {children}
+
+      {typeof children === "string" ? (
+        <span className="text-neutral-900">{children}</span>
+      ) : (
+        children
+      )}
     </div>
   );
 };

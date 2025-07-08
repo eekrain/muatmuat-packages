@@ -4,7 +4,9 @@ import { ChevronRight } from "lucide-react";
 
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { compareArraysByNameOnly } from "@/lib/utils/array";
 import { handleFirstTime } from "@/lib/utils/form";
+import { useSelectArmadaModalAction } from "@/store/forms/selectArmadaModalStore";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -13,13 +15,15 @@ import {
 import { InformasiMuatanModal } from "../InformasiMuatan";
 import { InformasiMuatanTable } from "../InformasiMuatan/InformasiMuatanTable";
 
-export const InformasiMuatan = () => {
+export const InformasiMuatan = ({ onFetchTrucks }) => {
   const [isInformasiMuatanModalOpen, setIsInformasiMuatanModalOpen] =
     useState(false);
   const informasiMuatan = useSewaArmadaStore(
     (state) => state.formValues.informasiMuatan
   );
   const { setField } = useSewaArmadaActions();
+  const { setIsOpen, setIsDimensionOrWeightChanged, setType } =
+    useSelectArmadaModalAction();
 
   return (
     <>
@@ -54,8 +58,21 @@ export const InformasiMuatan = () => {
       <InformasiMuatanModal
         open={isInformasiMuatanModalOpen}
         onOpenChange={setIsInformasiMuatanModalOpen}
-        maxInformasiMuatan={5}
-        onSaveInformasiMuatan={(data) => setField("informasiMuatan", data)}
+        maxInformasiMuatan={10}
+        onSaveInformasiMuatan={async (data) => {
+          if (JSON.stringify(informasiMuatan) !== JSON.stringify(data)) {
+            if (compareArraysByNameOnly(informasiMuatan, data)) {
+              await onFetchTrucks();
+              setType("truckTypeId");
+              setIsDimensionOrWeightChanged(true);
+              setIsOpen(true);
+            } else {
+              setField("carrierId", null);
+              setField("truckTypeId", null);
+            }
+          }
+          setField("informasiMuatan", data);
+        }}
         defaultValues={informasiMuatan}
       />
     </>

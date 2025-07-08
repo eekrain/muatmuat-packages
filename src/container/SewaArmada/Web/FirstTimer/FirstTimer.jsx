@@ -16,8 +16,8 @@ export const FirstTimer = () => {
           height={76}
         />
       </div>
-      <div className="mb-6 flex flex-col items-center gap-6">
-        <h1 className="text-center text-[16px] font-semibold text-neutral-900">
+      <div className="mb-6 flex flex-col items-center gap-3">
+        <h1 className="text-center text-base font-semibold leading-[1] text-neutral-900">
           Ayo kirim muatan Anda dengan muatrans!
         </h1>
 

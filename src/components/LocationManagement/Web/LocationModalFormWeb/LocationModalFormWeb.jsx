@@ -2,6 +2,7 @@
 // npm install zustand react-google-maps/api
 import { useEffect, useRef } from "react";
 
+import Button from "@/components/Button/Button";
 import Input from "@/components/Form/Input";
 import { MyTextArea } from "@/components/Form/TextArea";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
@@ -75,9 +76,9 @@ const InnerLocationModalFormWeb = ({
 
   return (
     <Modal open={open} onOpenChange={onOpenChange} closeOnOutsideClick>
-      <ModalContent>
+      <ModalContent type="muatmuat">
         <div className="h-[420px] w-[919px]">
-          <div className="flex h-full w-full flex-row items-center gap-4 p-4">
+          <div className="flex h-full w-full flex-row items-center gap-4 p-4 pr-0">
             <MapContainer
               viewOnly={false}
               coordinates={coordinates}
@@ -90,7 +91,7 @@ const InnerLocationModalFormWeb = ({
               }
             />
 
-            <div className="w-full flex-1">
+            <div className="w-full flex-1 pr-[8px]">
               <h2 className="h-[43px] text-base font-semibold">
                 {formMode === "muat" ? "Lokasi Muat" : "Lokasi Bongkar"}
               </h2>
@@ -100,27 +101,23 @@ const InnerLocationModalFormWeb = ({
                 // className="flex h-[calc(380px-43px)] flex-col gap-4 overflow-y-auto"
                 className="flex h-[calc(380px-43px)] flex-col gap-4"
               >
-                <div className="flex w-full flex-col gap-4 overflow-y-auto">
+                <div className="flex w-full flex-col gap-4 overflow-y-auto pr-[7px]">
                   <div className="w-full">
                     <label className="mb-3 block text-[12px] font-medium text-neutral-600">
                       {formMode === "muat" ? "Lokasi Muat*" : "Lokasi Bongkar*"}
                     </label>
                     <InputLocationManagementDropdown
+                      errorMessage={formErrors?.dataLokasi}
                       markerIcon={
                         formMode === "muat"
                           ? "/icons/marker-lokasi-muat.svg"
                           : "/icons/marker-lokasi-bongkar.svg"
                       }
                     />
-                    {formErrors?.dataLokasi && (
-                      <span className="text-xs font-medium text-red-500">
-                        {formErrors?.dataLokasi}
-                      </span>
-                    )}
                   </div>
                   <div>
                     <label className="mb-3 block text-[12px] font-medium text-neutral-600">
-                      Detail Lokasi (Optional)
+                      Detail Lokasi <i>(Opsional)</i>
                     </label>
                     <MyTextArea
                       value={formValues.detailLokasi}
@@ -158,18 +155,19 @@ const InnerLocationModalFormWeb = ({
                         if (val.length > 14) return;
                         setField("noHPPIC", val);
                       }}
-                      placeholder="Masukkan No. HP PIC Lokasi Muat"
+                      placeholder="Contoh: 08xxxxxxxx"
                       errorMessage={formErrors?.noHPPIC}
                     />
                   </div>
                 </div>
 
-                <button
+                <Button
                   type="submit"
-                  className="rounded-[6px] bg-blue-600 py-2 text-xs font-medium text-white hover:bg-blue-700"
+                  variant="muatparts-primary"
+                  className="mx-auto w-[112px] rounded-full"
                 >
                   Simpan
-                </button>
+                </Button>
               </form>
             </div>
           </div>

@@ -7,9 +7,14 @@ import {
 import { cn } from "@/lib/utils";
 
 // Warning Badge Component
-export const WarningBadge = ({ message }) => {
+export const WarningBadge = ({ className, message }) => {
   return (
-    <div className="flex h-[38px] w-[424px] items-center gap-x-1 rounded-lg bg-warning-100 px-2">
+    <div
+      className={cn(
+        "flex min-h-[38px] w-[424px] items-center gap-x-1 rounded-lg bg-secondary-100 px-2",
+        className
+      )}
+    >
       <IconComponent src="/icons/warning14.svg" width={14} height={14} />
       <span className="flex-1 text-[12px] font-semibold leading-[14.4px] text-neutral-900">
         {message}
@@ -21,26 +26,42 @@ export const WarningBadge = ({ message }) => {
 // Section Header Component
 export const SectionHeader = ({ recommended, type }) => {
   const recommendedTitles = {
-    carrier: "Rekomendasi Carrier Sesuai Muatan",
-    truck: "Rekomendasi Truk Sesuai Muatan",
+    carrierId: "Rekomendasi Carrier Sesuai Muatan",
+    truckTypeId: "Rekomendasi Truk Sesuai Muatan",
   };
   const recommendedTitle = recommendedTitles[type] || recommendedTitles.carrier;
 
   const tooltipContents = {
-    carrier:
+    carrierId:
       "Berikut adalah rekomendasi carrier berdasarkan informasi muatan yang kamu isi",
-    truck:
+    truckTypeId:
       "Berikut adalah rekomendasi truk berdasarkan berat dan dimensi muatan yang kamu isikan dan diurutkan dari yang termurah.",
   };
-  const tooltipContent = tooltipContents[type] || tooltipContents.carrier;
+  const tooltipContent = tooltipContents[type] || tooltipContents.carrierId;
+
+  if (recommended) {
+    return (
+      <div className="flex h-6 w-[424px] items-center gap-x-1">
+        <span className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
+          {recommended ? recommendedTitle : "Tidak Direkomendasikan"}
+        </span>
+        {recommended && (
+          <InfoTooltip
+            appearance={{ iconClassName: "size-[24px] text-neutral-700" }}
+            className="w-[336px]"
+            side="bottom"
+          >
+            {tooltipContent}
+          </InfoTooltip>
+        )}
+      </div>
+    );
+  }
 
   return (
-    <div className="flex h-6 w-[424px] items-center gap-x-1">
-      <span className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
-        {recommended ? recommendedTitle : "Tidak Direkomendasikan"}
-      </span>
-      {recommended && <InfoTooltip>{tooltipContent}</InfoTooltip>}
-    </div>
+    <span className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
+      {recommended ? recommendedTitle : "Tidak Direkomendasikan"}
+    </span>
   );
 };
 
@@ -49,7 +70,7 @@ export const CarrierItem = ({ image, name, onClick }) => {
   return (
     <div
       className={
-        "flex h-[92px] w-[424px] cursor-pointer items-center gap-x-2 border-b border-neutral-400 py-3 transition-colors hover:bg-neutral-100"
+        "flex h-[92px] w-[424px] cursor-pointer items-center gap-x-2 border-b border-neutral-400 transition-colors hover:bg-neutral-100"
       }
       onClick={() => onClick()}
     >

@@ -8,7 +8,7 @@ import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook } from "@/hooks/use-swr";
 
 const Page = () => {
-  const { isMobile, mounted } = useDevice();
+  const { isMobile } = useDevice();
   const defaultQueryParams = {
     page: 1,
     limit: 10,
@@ -57,8 +57,8 @@ const Page = () => {
     return params.toString();
   }, [queryParams]);
 
-  const { data: requiringConfirmationCountData } = useSWRHook(
-    "v1/orders/requiring-confirmation/count"
+  const { data: settlementAlertInfoData } = useSWRHook(
+    "v1/orders/settlement/alert-info"
   );
   // Fetch orders data
   const { data: ordersData, isOrdersLoading } = useSWRHook(
@@ -66,8 +66,7 @@ const Page = () => {
   );
   const { data: countByStatusData } = useSWRHook("v1/orders/count-by-status");
 
-  const requiringConfirmationCount =
-    requiringConfirmationCountData?.Data || null;
+  const settlementAlertInfo = settlementAlertInfoData?.Data || [];
   const orders = ordersData?.Data?.orders || [];
   const countByStatus = countByStatusData?.Data?.statusCounts || {};
 
@@ -133,9 +132,6 @@ const Page = () => {
     setLastFilterField(field);
   };
 
-  if (!mounted) {
-    return null;
-  }
   if (isMobile) {
     return <div>Responsive sementara</div>;
   }
@@ -146,7 +142,7 @@ const Page = () => {
       orders={orders}
       pagination={pagination}
       isOrdersLoading={isOrdersLoading}
-      requiringConfirmationCount={requiringConfirmationCount}
+      settlementAlertInfo={settlementAlertInfo}
       isFirstTimer={isFirstTimer}
       lastFilterField={lastFilterField}
       tabs={tabs}

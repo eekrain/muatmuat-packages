@@ -39,7 +39,8 @@ export const NumberInput = forwardRef(
   (
     {
       stepper = 1,
-      thousandSeparator,
+      thousandSeparator = ".",
+      decimalSeparator = ",",
       placeholder = "Enter a number",
       defaultValue,
       min = -Infinity,
@@ -136,6 +137,7 @@ export const NumberInput = forwardRef(
             value={value}
             onValueChange={handleChange}
             thousandSeparator={thousandSeparator}
+            decimalSeparator={decimalSeparator}
             decimalScale={decimalScale}
             fixedDecimalScale={fixedDecimalScale}
             allowNegative={min < 0}

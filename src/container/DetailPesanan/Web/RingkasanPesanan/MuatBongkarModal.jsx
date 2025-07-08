@@ -28,7 +28,7 @@ const MuatBongkarModal = ({ isOpen, setIsOpen, data, title }) => (
                   }
                   totalLength={data?.length}
                   index={item.index}
-                  activeIndex={1}
+                  activeIndex={10}
                 >
                   <TimelineContentAddress
                     title={item.fullAddress}
