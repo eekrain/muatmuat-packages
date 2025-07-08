@@ -44,8 +44,8 @@ export const useGetDriverQRCodeById = (requestData = exampleBody) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     // Fetch data from API with this orderId, driverId
     const response = apiResultQRCode;
-    // setQRData(response.data);
-    setQRData(null);
+    setQRData(response.data);
+    // setQRData(null);
     setIsLoading(false);
   };
 

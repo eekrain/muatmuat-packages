@@ -1,6 +1,9 @@
 import useSWR from "swr";
 
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import {
+  OrderStatusEnum,
+  OrderTypeEnum,
+} from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { normalizeDetailPesananOrderDetail } from "@/lib/normalizers/detailpesanan";
 
 import { getAdditionalServices } from "./getAdditionalServices";
@@ -8,6 +11,7 @@ import { getCancellationHistory } from "./getCancellationHistory";
 import { getOrderAlerts } from "./getOrderAlerts";
 import { getOrderPaymentData } from "./getOrderPaymentData";
 import { getOrderStatusHistory } from "./getOrderStatusHistory";
+import { getStatusLegend } from "./getStatusLegend";
 
 /**
  * Notes dari mas friday
@@ -106,30 +110,31 @@ const apiResultOrderDetail = {
         invoiceNumber: "INV/12345678",
         // orderStatus: OrderStatusEnum.LOADING,
         orderStatus: OrderStatusEnum.LOADING,
-        orderTitle: "Dimuat",
-        orderType: "INSTANT",
+        orderTitle: "Armada Dijadwalkan",
+        unitFleetStatus: 3,
+        orderType: OrderTypeEnum.INSTANT,
         createdAt: "2024-01-01T10:00:00Z",
         updatedAt: "2024-01-01T14:30:00Z",
       },
       summary: {
-        distance: 12,
+        distance: 4.9,
         carrier: {
-          carrierId: "uuid-carrier-1",
-          name: "Box Container",
-          image: "https://example.com/box.jpg",
+          carrierId: "f483709a-de4c-4541-b29e-6f4d9a912331",
+          name: "Box",
+          image: "https://picsum.photos/300/300",
         },
         truckType: {
-          truckTypeId: "uuid-truck-1",
-          name: "Medium Truck 4x2 Box",
-          image: "https://example.com/truck.jpg",
-          totalUnit: 2,
+          truckTypeId: "f483709a-de4c-4541-b29e-6f4d9a912331",
+          name: "Cold Diesel Double",
+          image: "https://picsum.photos/300/300",
+          totalUnit: 1,
         },
         loadTimeStart: "2025-02-08T09:00:00Z",
         loadTimeEnd: "2025-02-08T12:00:00Z",
         locations: locations,
         isHalalLogistic: true,
-        canReview: true,
-        isEdit: true,
+        canReview: false,
+        isEdit: false,
         cargo: [
           {
             cargoId: "550e8400-e29b-41d4-a716-446655440004",
@@ -148,8 +153,10 @@ const apiResultOrderDetail = {
           },
         ],
         payment: {
-          paymentMethod: "va_bca",
-          paymentDueDateTime: "2025-06-30T03:52:13.000Z",
+          paymentMethod: "BCA Virtual Account",
+          paymentDueDateTime: "",
+          paymentLogo:
+            "https://azlogistik.s3.ap-southeast-3.amazonaws.com/dev/file-1736740281046.webp",
         },
         price: {
           totalPrice: 1500000.0,
@@ -172,44 +179,33 @@ const apiResultOrderDetail = {
           overloadFee: 100000,
         },
       },
+
       otherInformation: {
         cargoPhotos: [
-          "/img/muatan1.png",
-          "/img/muatan2.png",
-          "/img/muatan3.png",
-          "/img/muatan4.png",
+          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/dev/file-1736911995414.webp",
+          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/dev/file-1738636779700.webp",
         ],
-        cargoDescription:
-          "tolong kirim muatan dengan hati hati, jangan sampai rusak dan hancur, terimakasih",
-        numberDeliveryOrder: ["DO123456ABCD"],
+        cargoDescription: "ALAT BERAT SEMUA",
+        numberDeliveryOrder: ["DO123456", "DO123457"],
       },
       changeCount: 0,
-      isChangeable: true,
-      isCancellable: true,
-      cancellationDeadline: "2025-02-06T09:00:00Z",
+      isChangeable: false,
+      isCancellable: false,
+      cancellationDeadline: "2025-06-24T15:00:00.000Z",
       hasCancellationPenalty: false,
-      drivers: [
-        {
-          driverId: "uuid-driver-1",
-          name: "Ahmad Rahman",
-          phoneNumber: "081234567891",
-          profileImage: "https://example.com/driver1.jpg",
-          driverStatus: "Menuju ke Lokasi Muat",
-          licensePlate: "B 1234 CD",
-        },
-      ],
+      drivers: [],
       documents: {
-        doNumber: "DO123456",
-        doUrl: "https://example.com/do.pdf",
+        doNumber: "",
+        doUrl: "",
       },
       businessEntity: {
         isBusinessEntity: true,
-        name: "PT Sukses Makmur",
-        taxId: "0123456789012345",
+        name: "PT Sari Agung",
+        taxId: "123456789012345",
       },
       config: {
         toleranceHours: 12,
-        hourlyRate: 25000.0,
+        hourlyRate: 0,
       },
       pendingChanges: {
         hasPendingChanges: false,
@@ -228,8 +224,9 @@ const fetcher = async (cacheKey) => {
       dataOrderStatusHistory,
       dataPayment,
       dataAdditionalServices,
-      dataOrderAlerts,
+      dataAlerts,
       dataCancellationHistory,
+      dataLegendStatus,
     ] = await Promise.all([
       // fetcherMuatrans.get(`/v1/orders/${orderId}`),
       apiResultOrderDetail,
@@ -238,19 +235,17 @@ const fetcher = async (cacheKey) => {
       getAdditionalServices(cacheKey),
       getOrderAlerts(cacheKey),
       getCancellationHistory(cacheKey),
+      getStatusLegend(cacheKey),
     ]);
-    console.log(
-      "🔍 ~  ~ src/services/detailpesanan/getDetailPesananData.js:230 ~ dataAdditionalServices:",
-      dataAdditionalServices
-    );
 
     const data = normalizeDetailPesananOrderDetail({
       dataOrderDetail: dataOrderDetail.data.Data,
-      dataOrderStatusHistory: dataOrderStatusHistory,
-      dataPayment: dataPayment,
-      dataAlerts: dataOrderAlerts,
-      dataAdditionalServices: dataAdditionalServices,
-      dataCancellationHistory: dataCancellationHistory,
+      dataOrderStatusHistory,
+      dataPayment,
+      dataAlerts,
+      dataAdditionalServices,
+      dataCancellationHistory,
+      dataLegendStatus,
     });
 
     return data;

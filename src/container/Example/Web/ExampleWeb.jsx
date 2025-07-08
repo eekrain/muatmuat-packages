@@ -56,7 +56,10 @@ import PageTitle from "@/components/PageTitle/PageTitle";
 import QuantityInput from "@/components/QuantityInput/QuantityInput";
 import RadioButton from "@/components/Radio/RadioButton";
 import SortingDropdown from "@/components/SortingDropdown/SortingDropdown";
-import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
+import {
+  StepperContainer,
+  StepperItemResponsive,
+} from "@/components/Stepper/Stepper";
 import {
   Tabs,
   TabsContent,
@@ -719,31 +722,27 @@ const BreadcrumbCardStepper = () => {
         <StepperContainer activeIndex={0} totalStep={6}>
           {[
             {
-              label: "Armada Dijadwalkan",
-              icon: "/icons/stepper-scheduled.svg",
+              label: "Pesanan Terkonfirmasi",
+              status: "CONFIRMED",
+              icon: "/icons/stepper/stepper-scheduled.svg",
             },
             {
               label: "Proses Muat",
-              icon: "/icons/stepper-box.svg",
+              status: "LOADING",
+              icon: "/icons/stepper/stepper-box.svg",
             },
             {
               label: "Proses Bongkar",
-              icon: "/icons/stepper-box-opened.svg",
-            },
-            {
-              label: "Dokumen Sedang Disiapkan",
-              icon: "/icons/stepper-document-preparing.svg",
-            },
-            {
-              label: "Proses Pengiriman Dokumen",
-              icon: "/icons/stepper-document-sending.svg",
+              status: "UNLOADING",
+              icon: "/icons/stepper/stepper-box-opened.svg",
             },
             {
               label: "Selesai",
-              icon: "/icons/stepper-done.svg",
+              status: "COMPLETED",
+              icon: "/icons/stepper/stepper-completed.svg",
             },
           ].map((step, index) => (
-            <StepperItem key={step.label} step={step} index={index} />
+            <StepperItemResponsive key={step.label} step={step} index={index} />
           ))}
         </StepperContainer>
       </div>

@@ -71,3 +71,8 @@ export const PaymentStatusEnum = {
   PENDING: "PENDING",
   SUCCESS: "SUCCESS",
 };
+
+export const OrderTypeEnum = {
+  INSTANT: "INSTANT",
+  SCHEDULED: "SCHEDULED",
+};
