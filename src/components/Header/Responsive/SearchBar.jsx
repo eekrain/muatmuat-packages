@@ -49,6 +49,7 @@ export const HeaderResponsiveSearchBar = ({
         className="w-full flex-1"
         appearance={{
           containerClassName: "border-none",
+          inputClassName: "mt-1",
         }}
         icon={{
           left: (
