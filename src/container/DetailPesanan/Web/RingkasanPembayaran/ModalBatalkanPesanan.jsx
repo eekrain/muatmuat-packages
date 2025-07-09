@@ -183,9 +183,15 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
 
             {dataRingkasanPembayaran?.orderStatus ===
             OrderStatusEnum.PREPARE_FLEET ? (
-              <CancelContentWhenPrepareFleet setIsAgreed={setIsAgreed} />
+              <CancelContentWhenPrepareFleet
+                isAgreed={isAgreed}
+                setIsAgreed={setIsAgreed}
+              />
             ) : (
-              <CancelContentWhenNotPrepareFleet setIsAgreed={setIsAgreed} />
+              <CancelContentWhenNotPrepareFleet
+                isAgreed={isAgreed}
+                setIsAgreed={setIsAgreed}
+              />
             )}
 
             {/* Action Button */}
@@ -231,7 +237,7 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
   );
 };
 
-const CancelContentWhenPrepareFleet = ({ setIsAgreed }) => {
+const CancelContentWhenPrepareFleet = ({ isAgreed, setIsAgreed }) => {
   return (
     <>
       {/* Description */}
@@ -252,7 +258,7 @@ const CancelContentWhenPrepareFleet = ({ setIsAgreed }) => {
       {/* Checkbox with Terms */}
       <div className="flex w-[318px] flex-row items-center gap-2">
         <Checkbox
-          checked={false}
+          checked={isAgreed}
           onChange={(e) => setIsAgreed(e.checked)}
           value="terms_agreement"
           label=""
@@ -266,7 +272,7 @@ const CancelContentWhenPrepareFleet = ({ setIsAgreed }) => {
   );
 };
 
-const CancelContentWhenNotPrepareFleet = ({ setIsAgreed }) => {
+const CancelContentWhenNotPrepareFleet = ({ isAgreed, setIsAgreed }) => {
   return (
     <>
       {/* Description */}
@@ -280,7 +286,7 @@ const CancelContentWhenNotPrepareFleet = ({ setIsAgreed }) => {
       {/* Checkbox with Terms */}
       <div className="flex w-[292px] flex-row items-center gap-2">
         <Checkbox
-          checked={false}
+          checked={isAgreed}
           onChange={(e) => setIsAgreed(e.checked)}
           value="terms_agreement"
           label=""
