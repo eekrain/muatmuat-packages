@@ -12,7 +12,10 @@ import { idrFormat } from "@/lib/utils/formatters";
 
 import { ModalBatalkanPesanan } from "./ModalBatalkanPesanan";
 
-export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
+export const RingkasanPembayaranDefault = ({
+  dataRingkasanPembayaran,
+  isShowWaitFleetAlert,
+}) => {
   const showButtons =
     !dataRingkasanPembayaran?.orderStatus.startsWith("CANCELED") &&
     dataRingkasanPembayaran?.orderStatus !==
@@ -216,7 +219,9 @@ export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
               Ubah Pesanan
             </Button>
           ) : null}
+          {/* {isShowWaitFleetAlert ? (
 
+          )} */}
           <ModalBatalkanPesanan
             dataRingkasanPembayaran={dataRingkasanPembayaran}
           >

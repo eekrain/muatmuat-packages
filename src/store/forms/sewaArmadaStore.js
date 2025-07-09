@@ -37,6 +37,7 @@ const defaultValues = {
     name: "",
     taxId: "",
   },
+  voucherId: null,
   paymentMethodId: null,
 };
 

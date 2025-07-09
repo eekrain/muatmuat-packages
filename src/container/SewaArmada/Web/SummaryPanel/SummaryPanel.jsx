@@ -14,6 +14,7 @@ import FleetOrderConfirmationModal from "@/container/SewaArmada/Web/FleetOrderCo
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useVouchers } from "@/hooks/useVoucher";
 import { fetcherMuatrans } from "@/lib/axios";
+import { normalizeFleetOrder } from "@/lib/normalizers/sewaarmada";
 import { cn } from "@/lib/utils";
 import { formatDate, formatShortDate } from "@/lib/utils/dateFormat";
 import { validateVoucherClientSide } from "@/lib/utils/voucherValidation";
@@ -37,8 +38,6 @@ export const SummaryPanel = ({
   settingsTime,
   paymentMethods,
   calculatedPrice,
-  selectedVoucher,
-  setSelectedVoucher,
 }) => {
   // Voucher related state and hooks
   const token = "Bearer your_token_here";
@@ -69,19 +68,9 @@ export const SummaryPanel = ({
   const router = useRouter();
 
   const orderType = useSewaArmadaStore((state) => state.orderType);
-  const {
-    cargoTypeId,
-    cargoCategoryId,
-    isHalalLogistics,
-    cargoDescription,
-    carrierId,
-    truckTypeId,
-    truckCount,
-    additionalServices,
-    deliveryOrderNumbers,
-    businessEntity,
-    paymentMethodId,
-  } = useSewaArmadaStore((state) => state.formValues);
+  const formValues = useSewaArmadaStore((state) => state.formValues);
+  const { truckTypeId, truckCount, businessEntity, paymentMethodId } =
+    formValues;
   const formErrors = useSewaArmadaStore((state) => state.formErrors);
 
   const isBusinessEntity = businessEntity.isBusinessEntity;
@@ -98,6 +87,13 @@ export const SummaryPanel = ({
   const baseTotal = baseOrderAmount + adminFee + taxAmount;
   const [currentTotal, setCurrentTotal] = useState(baseTotal);
   const [showInfoPopup, setShowInfoPopup] = useState(null);
+
+  const selectedVoucher = useShallowMemo(() => {
+    if (!formValues.voucherId || voucherList.length === 0) {
+      return null;
+    }
+    return voucherList.find((v) => v.id === formValues.voucherId) || null;
+  }, [formValues.voucherId, voucherList]);
 
   // Keep priceSummary logic from old file with useShallowMemo
   const priceSummary = useShallowMemo(() => {
@@ -322,7 +318,7 @@ export const SummaryPanel = ({
           discountAmount: discountValue, // This will hold the FINAL numerical discount value
         };
 
-        setSelectedVoucher(validatedVoucher);
+        setField("voucherId", validatedVoucher.id);
         setShowVoucherPopup(false);
 
         // Show success toast and highlight (from new logic)
@@ -339,11 +335,11 @@ export const SummaryPanel = ({
         setValidationErrors({
           [voucher.id]: validationMessage,
         });
-        setSelectedVoucher(null);
+        setField("voucherId", null); // Clear voucher selection
       }
     } catch (err) {
       console.error("Error validating voucher:", err);
-      setSelectedVoucher(null);
+      setField("voucherId", null); // Clear voucher selection
 
       // Enhanced error handling from old file with new error messages
       let errorMessage = "Gagal memvalidasi voucher";
@@ -450,133 +446,41 @@ export const SummaryPanel = ({
 
   const handleOrderFleet = () => {
     // Enhanced sample order data from old file
-    const sampleOrderData = {
+    const orderFleetData = normalizeFleetOrder(
       orderType,
-      loadTimeStart: "2025-06-26T09:00:00Z",
-      loadTimeEnd: "2025-07-27T09:00:00Z",
-      locations: [
-        {
-          locationType: "PICKUP",
-          sequence: 1,
-          fullAddress: "Jl. Sudirman No. 123, Jakarta Pusat",
-          detailAddress: "Gedung ABC Lantai 5",
-          latitude: -6.2088,
-          longitude: 106.8456,
-          district: "Tanah Abang",
-          districtId: 2,
-          city: "Jakarta Pusat",
-          cityId: 213,
-          province: "DKI Jakarta",
-          provinceId: 35,
-          postalCode: "10270",
-          picName: "Budi Santoso",
-          picPhoneNumber: "081234567890",
-        },
-        {
-          locationType: "DROPOFF",
-          sequence: 1,
-          fullAddress: "Jl. Gatot Subroto No. 456, Jakarta Selatan",
-          detailAddress: "Lobby Utama",
-          latitude: -6.25,
-          longitude: 106.83,
-          district: "Setiabudi",
-          districtId: 2,
-          city: "Jakarta Pusat",
-          cityId: 213,
-          province: "DKI Jakarta",
-          provinceId: 35,
-          postalCode: "12930",
-          picName: "Sari Dewi",
-          picPhoneNumber: "081234567891",
-        },
-      ],
-      cargos: [
-        {
-          cargoNameId: "550e8400-e29b-41d4-a716-446655440030",
-          customName: "Laptop dan Printer",
-          weight: 500.0,
-          weightUnit: "kg",
-          dimensions: {
-            length: 2.0,
-            width: 1.5,
-            height: 1.0,
-            dimensionUnit: "m",
-          },
-          sequence: 1,
-        },
-      ],
-      cargoTypeId,
-      cargoCategoryId,
-      cargoPhotos: [
-        "https://storage.muatrans.com/cargos/photo-123456.jpg",
-        "https://storage.muatrans.com/cargos/photo-123457.jpg",
-      ],
-      cargoDescription: "Elektronik dan peralatan kantor",
-      isHalalLogistics,
-      carrierId,
-      truckTypeId,
-      truckCount: 2,
-      estimatedDistance: 75.5,
-      estimatedTime: 120,
-      additionalServices,
-      deliveryOrderNumbers,
-      businessEntity,
-      voucherId: selectedVoucher?.id || "",
-      paymentMethodId,
-      pricing: calculatedPrice
-        ? {
-            // Use calculatedPrice if available (from old file logic)
-            transportFee: calculatedPrice.transportFee,
-            insuranceFee: calculatedPrice.insuranceFee,
-            additionalServiceFee:
-              calculatedPrice.additionalServiceFee?.reduce(
-                (sum, item) => sum + item.totalCost,
-                0
-              ) || 0,
-            voucherDiscount: voucherDiscount,
-            adminFee: calculatedPrice.adminFee,
-            taxAmount: calculatedPrice.taxAmount,
-            totalPrice: calculatedPrice.totalPrice - voucherDiscount,
-          }
-        : {
-            // Fallback to simple pricing structure
-            transportFee: baseOrderAmount,
-            insuranceFee: 0,
-            additionalServiceFee: 0,
-            voucherDiscount: voucherDiscount,
-            adminFee: adminFee,
-            taxAmount: taxAmount,
-            totalPrice: currentTotal,
-          },
-    };
+      formValues,
+      calculatedPrice
+    );
 
     // Validate order data before sending
-    const result = validateOrderData(sampleOrderData);
-    console.log("Validation result:", result);
-    console.log("Order data with voucher:", sampleOrderData);
+    // const result = validateOrderData(orderFleetData);
+    // console.log("Validation result:", result);
+    console.log("Order data with voucher:", orderFleetData);
 
     // Show validation errors if any
-    if (result.length > 0) {
-      const errorMessages = result.map((err) => err.message).join("\n");
-      alert(`Validation errors:\n${errorMessages}`);
-      setIsModalConfirmationOpen(false);
-      return;
-    }
+    // if (result.length > 0) {
+    //   const errorMessages = result.map((err) => err.message).join("\n");
+    //   alert(`Validation errors:\n${errorMessages}`);
+    //   setIsModalConfirmationOpen(false);
+    //   return;
+    // }
 
     try {
       // Panggil API untuk membuat pesanan using fetcherMuatrans
       const response = fetcherMuatrans.post(
         "/v1/orders/create",
-        sampleOrderData,
+        orderFleetData,
         {
           headers: { Authorization: token },
         }
       );
 
       if (response.data.Message.Code == 200) {
-        alert("Hore Berhasil Sewa Armada :)");
+        // alert("Hore Berhasil Sewa Armada :)");
         // Handle sukses - bisa redirect ke detail pesanan
-        // router.push(`/daftarpesanan/detailpesanan/${response.data.data.orderId}`);
+        router.push(
+          `/daftarpesanan/detailpesanan/${response.data.data.orderId}`
+        );
       } else {
         alert("Validation error from server");
       }
@@ -657,7 +561,7 @@ export const SummaryPanel = ({
                 </div>
                 <button
                   onClick={() => {
-                    setSelectedVoucher(null);
+                    setField("voucherId", null);
                     setVoucherDiscount(0);
                     setShowVoucherSuccess(false);
                   }}

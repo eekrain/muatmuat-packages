@@ -165,7 +165,7 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
                     : "text-neutral-900"
                 )}
               >
-                {selectedTruck?.name || "Pilih Jenis Truck"}
+                {selectedTruck?.name || "Pilih Jenis Truk"}
               </span>
               <IconComponent
                 src="/icons/chevron-right.svg"

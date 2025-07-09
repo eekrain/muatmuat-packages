@@ -9,22 +9,28 @@ const LIST_SHOW_PENDING = [
   OrderStatusEnum.WAITING_REPAYMENT_2,
 ];
 
-export const RingkasanPembayaran = ({ dataRingkasanPembayaran }) => {
+export const RingkasanPembayaran = ({
+  dataRingkasanPembayaran,
+  isShowWaitFleetAlert,
+}) => {
   return (
     <div className="flex w-full flex-col items-center gap-4">
       {/* Card Ringkasan Pembayaran */}
       {LIST_SHOW_PENDING.includes(dataRingkasanPembayaran?.orderStatus) ? (
         <RingkasanPembayaranPending
           dataRingkasanPembayaran={dataRingkasanPembayaran}
+          isShowWaitFleetAlert={isShowWaitFleetAlert}
         />
       ) : dataRingkasanPembayaran?.orderStatus ===
         OrderStatusEnum.WAITING_REPAYMENT_1 ? (
         <RingkasanPembayaranTambahanBiaya
           dataRingkasanPembayaran={dataRingkasanPembayaran}
+          isShowWaitFleetAlert={isShowWaitFleetAlert}
         />
       ) : (
         <RingkasanPembayaranDefault
           dataRingkasanPembayaran={dataRingkasanPembayaran}
+          isShowWaitFleetAlert={isShowWaitFleetAlert}
         />
       )}
     </div>

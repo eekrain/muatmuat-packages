@@ -356,28 +356,26 @@ const PesananTable = ({
                           {/* Tanggal Muat */}
                           <td className="w-[156px] pb-4 pl-0 pr-6 pt-5 align-top">
                             <span className="text-[12px] font-medium text-neutral-900">
-                              {new Date(order.loadTimeStart).toLocaleDateString(
-                                "id-ID",
-                                {
-                                  day: "numeric",
-                                  month: "short",
-                                  year: "numeric",
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                }
-                              )}{" "}
-                              WIB s/d{" "}
-                              {new Date(order.loadTimeEnd).toLocaleDateString(
-                                "id-ID",
-                                {
-                                  day: "numeric",
-                                  month: "short",
-                                  year: "numeric",
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                }
-                              )}{" "}
-                              WIB
+                              {`${new Date(
+                                order.loadTimeStart
+                              ).toLocaleDateString("id-ID", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })} WIB`}
+                              {order.loadTimeEnd
+                                ? ` s/d ${new Date(
+                                    order.loadTimeEnd
+                                  ).toLocaleDateString("id-ID", {
+                                    day: "numeric",
+                                    month: "short",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })} WIB`
+                                : null}
                             </span>
                           </td>
 
