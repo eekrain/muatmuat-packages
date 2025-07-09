@@ -444,7 +444,7 @@ export const SummaryPanel = ({
     return errors;
   };
 
-  const handleOrderFleet = () => {
+  const handleOrderFleet = async () => {
     // Enhanced sample order data from old file
     const orderFleetData = normalizeFleetOrder(
       orderType,
@@ -467,7 +467,7 @@ export const SummaryPanel = ({
 
     try {
       // Panggil API untuk membuat pesanan using fetcherMuatrans
-      const response = fetcherMuatrans.post(
+      const response = await fetcherMuatrans.post(
         "/v1/orders/create",
         orderFleetData,
         {
@@ -479,7 +479,7 @@ export const SummaryPanel = ({
         // alert("Hore Berhasil Sewa Armada :)");
         // Handle sukses - bisa redirect ke detail pesanan
         router.push(
-          `/daftarpesanan/detailpesanan/${response.data.data.orderId}`
+          `/daftarpesanan/detailpesanan/${response.data.Data.orderId}`
         );
       } else {
         alert("Validation error from server");
