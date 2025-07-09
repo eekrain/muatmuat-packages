@@ -27,7 +27,6 @@ import { formatDate } from "@/lib/utils/dateFormat";
 import { DriverStatusCardItem } from "./DriverStatusCard";
 
 const warningVariantStatus = [
-  OrderStatusEnum.PREPARE_FLEET,
   OrderStatusEnum.WAITING_PAYMENT_1,
   OrderStatusEnum.WAITING_PAYMENT_2,
   OrderStatusEnum.WAITING_REPAYMENT_1,
