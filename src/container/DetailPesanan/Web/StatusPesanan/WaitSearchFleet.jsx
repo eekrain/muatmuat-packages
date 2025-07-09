@@ -5,7 +5,7 @@ import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import { ModalBatalkanPesanan } from "@/container/DetailPesanan/Web/RingkasanPembayaran/ModalBatalkanPesanan";
 import { useSWRMutateHook } from "@/hooks/use-swr";
 
-export const WaitSearchFleetButton = ({ onClick = () => {} }) => {
+export const WaitFleetSearchButton = ({ onClick = () => {} }) => {
   const params = useParams();
   const { trigger: confirmWaiting } = useSWRMutateHook(
     `v1/orders/${params.orderId}/waiting-confirmation`
@@ -28,7 +28,7 @@ export const WaitSearchFleetButton = ({ onClick = () => {} }) => {
   );
 };
 
-export const WaitSearchFleetModal = ({
+export const WaitFleetSearchModal = ({
   dataRingkasanPembayaran,
   isOpen,
   setIsOpen,
@@ -52,14 +52,14 @@ export const WaitSearchFleetModal = ({
               <Button
                 variant="muatparts-primary-secondary"
                 className="h-8"
-                onClick={() => setIsOpen(false)}
+                // onClick={() => setIsOpen(false)}
                 type="button"
               >
                 Batalkan
               </Button>
             </ModalBatalkanPesanan>
 
-            <WaitSearchFleetButton onClick={() => setIsOpen(false)} />
+            <WaitFleetSearchButton onClick={() => setIsOpen(false)} />
             {/* <Button
               variant="muatparts-primary"
               className="h-8 w-full"
