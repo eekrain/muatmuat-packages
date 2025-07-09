@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
  * @typedef {Object} HeaderResponsiveFormWithMenu
  * @property {() => void | undefined} onClickInfo
  * @property {() => void | undefined} onClickMenu
+ * @property {() => void | undefined} onClickShare
  */
 /**
  * @typedef {Object} HeaderResponsiveFormProps

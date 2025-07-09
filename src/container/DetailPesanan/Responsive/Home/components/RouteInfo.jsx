@@ -7,7 +7,7 @@ import {
 } from "@/components/Timeline";
 import { dataCollapsed } from "@/container/Example/Web/mockdata";
 
-const RouteInfo = () => {
+export const RouteInfo = () => {
   const muatan = [
     {
       name: "Furniture Kayu",
@@ -67,5 +67,3 @@ const RouteInfo = () => {
     </div>
   );
 };
-
-export default RouteInfo;

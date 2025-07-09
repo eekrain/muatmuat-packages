@@ -1,12 +1,14 @@
 import { useTranslation } from "@/hooks/use-translation";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
-const MenuList = () => {
+export const MenuList = () => {
   const { t } = useTranslation();
+  const navigation = useResponsiveNavigation();
 
   const menus = [
     {
       label: "Ringkasan Status Pesanan",
-      onClick: () => alert("Ringkasan Status Pesanan clicked"),
+      onClick: () => navigation.push("/order-summary"),
     },
     {
       label: "Detail Pengiriman Dokumen",
@@ -20,10 +22,10 @@ const MenuList = () => {
       label: "Ubah Pesanan",
       onClick: () => alert("Ubah Pesanan clicked"),
     },
-    {
-      label: "Batalkan Pesanan",
-      onClick: () => alert("Batalkan Pesanan clicked"),
-    },
+    // {
+    //   label: "Batalkan Pesanan",
+    //   onClick: () => alert("Batalkan Pesanan clicked"),
+    // },
     {
       label: "Unduh Dokumen Delivery Order (DO)",
       onClick: () => alert("Unduh Dokumen Delivery Order (DO) clicked"),
@@ -40,5 +42,3 @@ const MenuList = () => {
     </ul>
   );
 };
-
-export default MenuList;

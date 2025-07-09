@@ -131,7 +131,12 @@ export const TimelineContentWithButtonDate = ({
   },
 }) => {
   return (
-    <div className={cn("flex items-center justify-between pb-5", className)}>
+    <div
+      className={cn(
+        "flex items-start justify-between pb-5 md:items-center",
+        className
+      )}
+    >
       <div className="flex flex-col gap-[2px]">
         <span
           className={cn(
@@ -157,7 +162,7 @@ export const TimelineContentWithButtonDate = ({
       {withDate && (
         <span
           className={cn(
-            "mt-0.5 block text-xs font-medium leading-[1.2] text-neutral-500",
+            "mt-0.5 block w-20 text-right text-xs font-medium leading-[1.2] text-neutral-500 md:w-fit",
             appearance?.dateClassname
           )}
         >

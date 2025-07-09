@@ -1,8 +1,11 @@
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Button from "@/components/Button/Button";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
-const DriverInfo = () => {
+export const DriverInfo = () => {
+  const navigation = useResponsiveNavigation();
+
   return (
     <div className="box-border flex w-full flex-col items-center justify-center border-b-2 border-[#461B02] bg-white p-5">
       <div className="flex w-full flex-col items-start gap-4">
@@ -11,7 +14,7 @@ const DriverInfo = () => {
           variant="primary"
           className="w-fit text-sm font-semibold"
         >
-          Menuju ke Lokasi Muat 1
+          Sedang Muat di Lokasi 1
         </BadgeStatusPesanan>
 
         <AvatarDriver
@@ -32,6 +35,8 @@ const DriverInfo = () => {
         <Button
           variant="muatparts-primary"
           className="h-7 w-full text-xs font-semibold"
+          onClick={() => navigation.push("/fleet-track")}
+          type="button"
         >
           Lacak Armada
         </Button>
@@ -39,5 +44,3 @@ const DriverInfo = () => {
     </div>
   );
 };
-
-export default DriverInfo;

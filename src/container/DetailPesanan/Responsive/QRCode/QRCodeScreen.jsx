@@ -8,8 +8,12 @@ import {
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
+import DriverCard from "./components/DriverCard";
+import QRCode from "./components/QRCode";
+import ShareVia from "./components/ShareVia";
+
 const QRCodeScreen = () => {
-  const [isOpenBottomsheet, setIsOpenBottomsheet] = useState(false);
+  const [isOpenShareVia, setIsOpenShareVia] = useState(false);
   const navigation = useResponsiveNavigation();
 
   return (
@@ -18,16 +22,19 @@ const QRCodeScreen = () => {
         label: "QR Code Lokasi Muat 1",
       }}
       withMenu={{
-        onClickInfo: () => alert("onClickInfo"),
-        onClickMenu: () => setIsOpenBottomsheet(true),
+        onClickShare: () => setIsOpenShareVia(true),
       }}
       onClickBackButton={() => navigation.pop()}
     >
-      <div className="space-y-2 bg-neutral-200"></div>
+      <div className="space-y-2 bg-neutral-200">
+        <DriverCard />
+        <QRCode />
+      </div>
 
-      <BottomSheet open={isOpenBottomsheet} onOpenChange={setIsOpenBottomsheet}>
+      <BottomSheet open={isOpenShareVia} onOpenChange={setIsOpenShareVia}>
         <BottomSheetContent>
-          <BottomSheetHeader>Menu</BottomSheetHeader>
+          <BottomSheetHeader>Bagikan</BottomSheetHeader>
+          <ShareVia />
         </BottomSheetContent>
       </BottomSheet>
     </FormResponsiveLayout>

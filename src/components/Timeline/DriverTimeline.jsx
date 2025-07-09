@@ -7,6 +7,7 @@ import {
   TimelineContentWithButtonDate,
   TimelineItem,
 } from "@/components/Timeline";
+import useDevice from "@/hooks/use-device";
 import {
   OrderStatusIcon,
   OrderStatusTitle,
@@ -14,7 +15,24 @@ import {
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";
 
-export const DriverTimeline = ({ dataDriverStatus }) => {
+/**
+ * @typedef {Object} WithButton
+ * @property {(driverStatusItem: DriverStatusItem) => void} onClickProof
+ */
+
+/**
+ * @typedef {Object} DriverTimelineProps
+ * @property {DataDriverStatus} dataDriverStatus
+ * @property {WithButton} [withButton]
+ */
+
+/**
+ * DriverTimeline component displays the timeline of driver statuses with image lightbox support.
+ *
+ * @param {DriverTimelineProps} props
+ * @returns {React.ReactNode}
+ */
+export const DriverTimeline = ({ dataDriverStatus, onClickProof }) => {
   const [images, setImages] = useState({ packages: [], pods: [] });
   const [currentStatus, setCurrentStatus] = useState(null);
   const [lightboxActiveIndex, setLightboxActiveIndex] = useState(0);
@@ -52,6 +70,7 @@ export const DriverTimeline = ({ dataDriverStatus }) => {
                     setCurrentStatus={setCurrentStatus}
                     setLightboxActiveIndex={setLightboxActiveIndex}
                     totalLength={parent.children.length}
+                    onClickProof={onClickProof}
                   />
                 ))}
               </TimelineContainer>
@@ -99,6 +118,7 @@ const ItemWithLightbox = ({
   setCurrentStatus,
   setLightboxActiveIndex,
   totalLength,
+  onClickProof,
 }) => {
   const subtitle = () => {
     if (driverStatusItem.statusCode.startsWith("MENUJU_")) {
@@ -109,6 +129,30 @@ const ItemWithLightbox = ({
   };
 
   const { openLightbox, current } = useLightbox();
+
+  const { isMobile } = useDevice();
+
+  const getOnClick = () => {
+    if (isMobile) {
+      return onClickProof;
+    } else {
+      return () => {
+        setImages({
+          packages: driverStatusItem.photoEvidences.packages,
+          pods: driverStatusItem.photoEvidences.pods,
+        });
+        setCurrentStatus(driverStatusItem);
+        openLightbox(0);
+      };
+    }
+  };
+
+  const buttonConfig = driverStatusItem.requiresPhoto
+    ? {
+        label: subtitle(),
+        onClick: getOnClick(),
+      }
+    : null;
 
   // Sync active index from Lightbox Provider
   useEffect(() => {
@@ -127,21 +171,7 @@ const ItemWithLightbox = ({
     >
       <TimelineContentWithButtonDate
         title={driverStatusItem.statusName}
-        withButton={
-          driverStatusItem.requiresPhoto
-            ? {
-                label: subtitle(),
-                onClick: () => {
-                  setImages({
-                    packages: driverStatusItem.photoEvidences.packages,
-                    pods: driverStatusItem.photoEvidences.pods,
-                  });
-                  setCurrentStatus(driverStatusItem);
-                  openLightbox(0);
-                },
-              }
-            : null
-        }
+        withButton={buttonConfig}
         withDate={new Date(driverStatusItem.date)}
         className={index === totalLength - 1 ? "pb-0" : ""}
         appearance={{
@@ -180,7 +210,7 @@ const ParentItem = ({
     <>
       <div
         className={cn(
-          "mt-5 grid grid-cols-[32px_1fr] items-center gap-3",
+          "mt-4 grid grid-cols-[32px_1fr] items-center gap-3 md:mt-5",
           className
         )}
       >
@@ -190,12 +220,12 @@ const ParentItem = ({
             iconStyles[variant]
           )}
         >
-          <IconComponent src={icon} width={16} height={16} />
+          <IconComponent src={icon} className="h-5 w-5 md:h-4 md:w-4" />
         </div>
 
         <div
           className={cn(
-            "flex justify-between text-sm font-bold leading-[1.2] text-neutral-600",
+            "flex items-center justify-between text-sm font-bold leading-[1.2] text-neutral-600",
             variant === "active" || variant === "canceled"
               ? "text-neutral-900"
               : ""
@@ -203,7 +233,11 @@ const ParentItem = ({
         >
           <span>{title}</span>
           {canceledAt && (
-            <span className={cn("block text-xs font-medium leading-[1.2]")}>
+            <span
+              className={cn(
+                "block w-20 text-right text-xs font-medium leading-[1.2] md:w-fit"
+              )}
+            >
               {formatDate(canceledAt)}
             </span>
           )}
@@ -211,9 +245,9 @@ const ParentItem = ({
       </div>
 
       {withDivider && (
-        <div className="my-5 grid grid-cols-[32px_1fr] items-center gap-3">
-          <div />
-          <hr className="border-neutral-400" />
+        <div className="my-4 grid items-center gap-3 md:my-5 md:grid-cols-[32px_1fr]">
+          <div className="hidden md:block" />
+          <hr className="w-full border-neutral-400" />
         </div>
       )}
     </>

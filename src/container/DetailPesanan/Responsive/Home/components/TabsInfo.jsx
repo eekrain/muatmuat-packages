@@ -9,7 +9,7 @@ import {
   TabsTriggerWithSeparator,
 } from "@/components/Tabs/Tabs";
 
-const TabsInfo = () => {
+export const TabsInfo = () => {
   return (
     <Tabs className="w-full bg-white" defaultValue={"ringkasan"}>
       <TabsList className="w-full">
@@ -72,5 +72,3 @@ const TabsInfo = () => {
     </Tabs>
   );
 };
-
-export default TabsInfo;

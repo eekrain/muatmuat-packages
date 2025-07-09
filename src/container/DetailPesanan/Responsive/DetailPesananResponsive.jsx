@@ -6,23 +6,29 @@ import {
   ResponsiveProvider,
   ResponsiveRoute,
 } from "@/lib/responsive-navigation";
+// Import the default screen without dynamic import
+import { dynamicScreen } from "@/lib/utils/dynamic-screen";
 import { useLoadingAction } from "@/store/loadingStore";
 
-// Import the default screen without dynamic import
 import DetailPesananScreen from "./Home/HomeScreen";
-import QRCodeScreen from "./QRCode/QRCodeScreen";
 
 // Dynamic import all the other screens, so that the user doesn't have to wait for the other screens to load
 // Screen components needs to be default exported
-// const CariNamaMuatanScreen = dynamicScreen(
-//   () => import("./CariNamaMuatan/CariNamaMuatanScreen")
-// );
+const QRCodeScreen = dynamicScreen(() => import("./QRCode/QRCodeScreen"));
+const OrderSummaryScreen = dynamicScreen(
+  () => import("./OrderSummary/OrderSummaryScreen")
+);
+const FleetTrackScreen = dynamicScreen(
+  () => import("./FleetTrack/FleetTrackScreen")
+);
+const DriverStatusDetailScreen = dynamicScreen(
+  () => import("./DriverStatusDetail/DriverStatusDetailScreen")
+);
+const ProofPhotoScreen = dynamicScreen(
+  () => import("./ProofPhoto/ProofPhotoScreen")
+);
 
-const DetailPesananResponsive = ({
-  cargoTypes,
-  cargoCategories,
-  paymentMethods,
-}) => {
+const DetailPesananResponsive = ({}) => {
   // const navigation = useResponsiveNavigation();
   // useEffect(() => {
   //   navigation.replace("/JenisCarrier");
@@ -38,10 +44,16 @@ const DetailPesananResponsive = ({
     <ResponsiveProvider>
       <ResponsiveRoute path="/" component={<DetailPesananScreen />} />
       <ResponsiveRoute path="/qr" component={<QRCodeScreen />} />
-      {/* <ResponsiveRoute
-        path="/CariNamaMuatan"
-        component={<CariNamaMuatanScreen />}
-      /> */}
+      <ResponsiveRoute
+        path="/order-summary"
+        component={<OrderSummaryScreen />}
+      />
+      <ResponsiveRoute path="/fleet-track" component={<FleetTrackScreen />} />
+      <ResponsiveRoute
+        path="/detail-driver-status"
+        component={<DriverStatusDetailScreen />}
+      />
+      <ResponsiveRoute path="/proof-photo" component={<ProofPhotoScreen />} />
     </ResponsiveProvider>
   );
 };

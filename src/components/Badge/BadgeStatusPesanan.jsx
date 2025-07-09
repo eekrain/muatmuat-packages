@@ -13,7 +13,7 @@ const badgeVariants = {
  * BadgeStatusPesanan component displays a status badge with optional icon and custom styles.
  *
  * @param {Object} props - Component props.
- * @param {"primary"|"secondary"|"success"|"warning"|"danger"} [props.variant="primary"] - The visual style of the badge. Autocomplete: "primary", "secondary", "success", "warning", "danger".
+ * @param {"primary"|"secondary"|"success"|"warning"|"error"} [props.variant="primary"] - The visual style of the badge. Autocomplete: "primary", "secondary", "success", "warning", "danger".
  * @param {string} [props.className] - Additional CSS classes to apply to the badge.
  * @param {{ iconLeft: string }} [props.icon={ iconLeft: "" }] - Icon configuration object. `iconLeft` is the source URL or path for the left icon.
  * @param {React.ReactNode} props.children - The content to display inside the badge.
