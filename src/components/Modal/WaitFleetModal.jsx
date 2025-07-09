@@ -1,7 +1,13 @@
 import Button from "@/components/Button/Button";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
+import { ModalBatalkanPesanan } from "@/container/DetailPesanan/Web/RingkasanPembayaran/ModalBatalkanPesanan";
 
-const WaitFleetModal = ({ isOpen, setIsOpen, onCancel, onConfirm }) => {
+const WaitFleetModal = ({
+  dataRingkasanPembayaran,
+  isOpen,
+  setIsOpen,
+  onConfirm,
+}) => {
   return (
     <Modal closeOnOutsideClick={false} open={isOpen} onOpenChange={setIsOpen}>
       <ModalContent className="w-modal-small">
@@ -15,14 +21,18 @@ const WaitFleetModal = ({ isOpen, setIsOpen, onCancel, onConfirm }) => {
             kamu tetap ingin menunggu?
           </p>
           <div className="flex items-center gap-x-2">
-            <Button
-              variant="muatparts-primary-secondary"
-              className="h-8"
-              onClick={onCancel}
-              type="button"
+            <ModalBatalkanPesanan
+              dataRingkasanPembayaran={dataRingkasanPembayaran}
             >
-              Batalkan
-            </Button>
+              <Button
+                variant="muatparts-primary-secondary"
+                className="h-8"
+                type="button"
+              >
+                Batalkan
+              </Button>
+            </ModalBatalkanPesanan>
+
             <Button
               variant="muatparts-primary"
               className="h-8"

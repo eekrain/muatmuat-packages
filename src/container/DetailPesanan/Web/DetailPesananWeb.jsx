@@ -140,6 +140,7 @@ const DetailPesananWeb = () => {
       />
 
       <WaitFleetModal
+        dataRingkasanPembayaran={dataDetailPesanan?.dataRingkasanPembayaran}
         isOpen={isWaitFleetModalOpen}
         setIsOpen={setIsWaitFleetModalOpen}
         onCancel={() => {
