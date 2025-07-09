@@ -94,13 +94,7 @@ const DeliveryEvidenceModal = ({
     const newAdditionalService = {
       serviceId: sendDeliveryEvidenceService.additionalServiceId,
       withShipping: sendDeliveryEvidenceService.withShipping,
-      shippingCost:
-        Number(selectedShippingOptions?.expedition?.originalCost) +
-        Number(
-          deliveryEvidenceFormValues.withInsurance
-            ? selectedShippingOptions?.expedition.originalInsurance
-            : 0
-        ),
+      shippingCost: Number(selectedShippingOptions?.expedition?.originalCost),
       shippingDetails: {
         ...deliveryEvidenceFormValues,
         ...(deliveryEvidenceFormValues.withInsurance && {
