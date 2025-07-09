@@ -53,6 +53,20 @@ const DetailPesananWeb = () => {
         />
         <div className="grid grid-cols-[846px_1fr] gap-4">
           <div className="flex flex-col gap-4">
+            {/* {true ? (
+              <div className="flex h-14 items-center gap-x-2 rounded-md bg-secondary-100 px-6 py-4">
+                <IconComponent
+                  className="icon-stroke-warning-900"
+                  src="/icons/warning24.svg"
+                  size="medium"
+                />
+                <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+                  {`Pesanan kamu memiliki tambahan biaya. Mohon selesaikan
+                  pembayaran sebelum tanggal `}
+                  <b>20 Mei 2024</b>
+                </span>
+              </div>
+            ) : null} */}
             {dataDetailPesanan?.dataStatusPesanan && (
               <StatusPesanan
                 dataStatusPesanan={dataDetailPesanan.dataStatusPesanan}
