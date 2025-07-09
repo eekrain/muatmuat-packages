@@ -4,7 +4,6 @@ import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
 
 import { AlertPendingPrepareFleet } from "./AlertPendingPrepareFleet";
-import AlertUpdateConfirmation from "./AlertUpdateConfirmation";
 import { DriverStatusCard } from "./DriverStatusCard";
 import { StatusPesananHeader } from "./StatusPesananHeader";
 
@@ -38,7 +37,7 @@ const StatusPesanan = ({ dataStatusPesanan }) => {
       />
 
       {/* Alert Buat Habis Update lokasi bongkar perlu konfirmasi */}
-      {true ? <AlertUpdateConfirmation /> : null}
+      {/* {true ? <AlertUpdateConfirmation /> : null} */}
 
       <Card className="rounded-xl border-none">
         <CardContent className="px-8 py-6">

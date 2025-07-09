@@ -1,4 +1,5 @@
 // /api/v1/orders/{orderId}/cancellation-history
+import { fetcherMuatrans } from "@/lib/axios";
 
 const apiResult = {
   data: {
@@ -42,17 +43,17 @@ const err = {
 export const getCancellationHistory = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
 
-  const result = apiResult;
+  // const result = apiResult;
+  // return result?.data?.Data?.reason ? result?.data?.Data : null;
+
+  const result = await fetcherMuatrans
+    .get(`v1/orders/${orderId}/cancellation-history`)
+    .catch((error) => {
+      console.log("Error when get cancellation history", error);
+      return null;
+    });
+
   return result?.data?.Data?.reason ? result?.data?.Data : null;
-
-  // const result = await fetcherMuatrans
-  //   .get(`v1/orders/${orderId}/cancellation-history`)
-  //   .catch((error) => {
-  //     console.log("Error when get cancellation history", error);
-  //     return null;
-  //   });
-
-  // return  result?.data?.Data?.reason ? result?.data?.Data : null;
 };
 
 export const useGetCancellationHistory = (orderId) =>

@@ -147,9 +147,13 @@ export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
     orderId,
     driverId: driver.driverId,
   });
+  console.log(
+    "🔍 ~  ~ src/container/DetailPesanan/Web/StatusPesanan/DriverStatusCard.jsx:146 ~ qrData:",
+    qrData
+  );
 
   const statusScan = () => {
-    const splitStatus = qrData?.driverInfo.statusScan?.split?.("_") || [];
+    const splitStatus = qrData?.driverInfo?.statusScan?.split?.("_") || [];
     let hasScan = false;
     let statusTitle = "";
     let statusText = "";
@@ -241,9 +245,9 @@ export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
                             </BadgeStatusPesanan>
 
                             <AvatarDriver
-                              name={qrData?.driverInfo.name}
-                              image={qrData?.driverInfo.driverImage}
-                              licensePlate={qrData?.driverInfo.licensePlate}
+                              name={qrData?.driverInfo?.name}
+                              image={qrData?.driverInfo?.driverImage}
+                              licensePlate={qrData?.driverInfo?.licensePlate}
                             />
                           </div>
                           <img

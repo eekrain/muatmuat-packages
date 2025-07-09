@@ -242,8 +242,8 @@ const completeFetcher = async (cacheKey) => {
       dataCancellationHistory,
       dataLegendStatus,
     ] = await Promise.all([
-      // fetcherMuatrans.get(`/v1/orders/${orderId}`),
-      apiResultOrderDetail,
+      fetcherMuatrans.get(`/v1/orders/${orderId}`),
+      // apiResultOrderDetail,
       getOrderStatusHistory(cacheKey),
       getOrderPaymentData(cacheKey),
       getAdditionalServices(cacheKey),
