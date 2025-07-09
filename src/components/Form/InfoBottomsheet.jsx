@@ -11,7 +11,9 @@ import IconComponent from "../IconComponent/IconComponent";
 export const InfoBottomsheet = ({ className, title, children }) => {
   return (
     <BottomSheet>
-      <BottomSheetTrigger className={cn("block size-4", className)}>
+      <BottomSheetTrigger
+        className={cn("block size-4 text-neutral-700", className)}
+      >
         <IconComponent src="/icons/info16.svg" width={16} height={16} />
       </BottomSheetTrigger>
       <BottomSheetContent>

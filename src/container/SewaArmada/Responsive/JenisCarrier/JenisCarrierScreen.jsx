@@ -1,6 +1,5 @@
-import { Info } from "lucide-react";
-
 import { Alert } from "@/components/Badge/Alert";
+import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
 import {
   LightboxPreview,
   LightboxProvider,
@@ -9,7 +8,7 @@ import SearchBarResponsiveLayout from "@/layout/ResponsiveLayout/SearchBarRespon
 
 const JenisCarrierScreen = () => {
   return (
-    <SearchBarResponsiveLayout placeholder="Cari Nama Muatan">
+    <SearchBarResponsiveLayout placeholder="Cari Jenis Carrier">
       <div className="bg-neutral-200">
         {/* Recommended Section */}
         <div className="mb-2 bg-white p-5">
@@ -17,10 +16,13 @@ const JenisCarrierScreen = () => {
             {/* Header */}
             <div className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-1">
-                <h2 className="text-[14px] font-bold leading-[15px] text-black">
+                <h2 className="mt-0.5 text-[14px] font-bold leading-[15px] text-black">
                   Rekomendasi Carrier Sesuai Muatan
                 </h2>
-                <Info size={16} className="text-neutral-700" />
+                <InfoBottomsheet title="Rekomendasi Carrier">
+                  Berikut adalah rekomendasi carrier berdasarkan informasi
+                  muatan yang kamu isi.
+                </InfoBottomsheet>
               </div>
             </div>
 
