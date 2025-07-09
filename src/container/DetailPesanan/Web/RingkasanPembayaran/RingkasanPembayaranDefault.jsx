@@ -219,7 +219,15 @@ export const RingkasanPembayaranDefault = ({ dataRingkasanPembayaran }) => {
 
           <ModalBatalkanPesanan
             dataRingkasanPembayaran={dataRingkasanPembayaran}
-          />
+          >
+            <Button
+              variant="muattrans-error-secondary"
+              className="h-8 w-full"
+              type="button"
+            >
+              Batalkan Pesanan
+            </Button>
+          </ModalBatalkanPesanan>
         </div>
       )}
     </div>

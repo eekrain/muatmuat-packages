@@ -6,13 +6,13 @@ import useSWR from "swr";
 
 import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Form/Checkbox";
-import { ModalAlasanPembatalan } from "@/components/Modal/BatalkanModal";
 import {
   Modal,
   ModalContent,
   ModalHeader,
   ModalTrigger,
 } from "@/components/Modal/Modal";
+import { ModalAlasanPembatalan } from "@/components/Modal/ModalAlasanPembatalan";
 import { ModalFormRekeningPencairan } from "@/components/RekeningPencairan/ModalFormRekeningPencairan";
 import { ModalFormRequestOtp } from "@/components/RekeningPencairan/ModalFormRequestOtp";
 import { fetcherMuatparts, fetcherMuatrans } from "@/lib/axios";
@@ -36,7 +36,7 @@ const fetcher = async (url) => {
 // make an array of integer from 1 to 6
 const cancelReasons = new Array(6).fill(0).map((_, index) => index);
 
-export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran }) => {
+export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
   const router = useRouter();
   const pathname = usePathname();
   const [isModalBatalkanOpen, setIsModalBatalkanOpen] = useState(false);
@@ -172,15 +172,7 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran }) => {
   return (
     <>
       <Modal open={isModalBatalkanOpen} onOpenChange={setIsModalBatalkanOpen}>
-        <ModalTrigger>
-          <Button
-            variant="muattrans-error-secondary"
-            className="h-8 w-full"
-            type="button"
-          >
-            Batalkan Pesanan
-          </Button>
-        </ModalTrigger>
+        <ModalTrigger>{children}</ModalTrigger>
         <ModalContent className="w-modal-small">
           <ModalHeader type="muattrans" size="small" />
           <div className="flex w-[386px] flex-col items-center justify-center gap-6 px-6 py-9">
