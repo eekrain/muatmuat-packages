@@ -6,6 +6,7 @@ import { useSWRHook } from "@/hooks/use-swr";
 const useGetFleetSearchStatus = (orderId, shouldRefetch = false) => {
   const intervalRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [isShow, setIsShow] = useState(false);
   const previousShowPopupRef = useRef(false);
 
   const { data: fleetSearchStatusData, mutate: refetchFleetSearchStatus } =
@@ -58,7 +59,9 @@ const useGetFleetSearchStatus = (orderId, shouldRefetch = false) => {
 
   return {
     isOpen,
+    isShow,
     setIsOpen,
+    setIsShow,
   };
 };
 

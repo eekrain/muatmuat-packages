@@ -1,15 +1,40 @@
+import { useParams } from "next/navigation";
+
 import Button from "@/components/Button/Button";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import { ModalBatalkanPesanan } from "@/container/DetailPesanan/Web/RingkasanPembayaran/ModalBatalkanPesanan";
+import { useSWRMutateHook } from "@/hooks/use-swr";
 
-const WaitFleetModal = ({
+export const WaitSearchFleetButton = ({ onClick = () => {} }) => {
+  const params = useParams();
+  const { trigger: confirmWaiting } = useSWRMutateHook(
+    `v1/orders/${params.orderId}/waiting-confirmation`
+  );
+
+  return (
+    <Button
+      variant="muatparts-primary"
+      className="h-8 w-full"
+      onClick={() => {
+        confirmWaiting({
+          continueWaiting: true,
+        });
+        onClick();
+      }}
+      type="button"
+    >
+      Ya, Menunggu
+    </Button>
+  );
+};
+
+export const WaitSearchFleetModal = ({
   dataRingkasanPembayaran,
   isOpen,
   setIsOpen,
-  onConfirm,
 }) => {
   return (
-    <Modal closeOnOutsideClick={false} open={isOpen} onOpenChange={setIsOpen}>
+    <Modal closeOnOutsideClick={true} open={isOpen} onOpenChange={setIsOpen}>
       <ModalContent className="w-modal-small">
         <ModalHeader size="small" />
         <div className="flex flex-col items-center gap-y-6 px-6 py-9">
@@ -27,25 +52,25 @@ const WaitFleetModal = ({
               <Button
                 variant="muatparts-primary-secondary"
                 className="h-8"
+                onClick={() => setIsOpen(false)}
                 type="button"
               >
                 Batalkan
               </Button>
             </ModalBatalkanPesanan>
 
-            <Button
+            <WaitSearchFleetButton onClick={() => setIsOpen(false)} />
+            {/* <Button
               variant="muatparts-primary"
-              className="h-8"
-              onClick={onConfirm}
+              className="h-8 w-full"
+              onClick={() => setIsOpen(false)}
               type="button"
             >
               Ya, Menunggu
-            </Button>
+            </Button> */}
           </div>
         </div>
       </ModalContent>
     </Modal>
   );
 };
-
-export default WaitFleetModal;

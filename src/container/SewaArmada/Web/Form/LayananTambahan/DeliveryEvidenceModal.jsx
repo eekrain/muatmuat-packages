@@ -91,12 +91,22 @@ const DeliveryEvidenceModal = ({
     const sendDeliveryEvidenceService = additionalServicesOptions.find(
       (item) => item.withShipping
     );
-
     const newAdditionalService = {
       serviceId: sendDeliveryEvidenceService.additionalServiceId,
       withShipping: sendDeliveryEvidenceService.withShipping,
+      shippingCost:
+        Number(selectedShippingOptions?.expedition?.originalCost) +
+        Number(
+          deliveryEvidenceFormValues.withInsurance
+            ? selectedShippingOptions?.expedition.originalInsurance
+            : 0
+        ),
       shippingDetails: {
         ...deliveryEvidenceFormValues,
+        ...(deliveryEvidenceFormValues.withInsurance && {
+          insuranceCost:
+            selectedShippingOptions?.expedition.originalInsurance || 0,
+        }),
         recipientName: locationFormValues.namaPIC,
         recipientPhone: locationFormValues.noHPPIC,
         destinationAddress: dataLokasi.location.name,
@@ -105,6 +115,8 @@ const DeliveryEvidenceModal = ({
         city: dataLokasi.city.name,
         province: dataLokasi.province.name,
         postalCode: dataLokasi.postalCode.name,
+        latitude: dataLokasi.coordinates.latitude,
+        longitude: dataLokasi.coordinates.longitude,
       },
     };
     const existingIndex = additionalServices.findIndex(

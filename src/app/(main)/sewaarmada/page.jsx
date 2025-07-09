@@ -1,7 +1,6 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
 
 import SewaArmadaResponsive from "@/container/SewaArmada/Responsive/SewaArmadaResponsive";
 import SewaArmadaWeb from "@/container/SewaArmada/Web/SewaArmadaWeb";
@@ -10,6 +9,7 @@ import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook, useSWRMutateHook } from "@/hooks/use-swr";
 import { fetcherPayment } from "@/lib/axios";
+import { getLoadTimes } from "@/lib/utils/dateTime";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -40,8 +40,8 @@ const Page = () => {
     distanceUnit,
     additionalServices,
     businessEntity,
+    voucherId,
   } = useSewaArmadaStore((state) => state.formValues);
-  const [selectedVoucher, setSelectedVoucher] = useState(null);
   const { setField, setFormId, setOrderType, reset } = useSewaArmadaActions();
   const { setWaitingSettlementOrderId } = useWaitingSettlementModalAction();
 
@@ -312,9 +312,9 @@ const Page = () => {
                     withShipping: item.withShipping,
                   }
             ),
-            ...(selectedVoucher && {
+            ...(voucherId && {
               voucherData: {
-                voucherId: selectedVoucher.id,
+                voucherId,
                 applyDiscount: true,
               },
             }),
@@ -341,7 +341,7 @@ const Page = () => {
     additionalServices,
     shippingOption,
     businessEntity.isBusinessEntity,
-    selectedVoucher,
+    voucherId,
   ]);
 
   useShallowCompareEffect(() => {
@@ -484,57 +484,17 @@ const Page = () => {
       };
 
       // Get load time from startDate and endDate, preserving the exact time
-      const getLoadTimes = () => {
-        const now = new Date();
-
-        // Helper function to format date to ISO string with Z (UTC) format
-        // while preserving the exact time values (not adjusting for timezone)
-        const formatToISOPreserveTime = (date) => {
-          if (!date) return now.toISOString();
-
-          try {
-            // Ensure we're working with a Date object
-            const dateObj = date instanceof Date ? date : new Date(date);
-
-            // Check if the date is valid
-            if (isNaN(dateObj.getTime())) {
-              console.error("Invalid date:", date);
-              return now.toISOString();
-            }
-
-            // Format the date manually to preserve time
-            const year = dateObj.getFullYear();
-            const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-            const day = String(dateObj.getDate()).padStart(2, "0");
-            const hours = String(dateObj.getHours()).padStart(2, "0");
-            const minutes = String(dateObj.getMinutes()).padStart(2, "0");
-            const seconds = String(dateObj.getSeconds()).padStart(2, "0");
-
-            // Create ISO string with Z suffix (indicating UTC) but with local time values
-            return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}Z`;
-          } catch (error) {
-            console.error("Error formatting date:", error);
-            return now.toISOString();
-          }
-        };
-
-        const result = {
-          loadTimeStart: formatToISOPreserveTime(loadTimeStart),
-        };
-
-        if (showRangeOption && loadTimeEnd) {
-          result.loadTimeEnd = formatToISOPreserveTime(loadTimeEnd);
-        }
-
-        return result;
-      };
 
       // Build the request payload
       const { weight, weightUnit } = calculateTotalWeight();
       const dimensions = getMaxDimensions();
       const origin = getOriginCoordinates();
       const destination = getDestinationCoordinates();
-      const loadTime = getLoadTimes();
+      const loadTime = getLoadTimes(
+        loadTimeStart,
+        showRangeOption,
+        loadTimeEnd
+      );
 
       const requestPayload = {
         orderType,
@@ -575,8 +535,6 @@ const Page = () => {
       shippingOption={shippingOption}
       calculatedPrice={calculatedPrice}
       paymentMethods={paymentMethods}
-      selectedVoucher={selectedVoucher}
-      setSelectedVoucher={setSelectedVoucher}
       onFetchTrucks={handleFetchTrucks}
     />
   );

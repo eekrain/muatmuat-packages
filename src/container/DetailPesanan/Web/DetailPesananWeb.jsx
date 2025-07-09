@@ -2,13 +2,11 @@ import { useParams } from "next/navigation";
 import { useEffect } from "react";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
-import WaitFleetModal from "@/components/Modal/WaitFleetModal";
-import { useSWRMutateHook } from "@/hooks/use-swr";
+import IconComponent from "@/components/IconComponent/IconComponent";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { isDev } from "@/lib/constants/is-dev";
 import { toast } from "@/lib/toast";
 import { useGetDetailPesananData } from "@/services/detailpesanan/getDetailPesananData";
-import useGetFleetSearchStatus from "@/services/detailpesanan/getFleetSearchStatus";
 import { useLoadingAction } from "@/store/loadingStore";
 
 import DetailPesananHeader from "./DetailPesananHeader/DetailPesananHeader";
@@ -33,15 +31,6 @@ const DetailPesananWeb = () => {
 
   const { data: dataDetailPesanan, isLoading: isLoadingDetailPesanan } =
     useGetDetailPesananData(params.orderId);
-  const { isOpen: isWaitFleetModalOpen, setIsOpen: setIsWaitFleetModalOpen } =
-    useGetFleetSearchStatus(
-      params.orderId,
-      dataDetailPesanan?.dataStatusPesanan?.orderStatus ===
-        OrderStatusEnum.PREPARE_FLEET
-    );
-  const { trigger: confirmWaiting } = useSWRMutateHook(
-    `v1/orders/${params.orderId}/waiting-confirmation`
-  );
 
   const { setIsGlobalLoading } = useLoadingAction();
 
@@ -66,7 +55,7 @@ const DetailPesananWeb = () => {
         />
         <div className="grid grid-cols-[846px_1fr] gap-4">
           <div className="flex flex-col gap-4">
-            {/* {true ? (
+            {true ? (
               <div className="flex h-14 items-center gap-x-2 rounded-md bg-secondary-100 px-6 py-4">
                 <IconComponent
                   className="icon-stroke-warning-900"
@@ -79,10 +68,13 @@ const DetailPesananWeb = () => {
                   <b>20 Mei 2024</b>
                 </span>
               </div>
-            ) : null} */}
+            ) : null}
             {dataDetailPesanan?.dataStatusPesanan && (
               <StatusPesanan
                 dataStatusPesanan={dataDetailPesanan.dataStatusPesanan}
+                dataRingkasanPembayaran={
+                  dataDetailPesanan.dataRingkasanPembayaran
+                }
               />
             )}
 
@@ -108,6 +100,7 @@ const DetailPesananWeb = () => {
                 dataRingkasanPembayaran={
                   dataDetailPesanan.dataRingkasanPembayaran
                 }
+                isShowWaitFleetAlert={isShowWaitFleetAlert}
               />
             )}
 
@@ -123,37 +116,6 @@ const DetailPesananWeb = () => {
           </div>
         </div>
       </div>
-
-      <WaitFleetModal
-        isOpen={isWaitFleetModalOpen}
-        setIsOpen={setIsWaitFleetModalOpen}
-        onCancel={() => {
-          setIsWaitFleetModalOpen(false);
-          alert("Pesanan kamu dibatalkan");
-        }}
-        onConfirm={() => {
-          confirmWaiting({
-            continueWaiting: true,
-          });
-          setIsWaitFleetModalOpen(false);
-        }}
-      />
-
-      <WaitFleetModal
-        dataRingkasanPembayaran={dataDetailPesanan?.dataRingkasanPembayaran}
-        isOpen={isWaitFleetModalOpen}
-        setIsOpen={setIsWaitFleetModalOpen}
-        onCancel={() => {
-          setIsWaitFleetModalOpen(false);
-          alert("Pesanan kamu dibatalkan");
-        }}
-        onConfirm={() => {
-          confirmWaiting({
-            continueWaiting: true,
-          });
-          setIsWaitFleetModalOpen(false);
-        }}
-      />
 
       {isDev && (
         <>

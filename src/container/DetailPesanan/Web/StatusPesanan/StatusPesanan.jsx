@@ -1,13 +1,27 @@
+import { useParams } from "next/navigation";
+
 import { Alert } from "@/components/Badge/Alert";
 import Card, { CardContent } from "@/components/Card/Card";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
+import useGetFleetSearchStatus from "@/services/detailpesanan/getFleetSearchStatus";
 
 import { AlertPendingPrepareFleet } from "./AlertPendingPrepareFleet";
 import { DriverStatusCard } from "./DriverStatusCard";
 import { StatusPesananHeader } from "./StatusPesananHeader";
+import { WaitSearchFleetModal } from "./WaitSearchFleet";
 
-const StatusPesanan = ({ dataStatusPesanan }) => {
+const StatusPesanan = ({ dataStatusPesanan, dataRingkasanPembayaran }) => {
+  const params = useParams();
+  const {
+    isOpen: isWaitFleetModalOpen,
+    isShow: isShowWaitFleetAlert,
+    setIsOpen: setIsWaitFleetModalOpen,
+    setIsShow: setIsShowWaitFleetAlert,
+  } = useGetFleetSearchStatus(
+    params.orderId,
+    dataStatusPesanan?.orderStatus === OrderStatusEnum.PREPARE_FLEET
+  );
   return (
     <>
       {dataStatusPesanan.alerts.map((alert) => (
@@ -58,6 +72,12 @@ const StatusPesanan = ({ dataStatusPesanan }) => {
           </div>
         </CardContent>
       </Card>
+
+      <WaitSearchFleetModal
+        dataRingkasanPembayaran={dataRingkasanPembayaran}
+        isOpen={isWaitFleetModalOpen}
+        setIsOpen={setIsWaitFleetModalOpen}
+      />
     </>
   );
 };
