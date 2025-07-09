@@ -37,7 +37,7 @@ const DetailPesananWeb = () => {
     useGetFleetSearchStatus(
       params.orderId,
       dataDetailPesanan?.dataStatusPesanan?.orderStatus ===
-        OrderStatusEnum.LOADING
+        OrderStatusEnum.PREPARE_FLEET
     );
   const { trigger: confirmWaiting } = useSWRMutateHook(
     `v1/orders/${params.orderId}/waiting-confirmation`
