@@ -2,9 +2,12 @@ import { useParams } from "next/navigation";
 import { useEffect } from "react";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
+import WaitFleetModal from "@/components/Modal/WaitFleetModal";
+import { useSWRMutateHook } from "@/hooks/use-swr";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 import { useGetDetailPesananData } from "@/services/detailpesanan/getDetailPesananData";
+import useGetFleetOrderStatus from "@/services/detailpesanan/getFleetOrderStatus";
 import { useLoadingAction } from "@/store/loadingStore";
 
 import DetailPesananHeader from "./DetailPesananHeader/DetailPesananHeader";
@@ -29,6 +32,15 @@ const DetailPesananWeb = () => {
 
   const { data: dataDetailPesanan, isLoading: isLoadingDetailPesanan } =
     useGetDetailPesananData(params.orderId);
+  const { isOpen: isWaitFleetModalOpen, setIsOpen: setIsWaitFleetModalOpen } =
+    useGetFleetOrderStatus(
+      params.orderId,
+      dataDetailPesanan?.dataStatusPesanan?.orderStatus ===
+        OrderStatusEnum.LOADING
+    );
+  const { trigger: confirmWaiting } = useSWRMutateHook(
+    `v1/orders/${params.orderId}/waiting-confirmation`
+  );
 
   const { setIsGlobalLoading } = useLoadingAction();
 
@@ -110,6 +122,21 @@ const DetailPesananWeb = () => {
           </div>
         </div>
       </div>
+
+      <WaitFleetModal
+        isOpen={isWaitFleetModalOpen}
+        setIsOpen={setIsWaitFleetModalOpen}
+        onCancel={() => {
+          setIsWaitFleetModalOpen(false);
+          alert("Pesanan kamu dibatalkan");
+        }}
+        onConfirm={() => {
+          confirmWaiting({
+            continueWaiting: true,
+          });
+          setIsWaitFleetModalOpen(false);
+        }}
+      />
 
       <button
         onClick={() => {

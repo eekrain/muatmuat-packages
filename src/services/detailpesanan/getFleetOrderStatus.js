@@ -1,0 +1,61 @@
+import { useEffect, useRef, useState } from "react";
+
+import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
+import { useSWRHook } from "@/hooks/use-swr";
+
+const useGetFleetOrderStatus = (orderId, shouldRefetch = false) => {
+  const intervalRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const previousShowPopupRef = useRef(false);
+
+  const { data: fleetOrderStatusData, mutate: refetchFleetOrderStatus } =
+    useSWRHook(`v1/orders/${orderId}/fleet-search-status`);
+
+  const fleetOrderStatus = fleetOrderStatusData?.Data || null;
+  const shouldShowPopup = fleetOrderStatus?.shouldShowPopup || false;
+
+  // Effect to track changes in shouldShowPopup
+  useEffect(() => {
+    // Check if shouldShowPopup changed from false to true
+    if (shouldShowPopup && !previousShowPopupRef.current) {
+      setIsOpen(true);
+    }
+
+    // Update the ref with current value for next comparison
+    previousShowPopupRef.current = shouldShowPopup;
+  }, [shouldShowPopup]);
+
+  useShallowCompareEffect(() => {
+    // Clear any existing interval first
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    // Only set up auto-refresh if shouldRefetch is true
+    if (shouldRefetch) {
+      // Perform an initial fetch when shouldRefetch becomes true
+      refetchFleetOrderStatus();
+
+      // Set up the interval for auto-refresh
+      intervalRef.current = setInterval(() => {
+        refetchFleetOrderStatus();
+      }, 1000 * 180); // 3 minutes interval
+    }
+
+    // Clean up function
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [shouldRefetch]);
+
+  return {
+    isOpen,
+    setIsOpen,
+  };
+};
+
+export default useGetFleetOrderStatus;
