@@ -3,16 +3,16 @@ import { useEffect, useRef, useState } from "react";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useSWRHook } from "@/hooks/use-swr";
 
-const useGetFleetOrderStatus = (orderId, shouldRefetch = false) => {
+const useGetFleetSearchStatus = (orderId, shouldRefetch = false) => {
   const intervalRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   const previousShowPopupRef = useRef(false);
 
-  const { data: fleetOrderStatusData, mutate: refetchFleetOrderStatus } =
+  const { data: fleetSearchStatusData, mutate: refetchFleetSearchStatus } =
     useSWRHook(`v1/orders/${orderId}/fleet-search-status`);
 
-  const fleetOrderStatus = fleetOrderStatusData?.Data || null;
-  const shouldShowPopup = fleetOrderStatus?.shouldShowPopup || false;
+  const fleetSearchStatus = fleetSearchStatusData?.Data || null;
+  const shouldShowPopup = fleetSearchStatus?.shouldShowPopup || false;
 
   // Effect to track changes in shouldShowPopup
   useEffect(() => {
@@ -35,11 +35,11 @@ const useGetFleetOrderStatus = (orderId, shouldRefetch = false) => {
     // Only set up auto-refresh if shouldRefetch is true
     if (shouldRefetch) {
       // Perform an initial fetch when shouldRefetch becomes true
-      refetchFleetOrderStatus();
+      refetchFleetSearchStatus();
 
       // Set up the interval for auto-refresh
       intervalRef.current = setInterval(() => {
-        refetchFleetOrderStatus();
+        refetchFleetSearchStatus();
       }, 1000 * 180); // 3 minutes interval
     }
 
@@ -58,4 +58,4 @@ const useGetFleetOrderStatus = (orderId, shouldRefetch = false) => {
   };
 };
 
-export default useGetFleetOrderStatus;
+export default useGetFleetSearchStatus;
