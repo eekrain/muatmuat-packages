@@ -7,7 +7,7 @@ import { useSWRMutateHook } from "@/hooks/use-swr";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 import { useGetDetailPesananData } from "@/services/detailpesanan/getDetailPesananData";
-import useGetFleetOrderStatus from "@/services/detailpesanan/getFleetOrderStatus";
+import useGetFleetSearchStatus from "@/services/detailpesanan/getFleetSearchStatus";
 import { useLoadingAction } from "@/store/loadingStore";
 
 import DetailPesananHeader from "./DetailPesananHeader/DetailPesananHeader";
@@ -33,7 +33,7 @@ const DetailPesananWeb = () => {
   const { data: dataDetailPesanan, isLoading: isLoadingDetailPesanan } =
     useGetDetailPesananData(params.orderId);
   const { isOpen: isWaitFleetModalOpen, setIsOpen: setIsWaitFleetModalOpen } =
-    useGetFleetOrderStatus(
+    useGetFleetSearchStatus(
       params.orderId,
       dataDetailPesanan?.dataStatusPesanan?.orderStatus ===
         OrderStatusEnum.LOADING
