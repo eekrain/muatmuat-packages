@@ -1,12 +1,16 @@
+import { useState } from "react";
+
 import { ChevronDown } from "lucide-react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
+import Button from "@/components/Button/Button";
 import {
   SimpleDropdown,
   SimpleDropdownContent,
   SimpleDropdownItem,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
+import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import {
   LightboxPreview,
@@ -17,6 +21,10 @@ import {
   OrderStatusEnum,
   OrderStatusTitle,
 } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { toast } from "@/lib/toast";
+import { formatDate } from "@/lib/utils/dateFormat";
+
+import { DriverStatusCardItem } from "./DriverStatusCard";
 
 const warningVariantStatus = [
   OrderStatusEnum.PREPARE_FLEET,
@@ -48,6 +56,16 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
       : dataStatusPesanan.orderStatus === OrderStatusEnum.COMPLETED
         ? "success"
         : "primary";
+
+  const [isModalAllDriverOpen, setIsModalAllDriverOpen] = useState(false);
+
+  const copyAllDriverQRCodeLink = () => {
+    const orderId = dataStatusPesanan.orderId;
+    const qrCodeLink = `${window.location.origin}/orders/${orderId}/qr-code`;
+    navigator.clipboard.writeText(qrCodeLink);
+    toast.success("Link QR Code Semua Driver Berhasil Disalin");
+    setIsModalAllDriverOpen(false);
+  };
 
   return (
     <div className="flex items-end gap-x-3">
@@ -232,13 +250,74 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
           </SimpleDropdownTrigger>
 
           <SimpleDropdownContent className="w-[198px]">
-            <SimpleDropdownItem>Lihat Semua Driver</SimpleDropdownItem>
-            <SimpleDropdownItem>
+            <SimpleDropdownItem onClick={() => setIsModalAllDriverOpen(true)}>
+              Lihat Semua Driver
+            </SimpleDropdownItem>
+            <SimpleDropdownItem onClick={copyAllDriverQRCodeLink}>
               Bagikan QR Code Semua Driver
             </SimpleDropdownItem>
           </SimpleDropdownContent>
         </SimpleDropdown>
       </div>
+
+      <ModalAllDriver
+        open={isModalAllDriverOpen}
+        onOpenChange={setIsModalAllDriverOpen}
+        driverStatus={dataStatusPesanan.driverStatus}
+        orderId={dataStatusPesanan.orderId}
+        orderStatus={dataStatusPesanan.orderStatus}
+        copyAllDriverQRCodeLink={copyAllDriverQRCodeLink}
+      />
     </div>
+  );
+};
+
+const ModalAllDriver = ({
+  open,
+  onOpenChange,
+  driverStatus = [],
+  orderId,
+  orderStatus,
+  copyAllDriverQRCodeLink,
+}) => {
+  const [search, setSearch] = useState("");
+  return (
+    <Modal open={open} onOpenChange={onOpenChange} closeOnOutsideClick>
+      <ModalContent className="p-6">
+        <h2 className="mb-3 text-center text-base font-bold leading-[1.2]">
+          Semua Driver
+        </h2>
+
+        <div className="w-[810px] rounded-xl border border-neutral-600 pl-3 pt-3">
+          <Input
+            placeholder="Cari Nama Driver/Plat Nomor"
+            icon={{ left: "/icons/search.svg" }}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="mb-3 w-[262px]"
+          />
+          <div className="pr-[3px]">
+            <div className="flex max-h-[368px] flex-col gap-3 overflow-y-auto pb-3 pr-[3px]">
+              {driverStatus.map((driver) => (
+                <DriverStatusCardItem
+                  key={driver.driverId}
+                  driver={driver}
+                  orderId={orderId}
+                  orderStatus={orderStatus}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <Button
+          variant="muatparts-primary"
+          className="ml-auto mt-3"
+          onClick={copyAllDriverQRCodeLink}
+        >
+          Bagikan QR Code Semua Driver
+        </Button>
+      </ModalContent>
+    </Modal>
   );
 };

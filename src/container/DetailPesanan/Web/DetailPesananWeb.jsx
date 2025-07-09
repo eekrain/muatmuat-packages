@@ -5,6 +5,7 @@ import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import WaitFleetModal from "@/components/Modal/WaitFleetModal";
 import { useSWRMutateHook } from "@/hooks/use-swr";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { isDev } from "@/lib/constants/is-dev";
 import { toast } from "@/lib/toast";
 import { useGetDetailPesananData } from "@/services/detailpesanan/getDetailPesananData";
 import useGetFleetSearchStatus from "@/services/detailpesanan/getFleetSearchStatus";
@@ -138,17 +139,36 @@ const DetailPesananWeb = () => {
         }}
       />
 
-      <button
-        onClick={() => {
-          // toast.error(
-          //   "Minimal pilih 1 alasan pembatalan untuk membatalkan pesanan"
-          // );
-          toast.success("Pesanan kamu berhasil dibatalkan");
+      <WaitFleetModal
+        isOpen={isWaitFleetModalOpen}
+        setIsOpen={setIsWaitFleetModalOpen}
+        onCancel={() => {
+          setIsWaitFleetModalOpen(false);
+          alert("Pesanan kamu dibatalkan");
         }}
-      >
-        tes toast
-      </button>
-      <pre>{JSON.stringify(dataDetailPesanan, null, 2)}</pre>
+        onConfirm={() => {
+          confirmWaiting({
+            continueWaiting: true,
+          });
+          setIsWaitFleetModalOpen(false);
+        }}
+      />
+
+      {isDev && (
+        <>
+          <button
+            onClick={() => {
+              // toast.error(
+              //   "Minimal pilih 1 alasan pembatalan untuk membatalkan pesanan"
+              // );
+              toast.success("Pesanan kamu berhasil dibatalkan");
+            }}
+          >
+            tes toast
+          </button>
+          <pre>{JSON.stringify(dataDetailPesanan, null, 2)}</pre>
+        </>
+      )}
     </>
   );
 };

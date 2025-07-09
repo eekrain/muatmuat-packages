@@ -28,6 +28,7 @@ import SertifikasiHalal from "@/container/SewaArmada/Web/Form/SertifikasiHalal";
 import { SummaryPanel } from "@/container/SewaArmada/Web/SummaryPanel/SummaryPanel";
 import { WelcomeCard } from "@/container/SewaArmada/Web/WelcomeCard/WelcomeCard";
 import { useSWRHook } from "@/hooks/use-swr";
+import { isDev } from "@/lib/constants/is-dev";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -150,8 +151,7 @@ export default function SewaArmadaWeb({
       <WaitingSettlementModal />
       <SelectArmadaModal carrierData={carriers} truckData={trucks} />
 
-      <div className="box-content h-[7px] w-[7px] flex-shrink-0 rounded-full border-[5px] border-[#FFC217] bg-[#461B02]"></div>
-      <button onClick={testSubmit}>Test Submit</button>
+      {isDev && <button onClick={testSubmit}>Test Submit</button>}
     </>
   );
 }

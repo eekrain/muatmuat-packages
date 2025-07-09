@@ -1,5 +1,6 @@
 import useSWR from "swr";
 
+import { fetcherMuatrans } from "@/lib/axios";
 import {
   OrderStatusEnum,
   OrderTypeEnum,
@@ -110,7 +111,7 @@ const apiResultOrderDetail = {
         invoiceNumber: "INV/12345678",
         // orderStatus: OrderStatusEnum.LOADING,
         orderStatus: OrderStatusEnum.LOADING,
-        orderTitle: "Armada Dijadwalkan",
+        orderTitle: "Proses Muat",
         unitFleetStatus: 3,
         orderType: OrderTypeEnum.INSTANT,
         createdAt: "2024-01-01T10:00:00Z",
@@ -217,12 +218,12 @@ const apiResultOrderDetail = {
 
 export const fetcherOrderDetail = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
-  const result = apiResultOrderDetail;
-  return result.data.Data;
+  // const result = apiResultOrderDetail;
+  // return result.data.Data;
 
-  // const result = await fetcherMuatrans.get(`v1/orders/${orderId}/alerts`);
+  const result = await fetcherMuatrans.get(`v1/orders/${orderId}/alerts`);
 
-  // return result?.data?.Data?.alerts || [];
+  return result?.data?.Data?.alerts || [];
 };
 
 export const useGetOrderDetail = (orderId) =>

@@ -14,10 +14,7 @@ import {
   ModalHeader,
   ModalTrigger,
 } from "@/components/Modal/Modal";
-import {
-  StepperContainer,
-  StepperItemResponsive,
-} from "@/components/Stepper/Stepper";
+import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -99,9 +96,41 @@ export const DriverStatusCard = ({ driverStatus, orderId, orderStatus }) => {
           ))}
         </div>
       </div>
+      {/* Slider Indicator */}
+      {driverStatus.length > 1 && (
+        <div className="mt-3 flex justify-center">
+          <SliderIndicator
+            currentIndex={currentIndex}
+            total={driverStatus.length}
+            setCurrentIndex={setCurrentIndex}
+          />
+        </div>
+      )}
     </div>
   );
 };
+
+// Slider indicator component using TailwindCSS
+const SliderIndicator = ({ currentIndex, total, setCurrentIndex }) => (
+  <div className="z-30 flex h-2 w-14 flex-row items-center gap-1">
+    {Array.from({ length: total }).map((_, idx) => (
+      <div
+        key={idx}
+        className={cn(
+          "h-2 w-2 cursor-pointer rounded-full bg-neutral-400 transition-all duration-300",
+          idx === currentIndex && "w-8 bg-primary-700"
+        )}
+        onClick={() => setCurrentIndex(idx)}
+        aria-label={`Go to slide ${idx + 1}`}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") setCurrentIndex(idx);
+        }}
+      />
+    ))}
+  </div>
+);
 
 const LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER = [
   OrderStatusEnum.WAITING_REPAYMENT_1,
@@ -111,7 +140,7 @@ const LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER = [
   OrderStatusEnum.COMPLETED,
 ];
 
-const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
+export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
   const pathname = usePathname();
 
   const { qrData } = useGetDriverQRCodeById({
@@ -124,9 +153,9 @@ const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
     let hasScan = false;
     let statusTitle = "";
     let statusText = "";
-    if (splitStatus.length !== 4) return { hasScan, statusText, statusTitle };
+    if (splitStatus.length < 3) return { hasScan, statusText, statusTitle };
 
-    statusTitle = `QR Code Lokasi ${splitStatus[2][0].toUpperCase()}${splitStatus[2].slice(1).toLowerCase()} ${splitStatus[3]}`;
+    statusTitle = `QR Code Lokasi ${splitStatus[2][0].toUpperCase()}${splitStatus[2].slice(1).toLowerCase()}${splitStatus[3] ? ` ${splitStatus[3]}` : ""}`;
 
     if (splitStatus[0] === "BELUM" && splitStatus[1] === "SCAN") {
       hasScan = false;
@@ -135,12 +164,16 @@ const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
     }
 
     if (hasScan) {
-      statusText = `Sudah Scan Lokasi ${splitStatus[2][0].toUpperCase()}${splitStatus[2].slice(1).toLowerCase()} ${splitStatus[3]}`;
+      statusText = `Sudah Scan di Lokasi ${splitStatus[2][0].toUpperCase()}${splitStatus[2].slice(1).toLowerCase()}${splitStatus[3] ? ` ${splitStatus[3]}` : ""}`;
     } else {
-      statusText = `Belum Scan Lokasi ${splitStatus[2][0].toUpperCase()}${splitStatus[2].slice(1).toLowerCase()} ${splitStatus[3]}`;
+      statusText = `Belum Scan di Lokasi ${splitStatus[2][0].toUpperCase()}${splitStatus[2].slice(1).toLowerCase()}${splitStatus[3] ? ` ${splitStatus[3]}` : ""}`;
     }
 
-    return { statusTitle, hasScan, statusText };
+    return {
+      statusTitle: statusTitle,
+      hasScan,
+      statusText: statusText,
+    };
   };
 
   const handleCopyQrCode = () => {
@@ -161,18 +194,18 @@ const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
             {!orderStatus.startsWith("WAITING") &&
               !LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER.includes(orderStatus) && (
                 <div className="flex items-center gap-x-3">
-                  {driver.statusTitle && (
+                  {driver.driverStatusTitle && (
                     <BadgeStatusPesanan
                       variant={
-                        driver.statusDriver?.startsWith("CANCELED")
+                        driver.orderStatus?.startsWith("CANCELED")
                           ? "error"
-                          : driver.statusDriver === OrderStatusEnum.COMPLETED
+                          : driver.orderStatus === OrderStatusEnum.COMPLETED
                             ? "success"
                             : "primary"
                       }
                       className="w-fit"
                     >
-                      {driver.statusTitle}
+                      {driver.driverStatusTitle}
                     </BadgeStatusPesanan>
                   )}
 
@@ -239,7 +272,7 @@ const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
             <div className="flex items-center justify-between">
               <AvatarDriver
                 name={driver.name}
-                image={driver.driverPhoto}
+                image={driver.driverImage}
                 licensePlate={driver.licensePlate}
               />
               <div className="flex items-center gap-x-3">
@@ -268,11 +301,7 @@ const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
             totalStep={driver.stepperData?.length || 0}
           >
             {driver.stepperData?.map((step, index) => (
-              <StepperItemResponsive
-                key={step.status}
-                step={step}
-                index={index}
-              />
+              <StepperItem key={step.status} step={step} index={index} />
             ))}
           </StepperContainer>
         </div>

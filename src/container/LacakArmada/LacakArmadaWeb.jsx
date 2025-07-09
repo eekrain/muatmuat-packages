@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 
+import { isDev } from "@/lib/constants/is-dev";
 import { useGetDriverStatusTimeline } from "@/services/lacak-armada/getDriverStatusTimeline";
 import { useLoadingAction } from "@/store/loadingStore";
 
@@ -26,7 +27,7 @@ const LacakArmadaWeb = () => {
         <MapPanel />
       </div>
 
-      <pre>{JSON.stringify(dataDriverStatus, null, 2)}</pre>
+      {isDev && <pre>{JSON.stringify(dataDriverStatus, null, 2)}</pre>}
     </>
   );
 };

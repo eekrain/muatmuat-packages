@@ -76,7 +76,7 @@ export const LeftPanel = ({ dataDriverStatus }) => {
             </div>
           )}
 
-          <h2 className="h-[8px] px-4 text-[12px] font-semibold leading-[14.4px] text-black">
+          <h2 className="px-4 text-[12px] font-semibold leading-[14.4px] text-black">
             Detail Status Driver
           </h2>
 

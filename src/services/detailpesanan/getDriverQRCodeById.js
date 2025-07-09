@@ -15,9 +15,9 @@ const apiResultQRCode = {
     driverInfo: {
       driverId: "550e8400-e29b-41d4-a716-446655440090",
       driverImage: "https://picsum.photos/50",
-      name: "Ahmad Rahman",
+      name: "Hendra",
       licensePlate: "B 1234 CD",
-      statusScan: "BELUM_SCAN_BONGKAR_2",
+      statusScan: "BELUM_SCAN_MUAT",
     },
     shareLink: "https://app.muattrans.com/qr/ABC123XYZ789",
     expiryTime: addMinutes(new Date(), 15),

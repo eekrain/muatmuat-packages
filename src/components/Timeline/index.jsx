@@ -135,7 +135,7 @@ export const TimelineContentWithButtonDate = ({
       <div className="flex flex-col gap-[2px]">
         <span
           className={cn(
-            "line-clamp-1 text-[14px] font-medium leading-[1.2] text-neutral-900",
+            "mt-0.5 line-clamp-1 text-[14px] font-medium leading-[1.2] text-neutral-900",
             appearance?.titleClassname
           )}
         >
@@ -157,7 +157,7 @@ export const TimelineContentWithButtonDate = ({
       {withDate && (
         <span
           className={cn(
-            "block text-xs font-medium leading-[1.2] text-neutral-500",
+            "mt-0.5 block text-xs font-medium leading-[1.2] text-neutral-500",
             appearance?.dateClassname
           )}
         >

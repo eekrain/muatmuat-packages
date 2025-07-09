@@ -1,3 +1,4 @@
+import { fetcherMuatrans } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
 // GET /base_url/v1/orders/{orderId}/status-history
@@ -10,13 +11,13 @@ const apiResultOrderStatusHistory = {
     driverStatus: [
       {
         driverId: "550e8400-e29b-41d4-a716-446655440021",
-        name: "Ahmad Rahman",
+        name: "Hendra",
         driverImage: "https://picsum.photos/50",
         licensePlate: "B 1234 CD",
         orderStatus: OrderStatusEnum.LOADING,
         orderStatusTitle: "Proses Muat",
         driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
-        driverStatusTitle: "Menuju ke Lokasi Muat 1",
+        driverStatusTitle: "Tiba di Lokasi Muat",
         stepStatus: [
           {
             statusCode: OrderStatusEnum.CONFIRMED,
@@ -38,14 +39,14 @@ const apiResultOrderStatusHistory = {
       },
 
       {
-        driverId: "550e8400-e29b-41d4-a716-446655440021",
+        driverId: "550e8400-e29b-41d4-a716-446655440022",
         name: "Ardian Eka",
         driverImage: "https://picsum.photos/50",
         licensePlate: "B 1234 CD",
         orderStatus: OrderStatusEnum.LOADING,
         orderStatusTitle: "Proses Muat",
         driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
-        driverStatusTitle: "Menuju ke Lokasi Muat 1",
+        driverStatusTitle: "Tiba di Lokasi Muat",
         stepStatus: [
           {
             statusCode: OrderStatusEnum.CONFIRMED,
@@ -67,14 +68,14 @@ const apiResultOrderStatusHistory = {
       },
 
       {
-        driverId: "550e8400-e29b-41d4-a716-446655440021",
+        driverId: "550e8400-e29b-41d4-a716-446655440023",
         name: "Cakra",
         driverImage: "https://picsum.photos/50",
         licensePlate: "B 1234 CD",
         orderStatus: OrderStatusEnum.LOADING,
         orderStatusTitle: "Proses Muat",
         driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
-        driverStatusTitle: "Menuju ke Lokasi Muat 1",
+        driverStatusTitle: "Tiba di Lokasi Muat",
         stepStatus: [
           {
             statusCode: OrderStatusEnum.CONFIRMED,
@@ -102,15 +103,15 @@ const apiResultOrderStatusHistory = {
 export const getOrderStatusHistory = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
 
-  const result = apiResultOrderStatusHistory;
+  // const result = apiResultOrderStatusHistory;
 
-  return result.Data;
+  // return result.Data;
 
-  // const result = await fetcherMuatrans.get(
-  //   `v1/orders/${orderId}/status-history`
-  // );
+  const result = await fetcherMuatrans.get(
+    `v1/orders/${orderId}/status-history`
+  );
 
-  // return result?.data?.Data || null;
+  return result?.data?.Data || null;
 };
 
 export const useGetOrderStatusHistory = (orderId) =>
