@@ -21,7 +21,7 @@ const PendingOrderWeb = ({
 
   const [tempSearch, setTempSearch] = useState("");
 
-  const hasOrders = orders.length > 0;
+  const hasFilteredOrders = orders.length > 0;
 
   return (
     <main className="flex justify-center px-10 py-8">
@@ -44,7 +44,7 @@ const PendingOrderWeb = ({
           tempSearch={tempSearch}
           setTempSearch={setTempSearch}
           orders={orders}
-          hasOrders={hasOrders}
+          hasFilteredOrders={hasFilteredOrders}
           searchOnly={true}
         />
       </div>

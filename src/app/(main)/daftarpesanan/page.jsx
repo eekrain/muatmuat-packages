@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 
 import DaftarPesananWeb from "@/container/DaftarPesanan/Web";
 import useDevice from "@/hooks/use-device";
+import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook } from "@/hooks/use-swr";
 
@@ -22,6 +23,7 @@ const Page = () => {
   const [queryParams, setQueryParams] = useState(defaultQueryParams);
   const [lastFilterField, setLastFilterField] = useState("");
   const [currentPeriodValue, setCurrentPeriodValue] = useState(null); // Track currently selected period
+  const [hasNoOrders, setHasNoOrders] = useState(false);
 
   // Transform state into query string using useMemo
   const queryString = useMemo(() => {
@@ -61,7 +63,7 @@ const Page = () => {
     "v1/orders/settlement/alert-info"
   );
   // Fetch orders data
-  const { data: ordersData, isOrdersLoading } = useSWRHook(
+  const { data: ordersData, isLoading: isOrdersLoading } = useSWRHook(
     `v1/orders/list?${queryString}`
   );
   const { data: countByStatusData } = useSWRHook("v1/orders/count-by-status");
@@ -97,21 +99,15 @@ const Page = () => {
     [countByStatus]
   );
 
-  const isFirstTimer = useShallowMemo(
-    () =>
-      JSON.stringify(defaultQueryParams) === JSON.stringify(queryParams) ||
-      (lastFilterField === "status" &&
-        Object.keys(defaultQueryParams).every((key) => {
-          if (key === "status") {
-            return tabs.some((item) => item.value === queryParams[key]);
-          }
-          return (
-            JSON.stringify(queryParams[key]) ===
-            JSON.stringify(defaultQueryParams[key])
-          );
-        })),
-    [defaultQueryParams, queryParams, lastFilterField, tabs]
-  );
+  useShallowCompareEffect(() => {
+    if (
+      !isOrdersLoading &&
+      orders.length === 0 &&
+      JSON.stringify(defaultQueryParams) === JSON.stringify(queryParams)
+    ) {
+      setHasNoOrders(true);
+    }
+  }, [orders, defaultQueryParams, queryParams, isOrdersLoading]);
 
   const handleChangeQueryParams = (field, value) => {
     setQueryParams((prevState) => {
@@ -143,7 +139,7 @@ const Page = () => {
       pagination={pagination}
       isOrdersLoading={isOrdersLoading}
       settlementAlertInfo={settlementAlertInfo}
-      isFirstTimer={isFirstTimer}
+      hasNoOrders={hasNoOrders}
       lastFilterField={lastFilterField}
       tabs={tabs}
       currentPeriodValue={currentPeriodValue}

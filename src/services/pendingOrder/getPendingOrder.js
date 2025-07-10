@@ -2,6 +2,7 @@
 import { useMemo, useState } from "react";
 
 import useDevice from "@/hooks/use-device";
+import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useSWRHook } from "@/hooks/use-swr";
 
 /**
@@ -16,11 +17,13 @@ export default function usePendingOrdersPage(options = {}) {
 
   const { isMobile } = useDevice();
   const [lastFilterField, setLastFilterField] = useState("");
-  const [queryParams, setQueryParams] = useState({
+  const defaultQueryParams = {
     search: "",
     sort: "",
     order: "",
-  });
+  };
+  const [queryParams, setQueryParams] = useState(defaultQueryParams);
+  const [hasNoOrders, setHasNoOrders] = useState(false);
 
   // Transform state into query string using useMemo
   const queryString = useMemo(() => {
@@ -52,6 +55,15 @@ export default function usePendingOrdersPage(options = {}) {
   const { data: ordersData } = useSWRHook(`v1/orders/list?${queryString}`);
   const orders = ordersData?.Data?.orders || [];
 
+  useShallowCompareEffect(() => {
+    if (
+      orders.length === 0 &&
+      JSON.stringify(defaultQueryParams) === JSON.stringify(queryParams)
+    ) {
+      setHasNoOrders(true);
+    }
+  }, [orders, defaultQueryParams, queryParams]);
+
   const handleChangeQueryParams = (field, value) => {
     setQueryParams((prevState) => ({ ...prevState, [field]: value }));
     setLastFilterField(field);
@@ -62,6 +74,7 @@ export default function usePendingOrdersPage(options = {}) {
     queryParams,
     lastFilterField,
     orders,
+    hasNoOrders,
     handleChangeQueryParams,
   };
 }

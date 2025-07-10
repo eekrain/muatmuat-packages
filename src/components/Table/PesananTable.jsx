@@ -35,7 +35,8 @@ const PesananTable = ({
   orders,
   isOrdersLoading,
   searchOnly = false,
-  isFirstTimer,
+  hasNoOrders,
+  hasFilteredOrders,
   lastFilterField,
   tabs,
 }) => {
@@ -178,7 +179,9 @@ const PesananTable = ({
               <div className="flex items-center gap-x-3">
                 <Input
                   className="gap-0"
-                  disabled={!hasOrders && (isFirstTimer || !queryParams.search)}
+                  disabled={
+                    hasNoOrders || (!hasFilteredOrders && !queryParams.search)
+                  }
                   appearance={{ containerClassName: "w-[262px]" }}
                   placeholder="Cari Pesanan"
                   icon={{
@@ -197,8 +200,8 @@ const PesananTable = ({
                 {searchOnly ? null : (
                   <Filter
                     disabled={
-                      (!hasOrders && isFirstTimer) ||
-                      (!isFirstTimer &&
+                      hasNoOrders ||
+                      (!hasFilteredOrders &&
                         !options
                           .flatMap((item) => item.children)
                           .some((item) => item.value === queryParams.status))
@@ -265,7 +268,7 @@ const PesananTable = ({
           {/* Table Component with proper structure */}
           {isOrdersLoading ? (
             <div className="flex min-h-[358px] w-full animate-pulse bg-neutral-200"></div>
-          ) : hasOrders || !isFirstTimer ? (
+          ) : !hasNoOrders ? (
             <div className="w-full overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
@@ -700,7 +703,7 @@ const PesananTable = ({
                   })}
                 </tbody>
               </table>
-              {!hasOrders ? (
+              {!hasFilteredOrders ? (
                 <div className="flex w-full pb-6">
                   <div
                     className={cn(
@@ -730,7 +733,7 @@ const PesananTable = ({
                 </div>
               ) : null}
             </div>
-          ) : isFirstTimer ? (
+          ) : (
             <div className="flex min-h-[358px] w-full justify-center pb-6">
               <div className="flex flex-col items-center justify-center gap-y-3">
                 <DataNotFound
@@ -753,7 +756,7 @@ const PesananTable = ({
                 </Button>
               </div>
             </div>
-          ) : null}
+          )}
         </CardContent>
       </Card>
 
