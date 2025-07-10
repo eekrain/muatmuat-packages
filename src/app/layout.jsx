@@ -7,9 +7,6 @@ import "./globals.scss";
 export const metadata = {
   title: "Muatrans Shipper",
   description: "",
-  icons: {
-    icon: "https://buyer.muatmuat.com/_resources/themes/muat/image/icon/icon-01.png",
-  },
 };
 
 const Avenir = localFont({

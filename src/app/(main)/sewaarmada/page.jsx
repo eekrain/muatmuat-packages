@@ -133,7 +133,7 @@ const Page = () => {
       setField("tempTrucks", trucks);
       setField("distance", trucks.priceComponents.estimatedDistance);
       setField("distanceUnit", trucks.priceComponents.distanceUnit);
-      setField("estimatedTime", trucks.priceComponents.preparationTime);
+      // setField("estimatedTime", trucks.priceComponents.preparationTime);
     }
   }, [trucks]);
 
@@ -383,6 +383,7 @@ const Page = () => {
       <SewaArmadaResponsive
         cargoTypes={cargoTypes}
         cargoCategories={cargoCategories}
+        additionalServicesOptions={additionalServicesOptions}
         paymentMethods={paymentMethods}
       />
     );

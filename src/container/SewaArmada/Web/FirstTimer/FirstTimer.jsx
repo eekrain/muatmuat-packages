@@ -9,14 +9,12 @@ export const FirstTimer = () => {
 
   return (
     <div className="flex w-[814px] flex-col items-center rounded-xl bg-white p-8 shadow-md">
-      <div className="mb-4">
+      <div className="mb-4 flex flex-col items-center gap-3">
         <ImageComponent
           src="/img/welcome-illustration.png"
           width={100}
           height={76}
         />
-      </div>
-      <div className="mb-6 flex flex-col items-center gap-3">
         <h1 className="text-center text-base font-semibold leading-[1] text-neutral-900">
           Ayo kirim muatan Anda dengan muatrans!
         </h1>
