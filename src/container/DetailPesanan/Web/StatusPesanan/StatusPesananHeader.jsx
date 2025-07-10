@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { ChevronDown } from "lucide-react";
 
@@ -279,7 +279,22 @@ const ModalAllDriver = ({
   orderStatus,
   copyAllDriverQRCodeLink,
 }) => {
+  console.log(
+    "🔍 ~  ~ src/container/DetailPesanan/Web/StatusPesanan/StatusPesananHeader.jsx:277 ~ driverStatus:",
+    driverStatus
+  );
   const [search, setSearch] = useState("");
+
+  const filteredDriverStatus = useMemo(() => {
+    return driverStatus.filter((driver) => {
+      const byName = driver.name.toLowerCase().includes(search.toLowerCase());
+      const byLicensePlate = driver.licensePlate
+        .toLowerCase()
+        .includes(search.toLowerCase());
+      return byName || byLicensePlate;
+    });
+  }, [driverStatus, search]);
+
   return (
     <Modal open={open} onOpenChange={onOpenChange} closeOnOutsideClick>
       <ModalContent className="p-6">
@@ -297,7 +312,7 @@ const ModalAllDriver = ({
           />
           <div className="pr-[3px]">
             <div className="flex max-h-[398px] flex-col gap-3 overflow-y-auto pb-3 pr-[3px]">
-              {driverStatus.map((driver) => (
+              {filteredDriverStatus.map((driver) => (
                 <DriverStatusCardItem
                   key={driver.driverId}
                   driver={driver}

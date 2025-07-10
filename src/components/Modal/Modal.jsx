@@ -222,6 +222,7 @@ export const ModalContent = ({
     muatmuat: "icon-fill-primary-700",
     muatparts: "icon-fill-muat-parts-non-800",
     muattrans: "icon-fill-muat-trans-secondary-900",
+    lightbox: "icon-fill-primary-700",
   };
   useEffect(() => {
     if (!isOpen) return;
@@ -278,7 +279,10 @@ export const ModalContent = ({
 
       <div
         ref={dialogRef}
-        className={cn("relative rounded-xl bg-neutral-50", className)}
+        className={cn(
+          "relative rounded-xl bg-neutral-50",
+          type === "lightbox" && "bg-transparent"
+        )}
       >
         {withCloseButton && (
           <button
