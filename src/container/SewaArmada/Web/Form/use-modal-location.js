@@ -17,7 +17,7 @@ const MODE_MAP = {
 
 export const useModalLocation = () => {
   const [modalConfig, setModalConfig] = useState(defaultModalConfig);
-  const { updateLokasi } = useSewaArmadaActions();
+  const { updateLokasi, setField } = useSewaArmadaActions();
 
   const handleOpenModalLocation = ({
     formMode,
@@ -32,6 +32,7 @@ export const useModalLocation = () => {
       defaultValues,
       onSubmit: (newData) => {
         updateLokasi(MODE_MAP[formMode], index, newData);
+        setField("truckTypeId", null);
       },
       index,
     });

@@ -16,7 +16,7 @@ export const LokasiMuat = () => {
   const errorLokasiMuat = useSewaArmadaStore(
     (state) => state.formErrors?.lokasiMuat
   );
-  const { addLokasi, removeLokasi } = useSewaArmadaActions();
+  const { addLokasi, removeLokasi, setField } = useSewaArmadaActions();
 
   return (
     <>
@@ -32,7 +32,10 @@ export const LokasiMuat = () => {
           onAddLocation={() =>
             handleFirstTime(() => addLokasi("lokasiMuat", null))
           }
-          onDeleteLocation={(index) => removeLokasi("lokasiMuat", index)}
+          onDeleteLocation={(index) => {
+            removeLokasi("lokasiMuat", index);
+            setField("truckTypeId", null);
+          }}
           onEditLocation={(index) =>
             handleFirstTime(() => {
               handleOpenModalLocation({

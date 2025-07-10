@@ -72,6 +72,9 @@ const SelectArmadaModal = ({ carrierData, truckData }) => {
       setField("truckCount", selectedTruck.unit);
       setField("minTruckCount", selectedTruck.unit);
     }
+    if (type === "carrierId") {
+      setField("truckTypeId", null);
+    }
     setField(type, item);
     setIsDimensionOrWeightChanged(false);
     setIsOpen(false);
