@@ -13,7 +13,9 @@ const DriverCard = () => {
           {/* Menuju ke Lokasi Muat 1 */}
           {/* Tiba di Lokasi Muat 1 */}
           {/* Antri di Lokasi Muat 1 */}
-          Sedang Muat di Lokasi 1
+          {/* Sedang Muat di Lokasi 1 */}
+          {/* ------------------------------------------ */}
+          Menuju ke Lokasi Muat 2
         </BadgeStatusPesanan>
 
         <AvatarDriver

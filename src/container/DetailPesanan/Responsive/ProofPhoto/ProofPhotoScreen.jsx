@@ -14,7 +14,8 @@ const ProofPhotoScreen = () => {
       onClickBackButton={() => navigation.pop()}
     >
       <div className="mb-16 space-y-2 bg-neutral-200">
-        <PhotoGrid />
+        <PhotoGrid title={"Bukti Muat Barang di Lokasi 1"} />
+        <PhotoGrid title={"POD Muat di Lokasi 1"} />
       </div>
     </FormResponsiveLayout>
   );

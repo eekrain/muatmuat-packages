@@ -14,7 +14,7 @@ export const DriverInfo = () => {
           variant="primary"
           className="w-fit text-sm font-semibold"
         >
-          Sedang Muat di Lokasi 1
+          Antri di Lokasi Bongkar 1
         </BadgeStatusPesanan>
 
         <AvatarDriver

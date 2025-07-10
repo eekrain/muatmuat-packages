@@ -7,11 +7,12 @@ const DriverCard = () => {
       <div className="flex w-full flex-col items-start gap-4">
         {/* Status Badge */}
         <BadgeStatusPesanan
-          variant="success"
+          variant="error"
           className="w-fit text-sm font-semibold"
         >
           {/* Belum Scan di Lokasi Muat 1 */}
-          Sudah Scan di Lokasi Muat 1
+          {/* Sudah Scan di Lokasi Muat 1 */}
+          Belum Scan di Lokasi Bongkar 1
         </BadgeStatusPesanan>
 
         <AvatarDriver
