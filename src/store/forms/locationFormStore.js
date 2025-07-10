@@ -109,7 +109,7 @@ export const useLocationFormStore = create(
               formValues?.dataLokasi?.location?.name
           );
 
-          if (foundLocationIndex !== -1)
+          if (foundLocationIndex !== -1 && foundLocationIndex !== index)
             return formMode === "muat"
               ? `Lokasi Muat ${index + 1} tidak boleh sama dengan Lokasi Muat ${foundLocationIndex + 1}`
               : `Lokasi Bongkar ${index + 1} tidak boleh sama dengan Lokasi Bongkar ${foundLocationIndex + 1}`;
