@@ -12,6 +12,7 @@ import {
   OrderStatusIcon,
   OrderStatusTitle,
 } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { DriverStatusLabel } from "@/lib/constants/detailpesanan/driver-status.enum";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";
 

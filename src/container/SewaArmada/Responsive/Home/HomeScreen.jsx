@@ -1,8 +1,6 @@
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 
-import { Truck } from "lucide-react";
-
 import {
   BottomSheet,
   BottomSheetContent,
@@ -483,7 +481,10 @@ const SewaArmadaHomeScreen = () => {
             >
               {/* Pilih Jenis Carrier */}
               <div className="flex h-8 w-full items-center gap-2 rounded-md border border-neutral-600 bg-neutral-200 px-3 py-2">
-                <Truck className="h-4 w-4 text-neutral-600" />
+                <IconComponent
+                  src="/icons/truck-carrier.svg"
+                  className="h-4 w-4 text-neutral-600"
+                />
                 <span className="flex-1 text-[14px] font-semibold text-neutral-600">
                   Pilih Jenis Carrier
                 </span>
@@ -504,7 +505,10 @@ const SewaArmadaHomeScreen = () => {
 
               {/* Pilih Jenis Truk */}
               <div className="flex h-8 w-full items-center gap-2 rounded-md border border-neutral-600 bg-neutral-200 px-3 py-2">
-                <Truck className="h-4 w-4 text-neutral-600" />
+                <IconComponent
+                  src="/icons/truck-jenis.svg"
+                  className="h-4 w-4 text-neutral-600"
+                />
                 <span className="flex-1 text-[14px] font-semibold text-neutral-600">
                   Pilih Jenis Truk
                 </span>
@@ -551,7 +555,7 @@ const SewaArmadaHomeScreen = () => {
 
           {/* Layanan Tambahan Field */}
           <FormContainer>
-            <FormLabel required={false}>Layanan Tambahan</FormLabel>
+            <FormLabel optional>Layanan Tambahan</FormLabel>
             <button
               className={
                 "flex h-8 items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-3"
@@ -559,9 +563,9 @@ const SewaArmadaHomeScreen = () => {
               onClick={handleEditLayananTambahan}
             >
               <div className="flex items-center gap-x-2">
-                <IconComponent src="/icons/muatan16.svg" />
+                <IconComponent src="/icons/layanan-tambahan.svg" />
                 <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-600">
-                  Layanan Tambahan
+                  Pilih Layanan Tambahan
                 </span>
               </div>
               <IconComponent src="/icons/chevron-right.svg" />

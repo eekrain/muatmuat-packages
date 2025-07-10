@@ -87,13 +87,14 @@ export const HeaderResponsiveDefault = ({
           dataUser ? "flex items-center gap-x-3" : "flex w-full justify-between"
         }
       >
-        <IconComponent
-          className="icon-stroke-muat-trans-primary-400 rounded-xl bg-muat-trans-secondary-900"
-          src="/icons/chevron-left24.svg"
-          width={24}
-          height={24}
-          onClick={handleBackButton}
-        />
+        <button onClick={handleBackButton}>
+          <IconComponent
+            className="icon-stroke-muat-trans-primary-400 rounded-xl bg-muat-trans-secondary-900"
+            src="/icons/chevron-left24.svg"
+            width={24}
+            height={24}
+          />
+        </button>
         <ImageComponent src="/icons/muattrans.svg" width={120} height={24} />
         {dataUser ? null : <div className="size-[24px]" />}
       </div>

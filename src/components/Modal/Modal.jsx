@@ -293,10 +293,12 @@ export const ModalContent = ({
             onClick={close}
           >
             <IconComponent
-              className={iconClassnames[type] || iconClassnames.muattrans}
+              className={cn(
+                "size-6 md:size-5",
+                iconClassnames[type] || iconClassnames.muattrans,
+                appearance.closeButtonClassname
+              )}
               src="/icons/close20.svg"
-              width={20}
-              height={20}
             />
           </button>
         )}

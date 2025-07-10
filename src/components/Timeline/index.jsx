@@ -177,7 +177,7 @@ export const TimelineContentAddress = ({ title, className, ...props }) => {
   return (
     <div
       className={cn(
-        "w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap pb-4 text-xs font-medium leading-[1.2] text-neutral-900",
+        "w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap pb-4 text-sm font-semibold leading-[1.2] text-neutral-900 md:text-xs md:font-medium",
         className
       )}
       {...props}

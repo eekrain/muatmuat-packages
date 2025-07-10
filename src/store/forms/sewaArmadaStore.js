@@ -169,11 +169,11 @@ export const useSewaArmadaStore = create(
                 "Deskripsi Muatan minimal 3 karakter";
             }
 
-            if (lokasiMuat.some((item) => item === null)) {
+            if (!lokasiMuat.some((item) => Boolean(item))) {
               newErrors.lokasiMuat = "Lokasi Muat wajib diisi";
             }
 
-            if (lokasiBongkar.some((item) => item === null)) {
+            if (!lokasiBongkar.some((item) => Boolean(item))) {
               newErrors.lokasiBongkar = "Lokasi Bongkar wajib diisi";
             }
 
