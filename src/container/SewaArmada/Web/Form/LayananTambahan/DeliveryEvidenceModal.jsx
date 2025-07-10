@@ -7,7 +7,9 @@ import { Select } from "@/components/Form/Select";
 import { InputLocationManagementDropdown } from "@/components/LocationManagement/Web/InputLocationManagementDropdown/InputLocationManagementDropdown";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import TextArea from "@/components/TextArea/TextArea";
+import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useSWRMutateHook } from "@/hooks/use-swr";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 import {
   useSewaArmadaActions,
@@ -19,7 +21,6 @@ const DeliveryEvidenceModal = ({
   setIsOpen,
   modalType,
   additionalServicesOptions,
-  shippingOptions,
 }) => {
   const [deliveryEvidenceFormValues, setDeliveryEvidenceFormValues] = useState({
     shippingOptionId: null,
@@ -45,6 +46,29 @@ const DeliveryEvidenceModal = ({
 
   const dataLokasi = useLocationFormStore((s) => s.formValues.dataLokasi);
   const detailLokasi = useLocationFormStore((s) => s.formValues.detailLokasi);
+
+  // Fetch shipping options when location data is complete
+  const { data: shippingOptionsData, trigger: fetchShippingOptions } =
+    useSWRMutateHook("v1/orders/shipping-options");
+
+  const shippingOptions = shippingOptionsData?.Data.shippingOptions || [];
+  const handleFetchShippingOptions = async ({ lat, long }) =>
+    await fetchShippingOptions({ lat, long });
+
+  useShallowCompareEffect(() => {
+    if (dataLokasi?.coordinates) {
+      handleFetchShippingOptions({
+        lat: dataLokasi.coordinates.latitude,
+        long: dataLokasi.coordinates.longitude,
+      });
+    }
+  }, [dataLokasi?.coordinates]);
+
+  useShallowCompareEffect(() => {
+    if (shippingOptions.length > 0) {
+      setField("tempShippingOptions", shippingOptions);
+    }
+  }, [shippingOptions]);
 
   const selectedShippingOptions = useShallowMemo(() => {
     if (!shippingOptions || shippingOptions?.length === 0) {

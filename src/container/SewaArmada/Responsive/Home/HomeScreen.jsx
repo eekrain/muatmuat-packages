@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 
-import { Shield, Truck } from "lucide-react";
+import { Truck } from "lucide-react";
 
 import {
   BottomSheet,
@@ -526,7 +526,8 @@ const SewaArmadaHomeScreen = () => {
           </FormContainer>
 
           {/* Asuransi Barang Field */}
-          <FormContainer>
+          {/* Belum ada dihide dulu */}
+          {/* <FormContainer>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1">
                 <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
@@ -546,7 +547,7 @@ const SewaArmadaHomeScreen = () => {
                 Gratis perlindungan hingga Rp10.000.000
               </span>
             </div>
-          </FormContainer>
+          </FormContainer> */}
 
           {/* Layanan Tambahan Field */}
           <FormContainer>

@@ -14,7 +14,7 @@ const defaultValues = {
   cargoCategoryId: null,
   isHalalLogistics: false,
   informasiMuatan: [],
-  fotoMuatan: [null, null, null, null],
+  cargoPhotos: [null, null, null, null],
   cargoDescription: "",
   carrierId: null,
   truckTypeId: null,
@@ -30,7 +30,7 @@ const defaultValues = {
   kirimBuktiFisik: false,
   bantuanTambahan: false,
   additionalServices: [],
-
+  tempShippingOptions: [],
   deliveryOrderNumbers: [],
   businessEntity: {
     isBusinessEntity: false,
@@ -62,17 +62,17 @@ export const useSewaArmadaStore = create(
             set((state) => ({
               formErrors: { ...state.formErrors, [field]: error },
             })),
-          setFotoMuatan: (index, value) =>
+          setCargoPhotos: (index, value) =>
             set((state) => {
-              let updated = [...state.formValues.fotoMuatan];
+              let updated = [...state.formValues.cargoPhotos];
               if (value == null) {
                 updated[index] = null;
                 updated = updated
                   .filter((item) => item != null)
                   .concat(
-                    new Array(state.formValues.fotoMuatan.length).fill(null)
+                    new Array(state.formValues.cargoPhotos.length).fill(null)
                   )
-                  .slice(0, state.formValues.fotoMuatan.length);
+                  .slice(0, state.formValues.cargoPhotos.length);
               } else {
                 const emptyIndex = updated.findIndex(
                   (item, i) => item == null && i < index
@@ -84,7 +84,7 @@ export const useSewaArmadaStore = create(
                 }
               }
               return {
-                formValues: { ...state.formValues, fotoMuatan: updated },
+                formValues: { ...state.formValues, cargoPhotos: updated },
               };
             }),
           addLokasi: (field, value) =>
@@ -131,14 +131,16 @@ export const useSewaArmadaStore = create(
               loadTimeStart,
               loadTimeEnd,
               showRangeOption,
-              fotoMuatan,
+              cargoPhotos,
               cargoDescription,
               lokasiMuat,
               lokasiBongkar,
             } = get().formValues;
 
             const newErrors = {};
-            const isValidFotoMuatan = fotoMuatan.some((item) => item !== null);
+            const isValidcargoPhotos = cargoPhotos.some(
+              (item) => item !== null
+            );
             if (!loadTimeStart) {
               newErrors.loadTimeStart = "Tanggal & waktu muat wajib diisi";
             }
@@ -157,8 +159,8 @@ export const useSewaArmadaStore = create(
                 newErrors.loadTimeEnd = `Rentang waktu maksimal ${settingsTime.loadingTime.maxRangeHours} jam`;
               }
             }
-            if (!isValidFotoMuatan) {
-              newErrors.fotoMuatan = "Muatan harus memiliki minimal 1 foto";
+            if (!isValidcargoPhotos) {
+              newErrors.cargoPhotos = "Muatan harus memiliki minimal 1 foto";
             }
             if (!cargoDescription) {
               newErrors.cargoDescription = "Deskripsi Muatan wajib diisi";
@@ -182,16 +184,18 @@ export const useSewaArmadaStore = create(
           validateSecondForm: () => {
             const {
               cargoDescription,
-              fotoMuatan,
+              cargoPhotos,
               businessEntity,
               paymentMethodId,
             } = get().formValues;
             const newErrors = {};
 
             // Validate uploaded images (at least one required)
-            const hasUploadedImage = fotoMuatan.some((image) => image !== null);
+            const hasUploadedImage = cargoPhotos.some(
+              (image) => image !== null
+            );
             if (!hasUploadedImage) {
-              newErrors.fotoMuatan = "Pesanan harus memiliki minimal 1 foto";
+              newErrors.cargoPhotos = "Pesanan harus memiliki minimal 1 foto";
             }
 
             // Validate description
@@ -259,7 +263,7 @@ export const useSewaArmadaActions = () => {
     setOrderType,
     setField,
     setError,
-    setFotoMuatan,
+    setCargoPhotos,
     addLokasi,
     updateLokasi,
     removeLokasi,
@@ -273,7 +277,7 @@ export const useSewaArmadaActions = () => {
     setOrderType,
     setField,
     setError,
-    setFotoMuatan,
+    setCargoPhotos,
     addLokasi,
     updateLokasi,
     removeLokasi,

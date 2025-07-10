@@ -10,11 +10,13 @@ import {
 } from "@/store/forms/sewaArmadaStore";
 
 export const FotoMuatan = () => {
-  const fotoMuatan = useSewaArmadaStore((state) => state.formValues.fotoMuatan);
+  const cargoPhotos = useSewaArmadaStore(
+    (state) => state.formValues.cargoPhotos
+  );
   const formErrors = useSewaArmadaStore((state) => state.formErrors);
-  const { setFotoMuatan } = useSewaArmadaActions();
+  const { setCargoPhotos } = useSewaArmadaActions();
 
-  const handleImageUpload = (index, img) => setFotoMuatan(index, img);
+  const handleImageUpload = (index, img) => setCargoPhotos(index, img);
 
   return (
     <FormContainer>
@@ -30,8 +32,8 @@ export const FotoMuatan = () => {
                 uploadText={key === 0 ? "Foto Utama" : `Foto ${key}`}
                 maxSize={10}
                 className="!size-[124px]"
-                value={fotoMuatan[key]}
-                isNull={formErrors.fotoMuatan}
+                value={cargoPhotos[key]}
+                isNull={formErrors.cargoPhotos}
                 cropperTitle="Upload Foto Muatan"
               />
             </Fragment>
@@ -39,10 +41,10 @@ export const FotoMuatan = () => {
           <p
             className={cn(
               "w-full text-[12px] font-medium leading-[14.4px]",
-              formErrors?.fotoMuatan ? "text-error-400" : "text-neutral-600"
+              formErrors?.cargoPhotos ? "text-error-400" : "text-neutral-600"
             )}
           >
-            {formErrors?.fotoMuatan ??
+            {formErrors?.cargoPhotos ??
               "Maksimal unggah 4 foto muatan dengan format .jpg/.jpeg/.png, besar file maks. 10MB"}
           </p>
         </div>
