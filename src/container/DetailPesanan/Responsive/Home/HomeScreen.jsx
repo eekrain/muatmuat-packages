@@ -5,7 +5,6 @@ import {
   BottomSheetContent,
   BottomSheetHeader,
 } from "@/components/Bottomsheet/Bottomsheet";
-import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
@@ -13,6 +12,7 @@ import { useGetOrderDetail } from "@/services/detailpesanan/getDetailPesananData
 
 import { DriverInfo } from "./components/DriverInfo";
 import { DriverQRCodeAlert } from "./components/DriverQRCodeAlert";
+import { FooterButton } from "./components/FooterButton";
 import { MenuList } from "./components/MenuList";
 import { OrderInfo } from "./components/OrderInfo";
 import { RouteInfo } from "./components/RouteInfo";
@@ -39,7 +39,7 @@ const DetailPesananScreen = () => {
       onClickBackButton={() => alert("onClickBackButton")}
     >
       <div className="mb-16 space-y-2 bg-neutral-200">
-        {false && <DriverQRCodeAlert />}
+        {true && <DriverQRCodeAlert />}
         <OrderInfo />
         <DriverInfo />
         <TabsInfo />
@@ -67,14 +67,7 @@ const DetailPesananScreen = () => {
       </BottomSheet>
 
       <ResponsiveFooter className="flex gap-3">
-        <Button
-          variant="muatparts-primary"
-          className="flex-1"
-          onClick={() => alert("Simpan")}
-          type="button"
-        >
-          Pesan Ulang
-        </Button>
+        <FooterButton />
       </ResponsiveFooter>
     </FormResponsiveLayout>
   );
