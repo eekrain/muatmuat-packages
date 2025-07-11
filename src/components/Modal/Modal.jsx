@@ -281,7 +281,8 @@ export const ModalContent = ({
         ref={dialogRef}
         className={cn(
           "relative rounded-xl bg-neutral-50",
-          type === "lightbox" && "bg-transparent"
+          type === "lightbox" && "bg-transparent",
+          className
         )}
       >
         {withCloseButton && (
