@@ -1,4 +1,5 @@
 import Button from "@/components/Button/Button";
+import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
 export const FooterButton = () => {
@@ -16,6 +17,10 @@ export const FooterButton = () => {
     BeriUlasan: [OrderStatusEnum.COMPLETED],
   };
 
+  const beriUlasanShow = () => {
+    navigation.push("/ulasan");
+  };
+
   return (
     <>
       <Button
@@ -29,7 +34,7 @@ export const FooterButton = () => {
       <Button
         variant="muatparts-primary"
         className="flex-1"
-        onClick={() => alert("Simpan")}
+        onClick={beriUlasanShow}
         type="button"
       >
         Beri Ulasan

@@ -11,6 +11,7 @@ import { dynamicScreen } from "@/lib/utils/dynamic-screen";
 import { useLoadingAction } from "@/store/loadingStore";
 
 import DetailPesananScreen from "./Home/HomeScreen";
+import UlasanScreen from "./Ulasan/UlasanScreen";
 
 // Dynamic import all the other screens, so that the user doesn't have to wait for the other screens to load
 // Screen components needs to be default exported
@@ -44,6 +45,7 @@ const DetailPesananResponsive = ({}) => {
     <ResponsiveProvider>
       <ResponsiveRoute path="/" component={<DetailPesananScreen />} />
       <ResponsiveRoute path="/qr" component={<QRCodeScreen />} />
+      <ResponsiveRoute path="/ulasan" component={<UlasanScreen />} />
       <ResponsiveRoute
         path="/order-summary"
         component={<OrderSummaryScreen />}
