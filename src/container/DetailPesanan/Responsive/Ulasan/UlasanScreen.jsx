@@ -8,29 +8,19 @@ import {
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
-import { useGetOrderDetail } from "@/services/detailpesanan/getDetailPesananData";
 
-import { DriverInfo } from "./components/DriverInfo";
-import { DriverQRCodeAlert } from "./components/DriverQRCodeAlert";
-import { FooterButton } from "./components/FooterButton";
-import { MenuList } from "./components/MenuList";
-import { OrderInfo } from "./components/OrderInfo";
-import { RouteInfo } from "./components/RouteInfo";
-import { TabsInfo } from "./components/TabsInfo";
+import ContentUlasan from "./components/ContentUlasan";
+import HeaderComponentUlasan from "./components/HeaderComponentUlasan";
 
-const DetailPesananScreen = () => {
+const UlasanScreen = () => {
   const navigation = useResponsiveNavigation();
-
   const [isOpenBottomsheet, setIsOpenBottomsheet] = useState(false);
-
   const [isOpenInfo, setIsOpenInfo] = useState(false);
-
-  const { data } = useGetOrderDetail("12345");
 
   return (
     <FormResponsiveLayout
       title={{
-        label: "Detail Pesanan",
+        label: "Ulasan",
       }}
       withMenu={{
         onClickInfo: () => setIsOpenInfo(true),
@@ -39,37 +29,27 @@ const DetailPesananScreen = () => {
       onClickBackButton={() => alert("onClickBackButton")}
     >
       <div className="mb-16 space-y-2 bg-neutral-200">
-        {true && <DriverQRCodeAlert />}
-        <OrderInfo />
-        <DriverInfo />
-        <TabsInfo />
-        <RouteInfo />
+        <HeaderComponentUlasan />
+        {[0, 1, 2, 3, 4].map((_, i) => (
+          <ContentUlasan key={i} />
+        ))}
       </div>
 
       <BottomSheet open={isOpenBottomsheet} onOpenChange={setIsOpenBottomsheet}>
         <BottomSheetContent>
           <BottomSheetHeader>Menu</BottomSheetHeader>
-          <MenuList />
         </BottomSheetContent>
       </BottomSheet>
 
       <BottomSheet open={isOpenInfo} onOpenChange={setIsOpenInfo}>
         <BottomSheetContent>
           <BottomSheetHeader>Informasi</BottomSheetHeader>
-          {/* <pre className="h-[700px] overflow-y-scroll">
-            {JSON.stringify(data, null, 2)}
-          </pre> */}
-          <div className="px-4 py-6 text-sm font-medium">
-            QR Code diperlukan agar driver dapat melanjutkan proses muat atau
-            bongkar barang.
-          </div>
         </BottomSheetContent>
       </BottomSheet>
 
-      <ResponsiveFooter className="flex gap-3">
-        <FooterButton />
-      </ResponsiveFooter>
+      <ResponsiveFooter className="flex gap-3"></ResponsiveFooter>
     </FormResponsiveLayout>
   );
 };
-export default DetailPesananScreen;
+
+export default UlasanScreen;

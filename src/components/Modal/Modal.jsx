@@ -222,6 +222,7 @@ export const ModalContent = ({
     muatmuat: "icon-fill-primary-700",
     muatparts: "icon-fill-muat-parts-non-800",
     muattrans: "icon-fill-muat-trans-secondary-900",
+    lightbox: "icon-fill-primary-700",
   };
   useEffect(() => {
     if (!isOpen) return;
@@ -278,7 +279,11 @@ export const ModalContent = ({
 
       <div
         ref={dialogRef}
-        className={cn("relative rounded-xl bg-neutral-50", className)}
+        className={cn(
+          "relative rounded-xl bg-neutral-50",
+          type === "lightbox" && "bg-transparent",
+          className
+        )}
       >
         {withCloseButton && (
           <button
@@ -289,10 +294,12 @@ export const ModalContent = ({
             onClick={close}
           >
             <IconComponent
-              className={iconClassnames[type] || iconClassnames.muattrans}
+              className={cn(
+                "size-6 md:size-5",
+                iconClassnames[type] || iconClassnames.muattrans,
+                appearance.closeButtonClassname
+              )}
               src="/icons/close20.svg"
-              width={20}
-              height={20}
             />
           </button>
         )}

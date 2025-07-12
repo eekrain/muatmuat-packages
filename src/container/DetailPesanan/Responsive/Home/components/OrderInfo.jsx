@@ -17,15 +17,15 @@ export const OrderInfo = () => {
       <div className="flex w-full flex-col items-start gap-4">
         {/* QR Code Toggle Button */}
         <div className="box-border flex w-full flex-row items-center justify-between border-b border-[#C4C4C4] pb-4">
-          <div className="flex w-full flex-row items-center justify-between">
-            <button
-              onClick={toggleQR}
-              className="flex items-center gap-3 text-xs font-semibold text-[#176CF7]"
-            >
+          <button
+            className="flex w-full flex-row items-center justify-between"
+            onClick={toggleQR}
+          >
+            <div className="flex items-center gap-3 text-xs font-semibold text-[#176CF7]">
               Tampilkan QR Code
-            </button>
+            </div>
             <ChevronRight className="h-4 w-4 text-[#176CF7]" />
-          </div>
+          </button>
         </div>
 
         {/* Order Code */}
@@ -53,7 +53,7 @@ export const OrderInfo = () => {
             variant="primary"
             className="w-full text-sm font-semibold"
           >
-            Proses Muat
+            Proses Bongkar
           </BadgeStatusPesanan>
         </div>
       </div>

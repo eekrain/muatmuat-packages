@@ -38,7 +38,7 @@ export const InitializeAuthentication = () => {
         const newSearch = params.toString();
         const newUrl = newSearch ? `?${newSearch}` : window.location.pathname;
         router.replace(newUrl);
-      }, 300); // 100ms delay should be sufficient for store hydration
+      }, 500); // 100ms delay should be sufficient for store hydration
 
       // Cleanup timeout on unmount or dependency change
       return () => clearTimeout(timeoutId);

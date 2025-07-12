@@ -68,13 +68,13 @@ export const TimelineField = ({
                         : "Masukkan Lokasi Bongkar")
                     }
                     className={cn(
-                      "cursor-pointer pb-0 font-medium",
-                      !item?.name && "mt-1"
+                      "mt-0.5 cursor-pointer pb-0",
+                      !item?.name && "text-neutral-600"
                     )}
                     onClick={() => onEditLocation(index)}
                   />
 
-                  {item !== null && (
+                  {values.length > 1 && (
                     <button
                       className="flex flex-shrink-0 items-center pl-2"
                       onClick={() => onDeleteLocation(index)}
@@ -97,7 +97,7 @@ export const TimelineField = ({
         {values.length < maxLocation && (
           <div className="flex justify-center">
             <button
-              className="flex items-center gap-2 text-xs font-semibold leading-[1.2] text-[#176CF7]"
+              className="flex items-center gap-2 text-sm font-semibold leading-[1.2] text-[#176CF7] md:text-xs"
               onClick={onAddLocation}
             >
               <IconComponent
@@ -107,7 +107,10 @@ export const TimelineField = ({
                 className="-mt-[2px] text-[#176CF7]"
                 size="medium"
               />
-              <span>Tambah Lokasi</span>
+              <span>
+                Tambah Lokasi
+                <span className="capitalize md:hidden">&nbsp;{variant}</span>
+              </span>
             </button>
           </div>
         )}

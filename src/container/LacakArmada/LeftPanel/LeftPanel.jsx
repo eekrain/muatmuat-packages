@@ -11,6 +11,10 @@ import { useClientHeight } from "@/hooks/use-client-height";
 const IS_SHOW_ESTIMATE_ARRIVAL = false;
 
 export const LeftPanel = ({ dataDriverStatus }) => {
+  console.log(
+    "🔍 ~ LeftPanel ~ src/container/LacakArmada/LeftPanel/LeftPanel.jsx:13 ~ dataDriverStatus:",
+    dataDriverStatus
+  );
   const router = useRouter();
   const params = useParams();
   const breadcrumbItems = [

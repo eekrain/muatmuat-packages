@@ -74,6 +74,7 @@ const FormSimpanLokasiScreen = dynamicScreen(
 const SewaArmadaResponsive = ({
   cargoTypes,
   cargoCategories,
+  additionalServicesOptions,
   paymentMethods,
 }) => {
   // const navigation = useResponsiveNavigation();
@@ -93,6 +94,7 @@ const SewaArmadaResponsive = ({
     if (!orderType) {
       setOrderType("INSTANT");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderType]);
 
   return (
@@ -118,7 +120,11 @@ const SewaArmadaResponsive = ({
       />
       <ResponsiveRoute
         path="/LayananTambahan"
-        component={<LayananTambahanScreen />}
+        component={
+          <LayananTambahanScreen
+            additionalServicesOptions={additionalServicesOptions}
+          />
+        }
       />
       <ResponsiveRoute
         path="/OpsiPengiriman"

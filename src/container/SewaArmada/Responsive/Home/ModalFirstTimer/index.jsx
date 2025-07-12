@@ -41,7 +41,7 @@ export const ModalFirstTimer = ({}) => {
       }}
       closeOnOutsideClick
     >
-      <ModalContent>
+      <ModalContent type="muatmuat">
         <div className="w-[296px] rounded-[10px] bg-neutral-50 px-5 pb-[26px] pt-[44px]">
           <h3 className="text-center text-base font-bold text-neutral-900">
             Nikmati Kemudahan Pengiriman dengan Muatrans!

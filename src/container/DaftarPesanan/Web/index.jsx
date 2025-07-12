@@ -15,7 +15,7 @@ const DaftarPesananWeb = ({
   pagination,
   isOrdersLoading,
   settlementAlertInfo,
-  isFirstTimer,
+  hasNoOrders,
   lastFilterField,
   tabs,
   currentPeriodValue,
@@ -25,7 +25,7 @@ const DaftarPesananWeb = ({
   const [tempSearch, setTempSearch] = useState("");
   const [recentPeriodOptions, setRecentPeriodOptions] = useState([]);
 
-  const hasOrders = orders.length > 0;
+  const hasFilteredOrders = orders.length > 0;
 
   // Helper function to format DD-MM-YYYY to YYYY-MM-DD without timezone issues
   const formatToYYYYMMDD = (dateStr) => {
@@ -163,9 +163,10 @@ const DaftarPesananWeb = ({
             </h1>
             <DropdownPeriode
               disable={
-                !hasOrders &&
-                (isFirstTimer ||
-                  (!queryParams.startDate && !queryParams.endDate))
+                hasNoOrders ||
+                (!hasFilteredOrders &&
+                  !queryParams.startDate &&
+                  !queryParams.endDate)
               }
               options={periodOptions}
               onSelect={handleSelectPeriod}
@@ -184,7 +185,7 @@ const DaftarPesananWeb = ({
             queryParams={queryParams}
             onChangeQueryParams={(field, value) => {
               // Example: When changing certain filters, also reset the period dropdown
-              if (field === "someSpecificFilter") {
+              if (field === "search") {
                 resetPeriodDropdown();
               }
               onChangeQueryParams(field, value);
@@ -193,14 +194,14 @@ const DaftarPesananWeb = ({
             setTempSearch={setTempSearch}
             orders={orders}
             isOrdersLoading={isOrdersLoading}
-            hasOrders={hasOrders}
-            isFirstTimer={isFirstTimer}
+            hasNoOrders={hasNoOrders}
+            hasFilteredOrders={hasFilteredOrders}
             lastFilterField={lastFilterField}
             tabs={tabs}
           />
 
           {/* Pagination */}
-          {hasOrders ? (
+          {hasFilteredOrders ? (
             <div className="mt-4 flex items-center justify-between">
               <Pagination
                 currentPage={pagination.currentPage}

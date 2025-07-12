@@ -1,15 +1,8 @@
 import { useState } from "react";
 
-import {
-  ChevronLeft,
-  ChevronUp,
-  CreditCard,
-  FileText,
-  Globe,
-  MapPin,
-  Phone,
-} from "lucide-react";
+import { ChevronLeft, ChevronUp } from "lucide-react";
 
+import IconComponent from "@/components/IconComponent/IconComponent";
 import DefaultResponsiveLayout from "@/layout/ResponsiveLayout/DefaultResponsiveLayout";
 import { useNotificationCounterStore } from "@/store/notificationCounterStore";
 
@@ -19,28 +12,28 @@ const ResponsiveMenuScreen = () => {
 
   const navigationItems = [
     {
-      icon: <FileText className="h-5 w-5" />,
+      icon: "/icons/menu/daftarpesanan.svg",
       label: "Daftar Pesanan",
       badge: order,
       badgeColor: "bg-red-500",
     },
     {
-      icon: <Phone className="h-5 w-5" />,
+      icon: "/icons/menu/pusatbantuan.svg",
       label: "Pusat Bantuan",
     },
   ];
 
   const settingsItems = [
     {
-      icon: <MapPin className="h-6 w-6" />,
+      icon: "/icons/menu/map.svg",
       label: "Manajemen Lokasi",
     },
     {
-      icon: <CreditCard className="h-5 w-5" />,
+      icon: "/icons/menu/rekening.svg",
       label: "Rekening Bank",
     },
     {
-      icon: <Globe className="h-5 w-5" />,
+      icon: "/icons/menu/bahasa.svg",
       label: "Bahasa",
     },
   ];
@@ -66,7 +59,7 @@ const ResponsiveMenuScreen = () => {
                 <span className="text-sm font-semibold text-black">
                   Lihat Profil
                 </span>
-                <ChevronLeft className="h-4 w-4 -rotate-90 text-[#461B02]" />
+                <ChevronLeft className="h-4 w-4 -rotate-90 text-muat-trans-secondary-900" />
               </div>
             </div>
           </div>
@@ -77,7 +70,10 @@ const ResponsiveMenuScreen = () => {
           <div className="space-y-4 p-4">
             {navigationItems.map((item, index) => (
               <div key={index} className="flex items-center gap-3">
-                <div className="text-[#461B02]">{item.icon}</div>
+                <IconComponent
+                  src={item.icon}
+                  className="h-5 w-5 text-muat-trans-secondary-900"
+                />
                 <div className="flex flex-1 items-center justify-between">
                   <span className="text-sm font-semibold text-black">
                     {item.label}
@@ -101,7 +97,7 @@ const ResponsiveMenuScreen = () => {
         <div className="mt-2 bg-white">
           <div className="p-4">
             <div
-              className="mb-4 flex cursor-pointer items-center justify-between"
+              className="flex cursor-pointer items-center justify-between"
               onClick={() => setIsSettingsExpanded(!isSettingsExpanded)}
             >
               <span className="text-sm font-bold text-black">Pengaturan</span>
@@ -112,18 +108,28 @@ const ResponsiveMenuScreen = () => {
               />
             </div>
 
-            {isSettingsExpanded && (
-              <div className="space-y-5">
-                {settingsItems.map((item, index) => (
-                  <div key={index} className="flex items-center gap-3">
-                    <div className="text-[#461B02]">{item.icon}</div>
-                    <span className="flex-1 text-sm font-semibold text-black">
-                      {item.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
+            <div
+              className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                isSettingsExpanded
+                  ? "mt-4 translate-y-0 opacity-100"
+                  : "pointer-events-none -translate-y-2 opacity-0"
+              } space-y-5`}
+              style={{
+                maxHeight: isSettingsExpanded ? "500px" : "0px",
+              }}
+            >
+              {settingsItems.map((item, index) => (
+                <div key={index} className="flex items-center gap-3">
+                  <IconComponent
+                    src={item.icon}
+                    className="h-5 w-5 text-muat-trans-secondary-900"
+                  />
+                  <span className="flex-1 text-sm font-semibold text-black">
+                    {item.label}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

@@ -38,12 +38,16 @@ export const Alert = ({
       )}
     >
       {typeof icon[variant] === "string" && (
-        <IconComponent
-          src={icon[variant]}
-          width={size === "big" ? 24 : 20}
-          height={size === "big" ? 24 : 20}
-          className={iconVariants[variant]}
-        />
+        <div className={cn("size-5", size === "big" && "size-6")}>
+          <IconComponent
+            src={icon[variant]}
+            className={cn(
+              "size-5",
+              size === "big" && "size-6",
+              iconVariants[variant]
+            )}
+          />
+        </div>
       )}
 
       {typeof children === "string" ? (

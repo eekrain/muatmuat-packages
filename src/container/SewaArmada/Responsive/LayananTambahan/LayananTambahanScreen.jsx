@@ -11,7 +11,7 @@ import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { useLayananTambahanStore } from "@/store/forms/layananTambahanStore";
 import { useLocationFormStore } from "@/store/forms/locationFormStore";
 
-const LayananTambahanScreen = () => {
+const LayananTambahanScreen = ({ additionalServicesOptions }) => {
   const navigation = useResponsiveNavigation();
   const shippingData = [
     {
@@ -399,47 +399,31 @@ const LayananTambahanScreen = () => {
           {/* Services List Container */}
           {tambahanFormValues.showOtherAdditionalServices ? (
             <div className="flex flex-col gap-y-4">
-              {/* Bantuan Tambahan Checkbox */}
-              <div className="flex flex-col gap-y-2">
-                <FormLabel>
-                  <Checkbox
-                    label="Bantuan Tambahan"
-                    checked={tambahanFormValues.bantuanTambahan}
-                    onChange={(e) =>
-                      tambahanSetField("bantuanTambahan", e.checked)
-                    }
-                  />
-                  <InfoBottomsheet title="Bantuan Tambahan">
-                    <p className="text-[14px] font-medium leading-[15.4px] text-neutral-900">
-                      Pilih opsi ini jika kamu memerlukan bantuan kenek untuk
-                      proses bongkar-muat barang.
-                    </p>
-                  </InfoBottomsheet>
-                </FormLabel>
-                <span className="ml-6 text-[14px] font-medium leading-[15.4px] text-neutral-600">
-                  Rp100.000
-                </span>
-              </div>
-
-              {/* Troli Checkbox */}
-              <div className="flex flex-col gap-y-2">
-                <FormLabel>
-                  <Checkbox
-                    label="Troli"
-                    checked={tambahanFormValues.troli}
-                    onChange={(e) => tambahanSetField("troli", e.checked)}
-                  />
-                  <InfoBottomsheet title="Troli">
-                    <span className="text-[14px] font-medium leading-[15.4px] text-neutral-900">
-                      Pilih opsi ini jika kamu memerlukan bantuan troli untuk
-                      proses bongkar-muat barang.
-                    </span>
-                  </InfoBottomsheet>
-                </FormLabel>
-                <span className="ml-6 text-[14px] font-medium leading-[15.4px] text-neutral-600">
-                  Rp75.000
-                </span>
-              </div>
+              {additionalServicesOptions
+                .filter((item) => !item.withShipping)
+                .map((service, key) => {
+                  return (
+                    <div className="flex flex-col gap-y-2" key={key}>
+                      <FormLabel>
+                        <Checkbox
+                          label={service.name}
+                          checked={tambahanFormValues.bantuanTambahan}
+                          onChange={(e) =>
+                            tambahanSetField("bantuanTambahan", e.checked)
+                          }
+                        />
+                        <InfoBottomsheet title="Bantuan Tambahan">
+                          <p className="text-[14px] font-medium leading-[15.4px] text-neutral-900">
+                            {service.description}
+                          </p>
+                        </InfoBottomsheet>
+                      </FormLabel>
+                      <span className="ml-6 text-[14px] font-medium leading-[15.4px] text-neutral-600">
+                        {`Rp.${Number(service.price).toLocaleString("id-ID")}`}
+                      </span>
+                    </div>
+                  );
+                })}
             </div>
           ) : null}
         </div>

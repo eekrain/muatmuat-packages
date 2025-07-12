@@ -70,7 +70,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
   // Get state from Zustand store
   const { formValues, formErrors } = useSewaArmadaStore();
   const {
-    fotoMuatan,
+    cargoPhotos,
     // deliveryOrder,
   } = formValues;
 
@@ -94,7 +94,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
   );
 
   // Get actions from Zustand store
-  const { setField, setFotoMuatan, validateSecondForm } =
+  const { setField, setCargoPhotos, validateSecondForm } =
     useSewaArmadaActions();
 
   // Voucher useEffect hooks and calculations
@@ -245,7 +245,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
   };
 
   // Event handlers
-  const handleImageUpload = (index, img) => setFotoMuatan(index, img);
+  const handleImageUpload = (index, img) => setCargoPhotos(index, img);
 
   const handleToggleCheckbox = (checked) => {
     setField("businessEntity", {
@@ -349,16 +349,16 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
                     uploadText={key === 0 ? "Foto Utama" : `Foto ${key + 1}`}
                     maxSize={10}
                     className="!size-[72px]"
-                    value={fotoMuatan[key]}
-                    isNull={formErrors.fotoMuatan}
+                    value={cargoPhotos[key]}
+                    isNull={formErrors.cargoPhotos}
                   />
                 </Fragment>
               ))}
             </div>
 
-            {formErrors.fotoMuatan && (
+            {formErrors.cargoPhotos && (
               <p className="text-[12px] font-medium leading-[14.4px] text-error-400">
-                {formErrors.fotoMuatan}
+                {formErrors.cargoPhotos}
               </p>
             )}
 

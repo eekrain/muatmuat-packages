@@ -309,11 +309,28 @@ export const DropdownJasaPengiriman = ({
       )}
 
       {/* Portal Dropdown */}
-      {isOpen && dropdownStyle && (
-        <Portal>
-          <div>{dropdown}</div>
-        </Portal>
-      )}
+      {isOpen && dropdownStyle ? (
+        shippingOptions.length > 0 ? (
+          <Portal>
+            <div>{dropdown}</div>
+          </Portal>
+        ) : (
+          <Portal>
+            <div>
+              <div
+                ref={setDropdownRef}
+                style={dropdownStyle}
+                className="shadow-muat mt-1 flex h-[66px] items-center justify-center rounded-md border border-neutral-300 bg-white px-2.5"
+              >
+                <p className="text-center text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                  Saat ini, kami belum bisa mengirim ke alamat tersebut.
+                  Silahkan masukkan alamat tujuan lain
+                </p>
+              </div>
+            </div>
+          </Portal>
+        )
+      ) : null}
     </div>
   );
 };

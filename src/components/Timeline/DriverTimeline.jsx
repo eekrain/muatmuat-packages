@@ -12,8 +12,35 @@ import {
   OrderStatusIcon,
   OrderStatusTitle,
 } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { DriverStatusLabel } from "@/lib/constants/detailpesanan/driver-status.enum";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";
+
+const getStatusCodeMeta = (statusCode) => {
+  const splitted = statusCode.split("_");
+  let index = null;
+  // Remote the last element if it's a number
+  if (!isNaN(Number(splitted[splitted.length - 1]))) {
+    index = Number(splitted[splitted.length - 1]);
+    splitted.pop();
+  }
+
+  return {
+    statusCode: splitted.join("_"),
+    index,
+  };
+};
+
+const t = {
+  labelPODMuat: "POD Muat",
+  labelPODBongkar: "POD Bongkar",
+  labelBuktiMuatBarang: "Bukti Muat Barang",
+  labelBuktiBongkarBarang: "Bukti Bongkar Barang",
+  labelPODMuatMulti: "POD Muat di Lokasi {index}",
+  labelPODBongkarMulti: "POD Bongkar di Lokasi {index}",
+  labelBuktiMuatBarangMulti: "Bukti Muat Barang di Lokasi {index}",
+  labelBuktiBongkarBarangMulti: "Bukti Bongkar Barang di Lokasi {index}",
+};
 
 /**
  * @typedef {Object} WithButton
@@ -32,20 +59,45 @@ import { formatDate } from "@/lib/utils/dateFormat";
  * @param {DriverTimelineProps} props
  * @returns {React.ReactNode}
  */
-export const DriverTimeline = ({ dataDriverStatus, onClickProof }) => {
+export const DriverTimeline = ({ dataDriverStatus }) => {
   const [images, setImages] = useState({ packages: [], pods: [] });
   const [currentStatus, setCurrentStatus] = useState(null);
   const [lightboxActiveIndex, setLightboxActiveIndex] = useState(0);
 
   const lightboxTitle = () => {
-    const splitted = currentStatus?.beforeStatusCode?.split("_") || [];
-    if (splitted.length !== 5 || splitted[0] !== "SEDANG")
-      return `Bukti ${currentStatus?.beforeStatusName || currentStatus?.statusName}`;
+    if (!currentStatus) return "";
 
-    if (lightboxActiveIndex > images.packages.length - 1)
-      return `POD ${splitted[1][0] + splitted[1].slice(1).toLowerCase()} di Lokasi ${splitted[4]}`;
-    else {
-      return `Bukti ${splitted[1][0] + splitted[1].slice(1).toLowerCase()} Barang di Lokasi ${splitted[4]}`;
+    if (!currentStatus?.beforeStatusCode?.includes("SEDANG")) {
+      const { statusCode, index } = getStatusCodeMeta(
+        currentStatus?.statusCode
+      );
+      return `Bukti ${DriverStatusLabel[statusCode]}${index > 1 ? index : ""}`;
+    }
+
+    const { statusCode, index } = getStatusCodeMeta(
+      currentStatus?.beforeStatusCode
+    );
+
+    if (lightboxActiveIndex > images.packages.length - 1) {
+      if (statusCode.includes("MUAT")) {
+        return index > 1
+          ? t.labelPODMuatMulti.replace("{index}", index)
+          : t.labelPODMuat;
+      } else {
+        return index > 1
+          ? t.labelPODBongkarMulti.replace("{index}", index)
+          : t.labelPODBongkar;
+      }
+    } else {
+      if (statusCode.includes("MUAT")) {
+        return index > 1
+          ? t.labelBuktiMuatBarangMulti.replace("{index}", index)
+          : t.labelBuktiMuatBarang;
+      } else {
+        return index > 1
+          ? t.labelBuktiBongkarBarangMulti.replace("{index}", index)
+          : t.labelBuktiBongkarBarang;
+      }
     }
   };
 

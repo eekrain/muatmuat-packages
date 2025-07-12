@@ -27,6 +27,7 @@ export const WaktuMuat = () => {
     const newDate = new Date(value);
     newDate.setSeconds(0, 0);
     setField(field, newDate);
+    setField("truckTypeId", null);
   };
 
   // Use current date for minimum date
@@ -86,6 +87,7 @@ export const WaktuMuat = () => {
               handleFirstTime(() => {
                 setField("showRangeOption", checked);
                 setField("loadTimeEnd", null);
+                setField("truckTypeId", null);
               })
             }
           />
