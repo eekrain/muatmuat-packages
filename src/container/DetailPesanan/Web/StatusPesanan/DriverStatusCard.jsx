@@ -8,17 +8,10 @@ import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalTrigger,
-} from "@/components/Modal/Modal";
+import { ModalQRCodeDriver } from "@/components/Modal/ModalQRCodeDriver";
 import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
-import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { useGetDriverQRCodeById } from "@/services/detailpesanan/getDriverQRCodeById";
 
 import ModalDetailStatusDriver from "./ModalDetailStatusDriver";
 
@@ -133,8 +126,6 @@ const SliderIndicator = ({ currentIndex, total, setCurrentIndex }) => (
 );
 
 const LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER = [
-  OrderStatusEnum.WAITING_REPAYMENT_1,
-  OrderStatusEnum.WAITING_REPAYMENT_2,
   OrderStatusEnum.PREPARE_DOCUMENT,
   OrderStatusEnum.DOCUMENT_DELIVERY,
   OrderStatusEnum.COMPLETED,
@@ -142,50 +133,6 @@ const LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER = [
 
 export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
   const pathname = usePathname();
-
-  const { qrData } = useGetDriverQRCodeById({
-    orderId,
-    driverId: driver.driverId,
-  });
-  console.log(
-    "🔍 ~  ~ src/container/DetailPesanan/Web/StatusPesanan/DriverStatusCard.jsx:146 ~ qrData:",
-    qrData
-  );
-
-  const statusScan = () => {
-    const splitStatus = qrData?.driverInfo?.statusScan?.split?.("_") || [];
-    let hasScan = false;
-    let statusTitle = "";
-    let statusText = "";
-    if (splitStatus.length < 3) return { hasScan, statusText, statusTitle };
-
-    statusTitle = `QR Code Lokasi ${splitStatus[2][0].toUpperCase()}${splitStatus[2].slice(1).toLowerCase()}${splitStatus[3] ? ` ${splitStatus[3]}` : ""}`;
-
-    if (splitStatus[0] === "BELUM" && splitStatus[1] === "SCAN") {
-      hasScan = false;
-    } else if (splitStatus[0] === "SUDAH" && splitStatus[1] === "SCAN") {
-      hasScan = true;
-    }
-
-    if (hasScan) {
-      statusText = `Sudah Scan di Lokasi ${splitStatus[2][0].toUpperCase()}${splitStatus[2].slice(1).toLowerCase()}${splitStatus[3] ? ` ${splitStatus[3]}` : ""}`;
-    } else {
-      statusText = `Belum Scan di Lokasi ${splitStatus[2][0].toUpperCase()}${splitStatus[2].slice(1).toLowerCase()}${splitStatus[3] ? ` ${splitStatus[3]}` : ""}`;
-    }
-
-    return {
-      statusTitle: statusTitle,
-      hasScan,
-      statusText: statusText,
-    };
-  };
-
-  const handleCopyQrCode = () => {
-    navigator.clipboard.writeText(
-      `${process.env.NEXT_PUBLIC_ASSET_REVERSE}/orders/${orderId}/drivers/${driver.driverId}/qr-code`
-    );
-    toast.success("Link QR Code berhasil disalin");
-  };
 
   return (
     <>
@@ -195,7 +142,7 @@ export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
           className="flex w-full flex-col gap-y-5 rounded-xl border border-neutral-400 px-4 py-5"
         >
           <div className="flex flex-col gap-y-3">
-            {!orderStatus.startsWith("WAITING") &&
+            {!orderStatus.startsWith("WAITING_PAYMENT") &&
               !LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER.includes(orderStatus) && (
                 <div className="flex items-center gap-x-3">
                   {driver.driverStatusTitle && (
@@ -205,7 +152,9 @@ export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
                           ? "error"
                           : driver.orderStatus === OrderStatusEnum.COMPLETED
                             ? "success"
-                            : "primary"
+                            : driver.orderStatus.startsWith("WAITING_REPAYMENT")
+                              ? "warning"
+                              : "primary"
                       }
                       className="w-fit"
                     >
@@ -214,63 +163,20 @@ export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
                   )}
 
                   {/* Modal QR Code Supir */}
-                  {qrData && (
-                    <Modal closeOnOutsideClick={false}>
-                      <ModalTrigger>
-                        <button className="flex items-center gap-x-1">
-                          <span className="text-[12px] font-medium leading-[14.4px] text-primary-700">
-                            Tampilkan QR Code
-                          </span>
-                          <IconComponent
-                            src="/icons/chevron-right.svg"
-                            className="icon-blue"
-                          />
-                        </button>
-                      </ModalTrigger>
-                      <ModalContent className="w-modal-big">
-                        <ModalHeader size="big" />
-                        <div className="flex w-full flex-col items-center gap-y-6 px-6 py-9">
-                          <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
-                            {/* {statusScan().statusTitle} */}
-                            QR Code Lokasi Muat & Bongkar
-                          </h1>
-                          <div className="flex flex-col items-center gap-y-3">
-                            <BadgeStatusPesanan
-                              className="w-fit"
-                              variant={
-                                statusScan().hasScan ? "success" : "error"
-                              }
-                            >
-                              {statusScan().statusText}
-                            </BadgeStatusPesanan>
-
-                            <AvatarDriver
-                              name={qrData?.driverInfo?.name}
-                              image={qrData?.driverInfo?.driverImage}
-                              licensePlate={qrData?.driverInfo?.licensePlate}
-                            />
-                          </div>
-                          <img
-                            src={qrData?.qrCodeImage}
-                            width={124}
-                            height={124}
-                            alt=""
-                          />
-                          <span className="text-center text-[14px] font-medium leading-[16.8px] text-neutral-900">
-                            *Tunjukkan QR Code ini kepada pihak driver agar
-                            dapat melanjutkan ke proses muat.
-                          </span>
-                          <Button
-                            iconLeft="/icons/salin-qrc16.svg"
-                            onClick={handleCopyQrCode}
-                            variant="muatparts-primary"
-                          >
-                            Bagikan QR Code
-                          </Button>
-                        </div>
-                      </ModalContent>
-                    </Modal>
-                  )}
+                  <ModalQRCodeDriver
+                    orderId={orderId}
+                    driverId={driver.driverId}
+                  >
+                    <button className="flex items-center gap-x-1">
+                      <span className="text-[12px] font-medium leading-[14.4px] text-primary-700">
+                        Tampilkan QR Code
+                      </span>
+                      <IconComponent
+                        src="/icons/chevron-right.svg"
+                        className="icon-blue"
+                      />
+                    </button>
+                  </ModalQRCodeDriver>
                 </div>
               )}
             <div className="flex items-center justify-between">

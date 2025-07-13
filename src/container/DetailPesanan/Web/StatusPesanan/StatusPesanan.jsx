@@ -2,6 +2,7 @@ import { Alert } from "@/components/Badge/Alert";
 import Card, { CardContent } from "@/components/Card/Card";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
+import { cn } from "@/lib/utils";
 
 import { AlertPendingPrepareFleet } from "./AlertPendingPrepareFleet";
 import { DriverStatusCard } from "./DriverStatusCard";
@@ -12,7 +13,7 @@ const StatusPesanan = ({ dataStatusPesanan }) => {
     <>
       {dataStatusPesanan.alerts.map((alert) => (
         <Alert key={alert.label} variant="secondary" size="big">
-          <div className="flex items-center gap-2">
+          <div className={cn("flex items-center gap-1", alert.info && "gap-2")}>
             <span
               className="info-alert-content block"
               style={{ "& b": { fontWeight: 600 } }}
@@ -27,6 +28,10 @@ const StatusPesanan = ({ dataStatusPesanan }) => {
                 appearance={{ iconColor: "text-neutral-700" }}
               />
             )}
+
+            {/* <span className="text-[12px] font-medium leading-[14.4px] text-primary-700">
+              Lihat Perubahan
+            </span> */}
           </div>
         </Alert>
       ))}

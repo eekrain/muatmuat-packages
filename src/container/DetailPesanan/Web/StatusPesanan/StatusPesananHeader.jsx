@@ -22,9 +22,11 @@ import {
   OrderStatusTitle,
 } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
-import { formatDate } from "@/lib/utils/dateFormat";
+import { cn } from "@/lib/utils";
 
 import { DriverStatusCardItem } from "./DriverStatusCard";
+import { ModalDetailAlasanPembatalan } from "./ModalDetailAlasanPembatalan";
+import { ModalLihatStatusLainnya } from "./ModalLihatStatusLainnya";
 
 const warningVariantStatus = [
   OrderStatusEnum.WAITING_PAYMENT_1,
@@ -35,7 +37,8 @@ const warningVariantStatus = [
 
 export const StatusPesananHeader = ({ dataStatusPesanan }) => {
   const orderStatusLabel =
-    dataStatusPesanan.unitFleetStatus > 1
+    dataStatusPesanan.driverStatus.length > 1 &&
+    dataStatusPesanan.orderStatus !== OrderStatusEnum.COMPLETED
       ? `${OrderStatusTitle[dataStatusPesanan.orderStatus]}: ${dataStatusPesanan.unitFleetStatus} Unit`
       : OrderStatusTitle[dataStatusPesanan.orderStatus];
 
@@ -82,84 +85,30 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
         </span>
 
         <div className="flex items-center gap-x-2">
-          <div className="flex items-center gap-5">
+          <div
+            className={cn(
+              "flex items-center gap-x-2",
+              dataStatusPesanan.orderStatus.startsWith("CANCELED") &&
+                dataStatusPesanan.cancellationHistory &&
+                "gap-x-5"
+            )}
+          >
             <BadgeStatusPesanan variant={statusVariant} className="w-fit">
               {orderStatusLabel}
             </BadgeStatusPesanan>
             {dataStatusPesanan.orderStatus.startsWith("CANCELED") &&
-              dataStatusPesanan.cancellationHistory && (
-                <Modal>
-                  <ModalTrigger>
-                    <button className="text-xs font-medium leading-[1.2] text-primary-700">
-                      Lihat Alasan Pembatalan
-                    </button>
-                  </ModalTrigger>
-                  <ModalContent type="muatmuat">
-                    <div className="relative flex w-[472px] flex-col items-start gap-[10px] rounded-xl bg-white px-6 py-8">
-                      {/* Content Container */}
-                      <div className="flex flex-row items-start gap-2">
-                        <div className="flex flex-col items-center gap-6">
-                          {/* Title */}
-                          <h2 className="w-[424px] text-center text-[16px] font-bold leading-[19.2px] text-black">
-                            Alasan Pembatalan
-                          </h2>
-
-                          {/* Details Section */}
-                          <div className="flex flex-col items-start gap-4">
-                            {/* Cancellation Time */}
-                            <div className="flex w-[133px] flex-col items-start gap-3">
-                              <div className="flex w-[105px] flex-row items-center gap-2">
-                                <span className="h-[8px] text-[12px] font-semibold leading-[14.4px] text-black">
-                                  Waktu Pembatalan
-                                </span>
-                              </div>
-                              <span className="w-[133px] text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                                {formatDate(
-                                  dataStatusPesanan.cancellationHistory
-                                    .cancelledAt
-                                )}
-                              </span>
-                            </div>
-
-                            {/* Cancelled By */}
-                            <div className="flex w-[91px] flex-col items-start gap-3">
-                              <div className="flex w-[91px] flex-row items-center gap-2">
-                                <span className="h-[8px] text-[12px] font-semibold leading-[14.4px] text-black">
-                                  Dibatalkan Oleh
-                                </span>
-                              </div>
-                              <span className="w-11 text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                                {
-                                  dataStatusPesanan.cancellationHistory
-                                    .cancelledBy
-                                }
-                              </span>
-                            </div>
-
-                            {/* Cancellation Reason */}
-                            <div className="flex w-[424px] flex-col items-start gap-3">
-                              <div className="flex w-[106px] flex-row items-center gap-2">
-                                <span className="h-[8px] text-[12px] font-semibold leading-[14.4px] text-black">
-                                  Alasan Pembatalan
-                                </span>
-                              </div>
-                              <p className="w-[424px] text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                                {dataStatusPesanan.cancellationHistory.reason
-                                  ?.additionalInfo ||
-                                  dataStatusPesanan.cancellationHistory.reason
-                                    ?.reasonName}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </ModalContent>
-                </Modal>
-              )}
+            dataStatusPesanan.cancellationHistory ? (
+              <ModalDetailAlasanPembatalan
+                cancellationHistory={dataStatusPesanan.cancellationHistory}
+              />
+            ) : dataStatusPesanan.otherStatus.length > 0 ? (
+              <ModalLihatStatusLainnya
+                otherStatus={dataStatusPesanan.otherStatus}
+              />
+            ) : null}
           </div>
           {dataStatusPesanan.orderStatus ===
-          OrderStatusEnum.DOCUMENT_SHIPPING ? (
+          OrderStatusEnum.DOCUMENT_DELIVERY ? (
             <Modal closeOnOutsideClick>
               <ModalTrigger>
                 <button className="flex items-center gap-x-1">
@@ -237,27 +186,29 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
         </div>
       </div>
 
-      <div className="w-[127px]">
-        <SimpleDropdown>
-          <SimpleDropdownTrigger asChild>
-            <button className="flex h-8 flex-row items-center justify-between gap-2 rounded-md border border-neutral-600 bg-white px-3 py-2 shadow-sm transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none">
-              <span className="text-xs font-medium leading-tight text-black">
-                Menu Lainnya
-              </span>
-              <ChevronDown className="h-4 w-4 text-neutral-700" />
-            </button>
-          </SimpleDropdownTrigger>
+      {dataStatusPesanan.driverStatus.length > 1 && (
+        <div className="w-[127px]">
+          <SimpleDropdown>
+            <SimpleDropdownTrigger asChild>
+              <button className="flex h-8 flex-row items-center justify-between gap-2 rounded-md border border-neutral-600 bg-white px-3 py-2 shadow-sm transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none">
+                <span className="text-xs font-medium leading-tight text-black">
+                  Menu Lainnya
+                </span>
+                <ChevronDown className="h-4 w-4 text-neutral-700" />
+              </button>
+            </SimpleDropdownTrigger>
 
-          <SimpleDropdownContent className="w-[198px]">
-            <SimpleDropdownItem onClick={() => setIsModalAllDriverOpen(true)}>
-              Lihat Semua Driver
-            </SimpleDropdownItem>
-            <SimpleDropdownItem onClick={copyAllDriverQRCodeLink}>
-              Bagikan QR Code Semua Driver
-            </SimpleDropdownItem>
-          </SimpleDropdownContent>
-        </SimpleDropdown>
-      </div>
+            <SimpleDropdownContent className="w-[198px]">
+              <SimpleDropdownItem onClick={() => setIsModalAllDriverOpen(true)}>
+                Lihat Semua Driver
+              </SimpleDropdownItem>
+              <SimpleDropdownItem onClick={copyAllDriverQRCodeLink}>
+                Bagikan QR Code Semua Driver
+              </SimpleDropdownItem>
+            </SimpleDropdownContent>
+          </SimpleDropdown>
+        </div>
+      )}
 
       <ModalAllDriver
         open={isModalAllDriverOpen}

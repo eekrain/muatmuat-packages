@@ -5,39 +5,18 @@ import { useEffect } from "react";
 
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
+import { getStatusScanMetadata } from "@/lib/normalizers/detailpesanan/getStatusScanMetadata";
 import { useGetDriverQRCodeById } from "@/services/detailpesanan/getDriverQRCodeById";
 import { useLoadingAction } from "@/store/loadingStore";
 
-const DriverQRCodeWebview = () => {
+const SingleDriverQRCode = () => {
   const params = useParams();
   const { qrData, isLoading } = useGetDriverQRCodeById({
     orderId: params.orderId,
     driverId: params.driverId,
   });
 
-  const statusScan = () => {
-    const splitStatus = qrData?.driverInfo.statusScan?.split?.("_") || [];
-    let hasScan = false;
-    let statusTitle = "";
-    let statusText = "";
-    if (splitStatus.length !== 4) return { hasScan, statusText, statusTitle };
-
-    statusTitle = `QR Code Lokasi ${splitStatus[2][0].toUpperCase()}${splitStatus[2].slice(1).toLowerCase()} ${splitStatus[3]}`;
-
-    if (splitStatus[0] === "BELUM" && splitStatus[1] === "SCAN") {
-      hasScan = false;
-    } else if (splitStatus[0] === "SUDAH" && splitStatus[1] === "SCAN") {
-      hasScan = true;
-    }
-
-    if (hasScan) {
-      statusText = `Sudah Scan Lokasi ${splitStatus[2][0].toUpperCase()}${splitStatus[2].slice(1).toLowerCase()} ${splitStatus[3]}`;
-    } else {
-      statusText = `Belum Scan Lokasi ${splitStatus[2][0].toUpperCase()}${splitStatus[2].slice(1).toLowerCase()} ${splitStatus[3]}`;
-    }
-
-    return { statusTitle, hasScan, statusText };
-  };
+  const statusScan = getStatusScanMetadata(qrData?.driverInfo?.statusScan);
 
   const { setIsGlobalLoading } = useLoadingAction();
   useEffect(() => {
@@ -57,9 +36,9 @@ const DriverQRCodeWebview = () => {
         <div className="flex flex-col items-center gap-y-3">
           <BadgeStatusPesanan
             className="w-fit"
-            variant={statusScan().hasScan ? "success" : "error"}
+            variant={statusScan.hasScan ? "success" : "error"}
           >
-            {statusScan().statusText}
+            {statusScan.statusText}
           </BadgeStatusPesanan>
 
           <AvatarDriver
@@ -86,4 +65,4 @@ const DriverQRCodeWebview = () => {
   );
 };
 
-export default DriverQRCodeWebview;
+export default SingleDriverQRCode;

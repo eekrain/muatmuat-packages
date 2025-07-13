@@ -26,10 +26,11 @@ export const LeftPanel = ({ dataDriverStatus }) => {
     { name: "Lacak Armada" },
   ];
 
-  const containerRef = useRef(null);
-  const containerHeight = useClientHeight({ ref: containerRef });
   const contentRef = useRef(null);
-  const contentHeight = useClientHeight({ ref: contentRef });
+  const contentHeight = useClientHeight({
+    ref: contentRef,
+    deps: [dataDriverStatus?.dataDriver?.statusDriver],
+  });
 
   return (
     <div className="grid grid-cols-1 grid-rows-[16px_24px_1fr] gap-6 bg-white px-6 pb-6 pt-8 shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
@@ -37,21 +38,8 @@ export const LeftPanel = ({ dataDriverStatus }) => {
 
       <PageTitle className="mb-0">Lacak Armada</PageTitle>
 
-      <div
-        ref={containerRef}
-        className="relative"
-        style={{
-          ...(containerHeight && {
-            maxHeight: containerHeight,
-          }),
-        }}
-      >
-        <div
-          className="flex flex-col gap-4 rounded-xl border border-[#C4C4C4] pt-5"
-          style={{
-            ...(!contentHeight && { height: "100%" }),
-          }}
-        >
+      {dataDriverStatus && (
+        <div className="flex flex-col gap-4 rounded-xl border border-[#C4C4C4] pt-5">
           <div className="px-4">
             <div className="flex flex-col gap-3 border-b border-neutral-400 pb-4">
               {/* Status Badge */}
@@ -88,7 +76,7 @@ export const LeftPanel = ({ dataDriverStatus }) => {
             ref={contentRef}
             className="pl-4 pr-[6px]"
             style={{
-              ...(!contentHeight && { height: "100%" }),
+              ...(!contentHeight && { flex: 1 }),
             }}
           >
             {contentHeight && (
@@ -103,7 +91,7 @@ export const LeftPanel = ({ dataDriverStatus }) => {
             )}
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

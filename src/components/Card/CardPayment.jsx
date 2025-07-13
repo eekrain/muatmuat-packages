@@ -96,7 +96,7 @@ const ContainerCollapsible = ({ title, className, children }) => {
       <div
         id="collapsible-content"
         className={cn(
-          "flex flex-col gap-6 overflow-hidden opacity-100 transition-all duration-300 ease-in-out",
+          "flex flex-col gap-5 overflow-hidden opacity-100 transition-all duration-300 ease-in-out",
           isOpen ? "max-h-[1000px] pt-3 opacity-100" : "max-h-0 opacity-0"
         )}
       >
@@ -108,11 +108,11 @@ const ContainerCollapsible = ({ title, className, children }) => {
 
 const ContainerItem = ({ title, className, children }) => {
   return (
-    <div className={cn("flex flex-col gap-3", className)}>
+    <div className={cn("flex flex-col gap-2", className)}>
       <h3 className="text-sm font-semibold leading-[1.2] text-black">
         {title}
       </h3>
-      {children}
+      <div className="flex flex-col gap-2">{children}</div>
     </div>
   );
 };

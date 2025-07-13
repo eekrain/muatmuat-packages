@@ -1,5 +1,5 @@
-import DriverQRCodeWebview from "@/container/DriverQRCodeWebview/DriverQRCodeWebview";
+import SingleDriverQRCode from "@/container/DriverQRCodeWebview/SingleDriverQRCode";
 
 export default function QRCodePage() {
-  return <DriverQRCodeWebview />;
+  return <SingleDriverQRCode />;
 }
