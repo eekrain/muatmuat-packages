@@ -105,7 +105,7 @@ export const DriverStatusCard = ({ driverStatus, orderId, orderStatus }) => {
 
 // Slider indicator component using TailwindCSS
 const SliderIndicator = ({ currentIndex, total, setCurrentIndex }) => (
-  <div className="z-30 flex h-2 w-14 flex-row items-center gap-1">
+  <div className="flex h-2 w-14 flex-row items-center gap-1">
     {Array.from({ length: total }).map((_, idx) => (
       <div
         key={idx}
