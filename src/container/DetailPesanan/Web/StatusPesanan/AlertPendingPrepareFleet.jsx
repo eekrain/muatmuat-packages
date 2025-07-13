@@ -17,7 +17,7 @@ export const AlertPendingPrepareFleet = ({ orderStatus, expiredAt }) => {
   if (!isShowAlert) return null;
 
   return (
-    <div className="flex items-center gap-8 rounded-2xl bg-muat-trans-primary-50 px-8 py-4">
+    <div className="flex flex-col items-center gap-3 bg-muat-trans-primary-50 px-8 py-4 md:flex-row md:gap-8 md:rounded-2xl">
       <div className="relative size-[72px]">
         <IconComponent
           src={"/icons/loader-truck-spinner.svg"}
@@ -34,18 +34,18 @@ export const AlertPendingPrepareFleet = ({ orderStatus, expiredAt }) => {
       </div>
 
       <div className="flex flex-col gap-y-3">
-        <h3 className="text-lg font-semibold leading-[1.2] text-neutral-900">
+        <h3 className="text-center text-sm font-semibold leading-[1.2] text-neutral-900 md:text-start md:text-lg">
           {orderStatus === OrderStatusEnum.WAITING_PAYMENT_1
             ? "Armada yang sesuai dengan pesanan kamu telah ditemukan"
             : "Sedang mempersiapkan armada yang sesuai untuk pesanan kamu"}
         </h3>
-        <p className="text-sm font-medium leading-[1.2] text-neutral-900">
+        <p className="text-xs font-medium leading-[1.2] text-neutral-600 md:text-sm md:text-neutral-900">
           {orderStatus === OrderStatusEnum.WAITING_PAYMENT_1
             ? "Mohon lakukan pembayaran dalam waktu "
             : "Terimakasih atas kesabaran kamu."}
 
           {orderStatus === OrderStatusEnum.WAITING_PAYMENT_1 && (
-            <span className="font-bold"> {countdown}</span>
+            <span className="font-bold text-neutral-900"> {countdown}</span>
           )}
         </p>
       </div>
