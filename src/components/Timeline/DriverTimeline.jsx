@@ -59,7 +59,7 @@ const t = {
  * @param {DriverTimelineProps} props
  * @returns {React.ReactNode}
  */
-export const DriverTimeline = ({ dataDriverStatus }) => {
+export const DriverTimeline = ({ dataDriverStatus, onClickProof }) => {
   const [images, setImages] = useState({ packages: [], pods: [] });
   const [currentStatus, setCurrentStatus] = useState(null);
   const [lightboxActiveIndex, setLightboxActiveIndex] = useState(0);
@@ -184,25 +184,23 @@ const ItemWithLightbox = ({
 
   const { isMobile } = useDevice();
 
-  const getOnClick = () => {
-    if (isMobile) {
-      return onClickProof;
+  const handleClickProof = () => {
+    if (isMobile && onClickProof) {
+      onClickProof();
     } else {
-      return () => {
-        setImages({
-          packages: driverStatusItem.photoEvidences.packages,
-          pods: driverStatusItem.photoEvidences.pods,
-        });
-        setCurrentStatus(driverStatusItem);
-        openLightbox(0);
-      };
+      setImages({
+        packages: driverStatusItem.photoEvidences.packages,
+        pods: driverStatusItem.photoEvidences.pods,
+      });
+      setCurrentStatus(driverStatusItem);
+      openLightbox(0);
     }
   };
 
   const buttonConfig = driverStatusItem.requiresPhoto
     ? {
         label: subtitle(),
-        onClick: getOnClick(),
+        onClick: handleClickProof,
       }
     : null;
 

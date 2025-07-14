@@ -85,13 +85,17 @@ export const RingkasanPembayaranDefault = ({
             ) : null}
 
             <CardPayment.ContainerItem title="Biaya Layanan Tambahan">
-              <CardPayment.Item
-                label="Nominal Kirim Bukti Fisik Penerimaan Barang"
-                value={idrFormat(dataRingkasanPembayaran?.documentShippingFee)}
-              />
-              <ModalDetailPengirimanDokumen
-                dataRingkasanPembayaran={dataRingkasanPembayaran}
-              />
+              <div className="flex flex-col gap-[2px]">
+                <CardPayment.Item
+                  label="Nominal Kirim Bukti Fisik Penerimaan Barang"
+                  value={idrFormat(
+                    dataRingkasanPembayaran?.documentShippingFee
+                  )}
+                />
+                <ModalDetailPengirimanDokumen
+                  dataRingkasanPembayaran={dataRingkasanPembayaran}
+                />
+              </div>
               <CardPayment.Item
                 label="Nominal Bantuan Tambahan"
                 value={idrFormat(
@@ -152,30 +156,34 @@ export const RingkasanPembayaranDefault = ({
             </div>
 
             <CardPayment.ContainerItem title="Biaya Waktu Tunggu">
-              <CardPayment.Item
-                label="Nominal Waktu Tunggu (1 Driver)"
-                value={idrFormat(200000)}
-              />
-              <ModalDetailWaktuTunggu
-                driver={{
-                  name: "Daffa Toldo",
-                  detail: "Lokasi Muat 1 : 1 Jam 59 Menit",
-                  startDate: "22 Nov 2024 15:00 WIB",
-                  endDate: "22 Nov 2024 16:59 WIB",
-                  totalPrice: "Rp100.000",
-                }}
-              />
+              <div className="flex flex-col gap-[2px]">
+                <CardPayment.Item
+                  label="Nominal Waktu Tunggu (1 Driver)"
+                  value={idrFormat(200000)}
+                />
+                <ModalDetailWaktuTunggu
+                  driver={{
+                    name: "Daffa Toldo",
+                    detail: "Lokasi Muat 1 : 1 Jam 59 Menit",
+                    startDate: "22 Nov 2024 15:00 WIB",
+                    endDate: "22 Nov 2024 16:59 WIB",
+                    totalPrice: "Rp100.000",
+                  }}
+                />
+              </div>
             </CardPayment.ContainerItem>
 
             <CardPayment.ContainerItem title="Biaya Overload Muatan">
-              <CardPayment.Item
-                label="Nominal Overload Muatan (2.000 kg)"
-                value={idrFormat(100000)}
-                className="h-auto"
-              />
-              <ModalDetailOverloadMuatan
-                dataRingkasanPembayaran={dataRingkasanPembayaran}
-              />
+              <div className="flex flex-col gap-[2px]">
+                <CardPayment.Item
+                  label="Nominal Overload Muatan (2.000 kg)"
+                  value={idrFormat(100000)}
+                  className="h-auto"
+                />
+                <ModalDetailOverloadMuatan
+                  dataRingkasanPembayaran={dataRingkasanPembayaran}
+                />
+              </div>
             </CardPayment.ContainerItem>
 
             <CardPayment.ContainerItem title="Biaya Lainnya">
@@ -219,9 +227,7 @@ export const RingkasanPembayaranDefault = ({
               Ubah Pesanan
             </Button>
           ) : null}
-          {/* {isShowWaitFleetAlert ? (
 
-          )} */}
           <ModalBatalkanPesanan
             dataRingkasanPembayaran={dataRingkasanPembayaran}
           >

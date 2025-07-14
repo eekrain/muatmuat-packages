@@ -1,25 +1,29 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-export const useClientHeight = ({ ref, onHeightChange, deps = [] }) => {
+export const useClientHeight = ({
+  ref,
+  deps = [],
+  onlyChangeFirstTime = true,
+}) => {
   const [height, setHeight] = useState(0);
   const timerRef = useRef(null);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const getHeight = () => {
-      if (ref.current && height === 0) {
-        const h = ref.current.clientHeight;
-        setHeight(h);
-        onHeightChange?.(h);
+      if (ref.current) {
+        setHeight((prev) =>
+          onlyChangeFirstTime && prev !== 0 ? prev : ref.current.clientHeight
+        );
       }
     };
 
-    timerRef.current = setTimeout(getHeight, 50);
+    timerRef.current = setTimeout(getHeight, 100);
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ref, height, ...deps]);
+  }, [ref, ...deps]);
 
   return height;
 };

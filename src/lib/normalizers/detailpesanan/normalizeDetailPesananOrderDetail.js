@@ -19,10 +19,6 @@ export const normalizeDetailPesananOrderDetail = ({
     const foundOtherAdditionalService = dataAdditionalServices.find(
       (val) => !val.isShipping
     );
-    console.log(
-      "🔍 ~  ~ src/lib/normalizers/detailpesanan/normalizeDetailPesananOrderDetail.js:13 ~ dataLegendStatus:",
-      dataLegendStatus
-    );
 
     const dataStatusPesanan = {
       orderId: dataOrderDetail.general?.orderId,
@@ -55,6 +51,7 @@ export const normalizeDetailPesananOrderDetail = ({
           (legend) => legend.statusCode === dataOrderDetail.general?.orderStatus
         ),
       },
+      otherStatus: dataOrderDetail?.otherStatus || [],
       withDocumentShipping: Boolean(foundDocumentShipping),
       expiredAt: dataPayment?.payment?.expiredAt,
       alerts: dataAlerts || [],

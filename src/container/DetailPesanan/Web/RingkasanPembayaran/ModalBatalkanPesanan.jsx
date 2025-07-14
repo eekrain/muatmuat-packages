@@ -23,19 +23,6 @@ import {
   useRequestOtpStore,
 } from "@/store/forms/requestOtpStore";
 
-const fetcher = async (url) => {
-  const res = await fetcherMuatrans.get(url);
-  const data = res.data?.Data?.reasons;
-  if (!data) return [];
-  return data.map((val) => ({
-    value: val?.reasonId,
-    label: val?.reasonName,
-  }));
-};
-
-// make an array of integer from 1 to 6
-const cancelReasons = new Array(6).fill(0).map((_, index) => index);
-
 export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
   const router = useRouter();
   const pathname = usePathname();
