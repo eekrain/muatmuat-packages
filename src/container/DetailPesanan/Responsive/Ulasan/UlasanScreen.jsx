@@ -31,7 +31,7 @@ const UlasanScreen = () => {
       <div className="mb-16 space-y-2 bg-neutral-200">
         <HeaderComponentUlasan />
         {[0, 1, 2, 3, 4].map((_, i) => (
-          <ContentUlasan key={i} />
+          <ContentUlasan key={i} type={i == 2 ? "list" : "form"} />
         ))}
       </div>
 
