@@ -7,7 +7,10 @@ import { toast } from "@/lib/toast";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
 
-export const RingkasanPembayaranPending = ({ dataRingkasanPembayaran }) => {
+export const RingkasanPembayaranPending = ({
+  dataRingkasanPembayaran,
+  isShowWaitFleetAlert,
+}) => {
   const { countdown } = useCountdown({
     endingDate: dataRingkasanPembayaran?.expiredAt,
     isNeedCountdown: true,

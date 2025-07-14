@@ -29,7 +29,6 @@ const Page = () => {
     showRangeOption,
     lokasiMuat,
     lokasiBongkar,
-    cargoTypeId,
     cargoCategoryId,
     informasiMuatan,
     carrierId,

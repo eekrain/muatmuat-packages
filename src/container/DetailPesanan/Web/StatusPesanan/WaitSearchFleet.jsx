@@ -32,9 +32,17 @@ export const WaitFleetSearchModal = ({
   dataRingkasanPembayaran,
   isOpen,
   setIsOpen,
+  setIsShowWaitFleetAlert,
 }) => {
   return (
-    <Modal closeOnOutsideClick={true} open={isOpen} onOpenChange={setIsOpen}>
+    <Modal
+      closeOnOutsideClick={true}
+      open={isOpen}
+      onOpenChange={(isOpen) => {
+        setIsOpen(isOpen);
+        setIsShowWaitFleetAlert(!isOpen);
+      }}
+    >
       <ModalContent className="w-modal-small">
         <ModalHeader size="small" />
         <div className="flex flex-col items-center gap-y-6 px-6 py-9">
@@ -60,14 +68,6 @@ export const WaitFleetSearchModal = ({
             </ModalBatalkanPesanan>
 
             <WaitFleetSearchButton onClick={() => setIsOpen(false)} />
-            {/* <Button
-              variant="muatparts-primary"
-              className="h-8 w-full"
-              onClick={() => setIsOpen(false)}
-              type="button"
-            >
-              Ya, Menunggu
-            </Button> */}
           </div>
         </div>
       </ModalContent>

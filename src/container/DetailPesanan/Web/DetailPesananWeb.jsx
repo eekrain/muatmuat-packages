@@ -130,6 +130,7 @@ const DetailPesananWeb = () => {
         dataRingkasanPembayaran={dataDetailPesanan?.dataRingkasanPembayaran}
         isOpen={isWaitFleetModalOpen}
         setIsOpen={setIsWaitFleetModalOpen}
+        setIsShowWaitFleetAlert={setIsShowWaitFleetAlert}
       />
 
       {isDev && (

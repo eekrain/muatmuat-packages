@@ -6,6 +6,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import { ModalDetailOverloadMuatan } from "@/components/Modal/ModalDetailOverloadMuatan";
 import { ModalDetailWaktuTunggu } from "@/components/Modal/ModalDetailWaktuTunggu";
+import { WaitFleetSearchButton } from "@/container/DetailPesanan/Web/StatusPesanan/WaitSearchFleet";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
@@ -228,6 +229,7 @@ export const RingkasanPembayaranDefault = ({
             </Button>
           ) : null}
 
+          {isShowWaitFleetAlert ? <WaitFleetSearchButton /> : null}
           <ModalBatalkanPesanan
             dataRingkasanPembayaran={dataRingkasanPembayaran}
           >

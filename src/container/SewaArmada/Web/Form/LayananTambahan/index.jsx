@@ -19,7 +19,6 @@ import {
 const LayananTambahan = ({
   additionalServicesOptions,
   shippingDetails,
-  shippingOptions,
   shippingOption,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -205,7 +204,6 @@ const LayananTambahan = ({
 const LayananTambahanLocation = ({
   additionalServicesOptions,
   shippingDetails,
-  shippingOptions,
   shippingOption,
 }) => {
   return (
@@ -213,7 +211,6 @@ const LayananTambahanLocation = ({
       <LayananTambahan
         additionalServicesOptions={additionalServicesOptions}
         shippingDetails={shippingDetails}
-        shippingOptions={shippingOptions}
         shippingOption={shippingOption}
       />
     </LocationProvider>

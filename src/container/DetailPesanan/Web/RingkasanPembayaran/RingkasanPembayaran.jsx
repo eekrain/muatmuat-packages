@@ -19,13 +19,11 @@ export const RingkasanPembayaran = ({
       {LIST_SHOW_PENDING.includes(dataRingkasanPembayaran?.orderStatus) ? (
         <RingkasanPembayaranPending
           dataRingkasanPembayaran={dataRingkasanPembayaran}
-          isShowWaitFleetAlert={isShowWaitFleetAlert}
         />
       ) : dataRingkasanPembayaran?.orderStatus ===
         OrderStatusEnum.WAITING_REPAYMENT_1 ? (
         <RingkasanPembayaranTambahanBiaya
           dataRingkasanPembayaran={dataRingkasanPembayaran}
-          isShowWaitFleetAlert={isShowWaitFleetAlert}
         />
       ) : (
         <RingkasanPembayaranDefault

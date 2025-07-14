@@ -44,7 +44,6 @@ export default function SewaArmadaWeb({
   trucks,
   additionalServicesOptions,
   shippingDetails,
-  shippingOptions,
   shippingOption,
   calculatedPrice,
   paymentMethods,
@@ -124,7 +123,6 @@ export default function SewaArmadaWeb({
                   <LayananTambahan
                     additionalServicesOptions={additionalServicesOptions}
                     shippingDetails={shippingDetails}
-                    shippingOptions={shippingOptions}
                     shippingOption={shippingOption}
                   />
                   <NoDeliveryOrder />

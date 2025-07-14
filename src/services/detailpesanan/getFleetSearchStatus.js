@@ -13,7 +13,8 @@ const useGetFleetSearchStatus = (orderId, shouldRefetch = false) => {
     useSWRHook(`v1/orders/${orderId}/fleet-search-status`);
 
   const fleetSearchStatus = fleetSearchStatusData?.Data || null;
-  const shouldShowPopup = fleetSearchStatus?.shouldShowPopup || false;
+  const shouldShowPopup =
+    (fleetSearchStatus?.shouldShowPopup || false) && !isShow;
 
   // Function to clear the interval
   const clearRefetchInterval = () => {
@@ -56,6 +57,13 @@ const useGetFleetSearchStatus = (orderId, shouldRefetch = false) => {
       clearRefetchInterval();
     };
   }, [shouldRefetch, shouldShowPopup]);
+
+  // NEW: Effect to clear interval when isShow becomes true
+  useEffect(() => {
+    if (isShow) {
+      clearRefetchInterval();
+    }
+  }, [isShow]);
 
   return {
     isOpen,
