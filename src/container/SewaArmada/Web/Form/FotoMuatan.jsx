@@ -32,7 +32,7 @@ export const FotoMuatan = () => {
                 uploadText={key === 0 ? "Foto Utama" : `Foto ${key}`}
                 maxSize={10}
                 className="!size-[124px]"
-                value={cargoPhotos[key]}
+                value={cargoPhotos?.[key]}
                 isNull={formErrors.cargoPhotos}
                 cropperTitle="Upload Foto Muatan"
               />
