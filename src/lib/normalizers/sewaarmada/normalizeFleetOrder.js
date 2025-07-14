@@ -17,7 +17,7 @@ export const normalizeFleetOrder = (orderType, formValues, calculatedPrice) => {
     truckTypeId,
     truckCount,
     distance,
-    estimatedTime,
+    // estimatedTime,
     additionalServices,
     deliveryOrderNumbers,
     businessEntity,

@@ -4,7 +4,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 import { zustandDevtools } from "@/lib/utils";
 
-const defaultValues = {
+export const defaultValues = {
   loadTimeStart: null,
   loadTimeEnd: null,
   showRangeOption: false,

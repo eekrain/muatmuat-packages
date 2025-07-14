@@ -10,6 +10,7 @@ import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook, useSWRMutateHook } from "@/hooks/use-swr";
 import { fetcherPayment } from "@/lib/axios";
 import { getLoadTimes } from "@/lib/utils/dateTime";
+import { useGetReorderData } from "@/services/sewaarmada/getReorderData";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -45,9 +46,11 @@ const Page = () => {
   const { setField, setFormId, setOrderType, reset } = useSewaArmadaActions();
   const { setWaitingSettlementOrderId } = useWaitingSettlementModalAction();
 
-  const { data: reorderData, isLoading: isLoadingReorderData } = useSWRHook(
-    copyOrderId ? `v1/orders/${copyOrderId}/reorder` : null
-  );
+  // const { data: reorderData, isLoading: isLoadingReorderData } = useSWRHook(
+  //   copyOrderId ? `v1/orders/${copyOrderId}/reorder` : null
+  // );
+  const { data: reorderData, isLoading: isLoadingReorderData } =
+    useGetReorderData(copyOrderId);
   const { data: settlementAlertInfoData } = useSWRHook(
     "v1/orders/settlement/alert-info"
   );
@@ -200,45 +203,14 @@ const Page = () => {
       setWaitingSettlementOrderId(settlementAlertInfo[1].orderId);
     }
   }, [settlementAlertInfo]);
-
+  // console.log("reorder", reorderData);
   useShallowCompareEffect(() => {
     if (!copyOrderId || !isLoadingReorderData) {
       if (reorderData) {
-        const cargoPhotos =
-          reorderData?.Data.otherInformation.cargoPhotos || [];
-        setOrderType("INSTANT");
-        setField("cargoTypeId", reorderData?.Data.otherInformation.cargoTypeId);
-        setField(
-          "cargoCategoryId",
-          reorderData?.Data.otherInformation.cargoCategoryId
-        );
-        setField(
-          "informasiMuatan",
-          reorderData?.Data.cargos.map((item) => ({
-            beratMuatan: {
-              berat: item.weight,
-              unit: item.weightUnit,
-            },
-            dimensiMuatan: {
-              panjang: item.dimensions.length,
-              lebar: item.dimensions.width,
-              tinggi: item.dimensions.heigth,
-              unit: item.dimensions.unit,
-            },
-            namaMuatan: {
-              label: item.cargoName,
-              value: item.cargoNameId,
-            },
-          }))
-        );
-        setField(
-          "cargoPhotos",
-          cargoPhotos.concat(Array(4 - cargoPhotos.length).fill(null))
-        );
-        setField(
-          "cargoDescription",
-          reorderData?.Data.otherInformation.cargoDescription
-        );
+        setOrderType(reorderData.orderType);
+        Object.entries(reorderData.formValues).forEach(([key, value]) => {
+          setField(key, value);
+        });
       } else if (urlFormId !== localFormId) {
         reset();
         setFormId(urlFormId);
