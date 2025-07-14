@@ -2,13 +2,13 @@ import { Alert } from "@/components/Badge/Alert";
 import Card, { CardContent } from "@/components/Card/Card";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
+import { AlertPendingPrepareFleet } from "@/container/DetailPesanan/Web/StatusPesanan/AlertPendingPrepareFleet";
+import AlertWaitFleetSearch from "@/container/DetailPesanan/Web/StatusPesanan/AlertWaitFleetSearch";
+import { DriverStatusCard } from "@/container/DetailPesanan/Web/StatusPesanan/DriverStatusCard";
+import { StatusPesananHeader } from "@/container/DetailPesanan/Web/StatusPesanan/StatusPesananHeader";
 import { cn } from "@/lib/utils";
 
-import { AlertPendingPrepareFleet } from "./AlertPendingPrepareFleet";
-import { DriverStatusCard } from "./DriverStatusCard";
-import { StatusPesananHeader } from "./StatusPesananHeader";
-
-const StatusPesanan = ({ dataStatusPesanan }) => {
+const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
   return (
     <>
       {dataStatusPesanan.alerts.map((alert) => (
@@ -40,6 +40,8 @@ const StatusPesanan = ({ dataStatusPesanan }) => {
         orderStatus={dataStatusPesanan.orderStatus}
         expiredAt={dataStatusPesanan.expiredAt}
       />
+
+      {isShowWaitFleetAlert && <AlertWaitFleetSearch />}
 
       {/* Alert Buat Habis Update lokasi bongkar perlu konfirmasi */}
       {/* {true ? <AlertUpdateConfirmation /> : null} */}

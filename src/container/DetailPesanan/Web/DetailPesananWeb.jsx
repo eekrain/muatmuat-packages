@@ -16,7 +16,7 @@ import { PaymentInstruction } from "./PaymentInstruction/PaymentInstruction";
 import { RingkasanPembayaran } from "./RingkasanPembayaran/RingkasanPembayaran";
 import RingkasanPesanan from "./RingkasanPesanan/RingkasanPesanan";
 import StatusPesanan from "./StatusPesanan/StatusPesanan";
-import { WaitFleetSearchModal } from "./StatusPesanan/WaitSearchFleet";
+import { WaitFleetSearchModal } from "./StatusPesanan/WaitFleetSearch";
 
 const LIST_SHOW_INSTRUCTION = [
   OrderStatusEnum.WAITING_PAYMENT_2,
@@ -84,6 +84,7 @@ const DetailPesananWeb = () => {
             {dataDetailPesanan?.dataStatusPesanan && (
               <StatusPesanan
                 dataStatusPesanan={dataDetailPesanan.dataStatusPesanan}
+                isShowWaitFleetAlert={isShowWaitFleetAlert}
               />
             )}
 
