@@ -149,7 +149,8 @@ export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
           <div className="flex flex-col gap-y-3">
             {!orderStatus.startsWith("WAITING_PAYMENT") &&
               !LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER.includes(orderStatus) &&
-              !LIST_HIDE_DRIVER_STATUS.includes(driver.orderStatus) && (
+              !LIST_HIDE_DRIVER_STATUS.includes(driver.orderStatus) &&
+              !orderStatus.startsWith("WAITING") && (
                 <div className="flex items-center gap-x-3">
                   {driver.driverStatusTitle && (
                     <BadgeStatusPesanan

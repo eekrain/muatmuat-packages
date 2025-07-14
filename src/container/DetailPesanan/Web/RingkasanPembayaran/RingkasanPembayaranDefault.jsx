@@ -119,7 +119,7 @@ export const RingkasanPembayaranDefault = ({
             ) : null}
 
             <CardPayment.ContainerItem title="Biaya Lainnya">
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-1">
                 <CardPayment.Item
                   label="Admin Layanan"
                   value={idrFormat(dataRingkasanPembayaran?.adminFee)}

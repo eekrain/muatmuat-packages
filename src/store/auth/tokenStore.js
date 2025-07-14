@@ -12,6 +12,7 @@ export const useTokenStore = create(
   zustandDevtools(
     persist(
       (set) => ({
+        isHydrated: false,
         ...initialAuthState,
         actions: {
           setToken: (val) =>
@@ -20,6 +21,7 @@ export const useTokenStore = create(
               refreshToken: val.refreshToken,
             }),
           clearToken: () => set({ ...initialAuthState }),
+          setHasHydrated: () => set({ isHydrated: true }),
         },
       }),
       {
@@ -29,6 +31,10 @@ export const useTokenStore = create(
           accessToken: state.accessToken,
           refreshToken: state.refreshToken,
         }),
+        onRehydrateStorage: () => (state, error) => {
+          // This function is called after hydration
+          state?.actions?.setHasHydrated?.();
+        },
       }
     ),
     {

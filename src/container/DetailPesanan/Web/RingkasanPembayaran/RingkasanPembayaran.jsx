@@ -1,11 +1,13 @@
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
 import { RingkasanPembayaranDefault } from "./RingkasanPembayaranDefault";
-import { RingkasanPembayaranPending } from "./RingkasanPembayaranPending";
+import { RingkasanPembayaranPendingPayment } from "./RingkasanPembayaranPendingPayment";
+import { RingkasanPembayaranPerubahanPesanan } from "./RingkasanPembayaranPerubahanPesanan";
 import { RingkasanPembayaranTambahanBiaya } from "./RingkasanPembayaranTambahanBiaya";
 
 const LIST_SHOW_PENDING = [
   OrderStatusEnum.WAITING_PAYMENT_2,
+  OrderStatusEnum.WAITING_PAYMENT_4,
   OrderStatusEnum.WAITING_REPAYMENT_2,
 ];
 
@@ -14,15 +16,20 @@ export const RingkasanPembayaran = ({
   isShowWaitFleetAlert,
 }) => {
   return (
-    <div className="flex w-full flex-col items-center gap-4">
+    <div className="flex w-full flex-col items-center gap-6">
       {/* Card Ringkasan Pembayaran */}
       {LIST_SHOW_PENDING.includes(dataRingkasanPembayaran?.orderStatus) ? (
-        <RingkasanPembayaranPending
+        <RingkasanPembayaranPendingPayment
           dataRingkasanPembayaran={dataRingkasanPembayaran}
         />
       ) : dataRingkasanPembayaran?.orderStatus ===
         OrderStatusEnum.WAITING_REPAYMENT_1 ? (
         <RingkasanPembayaranTambahanBiaya
+          dataRingkasanPembayaran={dataRingkasanPembayaran}
+        />
+      ) : dataRingkasanPembayaran?.orderStatus ===
+        OrderStatusEnum.WAITING_PAYMENT_3 ? (
+        <RingkasanPembayaranPerubahanPesanan
           dataRingkasanPembayaran={dataRingkasanPembayaran}
         />
       ) : (

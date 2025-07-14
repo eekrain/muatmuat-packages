@@ -12,7 +12,6 @@ import { useLoadingAction } from "@/store/loadingStore";
 
 import DetailPesananHeader from "./DetailPesananHeader/DetailPesananHeader";
 import DetailPIC from "./DetailPic/DetailPic";
-import { PaymentInstruction } from "./PaymentInstruction/PaymentInstruction";
 import { RingkasanPembayaran } from "./RingkasanPembayaran/RingkasanPembayaran";
 import RingkasanPesanan from "./RingkasanPesanan/RingkasanPesanan";
 import StatusPesanan from "./StatusPesanan/StatusPesanan";
@@ -104,26 +103,14 @@ const DetailPesananWeb = () => {
             )}
           </div>
 
-          <div className="flex flex-col gap-4">
-            {dataDetailPesanan?.dataRingkasanPembayaran && (
-              <RingkasanPembayaran
-                dataRingkasanPembayaran={
-                  dataDetailPesanan.dataRingkasanPembayaran
-                }
-                isShowWaitFleetAlert={isShowWaitFleetAlert}
-              />
-            )}
-
-            {LIST_SHOW_INSTRUCTION.includes(
-              dataDetailPesanan?.dataStatusPesanan?.orderStatus
-            ) && (
-              <PaymentInstruction
-                dataPaymentInstruction={
-                  dataDetailPesanan.dataPaymentInstruction
-                }
-              />
-            )}
-          </div>
+          {dataDetailPesanan?.dataRingkasanPembayaran && (
+            <RingkasanPembayaran
+              dataRingkasanPembayaran={
+                dataDetailPesanan.dataRingkasanPembayaran
+              }
+              isShowWaitFleetAlert={isShowWaitFleetAlert}
+            />
+          )}
         </div>
       </div>
 

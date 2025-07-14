@@ -7,11 +7,13 @@ import { fetcherMuatparts } from "@/lib/axios";
 import { useTokenActions, useTokenStore } from "@/store/auth/tokenStore";
 import { useUserActions, useUserStore } from "@/store/auth/userStore";
 
-export const InitializeAuthentication = () => {
+export const AuthenticationProvider = ({ children }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const refreshTokenParam = searchParams.get("refreshToken");
-  const accessTokenParam = searchParams.get("accessToken");
+  const refreshTokenSearchParam = searchParams.get("refreshToken");
+  const accessTokenSearchParam = searchParams.get("accessToken");
+
+  const isZustandHydrated = useTokenStore((state) => state.isHydrated);
   const { setToken } = useTokenActions();
   const [hasCheckAuthParams, setHasCheckAuthParams] = useState(false);
 
@@ -19,17 +21,19 @@ export const InitializeAuthentication = () => {
 
   // Setting token from URL params on first render
   useEffect(() => {
+    if (!isZustandHydrated) return;
     if (hasCheckAuthParams) return;
+
     if (
-      Boolean(refreshTokenParam) &&
-      Boolean(accessTokenParam) &&
+      Boolean(refreshTokenSearchParam) &&
+      Boolean(accessTokenSearchParam) &&
       !hasCheckAuthParams
     ) {
       // Add delay to ensure Zustand store is hydrated from localStorage
       const timeoutId = setTimeout(() => {
         setToken({
-          refreshToken: refreshTokenParam,
-          accessToken: accessTokenParam,
+          refreshToken: refreshTokenSearchParam,
+          accessToken: accessTokenSearchParam,
         });
         // Remove tokens from URL
         const params = new URLSearchParams(searchParams.toString());
@@ -38,7 +42,7 @@ export const InitializeAuthentication = () => {
         const newSearch = params.toString();
         const newUrl = newSearch ? `?${newSearch}` : window.location.pathname;
         router.replace(newUrl);
-      }, 500); // 100ms delay should be sufficient for store hydration
+      }, 100); // 100ms delay should be sufficient for store hydration
 
       // Cleanup timeout on unmount or dependency change
       return () => clearTimeout(timeoutId);
@@ -46,7 +50,13 @@ export const InitializeAuthentication = () => {
     setHasCheckAuthParams(true);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refreshTokenParam, accessTokenParam, hasCheckAuthParams, searchParams]);
+  }, [
+    refreshTokenSearchParam,
+    accessTokenSearchParam,
+    hasCheckAuthParams,
+    searchParams,
+    isZustandHydrated,
+  ]);
 
   // Fetching user data and matrix on first render
   useEffect(() => {
@@ -70,7 +80,7 @@ export const InitializeAuthentication = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasCheckAuthParams]);
 
-  return null;
+  return hasCheckAuthParams ? children : <></>;
 };
 
 export const useAuth = () => {
