@@ -1,14 +1,19 @@
 import { useState } from "react";
 
+import Button from "@/components/Button/Button";
 import CardPayment from "@/components/Card/CardPayment";
-import { ModalDetailOverloadMuatan } from "@/components/Modal/ModalDetailOverloadMuatan";
-import { ModalDetailWaktuTunggu } from "@/components/Modal/ModalDetailWaktuTunggu";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTrigger,
+} from "@/components/Modal/Modal";
 import { ModalOpsiPembayaran } from "@/components/Modal/ModalOpsiPembayaran";
 import { useSWRHook } from "@/hooks/use-swr";
 import { fetcherPayment } from "@/lib/axios";
 import { idrFormat } from "@/lib/utils/formatters";
 
-export const RingkasanPembayaranTambahanBiaya = ({
+export const RingkasanPembayaranPerubahanPesanan = ({
   dataRingkasanPembayaran,
 }) => {
   // Fetch payment methods using SWR
@@ -20,35 +25,23 @@ export const RingkasanPembayaranTambahanBiaya = ({
   const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState(null);
 
   return (
-    <div className="flex w-full flex-col gap-4">
+    <div className="flex h-[453px] w-full flex-col gap-4">
       <CardPayment.Root className="w-full">
         <CardPayment.Header>Detail Tambahan Biaya</CardPayment.Header>
 
         <CardPayment.Content noScroll>
-          <CardPayment.ContainerItem title="Biaya Waktu Tunggu">
+          <CardPayment.ContainerItem title="Biaya Perubahan Rute">
             <CardPayment.Item
-              label="Nominal Waktu Tunggu (1 Driver)"
-              value={idrFormat(200000)}
-            />
-            <ModalDetailWaktuTunggu
-              driver={{
-                name: "Daffa Toldo",
-                detail: "Lokasi Muat 1 : 1 Jam 59 Menit",
-                startDate: "22 Nov 2024 15:00 WIB",
-                endDate: "22 Nov 2024 16:59 WIB",
-                totalPrice: "Rp100.000",
-              }}
+              label="Selisih Jarak Perubahan Lokasi Bongkar"
+              value={idrFormat(150000)}
             />
           </CardPayment.ContainerItem>
 
-          <CardPayment.ContainerItem title="Biaya Overload Muatan">
+          <CardPayment.ContainerItem title="Biaya Administrasi">
             <CardPayment.Item
-              label="Nominal Overload Muatan (2.000 kg)"
-              value={idrFormat(100000)}
+              label="Admin Ubah Pesanan"
+              value={idrFormat(50000)}
               className="h-auto"
-            />
-            <ModalDetailOverloadMuatan
-              dataRingkasanPembayaran={dataRingkasanPembayaran}
             />
           </CardPayment.ContainerItem>
 
@@ -77,6 +70,46 @@ export const RingkasanPembayaranTambahanBiaya = ({
           />
         </CardPayment.FooterTotal>
       </CardPayment.Root>
+
+      <ModalBatalkanPerubahanPesanan />
     </div>
+  );
+};
+
+const ModalBatalkanPerubahanPesanan = () => {
+  return (
+    <Modal>
+      <ModalTrigger>
+        <Button
+          variant="muattrans-error-secondary"
+          className="h-8 w-full"
+          type="button"
+        >
+          Batalkan Perubahan
+        </Button>
+      </ModalTrigger>
+
+      <ModalContent className="w-modal-small">
+        <ModalHeader size="small" />
+
+        <div className="flex flex-col items-center gap-6 px-6 py-9 text-neutral-900">
+          <h2 className="text-center text-base font-bold">
+            Batalkan Perubahan
+          </h2>
+
+          <p className="text-center text-sm leading-[1.1]">
+            Apakah kamu yakin ingin membatalkan perubahan?
+            <br />
+            <br />
+            Jika kamu melakukan pembatalan, kamu tidak dapat melakukan perubahan
+            pesanan lagi
+          </p>
+
+          <Button variant="muatparts-primary-secondary" className="w-[178px]]">
+            Batalkan Perubahan
+          </Button>
+        </div>
+      </ModalContent>
+    </Modal>
   );
 };

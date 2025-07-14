@@ -6,32 +6,61 @@ import { AlertPendingPrepareFleet } from "@/container/DetailPesanan/Web/StatusPe
 import AlertWaitFleetSearch from "@/container/DetailPesanan/Web/StatusPesanan/AlertWaitFleetSearch";
 import { DriverStatusCard } from "@/container/DetailPesanan/Web/StatusPesanan/DriverStatusCard";
 import { StatusPesananHeader } from "@/container/DetailPesanan/Web/StatusPesanan/StatusPesananHeader";
+import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { cn } from "@/lib/utils";
 
-const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
+import { AlertPendingPayment1 } from "./AlertPendingPayment1";
+import { AlertPendingUpdateConfirmation } from "./AlertPendingUpdateConfirmation";
+import { AlertPendingUpdatePayment } from "./AlertPendingUpdatePayment";
+
+const StatusPesanan = ({ dataStatusPesanan }) => {
   return (
     <>
-      {dataStatusPesanan.alerts.map((alert) => (
-        <Alert key={alert.label} variant="secondary" size="big">
-          <div className={cn("flex items-center gap-1", alert.info && "gap-2")}>
+      {dataStatusPesanan.orderStatus ===
+        OrderStatusEnum.PENDING_PREPARE_FLEET && (
+        <AlertPendingPrepareFleet
+          orderStatus={dataStatusPesanan.orderStatus}
+          expiredAt={dataStatusPesanan.expiredAt}
+        />
+      )}
+
+      {dataStatusPesanan.orderStatus === OrderStatusEnum.WAITING_PAYMENT_1 && (
+        <AlertPendingPayment1 expiredAt={dataStatusPesanan.expiredAt} />
+      )}
+
+      {dataStatusPesanan.orderStatus === OrderStatusEnum.WAITING_PAYMENT_3 && (
+        <AlertPendingUpdatePayment expiredAt={dataStatusPesanan.expiredAt} />
+      )}
+
+      {/* Alert Buat Habis Update lokasi bongkar perlu konfirmasi */}
+      {dataStatusPesanan.orderStatus ===
+        OrderStatusEnum.WAITING_CONFIRMATION_CHANGES && (
+        <AlertPendingUpdateConfirmation />
+      )}
+
+      {dataStatusPesanan.alerts.map((item) => (
+        <Alert key={item.label} variant="secondary" size="big">
+          <div className={cn("flex items-center gap-1", item.info && "gap-2")}>
             <span
               className="info-alert-content block"
               style={{ "& b": { fontWeight: 600 } }}
-              dangerouslySetInnerHTML={{ __html: alert.label }}
+              dangerouslySetInnerHTML={{ __html: item.label }}
             />
-
-            {alert?.info && (
+            {item.type === "CONFIRMED_CHANGES" ? (
+              <button
+                onClick={() => alert("Handle lihat perubahan")}
+                className="text-[12px] font-medium leading-[14.4px] text-primary-700"
+              >
+                Lihat Perubahan
+              </button>
+            ) : item?.info ? (
               <InfoTooltip
                 side="right"
-                render={alert.info}
+                render={item.info}
                 className="w-[336px]"
                 appearance={{ iconColor: "text-neutral-700" }}
               />
-            )}
-
-            {/* <span className="text-[12px] font-medium leading-[14.4px] text-primary-700">
-              Lihat Perubahan
-            </span> */}
+            ) : null}
           </div>
         </Alert>
       ))}

@@ -1,6 +1,6 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
 
-const AlertUpdateConfirmation = () => {
+export const AlertPendingUpdateConfirmation = () => {
   return (
     <div className="flex items-center gap-8 rounded-2xl bg-muat-trans-primary-50 px-8 py-4">
       <div className="relative size-[72px]">
@@ -29,5 +29,3 @@ const AlertUpdateConfirmation = () => {
     </div>
   );
 };
-
-export default AlertUpdateConfirmation;

@@ -181,7 +181,8 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
     if (
       ALLOW_LIST.Unduh === "ALL" &&
       dataStatusPesanan?.hasFoundFleet &&
-      !dataStatusPesanan?.orderStatus.includes("WAITING_PAYMENT")
+      dataStatusPesanan?.orderStatus !== OrderStatusEnum.WAITING_PAYMENT_1 &&
+      dataStatusPesanan?.orderStatus !== OrderStatusEnum.WAITING_PAYMENT_2
     ) {
       config.Unduh = true;
     }
@@ -191,7 +192,8 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
 
     if (
       ALLOW_LIST.PesanUlang === "ALL" &&
-      !dataStatusPesanan?.orderStatus.includes("WAITING_PAYMENT") &&
+      dataStatusPesanan?.orderStatus !== OrderStatusEnum.WAITING_PAYMENT_1 &&
+      dataStatusPesanan?.orderStatus !== OrderStatusEnum.WAITING_PAYMENT_2 &&
       !dataStatusPesanan?.orderStatus.includes("WAITING_REPAYMENT")
     ) {
       config.PesanUlang = true;
@@ -235,6 +237,13 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
           </Modal>
         </div>
         <div className="flex items-center gap-x-3">
+          <Button
+            variant="muatparts-primary-secondary"
+            className="h-8"
+            type="button"
+          >
+            Detail Pembayaran
+          </Button>
           {showButtonConfig?.DetailRefund && (
             <Link
               href={`/daftarpesanan/detailpesanan/${params.orderId}/detail-refund`}
@@ -248,7 +257,6 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
               </Button>
             </Link>
           )}
-
           {showButtonConfig?.DetailPembayaran && (
             <Button
               variant="muatparts-primary-secondary"
@@ -280,7 +288,6 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
               </SimpleDropdownContent>
             </SimpleDropdown>
           )}
-
           {showButtonConfig?.PesanUlang && (
             <Button
               variant={
@@ -303,7 +310,6 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
               Pesan Ulang
             </Button>
           )}
-
           {showButtonConfig?.DokumenDiterima && (
             <Button
               variant="muatparts-primary"
@@ -314,8 +320,7 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
               Dokumen Diterima
             </Button>
           )}
-
-          {true && (
+          {showButtonConfig?.BeriUlasan && (
             <Button
               variant="muatparts-primary"
               className="h-8"

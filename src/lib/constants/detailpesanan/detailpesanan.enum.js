@@ -25,7 +25,12 @@ export const OrderStatusEnum = {
   CANCELED_BY_SYSTEM: "CANCELED_BY_SYSTEM",
   CANCELED_BY_SHIPPER: "CANCELED_BY_SHIPPER",
   CANCELED_BY_TRANSPORTER: "CANCELED_BY_TRANSPORTER",
+
   FLEET_CHANGE: "FLEET_CHANGE",
+  WAITING_CONFIRMATION_CHANGES: "WAITING_CONFIRMATION_CHANGES",
+  WAITING_PAYMENT_3: "WAITING_PAYMENT_3",
+  WAITING_PAYMENT_4: "WAITING_PAYMENT_4",
+  CONFIRMED_CHANGES: "CONFIRMED_CHANGES",
 };
 
 export const OrderStatusTitle = {
@@ -44,7 +49,12 @@ export const OrderStatusTitle = {
   CANCELED_BY_SYSTEM: "Dibatalkan",
   CANCELED_BY_SHIPPER: "Dibatalkan",
   CANCELED_BY_TRANSPORTER: "Dibatalkan",
+
   FLEET_CHANGE: "Pergantian Armada",
+  WAITING_CONFIRMATION_CHANGES: "Menunggu Konfirmasi",
+  WAITING_PAYMENT_3: "Menunggu Pembayaran",
+  WAITING_PAYMENT_4: "Menunggu Pembayaran",
+  CONFIRMED_CHANGES: "Pesanan Terkonfirmasi",
 };
 
 export const OrderStatusIcon = {

@@ -28,13 +28,6 @@ import { DriverStatusCardItem } from "./DriverStatusCard";
 import { ModalDetailAlasanPembatalan } from "./ModalDetailAlasanPembatalan";
 import { ModalLihatStatusLainnya } from "./ModalLihatStatusLainnya";
 
-const warningVariantStatus = [
-  OrderStatusEnum.WAITING_PAYMENT_1,
-  OrderStatusEnum.WAITING_PAYMENT_2,
-  OrderStatusEnum.WAITING_REPAYMENT_1,
-  OrderStatusEnum.WAITING_REPAYMENT_2,
-];
-
 export const StatusPesananHeader = ({ dataStatusPesanan }) => {
   const orderStatusLabel =
     dataStatusPesanan.driverStatus.length > 1 &&
@@ -49,9 +42,7 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
     "/img/muatan4.png",
   ];
 
-  const statusVariant = warningVariantStatus.includes(
-    dataStatusPesanan.orderStatus
-  )
+  const statusVariant = dataStatusPesanan.orderStatus.startsWith("WAITING")
     ? "warning"
     : dataStatusPesanan.orderStatus.startsWith("CANCELED")
       ? "error"

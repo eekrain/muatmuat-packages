@@ -5,7 +5,7 @@ import { Suspense, useEffect, useRef } from "react";
 import LoadingInteractive from "@/components/Loading/LoadingInteractive";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
 import Toaster from "@/components/Toaster/Toaster";
-import { InitializeAuthentication } from "@/hooks/use-auth";
+import { AuthenticationProvider } from "@/hooks/use-auth";
 import { TranslationProvider } from "@/hooks/use-translation";
 import { useLoadingAction } from "@/store/loadingStore";
 import { useNotificationCounterActions } from "@/store/notificationCounterStore";
@@ -35,9 +35,11 @@ const MainLayout = ({ children }) => {
   return (
     <>
       <Suspense fallback={<LoadingStatic />}>
-        <InitializeAuthentication />
         <LoadingInteractive />
-        <TranslationProvider>{children}</TranslationProvider>
+
+        <AuthenticationProvider>
+          <TranslationProvider>{children}</TranslationProvider>
+        </AuthenticationProvider>
       </Suspense>
       <Toaster />
     </>
