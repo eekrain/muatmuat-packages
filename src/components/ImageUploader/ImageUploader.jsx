@@ -13,7 +13,6 @@ const ImageUploader = (props) => {
   const handleFinishCrop = async (value) => {
     const formData = new FormData();
     formData.append("file", value);
-    props.getImage(value);
 
     return await uploadPhoto(formData)
       .then((data) => {

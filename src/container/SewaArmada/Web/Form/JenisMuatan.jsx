@@ -12,6 +12,7 @@ export const JenisMuatan = ({ cargoCategories }) => {
   const cargoCategoryId = useSewaArmadaStore(
     (state) => state.formValues.cargoCategoryId
   );
+  const formErrors = useSewaArmadaStore((state) => state.formErrors);
   const { setField } = useSewaArmadaActions();
 
   // Generate tooltip content from cargo categories descriptions
@@ -46,20 +47,27 @@ export const JenisMuatan = ({ cargoCategories }) => {
       >
         Jenis Muatan
       </FormLabel>
-      <div className="flex flex-1 flex-wrap gap-3">
-        {cargoCategories.map((category) => (
-          <div className="w-[250px]" key={category.id}>
-            <RadioButton
-              name="cargoCategoryId"
-              label={category.name}
-              checked={cargoCategoryId === category.id}
-              onClick={({ value }) =>
-                handleFirstTime(() => setField("cargoCategoryId", value))
-              }
-              value={category.id}
-            />
-          </div>
-        ))}
+      <div className="flex flex-1 flex-col gap-y-3">
+        <div className="flex flex-wrap gap-3">
+          {cargoCategories.map((category) => (
+            <div className="w-[250px]" key={category.id}>
+              <RadioButton
+                name="cargoCategoryId"
+                label={category.name}
+                checked={cargoCategoryId === category.id}
+                onClick={({ value }) =>
+                  handleFirstTime(() => setField("cargoCategoryId", value))
+                }
+                value={category.id}
+              />
+            </div>
+          ))}
+        </div>
+        {formErrors.cargoCategoryId && (
+          <span className="text-[12px] font-medium leading-[14.4px] text-error-400">
+            Jenis Muatan wajib diisi
+          </span>
+        )}
       </div>
     </FormContainer>
   );

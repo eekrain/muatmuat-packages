@@ -114,20 +114,6 @@ const Page = () => {
       .find((item) => item.id === shippingDetails.shippingOptionId);
   }, [shippingDetails, tempShippingOptions]);
 
-  // Set default value if cargoTypes is loaded and tipeMuatan is not set
-  useShallowCompareEffect(() => {
-    if (cargoTypes.length > 0 && !cargoTypeId) {
-      setField("cargoTypeId", cargoTypes[0].id);
-    }
-  }, [cargoTypes, cargoTypeId, isMobile]);
-
-  // Set default value if cargoCategories is loaded and jenisMuatan is not set
-  useShallowCompareEffect(() => {
-    if (cargoCategories.length > 0 && !cargoCategoryId) {
-      setField("cargoCategoryId", cargoCategories[0].id);
-    }
-  }, [cargoCategories, cargoCategoryId, isMobile]);
-
   useShallowCompareEffect(() => {
     if (trucks) {
       setField("tempTrucks", trucks);
@@ -261,16 +247,19 @@ const Page = () => {
     }
   }, [urlFormId, localFormId, copyOrderId, reorderData, isLoadingReorderData]);
 
-  const handleFetchTrucks = async () => {
+  const handleFetchTrucks = async ({
+    informasiMuatan: newInformasiMuatan,
+  } = {}) => {
     // Jika tipe truck dan carrier sudah dipilih, fetch data truk
     if (carrierId) {
+      const latestInformasiMuatan = newInformasiMuatan || informasiMuatan;
       // Calculate total weight and convert to tons
       const calculateTotalWeight = () => {
         let totalWeight = 0;
 
-        if (informasiMuatan && informasiMuatan.length > 0) {
+        if (latestInformasiMuatan && latestInformasiMuatan.length > 0) {
           // Sum all weights with unit conversion
-          totalWeight = informasiMuatan.reduce((sum, item) => {
+          totalWeight = latestInformasiMuatan.reduce((sum, item) => {
             const weight = item.beratMuatan?.berat || 0;
             const unit = item.beratMuatan?.unit || "kg";
 
@@ -298,8 +287,8 @@ const Page = () => {
         let maxWidth = 0;
         let maxHeight = 0;
 
-        if (informasiMuatan && informasiMuatan.length > 0) {
-          informasiMuatan.forEach((item) => {
+        if (latestInformasiMuatan && latestInformasiMuatan.length > 0) {
+          latestInformasiMuatan.forEach((item) => {
             const length = item.dimensiMuatan?.panjang || 0;
             const width = item.dimensiMuatan?.lebar || 0;
             const height = item.dimensiMuatan?.tinggi || 0;

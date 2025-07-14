@@ -171,7 +171,7 @@ export default function ImageUploaderWeb({
       // You can also log the base64 string length as an approximate size indicator
       console.log(`Base64 data length: ${base64.length} characters`);
 
-      getImage(base64);
+      // getImage(base64);
       onUpload(base64);
       imageRef.current.value = null;
     };

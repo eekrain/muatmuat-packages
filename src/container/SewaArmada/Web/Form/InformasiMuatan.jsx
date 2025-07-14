@@ -21,6 +21,9 @@ export const InformasiMuatan = ({ onFetchTrucks }) => {
   const informasiMuatan = useSewaArmadaStore(
     (state) => state.formValues.informasiMuatan
   );
+  const truckTypeId = useSewaArmadaStore(
+    (state) => state.formValues.truckTypeId
+  );
   const { setField } = useSewaArmadaActions();
   const { setIsOpen, setIsDimensionOrWeightChanged, setType } =
     useSelectArmadaModalAction();
@@ -60,9 +63,14 @@ export const InformasiMuatan = ({ onFetchTrucks }) => {
         onOpenChange={setIsInformasiMuatanModalOpen}
         maxInformasiMuatan={10}
         onSaveInformasiMuatan={async (data) => {
-          if (JSON.stringify(informasiMuatan) !== JSON.stringify(data)) {
+          if (
+            truckTypeId &&
+            JSON.stringify(informasiMuatan) !== JSON.stringify(data)
+          ) {
             if (compareArraysByNameOnly(informasiMuatan, data)) {
-              await onFetchTrucks();
+              await onFetchTrucks({
+                informasiMuatan: data,
+              });
               setType("truckTypeId");
               setIsDimensionOrWeightChanged(true);
               setIsOpen(true);

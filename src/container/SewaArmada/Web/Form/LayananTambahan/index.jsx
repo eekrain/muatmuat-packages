@@ -196,7 +196,7 @@ const LayananTambahan = ({
         setIsOpen={setIsOpen}
         modalType={modalType}
         additionalServicesOptions={additionalServicesOptions}
-        shippingOptions={shippingOptions}
+        shippingDetails={shippingDetails}
       />
     </>
   );

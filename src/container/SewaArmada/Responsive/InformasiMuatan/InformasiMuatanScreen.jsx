@@ -63,6 +63,7 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories }) => {
       console.log("Form has errors", formErrors);
       return;
     }
+
     Object.entries(formValues).forEach(([key, value]) => {
       setSewaArmadaField(key, value);
     });
@@ -232,27 +233,36 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories }) => {
                 {/* Nama Muatan Field */}
                 <FormContainer>
                   <FormLabel required>Nama Muatan</FormLabel>
-                  <button
-                    className={
-                      "flex h-8 items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-3"
-                    }
-                    onClick={() =>
-                      navigation.push("/CariNamaMuatan", { index })
-                    }
-                  >
-                    <div className="flex items-center gap-x-2">
-                      <IconComponent src="/icons/muatan16.svg" />
-                      <span
-                        className={cn(
-                          "text-[14px] font-semibold leading-[15.4px]",
-                          !muatan.namaMuatan.label && "text-neutral-600"
-                        )}
-                      >
-                        {muatan.namaMuatan.label || "Pilih Nama Muatan"}
+                  <div className="flex w-full flex-col">
+                    <button
+                      className={cn(
+                        "flex h-8 items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-3",
+                        formErrors[`informasiMuatan.${index}.namaMuatan`] &&
+                          "border-error-400"
+                      )}
+                      onClick={() =>
+                        navigation.push("/CariNamaMuatan", { index })
+                      }
+                    >
+                      <div className="flex items-center gap-x-2">
+                        <IconComponent src="/icons/muatan16.svg" />
+                        <span
+                          className={cn(
+                            "text-[14px] font-semibold leading-[15.4px]",
+                            !muatan.namaMuatan.label && "text-neutral-600"
+                          )}
+                        >
+                          {muatan.namaMuatan.label || "Pilih Nama Muatan"}
+                        </span>
+                      </div>
+                      <IconComponent src="/icons/chevron-right.svg" />
+                    </button>
+                    {formErrors[`informasiMuatan.${index}.namaMuatan`] && (
+                      <span className="mt-3 text-[12px] font-medium leading-[13.2px] text-error-400">
+                        Muatan wajib dipilih
                       </span>
-                    </div>
-                    <IconComponent src="/icons/chevron-right.svg" />
-                  </button>
+                    )}
+                  </div>
                 </FormContainer>
 
                 {/* Berat Muatan Field */}

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 
+import { toast } from "@/lib/toast";
 import { zustandDevtools } from "@/lib/utils";
 
 const defaultInformasiMuatan = {
@@ -126,8 +127,12 @@ export const useInformasiMuatanStore = create(
           newErrors.cargoCategoryId = "Jenis muatan harus diisi";
         }
 
+        if (!cargoCategoryId && !cargoTypeId) {
+          toast.error("Terdapat field yang kosong");
+        }
+
         informasiMuatan.forEach((muatan, index) => {
-          if (!muatan.namaMuatan) {
+          if (!muatan.namaMuatan.value) {
             newErrors[`informasiMuatan.${index}.namaMuatan`] =
               "Nama muatan harus diisi";
           }

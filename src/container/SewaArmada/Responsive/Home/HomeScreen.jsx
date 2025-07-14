@@ -45,6 +45,10 @@ const SewaArmadaHomeScreen = () => {
   const handleEditInformasiMuatan = () => {
     setInformasiMuatanField("cargoTypeId", formValues.cargoTypeId);
     setInformasiMuatanField("cargoCategoryId", formValues.cargoCategoryId);
+    setInformasiMuatanField("isHalalLogistics", formValues.isHalalLogistics);
+    if (formValues.informasiMuatan.length > 0) {
+      setInformasiMuatanField("informasiMuatan", formValues.informasiMuatan);
+    }
     navigation.push("/InformasiMuatan");
   };
 

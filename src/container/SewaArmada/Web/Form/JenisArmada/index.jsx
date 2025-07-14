@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import minBy from "lodash/minBy";
 
@@ -36,6 +36,28 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
   const { setField } = useSewaArmadaActions();
   const { setIsOpen: setSelectArmadaModalOpen, setType } =
     useSelectArmadaModalAction();
+
+  // Check if locations have more than one non-null item
+  const hasMultipleLocations =
+    (lokasiMuat &&
+      lokasiMuat.filter((location) => location !== null).length > 1) ||
+    (lokasiBongkar &&
+      lokasiBongkar.filter((location) => location !== null).length > 1);
+
+  // Reset truckCount to 1 when locations change and have multiple non-null items
+  useEffect(() => {
+    const nonNullLokasiMuat =
+      lokasiMuat?.filter((location) => location !== null) || [];
+    const nonNullLokasiBongkar =
+      lokasiBongkar?.filter((location) => location !== null) || [];
+
+    if (
+      (nonNullLokasiMuat.length > 1 || nonNullLokasiBongkar.length > 1) &&
+      truckCount !== 1
+    ) {
+      setField("truckCount", 1);
+    }
+  }, [lokasiMuat, lokasiBongkar, truckCount, setField]);
 
   const selectedCarrier = useShallowMemo(
     () =>
@@ -201,7 +223,7 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
           <FormLabel required>Jumlah Armada</FormLabel>
           <div className="">
             <ButtonPlusMinus
-              disabled={!truckTypeId}
+              disabled={!truckTypeId || hasMultipleLocations}
               onChange={(value) => setField("truckCount", value)}
               minValue={minTruckCount}
               maxValue={10}

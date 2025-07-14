@@ -131,6 +131,8 @@ export const useSewaArmadaStore = create(
               loadTimeStart,
               loadTimeEnd,
               showRangeOption,
+              cargoTypeId,
+              cargoCategoryId,
               cargoPhotos,
               cargoDescription,
               lokasiMuat,
@@ -158,6 +160,12 @@ export const useSewaArmadaStore = create(
               } else if (diffMs > eightHoursMs) {
                 newErrors.loadTimeEnd = `Rentang waktu maksimal ${settingsTime.loadingTime.maxRangeHours} jam`;
               }
+            }
+            if (!cargoTypeId) {
+              newErrors.cargoTypeId = "Tipe muatan harus diisi";
+            }
+            if (!cargoCategoryId) {
+              newErrors.cargoCategoryId = "Jenis muatan harus diisi";
             }
             if (!isValidcargoPhotos) {
               newErrors.cargoPhotos = "Muatan harus memiliki minimal 1 foto";

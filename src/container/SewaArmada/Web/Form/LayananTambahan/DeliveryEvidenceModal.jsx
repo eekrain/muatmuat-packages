@@ -21,6 +21,7 @@ const DeliveryEvidenceModal = ({
   setIsOpen,
   modalType,
   additionalServicesOptions,
+  shippingDetails,
 }) => {
   const [deliveryEvidenceFormValues, setDeliveryEvidenceFormValues] = useState({
     shippingOptionId: null,
@@ -54,6 +55,15 @@ const DeliveryEvidenceModal = ({
   const shippingOptions = shippingOptionsData?.Data.shippingOptions || [];
   const handleFetchShippingOptions = async ({ lat, long }) =>
     await fetchShippingOptions({ lat, long });
+
+  useShallowCompareEffect(() => {
+    if (shippingDetails) {
+      setDeliveryEvidenceFormValues({
+        shippingOptionId: shippingDetails.shippingOptionId,
+        withInsurance: shippingDetails.withInsurance,
+      });
+    }
+  }, [shippingDetails]);
 
   useShallowCompareEffect(() => {
     if (dataLokasi?.coordinates) {
