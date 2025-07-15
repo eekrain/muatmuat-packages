@@ -13,7 +13,7 @@ import { AlertPendingPayment1 } from "./AlertPendingPayment1";
 import { AlertPendingUpdateConfirmation } from "./AlertPendingUpdateConfirmation";
 import { AlertPendingUpdatePayment } from "./AlertPendingUpdatePayment";
 
-const StatusPesanan = ({ dataStatusPesanan }) => {
+const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
   return (
     <>
       {dataStatusPesanan.orderStatus ===
