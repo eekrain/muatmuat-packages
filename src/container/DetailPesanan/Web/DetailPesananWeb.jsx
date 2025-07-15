@@ -17,11 +17,6 @@ import RingkasanPesanan from "./RingkasanPesanan/RingkasanPesanan";
 import StatusPesanan from "./StatusPesanan/StatusPesanan";
 import { WaitFleetSearchModal } from "./StatusPesanan/WaitFleetSearch";
 
-const LIST_SHOW_INSTRUCTION = [
-  OrderStatusEnum.WAITING_PAYMENT_2,
-  OrderStatusEnum.WAITING_REPAYMENT_2,
-];
-
 const DetailPesananWeb = () => {
   const params = useParams();
 

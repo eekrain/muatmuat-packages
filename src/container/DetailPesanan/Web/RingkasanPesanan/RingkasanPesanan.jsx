@@ -69,7 +69,6 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
                     image={dataRingkasanPesanan?.vehicle?.image}
                     alt="Jenis Carrier"
                     className="size-[68px]"
-                    withZoom={true}
                   />
                 </LightboxProvider>
 
@@ -265,7 +264,6 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
                         image={image}
                         alt={`Foto muatan ${index + 1}`}
                         className="size-[124px]"
-                        withZoom={true}
                       />
                     ))}
                   </LightboxProvider>

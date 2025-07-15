@@ -17,6 +17,7 @@ import {
   ModalHeader,
   ModalTrigger,
 } from "@/components/Modal/Modal";
+import PageTitle from "@/components/PageTitle/PageTitle";
 import Slider from "@/components/Slider/Slider";
 import DriverRatingModal from "@/container/DetailPesanan/Web/DetailPesananHeader/DriverRatingModal";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
@@ -213,29 +214,23 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
   return (
     <>
       <div className="my-6 flex items-center justify-between">
-        <div className="flex items-center">
-          <IconComponent src="/icons/arrow-left24.svg" size="medium" />
-          <div className="ml-3 text-[20px] font-bold leading-[24px] text-neutral-900">
-            Detail Pesanan
-          </div>
+        <PageTitle>
+          <div className="inline-flex items-center gap-1">
+            <span>Detail Pesanan</span>
 
-          <Modal closeOnOutsideClick={false}>
-            <ModalTrigger>
-              <div className="ml-1">
+            <Modal closeOnOutsideClick={false}>
+              <ModalTrigger>
                 <IconComponent src="/icons/info16.svg" width={16} height={16} />
-              </div>
-            </ModalTrigger>
-            <ModalContent className="w-modal-small">
-              <ModalHeader size="small" />
-              <div className="w-full px-6 py-9">
-                <Slider
-                  slides={slides}
-                  onComplete={() => console.log("Slider completed!")}
-                />
-              </div>
-            </ModalContent>
-          </Modal>
-        </div>
+              </ModalTrigger>
+              <ModalContent className="w-modal-small">
+                <ModalHeader size="small" />
+                <div className="w-full px-6 py-9">
+                  <Slider slides={slides} />
+                </div>
+              </ModalContent>
+            </Modal>
+          </div>
+        </PageTitle>
         <div className="flex items-center gap-x-3">
           <Button
             variant="muatparts-primary-secondary"

@@ -1205,7 +1205,6 @@ const ExampleLightbox = () => {
             image={images[0]}
             alt="Jenis Carrier"
             className="size-[100px] overflow-hidden rounded-md object-cover"
-            withZoom={true}
           />
         </LightboxProvider>
       </div>

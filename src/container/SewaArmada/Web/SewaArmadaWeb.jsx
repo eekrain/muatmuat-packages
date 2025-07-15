@@ -51,13 +51,7 @@ export default function SewaArmadaWeb({
 }) {
   const orderType = useSewaArmadaStore((state) => state.orderType);
 
-  const { setIsGlobalLoading } = useLoadingAction();
-  useEffect(() => {
-    setIsGlobalLoading(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const { data: dataBanner } = useSWRHook("v1/orders/banner-ads");
+  const { data: dataBanner, isLoading } = useSWRHook("v1/orders/banner-ads");
   const banners = useMemo(() => {
     const data = dataBanner?.Data?.banners;
     if (!data) return [];
@@ -68,6 +62,14 @@ export default function SewaArmadaWeb({
       linkUrl: item.link,
     }));
   }, [dataBanner]);
+
+  const { setIsGlobalLoading } = useLoadingAction();
+  useEffect(() => {
+    if (!isLoading) {
+      setIsGlobalLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading]);
 
   const { validateForm } = useSewaArmadaActions();
   const testSubmit = () => {

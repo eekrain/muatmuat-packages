@@ -33,7 +33,9 @@ export const useTokenStore = create(
         }),
         onRehydrateStorage: () => (state, error) => {
           // This function is called after hydration
-          state?.actions?.setHasHydrated?.();
+          setTimeout(() => {
+            state?.actions?.setHasHydrated?.();
+          }, 1000);
         },
       }
     ),

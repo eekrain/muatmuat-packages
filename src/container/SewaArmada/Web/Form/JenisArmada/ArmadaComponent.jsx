@@ -81,7 +81,6 @@ export const CarrierItem = ({ image, name, onClick }) => {
             image={image}
             alt="Jenis Carrier"
             className="size-[68px] overflow-hidden rounded-md object-cover"
-            withZoom={true}
           />
         </LightboxProvider>
       </button>
@@ -149,7 +148,6 @@ export const TruckItem = ({
               image={image}
               alt="Jenis Carrier"
               className="size-[68px] overflow-hidden rounded-md object-cover"
-              withZoom={true}
             />
           </LightboxProvider>
         </button>

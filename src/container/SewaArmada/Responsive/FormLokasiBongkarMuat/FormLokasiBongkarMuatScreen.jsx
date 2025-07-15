@@ -3,6 +3,7 @@ import { MapPin, User } from "lucide-react";
 import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import Input from "@/components/Form/Input";
+import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
 import {
   useResponsiveNavigation,
@@ -54,6 +55,12 @@ const FormLokasiBongkarMuatScreen = () => {
     // Reset form values in useLocationFormStore
     reset();
   };
+
+  useShallowCompareEffect(() => {
+    if (params?.config?.defaultValues) {
+      reset(params.config.defaultValues);
+    }
+  }, [params?.config?.defaultValues]);
 
   return (
     <FormResponsiveLayout

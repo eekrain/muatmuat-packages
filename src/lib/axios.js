@@ -44,7 +44,6 @@ export const createAxios = (baseURL) => {
           window.location.replace(
             `${process.env.NEXT_PUBLIC_INTERNAL_WEB}sistem`
           );
-          return new Promise(() => {}); // Prevent further promise resolution
         }
         // Handle other HTTP error codes (4xx, 5xx other than 503)
         if (error.response.status === 401 || error.response.status === 403) {
@@ -71,9 +70,7 @@ export const createAxios = (baseURL) => {
           if (window?.location && !isPublicRoutes) {
             window.location.replace("/sewaarmada");
           }
-          return new Promise(() => {}); // Prevent further error propagation.
         }
-        return Promise.reject(error);
       } else {
         // Something happened in setting up the request that triggered an Error
         console.error("Request setup error:", error.message);

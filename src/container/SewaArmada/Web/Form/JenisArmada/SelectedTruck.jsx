@@ -45,7 +45,6 @@ export const SelectedTruck = ({
           image={image}
           alt="Jenis Truk"
           className="size-[96px] overflow-hidden rounded-md object-cover"
-          withZoom={true}
         />
       </LightboxProvider>
       <div className="flex flex-col gap-y-3">

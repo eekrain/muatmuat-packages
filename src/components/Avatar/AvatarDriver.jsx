@@ -20,7 +20,10 @@ export const AvatarDriver = ({
       <img
         src={image}
         alt={name}
-        className={cn("h-10 w-10 rounded-full", appearance.photoClassName)}
+        className={cn(
+          "h-10 w-10 rounded-full object-cover",
+          appearance.photoClassName
+        )}
       />
 
       <div

@@ -47,9 +47,12 @@ const useGetFleetSearchStatus = (orderId, shouldRefetch = false) => {
       refetchFleetSearchStatus();
 
       // Set up the interval for auto-refresh
-      intervalRef.current = setInterval(() => {
-        refetchFleetSearchStatus();
-      }, 1000 * 180); // 3 minutes interval
+      intervalRef.current = setInterval(
+        () => {
+          refetchFleetSearchStatus();
+        },
+        3 * 60 * 1000
+      ); // 3 minutes interval
     }
 
     // Clean up function
