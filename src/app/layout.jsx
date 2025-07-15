@@ -1,7 +1,5 @@
 import localFont from "next/font/local";
 
-import MainLayout from "@/layout/MainLayout/MainLayout";
-
 import "./globals.scss";
 
 export const metadata = {
@@ -37,9 +35,7 @@ const Avenir = localFont({
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${Avenir.className} bg-background`}>
-        <MainLayout>{children}</MainLayout>
-      </body>
+      <body className={`${Avenir.className} bg-background`}>{children}</body>
     </html>
   );
 }
