@@ -69,7 +69,7 @@ export const createAxios = (baseURL) => {
             return false;
           });
           if (window?.location && !isPublicRoutes) {
-            window.location.replace("/login");
+            window.location.replace("/");
           }
         }
       } else {
