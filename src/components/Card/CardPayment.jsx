@@ -8,7 +8,7 @@ const Root = ({ className, children }) => {
   return (
     <div
       className={cn(
-        "flex flex-col overflow-hidden rounded-xl bg-white shadow-md",
+        "flex flex-col overflow-hidden bg-white md:rounded-xl md:shadow-md",
         className
       )}
     >
@@ -19,8 +19,8 @@ const Root = ({ className, children }) => {
 
 const Header = ({ className, children }) => {
   return (
-    <div className={cn("flex min-h-[59px] items-center px-5", className)}>
-      <span className="w-full text-base font-bold leading-[1.2] text-neutral-900">
+    <div className={cn("flex items-center md:min-h-[59px] md:px-5", className)}>
+      <span className="w-full text-sm font-semibold leading-[1.2] text-neutral-900 md:text-base md:font-bold">
         {children}
       </span>
     </div>
@@ -42,8 +42,8 @@ const Content = ({ noScroll = false, className, children }) => {
       <div
         ref={containerRef}
         className={cn(
-          "flex w-full max-w-sm flex-col gap-6 overflow-x-hidden bg-white pb-4 pl-5",
-          noScroll ? "pr-5" : "overflow-y-scroll",
+          "flex w-full max-w-sm flex-col gap-5 overflow-x-hidden bg-white pb-4 md:gap-6 md:pl-5",
+          noScroll ? "md:pr-5" : "overflow-y-scroll",
           className
         )}
       >
@@ -52,13 +52,13 @@ const Content = ({ noScroll = false, className, children }) => {
     );
 
   return (
-    <div className="pr-[8px]" style={{ maxHeight }}>
+    <div className={`md:pr-[8px] md:max-h-[${maxHeight}px]`}>
       <div
         className={cn(
-          "flex w-full max-w-sm flex-col gap-6 overflow-x-hidden overflow-y-scroll bg-white pb-4 pl-5 pr-[8px]",
+          "flex w-full max-w-sm flex-col gap-6 overflow-x-hidden bg-white md:overflow-y-scroll md:pb-4 md:pl-5 md:pr-[8px]",
+          `md:max-h-[${maxHeight}px]`,
           className
         )}
-        style={{ maxHeight }}
       >
         {children}
       </div>

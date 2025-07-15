@@ -1,8 +1,7 @@
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
-import { DriverStatus } from "./components/DriverStatus";
-import { OrderLegends } from "./components/OrderLegends";
+import { OrderStatusSummary } from "./components/OrderStatusSummary";
 
 const OrderSummaryScreen = () => {
   const navigation = useResponsiveNavigation();
@@ -14,9 +13,8 @@ const OrderSummaryScreen = () => {
       }}
       onClickBackButton={() => navigation.pop()}
     >
-      <div className="mb-16 space-y-2 bg-neutral-200">
-        <OrderLegends />
-        <DriverStatus />
+      <div className="mb-16 bg-neutral-200">
+        <OrderStatusSummary />
       </div>
     </FormResponsiveLayout>
   );

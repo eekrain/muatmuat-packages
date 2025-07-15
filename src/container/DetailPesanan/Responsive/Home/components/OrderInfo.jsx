@@ -16,17 +16,32 @@ export const OrderInfo = () => {
     <div className="flex w-full flex-col items-start bg-white p-5">
       <div className="flex w-full flex-col items-start gap-4">
         {/* QR Code Toggle Button */}
-        <div className="box-border flex w-full flex-row items-center justify-between border-b border-[#C4C4C4] pb-4">
-          <button
-            className="flex w-full flex-row items-center justify-between"
-            onClick={toggleQR}
-          >
-            <div className="flex items-center gap-3 text-xs font-semibold text-[#176CF7]">
-              Tampilkan QR Code
-            </div>
-            <ChevronRight className="h-4 w-4 text-[#176CF7]" />
-          </button>
-        </div>
+        {false && (
+          <div className="box-border flex w-full flex-row items-center justify-between border-b border-[#C4C4C4] pb-4">
+            <button
+              className="flex w-full flex-row items-center justify-between"
+              onClick={toggleQR}
+            >
+              <div className="flex items-center gap-3 text-xs font-semibold text-[#176CF7]">
+                Tampilkan QR Code
+              </div>
+              <ChevronRight className="h-4 w-4 text-[#176CF7]" />
+            </button>
+          </div>
+        )}
+        {false && (
+          <div className="box-border flex w-full flex-row items-center justify-between border-b border-[#C4C4C4] pb-4">
+            <button
+              className="flex w-full flex-row items-center justify-between"
+              onClick={toggleQR}
+            >
+              <div className="flex items-center gap-3 text-xs font-semibold text-[#176CF7]">
+                Lihat Resi Pengiriman Dokumen
+              </div>
+              <ChevronRight className="h-4 w-4 text-[#176CF7]" />
+            </button>
+          </div>
+        )}
 
         {/* Order Code */}
         <div className="box-border flex w-full flex-row items-start justify-between border-b border-[#C4C4C4] pb-4">
@@ -50,10 +65,10 @@ export const OrderInfo = () => {
           </div> */}
 
           <BadgeStatusPesanan
-            variant="primary"
+            variant="success"
             className="w-full text-sm font-semibold"
           >
-            Proses Bongkar
+            Selesai
           </BadgeStatusPesanan>
         </div>
       </div>

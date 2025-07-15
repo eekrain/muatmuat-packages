@@ -23,22 +23,58 @@ export const FooterButton = () => {
 
   return (
     <>
-      <Button
-        variant="muatparts-primary-secondary"
-        className="flex-1"
-        onClick={() => alert("Simpan")}
-        type="button"
-      >
-        Pesan Ulang
-      </Button>
-      <Button
-        variant="muatparts-primary"
-        className="flex-1"
-        onClick={beriUlasanShow}
-        type="button"
-      >
-        Beri Ulasan
-      </Button>
+      <div className="flex gap-2">
+        {true && (
+          <Button
+            variant="muatparts-primary-secondary"
+            className="w-full p-0"
+            onClick={() => alert("Simpan")}
+            type="button"
+          >
+            Pesan Ulang
+          </Button>
+        )}
+        {true && (
+          <Button
+            variant="muatparts-primary"
+            className="w-full p-0"
+            onClick={beriUlasanShow}
+            type="button"
+          >
+            Beri Ulasan
+          </Button>
+        )}
+        {false && (
+          <Button
+            variant="muatparts-primary"
+            className="w-full p-0"
+            onClick={() => alert("Simpan")}
+            type="button"
+          >
+            Lanjut Pembayaran
+          </Button>
+        )}
+        {false && (
+          <Button
+            variant="muatparts-primary"
+            className="w-full p-0"
+            onClick={() => alert("Simpan")}
+            type="button"
+          >
+            Dokumen Diterima
+          </Button>
+        )}
+        {false && (
+          <Button
+            variant="muatparts-error-secondary"
+            className="w-full p-0"
+            onClick={() => alert("Simpan")}
+            type="button"
+          >
+            Batalkan Pesanan
+          </Button>
+        )}
+      </div>
     </>
   );
 };

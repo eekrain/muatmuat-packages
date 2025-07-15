@@ -9,7 +9,9 @@ import {
   TabsTriggerWithSeparator,
 } from "@/components/Tabs/Tabs";
 
-export const TabsInfo = () => {
+import { DetailPICMobile } from "./DetailPICMobile";
+
+export const TabsInfo = ({ dataDetailPIC }) => {
   return (
     <Tabs className="w-full bg-white" defaultValue={"ringkasan"}>
       <TabsList className="w-full">
@@ -54,20 +56,16 @@ export const TabsInfo = () => {
         </div>
       </TabsContent>
 
-      <TabsContent value="informasi-lainnya" className="p-4">
-        <div className="py-8 text-center">
+      <TabsContent value="informasi-lainnya" className="">
+        <div className="text-center">
           <p className="text-neutral-500">
-            Informasi muatan akan ditampilkan di sini
+            <img src="/img/mock-info-lain.png" alt="" />
           </p>
         </div>
       </TabsContent>
 
-      <TabsContent value="detail-pic" className="p-4">
-        <div className="py-8 text-center">
-          <p className="text-neutral-500">
-            Detail PIC akan ditampilkan di sini
-          </p>
-        </div>
+      <TabsContent value="detail-pic" className="">
+        <DetailPICMobile dataDetailPIC={dataDetailPIC} />
       </TabsContent>
     </Tabs>
   );

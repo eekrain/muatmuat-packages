@@ -30,11 +30,11 @@ export const DriverStatus = ({ status = "Proses Muat" }) => {
       status: "UNLOADING",
       icon: "/icons/stepper/stepper-box-opened.svg",
     },
-    {
-      label: "Dokumen Disiapkan",
-      status: "PREPARE_DOCUMENT",
-      icon: "/icons/stepper/stepper-document-preparing.svg",
-    },
+    // {
+    //   label: "Dokumen Disiapkan",
+    //   status: "PREPARE_DOCUMENT",
+    //   icon: "/icons/stepper/stepper-document-preparing.svg",
+    // },
     {
       label: "Pengiriman Dokumen",
       status: "DOCUMENT_DELIVERY",
@@ -57,13 +57,31 @@ export const DriverStatus = ({ status = "Proses Muat" }) => {
         />
 
         {/* Status Badge */}
-        <BadgeStatusPesanan
-          variant="primary"
-          className="w-full text-sm font-semibold"
-        >
-          Proses Muat
-        </BadgeStatusPesanan>
-        <StepperContainer activeIndex={0} totalStep={list.length}>
+        {false && (
+          <BadgeStatusPesanan
+            variant="primary"
+            className="w-full text-sm font-semibold"
+          >
+            Proses Muat
+          </BadgeStatusPesanan>
+        )}
+        {true && (
+          <BadgeStatusPesanan
+            variant="primary"
+            className="w-full text-sm font-semibold"
+          >
+            Dokumen Sedang Disiapkan
+          </BadgeStatusPesanan>
+        )}
+        {false && (
+          <BadgeStatusPesanan
+            variant="primary"
+            className="w-full text-sm font-semibold"
+          >
+            Proses Muat
+          </BadgeStatusPesanan>
+        )}
+        <StepperContainer activeIndex={3} totalStep={list.length}>
           {list.map((step, index) => (
             <StepperItemResponsive key={step.label} step={step} index={index} />
           ))}
