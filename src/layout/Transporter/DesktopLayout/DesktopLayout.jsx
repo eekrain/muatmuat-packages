@@ -3,9 +3,10 @@
 import { usePathname } from "next/navigation";
 
 import FloatingButton from "@/components/FloatingButton/FloatingButton";
-import HeaderWeb from "@/components/Header/Web/HeaderWeb";
 import { useTokenStore } from "@/store/Auth/tokenStore";
 import { useNotificationCounterStore } from "@/store/Shipper/notificationCounterStore";
+
+import HeaderLayout from "../HeaderLayout/HeaderLayout";
 
 export default function DesktopLayout({ children }) {
   const pathname = usePathname();
@@ -20,7 +21,7 @@ export default function DesktopLayout({ children }) {
 
   return (
     <div className="relative min-h-screen">
-      <HeaderWeb notifCounter={{ notification, chat }} />
+      <HeaderLayout notifCounter={{ notification, chat }} />
       <div
         className={
           isLoggedIn ? "min-h-[calc(100dvh-92px)]" : "min-h-[calc(100dvh-60px)]"

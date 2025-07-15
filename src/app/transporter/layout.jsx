@@ -1,4 +1,4 @@
-import MainLayout from "@/layout/Transporter/MainLayout";
+import MainLayout from "@/layout/Transporter/MainLayout/MainLayout";
 
 export const metadata = {
   title: "Muatrans Transporter",

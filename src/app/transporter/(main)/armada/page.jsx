@@ -1,4 +1,10 @@
+import ArmadaContainer from "@/container/Transporter/Armada/ArmadaContainer";
+
 const Page = () => {
-  return <div>Page</div>;
+  return (
+    <div className="">
+      <ArmadaContainer />
+    </div>
+  );
 };
 export default Page;
