@@ -3,6 +3,8 @@ import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";
 
+import IconComponent from "../IconComponent/IconComponent";
+
 export const lineVariants = cva(
   "absolute left-1/2 top-1 block h-full -translate-x-1/2 border-l-[2px] border-dashed",
   {
@@ -67,6 +69,10 @@ export const TimelineItem = ({
   className,
   children,
   withSeparator = false,
+  appearance = {
+    lineClassname: "",
+    bulletClassname: "",
+  },
 }) => {
   const getVariant = () => {
     const selected = {};
@@ -97,7 +103,8 @@ export const TimelineItem = ({
             className={cn(
               lineVariants({
                 variant: getVariant().line,
-              })
+              }),
+              appearance.lineClassname
             )}
           />
         )}
@@ -105,11 +112,12 @@ export const TimelineItem = ({
           className={cn(
             bulletVariants({
               variant: getVariant().bullet,
-            })
+            }),
+            appearance.bulletClassname
           )}
         >
           {!variant.startsWith("bullet") && (
-            <div className="-ml-[1px] mt-[2px]">{index + 1}</div>
+            <div className="mt-[2px]">{index + 1}</div>
           )}
         </span>
       </div>
@@ -183,6 +191,69 @@ export const TimelineContentAddress = ({ title, className, ...props }) => {
       {...props}
     >
       {title}
+    </div>
+  );
+};
+
+export const TimelinePICData = ({
+  title = null,
+  address = "",
+  details = "",
+  picName = "",
+  picPhone = "",
+  className,
+  setHeight,
+}) => {
+  return (
+    <div className={cn("flex w-full flex-col pb-3", className)}>
+      {title && (
+        <div className="h-5 text-xs font-medium text-neutral-600">{title}</div>
+      )}
+      {/* Detail items */}
+      <div className="grid grid-cols-[166px_1fr] gap-2">
+        <div className="col-span-2 text-xs font-medium text-neutral-900">
+          {address}
+        </div>
+
+        <div className="flex items-center gap-2">
+          <IconComponent
+            src="/icons/topik-amandemen16.svg"
+            width={16}
+            height={16}
+            classname="text-[#461B02]"
+          />
+          <span className="text-xs font-medium text-neutral-600">
+            Detail Lokasi:
+          </span>
+        </div>
+        <span className="text-xs font-medium text-neutral-900">{details}</span>
+
+        <div className="flex items-center gap-2">
+          <IconComponent
+            src="/icons/profile16.svg"
+            width={16}
+            height={16}
+            classname="text-[#461B02]"
+          />
+          <span className="text-xs font-medium text-neutral-600">
+            Nama PIC Lokasi Muat:
+          </span>
+        </div>
+        <span className="text-xs font-medium text-neutral-900">{picName}</span>
+
+        <div className="flex items-center gap-2">
+          <IconComponent
+            src="/icons/call16.svg"
+            width={16}
+            height={16}
+            classname="text-[#461B02]"
+          />
+          <span className="text-xs font-medium text-neutral-600">
+            No. HP PIC Lokasi Muat:
+          </span>
+        </div>
+        <span className="text-xs font-medium text-neutral-900">{picPhone}</span>
+      </div>
     </div>
   );
 };

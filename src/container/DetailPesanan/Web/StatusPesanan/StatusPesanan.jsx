@@ -13,6 +13,8 @@ import { StatusPesananHeader } from "@/container/DetailPesanan/Web/StatusPesanan
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { cn } from "@/lib/utils";
 
+import { ModalPerubahanData } from "./ModalPerubahanData";
+
 const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
   return (
     <>
@@ -47,12 +49,7 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
               dangerouslySetInnerHTML={{ __html: item.label }}
             />
             {item.type === "CONFIRMED_CHANGES" ? (
-              <button
-                onClick={() => alert("Handle lihat perubahan")}
-                className="text-[12px] font-medium leading-[14.4px] text-primary-700"
-              >
-                Lihat Perubahan
-              </button>
+              <ModalPerubahanData />
             ) : item?.info ? (
               <InfoTooltip
                 side="right"
@@ -68,14 +65,7 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
       {/* Alert Driver akan kena biaya tunggu dan tunjukan QR ke driver */}
       {/* {true ? <AlertDriverWaiting /> : null} */}
 
-      {isShowWaitFleetAlert ? (
-        <AlertWaitFleetSearch />
-      ) : (
-        <AlertPendingPrepareFleet
-          orderStatus={dataStatusPesanan.orderStatus}
-          expiredAt={dataStatusPesanan.expiredAt}
-        />
-      )}
+      {isShowWaitFleetAlert && <AlertWaitFleetSearch />}
 
       {/* Alert Buat Habis Update lokasi bongkar perlu konfirmasi */}
       {/* {true ? <AlertUpdateConfirmation /> : null} */}

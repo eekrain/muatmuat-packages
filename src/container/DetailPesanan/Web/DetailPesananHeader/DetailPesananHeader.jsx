@@ -29,6 +29,10 @@ const ALLOW_LIST = {
     OrderStatusEnum.CANCELED_BY_SYSTEM,
     OrderStatusEnum.CANCELED_BY_TRANSPORTER,
   ],
+  DetailPembayaran: [
+    OrderStatusEnum.WAITING_PAYMENT_1,
+    OrderStatusEnum.WAITING_PAYMENT_2,
+  ],
   Unduh: "ALL",
   PesanUlang: "ALL",
   DokumenDiterima: [OrderStatusEnum.DOCUMENT_DELIVERY],
@@ -148,6 +152,13 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
     }
 
     if (
+      ALLOW_LIST.DetailPembayaran.includes(dataStatusPesanan?.orderStatus) &&
+      dataStatusPesanan?.hasFoundFleet
+    ) {
+      config.DetailPembayaran = true;
+    }
+
+    if (
       ALLOW_LIST.Unduh === "ALL" &&
       dataStatusPesanan?.hasFoundFleet &&
       dataStatusPesanan?.orderStatus !== OrderStatusEnum.WAITING_PAYMENT_1 &&
@@ -200,13 +211,6 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
           </div>
         </PageTitle>
         <div className="flex items-center gap-x-3">
-          <Button
-            variant="muatparts-primary-secondary"
-            className="h-8"
-            type="button"
-          >
-            Detail Pembayaran
-          </Button>
           {showButtonConfig?.DetailRefund && (
             <Link
               href={`/daftarpesanan/detailpesanan/${params.orderId}/detail-refund`}
