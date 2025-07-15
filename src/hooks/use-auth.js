@@ -4,11 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { fetcherMuatparts } from "@/lib/axios";
-import {
-  useTokenActions,
-  useTokenStore,
-} from "@/store/Shipper/auth/tokenStore";
-import { useUserActions, useUserStore } from "@/store/Shipper/auth/userStore";
+import { useTokenActions, useTokenStore } from "@/store/Auth/tokenStore";
+import { useUserActions, useUserStore } from "@/store/Auth/userStore";
 
 const cacheConfig = {
   headers: {

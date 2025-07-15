@@ -7,7 +7,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { useAuth } from "@/hooks/use-auth";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
-import { useTokenStore } from "@/store/Shipper/auth/tokenStore";
+import { useTokenStore } from "@/store/Auth/tokenStore";
 
 const MenuItem = ({ imgUrl, title, variant, onClick }) => {
   return (
