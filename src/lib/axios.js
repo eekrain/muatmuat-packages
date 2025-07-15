@@ -6,6 +6,7 @@ import { useUserStore } from "@/store/Shipper/auth/userStore";
 const LIST_PUBLIC_ROUTES = [
   "/sewaarmada",
   "/example",
+  "/",
   // /orders/orderId/drivers/driverId/qr-code
   /^\/orders\/[^\/]+\/drivers\/[^\/]+\/qr-code$/,
 ];
@@ -68,7 +69,7 @@ export const createAxios = (baseURL) => {
             return false;
           });
           if (window?.location && !isPublicRoutes) {
-            window.location.replace("/sewaarmada");
+            window.location.replace("/login");
           }
         }
       } else {
