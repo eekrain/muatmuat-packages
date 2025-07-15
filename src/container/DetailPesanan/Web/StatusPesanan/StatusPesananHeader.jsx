@@ -92,7 +92,7 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
               <ModalDetailAlasanPembatalan
                 cancellationHistory={dataStatusPesanan.cancellationHistory}
               />
-            ) : dataStatusPesanan.otherStatus.length > 0 ? (
+            ) : dataStatusPesanan.otherStatus.length > 1 ? (
               <ModalLihatStatusLainnya
                 otherStatus={dataStatusPesanan.otherStatus}
               />
@@ -146,7 +146,6 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
                               image={image}
                               alt={`Dokumen ${index + 1}`}
                               className="size-[56px]"
-                              withZoom={true}
                             />
                           ))}
                         </LightboxProvider>

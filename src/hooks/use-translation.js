@@ -17,6 +17,14 @@ import {
   useSelectedLanguageStore,
 } from "@/store/selectedLanguageStore";
 
+const cacheConfig = {
+  headers: {
+    "Content-Type": "application/json",
+    // Cache for 1 week, but allow revalidation for every 1 hour
+    "Cache-Control": "public, max-age=604800, stale-while-revalidate=3600",
+  },
+};
+
 const createTranslationStore = () =>
   createStore((set) => ({
     // State
@@ -35,19 +43,14 @@ const createTranslationStore = () =>
         const url = `${s3url}content-general/locales/${envProd}/${languageUrl}/common.json`;
 
         try {
-          const response = await xior.get(url, {
-            headers: {
-              "Content-Type": "application/json",
-              // Cache for 1 week, but allow revalidation for every 1 hour
-              "Cache-Control":
-                "public, max-age=604800, stale-while-revalidate=3600",
-            },
-          });
+          const response = await xior.get(url, cacheConfig);
+          await new Promise((resolve) => setTimeout(resolve, 1000));
           set({ translation: response.data, isTranslationsReady: true });
         } catch (error) {
           console.error(
             `Error fetching ${languageUrl} translations: ${error.message}`
           );
+          await new Promise((resolve) => setTimeout(resolve, 1000));
           set({ translation: {}, isTranslationsReady: true });
         }
       },
@@ -84,17 +87,26 @@ export const useTranslation = () => {
   if (!store) {
     throw new Error("useTranslation must be used within a TranslationProvider");
   }
-  const listLanguages = useStore(
-    store,
-    useShallow((s) => s.listLanguages)
-  );
   const isTranslationsReady = useStore(store, (s) => s.isTranslationsReady);
 
   return {
     t: store.t,
-    listLanguages,
     isTranslationsReady,
   };
+};
+
+export const useListLanguages = () => {
+  const store = useContext(TranslationContext);
+  if (!store) {
+    throw new Error(
+      "useListLanguages must be used within a TranslationProvider"
+    );
+  }
+  const listLanguages = useStore(
+    store,
+    useShallow((s) => s.listLanguages)
+  );
+  return { listLanguages };
 };
 
 const useInitTranslation = (store) => {
@@ -119,14 +131,7 @@ const useInitTranslation = (store) => {
         // First we fetch the list of language
         const response = await fetcherMuatparts.get(
           "v1/bo/language/list?supermenuid=6&role=5",
-          {
-            headers: {
-              "Content-Type": "application/json",
-              // Cache for 24 hours, but allow revalidation for every 1 hour
-              "Cache-Control":
-                "public, max-age=86400, stale-while-revalidate=3600",
-            },
-          }
+          cacheConfig
         );
         const listLanguages = response.data.Data;
         setListLanguages(listLanguages);

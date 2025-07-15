@@ -55,7 +55,6 @@ const SewaArmadaHomeScreen = () => {
   const handleEditLayananTambahan = () => {
     navigation.push("/LayananTambahan");
   };
-  console.log("hihi", isShowCostDetail);
 
   const validateLokasiOnSelect = useLocationFormStore(
     (s) => s.validateLokasiOnSelect
@@ -306,6 +305,63 @@ const SewaArmadaHomeScreen = () => {
   }, [voucherList]);
   /* end voucher */
 
+  const handleEditLokasi = ({ formMode, index }) => {
+    const field = {
+      muat: "lokasiMuat",
+      bongkar: "lokasiBongkar",
+    };
+    const defaultValues = formValues[field[formMode]][index];
+    const params = {
+      formMode,
+      allSelectedLocations: formValues[field[formMode]],
+      index,
+    };
+
+    const navigateToForm = async (defaultValues) => {
+      navigation.push("/FormLokasiBongkarMuat", {
+        config: {
+          ...params,
+          defaultValues,
+        },
+        layout: {
+          title: formMode === "bongkar" ? "Lokasi Bongkar" : "Lokasi Muat",
+        },
+      });
+    };
+
+    if (defaultValues) {
+      navigateToForm(defaultValues);
+    } else {
+      navigation.push("/PencarianLokasi", {
+        config: {
+          ...params,
+          afterLocationSelected: async () => {
+            // delay 500ms untuk menunggu data lokasi terisi
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            const defaultValues = useLocationFormStore.getState().formValues;
+            navigateToForm(defaultValues);
+          },
+          validateLokasiOnSelect: (selectedAddress) => {
+            const error = validateLokasiOnSelect(
+              formMode,
+              index,
+              selectedAddress
+            );
+
+            if (error) {
+              toast.error(error);
+              throw new Error(error);
+            }
+          },
+        },
+        layout: {
+          title:
+            formMode === "bongkar" ? "Cari Lokasi Bongkar" : "Cari Lokasi Muat",
+        },
+      });
+    }
+  };
+
   return (
     <DefaultResponsiveLayout mode="default">
       <div
@@ -353,44 +409,9 @@ const SewaArmadaHomeScreen = () => {
               }
               onAddLocation={() => addLokasi("lokasiMuat", null)}
               onDeleteLocation={(index) => removeLokasi("lokasiMuat", index)}
-              onEditLocation={(index) => {
-                const params = {
-                  formMode: "muat",
-                  allSelectedLocations: formValues.lokasiMuat,
-                  defaultValues: formValues.lokasiMuat[index],
-                  index,
-                };
-                navigation.push("/PencarianLokasi", {
-                  config: {
-                    ...params,
-                    afterLocationSelected: () => {
-                      navigation.push("/FormLokasiBongkarMuat", {
-                        config: {
-                          ...params,
-                        },
-                        layout: {
-                          title: "Lokasi Muat",
-                        },
-                      });
-                    },
-                    validateLokasiOnSelect: (selectedAddress) => {
-                      const error = validateLokasiOnSelect(
-                        "muat",
-                        index,
-                        selectedAddress
-                      );
-
-                      if (error) {
-                        toast.error(error);
-                        throw new Error(error);
-                      }
-                    },
-                  },
-                  layout: {
-                    title: "Cari Lokasi Muat",
-                  },
-                });
-              }}
+              onEditLocation={(index) =>
+                handleEditLokasi({ formMode: "muat", index })
+              }
             />
           </FormContainer>
           {/* Lokasi Bongkar Field */}
@@ -406,44 +427,9 @@ const SewaArmadaHomeScreen = () => {
               }
               onAddLocation={() => addLokasi("lokasiBongkar", null)}
               onDeleteLocation={(index) => removeLokasi("lokasiBongkar", index)}
-              onEditLocation={(index) => {
-                const params = {
-                  formMode: "bongkar",
-                  allSelectedLocations: formValues.lokasiBongkar,
-                  defaultValues: formValues.lokasiBongkar[index],
-                  index,
-                };
-                navigation.push("/PencarianLokasi", {
-                  config: {
-                    ...params,
-                    afterLocationSelected: () => {
-                      navigation.push("/FormLokasiBongkarMuat", {
-                        config: {
-                          ...params,
-                        },
-                        layout: {
-                          title: "Lokasi Bongkar",
-                        },
-                      });
-                    },
-                    validateLokasiOnSelect: (selectedAddress) => {
-                      const error = validateLokasiOnSelect(
-                        "bongkar",
-                        index,
-                        selectedAddress
-                      );
-
-                      if (error) {
-                        toast.error(error);
-                        throw new Error(error);
-                      }
-                    },
-                  },
-                  layout: {
-                    title: "Cari Lokasi Bongkar",
-                  },
-                });
-              }}
+              onEditLocation={(index) =>
+                handleEditLokasi({ formMode: "bongkar", index })
+              }
             />
           </FormContainer>
 

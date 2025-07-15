@@ -93,9 +93,9 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
                 orderId={dataStatusPesanan.orderId}
                 orderStatus={dataStatusPesanan.orderStatus}
               />
-            ) : dataStatusPesanan.legendStatus?.stepperData?.length > 0 ? (
+            ) : (
               <StepperOnly legendStatus={dataStatusPesanan.legendStatus} />
-            ) : null}
+            )}
           </div>
         </CardContent>
       </Card>
@@ -105,7 +105,21 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
 
 export default StatusPesanan;
 
+const LIST_SHOW_STEPPER_ONLY = [
+  OrderStatusEnum.CONFIRMED,
+  OrderStatusEnum.SCHEDULED_FLEET,
+  OrderStatusEnum.LOADING,
+  OrderStatusEnum.UNLOADING,
+  OrderStatusEnum.PREPARE_DOCUMENT,
+  OrderStatusEnum.DOCUMENT_DELIVERY,
+  OrderStatusEnum.WAITING_REPAYMENT_1,
+  OrderStatusEnum.WAITING_REPAYMENT_2,
+];
+
 const StepperOnly = ({ legendStatus }) => {
+  if (!LIST_SHOW_STEPPER_ONLY.includes(legendStatus.activeIndex)) return null;
+  if (legendStatus?.stepperData?.length === 0) return null;
+
   return (
     <div className="flex w-full flex-col gap-y-5 rounded-xl border border-neutral-400 px-4 py-5">
       <StepperContainer

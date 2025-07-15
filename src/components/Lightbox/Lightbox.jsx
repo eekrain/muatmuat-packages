@@ -141,13 +141,7 @@ export const useLightbox = () => {
 /**
  * @param {LightboxPreviewProps} props
  */
-export const LightboxPreview = ({
-  image,
-  index = 0,
-  className,
-  alt,
-  withZoom = true,
-}) => {
+export const LightboxPreview = ({ image, index = 0, className, alt }) => {
   const { openLightbox } = useLightbox();
 
   return (
