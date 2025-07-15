@@ -6,7 +6,7 @@ import { useListLanguages } from "@/hooks/use-translation";
 import {
   useSelectedLanguageActions,
   useSelectedLanguageStore,
-} from "@/store/selectedLanguageStore";
+} from "@/store/Shipper/selectedLanguageStore";
 
 const LanguageDropdown = () => {
   const [open, setOpen] = useState(false);

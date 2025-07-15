@@ -5,7 +5,7 @@ import { useTranslation } from "@/hooks/use-translation";
 import {
   useRekeningPencairanActions,
   useRekeningPencairanStore,
-} from "@/store/forms/rekeningPencairanStore";
+} from "@/store/Shipper/forms/rekeningPencairanStore";
 
 import { Alert } from "../Badge/Alert";
 import Button from "../Button/Button";

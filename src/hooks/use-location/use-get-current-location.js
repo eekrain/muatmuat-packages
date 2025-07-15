@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { useLocationFormStore } from "@/store/forms/locationFormStore";
+import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 
 import useDevice from "../use-device";
 import { fetcher } from "./fetcher";

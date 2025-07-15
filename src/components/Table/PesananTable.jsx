@@ -17,7 +17,7 @@ import {
   TimelineContentAddress,
   TimelineItem,
 } from "@/components/Timeline";
-import MuatBongkarModal from "@/container/DetailPesanan/Web/RingkasanPesanan/MuatBongkarModal";
+import MuatBongkarModal from "@/container/Shipper/DetailPesanan/Web/RingkasanPesanan/MuatBongkarModal";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import {
   OrderStatusEnum,

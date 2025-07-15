@@ -10,7 +10,7 @@ import {
 import useDevice from "@/hooks/use-device";
 import { getStatusScanMetadata } from "@/lib/normalizers/detailpesanan/getStatusScanMetadata";
 import { cn } from "@/lib/utils";
-import { useGetDriverQRCodeById } from "@/services/detailpesanan/getDriverQRCodeById";
+import { useGetDriverQRCodeById } from "@/services/Shipper/detailpesanan/getDriverQRCodeById";
 
 export const ModalQRCodeDriver = ({
   title = "QR Code Lokasi Muat & Bongkar",

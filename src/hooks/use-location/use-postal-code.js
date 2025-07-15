@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo } from "react";
 
 import { fetcherMuatparts } from "@/lib/axios";
 import { normalizePostalCodeData } from "@/lib/normalizers/location";
-import { useLocationFormStore } from "@/store/forms/locationFormStore";
+import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 
 import { useDebounceCallback } from "../use-debounce-callback";
 import useDevice from "../use-device";

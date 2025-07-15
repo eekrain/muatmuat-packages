@@ -7,7 +7,7 @@ import {
 } from "@/lib/normalizers/location";
 import { normalizeRecentHistoryLocation } from "@/lib/normalizers/location/normalizeRecentHistoryLocation";
 import { toast } from "@/lib/toast";
-import { useLocationFormStore } from "@/store/forms/locationFormStore";
+import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 
 import { useSWRHook } from "../use-swr";
 import { fetcher } from "./fetcher";

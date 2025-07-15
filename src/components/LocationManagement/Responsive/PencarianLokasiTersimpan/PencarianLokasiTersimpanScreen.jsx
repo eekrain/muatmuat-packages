@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useRef } from "react";
 
 import { useLocationContext } from "@/hooks/use-location/use-location";
-import SearchBarResponsiveLayout from "@/layout/ResponsiveLayout/SearchBarResponsiveLayout";
+import SearchBarResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/SearchBarResponsiveLayout";
 import { normalizeUserSavedLocation } from "@/lib/normalizers/location";
 import {
   useResponsiveNavigation,
   useResponsiveRouteParams,
 } from "@/lib/responsive-navigation";
-import { useResponsiveSearchStore } from "@/store/zustand/responsiveSearchStore";
+import { useResponsiveSearchStore } from "@/store/Shipper/zustand/responsiveSearchStore";
 
 import { SavedLocationItem } from "../PencarianLokasi/SavedLocationItem";
 

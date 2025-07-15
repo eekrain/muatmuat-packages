@@ -10,7 +10,7 @@ import {
   LocationProvider,
   useLocationContext,
 } from "@/hooks/use-location/use-location";
-import { useLocationFormStore } from "@/store/forms/locationFormStore";
+import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 
 import { MapContainer } from "../../../MapContainer/MapContainer";
 import { InputLocationManagementDropdown } from "../InputLocationManagementDropdown/InputLocationManagementDropdown";

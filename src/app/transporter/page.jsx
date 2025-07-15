@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-import { useLoadingAction } from "@/store/loadingStore";
+import { useLoadingAction } from "@/store/Shipper/loadingStore";
 
 const Page = () => {
   const { setIsGlobalLoading } = useLoadingAction();

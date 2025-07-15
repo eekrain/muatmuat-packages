@@ -8,8 +8,8 @@ import { AuthenticationProvider } from "@/hooks/use-auth";
 import useDevice from "@/hooks/use-device";
 import { TranslationProvider } from "@/hooks/use-translation";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
-import { useLoadingAction } from "@/store/loadingStore";
-import { useNotificationCounterActions } from "@/store/notificationCounterStore";
+import { useLoadingAction } from "@/store/Shipper/loadingStore";
+import { useNotificationCounterActions } from "@/store/Shipper/notificationCounterStore";
 
 const MainLayout = ({ children }) => {
   useDefaultTimeoutLoading();

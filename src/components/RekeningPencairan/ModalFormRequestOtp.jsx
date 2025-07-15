@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import {
   useRequestOtpActions,
   useRequestOtpStore,
-} from "@/store/forms/requestOtpStore";
+} from "@/store/Shipper/forms/requestOtpStore";
 
 import Button from "../Button/Button";
 import IconComponent from "../IconComponent/IconComponent";

@@ -10,7 +10,7 @@ import {
   addArraysUnique,
   getElementsNotInSecondArray,
 } from "@/lib/utils/array";
-import kurirTokoZustand from "@/store/zustand/kurirToko";
+import kurirTokoZustand from "@/store/Shipper/zustand/kurirToko";
 
 import DataNotFound from "../DataNotFound/DataNotFound";
 import Input from "../Form/Input";

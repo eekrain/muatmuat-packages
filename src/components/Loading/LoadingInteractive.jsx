@@ -1,6 +1,6 @@
 "use client";
 
-import { useLoadingStore } from "@/store/loadingStore";
+import { useLoadingStore } from "@/store/Shipper/loadingStore";
 
 export default function LoadingInteractive() {
   const isGlobalLoading = useLoadingStore((state) => state.isGlobalLoading);
