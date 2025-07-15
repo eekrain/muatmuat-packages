@@ -6,15 +6,15 @@ const normalizeLocation = (location) => {
     dataLokasi: {
       district: {
         name: location.district,
-        value: null,
+        value: location.districtId,
       },
       city: {
         name: location.city,
-        value: null,
+        value: location.cityId,
       },
       province: {
         name: location.province,
-        value: null,
+        value: location.provinceId,
       },
       kecamatanList: [],
       postalCodeList: [],
@@ -73,7 +73,7 @@ export const normalizeReorderFleet = (
       dimensiMuatan: {
         panjang: item.dimensions.length,
         lebar: item.dimensions.width,
-        tinggi: item.dimensions.heigth,
+        tinggi: item.dimensions.height,
         unit: item.dimensions.unit,
       },
       namaMuatan: {

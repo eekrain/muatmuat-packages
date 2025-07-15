@@ -211,6 +211,9 @@ const Page = () => {
         Object.entries(reorderData.formValues).forEach(([key, value]) => {
           setField(key, value);
         });
+        // const url = new URL(window.location.href);
+        // url.searchParams.delete("orderId");
+        // window.history.replaceState({}, document.title, url.toString());
       } else if (urlFormId !== localFormId) {
         reset();
         setFormId(urlFormId);

@@ -2,16 +2,16 @@ import { Alert } from "@/components/Badge/Alert";
 import Card, { CardContent } from "@/components/Card/Card";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
+// import AlertDriverWaiting from "@/container/DetailPesanan/Web/StatusPesanan/AlertDriverWaiting";
+import { AlertPendingPayment1 } from "@/container/DetailPesanan/Web/StatusPesanan/AlertPendingPayment1";
 import { AlertPendingPrepareFleet } from "@/container/DetailPesanan/Web/StatusPesanan/AlertPendingPrepareFleet";
+import { AlertPendingUpdateConfirmation } from "@/container/DetailPesanan/Web/StatusPesanan/AlertPendingUpdateConfirmation";
+import { AlertPendingUpdatePayment } from "@/container/DetailPesanan/Web/StatusPesanan/AlertPendingUpdatePayment";
 import AlertWaitFleetSearch from "@/container/DetailPesanan/Web/StatusPesanan/AlertWaitFleetSearch";
 import { DriverStatusCard } from "@/container/DetailPesanan/Web/StatusPesanan/DriverStatusCard";
 import { StatusPesananHeader } from "@/container/DetailPesanan/Web/StatusPesanan/StatusPesananHeader";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { cn } from "@/lib/utils";
-
-import { AlertPendingPayment1 } from "./AlertPendingPayment1";
-import { AlertPendingUpdateConfirmation } from "./AlertPendingUpdateConfirmation";
-import { AlertPendingUpdatePayment } from "./AlertPendingUpdatePayment";
 
 const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
   return (
@@ -65,12 +65,17 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
         </Alert>
       ))}
 
-      <AlertPendingPrepareFleet
-        orderStatus={dataStatusPesanan.orderStatus}
-        expiredAt={dataStatusPesanan.expiredAt}
-      />
+      {/* Alert Driver akan kena biaya tunggu dan tunjukan QR ke driver */}
+      {/* {true ? <AlertDriverWaiting /> : null} */}
 
-      {isShowWaitFleetAlert && <AlertWaitFleetSearch />}
+      {isShowWaitFleetAlert ? (
+        <AlertWaitFleetSearch />
+      ) : (
+        <AlertPendingPrepareFleet
+          orderStatus={dataStatusPesanan.orderStatus}
+          expiredAt={dataStatusPesanan.expiredAt}
+        />
+      )}
 
       {/* Alert Buat Habis Update lokasi bongkar perlu konfirmasi */}
       {/* {true ? <AlertUpdateConfirmation /> : null} */}
