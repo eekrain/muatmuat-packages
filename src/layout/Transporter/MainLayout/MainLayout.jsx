@@ -3,8 +3,6 @@
 import { useRouter } from "next/navigation";
 import { Suspense, useEffect, useRef } from "react";
 
-import LoadingInteractive from "@/components/Loading/LoadingInteractive";
-import LoadingStatic from "@/components/Loading/LoadingStatic";
 import Toaster from "@/components/Toaster/Toaster";
 import { AuthenticationProvider } from "@/hooks/use-auth";
 import useDevice from "@/hooks/use-device";
@@ -27,8 +25,14 @@ const MainLayout = ({ children }) => {
 
   return (
     <>
+<<<<<<<< HEAD:src/layout/Transporter/MainLayout/MainLayout.jsx
       <Suspense fallback={<LoadingStatic />}>
         <LoadingInteractive />
+========
+      <Suspense>
+        {/* <LoadingInteractive /> */}
+
+>>>>>>>> 98bce10 (feat: implement middleware based on shipper or transporter subdomain):src/layout/Shipper/MainLayout/MainLayout.jsx
         <TranslationProvider>
           <AuthenticationProvider>{children}</AuthenticationProvider>
         </TranslationProvider>
