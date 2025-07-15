@@ -75,55 +75,23 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
       driverId: "uuid-driver-1",
       name: "Ahmad Rahman",
       phoneNumber: "081234567891",
-      profileImage: "/img/avatar2.png",
+      profileImage: "https://example.com/driver1.jpg",
       licensePlate: "B 1234 CD",
-      hasReview: false,
       canReview: true,
-      driverPerformance: {
-        onTimePickup: true,
-        onTimeDelivery: true,
-        cargoCondition: "GOOD",
-        communicationRating: "EXCELLENT",
-      },
+      reviewedAt: "",
+      rating: 0,
+      review: "",
     },
     {
       driverId: "uuid-driver-2",
       name: "Budi Santoso",
       phoneNumber: "081234567892",
-      profileImage: "/img/avatar2.png",
+      profileImage: "https://example.com/driver2.jpg",
       licensePlate: "B 5678 EF",
-      hasReview: true,
       canReview: false,
       reviewedAt: "2025-02-11T16:00:00Z",
-      givenRating: 2,
-      givenReview: "Driver lambat dalam mengirim barang",
-    },
-    {
-      driverId: "uuid-driver-1",
-      name: "Ahmad Rahman",
-      phoneNumber: "081234567891",
-      profileImage: "/img/avatar2.png",
-      licensePlate: "B 1234 CD",
-      hasReview: false,
-      canReview: true,
-      driverPerformance: {
-        onTimePickup: true,
-        onTimeDelivery: true,
-        cargoCondition: "GOOD",
-        communicationRating: "EXCELLENT",
-      },
-    },
-    {
-      driverId: "uuid-driver-2",
-      name: "Budi Santoso",
-      phoneNumber: "081234567892",
-      profileImage: "/img/avatar2.png",
-      licensePlate: "B 5678 EF",
-      hasReview: true,
-      canReview: false,
-      reviewedAt: "2025-02-11T16:00:00Z",
-      givenRating: 5,
-      givenReview: "",
+      rating: 5,
+      review: "Driver sangat baik dan profesional",
     },
   ];
 
@@ -150,7 +118,7 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
 
   // Check if all drivers have been reviewed
   const areAllDriversReviewed = drivers.every(
-    (driver) => driver.hasReview === true
+    (driver) => driver.canReview === true
   );
 
   const unduhMenu = [
@@ -320,7 +288,7 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
               Dokumen Diterima
             </Button>
           )}
-          {showButtonConfig?.BeriUlasan && (
+          {!showButtonConfig?.BeriUlasan && (
             <Button
               variant="muatparts-primary"
               className="h-8"

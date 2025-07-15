@@ -219,6 +219,11 @@ input::-webkit-inner-spin-button {
     fill: var(--secondary-400);
   }
 }
+.icon-fill-secondary-700 {
+  path {
+    fill: var(--secondary-700);
+  }
+}
 .icon-fill-muat-parts-non-800 {
   path {
     fill: var(--muat-parts-non-800);

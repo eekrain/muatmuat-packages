@@ -1,39 +1,28 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import RatingInput from "@/components/Form/RatingInput";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import TextArea from "@/components/TextArea/TextArea";
+import usePrevious from "@/hooks/use-previous";
+import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { toast } from "@/lib/toast";
 
-const DriverRatingForm = ({ driver }) => {
-  const [formValues, setFormValues] = useState({
-    rating: 0,
-    review: "",
-  });
-
-  useEffect(() => {
-    setFormValues({
-      rating: driver.hasReview ? driver.givenRating : 0,
-      review: driver.hasReview ? driver.givenReview : "",
-    });
-  }, [driver.hasReview, driver.givenRating, driver.givenReview]);
-
+const DriverRatingForm = ({
+  driver,
+  onDriverRatingFormValuesChange,
+  onSaveReview,
+  index,
+}) => {
   const handleChangeFormValues = (field, value) => {
-    setFormValues((prevState) => ({
-      ...prevState,
-      [field]: value,
-    }));
+    onDriverRatingFormValuesChange(index, field, value);
   };
 
   const handleSaveDriverReview = () => {
-    if (formValues.rating === 0) {
-      return toast.error("Rating driver wajib diisi");
-    }
-    toast.success("Ulasan berhasil disimpan ");
+    onSaveReview(index);
   };
 
   return (
@@ -69,25 +58,21 @@ const DriverRatingForm = ({ driver }) => {
             Rating Driver
           </span>
           <RatingInput
-            disabled={driver.hasReview}
+            disabled={!driver.canReview}
             onChange={(val) => handleChangeFormValues("rating", val)}
-            value={formValues.rating}
+            value={driver.rating || 0}
           />
         </div>
 
         {/* Review Column */}
         <div className="flex min-w-[262px] flex-col gap-2">
-          <span className="text-[12px] font-medium text-neutral-600">
-            Berikan ulasan untuk driver {driver.hasReview ? "" : "(Opsional)"}
-          </span>
-          {driver.hasReview ? (
-            <p className="text-[12px] font-medium leading-3 text-neutral-900">
-              {driver.givenReview}
-            </p>
-          ) : (
+          {driver.canReview ? (
             <>
+              <span className="text-[12px] font-medium text-neutral-600">
+                Berikan ulasan untuk driver (Opsional)
+              </span>
               <TextArea
-                value={formValues.review}
+                value={driver.review || ""}
                 onChange={(e) =>
                   handleChangeFormValues("review", e.target.value)
                 }
@@ -96,10 +81,19 @@ const DriverRatingForm = ({ driver }) => {
                 height={80}
                 supportiveText={{
                   title: "",
-                  desc: `${formValues.review.length}/500`,
+                  desc: `${(driver.review || "").length}/500`,
                 }}
                 resize="none"
               />
+            </>
+          ) : (
+            <>
+              <span className="text-[12px] font-medium text-neutral-600">
+                Ulasanmu
+              </span>
+              <p className="text-[12px] font-medium leading-3 text-neutral-900">
+                {driver.review || "-"}
+              </p>
             </>
           )}
         </div>
@@ -120,8 +114,35 @@ const DriverRatingForm = ({ driver }) => {
 };
 
 const DriverRatingModal = ({ isOpen, setIsOpen, drivers }) => {
+  const [driversFormValues, setDriversFormValues] = useState([]);
+  const previousIsOpen = usePrevious(isOpen);
+
+  useShallowCompareEffect(() => {
+    if (isOpen && !previousIsOpen) {
+      setDriversFormValues(drivers);
+    }
+  }, [isOpen, previousIsOpen, drivers]);
+
+  const handleDriverRatingFormValuesChange = (index, field, value) => {
+    setDriversFormValues((prevState) =>
+      prevState.map((driver, i) =>
+        i === index ? { ...driver, [field]: value } : driver
+      )
+    );
+  };
+
+  const handleSaveReview = (index) => {
+    const driver = driversFormValues[index];
+
+    if ((driver.rating || 0) === 0) {
+      return toast.error("Rating driver wajib diisi");
+    }
+
+    toast.success("Ulasan berhasil disimpan");
+  };
+
   return (
-    <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick={false}>
+    <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick>
       <ModalContent className="flex w-[800px] flex-col items-center gap-y-3 p-6">
         {/* Header */}
         <div className="w-full text-center">
@@ -134,9 +155,16 @@ const DriverRatingModal = ({ isOpen, setIsOpen, drivers }) => {
         <div className="rounded-xl border border-neutral-400 px-4 py-5">
           <div className="mr-[-12px] flex max-h-[304px] overflow-y-auto pr-[7px]">
             <div className="flex flex-col gap-y-5">
-              {drivers.map((driver, key) => (
+              {driversFormValues.map((driver, key) => (
                 <Fragment key={key}>
-                  <DriverRatingForm driver={driver} />
+                  <DriverRatingForm
+                    driver={driver}
+                    index={key}
+                    onDriverRatingFormValuesChange={
+                      handleDriverRatingFormValuesChange
+                    }
+                    onSaveReview={handleSaveReview}
+                  />
                 </Fragment>
               ))}
             </div>

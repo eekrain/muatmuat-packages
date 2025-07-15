@@ -39,7 +39,7 @@ const RatingInput = ({
           onMouseLeave={() => setHover(0)}
         >
           <IconComponent
-            className={`transition-colors duration-200 ${(hover || value) >= item ? "icon-fill-secondary-400" : "icon-fill-neutral-400"}`}
+            className={`transition-colors duration-200 ${(hover || value) >= item ? "icon-fill-secondary-700" : "icon-fill-neutral-400"}`}
             src="/icons/bintang-solid24.svg"
             size="medium"
           />

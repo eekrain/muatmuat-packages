@@ -13,6 +13,7 @@ import {
   WarningBadge,
 } from "@/container/SewaArmada/Web/Form/JenisArmada/ArmadaComponent";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { toast } from "@/lib/toast";
 import {
   useSelectArmadaModalAction,
   useSelectArmadaModalStore,
@@ -74,6 +75,9 @@ const SelectArmadaModal = ({ carrierData, truckData }) => {
     }
     if (type === "carrierId") {
       setField("truckTypeId", null);
+    }
+    if (isDimensionOrWeightChanged) {
+      toast.success("Informasi muatan dan jenis armada telah berhasil diubah");
     }
     setField(type, item);
     setIsDimensionOrWeightChanged(false);
