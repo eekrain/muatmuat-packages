@@ -25,7 +25,7 @@ export function middleware(request) {
   }
 
   // --- SHIPPER SUBDOMAIN HANDLER ---
-  if (cleanHost.startsWith("shipper.")) {
+  if (cleanHost.startsWith("shipper.") || hostname.includes(":3000")) {
     // 1. Redirect / to /sewaarmada
     if (url.pathname === "/") {
       url.pathname = "/sewaarmada";
@@ -59,7 +59,7 @@ export function middleware(request) {
   }
 
   // --- TRANSPORTER SUBDOMAIN HANDLER ---
-  if (cleanHost.startsWith("transporter.")) {
+  if (cleanHost.startsWith("transporter.") || hostname.includes(":4000")) {
     url.pathname = `/transporter${url.pathname}`;
     return NextResponse.rewrite(url);
   }

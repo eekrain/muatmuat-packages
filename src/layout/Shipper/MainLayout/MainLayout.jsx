@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { Suspense, useEffect, useRef } from "react";
 
+import LoadingInteractive from "@/components/Loading/LoadingInteractive";
+import LoadingStatic from "@/components/Loading/LoadingStatic";
 import Toaster from "@/components/Toaster/Toaster";
 import { AuthenticationProvider } from "@/hooks/use-auth";
 import useDevice from "@/hooks/use-device";
@@ -25,8 +27,8 @@ const MainLayout = ({ children }) => {
 
   return (
     <>
-      <Suspense>
-        {/* <LoadingInteractive /> */}
+      <Suspense fallback={<LoadingStatic />}>
+        <LoadingInteractive />
 
         <TranslationProvider>
           <AuthenticationProvider>{children}</AuthenticationProvider>
