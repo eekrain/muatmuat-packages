@@ -11,6 +11,9 @@ const LIST_PUBLIC_FILES = [
   "/img/",
 ];
 
+const LIST_SHIPPER_SUBDOMAIN = ["shipper.", "trans-az."];
+const LIST_TRANSPORTER_SUBDOMAIN = ["transporter."];
+
 export function middleware(request) {
   const hostname = request.headers.get("host") || "";
   const url = request.nextUrl.clone();
@@ -25,7 +28,12 @@ export function middleware(request) {
   }
 
   // --- SHIPPER SUBDOMAIN HANDLER ---
-  if (cleanHost.startsWith("shipper.") || hostname.includes(":3000")) {
+  if (
+    LIST_SHIPPER_SUBDOMAIN.some((subdomain) =>
+      cleanHost.startsWith(subdomain)
+    ) ||
+    hostname.includes(":3000")
+  ) {
     // 1. Redirect / to /sewaarmada
     if (url.pathname === "/") {
       url.pathname = "/sewaarmada";
@@ -59,7 +67,12 @@ export function middleware(request) {
   }
 
   // --- TRANSPORTER SUBDOMAIN HANDLER ---
-  if (cleanHost.startsWith("transporter.") || hostname.includes(":4000")) {
+  if (
+    LIST_TRANSPORTER_SUBDOMAIN.some((subdomain) =>
+      cleanHost.startsWith(subdomain)
+    ) ||
+    hostname.includes(":4000")
+  ) {
     url.pathname = `/transporter${url.pathname}`;
     return NextResponse.rewrite(url);
   }
