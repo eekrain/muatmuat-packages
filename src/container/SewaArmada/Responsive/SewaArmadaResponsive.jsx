@@ -2,19 +2,22 @@
 
 import { useEffect } from "react";
 
+import CropperScreen from "@/components/Cropper/CropperScreen";
+// Import the default screen without dynamic import
 import { LocationProvider } from "@/hooks/use-location/use-location";
 import {
   ResponsiveProvider,
   ResponsiveRoute,
+  useResponsiveNavigation,
 } from "@/lib/responsive-navigation";
 import { dynamicScreen } from "@/lib/utils/dynamic-screen";
+import { useImageUploaderActions } from "@/store/forms/imageUploaderStore";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
 } from "@/store/forms/sewaArmadaStore";
 import { useLoadingAction } from "@/store/loadingStore";
 
-// Import the default screen without dynamic import
 import SewaArmadaHomeScreen from "./Home/HomeScreen";
 
 // Dynamic import all the other screens, so that the user doesn't have to wait for the other screens to load
@@ -77,7 +80,8 @@ const SewaArmadaResponsive = ({
   additionalServicesOptions,
   paymentMethods,
 }) => {
-  // const navigation = useResponsiveNavigation();
+  const navigation = useResponsiveNavigation();
+  const { reset } = useImageUploaderActions();
   // useEffect(() => {
   //   navigation.replace("/JenisCarrier");
   // }, []);
@@ -157,6 +161,18 @@ const SewaArmadaResponsive = ({
       <ResponsiveRoute
         path="/InformasiPesanan"
         component={<InformasiPesananScreen paymentMethods={paymentMethods} />}
+      />
+      <ResponsiveRoute
+        path="/Cropper"
+        component={
+          <CropperScreen
+            onCheck={() => navigation.push("/")}
+            onClose={() => {
+              reset();
+              navigation.pop();
+            }}
+          />
+        }
       />
       <ResponsiveRoute
         path="/OpsiPembayaran"

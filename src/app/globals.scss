@@ -197,6 +197,11 @@ input::-webkit-inner-spin-button {
     fill: var(--neutral-50);
   }
 }
+.icon-stroke-neutral-50 {
+  path {
+    stroke: var(--neutral-50);
+  }
+}
 
 .icon-fill-neutral-400 {
   path {

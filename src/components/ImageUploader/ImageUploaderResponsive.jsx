@@ -10,7 +10,12 @@ import {
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { useTranslation } from "@/hooks/use-translation";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
+import {
+  useImageUploaderActions,
+  useImageUploaderStore,
+} from "@/store/forms/imageUploaderStore";
 
 import styles from "./ImageUploader.module.scss";
 
@@ -53,16 +58,14 @@ export default function ImageUploaderResponsive({
 }) {
   const cameraRef = useRef(null);
   const fileRef = useRef(null);
-  const [image, setImage] = useState(null); //set image source for cropper
-  const [isOpen, setIsOpen] = useState(false); //open cropper modal
-  const [isShowPreview, setIsShowPreview] = useState(false); // open preview setelah crop
-  const [cropData, setCropData] = useState(null); //get crop result
-  const [imageFiles, setImageFiles] = useState(null);
   const base64Image = value;
   const [error, setError] = useState(false);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   // LB - 0652 - 25. 03 - QC Plan - Web - Pengecekan Ronda Muatparts - Tahap 2
   const { t } = useTranslation();
+  const navigation = useResponsiveNavigation();
+  const { image, imageFile } = useImageUploaderStore();
+  const { setImage, setImageFile } = useImageUploaderActions();
 
   // const getFile = (e) => {
   //   let files;
@@ -100,10 +103,10 @@ export default function ImageUploaderResponsive({
 
     if (e.dataTransfer) {
       files = e.dataTransfer.files;
-      setImageFiles(files[0]);
+      setImageFile(files[0]);
     } else if (e.target) {
       files = e.target.files;
-      setImageFiles(files[0]);
+      setImageFile(files[0]);
     }
     file = files[0];
 
@@ -186,9 +189,9 @@ export default function ImageUploaderResponsive({
         const fullReader = new FileReader();
         fullReader.onloadend = () => {
           setImage(fullReader.result);
-          setIsOpen(true);
           setError(false);
           setIsBottomSheetOpen(false);
+          navigation.push("/Cropper");
         };
         fullReader.readAsDataURL(file);
       }
@@ -200,10 +203,9 @@ export default function ImageUploaderResponsive({
   };
 
   const getCroppedData = (value) => {
-    const file = base64ToFile(value, imageFiles.name, imageFiles.type);
+    const file = base64ToFile(value, imageFile.name, imageFile.type);
     onFinishCrop(file);
     if (value) {
-      setCropData(value);
       onUpload(value);
       onError(false);
       cameraRef.current.value = null;
@@ -223,7 +225,6 @@ export default function ImageUploaderResponsive({
     cameraRef.current.value = null;
     fileRef.current.value = null;
     setImage(null);
-    setCropData(null);
     getImage(null);
     e.stopPropagation();
   };
