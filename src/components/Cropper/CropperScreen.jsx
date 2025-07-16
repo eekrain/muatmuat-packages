@@ -4,8 +4,8 @@ import { useRef } from "react";
 import "cropperjs/dist/cropper.css";
 import Cropper from "react-cropper";
 
-import CropperResponsiveLayout from "@/layout/ResponsiveLayout/CropperResponsiveLayout";
-import { useImageUploaderStore } from "@/store/forms/imageUploaderStore";
+import CropperResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/CropperResponsiveLayout";
+import { useImageUploaderStore } from "@/store/Shipper/forms/imageUploaderStore";
 
 import "./cropper_az.css";
 

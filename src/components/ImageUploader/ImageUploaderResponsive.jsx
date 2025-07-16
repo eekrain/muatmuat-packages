@@ -15,7 +15,7 @@ import { toast } from "@/lib/toast";
 import {
   useImageUploaderActions,
   useImageUploaderStore,
-} from "@/store/forms/imageUploaderStore";
+} from "@/store/Shipper/forms/imageUploaderStore";
 
 import styles from "./ImageUploader.module.scss";
 
