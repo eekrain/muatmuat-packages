@@ -110,9 +110,9 @@ const apiResultOrderDetail = {
         transporterOrderCode: "MT.25.AA.001",
         invoiceNumber: "INV/12345678",
         // orderStatus: OrderStatusEnum.LOADING,
-        orderStatus: OrderStatusEnum.WAITING_REPAYMENT_1,
+        orderStatus: OrderStatusEnum.LOADING,
         orderTitle: "Proses Muat",
-        unitFleetStatus: 2,
+        unitFleetStatus: 3,
         orderType: OrderTypeEnum.INSTANT,
         createdAt: "2024-01-01T10:00:00Z",
         updatedAt: "2024-01-01T14:30:00Z",
@@ -211,19 +211,6 @@ const apiResultOrderDetail = {
       pendingChanges: {
         hasPendingChanges: false,
       },
-
-      otherStatus: [
-        {
-          orderStatus: OrderStatusEnum.WAITING_REPAYMENT_1,
-          orderTitle: "Proses Muat",
-          unitFleetStatus: 2,
-        },
-        {
-          orderStatus: OrderStatusEnum.PREPARE_DOCUMENT,
-          orderTitle: "Proses Muat",
-          unitFleetStatus: 1,
-        },
-      ],
     },
     Type: "/v1/orders/550e8400-e29b-41d4-a716-446655440000",
   },
@@ -255,8 +242,8 @@ const completeFetcher = async (cacheKey) => {
       dataCancellationHistory,
       dataLegendStatus,
     ] = await Promise.all([
-      // fetcherMuatrans.get(`/v1/orders/${orderId}`),
-      apiResultOrderDetail,
+      fetcherMuatrans.get(`/v1/orders/${orderId}`),
+      // apiResultOrderDetail,
       getOrderStatusHistory(cacheKey),
       getOrderPaymentData(cacheKey),
       getAdditionalServices(cacheKey),
