@@ -2,11 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import CropperWeb from "@/components/Cropper/CropperWeb";
+import IconComponent from "@/components/IconComponent/IconComponent";
+import ImageComponent from "@/components/ImageComponent/ImageComponent";
+import { useSWRMutateHook } from "@/hooks/use-swr";
 import { toast } from "@/lib/toast";
 
-import CropperImage from "../Cropper/Cropper";
-import IconComponent from "../IconComponent/IconComponent";
-import ImageComponent from "../ImageComponent/ImageComponent";
 import styles from "./ImageUploader.module.scss";
 
 // import { useTranslation } from "@/context/TranslationProvider";
@@ -40,6 +41,9 @@ export default function ImageUploaderWeb({
 
   const [renderUploadText, setRenderUploadText] = useState(uploadText);
   const [renderErrorText, setRenderErrorText] = useState(errorText);
+
+  const { trigger: uploadPhoto, isMutating: isMutatingUploadPhoto } =
+    useSWRMutateHook("v1/orders/upload", "POST");
 
   useEffect(() => {
     if (!uploadText) setRenderUploadText("Unggah Gambar");
@@ -156,13 +160,27 @@ export default function ImageUploaderWeb({
     // }
   };
 
+  const handleFinishCrop = async (value) => {
+    const formData = new FormData();
+    formData.append("file", value);
+
+    return await uploadPhoto(formData)
+      .then((data) => {
+        getImage(data.Data.photoUrl);
+        return data;
+      })
+      .catch((error) => {
+        return value;
+      });
+  };
+
   const getCroppedData = (file) => {
     // Log file information
     console.log(`File size: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
     console.log(`File name: ${file.name}`);
     console.log(`File type: ${file.type}`);
 
-    onFinishCrop(file);
+    handleFinishCrop(file);
 
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -201,12 +219,12 @@ export default function ImageUploaderWeb({
           error && styles.ImageUploaderNull
         } group relative flex size-[72px] items-end gap-y-3 hover:!border-primary-700 ${className}`}
         style={
-          !error && base64Image && !isLoading
+          !error && base64Image && !isMutatingUploadPhoto
             ? { backgroundImage: `url(${base64Image})` }
             : { backgroundImage: "none" }
         }
         onClick={() => {
-          if (!isLoading) {
+          if (!isMutatingUploadPhoto) {
             imageRef.current.click();
           }
         }}
@@ -218,7 +236,7 @@ export default function ImageUploaderWeb({
           ref={imageRef}
           className="hidden"
         />
-        {isLoading ? (
+        {isMutatingUploadPhoto ? (
           <>
             <ImageComponent
               className={styles.rotate_image}
@@ -281,7 +299,7 @@ export default function ImageUploaderWeb({
         )}
       </div>
       {isOpen ? (
-        <CropperImage
+        <CropperWeb
           imageFile={imageFile}
           imageSource={image}
           isOpen={isOpen}

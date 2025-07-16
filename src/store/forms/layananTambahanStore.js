@@ -13,6 +13,8 @@ const defaultValues = {
   bantuanTambahan: false,
   troli: false,
 
+  additionalServices: [],
+  tempShippingOptions: [],
   // UI state
   showOtherAdditionalServices: false,
 };

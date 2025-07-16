@@ -5,14 +5,13 @@ import { useRef, useState } from "react";
 import {
   BottomSheet,
   BottomSheetContent,
-  BottomSheetHeader,
 } from "@/components/Bottomsheet/Bottomsheet";
-import { useTranslation } from "@/context/TranslationProvider";
+// import CropperResponsive from "@/components/Cropper/CropperResponsive";
+import IconComponent from "@/components/IconComponent/IconComponent";
+import ImageComponent from "@/components/ImageComponent/ImageComponent";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 
-import CropperImage from "../Cropper/Cropper";
-import IconComponent from "../IconComponent/IconComponent";
-import ImageComponent from "../ImageComponent/ImageComponent";
 import styles from "./ImageUploader.module.scss";
 
 function base64ToFile(base64String, filename, mimeType) {
@@ -235,7 +234,7 @@ export default function ImageUploaderResponsive({
 
   const uploadOptions = [
     {
-      src: "/icons/camera.svg",
+      src: "/icons/camera24.svg",
       title: "Ambil Foto",
       onClick: () => {
         setIsBottomSheetOpen(false);
@@ -243,7 +242,7 @@ export default function ImageUploaderResponsive({
       },
     },
     {
-      src: "/icons/Upload.svg",
+      src: "/icons/upload24.svg",
       title: "Unggah File",
       onClick: () => {
         setIsBottomSheetOpen(false);
@@ -256,15 +255,18 @@ export default function ImageUploaderResponsive({
     <>
       <BottomSheet open={isBottomSheetOpen} onOpenChange={setIsBottomSheetOpen}>
         <BottomSheetContent>
-          <BottomSheetHeader>Pilih Sumber Foto</BottomSheetHeader>
           <div className="flex justify-around py-4">
             {uploadOptions.map((option, key) => (
               <div className="flex flex-col items-center gap-y-4" key={key}>
                 <div
-                  className="size-16 cursor-pointer rounded-[50px] bg-primary-700 p-5"
+                  className="flex size-16 cursor-pointer items-center justify-center rounded-[50px] bg-primary-700"
                   onClick={option.onClick}
                 >
-                  <IconComponent src={option.src} size="medium" />
+                  <IconComponent
+                    className="icon-fill-neutral-50"
+                    src={option.src}
+                    size="medium"
+                  />
                 </div>
                 <span className="text-[16px] font-semibold leading-[19.2px]">
                   {option.title}
@@ -352,8 +354,8 @@ export default function ImageUploaderResponsive({
           </>
         )}
       </div>
-      {isOpen ? (
-        <CropperImage
+      {/* {isOpen ? (
+        <CropperResponsive
           imageSource={image}
           isOpen={isOpen}
           setIsOpen={setIsOpen}
@@ -367,7 +369,7 @@ export default function ImageUploaderResponsive({
           setIsShowPreview={setIsShowPreview}
           fileType={imageFiles?.type}
         />
-      ) : null}
+      ) : null} */}
     </>
   );
 }

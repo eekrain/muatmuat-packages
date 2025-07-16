@@ -6,6 +6,7 @@ import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { useLayananTambahanStore } from "@/store/forms/layananTambahanStore";
@@ -86,6 +87,11 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
     }
     navigation.pop();
   };
+  console.log("locatin", locationFormValues);
+  const otherAdditionalServices = useShallowMemo(
+    () => additionalServicesOptions.filter((item) => !item.withShipping),
+    [additionalServicesOptions]
+  );
 
   return (
     <FormResponsiveLayout
@@ -375,42 +381,65 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
         </div>
 
         {/* Section 4: Layanan Tambahan Lainnya */}
-        <div className="flex w-full flex-col gap-y-6 rounded-none bg-white p-5 px-4">
-          {/* Section Header */}
-          <button
-            className="flex h-5 w-full flex-row items-center justify-between gap-4"
-            onClick={() =>
-              tambahanSetField(
-                "showOtherAdditionalServices",
-                !tambahanFormValues.showOtherAdditionalServices
-              )
-            }
-          >
-            <span className="flex items-center text-[14px] font-bold leading-[15.4px] text-neutral-900">
-              Layanan Tambahan Lainnya
-            </span>
-            <IconComponent
-              src="/icons/chevron-up20.svg"
-              width={20}
-              height={20}
-            />
-          </button>
+        {otherAdditionalServices.length > 0 ? (
+          <div className="flex w-full flex-col gap-y-6 rounded-none bg-white p-5 px-4">
+            {/* Section Header */}
+            <button
+              className="flex h-5 w-full flex-row items-center justify-between gap-4"
+              onClick={() =>
+                tambahanSetField(
+                  "showOtherAdditionalServices",
+                  !tambahanFormValues.showOtherAdditionalServices
+                )
+              }
+            >
+              <span className="flex items-center text-[14px] font-bold leading-[15.4px] text-neutral-900">
+                Layanan Tambahan Lainnya
+              </span>
+              <IconComponent
+                src="/icons/chevron-up20.svg"
+                width={20}
+                height={20}
+              />
+            </button>
 
-          {/* Services List Container */}
-          {tambahanFormValues.showOtherAdditionalServices ? (
-            <div className="flex flex-col gap-y-4">
-              {additionalServicesOptions
-                .filter((item) => !item.withShipping)
-                .map((service, key) => {
+            {/* Services List Container */}
+            {tambahanFormValues.showOtherAdditionalServices ? (
+              <div className="flex flex-col gap-y-4">
+                {otherAdditionalServices.map((service, key) => {
+                  // Check if this service is already in the additionalServices array
+                  const isSelected = otherAdditionalServices.some(
+                    (selectedService) =>
+                      selectedService.serviceId === service.additionalServiceId
+                  );
                   return (
                     <div className="flex flex-col gap-y-2" key={key}>
                       <FormLabel>
                         <Checkbox
                           label={service.name}
-                          checked={tambahanFormValues.bantuanTambahan}
-                          onChange={(e) =>
-                            tambahanSetField("bantuanTambahan", e.checked)
-                          }
+                          checked={isSelected}
+                          onChange={(e) => {
+                            if (e.checked) {
+                              // Add the service to the array if checked
+                              tambahanSetField("additionalServices", [
+                                ...tambahanFormValues.additionalServices,
+                                {
+                                  serviceId: service.additionalServiceId,
+                                  withShipping: service.withShipping,
+                                },
+                              ]);
+                            } else {
+                              // Remove the service from the array if unchecked
+                              tambahanSetField(
+                                "additionalServices",
+                                tambahanFormValues.additionalServices.filter(
+                                  (selectedService) =>
+                                    selectedService.serviceId !==
+                                    service.additionalServiceId
+                                )
+                              );
+                            }
+                          }}
                         />
                         <InfoBottomsheet title="Bantuan Tambahan">
                           <p className="text-[14px] font-medium leading-[15.4px] text-neutral-900">
@@ -424,9 +453,10 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                     </div>
                   );
                 })}
-            </div>
-          ) : null}
-        </div>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </div>
 
       <ResponsiveFooter className="flex gap-3">

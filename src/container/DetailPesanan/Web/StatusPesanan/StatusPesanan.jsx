@@ -7,13 +7,13 @@ import { AlertPendingPayment1 } from "@/container/DetailPesanan/Web/StatusPesana
 import { AlertPendingPrepareFleet } from "@/container/DetailPesanan/Web/StatusPesanan/AlertPendingPrepareFleet";
 import { AlertPendingUpdateConfirmation } from "@/container/DetailPesanan/Web/StatusPesanan/AlertPendingUpdateConfirmation";
 import { AlertPendingUpdatePayment } from "@/container/DetailPesanan/Web/StatusPesanan/AlertPendingUpdatePayment";
-import AlertWaitFleetSearch from "@/container/DetailPesanan/Web/StatusPesanan/AlertWaitFleetSearch";
+// import AlertWaitFleetSearch from "@/container/DetailPesanan/Web/StatusPesanan/AlertWaitFleetSearch";
 import { DriverStatusCard } from "@/container/DetailPesanan/Web/StatusPesanan/DriverStatusCard";
+import ModalIncomingDriverWaitingTimeFee from "@/container/DetailPesanan/Web/StatusPesanan/ModalIncomingDriverWaitingTimeFee";
+import { ModalPerubahanData } from "@/container/DetailPesanan/Web/StatusPesanan/ModalPerubahanData";
 import { StatusPesananHeader } from "@/container/DetailPesanan/Web/StatusPesanan/StatusPesananHeader";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { cn } from "@/lib/utils";
-
-import { ModalPerubahanData } from "./ModalPerubahanData";
 
 const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
   return (
@@ -50,6 +50,8 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
             />
             {item.type === "CONFIRMED_CHANGES" ? (
               <ModalPerubahanData />
+            ) : item.type === "WAITING_TIME_CHARGE" ? (
+              <ModalIncomingDriverWaitingTimeFee />
             ) : item?.info ? (
               <InfoTooltip
                 side="right"
@@ -65,7 +67,7 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
       {/* Alert Driver akan kena biaya tunggu dan tunjukan QR ke driver */}
       {/* {true ? <AlertDriverWaiting /> : null} */}
 
-      {isShowWaitFleetAlert && <AlertWaitFleetSearch />}
+      {/* {isShowWaitFleetAlert && <AlertWaitFleetSearch />} */}
 
       {/* Alert Buat Habis Update lokasi bongkar perlu konfirmasi */}
       {/* {true ? <AlertUpdateConfirmation /> : null} */}

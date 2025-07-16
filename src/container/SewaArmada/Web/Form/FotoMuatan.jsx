@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 
 import { FormContainer, FormLabel } from "@/components/Form/Form";
-import ImageUploader from "@/components/ImageUploader/ImageUploader";
+import ImageUploaderWeb from "@/components/ImageUploader/ImageUploaderWeb";
 import { cn } from "@/lib/utils";
 import { handleFirstTime } from "@/lib/utils/form";
 import {
@@ -25,7 +25,7 @@ export const FotoMuatan = () => {
         <div className="flex flex-wrap gap-4">
           {[...Array(4)].map((_, key) => (
             <Fragment key={key}>
-              <ImageUploader
+              <ImageUploaderWeb
                 getImage={(value) =>
                   handleFirstTime(() => handleImageUpload(key, value))
                 }

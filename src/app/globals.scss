@@ -192,6 +192,12 @@ input::-webkit-inner-spin-button {
   font-weight: 700;
 }
 
+.icon-fill-neutral-50 {
+  path {
+    fill: var(--neutral-50);
+  }
+}
+
 .icon-fill-neutral-400 {
   path {
     fill: var(--neutral-400);

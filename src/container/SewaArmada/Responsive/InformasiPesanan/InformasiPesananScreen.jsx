@@ -15,7 +15,8 @@ import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
-import ImageUploader from "@/components/ImageUploader/ImageUploader";
+// import ImageUploader from "@/components/ImageUploader/ImageUploader";
+import ImageUploaderResponsive from "@/components/ImageUploader/ImageUploaderResponsive";
 import TextArea from "@/components/TextArea/TextArea";
 import VoucherCard from "@/components/Voucher/VoucherCard";
 import VoucherEmptyState from "@/components/Voucher/VoucherEmptyState";
@@ -335,7 +336,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
 
         {/* Form Lampiran Foto */}
         <div className="flex flex-col gap-6 bg-white p-4">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-y-4">
             <h2 className="text-[14px] font-semibold text-neutral-900">
               Lampiran/Foto Muatan*
             </h2>
@@ -344,7 +345,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
             <div className="flex flex-wrap gap-3">
               {[...Array(4)].map((_, key) => (
                 <Fragment key={key}>
-                  <ImageUploader
+                  <ImageUploaderResponsive
                     getImage={(value) => handleImageUpload(key, value)}
                     uploadText={key === 0 ? "Foto Utama" : `Foto ${key + 1}`}
                     maxSize={10}
@@ -369,7 +370,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
           </div>
 
           {/* Form Deskripsi */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-y-4">
             <div className="flex items-start gap-1">
               <span className="text-[14px] font-semibold text-neutral-900">
                 Deskripsi Muatan*
@@ -404,7 +405,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
         </div>
 
         {/* Badan Usaha Pemesan - Updated Section */}
-        <div className="flex flex-col gap-4 bg-white p-4">
+        <div className="flex flex-col gap-y-4 bg-white p-4">
           {/* Header */}
           <div className="flex items-center gap-1">
             <h2 className="text-[14px] font-bold leading-[15.4px] text-neutral-900">
@@ -430,7 +431,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
 
           {/* Form Fields - Only show when checkbox is checked */}
           {isBusinessEntity && (
-            <div className="mt-2 flex flex-col gap-4">
+            <div className="mt-2 flex flex-col gap-y-4">
               {/* Field Nama Badan Usaha */}
               <div className="flex flex-col gap-3">
                 <label className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
@@ -506,7 +507,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
         </div>
 
         {/* Ringkasan Transaksi */}
-        <div className="flex flex-col gap-6 bg-white p-4">
+        <div className="gap-y-f6 flex flex-col bg-white p-4">
           <h1 className="text-[14px] font-semibold text-neutral-900">
             Ringkasan Transaksi
           </h1>
@@ -514,7 +515,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
           {/* Detail Biaya Container */}
           <div className="flex flex-col gap-6 border-b border-neutral-400 pb-6">
             {/* Biaya Pesan Jasa Angkut */}
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-y-4">
               <h3 className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
                 Biaya Pesan Jasa Angkut
               </h3>
@@ -529,7 +530,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
             </div>
 
             {/* Biaya Asuransi */}
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-y-4">
               <h3 className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
                 Biaya Asuransi Barang
               </h3>
@@ -544,7 +545,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
             </div>
 
             {/* Biaya Layanan Tambahan */}
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-y-4">
               <h3 className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
                 Biaya Layanan Tambahan
               </h3>
@@ -572,7 +573,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
             </div>
 
             {/* Diskon Voucher */}
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-y-4">
               <h3 className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
                 Diskon Voucher
               </h3>
@@ -602,7 +603,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
 
           {/* Biaya Lainnya Container */}
           <div className="flex flex-col gap-6 border-b border-neutral-400 pb-6">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-y-4">
               <h3 className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
                 Biaya Lainnya
               </h3>

@@ -7,7 +7,7 @@ import "cropperjs/dist/cropper.css";
 import Cropper from "react-cropper";
 
 // import CropperPreviewResponsive from "./CropperPreviewResponsive";
-import { useHeader } from "@/common/ResponsiveContext";
+// import { useHeader } from "@/common/ResponsiveContext";
 
 import IconComponent from "../IconComponent/IconComponent";
 import style from "./CropperResponsive.module.scss";
@@ -31,7 +31,7 @@ export default function CropperResponsive({
   const cropperRef = useRef(null);
   const [previewImage, setPreviewImage] = useState(null);
   const defaultRatioRef = useRef(null);
-  const { setAppBar } = useHeader();
+  // const { setAppBar } = useHeader();
 
   const getCropData = () => {
     if (typeof cropperRef.current.cropper !== "undefined") {

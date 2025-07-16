@@ -83,7 +83,7 @@ const NeedConfirmationWarning = ({ className, settlementAlertInfo }) => {
           size="medium"
         />
         <div className="flex items-center gap-x-1 text-[12px] font-semibold leading-[14.4px] text-neutral-900">
-          <span>{settlementAlertInfo[statusPendingIndex].alertText}</span>
+          <span>{t(settlementAlertInfo[statusPendingIndex].alertText)}</span>
           <Link
             className="text-primary-700"
             href={
