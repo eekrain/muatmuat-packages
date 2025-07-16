@@ -79,7 +79,7 @@ const HeaderLayout = ({
     {
       id: "manajemen-armada",
       label: "Manajemen Armada",
-      href: "/armada",
+      href: "/manajemen-armada",
       icon: "/icons/header-transporter/armada.svg",
     },
     {
