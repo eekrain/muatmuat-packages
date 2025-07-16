@@ -13,6 +13,7 @@ const cacheConfig = {
     // Cache for 8 hours, but allow revalidation for every 1 hour
     "Cache-Control": "public, max-age=28800, stale-while-revalidate=3600",
   },
+  timeout: 2000,
 };
 
 export const AuthenticationProvider = ({ children }) => {
@@ -29,6 +30,7 @@ export const AuthenticationProvider = ({ children }) => {
   const { setUser, setDataMatrix } = useUserActions();
 
   useEffect(() => {
+    console.log("Auth effect:", { isZustandHydrated, hasInitAuth });
     // Only run when Zustand is hydrated and we haven't initialized auth yet
     if (!isZustandHydrated || hasInitAuth) return;
 
@@ -50,25 +52,41 @@ export const AuthenticationProvider = ({ children }) => {
         await new Promise((res) => setTimeout(res, 500));
       }
 
+      console.log("anjay 1");
       try {
-        const [resUser, resMatrix, resCredential] = await Promise.all([
-          fetcherMuatparts.post(
-            "v1/user/getUserStatusV3",
-            undefined,
-            cacheConfig
-          ),
-          fetcherMuatparts.get("v1/register/checkmatrix", cacheConfig),
-          fetcherMuatparts.get(
-            "v1/muatparts/auth/credential-check",
-            cacheConfig
-          ),
-        ]);
-        const { accessToken, refreshtoken, ...user } =
-          resCredential.data?.Data || {};
-        setUser({ ...resUser.data?.Data, ...user });
-        setDataMatrix(resMatrix.data?.Data);
+        console.log("anjay 2");
+
+        const [userResult, matrixResult, credentialResult] =
+          await Promise.allSettled([
+            fetcherMuatparts.post(
+              "v1/user/getUserStatusV3",
+              undefined,
+              cacheConfig
+            ),
+            fetcherMuatparts.get("v1/register/checkmatrix", cacheConfig),
+            fetcherMuatparts.get(
+              "v1/muatparts/auth/credential-check",
+              cacheConfig
+            ),
+          ]);
+        let dataUser = {};
+        if (userResult.status === "fulfilled") {
+          dataUser = { ...userResult.value.data?.Data };
+        }
+        if (credentialResult.status === "fulfilled") {
+          const credential = credentialResult.value.data?.Data || {};
+          delete credential.accessToken;
+          delete credential.refreshToken;
+          delete credential.refreshtoken;
+          dataUser = { ...dataUser, ...credential };
+        }
+        setUser(dataUser);
+
+        if (matrixResult.status === "fulfilled") {
+          setDataMatrix(matrixResult.value.data?.Data);
+        }
       } catch (err) {
-        console.log("Error initializing authentication");
+        console.error("Error initializing authentication", err);
       } finally {
         setHasInitAuth(true);
       }
@@ -91,7 +109,7 @@ export const AuthenticationProvider = ({ children }) => {
 export const useAuth = () => {
   const dataMatrix = useUserStore(useShallow((state) => state.dataMatrix));
   const dataUser = useUserStore(useShallow((state) => state.dataUser));
-
+  const isLoggedIn = Boolean(dataUser?.ID) || Boolean(dataUser?.id);
   // Stable logout function
   const logout = useCallback(async () => {
     const authStore = useTokenStore.getState();
@@ -112,5 +130,5 @@ export const useAuth = () => {
     }
   }, []);
 
-  return { dataMatrix, dataUser, logout };
+  return { dataMatrix, dataUser, logout, isLoggedIn };
 };

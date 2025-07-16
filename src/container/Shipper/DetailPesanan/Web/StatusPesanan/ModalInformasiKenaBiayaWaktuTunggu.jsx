@@ -2,17 +2,18 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import { cn } from "@/lib/utils";
 
-const ModalIncomingDriverWaitingTimeFee = () => {
-  const dummyData = [
-    {
-      name: "Noel Gallagher",
-      licensePlate: "AE 666 LBA",
-    },
-    {
-      name: "Noel Gallagher",
-      licensePlate: "AE 666 LBA",
-    },
-  ];
+/**
+ * @typedef {Object} Driver
+ * @property {string} name
+ * @property {string} licensePlate
+ */
+
+/**
+ * @param {Object} param
+ * @param {Driver[]} param.data
+ * @returns
+ */
+export const ModalInformasiKenaBiayaWaktuTunggu = ({ data = [] }) => {
   return (
     <Modal closeOnOutsideClick>
       <ModalTrigger>
@@ -27,11 +28,11 @@ const ModalIncomingDriverWaitingTimeFee = () => {
               Informasi
             </h1>
             <div className="mt-6 flex w-full flex-col gap-y-3">
-              {dummyData.map((item, key) => (
+              {data.map((item, key) => (
                 <div
                   className={cn(
                     "flex flex-col",
-                    dummyData.length - 1 === key
+                    data.length - 1 === key
                       ? ""
                       : "border-b border-b-neutral-400 pb-3"
                   )}
@@ -64,5 +65,3 @@ const ModalIncomingDriverWaitingTimeFee = () => {
     </Modal>
   );
 };
-
-export default ModalIncomingDriverWaitingTimeFee;

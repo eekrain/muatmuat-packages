@@ -4,13 +4,13 @@ import { usePathname } from "next/navigation";
 
 import FloatingButton from "@/components/FloatingButton/FloatingButton";
 import HeaderWeb from "@/components/Header/Web/HeaderWeb";
-import { useTokenStore } from "@/store/Auth/tokenStore";
+import { useAuth } from "@/hooks/use-auth";
 import { useNotificationCounterStore } from "@/store/Shipper/notificationCounterStore";
 
 export default function DesktopLayout({ children }) {
   const pathname = usePathname();
 
-  const isLoggedIn = useTokenStore((state) => state.accessToken);
+  const { isLoggedIn } = useAuth();
   const { notification, chat } = useNotificationCounterStore();
 
   const arr = ["/register/otp"];

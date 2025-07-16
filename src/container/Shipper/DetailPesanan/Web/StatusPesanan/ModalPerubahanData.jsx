@@ -53,10 +53,6 @@ const locationData = {
 
 export const ModalPerubahanData = () => {
   const [heights, setHeights] = useState([]);
-  console.log(
-    "🔍 ~  ~ src/container/DetailPesanan/Web/StatusPesanan/ModalPerubahanData.jsx:47 ~ heights:",
-    heights
-  );
 
   return (
     <Modal>

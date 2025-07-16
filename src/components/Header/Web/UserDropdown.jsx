@@ -7,7 +7,6 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { useAuth } from "@/hooks/use-auth";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
-import { useTokenStore } from "@/store/Auth/tokenStore";
 
 const MenuItem = ({ imgUrl, title, variant, onClick }) => {
   return (
@@ -26,11 +25,10 @@ const MenuItem = ({ imgUrl, title, variant, onClick }) => {
 
 export const UserDropdown = () => {
   const { t } = useTranslation();
-  const accessToken = useTokenStore((state) => state.accessToken);
-  const { dataUser, logout } = useAuth();
+  const { isLoggedIn, dataUser, logout } = useAuth();
   return (
     <>
-      {!accessToken ? (
+      {!isLoggedIn ? (
         <a href={`${process.env.NEXT_PUBLIC_INTERNAL_WEB}login?from=muattrans`}>
           <Button variant="muatparts-primary">
             <span className="text-[14px] font-semibold leading-[1] text-neutral-50">
