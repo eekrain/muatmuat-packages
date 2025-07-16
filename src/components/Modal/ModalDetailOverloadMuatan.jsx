@@ -1,11 +1,21 @@
+import { cn } from "@/lib/utils";
+import { idrFormat } from "@/lib/utils/formatters";
+
 const { Modal, ModalTrigger, ModalContent } = require("./Modal");
 
 export const ModalDetailOverloadMuatan = ({
-  data = {
-    driverName: "Noel Gallagher",
-    amount: "Rp100.000",
-    overloadWeight: "1.000 kg",
-  },
+  drivers = [
+    {
+      driverName: "Noel Gallagher",
+      amount: 100000,
+      overloadWeight: "1.000 kg",
+    },
+    {
+      driverName: "Liam Gallagher",
+      amount: 200000,
+      overloadWeight: "2.000 kg",
+    },
+  ],
 }) => {
   return (
     <Modal closeOnOutsideClick>
@@ -24,27 +34,46 @@ export const ModalDetailOverloadMuatan = ({
             Detail Overload Muatan
           </h2>
 
-          <div className="w-full">
-            <div className="flex items-baseline justify-between">
-              <span className="h-2.5 text-sm font-semibold text-neutral-900">
-                Driver : {data.driverName}
-              </span>
+          <div className="flex flex-col">
+            {drivers.map((driver, idx) => (
+              <div
+                className={cn(
+                  "w-full border-b border-neutral-400 pb-6",
+                  idx !== drivers.length - 1 && "mb-6"
+                )}
+                key={idx}
+              >
+                <div className="flex items-baseline justify-between">
+                  <span className="h-2.5 text-sm font-semibold text-neutral-900">
+                    Driver : {driver.driverName}
+                  </span>
+                  <span className="h-2.5 text-right text-neutral-900">
+                    {idrFormat(driver.amount)}
+                  </span>
+                </div>
+                <span className="mt-3 block h-2 text-xs font-medium leading-[14.4px] text-neutral-600">
+                  Nominal Overload Muatan ({driver.overloadWeight})
+                </span>
+              </div>
+            ))}
 
-              <span className="h-2.5 text-right text-neutral-900">
-                {data.amount}
+            <div className="text-neutral-90 flex items-center justify-between pt-6 text-base font-bold">
+              <span className="">Total</span>
+              <span className="">
+                {drivers
+                  .reduce(
+                    (acc, d) =>
+                      acc +
+                      (Number(d.amount.toString().replace(/[^\d]/g, "")) || 0),
+                    0
+                  )
+                  .toLocaleString("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0,
+                  })}
               </span>
             </div>
-
-            <span className="mt-3 block h-2 text-xs font-medium leading-[14.4px] text-neutral-600">
-              Nominal Overload Muatan ({data.overloadWeight})
-            </span>
-          </div>
-
-          <hr className="my-6 block border-neutral-400" />
-
-          <div className="flex items-center justify-between text-base font-bold text-neutral-900">
-            <span className="">Total</span>
-            <span className="">{data.amount}</span>
           </div>
         </div>
       </ModalContent>

@@ -3,9 +3,9 @@ import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import { ModalPostalCodeResponsive } from "@/components/LocationManagement/Responsive/ModalPostalCodeResponsive/ModalPostalCodeResponsive";
 import { MapContainer } from "@/components/MapContainer/MapContainer";
 import { useLocationContext } from "@/hooks/use-location/use-location";
-import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
+import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveRouteParams } from "@/lib/responsive-navigation";
-import { useLocationFormStore } from "@/store/forms/locationFormStore";
+import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 
 const PinPointMapScreen = () => {
   const params = useResponsiveRouteParams();

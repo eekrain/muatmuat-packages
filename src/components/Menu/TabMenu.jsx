@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useRef } from "react";
 
 import useDevice from "@/hooks/use-device";
-import menuZus from "@/store/zustand/menu";
+import menuZus from "@/store/Shipper/zustand/menu";
 
 /**
  * TabMenu component renders a tabbed menu interface with auto-selection of first tab.

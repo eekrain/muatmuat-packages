@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo } from "react";
 
 import { fetcherMuatparts } from "@/lib/axios";
-import { useLocationFormStore } from "@/store/forms/locationFormStore";
-import { useResponsiveSearchStore } from "@/store/zustand/responsiveSearchStore";
+import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
+import { useResponsiveSearchStore } from "@/store/Shipper/zustand/responsiveSearchStore";
 
 import { useDebounceCallback } from "../use-debounce-callback";
 import useDevice from "../use-device";

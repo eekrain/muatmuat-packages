@@ -3,7 +3,7 @@
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
-import { useResponsiveSearchStore } from "@/store/zustand/responsiveSearchStore";
+import { useResponsiveSearchStore } from "@/store/Shipper/zustand/responsiveSearchStore";
 
 const DEFAULT_FUNCTION = () =>
   alert("Responsive SearchBar Header: No function provided");

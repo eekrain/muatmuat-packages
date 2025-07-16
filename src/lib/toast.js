@@ -1,4 +1,4 @@
-import { useToastStore } from "@/store/toastStore";
+import { useToastStore } from "@/store/Shipper/toastStore";
 
 /**
  * Global toast utility

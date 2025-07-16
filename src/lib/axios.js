@@ -1,7 +1,7 @@
 import xior from "xior";
 
-import { useTokenStore } from "@/store/auth/tokenStore";
-import { useUserStore } from "@/store/auth/userStore";
+import { useTokenStore } from "@/store/Auth/tokenStore";
+import { useUserStore } from "@/store/Auth/userStore";
 
 const LIST_PUBLIC_ROUTES = [
   "/sewaarmada",
@@ -57,6 +57,7 @@ export const createAxios = (baseURL) => {
             // If route is a string, check if pathname starts with the route
             // This allows subpaths to match (e.g., "/sewaarmada/something" matches "/sewaarmada")
             if (typeof route === "string") {
+              if (route === "/") return pathname === route;
               return pathname === route || pathname.startsWith(route);
             }
 
@@ -68,7 +69,7 @@ export const createAxios = (baseURL) => {
             return false;
           });
           if (window?.location && !isPublicRoutes) {
-            window.location.replace("/sewaarmada");
+            window.location.replace("/");
           }
         }
       } else {

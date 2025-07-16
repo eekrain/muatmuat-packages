@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-import { mockGetAvailableVouchers } from "@/services/voucher/mockVoucherService";
-import { muatTransGetAvailableVouchers } from "@/services/voucher/muatTransVoucherService";
+import { mockGetAvailableVouchers } from "@/services/Shipper/voucher/mockVoucherService";
+import { muatTransGetAvailableVouchers } from "@/services/Shipper/voucher/muatTransVoucherService";
 
 export const useVouchers = (token, useMockData = false, mockEmpty = false) => {
   const [vouchers, setVouchers] = useState([]);

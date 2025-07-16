@@ -9,7 +9,7 @@ import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { useLocationContext } from "@/hooks/use-location/use-location";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { normalizeUserSavedLocation } from "@/lib/normalizers/location";
-import { useLocationFormStore } from "@/store/forms/locationFormStore";
+import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 
 const errors = {};
 export const ModalFormSimpanLokasiWeb = ({

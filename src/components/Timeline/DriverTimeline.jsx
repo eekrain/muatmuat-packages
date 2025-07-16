@@ -145,11 +145,7 @@ export const DriverTimeline = ({ dataDriverStatus, onClickProof }) => {
                     ? "active"
                     : "inactive"
               }
-              canceledAt={
-                parent.mappedOrderStatus.startsWith("CANCELED")
-                  ? parent.date
-                  : null
-              }
+              canceledAt={parent.date}
               className={
                 parentIndex === 0 && !Boolean(parent?.children) ? "mt-0" : ""
               }
@@ -276,16 +272,16 @@ const ParentItem = ({
         <div
           className={cn(
             "flex items-center justify-between text-sm font-bold leading-[1.2] text-neutral-600",
-            variant === "active" || variant === "canceled"
-              ? "text-neutral-900"
-              : ""
+            variant === "canceled" && "text-neutral-900",
+            variant === "active" && "text-neutral-900"
           )}
         >
           <span>{title}</span>
           {canceledAt && (
             <span
               className={cn(
-                "block w-20 text-right text-xs font-medium leading-[1.2] md:w-fit"
+                "block w-20 text-right text-xs font-medium leading-[1.2] text-neutral-600 md:w-fit",
+                variant === "canceled" && "text-neutral-900"
               )}
             >
               {formatDate(canceledAt)}

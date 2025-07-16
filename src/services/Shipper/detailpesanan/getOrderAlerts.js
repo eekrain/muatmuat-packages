@@ -1,0 +1,46 @@
+// GET /api/v1/orders/{orderId}/alerts
+const apiResult = {
+  data: {
+    Message: {
+      code: 200,
+      text: "Success",
+    },
+    Data: {
+      alerts: [
+        {
+          type: "CONFIRMED_CHANGES",
+          date: "2025-05-21T14:30:00+07:00",
+          // label: "Pengembalian dana sedang dalam proses.",
+          // info: "Pengembalian dana sedang dalam proses, jumlah dana akan disesuakan setelah dikurangi <b>Admin Pembatalan</b> dan <b>Tambahan Biaya</b>. Info lebih lanjut hubungi Customer Service.",
+          // label: "Pengembalian dana berhasil diproses.",
+          // info: "Proses pengembalian dana telah berhasil dicairkan ke rekening kamu. Info lebih lanjut hubungi Customer Service.",
+          // label:
+          //   "Pesanan kamu memiliki tambahan biaya. Mohon selesaikan pembayaran sebelum tanggal <b>20 Mei 2024</b>",
+          // info: "",
+          label: "Perubahan pesanan telah kamu lakukan.",
+          info: "",
+        },
+        // {
+        //   type: "PENGEMBALIAN_DANA_SEDANG_DALAM_PROSES",
+        //   date: "2025-05-21T14:30:00+07:00",
+        //   label: "Pengembalian dana sedang dalam proses.",
+        //   info: "Pengembalian dana sedang dalam proses, jumlah dana akan disesuakan setelah dikurangi <b>Admin Pembatalan</b> dan <b>Tambahan Biaya</b>. Info lebih lanjut hubungi Customer Service.",
+        // },
+      ],
+    },
+    Type: "ORDER_ALERTS",
+  },
+};
+
+export const getOrderAlerts = async (cacheKey) => {
+  const orderId = cacheKey.split("/")[1];
+  const result = apiResult;
+  return result.data.Data.alerts;
+
+  // const result = await fetcherMuatrans.get(`v1/orders/${orderId}/alerts`);
+
+  // return result?.data?.Data?.alerts || [];
+};
+
+export const useGetOrderAlerts = (orderId) =>
+  useSWR(`order-alerts/${orderId}`, getOrderAlerts);

@@ -12,7 +12,7 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
-import { useTokenStore } from "@/store/auth/tokenStore";
+import { useTokenStore } from "@/store/Auth/tokenStore";
 
 import styles from "./FloatingButton.module.scss";
 

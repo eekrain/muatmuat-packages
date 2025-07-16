@@ -8,7 +8,7 @@ import PropTypes from "prop-types";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import useDevice from "@/hooks/use-device";
 import { cn } from "@/lib/utils";
-import { useToastStore } from "@/store/toastStore";
+import { useToastStore } from "@/store/Shipper/toastStore";
 
 const Toaster = ({ className }) => {
   const dataToast = useToastStore((state) => state.dataToast);

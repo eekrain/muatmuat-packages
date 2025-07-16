@@ -1,6 +1,6 @@
-import { useTokenStore } from "@/store/auth/tokenStore";
-import { useFirstTimerModalStore } from "@/store/first-timer/firstTimerModalStore";
-import { useWaitingSettlementModalStore } from "@/store/forms/waitingSettlementModalStore";
+import { useTokenStore } from "@/store/Auth/tokenStore";
+import { useFirstTimerModalStore } from "@/store/Shipper/first-timer/firstTimerModalStore";
+import { useWaitingSettlementModalStore } from "@/store/Shipper/forms/waitingSettlementModalStore";
 
 export const handleFirstTime = (callback) => {
   const accessToken = useTokenStore.getState().accessToken;
