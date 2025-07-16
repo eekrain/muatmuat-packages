@@ -29,7 +29,6 @@ const MainLayout = ({ children }) => {
     <>
       <Suspense fallback={<LoadingStatic />}>
         <LoadingInteractive />
-
         <TranslationProvider>
           <AuthenticationProvider>{children}</AuthenticationProvider>
         </TranslationProvider>
