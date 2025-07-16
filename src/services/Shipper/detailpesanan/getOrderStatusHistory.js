@@ -1,5 +1,35 @@
-import { fetcherMuatrans } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+
+const stepStatus = [
+  {
+    statusCode: OrderStatusEnum.SCHEDULED_FLEET,
+    statusName: "Pesanan Terkonfirmasi",
+  },
+  {
+    statusCode: OrderStatusEnum.LOADING,
+    statusName: "Proses Muat",
+  },
+  {
+    statusCode: OrderStatusEnum.UNLOADING,
+    statusName: "Proses Bongkar",
+  },
+  {
+    statusCode: OrderStatusEnum.WAITING_REPAYMENT_1,
+    statusName: "Menunggu Pembayaran",
+  },
+  {
+    statusCode: OrderStatusEnum.PREPARE_DOCUMENT,
+    statusName: "Dokumen Sedang Disiapkan",
+  },
+  {
+    statusCode: OrderStatusEnum.DOCUMENT_DELIVERY,
+    statusName: "Proses Pengiriman Dokumen",
+  },
+  {
+    statusCode: OrderStatusEnum.COMPLETED,
+    statusName: "Selesai",
+  },
+];
 
 // GET /base_url/v1/orders/{orderId}/status-history
 const apiResultOrderStatusHistory = {
@@ -14,28 +44,11 @@ const apiResultOrderStatusHistory = {
         name: "Hendra",
         driverImage: "https://picsum.photos/50",
         licensePlate: "B 1234 CD",
-        orderStatus: OrderStatusEnum.LOADING,
-        orderStatusTitle: "Proses Muat",
-        driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
-        driverStatusTitle: "Tiba di Lokasi Muat",
-        stepStatus: [
-          {
-            statusCode: OrderStatusEnum.CONFIRMED,
-            statusName: "Pesanan Terkonfirmasi",
-          },
-          {
-            statusCode: OrderStatusEnum.LOADING,
-            statusName: "Proses Muat",
-          },
-          {
-            statusCode: OrderStatusEnum.UNLOADING,
-            statusName: "Proses Bongkar",
-          },
-          {
-            statusCode: OrderStatusEnum.COMPLETED,
-            statusName: "Selesai",
-          },
-        ],
+        orderStatus: OrderStatusEnum.WAITING_REPAYMENT_1,
+        orderStatusTitle: "Sedang Muat",
+        driverStatus: "SEDANG_MUAT",
+        driverStatusTitle: "Sedang Muat",
+        stepStatus,
       },
 
       {
@@ -43,28 +56,11 @@ const apiResultOrderStatusHistory = {
         name: "Ardian Eka",
         driverImage: "https://picsum.photos/50",
         licensePlate: "B 1234 CD",
-        orderStatus: OrderStatusEnum.LOADING,
+        orderStatus: OrderStatusEnum.WAITING_REPAYMENT_1,
         orderStatusTitle: "Proses Muat",
         driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
-        driverStatusTitle: "Tiba di Lokasi Muat",
-        stepStatus: [
-          {
-            statusCode: OrderStatusEnum.CONFIRMED,
-            statusName: "Pesanan Terkonfirmasi",
-          },
-          {
-            statusCode: OrderStatusEnum.LOADING,
-            statusName: "Proses Muat",
-          },
-          {
-            statusCode: OrderStatusEnum.UNLOADING,
-            statusName: "Proses Bongkar",
-          },
-          {
-            statusCode: OrderStatusEnum.COMPLETED,
-            statusName: "Selesai",
-          },
-        ],
+        driverStatusTitle: "Menuju ke Lokasi Bongkar",
+        stepStatus,
       },
 
       {
@@ -72,28 +68,11 @@ const apiResultOrderStatusHistory = {
         name: "Cakra",
         driverImage: "https://picsum.photos/50",
         licensePlate: "B 1234 CD",
-        orderStatus: OrderStatusEnum.LOADING,
+        orderStatus: OrderStatusEnum.WAITING_REPAYMENT_1,
         orderStatusTitle: "Proses Muat",
         driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
-        driverStatusTitle: "Tiba di Lokasi Muat",
-        stepStatus: [
-          {
-            statusCode: OrderStatusEnum.CONFIRMED,
-            statusName: "Pesanan Terkonfirmasi",
-          },
-          {
-            statusCode: OrderStatusEnum.LOADING,
-            statusName: "Proses Muat",
-          },
-          {
-            statusCode: OrderStatusEnum.UNLOADING,
-            statusName: "Proses Bongkar",
-          },
-          {
-            statusCode: OrderStatusEnum.COMPLETED,
-            statusName: "Selesai",
-          },
-        ],
+        driverStatusTitle: "Menuju ke Lokasi Bongkar",
+        stepStatus,
       },
     ],
   },
@@ -103,15 +82,15 @@ const apiResultOrderStatusHistory = {
 export const getOrderStatusHistory = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
 
-  // const result = apiResultOrderStatusHistory;
+  const result = apiResultOrderStatusHistory;
 
-  // return result.Data;
+  return result.Data;
 
-  const result = await fetcherMuatrans.get(
-    `v1/orders/${orderId}/status-history`
-  );
+  // const result = await fetcherMuatrans.get(
+  //   `v1/orders/${orderId}/status-history`
+  // );
 
-  return result?.data?.Data || null;
+  // return result?.data?.Data || null;
 };
 
 export const useGetOrderStatusHistory = (orderId) =>

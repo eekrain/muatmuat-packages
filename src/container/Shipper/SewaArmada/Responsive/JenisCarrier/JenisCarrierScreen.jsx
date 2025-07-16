@@ -1,6 +1,6 @@
 import { Fragment, useMemo } from "react";
 
-import { Alert } from "@/components/Badge/Alert";
+import { Alert } from "@/components/Alert/Alert";
 import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
 import {
   LightboxPreview,

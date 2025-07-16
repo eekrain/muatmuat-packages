@@ -1,4 +1,3 @@
-import { fetcherMuatrans } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
 // GET /base_url/v1/orders/{orderId}/status-legend
@@ -55,15 +54,15 @@ const apiResultStatusLegend = {
 export const getStatusLegend = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
 
-  // await new Promise((resolve) => setTimeout(resolve, 1000));
-  // const result = apiResultStatusLegend;
-  // return result?.data?.Data?.statusLegend || [];
-
-  const result = await fetcherMuatrans.get(
-    `v1/orders/${orderId}/status-legend`
-  );
-
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  const result = apiResultStatusLegend;
   return result?.data?.Data?.statusLegend || [];
+
+  // const result = await fetcherMuatrans.get(
+  //   `v1/orders/${orderId}/status-legend`
+  // );
+
+  // return result?.data?.Data?.statusLegend || [];
 };
 
 export const useGetStatusLegend = (orderId) =>

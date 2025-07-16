@@ -30,7 +30,6 @@ import { ModalLihatStatusLainnya } from "./ModalLihatStatusLainnya";
 
 export const StatusPesananHeader = ({ dataStatusPesanan }) => {
   const orderStatusLabel =
-    dataStatusPesanan.driverStatus.length > 1 &&
     dataStatusPesanan.orderStatus !== OrderStatusEnum.COMPLETED
       ? `${OrderStatusTitle[dataStatusPesanan.orderStatus]}: ${dataStatusPesanan.unitFleetStatus} Unit`
       : OrderStatusTitle[dataStatusPesanan.orderStatus];

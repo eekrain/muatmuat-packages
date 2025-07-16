@@ -1,8 +1,8 @@
 import Link from "next/link";
 import React, { useMemo, useState } from "react";
 
+import { Alert } from "@/components/Alert/Alert";
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
-import { Alert } from "@/components/Badge/Alert";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import { BannerCarousel } from "@/components/BannerCarousel/BannerCarousel";
 import {

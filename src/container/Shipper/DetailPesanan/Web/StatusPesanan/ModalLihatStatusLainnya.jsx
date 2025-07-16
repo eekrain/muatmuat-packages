@@ -1,6 +1,9 @@
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
-import { OrderStatusTitle } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import {
+  OrderStatusEnum,
+  OrderStatusTitle,
+} from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
 export const ModalLihatStatusLainnya = ({ otherStatus }) => {
   return (
@@ -18,7 +21,15 @@ export const ModalLihatStatusLainnya = ({ otherStatus }) => {
           {otherStatus.map((status) => (
             <BadgeStatusPesanan
               key={status.orderStatus}
-              variant="primary"
+              variant={
+                status.orderStatus.startsWith("WAITING")
+                  ? "warning"
+                  : status.orderStatus.startsWith("CANCELED")
+                    ? "error"
+                    : status.orderStatus === OrderStatusEnum.COMPLETED
+                      ? "success"
+                      : "primary"
+              }
               className="w-[272px]"
             >
               {OrderStatusTitle[status.orderStatus]}: {status.unitFleetStatus}{" "}

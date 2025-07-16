@@ -1,6 +1,5 @@
-import { Alert } from "@/components/Badge/Alert";
+import { AlertMultiline } from "@/components/Alert/AlertMultiline";
 import Card, { CardContent } from "@/components/Card/Card";
-import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
 // import AlertDriverWaiting from "@/container/DetailPesanan/Web/StatusPesanan/AlertDriverWaiting";
 import { AlertPendingPayment1 } from "@/container/Shipper/DetailPesanan/Web/StatusPesanan/AlertPendingPayment1";
@@ -11,9 +10,6 @@ import AlertWaitFleetSearch from "@/container/Shipper/DetailPesanan/Web/StatusPe
 import { DriverStatusCard } from "@/container/Shipper/DetailPesanan/Web/StatusPesanan/DriverStatusCard";
 import { StatusPesananHeader } from "@/container/Shipper/DetailPesanan/Web/StatusPesanan/StatusPesananHeader";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
-import { cn } from "@/lib/utils";
-
-import { ModalPerubahanData } from "./ModalPerubahanData";
 
 const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
   return (
@@ -40,27 +36,12 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
         <AlertPendingUpdateConfirmation />
       )}
 
-      {dataStatusPesanan.alerts.map((item) => (
-        <Alert key={item.label} variant="secondary" size="big">
-          <div className={cn("flex items-center gap-1", item.info && "gap-2")}>
-            <span
-              className="info-alert-content block"
-              style={{ "& b": { fontWeight: 600 } }}
-              dangerouslySetInnerHTML={{ __html: item.label }}
-            />
-            {item.type === "CONFIRMED_CHANGES" ? (
-              <ModalPerubahanData />
-            ) : item?.info ? (
-              <InfoTooltip
-                side="right"
-                render={item.info}
-                className="w-[336px]"
-                appearance={{ iconColor: "text-neutral-700" }}
-              />
-            ) : null}
-          </div>
-        </Alert>
-      ))}
+      <AlertMultiline
+        items={dataStatusPesanan.alerts.map((item) => ({
+          label: item.label,
+          info: item.info,
+        }))}
+      />
 
       {/* Alert Driver akan kena biaya tunggu dan tunjukan QR ke driver */}
       {/* {true ? <AlertDriverWaiting /> : null} */}

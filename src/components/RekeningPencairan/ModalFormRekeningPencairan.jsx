@@ -7,7 +7,7 @@ import {
   useRekeningPencairanStore,
 } from "@/store/Shipper/forms/rekeningPencairanStore";
 
-import { Alert } from "../Badge/Alert";
+import { Alert } from "../Alert/Alert";
 import Button from "../Button/Button";
 import Checkbox from "../Form/Checkbox";
 import Input from "../Form/Input";
