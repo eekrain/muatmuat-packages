@@ -6,7 +6,6 @@ import { useUserStore } from "@/store/Auth/userStore";
 const LIST_PUBLIC_ROUTES = [
   "/sewaarmada",
   "/example",
-  "/",
   // /orders/orderId/drivers/driverId/qr-code
   /^\/orders\/[^\/]+\/drivers\/[^\/]+\/qr-code$/,
 ];
@@ -58,6 +57,7 @@ export const createAxios = (baseURL) => {
             // If route is a string, check if pathname starts with the route
             // This allows subpaths to match (e.g., "/sewaarmada/something" matches "/sewaarmada")
             if (typeof route === "string") {
+              if (route === "/") return pathname === route;
               return pathname === route || pathname.startsWith(route);
             }
 

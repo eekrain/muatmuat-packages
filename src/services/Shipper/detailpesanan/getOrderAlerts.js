@@ -1,118 +1,40 @@
 import { fetcherMuatrans } from "@/lib/axios";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
-// GET /base_url/v1/orders/{orderId}/status-history
-const apiResultOrderStatusHistory = {
-  Message: {
-    Code: 200,
-    Text: "Order status history retrieved successfully",
+// GET /api/v1/orders/{orderId}/alerts
+const apiResult = {
+  data: {
+    Message: {
+      code: 200,
+      text: "Success",
+    },
+    Data: {
+      alerts: [
+        // {
+        //   type: "DELIVERY_DELAY",
+        //   date: "2025-05-21T14:30:00+07:00",
+        //   label: "Pengembalian dana sedang dalam proses.",
+        //   info: "Pengembalian dana sedang dalam proses, jumlah dana akan disesuakan setelah dikurangi <b>Admin Pembatalan</b> dan <b>Tambahan Biaya</b>. Info lebih lanjut hubungi Customer Service.",
+        //   // label: "Pengembalian dana berhasil diproses.",
+        //   // info: "Proses pengembalian dana telah berhasil dicairkan ke rekening kamu. Info lebih lanjut hubungi Customer Service.",
+        //   // label:
+        //   //   "Pesanan kamu memiliki tambahan biaya. Mohon selesaikan pembayaran sebelum tanggal <b>20 Mei 2024</b>",
+        //   // info: "",
+        // },
+      ],
+    },
+    Type: "ORDER_ALERTS",
   },
-  Data: {
-    driverStatus: [
-      {
-        driverId: "550e8400-e29b-41d4-a716-446655440021",
-        name: "Hendra",
-        driverImage: "https://picsum.photos/50",
-        licensePlate: "B 1234 CD",
-        orderStatus: OrderStatusEnum.LOADING,
-        orderStatusTitle: "Proses Muat",
-        driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
-        driverStatusTitle: "Tiba di Lokasi Muat",
-        stepStatus: [
-          {
-            statusCode: OrderStatusEnum.CONFIRMED,
-            statusName: "Pesanan Terkonfirmasi",
-          },
-          {
-            statusCode: OrderStatusEnum.LOADING,
-            statusName: "Proses Muat",
-          },
-          {
-            statusCode: OrderStatusEnum.UNLOADING,
-            statusName: "Proses Bongkar",
-          },
-          {
-            statusCode: OrderStatusEnum.COMPLETED,
-            statusName: "Selesai",
-          },
-        ],
-      },
-
-      {
-        driverId: "550e8400-e29b-41d4-a716-446655440022",
-        name: "Ardian Eka",
-        driverImage: "https://picsum.photos/50",
-        licensePlate: "B 1234 CD",
-        orderStatus: OrderStatusEnum.LOADING,
-        orderStatusTitle: "Proses Muat",
-        driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
-        driverStatusTitle: "Tiba di Lokasi Muat",
-        stepStatus: [
-          {
-            statusCode: OrderStatusEnum.CONFIRMED,
-            statusName: "Pesanan Terkonfirmasi",
-          },
-          {
-            statusCode: OrderStatusEnum.LOADING,
-            statusName: "Proses Muat",
-          },
-          {
-            statusCode: OrderStatusEnum.UNLOADING,
-            statusName: "Proses Bongkar",
-          },
-          {
-            statusCode: OrderStatusEnum.COMPLETED,
-            statusName: "Selesai",
-          },
-        ],
-      },
-
-      {
-        driverId: "550e8400-e29b-41d4-a716-446655440023",
-        name: "Cakra",
-        driverImage: "https://picsum.photos/50",
-        licensePlate: "B 1234 CD",
-        orderStatus: OrderStatusEnum.LOADING,
-        orderStatusTitle: "Proses Muat",
-        driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
-        driverStatusTitle: "Tiba di Lokasi Muat",
-        stepStatus: [
-          {
-            statusCode: OrderStatusEnum.CONFIRMED,
-            statusName: "Pesanan Terkonfirmasi",
-          },
-          {
-            statusCode: OrderStatusEnum.LOADING,
-            statusName: "Proses Muat",
-          },
-          {
-            statusCode: OrderStatusEnum.UNLOADING,
-            statusName: "Proses Bongkar",
-          },
-          {
-            statusCode: OrderStatusEnum.COMPLETED,
-            statusName: "Selesai",
-          },
-        ],
-      },
-    ],
-  },
-  Type: "ORDER_STATUS_HISTORY",
 };
 
-export const getOrderStatusHistory = async (cacheKey) => {
+export const getOrderAlerts = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
+  // const result = apiResult;
+  // return result.data.Data.alerts;
 
-  // const result = apiResultOrderStatusHistory;
+  const result = await fetcherMuatrans.get(`v1/orders/${orderId}/alerts`);
 
-  // return result.Data;
-
-  const result = await fetcherMuatrans.get(
-    `v1/orders/${orderId}/status-history`
-  );
-
-  return result?.data?.Data || null;
+  return result?.data?.Data?.alerts || [];
 };
 
-export const useGetOrderStatusHistory = (orderId) =>
-  useSWR(`order-status-history/${orderId}`, getOrderStatusHistory);
+export const useGetOrderAlerts = (orderId) =>
+  useSWR(`order-alerts/${orderId}`, getOrderAlerts);
