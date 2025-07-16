@@ -1,12 +1,16 @@
+"use client";
+
 import ArmadaContainer from "@/container/Transporter/Armada/ArmadaContainer";
+import EmptyArmada from "@/container/Transporter/Armada/EmptyArmada";
+import { useGetActiveVehiclesData } from "@/services/Transporter/manajemen-armada/getActiveVehiclesData";
 
 const Page = () => {
-  // const { data } = getDataArmada();
+  const { data } = useGetActiveVehiclesData();
 
-  return (
-    <div className="">
-      <ArmadaContainer />
-    </div>
-  );
+  const vehicles = data?.vehicles || [];
+
+  if (!!vehicles.length) return <ArmadaContainer vehicles={vehicles} />;
+
+  return <EmptyArmada />;
 };
 export default Page;
