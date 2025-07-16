@@ -120,15 +120,7 @@ const DetailRefundPesananWeb = () => {
                     </span>
                   </div>
 
-                  <ModalDetailWaktuTunggu
-                    driver={{
-                      name: "Daffa Toldo",
-                      detail: "Lokasi Muat 1 : 1 Jam 59 Menit",
-                      startDate: "22 Nov 2024 15:00 WIB",
-                      endDate: "22 Nov 2024 16:59 WIB",
-                      totalPrice: "Rp100.000",
-                    }}
-                  />
+                  <ModalDetailWaktuTunggu />
                 </div>
 
                 {/* Administration Cost */}

@@ -128,6 +128,8 @@ const SliderIndicator = ({ currentIndex, total, setCurrentIndex }) => (
 const LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER = [
   OrderStatusEnum.PREPARE_DOCUMENT,
   OrderStatusEnum.DOCUMENT_DELIVERY,
+  OrderStatusEnum.WAITING_REPAYMENT_1,
+  OrderStatusEnum.WAITING_REPAYMENT_2,
   OrderStatusEnum.COMPLETED,
 ];
 
@@ -149,8 +151,7 @@ export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
           <div className="flex flex-col gap-y-3">
             {!orderStatus.startsWith("WAITING_PAYMENT") &&
               !LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER.includes(orderStatus) &&
-              !LIST_HIDE_DRIVER_STATUS.includes(driver.orderStatus) &&
-              !orderStatus.startsWith("WAITING") && (
+              !LIST_HIDE_DRIVER_STATUS.includes(driver.orderStatus) && (
                 <div className="flex items-center gap-x-3">
                   {driver.driverStatusTitle && (
                     <BadgeStatusPesanan
