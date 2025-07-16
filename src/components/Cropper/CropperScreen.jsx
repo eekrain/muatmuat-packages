@@ -5,12 +5,16 @@ import "cropperjs/dist/cropper.css";
 import Cropper from "react-cropper";
 
 import CropperResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/CropperResponsiveLayout";
-import { useImageUploaderStore } from "@/store/Shipper/forms/imageUploaderStore";
+import {
+  useImageUploaderActions,
+  useImageUploaderStore,
+} from "@/store/Shipper/forms/imageUploaderStore";
 
 import "./cropper_az.css";
 
 const CropperScreen = ({ onCheck, onClose }) => {
-  const { image, isCircle } = useImageUploaderStore();
+  const { image, imageFile, isCircle } = useImageUploaderStore();
+  const { setPreviewImage } = useImageUploaderActions();
   const cropperRef = useRef(null);
   const defaultRatioRef = useRef(null);
 
@@ -32,11 +36,29 @@ const CropperScreen = ({ onCheck, onClose }) => {
     }
   };
 
+  const getCropData = () => {
+    if (typeof cropperRef.current.cropper !== "undefined") {
+      setPreviewImage(
+        cropperRef.current?.cropper
+          .getCroppedCanvas()
+          .toDataURL(imageFile?.type, 1.0)
+      );
+    }
+    const cropper = cropperRef.current?.cropper;
+    cropper.reset();
+  };
+
   return (
-    <CropperResponsiveLayout onCheck={onCheck} onClose={onClose}>
+    <CropperResponsiveLayout
+      onCheck={() => {
+        getCropData();
+        onCheck();
+      }}
+      onClose={onClose}
+    >
       <div className="flex min-h-screen items-center">
         <div
-          className={`aspect-square w-full ${isCircle ? "modal-cropper-circle" : ""}`}
+          className={`aspect-square ${isCircle ? "modal-cropper-circle" : ""}`}
         >
           <Cropper
             ref={cropperRef}

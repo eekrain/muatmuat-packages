@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 
+import CropperPreviewScreen from "@/components/Cropper/CropperPreviewScreen";
 import CropperScreen from "@/components/Cropper/CropperScreen";
 // Import the default screen without dynamic import
 import { LocationProvider } from "@/hooks/use-location/use-location";
@@ -166,11 +167,23 @@ const SewaArmadaResponsive = ({
         path="/Cropper"
         component={
           <CropperScreen
-            onCheck={() => navigation.push("/")}
+            onCheck={() => navigation.push("/CropperPreview")}
             onClose={() => {
               reset();
               navigation.pop();
             }}
+          />
+        }
+      />
+      <ResponsiveRoute
+        path="/CropperPreview"
+        component={
+          <CropperPreviewScreen
+          // onCheck={() => navigation.push("/")}
+          // onClose={() => {
+          //   reset();
+          //   navigation.pop();
+          // }}
           />
         }
       />

@@ -2,15 +2,25 @@ import Image from "next/image";
 
 import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
-import FormResponsiveLayout from "@/layout/ResponsiveLayout/FormResponsiveLayout";
-import { useResponsiveRouteParams } from "@/lib/responsive-navigation";
+import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import {
+  useImageUploaderActions,
+  useImageUploaderStore,
+} from "@/store/Shipper/forms/imageUploaderStore";
 
 const CropperPreviewScreen = () => {
-  const params = useResponsiveRouteParams();
+  const navigation = useResponsiveNavigation();
+  const { previewImage } = useImageUploaderStore();
+  const { reset } = useImageUploaderActions();
   return (
     <FormResponsiveLayout
       title={{
-        label: params.title,
+        label: "Upload Foto Muatan",
+      }}
+      onClickBackButton={() => {
+        reset();
+        navigation.popTo("/InformasiPesanan");
       }}
     >
       <div className="mb-16 w-full bg-neutral-100">
@@ -18,16 +28,16 @@ const CropperPreviewScreen = () => {
           <div className="overflow-hidden rounded-full">
             <Image
               alt="preview"
-              className="size-full"
-              src={src}
+              className="size-full bg-neutral-50"
+              src={previewImage}
               width={100}
               height={100}
             />
           </div>
         </div>
-        <div className="mt-6 flex flex-col justify-center gap-y-3">
+        <div className="mt-6 flex flex-col items-center justify-center gap-y-3">
           <Button
-            className="!h-[30px]"
+            className="w-[134px]"
             variant="muatparts-primary-secondary"
             onClick={() => {}}
           >
@@ -41,7 +51,7 @@ const CropperPreviewScreen = () => {
       <ResponsiveFooter>
         <Button
           variant="muatparts-primary"
-          className="flex-1"
+          className="w-full"
           onClick={() => {}}
           type="button"
         >

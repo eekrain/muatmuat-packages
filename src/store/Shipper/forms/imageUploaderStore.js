@@ -7,6 +7,7 @@ const defaultValues = {
   image: null,
   imageFile: null,
   isCircle: true,
+  previewImage: null,
 };
 
 export const useImageUploaderStore = create(
@@ -23,6 +24,7 @@ export const useImageUploaderStore = create(
             set({
               imageFile,
             }),
+          setPreviewImage: (previewImage) => set({ previewImage }),
           reset: () =>
             set({
               ...defaultValues,
@@ -43,12 +45,12 @@ export const useImageUploaderStore = create(
 );
 
 export const useImageUploaderActions = () => {
-  const { reset, setImage, setImageFile } = useImageUploaderStore(
-    (state) => state.setterActions
-  );
+  const { reset, setImage, setImageFile, setPreviewImage } =
+    useImageUploaderStore((state) => state.setterActions);
   return {
     reset,
     setImage,
     setImageFile,
+    setPreviewImage,
   };
 };
