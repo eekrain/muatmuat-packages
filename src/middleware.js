@@ -1,20 +1,6 @@
 // middleware.ts
 import { NextResponse } from "next/server";
 
-if (!process.env.NEXT_PUBLIC_SUBDOMAIN_SHIPPER) {
-  throw new Error("NEXT_PUBLIC_SUBDOMAIN_SHIPPER is not set");
-}
-if (!process.env.NEXT_PUBLIC_SUBDOMAIN_SHIPPER.includes(".")) {
-  throw new Error("NEXT_PUBLIC_SUBDOMAIN_SHIPPER must include a dot");
-}
-
-if (!process.env.NEXT_PUBLIC_SUBDOMAIN_TRANSPORTER) {
-  throw new Error("NEXT_PUBLIC_SUBDOMAIN_TRANSPORTER is not set");
-}
-if (!process.env.NEXT_PUBLIC_SUBDOMAIN_TRANSPORTER.includes(".")) {
-  throw new Error("NEXT_PUBLIC_SUBDOMAIN_TRANSPORTER must include a dot");
-}
-
 const LIST_PUBLIC_FILES = [
   "/_next",
   "/favicon.ico",
@@ -28,7 +14,9 @@ const LIST_PUBLIC_FILES = [
 export function middleware(request) {
   const hostname = request.headers.get("host") || "";
   const url = request.nextUrl.clone();
-  const cleanHost = hostname.replace(":3000", "").replace(":4000", "");
+  const cleanHost = hostname
+    .replace(`:${process.env.NEXT_PUBLIC_PORT_SHIPPER}`, "")
+    .replace(`:${process.env.NEXT_PUBLIC_PORT_TRANSPORTER}`, "");
 
   // Exclude Next.js static files, known public assets, and any file with an extension from rewrite
   if (
@@ -38,22 +26,8 @@ export function middleware(request) {
     return NextResponse.next();
   }
 
-  const LIST_SHIPPER_SUBDOMAIN =
-    process.env.NEXT_PUBLIC_SUBDOMAIN_SHIPPER.split(",").filter(
-      (subdomain) => subdomain !== ""
-    );
-  const LIST_TRANSPORTER_SUBDOMAIN =
-    process.env.NEXT_PUBLIC_SUBDOMAIN_TRANSPORTER.split(",").filter(
-      (subdomain) => subdomain !== ""
-    );
-
   // --- SHIPPER SUBDOMAIN HANDLER ---
-  if (
-    LIST_SHIPPER_SUBDOMAIN.some((subdomain) =>
-      cleanHost.startsWith(subdomain)
-    ) ||
-    hostname.includes(":3000")
-  ) {
+  if (hostname.includes(`:${process.env.NEXT_PUBLIC_PORT_SHIPPER}`)) {
     // 1. Redirect / to /sewaarmada
     if (url.pathname === "/") {
       url.pathname = "/sewaarmada";
@@ -87,12 +61,7 @@ export function middleware(request) {
   }
 
   // --- TRANSPORTER SUBDOMAIN HANDLER ---
-  if (
-    LIST_TRANSPORTER_SUBDOMAIN.some((subdomain) =>
-      cleanHost.startsWith(subdomain)
-    ) ||
-    hostname.includes(":4000")
-  ) {
+  if (hostname.includes(`:${process.env.NEXT_PUBLIC_PORT_TRANSPORTER}`)) {
     url.pathname = `/transporter${url.pathname}`;
     return NextResponse.rewrite(url);
   }
