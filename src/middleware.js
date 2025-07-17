@@ -25,6 +25,14 @@ export function middleware(request) {
 
   // --- TRANSPORTER SUBDOMAIN HANDLER ---
   if (process.env.NEXT_PUBLIC_APP_MODE === "transporter") {
+    // Redirect root path based on environment
+    if (url.pathname === "/") {
+      const isDevEnvironment = process.env.NEXT_PUBLIC_ENVIRONMENT === "dev";
+      url.pathname = isDevEnvironment ? "/dev-login" : "/login";
+      return NextResponse.redirect(url);
+    }
+
+    // Rewrite all transporter paths
     url.pathname = `/transporter${url.pathname}`;
     return NextResponse.rewrite(url);
   }

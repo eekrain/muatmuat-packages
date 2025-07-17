@@ -109,9 +109,22 @@ export const useAuth = () => {
     } finally {
       authStore.actions.clearToken();
       userStore.actions.clearUser();
-      window.location.replace(
-        `${process.env.NEXT_PUBLIC_INTERNAL_WEB}login/signout`
-      );
+
+      // Determine redirect URL based on app mode and environment
+      let redirectUrl;
+
+      if (process.env.NEXT_PUBLIC_APP_MODE === "transporter") {
+        // Transporter mode: redirect to appropriate login page
+        redirectUrl =
+          process.env.NEXT_PUBLIC_ENVIRONMENT === "dev"
+            ? "/dev-login"
+            : "/login";
+      } else {
+        // Other modes: redirect to external signout
+        redirectUrl = `${process.env.NEXT_PUBLIC_INTERNAL_WEB}login/signout`;
+      }
+
+      window.location.replace(redirectUrl);
     }
   }, []);
 
