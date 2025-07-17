@@ -7,6 +7,7 @@ import {
   BottomSheet,
   BottomSheetContent,
   BottomSheetHeader,
+  BottomSheetTrigger,
 } from "@/components/Bottomsheet/Bottomsheet";
 import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
@@ -15,13 +16,13 @@ import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
-// import ImageUploader from "@/components/ImageUploader/ImageUploader";
 import ImageUploaderResponsive from "@/components/ImageUploader/ImageUploaderResponsive";
 import TextArea from "@/components/TextArea/TextArea";
 import VoucherCard from "@/components/Voucher/VoucherCard";
 import VoucherEmptyState from "@/components/Voucher/VoucherEmptyState";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
 import NoDeliveryOrder from "@/container/Shipper/SewaArmada/Responsive/InformasiPesanan/NoDeliveryOrder";
+import OrderSummarySection from "@/container/Shipper/SewaArmada/Responsive/InformasiPesanan/OrderSummarySection";
 import usePrevious from "@/hooks/use-previous";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useVouchers } from "@/hooks/useVoucher";
@@ -67,32 +68,27 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
   const previousIsBottomsheetOpen = usePrevious(isBottomsheetOpen);
   const [validationErrors, setValidationErrors] = useState({});
   const [validatingVoucher, setValidatingVoucher] = useState(null);
+  const [
+    isOrderConfirmationBottomsheetOpen,
+    setIsOrderConfirmationBottomsheetOpen,
+  ] = useState(false);
   /* end voucher state */
   // Get state from Zustand store
   const { formValues, formErrors } = useSewaArmadaStore();
   const {
+    loadTimeStart,
+    loadTimeEnd,
+    showRangeOption,
+    informasiMuatan,
+    truckCount,
     cargoPhotos,
+    cargoDescription,
+    businessEntity,
+    paymentMethodId,
     // deliveryOrder,
   } = formValues;
-  console.log("cargo", cargoPhotos);
-  const cargoDescription = useSewaArmadaStore(
-    (state) => state.formValues.cargoDescription
-  );
-  const businessEntity = useSewaArmadaStore(
-    (state) => state.formValues.businessEntity
-  );
-  const isBusinessEntity = useSewaArmadaStore(
-    (state) => state.formValues.businessEntity.isBusinessEntity
-  );
-  const name = useSewaArmadaStore(
-    (state) => state.formValues.businessEntity.name
-  );
-  const taxId = useSewaArmadaStore(
-    (state) => state.formValues.businessEntity.taxId
-  );
-  const paymentMethodId = useSewaArmadaStore(
-    (state) => state.formValues.paymentMethodId
-  );
+
+  const { isBusinessEntity, name, taxId } = businessEntity;
 
   // Get actions from Zustand store
   const { setField, setCargoPhotos, validateSecondForm } =
@@ -256,12 +252,14 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
     });
   };
 
-  const handleSubmit = () => {
+  const handleValidateInformasiPesanan = () => {
     if (validateSecondForm()) {
-      // Navigate to next page or submit form
-      // navigation.push("/NextPage");
-      console.log("Form is valid, proceeding...");
+      setIsOrderConfirmationBottomsheetOpen(true);
     }
+  };
+
+  const handleCreateOrder = () => {
+    alert("buat logic buat pesan armada");
   };
 
   const selectedOpsiPembayaran = useShallowMemo(
@@ -668,14 +666,112 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
           </div>
           <IconComponent src="/icons/chevron-right24.svg" size="medium" />
         </button>
-        <Button
-          variant="muatparts-primary"
-          className="h-10"
-          onClick={handleSubmit}
-          type="button"
+        <BottomSheet
+          open={isOrderConfirmationBottomsheetOpen}
+          onOpenChange={setIsOrderConfirmationBottomsheetOpen}
         >
-          Lanjut
-        </Button>
+          <Button
+            variant="muatparts-primary"
+            className="h-10"
+            onClick={handleValidateInformasiPesanan}
+            type="button"
+          >
+            Lanjut
+          </Button>
+          <BottomSheetContent>
+            <BottomSheetHeader>Periksa Pesanan Anda</BottomSheetHeader>
+            <div className="flex w-full flex-col gap-y-4 bg-white px-4 py-6">
+              {/* Waktu Muat */}
+              <OrderSummarySection className="gap-y-4 font-semibold text-neutral-900">
+                <h4 className="text-[14px] leading-[15.4px]">Waktu Muat</h4>
+                <span className="text-[12px] leading-[13.2px]">{`${formatDate(loadTimeStart)}${showRangeOption ? ` s/d ${formatDate(loadTimeEnd)}` : ""}`}</span>
+              </OrderSummarySection>
+              <OrderSummarySection className="gap-y-3 text-neutral-900">
+                <h4 className="text-[14px] font-semibold leading-[15.4px]">
+                  Informasi Armada
+                </h4>
+                <div className="flex items-center gap-x-3">
+                  <div className="size-[68px] overflow-hidden rounded-xl border border-neutral-400">
+                    <ImageComponent
+                      className="w-full"
+                      src="/img/recommended1.png"
+                      width={68}
+                      height={68}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-y-3">
+                    <span className="text-[14px] font-semibold leading-[15.4px]">
+                      Box - Colt Diesel Engkel
+                    </span>
+                    <span className="text-[14px] font-medium leading-[15.4px]">
+                      {`Kebutuhan : ${truckCount} Unit`}
+                    </span>
+                  </div>
+                </div>
+              </OrderSummarySection>
+              <OrderSummarySection className="gap-y-4 text-neutral-900">
+                <h4 className="text-[14px] font-semibold leading-[15.4px]">
+                  Informasi Muatan
+                </h4>
+                <div className="flex flex-col gap-y-3">
+                  {informasiMuatan.slice(0, 2).map((item, key) => (
+                    <div className="flex items-center gap-x-2" key={key}>
+                      <IconComponent src="/icons/muatan16.svg" />
+                      <span className="text-[12px] font-medium leading-[13.2px] text-neutral-900">
+                        {`${item.namaMuatan.label} `}
+                        <span className="text-neutral-600">{`(${item.beratMuatan.berat.toLocaleString("id-ID")} ${item.beratMuatan.unit})`}</span>
+                      </span>
+                    </div>
+                  ))}
+                  {informasiMuatan.length > 2 ? (
+                    <div className="ml-6 flex items-center">
+                      <BottomSheet>
+                        <BottomSheetTrigger>
+                          <button className="inline text-[12px] font-semibold leading-[13.2px] text-primary-700">
+                            Lihat Muatan Lainnya
+                          </button>
+                        </BottomSheetTrigger>
+                        <BottomSheetContent>
+                          <BottomSheetHeader>
+                            Informasi Muatan
+                          </BottomSheetHeader>
+                          <div className="flex flex-col gap-y-4 px-4 py-6">
+                            {informasiMuatan.map((item, key) => (
+                              <div
+                                className="flex items-center gap-x-2"
+                                key={key}
+                              >
+                                <IconComponent src="/icons/muatan16.svg" />
+                                <span className="text-[12px] font-medium leading-[13.2px] text-neutral-900">
+                                  {`${item.namaMuatan.label} `}
+                                  <span className="text-neutral-600">{`(${item.beratMuatan.berat.toLocaleString("id-ID")} ${item.beratMuatan.unit})`}</span>
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </BottomSheetContent>
+                      </BottomSheet>
+                    </div>
+                  ) : null}
+                </div>
+              </OrderSummarySection>
+              <div className="text-[12px] font-medium leading-[13.2px] text-neutral-900">
+                {"*Dengan memesan jasa angkut ini, kamu telah menyetujui "}
+                <span className="font-semibold text-primary-700">
+                  Syarat dan Ketentuan Muatrans
+                </span>
+              </div>
+              <Button
+                variant="muatparts-primary"
+                className="h-10"
+                onClick={handleCreateOrder}
+                type="button"
+              >
+                Pesan Sekarang
+              </Button>
+            </div>
+          </BottomSheetContent>
+        </BottomSheet>
       </ResponsiveFooter>
 
       {/* Voucher BottomSheet */}

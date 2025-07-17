@@ -114,7 +114,7 @@ export const BottomSheetContent = ({ children, className }) => {
   const { isOpen, handleClickOutside, close } = useBottomSheet();
   const sheetRef = useRef(null);
   const baseClass =
-    "fixed left-0 right-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl max-h-[80vh] w-full mx-auto animate-slideUp";
+    "fixed left-0 right-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl w-full mx-auto animate-slideUp";
 
   // Drag state
   const [dragging, setDragging] = React.useState(false);
@@ -264,7 +264,7 @@ export const BottomSheetContent = ({ children, className }) => {
       >
         <div
           ref={sheetRef}
-          className={className ?? baseClass}
+          className={cn(baseClass, className)}
           style={{
             transform: `translateY(${translateY}px)`,
             transition: dragging
