@@ -1,11 +1,12 @@
 import { useState } from "react";
 
-import { Search } from "lucide-react";
+import { ChevronDown, ChevronUp, Search } from "lucide-react";
 
 import FilterDropdown from "@/components/FilterDropdown";
 import Input from "@/components/Form/Input";
 import { cn } from "@/lib/utils";
 
+import ActiveFiltersBar from "../ActiveFiltersBar/ActiveFiltersBar";
 import Pagination from "../Pagination/Pagination";
 
 const DataTable = ({
@@ -33,9 +34,11 @@ const DataTable = ({
   rowClassName = null,
   paginationVariant = "muatrans",
   filterConfig = null,
+  onSort,
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [selectedFilters, setSelectedFilters] = useState({});
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
   const handleSearch = (value) => {
     setSearchValue(value);
@@ -53,8 +56,78 @@ const DataTable = ({
     onFilter?.(filters);
   };
 
+  // Convert selected filters to active filter format
+  const getActiveFilters = () => {
+    const activeFilters = [];
+
+    Object.entries(selectedFilters).forEach(([categoryKey, items]) => {
+      const category = filterConfig?.categories?.find(
+        (cat) => cat.key === categoryKey
+      );
+
+      if (Array.isArray(items)) {
+        // Multi-select
+        items.forEach((item) => {
+          activeFilters.push({
+            id: `${categoryKey}-${item.id}`,
+            label: item.label,
+            categoryKey,
+            item,
+          });
+        });
+      } else if (items) {
+        // Single-select
+        activeFilters.push({
+          id: `${categoryKey}-${items.id}`,
+          label: items.label,
+          categoryKey,
+          item: items,
+        });
+      }
+    });
+
+    return activeFilters;
+  };
+
+  const handleRemoveFilter = (filter) => {
+    const newFilters = { ...selectedFilters };
+
+    if (Array.isArray(newFilters[filter.categoryKey])) {
+      // Multi-select
+      newFilters[filter.categoryKey] = newFilters[filter.categoryKey].filter(
+        (item) => item.id !== filter.item.id
+      );
+      if (newFilters[filter.categoryKey].length === 0) {
+        delete newFilters[filter.categoryKey];
+      }
+    } else {
+      // Single-select
+      delete newFilters[filter.categoryKey];
+    }
+
+    setSelectedFilters(newFilters);
+    onFilter?.(newFilters);
+  };
+
+  const handleClearAllFilters = () => {
+    setSelectedFilters({});
+    onFilter?.({});
+  };
+
+  const handleSort = (key) => {
+    if (!onSort) return;
+
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+
+    setSortConfig({ key, direction });
+    onSort(key, direction);
+  };
+
   const renderHeader = () => (
-    <div className="flex items-center justify-between border-b border-neutral-300 px-6 py-4">
+    <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
         {showSearch && (
           <Input
@@ -95,23 +168,54 @@ const DataTable = ({
   );
 
   const renderTable = () => (
-    <div className="relative h-[calc(100dvh-360px)] overflow-hidden">
+    <div className="relative h-[calc(100dvh-400px)] overflow-hidden border-t border-neutral-400">
       <div className="absolute inset-0 overflow-auto">
         <table className="w-full table-auto">
           <thead className="sticky top-0 z-10 bg-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[1px] after:bg-neutral-300">
             <tr>
-              {columns.map((column, index) => (
-                <th
-                  key={index}
-                  className={cn(
-                    "bg-white px-6 py-4 text-left text-xs font-bold text-neutral-600",
-                    column.headerClassName
-                  )}
-                  style={column.width ? { width: column.width } : {}}
-                >
-                  {column.header}
-                </th>
-              ))}
+              {columns.map((column, index) => {
+                const isSortable =
+                  column.sortable !== false && column.key && onSort;
+                const isSorted = sortConfig.key === column.key;
+
+                return (
+                  <th
+                    key={index}
+                    className={cn(
+                      "bg-white px-6 py-4 text-left text-xs font-bold text-neutral-600",
+                      isSortable &&
+                        "cursor-pointer select-none hover:bg-neutral-50",
+                      column.headerClassName
+                    )}
+                    style={column.width ? { width: column.width } : {}}
+                    onClick={() => isSortable && handleSort(column.key)}
+                  >
+                    <div className="flex items-center gap-1">
+                      <span>{column.header}</span>
+                      {isSortable && (
+                        <div className="flex flex-col">
+                          <ChevronUp
+                            className={cn(
+                              "-mb-1 h-3 w-3",
+                              isSorted && sortConfig.direction === "asc"
+                                ? "text-primary-700"
+                                : "text-neutral-400"
+                            )}
+                          />
+                          <ChevronDown
+                            className={cn(
+                              "-mt-1 h-3 w-3",
+                              isSorted && sortConfig.direction === "desc"
+                                ? "text-primary-700"
+                                : "text-neutral-400"
+                            )}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </th>
+                );
+              })}
             </tr>
           </thead>
           <tbody>
@@ -161,15 +265,26 @@ const DataTable = ({
     </div>
   );
 
+  const activeFilters = getActiveFilters();
+
   return (
     <div className="">
       <div
         className={cn(
-          "w-full overflow-hidden rounded-lg border border-neutral-300 bg-white",
+          "w-full space-y-4 overflow-hidden rounded-lg border border-neutral-300 bg-white pt-5",
           className
         )}
       >
-        {renderHeader()}
+        <div className="space-y-4 px-6">
+          {renderHeader()}
+          {showFilter && activeFilters.length > 0 && (
+            <ActiveFiltersBar
+              filters={activeFilters}
+              onRemoveFilter={handleRemoveFilter}
+              onClearAll={handleClearAllFilters}
+            />
+          )}
+        </div>
         {renderTable()}
       </div>
       {showPagination && !loading && data.length > 0 && (

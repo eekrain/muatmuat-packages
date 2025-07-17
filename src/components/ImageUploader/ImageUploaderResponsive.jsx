@@ -6,12 +6,14 @@ import {
   BottomSheet,
   BottomSheetContent,
 } from "@/components/Bottomsheet/Bottomsheet";
-// import CropperResponsive from "@/components/Cropper/CropperResponsive";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
+import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
+import { useSWRMutateHook } from "@/hooks/use-swr";
 import { useTranslation } from "@/hooks/use-translation";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
+import { base64ToFile } from "@/lib/utils/file";
 import {
   useImageUploaderActions,
   useImageUploaderStore,
@@ -19,42 +21,20 @@ import {
 
 import styles from "./ImageUploader.module.scss";
 
-function base64ToFile(base64String, filename, mimeType) {
-  // Decode base64 string to binary data
-  const byteCharacters = atob(base64String.split(",")[1]); // Remove data URL prefix if present
-
-  // Create a byte array from the binary data
-  const byteArrays = [];
-  for (let offset = 0; offset < byteCharacters.length; offset++) {
-    byteArrays.push(byteCharacters.charCodeAt(offset));
-  }
-
-  // Create a Blob from the byte array
-  const blob = new Blob([new Uint8Array(byteArrays)], { type: mimeType });
-
-  // Create a File from the Blob
-  const file = new File([blob], filename, { type: mimeType });
-
-  return file;
-}
-
 export default function ImageUploaderResponsive({
   className,
-  getImage, //get image
+  onChange, //get image
   isNull = false, //image status
   isMain = false, //main image status
   uploadText = "Unggah", //upload image text
   errorText = "Ulangi", //error upload image text
   maxSize = 0,
-  isCircle = false,
   onUpload = () => {}, //function that return image of uploaded image
   onError = () => {}, //function that return error when uploading image,
   value = null,
   isBig = true, // boolean to show text/title below the icon in the middle
-  previewTitle,
-  onFinishCrop,
-  isLoading,
   acceptedFormats = [".jpg", ".jpeg", ".png"], // format of image that can be uploaded
+  index = 0,
 }) {
   const cameraRef = useRef(null);
   const fileRef = useRef(null);
@@ -64,38 +44,36 @@ export default function ImageUploaderResponsive({
   // LB - 0652 - 25. 03 - QC Plan - Web - Pengecekan Ronda Muatparts - Tahap 2
   const { t } = useTranslation();
   const navigation = useResponsiveNavigation();
-  const { image, imageFile } = useImageUploaderStore();
-  const { setImage, setImageFile } = useImageUploaderActions();
+  const { activeIndex, image, imageFile, isReadyUploadPhoto, previewImage } =
+    useImageUploaderStore();
+  const {
+    reset,
+    setActiveIndex,
+    setImage,
+    setImageFile,
+    setIsReadyUploadPhoto,
+  } = useImageUploaderActions();
 
-  // const getFile = (e) => {
-  //   let files;
-  //   if (e.dataTransfer) {
-  //     files = e.dataTransfer.files;
-  //     setImageFiles(files);
-  //   } else if (e.target) {
-  //     files = e.target.files;
-  //     setImageFiles(files[0]);
-  //   }
-  //   const reader = new FileReader();
-  //   reader.onloadend = () => {
-  //     //(reader.result, "39");
-  //     setImage(reader.result);
-  //     setShowBottomsheet(false)
-  //     setIsOpen(true);
-  //     setIsShowPreview(false)
-  //   };
-  //   if (reader && e) {
-  //     if (files.length > 0) {
-  //       //(files[0]);
-  //       if (maxSize * 1000 > 0 && files[0].size > maxSize * 1000) {
-  //         onError(true);
-  //         return;
-  //       }
-  //       reader.readAsDataURL(files[0]);
-  //       onError(false);
-  //     }
-  //   }
-  // };
+  const { trigger: uploadPhoto, isMutating: isMutatingUploadPhoto } =
+    useSWRMutateHook("v1/orders/upload", "POST");
+
+  useShallowCompareEffect(() => {
+    const handleUploadPhoto = async () => {
+      const file = base64ToFile(previewImage, imageFile.name, imageFile.type);
+      const formData = new FormData();
+      formData.append("file", file);
+      await uploadPhoto(formData)
+        .then((data) => {
+          onChange(data.Data.photoUrl);
+          reset();
+          setIsReadyUploadPhoto(false);
+        })
+        .catch((error) => console.log("Error Upload Photo: ", error));
+    };
+    if (isReadyUploadPhoto && index === activeIndex) {
+      handleUploadPhoto();
+    }
+  }, [isReadyUploadPhoto, imageFile, previewImage, index, activeIndex]);
 
   const getFile = (e) => {
     let files;
@@ -189,6 +167,7 @@ export default function ImageUploaderResponsive({
         const fullReader = new FileReader();
         fullReader.onloadend = () => {
           setImage(fullReader.result);
+          setActiveIndex(index);
           setError(false);
           setIsBottomSheetOpen(false);
           navigation.push("/Cropper");
@@ -200,25 +179,6 @@ export default function ImageUploaderResponsive({
     // Read the first few bytes for magic number checking
     const blob = file.slice(0, 8); // Read first 8 bytes which covers all our magic numbers
     headerReader.readAsArrayBuffer(blob);
-  };
-
-  const getCroppedData = (value) => {
-    const file = base64ToFile(value, imageFile.name, imageFile.type);
-    onFinishCrop(file);
-    if (value) {
-      onUpload(value);
-      onError(false);
-      cameraRef.current.value = null;
-      fileRef.current.value = null;
-    }
-  };
-
-  const clearInput = (value) => {
-    if (value) {
-      cameraRef.current.value = null;
-      fileRef.current.value = null;
-      setImage(null);
-    }
   };
 
   const removeImage = (e) => {
@@ -284,7 +244,7 @@ export default function ImageUploaderResponsive({
           error && styles.ImageUploaderNull
         } group relative flex size-[72px] items-end gap-y-3 hover:!border-primary-700 ${className}`}
         style={
-          !error && base64Image && !isLoading
+          !error && base64Image && !isMutatingUploadPhoto
             ? { backgroundImage: `url(${base64Image})` }
             : { backgroundImage: "none" }
         }
@@ -305,7 +265,7 @@ export default function ImageUploaderResponsive({
           className="hidden"
           onChange={getFile}
         />
-        {isLoading ? (
+        {isMutatingUploadPhoto ? (
           <div>
             <ImageComponent
               className={styles.rotate_image}
@@ -319,7 +279,11 @@ export default function ImageUploaderResponsive({
           <>
             {!error && !base64Image && (
               <>
-                <IconComponent size="small" src="/icons/add_image.svg" />
+                <IconComponent
+                  width={20}
+                  height={20}
+                  src="/icons/add-image20.svg"
+                />
                 <span className="text-[12px] font-medium leading-[13.2px] text-black group-hover:text-primary-700">
                   {uploadText}
                 </span>
@@ -355,22 +319,6 @@ export default function ImageUploaderResponsive({
           </>
         )}
       </div>
-      {/* {isOpen ? (
-        <CropperResponsive
-          imageSource={image}
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          result={getCroppedData}
-          onClose={clearInput}
-          required={true}
-          isCircle={isCircle}
-          previewTitle={previewTitle}
-          uploadOptions={uploadOptions}
-          isShowPreview={isShowPreview}
-          setIsShowPreview={setIsShowPreview}
-          fileType={imageFiles?.type}
-        />
-      ) : null} */}
     </>
   );
 }

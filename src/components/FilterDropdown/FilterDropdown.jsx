@@ -8,6 +8,7 @@ import {
   SimpleDropdownContent,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
+import Checkbox from "@/components/Form/Checkbox";
 import Input from "@/components/Form/Input";
 import { cn } from "@/lib/utils";
 
@@ -118,7 +119,7 @@ const FilterDropdown = ({
     // Set a timeout to close the popover
     hoverTimeouts.current[categoryKey] = setTimeout(() => {
       setOpenPopovers((prev) => ({ ...prev, [categoryKey]: false }));
-    }, 0); // Small delay to allow moving to the content
+    }, 25); // Small delay to allow moving to the content
   };
 
   // Cleanup timeouts on unmount
@@ -197,7 +198,7 @@ const FilterDropdown = ({
             >
               <Popover.Trigger asChild>
                 <div
-                  className="flex h-8 cursor-pointer items-center justify-between px-2.5 text-left transition-colors hover:bg-neutral-100"
+                  className="flex h-8 cursor-pointer items-center justify-between px-2.5 text-left transition-all hover:bg-neutral-100"
                   onMouseEnter={() => handleMouseEnter(category.key)}
                   onMouseLeave={() => handleMouseLeave(category.key)}
                 >
@@ -247,26 +248,25 @@ const FilterDropdown = ({
                       </div>
                     ) : (
                       getFilteredItems(category.key).map((item) => (
-                        <label
+                        <div
                           key={item.id}
                           className={cn(
-                            "flex h-8 cursor-pointer items-center gap-3 transition-colors hover:bg-neutral-50",
+                            "flex h-8 items-center px-2",
                             itemClassName
                           )}
                         >
-                          <input
-                            type={multiSelect ? "checkbox" : "radio"}
-                            name={category.key}
+                          <Checkbox
                             checked={isItemSelected(category.key, item)}
                             onChange={() =>
                               handleItemToggle(category.key, item)
                             }
-                            className="h-4 w-4 rounded border-neutral-300 text-primary-700 focus:ring-primary-700"
+                            value={item.id}
+                            label={item.label}
+                            appearance={{
+                              labelClassName: "text-xs font-medium",
+                            }}
                           />
-                          <span className="text-xs font-medium">
-                            {item.label}
-                          </span>
-                        </label>
+                        </div>
                       ))
                     )}
                   </div>

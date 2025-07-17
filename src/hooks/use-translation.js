@@ -66,9 +66,34 @@ export const TranslationProvider = ({ children }) => {
     useShallow((s) => s.translation)
   );
 
+  /**
+   * Translation function that replaces placeholders in translation keys with provided parameters
+   * @param {string} label - The translation key to look up
+   * @param {Record<string, string | number>} [params] - Optional parameters object to replace placeholders
+   * @returns {string} The translated string with replaced placeholders, or the original label if translation not found
+   *
+   * @example
+   * // Basic usage
+   * t(welcome_message') // Returns: "Welcome to our app"
+   *
+   * // With parameters
+   * t('hello_user', {name: "John" })// Returns: "Hello John" (if translation is "Hello {name}")
+   *
+   * // Multiple parameters
+   * t('items_count,  {count: 5, }) // Returns: "Showing 5 of 10 items" (if translation is "Showing {count} of {total} items")
+   *
+   * // Fallback to original label if translation not found
+   * t('unknown_key') // Returns: "unknown_key"
+   */
   const t = useCallback(
-    (key) => {
-      return translation[key] || key;
+    (label, params) => {
+      if (!translation[label]) return label;
+
+      if (params) {
+        return label.replace(/{(\w+)}/g, (match, key) => params[key]);
+      }
+
+      return label;
     },
     [translation]
   );

@@ -326,10 +326,10 @@ const fetcher = async (cacheKey) => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   try {
-    // const response = await fetcherMuatrans.get(
-    //   `v1/orders/status-driver?orderId=${orderId}&driverId=${driverId}`
-    // );
-    const response = apiResult;
+    const response = await fetcherMuatrans.get(
+      `v1/orders/status-driver?orderId=${orderId}&driverId=${driverId}`
+    );
+    // const response = apiResult;
     const result = transformDriverStatusData(response.data.Data);
 
     return result;

@@ -18,6 +18,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 const ArmadaAktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -37,6 +38,7 @@ const ArmadaAktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
       key: "photo",
       header: "Foto",
       width: "80px",
+      sortable: false,
       render: (row) => (
         <div className="h-12 w-12 overflow-hidden rounded">
           <img
@@ -48,15 +50,8 @@ const ArmadaAktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
       ),
     },
     {
-      key: "vehicleInfo",
-      header: (
-        <div className="flex items-center gap-1">
-          Nama Kendaraan
-          <button className="text-neutral-400 hover:text-neutral-600">
-            <ChevronDown size={16} />
-          </button>
-        </div>
-      ),
+      key: "licensePlate",
+      header: "Nama Kendaraan",
       render: (row) => (
         <div className="space-y-1">
           <div className="text-xs font-bold">{row.licensePlate}</div>
@@ -68,14 +63,7 @@ const ArmadaAktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
     },
     {
       key: "driver",
-      header: (
-        <div className="flex items-center gap-1">
-          Driver
-          <button className="text-neutral-400 hover:text-neutral-600">
-            <ChevronDown size={16} />
-          </button>
-        </div>
-      ),
+      header: "Driver",
       width: "280px",
       render: (row) => (
         <div className="">
@@ -102,32 +90,19 @@ const ArmadaAktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
       ),
     },
     {
-      key: "brand",
-      header: (
-        <div className="flex items-center gap-1">
-          Merek Kendaraan
-          <button className="text-neutral-400 hover:text-neutral-600">
-            <ChevronDown size={16} />
-          </button>
-        </div>
-      ),
+      key: "vehicleBrand",
+      header: "Merek Kendaraan",
       render: (row) => row.vehicleBrand?.name || "-",
     },
     {
-      key: "type",
-      header: (
-        <div className="flex items-center gap-1">
-          Tipe Kendaraan
-          <button className="text-neutral-400 hover:text-neutral-600">
-            <ChevronDown size={16} />
-          </button>
-        </div>
-      ),
+      key: "vehicleType",
+      header: "Tipe Kendaraan",
       render: (row) => row.vehicleType?.name || "-",
     },
     {
       key: "status",
       header: "Status",
+      sortable: false,
       render: (row) => {
         // Map the status based on the dummy data
         let statusText = "Siap Menerima Order";
@@ -145,6 +120,7 @@ const ArmadaAktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
       key: "action",
       header: "",
       width: "120px",
+      sortable: false,
       render: (row) => (
         <SimpleDropdown>
           <SimpleDropdownTrigger asChild>
@@ -230,6 +206,13 @@ const ArmadaAktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
     onPerPageChange?.(limit);
   };
 
+  const handleSort = (key, direction) => {
+    setSortConfig({ key, direction });
+    console.log(`Sorting by ${key} in ${direction} order`);
+    // TODO: Implement actual sorting logic here
+    // This would typically involve calling an API with sort parameters
+  };
+
   // Add warning indicators to rows
   const rowClassName = (row) => {
     if (row.warningDocumentExpired || row.pendingUpdateDriver) {
@@ -252,6 +235,7 @@ const ArmadaAktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
       onPerPageChange={handlePerPageChange}
       onSearch={handleSearch}
       onFilter={handleFilter}
+      onSort={handleSort}
       loading={isLoading}
       showPagination
       rowClassName={rowClassName}

@@ -1,3 +1,5 @@
+import { fetcherMuatrans } from "@/lib/axios";
+
 // GET /api/v1/orders/{orderId}/alerts
 const apiResult = {
   data: {
@@ -59,12 +61,11 @@ const apiResult = {
 
 export const getOrderAlerts = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
-  const result = apiResult;
-  return result.data.Data.alerts;
+  // const result = apiResult;
+  // return result.data.Data.alerts;
 
-  // const result = await fetcherMuatrans.get(`v1/orders/${orderId}/alerts`);
-
-  // return result?.data?.Data?.alerts || [];
+  const result = await fetcherMuatrans.get(`v1/orders/${orderId}/alerts`);
+  return result?.data?.Data?.alerts || [];
 };
 
 export const useGetOrderAlerts = (orderId) =>

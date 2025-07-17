@@ -11,13 +11,9 @@ const LIST_PUBLIC_FILES = [
   "/img/",
 ];
 
-const LIST_SHIPPER_SUBDOMAIN = ["shipper.", "trans-az."];
-const LIST_TRANSPORTER_SUBDOMAIN = ["transporter."];
-
 export function middleware(request) {
   const hostname = request.headers.get("host") || "";
   const url = request.nextUrl.clone();
-  const cleanHost = hostname.replace(":3000", "");
 
   // Exclude Next.js static files, known public assets, and any file with an extension from rewrite
   if (
@@ -27,13 +23,14 @@ export function middleware(request) {
     return NextResponse.next();
   }
 
+  // --- TRANSPORTER SUBDOMAIN HANDLER ---
+  if (process.env.NEXT_PUBLIC_APP_MODE === "transporter") {
+    url.pathname = `/transporter${url.pathname}`;
+    return NextResponse.rewrite(url);
+  }
+
   // --- SHIPPER SUBDOMAIN HANDLER ---
-  if (
-    LIST_SHIPPER_SUBDOMAIN.some((subdomain) =>
-      cleanHost.startsWith(subdomain)
-    ) ||
-    hostname.includes(":3000")
-  ) {
+  if (process.env.NEXT_PUBLIC_APP_MODE === "shipper") {
     // 1. Redirect / to /sewaarmada
     if (url.pathname === "/") {
       url.pathname = "/sewaarmada";
@@ -63,17 +60,6 @@ export function middleware(request) {
 
     // 4. Always rewrite to /shipper path for all other requests
     url.pathname = `/shipper${url.pathname}`;
-    return NextResponse.rewrite(url);
-  }
-
-  // --- TRANSPORTER SUBDOMAIN HANDLER ---
-  if (
-    LIST_TRANSPORTER_SUBDOMAIN.some((subdomain) =>
-      cleanHost.startsWith(subdomain)
-    ) ||
-    hostname.includes(":4000")
-  ) {
-    url.pathname = `/transporter${url.pathname}`;
     return NextResponse.rewrite(url);
   }
 

@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { addMinutes, isPast } from "date-fns";
 
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
+import { fetcherMuatrans } from "@/lib/axios";
 
 const apiResultQRCode = {
   data: {
@@ -40,13 +41,13 @@ export const useGetDriverQRCodeById = (requestData = exampleBody) => {
   const generateQRCode = async () => {
     if (!requestData) return;
     try {
-      // const response = await fetcherMuatrans.post(
-      //   "v1/orders/qr-codes/generate",
-      //   requestData
-      // );
-      const response = apiResultQRCode;
-      // setQRData(response.data?.Data || null);
-      setQRData(null);
+      const response = await fetcherMuatrans.post(
+        "v1/orders/qr-codes/generate",
+        requestData
+      );
+      // const response = apiResultQRCode;
+      setQRData(response.data?.Data || null);
+      // setQRData(null);
     } catch (error) {
       console.log("Error generate QR Code", error);
     } finally {

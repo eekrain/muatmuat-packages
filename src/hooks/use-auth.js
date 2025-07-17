@@ -13,7 +13,7 @@ const cacheConfig = {
     // Cache for 8 hours, but allow revalidation for every 1 hour
     "Cache-Control": "public, max-age=28800, stale-while-revalidate=3600",
   },
-  timeout: 2000,
+  // timeout: 2000,
 };
 
 export const AuthenticationProvider = ({ children }) => {
@@ -52,39 +52,24 @@ export const AuthenticationProvider = ({ children }) => {
         await new Promise((res) => setTimeout(res, 500));
       }
 
-      console.log("anjay 1");
       try {
-        console.log("anjay 2");
-
-        const [userResult, matrixResult, credentialResult] =
-          await Promise.allSettled([
-            fetcherMuatparts.post(
-              "v1/user/getUserStatusV3",
-              undefined,
-              cacheConfig
-            ),
-            fetcherMuatparts.get("v1/register/checkmatrix", cacheConfig),
-            fetcherMuatparts.get(
-              "v1/muatparts/auth/credential-check",
-              cacheConfig
-            ),
-          ]);
-        let dataUser = {};
-        if (userResult.status === "fulfilled") {
-          dataUser = { ...userResult.value.data?.Data };
-        }
-        if (credentialResult.status === "fulfilled") {
-          const credential = credentialResult.value.data?.Data || {};
-          delete credential.accessToken;
-          delete credential.refreshToken;
-          delete credential.refreshtoken;
-          dataUser = { ...dataUser, ...credential };
-        }
-        setUser(dataUser);
-
-        if (matrixResult.status === "fulfilled") {
-          setDataMatrix(matrixResult.value.data?.Data);
-        }
+        await Promise.allSettled([
+          fetcherMuatparts
+            .get("v1/muatparts/auth/credential-check", cacheConfig)
+            .then((res) => {
+              const credential = res.data?.Data || {};
+              delete credential.accessToken;
+              delete credential.refreshToken;
+              delete credential.refreshtoken;
+              setUser(credential);
+            }),
+          fetcherMuatparts
+            .post("v1/user/getUserStatusV3", undefined, cacheConfig)
+            .then((res) => setUser(res.data?.Data)),
+          fetcherMuatparts
+            .get("v1/register/checkmatrix", cacheConfig)
+            .then((res) => setDataMatrix(res.data?.Data)),
+        ]);
       } catch (err) {
         console.error("Error initializing authentication", err);
       } finally {

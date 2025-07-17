@@ -36,6 +36,10 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
                 name: "Noel Gallagher",
                 licensePlate: "AE 666 LBA",
               },
+              {
+                name: "Noel Gallagher",
+                licensePlate: "AE 666 LBA",
+              },
             ]}
           />
         ),

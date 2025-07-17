@@ -161,17 +161,12 @@ export default function ImageUploaderWeb({
   };
 
   const handleFinishCrop = async (value) => {
+    console.log("value", value);
     const formData = new FormData();
     formData.append("file", value);
-
-    return await uploadPhoto(formData)
-      .then((data) => {
-        getImage(data.Data.photoUrl);
-        return data;
-      })
-      .catch((error) => {
-        return value;
-      });
+    await uploadPhoto(formData)
+      .then((data) => getImage(data.Data.photoUrl))
+      .catch((error) => console.log("Error Upload Photo: ", error));
   };
 
   const getCroppedData = (file) => {

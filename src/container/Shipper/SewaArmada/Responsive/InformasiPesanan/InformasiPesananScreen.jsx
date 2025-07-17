@@ -74,7 +74,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
     cargoPhotos,
     // deliveryOrder,
   } = formValues;
-
+  console.log("cargo", cargoPhotos);
   const cargoDescription = useSewaArmadaStore(
     (state) => state.formValues.cargoDescription
   );
@@ -335,7 +335,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
         </div>
 
         {/* Form Lampiran Foto */}
-        <div className="flex flex-col gap-6 bg-white p-4">
+        <div className="flex flex-col gap-6 bg-neutral-50 p-4">
           <div className="flex flex-col gap-y-4">
             <h2 className="text-[14px] font-semibold text-neutral-900">
               Lampiran/Foto Muatan*
@@ -346,12 +346,13 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
               {[...Array(4)].map((_, key) => (
                 <Fragment key={key}>
                   <ImageUploaderResponsive
-                    getImage={(value) => handleImageUpload(key, value)}
-                    uploadText={key === 0 ? "Foto Utama" : `Foto ${key + 1}`}
+                    onChange={(value) => handleImageUpload(key, value)}
+                    uploadText={key === 0 ? "Foto Utama" : `Foto ${key}`}
                     maxSize={10}
                     className="!size-[72px]"
                     value={cargoPhotos[key]}
                     isNull={formErrors.cargoPhotos}
+                    index={key}
                   />
                 </Fragment>
               ))}
@@ -405,7 +406,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
         </div>
 
         {/* Badan Usaha Pemesan - Updated Section */}
-        <div className="flex flex-col gap-y-4 bg-white p-4">
+        <div className="flex flex-col gap-y-4 bg-neutral-50 p-4">
           {/* Header */}
           <div className="flex items-center gap-1">
             <h2 className="text-[14px] font-bold leading-[15.4px] text-neutral-900">
@@ -507,7 +508,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
         </div>
 
         {/* Ringkasan Transaksi */}
-        <div className="gap-y-f6 flex flex-col bg-white p-4">
+        <div className="flex flex-col gap-y-6 bg-neutral-50 p-4">
           <h1 className="text-[14px] font-semibold text-neutral-900">
             Ringkasan Transaksi
           </h1>
@@ -653,7 +654,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
         >
           <div className="flex items-center gap-x-3">
             {selectedVoucher ? (
-              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs text-white">
+              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs text-neutral-50">
                 ✓
               </div>
             ) : (
@@ -681,11 +682,11 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
       <BottomSheet open={isBottomsheetOpen} onOpenChange={setIsBottomsheetOpen}>
         <BottomSheetContent
           className={
-            "animate-slideUp fixed bottom-0 left-0 right-0 z-50 mx-auto max-h-[90vh] w-full overflow-y-auto rounded-t-2xl bg-white shadow-2xl"
+            "animate-slideUp fixed bottom-0 left-0 right-0 z-50 mx-auto max-h-[90vh] w-full overflow-y-auto rounded-t-2xl bg-neutral-50 shadow-2xl"
           }
         >
           <BottomSheetHeader>Pilih Voucher</BottomSheetHeader>
-          <div className="flex h-[577px] w-full flex-col gap-4 overflow-y-auto bg-white px-4 py-6">
+          <div className="flex h-[577px] w-full flex-col gap-4 overflow-y-auto bg-neutral-50 px-4 py-6">
             {/* Search bar */}
             <div className="relative flex items-center rounded-md border border-neutral-400">
               <div className="absolute left-3">
@@ -783,7 +784,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
             </div>
 
             {/* Apply button */}
-            <div className="sticky bottom-0 flex items-center bg-white pt-4">
+            <div className="sticky bottom-0 flex items-center bg-neutral-50 pt-4">
               <Button
                 variant="muatparts-primary"
                 className="flex-1"

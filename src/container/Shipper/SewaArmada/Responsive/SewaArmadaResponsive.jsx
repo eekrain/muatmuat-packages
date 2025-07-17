@@ -167,7 +167,7 @@ const SewaArmadaResponsive = ({
         path="/Cropper"
         component={
           <CropperScreen
-            onCheck={() => navigation.push("/CropperPreview")}
+            isCircle
             onClose={() => {
               reset();
               navigation.pop();
