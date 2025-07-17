@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import * as HoverCard from "@radix-ui/react-hover-card";
+import * as Popover from "@radix-ui/react-popover";
 import { ChevronRight, Search, SlidersHorizontal } from "lucide-react";
 
 import {
@@ -8,6 +8,7 @@ import {
   SimpleDropdownContent,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
+import Input from "@/components/Form/Input";
 import { cn } from "@/lib/utils";
 
 const FilterDropdown = ({
@@ -22,10 +23,12 @@ const FilterDropdown = ({
   dropdownClassName,
   itemClassName,
   searchPlaceholder = "Search...",
-  emptyMessage = "No items found",
-  maxHeight = "300px",
+  emptyMessage = "Data Tidak Ditemukan",
+  maxHeight = "160px",
 }) => {
   const [searchQueries, setSearchQueries] = useState({});
+  const [openPopovers, setOpenPopovers] = useState({});
+  const hoverTimeouts = useRef({});
 
   const handleItemToggle = (categoryKey, item) => {
     if (!multiSelect) {
@@ -90,13 +93,6 @@ const FilterDropdown = ({
     }));
   };
 
-  const getSelectedCount = (categoryKey) => {
-    if (!multiSelect) {
-      return selectedValues[categoryKey] ? 1 : 0;
-    }
-    return selectedValues[categoryKey]?.length || 0;
-  };
-
   const getTotalSelectedCount = () => {
     if (!showSelectedCount) return 0;
 
@@ -108,20 +104,58 @@ const FilterDropdown = ({
     }, 0);
   };
 
+  const handleMouseEnter = (categoryKey) => {
+    // Clear any pending close timeout
+    if (hoverTimeouts.current[categoryKey]) {
+      clearTimeout(hoverTimeouts.current[categoryKey]);
+    }
+
+    // Open the popover
+    setOpenPopovers((prev) => ({ ...prev, [categoryKey]: true }));
+  };
+
+  const handleMouseLeave = (categoryKey) => {
+    // Set a timeout to close the popover
+    hoverTimeouts.current[categoryKey] = setTimeout(() => {
+      setOpenPopovers((prev) => ({ ...prev, [categoryKey]: false }));
+    }, 0); // Small delay to allow moving to the content
+  };
+
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    return () => {
+      Object.values(hoverTimeouts.current).forEach((timeout) =>
+        clearTimeout(timeout)
+      );
+    };
+  }, []);
+
   const renderTrigger = () => {
     const totalSelected = getTotalSelectedCount();
 
     // Default trigger if none provided
     if (!trigger) {
       return (
-        <button className="flex h-8 w-[104px] flex-row items-center justify-between gap-2 rounded-md border border-neutral-600 bg-white px-3 shadow-sm transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none">
-          <span className="text-xs font-medium text-neutral-600">Filter</span>
-          <SlidersHorizontal className="h-4 w-4 text-neutral-700" />
-          {totalSelected > 0 && (
-            <span className="ml-1 rounded-full bg-primary-700 px-2 py-0.5 text-xs text-white">
-              {totalSelected}
-            </span>
+        <button
+          className={cn(
+            "flex h-8 w-[104px] flex-row items-center justify-between gap-2 rounded-md border bg-white px-3 transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none",
+            totalSelected > 0 ? "border-primary-700" : "border-neutral-600"
           )}
+        >
+          <span
+            className={cn(
+              "text-xs font-medium",
+              totalSelected > 0 ? "text-primary-700" : "text-neutral-600"
+            )}
+          >
+            Filter
+          </span>
+          <SlidersHorizontal
+            className={cn(
+              "h-4 w-4",
+              totalSelected > 0 ? "text-primary-700" : "text-neutral-700"
+            )}
+          />
         </button>
       );
     }
@@ -147,63 +181,68 @@ const FilterDropdown = ({
       <SimpleDropdownTrigger asChild>{renderTrigger()}</SimpleDropdownTrigger>
 
       <SimpleDropdownContent
-        className={cn("w-[240px] bg-neutral-50 p-2", dropdownClassName)}
+        className={cn(
+          "w-[194px] overflow-hidden border-neutral-400 bg-neutral-50",
+          dropdownClassName
+        )}
       >
         {categories.map((category) => {
-          const selectedCount = getSelectedCount(category.key);
-
           return (
-            <HoverCard.Root key={category.key} openDelay={0} closeDelay={0}>
-              <HoverCard.Trigger asChild>
-                <div className="flex w-full cursor-pointer items-center justify-between rounded-md px-4 py-3 text-left text-sm font-medium transition-colors hover:bg-neutral-100">
-                  <span>{category.label}</span>
+            <Popover.Root
+              key={category.key}
+              open={openPopovers[category.key] || false}
+              onOpenChange={(open) => {
+                setOpenPopovers((prev) => ({ ...prev, [category.key]: open }));
+              }}
+            >
+              <Popover.Trigger asChild>
+                <div
+                  className="flex h-8 cursor-pointer items-center justify-between px-2.5 text-left transition-colors hover:bg-neutral-100"
+                  onMouseEnter={() => handleMouseEnter(category.key)}
+                  onMouseLeave={() => handleMouseLeave(category.key)}
+                >
+                  <span className="text-xs font-medium">{category.label}</span>
                   <div className="flex items-center gap-2">
-                    {selectedCount > 0 && showSelectedCount && (
-                      <span className="text-xs text-primary-700">
-                        ({selectedCount})
-                      </span>
-                    )}
-                    <ChevronRight size={16} className="text-neutral-500" />
+                    <ChevronRight size={16} className="text-neutral-700" />
                   </div>
                 </div>
-              </HoverCard.Trigger>
-              <HoverCard.Portal>
-                <HoverCard.Content
+              </Popover.Trigger>
+              <Popover.Portal>
+                <Popover.Content
                   side="right"
                   align="start"
-                  sideOffset={5}
-                  className="z-50 w-[360px] rounded-md border border-neutral-200 bg-white p-4 shadow-lg"
+                  sideOffset={4}
+                  className="shadow-muat z-50 w-[194px] rounded-md border border-neutral-400 bg-white p-2.5"
+                  onMouseEnter={() => handleMouseEnter(category.key)}
+                  onMouseLeave={() => handleMouseLeave(category.key)}
+                  onOpenAutoFocus={(e) => e.preventDefault()}
                 >
-                  <div className="mb-3 text-sm font-medium text-neutral-900">
-                    {category.label}
-                  </div>
-
                   {/* Search Input */}
                   {searchable && (
-                    <div className="relative mb-3">
-                      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
-                      <input
-                        type="text"
-                        value={searchQueries[category.key] || ""}
-                        onChange={(e) =>
-                          handleSearchChange(category.key, e.target.value)
-                        }
-                        placeholder={searchPlaceholder.replace(
-                          "{category}",
-                          category.label || ""
-                        )}
-                        className="w-full rounded-lg border border-neutral-300 py-2 pl-10 pr-4 text-sm focus:border-primary-700 focus:outline-none"
-                      />
-                    </div>
+                    <Input
+                      type="text"
+                      value={searchQueries[category.key] || ""}
+                      onChange={(e) =>
+                        handleSearchChange(category.key, e.target.value)
+                      }
+                      placeholder={searchPlaceholder.replace(
+                        "{category}",
+                        category.label || ""
+                      )}
+                      icon={{
+                        left: <Search className="h-4 w-4 text-neutral-500" />,
+                      }}
+                      appearance={{
+                        containerClassName: "h-8 mb-2.5",
+                        inputClassName: "text-xs font-medium",
+                      }}
+                    />
                   )}
 
                   {/* Items List */}
-                  <div
-                    className="space-y-1 overflow-y-auto"
-                    style={{ maxHeight }}
-                  >
+                  <div className="overflow-y-auto" style={{ maxHeight }}>
                     {getFilteredItems(category.key).length === 0 ? (
-                      <div className="py-4 text-center text-sm text-neutral-500">
+                      <div className="py-2 text-center text-xs font-medium">
                         {emptyMessage}
                       </div>
                     ) : (
@@ -211,7 +250,7 @@ const FilterDropdown = ({
                         <label
                           key={item.id}
                           className={cn(
-                            "flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 transition-colors hover:bg-neutral-50",
+                            "flex h-8 cursor-pointer items-center gap-3 transition-colors hover:bg-neutral-50",
                             itemClassName
                           )}
                         >
@@ -224,16 +263,16 @@ const FilterDropdown = ({
                             }
                             className="h-4 w-4 rounded border-neutral-300 text-primary-700 focus:ring-primary-700"
                           />
-                          <span className="text-sm font-medium text-neutral-900">
+                          <span className="text-xs font-medium">
                             {item.label}
                           </span>
                         </label>
                       ))
                     )}
                   </div>
-                </HoverCard.Content>
-              </HoverCard.Portal>
-            </HoverCard.Root>
+                </Popover.Content>
+              </Popover.Portal>
+            </Popover.Root>
           );
         })}
       </SimpleDropdownContent>
