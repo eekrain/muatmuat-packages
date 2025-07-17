@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 
 import FloatingButton from "@/components/FloatingButton/FloatingButton";
 import { useAuth } from "@/hooks/use-auth";
+import { cn } from "@/lib/utils";
 import { useNotificationCounterStore } from "@/store/Shipper/notificationCounterStore";
 
 import HeaderLayout from "../HeaderLayout/HeaderLayout";
@@ -23,9 +24,10 @@ export default function DesktopLayout({ children }) {
     <div className="relative min-h-screen">
       <HeaderLayout notifCounter={{ notification, chat }} />
       <div
-        className={
-          isLoggedIn ? "min-h-[calc(100dvh-92px)]" : "min-h-[calc(100dvh-60px)]"
-        }
+        className={cn(
+          "mx-auto max-w-[1232px] overflow-y-hidden",
+          isLoggedIn ? "max-h-[calc(100dvh-92px)]" : "max-h-[calc(100dvh-60px)]"
+        )}
       >
         {children}
       </div>

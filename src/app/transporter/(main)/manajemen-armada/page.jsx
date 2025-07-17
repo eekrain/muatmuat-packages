@@ -5,11 +5,12 @@ import EmptyArmada from "@/container/Transporter/Armada/EmptyArmada";
 import { useGetActiveVehiclesData } from "@/services/Transporter/manajemen-armada/getActiveVehiclesData";
 
 const Page = () => {
-  const { data } = useGetActiveVehiclesData();
+  const { data, isLoading } = useGetActiveVehiclesData();
 
   const vehicles = data?.vehicles || [];
 
-  if (!!vehicles.length) return <ArmadaContainer vehicles={vehicles} />;
+  if (!!vehicles.length)
+    return <ArmadaContainer data={data} isLoading={isLoading} />;
 
   return <EmptyArmada />;
 };
