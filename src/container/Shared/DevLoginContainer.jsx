@@ -18,7 +18,7 @@ const getInputType = (input) => {
   return emailRegex.test(input) ? "email" : "phone";
 };
 
-const DevLoginContainer = () => {
+const DevLoginContainer = ({ onSuccessRedirect = "/manajemen-armada" }) => {
   const [formData, setFormData] = useState({
     emailOrPhone: "",
     password: "",
@@ -161,7 +161,7 @@ const DevLoginContainer = () => {
       // Add delay before redirect
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      window.location.replace("/manajemen-armada");
+      window.location.replace(onSuccessRedirect);
     } catch (error) {
       console.error("Login error:", error);
       setErrors({

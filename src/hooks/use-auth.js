@@ -1,5 +1,5 @@
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useShallow } from "zustand/react/shallow";
 
@@ -61,7 +61,7 @@ export const AuthenticationProvider = ({ children }) => {
               delete credential.accessToken;
               delete credential.refreshToken;
               delete credential.refreshtoken;
-              setUser(credential);
+              setUser({ ...credential, isLoggedIn: true });
             }),
           fetcherMuatparts
             .post("v1/user/getUserStatusV3", undefined, cacheConfig)
@@ -94,7 +94,8 @@ export const AuthenticationProvider = ({ children }) => {
 export const useAuth = () => {
   const dataMatrix = useUserStore(useShallow((state) => state.dataMatrix));
   const dataUser = useUserStore(useShallow((state) => state.dataUser));
-  const isLoggedIn = Boolean(dataUser?.ID) || Boolean(dataUser?.id);
+  const isLoggedIn = useMemo(() => Boolean(dataUser?.name), [dataUser?.name]);
+
   // Stable logout function
   const logout = useCallback(async () => {
     const authStore = useTokenStore.getState();

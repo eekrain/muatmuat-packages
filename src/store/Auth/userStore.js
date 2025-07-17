@@ -10,9 +10,21 @@ export const useUserStore = create(
         dataUser: null,
         dataMatrix: null,
         actions: {
-          setUser: (val) => set({ dataUser: val }),
-          setDataMatrix: (data) => set({ dataMatrix: data }),
-          clearUser: () => set({ dataUser: null, dataMatrix: null }),
+          setUser: (val) =>
+            set((state) => ({
+              dataUser: {
+                ...(state?.dataUser ? state.dataUser : {}),
+                ...val,
+              },
+            })),
+          setDataMatrix: (data) =>
+            set((state) => ({
+              dataMatrix: {
+                ...(state?.dataMatrix ? state.dataMatrix : {}),
+                ...data,
+              },
+            })),
+          clearUser: () => set({ dataUser: {}, dataMatrix: null }),
         },
       }),
       {
