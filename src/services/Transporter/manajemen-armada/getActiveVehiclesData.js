@@ -32,6 +32,209 @@ const apiResultActiveVehicles = {
           },
           assignedDriver: {
             id: "550e8400-e29b-41d4-a716-446655440012",
+            fullName: "Raden Cakradana Ardhanurahman Yudhatama",
+            whatsappNumber: "081234567890",
+          },
+          status: "ACTIVE",
+          warningDocumentExpired: true,
+          pendingUpdateDriver: true,
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440011",
+          photoUrl: "https://picsum.photos/300/300",
+          licensePlate: "B 1234 ABC",
+          truckType: {
+            id: "550e8400-e29b-41d4-a716-446655440000",
+            name: "Truk Besar",
+          },
+          carrierType: {
+            id: "550e8400-e29b-41d4-a716-446655440001",
+            name: "Box",
+          },
+          vehicleBrand: {
+            id: "550e8400-e29b-41d4-a716-446655440002",
+            name: "Hino",
+          },
+          vehicleType: {
+            id: "550e8400-e29b-41d4-a716-446655440003",
+            name: "Hino Dutro",
+          },
+          assignedDriver: {
+            id: "550e8400-e29b-41d4-a716-446655440012",
+            fullName: "John Doe",
+            whatsappNumber: "081234567890",
+          },
+          status: "ACTIVE",
+          warningDocumentExpired: true,
+          pendingUpdateDriver: true,
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440011",
+          photoUrl: "https://picsum.photos/300/300",
+          licensePlate: "B 1234 ABC",
+          truckType: {
+            id: "550e8400-e29b-41d4-a716-446655440000",
+            name: "Truk Besar",
+          },
+          carrierType: {
+            id: "550e8400-e29b-41d4-a716-446655440001",
+            name: "Box",
+          },
+          vehicleBrand: {
+            id: "550e8400-e29b-41d4-a716-446655440002",
+            name: "Hino",
+          },
+          vehicleType: {
+            id: "550e8400-e29b-41d4-a716-446655440003",
+            name: "Hino Dutro",
+          },
+          assignedDriver: {
+            id: "550e8400-e29b-41d4-a716-446655440012",
+            fullName: "John Doe",
+            whatsappNumber: "081234567890",
+          },
+          status: "ACTIVE",
+          warningDocumentExpired: true,
+          pendingUpdateDriver: true,
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440011",
+          photoUrl: "https://picsum.photos/300/300",
+          licensePlate: "B 1234 ABC",
+          truckType: {
+            id: "550e8400-e29b-41d4-a716-446655440000",
+            name: "Truk Besar",
+          },
+          carrierType: {
+            id: "550e8400-e29b-41d4-a716-446655440001",
+            name: "Box",
+          },
+          vehicleBrand: {
+            id: "550e8400-e29b-41d4-a716-446655440002",
+            name: "Hino",
+          },
+          vehicleType: {
+            id: "550e8400-e29b-41d4-a716-446655440003",
+            name: "Hino Dutro",
+          },
+          assignedDriver: {
+            id: "550e8400-e29b-41d4-a716-446655440012",
+            fullName: "John Doe",
+            whatsappNumber: "081234567890",
+          },
+          status: "ACTIVE",
+          warningDocumentExpired: true,
+          pendingUpdateDriver: true,
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440011",
+          photoUrl: "https://picsum.photos/300/300",
+          licensePlate: "B 1234 ABC",
+          truckType: {
+            id: "550e8400-e29b-41d4-a716-446655440000",
+            name: "Truk Besar",
+          },
+          carrierType: {
+            id: "550e8400-e29b-41d4-a716-446655440001",
+            name: "Box",
+          },
+          vehicleBrand: {
+            id: "550e8400-e29b-41d4-a716-446655440002",
+            name: "Hino",
+          },
+          vehicleType: {
+            id: "550e8400-e29b-41d4-a716-446655440003",
+            name: "Hino Dutro",
+          },
+          assignedDriver: {
+            id: "550e8400-e29b-41d4-a716-446655440012",
+            fullName: "John Doe",
+            whatsappNumber: "081234567890",
+          },
+          status: "ACTIVE",
+          warningDocumentExpired: true,
+          pendingUpdateDriver: true,
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440011",
+          photoUrl: "https://picsum.photos/300/300",
+          licensePlate: "B 1234 ABC",
+          truckType: {
+            id: "550e8400-e29b-41d4-a716-446655440000",
+            name: "Truk Besar",
+          },
+          carrierType: {
+            id: "550e8400-e29b-41d4-a716-446655440001",
+            name: "Box",
+          },
+          vehicleBrand: {
+            id: "550e8400-e29b-41d4-a716-446655440002",
+            name: "Hino",
+          },
+          vehicleType: {
+            id: "550e8400-e29b-41d4-a716-446655440003",
+            name: "Hino Dutro",
+          },
+          assignedDriver: {
+            id: "550e8400-e29b-41d4-a716-446655440012",
+            fullName: "John Doe",
+            whatsappNumber: "081234567890",
+          },
+          status: "ACTIVE",
+          warningDocumentExpired: true,
+          pendingUpdateDriver: true,
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440011",
+          photoUrl: "https://picsum.photos/300/300",
+          licensePlate: "B 1234 ABC",
+          truckType: {
+            id: "550e8400-e29b-41d4-a716-446655440000",
+            name: "Truk Besar",
+          },
+          carrierType: {
+            id: "550e8400-e29b-41d4-a716-446655440001",
+            name: "Box",
+          },
+          vehicleBrand: {
+            id: "550e8400-e29b-41d4-a716-446655440002",
+            name: "Hino",
+          },
+          vehicleType: {
+            id: "550e8400-e29b-41d4-a716-446655440003",
+            name: "Hino Dutro",
+          },
+          assignedDriver: {
+            id: "550e8400-e29b-41d4-a716-446655440012",
+            fullName: "John Doe",
+            whatsappNumber: "081234567890",
+          },
+          status: "ACTIVE",
+          warningDocumentExpired: true,
+          pendingUpdateDriver: true,
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440011",
+          photoUrl: "https://picsum.photos/300/300",
+          licensePlate: "B 1234 ABC",
+          truckType: {
+            id: "550e8400-e29b-41d4-a716-446655440000",
+            name: "Truk Besar",
+          },
+          carrierType: {
+            id: "550e8400-e29b-41d4-a716-446655440001",
+            name: "Box",
+          },
+          vehicleBrand: {
+            id: "550e8400-e29b-41d4-a716-446655440002",
+            name: "Hino",
+          },
+          vehicleType: {
+            id: "550e8400-e29b-41d4-a716-446655440003",
+            name: "Hino Dutro",
+          },
+          assignedDriver: {
+            id: "550e8400-e29b-41d4-a716-446655440012",
             fullName: "John Doe",
             whatsappNumber: "081234567890",
           },
@@ -125,6 +328,19 @@ const apiResultActiveVehicles = {
           { id: "550e8400-e29b-41d4-a716-446655440000", value: "Hino" },
           { id: "550e8400-e29b-41d4-a716-446655440001", value: "Mitsubishi" },
           { id: "550e8400-e29b-41d4-a716-446655440002", value: "Isuzu" },
+          { id: "550e8400-e29b-41d4-a716-446655440003", value: "Toyota" },
+          { id: "550e8400-e29b-41d4-a716-446655440004", value: "Nissan" },
+          { id: "550e8400-e29b-41d4-a716-446655440005", value: "UD Trucks" },
+          { id: "550e8400-e29b-41d4-a716-446655440006", value: "Scania" },
+          {
+            id: "550e8400-e29b-41d4-a716-446655440007",
+            value: "Mercedes-Benz",
+          },
+          { id: "550e8400-e29b-41d4-a716-446655440008", value: "Volvo" },
+          { id: "550e8400-e29b-41d4-a716-446655440009", value: "MAN" },
+          { id: "550e8400-e29b-41d4-a716-446655440010", value: "Iveco" },
+          { id: "550e8400-e29b-41d4-a716-446655440011", value: "FAW" },
+          { id: "550e8400-e29b-41d4-a716-446655440012", value: "Dongfeng" },
         ],
         vehicleType: [
           { id: "550e8400-e29b-41d4-a716-446655440000", value: "Hino Dutro" },

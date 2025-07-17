@@ -10,9 +10,11 @@ import {
   TabsTriggerWithSeparator,
 } from "@/components/Tabs/Tabs";
 
-const ArmadaContainer = ({ vehicles }) => {
+import ArmadaAktif from "./ArmadaAktif";
+
+const ArmadaContainer = ({ data }) => {
   return (
-    <div className="mx-auto max-w-[1232px] space-y-4 py-6">
+    <div className="max-h-screen w-full space-y-4 py-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">Manajemen Armada</h1>
         <div className="flex gap-3">
@@ -52,13 +54,25 @@ const ArmadaContainer = ({ vehicles }) => {
           </TabsTriggerWithSeparator>
         </TabsList>
 
-        <TabsContent value="aktif"></TabsContent>
-        <TabsContent value="nonaktif"></TabsContent>
-        <TabsContent value="proses"></TabsContent>
-        <TabsContent value="arsip"></TabsContent>
+        <TabsContent value="aktif" className={"pt-4"}>
+          <ArmadaAktif data={data} />
+        </TabsContent>
+        <TabsContent value="nonaktif">
+          <div className="flex min-h-[400px] items-center justify-center">
+            <p className="text-neutral-500">Armada nonaktif content</p>
+          </div>
+        </TabsContent>
+        <TabsContent value="proses">
+          <div className="flex min-h-[400px] items-center justify-center">
+            <p className="text-neutral-500">Proses pendaftaran content</p>
+          </div>
+        </TabsContent>
+        <TabsContent value="arsip">
+          <div className="flex min-h-[400px] items-center justify-center">
+            <p className="text-neutral-500">Arsip content</p>
+          </div>
+        </TabsContent>
       </Tabs>
-
-      <pre>{JSON.stringify(vehicles, null, 2)}</pre>
     </div>
   );
 };
