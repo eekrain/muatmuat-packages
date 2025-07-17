@@ -84,3 +84,5 @@ export const DimensionInput = ({
     </div>
   );
 };
+
+export default DimensionInput;
