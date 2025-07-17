@@ -2,6 +2,7 @@ import Image from "next/image";
 
 import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
+import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import {
@@ -12,7 +13,19 @@ import {
 const CropperPreviewScreen = () => {
   const navigation = useResponsiveNavigation();
   const { previewImage } = useImageUploaderStore();
-  const { reset } = useImageUploaderActions();
+  const { reset, setIsReadyUploadPhoto } = useImageUploaderActions();
+
+  useShallowCompareEffect(() => {
+    if (!previewImage) {
+      navigation.popTo("/InformasiPesanan");
+    }
+  }, [previewImage]);
+
+  const handleSaveImage = () => {
+    setIsReadyUploadPhoto(true);
+    navigation.popTo("/InformasiPesanan");
+  };
+
   return (
     <FormResponsiveLayout
       title={{
@@ -52,7 +65,7 @@ const CropperPreviewScreen = () => {
         <Button
           variant="muatparts-primary"
           className="w-full"
-          onClick={() => {}}
+          onClick={handleSaveImage}
           type="button"
         >
           Lanjut

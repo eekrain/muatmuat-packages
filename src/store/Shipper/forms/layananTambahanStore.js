@@ -26,11 +26,13 @@ export const useLayananTambahanStore = create(
       formErrors: {},
 
       // Actions
-      setField: (field, value) =>
+      setField: (field, value) => {
+        console.log("field", field, value);
         set((state) => ({
           formValues: { ...state.formValues, [field]: value },
           formErrors: { ...state.formErrors, [field]: undefined },
-        })),
+        }));
+      },
 
       validateForm: () => {
         const { namaPenerima, nomorHandphonePenerima, opsiPegiriman } =

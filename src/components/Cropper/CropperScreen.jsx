@@ -4,7 +4,9 @@ import { useRef } from "react";
 import "cropperjs/dist/cropper.css";
 import Cropper from "react-cropper";
 
+import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import CropperResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/CropperResponsiveLayout";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import {
   useImageUploaderActions,
   useImageUploaderStore,
@@ -12,11 +14,18 @@ import {
 
 import "./cropper_az.css";
 
-const CropperScreen = ({ onCheck, onClose }) => {
-  const { image, imageFile, isCircle } = useImageUploaderStore();
+const CropperScreen = ({ isCircle, onClose }) => {
+  const navigation = useResponsiveNavigation();
+  const { image, imageFile } = useImageUploaderStore();
   const { setPreviewImage } = useImageUploaderActions();
   const cropperRef = useRef(null);
   const defaultRatioRef = useRef(null);
+
+  useShallowCompareEffect(() => {
+    if (!image || !imageFile) {
+      navigation.popTo("/InformasiPesanan");
+    }
+  }, [image, imageFile]);
 
   const handleZoom = (event) => {
     const oldRatio = event.detail.oldRatio;
@@ -36,24 +45,29 @@ const CropperScreen = ({ onCheck, onClose }) => {
     }
   };
 
-  const getCropData = () => {
-    if (typeof cropperRef.current.cropper !== "undefined") {
+  const handlePreviewCroppedImage = () => {
+    const cropper = cropperRef.current?.cropper;
+    if (cropper) {
+      // Get filename from imageFile or generate one
+      let fileName =
+        imageFile?.name ||
+        `cropped_image_${Date.now()}.${imageFile?.type?.split("/")[1] || "jpeg"}`;
+
+      // Ensure the filename doesn't have spaces or special characters
+      fileName = fileName.replace(/[^a-zA-Z0-9.-]/g, "_");
+
       setPreviewImage(
         cropperRef.current?.cropper
           .getCroppedCanvas()
-          .toDataURL(imageFile?.type, 1.0)
-      );
+          .toDataURL(imageFile.type, 0.7)
+      ); // compress at 70%
+      navigation.push("/CropperPreview");
     }
-    const cropper = cropperRef.current?.cropper;
-    cropper.reset();
   };
 
   return (
     <CropperResponsiveLayout
-      onCheck={() => {
-        getCropData();
-        onCheck();
-      }}
+      onCheck={handlePreviewCroppedImage}
       onClose={onClose}
     >
       <div className="flex min-h-screen items-center">

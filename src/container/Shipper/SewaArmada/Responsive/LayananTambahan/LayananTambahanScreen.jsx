@@ -408,7 +408,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
               <div className="flex flex-col gap-y-4">
                 {otherAdditionalServices.map((service, key) => {
                   // Check if this service is already in the additionalServices array
-                  const isSelected = otherAdditionalServices.some(
+                  const isSelected = tambahanFormValues.additionalServices.some(
                     (selectedService) =>
                       selectedService.serviceId === service.additionalServiceId
                   );
