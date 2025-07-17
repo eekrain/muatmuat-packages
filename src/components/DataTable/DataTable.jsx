@@ -168,7 +168,7 @@ const DataTable = ({
   );
 
   const renderTable = () => (
-    <div className="relative h-[calc(100dvh-400px)] overflow-hidden border-t border-neutral-400">
+    <div className="relative h-[calc(100dvh-422px)] overflow-hidden border-t border-neutral-400">
       <div className="absolute inset-0 overflow-auto">
         <table className="w-full table-auto">
           <thead className="sticky top-0 z-10 bg-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[1px] after:bg-neutral-300">

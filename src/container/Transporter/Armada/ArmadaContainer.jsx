@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { Download, Plus } from "lucide-react";
 
 import Button from "@/components/Button/Button";
@@ -13,6 +15,8 @@ import {
 import ArmadaAktif from "./ArmadaAktif";
 
 const ArmadaContainer = ({ data }) => {
+  const router = useRouter();
+
   return (
     <div className="max-h-screen w-full space-y-4 py-6">
       <div className="flex items-center justify-between">
@@ -25,7 +29,10 @@ const ArmadaContainer = ({ data }) => {
           >
             <span className="pt-0.5">{"Tambah Armada Massal"}</span>
           </Button>
-          <Button iconLeft={<Plus size={16} />} onClick={() => {}}>
+          <Button
+            iconLeft={<Plus size={16} />}
+            onClick={() => router.push("/manajemen-armada/tambah")}
+          >
             <span className="pt-0.5">{"Tambah Armada"}</span>
           </Button>
           <Button iconLeft={<Download size={16} />} onClick={() => {}}>
