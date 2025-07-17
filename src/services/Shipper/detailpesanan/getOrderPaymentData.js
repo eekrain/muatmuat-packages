@@ -1,5 +1,7 @@
 import { addMinutes } from "date-fns";
 
+import { fetcherMuatrans } from "@/lib/axios";
+
 // GET /api/v1/orders/{orderId}/payment
 const apiResultPaymentData = {
   Message: {
@@ -22,12 +24,12 @@ const apiResultPaymentData = {
 export const getOrderPaymentData = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
 
-  const result = apiResultPaymentData;
-  return result.Data;
+  // const result = apiResultPaymentData;
+  // return result.Data;
 
-  // const result = await fetcherMuatrans.get(`v1/orders/${orderId}/payment`);
+  const result = await fetcherMuatrans.get(`v1/orders/${orderId}/payment`);
 
-  // return result?.data?.Data || null;
+  return result?.data?.Data || null;
 };
 
 export const useGetOrderPaymentData = (orderId) =>

@@ -1,6 +1,20 @@
 // middleware.ts
 import { NextResponse } from "next/server";
 
+if (!process.env.NEXT_PUBLIC_SUBDOMAIN_SHIPPER) {
+  throw new Error("NEXT_PUBLIC_SUBDOMAIN_SHIPPER is not set");
+}
+if (!process.env.NEXT_PUBLIC_SUBDOMAIN_SHIPPER.includes(".")) {
+  throw new Error("NEXT_PUBLIC_SUBDOMAIN_SHIPPER must include a dot");
+}
+
+if (!process.env.NEXT_PUBLIC_SUBDOMAIN_TRANSPORTER) {
+  throw new Error("NEXT_PUBLIC_SUBDOMAIN_TRANSPORTER is not set");
+}
+if (!process.env.NEXT_PUBLIC_SUBDOMAIN_TRANSPORTER.includes(".")) {
+  throw new Error("NEXT_PUBLIC_SUBDOMAIN_TRANSPORTER must include a dot");
+}
+
 const LIST_PUBLIC_FILES = [
   "/_next",
   "/favicon.ico",
@@ -11,13 +25,10 @@ const LIST_PUBLIC_FILES = [
   "/img/",
 ];
 
-const LIST_SHIPPER_SUBDOMAIN = ["shipper.", "trans-az."];
-const LIST_TRANSPORTER_SUBDOMAIN = ["transporter."];
-
 export function middleware(request) {
   const hostname = request.headers.get("host") || "";
   const url = request.nextUrl.clone();
-  const cleanHost = hostname.replace(":3000", "");
+  const cleanHost = hostname.replace(":3000", "").replace(":4000", "");
 
   // Exclude Next.js static files, known public assets, and any file with an extension from rewrite
   if (
@@ -26,6 +37,15 @@ export function middleware(request) {
   ) {
     return NextResponse.next();
   }
+
+  const LIST_SHIPPER_SUBDOMAIN =
+    process.env.NEXT_PUBLIC_SUBDOMAIN_SHIPPER.split(",").filter(
+      (subdomain) => subdomain !== ""
+    );
+  const LIST_TRANSPORTER_SUBDOMAIN =
+    process.env.NEXT_PUBLIC_SUBDOMAIN_TRANSPORTER.split(",").filter(
+      (subdomain) => subdomain !== ""
+    );
 
   // --- SHIPPER SUBDOMAIN HANDLER ---
   if (
