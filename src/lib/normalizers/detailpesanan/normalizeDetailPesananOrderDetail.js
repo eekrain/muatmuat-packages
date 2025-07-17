@@ -147,6 +147,8 @@ export const normalizeDetailPesananOrderDetail = ({
       otherAdditionalService: {
         totalPrice: foundOtherAdditionalService?.courierPrice,
       },
+      priceChange: dataOrderDetail.summary?.priceChange,
+      priceCharge: dataOrderDetail.summary?.priceCharge,
     };
 
     return {

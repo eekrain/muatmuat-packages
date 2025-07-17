@@ -179,6 +179,30 @@ const apiResultOrderDetail = {
           },
           overloadFee: 100000,
         },
+
+        priceChange: {
+          additionalCost: 0,
+          penaltyFee: 0,
+          adminFee: 0,
+          taxAmount: 0,
+          totalAdjustment: 0,
+          requiresPayment: false,
+        },
+
+        priceCharge: {
+          waitingFee: {
+            totalAmount: 0.0,
+            totalDriver: 0,
+          },
+          overloadFee: {
+            totalAmount: 0.0,
+            totalWeight: 0,
+            weightUnit: "kg",
+          },
+          adminFee: 0,
+          totalCharge: 0,
+          isPaid: false,
+        },
       },
 
       otherInformation: {
@@ -255,8 +279,8 @@ const completeFetcher = async (cacheKey) => {
       dataCancellationHistory,
       dataLegendStatus,
     ] = await Promise.all([
-      // fetcherMuatrans.get(`/v1/orders/${orderId}`),
-      apiResultOrderDetail,
+      fetcherMuatrans.get(`/v1/orders/${orderId}`),
+      // apiResultOrderDetail,
       getOrderStatusHistory(cacheKey),
       getOrderPaymentData(cacheKey),
       getAdditionalServices(cacheKey),
