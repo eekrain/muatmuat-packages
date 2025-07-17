@@ -25,7 +25,7 @@ export default function DesktopLayout({ children }) {
       <HeaderLayout notifCounter={{ notification, chat }} />
       <div
         className={cn(
-          "mx-auto max-w-[1232px] overflow-y-hidden",
+          "mx-auto max-w-[1232px]",
           isLoggedIn ? "max-h-[calc(100dvh-92px)]" : "max-h-[calc(100dvh-60px)]"
         )}
       >
