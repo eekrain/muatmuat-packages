@@ -10,6 +10,7 @@ import FileUpload from "@/components/FileUpload/FileUpload";
 import DimensionInput from "@/components/Form/DimensionInput";
 import Input from "@/components/Form/Input";
 import { Select } from "@/components/Form/Select";
+import SelectFilterRadix from "@/components/Form/SelectFilterRadix";
 import ImageUploaderWeb from "@/components/ImageUploader/ImageUploaderWeb";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import {
@@ -82,6 +83,17 @@ const Page = () => {
     handleChange("plat", formatted.trim());
   };
 
+  const handlePlatKeyDown = (e) => {
+    const value = e.target.value.toUpperCase();
+    const parts = value.split(" ");
+    if (parts.length >= 3) {
+      // Sudah di bagian ketiga, hanya boleh huruf
+      if (e.key.length === 1 && /[0-9]/.test(e.key)) {
+        e.preventDefault();
+      }
+    }
+  };
+
   // Handler nomor rangka
   const handleNomorRangkaChange = (e) => {
     let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
@@ -105,7 +117,7 @@ const Page = () => {
     years.push({ label: y.toString(), value: y.toString() });
   }
   return (
-    <div className="mx-auto max-w-[818px] p-4">
+    <div className="mx-auto max-w-[818px] py-6">
       <BreadCrumb data={BREADCRUMB} />
       <PageTitle>Tambah Armada</PageTitle>
 
@@ -121,12 +133,13 @@ const Page = () => {
               placeholder="Contoh : L 1234 TY"
               value={formData.plat}
               onChange={handlePlatChange}
+              onKeyDown={handlePlatKeyDown}
               appearance={inputAppearance}
               className="w-[328px]"
             />
 
             <div className={labelClass}>Jenis Truk*</div>
-            <Select
+            <SelectFilterRadix
               options={
                 isLoadingTruckTypes
                   ? []
@@ -145,7 +158,7 @@ const Page = () => {
             />
 
             <div className={labelClass}>Jenis Carrier*</div>
-            <Select
+            <SelectFilterRadix
               options={
                 formData.jenisTruk && !isLoadingCarrier
                   ? carrierTypes
@@ -161,7 +174,7 @@ const Page = () => {
             />
 
             <div className={labelClass}>Merek Kendaraan*</div>
-            <Select
+            <SelectFilterRadix
               options={brands.map((item) => ({
                 label: item.name,
                 value: item.id,
@@ -177,7 +190,7 @@ const Page = () => {
             />
 
             <div className={labelClass}>Tipe Kendaraan*</div>
-            <Select
+            <SelectFilterRadix
               options={
                 formData.merekKendaraan && !isLoadingTypes
                   ? filteredTypes.map((item) => ({
