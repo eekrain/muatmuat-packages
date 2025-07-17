@@ -30,7 +30,7 @@ const inputAppearance = {
 };
 
 const selectClass =
-  "w-[328px] rounded-[7px] px-4 disabled:bg-gray-200 disabled:text-gray-700 disabled:border-gray-700";
+  "w-[328px] rounded-[7px] disabled:bg-gray-200 disabled:text-gray-700 disabled:border-gray-700";
 const labelClass = "w-[220px] text-sm text-[#7B7B7B] flex items-center";
 const labelClassOptional =
   "w-[220px] font-medium italic text-neutral-500 text-right flex items-center";
@@ -112,10 +112,10 @@ const Page = () => {
   );
 
   const currentYear = new Date().getFullYear();
-  const years = [];
-  for (let y = currentYear; y >= 2000; y--) {
-    years.push({ label: y.toString(), value: y.toString() });
-  }
+  const years = Array.from({ length: currentYear - 1950 }, (_, i) => {
+    const year = (currentYear - i).toString();
+    return { label: year, value: year };
+  });
   return (
     <div className="mx-auto max-w-[818px] py-6">
       <BreadCrumb data={BREADCRUMB} />
