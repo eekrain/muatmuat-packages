@@ -14,9 +14,6 @@ const LIST_PUBLIC_FILES = [
 export function middleware(request) {
   const hostname = request.headers.get("host") || "";
   const url = request.nextUrl.clone();
-  const cleanHost = hostname
-    .replace(`:${process.env.NEXT_PUBLIC_PORT_SHIPPER}`, "")
-    .replace(`:${process.env.NEXT_PUBLIC_PORT_TRANSPORTER}`, "");
 
   // Exclude Next.js static files, known public assets, and any file with an extension from rewrite
   if (
@@ -26,8 +23,14 @@ export function middleware(request) {
     return NextResponse.next();
   }
 
+  // --- TRANSPORTER SUBDOMAIN HANDLER ---
+  if (process.env.NEXT_PUBLIC_APP_MODE === "transporter") {
+    url.pathname = `/transporter${url.pathname}`;
+    return NextResponse.rewrite(url);
+  }
+
   // --- SHIPPER SUBDOMAIN HANDLER ---
-  if (hostname.includes(`:${process.env.NEXT_PUBLIC_PORT_SHIPPER}`)) {
+  if (process.env.NEXT_PUBLIC_APP_MODE === "shipper") {
     // 1. Redirect / to /sewaarmada
     if (url.pathname === "/") {
       url.pathname = "/sewaarmada";
@@ -57,12 +60,6 @@ export function middleware(request) {
 
     // 4. Always rewrite to /shipper path for all other requests
     url.pathname = `/shipper${url.pathname}`;
-    return NextResponse.rewrite(url);
-  }
-
-  // --- TRANSPORTER SUBDOMAIN HANDLER ---
-  if (hostname.includes(`:${process.env.NEXT_PUBLIC_PORT_TRANSPORTER}`)) {
-    url.pathname = `/transporter${url.pathname}`;
     return NextResponse.rewrite(url);
   }
 
