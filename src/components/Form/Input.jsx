@@ -49,6 +49,7 @@ const Input = forwardRef(
       icon = { left: null, right: null },
       text = { left: null, right: null },
       className,
+      maxLength,
       appearance = {
         containerClassName: "",
         inputClassName: "",
@@ -99,6 +100,7 @@ const Input = forwardRef(
             </span>
           )}
           <input
+            maxLength={maxLength}
             {...props}
             onChange={onChange}
             type={type}

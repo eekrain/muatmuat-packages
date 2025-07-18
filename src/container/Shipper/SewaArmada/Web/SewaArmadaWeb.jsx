@@ -28,6 +28,7 @@ import SelectArmadaModal from "@/container/Shipper/SewaArmada/Web/Form/JenisArma
 import SertifikasiHalal from "@/container/Shipper/SewaArmada/Web/Form/SertifikasiHalal";
 import { CreateOrderSummaryPanel } from "@/container/Shipper/SewaArmada/Web/SummaryPanel/CreateOrderSummaryPanel";
 import { WelcomeCard } from "@/container/Shipper/SewaArmada/Web/WelcomeCard/WelcomeCard";
+import { useAuth } from "@/hooks/use-auth";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook } from "@/hooks/use-swr";
 import { isDev } from "@/lib/constants/is-dev";
@@ -115,6 +116,11 @@ export default function SewaArmadaWeb({
     console.log("🚀 ~ file: SewaArmadaWeb.jsx:61 ~ isValidForm:", isValidForm);
   };
 
+  const { isLoggedIn } = useAuth();
+  const shouldShowFirstTimer = isLoggedIn
+    ? userPreferences?.Data?.shouldShowPopup === true
+    : orderType === "";
+
   return (
     <>
       <main className="mx-auto flex min-h-full max-w-[1280px] flex-col items-center gap-6 px-10 py-8">
@@ -124,7 +130,7 @@ export default function SewaArmadaWeb({
         <AlertMultiline items={alertItems} className="mt-0 w-full" />
 
         {/* Main Content */}
-        {userPreferences?.Data?.shouldShowPopup == true || orderType === "" ? (
+        {shouldShowFirstTimer ? (
           <FirstTimer />
         ) : (
           <>

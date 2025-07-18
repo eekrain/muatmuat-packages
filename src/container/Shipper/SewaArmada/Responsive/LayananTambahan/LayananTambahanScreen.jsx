@@ -245,6 +245,8 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
             <FormContainer className="h-[78px]">
               <FormLabel required>Detail Alamat Tujuan</FormLabel>
               <Input
+                disabled={!locationFormValues?.dataLokasi?.location?.name}
+                maxLength={500}
                 placeholder="Masukkan Detail Alamat Tujuan"
                 name="detailLokasi"
                 type="text"
@@ -261,6 +263,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
             <FormContainer>
               <FormLabel required>Kecamatan</FormLabel>
               <DropdownRadioBottomsheeet
+                disabled={!locationFormValues?.dataLokasi?.location?.name}
                 className="w-full"
                 title="Kecamatan"
                 options={
@@ -311,6 +314,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
             <FormContainer>
               <FormLabel required>Kode Pos</FormLabel>
               <DropdownRadioBottomsheeet
+                disabled={!locationFormValues?.dataLokasi?.location?.name}
                 className="w-full"
                 title="Kode Pos"
                 options={

@@ -19,6 +19,7 @@ const DropdownRadioBottomsheeet = ({
   onChange = () => {},
   saveLabel,
   placeHolder,
+  disabled,
 }) => {
   const [tempValue, setTempValue] = useState("");
   const [isBottomsheetOpen, setIsBottomsheetOpen] = useState(false);
@@ -42,14 +43,28 @@ const DropdownRadioBottomsheeet = ({
       <button
         className={cn(
           "flex h-8 items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-2",
+          disabled
+            ? "cursor-not-allowed border-neutral-600 bg-neutral-200 hover:border-neutral-600"
+            : "cursor-pointer",
           className
         )}
-        onClick={() => setIsBottomsheetOpen(true)}
+        onClick={() => {
+          if (!disabled) setIsBottomsheetOpen(true);
+        }}
+        disabled={disabled}
       >
-        <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
+        <span
+          className={cn(
+            "text-[14px] font-semibold leading-[15.4px]",
+            !selectedItem && disabled ? "text-neutral-600" : "text-neutral-900"
+          )}
+        >
           {selectedItem?.label ?? placeHolder ?? ""}
         </span>
-        <IconComponent src="/icons/chevron-down.svg" />
+        <IconComponent
+          src="/icons/chevron-down.svg"
+          color={disabled ? "gray" : undefined}
+        />
       </button>
       <BottomSheetContent>
         <BottomSheetHeader>{title}</BottomSheetHeader>
