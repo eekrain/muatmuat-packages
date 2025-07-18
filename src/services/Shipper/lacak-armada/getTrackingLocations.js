@@ -1,5 +1,7 @@
 import useSWR from "swr";
 
+const IS_MOCK = false;
+
 // GET /base_data/v1/orders/tracking/{orderId}/location?driverId={driverId}
 const apiResult = {
   data: {
@@ -59,15 +61,10 @@ const apiResult = {
   },
 };
 
-export const getTrackingLocations = async (cacheKey) => {
-  const orderId = cacheKey.split("/")[1];
-  const driverId = cacheKey.split("/")[2];
-
-  const result = apiResult.data.Data;
-
+const normalizeTrackingLocations = (data) => {
   const locationMarkers = [];
   const locationPolyline = [];
-  for (const point of result.route.pickupPoints) {
+  for (const point of data.route.pickupPoints) {
     locationMarkers.push({
       position: { lat: point.latitude, lng: point.longitude },
       title: point.name,
@@ -75,7 +72,7 @@ export const getTrackingLocations = async (cacheKey) => {
     });
     locationPolyline.push({ lat: point.latitude, lng: point.longitude });
   }
-  for (const point of result.route.dropoffPoints) {
+  for (const point of data.route.dropoffPoints) {
     locationMarkers.push({
       position: { lat: point.latitude, lng: point.longitude },
       title: point.name,
@@ -84,9 +81,23 @@ export const getTrackingLocations = async (cacheKey) => {
     locationPolyline.push({ lat: point.latitude, lng: point.longitude });
   }
 
-  const encodedTruckPolyline = result.fleets[0].currentLocation.encodedPolyline;
+  const encodedTruckPolyline = data.fleets[0].currentLocation.encodedPolyline;
 
   return { locationMarkers, locationPolyline, encodedTruckPolyline };
+};
+export const getTrackingLocations = async (cacheKey) => {
+  const orderId = cacheKey.split("/")[1];
+  const driverId = cacheKey.split("/")[2];
+
+  let response;
+  if (IS_MOCK) {
+    response = apiResult;
+  } else {
+    response = await fetcherMuatrans.get(
+      `v1/orders/tracking/${orderId}/location?driverId=${driverId}`
+    );
+  }
+  return normalizeTrackingLocations(response.data.Data);
 };
 
 export const useGetTrackingLocations = ({ orderId, driverId }) =>

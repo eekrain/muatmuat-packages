@@ -1,6 +1,8 @@
 // /api/v1/orders/{orderId}/cancellation-history
 import { fetcherMuatrans } from "@/lib/axios";
 
+const IS_MOCK = false;
+
 const apiResult = {
   data: {
     Message: {
@@ -27,31 +29,22 @@ const apiResult = {
     Type: "CANCELLATION_HISTORY",
   },
 };
-const err = {
-  data: {
-    Message: {
-      Code: 404,
-      Text: "Not Found",
-    },
-    Data: {
-      Message: "Riwayat pembatalan tidak ditemukan",
-    },
-    Type: "/v1/orders/fdf71f98-4978-4e85-994e-0c5208e4ea0f/cancellation-history",
-  },
-};
 
 export const getCancellationHistory = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
 
-  // const result = apiResult;
-  // return result?.data?.Data?.reason ? result?.data?.Data : null;
+  let result;
 
-  const result = await fetcherMuatrans
-    .get(`v1/orders/${orderId}/cancellation-history`)
-    .catch((error) => {
-      console.log("Error when get cancellation history", error);
-      return null;
-    });
+  if (IS_MOCK) {
+    result = apiResult;
+  } else {
+    result = await fetcherMuatrans
+      .get(`v1/orders/${orderId}/cancellation-history`)
+      .catch((error) => {
+        console.log("Error when get cancellation history", error);
+        return null;
+      });
+  }
 
   return result?.data?.Data?.reason ? result?.data?.Data : null;
 };

@@ -1,5 +1,7 @@
 import { fetcherMuatrans } from "@/lib/axios";
 
+const IS_MOCK = false;
+
 // GET /api/v1/orders/${orderId}/waiting-time
 const apiResult = {
   Message: {
@@ -24,12 +26,14 @@ const apiResult = {
 
 export const getWaitingTime = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
-  // const result = apiResult;
-  // return result.data.Data.alerts;
+  let result;
+  if (IS_MOCK) {
+    result = apiResult;
+  } else {
+    result = await fetcherMuatrans.get(`v1/orders/${orderId}/waiting-time`);
+  }
 
-  const result = await fetcherMuatrans.get(`v1/orders/${orderId}/waiting-time`);
-
-  return result?.data?.Data?.alerts || [];
+  return result?.data?.Data?.waitingTime || [];
 };
 
 export const useGetWaitingTime = (orderId) =>

@@ -14,6 +14,8 @@ import { getOrderPaymentData } from "./getOrderPaymentData";
 import { getOrderStatusHistory } from "./getOrderStatusHistory";
 import { getStatusLegend } from "./getStatusLegend";
 
+const IS_MOCK = false;
+
 /**
  * Notes dari mas friday
  * /orders/{orderId}
@@ -255,12 +257,16 @@ const apiResultOrderDetail = {
 
 export const fetcherOrderDetail = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
-  // const result = apiResultOrderDetail;
-  // return result.data.Data;
 
-  const result = await fetcherMuatrans.get(`v1/orders/${orderId}/alerts`);
+  let result;
 
-  return result?.data?.Data?.alerts || [];
+  if (IS_MOCK) {
+    result = apiResultOrderDetail;
+  } else {
+    result = await fetcherMuatrans.get(`v1/orders/${orderId}`);
+  }
+
+  return result?.data?.Data;
 };
 
 export const useGetOrderDetail = (orderId) =>
@@ -279,8 +285,7 @@ const completeFetcher = async (cacheKey) => {
       dataCancellationHistory,
       dataLegendStatus,
     ] = await Promise.all([
-      fetcherMuatrans.get(`/v1/orders/${orderId}`),
-      // apiResultOrderDetail,
+      fetcherOrderDetail(cacheKey),
       getOrderStatusHistory(cacheKey),
       getOrderPaymentData(cacheKey),
       getAdditionalServices(cacheKey),
@@ -290,7 +295,7 @@ const completeFetcher = async (cacheKey) => {
     ]);
 
     const data = normalizeDetailPesananOrderDetail({
-      dataOrderDetail: dataOrderDetail.data.Data,
+      dataOrderDetail,
       dataOrderStatusHistory,
       dataPayment,
       dataAlerts,

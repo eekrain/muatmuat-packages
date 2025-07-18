@@ -3,6 +3,8 @@ import useSWR from "swr";
 
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
+const IS_MOCK = false;
+
 const apiResult = {
   data: {
     Message: {
@@ -326,10 +328,14 @@ const fetcher = async (cacheKey) => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   try {
-    const response = await fetcherMuatrans.get(
-      `v1/orders/status-driver?orderId=${orderId}&driverId=${driverId}`
-    );
-    // const response = apiResult;
+    let response;
+    if (IS_MOCK) {
+      response = apiResult;
+    } else {
+      response = await fetcherMuatrans.get(
+        `v1/orders/status-driver?orderId=${orderId}&driverId=${driverId}`
+      );
+    }
     const result = transformDriverStatusData(response.data.Data);
 
     return result;

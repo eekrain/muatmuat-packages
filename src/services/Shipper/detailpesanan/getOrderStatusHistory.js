@@ -1,6 +1,8 @@
 import { fetcherMuatrans } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
+const IS_MOCK = false;
+
 const stepStatus = [
   {
     statusCode: OrderStatusEnum.SCHEDULED_FLEET,
@@ -85,13 +87,12 @@ const apiResultOrderStatusHistory = {
 export const getOrderStatusHistory = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
 
-  // const result = apiResultOrderStatusHistory;
-
-  // return result.data.Data;
-
-  const result = await fetcherMuatrans.get(
-    `v1/orders/${orderId}/status-history`
-  );
+  let result;
+  if (IS_MOCK) {
+    result = apiResultOrderStatusHistory;
+  } else {
+    result = await fetcherMuatrans.get(`v1/orders/${orderId}/status-history`);
+  }
 
   return result?.data?.Data || null;
 };
