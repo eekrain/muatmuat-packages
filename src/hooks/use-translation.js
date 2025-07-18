@@ -44,14 +44,15 @@ const createTranslationStore = () =>
 
         try {
           const response = await xior.get(url, cacheConfig);
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          set({ translation: response.data, isTranslationsReady: true });
+          set({ translation: response.data });
         } catch (error) {
           console.error(
             `Error fetching ${languageUrl} translations: ${error.message}`
           );
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          set({ translation: {}, isTranslationsReady: true });
+          set({ translation: {} });
+        } finally {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          set({ isTranslationsReady: true });
         }
       },
     },
@@ -87,15 +88,13 @@ export const TranslationProvider = ({ children }) => {
    */
   const t = useCallback(
     (label, params) => {
-      return translation[label] || label;
+      if (!translation?.[label]) return label;
 
-      // if (!translation?.[label]) return label;
+      if (params) {
+        return label.replace(/{(\w+)}/g, (match, key) => params[key]);
+      }
 
-      // if (params) {
-      //   return label.replace(/{(\w+)}/g, (match, key) => params[key]);
-      // }
-
-      // return label;
+      return translation[label];
     },
     [translation]
   );
