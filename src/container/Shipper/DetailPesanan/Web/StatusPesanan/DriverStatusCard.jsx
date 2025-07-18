@@ -160,7 +160,7 @@ export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
                           ? "error"
                           : driver.orderStatus === OrderStatusEnum.COMPLETED
                             ? "success"
-                            : driver.orderStatus.startsWith("WAITING_REPAYMENT")
+                            : driver.driverStatus.startsWith("WAITING")
                               ? "warning"
                               : "primary"
                       }

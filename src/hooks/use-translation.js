@@ -87,13 +87,15 @@ export const TranslationProvider = ({ children }) => {
    */
   const t = useCallback(
     (label, params) => {
-      if (!translation[label]) return label;
+      return translation[label] || label;
 
-      if (params) {
-        return label.replace(/{(\w+)}/g, (match, key) => params[key]);
-      }
+      // if (!translation?.[label]) return label;
 
-      return label;
+      // if (params) {
+      //   return label.replace(/{(\w+)}/g, (match, key) => params[key]);
+      // }
+
+      // return label;
     },
     [translation]
   );

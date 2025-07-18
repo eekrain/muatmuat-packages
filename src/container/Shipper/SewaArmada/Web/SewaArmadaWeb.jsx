@@ -2,9 +2,9 @@
 
 import { useEffect, useMemo } from "react";
 
+import { AlertMultiline } from "@/components/Alert/AlertMultiline";
 import { BannerCarousel } from "@/components/BannerCarousel/BannerCarousel";
 import Card from "@/components/Card/Card";
-import NeedConfirmationWarning from "@/components/NeedConfirmationWarning/NeedConfirmationWarning";
 import { FirstTimer } from "@/container/Shipper/SewaArmada/Web/FirstTimer/FirstTimer";
 import LoginModal from "@/container/Shipper/SewaArmada/Web/FirstTimer/LoginModal";
 import WaitingSettlementModal from "@/container/Shipper/SewaArmada/Web/FirstTimer/WaitingSettlementModal";
@@ -67,6 +67,34 @@ export default function SewaArmadaWeb({
     }));
   }, [dataBanner]);
 
+  const alertItems = useMemo(() => {
+    if (!settlementAlertInfo) return [];
+
+    const listPesananUrl = [
+      "/daftarpesanan/pesananmenunggupembayaran",
+      "/daftarpesanan/pesananmenunggupelunasan",
+      "/daftarpesanan/butuhkonfirmasianda",
+    ];
+
+    return settlementAlertInfo
+      .map((item, key) => {
+        if (!item.orderId || item.orderId.length === 0) {
+          return null;
+        }
+        return {
+          label: item.alertText,
+          link: {
+            label: "Lihat Pesanan",
+            link:
+              item.orderId.length === 1
+                ? `/daftarpesanan/detailpesanan/${item.orderId[0]}`
+                : listPesananUrl[key],
+          },
+        };
+      })
+      .filter(Boolean);
+  }, [settlementAlertInfo]);
+
   const { setIsGlobalLoading } = useLoadingAction();
   useEffect(() => {
     if ((!isLoading, isLoadingUserPreferences)) {
@@ -87,12 +115,7 @@ export default function SewaArmadaWeb({
         {/* Carousel Banner */}
         <BannerCarousel banners={banners} />
 
-        {settlementAlertInfo.length > 0 ? (
-          <NeedConfirmationWarning
-            className="mt-0 w-full"
-            settlementAlertInfo={settlementAlertInfo}
-          />
-        ) : null}
+        <AlertMultiline items={alertItems} className="mt-0 w-full" />
 
         {/* Main Content */}
         {userPreferences?.Data?.shouldShowPopup == true || orderType === "" ? (

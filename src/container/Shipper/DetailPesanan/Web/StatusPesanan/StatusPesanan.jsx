@@ -58,40 +58,44 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
 
   return (
     <>
-      {dataStatusPesanan.orderStatus ===
-        OrderStatusEnum.PENDING_PREPARE_FLEET && (
-        <AlertPendingPrepareFleet
-          orderStatus={dataStatusPesanan.orderStatus}
-          expiredAt={dataStatusPesanan.expiredAt}
+      <div className="flex flex-col gap-y-6">
+        {dataStatusPesanan.orderStatus ===
+          OrderStatusEnum.PENDING_PREPARE_FLEET && (
+          <AlertPendingPrepareFleet
+            orderStatus={dataStatusPesanan.orderStatus}
+            expiredAt={dataStatusPesanan.expiredAt}
+          />
+        )}
+
+        {dataStatusPesanan.orderStatus ===
+          OrderStatusEnum.WAITING_PAYMENT_1 && (
+          <AlertPendingPayment1 expiredAt={dataStatusPesanan.expiredAt} />
+        )}
+
+        {dataStatusPesanan.orderStatus ===
+          OrderStatusEnum.WAITING_PAYMENT_3 && (
+          <AlertPendingUpdatePayment expiredAt={dataStatusPesanan.expiredAt} />
+        )}
+
+        {/* Alert Buat Habis Update lokasi bongkar perlu konfirmasi */}
+        {dataStatusPesanan.orderStatus ===
+          OrderStatusEnum.WAITING_CONFIRMATION_CHANGES && (
+          <AlertPendingUpdateConfirmation />
+        )}
+
+        <AlertMultiline
+          items={[
+            ...(isShowWaitFleetAlert
+              ? [
+                  {
+                    label: AlertLabelEnum.CONFIRMATION_WAITING_PREPARE_FLEET,
+                  },
+                ]
+              : []),
+            ...dataStatusPesanan.alerts.map((item) => getContentAlert(item)),
+          ]}
         />
-      )}
-
-      {dataStatusPesanan.orderStatus === OrderStatusEnum.WAITING_PAYMENT_1 && (
-        <AlertPendingPayment1 expiredAt={dataStatusPesanan.expiredAt} />
-      )}
-
-      {dataStatusPesanan.orderStatus === OrderStatusEnum.WAITING_PAYMENT_3 && (
-        <AlertPendingUpdatePayment expiredAt={dataStatusPesanan.expiredAt} />
-      )}
-
-      {/* Alert Buat Habis Update lokasi bongkar perlu konfirmasi */}
-      {dataStatusPesanan.orderStatus ===
-        OrderStatusEnum.WAITING_CONFIRMATION_CHANGES && (
-        <AlertPendingUpdateConfirmation />
-      )}
-
-      <AlertMultiline
-        items={[
-          ...(isShowWaitFleetAlert
-            ? [
-                {
-                  label: AlertLabelEnum.CONFIRMATION_WAITING_PREPARE_FLEET,
-                },
-              ]
-            : []),
-          ...dataStatusPesanan.alerts.map((item) => getContentAlert(item)),
-        ]}
-      />
+      </div>
 
       <Card className="rounded-xl border-none">
         <CardContent className="px-8 py-6">
