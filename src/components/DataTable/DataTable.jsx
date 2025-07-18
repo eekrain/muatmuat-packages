@@ -7,6 +7,8 @@ import Input from "@/components/Form/Input";
 import { cn } from "@/lib/utils";
 
 import ActiveFiltersBar from "../ActiveFiltersBar/ActiveFiltersBar";
+import DataNotFound from "../DataNotFound/DataNotFound";
+import DisplayOptionsBar from "../DisplayOptionsBar/DisplayOptionsBar";
 import Pagination from "../Pagination/Pagination";
 
 const DataTable = ({
@@ -17,6 +19,7 @@ const DataTable = ({
   showSearch = true,
   showPagination = true,
   showTotalCount = true,
+  showDisplayView = false,
   totalCountLabel = "items",
   currentPage = 1,
   totalPages = 1,
@@ -35,6 +38,7 @@ const DataTable = ({
   paginationVariant = "muatrans",
   filterConfig = null,
   onSort,
+  displayOptions = null,
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [selectedFilters, setSelectedFilters] = useState({});
@@ -61,10 +65,6 @@ const DataTable = ({
     const activeFilters = [];
 
     Object.entries(selectedFilters).forEach(([categoryKey, items]) => {
-      const category = filterConfig?.categories?.find(
-        (cat) => cat.key === categoryKey
-      );
-
       if (Array.isArray(items)) {
         // Multi-select
         items.forEach((item) => {
@@ -145,46 +145,52 @@ const DataTable = ({
     }
   };
 
-  const renderHeader = () => (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-3">
-        {showSearch && (
-          <Input
-            type="text"
-            placeholder={searchPlaceholder}
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            onKeyUp={handleSearchKeyUp}
-            icon={{
-              left: <Search className="h-4 w-4 text-neutral-500" />,
-            }}
-            appearance={{
-              containerClassName: "h-8 w-[262px]",
-              inputClassName: "text-xs font-medium ",
-            }}
-            className="w-fit"
-          />
-        )}
-        {showFilter && filterConfig && (
-          <FilterDropdown
-            categories={filterConfig.categories}
-            data={filterConfig.data}
-            selectedValues={selectedFilters}
-            onSelectionChange={handleFilterChange}
-            searchPlaceholder="Cari {category}"
-          />
-        )}
+  const renderHeader = () => {
+    const isDisabled = totalItems === 0 && !loading;
+
+    return (
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          {showSearch && (
+            <Input
+              type="text"
+              placeholder={searchPlaceholder}
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              onKeyUp={handleSearchKeyUp}
+              disabled={isDisabled}
+              icon={{
+                left: <Search className="h-4 w-4 text-neutral-500" />,
+              }}
+              appearance={{
+                containerClassName: "h-8 w-[262px]",
+                inputClassName: "text-xs font-medium ",
+              }}
+              className="w-fit"
+            />
+          )}
+          {showFilter && filterConfig && (
+            <FilterDropdown
+              categories={filterConfig.categories}
+              data={filterConfig.data}
+              selectedValues={selectedFilters}
+              onSelectionChange={handleFilterChange}
+              searchPlaceholder="Cari {category}"
+              disabled={isDisabled}
+            />
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          {headerActions}
+          {showTotalCount && totalItems !== undefined && (
+            <div className="text-sm font-semibold text-neutral-900">
+              Total : {totalItems} {totalCountLabel}
+            </div>
+          )}
+        </div>
       </div>
-      <div className="flex items-center gap-3">
-        {headerActions}
-        {showTotalCount && totalItems !== undefined && (
-          <div className="text-sm font-semibold text-neutral-900">
-            Total : {totalItems} {totalCountLabel}
-          </div>
-        )}
-      </div>
-    </div>
-  );
+    );
+  };
 
   const renderTable = () => (
     <div className="relative h-[calc(100dvh-422px)] overflow-hidden border-t border-neutral-400">
@@ -241,9 +247,10 @@ const DataTable = ({
               <tr>
                 <td colSpan={columns.length} className="px-6 py-8 text-center">
                   {emptyState || (
-                    <div className="text-sm text-neutral-500">
-                      No data available
-                    </div>
+                    <DataNotFound
+                      className="gap-y-5"
+                      title="Keyword Tidak Ditemukan"
+                    />
                   )}
                 </td>
               </tr>
@@ -294,8 +301,24 @@ const DataTable = ({
               onClearAll={handleClearAllFilters}
             />
           )}
+          {showDisplayView && displayOptions && (
+            <DisplayOptionsBar
+              totalCount={displayOptions.totalCount || totalItems}
+              statusOptions={displayOptions.statusOptions || []}
+              currentStatus={displayOptions.currentStatus}
+              onStatusChange={displayOptions.onStatusChange}
+            />
+          )}
         </div>
-        {renderTable()}
+        {totalItems === 0 && !loading ? (
+          <DataNotFound
+            className="gap-y-5 pb-10 pt-6"
+            title="Belum Ada Data"
+            type="data"
+          />
+        ) : (
+          renderTable()
+        )}
       </div>
       {showPagination && !loading && data.length > 0 && (
         <Pagination

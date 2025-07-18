@@ -1,0 +1,51 @@
+import { cn } from "@/lib/utils";
+
+const DisplayOptionsBar = ({
+  totalCount = 0,
+  statusOptions = [],
+  currentStatus = null,
+  onStatusChange,
+  className,
+}) => {
+  // Add "All" option at the beginning if statusOptions exist
+  const allStatusOptions =
+    statusOptions.length > 0
+      ? [{ value: null, label: `Semua (${totalCount})` }, ...statusOptions]
+      : [];
+
+  return (
+    <div className={cn("flex items-center gap-2", className)}>
+      <span className="text-xs font-bold">Tampilkan:</span>
+      <div className="flex items-center gap-2 text-xxs">
+        {allStatusOptions.map((status) => (
+          <button
+            key={status.value ?? "all"}
+            onClick={() => {
+              console.log("DisplayOptionsBar button clicked:", status);
+              onStatusChange?.(status.value);
+            }}
+            className={cn(
+              "flex h-7 items-center gap-1 rounded-full px-4 font-semibold transition-colors",
+              currentStatus === status.value
+                ? "border border-primary-700 bg-primary-50 text-primary-700"
+                : "border border-neutral-200 bg-neutral-200 hover:bg-neutral-100"
+            )}
+          >
+            {status.label}
+            {status.count !== undefined && (
+              <span className="relative flex items-center">
+                {" "}
+                ({status.count})
+                {status.hasNotification && (
+                  <span className="absolute -right-2.5 top-0 h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                )}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default DisplayOptionsBar;

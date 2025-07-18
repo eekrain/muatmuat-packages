@@ -8,10 +8,10 @@ const BadgeStatus = ({
 }) => {
   const variants = {
     primary: "bg-primary-50 text-primary-700 ",
-    success: "bg-success-50 text-success-700 ",
+    success: "bg-success-50 text-success-400 ",
     warning: "bg-warning-100 text-warning-900 ",
-    error: "bg-error-100 text-error-700 ",
-    neutral: "bg-neutral-100 text-neutral-700 ",
+    error: "bg-error-50 text-error-400 ",
+    neutral: "bg-neutral-200 text-neutral-600 ",
   };
 
   return (

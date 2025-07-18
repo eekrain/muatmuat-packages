@@ -13,15 +13,30 @@ import {
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
 
-const ArmadaArsip = ({ data, isLoading, onPageChange, onPerPageChange }) => {
+const ArmadaProses = ({
+  data,
+  isLoading,
+  onPageChange,
+  onPerPageChange,
+  onStatusChange,
+}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const [selectedStatus, setSelectedStatus] = useState(null);
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case "DELETED":
-        return <BadgeStatus variant="error">Dihapus</BadgeStatus>;
+      case "DALAM_TINJAUAN":
+        return <BadgeStatus variant="primary">Dalam Tinjauan</BadgeStatus>;
+      case "VERIFIKASI_DITOLAK":
+        return <BadgeStatus variant="error">Verifikasi Ditolak</BadgeStatus>;
+      case "MENUNGGU_PEMASANGAN_GPS":
+        return (
+          <BadgeStatus variant="warning">Menunggu Pemasangan GPS</BadgeStatus>
+        );
+      case "PROSES_KALIBRASI":
+        return <BadgeStatus variant="warning">Proses Kalibrasi</BadgeStatus>;
       default:
         return <BadgeStatus variant="neutral">{status}</BadgeStatus>;
     }
@@ -45,12 +60,19 @@ const ArmadaArsip = ({ data, isLoading, onPageChange, onPerPageChange }) => {
     },
     {
       key: "licensePlate",
-      header: "Nama Kendaraan",
+      header: "No. Polisi",
+      render: (row) => (
+        <div className="text-xs font-bold">{row.licensePlate}</div>
+      ),
+    },
+    {
+      key: "truckType",
+      header: "Jenis Armada",
       render: (row) => (
         <div className="space-y-1">
-          <div className="text-xs font-bold">{row.licensePlate}</div>
-          <div className="text-xxs font-medium">
-            {row.carrierType?.name} - {row.truckType?.name}
+          <div className="text-xs font-semibold">{row.truckType?.name}</div>
+          <div className="text-xxs font-medium text-neutral-600">
+            {row.carrierType?.name}
           </div>
         </div>
       ),
@@ -87,8 +109,20 @@ const ArmadaArsip = ({ data, isLoading, onPageChange, onPerPageChange }) => {
             </button>
           </SimpleDropdownTrigger>
 
-          <SimpleDropdownContent className="w-[124px]" align="end">
+          <SimpleDropdownContent className="w-fit">
             <SimpleDropdownItem onClick={() => {}}>Detail</SimpleDropdownItem>
+            <SimpleDropdownItem onClick={() => {}}>Edit</SimpleDropdownItem>
+            {row.status === "VERIFIKASI_DITOLAK" && (
+              <SimpleDropdownItem onClick={() => {}}>
+                Kirim Ulang Verifikasi
+              </SimpleDropdownItem>
+            )}
+            {row.status === "MENUNGGU_PEMASANGAN_GPS" && (
+              <SimpleDropdownItem onClick={() => {}}>
+                Konfirmasi Pemasangan GPS
+              </SimpleDropdownItem>
+            )}
+            <SimpleDropdownItem onClick={() => {}}>Batalkan</SimpleDropdownItem>
           </SimpleDropdownContent>
         </SimpleDropdown>
       ),
@@ -115,7 +149,6 @@ const ArmadaArsip = ({ data, isLoading, onPageChange, onPerPageChange }) => {
         { key: "carrierType", label: "Jenis Carrier" },
         { key: "vehicleBrand", label: "Merek Kendaraan" },
         { key: "vehicleType", label: "Tipe Kendaraan" },
-        { key: "status", label: "Status" },
       ],
       data: {
         truckType:
@@ -135,11 +168,6 @@ const ArmadaArsip = ({ data, isLoading, onPageChange, onPerPageChange }) => {
           })) || [],
         vehicleType:
           data.dataFilter.vehicleType?.map((item) => ({
-            id: item.id,
-            label: item.value,
-          })) || [],
-        status:
-          data.dataFilter.status?.map((item) => ({
             id: item.id,
             label: item.value,
           })) || [],
@@ -165,12 +193,71 @@ const ArmadaArsip = ({ data, isLoading, onPageChange, onPerPageChange }) => {
     // This would typically involve calling an API with sort parameters
   };
 
+  const handleStatusChange = (status) => {
+    console.log("DisplayOptionsBar - Status clicked:", status);
+    console.log("Previous status:", selectedStatus);
+    setSelectedStatus(status);
+    onStatusChange?.(status);
+    console.log("New status set to:", status);
+  };
+
   // Add warning indicators to rows
-  const rowClassName = (row) => {
-    if (row.warningDocumentExpired) {
-      return "";
+  // const rowClassName = (row) => {
+  //   if (row.status === "VERIFIKASI_DITOLAK") {
+  //     return "bg-red-50";
+  //   }
+  //   return "";
+  // };
+
+  // Prepare display options for status filter
+  const getDisplayOptions = () => {
+    console.log("getDisplayOptions called with data:", {
+      status: data?.dataFilter?.status,
+      summary: data?.summary,
+    });
+
+    if (!data?.dataFilter?.status) {
+      console.log("No status data available in dataFilter");
+      return null;
     }
-    return "";
+
+    // Map status IDs to summary keys
+    const getCountFromSummary = (statusId) => {
+      if (!data?.summary) return 0;
+
+      switch (statusId) {
+        case "DALAM_TINJAUAN":
+          return data.summary.dalamTinjauan || 0;
+        case "VERIFIKASI_DITOLAK":
+          return data.summary.verifikasiDitolak || 0;
+        case "MENUNGGU_PEMASANGAN_GPS":
+          return data.summary.menungguPemasanganGPS || 0;
+        case "PROSES_KALIBRASI":
+          return data.summary.prosesKalibrasi || 0;
+        default:
+          return 0;
+      }
+    };
+
+    const statusOptions = data.dataFilter.status.map((item) => {
+      const count = getCountFromSummary(item.id);
+      return {
+        value: item.id,
+        label: item.value,
+        count: count,
+        hasNotification: item.id === "PROSES_KALIBRASI" && count > 0,
+      };
+    });
+
+    console.log("Status options with summary counts:", statusOptions);
+
+    return {
+      statusOptions,
+      currentStatus: selectedStatus,
+      onStatusChange: handleStatusChange,
+      totalCount:
+        data?.summary?.totalProcess || data?.pagination?.totalItems || 0,
+    };
   };
 
   return (
@@ -178,7 +265,7 @@ const ArmadaArsip = ({ data, isLoading, onPageChange, onPerPageChange }) => {
       data={data?.vehicles || []}
       columns={columns}
       searchPlaceholder="Cari No. Polisi, Jenis Truk atau lainnya"
-      totalCountLabel="Armada Arsip"
+      totalCountLabel="Armada"
       currentPage={data?.pagination?.page || currentPage}
       totalPages={data?.pagination?.totalPages || 1}
       totalItems={data?.pagination?.totalItems || 0}
@@ -190,10 +277,12 @@ const ArmadaArsip = ({ data, isLoading, onPageChange, onPerPageChange }) => {
       onSort={handleSort}
       loading={isLoading}
       showPagination
-      rowClassName={rowClassName}
+      showDisplayView={true}
+      displayOptions={getDisplayOptions()}
+      // rowClassName={rowClassName}
       filterConfig={getFilterConfig()}
     />
   );
 };
 
-export default ArmadaArsip;
+export default ArmadaProses;

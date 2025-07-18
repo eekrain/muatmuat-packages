@@ -5,7 +5,6 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
 import BadgeStatus from "@/components/Badge/BadgeStatus";
-import Button from "@/components/Button/Button";
 import { DataTable } from "@/components/DataTable";
 import {
   SimpleDropdown,
@@ -237,16 +236,6 @@ const ArmadaAktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
       showPagination
       rowClassName={rowClassName}
       filterConfig={getFilterConfig()}
-      emptyState={
-        <div className="flex flex-col items-center gap-2 py-8">
-          <div className="text-sm text-neutral-500">
-            Tidak ada armada yang terdaftar
-          </div>
-          <Button variant="muatparts-primary" size="sm">
-            Tambah Armada
-          </Button>
-        </div>
-      }
     />
   );
 };

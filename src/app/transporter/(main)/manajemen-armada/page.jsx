@@ -14,10 +14,12 @@ import {
 import ArmadaAktif from "@/container/Transporter/Armada/ArmadaAktif";
 import ArmadaArsip from "@/container/Transporter/Armada/ArmadaArsip";
 import ArmadaNonaktif from "@/container/Transporter/Armada/ArmadaNonaktif";
+import ArmadaProses from "@/container/Transporter/Armada/ArmadaProses";
 import EmptyArmada from "@/container/Transporter/Armada/EmptyArmada";
 import { useGetActiveVehiclesData } from "@/services/Transporter/manajemen-armada/getActiveVehiclesData";
 import { useGetArchivedVehiclesData } from "@/services/Transporter/manajemen-armada/getArchivedVehiclesData";
 import { useGetInactiveVehiclesData } from "@/services/Transporter/manajemen-armada/getInactiveVehiclesData";
+import { useGetProcessVehiclesData } from "@/services/Transporter/manajemen-armada/getProcessVehiclesData";
 import { useGetVehiclesCount } from "@/services/Transporter/manajemen-armada/getVehiclesCount";
 
 const Page = () => {
@@ -25,6 +27,7 @@ const Page = () => {
   const { data: count } = useGetVehiclesCount();
   const { data: dataAktif } = useGetActiveVehiclesData();
   const { data: dataNonaktif } = useGetInactiveVehiclesData();
+  const { data: dataProses } = useGetProcessVehiclesData();
   const { data: dataArsip } = useGetArchivedVehiclesData();
 
   const isEmpty =
@@ -81,18 +84,16 @@ const Page = () => {
           </TabsTriggerWithSeparator>
         </TabsList>
 
-        <TabsContent value="aktif" className={"pt-4"}>
+        <TabsContent value="aktif" className="pt-4">
           <ArmadaAktif data={dataAktif} />
         </TabsContent>
-        <TabsContent value="nonaktif" className={"pt-4"}>
+        <TabsContent value="nonaktif" className="pt-4">
           <ArmadaNonaktif data={dataNonaktif} />
         </TabsContent>
-        <TabsContent value="proses">
-          <div className="flex min-h-[400px] items-center justify-center">
-            <p className="text-neutral-500">Proses pendaftaran content</p>
-          </div>
+        <TabsContent value="proses" className="pt-4">
+          <ArmadaProses data={dataProses} />
         </TabsContent>
-        <TabsContent value="arsip" className={"pt-4"}>
+        <TabsContent value="arsip" className="pt-4">
           <ArmadaArsip data={dataArsip} />
         </TabsContent>
       </Tabs>

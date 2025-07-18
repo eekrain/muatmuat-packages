@@ -26,7 +26,7 @@ const DataNotFound = ({
             : type === "search"
               ? "/icons/data-not-found.svg"
               : type === "data"
-                ? "/icons/data-empty.png"
+                ? "/img/data-empty.png"
                 : ""
         }
         alt="Data Not Found"

@@ -5,7 +5,6 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
 import BadgeStatus from "@/components/Badge/BadgeStatus";
-import Button from "@/components/Button/Button";
 import { DataTable } from "@/components/DataTable";
 import {
   SimpleDropdown,
@@ -14,17 +13,24 @@ import {
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
 
-const ArmadaNonaktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
+const ArmadaNonaktif = ({
+  data,
+  isLoading,
+  onPageChange,
+  onPerPageChange,
+  onStatusChange,
+}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const [selectedStatus, setSelectedStatus] = useState(null);
 
   const getStatusBadge = (status) => {
     switch (status) {
       case "UNPAIRED":
         return <BadgeStatus variant="warning">Belum Dipasangkan</BadgeStatus>;
       case "INACTIVE":
-        return <BadgeStatus variant="neutral">Tidak Aktif</BadgeStatus>;
+        return <BadgeStatus variant="neutral">Nonaktif</BadgeStatus>;
       default:
         return <BadgeStatus variant="neutral">{status}</BadgeStatus>;
     }
@@ -140,7 +146,6 @@ const ArmadaNonaktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
         { key: "carrierType", label: "Jenis Carrier" },
         { key: "vehicleBrand", label: "Merek Kendaraan" },
         { key: "vehicleType", label: "Tipe Kendaraan" },
-        { key: "status", label: "Status" },
       ],
       data: {
         truckType:
@@ -160,11 +165,6 @@ const ArmadaNonaktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
           })) || [],
         vehicleType:
           data.dataFilter.vehicleType?.map((item) => ({
-            id: item.id,
-            label: item.value,
-          })) || [],
-        status:
-          data.dataFilter.status?.map((item) => ({
             id: item.id,
             label: item.value,
           })) || [],
@@ -190,12 +190,67 @@ const ArmadaNonaktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
     // This would typically involve calling an API with sort parameters
   };
 
+  const handleStatusChange = (status) => {
+    console.log("DisplayOptionsBar - Status clicked:", status);
+    console.log("Previous status:", selectedStatus);
+    setSelectedStatus(status);
+    onStatusChange?.(status);
+    console.log("New status set to:", status);
+  };
+
   // Add warning indicators to rows
   const rowClassName = (row) => {
     if (row.warningDocumentExpired) {
       return "";
     }
     return "";
+  };
+
+  // Prepare display options for status filter
+  const getDisplayOptions = () => {
+    console.log("getDisplayOptions called with data:", {
+      status: data?.dataFilter?.status,
+      summary: data?.summary,
+    });
+
+    if (!data?.dataFilter?.status) {
+      console.log("No status data available in dataFilter");
+      return null;
+    }
+
+    // Map status IDs to summary keys
+    const getCountFromSummary = (statusId) => {
+      if (!data?.summary) return 0;
+
+      switch (statusId) {
+        case "UNPAIRED":
+          return data.summary.unpaired || 0;
+        case "INACTIVE":
+          return data.summary.inactive || 0;
+        default:
+          return 0;
+      }
+    };
+
+    const statusOptions = data.dataFilter.status.map((item) => {
+      const count = getCountFromSummary(item.id);
+      return {
+        value: item.id,
+        label: item.value,
+        count: count,
+        hasNotification: item.id === "UNPAIRED" && count > 0,
+      };
+    });
+
+    console.log("Status options with summary counts:", statusOptions);
+
+    return {
+      statusOptions,
+      currentStatus: selectedStatus,
+      onStatusChange: handleStatusChange,
+      totalCount:
+        data?.summary?.totalInactive || data?.pagination?.totalItems || 0,
+    };
   };
 
   return (
@@ -215,18 +270,10 @@ const ArmadaNonaktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
       onSort={handleSort}
       loading={isLoading}
       showPagination
+      showDisplayView={true}
+      displayOptions={getDisplayOptions()}
       rowClassName={rowClassName}
       filterConfig={getFilterConfig()}
-      emptyState={
-        <div className="flex flex-col items-center gap-2 py-8">
-          <div className="text-sm text-neutral-500">
-            Tidak ada armada nonaktif
-          </div>
-          <Button variant="muatparts-primary" size="sm">
-            Tambah Armada
-          </Button>
-        </div>
-      }
     />
   );
 };
