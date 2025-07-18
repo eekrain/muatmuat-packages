@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { ChevronDown, ChevronUp, Search } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, Search } from "lucide-react";
 
 import FilterDropdown from "@/components/FilterDropdown";
 import Input from "@/components/Form/Input";
@@ -117,13 +117,32 @@ const DataTable = ({
   const handleSort = (key) => {
     if (!onSort) return;
 
-    let direction = "asc";
-    if (sortConfig.key === key && sortConfig.direction === "asc") {
-      direction = "desc";
+    let newDirection = null;
+    let newKey = key;
+
+    if (sortConfig.key === key) {
+      // Same column: cycle through asc → desc → null
+      if (sortConfig.direction === "asc") {
+        newDirection = "desc";
+      } else if (sortConfig.direction === "desc") {
+        newDirection = null;
+        newKey = null;
+      } else {
+        newDirection = "asc";
+      }
+    } else {
+      // Different column: start with asc
+      newDirection = "asc";
     }
 
-    setSortConfig({ key, direction });
-    onSort(key, direction);
+    setSortConfig({ key: newKey, direction: newDirection });
+
+    if (newDirection) {
+      onSort(newKey, newDirection);
+    } else {
+      // Notify parent that sorting is cleared
+      onSort(null, null);
+    }
   };
 
   const renderHeader = () => (
@@ -193,23 +212,14 @@ const DataTable = ({
                     <div className="flex items-center gap-1">
                       <span>{column.header}</span>
                       {isSortable && (
-                        <div className="flex flex-col">
-                          <ChevronUp
-                            className={cn(
-                              "-mb-1 h-3 w-3",
-                              isSorted && sortConfig.direction === "asc"
-                                ? "text-primary-700"
-                                : "text-neutral-400"
-                            )}
-                          />
-                          <ChevronDown
-                            className={cn(
-                              "-mt-1 h-3 w-3",
-                              isSorted && sortConfig.direction === "desc"
-                                ? "text-primary-700"
-                                : "text-neutral-400"
-                            )}
-                          />
+                        <div className="ml-1">
+                          {!isSorted ? (
+                            <ArrowUpDown className="h-3 w-3 text-neutral-400" />
+                          ) : sortConfig.direction === "asc" ? (
+                            <ArrowUp className="h-3 w-3 text-primary-700" />
+                          ) : (
+                            <ArrowDown className="h-3 w-3 text-primary-700" />
+                          )}
                         </div>
                       )}
                     </div>

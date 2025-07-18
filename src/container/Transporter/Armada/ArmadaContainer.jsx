@@ -13,6 +13,8 @@ import {
 } from "@/components/Tabs/Tabs";
 
 import ArmadaAktif from "./ArmadaAktif";
+import ArmadaArsip from "./ArmadaArsip";
+import ArmadaNonaktif from "./ArmadaNonaktif";
 
 const ArmadaContainer = ({ data }) => {
   const router = useRouter();
@@ -64,20 +66,16 @@ const ArmadaContainer = ({ data }) => {
         <TabsContent value="aktif" className={"pt-4"}>
           <ArmadaAktif data={data} />
         </TabsContent>
-        <TabsContent value="nonaktif">
-          <div className="flex min-h-[400px] items-center justify-center">
-            <p className="text-neutral-500">Armada nonaktif content</p>
-          </div>
+        <TabsContent value="nonaktif" className={"pt-4"}>
+          <ArmadaNonaktif data={data} />
         </TabsContent>
         <TabsContent value="proses">
           <div className="flex min-h-[400px] items-center justify-center">
             <p className="text-neutral-500">Proses pendaftaran content</p>
           </div>
         </TabsContent>
-        <TabsContent value="arsip">
-          <div className="flex min-h-[400px] items-center justify-center">
-            <p className="text-neutral-500">Arsip content</p>
-          </div>
+        <TabsContent value="arsip" className={"pt-4"}>
+          <ArmadaArsip data={data} />
         </TabsContent>
       </Tabs>
     </div>
