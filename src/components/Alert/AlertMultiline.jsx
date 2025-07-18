@@ -34,7 +34,7 @@ export const AlertMultiline = ({ className, items = [] }) => {
   return (
     <div
       className={cn(
-        "mt-6 flex flex-col gap-y-3 rounded-xl bg-secondary-100 px-6 py-4",
+        "flex flex-col gap-y-3 rounded-xl bg-secondary-100 px-6 py-4",
         "text-xs font-medium leading-[1.2] text-neutral-900",
         className
       )}
@@ -88,16 +88,12 @@ const Item = ({ item }) => {
         dangerouslySetInnerHTML={{ __html: t(item.label) }}
       />
 
-      {item.href ? (
+      {item.link ? (
         <Link
           className="text-xs font-medium text-primary-700"
-          href={
-            item.orderId.length === 1
-              ? `/daftarpesanan/detailpesanan/${item.orderId[0]}`
-              : listPesananUrl[key]
-          }
+          href={item.link.link}
         >
-          {t(item.href.label)}
+          {t(item.link.label)}
         </Link>
       ) : item.button ? (
         item.button

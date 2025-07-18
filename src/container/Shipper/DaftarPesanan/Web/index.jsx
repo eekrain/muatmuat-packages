@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
+import { AlertMultiline } from "@/components/Alert/AlertMultiline";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
-import NeedConfirmationWarning from "@/components/NeedConfirmationWarning/NeedConfirmationWarning";
 import Pagination from "@/components/Pagination/Pagination";
 import PesananTable from "@/components/Table/PesananTable";
 import { useTranslation } from "@/hooks/use-translation";
@@ -24,6 +24,33 @@ const DaftarPesananWeb = ({
   const { t } = useTranslation();
   const [tempSearch, setTempSearch] = useState("");
   const [recentPeriodOptions, setRecentPeriodOptions] = useState([]);
+
+  const alertItems = useMemo(() => {
+    if (!settlementAlertInfo) return [];
+
+    const listPesananUrl = [
+      "/daftarpesanan/pesananmenunggupembayaran",
+      "/daftarpesanan/pesananmenunggupelunasan",
+      "/daftarpesanan/butuhkonfirmasianda",
+    ];
+    return settlementAlertInfo
+      .map((item, key) => {
+        if (!item.orderId || item.orderId.length === 0) {
+          return null;
+        }
+        return {
+          label: item.alertText,
+          link: {
+            label: "Lihat Pesanan",
+            link:
+              item.orderId.length === 1
+                ? `/daftarpesanan/detailpesanan/${item.orderId[0]}`
+                : listPesananUrl[key],
+          },
+        };
+      })
+      .filter(Boolean);
+  }, [settlementAlertInfo]);
 
   const hasFilteredOrders = orders.length > 0;
 
@@ -175,11 +202,7 @@ const DaftarPesananWeb = ({
             />
           </div>
 
-          {settlementAlertInfo.length > 0 ? (
-            <NeedConfirmationWarning
-              settlementAlertInfo={settlementAlertInfo}
-            />
-          ) : null}
+          <AlertMultiline items={alertItems} className="mt-6" />
 
           <PesananTable
             queryParams={queryParams}

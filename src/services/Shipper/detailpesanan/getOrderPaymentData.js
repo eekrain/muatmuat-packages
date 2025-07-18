@@ -32,10 +32,15 @@ export const getOrderPaymentData = async (cacheKey) => {
   if (IS_MOCK) {
     result = apiResultPaymentData;
   } else {
-    result = await fetcherMuatrans.get(`v1/orders/${orderId}/payment`);
+    result = await fetcherMuatrans
+      .get(`v1/orders/${orderId}/payment`)
+      .catch((error) => {
+        console.log("Error when get order payment data", error);
+        return null;
+      });
   }
 
-  // return result?.data?.Data || null;
+  return result?.data?.Data || null;
 };
 
 export const useGetOrderPaymentData = (orderId) =>
