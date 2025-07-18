@@ -35,7 +35,7 @@ export const getOrderPaymentData = async (cacheKey) => {
     result = await fetcherMuatrans.get(`v1/orders/${orderId}/payment`);
   }
 
-  return result?.data?.Data || null;
+  // return result?.data?.Data || null;
 };
 
 export const useGetOrderPaymentData = (orderId) =>
