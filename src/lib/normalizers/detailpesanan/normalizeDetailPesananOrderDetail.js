@@ -123,6 +123,13 @@ export const normalizeDetailPesananOrderDetail = ({
       newPriceCharge = priceCharge;
     }
 
+    const priceChange = dataOrderDetail.summary?.priceChange;
+    let newPriceChange = null;
+
+    if (priceChange?.totalCharge && priceChange?.totalCharge > 0) {
+      newPriceChange = priceChange;
+    }
+
     const dataRingkasanPembayaran = {
       paymentMethod: dataPayment?.payment?.method,
       vaNumber: dataPayment?.payment?.vaNumber,
@@ -154,8 +161,8 @@ export const normalizeDetailPesananOrderDetail = ({
       otherAdditionalService: {
         totalPrice: foundOtherAdditionalService?.courierPrice,
       },
-      priceChange: dataOrderDetail.summary?.priceChange,
       priceCharge: newPriceCharge,
+      priceChange: newPriceChange,
     };
 
     return {

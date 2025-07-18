@@ -22,8 +22,8 @@ export const RingkasanPembayaran = ({
         <RingkasanPembayaranPendingPayment
           dataRingkasanPembayaran={dataRingkasanPembayaran}
         />
-      ) : dataRingkasanPembayaran?.orderStatus ===
-        OrderStatusEnum.WAITING_REPAYMENT_1 ? (
+      ) : dataRingkasanPembayaran?.priceCharge &&
+        dataRingkasanPembayaran?.priceCharge?.isPaid === false ? (
         <RingkasanPembayaranTambahanBiaya
           dataRingkasanPembayaran={dataRingkasanPembayaran}
         />

@@ -6,6 +6,7 @@ import { ModalDetailWaktuTunggu } from "@/components/Modal/ModalDetailWaktuTungg
 import { ModalOpsiPembayaran } from "@/components/Modal/ModalOpsiPembayaran";
 import { useSWRHook } from "@/hooks/use-swr";
 import { fetcherPayment } from "@/lib/axios";
+import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { idrFormat } from "@/lib/utils/formatters";
 
 export const RingkasanPembayaranTambahanBiaya = ({
@@ -25,35 +26,55 @@ export const RingkasanPembayaranTambahanBiaya = ({
         <CardPayment.Header>Detail Tambahan Biaya</CardPayment.Header>
 
         <CardPayment.Content noScroll>
-          <CardPayment.ContainerItem title="Biaya Waktu Tunggu">
-            <CardPayment.Item
-              label="Nominal Waktu Tunggu (1 Driver)"
-              value={idrFormat(200000)}
-            />
-            <ModalDetailWaktuTunggu />
-          </CardPayment.ContainerItem>
-
-          <CardPayment.ContainerItem title="Biaya Overload Muatan">
-            <CardPayment.Item
-              label="Nominal Overload Muatan (2.000 kg)"
-              value={idrFormat(100000)}
-              className="h-auto"
-            />
-            <ModalDetailOverloadMuatan
-              dataRingkasanPembayaran={dataRingkasanPembayaran}
-            />
-          </CardPayment.ContainerItem>
-
-          <CardPayment.ContainerItem title="Biaya Lainnya">
-            <div className="flex flex-col gap-1">
+          {dataRingkasanPembayaran?.priceCharge?.waitingFee?.totalAmount &&
+          dataRingkasanPembayaran?.priceCharge?.waitingFee?.totalAmount > 0 ? (
+            <CardPayment.ContainerItem title="Biaya Waktu Tunggu">
               <CardPayment.Item
-                label="Admin Layanan"
-                value={idrFormat(10000)}
+                label={`Nominal Waktu Tunggu (${dataRingkasanPembayaran?.priceCharge?.waitingFee?.totalDriver} Driver)`}
+                value={idrFormat(
+                  dataRingkasanPembayaran?.priceCharge?.waitingFee?.totalAmount
+                )}
               />
+              <ModalDetailWaktuTunggu />
+            </CardPayment.ContainerItem>
+          ) : null}
 
-              <CardPayment.Item label="Pajak" value={idrFormat(10000)} />
-            </div>
-          </CardPayment.ContainerItem>
+          {dataRingkasanPembayaran?.priceCharge?.overloadFee?.totalAmount &&
+          dataRingkasanPembayaran?.priceCharge?.overloadFee?.totalAmount > 0 ? (
+            <CardPayment.ContainerItem title="Biaya Overload Muatan">
+              <CardPayment.Item
+                label={`Nominal Overload Muatan (${Number(dataRingkasanPembayaran?.priceCharge?.overloadFee?.totalWeight).toLocaleString("id-ID")} ${dataRingkasanPembayaran?.priceCharge?.overloadFee?.weightUnit})`}
+                value={idrFormat(
+                  dataRingkasanPembayaran?.priceCharge?.overloadFee?.totalAmount
+                )}
+                className="h-auto"
+              />
+              <ModalDetailOverloadMuatan
+                dataRingkasanPembayaran={dataRingkasanPembayaran}
+              />
+            </CardPayment.ContainerItem>
+          ) : null}
+
+          {Boolean(dataRingkasanPembayaran?.priceCharge?.adminFee) ||
+          Boolean(dataRingkasanPembayaran?.priceCharge?.taxAmount) ? (
+            <CardPayment.ContainerItem title="Biaya Lainnya">
+              <div className="flex flex-col gap-1">
+                <CardPayment.Item
+                  label="Admin Layanan"
+                  value={idrFormat(
+                    dataRingkasanPembayaran?.priceCharge?.adminFee || 0
+                  )}
+                />
+
+                <CardPayment.Item
+                  label="Pajak"
+                  value={idrFormat(
+                    dataRingkasanPembayaran?.priceCharge?.taxAmount || 0
+                  )}
+                />
+              </div>
+            </CardPayment.ContainerItem>
+          ) : null}
         </CardPayment.Content>
 
         <CardPayment.FooterTotal
@@ -61,12 +82,15 @@ export const RingkasanPembayaranTambahanBiaya = ({
           value={idrFormat(250000)}
           className="gap-20"
         >
-          <ModalOpsiPembayaran
-            paymentMethods={paymentMethodsData?.Data}
-            selectedPaymentMethodId={selectedPaymentMethodId}
-            onSelectedPaymentMethodId={setSelectedPaymentMethodId}
-            className="mt-6"
-          />
+          {dataRingkasanPembayaran?.orderStatus ===
+            OrderStatusEnum.WAITING_REPAYMENT_1 && (
+            <ModalOpsiPembayaran
+              paymentMethods={paymentMethodsData?.Data}
+              selectedPaymentMethodId={selectedPaymentMethodId}
+              onSelectedPaymentMethodId={setSelectedPaymentMethodId}
+              className="mt-6"
+            />
+          )}
         </CardPayment.FooterTotal>
       </CardPayment.Root>
     </div>
