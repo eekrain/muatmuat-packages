@@ -20,6 +20,7 @@ import ImageUploaderResponsive from "@/components/ImageUploader/ImageUploaderRes
 import TextArea from "@/components/TextArea/TextArea";
 import {
   TimelineContainer,
+  TimelineContentAddress,
   TimelineContentWithButtonDate,
   TimelineItem,
 } from "@/components/Timeline";
@@ -723,18 +724,8 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
                           ? {
                               label: "Lihat Lokasi Muat Lainnya",
                               onClick: () => {
+                                setLocationType("muat");
                                 setIsLocationBottomsheetOpen(true);
-                                // setModalData(
-                                //   lokasiMuat.map(
-                                //     (item, index) => ({
-                                //       ...item,
-                                //       index,
-                                //       isPickup: true,
-                                //     })
-                                //   )
-                                // );
-                                // setIsPickup(true);
-                                // setIsLokasiMuatBongkarModalOpen(true);
                               },
                             }
                           : undefined
@@ -756,18 +747,8 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
                           ? {
                               label: "Lihat Lokasi Bongkar Lainnya",
                               onClick: () => {
-                                alert("hai");
-                                // setModalData(
-                                //   lokasiBongkar.map(
-                                //     (item, index) => ({
-                                //       ...item,
-                                //       index,
-                                //       isPickup: false,
-                                //     })
-                                //   )
-                                // );
-                                // setIsPickup(false);
-                                // setIsLokasiMuatBongkarModalOpen(true);
+                                setLocationType("bongkar");
+                                setIsLocationBottomsheetOpen(true);
                               },
                             }
                           : undefined
@@ -1000,7 +981,31 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
           <BottomSheetHeader>
             {locationType === "muat" ? "Lokasi Muat" : "Lokasi Bongkar"}
           </BottomSheetHeader>
-          <div className="flex flex-col gap-y-4 px-4 py-6"></div>
+          <div className="flex flex-col gap-y-4 px-4 py-6">
+            <TimelineContainer>
+              {(locationType === "muat" ? lokasiMuat : lokasiBongkar).map(
+                (item, key) => (
+                  <Fragment key={key}>
+                    <TimelineItem
+                      variant={
+                        locationType === "muat" ? "number-muat" : "number-muat"
+                      }
+                      totalLength={
+                        (locationType === "muat" ? lokasiMuat : lokasiBongkar)
+                          .length
+                      }
+                      index={key}
+                      activeIndex={0}
+                    >
+                      <TimelineContentAddress
+                        title={item.dataLokasi.location.name || ""}
+                      />
+                    </TimelineItem>
+                  </Fragment>
+                )
+              )}
+            </TimelineContainer>
+          </div>
         </BottomSheetContent>
       </BottomSheet>
     </FormResponsiveLayout>
