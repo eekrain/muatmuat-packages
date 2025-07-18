@@ -146,6 +146,7 @@ const Page = () => {
                   : truckTypes.map((item) => ({
                       label: item.name,
                       value: item.id,
+                      image: item.icon,
                     }))
               }
               value={formData.jenisTruk}
@@ -155,6 +156,7 @@ const Page = () => {
               }}
               placeholder="Pilih Jenis Truk"
               className={selectClass}
+              classNameOptions="h-12"
             />
 
             <div className={labelClass}>Jenis Carrier*</div>
@@ -163,7 +165,11 @@ const Page = () => {
                 formData.jenisTruk && !isLoadingCarrier
                   ? carrierTypes
                       .filter((item) => item.truckTypeId === formData.jenisTruk)
-                      .map((item) => ({ label: item.name, value: item.id }))
+                      .map((item) => ({
+                        label: item.name,
+                        value: item.id,
+                        image: item.icon,
+                      }))
                   : []
               }
               value={formData.jenisCarrier}
@@ -171,6 +177,7 @@ const Page = () => {
               placeholder="Pilih Jenis Carrier"
               className={selectClass}
               disabled={!formData.jenisTruk || isLoadingCarrier}
+              classNameOptions="h-12"
             />
 
             <div className={labelClass}>Merek Kendaraan*</div>

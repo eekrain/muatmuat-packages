@@ -93,7 +93,9 @@ export const AuthenticationProvider = ({ children }) => {
 
 export const useAuth = () => {
   const dataMatrix = useUserStore(useShallow((state) => state.dataMatrix));
-  const dataUser = useUserStore(useShallow((state) => state.dataUser));
+  const dataUser = useUserStore(
+    useShallow((state) => ({ ...state.dataUser, Email: "cakra@gmail.com" }))
+  );
   const isLoggedIn = useMemo(() => Boolean(dataUser?.name), [dataUser?.name]);
 
   // Stable logout function

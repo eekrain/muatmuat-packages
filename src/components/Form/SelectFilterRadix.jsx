@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import * as Popover from "@radix-ui/react-popover";
-import { ChevronDown, Plus } from "lucide-react";
+import { ChevronDown, Plus, Search } from "lucide-react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { cn } from "@/lib/utils";
@@ -18,6 +18,7 @@ const SelectFilterRadix = ({
   searchable = true,
   maxHeight = "238px",
   errorMessage = null,
+  classNameOptions,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOption, setSelectedOption] = useState(value);
@@ -29,13 +30,10 @@ const SelectFilterRadix = ({
     option.label.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Focus search input when dropdown opens
+  // Clear search input when dropdown close
   useEffect(() => {
-    if (open && searchable && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
     if (!open) setSearchTerm("");
-  }, [open, searchable]);
+  }, [open]);
 
   // Update selected option when value prop changes
   useEffect(() => {
@@ -106,24 +104,13 @@ const SelectFilterRadix = ({
         side="bottom"
         avoidCollisions={false}
         style={{ maxHeight }}
+        onOpenAutoFocus={(e) => e.preventDefault()}
       >
         {/* Search Input */}
         {searchable && (
           <div className="p-2.5">
-            <div className="flex h-8 items-center gap-2 rounded-md border border-primary-700 bg-white px-3 focus-within:border-primary-700 hover:border-primary-700">
-              <svg
-                className="h-4 w-4 flex-shrink-0 text-primary-700"
-                fill="none"
-                viewBox="0 0 18 18"
-              >
-                <path
-                  d="M8.5 15.5a7 7 0 1 0 0-14 7 7 0 0 0 0 14Zm4.5-2 3 3"
-                  stroke="#176CF7"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+            <div className="flex h-8 items-center gap-2 rounded-md border border-neutral-600 bg-white px-3 focus-within:border-primary-700 hover:border-primary-700">
+              <Search size={16} />
               <input
                 ref={searchInputRef}
                 type="text"
@@ -169,12 +156,23 @@ const SelectFilterRadix = ({
                 type="button"
                 onClick={() => handleOptionSelect(option)}
                 className={cn(
-                  "flex h-8 w-full cursor-pointer items-center justify-between px-2.5 text-left transition-colors hover:bg-neutral-200"
+                  "flex h-8 w-full cursor-pointer items-center justify-between px-2.5 text-left transition-colors hover:bg-neutral-200",
+                  classNameOptions
                 )}
               >
-                <span className="truncate text-xs font-medium text-neutral-900">
-                  {option.label}
-                </span>
+                <div className="flex items-center gap-2.5">
+                  {option.image && (
+                    <img
+                      src={option.image}
+                      className="aspect-square object-contain"
+                      height={32}
+                      width={32}
+                    />
+                  )}
+                  <span className="truncate text-xs font-medium text-neutral-900">
+                    {option.label}
+                  </span>
+                </div>
                 {selectedOption && selectedOption === option.value ? (
                   <IconComponent
                     src={"/icons/check-circle16.svg"}
@@ -186,7 +184,7 @@ const SelectFilterRadix = ({
               </button>
             ))
           ) : (
-            <div className="inline-flex h-[42px] w-full items-center justify-center text-xs font-semibold text-neutral-900">
+            <div className="inline-flex h-8 w-full items-center justify-center text-xs font-medium text-neutral-900">
               Data Tidak Ditemukan
             </div>
           )}
