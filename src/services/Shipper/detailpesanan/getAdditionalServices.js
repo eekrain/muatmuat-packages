@@ -1,7 +1,7 @@
 // /api/v1/orders/{orderId}/additional-services
 import { fetcherMuatrans } from "@/lib/axios";
 
-const IS_MOCK = false;
+const useMockData_getAdditionalServices = false;
 
 const apiResult = {
   data: {
@@ -42,7 +42,7 @@ export const getAdditionalServices = async (cacheKey) => {
 
   let result;
 
-  if (IS_MOCK) {
+  if (useMockData_getAdditionalServices) {
     result = apiResult;
   } else {
     result = await fetcherMuatrans.get(

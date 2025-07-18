@@ -14,7 +14,7 @@ import { getOrderPaymentData } from "./getOrderPaymentData";
 import { getOrderStatusHistory } from "./getOrderStatusHistory";
 import { getStatusLegend } from "./getStatusLegend";
 
-const IS_MOCK = false;
+const useMockData_getDetailPesananData = false;
 
 /**
  * Notes dari mas friday
@@ -260,7 +260,7 @@ export const fetcherOrderDetail = async (cacheKey) => {
 
   let result;
 
-  if (IS_MOCK) {
+  if (useMockData_getDetailPesananData) {
     result = apiResultOrderDetail;
   } else {
     result = await fetcherMuatrans.get(`v1/orders/${orderId}`);
