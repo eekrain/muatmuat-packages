@@ -5,6 +5,8 @@ import { addMinutes, isPast } from "date-fns";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { fetcherMuatrans } from "@/lib/axios";
 
+const IS_MOCK = false;
+
 const apiResultQRCode = {
   data: {
     Message: {
@@ -41,13 +43,16 @@ export const useGetDriverQRCodeById = (requestData = exampleBody) => {
   const generateQRCode = async () => {
     if (!requestData) return;
     try {
-      const response = await fetcherMuatrans.post(
-        "v1/orders/qr-codes/generate",
-        requestData
-      );
-      // const response = apiResultQRCode;
-      setQRData(response.data?.Data || null);
-      // setQRData(null);
+      let result;
+      if (IS_MOCK) {
+        result = apiResultQRCode;
+      } else {
+        result = await fetcherMuatrans.post(
+          "v1/orders/qr-codes/generate",
+          requestData
+        );
+      }
+      setQRData(result?.data?.Data || null);
     } catch (error) {
       console.log("Error generate QR Code", error);
     } finally {

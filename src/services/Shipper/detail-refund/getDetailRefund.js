@@ -1,5 +1,7 @@
 import useSWR from "swr";
 
+const IS_MOCK = true;
+
 // GET /base_data/v1/orders/tracking/{orderId}/location?driverId={driverId}
 const apiResult = {
   Message: {
@@ -60,7 +62,11 @@ const apiResult = {
 export const getDetailRefund = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
 
-  const result = apiResult.Data;
+  let result;
+
+  if (IS_MOCK) {
+    result = apiResult;
+  }
 
   const locationMarkers = [];
   const locationPolyline = [];

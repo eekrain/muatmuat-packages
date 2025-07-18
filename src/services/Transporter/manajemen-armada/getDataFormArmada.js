@@ -20,13 +20,13 @@ const mockJenisTruk = {
       truckTypes: [
         {
           id: "550e8400-e29b-41d4-a716-446655440000",
-          name: "Truk Besar",
-          icon: "url",
+          name: "Colt Diesel Double",
+          icon: "/img/mock-add-armada/truck/colt.png",
         },
         {
           id: "550e8400-e29b-41d3-a716-446655440000",
-          name: "Truk Kecil",
-          icon: "url",
+          name: "Tractor Head 4x2",
+          icon: "/img/mock-add-armada/truck/tractor.png",
         },
       ],
     },
@@ -45,7 +45,13 @@ const mockTypeCarrier = {
         {
           id: "550e8400-e29b-41d4-a716-446655440001",
           name: "Box",
-          icon: "url",
+          icon: "/img/mock-add-armada/carrier/box.png",
+          truckTypeId: "550e8400-e29b-41d4-a716-446655440000",
+        },
+        {
+          id: "550e8400-e29b-41d3-a716-446655440001",
+          name: "Flatbed",
+          icon: "/img/mock-add-armada/carrier/flatbed.png",
           truckTypeId: "550e8400-e29b-41d4-a716-446655440000",
         },
       ],
