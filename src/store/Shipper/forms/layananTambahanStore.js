@@ -3,8 +3,6 @@ import { create } from "zustand";
 import { toast } from "@/lib/toast";
 import { zustandDevtools } from "@/lib/utils";
 
-import { useLocationFormStore } from "./locationFormStore";
-
 const defaultValues = {
   // Form data state
   opsiPegiriman: null,
@@ -29,23 +27,10 @@ export const useLayananTambahanStore = create(
 
       // Actions
       setField: (field, value) =>
-        set((state) => {
-          const newFormErrors = { ...state.formErrors, [field]: undefined };
-
-          // If setting opsiPegiriman and it's not null, clear the error in locationFormStore
-          if (field === "opsiPegiriman" && value !== null) {
-            const locationFormStore = useLocationFormStore.getState();
-            locationFormStore.setErrors({
-              ...locationFormStore.formErrors,
-              opsiPegiriman: undefined,
-            });
-          }
-
-          return {
-            formValues: { ...state.formValues, [field]: value },
-            formErrors: newFormErrors,
-          };
-        }),
+        set((state) => ({
+          formValues: { ...state.formValues, [field]: value },
+          formErrors: { ...state.formErrors, [field]: undefined },
+        })),
 
       validateForm: () => {
         const { namaPenerima, nomorHandphonePenerima, opsiPegiriman } =

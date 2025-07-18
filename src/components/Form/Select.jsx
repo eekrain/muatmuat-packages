@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRef } from "react";
 
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { ChevronDownIcon } from "lucide-react";
@@ -9,6 +10,7 @@ import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 import IconComponent from "../IconComponent/IconComponent";
+import { useRegisterModalPortalNode } from "../Modal/useRegisterModalPortalNode";
 
 /**
  * @param {React.ComponentProps<typeof SelectPrimitive.Item> & { className?: string, children: React.ReactNode }} props
@@ -52,6 +54,10 @@ export const Select = ({
   ...props
 }) => {
   const { t } = useTranslation();
+  const contentRef = useRef(null);
+
+  // Register the dropdown content with the modal system
+  const setContentRef = useRegisterModalPortalNode(contentRef, [options]);
 
   return (
     <div className="relative flex flex-col gap-2">
@@ -87,6 +93,7 @@ export const Select = ({
 
         <SelectPrimitive.Portal>
           <SelectPrimitive.Content
+            ref={setContentRef}
             data-slot="select-content"
             className={cn(
               "z-50 overflow-hidden rounded-md border border-neutral-300 bg-white text-xs font-medium shadow-lg",

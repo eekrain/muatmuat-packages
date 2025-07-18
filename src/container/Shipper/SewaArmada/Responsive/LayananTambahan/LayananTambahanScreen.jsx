@@ -343,7 +343,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
             <div className="flex flex-col gap-y-3">
               <div className="flex w-full cursor-pointer flex-col gap-y-3 rounded-md bg-primary-50 px-4 py-2">
                 <button
-                  className={`flex w-full items-center justify-between ${tambahanFormValues.opsiPegiriman ? "border-b border-b-neutral-400 pb-3" : ""}`}
+                  className={`flex w-full items-center justify-between ${locationFormValues.opsiPegiriman ? "border-b border-b-neutral-400 pb-3" : ""}`}
                   onClick={() =>
                     navigation.push("/OpsiPengiriman", { shippingData })
                   }
@@ -385,9 +385,9 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                   />
                 ) : null}
               </div>
-              {locationFormErrors?.opsiPegiriman ? (
+              {tambahanFormErrors?.opsiPegiriman ? (
                 <span className="text-[12px] font-medium leading-[13.2px] text-error-400">
-                  {locationFormErrors?.opsiPegiriman}
+                  {tambahanFormErrors?.opsiPegiriman}
                 </span>
               ) : null}
             </div>
