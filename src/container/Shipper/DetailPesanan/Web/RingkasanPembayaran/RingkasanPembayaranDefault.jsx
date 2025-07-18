@@ -219,7 +219,8 @@ export const RingkasanPembayaranDefault = ({
             </Button>
           ) : null}
 
-          {isShowWaitFleetAlert ? <WaitFleetSearchButton /> : null}
+          {isShowWaitFleetAlert && <WaitFleetSearchButton />}
+
           <ModalBatalkanPesanan
             dataRingkasanPembayaran={dataRingkasanPembayaran}
           >
