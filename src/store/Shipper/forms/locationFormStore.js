@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 import { zustandDevtools } from "@/lib/utils";
 
+import { useLayananTambahanStore } from "./layananTambahanStore";
 import { useSewaArmadaStore } from "./sewaArmadaStore";
 
 /**
@@ -211,6 +212,15 @@ export const useLocationFormStore = create(
         // Kode Pos wajib diisi
         if (!formValues.dataLokasi?.postalCode?.value) {
           errors.postalCode = "Kode Pos wajib diisi";
+        }
+
+        // Check shipping option from layanan tambahan store
+        const layananTambahanStore = useLayananTambahanStore.getState();
+        if (!layananTambahanStore.formValues.opsiPegiriman) {
+          errors.opsiPegiriman = "Opsi pengiriman wajib diisi";
+        } else {
+          // Clear the error if shipping option is selected
+          errors.opsiPegiriman = undefined;
         }
 
         return Object.values(errors).every((error) => error === undefined);

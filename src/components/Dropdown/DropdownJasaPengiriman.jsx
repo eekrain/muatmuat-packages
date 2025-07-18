@@ -284,11 +284,12 @@ export const DropdownJasaPengiriman = ({
         onClick={handleToggle}
         disabled={disabled}
         className={cn(
-          "flex h-8 w-full items-center justify-between gap-2 rounded-md border bg-white px-3 py-0 text-left text-xs font-medium leading-[120%] transition-colors",
-          disabled && "cursor-not-allowed border-neutral-300 text-neutral-400",
+          "flex h-8 w-full items-center justify-between gap-2 rounded-md border px-3 py-0 text-left text-xs font-medium leading-[120%] text-neutral-600 transition-colors",
+          disabled &&
+            "cursor-not-allowed border-neutral-300 bg-neutral-200 text-neutral-400",
+          !disabled && "hover:border-primary-700",
           isOpen && "border-primary-700 text-neutral-900",
-          !isOpen &&
-            "border-primary-700 text-neutral-600 hover:text-neutral-900",
+          !isOpen && "border-neutral-600",
           errorMessage && "border-red-500 focus:border-red-500"
         )}
       >

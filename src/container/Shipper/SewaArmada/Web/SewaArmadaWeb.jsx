@@ -29,6 +29,7 @@ import { SummaryPanel } from "@/container/Shipper/SewaArmada/Web/SummaryPanel/Su
 import { WelcomeCard } from "@/container/Shipper/SewaArmada/Web/WelcomeCard/WelcomeCard";
 import { useSWRHook } from "@/hooks/use-swr";
 import { isDev } from "@/lib/constants/is-dev";
+import { useGetUserPreferences } from "@/services/Shipper/sewaarmada/userPreferences";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -52,6 +53,9 @@ export default function SewaArmadaWeb({
   const orderType = useSewaArmadaStore((state) => state.orderType);
 
   const { data: dataBanner, isLoading } = useSWRHook("v1/orders/banner-ads");
+  const { data: userPreferences, isLoading: isLoadingUserPreferences } =
+    useGetUserPreferences();
+
   const banners = useMemo(() => {
     const data = dataBanner?.Data?.banners;
     if (!data) return [];
@@ -65,11 +69,11 @@ export default function SewaArmadaWeb({
 
   const { setIsGlobalLoading } = useLoadingAction();
   useEffect(() => {
-    if (!isLoading) {
+    if ((!isLoading, isLoadingUserPreferences)) {
       setIsGlobalLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading]);
+  }, [isLoading, isLoadingUserPreferences]);
 
   const { validateForm } = useSewaArmadaActions();
   const testSubmit = () => {
@@ -91,7 +95,7 @@ export default function SewaArmadaWeb({
         ) : null}
 
         {/* Main Content */}
-        {orderType === "" ? (
+        {userPreferences?.Data?.shouldShowPopup == true || orderType === "" ? (
           <FirstTimer />
         ) : (
           <>

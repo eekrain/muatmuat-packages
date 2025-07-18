@@ -1,11 +1,27 @@
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { ArmadaOption } from "@/container/Shipper/SewaArmada/Web/FirstTimer/ArmadaOption";
+import { useSaveUserPreferences } from "@/services/Shipper/sewaarmada/userPreferences";
 import { useSewaArmadaActions } from "@/store/Shipper/forms/sewaArmadaStore";
 
 export const FirstTimer = () => {
   const { setOrderType } = useSewaArmadaActions();
+  const { trigger: savePreferences } = useSaveUserPreferences();
 
-  const handleClickArmadaOption = (type) => setOrderType(type);
+  const handleClickArmadaOption = async (type) => {
+    try {
+      // Set order type first
+      setOrderType(type);
+
+      // Save user preferences to not show popup again
+      await savePreferences({
+        dontShowAgain: true,
+      });
+    } catch (error) {
+      console.error("Error saving user preferences:", error);
+      // Even if saving preferences fails, still set the order type
+      setOrderType(type);
+    }
+  };
 
   return (
     <div className="flex w-[814px] flex-col items-center rounded-xl bg-white p-8 shadow-md">

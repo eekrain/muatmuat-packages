@@ -122,7 +122,21 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
             </div>
 
             <span className="ml-6 text-[14px] font-medium leading-[15.4px] text-neutral-600">
-              Rp-
+              {tambahanFormValues.opsiPegiriman
+                ? (() => {
+                    const shippingPrice = parseInt(
+                      tambahanFormValues.opsiPegiriman.price.replace(
+                        /[^\d]/g,
+                        ""
+                      )
+                    );
+                    const insurancePrice = tambahanFormValues.asuransiPengiriman
+                      ? 10000
+                      : 0;
+                    const total = shippingPrice + insurancePrice;
+                    return `Rp${total.toLocaleString("id-ID")}`;
+                  })()
+                : "Rp-"}
             </span>
           </div>
 
@@ -329,7 +343,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
             <div className="flex flex-col gap-y-3">
               <div className="flex w-full cursor-pointer flex-col gap-y-3 rounded-md bg-primary-50 px-4 py-2">
                 <button
-                  className={`flex w-full items-center justify-between ${locationFormValues.opsiPegiriman ? "border-b border-b-neutral-400 pb-3" : ""}`}
+                  className={`flex w-full items-center justify-between ${tambahanFormValues.opsiPegiriman ? "border-b border-b-neutral-400 pb-3" : ""}`}
                   onClick={() =>
                     navigation.push("/OpsiPengiriman", { shippingData })
                   }
@@ -371,9 +385,9 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                   />
                 ) : null}
               </div>
-              {tambahanFormErrors?.opsiPegiriman ? (
+              {locationFormErrors?.opsiPegiriman ? (
                 <span className="text-[12px] font-medium leading-[13.2px] text-error-400">
-                  {tambahanFormErrors?.opsiPegiriman}
+                  {locationFormErrors?.opsiPegiriman}
                 </span>
               ) : null}
             </div>

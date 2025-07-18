@@ -338,6 +338,12 @@ const DeliveryEvidenceModal = ({
               </label>
               <DropdownJasaPengiriman
                 shippingOptions={shippingOptions}
+                disabled={
+                  !locationFormValues?.dataLokasi?.district?.value ||
+                  !dataLokasi?.city?.name ||
+                  !dataLokasi?.province?.name ||
+                  !locationFormValues?.dataLokasi?.postalCode?.value
+                }
                 value={selectedShippingOptions}
                 onChange={({ expedition, hasInsurance }) => {
                   setDeliveryEvidenceFormValues((prev) => ({
