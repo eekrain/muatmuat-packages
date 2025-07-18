@@ -193,16 +193,16 @@ const apiResultOrderDetail = {
 
         priceCharge: {
           waitingFee: {
-            totalAmount: 0.0,
-            totalDriver: 0,
+            totalAmount: 100000,
+            totalDriver: 1,
           },
           overloadFee: {
-            totalAmount: 0.0,
+            totalAmount: 0,
             totalWeight: 0,
             weightUnit: "kg",
           },
-          adminFee: 0,
-          totalCharge: 0,
+          adminFee: 10000,
+          totalCharge: 110000,
           isPaid: false,
         },
       },
