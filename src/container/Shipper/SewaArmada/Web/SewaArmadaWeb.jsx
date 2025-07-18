@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useMemo } from "react";
 
 import { AlertMultiline } from "@/components/Alert/AlertMultiline";
@@ -25,8 +26,9 @@ import {
 import DeskripsiMuatan from "@/container/Shipper/SewaArmada/Web/Form/DeskripsiMuatan";
 import SelectArmadaModal from "@/container/Shipper/SewaArmada/Web/Form/JenisArmada/SelectArmadaModal";
 import SertifikasiHalal from "@/container/Shipper/SewaArmada/Web/Form/SertifikasiHalal";
-import { SummaryPanel } from "@/container/Shipper/SewaArmada/Web/SummaryPanel/SummaryPanel";
+import { CreateOrderSummaryPanel } from "@/container/Shipper/SewaArmada/Web/SummaryPanel/CreateOrderSummaryPanel";
 import { WelcomeCard } from "@/container/Shipper/SewaArmada/Web/WelcomeCard/WelcomeCard";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook } from "@/hooks/use-swr";
 import { isDev } from "@/lib/constants/is-dev";
 import { useGetUserPreferences } from "@/services/Shipper/sewaarmada/userPreferences";
@@ -35,6 +37,8 @@ import {
   useSewaArmadaStore,
 } from "@/store/Shipper/forms/sewaArmadaStore";
 import { useLoadingAction } from "@/store/Shipper/loadingStore";
+
+import UpdateOrderSummaryPanel from "./SummaryPanel/UpdateOrderSummaryPanel";
 
 export default function SewaArmadaWeb({
   settlementAlertInfo,
@@ -50,6 +54,8 @@ export default function SewaArmadaWeb({
   paymentMethods,
   onFetchTrucks,
 }) {
+  const pathname = usePathname();
+  const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
 
   const { data: dataBanner, isLoading } = useSWRHook("v1/orders/banner-ads");
@@ -67,7 +73,7 @@ export default function SewaArmadaWeb({
     }));
   }, [dataBanner]);
 
-  const alertItems = useMemo(() => {
+  const alertItems = useShallowMemo(() => {
     if (!settlementAlertInfo) return [];
 
     const listPesananUrl = [
@@ -160,11 +166,19 @@ export default function SewaArmadaWeb({
               </Card>
 
               {/* Summary Panel */}
-              <SummaryPanel
-                settingsTime={settingsTime}
-                paymentMethods={paymentMethods}
-                calculatedPrice={calculatedPrice}
-              />
+              {isEditPage ? (
+                <UpdateOrderSummaryPanel
+                  settingsTime={settingsTime}
+                  paymentMethods={paymentMethods}
+                  calculatedPrice={calculatedPrice}
+                />
+              ) : (
+                <CreateOrderSummaryPanel
+                  settingsTime={settingsTime}
+                  paymentMethods={paymentMethods}
+                  calculatedPrice={calculatedPrice}
+                />
+              )}
             </div>
           </>
         )}

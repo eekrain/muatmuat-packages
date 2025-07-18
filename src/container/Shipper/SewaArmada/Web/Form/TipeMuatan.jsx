@@ -1,3 +1,5 @@
+import { usePathname } from "next/navigation";
+
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import RadioButton from "@/components/Radio/RadioButton";
@@ -9,6 +11,8 @@ import {
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
 export const TipeMuatan = ({ cargoTypes }) => {
+  const pathname = usePathname();
+  const isEditPage = pathname.includes("/ubahpesanan");
   const cargoTypeId = useSewaArmadaStore(
     (state) => state.formValues.cargoTypeId
   );
@@ -51,6 +55,7 @@ export const TipeMuatan = ({ cargoTypes }) => {
           {cargoTypes.map((type) => (
             <div className="w-[250px]" key={type.id}>
               <RadioButton
+                disabled={isEditPage}
                 name="cargoTypeId"
                 label={type.name}
                 checked={cargoTypeId === type.id}

@@ -1,3 +1,5 @@
+import { useParams, useRouter } from "next/navigation";
+
 import Button from "@/components/Button/Button";
 import CardPayment from "@/components/Card/CardPayment";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -15,6 +17,8 @@ export const RingkasanPembayaranDefault = ({
   dataRingkasanPembayaran,
   isShowWaitFleetAlert,
 }) => {
+  const params = useParams();
+  const router = useRouter();
   const showButtons =
     !dataRingkasanPembayaran?.orderStatus.startsWith("CANCELED") &&
     dataRingkasanPembayaran?.orderStatus !==
@@ -212,7 +216,9 @@ export const RingkasanPembayaranDefault = ({
             <Button
               variant="muatparts-primary-secondary"
               className="h-8 w-full"
-              onClick={() => {}}
+              onClick={() =>
+                router.push(`/sewaarmada/ubahpesanan/${params.orderId}`)
+              }
               type="button"
             >
               Ubah Pesanan

@@ -34,7 +34,7 @@ const Toast = ({ message, onClose }) => (
   </div>
 );
 
-export const SummaryPanel = ({
+export const CreateOrderSummaryPanel = ({
   settingsTime,
   paymentMethods,
   calculatedPrice,

@@ -1,3 +1,5 @@
+import { usePathname } from "next/navigation";
+
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import TextArea from "@/components/TextArea/TextArea";
 import { handleFirstTime } from "@/lib/utils/form";
@@ -7,6 +9,8 @@ import {
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
 const DeskripsiMuatan = () => {
+  const pathname = usePathname();
+  const isEditPage = pathname.includes("/ubahpesanan");
   const cargoDescription = useSewaArmadaStore(
     (state) => state.formValues.cargoDescription
   );
@@ -18,6 +22,7 @@ const DeskripsiMuatan = () => {
       <FormLabel required>Deskripsi Muatan</FormLabel>
       <div className="flex flex-1 flex-col gap-2">
         <TextArea
+          disabled={isEditPage}
           name="cargoDescription"
           maxLength={500}
           hasCharCount

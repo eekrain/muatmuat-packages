@@ -1,3 +1,5 @@
+import { usePathname } from "next/navigation";
+
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import RadioButton from "@/components/Radio/RadioButton";
@@ -9,6 +11,8 @@ import {
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
 export const JenisMuatan = ({ cargoCategories }) => {
+  const pathname = usePathname();
+  const isEditPage = pathname.includes("/ubahpesanan");
   const cargoCategoryId = useSewaArmadaStore(
     (state) => state.formValues.cargoCategoryId
   );
@@ -52,6 +56,7 @@ export const JenisMuatan = ({ cargoCategories }) => {
           {cargoCategories.map((category) => (
             <div className="w-[250px]" key={category.id}>
               <RadioButton
+                disabled={isEditPage}
                 name="cargoCategoryId"
                 label={category.name}
                 checked={cargoCategoryId === category.id}

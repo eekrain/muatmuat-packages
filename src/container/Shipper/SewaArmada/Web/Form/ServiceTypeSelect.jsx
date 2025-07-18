@@ -1,3 +1,5 @@
+import { usePathname } from "next/navigation";
+
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { cn } from "@/lib/utils";
 import {
@@ -6,17 +8,24 @@ import {
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
 export const ServiceTypeSelect = () => {
+  const pathname = usePathname();
+  const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
   const { setOrderType } = useSewaArmadaActions();
 
   return (
     <div className="flex justify-center gap-3">
       {/* Instan Card - Active */}
-      <div
+      <button
         className={cn(
           "flex h-[136px] w-[385px] cursor-pointer flex-col items-center justify-center gap-y-3 rounded-xl border border-neutral-400 bg-white p-6 hover:border-[#FFC217]",
-          orderType === "INSTANT" && "border-[#FFC217] bg-[#FFF5C6]"
+          orderType === "INSTANT"
+            ? isEditPage
+              ? "cursor-not-allowed border-neutral-600 bg-neutral-200 hover:border-neutral-600 hover:bg-neutral-200"
+              : "border-[#FFC217] bg-[#FFF5C6]"
+            : isEditPage && "cursor-not-allowed hover:border-neutral-400"
         )}
+        disabled={isEditPage}
         onClick={() => setOrderType("INSTANT")}
       >
         <div className="flex size-8 items-center justify-center">
@@ -31,14 +40,19 @@ export const ServiceTypeSelect = () => {
           Pesan jasa angkut untuk penjemputan dan pengiriman segera atau di
           Hari+1.
         </p>
-      </div>
+      </button>
 
       {/* Terjadwal Card - Inactive */}
-      <div
+      <button
         className={cn(
           "flex h-[136px] w-[385px] cursor-pointer flex-col items-center justify-center gap-y-3 rounded-xl border border-neutral-400 bg-white p-6 hover:border-[#FFC217]",
-          orderType === "SCHEDULED" && "border-[#FFC217] bg-[#FFF5C6]"
+          orderType === "SCHEDULED"
+            ? isEditPage
+              ? "cursor-not-allowed border-neutral-600 bg-neutral-200 hover:border-neutral-600 hover:bg-neutral-200"
+              : "border-[#FFC217] bg-[#FFF5C6]"
+            : isEditPage && "cursor-not-allowed hover:border-neutral-400"
         )}
+        disabled={isEditPage}
         onClick={() => setOrderType("SCHEDULED")}
       >
         <div className="flex size-8 items-center justify-center">
@@ -53,7 +67,7 @@ export const ServiceTypeSelect = () => {
           Pesan jasa angkut untuk penjemputan dan pengiriman di Hari+2 sampai
           dengan Hari+30.
         </p>
-      </div>
+      </button>
     </div>
   );
 };

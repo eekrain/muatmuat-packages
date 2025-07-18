@@ -25,6 +25,7 @@ import {
 } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { formatDate } from "@/lib/utils/dateFormat";
 
 const PesananTable = ({
   queryParams,
@@ -314,8 +315,8 @@ const PesananTable = ({
                 <tbody>
                   {orders.map((order, key) => {
                     const firstPickupDropoff = [
-                      ...order.locations.pickup,
-                      ...order.locations.dropoff,
+                      order.locations.pickup[0],
+                      order.locations.dropoff[0],
                     ];
                     // Convert OrderStatusEnum to an array of keys to determine the order
                     const statusOrder = Object.keys(OrderStatusEnum);
@@ -641,15 +642,7 @@ const PesananTable = ({
                                       ? "Lakukan pembayaran sebelum "
                                       : "Lakukan pelunasan sebelum "}
                                     <span className="font-bold">
-                                      {new Date(
-                                        order.paymentDeadline
-                                      ).toLocaleDateString("id-ID", {
-                                        day: "numeric",
-                                        month: "short",
-                                        year: "numeric",
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                      })}
+                                      {formatDate(order.paymentDeadline)}
                                     </span>
                                   </span>
                                 </div>

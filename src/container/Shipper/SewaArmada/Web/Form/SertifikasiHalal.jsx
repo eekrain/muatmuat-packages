@@ -1,3 +1,5 @@
+import { usePathname } from "next/navigation";
+
 import Checkbox from "@/components/Form/Checkbox";
 import { FormContainer } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
@@ -8,6 +10,8 @@ import {
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
 const SertifikasiHalal = () => {
+  const pathname = usePathname();
+  const isEditPage = pathname.includes("/ubahpesanan");
   const isHalalLogistics = useSewaArmadaStore(
     (state) => state.formValues.isHalalLogistics
   );
@@ -32,6 +36,7 @@ const SertifikasiHalal = () => {
       </div>
       {/* Checkbox */}
       <Checkbox
+        disabled={isEditPage}
         label="Centang opsi jika pengiriman memerlukan armada dengan sertifikat halal logistik"
         checked={isHalalLogistics}
         onChange={({ checked }) =>

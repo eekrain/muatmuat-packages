@@ -1,3 +1,4 @@
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import minBy from "lodash/minBy";
@@ -19,6 +20,8 @@ import {
 export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
   const [isRecommendedTruckOpen, setIsRecommendedTruckOpen] = useState(false);
 
+  const pathname = usePathname();
+  const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
   const {
     loadTimeStart,
@@ -113,6 +116,7 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
   };
 
   const isTruckTypeIdDisabled =
+    isEditPage ||
     !loadTimeStart ||
     (showRangeOption && !loadTimeEnd) ||
     !lokasiMuat ||
@@ -131,11 +135,11 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
             <button
               className={cn(
                 "flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 px-3",
-                informasiMuatan?.length > 0
+                informasiMuatan?.length > 0 && !isEditPage
                   ? "cursor-pointer bg-neutral-50"
                   : "cursor-not-allowed bg-neutral-200"
               )}
-              disabled={informasiMuatan?.length === 0}
+              disabled={informasiMuatan?.length === 0 || isEditPage}
               onClick={() =>
                 handleFirstTime(() => handleOpenModal("carrierId"))
               }

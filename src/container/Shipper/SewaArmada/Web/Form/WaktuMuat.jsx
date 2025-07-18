@@ -1,5 +1,7 @@
 "use client";
 
+import { usePathname } from "next/navigation";
+
 import DatetimePicker from "@/components/DatetimePicker/DatetimePicker";
 import Checkbox from "@/components/Form/Checkbox";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
@@ -11,6 +13,8 @@ import {
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
 export const WaktuMuat = () => {
+  const pathname = usePathname();
+  const isEditPage = pathname.includes("/ubahpesanan");
   const loadTimeStart = useSewaArmadaStore(
     (state) => state.formValues.loadTimeStart
   );
@@ -80,6 +84,7 @@ export const WaktuMuat = () => {
 
         <div className="flex flex-row items-center gap-x-1">
           <Checkbox
+            disabled={isEditPage}
             label="Dengan Rentang Waktu"
             value="rentang_waktu"
             checked={showRangeOption}
