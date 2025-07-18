@@ -499,7 +499,7 @@ export const SummaryPanel = ({
 
   return (
     <>
-      <Card className="shadow-muat flex w-[338px] flex-col gap-0 rounded-xl border-none bg-white">
+      <Card className="shadow-muat sticky top-[124px] flex w-[338px] flex-col gap-0 rounded-xl border-none bg-white">
         <div className="flex flex-col gap-y-6 px-5 py-6">
           <h3 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
             Ringkasan Transaksi

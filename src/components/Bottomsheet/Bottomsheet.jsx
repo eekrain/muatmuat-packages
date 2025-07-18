@@ -101,8 +101,27 @@ export const BottomSheet = ({
   );
 };
 
-export const BottomSheetTrigger = ({ children, className }) => {
+export const BottomSheetTrigger = ({
+  children,
+  className,
+  asChild = false,
+}) => {
   const { open } = useBottomSheet();
+
+  if (asChild) {
+    // Clone the child and add onClick handler
+    return React.cloneElement(children, {
+      onClick: (e) => {
+        // Preserve any existing onClick handler
+        if (children.props.onClick) {
+          children.props.onClick(e);
+        }
+        open();
+      },
+      className: cn(children.props.className, "cursor-pointer", className),
+    });
+  }
+
   return (
     <div onClick={open} className={cn("cursor-pointer", className)}>
       {children}
@@ -114,7 +133,7 @@ export const BottomSheetContent = ({ children, className }) => {
   const { isOpen, handleClickOutside, close } = useBottomSheet();
   const sheetRef = useRef(null);
   const baseClass =
-    "fixed left-0 right-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl w-full mx-auto animate-slideUp";
+    "fixed left-0 right-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl w-full max-h-[75vh] mx-auto animate-slideUp";
 
   // Drag state
   const [dragging, setDragging] = React.useState(false);

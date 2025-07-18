@@ -18,6 +18,11 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import ImageUploaderResponsive from "@/components/ImageUploader/ImageUploaderResponsive";
 import TextArea from "@/components/TextArea/TextArea";
+import {
+  TimelineContainer,
+  TimelineContentWithButtonDate,
+  TimelineItem,
+} from "@/components/Timeline";
 import VoucherCard from "@/components/Voucher/VoucherCard";
 import VoucherEmptyState from "@/components/Voucher/VoucherEmptyState";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
@@ -61,17 +66,24 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
   const [currentTotal, setCurrentTotal] = useState(baseTotal);
   const [voucherDiscount, setVoucherDiscount] = useState(0);
 
-  const [isBottomsheetOpen, setIsBottomsheetOpen] = useState(false);
+  const [isBottomsheetOpen, setIsBottomsheetOpen] = useState(false); // Bottomsheet Voucher
+  const [
+    isInformasiMuatanBottomsheetOpen,
+    setIsInformasiMuatanBottomsheetOpen,
+  ] = useState(false); // Bottomsheet informasi muatan periksa pesanan kamu
+  const [
+    isOrderConfirmationBottomsheetOpen,
+    setIsOrderConfirmationBottomsheetOpen,
+  ] = useState(false); // Bottomsheet periksa pesanan kamu
+  const [isLocationBottomsheetOpen, setIsLocationBottomsheetOpen] =
+    useState(false);
+  const [locationType, setLocationType] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [tempSelectedVoucher, setTempSelectedVoucher] = useState(null);
   const [selectedVoucher, setSelectedVoucher] = useState(null);
   const previousIsBottomsheetOpen = usePrevious(isBottomsheetOpen);
   const [validationErrors, setValidationErrors] = useState({});
   const [validatingVoucher, setValidatingVoucher] = useState(null);
-  const [
-    isOrderConfirmationBottomsheetOpen,
-    setIsOrderConfirmationBottomsheetOpen,
-  ] = useState(false);
   /* end voucher state */
   // Get state from Zustand store
   const { formValues, formErrors } = useSewaArmadaStore();
@@ -79,6 +91,8 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
     loadTimeStart,
     loadTimeEnd,
     showRangeOption,
+    lokasiMuat,
+    lokasiBongkar,
     informasiMuatan,
     truckCount,
     cargoPhotos,
@@ -87,7 +101,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
     paymentMethodId,
     // deliveryOrder,
   } = formValues;
-
+  console.log("lokasi", lokasiBongkar, lokasiMuat);
   const { isBusinessEntity, name, taxId } = businessEntity;
 
   // Get actions from Zustand store
@@ -680,11 +694,87 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
           </Button>
           <BottomSheetContent>
             <BottomSheetHeader>Periksa Pesanan Anda</BottomSheetHeader>
-            <div className="flex w-full flex-col gap-y-4 bg-white px-4 py-6">
+            <div className="flex max-h-[calc(75vh_-_54px)] w-full flex-col gap-y-4 overflow-y-auto bg-white px-4 py-6">
               {/* Waktu Muat */}
               <OrderSummarySection className="gap-y-4 font-semibold text-neutral-900">
                 <h4 className="text-[14px] leading-[15.4px]">Waktu Muat</h4>
                 <span className="text-[12px] leading-[13.2px]">{`${formatDate(loadTimeStart)}${showRangeOption ? ` s/d ${formatDate(loadTimeEnd)}` : ""}`}</span>
+              </OrderSummarySection>
+              <OrderSummarySection className="gap-y-4 text-neutral-900">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-[14px] font-semibold leading-[15.4px]">
+                    Rute
+                  </h4>
+                  <span className="text-[12px] font-medium leading-[13.2px]">
+                    {"Estimasi 178 km"}
+                  </span>
+                </div>
+                <TimelineContainer>
+                  <TimelineItem
+                    variant="bullet"
+                    totalLength={2}
+                    index={0}
+                    activeIndex={0}
+                  >
+                    <TimelineContentWithButtonDate
+                      title={lokasiMuat?.[0]?.dataLokasi.location.name || ""}
+                      withButton={
+                        lokasiMuat && lokasiMuat.length > 1
+                          ? {
+                              label: "Lihat Lokasi Muat Lainnya",
+                              onClick: () => {
+                                setIsLocationBottomsheetOpen(true);
+                                // setModalData(
+                                //   lokasiMuat.map(
+                                //     (item, index) => ({
+                                //       ...item,
+                                //       index,
+                                //       isPickup: true,
+                                //     })
+                                //   )
+                                // );
+                                // setIsPickup(true);
+                                // setIsLokasiMuatBongkarModalOpen(true);
+                              },
+                            }
+                          : undefined
+                      }
+                    />
+                  </TimelineItem>
+
+                  <TimelineItem
+                    variant="bullet"
+                    totalLength={2}
+                    index={1}
+                    activeIndex={0}
+                  >
+                    <TimelineContentWithButtonDate
+                      className="pb-0"
+                      title={lokasiBongkar?.[0]?.dataLokasi.location.name || ""}
+                      withButton={
+                        lokasiBongkar && lokasiBongkar.length > 1
+                          ? {
+                              label: "Lihat Lokasi Bongkar Lainnya",
+                              onClick: () => {
+                                alert("hai");
+                                // setModalData(
+                                //   lokasiBongkar.map(
+                                //     (item, index) => ({
+                                //       ...item,
+                                //       index,
+                                //       isPickup: false,
+                                //     })
+                                //   )
+                                // );
+                                // setIsPickup(false);
+                                // setIsLokasiMuatBongkarModalOpen(true);
+                              },
+                            }
+                          : undefined
+                      }
+                    />
+                  </TimelineItem>
+                </TimelineContainer>
               </OrderSummarySection>
               <OrderSummarySection className="gap-y-3 text-neutral-900">
                 <h4 className="text-[14px] font-semibold leading-[15.4px]">
@@ -725,9 +815,17 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
                   ))}
                   {informasiMuatan.length > 2 ? (
                     <div className="ml-6 flex items-center">
-                      <BottomSheet>
-                        <BottomSheetTrigger>
-                          <button className="inline text-[12px] font-semibold leading-[13.2px] text-primary-700">
+                      <BottomSheet
+                        open={isInformasiMuatanBottomsheetOpen}
+                        onOpenChange={setIsInformasiMuatanBottomsheetOpen}
+                      >
+                        <BottomSheetTrigger asChild>
+                          <button
+                            className="text-[12px] font-semibold leading-[13.2px] text-primary-700"
+                            onClick={() =>
+                              setIsInformasiMuatanBottomsheetOpen(true)
+                            }
+                          >
                             Lihat Muatan Lainnya
                           </button>
                         </BottomSheetTrigger>
@@ -890,6 +988,19 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
               </Button>
             </div>
           </div>
+        </BottomSheetContent>
+      </BottomSheet>
+
+      {/* Bottomsheet Lokasi Muat dan Lokasi Bongkar */}
+      <BottomSheet
+        open={isLocationBottomsheetOpen}
+        onOpenChange={setIsLocationBottomsheetOpen}
+      >
+        <BottomSheetContent>
+          <BottomSheetHeader>
+            {locationType === "muat" ? "Lokasi Muat" : "Lokasi Bongkar"}
+          </BottomSheetHeader>
+          <div className="flex flex-col gap-y-4 px-4 py-6"></div>
         </BottomSheetContent>
       </BottomSheet>
     </FormResponsiveLayout>

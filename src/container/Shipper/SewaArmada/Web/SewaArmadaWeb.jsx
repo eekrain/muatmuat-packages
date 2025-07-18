@@ -102,7 +102,7 @@ export default function SewaArmadaWeb({
             {/* Welcome Section */}
             <WelcomeCard />
 
-            <div className="flex w-full gap-4">
+            <div className="relative flex w-full gap-4">
               {/* Form Container */}
               <Card className="flex flex-1 flex-col gap-6 border-none p-8 shadow-md">
                 {/* Service Type Selection */}
