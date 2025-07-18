@@ -223,7 +223,7 @@ const DropdownPeriode = ({
       )}
 
       <Modal open={isPeriode} onOpenChange={setIsPeriode} closeOnOutsideClick>
-        <ModalContent className="w-modal-small">
+        <ModalContent type="muatmuat" className="w-modal-small">
           <ModalHeader size="small" />
           <div className="flex flex-col items-center gap-6 px-4 py-7">
             <h3 className="bold-base text-center">

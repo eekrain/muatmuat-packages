@@ -21,7 +21,7 @@ export const ModalInformasiKenaBiayaWaktuTunggu = ({ data = [] }) => {
           Lihat Driver
         </button>
       </ModalTrigger>
-      <ModalContent>
+      <ModalContent type="muatmuat">
         <div className="px-6 py-8">
           <div className="flex w-[530px] flex-col items-center">
             <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">

@@ -20,7 +20,7 @@ import { ModalPerubahanData } from "./ModalPerubahanData";
 const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
   const getContentAlert = ({ type }) => {
     const info = AlertInfoEnum[type];
-    if (AlertLabelEnum.CONFIRMATION_WAITING_PREPARE_FLEET) return false;
+    if (type === AlertTypeEnum.CONFIRMATION_WAITING_PREPARE_FLEET) return false;
     if (info) return { label: AlertLabelEnum[type], info };
 
     if (type === AlertTypeEnum.WAITING_TIME_CHARGE) {
@@ -56,6 +56,11 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
 
     return { label: AlertLabelEnum[type] };
   };
+
+  console.log(
+    "🔍 ~  ~ src/container/Shipper/DetailPesanan/Web/StatusPesanan/StatusPesanan.jsx:60 ~ alerts:",
+    dataStatusPesanan.alerts
+  );
 
   return (
     <>
@@ -95,7 +100,7 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
               : []),
             ...dataStatusPesanan.alerts
               .map((item) => getContentAlert(item))
-              .filter((item) => Boolean(item)),
+              .filter((val) => Boolean(val)),
           ]}
         />
       </div>

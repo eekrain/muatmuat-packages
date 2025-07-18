@@ -69,7 +69,7 @@ export const ModalFormSimpanLokasiWeb = ({
       withCloseButton
       closeOnOutsideClick={false}
     >
-      <ModalContent>
+      <ModalContent type="muatmuat">
         <div className="relative grid h-[510px] w-[398px] grid-cols-1 gap-6 overflow-hidden p-6">
           <h2 className="text-base font-bold leading-[1] text-[#1B1B1B]">
             {title}

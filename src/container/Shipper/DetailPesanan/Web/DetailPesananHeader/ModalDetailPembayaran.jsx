@@ -31,7 +31,7 @@ export const ModalDetailPembayaran = ({
           Detail Pembayaran
         </Button>
       </ModalTrigger>
-      <ModalContent className="py-8 pl-6 pr-[11px]">
+      <ModalContent type="muatmuat" className="py-8 pl-6 pr-[11px]">
         <h2 className="mb-6 text-center text-base font-bold leading-[1.2] text-neutral-900">
           Detail Pembayaran
         </h2>
