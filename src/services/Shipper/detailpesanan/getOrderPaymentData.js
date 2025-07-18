@@ -40,7 +40,7 @@ export const getOrderPaymentData = async (cacheKey) => {
       });
   }
 
-  // return result?.data?.Data || null;
+  return result?.data?.Data || null;
 };
 
 export const useGetOrderPaymentData = (orderId) =>
