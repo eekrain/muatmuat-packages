@@ -2,7 +2,7 @@ import { addMinutes } from "date-fns";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const IS_MOCK = false;
+const useMockData = false;
 
 // GET /api/v1/orders/{orderId}/payment
 const apiResultPaymentData = {
@@ -29,7 +29,7 @@ export const getOrderPaymentData = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
 
   let result;
-  if (IS_MOCK) {
+  if (useMockData) {
     result = apiResultPaymentData;
   } else {
     result = await fetcherMuatrans

@@ -1,6 +1,6 @@
 import useSWR from "swr";
 
-const IS_MOCK = false;
+const useMockData_getTrackingLocations = false;
 
 // GET /base_data/v1/orders/tracking/{orderId}/location?driverId={driverId}
 const apiResult = {
@@ -90,7 +90,7 @@ export const getTrackingLocations = async (cacheKey) => {
   const driverId = cacheKey.split("/")[2];
 
   let response;
-  if (IS_MOCK) {
+  if (useMockData_getTrackingLocations) {
     response = apiResult;
   } else {
     response = await fetcherMuatrans.get(

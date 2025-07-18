@@ -1,7 +1,7 @@
 import { fetcherMuatrans } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
-const IS_MOCK = false;
+const useMockData_getOrderStatusHistory = false;
 
 const stepStatus = [
   {
@@ -88,7 +88,7 @@ export const getOrderStatusHistory = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
 
   let result;
-  if (IS_MOCK) {
+  if (useMockData_getOrderStatusHistory) {
     result = apiResultOrderStatusHistory;
   } else {
     result = await fetcherMuatrans.get(`v1/orders/${orderId}/status-history`);

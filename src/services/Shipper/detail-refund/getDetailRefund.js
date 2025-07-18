@@ -1,6 +1,6 @@
 import useSWR from "swr";
 
-const IS_MOCK = false;
+const useMockData_getDetailRefund = false;
 
 // GET /base_data/v1/orders/tracking/{orderId}/location?driverId={driverId}
 const apiResult = {
@@ -64,8 +64,12 @@ export const getDetailRefund = async (cacheKey) => {
 
   let result;
 
-  if (IS_MOCK) {
+  if (useMockData_getDetailRefund) {
     result = apiResult;
+  } else {
+    result = await fetcherMuatrans.get(
+      `v1/orders/${orderId}/cancellation-history`
+    );
   }
 
   const locationMarkers = [];

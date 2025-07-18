@@ -5,7 +5,7 @@ import { addMinutes, isPast } from "date-fns";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { fetcherMuatrans } from "@/lib/axios";
 
-const IS_MOCK = false;
+const useMockData_getDriverQRCodeById = false;
 
 const apiResultQRCode = {
   data: {
@@ -44,7 +44,7 @@ export const useGetDriverQRCodeById = (requestData = exampleBody) => {
     if (!requestData) return;
     try {
       let result;
-      if (IS_MOCK) {
+      if (useMockData_getDriverQRCodeById) {
         result = apiResultQRCode;
       } else {
         result = await fetcherMuatrans.post(

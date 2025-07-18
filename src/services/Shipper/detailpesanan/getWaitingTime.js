@@ -1,6 +1,6 @@
 import { fetcherMuatrans } from "@/lib/axios";
 
-const IS_MOCK = false;
+const useMockData_getWaitingTime = false;
 
 // GET /api/v1/orders/${orderId}/waiting-time
 const apiResult = {
@@ -27,7 +27,7 @@ const apiResult = {
 export const getWaitingTime = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
   let result;
-  if (IS_MOCK) {
+  if (useMockData_getWaitingTime) {
     result = apiResult;
   } else {
     result = await fetcherMuatrans.get(`v1/orders/${orderId}/waiting-time`);
