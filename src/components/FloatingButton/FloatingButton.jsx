@@ -118,7 +118,7 @@ const FloatingButton = () => {
         onOpenChange={setIsModalOpen}
         closeOnOutsideClick={false}
       >
-        <ModalContent className="w-modal-small">
+        <ModalContent type="muatmuat" className="w-modal-small">
           <ModalHeader size="small" />
           <div className="px-6 py-9">
             <div className="flex flex-col items-center">

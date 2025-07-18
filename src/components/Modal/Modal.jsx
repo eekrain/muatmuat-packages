@@ -15,32 +15,61 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { cn } from "@/lib/utils";
 
 /**
+ * @typedef {'muatmuat' | 'muatparts' | 'muattrans' | 'lightbox'} ModalType
+ */
+
+/**
+ * @typedef {'xl' | 'big' | 'small'} ModalSize
+ */
+
+/**
+ * @typedef {Object} ModalAppearance
+ * @property {string} [backgroudClassname] - Additional CSS classes for the modal background overlay.
+ * @property {string} [closeButtonClassname] - Additional CSS classes for the close button.
+ */
+
+/**
  * @typedef {Object} ModalContextType
  * @property {() => void} open - Function to open the modal.
  * @property {() => void} close - Function to close the modal.
  * @property {boolean} isOpen - Whether the modal is currently open.
+ * @property {(e: MouseEvent) => void} handleClickOutside - Internal handler for clicks outside the modal.
+ * @property {boolean} withCloseButton - Whether the modal should display a close button.
+ * @property {React.RefObject<HTMLDivElement>} dialogRef - Ref to the modal's dialog element.
+ * @property {(node: HTMLElement | null) => void} registerAllowedNode - Registers a node that is considered "inside" the modal for outside click detection.
+ * @property {(node: HTMLElement | null) => void} unregisterAllowedNode - Unregisters an allowed node.
  */
 
+/** @type {React.Context<ModalContextType | undefined>} */
 const ModalContext = createContext(undefined);
 
 /**
+ * A hook to access the modal context, providing functions to open and close the modal, and its current open state.
  * @returns {ModalContextType}
+ * @throws {Error} If used outside of a Modal.Root component.
  */
 export const useModal = () => {
   const context = useContext(ModalContext);
+  if (context === undefined) {
+    throw new Error("useModal must be used within a Modal.Root");
+  }
   return context;
 };
 
 /**
  * @typedef {Object} ModalRootProps
- * @property {React.ReactNode} children
- * @property {boolean} [open]
- * @property {(open: boolean) => void} [onOpenChange]
- * @property {boolean} [closeOnOutsideClick=true]
+ * @property {React.ReactNode} children - The child components to be rendered within the modal context.
+ * @property {boolean} [open] - Controls the open state of the modal. If provided, the modal becomes a controlled component.
+ * @property {(open: boolean) => void} [onOpenChange] - Callback fired when the open state of the modal changes.
+ * @property {boolean} [closeOnOutsideClick=false] - If true, the modal will close when clicking outside of it.
+ * @property {boolean} [withCloseButton=true] - If true, the modal will render a default close button.
  */
 
 /**
+ * The root component for the modal. It provides the context for other modal components.
+ * Can be used as a controlled or uncontrolled component.
  * @param {ModalRootProps} props
+ * @returns {JSX.Element}
  */
 export const Modal = ({
   children,
@@ -50,9 +79,10 @@ export const Modal = ({
   withCloseButton = true,
 }) => {
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  /** @type {React.RefObject<HTMLDivElement>} */
   const dialogRef = useRef(null);
 
-  // Track allowed nodes (e.g., dropdowns rendered via portal)
+  /** @type {React.MutableRefObject<Set<HTMLElement>>} */
   const allowedRefs = useRef(new Set());
 
   const registerAllowedNode = useCallback((node) => {
@@ -99,7 +129,7 @@ export const Modal = ({
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, close, dialogRef]);
+  }, [isOpen, close]);
 
   // Prevent background scroll when modal is open
   useEffect(() => {
@@ -129,8 +159,10 @@ export const Modal = ({
     }
   }, [isOpen]);
 
-  // Updated handleClickOutside to check allowedRefs
   const handleClickOutside = useCallback(
+    /**
+     * @param {MouseEvent} e - The mouse event.
+     */
     (e) => {
       if (!closeOnOutsideClick) return;
 
@@ -174,7 +206,15 @@ export const Modal = ({
 };
 
 /**
- * @param {{ children: React.ReactNode }} props
+ * @typedef {Object} ModalTriggerProps
+ * @property {React.ReactNode} children - The content of the trigger.
+ * @property {string} [className] - Additional CSS classes for the trigger element.
+ */
+
+/**
+ * A component that triggers the opening of the modal when clicked.
+ * @param {ModalTriggerProps} props
+ * @returns {JSX.Element}
  */
 export const ModalTrigger = ({ className, children }) => {
   const { open } = useModal();
@@ -187,7 +227,15 @@ export const ModalTrigger = ({ className, children }) => {
 };
 
 /**
- * @param {{ children: React.ReactNode }} props
+ * @typedef {Object} ModalCloseProps
+ * @property {React.ReactNode} children - The content of the close button.
+ * @property {() => void} [onClick] - Optional click handler that fires before the modal closes.
+ */
+
+/**
+ * A component that triggers the closing of the modal when clicked.
+ * @param {ModalCloseProps} props
+ * @returns {JSX.Element}
  */
 export const ModalClose = ({ children, onClick }) => {
   const { close } = useModal();
@@ -205,6 +253,20 @@ export const ModalClose = ({ children, onClick }) => {
   );
 };
 
+/**
+ * @typedef {Object} ModalContentProps
+ * @property {ModalSize} [size='small'] - The size of the modal content.
+ * @property {ModalType} [type='muattrans'] - The type of modal, influencing styling (e.g., header image, icon color).
+ * @property {React.ReactNode} children - The content to be displayed inside the modal.
+ * @property {string} [className] - Additional CSS classes for the modal content container.
+ * @property {ModalAppearance} [appearance] - Custom appearance options for the modal.
+ */
+
+/**
+ * The main content area of the modal. Renders the modal overlay and the dialog itself.
+ * @param {ModalContentProps} props
+ * @returns {JSX.Element | null}
+ */
 export const ModalContent = ({
   size = "small",
   type = "muattrans",
@@ -224,6 +286,7 @@ export const ModalContent = ({
     muattrans: "icon-fill-muat-trans-secondary-900",
     lightbox: "icon-fill-primary-700",
   };
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -232,13 +295,14 @@ export const ModalContent = ({
       const modals = Array.from(document.querySelectorAll(".modal-parent"));
       modals.forEach((modal, idx) => {
         modal.classList.remove("invisible");
+        // Hide all but the topmost modal
         if (idx < modals.length - 1) {
           modal.classList.add("invisible");
         }
       });
     }, 10); // 10ms is usually enough
 
-    // Cleanup: when this modal unmounts, re-check visibility
+    // Cleanup: when this modal unmounts, re-check visibility for other modals
     return () => {
       clearTimeout(timeout);
       const modals = Array.from(document.querySelectorAll(".modal-parent"));
@@ -315,12 +379,18 @@ const widthStyles = {
   big: "w-modal-big",
   small: "w-modal-small",
 };
+
 /**
- * @param {{
- *  type: "muattrans" | "muatparts",
- *  size: "small" | "big" | "xl",
- *  className?: string,
- * }} props
+ * @typedef {Object} ModalHeaderProps
+ * @property {ModalType} [type='muattrans'] - The type of modal, influencing the header image.
+ * @property {ModalSize} [size='small'] - The size of the modal, influencing the header image.
+ * @property {string} [className] - Additional CSS classes for the header image.
+ */
+
+/**
+ * A component to display a header image for the modal.
+ * @param {ModalHeaderProps} props
+ * @returns {JSX.Element}
  */
 export const ModalHeader = ({
   className,
@@ -340,7 +410,15 @@ export const ModalHeader = ({
 };
 
 /**
- * @param {{ children: React.ReactNode, className?: string }} props
+ * @typedef {Object} ModalFooterProps
+ * @property {React.ReactNode} children - The content of the footer.
+ * @property {string} [className] - Additional CSS classes for the footer container.
+ */
+
+/**
+ * A component to display a footer section within the modal.
+ * @param {ModalFooterProps} props
+ * @returns {JSX.Element}
  */
 export const ModalFooter = ({ children, className }) => {
   const baseClass = "border-t px-6 py-4 bg-gray-50 rounded-b-2xl";

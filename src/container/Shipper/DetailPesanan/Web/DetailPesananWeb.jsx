@@ -52,12 +52,8 @@ const DetailPesananWeb = () => {
 
         <DetailPesananHeader
           dataStatusPesanan={dataDetailPesanan?.dataStatusPesanan}
-          orderCode={dataDetailPesanan?.orderCode || "INV/MT25AA001"}
-          driverInfo={{
-            name: "Noel Gallagher",
-            id: "AE 666 LBA",
-          }}
-          statusLabel="Dokumen Sedang Disiapkan"
+          dataRingkasanPembayaran={dataDetailPesanan?.dataRingkasanPembayaran}
+          isShowWaitFleetAlert={isShowWaitFleetAlert}
         />
         <div className="grid grid-cols-[846px_1fr] gap-4">
           <div className="flex flex-col gap-4">

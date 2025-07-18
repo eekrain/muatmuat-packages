@@ -13,21 +13,18 @@ import {
   SimpleDropdownItem,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
-import IconComponent from "@/components/IconComponent/IconComponent";
 
-const ArmadaAktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
+const ArmadaNonaktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case "ON_DUTY":
-        return <BadgeStatus variant="primary">Bertugas</BadgeStatus>;
-      case "WAITING_LOADING_TIME":
-        return <BadgeStatus variant="warning">Akan Muat Hari Ini</BadgeStatus>;
-      case "READY_FOR_ORDER":
-        return <BadgeStatus variant="success">Siap Menerima Order</BadgeStatus>;
+      case "UNPAIRED":
+        return <BadgeStatus variant="warning">Belum Dipasangkan</BadgeStatus>;
+      case "INACTIVE":
+        return <BadgeStatus variant="neutral">Tidak Aktif</BadgeStatus>;
       default:
         return <BadgeStatus variant="neutral">{status}</BadgeStatus>;
     }
@@ -67,19 +64,8 @@ const ArmadaAktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
       width: "280px",
       render: (row) => (
         <div className="">
-          <div className="flex gap-3">
-            <div className="line-clamp-1 flex-1 break-all text-xxs font-semibold">
-              {row.assignedDriver?.fullName || "-"}
-            </div>
-
-            <div className="flex gap-1">
-              <button className="text-neutral-700 hover:text-primary-700">
-                <IconComponent size={12} src={"/icons/pencil-outline.svg"} />
-              </button>
-              <button className="text-neutral-700 hover:text-primary-700">
-                <IconComponent size={12} src={"/icons/unlink.svg"} />
-              </button>
-            </div>
+          <div className="text-xxs font-semibold">
+            {row.assignedDriver?.fullName || "-"}
           </div>
           <div className="text-xxs font-medium text-neutral-600">
             {row.assignedDriver?.whatsappNumber
@@ -103,10 +89,7 @@ const ArmadaAktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
       key: "status",
       header: "Status",
       sortable: false,
-      render: (row) => {
-        // Use the status directly from the data
-        return getStatusBadge(row.status);
-      },
+      render: (row) => getStatusBadge(row.status),
     },
     {
       key: "action",
@@ -126,14 +109,11 @@ const ArmadaAktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
 
           <SimpleDropdownContent className="w-fit">
             <SimpleDropdownItem onClick={() => {}}>
-              Lihat Agenda Driver
+              Aktifkan Armada
             </SimpleDropdownItem>
-            {row.status === "READY_FOR_ORDER" && (
-              <SimpleDropdownItem onClick={() => {}}>
-                Nonaktifkan
-              </SimpleDropdownItem>
-            )}
             <SimpleDropdownItem onClick={() => {}}>Detail</SimpleDropdownItem>
+            <SimpleDropdownItem onClick={() => {}}>Edit</SimpleDropdownItem>
+            <SimpleDropdownItem onClick={() => {}}>Hapus</SimpleDropdownItem>
           </SimpleDropdownContent>
         </SimpleDropdown>
       ),
@@ -212,7 +192,7 @@ const ArmadaAktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
 
   // Add warning indicators to rows
   const rowClassName = (row) => {
-    if (row.warningDocumentExpired || row.pendingUpdateDriver) {
+    if (row.warningDocumentExpired) {
       return "";
     }
     return "";
@@ -223,7 +203,7 @@ const ArmadaAktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
       data={data?.vehicles || []}
       columns={columns}
       searchPlaceholder="Cari No. Polisi, Jenis Truk atau lainnya"
-      totalCountLabel="Armada"
+      totalCountLabel="Armada Nonaktif"
       currentPage={data?.pagination?.page || currentPage}
       totalPages={data?.pagination?.totalPages || 1}
       totalItems={data?.pagination?.totalItems || 0}
@@ -240,7 +220,7 @@ const ArmadaAktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
       emptyState={
         <div className="flex flex-col items-center gap-2 py-8">
           <div className="text-sm text-neutral-500">
-            Tidak ada armada yang terdaftar
+            Tidak ada armada nonaktif
           </div>
           <Button variant="muatparts-primary" size="sm">
             Tambah Armada
@@ -251,4 +231,4 @@ const ArmadaAktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
   );
 };
 
-export default ArmadaAktif;
+export default ArmadaNonaktif;

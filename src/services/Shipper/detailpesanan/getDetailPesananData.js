@@ -14,7 +14,7 @@ import { getOrderPaymentData } from "./getOrderPaymentData";
 import { getOrderStatusHistory } from "./getOrderStatusHistory";
 import { getStatusLegend } from "./getStatusLegend";
 
-const useMockData_getDetailPesananData = false;
+const useMockData = false;
 
 /**
  * Notes dari mas friday
@@ -194,7 +194,7 @@ const apiResultOrderDetail = {
         priceCharge: {
           waitingFee: {
             totalAmount: 100000,
-            totalDriver: 1,
+            totalDriver: 3,
           },
           overloadFee: {
             totalAmount: 0,
@@ -260,7 +260,7 @@ export const fetcherOrderDetail = async (cacheKey) => {
 
   let result;
 
-  if (useMockData_getDetailPesananData) {
+  if (useMockData) {
     result = apiResultOrderDetail;
   } else {
     result = await fetcherMuatrans.get(`v1/orders/${orderId}`);

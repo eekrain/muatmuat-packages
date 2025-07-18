@@ -23,6 +23,8 @@ import DriverRatingModal from "@/container/Shipper/DetailPesanan/Web/DetailPesan
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { cn } from "@/lib/utils";
 
+import { ModalDetailPembayaran } from "./ModalDetailPembayaran";
+
 const ALLOW_LIST = {
   DetailRefund: [
     OrderStatusEnum.CANCELED_BY_SHIPPER,
@@ -39,7 +41,11 @@ const ALLOW_LIST = {
   BeriUlasan: [OrderStatusEnum.COMPLETED],
 };
 
-const DetailPesananHeader = ({ dataStatusPesanan }) => {
+const DetailPesananHeader = ({
+  dataStatusPesanan,
+  dataRingkasanPembayaran,
+  isShowWaitFleetAlert,
+}) => {
   const params = useParams();
   const slides = [
     {
@@ -152,8 +158,9 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
     }
 
     if (
-      ALLOW_LIST.DetailPembayaran.includes(dataStatusPesanan?.orderStatus) &&
-      dataStatusPesanan?.hasFoundFleet
+      // ALLOW_LIST.DetailPembayaran.includes(dataStatusPesanan?.orderStatus) &&
+      // dataStatusPesanan?.hasFoundFleet
+      dataStatusPesanan?.hasPriceCharge
     ) {
       config.DetailPembayaran = true;
     }
@@ -225,13 +232,10 @@ const DetailPesananHeader = ({ dataStatusPesanan }) => {
             </Link>
           )}
           {showButtonConfig?.DetailPembayaran && (
-            <Button
-              variant="muatparts-primary-secondary"
-              className="h-8"
-              type="button"
-            >
-              Detail Pembayaran
-            </Button>
+            <ModalDetailPembayaran
+              dataRingkasanPembayaran={dataRingkasanPembayaran}
+              isShowWaitFleetAlert={isShowWaitFleetAlert}
+            />
           )}
           {showButtonConfig?.Unduh && (
             <SimpleDropdown>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { sub } from "date-fns";
 import { ChevronDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -11,18 +12,21 @@ export const ModalDetailWaktuTunggu = ({
   drivers = [
     {
       name: "Daffa Toldo",
-      detail: "Lokasi Muat 1 : 1 Jam 59 Menit",
-      startDate: "22 Nov 2024 15:00 WIB",
-      endDate: "22 Nov 2024 16:59 WIB",
-      totalPrice: "Rp100.000",
+      data: [
+        {
+          detail: "Lokasi Muat 1 : 1 Jam 59 Menit",
+          startDate: sub(new Date(), { hours: 2 }).toISOString(),
+          endDate: sub(new Date(), { hours: 1 }).toISOString(),
+          totalPrice: 100000,
+        },
+        {
+          detail: "Lokasi Muat 1 : 1 Jam 59 Menit",
+          startDate: sub(new Date(), { hours: 2 }).toISOString(),
+          endDate: sub(new Date(), { hours: 1 }).toISOString(),
+          totalPrice: 200000,
+        },
+      ],
     },
-    // {
-    //   name: "Ardian Eka",
-    //   detail: "Lokasi Muat 1 : 1 Jam 59 Menit",
-    //   startDate: "22 Nov 2024 15:00 WIB",
-    //   endDate: "22 Nov 2024 16:59 WIB",
-    //   totalPrice: "Rp100.000",
-    // },
   ],
 }) => {
   // Use an array of booleans to track expanded state for each driver
@@ -117,7 +121,7 @@ export const ModalDetailWaktuTunggu = ({
               {drivers
                 .reduce(
                   (acc, d) =>
-                    acc + (parseInt(d.totalPrice.replace(/[^\d]/g, "")) || 0),
+                    acc + (parseInt(d?.totalPrice?.replace(/[^\d]/g, "")) || 0),
                   0
                 )
                 .toLocaleString("id-ID", {

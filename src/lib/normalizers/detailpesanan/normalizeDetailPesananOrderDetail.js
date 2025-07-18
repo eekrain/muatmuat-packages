@@ -20,6 +20,20 @@ export const normalizeDetailPesananOrderDetail = ({
       (val) => !val.isShipping
     );
 
+    const priceCharge = dataOrderDetail.summary?.priceCharge;
+    let newPriceCharge = null;
+
+    if (priceCharge?.totalCharge && priceCharge?.totalCharge > 0) {
+      newPriceCharge = priceCharge;
+    }
+
+    const priceChange = dataOrderDetail.summary?.priceChange;
+    let newPriceChange = null;
+
+    if (priceChange?.totalCharge && priceChange?.totalCharge > 0) {
+      newPriceChange = priceChange;
+    }
+
     const dataStatusPesanan = {
       orderId: dataOrderDetail.general?.orderId,
       orderCode:
@@ -59,6 +73,8 @@ export const normalizeDetailPesananOrderDetail = ({
       hasFoundFleet:
         dataOrderStatusHistory?.driverStatus &&
         dataOrderStatusHistory?.driverStatus?.length > 0,
+      hasPriceCharge: newPriceCharge && newPriceCharge?.isPaid === false,
+      hasPriceChange: Boolean(newPriceChange),
     };
 
     const route = { muat: [], bongkar: [] };
@@ -116,13 +132,6 @@ export const normalizeDetailPesananOrderDetail = ({
         dataOrderDetail.otherInformation?.numberDeliveryOrder || [],
     };
 
-    const priceCharge = dataOrderDetail.summary?.priceCharge;
-    let newPriceCharge = null;
-
-    if (priceCharge?.totalCharge && priceCharge?.totalCharge > 0) {
-      newPriceCharge = priceCharge;
-    }
-
     const dataRingkasanPembayaran = {
       paymentMethod: dataPayment?.payment?.method,
       vaNumber: dataPayment?.payment?.vaNumber,
@@ -154,8 +163,8 @@ export const normalizeDetailPesananOrderDetail = ({
       otherAdditionalService: {
         totalPrice: foundOtherAdditionalService?.courierPrice,
       },
-      priceChange: dataOrderDetail.summary?.priceChange,
       priceCharge: newPriceCharge,
+      priceChange: newPriceChange,
     };
 
     return {

@@ -8,7 +8,7 @@ const Root = ({ className, children }) => {
   return (
     <div
       className={cn(
-        "grid grid-rows-[59px_1fr_59px] overflow-hidden rounded-xl bg-white shadow-md",
+        "flex flex-col overflow-hidden rounded-xl bg-white shadow-md",
         className
       )}
     >
@@ -29,15 +29,13 @@ const Header = ({ className, children }) => {
 
 const Content = ({ noScroll = false, className, children }) => {
   return (
-    <div className="h-full overflow-hidden">
-      <div
-        className={cn(
-          "flex h-full w-full flex-col gap-6 overflow-y-auto bg-white pb-4 pl-5 pr-[8px]",
-          className
-        )}
-      >
-        {children}
-      </div>
+    <div
+      className={cn(
+        "flex h-full w-full flex-col gap-6 overflow-y-auto bg-white pb-4 pl-5 pr-[8px]",
+        className
+      )}
+    >
+      {children}
     </div>
   );
 };
@@ -138,9 +136,20 @@ const Subtotal = ({ className, label, value }) => {
 
 const FooterTotal = ({ className, label, value, children }) => {
   return (
-    <div className="flex w-full items-center justify-between px-5 text-base font-bold leading-[1.2] text-neutral-900 shadow-[0px_4px_11px_0px_#41414140]">
-      <span>{label}</span>
-      <span>{value}</span>
+    <div
+      className={cn(
+        "w-full px-5 py-6 shadow-[0px_4px_11px_0px_#41414140]",
+        className
+      )}
+    >
+      <div
+        className={
+          "flex justify-between text-base font-bold leading-[1.2] text-neutral-900"
+        }
+      >
+        <span>{label}</span>
+        <span>{value}</span>
+      </div>
 
       {children}
     </div>
