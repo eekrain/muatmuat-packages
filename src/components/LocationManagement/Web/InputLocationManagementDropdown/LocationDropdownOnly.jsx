@@ -37,9 +37,7 @@ export const LocationDropdownOnly = ({
   const scrollParentRef = useRef(null);
 
   // Get the callback ref from the hook
-  const setDropdownRef = useRegisterModalPortalNode(dropdownRef, [
-    isDropdownSearchOpen,
-  ]);
+  const setDropdownRef = useRegisterModalPortalNode([isDropdownSearchOpen]);
 
   // Function to find the first scrollable parent
   const getScrollParent = useCallback((node) => {

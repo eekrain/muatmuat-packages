@@ -6,6 +6,7 @@ import Input from "@/components/Form/Input";
 import { Select } from "@/components/Form/Select";
 import { InputLocationManagementDropdown } from "@/components/LocationManagement/Web/InputLocationManagementDropdown/InputLocationManagementDropdown";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
+import { useRegisterModalPortalNode } from "@/components/Modal/useRegisterModalPortalNode";
 import TextArea from "@/components/TextArea/TextArea";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
@@ -16,13 +17,16 @@ import {
   useSewaArmadaStore,
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
-const DeliveryEvidenceModal = ({
-  isOpen,
-  setIsOpen,
+const DeliveryEvidenceModalContent = ({
   modalType,
   additionalServicesOptions,
   shippingDetails,
+  setIsOpen,
 }) => {
+  // Get the callback ref from the hook
+  const setKecamatanRef = useRegisterModalPortalNode([]);
+  const setKodePosRef = useRegisterModalPortalNode([]);
+
   const [deliveryEvidenceFormValues, setDeliveryEvidenceFormValues] = useState({
     shippingOptionId: null,
     withInsurance: false,
@@ -168,6 +172,203 @@ const DeliveryEvidenceModal = ({
     setIsOpen(false);
   };
 
+  return (
+    <div className="flex w-[472px] flex-col items-center gap-4 px-6 py-8">
+      <h2 className="text-center text-[16px] font-bold leading-[19.2px] text-neutral-900">
+        Kirim Bukti Fisik Penerimaan Barang
+      </h2>
+
+      {/* Form Container */}
+      <div className="relative mr-[-16px] max-h-[361px] w-[424px] overflow-y-auto pr-[11px]">
+        <div className="grid grid-cols-1 gap-y-3">
+          {/* Nama Penerima Field */}
+          <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+            Nama Penerima*
+          </label>
+          <Input
+            name="namaPIC"
+            placeholder="Masukkan Nama Penerima"
+            value={locationFormValues.namaPIC}
+            onChange={(e) => setLocationField("namaPIC", e.target.value)}
+            errorMessage={locationFormErrors.namaPIC}
+            className="w-full"
+          />
+
+          {/* Nomor Handphone Field */}
+          <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+            Nomor Handphone Penerima*
+          </label>
+          <Input
+            name="noHPPIC"
+            placeholder="Contoh: 08xxxxxxxx"
+            type="tel"
+            value={locationFormValues.noHPPIC}
+            onChange={(e) => setLocationField("noHPPIC", e.target.value)}
+            errorMessage={locationFormErrors.noHPPIC}
+            className="w-full"
+          />
+          {/* Alamat Tujuan Field */}
+          <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+            Alamat Tujuan*
+          </label>
+
+          <InputLocationManagementDropdown
+            errorMessage={locationFormErrors.dataLokasi}
+          />
+
+          {/* Detail Alamat Field */}
+          <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+            Detail Alamat Tujuan*
+          </label>
+          <TextArea
+            name="detailLokasi"
+            placeholder="Masukkan Detail Alamat Tujuan"
+            value={locationFormValues.detailLokasi}
+            onChange={(e) => setLocationField("detailLokasi", e.target.value)}
+            maxLength={500}
+            height={80}
+            hasCharCount={true}
+            status={locationFormErrors.detailLokasi ? "error" : null}
+            supportiveText={{
+              title: locationFormErrors.detailLokasi || "",
+              desc: "",
+            }}
+            className="w-full"
+          />
+
+          {/* Kecamatan Dropdown */}
+          <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+            Kecamatan*
+          </label>
+
+          <Select
+            ref={setKecamatanRef}
+            placeholder="Pilih Kecamatan Tujuan"
+            options={
+              dataLokasi?.kecamatanList && dataLokasi?.kecamatanList.length > 0
+                ? dataLokasi?.kecamatanList.map((item) => ({
+                    label: item.name,
+                    value: item.value,
+                  }))
+                : []
+            }
+            value={locationFormValues?.dataLokasi?.district?.value}
+            onChange={(selectedValue) => {
+              const kecamatanFound = dataLokasi?.kecamatanList.find(
+                (item) => item.value === selectedValue
+              );
+              setLocationPartial({
+                district: {
+                  name: kecamatanFound.name,
+                  value: kecamatanFound.value,
+                },
+              });
+            }}
+            errorMessage={locationFormErrors.district}
+          />
+
+          {/* Kota & Provinsi Display */}
+
+          <span className="text-[12px] font-medium text-neutral-600">Kota</span>
+          <span className="text-[12px] font-medium text-neutral-900">
+            {dataLokasi?.city?.name || "-"}
+          </span>
+
+          <span className="text-[12px] font-medium text-neutral-600">
+            Provinsi
+          </span>
+          <span className="text-[12px] font-medium text-neutral-900">
+            {dataLokasi?.province?.name || "-"}
+          </span>
+
+          {/* Kode Pos Dropdown */}
+          <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+            Kode Pos*
+          </label>
+
+          <Select
+            ref={setKodePosRef}
+            placeholder="Pilih Kode Pos"
+            options={
+              dataLokasi?.postalCodeList &&
+              dataLokasi?.postalCodeList.length > 0
+                ? dataLokasi?.postalCodeList.map((item) => ({
+                    label: item.name,
+                    value: item.value,
+                  }))
+                : []
+            }
+            value={locationFormValues?.dataLokasi?.postalCode?.value}
+            onChange={(selectedValue) => {
+              const postalCodeFound = dataLokasi?.postalCodeList.find(
+                (item) => item.value === selectedValue
+              );
+              setLocationPartial({
+                postalCode: {
+                  name: postalCodeFound.name,
+                  value: postalCodeFound.value,
+                },
+              });
+            }}
+            errorMessage={locationFormErrors.postalCode}
+          />
+
+          {/* Ekspedisi Dropdown */}
+          <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+            Pilih Ekspedisi*
+          </label>
+          <DropdownJasaPengiriman
+            shippingOptions={shippingOptions}
+            disabled={
+              !locationFormValues?.dataLokasi?.district?.value ||
+              !dataLokasi?.city?.name ||
+              !dataLokasi?.province?.name ||
+              !locationFormValues?.dataLokasi?.postalCode?.value
+            }
+            value={selectedShippingOptions}
+            onChange={({ expedition, hasInsurance }) => {
+              setDeliveryEvidenceFormValues((prev) => ({
+                ...prev,
+                shippingOptionId: expedition.id,
+                withInsurance: hasInsurance,
+              }));
+              setDeliveryEvidenceFormErrors((prevState) => ({
+                ...prevState,
+                shippingOption: undefined,
+              }));
+            }}
+            placeholder="Pilih Ekspedisi"
+            insuranceText="Pakai Asuransi Pengiriman"
+            errorMessage={deliveryEvidenceFormErrors.shippingOption}
+          />
+        </div>
+      </div>
+
+      {/* Submit Button */}
+      <Button
+        variant="muatparts-primary"
+        className="h-8 w-[112px]"
+        onClick={handleSubmit}
+      >
+        Simpan
+      </Button>
+    </div>
+  );
+};
+
+const DeliveryEvidenceModal = ({
+  isOpen,
+  setIsOpen,
+  modalType,
+  additionalServicesOptions,
+  shippingDetails,
+}) => {
+  const { setField } = useSewaArmadaActions();
+  const additionalServices = useSewaArmadaStore(
+    (s) => s.formValues.additionalServices
+  );
+  const { reset: resetLocationForm } = useLocationFormStore();
+
   useEffect(() => {
     if (!isOpen) resetLocationForm();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -188,190 +389,12 @@ const DeliveryEvidenceModal = ({
       closeOnOutsideClick
     >
       <ModalContent className="max-h-[598px] overflow-y-auto" type="muatmuat">
-        {/* Modal Header */}
-        <div className="flex w-[472px] flex-col items-center gap-4 px-6 py-8">
-          <h2 className="text-center text-[16px] font-bold leading-[19.2px] text-neutral-900">
-            Kirim Bukti Fisik Penerimaan Barang
-          </h2>
-
-          {/* Form Container */}
-          <div className="relative mr-[-16px] max-h-[361px] w-[424px] overflow-y-auto pr-[11px]">
-            <div className="grid grid-cols-1 gap-y-3">
-              {/* Nama Penerima Field */}
-              <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                Nama Penerima*
-              </label>
-              <Input
-                name="namaPIC"
-                placeholder="Masukkan Nama Penerima"
-                value={locationFormValues.namaPIC}
-                onChange={(e) => setLocationField("namaPIC", e.target.value)}
-                errorMessage={locationFormErrors.namaPIC}
-                className="w-full"
-              />
-
-              {/* Nomor Handphone Field */}
-              <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                Nomor Handphone Penerima*
-              </label>
-              <Input
-                name="noHPPIC"
-                placeholder="Contoh: 08xxxxxxxx"
-                type="tel"
-                value={locationFormValues.noHPPIC}
-                onChange={(e) => setLocationField("noHPPIC", e.target.value)}
-                errorMessage={locationFormErrors.noHPPIC}
-                className="w-full"
-              />
-              {/* Alamat Tujuan Field */}
-              <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                Alamat Tujuan*
-              </label>
-
-              <InputLocationManagementDropdown
-                errorMessage={locationFormErrors.dataLokasi}
-              />
-
-              {/* Detail Alamat Field */}
-              <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                Detail Alamat Tujuan*
-              </label>
-              <TextArea
-                name="detailLokasi"
-                placeholder="Masukkan Detail Alamat Tujuan"
-                value={locationFormValues.detailLokasi}
-                onChange={(e) =>
-                  setLocationField("detailLokasi", e.target.value)
-                }
-                maxLength={500}
-                height={80}
-                hasCharCount={true}
-                status={locationFormErrors.detailLokasi ? "error" : null}
-                supportiveText={{
-                  title: locationFormErrors.detailLokasi || "",
-                  desc: "",
-                }}
-                className="w-full"
-              />
-
-              {/* Kecamatan Dropdown */}
-              <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                Kecamatan*
-              </label>
-
-              <Select
-                placeholder="Pilih Kecamatan Tujuan"
-                options={
-                  dataLokasi?.kecamatanList &&
-                  dataLokasi?.kecamatanList.length > 0
-                    ? dataLokasi?.kecamatanList.map((item) => ({
-                        label: item.name,
-                        value: item.value,
-                      }))
-                    : []
-                }
-                value={locationFormValues?.dataLokasi?.district?.value}
-                onChange={(selectedValue) => {
-                  const kecamatanFound = dataLokasi?.kecamatanList.find(
-                    (item) => item.value === selectedValue
-                  );
-                  setLocationPartial({
-                    district: {
-                      name: kecamatanFound.name,
-                      value: kecamatanFound.value,
-                    },
-                  });
-                }}
-                errorMessage={locationFormErrors.district}
-              />
-
-              {/* Kota & Provinsi Display */}
-
-              <span className="text-[12px] font-medium text-neutral-600">
-                Kota
-              </span>
-              <span className="text-[12px] font-medium text-neutral-900">
-                {dataLokasi?.city?.name || "-"}
-              </span>
-
-              <span className="text-[12px] font-medium text-neutral-600">
-                Provinsi
-              </span>
-              <span className="text-[12px] font-medium text-neutral-900">
-                {dataLokasi?.province?.name || "-"}
-              </span>
-
-              {/* Kode Pos Dropdown */}
-              <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                Kode Pos*
-              </label>
-
-              <Select
-                placeholder="Pilih Kode Pos"
-                options={
-                  dataLokasi?.postalCodeList &&
-                  dataLokasi?.postalCodeList.length > 0
-                    ? dataLokasi?.postalCodeList.map((item) => ({
-                        label: item.name,
-                        value: item.value,
-                      }))
-                    : []
-                }
-                value={locationFormValues?.dataLokasi?.postalCode?.value}
-                onChange={(selectedValue) => {
-                  const postalCodeFound = dataLokasi?.postalCodeList.find(
-                    (item) => item.value === selectedValue
-                  );
-                  setLocationPartial({
-                    postalCode: {
-                      name: postalCodeFound.name,
-                      value: postalCodeFound.value,
-                    },
-                  });
-                }}
-                errorMessage={locationFormErrors.postalCode}
-              />
-
-              {/* Ekspedisi Dropdown */}
-              <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
-                Pilih Ekspedisi*
-              </label>
-              <DropdownJasaPengiriman
-                shippingOptions={shippingOptions}
-                disabled={
-                  !locationFormValues?.dataLokasi?.district?.value ||
-                  !dataLokasi?.city?.name ||
-                  !dataLokasi?.province?.name ||
-                  !locationFormValues?.dataLokasi?.postalCode?.value
-                }
-                value={selectedShippingOptions}
-                onChange={({ expedition, hasInsurance }) => {
-                  setDeliveryEvidenceFormValues((prev) => ({
-                    ...prev,
-                    shippingOptionId: expedition.id,
-                    withInsurance: hasInsurance,
-                  }));
-                  setDeliveryEvidenceFormErrors((prevState) => ({
-                    ...prevState,
-                    shippingOption: undefined,
-                  }));
-                }}
-                placeholder="Pilih Ekspedisi"
-                insuranceText="Pakai Asuransi Pengiriman"
-                errorMessage={deliveryEvidenceFormErrors.shippingOption}
-              />
-            </div>
-          </div>
-
-          {/* Submit Button */}
-          <Button
-            variant="muatparts-primary"
-            className="h-8 w-[112px]"
-            onClick={handleSubmit}
-          >
-            Simpan
-          </Button>
-        </div>
+        <DeliveryEvidenceModalContent
+          modalType={modalType}
+          additionalServicesOptions={additionalServicesOptions}
+          shippingDetails={shippingDetails}
+          setIsOpen={setIsOpen}
+        />
       </ModalContent>
     </Modal>
   );

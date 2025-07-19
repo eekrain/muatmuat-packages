@@ -33,7 +33,7 @@ export const DropdownJasaPengiriman = ({
   const scrollParentRef = useRef(null);
 
   // Get the callback ref from the hook
-  const setDropdownRef = useRegisterModalPortalNode(dropdownRef, [isOpen]);
+  const setDropdownRef = useRegisterModalPortalNode([isOpen]);
 
   // Function to find the first scrollable parent
   const getScrollParent = useCallback((node) => {

@@ -23,9 +23,7 @@ export const ModalPostalCode = ({
     searchValue && searchValue.length > 0 && options.length > 0;
 
   // Get the callback ref from the hook
-  const setDropdownRef = useRegisterModalPortalNode(dropdownRef, [
-    isDropdownSearchOpen,
-  ]);
+  const setDropdownRef = useRegisterModalPortalNode([isDropdownSearchOpen]);
 
   return (
     <Modal

@@ -6,25 +6,20 @@ import { useModal } from "./Modal";
  * Hook to register a node with the modal system to prevent modal closure on clicks.
  * Automatically handles callback ref logic for immediate node registration.
  *
- * @param {React.RefObject} ref - The ref object for the dropdown
  * @param {Array} deps - Dependencies array to trigger re-registration
  * @returns {Function} Callback ref function to attach to the dropdown element
  */
-export function useRegisterModalPortalNode(ref, deps = []) {
+export function useRegisterModalPortalNode(deps = []) {
   const { registerAllowedNode, unregisterAllowedNode } = useModal?.() || {};
   const lastNodeRef = useRef(null);
   const [dropdownNode, setDropdownNode] = useState(null);
+  const ref = useRef(null);
 
   // Create callback ref that captures the node and updates state
-  const setDropdownRef = useCallback(
-    (node) => {
-      if (ref) {
-        ref.current = node;
-      }
-      setDropdownNode(node);
-    },
-    [ref]
-  );
+  const setDropdownRef = useCallback((node) => {
+    ref.current = node;
+    setDropdownNode(node);
+  }, []);
 
   useLayoutEffect(() => {
     // Validate that we have a proper DOM node
