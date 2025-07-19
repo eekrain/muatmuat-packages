@@ -122,7 +122,7 @@ export default function CropperWeb({
           } w-[424px] rounded-xl bg-white px-6 py-9`}
         >
           <div className="mb-6 flex flex-col items-center gap-[18px] bg-white">
-            <span className="text-1b1b text-[16px] font-bold leading-[19.2px]">
+            <span className="text-1b1b text-base font-bold leading-[19.2px]">
               {title}
             </span>
             <div className="relative h-[386px] w-[386px]">
@@ -174,7 +174,7 @@ export default function CropperWeb({
               onClick={cancelCrop}
               className="flex h-8 min-w-[112px] items-center justify-center rounded-full border border-[#176CF7] bg-white px-3 outline-none"
             >
-              <span className="text-[14px] font-semibold leading-[16.8px] text-[#176CF7]">
+              <span className="text-sm font-semibold leading-[16.8px] text-[#176CF7]">
                 Batal
               </span>
             </button>
@@ -184,7 +184,7 @@ export default function CropperWeb({
               className="flex h-8 min-w-[112px] items-center justify-center rounded-full bg-[#176CF7] px-3 outline-none"
               autoFocus
             >
-              <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-50">
+              <span className="text-sm font-semibold leading-[16.8px] text-neutral-50">
                 Simpan
               </span>
             </button>

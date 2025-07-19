@@ -151,7 +151,7 @@ export const LocationDropdownOnly = ({
             await handleGetCurrentLocation();
             setIsDropdownSearchOpen(false);
           }}
-          className="flex w-full items-center gap-2 px-[20px] py-[12px] text-[10px] font-medium text-[#176CF7]"
+          className="flex w-full items-center gap-2 px-[20px] py-[12px] text-xxs font-medium text-[#176CF7]"
         >
           <IconComponent
             src="/icons/marker-target-outline.svg"
@@ -217,14 +217,14 @@ export const LocationDropdownOnly = ({
                 className="text-[#176CF7]"
               />
             </div>
-            <p className="text-[10px] font-semibold leading-[14.4px] text-[#176CF7]">
+            <p className="text-xxs font-semibold leading-[14.4px] text-[#176CF7]">
               Input Lokasi yang terdekat dengan Anda
             </p>
           </div>
 
           {userSavedLocations && userSavedLocations.length > 0 && (
             <>
-              <div className="text-[10px] text-sm font-medium leading-[1.3] text-neutral-600">
+              <div className="text-sm text-xxs font-medium leading-[1.3] text-neutral-600">
                 Manajemen Lokasi
               </div>
               <div className="space-y-2">

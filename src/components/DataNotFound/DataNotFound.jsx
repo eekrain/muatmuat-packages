@@ -39,7 +39,7 @@ const DataNotFound = ({
         ) : (
           <p
             className={cn(
-              "w-[257px] text-center text-[16px] font-[600] text-neutral-600",
+              "w-[257px] text-center text-base font-[600] text-neutral-600",
               textClass
             )}
           >

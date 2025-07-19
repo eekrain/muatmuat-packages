@@ -78,7 +78,7 @@ const FloatingButton = () => {
                 height={20}
                 width={20}
               />
-              <div className="self-center text-[16px] leading-6">
+              <div className="self-center text-base leading-6">
                 Hubungi Kami
               </div>
             </div>
@@ -95,7 +95,7 @@ const FloatingButton = () => {
                 height={20}
                 width={20}
               />
-              <div className="self-center text-[16px] leading-6">
+              <div className="self-center text-base leading-6">
                 Pusat Bantuan / FAQ
               </div>
             </div>
@@ -122,14 +122,14 @@ const FloatingButton = () => {
           <ModalHeader size="small" />
           <div className="px-6 py-9">
             <div className="flex flex-col items-center">
-              <span className="text-center text-[17px] font-bold leading-[25.5px] text-[#1b1b1b]">
+              <span className="text-center text-base font-bold leading-[25.5px] text-[#1b1b1b]">
                 Hubungi Kami
               </span>
-              <span className="mt-6 text-center text-[14px] font-medium leading-[21px] text-[#1b1b1b]">
+              <span className="mt-6 text-center text-sm font-medium leading-[21px] text-[#1b1b1b]">
                 Jika Anda membutuhkan bantuan dapat menghubungi nomor dibawah
                 ini
               </span>
-              <div className="mt-2 flex flex-row text-center text-[14px] font-medium leading-[21px] text-primary-700">
+              <div className="mt-2 flex flex-row text-center text-sm font-medium leading-[21px] text-primary-700">
                 <ImageComponent
                   className="h-5 w-5 self-center"
                   src="/img/hubungi-kami-blue.png"
@@ -138,7 +138,7 @@ const FloatingButton = () => {
                 />
                 <span>+62 811-3886-7000</span>
               </div>
-              <span className="mt-3 text-center text-[14px] font-medium leading-[21px] text-[#1b1b1b]">
+              <span className="mt-3 text-center text-sm font-medium leading-[21px] text-[#1b1b1b]">
                 atau klik tombol dibawah ini
               </span>
               <Link
@@ -188,14 +188,14 @@ const FloatingButton = () => {
             </div>
             <div className={styles.modal_apps_az}>
               <div className="flex flex-col items-center p-1">
-                <span className="text-center text-[17px] font-bold leading-[25.5px] text-[#1b1b1b]">
+                <span className="text-center text-base font-bold leading-[25.5px] text-[#1b1b1b]">
                   Hubungi Kami
                 </span>
-                <span className="mt-6 text-center text-[14px] font-medium leading-[21px] text-[#1b1b1b]">
+                <span className="mt-6 text-center text-sm font-medium leading-[21px] text-[#1b1b1b]">
                   Jika Anda membutuhkan bantuan dapat menghubungi nomor dibawah
                   ini
                 </span>
-                <div className="mt-2 flex flex-row text-center text-[14px] font-medium leading-[21px] text-primary-700">
+                <div className="mt-2 flex flex-row text-center text-sm font-medium leading-[21px] text-primary-700">
                   <ImageComponent
                     className="h-5 w-5 self-center"
                     src="/img/hubungi-kami-blue.png"
@@ -204,7 +204,7 @@ const FloatingButton = () => {
                   />
                   <span>+62 811-3886-7000</span>
                 </div>
-                <span className="mt-3 text-center text-[14px] font-medium leading-[21px] text-[#1b1b1b]">
+                <span className="mt-3 text-center text-sm font-medium leading-[21px] text-[#1b1b1b]">
                   atau klik tombol dibawah ini
                 </span>
                 <Link

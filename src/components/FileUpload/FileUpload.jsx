@@ -100,7 +100,7 @@ const FileUpload = ({
       {value ? (
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-y-2">
-            <span className="text-[12px] font-medium leading-[14.4px] text-success-400">
+            <span className="text-xs font-medium leading-[14.4px] text-success-400">
               {value.name}
             </span>
             {isUploading ? <ProgressBar progress={progress} /> : null}
@@ -112,7 +112,7 @@ const FileUpload = ({
               className="cursor-pointer"
             />
             <span
-              className="cursor-pointer text-[12px] font-medium leading-[14.4px] text-primary-700"
+              className="cursor-pointer text-xs font-medium leading-[14.4px] text-primary-700"
               onClick={() => fileRef.current.click()}
             >
               Ubah File
@@ -136,10 +136,10 @@ const FileUpload = ({
             </div>
           ) : (
             <div className="ml-2">
-              <div className="text-[14px] leading-[16.8px] text-neutral-600">
+              <div className="text-sm leading-[16.8px] text-neutral-600">
                 Format file {acceptedFormats.join("/")}
               </div>
-              <div className="text-[14px] leading-[16.8px] text-neutral-600">
+              <div className="text-sm leading-[16.8px] text-neutral-600">
                 maks {maxSize}MB
               </div>
             </div>

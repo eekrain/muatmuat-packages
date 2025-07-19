@@ -53,7 +53,7 @@ function InputOTPSlot({ index, className, ...props }) {
       data-active={isActive}
       className={cn(
         // Base styling - larger size and rounded corners
-        "relative flex size-[30px] items-center justify-center p-0 text-center text-[14px] font-bold leading-[16.8px]",
+        "relative flex size-[30px] items-center justify-center p-0 text-center text-sm font-bold leading-[16.8px]",
         // Border and background
         "rounded-lg border border-[#868686] bg-white outline-none",
         // Active state

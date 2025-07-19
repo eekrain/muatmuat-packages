@@ -40,10 +40,10 @@ const NoDeliveryOrder = () => {
       <div className="flex flex-col gap-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
-            <h2 className="text-[14px] font-semibold text-neutral-900">
+            <h2 className="text-sm font-semibold text-neutral-900">
               No. Delivery Order (DO)
             </h2>
-            <span className="text-[10px] font-semibold text-neutral-900">
+            <span className="text-xxs font-semibold text-neutral-900">
               (Opsional)
             </span>
             <IconComponent
@@ -65,7 +65,7 @@ const NoDeliveryOrder = () => {
                 setType("list");
               }
             }}
-            className="text-[14px] font-semibold text-primary-700"
+            className="text-sm font-semibold text-primary-700"
           >
             Tambah
           </button>
@@ -135,7 +135,7 @@ const NoDeliveryOrder = () => {
                   }
                   key={key}
                 >
-                  <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
+                  <span className="text-sm font-semibold leading-[15.4px] text-neutral-900">
                     {item}
                   </span>
                   <IconComponent
@@ -163,7 +163,7 @@ const NoDeliveryOrder = () => {
                   width={14}
                   height={14}
                 />
-                <span className="text-[14px] font-semibold leading-[15.4px] text-primary-700">
+                <span className="text-sm font-semibold leading-[15.4px] text-primary-700">
                   Tambah No. Delivery Order (DO)
                 </span>
               </button>

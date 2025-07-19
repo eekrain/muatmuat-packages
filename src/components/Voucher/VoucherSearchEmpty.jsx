@@ -14,7 +14,7 @@ const VoucherSearchEmpty = () => {
         className="h-[114px] w-[134px] object-contain"
       />
 
-      <p className="mt-[12px] text-[16px] font-medium text-gray-600">
+      <p className="mt-[12px] text-base font-medium text-gray-600">
         Keyword Tidak Ditemukan
       </p>
     </div>

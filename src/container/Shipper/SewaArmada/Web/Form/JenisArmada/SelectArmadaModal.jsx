@@ -110,7 +110,7 @@ const SelectArmadaModal = ({ carrierData, truckData }) => {
           <div className="flex h-[460px] flex-col gap-y-4 px-6 py-8">
             {/* Header */}
             <div className="flex w-[424px] justify-center">
-              <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
+              <h1 className="text-base font-bold leading-[19.2px] text-neutral-900">
                 {modalTitle}
               </h1>
             </div>
@@ -218,7 +218,7 @@ const SelectArmadaModal = ({ carrierData, truckData }) => {
               </div>
             ) : (
               <div>
-                <span className="text-[16px] font-bold leading-[19.2px]">
+                <span className="text-base font-bold leading-[19.2px]">
                   Hasil Pencarian
                 </span>
                 {filteredData.length === 0 ? (

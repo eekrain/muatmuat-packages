@@ -69,7 +69,7 @@ const CariNamaMuatanScreen = () => {
                 key={key}
                 onClick={() => handleSelectNamaMuatan(item)}
               >
-                <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
+                <span className="text-sm font-semibold leading-[15.4px] text-neutral-900">
                   {item.label}
                 </span>
               </button>
@@ -80,7 +80,7 @@ const CariNamaMuatanScreen = () => {
         <div className="flex min-h-[calc(100vh_-_126px)] items-center justify-center">
           <DataNotFound
             className="gap-y-3.5"
-            textClass="leading-[14px] !text-[14px]"
+            textClass="leading-[14px] !text-sm"
             title={
               <>
                 Keyword

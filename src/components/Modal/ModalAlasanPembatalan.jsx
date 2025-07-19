@@ -31,7 +31,7 @@ export const ModalAlasanPembatalan = ({
         <ModalHeader type="muattrans" size="small" />
         <div className="flex flex-col items-center justify-center gap-6 px-6 py-9">
           {/* Title */}
-          <h2 className="max- w-full text-center text-[16px] font-bold leading-[19.2px] text-black">
+          <h2 className="max- w-full text-center text-base font-bold leading-[19.2px] text-black">
             {labelTitle}
           </h2>
 

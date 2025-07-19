@@ -9,7 +9,7 @@ const FleetOrderConfirmationModal = ({ isOpen, setIsOpen, onOrderFleet }) => {
         <ModalHeader size="big" />
         <div className="flex w-[454px] flex-col items-center justify-center gap-6 px-6 py-9">
           {/* Judul Modal */}
-          <h2 className="w-full text-center text-[16px] font-bold leading-[19.2px] text-neutral-900">
+          <h2 className="w-full text-center text-base font-bold leading-[19.2px] text-neutral-900">
             Informasi
           </h2>
 
@@ -23,7 +23,7 @@ const FleetOrderConfirmationModal = ({ isOpen, setIsOpen, onOrderFleet }) => {
                 width={24}
               />
             </div>
-            <p className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+            <p className="text-xs font-medium leading-[14.4px] text-neutral-900">
               Jika ada kendala pada persiapan atau perjalanan ke lokasi muat,
               pengiriman mungkin tidak bisa dilanjutkan. Kami akan tetap
               berusaha memberikan solusi terbaik.
@@ -31,13 +31,13 @@ const FleetOrderConfirmationModal = ({ isOpen, setIsOpen, onOrderFleet }) => {
           </div>
 
           {/* Text Konfirmasi */}
-          <p className="w-full text-center text-[14px] font-medium leading-[16.8px] text-neutral-900">
+          <p className="w-full text-center text-sm font-medium leading-[16.8px] text-neutral-900">
             Apakah kamu yakin data yang kamu isi sudah benar? <br />
             Pastikan semua informasi telah diperiksa sebelum melanjutkan.
           </p>
 
           {/* Text Syarat dan Ketentuan */}
-          <p className="w-[320px] text-center text-[12px] font-medium leading-[14.4px] text-neutral-900">
+          <p className="w-[320px] text-center text-xs font-medium leading-[14.4px] text-neutral-900">
             *Dengan memesan jasa angkut ini, kamu telah menyetujui{" "}
             {/* <Link href="/syarat-ketentuan"> */}
             <span className="text-primary-700">

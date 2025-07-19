@@ -14,7 +14,7 @@ export const ModalDetailAlasanPembatalan = ({ cancellationHistory }) => {
           <div className="flex flex-row items-start gap-2">
             <div className="flex flex-col items-center gap-6">
               {/* Title */}
-              <h2 className="w-[424px] text-center text-[16px] font-bold leading-[19.2px] text-black">
+              <h2 className="w-[424px] text-center text-base font-bold leading-[19.2px] text-black">
                 Alasan Pembatalan
               </h2>
 
@@ -23,11 +23,11 @@ export const ModalDetailAlasanPembatalan = ({ cancellationHistory }) => {
                 {/* Cancellation Time */}
                 <div className="flex w-[133px] flex-col items-start gap-3">
                   <div className="flex w-[105px] flex-row items-center gap-2">
-                    <span className="h-[8px] text-[12px] font-semibold leading-[14.4px] text-black">
+                    <span className="h-[8px] text-xs font-semibold leading-[14.4px] text-black">
                       Waktu Pembatalan
                     </span>
                   </div>
-                  <span className="w-[133px] text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                  <span className="w-[133px] text-xs font-medium leading-[14.4px] text-neutral-600">
                     {formatDate(cancellationHistory.cancelledAt)}
                   </span>
                 </div>
@@ -35,11 +35,11 @@ export const ModalDetailAlasanPembatalan = ({ cancellationHistory }) => {
                 {/* Cancelled By */}
                 <div className="flex w-[91px] flex-col items-start gap-3">
                   <div className="flex w-[91px] flex-row items-center gap-2">
-                    <span className="h-[8px] text-[12px] font-semibold leading-[14.4px] text-black">
+                    <span className="h-[8px] text-xs font-semibold leading-[14.4px] text-black">
                       Dibatalkan Oleh
                     </span>
                   </div>
-                  <span className="w-11 text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                  <span className="w-11 text-xs font-medium leading-[14.4px] text-neutral-600">
                     {cancellationHistory.cancelledBy}
                   </span>
                 </div>
@@ -47,11 +47,11 @@ export const ModalDetailAlasanPembatalan = ({ cancellationHistory }) => {
                 {/* Cancellation Reason */}
                 <div className="flex w-[424px] flex-col items-start gap-3">
                   <div className="flex w-[106px] flex-row items-center gap-2">
-                    <span className="h-[8px] text-[12px] font-semibold leading-[14.4px] text-black">
+                    <span className="h-[8px] text-xs font-semibold leading-[14.4px] text-black">
                       Alasan Pembatalan
                     </span>
                   </div>
-                  <p className="w-[424px] text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                  <p className="w-[424px] text-xs font-medium leading-[14.4px] text-neutral-600">
                     {cancellationHistory.reason?.additionalInfo ||
                       cancellationHistory.reason?.reasonName}
                   </p>

@@ -69,7 +69,7 @@ export const JenisMuatan = ({ cargoCategories }) => {
           ))}
         </div>
         {formErrors.cargoCategoryId && (
-          <span className="text-[12px] font-medium leading-[14.4px] text-error-400">
+          <span className="text-xs font-medium leading-[14.4px] text-error-400">
             Jenis Muatan wajib diisi
           </span>
         )}

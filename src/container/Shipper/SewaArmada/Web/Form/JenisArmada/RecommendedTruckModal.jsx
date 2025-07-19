@@ -29,7 +29,7 @@ const RecommendedTruckModal = ({ isOpen, setIsOpen, recommendedTrucks }) => {
     <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick={false}>
       <ModalContent type="muatmuat">
         <div className="flex flex-col items-center gap-y-4 px-6 py-9">
-          <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
+          <h1 className="text-base font-bold leading-[19.2px] text-neutral-900">
             Rekomendasi Kami
           </h1>
           <WarningBadge message="Pastikan lokasi muat dan bongkar dapat dijangkau truk rekomendasi kami untuk kelancaran proses" />

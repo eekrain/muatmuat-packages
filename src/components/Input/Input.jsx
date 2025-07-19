@@ -60,7 +60,7 @@ const Input = forwardRef(
             </div>
           ) : null}
           {text.left ? (
-            <span className="mr-3 text-[12px] font-medium leading-[14.4px] text-neutral-900 max-[600px]:text-[14px] max-[600px]:font-semibold max-[600px]:leading-[15.4px]">
+            <span className="mr-3 text-xs font-medium leading-[14.4px] text-neutral-900 max-[600px]:text-sm max-[600px]:font-semibold max-[600px]:leading-[15.4px]">
               {text.left}
             </span>
           ) : null}
@@ -70,7 +70,7 @@ const Input = forwardRef(
             ref={ref}
             name={name}
             placeholder={placeholder}
-            className={`w-full min-w-[0px] ${style.input} ${classInput} text-[12px] font-medium leading-[14.4px] text-neutral-900 placeholder:text-neutral-600 max-[600px]:text-[14px] max-[600px]:font-semibold max-[600px]:leading-[15.4px]`}
+            className={`w-full min-w-[0px] ${style.input} ${classInput} text-xs font-medium leading-[14.4px] text-neutral-900 placeholder:text-neutral-600 max-[600px]:text-sm max-[600px]:font-semibold max-[600px]:leading-[15.4px]`}
             disabled={disabled}
           />
           {!isEmpty(icon.right) ? (
@@ -89,7 +89,7 @@ const Input = forwardRef(
             </div>
           ) : null}
           {text.right ? (
-            <span className="ml-3 text-[12px] font-medium leading-[14.4px] text-neutral-900 max-[600px]:text-[14px] max-[600px]:font-semibold max-[600px]:leading-[15.4px]">
+            <span className="ml-3 text-xs font-medium leading-[14.4px] text-neutral-900 max-[600px]:text-sm max-[600px]:font-semibold max-[600px]:leading-[15.4px]">
               {text.right}
             </span>
           ) : null}

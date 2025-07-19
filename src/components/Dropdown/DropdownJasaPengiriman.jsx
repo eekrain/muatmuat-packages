@@ -323,7 +323,7 @@ export const DropdownJasaPengiriman = ({
                 style={dropdownStyle}
                 className="shadow-muat mt-1 flex h-[66px] items-center justify-center rounded-md border border-neutral-300 bg-white px-2.5"
               >
-                <p className="text-center text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                <p className="text-center text-xs font-medium leading-[14.4px] text-neutral-900">
                   Saat ini, kami belum bisa mengirim ke alamat tersebut.
                   Silahkan masukkan alamat tujuan lain
                 </p>

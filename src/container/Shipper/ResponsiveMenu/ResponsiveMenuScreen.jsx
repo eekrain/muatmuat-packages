@@ -82,7 +82,7 @@ const ResponsiveMenuScreen = () => {
                     <div
                       className={`${item.badgeColor} flex h-3.5 min-w-[23px] items-center justify-center rounded-full px-2 py-1`}
                     >
-                      <span className="text-[8px] font-bold text-white">
+                      <span className="text-xxs font-bold text-white">
                         {item.badge >= 100 ? "99+" : item.badge}
                       </span>
                     </div>

@@ -18,7 +18,7 @@ export const DownloadPopover = () => {
         >
           <div className="flex items-center gap-x-1">
             <IconComponent src="/icons/mobile.svg" />
-            <span className="text-[12px] font-semibold leading-[12px]">
+            <span className="text-xs font-semibold leading-[12px]">
               {t("linkDownloadMuatMuat")}
             </span>
           </div>

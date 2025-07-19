@@ -46,12 +46,12 @@ export const ModalFormRequestOtp = ({
         <ModalHeader type="muattrans" size="small" />
         <div className="flex h-[338px] w-[386px] min-w-[386px] max-w-[558px] flex-col items-center justify-center gap-6 px-6 py-9">
           {/* Title */}
-          <h2 className="w-[175px] max-w-[510px] text-center text-[16px] font-bold leading-[19.2px] text-black">
+          <h2 className="w-[175px] max-w-[510px] text-center text-base font-bold leading-[19.2px] text-black">
             Pilih Metode Verifikasi
           </h2>
 
           {/* Description */}
-          <p className="w-[338px] max-w-[510px] text-center text-[14px] font-medium leading-[16.8px] text-black">
+          <p className="w-[338px] max-w-[510px] text-center text-sm font-medium leading-[16.8px] text-black">
             Pilih salah satu metode dibawah ini untuk mendapatkan kode
             verifikasi
           </p>
@@ -83,10 +83,10 @@ export const ModalFormRequestOtp = ({
 
                 {/* Method Info */}
                 <div className="flex h-6 w-[282px] flex-grow flex-col items-start justify-center gap-2">
-                  <span className="w-full text-[12px] font-medium leading-[14.4px] text-black">
+                  <span className="w-full text-xs font-medium leading-[14.4px] text-black">
                     {item.title}
                   </span>
-                  <span className="w-full text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                  <span className="w-full text-xs font-medium leading-[14.4px] text-neutral-600">
                     {item.value}
                   </span>
                 </div>

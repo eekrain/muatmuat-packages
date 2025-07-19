@@ -15,7 +15,7 @@ export const AsuransiBarang = () => {
       >
         <div className="flex items-center gap-x-2">
           <IconComponent src="/icons/shield20.svg" width={20} height={20} />
-          <span className="text-[12px] font-medium leading-[12px] text-neutral-900">
+          <span className="text-xs font-medium leading-[12px] text-neutral-900">
             Gratis perlindungan hingga Rp10.000.000
           </span>
         </div>

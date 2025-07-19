@@ -16,7 +16,7 @@ export const NoDeliveryOrder = () => {
     <FormContainer>
       <div className="text-sm font-semibold leading-[1.1] text-neutral-900 md:h-4 md:w-[174px] md:text-xs md:font-medium md:leading-[1.2] md:text-neutral-600">
         <span>No. Delivery Order (DO)</span>
-        <span className="block text-[10px] md:text-xs md:font-medium md:italic md:text-neutral-500">
+        <span className="block text-xxs md:text-xs md:font-medium md:italic md:text-neutral-500">
           (Opsional)
         </span>
       </div>

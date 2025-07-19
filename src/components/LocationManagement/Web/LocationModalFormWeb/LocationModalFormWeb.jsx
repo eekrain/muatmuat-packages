@@ -103,7 +103,7 @@ const InnerLocationModalFormWeb = ({
               >
                 <div className="flex w-full flex-col gap-4 overflow-y-auto pr-[7px]">
                   <div className="w-full">
-                    <label className="mb-3 block text-[12px] font-medium text-neutral-600">
+                    <label className="mb-3 block text-xs font-medium text-neutral-600">
                       {formMode === "muat" ? "Lokasi Muat*" : "Lokasi Bongkar*"}
                     </label>
                     <InputLocationManagementDropdown
@@ -116,7 +116,7 @@ const InnerLocationModalFormWeb = ({
                     />
                   </div>
                   <div>
-                    <label className="mb-3 block text-[12px] font-medium text-neutral-600">
+                    <label className="mb-3 block text-xs font-medium text-neutral-600">
                       Detail Lokasi <i>(Opsional)</i>
                     </label>
                     <MyTextArea
@@ -132,7 +132,7 @@ const InnerLocationModalFormWeb = ({
                     />
                   </div>
                   <div>
-                    <label className="mb-3 block text-[12px] font-medium text-neutral-600">
+                    <label className="mb-3 block text-xs font-medium text-neutral-600">
                       Nama PIC{" "}
                       {formMode === "muat" ? "Lokasi Muat" : "Lokasi Bongkar"}*
                     </label>
@@ -144,7 +144,7 @@ const InnerLocationModalFormWeb = ({
                     />
                   </div>
                   <div>
-                    <label className="mb-3 block text-[12px] font-medium text-neutral-600">
+                    <label className="mb-3 block text-xs font-medium text-neutral-600">
                       No. HP PIC{" "}
                       {formMode === "muat" ? "Lokasi Muat" : "Lokasi Bongkar"}*
                     </label>

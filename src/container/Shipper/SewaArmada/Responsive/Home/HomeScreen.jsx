@@ -372,7 +372,7 @@ const SewaArmadaHomeScreen = () => {
         {/* Brand Section */}
         <div className="my-2 flex h-[61px] w-full items-center justify-between gap-[29px] bg-white px-4 py-3">
           <div className="flex-1">
-            <h2 className="text-[16px] font-semibold leading-[17.6px] text-[#461B02]">
+            <h2 className="text-base font-semibold leading-[17.6px] text-[#461B02]">
               Ayo kirim muatan kamu dengan muatrans!
             </h2>
           </div>
@@ -382,7 +382,7 @@ const SewaArmadaHomeScreen = () => {
               alt="muatrans"
               className="h-4 w-20"
             />
-            <p className="text-right text-[10px] font-semibold leading-[10px] text-[#461B02]">
+            <p className="text-right text-xxs font-semibold leading-[10px] text-[#461B02]">
               Cargo Land Transportation Company
             </p>
           </div>
@@ -444,7 +444,7 @@ const SewaArmadaHomeScreen = () => {
             >
               <div className="flex items-center gap-x-2">
                 <IconComponent src="/icons/muatan16.svg" />
-                <span className="max-w-[256px] truncate text-[14px] font-semibold leading-[15.4px]">
+                <span className="max-w-[256px] truncate text-sm font-semibold leading-[15.4px]">
                   {formValues.informasiMuatan.length === 0 ? (
                     <span className="text-neutral-600">Masukkan Muatan</span>
                   ) : (
@@ -475,7 +475,7 @@ const SewaArmadaHomeScreen = () => {
                   src="/icons/truck-carrier.svg"
                   className="h-4 w-4 text-neutral-600"
                 />
-                <span className="flex-1 text-[14px] font-semibold text-neutral-600">
+                <span className="flex-1 text-sm font-semibold text-neutral-600">
                   Pilih Jenis Carrier
                 </span>
                 <svg
@@ -499,7 +499,7 @@ const SewaArmadaHomeScreen = () => {
                   src="/icons/truck-jenis.svg"
                   className="h-4 w-4 text-neutral-600"
                 />
-                <span className="flex-1 text-[14px] font-semibold text-neutral-600">
+                <span className="flex-1 text-sm font-semibold text-neutral-600">
                   Pilih Jenis Truk
                 </span>
                 <svg
@@ -524,20 +524,20 @@ const SewaArmadaHomeScreen = () => {
           {/* <FormContainer>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1">
-                <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
+                <span className="text-sm font-semibold leading-[15.4px] text-neutral-900">
                   Asuransi Barang
                 </span>
-                <span className="text-[10px] font-semibold text-neutral-900">
+                <span className="text-xxs font-semibold text-neutral-900">
                   (Opsional)
                 </span>
               </div>
-              <span className="cursor-pointer text-[12px] font-semibold text-primary-700">
+              <span className="cursor-pointer text-xs font-semibold text-primary-700">
                 Ubah Asuransi
               </span>
             </div>
             <div className="flex h-8 w-full items-center gap-2 rounded-md border border-neutral-600 bg-neutral-50 px-3 py-2">
               <Shield className="h-4 w-4 text-neutral-700" />
-              <span className="flex-1 text-[14px] font-semibold text-neutral-900">
+              <span className="flex-1 text-sm font-semibold text-neutral-900">
                 Gratis perlindungan hingga Rp10.000.000
               </span>
             </div>
@@ -554,7 +554,7 @@ const SewaArmadaHomeScreen = () => {
             >
               <div className="flex items-center gap-x-2">
                 <IconComponent src="/icons/layanan-tambahan.svg" />
-                <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-600">
+                <span className="text-sm font-semibold leading-[15.4px] text-neutral-600">
                   Pilih Layanan Tambahan
                 </span>
               </div>
@@ -626,7 +626,7 @@ const SewaArmadaHomeScreen = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Cari Kode Voucher"
-                className="h-10 w-full rounded-md bg-transparent pl-10 pr-3 text-[14px] outline-none"
+                className="h-10 w-full rounded-md bg-transparent pl-10 pr-3 text-sm outline-none"
                 disabled={
                   loading || error || !voucherList || voucherList.length === 0
                 }
@@ -642,7 +642,7 @@ const SewaArmadaHomeScreen = () => {
             </div>
 
             {/* Voucher selection note */}
-            <p className="text-[12px] font-medium text-neutral-600">
+            <p className="text-xs font-medium text-neutral-600">
               Hanya bisa dipilih 1 Voucher
             </p>
 
@@ -651,7 +651,7 @@ const SewaArmadaHomeScreen = () => {
               {loading ? (
                 <div className="flex flex-col items-center justify-center py-8">
                   <div className="mb-3 h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
-                  <span className="text-[14px] font-medium text-neutral-600">
+                  <span className="text-sm font-medium text-neutral-600">
                     Memuat voucher...
                   </span>
                 </div>
@@ -672,12 +672,12 @@ const SewaArmadaHomeScreen = () => {
                       />
                     </svg>
                   </div>
-                  <span className="mb-2 text-center text-[14px] font-medium">
+                  <span className="mb-2 text-center text-sm font-medium">
                     {error}
                   </span>
                   <button
                     onClick={refetch}
-                    className="text-[12px] text-blue-600 underline hover:text-blue-800"
+                    className="text-xs text-blue-600 underline hover:text-blue-800"
                   >
                     Coba Lagi
                   </button>

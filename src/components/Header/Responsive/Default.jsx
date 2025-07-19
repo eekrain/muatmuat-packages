@@ -107,7 +107,7 @@ export const HeaderResponsiveDefault = ({
               onClick={() => menuIcon.onClick()}
             >
               {menuIcon.count ? (
-                <div className="absolute bottom-2.5 left-2.5 rounded-[30px] bg-muat-trans-secondary-900 p-1 text-[8px] font-bold leading-[8px] text-neutral-50">
+                <div className="absolute bottom-2.5 left-2.5 rounded-[30px] bg-muat-trans-secondary-900 p-1 text-xxs font-bold leading-[8px] text-neutral-50">
                   <span>{menuIcon.count}</span>
                 </div>
               ) : null}

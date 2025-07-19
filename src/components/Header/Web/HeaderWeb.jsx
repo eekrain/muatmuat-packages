@@ -69,13 +69,13 @@ const HeaderWeb = ({
         </div>
         <div className="flex items-center gap-x-6">
           <Link
-            className="text-[12px] font-medium leading-[12px]"
+            className="text-xs font-medium leading-[12px]"
             href={process.env.NEXT_PUBLIC_INTERNAL_WEB}
           >
             Kembali ke muatmuat
           </Link>
           <Link
-            className="text-[12px] font-medium leading-[12px]"
+            className="text-xs font-medium leading-[12px]"
             href={`${
               process.env.NEXT_PUBLIC_INTERNAL_WEB
             }traffic/redirect_faq?from=gen`}
@@ -89,7 +89,7 @@ const HeaderWeb = ({
                 {menuNotifications.map((menu, key) => (
                   <Link href="#" className="relative" key={key}>
                     <div className="absolute bottom-3 left-3 flex h-3.5 items-center rounded-[30px] border-[1.5px] border-neutral-50 bg-buyer-seller-900 px-1.5">
-                      <span className="text-[8px] font-medium leading-[8px] text-neutral-50">
+                      <span className="text-xxs font-medium leading-[8px] text-neutral-50">
                         {menu.count}
                       </span>
                     </div>

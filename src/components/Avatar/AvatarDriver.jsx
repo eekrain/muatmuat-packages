@@ -53,7 +53,7 @@ export const AvatarDriver = ({
 
           <span
             className={cn(
-              "text-xs font-medium md:text-[10px]",
+              "text-xs font-medium md:text-xxs",
               appearance.licensePlateClassName
             )}
           >

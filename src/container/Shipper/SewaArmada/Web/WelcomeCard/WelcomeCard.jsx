@@ -12,10 +12,10 @@ export const WelcomeCard = () => {
           alt="Muatrans truck illustration"
         />
         <div className="flex h-[45px] w-[558px] flex-col items-start gap-3">
-          <h2 className="w-full text-center text-[16px] font-bold leading-[19.2px] text-neutral-900">
+          <h2 className="w-full text-center text-base font-bold leading-[19.2px] text-neutral-900">
             Selamat Datang di Muatrans!
           </h2>
-          <p className="w-full text-center text-[12px] font-medium leading-[14.4px] text-neutral-600">
+          <p className="w-full text-center text-xs font-medium leading-[14.4px] text-neutral-600">
             Pesen truk kapan saja dan di mana saja dengan mudah. Serta lacak
             kiriman secara real-time untuk memastikan keamanan pengiriman dan
             dapatkan rekomendasi truk sesuai muatan agar lebih efisien!

@@ -36,7 +36,7 @@ const Checkbox = ({
   return (
     <div
       className={cn(
-        "relative flex items-center gap-[8px] text-[12px] text-neutral-900",
+        "relative flex items-center gap-[8px] text-xs text-neutral-900",
         className
       )}
       onClick={checkedClick}
@@ -75,7 +75,7 @@ const Checkbox = ({
       />
       <span
         className={cn(
-          "select-none text-[14px] font-semibold leading-[15.4px] text-neutral-900 md:text-[12px] md:font-medium md:leading-[14.4px]",
+          "select-none text-sm font-semibold leading-[15.4px] text-neutral-900 md:text-xs md:font-medium md:leading-[14.4px]",
           appearance.labelClassName
         )}
       >

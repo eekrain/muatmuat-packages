@@ -95,7 +95,7 @@ const Pagination = ({
                 <button
                   onClick={() => onPageChange(pageNumber)}
                   className={cn(
-                    "flex size-[32px] items-center justify-center rounded-md text-[14px] font-bold leading-[14px]",
+                    "flex size-[32px] items-center justify-center rounded-md text-sm font-bold leading-[14px]",
                     currentPage === pageNumber
                       ? buttonClassname
                       : "bg-none font-medium text-neutral-600"
@@ -135,7 +135,7 @@ const Pagination = ({
               key={option}
               onClick={() => onPerPageChange(option)}
               className={cn(
-                "flex size-[32px] items-center justify-center rounded-md text-[14px] font-bold leading-[14px]",
+                "flex size-[32px] items-center justify-center rounded-md text-sm font-bold leading-[14px]",
                 perPage === option
                   ? buttonClassname
                   : "bg-none font-medium text-neutral-600"

@@ -10,7 +10,7 @@ const VoucherEmptyState = () => {
         width={151}
         height={122}
       />
-      <p className="text-[16px] font-medium text-neutral-600">
+      <p className="text-base font-medium text-neutral-600">
         Belum Ada Voucher
       </p>
     </div>

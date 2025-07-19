@@ -100,7 +100,7 @@ const LayananTambahan = ({
                   </div>
 
                   {/* Biaya Layanan */}
-                  <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                  <span className="text-xs font-medium leading-[14.4px] text-neutral-900">
                     {`Rp${
                       Number(service.price) === 0
                         ? isSelected && shippingDetails
@@ -126,10 +126,10 @@ const LayananTambahan = ({
                       src="/icons/lokasi16.svg"
                     />
                     <div className="flex flex-1 flex-col gap-y-3 text-neutral-900">
-                      <span className="text-[12px] font-bold leading-[14.4px]">
+                      <span className="text-xs font-bold leading-[14.4px]">
                         {shippingDetails.destinationAddress}
                       </span>
-                      <p className="text-[12px] font-medium leading-[14.4px]">
+                      <p className="text-xs font-medium leading-[14.4px]">
                         {shippingDetails.detailAddress}
                       </p>
                       {[
@@ -154,7 +154,7 @@ const LayananTambahan = ({
                             className="icon-fill-muat-trans-secondary-900"
                             src={item.iconSrc}
                           />
-                          <div className="text-[12px] leading-[14.4px]">
+                          <div className="text-xs leading-[14.4px]">
                             <div className="font-medium">{item.label}</div>
                             <div className="font-semibold">{item.value}</div>
                           </div>
@@ -175,7 +175,7 @@ const LayananTambahan = ({
                         setIsOpen(true);
                       }}
                     >
-                      <span className="text-[12px] font-medium leading-[14.4px] text-primary-700">
+                      <span className="text-xs font-medium leading-[14.4px] text-primary-700">
                         Ubah
                       </span>
                       <IconComponent

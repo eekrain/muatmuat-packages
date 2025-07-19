@@ -33,7 +33,7 @@ export const FormLabel = ({
         {optional && (
           <>
             &nbsp;
-            <span className="text-[10px] md:text-xs md:font-medium md:italic md:text-neutral-500">
+            <span className="text-xxs md:text-xs md:font-medium md:italic md:text-neutral-500">
               (Opsional)
             </span>
           </>

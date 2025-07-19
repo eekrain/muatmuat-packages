@@ -102,7 +102,7 @@ const ImageUploaderRegister = ({
         />
         {/* LB - 0340, 25.03 */}
         <span
-          className="cursor-pointer text-[10px] font-semibold text-primary-700"
+          className="cursor-pointer text-xxs font-semibold text-primary-700"
           onClick={handleUbah}
         >
           {/* {t("buttonChangeFile")} */}

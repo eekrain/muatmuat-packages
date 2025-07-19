@@ -64,7 +64,7 @@ export const ExpandableTextArea = ({
 
       <div
         className={cn(
-          "flex justify-between text-[12px] font-medium text-neutral-600",
+          "flex justify-between text-xs font-medium text-neutral-600",
           errorMessage && "text-error-400"
         )}
       >

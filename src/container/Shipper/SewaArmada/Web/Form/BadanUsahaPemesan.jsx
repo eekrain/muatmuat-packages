@@ -117,16 +117,16 @@ export const BadanUsahaPemesan = () => {
               <IconComponent src="/icons/profil-perusahaan16.svg" />
               <div className="flex flex-1 flex-col py-1">
                 <div className="flex w-full flex-col gap-y-3">
-                  <h4 className="text-[12px] font-bold leading-[14.4px] text-neutral-900">
+                  <h4 className="text-xs font-bold leading-[14.4px] text-neutral-900">
                     {name}
                   </h4>
                   <div className="flex items-center gap-x-2">
                     <IconComponent src="/icons/nomor-amandemen16.svg" />
                     <div>
-                      <div className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                      <div className="text-xs font-medium leading-[14.4px] text-neutral-900">
                         {"Nomor NPWP :"}
                       </div>
-                      <div className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+                      <div className="text-xs font-semibold leading-[14.4px] text-neutral-900">
                         {taxId}
                       </div>
                     </div>
@@ -140,7 +140,7 @@ export const BadanUsahaPemesan = () => {
                   setIsModalOpen(true);
                 }}
               >
-                <span className="text-[12px] font-medium leading-[14.4px] text-primary-700">
+                <span className="text-xs font-medium leading-[14.4px] text-primary-700">
                   Ubah
                 </span>
                 <IconComponent
@@ -169,7 +169,7 @@ export const BadanUsahaPemesan = () => {
         <ModalContent type="muatmuat">
           <div className="flex flex-col gap-y-4 px-6 py-8">
             <div className="flex w-[424px] justify-center">
-              <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
+              <h1 className="text-base font-bold leading-[19.2px] text-neutral-900">
                 Informasi Badan Usaha
               </h1>
             </div>
@@ -177,7 +177,7 @@ export const BadanUsahaPemesan = () => {
             <div className="flex w-full flex-col items-start gap-3">
               {/* Field 1 - Nama Badan Usaha */}
               <div className="flex w-full flex-col gap-3">
-                <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                <label className="text-xs font-medium leading-[14.4px] text-neutral-600">
                   Nama Badan Usaha/Perusahaan*
                 </label>
                 <Input
@@ -191,7 +191,7 @@ export const BadanUsahaPemesan = () => {
 
               {/* Field 2 - Nomor NPWP */}
               <div className="flex w-full flex-col gap-3">
-                <label className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                <label className="text-xs font-medium leading-[14.4px] text-neutral-600">
                   Nomor NPWP*
                 </label>
                 <Input

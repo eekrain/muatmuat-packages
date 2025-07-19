@@ -80,7 +80,7 @@ const MultilevelSelect = ({ options, value, onChange, disabled }) => {
               onMouseEnter={() => handleFirstLevelHover(option)}
               onClick={() => !hasChildren && handleSelect(option)}
             >
-              <div className="max-w-[148px] truncate text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+              <div className="max-w-[148px] truncate text-xs font-semibold leading-[14.4px] text-neutral-900">
                 {option.label}
               </div>
               {hasChildren && <IconComponent src="/icons/chevron-right.svg" />}
@@ -166,7 +166,7 @@ const MultilevelSelect = ({ options, value, onChange, disabled }) => {
       >
         <div
           className={cn(
-            "truncate text-[12px] font-medium leading-[14.4px]",
+            "truncate text-xs font-medium leading-[14.4px]",
             isActive ? "text-primary-700" : "text-neutral-600"
           )}
         >

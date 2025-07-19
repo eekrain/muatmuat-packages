@@ -15,7 +15,7 @@ export const TagBubble = ({
         className
       )}
     >
-      <span className="flex-1 truncate text-[10px] font-semibold leading-[13px] text-primary-700">
+      <span className="flex-1 truncate text-xxs font-semibold leading-[13px] text-primary-700">
         {children}
       </span>
       {withRemove && (

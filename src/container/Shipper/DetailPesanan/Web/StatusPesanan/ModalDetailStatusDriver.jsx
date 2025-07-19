@@ -25,7 +25,7 @@ const ModalDetailStatusDriver = () => {
         </Button>
       </ModalTrigger>
       <ModalContent className="w-[800px] p-6" type="muatmuat">
-        <h2 className="mb-3 text-center text-[16px] font-bold leading-[19.2px] text-black">
+        <h2 className="mb-3 text-center text-base font-bold leading-[19.2px] text-black">
           Detail Status Driver
         </h2>
 

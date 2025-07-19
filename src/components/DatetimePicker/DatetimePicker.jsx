@@ -449,7 +449,7 @@ const DatetimePicker = ({
         >
           <ImageComponent src="/icons/calendar16.svg" width={16} height={16} />
           <span
-            className={`text-[12px] font-medium leading-[14.4px] ${datetimeValue ? "text-neutral-900" : "text-neutral-600"}`}
+            className={`text-xs font-medium leading-[14.4px] ${datetimeValue ? "text-neutral-900" : "text-neutral-600"}`}
           >
             {datetimeValue ? `${appliedDateStr} WIB` : placeholder}
           </span>

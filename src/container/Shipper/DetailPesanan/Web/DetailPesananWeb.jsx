@@ -64,7 +64,7 @@ const DetailPesananWeb = () => {
                   src="/icons/warning24.svg"
                   size="medium"
                 />
-                <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+                <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
                   {`Pesanan kamu memiliki tambahan biaya. Mohon selesaikan
                   pembayaran sebelum tanggal `}
                   <b>20 Mei 2024</b>

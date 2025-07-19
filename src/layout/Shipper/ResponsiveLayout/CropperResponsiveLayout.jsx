@@ -12,7 +12,7 @@ const CropperResponsiveLayout = ({ children, onClose, onCheck }) => {
           size="medium"
           onClick={onClose}
         />
-        <div className="flex-1 text-[16px] font-medium text-neutral-50">
+        <div className="flex-1 text-base font-medium text-neutral-50">
           Cropper
         </div>
         <IconComponent

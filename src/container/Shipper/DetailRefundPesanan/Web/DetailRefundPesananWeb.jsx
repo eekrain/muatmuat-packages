@@ -112,10 +112,10 @@ const DetailRefundPesananWeb = () => {
 
                 <div>
                   <div className="mb-3 flex h-[8px] w-full items-start justify-between">
-                    <span className="w-[190px] text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                    <span className="w-[190px] text-xs font-medium leading-[14.4px] text-neutral-600">
                       Nominal Waktu Tunggu (1 Driver)
                     </span>
-                    <span className="text-right text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                    <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
                       {idrFormat(100000)}
                     </span>
                   </div>

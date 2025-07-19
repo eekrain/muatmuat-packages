@@ -56,7 +56,7 @@ const CropperPreviewScreen = () => {
           >
             Ubah Foto
           </Button>
-          <span className="text-[14px] font-medium leading-[14px] text-[#676767]">
+          <span className="text-sm font-medium leading-[14px] text-[#676767]">
             Max. size foto 10MB
           </span>
         </div>

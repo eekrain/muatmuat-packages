@@ -78,7 +78,7 @@ export const HeaderResponsiveForm = ({
                 width={24}
                 height={24}
               />
-              <span className="text-[10px] font-semibold">Info</span>
+              <span className="text-xxs font-semibold">Info</span>
             </button>
           )}
           {withMenu.onClickMenu && (
@@ -87,7 +87,7 @@ export const HeaderResponsiveForm = ({
               className="flex w-[38px] flex-col items-center gap-[2px]"
             >
               <IconComponent src="/icons/menu-dot.svg" width={24} height={24} />
-              <span className="text-[10px] font-semibold">Menu</span>
+              <span className="text-xxs font-semibold">Menu</span>
             </button>
           )}
           {withMenu.onClickShare && (
@@ -96,7 +96,7 @@ export const HeaderResponsiveForm = ({
               className="flex w-[38px] flex-col items-center gap-[2px]"
             >
               <IconComponent src="/icons/share16.svg" width={24} height={24} />
-              <span className="text-[10px] font-semibold">Bagikan</span>
+              <span className="text-xxs font-semibold">Bagikan</span>
             </button>
           )}
         </div>

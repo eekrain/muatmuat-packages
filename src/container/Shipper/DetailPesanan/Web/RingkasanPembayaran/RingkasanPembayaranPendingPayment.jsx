@@ -28,7 +28,7 @@ export const RingkasanPembayaranPendingPayment = ({
         <CardPayment.Content className="pb-6 pt-6" noScroll>
           <div className="flex h-[92px] items-start justify-between rounded-xl bg-warning-100 px-4 py-6">
             <div className="text-xs font-medium leading-[1.2]">
-              <div className="text-[16px] font-bold text-secondary-900">
+              <div className="text-base font-bold text-secondary-900">
                 Bayar Sebelum
               </div>
               <span className="mt-3 block font-medium text-neutral-900">

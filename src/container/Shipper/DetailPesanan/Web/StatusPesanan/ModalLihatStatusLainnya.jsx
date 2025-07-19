@@ -14,7 +14,7 @@ export const ModalLihatStatusLainnya = ({ otherStatus }) => {
         </button>
       </ModalTrigger>
       <ModalContent className="px-6 py-8">
-        <h2 className="mb-6 text-center text-[16px] font-bold leading-[1.2] text-neutral-900">
+        <h2 className="mb-6 text-center text-base font-bold leading-[1.2] text-neutral-900">
           Status Lainnya
         </h2>
         <div className="flex flex-col gap-2">

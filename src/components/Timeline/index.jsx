@@ -21,7 +21,7 @@ export const lineVariants = cva(
 );
 
 export const bulletVariants = cva(
-  "absolute left-1/2 inline-flex -translate-x-1/2 items-center justify-center rounded-full text-[10px] font-bold",
+  "absolute left-1/2 inline-flex -translate-x-1/2 items-center justify-center rounded-full text-xxs font-bold",
   {
     variants: {
       variant: {
@@ -148,7 +148,7 @@ export const TimelineContentWithButtonDate = ({
       <div className="flex flex-col gap-[2px]">
         <span
           className={cn(
-            "line-clamp-1 text-[14px] font-medium leading-[1.2] text-neutral-900",
+            "line-clamp-1 text-sm font-medium leading-[1.2] text-neutral-900",
             appearance?.titleClassname
           )}
         >

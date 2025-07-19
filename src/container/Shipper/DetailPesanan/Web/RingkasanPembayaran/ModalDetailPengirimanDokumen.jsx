@@ -63,14 +63,14 @@ export const ModalDetailPengirimanDokumen = ({ dataRingkasanPembayaran }) => {
   return (
     <Modal closeOnOutsideClick>
       <ModalTrigger>
-        <button className="text-[12px] font-medium leading-[14.4px] text-primary-700">
+        <button className="text-xs font-medium leading-[14.4px] text-primary-700">
           Lihat Detail Pengiriman Dokumen
         </button>
       </ModalTrigger>
       <ModalContent>
         <div className="flex flex-col gap-y-4 px-6 py-9">
           {/* Header */}
-          <h2 className="text-center text-[16px] font-bold leading-[19.2px] text-neutral-900">
+          <h2 className="text-center text-base font-bold leading-[19.2px] text-neutral-900">
             Detail Pengiriman Dokumen
           </h2>
 
@@ -82,11 +82,11 @@ export const ModalDetailPengirimanDokumen = ({ dataRingkasanPembayaran }) => {
                 key={field.id}
                 className="flex w-[424px] flex-col items-start gap-3 p-0"
               >
-                <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+                <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
                   {field.label}
                 </span>
                 <span
-                  className={`text-[12px] font-medium leading-[14.4px] text-neutral-600 ${field.width}`}
+                  className={`text-xs font-medium leading-[14.4px] text-neutral-600 ${field.width}`}
                 >
                   {field.value}
                 </span>
@@ -95,7 +95,7 @@ export const ModalDetailPengirimanDokumen = ({ dataRingkasanPembayaran }) => {
 
             {/* Ekspedisi Section */}
             <div className="flex h-12 w-[424px] flex-col items-start gap-3 p-0">
-              <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+              <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
                 Ekspedisi Pengiriman
               </span>
 
@@ -103,10 +103,10 @@ export const ModalDetailPengirimanDokumen = ({ dataRingkasanPembayaran }) => {
               <div className="flex w-full flex-col gap-2">
                 {/* JNE Service */}
                 <div className="flex h-2 w-[424px] flex-row items-center justify-between">
-                  <span className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                  <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
                     {dataRingkasanPembayaran?.documentShippingDetail?.courier}
                   </span>
-                  <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                  <span className="text-xs font-medium leading-[14.4px] text-neutral-900">
                     {idrFormat(
                       dataRingkasanPembayaran?.documentShippingDetail
                         ?.courierPrice
@@ -116,10 +116,10 @@ export const ModalDetailPengirimanDokumen = ({ dataRingkasanPembayaran }) => {
 
                 {/* Insurance */}
                 <div className="flex h-2 w-[424px] flex-row items-center justify-between">
-                  <span className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                  <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
                     Asuransi Pengiriman
                   </span>
-                  <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                  <span className="text-xs font-medium leading-[14.4px] text-neutral-900">
                     {idrFormat(
                       dataRingkasanPembayaran?.documentShippingDetail
                         ?.insurancePrice

@@ -112,7 +112,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
               />
 
               <InfoBottomsheet title="Kirim Bukti Fisik Penerimaan Barang">
-                <span className="text-[14px] font-medium leading-[15.4px] text-neutral-900">
+                <span className="text-sm font-medium leading-[15.4px] text-neutral-900">
                   Pilih opsi ini jika kamu ingin dokumen surat jalan atau
                   dokumen pendukung lainnya, dikembalikan ke alamat tujuan yang
                   kamu isikan. Biaya pengiriman akan mengikuti alamat tujuan
@@ -121,7 +121,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
               </InfoBottomsheet>
             </div>
 
-            <span className="ml-6 text-[14px] font-medium leading-[15.4px] text-neutral-600">
+            <span className="ml-6 text-sm font-medium leading-[15.4px] text-neutral-600">
               {tambahanFormValues.opsiPegiriman
                 ? (() => {
                     const shippingPrice = parseInt(
@@ -292,20 +292,20 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
 
             {/* Kabupaten/Kota Display */}
             <div className="flex flex-col gap-y-4">
-              <span className="leading-[15.4px text-[14px] font-semibold text-neutral-900">
+              <span className="leading-[15.4px text-sm font-semibold text-neutral-900">
                 Kabupaten/Kota
               </span>
-              <span className="flex h-2 items-center text-[12px] font-semibold leading-[13.2px] text-black">
+              <span className="flex h-2 items-center text-xs font-semibold leading-[13.2px] text-black">
                 {locationFormValues.dataLokasi?.city?.name || "-"}
               </span>
             </div>
 
             {/* Provinsi Display */}
             <div className="flex flex-col gap-y-4">
-              <span className="leading-[15.4px text-[14px] font-semibold text-neutral-900">
+              <span className="leading-[15.4px text-sm font-semibold text-neutral-900">
                 Provinsi
               </span>
-              <span className="flex h-2 items-center text-[12px] font-semibold leading-[13.2px] text-black">
+              <span className="flex h-2 items-center text-xs font-semibold leading-[13.2px] text-black">
                 {locationFormValues.dataLokasi?.province?.name || "-"}
               </span>
             </div>
@@ -359,15 +359,15 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                     <div className="flex flex-col items-start gap-y-2">
                       {tambahanFormValues.opsiPegiriman ? (
                         <>
-                          <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
+                          <span className="text-sm font-semibold leading-[15.4px] text-neutral-900">
                             {tambahanFormValues.opsiPegiriman.courier}
                           </span>
-                          <span className="text-[12px] font-medium leading-[13.2px] text-neutral-900">
+                          <span className="text-xs font-medium leading-[13.2px] text-neutral-900">
                             {tambahanFormValues.opsiPegiriman.price}
                           </span>
                         </>
                       ) : (
-                        <span className="text-[14px] font-semibold leading-[15.4px] text-primary-700">
+                        <span className="text-sm font-semibold leading-[15.4px] text-primary-700">
                           Pilih Opsi Pengiriman
                         </span>
                       )}
@@ -385,12 +385,12 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                       tambahanSetField("asuransiPengiriman", e.checked)
                     }
                     label="Pakai Asuransi Pengiriman (Rp10.000)"
-                    className="!text-[12px] !font-medium !leading-[15.6px]"
+                    className="!text-xs !font-medium !leading-[15.6px]"
                   />
                 ) : null}
               </div>
               {tambahanFormErrors?.opsiPegiriman ? (
-                <span className="text-[12px] font-medium leading-[13.2px] text-error-400">
+                <span className="text-xs font-medium leading-[13.2px] text-error-400">
                   {tambahanFormErrors?.opsiPegiriman}
                 </span>
               ) : null}
@@ -411,7 +411,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                 )
               }
             >
-              <span className="flex items-center text-[14px] font-bold leading-[15.4px] text-neutral-900">
+              <span className="flex items-center text-sm font-bold leading-[15.4px] text-neutral-900">
                 Layanan Tambahan Lainnya
               </span>
               <IconComponent
@@ -460,12 +460,12 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                           }}
                         />
                         <InfoBottomsheet title="Bantuan Tambahan">
-                          <p className="text-[14px] font-medium leading-[15.4px] text-neutral-900">
+                          <p className="text-sm font-medium leading-[15.4px] text-neutral-900">
                             {service.description}
                           </p>
                         </InfoBottomsheet>
                       </FormLabel>
-                      <span className="ml-6 text-[14px] font-medium leading-[15.4px] text-neutral-600">
+                      <span className="ml-6 text-sm font-medium leading-[15.4px] text-neutral-600">
                         {`Rp.${Number(service.price).toLocaleString("id-ID")}`}
                       </span>
                     </div>

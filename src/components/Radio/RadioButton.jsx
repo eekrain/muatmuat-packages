@@ -62,7 +62,7 @@ const RadioButton = ({
         children
       ) : (
         <span
-          className={`text-[14px] font-semibold leading-[15.4px] text-neutral-900 md:text-[12px] md:font-medium md:leading-[14.4px] ${classNameLabel}`}
+          className={`text-sm font-semibold leading-[15.4px] text-neutral-900 md:text-xs md:font-medium md:leading-[14.4px] ${classNameLabel}`}
         >
           {label}
         </span>

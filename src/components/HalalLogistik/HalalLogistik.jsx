@@ -10,7 +10,7 @@ export const HalalLogistik = () => {
           height={24}
           alt="Halal Indonesia"
         />
-        <span className="text-center text-[12px] font-semibold leading-[14.4px] text-[#652672]">
+        <span className="text-center text-xs font-semibold leading-[14.4px] text-[#652672]">
           Menggunakan Layanan Halal Logistik
         </span>
       </div>

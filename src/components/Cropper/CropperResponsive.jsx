@@ -118,7 +118,7 @@ export default function CropperResponsive({
               onClick={cancelCrop}
             />
             {/* </button> */}
-            <span className="text-[16px] font-medium leading-[19.2px] text-white">
+            <span className="text-base font-medium leading-[19.2px] text-white">
               Cropper
             </span>
           </div>
@@ -134,10 +134,10 @@ export default function CropperResponsive({
             className={`m-auto aspect-square w-full ${isCircle ? "modal-cropper-circle" : ""} `}
           >
             {/* <div className="bg-[white] flex flex-col absolute right-[8px] bottom-[7.5px] border-[#E2E2E2] border-[1px] rounded-[12px] z-50 h-[80px]">
-                            <div className="h-1/2 text-[25px] cursor-pointer text-[black] flex justify-center items-center" onClick={zoomIn}>
+                            <div className="h-1/2 text-2xl cursor-pointer text-[black] flex justify-center items-center" onClick={zoomIn}>
                                 +
                             </div>
-                            <div className="h-1/2 text-[25px] cursor-pointer text-[black] flex justify-center items-center p-[15px]" onClick={zoomOut}>
+                            <div className="h-1/2 text-2xl cursor-pointer text-[black] flex justify-center items-center p-[15px]" onClick={zoomOut}>
                                 <div className="w-[12px] border-[1.25px] border-[#1B1B1B]">
                                 </div>
                             </div>

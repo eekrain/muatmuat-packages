@@ -30,7 +30,7 @@ const DriverItem = ({ driver, showSeparator = true, orderId }) => {
           appearance={{
             containerClassName: "gap-1",
             nameClassName: "text-xs font-bold",
-            licensePlateClassName: "text-[10px]",
+            licensePlateClassName: "text-xxs",
           }}
           withIcon={false}
         />

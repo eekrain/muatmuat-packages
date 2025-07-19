@@ -4,7 +4,7 @@ import { thousandSeparator } from "@/lib/utils/formatters";
 
 const Label = ({ children, tooltip }) => (
   <div className="flex h-[16px] items-center gap-1">
-    <div className="mt-[2px] h-4 text-[12px] font-bold leading-[1.2] text-neutral-600">
+    <div className="mt-[2px] h-4 text-xs font-bold leading-[1.2] text-neutral-600">
       {children}
     </div>
     <div className="flex-shrink-0">{tooltip}</div>
@@ -57,7 +57,7 @@ export const InformasiMuatanTable = ({ informasiMuatan, onClickUpdate }) => {
               onClick={onClickUpdate}
               className="flex w-[54px] items-end justify-center gap-2 text-primary-700"
             >
-              <span className="cursor-pointer text-[12px] font-medium leading-[14.4px]">
+              <span className="cursor-pointer text-xs font-medium leading-[14.4px]">
                 Ubah
               </span>
               <div className="flex h-4 w-4 items-center justify-center">
@@ -79,18 +79,18 @@ export const InformasiMuatanTable = ({ informasiMuatan, onClickUpdate }) => {
             className="grid grid-cols-[209px_113px_190px] gap-x-4"
           >
             <div className="w-[209px]">
-              <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+              <span className="text-xs font-medium leading-[14.4px] text-neutral-900">
                 {item.namaMuatan.label}
               </span>
             </div>
             <div className="w-[113px]">
-              <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+              <span className="text-xs font-medium leading-[14.4px] text-neutral-900">
                 {thousandSeparator(item.beratMuatan.berat)}{" "}
                 {item.beratMuatan.unit}
               </span>
             </div>
             <div className="w-[190px]">
-              <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+              <span className="text-xs font-medium leading-[14.4px] text-neutral-900">
                 {thousandSeparator(item.dimensiMuatan.panjang)} x{" "}
                 {thousandSeparator(item.dimensiMuatan.lebar)} x{" "}
                 {thousandSeparator(item.dimensiMuatan.tinggi)}{" "}
