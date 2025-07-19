@@ -1,3 +1,5 @@
+import pluginAnimate from "tailwindcss-animate";
+import pluginCapsize from "tailwindcss-capsize";
 import defaultTheme from "tailwindcss/defaultTheme";
 
 /**
@@ -8,7 +10,8 @@ const config = {
   theme: {
     extend: {
       fontSize: {
-        xxs: ["10px", { lineHeight: "12px" }],
+        ...defaultTheme.fontSize,
+        xxs: ["10px", "12px"],
         xs: ["12px", { lineHeight: "14.4px" }],
         sm: ["14px", { lineHeight: "16.8px" }],
         base: ["16px", { lineHeight: "19.2px" }],
@@ -16,8 +19,21 @@ const config = {
         xl: ["20px", { lineHeight: "24px" }],
         "2xl": ["24px", { lineHeight: "28.8px" }],
         "3xl": ["32px", { lineHeight: "38.4px" }],
-        ...defaultTheme.fontSize,
       },
+      fontFamily: {
+        sans: ["var(--font-avenir)", ...defaultTheme.fontFamily.sans],
+      },
+      fontMetrics: {
+        // Keys here must match those in fontFamily.
+        sans: {
+          capHeight: 708,
+          ascent: 756,
+          descent: -300,
+          lineGap: 200,
+          unitsPerEm: 1000,
+        },
+      },
+
       colors: {
         background: "#F8F8FB",
         foreground: "#171717",
@@ -210,7 +226,7 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [pluginAnimate, pluginCapsize],
 };
 
 export default config;

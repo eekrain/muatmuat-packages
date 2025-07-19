@@ -8,6 +8,8 @@ export const metadata = {
 };
 
 const Avenir = localFont({
+  variable: "--font-avenir",
+  display: "swap",
   src: [
     {
       path: "../fonts/AvenirNextLTPro-Bold.otf",
@@ -34,8 +36,8 @@ const Avenir = localFont({
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={`${Avenir.className} bg-background`}>{children}</body>
+    <html lang="en" className={Avenir.variable}>
+      <body className="bg-background font-sans">{children}</body>
     </html>
   );
 }

@@ -11,7 +11,7 @@ import IconComponent from "../IconComponent/IconComponent";
 
 const buttonVariants = cva(
   // Base styles
-  "flex h-8 items-center justify-center gap-1 rounded-[24px] px-6 py-3 text-sm font-semibold leading-[16.8px] transition-colors",
+  "leading-[16.8px] flex h-8 items-center justify-center gap-1 rounded-[24px] px-6 py-3 text-sm font-semibold transition-colors",
   {
     variants: {
       variant: {
@@ -82,6 +82,9 @@ const Button = ({
   iconLeft = null,
   iconRight = null,
   disabled = false,
+  appearance = {
+    iconClassName: "",
+  },
   ...buttonProps
 }) => {
   const isSecondaryVariant = variant.includes("secondary");
@@ -106,19 +109,19 @@ const Button = ({
           src={iconLeft}
           height={16}
           width={16}
-          className={iconColorClass}
+          className={cn(iconColorClass, appearance.iconClassName)}
         />
       ) : (
         iconLeft
       )}
-      {children}
+      <span className="capsize">{children}</span>
       {typeof iconRight === "string" ? (
         <IconComponent
           loader={false}
           src={iconRight}
           height={16}
           width={16}
-          className={iconColorClass}
+          className={cn(iconColorClass, appearance.iconClassName)}
         />
       ) : (
         iconRight
