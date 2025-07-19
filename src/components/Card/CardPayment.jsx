@@ -112,7 +112,9 @@ const Item = ({
       >
         {label}
       </div>
-      <div className={cn("flex gap-2 text-black", appearance.valueClassName)}>
+      <div
+        className={cn("flex gap-2 text-neutral-900", appearance.valueClassName)}
+      >
         {value}
       </div>
     </div>

@@ -48,31 +48,27 @@ export const RingkasanPembayaranDefault = ({
         <CardPayment.Content>
           <CardPayment.ContainerCollapsible title="Detail Pesanan">
             <div className="flex flex-col gap-3">
-              <CardPayment.Item
-                label="Waktu Pembayaran"
-                value={formatDate(dataRingkasanPembayaran?.expiredAt)}
-              />
+              {dataRingkasanPembayaran?.expiredAt && (
+                <CardPayment.Item
+                  label="Waktu Pembayaran"
+                  value={formatDate(dataRingkasanPembayaran?.expiredAt)}
+                />
+              )}
 
               <CardPayment.Item
                 label="Opsi Pembayaran"
+                appearance={{
+                  valueClassName: "items-center",
+                }}
                 value={
                   <>
-                    <IconComponent
-                      src={
-                        PaymentMethodIconFromMethod[
-                          dataRingkasanPembayaran?.paymentMethod
-                        ]
-                      }
-                      width={16}
-                      height={16}
-                      className="bg-white"
+                    <img
+                      src={dataRingkasanPembayaran?.paymentLogo}
+                      alt={dataRingkasanPembayaran?.paymentMethod}
+                      className="h-4 w-4 bg-white"
                     />
-                    <span>
-                      {
-                        PaymentMethodTitle[
-                          dataRingkasanPembayaran?.paymentMethod
-                        ]
-                      }
+                    <span className="capsize">
+                      {dataRingkasanPembayaran?.paymentMethod}
                     </span>
                   </>
                 }

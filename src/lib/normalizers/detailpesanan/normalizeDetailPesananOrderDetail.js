@@ -133,7 +133,8 @@ export const normalizeDetailPesananOrderDetail = ({
     };
 
     const dataRingkasanPembayaran = {
-      paymentMethod: dataPayment?.payment?.method,
+      paymentMethod: dataOrderDetail.summary?.payment?.paymentMethod,
+      paymentLogo: dataOrderDetail.summary?.payment?.paymentLogo,
       vaNumber: dataPayment?.payment?.vaNumber,
       expiredAt: dataPayment?.payment?.expiredAt,
       transportFee: dataOrderDetail.summary?.price?.transportFee,
