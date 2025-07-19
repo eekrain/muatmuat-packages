@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
+import CardPayment from "@/components/Card/CardPayment";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { ModalDetailWaktuTunggu } from "@/components/Modal/ModalDetailWaktuTunggu";
 import PageTitle from "@/components/PageTitle/PageTitle";
@@ -65,7 +66,7 @@ const DetailRefundPesananWeb = () => {
               Rekening Pengembalian Dana
             </h2>
 
-            <div className="grid grid-cols-[131px_1fr] gap-x-8 gap-y-5 text-xs font-medium leading-[1.2]">
+            <div className="leading-[1.2] grid grid-cols-[131px_1fr] gap-x-8 gap-y-5 text-xs font-medium">
               <span className="text-neutral-600">Nama Bank</span>
               <div className="flex items-center gap-2">
                 <IconComponent
@@ -86,86 +87,64 @@ const DetailRefundPesananWeb = () => {
         </div>
 
         {/* Refund Details Sidebar */}
-        <div className="w-80 space-y-4">
+        <div className="flex max-h-[453px] w-[338px] flex-col gap-4">
           {/* Refund Breakdown */}
-          <div className="overflow-hidden rounded-xl bg-white font-medium shadow-sm">
-            <div className="px-5 py-6">
-              <h3 className="mb-6 text-base font-bold text-neutral-900">
-                Detail Pengembalian Dana
-              </h3>
+          <CardPayment.Root className="w-full flex-1">
+            <CardPayment.Header>Detail Pengembalian Dana</CardPayment.Header>
 
-              <div className="space-y-6">
-                {/* Transportation Cost */}
-                <div>
-                  <h4 className="mb-3 h-[10px] text-sm font-semibold text-neutral-900">
-                    Biaya Pesan Jasa Angkut
-                  </h4>
-                  <div className="flex items-start justify-between gap-2">
-                    <span className="w-[190px] text-xs text-neutral-600">
-                      Nominal Seluruh Pesan Jasa Angkut
-                    </span>
-                    <span className="pt-[2px] text-xs text-neutral-900">
-                      Rp1.394.410
-                    </span>
-                  </div>
-                </div>
+            <CardPayment.Content noScroll>
+              {/* Transportation Cost */}
+              <CardPayment.ContainerItem title="Biaya Pesan Jasa Angkut">
+                <CardPayment.Item
+                  label="Nominal Seluruh Pesan Jasa Angkut"
+                  value="Rp1.394.410"
+                />
+              </CardPayment.ContainerItem>
 
-                <div>
-                  <div className="mb-3 flex h-[8px] w-full items-start justify-between">
-                    <span className="w-[190px] text-xs font-medium leading-[14.4px] text-neutral-600">
-                      Nominal Waktu Tunggu (1 Driver)
-                    </span>
-                    <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
-                      {idrFormat(100000)}
-                    </span>
-                  </div>
-
+              {/* Waiting Time Cost */}
+              <CardPayment.ContainerItem title="Biaya Waktu Tunggu">
+                <div className="flex flex-col gap-0.5">
+                  <CardPayment.Item
+                    label="Nominal Waktu Tunggu (1 Driver)"
+                    value={idrFormat(100000)}
+                  />
                   <ModalDetailWaktuTunggu />
                 </div>
+              </CardPayment.ContainerItem>
 
-                {/* Administration Cost */}
-                <div>
-                  <h4 className="mb-3 h-[10px] text-sm font-semibold text-neutral-900">
-                    Biaya Administrasi
-                  </h4>
-                  <div className="flex items-start justify-between gap-2">
-                    <span className="w-[190px] text-xs text-neutral-600">
-                      Admin Pembatalan
-                    </span>
-                    <span className="text-xs text-red-500">-Rp100.000</span>
-                  </div>
-                </div>
+              {/* Administration Cost */}
+              <CardPayment.ContainerItem title="Biaya Administrasi">
+                <CardPayment.Item
+                  label="Admin Pembatalan"
+                  value="-Rp100.000"
+                  appearance={{
+                    valueClassName: "text-red-500",
+                  }}
+                />
+              </CardPayment.ContainerItem>
 
-                {/* Other Costs */}
-                <div>
-                  <h4 className="mb-3 h-[10px] text-sm font-semibold text-neutral-900">
-                    Biaya Lainnya
-                  </h4>
-                  <div className="flex items-start justify-between gap-2">
-                    <span className="w-[190px] text-xs text-neutral-600">
-                      Admin Refund
-                    </span>
-                    <span className="text-xs text-red-500">-Rp10.000</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+              {/* Other Costs */}
+              <CardPayment.ContainerItem title="Biaya Lainnya">
+                <CardPayment.Item
+                  label="Admin Refund"
+                  value="-Rp10.000"
+                  appearance={{
+                    valueClassName: "text-red-500",
+                  }}
+                />
+              </CardPayment.ContainerItem>
+            </CardPayment.Content>
 
-            {/* Total */}
-            <div className="px-5 py-6 shadow-[0px_4px_11px_0px_#41414140]">
-              <div className="flex items-start justify-between">
-                <span className="text-base font-bold text-neutral-900">
-                  Total Pengembalian Dana
-                </span>
-                <span className="text-base font-bold text-neutral-900">
-                  Rp1.184.410
-                </span>
-              </div>
-            </div>
-          </div>
+            <CardPayment.FooterTotal
+              label="Total Pengembalian Dana"
+              value="Rp1.184.410"
+              appearance={{
+                labelClassName: "max-w-[148px]",
+              }}
+            />
+          </CardPayment.Root>
 
           {/* Download Button */}
-
           <Button
             iconLeft="/icons/download16.svg"
             variant="muatparts-primary-secondary"

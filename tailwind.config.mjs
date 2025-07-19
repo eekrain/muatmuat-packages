@@ -26,7 +26,7 @@ const config = {
       fontMetrics: {
         // Keys here must match those in fontFamily.
         sans: {
-          capHeight: 708,
+          capHeight: 722,
           ascent: 756,
           descent: -300,
           lineGap: 200,

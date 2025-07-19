@@ -43,7 +43,7 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
                     height={24}
                     alt="Halal Indonesia"
                   />
-                  <span className="text-center text-xs font-semibold leading-[14.4px] text-[#652672]">
+                  <span className="leading-[14.4px] text-center text-xs font-semibold text-[#652672]">
                     Menggunakan Layanan Halal Logistik
                   </span>
                 </div>
@@ -51,12 +51,12 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
             )}
 
             {/* Page Title */}
-            <h1 className="mb-6 text-lg font-bold leading-[21.6px] text-neutral-900">
+            <h1 className="leading-[21.6px] mb-6 text-lg font-bold text-neutral-900">
               Ringkasan Pesanan
             </h1>
             {/* Informasi Armada */}
             <div className="flex flex-col gap-4 md:flex-row md:gap-8">
-              <div className="w-full text-xs font-medium leading-[14.4px] text-neutral-600 md:w-[178px]">
+              <div className="leading-[14.4px] w-full text-xs font-medium text-neutral-600 md:w-[178px]">
                 Informasi Armada
               </div>
               <div className="flex flex-1 items-center gap-4">
@@ -74,10 +74,10 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
 
                 {/* Armada Info */}
                 <div className="flex flex-col gap-2">
-                  <h3 className="text-xs font-bold leading-[14.4px] text-neutral-900">
+                  <h3 className="leading-[14.4px] text-xs font-bold text-neutral-900">
                     {dataRingkasanPesanan?.vehicle?.name}
                   </h3>
-                  <p className="text-xs font-medium leading-[14.4px] text-neutral-900">
+                  <p className="leading-[14.4px] text-xs font-medium text-neutral-900">
                     Kebutuhan : {dataRingkasanPesanan?.vehicle.truckCount} Unit
                   </p>
                 </div>
@@ -86,11 +86,11 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
 
             {/* Waktu Muat */}
             <div className="flex flex-col gap-4 md:flex-row md:gap-8">
-              <div className="w-full text-xs font-medium leading-[14.4px] text-neutral-600 md:w-[178px]">
+              <div className="leading-[14.4px] w-full text-xs font-medium text-neutral-600 md:w-[178px]">
                 Waktu Muat
               </div>
               <div className="flex-1">
-                <span className="text-xs font-medium leading-[14.4px] text-neutral-900">
+                <span className="leading-[14.4px] text-xs font-medium text-neutral-900">
                   {formatDate(dataRingkasanPesanan?.loadTimeStart)} s/d{" "}
                   {dataRingkasanPesanan?.loadTimeEnd
                     ? `s/d ${formatDate(dataRingkasanPesanan?.loadTimeEnd)}`
@@ -101,11 +101,11 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
 
             {/* Rute */}
             <div className="flex flex-col gap-4 md:flex-row md:gap-8">
-              <div className="w-full text-xs font-medium leading-[14.4px] text-neutral-600 md:w-[178px]">
+              <div className="leading-[14.4px] w-full text-xs font-medium text-neutral-600 md:w-[178px]">
                 Rute
               </div>
               <div className="flex-1">
-                <p className="mb-3 text-xs font-medium leading-[14.4px] text-neutral-900">
+                <p className="leading-[14.4px] mb-3 text-xs font-medium text-neutral-900">
                   Estimasi {dataRingkasanPesanan?.estimatedDistance} km
                 </p>
 
@@ -187,7 +187,7 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
 
             {/* Informasi Muatan */}
             <div className="flex flex-col gap-4 md:flex-row md:gap-8">
-              <div className="w-full text-xs font-medium leading-[14.4px] text-neutral-600 md:w-[178px]">
+              <div className="leading-[14.4px] w-full text-xs font-medium text-neutral-600 md:w-[178px]">
                 Informasi Muatan
               </div>
               <div className="flex-1">
@@ -197,26 +197,26 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
                     .map((item, index) => (
                       <div key={index} className="flex items-center gap-2">
                         <IconComponent
-                          src="/icons/package.svg"
+                          src="/icons/muatan16.svg"
                           width={16}
                           height={16}
                           className="flex-shrink-0"
                         />
-                        <span className="text-xs font-medium leading-[14.4px] text-neutral-900">
+                        <span className="leading-[14.4px] text-xs font-medium text-neutral-900 capsize">
                           {item.name} ({item.weight} {item.weightUnit})
                         </span>
                       </div>
                     ))}
                   <Modal closeOnOutsideClick={false}>
                     <ModalTrigger>
-                      <button className="text-xs font-medium leading-[14.4px] text-primary-700">
+                      <button className="leading-[14.4px] text-xs font-medium text-primary-700">
                         Lihat Informasi Muatan Lainnya
                       </button>
                     </ModalTrigger>
                     <ModalContent>
                       <div className="flex flex-col gap-y-3 p-6">
                         {/* Header */}
-                        <h2 className="text-center text-base font-bold leading-[19.2px] text-neutral-900">
+                        <h2 className="leading-[19.2px] text-center text-base font-bold text-neutral-900">
                           Informasi Muatan
                         </h2>
                         <div className="flex w-[600px] flex-col items-start gap-2 rounded-xl border border-neutral-400 px-4 py-5">
@@ -226,7 +226,7 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
                               className="flex w-full flex-row items-center gap-2"
                             >
                               <IconComponent src="/icons/muatan16.svg" />
-                              <span className="text-xs font-medium leading-[14.4px] text-neutral-900">
+                              <span className="leading-[14.4px] text-xs font-medium text-neutral-900 capsize">
                                 {item.name} ({item.weight} {item.weightUnit})
                               </span>
                             </div>
@@ -250,7 +250,7 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
             <div className="flex flex-col gap-y-6">
               {/* Lampiran/Foto Muatan */}
               <div className="flex flex-col gap-4 md:flex-row md:gap-8">
-                <div className="w-full text-xs font-medium leading-[14.4px] text-neutral-600 md:w-[178px]">
+                <div className="leading-[14.4px] w-full text-xs font-medium text-neutral-600 md:w-[178px]">
                   Lampiran/Foto Muatan
                 </div>
                 <div className="grid flex-1 grid-cols-2 gap-4 md:grid-cols-4">
@@ -273,11 +273,11 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
               {/* Deskripsi Muatan */}
 
               <div className="flex flex-col gap-4 md:flex-row md:gap-8">
-                <div className="w-full text-xs font-medium leading-[14.4px] text-neutral-600 md:w-[178px]">
+                <div className="leading-[14.4px] w-full text-xs font-medium text-neutral-600 md:w-[178px]">
                   Deskripsi Muatan
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs font-medium leading-[14.4px] text-neutral-900">
+                  <p className="leading-[14.4px] text-xs font-medium text-neutral-900">
                     {dataRingkasanPesanan.cargoDescription}
                   </p>
                 </div>
@@ -285,7 +285,7 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
 
               {/* No. Delivery Order */}
               <div className="flex flex-col gap-4 md:flex-row md:gap-8">
-                <div className="w-full text-xs font-medium leading-[14.4px] text-neutral-600 md:w-[178px]">
+                <div className="leading-[14.4px] w-full text-xs font-medium text-neutral-600 md:w-[178px]">
                   No. Delivery Order
                 </div>
                 <div className="flex-1">
@@ -312,7 +312,7 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
               height={20}
               className={`icon-blue transition-transform duration-300 ${!isExpanded ? "rotate-180" : ""}`}
             />
-            <span className="text-xs font-semibold leading-[14.4px] text-primary-700">
+            <span className="leading-[14.4px] text-xs font-semibold text-primary-700">
               {isExpanded ? "Sembunyikan" : "Lihat Selengkapnya"}
             </span>
           </button>

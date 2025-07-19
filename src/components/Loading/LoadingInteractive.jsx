@@ -5,7 +5,12 @@ import { useLoadingStore } from "@/store/Shipper/loadingStore";
 
 export default function LoadingInteractive() {
   const isGlobalLoading = useLoadingStore((state) => state.isGlobalLoading);
+  console.log("🚀 ~ LoadingInteractive ~ isGlobalLoading:", isGlobalLoading);
   const { isTranslationsReady } = useTranslation();
+  console.log(
+    "🚀 ~ LoadingInteractive ~ isTranslationsReady:",
+    isTranslationsReady
+  );
 
   if (isGlobalLoading || !isTranslationsReady) {
     return (

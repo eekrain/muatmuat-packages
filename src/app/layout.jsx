@@ -37,7 +37,7 @@ const Avenir = localFont({
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={Avenir.variable}>
-      <body className="bg-background font-sans">{children}</body>
+      <body className="bg-background font-sans antialiased">{children}</body>
     </html>
   );
 }

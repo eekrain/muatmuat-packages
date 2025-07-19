@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef } from "react";
 
 import LoadingInteractive from "@/components/Loading/LoadingInteractive";
@@ -45,9 +45,11 @@ const useResetNavigationOnDesktop = () => {
   const router = useRouter();
   const { isMobile, mounted } = useDevice();
   const { replace: replaceNavigation } = useResponsiveNavigation();
+  const searchParams = useSearchParams();
+  const screenSearchParam = searchParams.get("screen");
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || !screenSearchParam) return;
     if (!isMobile) {
       const currentSeach = new URLSearchParams(window.location.search);
       currentSeach.delete("screen");
@@ -57,7 +59,7 @@ const useResetNavigationOnDesktop = () => {
       replaceNavigation("/");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMobile, mounted]);
+  }, [isMobile, mounted, screenSearchParam]);
 };
 
 const useDefaultTimeoutLoading = () => {

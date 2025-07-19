@@ -7,6 +7,10 @@ import { ModalDetailOverloadMuatan } from "@/components/Modal/ModalDetailOverloa
 import { ModalDetailWaktuTunggu } from "@/components/Modal/ModalDetailWaktuTunggu";
 import { WaitFleetSearchButton } from "@/container/Shipper/DetailPesanan/Web/StatusPesanan/WaitFleetSearch";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import {
+  PaymentMethodIconFromMethod,
+  PaymentMethodTitle,
+} from "@/lib/constants/detailpesanan/payment.enum";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
 
@@ -54,12 +58,22 @@ export const RingkasanPembayaranDefault = ({
                 value={
                   <>
                     <IconComponent
-                      src="/icons/payment/va_bca.svg"
+                      src={
+                        PaymentMethodIconFromMethod[
+                          dataRingkasanPembayaran?.paymentMethod
+                        ]
+                      }
                       width={16}
                       height={16}
                       className="bg-white"
                     />
-                    <span>BCA Virtual Account</span>
+                    <span>
+                      {
+                        PaymentMethodTitle[
+                          dataRingkasanPembayaran?.paymentMethod
+                        ]
+                      }
+                    </span>
                   </>
                 }
               />
@@ -69,8 +83,8 @@ export const RingkasanPembayaranDefault = ({
               <CardPayment.Item
                 label={
                   <span>
-                    Nominal Pesan Jasa Angkut <br />
-                    (1 Unit)
+                    Nominal Pesan Jasa Angkut <br />(
+                    {dataRingkasanPembayaran?.totalTruckUnit} Unit)
                   </span>
                 }
                 value={idrFormat(dataRingkasanPembayaran?.transportFee)}
@@ -134,60 +148,80 @@ export const RingkasanPembayaranDefault = ({
               </div>
             </CardPayment.ContainerItem>
           </CardPayment.ContainerCollapsible>
-
-          <CardPayment.ContainerCollapsible title="Detail Tambahan Biaya">
-            <div className="flex flex-col gap-3">
-              <CardPayment.Item
-                label="Waktu Pembayaran"
-                value={formatDate(dataRingkasanPembayaran?.expiredAt)}
-              />
-
-              <CardPayment.Item
-                label="Opsi Pembayaran"
-                value={
-                  <>
-                    <IconComponent
-                      src="/icons/payment/va_bca.svg"
-                      width={16}
-                      height={16}
-                      className="bg-white"
-                    />
-                    <span>BCA Virtual Account</span>
-                  </>
-                }
-              />
-            </div>
-
-            <CardPayment.ContainerItem title="Biaya Waktu Tunggu">
-              <div className="flex flex-col gap-[2px]">
+          {dataRingkasanPembayaran?.priceCharge?.waitingFee?.totalAmount >
+            0 && (
+            <CardPayment.ContainerCollapsible title="Detail Tambahan Biaya">
+              <div className="flex flex-col gap-3">
                 <CardPayment.Item
-                  label="Nominal Waktu Tunggu (1 Driver)"
-                  value={idrFormat(200000)}
+                  label="Waktu Pembayaran"
+                  value={formatDate(dataRingkasanPembayaran?.expiredAt)}
                 />
-                <ModalDetailWaktuTunggu />
-              </div>
-            </CardPayment.ContainerItem>
 
-            <CardPayment.ContainerItem title="Biaya Overload Muatan">
-              <div className="flex flex-col gap-[2px]">
                 <CardPayment.Item
-                  label="Nominal Overload Muatan (2.000 kg)"
-                  value={idrFormat(100000)}
-                  className="h-auto"
-                />
-                <ModalDetailOverloadMuatan
-                  dataRingkasanPembayaran={dataRingkasanPembayaran}
+                  label="Opsi Pembayaran"
+                  value={
+                    <>
+                      <IconComponent
+                        src={
+                          PaymentMethodIconFromMethod[
+                            dataRingkasanPembayaran?.paymentMethod
+                          ]
+                        }
+                        width={16}
+                        height={16}
+                        className="bg-white"
+                      />
+                      <span>
+                        {
+                          PaymentMethodTitle[
+                            dataRingkasanPembayaran?.paymentMethod
+                          ]
+                        }
+                      </span>
+                    </>
+                  }
                 />
               </div>
-            </CardPayment.ContainerItem>
 
-            <CardPayment.ContainerItem title="Biaya Lainnya">
-              <CardPayment.Item
-                label="Admin Layanan"
-                value={idrFormat(10000)}
-              />
-            </CardPayment.ContainerItem>
-          </CardPayment.ContainerCollapsible>
+              <CardPayment.ContainerItem title="Biaya Waktu Tunggu">
+                <div className="flex flex-col gap-[2px]">
+                  <CardPayment.Item
+                    label={`Nominal Waktu Tunggu (${dataRingkasanPembayaran?.priceCharge?.waitingFee?.totalDriver} Driver)`}
+                    value={idrFormat(
+                      dataRingkasanPembayaran?.priceCharge?.waitingFee
+                        ?.totalAmount
+                    )}
+                  />
+                  <ModalDetailWaktuTunggu />
+                </div>
+              </CardPayment.ContainerItem>
+
+              <CardPayment.ContainerItem title="Biaya Overload Muatan">
+                <div className="flex flex-col gap-[2px]">
+                  <CardPayment.Item
+                    label={`Nominal Overload Muatan (${dataRingkasanPembayaran?.priceCharge?.overloadFee?.totalWeight} kg)`}
+                    value={idrFormat(
+                      dataRingkasanPembayaran?.priceCharge?.overloadFee
+                        ?.totalAmount
+                    )}
+                    className="h-auto"
+                  />
+                  <ModalDetailOverloadMuatan
+                    dataRingkasanPembayaran={dataRingkasanPembayaran}
+                  />
+                </div>
+              </CardPayment.ContainerItem>
+
+              <CardPayment.ContainerItem title="Biaya Lainnya">
+                <CardPayment.Item
+                  label="Admin Layanan"
+                  value={idrFormat(
+                    dataRingkasanPembayaran?.priceCharge?.adminFee
+                  )}
+                />
+              </CardPayment.ContainerItem>
+            </CardPayment.ContainerCollapsible>
+          )}
 
           <CardPayment.Subtotal
             label="Subtotal"
@@ -195,7 +229,10 @@ export const RingkasanPembayaranDefault = ({
           />
         </CardPayment.Content>
 
-        <CardPayment.FooterTotal label="Total" value="Rp 100.000" />
+        <CardPayment.FooterTotal
+          label="Total"
+          value={idrFormat(dataRingkasanPembayaran?.totalPrice)}
+        />
       </CardPayment.Root>
 
       {/* Buttons Section */}

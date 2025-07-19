@@ -20,7 +20,7 @@ const Root = ({ className, children }) => {
 const Header = ({ className, children }) => {
   return (
     <div className={cn("flex min-h-[59px] items-center px-5", className)}>
-      <span className="w-full text-base font-bold leading-[1.2] text-neutral-900">
+      <span className="leading-[1.2] w-full text-base font-bold text-neutral-900 capsize">
         {children}
       </span>
     </div>
@@ -31,7 +31,7 @@ const Content = ({ noScroll = false, className, children }) => {
   return (
     <div
       className={cn(
-        "flex h-full w-full flex-col gap-6 overflow-y-auto bg-white pb-4 pl-5 pr-[8px]",
+        "flex h-full w-full flex-col gap-6 overflow-y-auto bg-white pb-4 pl-5 pr-[8px] pt-0.5",
         className
       )}
     >
@@ -54,7 +54,7 @@ const ContainerCollapsible = ({ title, className, children }) => {
         aria-expanded={isOpen}
         aria-controls="collapsible-content"
       >
-        <h3 className="text-sm font-semibold leading-[1.2] text-black">
+        <h3 className="leading-[1.2] text-sm font-semibold text-black">
           {title}
         </h3>
         <div className="flex-shrink-0">
@@ -82,8 +82,8 @@ const ContainerCollapsible = ({ title, className, children }) => {
 
 const ContainerItem = ({ title, className, children }) => {
   return (
-    <div className={cn("flex flex-col gap-3", className)}>
-      <h3 className="text-sm font-semibold leading-[1.2] text-black">
+    <div className={cn("flex flex-col gap-4", className)}>
+      <h3 className="leading-[1.2] text-sm font-semibold text-black capsize">
         {title}
       </h3>
       {children}
@@ -123,7 +123,7 @@ const Subtotal = ({ className, label, value }) => {
   return (
     <div
       className={cn(
-        "flex w-full items-center justify-between text-sm font-semibold leading-[1.2] text-neutral-900",
+        "leading-[1.2] flex w-full items-center justify-between text-sm font-semibold text-neutral-900",
         className
       )}
     >
@@ -134,7 +134,13 @@ const Subtotal = ({ className, label, value }) => {
   );
 };
 
-const FooterTotal = ({ className, label, value, children }) => {
+const FooterTotal = ({
+  className,
+  label,
+  value,
+  children,
+  appearance = { labelClassName: "", valueClassName: "" },
+}) => {
   return (
     <div
       className={cn(
@@ -144,11 +150,11 @@ const FooterTotal = ({ className, label, value, children }) => {
     >
       <div
         className={
-          "flex justify-between text-base font-bold leading-[1.2] text-neutral-900"
+          "leading-[1.2] flex justify-between text-base font-bold text-neutral-900"
         }
       >
-        <span>{label}</span>
-        <span>{value}</span>
+        <span className={appearance.labelClassName}>{label}</span>
+        <span className={appearance.valueClassName}>{value}</span>
       </div>
 
       {children}

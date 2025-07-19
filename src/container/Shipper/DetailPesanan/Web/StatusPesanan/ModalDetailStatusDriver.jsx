@@ -25,7 +25,7 @@ const ModalDetailStatusDriver = () => {
         </Button>
       </ModalTrigger>
       <ModalContent className="w-[800px] p-6" type="muatmuat">
-        <h2 className="mb-3 text-center text-base font-bold leading-[19.2px] text-black">
+        <h2 className="leading-[19.2px] mb-3 text-center text-base font-bold text-black">
           Detail Status Driver
         </h2>
 
@@ -58,7 +58,7 @@ const ModalDetailStatusDriver = () => {
           >
             {contentHeight && dataDriverStatus ? (
               <div
-                className="overflow-y-auto pl-4 pr-[8px]"
+                className="overflow-y-auto pl-4 pr-[7px]"
                 style={{
                   ...(contentHeight ? { maxHeight: contentHeight } : {}),
                 }}
