@@ -96,7 +96,7 @@ function processFile(filePath) {
     let modifiedContent = content;
     let changes = 0;
 
-    console.log(`\n📁 Processing: ${filePath}`);
+    // console.log(`\n📁 Processing: ${filePath}`);
 
     // Pattern 1: fontSize in JavaScript object properties
     // Example: fontSize: "12px"
@@ -266,7 +266,7 @@ function processFile(filePath) {
       console.log(`  ✅ Updated ${changes} font size declarations`);
       return changes;
     } else {
-      console.log(`  ℹ️  No changes needed`);
+      // console.log(`  ℹ️  No changes needed`);
       return 0;
     }
   } catch (error) {
