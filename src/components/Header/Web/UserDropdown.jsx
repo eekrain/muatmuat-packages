@@ -31,7 +31,7 @@ export const UserDropdown = () => {
       {!isLoggedIn ? (
         <a href={`${process.env.NEXT_PUBLIC_INTERNAL_WEB}login?from=muattrans`}>
           <Button variant="muatparts-primary">
-            <span className="text-sm font-semibold leading-[1] text-neutral-50">
+            <span className="leading-[1] text-sm font-semibold text-neutral-50">
               Masuk
             </span>
           </Button>
@@ -45,9 +45,9 @@ export const UserDropdown = () => {
                 alt={`${dataUser?.name} profile`}
                 className="block size-[20px] overflow-hidden rounded-full border border-neutral-500"
               />
-              <span className="max-w-[104px] truncate text-xs font-medium leading-[12px]">
-                {dataUser?.name}
-              </span>
+              <div className="max-w-[104px] text-xs font-medium">
+                <span className="block truncate capsize">{dataUser?.name}</span>
+              </div>
             </button>
           </HoverCard.Trigger>
 
@@ -56,6 +56,7 @@ export const UserDropdown = () => {
               className="shadow-muat z-20 flex w-[160px] flex-col justify-between rounded-md border border-neutral-300 bg-neutral-50"
               side="bottom"
               align="end"
+              sideOffset={4}
             >
               <div className="flex flex-col py-2">
                 <MenuItem

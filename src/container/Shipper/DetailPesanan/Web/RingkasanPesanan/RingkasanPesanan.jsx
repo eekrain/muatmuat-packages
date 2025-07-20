@@ -43,7 +43,7 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
                     height={24}
                     alt="Halal Indonesia"
                   />
-                  <span className="leading-[14.4px] text-center text-xs font-semibold text-[#652672]">
+                  <span className="leading-[14.4px] text-center text-xs font-semibold text-[#652672] capsize">
                     Menggunakan Layanan Halal Logistik
                   </span>
                 </div>
