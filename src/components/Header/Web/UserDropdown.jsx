@@ -45,8 +45,8 @@ export const UserDropdown = () => {
                 alt={`${dataUser?.name} profile`}
                 className="block size-[20px] overflow-hidden rounded-full border border-neutral-500"
               />
-              <div className="max-w-[104px] text-xs font-medium">
-                <span className="block truncate capsize">{dataUser?.name}</span>
+              <div className="max-w-[104px] text-xs font-medium capsize">
+                <span className="block truncate">{dataUser?.name}</span>
               </div>
             </button>
           </HoverCard.Trigger>
