@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 import { ChevronDown } from "lucide-react";
 
@@ -58,6 +59,8 @@ const HeaderWeb = ({
       },
     },
   ];
+
+  const [openSettings, setOpenSettings] = useState(false);
 
   return (
     <header className="sticky left-0 top-0 z-20 w-full">
@@ -135,12 +138,17 @@ const HeaderWeb = ({
             <span className="capsize">Daftar Pesanan</span>
           </Link>
 
-          <SimpleDropdown>
+          <SimpleDropdown open={openSettings} onOpenChange={setOpenSettings}>
             <SimpleDropdownTrigger asChild>
               <button className="flex h-8 items-center gap-1 border-b-2 border-transparent outline-none">
                 <IconComponent src="/icons/header-pengaturan.svg" />
                 <span className="capsize">Pengaturan</span>
-                <ChevronDown className="h-4 w-4" />
+                <ChevronDown
+                  className={cn(
+                    "h-4 w-4 transition-transform duration-300",
+                    openSettings && "rotate-180"
+                  )}
+                />
               </button>
             </SimpleDropdownTrigger>
 

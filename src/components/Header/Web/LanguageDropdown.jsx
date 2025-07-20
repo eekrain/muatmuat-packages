@@ -32,7 +32,12 @@ const LanguageDropdown = () => {
       <span className="block pt-[2px] text-xs font-semibold capsize">
         {selectedLanguage?.name}
       </span>
-      <ChevronDown className={cn("mt-0.5 h-4 w-4", open && "rotate-180")} />
+      <ChevronDown
+        className={cn(
+          "mt-0.5 h-4 w-4 transition-transform duration-300",
+          open && "rotate-180"
+        )}
+      />
       {/* toggle bahasa */}
       {open && (
         <div className="shadow-muat absolute left-0 top-6 z-50 flex w-[216px] cursor-pointer flex-col rounded-md border border-neutral-300 bg-neutral-50">
