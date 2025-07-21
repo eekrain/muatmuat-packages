@@ -100,7 +100,7 @@ export const TimelineField = ({
         {values.length < maxLocation && (
           <div className="flex justify-center">
             <button
-              className="leading-[1.2] flex items-center gap-2 text-sm font-semibold text-[#176CF7] md:text-xs"
+              className="flex items-center gap-2 text-sm font-semibold leading-[1.2] text-[#176CF7] md:text-xs"
               onClick={onAddLocation}
             >
               <IconComponent

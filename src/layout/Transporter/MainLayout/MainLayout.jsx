@@ -14,6 +14,23 @@ import { useLoadingAction } from "@/store/Shared/loadingStore";
 import { useNotificationCounterActions } from "@/store/Shipper/notificationCounterStore";
 
 const MainLayout = ({ children }) => {
+  return (
+    <Suspense fallback={<LoadingStatic />}>
+      <Script>
+        <TranslationProvider>
+          <LoadingInteractive />
+
+          <AuthenticationProvider>{children}</AuthenticationProvider>
+        </TranslationProvider>
+        <Toaster />
+      </Script>
+    </Suspense>
+  );
+};
+
+export default MainLayout;
+
+const Script = ({ children }) => {
   useDefaultTimeoutLoading();
   useResetNavigationOnDesktop();
 
@@ -25,21 +42,8 @@ const MainLayout = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return (
-    <>
-      <Suspense fallback={<LoadingStatic />}>
-        <TranslationProvider>
-          <LoadingInteractive />
-
-          <AuthenticationProvider>{children}</AuthenticationProvider>
-        </TranslationProvider>
-      </Suspense>
-      <Toaster />
-    </>
-  );
+  return <>{children}</>;
 };
-
-export default MainLayout;
 
 const useResetNavigationOnDesktop = () => {
   const router = useRouter();
