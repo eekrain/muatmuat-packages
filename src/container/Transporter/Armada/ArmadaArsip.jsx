@@ -107,13 +107,13 @@ const ArmadaArsip = ({ onPageChange, onPerPageChange }) => {
   ];
 
   const handleSearch = (value) => {
-    console.log("Search:", value);
+    // Search functionality
     setSearchValue(value);
     setCurrentPage(1); // Reset to first page when searching
   };
 
   const handleFilter = (newFilters) => {
-    console.log("Filters:", newFilters);
+    // Apply filters
     setFilters(newFilters);
     setCurrentPage(1); // Reset to first page when filtering
   };
@@ -173,7 +173,7 @@ const ArmadaArsip = ({ onPageChange, onPerPageChange }) => {
 
   const handleSort = (key, direction) => {
     setSortConfig({ key, direction });
-    console.log(`Sorting by ${key} in ${direction} order`);
+    // Sorting by key and direction
     // TODO: Implement actual sorting logic here
     // This would typically involve calling an API with sort parameters
   };

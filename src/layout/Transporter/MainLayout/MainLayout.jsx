@@ -37,7 +37,7 @@ const Script = ({ children }) => {
   const { fetchSidebarData } = useNotificationCounterActions();
   useEffect(() => {
     fetchSidebarData().catch((error) => {
-      console.warn("Error fetching sidebar data", error);
+      // Error fetching sidebar data
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

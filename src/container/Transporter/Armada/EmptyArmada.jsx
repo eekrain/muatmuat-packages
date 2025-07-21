@@ -16,7 +16,7 @@ const EmptyArmada = () => {
         subtitle="Tambahkan armada pertamamu sekarang!"
         buttonText="Search Again"
         iconPlus={false}
-        onButtonClick={() => console.log("Search again clicked")}
+        onButtonClick={() => {}}
       >
         <Button
           variant="muattrans-primary-secondary"
