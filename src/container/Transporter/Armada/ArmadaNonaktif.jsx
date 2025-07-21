@@ -12,7 +12,11 @@ import {
   SimpleDropdownItem,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
+import IconComponent from "@/components/IconComponent/IconComponent";
+import DriverSelectionModal from "@/components/Modal/DriverSelectionModal";
+import { useGetDriversList } from "@/services/Transporter/manajemen-armada/getDriversList";
 import { useGetInactiveVehiclesData } from "@/services/Transporter/manajemen-armada/getInactiveVehiclesData";
+import { updateVehicleDriver } from "@/services/Transporter/manajemen-armada/updateVehicleDriver";
 
 const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,6 +25,9 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [searchValue, setSearchValue] = useState("");
   const [filters, setFilters] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [driverSearchValue, setDriverSearchValue] = useState("");
 
   // Fetch vehicles data with pagination, filters and status
   const { data, isLoading } = useGetInactiveVehiclesData({
@@ -29,6 +36,17 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
     search: searchValue,
     status: selectedStatus,
     ...filters,
+  });
+
+  // Fetch drivers list
+  const {
+    data: driversData,
+    error: driversError,
+    isLoading: driversLoading,
+  } = useGetDriversList({
+    page: 1,
+    limit: 10,
+    search: driverSearchValue,
   });
 
   const getStatusBadge = (status) => {
@@ -75,14 +93,49 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
       header: "Driver",
       width: "280px",
       render: (row) => (
-        <div className="">
-          <div className="text-xxs font-semibold">
-            {row.assignedDriver?.fullName || "-"}
+        <div className="space-y-2">
+          <div className="flex items-end gap-3 text-xxs font-semibold">
+            {row.assignedDriver?.fullName ? (
+              <>
+                <div className="line-clamp-1 h-3 flex-1 break-all">
+                  Driver : {row.assignedDriver?.fullName}
+                </div>
+                <div className="flex gap-1">
+                  <button
+                    className="text-neutral-700 hover:text-primary-700"
+                    onClick={() => {
+                      setSelectedVehicle(row);
+                      setIsModalOpen(true);
+                    }}
+                  >
+                    <IconComponent
+                      size={12}
+                      src={"/icons/pencil-outline.svg"}
+                    />
+                  </button>
+                  <button className="text-neutral-700 hover:text-primary-700">
+                    <IconComponent size={12} src={"/icons/unlink.svg"} />
+                  </button>
+                </div>
+              </>
+            ) : (
+              "Driver : - "
+            )}
           </div>
           <div className="text-xxs font-medium text-neutral-600">
-            {row.assignedDriver?.whatsappNumber
-              ? `No. HP : ${row.assignedDriver.whatsappNumber}`
-              : "-"}
+            {row.assignedDriver?.whatsappNumber ? (
+              `No. HP : ${row.assignedDriver.whatsappNumber}`
+            ) : (
+              <button
+                className="font-semibold text-primary-700 hover:text-primary-700"
+                onClick={() => {
+                  setSelectedVehicle(row);
+                  setIsModalOpen(true);
+                }}
+              >
+                Pilih Driver
+              </button>
+            )}
           </div>
         </div>
       ),
@@ -261,28 +314,67 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
     };
   };
 
+  const handleSaveDriver = async (vehicleId, driverId) => {
+    try {
+      await updateVehicleDriver(vehicleId, driverId);
+
+      // After successful API call, refresh the data
+      // You might want to trigger a refetch of the vehicle data here
+      // For example: mutate() if using SWR
+
+      setIsModalOpen(false);
+      setSelectedVehicle(null);
+
+      // Show success message (you might want to use a toast notification)
+      console.log("Driver updated successfully");
+    } catch (error) {
+      console.error("Failed to update driver:", error);
+      // Show error message (you might want to use a toast notification)
+    }
+  };
+
   return (
-    <DataTable
-      data={data?.vehicles || []}
-      columns={columns}
-      searchPlaceholder="Cari No. Polisi, Jenis Truk atau lainnya"
-      totalCountLabel="Armada Nonaktif"
-      currentPage={data?.pagination?.page || currentPage}
-      totalPages={data?.pagination?.totalPages || 1}
-      totalItems={data?.pagination?.totalItems || 0}
-      perPage={data?.pagination?.limit || perPage}
-      onPageChange={handlePageChange}
-      onPerPageChange={handlePerPageChange}
-      onSearch={handleSearch}
-      onFilter={handleFilter}
-      onSort={handleSort}
-      loading={isLoading}
-      showPagination
-      showDisplayView={true}
-      displayOptions={getDisplayOptions()}
-      rowClassName={rowClassName}
-      filterConfig={getFilterConfig()}
-    />
+    <>
+      <DataTable
+        data={data?.vehicles || []}
+        columns={columns}
+        searchPlaceholder="Cari No. Polisi, Jenis Truk atau lainnya"
+        totalCountLabel="Armada"
+        currentPage={data?.pagination?.page || currentPage}
+        totalPages={data?.pagination?.totalPages || 1}
+        totalItems={data?.pagination?.totalItems || 0}
+        perPage={data?.pagination?.limit || perPage}
+        onPageChange={handlePageChange}
+        onPerPageChange={handlePerPageChange}
+        onSearch={handleSearch}
+        onFilter={handleFilter}
+        onSort={handleSort}
+        loading={isLoading}
+        showPagination
+        showDisplayView={true}
+        displayOptions={getDisplayOptions()}
+        rowClassName={rowClassName}
+        filterConfig={getFilterConfig()}
+      />
+
+      <DriverSelectionModal
+        open={isModalOpen}
+        onOpenChange={(open) => {
+          setIsModalOpen(open);
+          if (!open) {
+            setDriverSearchValue(""); // Clear search when modal closes
+          }
+        }}
+        onSave={handleSaveDriver}
+        vehicleId={selectedVehicle?.id}
+        currentDriverId={selectedVehicle?.assignedDriver?.id}
+        title={selectedVehicle?.assignedDriver ? "Ubah Driver" : "Pilih Driver"}
+        drivers={driversData?.drivers || []}
+        isLoading={driversLoading}
+        error={driversError}
+        onSearch={setDriverSearchValue}
+      />
+    </>
   );
 };
 

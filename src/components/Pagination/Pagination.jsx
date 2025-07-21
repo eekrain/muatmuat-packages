@@ -17,6 +17,7 @@ const Pagination = ({
   onPerPageChange,
   perPage = 10,
   variants,
+  className,
 }) => {
   const perPageOptions = [10, 20, 40];
   const buttonClassname = buttonVariants[variants] || buttonVariants.muatrans;
@@ -70,7 +71,9 @@ const Pagination = ({
   };
 
   return (
-    <div className="flex w-full items-center justify-between py-4">
+    <div
+      className={cn("flex w-full items-center justify-between py-4", className)}
+    >
       <div className="flex items-center gap-2">
         <button
           onClick={handlePrevPage}

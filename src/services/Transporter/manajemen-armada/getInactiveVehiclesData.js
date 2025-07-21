@@ -10,85 +10,85 @@ const apiResultInactiveVehicles = {
     },
     Data: {
       vehicles: [
-        // {
-        //   id: "550e8400-e29b-41d4-a716-446655440015",
-        //   photoUrl: "https://picsum.photos/300/300",
-        //   licensePlate: "B 9876 XYZ",
-        //   truckType: {
-        //     id: "550e8400-e29b-41d4-a716-446655440000",
-        //     name: "Truk Besar",
-        //   },
-        //   carrierType: {
-        //     id: "550e8400-e29b-41d4-a716-446655440001",
-        //     name: "Box",
-        //   },
-        //   vehicleBrand: {
-        //     id: "550e8400-e29b-41d4-a716-446655440002",
-        //     name: "Hino",
-        //   },
-        //   vehicleType: {
-        //     id: "550e8400-e29b-41d4-a716-446655440003",
-        //     name: "Hino Dutro",
-        //   },
-        //   assignedDriver: null,
-        //   status: "UNPAIRED",
-        //   warningDocumentExpired: false,
-        //   pendingUpdateDriver: false,
-        // },
-        // {
-        //   id: "550e8400-e29b-41d4-a716-446655440016",
-        //   photoUrl: "https://picsum.photos/300/300",
-        //   licensePlate: "B 5432 LMN",
-        //   truckType: {
-        //     id: "550e8400-e29b-41d4-a716-446655440001",
-        //     name: "Truk Sedang",
-        //   },
-        //   carrierType: {
-        //     id: "550e8400-e29b-41d4-a716-446655440002",
-        //     name: "Pick Up",
-        //   },
-        //   vehicleBrand: {
-        //     id: "550e8400-e29b-41d4-a716-446655440002",
-        //     name: "Isuzu",
-        //   },
-        //   vehicleType: {
-        //     id: "550e8400-e29b-41d4-a716-446655440002",
-        //     name: "Isuzu Elf",
-        //   },
-        //   assignedDriver: {
-        //     id: "550e8400-e29b-41d4-a716-446655440012",
-        //     fullName: "John Doe",
-        //     whatsappNumber: "081234567890",
-        //   },
-        //   status: "INACTIVE",
-        //   warningDocumentExpired: true,
-        //   pendingUpdateDriver: false,
-        // },
-        // {
-        //   id: "550e8400-e29b-41d4-a716-446655440017",
-        //   photoUrl: "https://picsum.photos/300/300",
-        //   licensePlate: "B 7890 OPQ",
-        //   truckType: {
-        //     id: "550e8400-e29b-41d4-a716-446655440000",
-        //     name: "Truk Besar",
-        //   },
-        //   carrierType: {
-        //     id: "550e8400-e29b-41d4-a716-446655440001",
-        //     name: "Flatbed",
-        //   },
-        //   vehicleBrand: {
-        //     id: "550e8400-e29b-41d4-a716-446655440001",
-        //     name: "Mitsubishi",
-        //   },
-        //   vehicleType: {
-        //     id: "550e8400-e29b-41d4-a716-446655440001",
-        //     name: "Mitsubishi Canter",
-        //   },
-        //   assignedDriver: null,
-        //   status: "INACTIVE",
-        //   warningDocumentExpired: false,
-        //   pendingUpdateDriver: false,
-        // },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440015",
+          photoUrl: "https://picsum.photos/300/300",
+          licensePlate: "B 9876 XYZ",
+          truckType: {
+            id: "550e8400-e29b-41d4-a716-446655440000",
+            name: "Truk Besar",
+          },
+          carrierType: {
+            id: "550e8400-e29b-41d4-a716-446655440001",
+            name: "Box",
+          },
+          vehicleBrand: {
+            id: "550e8400-e29b-41d4-a716-446655440002",
+            name: "Hino",
+          },
+          vehicleType: {
+            id: "550e8400-e29b-41d4-a716-446655440003",
+            name: "Hino Dutro",
+          },
+          assignedDriver: null,
+          status: "UNPAIRED",
+          warningDocumentExpired: false,
+          pendingUpdateDriver: false,
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440016",
+          photoUrl: "https://picsum.photos/300/300",
+          licensePlate: "B 5432 LMN",
+          truckType: {
+            id: "550e8400-e29b-41d4-a716-446655440001",
+            name: "Truk Sedang",
+          },
+          carrierType: {
+            id: "550e8400-e29b-41d4-a716-446655440002",
+            name: "Pick Up",
+          },
+          vehicleBrand: {
+            id: "550e8400-e29b-41d4-a716-446655440002",
+            name: "Isuzu",
+          },
+          vehicleType: {
+            id: "550e8400-e29b-41d4-a716-446655440002",
+            name: "Isuzu Elf",
+          },
+          assignedDriver: {
+            id: "550e8400-e29b-41d4-a716-446655440012",
+            fullName: "Raden Cakradana Ardhanurahman Yudhatama",
+            whatsappNumber: "081234567890",
+          },
+          status: "INACTIVE",
+          warningDocumentExpired: true,
+          pendingUpdateDriver: false,
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440017",
+          photoUrl: "https://picsum.photos/300/300",
+          licensePlate: "B 7890 OPQ",
+          truckType: {
+            id: "550e8400-e29b-41d4-a716-446655440000",
+            name: "Truk Besar",
+          },
+          carrierType: {
+            id: "550e8400-e29b-41d4-a716-446655440001",
+            name: "Flatbed",
+          },
+          vehicleBrand: {
+            id: "550e8400-e29b-41d4-a716-446655440001",
+            name: "Mitsubishi",
+          },
+          vehicleType: {
+            id: "550e8400-e29b-41d4-a716-446655440001",
+            name: "Mitsubishi Canter",
+          },
+          assignedDriver: null,
+          status: "INACTIVE",
+          warningDocumentExpired: false,
+          pendingUpdateDriver: false,
+        },
       ],
       pagination: {
         page: 1,
