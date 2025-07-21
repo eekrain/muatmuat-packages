@@ -93,6 +93,9 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
     [additionalServicesOptions]
   );
 
+  const isLocationDisabled = !locationFormValues?.dataLokasi?.location?.name;
+  const isKirimBuktiFisikDisabled = !tambahanFormValues.kirimBuktiFisik;
+
   return (
     <FormResponsiveLayout
       title={{
@@ -146,6 +149,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
             <FormContainer>
               <FormLabel required>Nama Penerima</FormLabel>
               <Input
+                disabled={isKirimBuktiFisikDisabled}
                 placeholder="Masukkan Nama Penerima"
                 icon={{
                   right: (
@@ -201,6 +205,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
             <FormContainer>
               <FormLabel required>Nomor Handphone Penerima</FormLabel>
               <Input
+                disabled={isKirimBuktiFisikDisabled}
                 placeholder="Contoh: 08xxxxxxxx"
                 name="noHPPIC"
                 type="text"
@@ -230,6 +235,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                 }}
               >
                 <Input
+                  disabled={isKirimBuktiFisikDisabled}
                   placeholder="Masukkan Alamat Tujuan"
                   name="namaLokasi"
                   type="text"
@@ -245,7 +251,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
             <FormContainer className="h-[78px]">
               <FormLabel required>Detail Alamat Tujuan</FormLabel>
               <Input
-                disabled={!locationFormValues?.dataLokasi?.location?.name}
+                disabled={isKirimBuktiFisikDisabled || isLocationDisabled}
                 maxLength={500}
                 placeholder="Masukkan Detail Alamat Tujuan"
                 name="detailLokasi"
@@ -263,7 +269,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
             <FormContainer>
               <FormLabel required>Kecamatan</FormLabel>
               <DropdownRadioBottomsheeet
-                disabled={!locationFormValues?.dataLokasi?.location?.name}
+                disabled={isKirimBuktiFisikDisabled || isLocationDisabled}
                 className="w-full"
                 title="Kecamatan"
                 options={
@@ -314,7 +320,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
             <FormContainer>
               <FormLabel required>Kode Pos</FormLabel>
               <DropdownRadioBottomsheeet
-                disabled={!locationFormValues?.dataLokasi?.location?.name}
+                disabled={isKirimBuktiFisikDisabled || isLocationDisabled}
                 className="w-full"
                 title="Kode Pos"
                 options={
@@ -345,29 +351,47 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
 
             {/* Section 3: Pilih Opsi Pengiriman */}
             <div className="flex flex-col gap-y-3">
-              <div className="flex w-full cursor-pointer flex-col gap-y-3 rounded-md bg-primary-50 px-4 py-2">
+              <div
+                className={`flex w-full cursor-pointer flex-col gap-y-3 rounded-md px-4 py-2 ${isKirimBuktiFisikDisabled || isLocationDisabled ? "cursor-not-allowed bg-neutral-200" : "cursor-pointer bg-primary-50"}`}
+              >
                 <button
                   className={`flex w-full items-center justify-between ${locationFormValues.opsiPegiriman ? "border-b border-b-neutral-400 pb-3" : ""}`}
-                  onClick={() =>
-                    navigation.push("/OpsiPengiriman", { shippingData })
-                  }
+                  onClick={() => {
+                    if (!isKirimBuktiFisikDisabled || isLocationDisabled) {
+                      navigation.push("/OpsiPengiriman", { shippingData });
+                    }
+                  }}
+                  disabled={isKirimBuktiFisikDisabled || isLocationDisabled}
                 >
                   <div className="flex items-center gap-x-3">
                     <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white p-1.5">
-                      <IconComponent src="/icons/transporter16.svg" />
+                      <IconComponent
+                        src="/icons/transporter16.svg"
+                        color={
+                          isKirimBuktiFisikDisabled || isLocationDisabled
+                            ? "gray"
+                            : undefined
+                        }
+                      />
                     </div>
                     <div className="flex flex-col items-start gap-y-2">
                       {tambahanFormValues.opsiPegiriman ? (
                         <>
-                          <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
+                          <span
+                            className={`text-[14px] font-semibold leading-[15.4px] ${isKirimBuktiFisikDisabled || isLocationDisabled ? "text-neutral-600" : "text-neutral-900"}`}
+                          >
                             {tambahanFormValues.opsiPegiriman.courier}
                           </span>
-                          <span className="text-[12px] font-medium leading-[13.2px] text-neutral-900">
+                          <span
+                            className={`text-[12px] font-medium leading-[13.2px] ${isKirimBuktiFisikDisabled || isLocationDisabled ? "text-neutral-600" : "text-neutral-900"}`}
+                          >
                             {tambahanFormValues.opsiPegiriman.price}
                           </span>
                         </>
                       ) : (
-                        <span className="text-[14px] font-semibold leading-[15.4px] text-primary-700">
+                        <span
+                          className={`text-[14px] font-semibold leading-[15.4px] ${isKirimBuktiFisikDisabled || isLocationDisabled ? "text-neutral-600" : "text-primary-700"}`}
+                        >
                           Pilih Opsi Pengiriman
                         </span>
                       )}
@@ -376,6 +400,11 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                   <IconComponent
                     src="/icons/chevron-right24.svg"
                     size="medium"
+                    color={
+                      isKirimBuktiFisikDisabled || isLocationDisabled
+                        ? "gray"
+                        : undefined
+                    }
                   />
                 </button>
                 {tambahanFormValues.opsiPegiriman ? (
