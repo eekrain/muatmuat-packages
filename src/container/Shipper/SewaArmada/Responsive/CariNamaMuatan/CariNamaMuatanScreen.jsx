@@ -69,7 +69,7 @@ const CariNamaMuatanScreen = () => {
                 key={key}
                 onClick={() => handleSelectNamaMuatan(item)}
               >
-                <span className="leading-[15.4px] text-sm font-semibold text-neutral-900">
+                <span className="text-sm font-semibold leading-[15.4px] text-neutral-900">
                   {item.label}
                 </span>
               </button>

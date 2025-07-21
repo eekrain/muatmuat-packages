@@ -16,11 +16,11 @@ export const ArmadaOption = ({ title, description, iconType, onClick }) => {
         <IconComponent src={iconPath} width={32} height={32} />
 
         <div className="flex flex-col items-center gap-3">
-          <h3 className="leading-[16.8px] text-sm font-semibold text-neutral-900">
+          <h3 className="text-sm font-semibold leading-[16.8px] text-neutral-900">
             {title}
           </h3>
 
-          <p className="leading-[14.4px] w-[294px] text-center text-xs font-medium text-neutral-600">
+          <p className="w-[294px] text-center text-xs font-medium leading-[14.4px] text-neutral-600">
             {description}
           </p>
         </div>

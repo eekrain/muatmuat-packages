@@ -397,7 +397,7 @@ export const InformasiMuatanModal = ({
 
 const Label = ({ required, optional, children, tooltip }) => (
   <div className="flex h-[16px] items-center gap-1">
-    <div className="leading-[1.2] mt-[2px] h-4 text-xs font-bold text-neutral-600">
+    <div className="mt-[2px] h-4 text-xs font-bold leading-[1.2] text-neutral-600">
       {children}
       {required && <span>*</span>}
       {optional && (

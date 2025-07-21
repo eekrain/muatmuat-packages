@@ -135,7 +135,7 @@ const NoDeliveryOrder = () => {
                   }
                   key={key}
                 >
-                  <span className="leading-[15.4px] text-sm font-semibold text-neutral-900">
+                  <span className="text-sm font-semibold leading-[15.4px] text-neutral-900">
                     {item}
                   </span>
                   <IconComponent
@@ -163,7 +163,7 @@ const NoDeliveryOrder = () => {
                   width={14}
                   height={14}
                 />
-                <span className="leading-[15.4px] text-sm font-semibold text-primary-700">
+                <span className="text-sm font-semibold leading-[15.4px] text-primary-700">
                   Tambah No. Delivery Order (DO)
                 </span>
               </button>

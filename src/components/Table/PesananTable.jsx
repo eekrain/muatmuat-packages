@@ -67,10 +67,10 @@ const PesananTable = ({
   const [isAllDriverStatusModalOpen, setIsAllDriverStatusModalOpen] =
     useState(false);
   const [selectedLocations, setSelectedLocations] = useState([]);
-  const [selectedGroupedStatusInfo, setSelecetedGroupedStatusInfo] = useState(
+  const [selectedGroupedStatusInfo, setSelectedGroupedStatusInfo] = useState(
     []
   );
-
+  console.log("selectedGroupedStatusInfo", selectedGroupedStatusInfo);
   const selectedFilter = useShallowMemo(
     () =>
       options
@@ -217,7 +217,7 @@ const PesananTable = ({
               </div>
               {searchOnly ? null : (
                 <div className="flex items-center gap-x-3">
-                  <span className="leading-[14.4px] text-xs font-bold text-neutral-900">
+                  <span className="text-xs font-bold leading-[14.4px] text-neutral-900">
                     Tampilkan:
                   </span>
                   {tabs.map((tab, key) => {
@@ -234,7 +234,7 @@ const PesananTable = ({
                         key={key}
                         onClick={() => onChangeQueryParams("status", tab.value)}
                         className={cn(
-                          "cursor-pointer rounded-full px-3 py-[6px] font-semibold",
+                          "flex h-7 cursor-pointer items-center rounded-full px-3 py-[6px] font-semibold",
                           queryParams.status === tab.value || isActiveAllTab
                             ? "border border-primary-700 bg-[#E2F2FF] text-primary-700"
                             : "bg-[#F1F1F1] text-neutral-900"
@@ -250,7 +250,7 @@ const PesananTable = ({
             {selectedFilter ? (
               <div className="flex h-8 items-center gap-x-3">
                 <button
-                  className="leading-[14.4px] text-xs font-bold text-primary-700"
+                  className="text-xs font-bold leading-[14.4px] text-primary-700"
                   onClick={() => onChangeQueryParams("status", "")}
                 >
                   Hapus Semua Filter
@@ -273,7 +273,7 @@ const PesananTable = ({
             <div className="w-full overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="leading-[14.4px] border-y border-neutral-400 text-xs font-bold text-neutral-600">
+                  <tr className="border-y border-neutral-400 text-xs font-bold leading-[14.4px] text-neutral-600">
                     <th className="w-[156px] px-6 py-5 text-left">
                       <div className="flex items-center gap-x-2">
                         <span>Kode Pesanan</span>
@@ -397,7 +397,7 @@ const PesananTable = ({
                                     >
                                       <TimelineContentAddress
                                         title={item.fullAddress}
-                                        className={`leading-[13px] text-xxs font-bold ${
+                                        className={`text-xxs font-bold leading-[13px] ${
                                           key === firstPickupDropoff?.length - 1
                                             ? "pb-0"
                                             : ""
@@ -474,7 +474,8 @@ const PesananTable = ({
 
                           {/* Status */}
                           <td className="w-[232px] pb-4 pl-0 pr-6 pt-5 align-top">
-                            {order.vehicle?.truckCount > 1 ? (
+                            {order.vehicle?.truckCount > 1 ||
+                            order.statusInfo.length > 1 ? (
                               <button
                                 onClick={() => {
                                   // Create an empty result object
@@ -488,7 +489,10 @@ const PesananTable = ({
                                       result[statusLabel] = {
                                         statusLabel,
                                         statusCode: item.statusCode,
-                                        count: 1,
+                                        count:
+                                          order.vehicle?.truckCount > 1
+                                            ? order.vehicle?.truckCount
+                                            : 1,
                                       };
                                     } else {
                                       result[statusLabel].count++;
@@ -514,7 +518,7 @@ const PesananTable = ({
                                     );
                                   });
 
-                                  setSelecetedGroupedStatusInfo(resultArray);
+                                  setSelectedGroupedStatusInfo(resultArray);
                                   setIsAllDriverStatusModalOpen(true);
                                 }}
                               >
@@ -624,9 +628,8 @@ const PesananTable = ({
                             </div>
                           </td>
                         </tr>
-
-                        {/* Conditional Alert Row - Only shown if the pesanan has a payment deadline */}
-                        {order.paymentDeadline && (
+                        {/* Conditional Alert Row */}
+                        {order.paymentDeadline ? (
                           <tr className="border-b border-neutral-400">
                             <td colSpan={6} className="px-6 pb-4">
                               <div className="flex h-12 items-center justify-between rounded-xl bg-secondary-100 px-4">
@@ -636,7 +639,7 @@ const PesananTable = ({
                                     src="/icons/warning24.svg"
                                     size="medium"
                                   />
-                                  <span className="leading-[14.4px] text-xs font-semibold text-neutral-900">
+                                  <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
                                     {order.statusInfo?.[0]?.statusCode ===
                                     "WAITING_PAYMENT"
                                       ? "Lakukan pembayaran sebelum "
@@ -648,7 +651,7 @@ const PesananTable = ({
                                 </div>
                                 {order.statusInfo?.[0]?.statusCode ===
                                 "WAITING_REPAYMENT" ? (
-                                  <span className="leading-[14.4px] text-xs font-semibold text-neutral-900">
+                                  <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
                                     {"Tambahan Biaya "}
                                     <span className="font-bold">{`Rp${order.additionalCost.toLocaleString("id-ID")}`}</span>
                                   </span>
@@ -656,9 +659,8 @@ const PesananTable = ({
                               </div>
                             </td>
                           </tr>
-                        )}
-                        {/* Pesanan Membutuhkan Konfirmasi */}
-                        {order.requiresConfirmation && (
+                        ) : order.requiresConfirmation ? (
+                          // Pesanan Membutuhkan Konfirmasi
                           <tr className="border-b border-neutral-400">
                             <td colSpan={6} className="px-6 pb-4">
                               <div className="flex h-12 items-center gap-x-3 rounded-xl bg-secondary-100 px-4">
@@ -667,15 +669,14 @@ const PesananTable = ({
                                   src="/icons/warning24.svg"
                                   size="medium"
                                 />
-                                <span className="leading-[14.4px] text-xs font-semibold text-neutral-900">
+                                <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
                                   Pesanan membutuhkan konfirmasi
                                 </span>
                               </div>
                             </td>
                           </tr>
-                        )}
-                        {/* Pengembalian dana sedang dalam proses. */}
-                        {order.isRefundProcessing && (
+                        ) : order.isRefundProcessing ? (
+                          // Pengembalian dana sedang dalam proses.
                           <tr className="border-b border-neutral-400">
                             <td colSpan={6} className="px-6 pb-4">
                               <div className="flex h-12 items-center gap-x-3 rounded-xl bg-secondary-100 px-4">
@@ -684,13 +685,13 @@ const PesananTable = ({
                                   src="/icons/warning24.svg"
                                   size="medium"
                                 />
-                                <span className="leading-[14.4px] text-xs font-semibold text-neutral-900">
+                                <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
                                   Pengembalian dana sedang dalam proses.
                                 </span>
                               </div>
                             </td>
                           </tr>
-                        )}
+                        ) : null}
                       </Fragment>
                     );
                   })}
@@ -736,7 +737,7 @@ const PesananTable = ({
                   width={96}
                   height={77}
                 />
-                <span className="leading-[14.4px] text-xs font-medium text-neutral-600">
+                <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
                   Mulai buat pesanan sekarang untuk kebutuhan pengiriman kamu
                 </span>
                 <Button
@@ -804,9 +805,9 @@ const PesananTable = ({
         open={isAllDriverStatusModalOpen}
         onOpenChange={setIsAllDriverStatusModalOpen}
       >
-        <ModalContent>
+        <ModalContent type="muatmuat">
           <div className="flex w-[320px] flex-col items-center gap-y-6 px-6 py-8">
-            <h1 className="leading-[19.2px] text-base font-bold text-neutral-900">
+            <h1 className="text-base font-bold leading-[19.2px] text-neutral-900">
               Status Lainnya
             </h1>
             <div className="flex w-full flex-col gap-y-2">

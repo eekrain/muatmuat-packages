@@ -118,7 +118,7 @@ export default function CropperResponsive({
               onClick={cancelCrop}
             />
             {/* </button> */}
-            <span className="leading-[19.2px] text-base font-medium text-white">
+            <span className="text-base font-medium leading-[19.2px] text-white">
               Cropper
             </span>
           </div>

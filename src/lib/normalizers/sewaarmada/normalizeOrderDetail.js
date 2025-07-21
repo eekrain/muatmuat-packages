@@ -38,9 +38,10 @@ const normalizeLocation = (location) => {
   };
 };
 
-export const normalizeReorderFleet = (
+export const normalizeOrderDetail = (
   reorderFleetData,
-  tempShippingOptions
+  tempShippingOptions,
+  type
 ) => {
   const {
     locations,

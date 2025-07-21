@@ -71,14 +71,14 @@ export const ModalFormSimpanLokasiWeb = ({
     >
       <ModalContent type="muatmuat">
         <div className="relative grid h-[510px] w-[398px] grid-cols-1 gap-6 overflow-hidden p-6">
-          <h2 className="leading-[1] text-base font-bold text-[#1B1B1B]">
+          <h2 className="text-base font-bold leading-[1] text-[#1B1B1B]">
             {title}
           </h2>
 
           <div className="flex h-full flex-col gap-3 overflow-y-auto">
             {/* Label Alamat */}
             <div className="flex flex-col gap-0.5">
-              <label className="leading-[12px] text-xxs font-semibold text-[#868686]">
+              <label className="text-xxs font-semibold leading-[12px] text-[#868686]">
                 Label Alamat*
               </label>
 
@@ -94,14 +94,14 @@ export const ModalFormSimpanLokasiWeb = ({
 
             {/* Lokasi */}
             <div className="flex flex-col gap-0.5">
-              <label className="leading-[12px] text-xxs font-semibold text-[#868686]">
+              <label className="text-xxs font-semibold leading-[12px] text-[#868686]">
                 Lokasi
               </label>
               <div className="flex h-[42px] w-full items-center gap-3 px-1.5">
                 <div className="h-6 w-[19.2px] flex-shrink-0">
                   <MapPin className="h-full w-full fill-current text-[#FFC217]" />
                 </div>
-                <span className="leading-[14px] line-clamp-3 flex-1 text-xs font-semibold text-[#1B1B1B]">
+                <span className="line-clamp-3 flex-1 text-xs font-semibold leading-[14px] text-[#1B1B1B]">
                   {formValues.dataLokasi?.location?.name ||
                     "Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore, quasi?"}
                 </span>
@@ -110,7 +110,7 @@ export const ModalFormSimpanLokasiWeb = ({
 
             {/* Alamat */}
             <div className="flex flex-col gap-0.5">
-              <label className="leading-[12px] text-xxs font-semibold text-[#868686]">
+              <label className="text-xxs font-semibold leading-[12px] text-[#868686]">
                 Alamat
               </label>
 
@@ -129,37 +129,37 @@ export const ModalFormSimpanLokasiWeb = ({
 
             {/* Kecamatan */}
             <div className="flex flex-col gap-0.5">
-              <label className="leading-[12px] text-xxs font-semibold text-[#868686]">
+              <label className="text-xxs font-semibold leading-[12px] text-[#868686]">
                 Kecamatan
               </label>
-              <span className="leading-[14px] text-xs font-semibold text-[#1B1B1B]">
+              <span className="text-xs font-semibold leading-[14px] text-[#1B1B1B]">
                 {formValues?.dataLokasi?.district?.name}
               </span>
             </div>
 
             {/* Kota */}
             <div className="flex flex-col gap-0.5">
-              <label className="leading-[12px] text-xxs font-semibold text-[#868686]">
+              <label className="text-xxs font-semibold leading-[12px] text-[#868686]">
                 Kota
               </label>
-              <span className="leading-[14px] text-xs font-semibold text-[#1B1B1B]">
+              <span className="text-xs font-semibold leading-[14px] text-[#1B1B1B]">
                 {formValues?.dataLokasi?.city?.name}
               </span>
             </div>
 
             {/* Provinsi */}
             <div className="flex flex-col gap-0.5">
-              <label className="leading-[12px] text-xxs font-semibold text-[#868686]">
+              <label className="text-xxs font-semibold leading-[12px] text-[#868686]">
                 Provinsi
               </label>
-              <span className="leading-[14px] text-xs font-semibold text-[#1B1B1B]">
+              <span className="text-xs font-semibold leading-[14px] text-[#1B1B1B]">
                 {formValues?.dataLokasi?.province?.name}
               </span>
             </div>
 
             {/* Kode Pos */}
             <div className="flex flex-col gap-0.5">
-              <label className="leading-[12px] text-xxs font-semibold text-[#868686]">
+              <label className="text-xxs font-semibold leading-[12px] text-[#868686]">
                 Kode Pos*
               </label>
               <Select
@@ -194,7 +194,7 @@ export const ModalFormSimpanLokasiWeb = ({
 
             {/* Nama PIC */}
             <div className="flex flex-col gap-0.5">
-              <label className="leading-[12px] text-xxs font-semibold text-[#868686]">
+              <label className="text-xxs font-semibold leading-[12px] text-[#868686]">
                 Nama PIC*
               </label>
 
@@ -210,7 +210,7 @@ export const ModalFormSimpanLokasiWeb = ({
 
             {/* No. HP PIC */}
             <div className="flex flex-col gap-0.5">
-              <label className="leading-[12px] text-xxs font-semibold text-[#868686]">
+              <label className="text-xxs font-semibold leading-[12px] text-[#868686]">
                 No. HP PIC*
               </label>
               <Input

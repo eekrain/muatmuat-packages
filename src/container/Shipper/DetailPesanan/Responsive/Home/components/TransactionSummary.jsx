@@ -62,7 +62,7 @@ export const TransactionSummary = () => {
                   <>Nominal Kirim Bukti Fisik Penerimaan Barang</>
                   <button
                     onClick={() => {}}
-                    className="leading-[1.2] h-2 w-fit text-xs font-medium text-primary-700"
+                    className="h-2 w-fit text-xs font-medium leading-[1.2] text-primary-700"
                   >
                     Lihat Detail Pengiriman Dokumen
                   </button>

@@ -174,7 +174,7 @@ const DeliveryEvidenceModalContent = ({
 
   return (
     <div className="flex w-[472px] flex-col items-center gap-4 px-6 py-8">
-      <h2 className="leading-[19.2px] text-center text-base font-bold text-neutral-900">
+      <h2 className="text-center text-base font-bold leading-[19.2px] text-neutral-900">
         Kirim Bukti Fisik Penerimaan Barang
       </h2>
 
@@ -182,7 +182,7 @@ const DeliveryEvidenceModalContent = ({
       <div className="relative mr-[-16px] max-h-[361px] w-[424px] overflow-y-auto pr-[11px]">
         <div className="grid grid-cols-1 gap-y-3">
           {/* Nama Penerima Field */}
-          <label className="leading-[14.4px] text-xs font-medium text-neutral-600">
+          <label className="text-xs font-medium leading-[14.4px] text-neutral-600">
             Nama Penerima*
           </label>
           <Input
@@ -195,7 +195,7 @@ const DeliveryEvidenceModalContent = ({
           />
 
           {/* Nomor Handphone Field */}
-          <label className="leading-[14.4px] text-xs font-medium text-neutral-600">
+          <label className="text-xs font-medium leading-[14.4px] text-neutral-600">
             Nomor Handphone Penerima*
           </label>
           <Input
@@ -208,7 +208,7 @@ const DeliveryEvidenceModalContent = ({
             className="w-full"
           />
           {/* Alamat Tujuan Field */}
-          <label className="leading-[14.4px] text-xs font-medium text-neutral-600">
+          <label className="text-xs font-medium leading-[14.4px] text-neutral-600">
             Alamat Tujuan*
           </label>
 
@@ -217,7 +217,7 @@ const DeliveryEvidenceModalContent = ({
           />
 
           {/* Detail Alamat Field */}
-          <label className="leading-[14.4px] text-xs font-medium text-neutral-600">
+          <label className="text-xs font-medium leading-[14.4px] text-neutral-600">
             Detail Alamat Tujuan*
           </label>
           <TextArea
@@ -237,7 +237,7 @@ const DeliveryEvidenceModalContent = ({
           />
 
           {/* Kecamatan Dropdown */}
-          <label className="leading-[14.4px] text-xs font-medium text-neutral-600">
+          <label className="text-xs font-medium leading-[14.4px] text-neutral-600">
             Kecamatan*
           </label>
 
@@ -280,7 +280,7 @@ const DeliveryEvidenceModalContent = ({
           </span>
 
           {/* Kode Pos Dropdown */}
-          <label className="leading-[14.4px] text-xs font-medium text-neutral-600">
+          <label className="text-xs font-medium leading-[14.4px] text-neutral-600">
             Kode Pos*
           </label>
 
@@ -312,7 +312,7 @@ const DeliveryEvidenceModalContent = ({
           />
 
           {/* Ekspedisi Dropdown */}
-          <label className="leading-[14.4px] text-xs font-medium text-neutral-600">
+          <label className="text-xs font-medium leading-[14.4px] text-neutral-600">
             Pilih Ekspedisi*
           </label>
           <DropdownJasaPengiriman

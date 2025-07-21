@@ -35,7 +35,7 @@ export const AlertMultiline = ({ className, items = [] }) => {
     <div
       className={cn(
         "flex flex-col gap-y-3 rounded-xl bg-secondary-100 px-6 py-4",
-        "leading-[1.2] text-xs font-medium text-neutral-900",
+        "text-xs font-medium leading-[1.2] text-neutral-900",
         className
       )}
     >
@@ -47,7 +47,7 @@ export const AlertMultiline = ({ className, items = [] }) => {
               src="/icons/warning24.svg"
               size="medium"
             />
-            <span className="font-semibold capsize">Pemberitahuan:</span>
+            <span className="capsize font-semibold">Pemberitahuan:</span>
           </div>
 
           <ul className="flex w-full list-disc flex-col gap-y-1 pl-10">

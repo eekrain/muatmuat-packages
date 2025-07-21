@@ -14,32 +14,36 @@ import { useLoadingAction } from "@/store/Shared/loadingStore";
 import { useNotificationCounterActions } from "@/store/Shipper/notificationCounterStore";
 
 const MainLayout = ({ children }) => {
+  return (
+    <Suspense fallback={<LoadingStatic />}>
+      <Script>
+        <TranslationProvider>
+          <LoadingInteractive />
+
+          <AuthenticationProvider>{children}</AuthenticationProvider>
+        </TranslationProvider>
+        <Toaster />
+      </Script>
+    </Suspense>
+  );
+};
+
+export default MainLayout;
+
+const Script = ({ children }) => {
   useDefaultTimeoutLoading();
   useResetNavigationOnDesktop();
 
   const { fetchSidebarData } = useNotificationCounterActions();
   useEffect(() => {
     fetchSidebarData().catch((error) => {
-      console.warn("Error fetching sidebar data", error);
+      // Error fetching sidebar data
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return (
-    <>
-      <Suspense fallback={<LoadingStatic />}>
-        <TranslationProvider>
-          <LoadingInteractive />
-
-          <AuthenticationProvider>{children}</AuthenticationProvider>
-        </TranslationProvider>
-      </Suspense>
-      <Toaster />
-    </>
-  );
+  return <>{children}</>;
 };
-
-export default MainLayout;
 
 const useResetNavigationOnDesktop = () => {
   const router = useRouter();

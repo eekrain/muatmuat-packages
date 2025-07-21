@@ -58,7 +58,7 @@ export const HeaderResponsiveForm = ({
 
         <h1
           className={cn(
-            "leading-[1] mt-1 text-base font-bold",
+            "mt-1 text-base font-bold leading-[1]",
             title?.className
           )}
         >

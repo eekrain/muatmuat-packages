@@ -218,14 +218,14 @@ export const LocationDropdownOnly = ({
                 className="text-[#176CF7]"
               />
             </div>
-            <p className="leading-[14.4px] text-xxs font-semibold text-[#176CF7] capsize">
+            <p className="capsize text-xxs font-semibold leading-[14.4px] text-[#176CF7]">
               Input Lokasi yang terdekat dengan Anda
             </p>
           </div>
 
           {userSavedLocations && userSavedLocations.length > 0 && (
             <>
-              <div className="leading-[1.3] text-xxs font-medium text-neutral-600">
+              <div className="text-xxs font-medium leading-[1.3] text-neutral-600">
                 Manajemen Lokasi
               </div>
               <div className="space-y-2">
@@ -244,7 +244,7 @@ export const LocationDropdownOnly = ({
                           height={20}
                         />
                       </div>
-                      <span className="line-clamp-1 flex-1 break-all text-xxs font-bold text-gray-800 capsize">
+                      <span className="capsize line-clamp-1 flex-1 break-all text-xxs font-bold text-gray-800">
                         {location.Name}
                       </span>
                       <div
@@ -263,7 +263,7 @@ export const LocationDropdownOnly = ({
 
                     <div className="flex w-full items-center gap-2 text-left">
                       <div className="w-5" />
-                      <div className="flex-1 text-xxs font-medium text-gray-600 capsize">
+                      <div className="capsize flex-1 text-xxs font-medium text-gray-600">
                         <span className="line-clamp-1">{location.Address}</span>
                       </div>
                       <div className="w-5" />

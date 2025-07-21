@@ -28,7 +28,7 @@ export const BadgeStatusPesanan = ({
   return (
     <div
       className={cn(
-        "leading-[1.2] inline-flex h-6 w-[176px] items-center justify-center gap-1 rounded-[6px] px-2 text-xs font-semibold capsize",
+        "capsize inline-flex h-6 w-[176px] items-center justify-center gap-1 rounded-[6px] px-2 text-xs font-semibold leading-[1.2]",
         badgeVariants[variant],
         className
       )}

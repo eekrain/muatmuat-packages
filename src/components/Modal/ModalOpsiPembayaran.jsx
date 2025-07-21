@@ -62,7 +62,7 @@ export const ModalOpsiPembayaran = ({
                     className="size-[16px] bg-white object-contain"
                     alt={selectedOpsiPembayaran.name}
                   />
-                  <span className="leading-[14.4px] text-xs font-medium text-neutral-900">
+                  <span className="text-xs font-medium leading-[14.4px] text-neutral-900">
                     {selectedOpsiPembayaran.name}
                   </span>
                 </div>
@@ -85,14 +85,14 @@ export const ModalOpsiPembayaran = ({
         <ModalContent type="muatmuat">
           <div className="flex flex-col gap-y-4 px-6 py-8">
             <div className="flex w-[424px] justify-center">
-              <h1 className="leading-[19.2px] text-base font-bold text-neutral-900">
+              <h1 className="text-base font-bold leading-[19.2px] text-neutral-900">
                 Opsi Pembayaran
               </h1>
             </div>
             {/* Content Container */}
             <div className="mr-[-16px] flex max-h-[321px] flex-col overflow-y-auto pr-[11px]">
               {/* Section Title */}
-              <h2 className="leading-[19.2px] text-base font-bold text-neutral-900">
+              <h2 className="text-base font-bold leading-[19.2px] text-neutral-900">
                 Semua Metode
               </h2>
 
@@ -114,7 +114,7 @@ export const ModalOpsiPembayaran = ({
                           className="size-[24px] bg-white object-contain"
                           alt={paymentMethod.category}
                         />
-                        <span className="leading-[14.4px] text-xs font-bold text-neutral-900">
+                        <span className="text-xs font-bold leading-[14.4px] text-neutral-900">
                           {paymentMethod.category}
                         </span>
                       </div>
@@ -152,7 +152,7 @@ export const ModalOpsiPembayaran = ({
                                   alt={method.name}
                                 />
                               </div>
-                              <span className="leading-[14.4px] text-xs font-semibold text-neutral-900">
+                              <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
                                 {method.name}
                               </span>
                             </div>

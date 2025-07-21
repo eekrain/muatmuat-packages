@@ -1,3 +1,5 @@
+import { usePathname } from "next/navigation";
+
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { LocationModalFormWeb } from "@/components/LocationManagement/Web/LocationModalFormWeb/LocationModalFormWeb";
 import { TimelineField } from "@/components/Timeline/timeline-field";
@@ -10,6 +12,8 @@ import {
 import { useModalLocation } from "./use-modal-location";
 
 export const LokasiBongkar = () => {
+  const pathname = usePathname();
+  const isEditPage = pathname.includes("/ubahpesanan");
   const { modalConfig, handleOpenModalLocation, handleCloseModalLocation } =
     useModalLocation();
   const lokasiBongkar = useSewaArmadaStore(
@@ -25,6 +29,7 @@ export const LokasiBongkar = () => {
       <FormContainer>
         <FormLabel required>Lokasi Bongkar</FormLabel>
         <TimelineField
+          withRemoveButton={!isEditPage}
           variant="bongkar"
           className="flex-1"
           values={

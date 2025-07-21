@@ -17,6 +17,7 @@ const Pagination = ({
   onPerPageChange,
   perPage = 10,
   variants,
+  className,
 }) => {
   const perPageOptions = [10, 20, 40];
   const buttonClassname = buttonVariants[variants] || buttonVariants.muatrans;
@@ -70,7 +71,9 @@ const Pagination = ({
   };
 
   return (
-    <div className="flex w-full items-center justify-between py-4">
+    <div
+      className={cn("flex w-full items-center justify-between py-4", className)}
+    >
       <div className="flex items-center gap-2">
         <button
           onClick={handlePrevPage}
@@ -95,7 +98,7 @@ const Pagination = ({
                 <button
                   onClick={() => onPageChange(pageNumber)}
                   className={cn(
-                    "leading-[14px] flex size-[32px] items-center justify-center rounded-md text-sm font-bold",
+                    "flex size-[32px] items-center justify-center rounded-md text-sm font-bold leading-[14px]",
                     currentPage === pageNumber
                       ? buttonClassname
                       : "bg-none font-medium text-neutral-600"
@@ -135,7 +138,7 @@ const Pagination = ({
               key={option}
               onClick={() => onPerPageChange(option)}
               className={cn(
-                "leading-[14px] flex size-[32px] items-center justify-center rounded-md text-sm font-bold",
+                "flex size-[32px] items-center justify-center rounded-md text-sm font-bold leading-[14px]",
                 perPage === option
                   ? buttonClassname
                   : "bg-none font-medium text-neutral-600"

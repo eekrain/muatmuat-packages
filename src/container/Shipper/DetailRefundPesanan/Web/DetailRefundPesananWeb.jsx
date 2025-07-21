@@ -66,7 +66,7 @@ const DetailRefundPesananWeb = () => {
               Rekening Pengembalian Dana
             </h2>
 
-            <div className="leading-[1.2] grid grid-cols-[131px_1fr] gap-x-8 gap-y-5 text-xs font-medium">
+            <div className="grid grid-cols-[131px_1fr] gap-x-8 gap-y-5 text-xs font-medium leading-[1.2]">
               <span className="text-neutral-600">Nama Bank</span>
               <div className="flex items-center gap-2">
                 <IconComponent

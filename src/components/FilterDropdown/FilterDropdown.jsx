@@ -31,16 +31,22 @@ const FilterDropdown = ({
   const [searchQueries, setSearchQueries] = useState({});
   const [openPopovers, setOpenPopovers] = useState({});
   const hoverTimeouts = useRef({});
+  const [tempSelectedValues, setTempSelectedValues] = useState(selectedValues);
+
+  // Sync tempSelectedValues when selectedValues prop changes
+  useEffect(() => {
+    setTempSelectedValues(selectedValues);
+  }, [selectedValues]);
 
   const handleItemToggle = (categoryKey, item) => {
     if (!multiSelect) {
       // Single select mode
-      onSelectionChange?.({ [categoryKey]: item });
+      setTempSelectedValues({ [categoryKey]: item });
       return;
     }
 
     // Multi select mode
-    const currentCategoryValues = selectedValues[categoryKey] || [];
+    const currentCategoryValues = tempSelectedValues[categoryKey] || [];
     const isSelected = currentCategoryValues.some(
       (selected) => selected.id === item.id
     );
@@ -55,7 +61,7 @@ const FilterDropdown = ({
     }
 
     const newSelectedValues = {
-      ...selectedValues,
+      ...tempSelectedValues,
       [categoryKey]: newCategoryValues,
     };
 
@@ -64,15 +70,15 @@ const FilterDropdown = ({
       delete newSelectedValues[categoryKey];
     }
 
-    onSelectionChange?.(newSelectedValues);
+    setTempSelectedValues(newSelectedValues);
   };
 
   const isItemSelected = (categoryKey, item) => {
     if (!multiSelect) {
-      return selectedValues[categoryKey]?.id === item.id;
+      return tempSelectedValues[categoryKey]?.id === item.id;
     }
     return (
-      selectedValues[categoryKey]?.some(
+      tempSelectedValues[categoryKey]?.some(
         (selected) => selected.id === item.id
       ) || false
     );
@@ -98,11 +104,11 @@ const FilterDropdown = ({
   const getTotalSelectedCount = () => {
     if (!showSelectedCount) return 0;
 
-    return Object.keys(selectedValues).reduce((acc, key) => {
+    return Object.keys(tempSelectedValues).reduce((acc, key) => {
       if (multiSelect) {
-        return acc + (selectedValues[key]?.length || 0);
+        return acc + (tempSelectedValues[key]?.length || 0);
       }
-      return acc + (selectedValues[key] ? 1 : 0);
+      return acc + (tempSelectedValues[key] ? 1 : 0);
     }, 0);
   };
 
@@ -181,10 +187,19 @@ const FilterDropdown = ({
     return trigger;
   };
 
-  // Clear search queries when dropdown closes
+  // Clear search queries and apply selection when dropdown closes
   const handleOpenChange = (open) => {
     if (!open) {
       setSearchQueries({});
+      // Only fire onSelectionChange if values have changed
+      if (
+        JSON.stringify(tempSelectedValues) !== JSON.stringify(selectedValues)
+      ) {
+        onSelectionChange?.(tempSelectedValues);
+      }
+    } else {
+      // Reset temp values when opening
+      setTempSelectedValues(selectedValues);
     }
   };
 
@@ -248,7 +263,7 @@ const FilterDropdown = ({
                       }}
                       appearance={{
                         containerClassName: "h-8 mb-2.5",
-                        inputClassName: "text-xs font-medium",
+                        inputClassName: "text-xs font-medium mt-0",
                       }}
                     />
                   )}

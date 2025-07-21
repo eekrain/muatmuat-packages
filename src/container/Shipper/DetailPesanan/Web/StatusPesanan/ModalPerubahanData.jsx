@@ -57,13 +57,13 @@ export const ModalPerubahanData = () => {
   return (
     <Modal>
       <ModalTrigger>
-        <button className="leading-[14.4px] text-xs font-medium text-primary-700">
+        <button className="text-xs font-medium leading-[14.4px] text-primary-700">
           Lihat Perubahan
         </button>
       </ModalTrigger>
 
       <ModalContent className="p-6" type="muatmuat">
-        <h1 className="leading-[1.2] mb-4 text-center text-base font-bold text-neutral-900">
+        <h1 className="mb-4 text-center text-base font-bold leading-[1.2] text-neutral-900">
           Detail Sebelum Perubahan
         </h1>
 

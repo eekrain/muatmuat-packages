@@ -90,7 +90,7 @@ const VoucherBottomSheet = ({
           onClick={() => setIsBottomsheetVoucherOpen(true)}
         >
           <IconComponent src="/icons/voucher16.svg" />
-          <span className="leading-[15.4px] text-sm font-semibold">
+          <span className="text-sm font-semibold leading-[15.4px]">
             {voucherId ? (
               <span className="text-neutral-900">
                 {vouchers.find((v) => v.id === voucherId)?.code ||

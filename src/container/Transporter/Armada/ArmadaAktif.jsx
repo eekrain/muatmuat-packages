@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { ChevronDown } from "lucide-react";
@@ -19,6 +20,8 @@ import { useGetDriversList } from "@/services/Transporter/manajemen-armada/getDr
 import { updateVehicleDriver } from "@/services/Transporter/manajemen-armada/updateVehicleDriver";
 
 const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
+  const router = useRouter();
+
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
@@ -93,9 +96,9 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
       header: "Driver",
       width: "280px",
       render: (row) => (
-        <div className="">
-          <div className="flex gap-3">
-            <div className="line-clamp-1 flex-1 break-all text-xxs font-semibold">
+        <div className="space-y-2">
+          <div className="flex items-end gap-3">
+            <div className="line-clamp-1 h-3 flex-1 break-all text-xxs font-semibold">
               {row.assignedDriver?.fullName || "-"}
             </div>
 
@@ -166,7 +169,11 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
                 Nonaktifkan
               </SimpleDropdownItem>
             )}
-            <SimpleDropdownItem onClick={() => {}}>Detail</SimpleDropdownItem>
+            <SimpleDropdownItem
+              onClick={() => router.push(`/manajemen-armada/${row.id}/detail`)}
+            >
+              Detail
+            </SimpleDropdownItem>
           </SimpleDropdownContent>
         </SimpleDropdown>
       ),
@@ -174,13 +181,13 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
   ];
 
   const handleSearch = (value) => {
-    console.log("Search:", value);
+    // Search functionality
     setSearchValue(value);
     setCurrentPage(1); // Reset to first page when searching
   };
 
   const handleFilter = (newFilters) => {
-    console.log("Filters:", newFilters);
+    // Apply filters
     setFilters(newFilters);
     setCurrentPage(1); // Reset to first page when filtering
   };
@@ -240,7 +247,7 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
 
   const handleSort = (key, direction) => {
     setSortConfig({ key, direction });
-    console.log(`Sorting by ${key} in ${direction} order`);
+    // Sorting by key and direction
     // TODO: Implement actual sorting logic here
     // This would typically involve calling an API with sort parameters
   };
@@ -265,9 +272,9 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
       setSelectedVehicle(null);
 
       // Show success message (you might want to use a toast notification)
-      console.log("Driver updated successfully");
+      // Driver updated successfully
     } catch (error) {
-      console.error("Failed to update driver:", error);
+      // Failed to update driver
       // Show error message (you might want to use a toast notification)
     }
   };

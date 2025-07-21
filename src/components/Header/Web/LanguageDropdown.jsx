@@ -36,7 +36,7 @@ const LanguageDropdown = () => {
         className="h-4 w-6 rounded-[5px] border"
         alt="flag"
       />
-      <span className="block pt-[2px] text-xs font-semibold capsize">
+      <span className="capsize block pt-[2px] text-xs font-semibold">
         {selectedLanguage?.name}
       </span>
       <ChevronDown

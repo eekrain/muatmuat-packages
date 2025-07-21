@@ -75,14 +75,14 @@ const FormLokasiBongkarMuatScreen = () => {
           <div className="flex flex-col gap-4">
             {/* Header with Ubah Lokasi */}
             <div className="flex items-center justify-between">
-              <h2 className="leading-[15px] flex-1 text-sm font-bold text-black">
+              <h2 className="flex-1 text-sm font-bold leading-[15px] text-black">
                 {params.config.formMode === "muat"
                   ? "Lokasi Muat"
                   : "Lokasi Bongkar"}
               </h2>
               <button
                 onClick={handleUbahLokasi}
-                className="leading-[13px] text-xs font-semibold text-[#176CF7]"
+                className="text-xs font-semibold leading-[13px] text-[#176CF7]"
               >
                 Ubah Lokasi
               </button>
@@ -91,7 +91,7 @@ const FormLokasiBongkarMuatScreen = () => {
             {/* Location Details */}
             <div className="flex items-center gap-2">
               <MapPin className="mt-0.5 h-6 w-6 flex-shrink-0 text-[#461B02]" />
-              <p className="leading-[15px] flex-1 text-sm font-medium text-black">
+              <p className="flex-1 text-sm font-medium leading-[15px] text-black">
                 {formValues.dataLokasi?.location?.name}
               </p>
             </div>
@@ -104,10 +104,10 @@ const FormLokasiBongkarMuatScreen = () => {
             {/* Detail Lokasi Field */}
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-1">
-                <label className="leading-[15px] text-sm font-semibold text-black">
+                <label className="text-sm font-semibold leading-[15px] text-black">
                   Detail Lokasi
                 </label>
-                <span className="leading-[12px] text-xxs font-semibold text-black">
+                <span className="text-xxs font-semibold leading-[12px] text-black">
                   (Opsional)
                 </span>
               </div>
@@ -129,7 +129,7 @@ const FormLokasiBongkarMuatScreen = () => {
                     style={{ height: "32px" }} // Initial height for 1 line
                   />
                 </div>
-                <div className="leading-[13px] flex items-center justify-between text-xs font-medium text-neutral-600">
+                <div className="flex items-center justify-between text-xs font-medium leading-[13px] text-neutral-600">
                   <span className="opacity-0">notes</span>
                   <span>{formValues.detailLokasi.length}/500</span>
                 </div>
@@ -138,7 +138,7 @@ const FormLokasiBongkarMuatScreen = () => {
 
             {/* Nama PIC Field */}
             <div className="flex flex-col gap-4">
-              <label className="leading-[15px] text-sm font-semibold text-black">
+              <label className="text-sm font-semibold leading-[15px] text-black">
                 Nama PIC Lokasi Lokasi{" "}
                 {params.config.formMode === "muat" ? "Muat" : "Bongkar"}
                 <span className="text-red-500">*</span>
@@ -161,7 +161,7 @@ const FormLokasiBongkarMuatScreen = () => {
 
             {/* No. HP PIC Field */}
             <div className="flex flex-col gap-4">
-              <label className="leading-[15px] text-sm font-semibold text-black">
+              <label className="text-sm font-semibold leading-[15px] text-black">
                 No. HP PIC Lokasi{" "}
                 {params.config.formMode === "muat" ? "Muat" : "Bongkar"}
                 <span className="text-red-500">*</span>

@@ -46,7 +46,7 @@ const RatingInput = ({
         </button>
       ))}
       {withLabel && value > 0 ? (
-        <span className="leading-[14.4px] text-xs font-semibold text-neutral-900">
+        <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
           {getRatingLabel(value)}
         </span>
       ) : null}

@@ -19,7 +19,7 @@ export const useVouchers = (token, useMockData = false, mockEmpty = false) => {
         console.log("🔄 useVouchers Hook - Starting fetch:", {
           useMockData,
           mockEmpty,
-          token: token?.substring(0, 20) + "..." || "No token",
+          token: `${token?.substring(0, 20)}...` || "No token",
           timestamp: new Date().toISOString(),
         });
 
@@ -45,7 +45,7 @@ export const useVouchers = (token, useMockData = false, mockEmpty = false) => {
           console.log("🌐 Using REAL API service");
           console.log(
             "📞 Calling muatTransGetAvailableVouchers with token:",
-            token?.substring(0, 20) + "..."
+            `${token?.substring(0, 20)}...`
           );
 
           try {
@@ -88,7 +88,7 @@ export const useVouchers = (token, useMockData = false, mockEmpty = false) => {
               console.log(
                 "🔄 Smart Fallback: Using mock data due to API failure"
               );
-              console.log("💡 Reason: " + apiError.message);
+              console.log(`💡 Reason: ${apiError.message}`);
 
               // Use mock data as fallback
               const mockVouchers = await mockGetAvailableVouchers();
@@ -101,10 +101,11 @@ export const useVouchers = (token, useMockData = false, mockEmpty = false) => {
 
               // Set error message to inform user
               setError(
-                "Menggunakan data demo - " +
-                  (apiError.message.includes("token")
+                `Menggunakan data demo - ${
+                  apiError.message.includes("token")
                     ? "Token tidak valid"
-                    : "Server tidak tersedia")
+                    : "Server tidak tersedia"
+                }`
               );
             } else {
               throw apiError; // Re-throw to be caught by outer catch

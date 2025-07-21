@@ -6,7 +6,7 @@ import { fetcherMuatrans } from "@/lib/axios";
  */
 export const muatTransGetAvailableVouchers = async (token) => {
   console.log("🚀 muatTransGetAvailableVouchers called with:", {
-    token: token?.substring(0, 20) + "..." || "No token",
+    token: `${token?.substring(0, 20)}...` || "No token",
     endpoint: "/v1/orders/vouchers",
     timestamp: new Date().toISOString(),
   });

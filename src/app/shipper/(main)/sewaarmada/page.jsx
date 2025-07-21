@@ -8,9 +8,9 @@ import useDevice from "@/hooks/use-device";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook, useSWRMutateHook } from "@/hooks/use-swr";
-import { fetcherPayment } from "@/lib/axios";
 import { getLoadTimes } from "@/lib/utils/dateTime";
-import { useGetReorderData } from "@/services/Shipper/sewaarmada/getReorderData";
+import { useGetOrderDetail } from "@/services/Shipper/sewaarmada/getOrderDetail";
+import useGetSewaArmadaFormOptionData from "@/services/Shipper/sewaarmada/getSewaArmadaFormOption";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -46,20 +46,20 @@ const Page = () => {
   const { setField, setFormId, setOrderType, reset } = useSewaArmadaActions();
   const { setWaitingSettlementOrderId } = useWaitingSettlementModalAction();
 
-  // const { data: reorderData, isLoading: isLoadingReorderData } = useSWRHook(
-  //   copyOrderId ? `v1/orders/${copyOrderId}/reorder` : null
-  // );
-  const { data: reorderData, isLoading: isLoadingReorderData } =
-    useGetReorderData(copyOrderId);
+  const { data: reorderData, isLoading } = useGetOrderDetail(
+    copyOrderId,
+    "reorder"
+  );
   const { data: settlementAlertInfoData } = useSWRHook(
     "v1/orders/settlement/alert-info"
   );
-  // Fetch cargo types using SWR
-  const { data: cargoTypesData } = useSWRHook("v1/orders/cargos/types");
-  // Fetch cargo categories using SWR
-  const { data: cargoCategoriesData } = useSWRHook(
-    "v1/orders/cargos/categories"
-  );
+  const {
+    cargoCategories,
+    cargoTypes,
+    additionalServicesOptions,
+    paymentMethods,
+    settingsTime,
+  } = useGetSewaArmadaFormOptionData();
   // Fetch recommended carriers from API using SWR
   const { data: carriersData } = useSWRHook(
     cargoCategoryId
@@ -70,33 +70,14 @@ const Page = () => {
   const { data: trucksData, trigger: fetchTrucks } = useSWRMutateHook(
     "v1/orders/trucks/recommended"
   );
-  // Fetch layanan tambahan dari API
-  const { data: additionalServicesData } = useSWRHook(
-    "v1/orders/additional-services"
-  );
   // Setup SWR mutation hook untuk API calculate-price
   const { trigger: calculatePrice, data: calculatedPriceData } =
     useSWRMutateHook("v1/orders/calculate-price");
-  // console.log("priceddata", priceData);
-  // Fetch payment methods using SWR
-  const { data: paymentMethodsData } = useSWRHook(
-    "v1/payment/methods",
-    fetcherPayment
-  );
-  const { data: settingsTimeData } = useSWRHook("v1/orders/settings/time");
 
   const settlementAlertInfo = settlementAlertInfoData?.Data || [];
-  // Extract cargo types from response
-  const cargoTypes = cargoTypesData?.Data?.types || [];
-  // Extract cargo categories from response
-  const cargoCategories = cargoCategoriesData?.Data?.categories || [];
   const carriers = carriersData?.Data || null;
   const trucks = trucksData?.Data || tempTrucks;
-  const additionalServicesOptions = additionalServicesData?.Data.services || [];
-  // Use the API data directly or fall back to an empty array
-  const paymentMethods = paymentMethodsData?.Data || [];
   const calculatedPrice = calculatedPriceData?.Data.price || null;
-  const settingsTime = settingsTimeData?.Data || null;
 
   const shippingDetails = useShallowMemo(() => {
     if (additionalServices.length === 0) return null;
@@ -205,7 +186,7 @@ const Page = () => {
   }, [settlementAlertInfo]);
   // console.log("reorder", reorderData);
   useShallowCompareEffect(() => {
-    if (!copyOrderId || !isLoadingReorderData) {
+    if (!copyOrderId || !isLoading) {
       if (reorderData) {
         setOrderType(reorderData.orderType);
         Object.entries(reorderData.formValues).forEach(([key, value]) => {
@@ -219,7 +200,7 @@ const Page = () => {
         setFormId(urlFormId);
       }
     }
-  }, [urlFormId, localFormId, copyOrderId, reorderData, isLoadingReorderData]);
+  }, [urlFormId, localFormId, copyOrderId, reorderData, isLoading]);
 
   const handleFetchTrucks = async ({
     informasiMuatan: newInformasiMuatan,

@@ -20,7 +20,7 @@ const Root = ({ className, children }) => {
 const Header = ({ className, children }) => {
   return (
     <div className={cn("flex min-h-[59px] items-center px-5", className)}>
-      <span className="leading-[1.2] w-full text-base font-bold text-neutral-900 capsize">
+      <span className="capsize w-full text-base font-bold leading-[1.2] text-neutral-900">
         {children}
       </span>
     </div>
@@ -54,7 +54,7 @@ const ContainerCollapsible = ({ title, className, children }) => {
         aria-expanded={isOpen}
         aria-controls="collapsible-content"
       >
-        <h3 className="leading-[1.2] text-sm font-semibold text-black">
+        <h3 className="text-sm font-semibold leading-[1.2] text-black">
           {title}
         </h3>
         <div className="flex-shrink-0">
@@ -83,7 +83,7 @@ const ContainerCollapsible = ({ title, className, children }) => {
 const ContainerItem = ({ title, className, children }) => {
   return (
     <div className={cn("flex flex-col gap-4", className)}>
-      <h3 className="leading-[1.2] text-sm font-semibold text-black capsize">
+      <h3 className="capsize text-sm font-semibold leading-[1.2] text-black">
         {title}
       </h3>
       {children}
@@ -125,7 +125,7 @@ const Subtotal = ({ className, label, value }) => {
   return (
     <div
       className={cn(
-        "leading-[1.2] flex w-full items-center justify-between text-sm font-semibold text-neutral-900",
+        "flex w-full items-center justify-between text-sm font-semibold leading-[1.2] text-neutral-900",
         className
       )}
     >
@@ -152,7 +152,7 @@ const FooterTotal = ({
     >
       <div
         className={
-          "leading-[1.2] flex justify-between text-base font-bold text-neutral-900"
+          "flex justify-between text-base font-bold leading-[1.2] text-neutral-900"
         }
       >
         <span className={appearance.labelClassName}>{label}</span>

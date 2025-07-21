@@ -24,6 +24,8 @@ export const TimelineField = ({
   labelAddLocation = "Tambah Lokasi",
   className,
   errorMessage,
+  disabled = false,
+  withRemoveButton = true,
 }) => {
   const getVariant = () => {
     const selected = {};
@@ -49,7 +51,8 @@ export const TimelineField = ({
         className={cn(
           "rounded-[6px] border border-[#7B7B7B] p-3 md:rounded-md",
           errorMessage && "border-error-400",
-          className
+          className,
+          disabled && "cursor-not-allowed bg-neutral-200"
         )}
       >
         <TimelineContainer>
@@ -72,12 +75,13 @@ export const TimelineField = ({
                     }
                     className={cn(
                       "mt-0.5 cursor-pointer pb-0",
-                      !item?.name && "text-neutral-600"
+                      !item?.name && "text-neutral-600",
+                      disabled && "cursor-not-allowed"
                     )}
-                    onClick={() => onEditLocation(index)}
+                    onClick={() => !disabled && onEditLocation(index)}
                   />
 
-                  {atLeastOneLocation && (
+                  {atLeastOneLocation && withRemoveButton && (
                     <button
                       className="flex flex-shrink-0 items-center pl-2"
                       onClick={() => onDeleteLocation(index)}
@@ -100,8 +104,12 @@ export const TimelineField = ({
         {values.length < maxLocation && (
           <div className="flex justify-center">
             <button
-              className="leading-[1.2] flex items-center gap-2 text-sm font-semibold text-[#176CF7] md:text-xs"
+              className={cn(
+                "flex items-center gap-2 text-sm font-semibold leading-[1.2] text-[#176CF7] md:text-xs",
+                disabled && "cursor-not-allowed"
+              )}
               onClick={onAddLocation}
+              disabled={disabled}
             >
               <IconComponent
                 width={20}
