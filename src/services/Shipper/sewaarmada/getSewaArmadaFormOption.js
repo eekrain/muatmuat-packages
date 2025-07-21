@@ -205,7 +205,7 @@ const settingsTimeDummyData = {
   currentServerTime: "2025-07-21 15:11:48",
 };
 
-const useGetSewaArmadaFormOptionData = () => {
+const useGetSewaArmadaFormOption = () => {
   // Fetch cargo types using SWR
   const { data: cargoTypesData } = useSWRHook("v1/orders/cargos/types");
   // Fetch cargo categories using SWR

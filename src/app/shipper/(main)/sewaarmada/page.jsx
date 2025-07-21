@@ -9,8 +9,8 @@ import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook, useSWRMutateHook } from "@/hooks/use-swr";
 import { getLoadTimes } from "@/lib/utils/dateTime";
-import { useGetReorderData } from "@/services/Shipper/sewaarmada/getReorderData";
-import useGetSewaArmadaFormOptionData from "@/services/Shipper/sewaarmada/getSewaArmadaFormOptionData";
+import { useGetOrderDetail } from "@/services/Shipper/detailpesanan/getDetailPesananData";
+import useGetSewaArmadaFormOptionData from "@/services/Shipper/sewaarmada/getSewaArmadaFormOption";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -47,7 +47,7 @@ const Page = () => {
   const { setWaitingSettlementOrderId } = useWaitingSettlementModalAction();
 
   const { data: reorderData, isLoading: isLoadingReorderData } =
-    useGetReorderData(copyOrderId);
+    useGetOrderDetail(copyOrderId);
   const { data: settlementAlertInfoData } = useSWRHook(
     "v1/orders/settlement/alert-info"
   );

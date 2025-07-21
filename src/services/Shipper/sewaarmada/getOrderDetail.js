@@ -1,13 +1,13 @@
 import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
-import { normalizeReorderFleet } from "@/lib/normalizers/sewaarmada";
+import { normalizeOrderDetail } from "@/lib/normalizers/sewaarmada";
 
-export const getReorderData = async (url) => {
-  const reorderData = await fetcherMuatrans.get(url);
+export const getOrderDetail = async (url) => {
+  const orderDetail = await fetcherMuatrans.get(url);
 
   const documentDeliveryService =
-    reorderData?.data?.Data.additionalService.find((item) => item.isShipping);
+    orderDetail?.data?.Data.additionalService.find((item) => item.isShipping);
   let tempShippingOptions = [];
 
   if (documentDeliveryService) {
@@ -20,12 +20,12 @@ export const getReorderData = async (url) => {
 
   return {
     orderType: "INSTANT",
-    formValues: normalizeReorderFleet(
-      reorderData?.data?.Data,
+    formValues: normalizeOrderDetail(
+      orderDetail?.data?.Data,
       tempShippingOptions
     ),
   };
 };
 
-export const useGetReorderData = (orderId) =>
-  useSWR(orderId ? `v1/orders/${orderId}/reorder` : null, getReorderData);
+export const useGetOrderDetail = (orderId) =>
+  useSWR(orderId ? `v1/orders/${orderId}/reorder` : null, getOrderDetail);
