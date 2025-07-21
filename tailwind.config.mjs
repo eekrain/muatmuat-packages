@@ -1,5 +1,4 @@
 import pluginAnimate from "tailwindcss-animate";
-import pluginCapsize from "tailwindcss-capsize";
 import defaultTheme from "tailwindcss/defaultTheme";
 
 /**
@@ -21,7 +20,7 @@ const config = {
         "3xl": ["32px", { lineHeight: "38.4px" }],
       },
       fontFamily: {
-        sans: ["var(--font-avenir)", ...defaultTheme.fontFamily.sans],
+        sans: ["Avenir Next LT Pro", ...defaultTheme.fontFamily.sans],
       },
       fontMetrics: {
         // Keys here must match those in fontFamily.
@@ -226,7 +225,7 @@ const config = {
       },
     },
   },
-  plugins: [pluginAnimate, pluginCapsize],
+  plugins: [pluginAnimate],
 };
 
 export default config;
