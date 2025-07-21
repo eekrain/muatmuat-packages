@@ -4,12 +4,27 @@ import { useTokenStore } from "@/store/AuthStore/tokenStore";
 import { useUserStore } from "@/store/AuthStore/userStore";
 
 const LIST_PUBLIC_ROUTES = [
-  "/sewaarmada",
-  "/example",
-  "/login",
-  "/dev-login",
-  // /orders/orderId/drivers/driverId/qr-code
-  /^\/orders\/[^\/]+\/drivers\/[^\/]+\/qr-code$/,
+  {
+    path: "/sewaarmada",
+    method: "exact",
+  },
+  {
+    path: "/example",
+    method: "startsWith",
+  },
+  {
+    path: "/login",
+    method: "exact",
+  },
+  {
+    path: "/dev-login",
+    method: "exact",
+  },
+  {
+    // /orders/orderId/drivers/driverId/qr-code
+    path: /^\/orders\/[^\/]+\/drivers\/[^\/]+\/qr-code$/,
+    method: "regex",
+  },
 ];
 
 export const createAxios = (baseURL) => {
@@ -56,19 +71,18 @@ export const createAxios = (baseURL) => {
             const pathname = window?.location?.pathname;
             if (!pathname) return false;
 
-            // If route is a string, check if pathname starts with the route
-            // This allows subpaths to match (e.g., "/sewaarmada/something" matches "/sewaarmada")
-            if (typeof route === "string") {
-              if (route === "/") return pathname === route;
-              return pathname === route || pathname.startsWith(route);
+            switch (route.method) {
+              case "exact":
+                return pathname === route.path;
+              case "startsWith":
+                return pathname.startsWith(route.path);
+              case "regex":
+                return (
+                  route.path instanceof RegExp && route.path.test(pathname)
+                );
+              default:
+                return false;
             }
-
-            // If route is a regex pattern
-            if (route instanceof RegExp) {
-              return route.test(pathname);
-            }
-
-            return false;
           });
           if (window?.location && !isPublicRoutes) {
             window.location.replace("/");
