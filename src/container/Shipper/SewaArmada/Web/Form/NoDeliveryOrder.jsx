@@ -1,3 +1,5 @@
+import { usePathname } from "next/navigation";
+
 import { FormContainer } from "@/components/Form/Form";
 import { TagInput } from "@/components/Form/TagInput";
 import { handleFirstTime } from "@/lib/utils/form";
@@ -7,6 +9,8 @@ import {
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
 export const NoDeliveryOrder = () => {
+  const pathname = usePathname();
+  const isEditPage = pathname.includes("/ubahpesanan");
   const deliveryOrderNumbers = useSewaArmadaStore(
     (state) => state.formValues.deliveryOrderNumbers
   );
@@ -22,6 +26,7 @@ export const NoDeliveryOrder = () => {
       </div>
       <div className="flex-1">
         <TagInput
+          disabled={isEditPage}
           tags={deliveryOrderNumbers}
           onTagsChange={(value) =>
             handleFirstTime(() => setField("deliveryOrderNumbers", value))

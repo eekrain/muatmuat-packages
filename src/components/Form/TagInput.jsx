@@ -151,7 +151,7 @@ export const TagInput = ({
       <div
         className={cn(
           "flex w-full max-w-[576px] cursor-text flex-col items-start gap-2 p-0",
-          disabled && "cursor-not-allowed opacity-50"
+          disabled && "cursor-not-allowed"
         )}
         onClick={disabled ? undefined : focusInput}
       >
@@ -167,9 +167,13 @@ export const TagInput = ({
                 key={`${tag}-${index}`}
                 disabled={disabled}
                 appearance={appearance.tagClassName}
-                withRemove={{
-                  onRemove: () => removeTag(index),
-                }}
+                withRemove={
+                  disabled
+                    ? null
+                    : {
+                        onRemove: () => removeTag(index),
+                      }
+                }
               >
                 {tag}
               </TagBubble>
