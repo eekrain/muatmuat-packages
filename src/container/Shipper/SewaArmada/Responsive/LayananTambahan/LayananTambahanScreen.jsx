@@ -382,12 +382,12 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                           >
                             {tambahanFormValues.opsiPegiriman.courier}
                           </span>
-                          <span className="leading-[13.2px] font-medium text-[12px] text-neutral-900">
+                          <span className="leading-[13.2px] text-xs font-medium text-neutral-900">
                             {tambahanFormValues.opsiPegiriman.price}
                           </span>
                         </>
                       ) : (
-                        <span className="leading-[15.4px] font-semibold text-[14px] text-primary-700">
+                        <span className="leading-[15.4px] text-sm font-semibold text-primary-700">
                           Pilih Opsi Pengiriman
                         </span>
                       )}
