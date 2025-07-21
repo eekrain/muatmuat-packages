@@ -1,16 +1,31 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import * as HoverCard from "@radix-ui/react-hover-card";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { useTranslation } from "@/hooks/use-translation";
+import { useOverlayAction } from "@/store/Shared/overlayStore";
 
 export const DownloadPopover = () => {
+  const [open, setOpen] = useState(false);
   const { t } = useTranslation();
+  const { setIsOverlayActive } = useOverlayAction();
+
+  useEffect(() => {
+    setIsOverlayActive(open);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   return (
-    <HoverCard.Root openDelay={0} closeDelay={200}>
+    <HoverCard.Root
+      open={open}
+      onOpenChange={setOpen}
+      openDelay={0}
+      closeDelay={200}
+    >
       <HoverCard.Trigger asChild>
         <a
           className="relative flex cursor-pointer items-center gap-1 text-xs font-medium no-underline"

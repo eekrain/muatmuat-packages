@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import xior from "xior";
 
-import { useTokenActions } from "@/store/Auth/tokenStore";
+import { useTokenActions } from "@/store/AuthStore/tokenStore";
 
 const DevLoginContainer = ({ onSuccessRedirect = "/manajemen-armada" }) => {
   const [formData, setFormData] = useState({

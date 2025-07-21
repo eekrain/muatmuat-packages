@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ChevronDown } from "lucide-react";
 
@@ -16,6 +16,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
+import { useOverlayAction } from "@/store/Shared/overlayStore";
 
 import { DownloadPopover } from "./DownloadPopover";
 import LanguageDropdown from "./LanguageDropdown";
@@ -61,6 +62,12 @@ const HeaderWeb = ({
   ];
 
   const [openSettings, setOpenSettings] = useState(false);
+  const { setIsOverlayActive } = useOverlayAction();
+
+  useEffect(() => {
+    setIsOverlayActive(openSettings);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openSettings]);
 
   return (
     <header className="sticky left-0 top-0 z-20 w-full">
@@ -152,7 +159,7 @@ const HeaderWeb = ({
               </button>
             </SimpleDropdownTrigger>
 
-            <SimpleDropdownContent>
+            <SimpleDropdownContent className="w-[194px]">
               {settingsMenu.map((menu, key) => (
                 <SimpleDropdownItem key={key} onClick={menu.onClick}>
                   {menu.label}

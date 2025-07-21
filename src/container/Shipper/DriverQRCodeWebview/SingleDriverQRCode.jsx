@@ -7,7 +7,7 @@ import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import { getStatusScanMetadata } from "@/lib/normalizers/detailpesanan/getStatusScanMetadata";
 import { useGetDriverQRCodeById } from "@/services/Shipper/detailpesanan/getDriverQRCodeById";
-import { useLoadingAction } from "@/store/Shipper/loadingStore";
+import { useLoadingAction } from "@/store/Shared/loadingStore";
 
 const SingleDriverQRCode = () => {
   const params = useParams();
@@ -29,7 +29,7 @@ const SingleDriverQRCode = () => {
   return (
     <div className="flex justify-center px-4 pt-8">
       <div className="flex w-full max-w-[450px] flex-col items-center gap-y-6 border border-neutral-400 bg-neutral-50 px-6 py-9">
-        <h1 className="text-base font-bold leading-[19.2px] text-neutral-900">
+        <h1 className="leading-[19.2px] text-base font-bold text-neutral-900">
           {/* {statusScan().statusTitle} */}
           QR Code Lokasi Muat & Bongkar
         </h1>
@@ -56,7 +56,7 @@ const SingleDriverQRCode = () => {
             />
           )}
         </div>
-        <span className="text-center text-sm font-medium leading-[16.8px] text-neutral-900">
+        <span className="leading-[16.8px] text-center text-sm font-medium text-neutral-900">
           *Tunjukkan QR Code ini kepada pihak driver agar dapat melanjutkan ke
           proses muat.
         </span>

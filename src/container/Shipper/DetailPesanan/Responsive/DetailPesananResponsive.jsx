@@ -8,7 +8,7 @@ import {
 } from "@/lib/responsive-navigation";
 // Import the default screen without dynamic import
 import { dynamicScreen } from "@/lib/utils/dynamic-screen";
-import { useLoadingAction } from "@/store/Shipper/loadingStore";
+import { useLoadingAction } from "@/store/Shared/loadingStore";
 
 import DetailPesananScreen from "./Home/HomeScreen";
 import UlasanScreen from "./Ulasan/UlasanScreen";

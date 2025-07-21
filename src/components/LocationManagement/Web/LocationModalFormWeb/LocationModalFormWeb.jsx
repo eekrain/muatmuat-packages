@@ -113,11 +113,16 @@ const InnerLocationModalFormWeb = ({
                           ? "/icons/marker-lokasi-muat.svg"
                           : "/icons/marker-lokasi-bongkar.svg"
                       }
+                      placeholder={
+                        formMode === "muat"
+                          ? "Masukkan Lokasi Muat"
+                          : "Masukkan Lokasi Bongkar"
+                      }
                     />
                   </div>
                   <div>
                     <label className="mb-3 block text-xs font-medium text-neutral-600">
-                      Detail Lokasi <i>(Opsional)</i>
+                      Detail Lokasi <i className="font-normal">(Opsional)</i>
                     </label>
                     <MyTextArea
                       value={formValues.detailLokasi}

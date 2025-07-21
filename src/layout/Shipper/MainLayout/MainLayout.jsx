@@ -10,7 +10,7 @@ import { AuthenticationProvider } from "@/hooks/use-auth";
 import useDevice from "@/hooks/use-device";
 import { TranslationProvider } from "@/hooks/use-translation";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
-import { useLoadingAction } from "@/store/Shipper/loadingStore";
+import { useLoadingAction } from "@/store/Shared/loadingStore";
 import { useNotificationCounterActions } from "@/store/Shipper/notificationCounterStore";
 
 const MainLayout = ({ children }) => {

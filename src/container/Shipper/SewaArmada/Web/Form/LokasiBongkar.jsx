@@ -31,6 +31,7 @@ export const LokasiBongkar = () => {
             lokasiBongkar?.map((item) => item?.dataLokasi?.location || null) ||
             []
           }
+          labelAddLocation="Tambah Lokasi Bongkar"
           onAddLocation={() =>
             handleFirstTime(() => addLokasi("lokasiBongkar", null))
           }

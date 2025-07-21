@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ChevronDown } from "lucide-react";
 
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { useListLanguages } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
+import { useOverlayAction } from "@/store/Shared/overlayStore";
 import {
   useSelectedLanguageActions,
   useSelectedLanguageStore,
@@ -17,6 +18,12 @@ const LanguageDropdown = () => {
   );
   const { listLanguages } = useListLanguages();
   const { setSelectedLanguage } = useSelectedLanguageActions();
+  const { setIsOverlayActive } = useOverlayAction();
+
+  useEffect(() => {
+    setIsOverlayActive(open);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   return (
     <div

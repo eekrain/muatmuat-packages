@@ -92,6 +92,7 @@ const useModalFormSimpanLokasiWeb = ({
 export const InputLocationManagementDropdown = ({
   errorMessage,
   markerIcon,
+  placeholder,
 }) => {
   const [
     isModalSavedLocationManagementOpen,
@@ -159,6 +160,7 @@ export const InputLocationManagementDropdown = ({
         handleEditLocation={handleEditLocation}
         errorMessage={errorMessage}
         markerIcon={markerIcon}
+        placeholder={placeholder}
       />
 
       <ModalPostalCode

@@ -21,6 +21,7 @@ export const TimelineField = ({
   onAddLocation,
   onDeleteLocation,
   onEditLocation,
+  labelAddLocation = "Tambah Lokasi",
   className,
   errorMessage,
 }) => {
@@ -39,6 +40,8 @@ export const TimelineField = ({
 
     return selected;
   };
+
+  const atLeastOneLocation = values.some((item) => item?.name);
 
   return (
     <div className="flex flex-col gap-2">
@@ -74,7 +77,7 @@ export const TimelineField = ({
                     onClick={() => onEditLocation(index)}
                   />
 
-                  {values.length > 1 && (
+                  {atLeastOneLocation && (
                     <button
                       className="flex flex-shrink-0 items-center pl-2"
                       onClick={() => onDeleteLocation(index)}
@@ -97,7 +100,7 @@ export const TimelineField = ({
         {values.length < maxLocation && (
           <div className="flex justify-center">
             <button
-              className="flex items-center gap-2 text-sm font-semibold leading-[1.2] text-[#176CF7] md:text-xs"
+              className="leading-[1.2] flex items-center gap-2 text-sm font-semibold text-[#176CF7] md:text-xs"
               onClick={onAddLocation}
             >
               <IconComponent
@@ -107,8 +110,8 @@ export const TimelineField = ({
                 className="-mt-[2px] text-[#176CF7]"
                 size="medium"
               />
-              <span>
-                Tambah Lokasi
+              <span className="capsize">
+                {labelAddLocation}
                 <span className="capitalize md:hidden">&nbsp;{variant}</span>
               </span>
             </button>
