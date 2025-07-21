@@ -21,7 +21,7 @@ export const lineVariants = cva(
 );
 
 export const bulletVariants = cva(
-  "absolute left-1/2 inline-flex -translate-x-1/2 items-center justify-center rounded-full text-[10px] font-bold",
+  "absolute left-1/2 inline-flex -translate-x-1/2 items-center justify-center rounded-full font-bold",
   {
     variants: {
       variant: {
@@ -117,7 +117,7 @@ export const TimelineItem = ({
           )}
         >
           {!variant.startsWith("bullet") && (
-            <div className="mt-[2px]">{index + 1}</div>
+            <div className="mt-[2px] text-xxs">{index + 1}</div>
           )}
         </span>
       </div>
@@ -148,7 +148,7 @@ export const TimelineContentWithButtonDate = ({
       <div className="flex flex-col gap-[2px]">
         <span
           className={cn(
-            "line-clamp-1 text-[14px] font-medium leading-[1.2] text-neutral-900",
+            "leading-[1.2] line-clamp-1 text-sm font-medium text-neutral-900",
             appearance?.titleClassname
           )}
         >
@@ -158,7 +158,7 @@ export const TimelineContentWithButtonDate = ({
           <button
             onClick={withButton.onClick}
             className={cn(
-              "h-2 w-fit text-xs font-medium leading-[1.2] text-primary-700",
+              "leading-[1.2] h-2 w-fit text-xs font-medium text-primary-700",
               appearance?.buttonClassname
             )}
           >
@@ -170,7 +170,7 @@ export const TimelineContentWithButtonDate = ({
       {withDate && (
         <span
           className={cn(
-            "block w-20 text-right text-xs font-medium leading-[1.2] text-neutral-500 md:w-fit",
+            "leading-[1.2] block w-20 text-right text-xs font-medium text-neutral-500 md:w-fit",
             appearance?.dateClassname
           )}
         >
@@ -185,7 +185,7 @@ export const TimelineContentAddress = ({ title, className, ...props }) => {
   return (
     <div
       className={cn(
-        "w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap pb-4 text-sm font-semibold leading-[1.2] text-neutral-900 md:text-xs md:font-medium",
+        "leading-[1.2] w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap pb-4 text-sm font-semibold text-neutral-900 md:text-xs md:font-medium",
         className
       )}
       {...props}

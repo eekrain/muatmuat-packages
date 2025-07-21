@@ -55,14 +55,14 @@ export const ModalFormRekeningPencairan = ({
         <ModalHeader type="muattrans" size="xl" />
         <div className="flex flex-col items-center justify-center gap-[22px] px-6 py-9">
           {/* Title */}
-          <h2 className="w-full text-center text-[16px] font-bold leading-[19.2px] text-black">
+          <h2 className="leading-[19.2px] w-full text-center text-base font-bold text-black">
             {t(labelTitle)}
           </h2>
 
           {/* Form Fields */}
           <div className="grid w-full grid-cols-[140px_1fr] gap-x-6 gap-y-4">
             {/* Bank Name Field */}
-            <label className="pt-2 text-[12px] font-medium leading-[14.4px] text-neutral-600">
+            <label className="leading-[14.4px] pt-2 text-xs font-medium text-neutral-600">
               {`${t("labelBankName")}*`}
             </label>
             <div className="relative">
@@ -78,7 +78,7 @@ export const ModalFormRekeningPencairan = ({
             </div>
 
             {/* Account Number Field */}
-            <label className="pt-2 text-[12px] font-medium leading-[14.4px] text-neutral-600">
+            <label className="leading-[14.4px] pt-2 text-xs font-medium text-neutral-600">
               {`${t("labelAccountNumber")}*`}
             </label>
             <div>
@@ -96,7 +96,7 @@ export const ModalFormRekeningPencairan = ({
             </div>
 
             {/* Account Holder Name Field */}
-            <label className="pt-2 text-[12px] font-medium leading-[14.4px] text-neutral-600">
+            <label className="leading-[14.4px] pt-2 text-xs font-medium text-neutral-600">
               {`${t("labelOwnerName")}*`}
             </label>
             <div className="flex flex-col gap-4">

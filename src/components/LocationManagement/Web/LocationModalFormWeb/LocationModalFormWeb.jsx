@@ -103,7 +103,7 @@ const InnerLocationModalFormWeb = ({
               >
                 <div className="flex w-full flex-col gap-4 overflow-y-auto pr-[7px]">
                   <div className="w-full">
-                    <label className="mb-3 block text-[12px] font-medium text-neutral-600">
+                    <label className="mb-3 block text-xs font-medium text-neutral-600">
                       {formMode === "muat" ? "Lokasi Muat*" : "Lokasi Bongkar*"}
                     </label>
                     <InputLocationManagementDropdown
@@ -113,11 +113,16 @@ const InnerLocationModalFormWeb = ({
                           ? "/icons/marker-lokasi-muat.svg"
                           : "/icons/marker-lokasi-bongkar.svg"
                       }
+                      placeholder={
+                        formMode === "muat"
+                          ? "Masukkan Lokasi Muat"
+                          : "Masukkan Lokasi Bongkar"
+                      }
                     />
                   </div>
                   <div>
-                    <label className="mb-3 block text-[12px] font-medium text-neutral-600">
-                      Detail Lokasi <i>(Opsional)</i>
+                    <label className="mb-3 block text-xs font-medium text-neutral-600">
+                      Detail Lokasi <i className="font-normal">(Opsional)</i>
                     </label>
                     <MyTextArea
                       value={formValues.detailLokasi}
@@ -132,7 +137,7 @@ const InnerLocationModalFormWeb = ({
                     />
                   </div>
                   <div>
-                    <label className="mb-3 block text-[12px] font-medium text-neutral-600">
+                    <label className="mb-3 block text-xs font-medium text-neutral-600">
                       Nama PIC{" "}
                       {formMode === "muat" ? "Lokasi Muat" : "Lokasi Bongkar"}*
                     </label>
@@ -144,7 +149,7 @@ const InnerLocationModalFormWeb = ({
                     />
                   </div>
                   <div>
-                    <label className="mb-3 block text-[12px] font-medium text-neutral-600">
+                    <label className="mb-3 block text-xs font-medium text-neutral-600">
                       No. HP PIC{" "}
                       {formMode === "muat" ? "Lokasi Muat" : "Lokasi Bongkar"}*
                     </label>

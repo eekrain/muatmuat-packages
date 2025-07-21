@@ -46,10 +46,10 @@ export const WaitFleetSearchModal = ({
       <ModalContent className="w-modal-small">
         <ModalHeader size="small" />
         <div className="flex flex-col items-center gap-y-6 px-6 py-9">
-          <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
+          <h1 className="leading-[19.2px] text-base font-bold text-neutral-900">
             Oops, Volume Pesanan Sedang Tinggi
           </h1>
-          <p className="text-center text-[14px] font-medium leading-[15.4px] text-neutral-900">
+          <p className="leading-[15.4px] text-center text-sm font-medium text-neutral-900">
             Kami membutuhkan waktu lebih lama untuk mempersiapkan armada. Apakah
             kamu tetap ingin menunggu?
           </p>

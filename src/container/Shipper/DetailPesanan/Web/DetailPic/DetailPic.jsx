@@ -52,7 +52,7 @@ const locationData = {
 const PICDetailItem = ({ icon, text, className = "" }) => (
   <div className={`flex items-center gap-2 ${className}`}>
     <IconComponent src={icon} className="icon-fill-muat-trans-secondary-900" />
-    <span className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+    <span className="leading-[14.4px] text-xs font-medium text-neutral-900 capsize">
       {text}
     </span>
   </div>
@@ -62,7 +62,7 @@ const PICDetailItem = ({ icon, text, className = "" }) => (
 const PICLocationCard = ({ locations, title }) => (
   <div className={"flex w-full flex-row gap-8"}>
     <div className="flex h-8 min-w-[178px] items-center">
-      <span className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+      <span className="leading-[14.4px] text-xs font-medium text-neutral-600">
         {title}
       </span>
     </div>
@@ -76,7 +76,7 @@ const PICLocationCard = ({ locations, title }) => (
             >
               <div className="flex flex-col gap-y-3">
                 {/* Header lokasi */}
-                <span className="text-[12px] font-bold leading-[14.4px] text-neutral-900">
+                <span className="leading-[14.4px] text-xs font-bold text-neutral-900">
                   {location.locationType === LocationTypeEnum.PICKUP
                     ? "Lokasi Muat"
                     : "Lokasi Bongkar"}{" "}
@@ -126,7 +126,7 @@ const DetailPIC = ({ dataDetailPIC }) => {
     <div className="shadow-muat flex flex-col items-center rounded-xl bg-neutral-50 p-8">
       {/* Header Section */}
       <div className="flex w-full items-center justify-between">
-        <h1 className="text-[18px] font-semibold leading-[21.6px] text-neutral-900">
+        <h1 className="leading-[21.6px] text-lg font-semibold text-neutral-900">
           Detail PIC
         </h1>
         <button

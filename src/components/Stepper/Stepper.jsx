@@ -147,7 +147,7 @@ export const StepperItem = ({ step, index }) => {
         {/* Step Label */}
         <div
           ref={titleRef}
-          className="absolute -bottom-2 left-1/2 -translate-x-1/2 translate-y-full text-center text-[12px] font-medium leading-[1.2] text-[#000000]"
+          className="leading-[1.2] absolute -bottom-2 left-1/2 -translate-x-1/2 translate-y-full text-center text-xs font-medium text-[#000000]"
           style={{ width: titleWidth }}
         >
           <span className="block font-semibold">{step.label}</span>

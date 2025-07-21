@@ -185,7 +185,7 @@ const Dropdown = ({
             )}
             <span className={style.content}>
               {val?.title && (
-                <span className="font-[600] leading-[14px]">{val?.title}</span>
+                <span className="leading-[14px] font-[600]">{val?.title}</span>
               )}
               <span className="line-clamp-2 font-[500]">{val?.name}</span>
             </span>
@@ -241,7 +241,7 @@ const Dropdown = ({
                   )}
                   <span className={style.content}>
                     {val?.title && (
-                      <span className="font-[600] leading-[14px]">
+                      <span className="leading-[14px] font-[600]">
                         {val?.title}
                       </span>
                     )}
@@ -256,7 +256,7 @@ const Dropdown = ({
         )}
         {/* 25. 03 - QC Plan - Web - Pengecekan Ronda Muatparts - Tahap 2 - LB - 0701 */}
         {searchBy.length === 0 && (
-          <li className="select-none p-2 text-center text-[12px]">
+          <li className="select-none p-2 text-center text-xs">
             {t("LabelfilterProdukDataTidakDitemukan")}
           </li>
         )}
@@ -296,11 +296,9 @@ const Dropdown = ({
             ) : labelName?.length ? (
               <span className="line-clamp-1 w-full">{labelName}</span>
             ) : dateRange[1] !== null && !fixedPlaceholder ? (
-              <span className="text-[12px] font-semibold text-neutral-600">{`${formatDateFE(dateRange[0])} - ${formatDateFE(dateRange[1])}`}</span>
+              <span className="text-xs font-semibold text-neutral-600">{`${formatDateFE(dateRange[0])} - ${formatDateFE(dateRange[1])}`}</span>
             ) : (
-              <span className="text-[12px] text-neutral-600">
-                {placeholder}
-              </span>
+              <span className="text-xs text-neutral-600">{placeholder}</span>
             )}
           </div>
           <span className="h-4 w-4">
@@ -325,7 +323,7 @@ const Dropdown = ({
                   onChange={handleSearch}
                   placeholder={searchPlaceholder}
                   className={
-                    "h-full w-full flex-1 rounded px-3 py-2 text-[12px] text-neutral-900 outline-none placeholder:text-neutral-700 focus:outline-none"
+                    "h-full w-full flex-1 rounded px-3 py-2 text-xs text-neutral-900 outline-none placeholder:text-neutral-700 focus:outline-none"
                   }
                 />
                 {search && (
@@ -347,9 +345,7 @@ const Dropdown = ({
                   height={14}
                   className={style.customIcon}
                 />
-                <span className="text-[12px] text-neutral-900">
-                  {textCustom}
-                </span>
+                <span className="text-xs text-neutral-900">{textCustom}</span>
               </div>
             )}
             {RenderDropDown}

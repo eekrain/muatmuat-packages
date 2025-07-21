@@ -9,12 +9,12 @@ export const ModalLihatStatusLainnya = ({ otherStatus }) => {
   return (
     <Modal>
       <ModalTrigger>
-        <button className="text-xs font-medium leading-[1.2] text-primary-700">
+        <button className="leading-[1.2] text-xs font-medium text-primary-700">
           Lihat Status Lainnya
         </button>
       </ModalTrigger>
       <ModalContent className="px-6 py-8">
-        <h2 className="mb-6 text-center text-[16px] font-bold leading-[1.2] text-neutral-900">
+        <h2 className="leading-[1.2] mb-6 text-center text-base font-bold text-neutral-900">
           Status Lainnya
         </h2>
         <div className="flex flex-col gap-2">

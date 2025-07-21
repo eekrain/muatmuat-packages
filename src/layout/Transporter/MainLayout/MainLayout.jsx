@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef } from "react";
 
 import LoadingInteractive from "@/components/Loading/LoadingInteractive";
@@ -10,7 +10,7 @@ import { AuthenticationProvider } from "@/hooks/use-auth";
 import useDevice from "@/hooks/use-device";
 import { TranslationProvider } from "@/hooks/use-translation";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
-import { useLoadingAction } from "@/store/Shipper/loadingStore";
+import { useLoadingAction } from "@/store/Shared/loadingStore";
 import { useNotificationCounterActions } from "@/store/Shipper/notificationCounterStore";
 
 const MainLayout = ({ children }) => {
@@ -28,8 +28,9 @@ const MainLayout = ({ children }) => {
   return (
     <>
       <Suspense fallback={<LoadingStatic />}>
-        <LoadingInteractive />
         <TranslationProvider>
+          <LoadingInteractive />
+
           <AuthenticationProvider>{children}</AuthenticationProvider>
         </TranslationProvider>
       </Suspense>
@@ -44,9 +45,11 @@ const useResetNavigationOnDesktop = () => {
   const router = useRouter();
   const { isMobile, mounted } = useDevice();
   const { replace: replaceNavigation } = useResponsiveNavigation();
+  const searchParams = useSearchParams();
+  const screenSearchParam = searchParams.get("screen");
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || !screenSearchParam) return;
     if (!isMobile) {
       const currentSeach = new URLSearchParams(window.location.search);
       currentSeach.delete("screen");
@@ -56,7 +59,7 @@ const useResetNavigationOnDesktop = () => {
       replaceNavigation("/");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMobile, mounted]);
+  }, [isMobile, mounted, screenSearchParam]);
 };
 
 const useDefaultTimeoutLoading = () => {

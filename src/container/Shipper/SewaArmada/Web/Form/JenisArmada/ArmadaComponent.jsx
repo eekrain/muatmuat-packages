@@ -16,7 +16,7 @@ export const WarningBadge = ({ className, message }) => {
       )}
     >
       <IconComponent src="/icons/warning14.svg" width={14} height={14} />
-      <span className="flex-1 text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+      <span className="leading-[14.4px] flex-1 text-xs font-semibold text-neutral-900">
         {message}
       </span>
     </div>
@@ -42,7 +42,7 @@ export const SectionHeader = ({ recommended, type }) => {
   if (recommended) {
     return (
       <div className="flex h-6 w-[424px] items-center gap-x-1">
-        <span className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
+        <span className="leading-[19.2px] text-base font-bold text-neutral-900">
           {recommended ? recommendedTitle : "Tidak Direkomendasikan"}
         </span>
         {recommended && (
@@ -59,7 +59,7 @@ export const SectionHeader = ({ recommended, type }) => {
   }
 
   return (
-    <span className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
+    <span className="leading-[19.2px] text-base font-bold text-neutral-900">
       {recommended ? recommendedTitle : "Tidak Direkomendasikan"}
     </span>
   );
@@ -84,9 +84,7 @@ export const CarrierItem = ({ image, name, onClick }) => {
           />
         </LightboxProvider>
       </button>
-      <span
-        className={"text-[12px] font-bold leading-[14.4px] text-neutral-900"}
-      >
+      <span className={"leading-[14.4px] text-xs font-bold text-neutral-900"}>
         {name}
       </span>
     </div>
@@ -155,18 +153,18 @@ export const TruckItem = ({
         <div className="flex w-[348px]">
           <div className="flex flex-col gap-y-3">
             <div className="flex flex-col">
-              <span className={"text-[12px] font-bold leading-[14.4px]"}>
+              <span className={"leading-[14.4px] text-xs font-bold"}>
                 {`${description} - ${name}`}
               </span>
             </div>
-            <span className={"text-[14px] font-semibold leading-[15.4px]"}>
+            <span className={"leading-[15.4px] text-sm font-semibold"}>
               {`Rp${price.toLocaleString("id-ID")}`}
             </span>
             <div className="flex flex-col gap-y-2">
               {details.map((detail, key) => (
                 <div className="flex items-center gap-x-2" key={key}>
                   <IconComponent src={detail.iconSrc} />
-                  <span className="text-[10px] font-medium leading-[13px]">
+                  <span className="leading-[13px] text-xxs font-medium">
                     {`${detail.title}${detail.value}`}
                   </span>
                 </div>

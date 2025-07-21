@@ -49,7 +49,7 @@ export const ModalQRCodeDriver = ({
         <ModalHeader size="big" />
         <div className="flex w-full flex-col items-center gap-y-6 p-[18px] md:px-6 md:py-9">
           <div>
-            <h1 className="mb-[18px] text-[16px] font-bold leading-[19.2px] text-neutral-900 md:mb-6">
+            <h1 className="leading-[19.2px] mb-[18px] text-base font-bold text-neutral-900 md:mb-6">
               {title}
             </h1>
             <div className="flex flex-col items-center gap-y-3">
@@ -67,13 +67,13 @@ export const ModalQRCodeDriver = ({
                 appearance={{
                   containerClassName: "gap-1",
                   nameClassName: "text-xs font-bold",
-                  licensePlateClassName: "text-[10px]",
+                  licensePlateClassName: "text-xxs",
                 }}
               />
             </div>
           </div>
           <img src={qrData?.qrCodeImage} width={124} height={124} alt="" />
-          <span className="text-center text-[14px] font-medium leading-[16.8px] text-neutral-900">
+          <span className="leading-[16.8px] text-center text-sm font-medium text-neutral-900">
             *Tunjukkan QR Code ini kepada pihak driver agar dapat melanjutkan ke
             proses muat.
           </span>

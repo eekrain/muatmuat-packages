@@ -1,7 +1,7 @@
 import xior from "xior";
 
-import { useTokenStore } from "@/store/Auth/tokenStore";
-import { useUserStore } from "@/store/Auth/userStore";
+import { useTokenStore } from "@/store/AuthStore/tokenStore";
+import { useUserStore } from "@/store/AuthStore/userStore";
 
 const LIST_PUBLIC_ROUTES = [
   "/sewaarmada",

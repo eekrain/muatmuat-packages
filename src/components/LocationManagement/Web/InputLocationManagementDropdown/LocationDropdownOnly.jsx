@@ -29,6 +29,7 @@ export const LocationDropdownOnly = ({
   handleEditLocation,
   errorMessage,
   markerIcon = "/icons/marker-lokasi-muat.svg",
+  placeholder = "Masukkan Lokasi",
 }) => {
   const containerRef = useRef(null);
   const inputRef = useRef(null);
@@ -37,9 +38,7 @@ export const LocationDropdownOnly = ({
   const scrollParentRef = useRef(null);
 
   // Get the callback ref from the hook
-  const setDropdownRef = useRegisterModalPortalNode(dropdownRef, [
-    isDropdownSearchOpen,
-  ]);
+  const setDropdownRef = useRegisterModalPortalNode([isDropdownSearchOpen]);
 
   // Function to find the first scrollable parent
   const getScrollParent = useCallback((node) => {
@@ -153,7 +152,7 @@ export const LocationDropdownOnly = ({
             await handleGetCurrentLocation();
             setIsDropdownSearchOpen(false);
           }}
-          className="flex w-full items-center gap-2 px-[20px] py-[12px] text-[10px] font-medium text-[#176CF7]"
+          className="flex w-full items-center gap-2 px-[20px] py-[12px] text-xxs font-medium text-[#176CF7]"
         >
           <IconComponent
             src="/icons/marker-target-outline.svg"
@@ -168,7 +167,7 @@ export const LocationDropdownOnly = ({
         </div>
 
         <div className="space-y-3 px-[20px] py-[12px]">
-          <div className="text-sm font-semibold text-gray-600">
+          <div className="text-xxs font-semibold text-gray-600">
             Hasil Pencarian
           </div>
           {locationAutoCompleteResult &&
@@ -190,7 +189,7 @@ export const LocationDropdownOnly = ({
                     height={20}
                   />
                 </div>
-                <p className="text-left text-sm leading-tight text-gray-800">
+                <p className="line-clamp-3 pt-0.5 text-left text-xxs font-medium leading-tight text-gray-800">
                   {location.Title}
                 </p>
 
@@ -213,20 +212,20 @@ export const LocationDropdownOnly = ({
           <div className="flex w-full flex-row items-center gap-2.5 rounded-md border border-[#176CF7] px-3 py-2">
             <div className="flex items-center">
               <IconComponent
-                src="/icons/warning24.svg"
+                src="/icons/info16.svg"
                 height={16}
                 width={16}
                 className="text-[#176CF7]"
               />
             </div>
-            <p className="text-[10px] font-semibold leading-[14.4px] text-[#176CF7]">
+            <p className="leading-[14.4px] text-xxs font-semibold text-[#176CF7] capsize">
               Input Lokasi yang terdekat dengan Anda
             </p>
           </div>
 
           {userSavedLocations && userSavedLocations.length > 0 && (
             <>
-              <div className="text-[10px] text-sm font-medium leading-[1.3] text-neutral-600">
+              <div className="leading-[1.3] text-xxs font-medium text-neutral-600">
                 Manajemen Lokasi
               </div>
               <div className="space-y-2">
@@ -234,36 +233,40 @@ export const LocationDropdownOnly = ({
                   <button
                     onClick={() => handleSelectUserSavedLocation(location)}
                     key={location.ID + location.Title}
-                    className="flex items-start gap-2 text-left"
+                    className="flex w-full flex-col gap-1"
                   >
-                    <div className="h-[20px] w-[20px]">
-                      <IconComponent
-                        className=""
-                        src="/icons/map-with-marker-outline.svg"
-                        width={20}
-                        height={20}
-                      />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <span className="line-clamp-1 break-all text-sm font-semibold text-gray-800">
+                    <div className="flex w-full items-center gap-2 text-left">
+                      <div className="size-5">
+                        <IconComponent
+                          className=""
+                          src="/icons/map-with-marker-outline.svg"
+                          width={20}
+                          height={20}
+                        />
+                      </div>
+                      <span className="line-clamp-1 flex-1 break-all text-xxs font-bold text-gray-800 capsize">
                         {location.Name}
                       </span>
-                      <span className="line-clamp-1 break-all text-xs text-gray-600">
-                        {location.Address}
-                      </span>
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditLocation(location);
+                        }}
+                        className="size-5 cursor-pointer hover:text-[#176CF7]"
+                      >
+                        <IconComponent
+                          src="/icons/pencil-outline.svg"
+                          className="size-5"
+                        />
+                      </div>
                     </div>
-                    <div
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEditLocation(location);
-                      }}
-                      className="h-[20px] w-[20px] cursor-pointer hover:text-[#176CF7]"
-                    >
-                      <IconComponent
-                        src="/icons/pencil-outline.svg"
-                        width={20}
-                        height={20}
-                      />
+
+                    <div className="flex w-full items-center gap-2 text-left">
+                      <div className="w-5" />
+                      <div className="flex-1 text-xxs font-medium text-gray-600 capsize">
+                        <span className="line-clamp-1">{location.Address}</span>
+                      </div>
+                      <div className="w-5" />
                     </div>
                   </button>
                 ))}
@@ -271,7 +274,7 @@ export const LocationDropdownOnly = ({
               <div className="text-right">
                 <button
                   onClick={onLocationManagementClicked}
-                  className="text-sm text-[#176CF7]"
+                  className="text-xxs font-medium text-[#176CF7]"
                 >
                   Lihat Manajemen Lokasi
                 </button>
@@ -291,7 +294,7 @@ export const LocationDropdownOnly = ({
       <Input
         ref={inputRef}
         type="text"
-        placeholder="Masukkan Lokasi Muat"
+        placeholder={placeholder}
         value={searchLocationAutoComplete}
         onClick={() => setIsDropdownSearchOpen(true)}
         onChange={(e) => {

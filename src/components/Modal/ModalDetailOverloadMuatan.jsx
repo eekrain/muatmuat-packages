@@ -22,15 +22,15 @@ export const ModalDetailOverloadMuatan = ({
       <ModalTrigger>
         <button
           type="button"
-          className="text-[12px] font-medium leading-[14.4px] text-primary-700"
+          className="leading-[14.4px] text-xs font-medium text-primary-700"
         >
           Lihat Detail Overload Muatan
         </button>
       </ModalTrigger>
       <ModalContent className="w-[578px]" type="muatmuat">
-        <div className="w-[578px] p-6 text-xs font-medium leading-[1.2]">
+        <div className="leading-[1.2] w-[578px] p-6 text-xs font-medium">
           {/* Header */}
-          <h2 className="text-center text-[16px] font-bold text-neutral-900">
+          <h2 className="text-center text-base font-bold text-neutral-900">
             Detail Overload Muatan
           </h2>
 
@@ -51,7 +51,7 @@ export const ModalDetailOverloadMuatan = ({
                     {idrFormat(driver.amount)}
                   </span>
                 </div>
-                <span className="mt-3 block h-2 text-xs font-medium leading-[14.4px] text-neutral-600">
+                <span className="leading-[14.4px] mt-3 block h-2 text-xs font-medium text-neutral-600">
                   Nominal Overload Muatan ({driver.overloadWeight})
                 </span>
               </div>

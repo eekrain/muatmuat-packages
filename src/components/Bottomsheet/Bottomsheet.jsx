@@ -329,7 +329,7 @@ export const BottomSheetHeader = ({ className, children }) => {
           height={24}
         />
       </button>
-      <span className="text-[14px] font-bold leading-[15.4px]">{children}</span>
+      <span className="leading-[15.4px] text-sm font-bold">{children}</span>
       <div className="size-[24px]" />
     </div>
   );

@@ -86,7 +86,7 @@ const ButtonPlusMinus = ({
       <input
         type="number"
         className={cn(
-          "w-full max-w-4 select-none text-[12px] font-medium leading-[14.4px] outline-none",
+          "leading-[14.4px] w-full max-w-4 select-none text-xs font-medium outline-none",
           disabled ? "text-neutral-500" : "text-neutral-900"
         )}
         value={numericValue}

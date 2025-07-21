@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import IconComponent from "@/components/IconComponent/IconComponent";
+import { ChevronDown } from "lucide-react";
+
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { useListLanguages } from "@/hooks/use-translation";
+import { cn } from "@/lib/utils";
+import { useOverlayAction } from "@/store/Shared/overlayStore";
 import {
   useSelectedLanguageActions,
   useSelectedLanguageStore,
@@ -15,6 +18,12 @@ const LanguageDropdown = () => {
   );
   const { listLanguages } = useListLanguages();
   const { setSelectedLanguage } = useSelectedLanguageActions();
+  const { setIsOverlayActive } = useOverlayAction();
+
+  useEffect(() => {
+    setIsOverlayActive(open);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   return (
     <div
@@ -27,14 +36,14 @@ const LanguageDropdown = () => {
         className="h-4 w-6 rounded-[5px] border"
         alt="flag"
       />
-      <span className="pt-[2px] text-xs font-semibold">
+      <span className="block pt-[2px] text-xs font-semibold capsize">
         {selectedLanguage?.name}
       </span>
-      <IconComponent
-        width={16}
-        loader={false}
-        className={`-mt-[2px] ${open && "rotate-180"}`}
-        src="/icons/chevron-down.svg"
+      <ChevronDown
+        className={cn(
+          "mt-0.5 h-4 w-4 transition-transform duration-300",
+          open && "rotate-180"
+        )}
       />
       {/* toggle bahasa */}
       {open && (

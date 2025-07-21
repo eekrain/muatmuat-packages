@@ -853,7 +853,7 @@ const ButtonBottomsheetTooltipForm = () => {
                 <div className="px-6 py-9">
                   <div className="flex w-[406px] max-w-[510px] flex-col items-center justify-center gap-6">
                     {/* Judul Modal */}
-                    <h2 className="w-full text-center text-[16px] font-bold leading-[19.2px] text-neutral-900">
+                    <h2 className="leading-[19.2px] w-full text-center text-base font-bold text-neutral-900">
                       Informasi
                     </h2>
 
@@ -867,7 +867,7 @@ const ButtonBottomsheetTooltipForm = () => {
                           className="text-[#FF7A00]"
                         />
                       </div>
-                      <p className="text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                      <p className="leading-[14.4px] text-xs font-medium text-neutral-900">
                         Jika ada kendala pada persiapan atau perjalanan ke
                         lokasi muat, pengiriman mungkin tidak bisa dilanjutkan.
                         Kami akan tetap berusaha memberikan solusi terbaik.
@@ -875,14 +875,14 @@ const ButtonBottomsheetTooltipForm = () => {
                     </div>
 
                     {/* Text Konfirmasi */}
-                    <p className="w-full text-center text-[14px] font-medium leading-[16.8px] text-neutral-900">
+                    <p className="leading-[16.8px] w-full text-center text-sm font-medium text-neutral-900">
                       Apakah kamu yakin data yang kamu isi sudah benar? <br />
                       Pastikan semua informasi telah diperiksa sebelum
                       melanjutkan.
                     </p>
 
                     {/* Text Syarat dan Ketentuan */}
-                    <p className="w-[320px] text-center text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                    <p className="leading-[14.4px] w-[320px] text-center text-xs font-medium text-neutral-900">
                       *Dengan memesan jasa angkut ini, kamu telah menyetujui{" "}
                       <Link href="/syarat-ketentuan">
                         <span className="text-primary-700 underline">

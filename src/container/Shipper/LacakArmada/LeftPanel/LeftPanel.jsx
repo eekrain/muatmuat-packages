@@ -57,7 +57,7 @@ export const LeftPanel = ({ dataDriverStatus }) => {
           </div>
           {dataDriverStatus?.dataDriver?.statusDriver?.startsWith("MENUJU") && (
             <div className="px-4">
-              <div className="flex h-[45px] items-center justify-between bg-[#F1F1F1] px-3 text-[12px] leading-[1.1]">
+              <div className="leading-[1.1] flex h-[45px] items-center justify-between bg-[#F1F1F1] px-3 text-xs">
                 <span className="max-w-[120px] font-medium text-[#7B7B7B]">
                   Estimasi Tiba di Lokasi Bongkar 2
                 </span>
@@ -68,7 +68,7 @@ export const LeftPanel = ({ dataDriverStatus }) => {
             </div>
           )}
 
-          <h2 className="px-4 text-[12px] font-semibold leading-[14.4px] text-black">
+          <h2 className="leading-[14.4px] px-4 text-xs font-semibold text-black">
             Detail Status Driver
           </h2>
 

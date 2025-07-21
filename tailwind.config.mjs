@@ -1,11 +1,39 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+import pluginAnimate from "tailwindcss-animate";
+import pluginCapsize from "tailwindcss-capsize";
+import defaultTheme from "tailwindcss/defaultTheme";
+
+/**
+ * @type {import('tailwindcss').Config}
+ */
+const config = {
   content: ["./src/**/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
       fontSize: {
-        xxs: "10px",
+        ...defaultTheme.fontSize,
+        xxs: ["10px", "12px"],
+        xs: ["12px", { lineHeight: "14.4px" }],
+        sm: ["14px", { lineHeight: "16.8px" }],
+        base: ["16px", { lineHeight: "19.2px" }],
+        lg: ["18px", { lineHeight: "21.6px" }],
+        xl: ["20px", { lineHeight: "24px" }],
+        "2xl": ["24px", { lineHeight: "28.8px" }],
+        "3xl": ["32px", { lineHeight: "38.4px" }],
       },
+      fontFamily: {
+        sans: ["var(--font-avenir)", ...defaultTheme.fontFamily.sans],
+      },
+      fontMetrics: {
+        // Keys here must match those in fontFamily.
+        sans: {
+          capHeight: 722,
+          ascent: 756,
+          descent: -300,
+          lineGap: 200,
+          unitsPerEm: 1000,
+        },
+      },
+
       colors: {
         background: "#F8F8FB",
         foreground: "#171717",
@@ -198,5 +226,7 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [pluginAnimate, pluginCapsize],
 };
+
+export default config;

@@ -102,7 +102,7 @@ const ImageUploaderRegister = ({
         />
         {/* LB - 0340, 25.03 */}
         <span
-          className="cursor-pointer text-[10px] font-semibold text-primary-700"
+          className="cursor-pointer text-xxs font-semibold text-primary-700"
           onClick={handleUbah}
         >
           {/* {t("buttonChangeFile")} */}
@@ -179,7 +179,7 @@ const ImageUploaderRegister = ({
           ? t("buttonChange")
           : t("buttonUpload")}
       </Button>
-      <span className="w-[107px] text-xs font-medium leading-[14.4px] text-neutral-600">
+      <span className="leading-[14.4px] w-[107px] text-xs font-medium text-neutral-600">
         {t("labelUploadPhotoRegister")}
       </span>
     </div>

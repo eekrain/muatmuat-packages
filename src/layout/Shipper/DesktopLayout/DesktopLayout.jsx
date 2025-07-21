@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import FloatingButton from "@/components/FloatingButton/FloatingButton";
 import HeaderWeb from "@/components/Header/Web/HeaderWeb";
 import { useAuth } from "@/hooks/use-auth";
+import { cn } from "@/lib/utils";
+import { useOverlay } from "@/store/Shared/overlayStore";
 import { useNotificationCounterStore } from "@/store/Shipper/notificationCounterStore";
 
 export default function DesktopLayout({ children }) {
@@ -12,6 +14,7 @@ export default function DesktopLayout({ children }) {
 
   const { isLoggedIn } = useAuth();
   const { notification, chat } = useNotificationCounterStore();
+  const { isOverlayActive } = useOverlay();
 
   const arr = ["/register/otp"];
   if (arr.some((item) => pathname.includes(item))) {
@@ -22,11 +25,13 @@ export default function DesktopLayout({ children }) {
     <div className="relative min-h-screen">
       <HeaderWeb notifCounter={{ notification, chat }} />
       <div
-        className={
-          isLoggedIn ? "min-h-[calc(100dvh-92px)]" : "min-h-[calc(100dvh-60px)]"
-        }
+        className={cn(
+          "relative min-h-[calc(100dvh-60px)]",
+          isLoggedIn && "min-h-[calc(100dvh-92px)]"
+        )}
       >
         {children}
+        {isOverlayActive && <div className="absolute inset-0 bg-black/25" />}
       </div>
       <FloatingButton />
 

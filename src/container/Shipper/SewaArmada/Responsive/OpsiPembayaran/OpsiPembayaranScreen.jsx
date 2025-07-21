@@ -27,7 +27,7 @@ const PaymentMethodItem = ({ method, isSelected, onSelect }) => {
             className="object-contain"
           />
         </div>
-        <span className="flex-1 text-[14px] font-semibold leading-[15.4px] text-neutral-900">
+        <span className="leading-[15.4px] flex-1 text-sm font-semibold text-neutral-900">
           {method.name}
         </span>
       </div>
@@ -99,7 +99,7 @@ const OpsiPembayaran = ({ paymentMethods }) => {
               >
                 <div className="flex flex-1 items-center gap-2">
                   <IconComponent src={paymentMethod.icon} size="medium" />
-                  <span className="flex-1 text-[14px] font-bold leading-[15.4px] text-neutral-900">
+                  <span className="leading-[15.4px] flex-1 text-sm font-bold text-neutral-900">
                     {paymentMethod.category}
                   </span>
                 </div>

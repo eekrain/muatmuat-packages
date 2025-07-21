@@ -27,8 +27,8 @@ export const RingkasanPembayaranPendingPayment = ({
       <CardPayment.Root className="w-full">
         <CardPayment.Content className="pb-6 pt-6" noScroll>
           <div className="flex h-[92px] items-start justify-between rounded-xl bg-warning-100 px-4 py-6">
-            <div className="text-xs font-medium leading-[1.2]">
-              <div className="text-[16px] font-bold text-secondary-900">
+            <div className="leading-[1.2] text-xs font-medium">
+              <div className="text-base font-bold text-secondary-900">
                 Bayar Sebelum
               </div>
               <span className="mt-3 block font-medium text-neutral-900">
@@ -45,7 +45,7 @@ export const RingkasanPembayaranPendingPayment = ({
             </BadgeStatusPesanan>
           </div>
 
-          <div className="text-xs font-medium leading-[1.2]">
+          <div className="leading-[1.2] text-xs font-medium">
             <div className="mb-2 text-neutral-600">Opsi Pembayaran</div>
 
             <div className="w-full">
@@ -65,7 +65,7 @@ export const RingkasanPembayaranPendingPayment = ({
             </div>
           </div>
 
-          <div className="text-xs font-medium leading-[1.2]">
+          <div className="leading-[1.2] text-xs font-medium">
             <div className="mb-2 text-neutral-600">Nomor Virtual Account</div>
 
             <div className="flex items-center justify-between">
@@ -88,7 +88,7 @@ export const RingkasanPembayaranPendingPayment = ({
             </div>
           </div>
 
-          <div className="text-xs font-medium leading-[1.2]">
+          <div className="leading-[1.2] text-xs font-medium">
             <div className="mb-2 text-neutral-600">Total Tagihan</div>
 
             <div className="font-bold text-neutral-900">

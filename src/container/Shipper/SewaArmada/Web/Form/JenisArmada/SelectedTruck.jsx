@@ -48,10 +48,10 @@ export const SelectedTruck = ({
         />
       </LightboxProvider>
       <div className="flex flex-col gap-y-3">
-        <span className={"text-[12px] font-bold leading-[14.4px]"}>
+        <span className={"leading-[14.4px] text-xs font-bold"}>
           {`${description} - ${name}`}
         </span>
-        <span className={"text-[14px] font-semibold leading-[15.4px]"}>
+        <span className={"leading-[15.4px] text-sm font-semibold"}>
           {`Rp${price.toLocaleString("id-ID")}`}
         </span>
         <div className="flex flex-col gap-y-2">
@@ -61,7 +61,7 @@ export const SelectedTruck = ({
                 className="icon-fill-muat-trans-secondary-900"
                 src={detail.iconSrc}
               />
-              <span className="text-[12px] font-medium leading-[14.4px]">
+              <span className="leading-[14.4px] text-xs font-medium">
                 {detail.title}
                 <span className="font-semibold">{detail.value}</span>
               </span>

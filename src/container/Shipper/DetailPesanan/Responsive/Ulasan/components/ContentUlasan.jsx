@@ -65,15 +65,15 @@ const ContentUlasan = ({ type }) => {
         {type == "list" ? (
           <div className="flex flex-col gap-3">
             <div className="flex flex-col">
-              <span className="text-[12px] font-medium text-[#7B7B7B]">
+              <span className="text-xs font-medium text-[#7B7B7B]">
                 Tanggal Ulasan
               </span>
-              <div className="text-[12px] font-medium text-gray-900">
+              <div className="text-xs font-medium text-gray-900">
                 24 Sep 2024 18:00 WIB
               </div>
             </div>
             <div className="flex flex-col">
-              <span className="text-[12px] font-medium text-[#7B7B7B]">
+              <span className="text-xs font-medium text-[#7B7B7B]">
                 Rating Driver
               </span>
               <div className="flex items-center gap-3">
@@ -96,7 +96,7 @@ const ContentUlasan = ({ type }) => {
                     </button>
                   ))}
                 </div>
-                <span className="text-[12px] font-medium text-gray-900">
+                <span className="text-xs font-medium text-gray-900">
                   {rateView[hoveredStar || rating]}
                 </span>
               </div>
@@ -129,7 +129,7 @@ const ContentUlasan = ({ type }) => {
                     </button>
                   ))}
                 </div>
-                <span className="text-[12px] font-medium text-gray-900">
+                <span className="text-xs font-medium text-gray-900">
                   {rateView[hoveredStar || rating]}
                 </span>
               </div>

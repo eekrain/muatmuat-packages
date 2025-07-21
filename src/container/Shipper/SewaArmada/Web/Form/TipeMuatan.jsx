@@ -68,7 +68,7 @@ export const TipeMuatan = ({ cargoTypes }) => {
           ))}
         </div>
         {formErrors.cargoTypeId && (
-          <span className="text-[12px] font-medium leading-[14.4px] text-error-400">
+          <span className="leading-[14.4px] text-xs font-medium text-error-400">
             Tipe Muatan wajib diisi
           </span>
         )}

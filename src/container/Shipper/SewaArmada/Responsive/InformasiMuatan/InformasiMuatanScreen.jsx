@@ -248,7 +248,7 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories }) => {
                         <IconComponent src="/icons/muatan16.svg" />
                         <span
                           className={cn(
-                            "text-[14px] font-semibold leading-[15.4px]",
+                            "leading-[15.4px] text-sm font-semibold",
                             !muatan.namaMuatan.label && "text-neutral-600"
                           )}
                         >
@@ -258,7 +258,7 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories }) => {
                       <IconComponent src="/icons/chevron-right.svg" />
                     </button>
                     {formErrors[`informasiMuatan.${index}.namaMuatan`] && (
-                      <span className="mt-3 text-[12px] font-medium leading-[13.2px] text-error-400">
+                      <span className="leading-[13.2px] mt-3 text-xs font-medium text-error-400">
                         Muatan wajib dipilih
                       </span>
                     )}
@@ -372,7 +372,7 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories }) => {
                         }
                         appearance={{
                           inputClassName:
-                            "font-semibold text-[14px] leading-[15.4px] text-neutral-900",
+                            "font-semibold text-sm leading-[15.4px] text-neutral-900",
                         }}
                       />
                     </div>

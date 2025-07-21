@@ -23,7 +23,7 @@ export const PaymentInstruction = () => {
       }}
     >
       {/* Header */}
-      <h2 className="text-[16px] font-bold leading-[19.2px] text-black">
+      <h2 className="leading-[19.2px] text-base font-bold text-black">
         {t("Cara Pembayaran")}
       </h2>
 
@@ -39,7 +39,7 @@ export const PaymentInstruction = () => {
               )}
               onClick={() => toggleAccordion(index)}
             >
-              <span className="flex-1 text-[14px] font-medium leading-[16.8px] text-black">
+              <span className="leading-[16.8px] flex-1 text-sm font-medium text-black">
                 {t(instruction.category)}
               </span>
 
@@ -74,7 +74,7 @@ export const PaymentInstruction = () => {
                 )}
               >
                 <div className="px-4 pb-4 pr-11 pt-3">
-                  <div className="text-[12px] font-normal leading-[14.4px] text-[#1B1B1B]">
+                  <div className="leading-[14.4px] text-xs font-normal text-[#1B1B1B]">
                     {t(instruction.guide)}
                   </div>
                 </div>

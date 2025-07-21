@@ -53,7 +53,7 @@ const CropperPreviewResponsive = ({
         >
           Ubah Foto
         </Button>
-        <div className="mt-3 text-[14px] font-medium leading-[16.8px] text-[#676767]">
+        <div className="leading-[16.8px] mt-3 text-sm font-medium text-[#676767]">
           {/* 24. THP 2 - MOD001 - MP - 015 - QC Plan - Web - MuatParts - Seller - Paket 039 A - Profil Seller - LB - 0066 */}
           {description}
         </div>
@@ -82,7 +82,7 @@ const CropperPreviewResponsive = ({
                 >
                   <IconComponent src={option.src} size="medium" />
                 </div>
-                <span className="text-[16px] font-semibold leading-[19.2px]">
+                <span className="leading-[19.2px] text-base font-semibold">
                   {option.title}
                 </span>
               </div>

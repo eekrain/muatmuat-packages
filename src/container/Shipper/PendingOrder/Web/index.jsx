@@ -33,7 +33,7 @@ const PendingOrderWeb = ({
             src="/icons/arrow-left24.svg"
             size="medium"
           />
-          <h1 className="text-[20px] font-bold leading-[24px] text-neutral-900">
+          <h1 className="leading-[24px] text-xl font-bold text-neutral-900">
             {title}
           </h1>
         </div>

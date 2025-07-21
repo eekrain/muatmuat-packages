@@ -55,7 +55,7 @@ export const WaktuMuat = () => {
             />
             {showRangeOption ? (
               <>
-                <span className="text-[12px] font-medium leading-[14.4px]">
+                <span className="leading-[14.4px] text-xs font-medium">
                   s/d
                 </span>
                 <DatetimePicker
@@ -73,7 +73,7 @@ export const WaktuMuat = () => {
             ) : null}
           </div>
           {formErrors.loadTimeStart || formErrors.loadTimeEnd ? (
-            <div className="flex items-center gap-x-[34px] text-[12px] font-medium leading-[14.4px] text-error-400">
+            <div className="leading-[14.4px] flex items-center gap-x-[34px] text-xs font-medium text-error-400">
               <div className="w-[271px]">{formErrors.loadTimeStart}</div>
               {showRangeOption ? (
                 <div className="w-[271px]">{formErrors.loadTimeEnd}</div>

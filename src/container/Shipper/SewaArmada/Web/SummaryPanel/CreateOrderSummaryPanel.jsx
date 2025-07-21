@@ -501,7 +501,7 @@ export const CreateOrderSummaryPanel = ({
     <>
       <Card className="shadow-muat sticky top-[124px] flex w-[338px] flex-col gap-0 rounded-xl border-none bg-white">
         <div className="flex flex-col gap-y-6 px-5 py-6">
-          <h3 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
+          <h3 className="leading-[19.2px] text-base font-bold text-neutral-900">
             Ringkasan Transaksi
           </h3>
           <div className="scrollbar-custombadanusaha mr-[-12px] flex max-h-[263px] flex-col gap-y-6 overflow-y-auto pr-2">
@@ -576,7 +576,7 @@ export const CreateOrderSummaryPanel = ({
             {
               priceSummary.length > 0 ? (
                 <>
-                  <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
+                  <span className="leading-[16.8px] text-sm font-semibold text-neutral-900">
                     Detail Pesanan
                   </span>
                   {priceSummary.map(({ title, items }, key) => {
@@ -587,7 +587,7 @@ export const CreateOrderSummaryPanel = ({
                       <div className="flex flex-col gap-y-3" key={key}>
                         <span
                           className={
-                            "text-[14px] font-semibold leading-[16.8px] text-neutral-900"
+                            "leading-[16.8px] text-sm font-semibold text-neutral-900"
                           }
                         >
                           {title}
@@ -601,13 +601,13 @@ export const CreateOrderSummaryPanel = ({
                           >
                             <span
                               className={
-                                "text-[12px] font-medium leading-[14.4px] text-neutral-600"
+                                "leading-[14.4px] text-xs font-medium text-neutral-600"
                               }
                             >
                               {label}
                             </span>
                             <span
-                              className={`text-[12px] font-medium leading-[14.4px] ${isDiscountSection ? "text-[#EE4343]" : "text-neutral-900"}`}
+                              className={`leading-[14.4px] text-xs font-medium ${isDiscountSection ? "text-[#EE4343]" : "text-neutral-900"}`}
                             >
                               {isDiscountSection ? "-" : ""}Rp
                               {price.toLocaleString("id-ID")}
@@ -619,10 +619,10 @@ export const CreateOrderSummaryPanel = ({
                   })}
 
                   <div className="flex items-center justify-between">
-                    <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
+                    <span className="leading-[16.8px] text-sm font-semibold text-neutral-900">
                       Sub Total
                     </span>
-                    <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
+                    <span className="leading-[16.8px] text-sm font-semibold text-neutral-900">
                       {
                         calculatedPrice
                           ? `Rp${calculatedPrice.totalPrice.toLocaleString("id-ID")}`
@@ -637,7 +637,7 @@ export const CreateOrderSummaryPanel = ({
               //   // Fallback to detailPesanan structure when no calculatedPrice
               //   detailPesanan.map(({ title, items }, key) => (
               //     <div className="flex flex-col gap-y-3" key={key}>
-              //       <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
+              //       <span className="text-sm font-semibold leading-[16.8px] text-neutral-900">
               //         {title}
               //       </span>
               //       {items.map(({ label, cost, isDiscount }, itemKey) => (
@@ -646,12 +646,12 @@ export const CreateOrderSummaryPanel = ({
               //           key={itemKey}
               //         >
               //           <span
-              //             className={`text-[12px] font-medium leading-[14.4px] ${isDiscount ? "text-[#EE4343]" : "text-neutral-600"}`}
+              //             className={`text-xs font-medium leading-[14.4px] ${isDiscount ? "text-[#EE4343]" : "text-neutral-600"}`}
               //           >
               //             {label}
               //           </span>
               //           <span
-              //             className={`text-[12px] font-medium leading-[14.4px] ${isDiscount ? "text-[#EE4343]" : "text-neutral-900"}`}
+              //             className={`text-xs font-medium leading-[14.4px] ${isDiscount ? "text-[#EE4343]" : "text-neutral-900"}`}
               //           >
               //             {isDiscount ? "-" : ""}Rp
               //             {Math.abs(cost).toLocaleString("id-ID")}
@@ -659,10 +659,10 @@ export const CreateOrderSummaryPanel = ({
               //         </div>
               //       ))}
               //       <div className="flex items-center justify-between">
-              //         <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
+              //         <span className="text-sm font-semibold leading-[16.8px] text-neutral-900">
               //           Sub Total
               //         </span>
-              //         <span className="text-[14px] font-semibold leading-[16.8px] text-neutral-900">
+              //         <span className="text-sm font-semibold leading-[16.8px] text-neutral-900">
               //           {calculatedPrice
               //             ? `Rp${calculatedPrice.totalPrice.toLocaleString("id-ID")}`
               //             : `Rp${currentTotal.toLocaleString("id-ID")}`}

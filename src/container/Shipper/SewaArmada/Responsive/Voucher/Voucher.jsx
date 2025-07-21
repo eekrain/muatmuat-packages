@@ -90,7 +90,7 @@ const VoucherBottomSheet = ({
           onClick={() => setIsBottomsheetVoucherOpen(true)}
         >
           <IconComponent src="/icons/voucher16.svg" />
-          <span className="text-[14px] font-semibold leading-[15.4px]">
+          <span className="leading-[15.4px] text-sm font-semibold">
             {voucherId ? (
               <span className="text-neutral-900">
                 {vouchers.find((v) => v.id === voucherId)?.code ||
@@ -116,12 +116,12 @@ const VoucherBottomSheet = ({
               value={searchQuery}
               onChange={handleSearchChange}
               placeholder="Cari Kode Voucher"
-              className="h-10 w-full rounded-md bg-transparent pl-10 pr-3 text-[14px] outline-none"
+              className="h-10 w-full rounded-md bg-transparent pl-10 pr-3 text-sm outline-none"
             />
           </div>
 
           {/* Voucher selection note */}
-          <p className="text-[12px] font-medium text-neutral-600">
+          <p className="text-xs font-medium text-neutral-600">
             Hanya bisa dipilih 1 Voucher
           </p>
 
@@ -135,7 +135,7 @@ const VoucherBottomSheet = ({
                 >
                   <div className="absolute right-0 top-0">
                     <div className="flex h-[18px] items-center rounded-bl-md rounded-tr-md bg-primary-100 px-2">
-                      <span className="text-[10px] font-medium text-primary-500">
+                      <span className="text-xxs font-medium text-primary-500">
                         {voucher.daysLeft > 3
                           ? `Sisa ${voucher.daysLeft} hari lagi`
                           : `Berakhir ${voucher.daysLeft} hari lagi`}
@@ -149,19 +149,19 @@ const VoucherBottomSheet = ({
                         <IconComponent src="/icons/voucher16.svg" />
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-[14px] font-semibold text-neutral-900">
+                        <span className="text-sm font-semibold text-neutral-900">
                           {voucher.code}
                         </span>
                         <ul className="mt-1">
                           <li className="flex items-center gap-x-1">
                             <div className="h-1 w-1 rounded-full bg-neutral-900"></div>
-                            <span className="text-[12px] font-medium text-neutral-900">
+                            <span className="text-xs font-medium text-neutral-900">
                               {voucher.discount}
                             </span>
                           </li>
                           <li className="flex items-center gap-x-1">
                             <div className="h-1 w-1 rounded-full bg-neutral-900"></div>
-                            <span className="text-[12px] font-medium text-neutral-900">
+                            <span className="text-xs font-medium text-neutral-900">
                               {voucher.minTransaction}
                             </span>
                           </li>
@@ -170,7 +170,7 @@ const VoucherBottomSheet = ({
                     </div>
 
                     <button
-                      className={`h-8 rounded-md px-3 text-[12px] font-semibold ${
+                      className={`h-8 rounded-md px-3 text-xs font-semibold ${
                         tempSelectedVoucher?.id === voucher.id
                           ? "bg-primary-500 text-white"
                           : "border border-primary-500 text-primary-500"
@@ -188,7 +188,7 @@ const VoucherBottomSheet = ({
                   src="/icons/empty-search.svg"
                   className="h-12 w-12"
                 />
-                <p className="mt-4 text-[14px] font-medium text-neutral-600">
+                <p className="mt-4 text-sm font-medium text-neutral-600">
                   Voucher tidak ditemukan
                 </p>
               </div>

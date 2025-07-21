@@ -29,6 +29,7 @@ export const LokasiMuat = () => {
           values={
             lokasiMuat?.map((item) => item?.dataLokasi?.location || null) || []
           }
+          labelAddLocation="Tambah Lokasi Muat"
           onAddLocation={() =>
             handleFirstTime(() => addLokasi("lokasiMuat", null))
           }

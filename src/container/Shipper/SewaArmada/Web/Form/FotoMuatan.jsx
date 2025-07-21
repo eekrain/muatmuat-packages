@@ -40,7 +40,7 @@ export const FotoMuatan = () => {
           ))}
           <p
             className={cn(
-              "w-full text-[12px] font-medium leading-[14.4px]",
+              "leading-[14.4px] w-full text-xs font-medium",
               formErrors?.cargoPhotos ? "text-error-400" : "text-neutral-600"
             )}
           >

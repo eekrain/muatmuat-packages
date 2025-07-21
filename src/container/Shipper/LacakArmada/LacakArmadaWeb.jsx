@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 import { isDev } from "@/lib/constants/is-dev";
 import { useGetDriverStatusTimeline } from "@/services/Shipper/lacak-armada/getDriverStatusTimeline";
-import { useLoadingAction } from "@/store/Shipper/loadingStore";
+import { useLoadingAction } from "@/store/Shared/loadingStore";
 
 import { LeftPanel } from "./LeftPanel/LeftPanel";
 import { MapPanel } from "./MapPanel/MapPanel";

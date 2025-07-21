@@ -146,9 +146,9 @@ export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
       <div className="w-full flex-shrink-0">
         <div
           key={driver.driverId}
-          className="flex w-full flex-col gap-y-5 rounded-xl border border-neutral-400 px-4 py-5"
+          className="flex w-full flex-col gap-y-5 rounded-xl border border-neutral-400 py-5"
         >
-          <div className="flex flex-col gap-y-3">
+          <div className="flex flex-col gap-y-3 px-4">
             {!orderStatus.startsWith("WAITING_PAYMENT") &&
               !LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER.includes(orderStatus) &&
               !LIST_HIDE_DRIVER_STATUS.includes(driver.orderStatus) && (
@@ -171,20 +171,22 @@ export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
                   )}
 
                   {/* Modal QR Code Supir */}
-                  <ModalQRCodeDriver
-                    orderId={orderId}
-                    driverId={driver.driverId}
-                  >
-                    <button className="flex items-center gap-x-1">
-                      <span className="text-[12px] font-medium leading-[14.4px] text-primary-700">
-                        Tampilkan QR Code
-                      </span>
-                      <IconComponent
-                        src="/icons/chevron-right.svg"
-                        className="icon-blue"
-                      />
-                    </button>
-                  </ModalQRCodeDriver>
+                  {!orderStatus.startsWith("CANCELED") && (
+                    <ModalQRCodeDriver
+                      orderId={orderId}
+                      driverId={driver.driverId}
+                    >
+                      <button className="flex items-center gap-x-1">
+                        <span className="leading-[14.4px] text-xs font-medium text-primary-700 capsize">
+                          Tampilkan QR Code
+                        </span>
+                        <IconComponent
+                          src="/icons/chevron-right.svg"
+                          className="icon-blue"
+                        />
+                      </button>
+                    </ModalQRCodeDriver>
+                  )}
                 </div>
               )}
             <div className="flex items-center justify-between">
@@ -194,7 +196,7 @@ export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
                 licensePlate={driver.licensePlate}
               />
               <div className="flex items-center gap-x-3">
-                {driver.statusDriver?.startsWith("CANCELED") ||
+                {driver.orderStatus?.startsWith("CANCELED") ||
                 LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER.includes(orderStatus) ? (
                   <ModalDetailStatusDriver />
                 ) : (
@@ -214,14 +216,16 @@ export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
             </div>
           </div>
 
-          <StepperContainer
-            activeIndex={driver.activeIndex || 0}
-            totalStep={driver.stepperData?.length || 0}
-          >
-            {driver.stepperData?.map((step, index) => (
-              <StepperItem key={step.status} step={step} index={index} />
-            ))}
-          </StepperContainer>
+          <div className="w-full px-5">
+            <StepperContainer
+              activeIndex={driver.activeIndex || 0}
+              totalStep={driver.stepperData?.length || 0}
+            >
+              {driver.stepperData?.map((step, index) => (
+                <StepperItem key={step.status} step={step} index={index} />
+              ))}
+            </StepperContainer>
+          </div>
         </div>
       </div>
     </>

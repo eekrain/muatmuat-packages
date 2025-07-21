@@ -127,7 +127,7 @@ const PilihProvinsi = ({
       {filteredProvinces.length > 0 ? (
         <>
           <div className="flex items-center justify-between border-b border-b-neutral-800 pb-3">
-            <span className="text-[16px] font-semibold leading-[17.6px]">
+            <span className="leading-[17.6px] text-base font-semibold">
               {t("checkboxSelectAll")}
             </span>
             <Checkbox
@@ -141,7 +141,7 @@ const PilihProvinsi = ({
           <div className="flex flex-col gap-y-[18px]">
             {filteredProvinces.map((item, key) => (
               <div className="flex flex-col gap-y-3" key={key}>
-                <span className="text-[18px] font-bold leading-[21.6px]">
+                <span className="leading-[21.6px] text-lg font-bold">
                   {item.key}
                 </span>
                 <div className="flex flex-col gap-y-4">
@@ -155,7 +155,7 @@ const PilihProvinsi = ({
                         key={province.ProvinceID}
                         className={`${isLastChild ? "" : "border-b border-b-neutral-400 pb-4"} flex items-center justify-between`}
                       >
-                        <span className="text-[16px] font-bold leading-[19.2px] text-neutral-600">
+                        <span className="leading-[19.2px] text-base font-bold text-neutral-600">
                           {province.Province}
                         </span>
                         <Checkbox
@@ -186,7 +186,7 @@ const PilihProvinsi = ({
         <div className="flex min-h-[calc(100vh_-_232px)]">
           <DataNotFound
             className="m-auto gap-y-3"
-            textClass="max-w-[111px] font-semibold text-[14px] leading-[16.8px]"
+            textClass="max-w-[111px] font-semibold text-sm leading-[16.8px]"
             title={t("labelKeywordNotFound")}
           />
         </div>

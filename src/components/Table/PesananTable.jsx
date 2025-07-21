@@ -217,7 +217,7 @@ const PesananTable = ({
               </div>
               {searchOnly ? null : (
                 <div className="flex items-center gap-x-3">
-                  <span className="text-[12px] font-bold leading-[14.4px] text-neutral-900">
+                  <span className="leading-[14.4px] text-xs font-bold text-neutral-900">
                     Tampilkan:
                   </span>
                   {tabs.map((tab, key) => {
@@ -234,13 +234,13 @@ const PesananTable = ({
                         key={key}
                         onClick={() => onChangeQueryParams("status", tab.value)}
                         className={cn(
-                          "cursor-pointer rounded-full px-3 py-[6px] text-[10px] font-semibold",
+                          "cursor-pointer rounded-full px-3 py-[6px] font-semibold",
                           queryParams.status === tab.value || isActiveAllTab
                             ? "border border-primary-700 bg-[#E2F2FF] text-primary-700"
                             : "bg-[#F1F1F1] text-neutral-900"
                         )}
                       >
-                        {tab.label}
+                        <span className="text-xxs">{tab.label}</span>
                       </div>
                     );
                   })}
@@ -250,7 +250,7 @@ const PesananTable = ({
             {selectedFilter ? (
               <div className="flex h-8 items-center gap-x-3">
                 <button
-                  className="text-[12px] font-bold leading-[14.4px] text-primary-700"
+                  className="leading-[14.4px] text-xs font-bold text-primary-700"
                   onClick={() => onChangeQueryParams("status", "")}
                 >
                   Hapus Semua Filter
@@ -273,7 +273,7 @@ const PesananTable = ({
             <div className="w-full overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="border-y border-neutral-400 text-[12px] font-bold leading-[14.4px] text-neutral-600">
+                  <tr className="leading-[14.4px] border-y border-neutral-400 text-xs font-bold text-neutral-600">
                     <th className="w-[156px] px-6 py-5 text-left">
                       <div className="flex items-center gap-x-2">
                         <span>Kode Pesanan</span>
@@ -352,14 +352,14 @@ const PesananTable = ({
                         >
                           {/* Kode Pesanan */}
                           <td className="w-[156px] px-6 pb-4 pt-5 align-top">
-                            <span className="text-[12px] font-medium text-neutral-900">
+                            <span className="text-xs font-medium text-neutral-900">
                               {order.invoice}
                             </span>
                           </td>
 
                           {/* Tanggal Muat */}
                           <td className="w-[156px] pb-4 pl-0 pr-6 pt-5 align-top">
-                            <span className="text-[12px] font-medium text-neutral-900">
+                            <span className="text-xs font-medium text-neutral-900">
                               {`${new Date(
                                 order.loadTimeStart
                               ).toLocaleDateString("id-ID", {
@@ -397,7 +397,7 @@ const PesananTable = ({
                                     >
                                       <TimelineContentAddress
                                         title={item.fullAddress}
-                                        className={`text-[10px] font-bold leading-[13px] ${
+                                        className={`leading-[13px] text-xxs font-bold ${
                                           key === firstPickupDropoff?.length - 1
                                             ? "pb-0"
                                             : ""
@@ -412,7 +412,7 @@ const PesananTable = ({
                                 order.locations.dropoff.length > 1) && (
                                 <button
                                   onClick={() => openLocationModal(order)}
-                                  className="text-[12px] font-medium text-primary-700"
+                                  className="text-xs font-medium text-primary-700"
                                 >
                                   Lihat Lokasi Lainnya
                                 </button>
@@ -432,14 +432,14 @@ const PesananTable = ({
                                 />
                               </div>
                               <div className="flex flex-col gap-2">
-                                <span className="text-[12px] font-bold text-neutral-900">
+                                <span className="text-xs font-bold text-neutral-900">
                                   {order.vehicle?.truckTypeName || "N/A"}
                                 </span>
                                 <div className="flex items-center gap-1">
-                                  <span className="text-[10px] font-medium text-neutral-600">
+                                  <span className="text-xxs font-medium text-neutral-600">
                                     Carrier :
                                   </span>
-                                  <span className="text-[10px] font-medium text-neutral-900">
+                                  <span className="text-xxs font-medium text-neutral-900">
                                     {order.vehicle?.carrierName || "N/A"}
                                   </span>
                                 </div>
@@ -451,7 +451,7 @@ const PesananTable = ({
                                       width={14}
                                       height={14}
                                     />
-                                    <span className="text-[10px] font-medium text-neutral-900">
+                                    <span className="text-xxs font-medium text-neutral-900">
                                       {order.vehicle?.truckCount || 0} Unit
                                     </span>
                                   </div>
@@ -463,7 +463,7 @@ const PesananTable = ({
                                       width={14}
                                       height={14}
                                     />
-                                    <span className="text-[10px] font-medium text-neutral-900">
+                                    <span className="text-xxs font-medium text-neutral-900">
                                       2.500 kg
                                     </span>
                                   </div>
@@ -636,7 +636,7 @@ const PesananTable = ({
                                     src="/icons/warning24.svg"
                                     size="medium"
                                   />
-                                  <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+                                  <span className="leading-[14.4px] text-xs font-semibold text-neutral-900">
                                     {order.statusInfo?.[0]?.statusCode ===
                                     "WAITING_PAYMENT"
                                       ? "Lakukan pembayaran sebelum "
@@ -648,7 +648,7 @@ const PesananTable = ({
                                 </div>
                                 {order.statusInfo?.[0]?.statusCode ===
                                 "WAITING_REPAYMENT" ? (
-                                  <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+                                  <span className="leading-[14.4px] text-xs font-semibold text-neutral-900">
                                     {"Tambahan Biaya "}
                                     <span className="font-bold">{`Rp${order.additionalCost.toLocaleString("id-ID")}`}</span>
                                   </span>
@@ -667,7 +667,7 @@ const PesananTable = ({
                                   src="/icons/warning24.svg"
                                   size="medium"
                                 />
-                                <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+                                <span className="leading-[14.4px] text-xs font-semibold text-neutral-900">
                                   Pesanan membutuhkan konfirmasi
                                 </span>
                               </div>
@@ -684,7 +684,7 @@ const PesananTable = ({
                                   src="/icons/warning24.svg"
                                   size="medium"
                                 />
-                                <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+                                <span className="leading-[14.4px] text-xs font-semibold text-neutral-900">
                                   Pengembalian dana sedang dalam proses.
                                 </span>
                               </div>
@@ -736,7 +736,7 @@ const PesananTable = ({
                   width={96}
                   height={77}
                 />
-                <span className="text-[12px] font-medium leading-[14.4px] text-neutral-600">
+                <span className="leading-[14.4px] text-xs font-medium text-neutral-600">
                   Mulai buat pesanan sekarang untuk kebutuhan pengiriman kamu
                 </span>
                 <Button
@@ -806,7 +806,7 @@ const PesananTable = ({
       >
         <ModalContent>
           <div className="flex w-[320px] flex-col items-center gap-y-6 px-6 py-8">
-            <h1 className="text-[16px] font-bold leading-[19.2px] text-neutral-900">
+            <h1 className="leading-[19.2px] text-base font-bold text-neutral-900">
               Status Lainnya
             </h1>
             <div className="flex w-full flex-col gap-y-2">

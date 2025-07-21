@@ -22,7 +22,7 @@ export const MyTextArea = ({
       <textarea
         {...inputProps}
         className={cn(
-          "w-full rounded-[6px] border border-neutral-600 p-3 text-xs font-medium leading-[1.2] text-neutral-900 outline-none placeholder:text-neutral-600 focus-within:border-primary-700 hover:border-primary-700",
+          "leading-[1.2] w-full rounded-[6px] border border-neutral-600 p-3 text-xs font-medium text-neutral-900 outline-none placeholder:text-neutral-600 focus-within:border-primary-700 hover:border-primary-700",
           errorMessage && "border-error-400",
           appearance.inputClassName
         )}
@@ -34,7 +34,7 @@ export const MyTextArea = ({
 
       <div
         className={cn(
-          "flex justify-between text-[12px] font-medium text-neutral-600",
+          "flex justify-between text-xs font-medium text-neutral-600",
           errorMessage && "text-error-400"
         )}
       >

@@ -17,7 +17,7 @@ const BreadCrumb = ({
 }) => {
   const getItemClasses = (idx) =>
     cn(
-      "select-none text-xs font-medium capitalize text-neutral-600",
+      "select-none text-xs font-medium capitalize text-neutral-600 capsize",
       "hover:text-primary-700",
       idx === data.length - 1
         ? "!max-w-none"

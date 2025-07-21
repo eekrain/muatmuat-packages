@@ -9,13 +9,13 @@ export const PaymentMethodEnum = {
 };
 
 export const PaymentMethodTitle = {
-  [PaymentMethodEnum.VA_BCA]: "BCA Virtual Account",
-  [PaymentMethodEnum.VA_BNI]: "BNI Virtual Account",
-  [PaymentMethodEnum.VA_BRI]: "BRI Virtual Account",
-  [PaymentMethodEnum.VA_BSI]: "BSI Virtual Account",
-  [PaymentMethodEnum.VA_CIMB]: "CIMB Virtual Account",
-  [PaymentMethodEnum.VA_MANDIRI]: "Mandiri Virtual Account",
-  [PaymentMethodEnum.VA_PERMATA]: "Permata Virtual Account",
+  va_bca: "BCA Virtual Account",
+  va_bni: "BNI Virtual Account",
+  va_bri: "BRI Virtual Account",
+  va_bsi: "BSI Virtual Account",
+  va_cimb: "CIMB Virtual Account",
+  va_mandiri: "Mandiri Virtual Account",
+  va_permata: "Permata Virtual Account",
 };
 
 export const PaymentInstructionEnum = {
@@ -33,13 +33,13 @@ export const PaymentInstructionTitle = {
 };
 
 export const PaymentMethodIconFromMethod = {
-  [PaymentMethodEnum.VA_BCA]: "/icons/payment/va_bca.svg",
-  [PaymentMethodEnum.VA_BNI]: "/icons/payment/va_bni.svg",
-  [PaymentMethodEnum.VA_BRI]: "/icons/payment/va_bri.svg",
-  [PaymentMethodEnum.VA_BSI]: "/icons/payment/va_bsi.svg",
-  [PaymentMethodEnum.VA_CIMB]: "/icons/payment/va_cimb.svg",
-  [PaymentMethodEnum.VA_MANDIRI]: "/icons/payment/va_mandiri.svg",
-  [PaymentMethodEnum.VA_PERMATA]: "/icons/payment/va_permata.svg",
+  va_bca: "/icons/payment/va_bca.svg",
+  va_bni: "/icons/payment/va_bni.svg",
+  va_bri: "/icons/payment/va_bri.svg",
+  va_bsi: "/icons/payment/va_bsi.svg",
+  va_cimb: "/icons/payment/va_cimb.svg",
+  va_mandiri: "/icons/payment/va_mandiri.svg",
+  va_permata: "/icons/payment/va_permata.svg",
 };
 
 export const PaymentMethodIconFromTitle = {

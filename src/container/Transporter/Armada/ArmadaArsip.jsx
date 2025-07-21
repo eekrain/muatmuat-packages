@@ -5,7 +5,6 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
 import BadgeStatus from "@/components/Badge/BadgeStatus";
-import Button from "@/components/Button/Button";
 import { DataTable } from "@/components/DataTable";
 import {
   SimpleDropdown,
@@ -21,10 +20,8 @@ const ArmadaArsip = ({ data, isLoading, onPageChange, onPerPageChange }) => {
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case "ACTIVE":
-        return <BadgeStatus variant="success">Aktif</BadgeStatus>;
-      case "INACTIVE":
-        return <BadgeStatus variant="neutral">Tidak Aktif</BadgeStatus>;
+      case "DELETED":
+        return <BadgeStatus variant="error">Dihapus</BadgeStatus>;
       default:
         return <BadgeStatus variant="neutral">{status}</BadgeStatus>;
     }
@@ -90,10 +87,7 @@ const ArmadaArsip = ({ data, isLoading, onPageChange, onPerPageChange }) => {
             </button>
           </SimpleDropdownTrigger>
 
-          <SimpleDropdownContent className="w-fit">
-            <SimpleDropdownItem onClick={() => {}}>
-              Kembalikan dari Arsip
-            </SimpleDropdownItem>
+          <SimpleDropdownContent className="w-[124px]" align="end">
             <SimpleDropdownItem onClick={() => {}}>Detail</SimpleDropdownItem>
           </SimpleDropdownContent>
         </SimpleDropdown>
@@ -198,13 +192,6 @@ const ArmadaArsip = ({ data, isLoading, onPageChange, onPerPageChange }) => {
       showPagination
       rowClassName={rowClassName}
       filterConfig={getFilterConfig()}
-      emptyState={
-        <div className="flex flex-col items-center gap-2 py-8">
-          <div className="text-sm text-neutral-500">
-            Tidak ada armada yang diarsipkan
-          </div>
-        </div>
-      }
     />
   );
 };

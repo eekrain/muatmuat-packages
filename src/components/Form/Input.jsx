@@ -95,7 +95,7 @@ const Input = forwardRef(
             </div>
           )}
           {text.left && (
-            <span className="mr-3 text-xs font-medium leading-[14.4px] text-neutral-900 max-[600px]:text-sm max-[600px]:font-semibold max-[600px]:leading-[15.4px]">
+            <span className="leading-[14.4px] max-[600px]:leading-[15.4px] mr-3 text-xs font-medium text-neutral-900 max-[600px]:text-sm max-[600px]:font-semibold">
               {text.left}
             </span>
           )}
@@ -109,7 +109,8 @@ const Input = forwardRef(
             placeholder={placeholder}
             disabled={disabled}
             className={cn(
-              "w-full min-w-0 border-none border-transparent bg-transparent text-xs font-medium leading-[14.4px] text-neutral-900 outline-none placeholder:text-neutral-600 max-[600px]:text-sm max-[600px]:font-semibold max-[600px]:leading-[15.4px]",
+              "leading-[14.4px] max-[600px]:leading-[15.4px] mt-0.5 w-full min-w-0 border-none border-transparent bg-transparent text-xs font-medium text-neutral-900 outline-none placeholder:text-neutral-600 max-[600px]:text-sm max-[600px]:font-semibold",
+              disabled && "cursor-not-allowed",
               appearance.inputClassName
             )}
           />
@@ -129,7 +130,7 @@ const Input = forwardRef(
             </div>
           )}
           {text.right && (
-            <span className="ml-3 text-xs font-medium leading-[14.4px] text-neutral-900 max-[600px]:text-sm max-[600px]:font-semibold max-[600px]:leading-[15.4px]">
+            <span className="leading-[14.4px] max-[600px]:leading-[15.4px] ml-3 text-xs font-medium text-neutral-900 max-[600px]:text-sm max-[600px]:font-semibold">
               {text.right}
             </span>
           )}

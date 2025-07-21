@@ -8,7 +8,7 @@ import { isDev } from "@/lib/constants/is-dev";
 import { toast } from "@/lib/toast";
 import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
 import useGetFleetSearchStatus from "@/services/Shipper/detailpesanan/getFleetSearchStatus";
-import { useLoadingAction } from "@/store/Shipper/loadingStore";
+import { useLoadingAction } from "@/store/Shared/loadingStore";
 
 import DetailPesananHeader from "./DetailPesananHeader/DetailPesananHeader";
 import DetailPIC from "./DetailPic/DetailPic";
@@ -64,7 +64,7 @@ const DetailPesananWeb = () => {
                   src="/icons/warning24.svg"
                   size="medium"
                 />
-                <span className="text-[12px] font-semibold leading-[14.4px] text-neutral-900">
+                <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
                   {`Pesanan kamu memiliki tambahan biaya. Mohon selesaikan
                   pembayaran sebelum tanggal `}
                   <b>20 Mei 2024</b>

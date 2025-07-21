@@ -185,7 +185,7 @@ const DaftarPesananWeb = ({
         <div className="mx-auto flex max-w-[1280px] flex-col">
           {/* Header */}
           <div className="flex items-center justify-between">
-            <h1 className="text-[20px] font-bold leading-[120%] text-neutral-900">
+            <h1 className="leading-[120%] text-xl font-bold text-neutral-900">
               Daftar Pesanan
             </h1>
             <DropdownPeriode

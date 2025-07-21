@@ -10,7 +10,7 @@ const MuatBongkarModal = ({ isOpen, setIsOpen, data, title }) => (
     <ModalContent>
       <div className="flex flex-col gap-y-3 p-6">
         {/* Header */}
-        <h2 className="text-center text-[16px] font-bold leading-[19.2px] text-neutral-900">
+        <h2 className="leading-[19.2px] text-center text-base font-bold text-neutral-900">
           {title}
         </h2>
         <div className="mr-[-12px] max-h-[388px] overflow-y-auto pr-[7px]">
@@ -32,7 +32,7 @@ const MuatBongkarModal = ({ isOpen, setIsOpen, data, title }) => (
                 >
                   <TimelineContentAddress
                     title={item.fullAddress}
-                    className={`text-[12px] font-medium leading-[14.4px] ${
+                    className={`leading-[14.4px] text-xs font-medium ${
                       index === data?.length - 1 ? "pb-0" : ""
                     }`}
                   />

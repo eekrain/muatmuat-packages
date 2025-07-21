@@ -245,6 +245,9 @@ const DetailPesananHeader = ({
                   variant="muatparts-primary-secondary"
                   className="h-8"
                   type="button"
+                  appearance={{
+                    iconClassName: "-mt-[4px]",
+                  }}
                 >
                   Unduh
                 </Button>

@@ -35,7 +35,7 @@ const createLabelStyle = () => ({
   background: "black",
   padding: "4px 8px",
   borderRadius: "4px",
-  fontSize: "12px",
+  fontSize: "text-xs",
   fontWeight: "bold",
   marginBottom: "8px",
 });
@@ -140,7 +140,7 @@ export const MapWithPath = ({
         color: white;
         padding: 4px 8px;
         border-radius: 4px;
-        font-size: 12px;
+        font-size: text-xs;
         font-weight: bold;
         white-space: nowrap;
         transform: translateY(-38px);

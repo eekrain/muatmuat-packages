@@ -229,7 +229,7 @@ export default function ImageUploaderResponsive({
                     size="medium"
                   />
                 </div>
-                <span className="text-[16px] font-semibold leading-[19.2px]">
+                <span className="leading-[19.2px] text-base font-semibold">
                   {option.title}
                 </span>
               </div>
@@ -284,7 +284,7 @@ export default function ImageUploaderResponsive({
                   height={20}
                   src="/icons/add-image20.svg"
                 />
-                <span className="text-[12px] font-medium leading-[13.2px] text-black group-hover:text-primary-700">
+                <span className="leading-[13.2px] text-xs font-medium text-black group-hover:text-primary-700">
                   {uploadText}
                 </span>
               </>
@@ -296,7 +296,7 @@ export default function ImageUploaderResponsive({
                   size="small"
                   src="/icons/restart.svg"
                 />
-                <span className="text-[12px] font-medium leading-[13.2px] text-[#EE4343] group-hover:text-primary-700">
+                <span className="leading-[13.2px] text-xs font-medium text-[#EE4343] group-hover:text-primary-700">
                   {errorText}
                 </span>
               </>
@@ -312,7 +312,7 @@ export default function ImageUploaderResponsive({
               </button>
             )}
             {isMain && base64Image && !error && (
-              <div className="absolute bottom-[4px] left-[6px] flex h-6 items-center justify-center rounded-md bg-success-50 px-[8.5px] text-[14px] font-semibold leading-[15.4px] text-success-400">
+              <div className="leading-[15.4px] absolute bottom-[4px] left-[6px] flex h-6 items-center justify-center rounded-md bg-success-50 px-[8.5px] text-sm font-semibold text-success-400">
                 Utama
               </div>
             )}

@@ -33,7 +33,7 @@ export const DropdownJasaPengiriman = ({
   const scrollParentRef = useRef(null);
 
   // Get the callback ref from the hook
-  const setDropdownRef = useRegisterModalPortalNode(dropdownRef, [isOpen]);
+  const setDropdownRef = useRegisterModalPortalNode([isOpen]);
 
   // Function to find the first scrollable parent
   const getScrollParent = useCallback((node) => {
@@ -181,10 +181,10 @@ export const DropdownJasaPengiriman = ({
         <div className="flex h-16 w-full flex-col justify-center gap-2 rounded-md border border-neutral-600 bg-white p-3">
           {/* First row - Expedition name, price, and chevron */}
           <div className="flex h-4 items-center gap-2">
-            <span className="flex-1 text-xs font-medium leading-[14px] text-neutral-900">
+            <span className="leading-[14px] flex-1 text-xs font-medium text-neutral-900">
               {selectedOption.courierName || selectedOption.name}
             </span>
-            <span className="text-right text-xs font-medium leading-[14px] text-neutral-900">
+            <span className="leading-[14px] text-right text-xs font-medium text-neutral-900">
               {idrFormat(selectedOption.originalCost || selectedOption.price)}
             </span>
             <button
@@ -207,7 +207,7 @@ export const DropdownJasaPengiriman = ({
             />
             <label
               htmlFor="insurance"
-              className="cursor-pointer text-xs font-medium leading-[14px] text-neutral-900"
+              className="leading-[14px] cursor-pointer text-xs font-medium text-neutral-900"
             >
               {insuranceText}{" "}
               <span className="text-primary-700">
@@ -237,7 +237,7 @@ export const DropdownJasaPengiriman = ({
           <div key={groupIndex}>
             {/* Group Header */}
             <div className="border-b border-neutral-200 px-2.5 py-3">
-              <span className="text-xs font-bold leading-[14px] text-neutral-900">
+              <span className="leading-[14px] text-xs font-bold text-neutral-900">
                 {group.groupName}
               </span>
             </div>
@@ -253,12 +253,12 @@ export const DropdownJasaPengiriman = ({
                 } `}
               >
                 <div className="flex-1">
-                  <span className="text-xs font-medium leading-[14px] text-neutral-900">
+                  <span className="leading-[14px] text-xs font-medium text-neutral-900">
                     {expedition.courierName}
                   </span>
                 </div>
                 <div className="flex-1 text-right">
-                  <span className="text-xs font-medium leading-[14px] text-neutral-900">
+                  <span className="leading-[14px] text-xs font-medium text-neutral-900">
                     {idrFormat(expedition.originalCost)}
                   </span>
                 </div>
@@ -284,7 +284,7 @@ export const DropdownJasaPengiriman = ({
         onClick={handleToggle}
         disabled={disabled}
         className={cn(
-          "flex h-8 w-full items-center justify-between gap-2 rounded-md border px-3 py-0 text-left text-xs font-medium leading-[120%] text-neutral-600 transition-colors",
+          "leading-[120%] flex h-8 w-full items-center justify-between gap-2 rounded-md border px-3 py-0 text-left text-xs font-medium text-neutral-600 transition-colors",
           disabled &&
             "cursor-not-allowed border-neutral-300 bg-neutral-200 text-neutral-400",
           !disabled && "hover:border-primary-700",
@@ -293,7 +293,7 @@ export const DropdownJasaPengiriman = ({
           errorMessage && "border-red-500 focus:border-red-500"
         )}
       >
-        <span className="flex-1 truncate text-xs leading-[14px]">
+        <span className="leading-[14px] flex-1 truncate text-xs">
           {displayText}
         </span>
         <div className="flex h-4 w-4 flex-shrink-0 items-center justify-center">
@@ -323,7 +323,7 @@ export const DropdownJasaPengiriman = ({
                 style={dropdownStyle}
                 className="shadow-muat mt-1 flex h-[66px] items-center justify-center rounded-md border border-neutral-300 bg-white px-2.5"
               >
-                <p className="text-center text-[12px] font-medium leading-[14.4px] text-neutral-900">
+                <p className="leading-[14.4px] text-center text-xs font-medium text-neutral-900">
                   Saat ini, kami belum bisa mengirim ke alamat tersebut.
                   Silahkan masukkan alamat tujuan lain
                 </p>

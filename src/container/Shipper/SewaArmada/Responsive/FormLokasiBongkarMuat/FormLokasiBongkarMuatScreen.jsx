@@ -75,14 +75,14 @@ const FormLokasiBongkarMuatScreen = () => {
           <div className="flex flex-col gap-4">
             {/* Header with Ubah Lokasi */}
             <div className="flex items-center justify-between">
-              <h2 className="flex-1 text-[14px] font-bold leading-[15px] text-black">
+              <h2 className="leading-[15px] flex-1 text-sm font-bold text-black">
                 {params.config.formMode === "muat"
                   ? "Lokasi Muat"
                   : "Lokasi Bongkar"}
               </h2>
               <button
                 onClick={handleUbahLokasi}
-                className="text-[12px] font-semibold leading-[13px] text-[#176CF7]"
+                className="leading-[13px] text-xs font-semibold text-[#176CF7]"
               >
                 Ubah Lokasi
               </button>
@@ -91,7 +91,7 @@ const FormLokasiBongkarMuatScreen = () => {
             {/* Location Details */}
             <div className="flex items-center gap-2">
               <MapPin className="mt-0.5 h-6 w-6 flex-shrink-0 text-[#461B02]" />
-              <p className="flex-1 text-[14px] font-medium leading-[15px] text-black">
+              <p className="leading-[15px] flex-1 text-sm font-medium text-black">
                 {formValues.dataLokasi?.location?.name}
               </p>
             </div>
@@ -104,10 +104,10 @@ const FormLokasiBongkarMuatScreen = () => {
             {/* Detail Lokasi Field */}
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-1">
-                <label className="text-[14px] font-semibold leading-[15px] text-black">
+                <label className="leading-[15px] text-sm font-semibold text-black">
                   Detail Lokasi
                 </label>
-                <span className="text-[10px] font-semibold leading-[12px] text-black">
+                <span className="leading-[12px] text-xxs font-semibold text-black">
                   (Opsional)
                 </span>
               </div>
@@ -123,13 +123,13 @@ const FormLokasiBongkarMuatScreen = () => {
                       setField("detailLokasi", textarea.value);
                     }}
                     placeholder="Masukkan Detail Lokasi"
-                    className="min-h-8 w-full resize-none overflow-y-auto rounded-md border border-neutral-600 bg-white px-3 py-[6px] text-[14px] font-semibold placeholder:text-neutral-600 focus:border-primary-700 focus:outline-none"
+                    className="min-h-8 w-full resize-none overflow-y-auto rounded-md border border-neutral-600 bg-white px-3 py-[6px] text-sm font-semibold placeholder:text-neutral-600 focus:border-primary-700 focus:outline-none"
                     maxLength={500}
                     rows={1}
                     style={{ height: "32px" }} // Initial height for 1 line
                   />
                 </div>
-                <div className="flex items-center justify-between text-[12px] font-medium leading-[13px] text-neutral-600">
+                <div className="leading-[13px] flex items-center justify-between text-xs font-medium text-neutral-600">
                   <span className="opacity-0">notes</span>
                   <span>{formValues.detailLokasi.length}/500</span>
                 </div>
@@ -138,7 +138,7 @@ const FormLokasiBongkarMuatScreen = () => {
 
             {/* Nama PIC Field */}
             <div className="flex flex-col gap-4">
-              <label className="text-[14px] font-semibold leading-[15px] text-black">
+              <label className="leading-[15px] text-sm font-semibold text-black">
                 Nama PIC Lokasi Lokasi{" "}
                 {params.config.formMode === "muat" ? "Muat" : "Bongkar"}
                 <span className="text-red-500">*</span>
@@ -161,7 +161,7 @@ const FormLokasiBongkarMuatScreen = () => {
 
             {/* No. HP PIC Field */}
             <div className="flex flex-col gap-4">
-              <label className="text-[14px] font-semibold leading-[15px] text-black">
+              <label className="leading-[15px] text-sm font-semibold text-black">
                 No. HP PIC Lokasi{" "}
                 {params.config.formMode === "muat" ? "Muat" : "Bongkar"}
                 <span className="text-red-500">*</span>

@@ -26,7 +26,7 @@ const DataNotFound = ({
             : type === "search"
               ? "/icons/data-not-found.svg"
               : type === "data"
-                ? "/icons/data-empty.png"
+                ? "/img/data-empty.png"
                 : ""
         }
         alt="Data Not Found"
@@ -39,7 +39,7 @@ const DataNotFound = ({
         ) : (
           <p
             className={cn(
-              "w-[257px] text-center text-[16px] font-[600] text-neutral-600",
+              "w-[257px] text-center text-base font-[600] text-neutral-600",
               textClass
             )}
           >

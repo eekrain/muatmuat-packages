@@ -26,6 +26,7 @@ const FilterDropdown = ({
   searchPlaceholder = "Search...",
   emptyMessage = "Data Tidak Ditemukan",
   maxHeight = "160px",
+  disabled = false,
 }) => {
   const [searchQueries, setSearchQueries] = useState({});
   const [openPopovers, setOpenPopovers] = useState({});
@@ -139,14 +140,21 @@ const FilterDropdown = ({
       return (
         <button
           className={cn(
-            "flex h-8 w-[104px] flex-row items-center justify-between gap-2 rounded-md border bg-white px-3 transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none",
-            totalSelected > 0 ? "border-primary-700" : "border-neutral-600"
+            "flex h-8 w-[104px] flex-row items-center justify-between gap-2 rounded-md border px-3 transition-colors duration-150 focus:outline-none",
+            disabled
+              ? "cursor-not-allowed border-neutral-600 bg-neutral-200"
+              : totalSelected > 0
+                ? "border-primary-700 bg-white hover:border-primary-700 hover:bg-gray-50"
+                : "border-neutral-600 bg-white hover:border-primary-700 hover:bg-gray-50"
           )}
+          disabled={disabled}
         >
           <span
             className={cn(
               "text-xs font-medium",
-              totalSelected > 0 ? "text-primary-700" : "text-neutral-600"
+              totalSelected > 0 && !disabled
+                ? "text-primary-700"
+                : "text-neutral-600"
             )}
           >
             Filter
@@ -154,7 +162,9 @@ const FilterDropdown = ({
           <SlidersHorizontal
             className={cn(
               "h-4 w-4",
-              totalSelected > 0 ? "text-primary-700" : "text-neutral-700"
+              totalSelected > 0 && !disabled
+                ? "text-primary-700"
+                : "text-neutral-700"
             )}
           />
         </button>
@@ -164,6 +174,7 @@ const FilterDropdown = ({
     if (typeof trigger === "function") {
       return trigger({
         selectedCount: totalSelected,
+        disabled: disabled,
       });
     }
 
@@ -178,8 +189,10 @@ const FilterDropdown = ({
   };
 
   return (
-    <SimpleDropdown onOpenChange={handleOpenChange}>
-      <SimpleDropdownTrigger asChild>{renderTrigger()}</SimpleDropdownTrigger>
+    <SimpleDropdown onOpenChange={handleOpenChange} disabled={disabled}>
+      <SimpleDropdownTrigger asChild disabled={disabled}>
+        {renderTrigger()}
+      </SimpleDropdownTrigger>
 
       <SimpleDropdownContent
         className={cn(

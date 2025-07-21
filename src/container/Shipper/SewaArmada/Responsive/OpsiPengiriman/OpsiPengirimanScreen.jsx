@@ -30,7 +30,7 @@ const OpsiPengiriman = () => {
             className="flex w-full flex-col gap-y-4 bg-neutral-50 p-4"
           >
             {/* Header Section - Category Title */}
-            <h3 className="text-[14px] font-bold capitalize leading-[15.4px] text-neutral-900">
+            <h3 className="leading-[15.4px] text-sm font-bold capitalize text-neutral-900">
               {category.category}
             </h3>
 
@@ -48,18 +48,18 @@ const OpsiPengiriman = () => {
                     }
                   >
                     {/* Courier Info */}
-                    <span className="text-[14px] font-semibold leading-[15.4px] text-neutral-900">
+                    <span className="leading-[15.4px] text-sm font-semibold text-neutral-900">
                       {option.courier}
                     </span>
 
                     {/* Price Info */}
-                    <span className="text-right text-[14px] font-semibold leading-[15.4px] text-neutral-900">
+                    <span className="leading-[15.4px] text-right text-sm font-semibold text-neutral-900">
                       {option.price}
                     </span>
                   </div>
 
                   {/* Estimation */}
-                  <span className="text-[12px] font-medium leading-[13.2px] text-neutral-600">
+                  <span className="leading-[13.2px] text-xs font-medium text-neutral-600">
                     {option.estimation}
                   </span>
                 </button>

@@ -31,11 +31,11 @@ export const FirstTimer = () => {
           width={100}
           height={76}
         />
-        <h1 className="text-center text-base font-semibold leading-[1] text-neutral-900">
+        <h1 className="leading-[1] text-center text-base font-semibold text-neutral-900">
           Ayo kirim muatan Anda dengan muatrans!
         </h1>
 
-        <p className="w-[313px] text-center text-[12px] font-medium leading-[14.4px] text-neutral-600">
+        <p className="leading-[14.4px] w-[313px] text-center text-xs font-medium text-neutral-600">
           Pesan truk kapan saja dan di mana saja dengan mudah. Serta lacak
           kiriman secara real-time untuk memastikan keamanan pengiriman dan
           dapatkan rekomendasi truk sesuai muatan agar lebih efisien!
