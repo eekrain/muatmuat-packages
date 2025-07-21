@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 
 import SewaArmadaWeb from "@/container/Shipper/SewaArmada/Web/SewaArmadaWeb";
 import useDevice from "@/hooks/use-device";
-import { useSWRHook } from "@/hooks/use-swr";
+import useGetSewaArmadaFormOption from "@/services/Shipper/sewaarmada/getSewaArmadaFormOption";
 import { useGetUpdateOrderData } from "@/services/Shipper/sewaarmada/getUpdateOrderData";
 
 const Page = () => {
@@ -12,22 +12,8 @@ const Page = () => {
   const { isMobile } = useDevice();
 
   const abc = useGetUpdateOrderData(params.orderId);
-  // Fetch cargo types using SWR
-  const { data: cargoTypesData } = useSWRHook("v1/orders/cargos/types");
-  // Fetch cargo categories using SWR
-  const { data: cargoCategoriesData } = useSWRHook(
-    "v1/orders/cargos/categories"
-  );
-  // Fetch layanan tambahan dari API
-  const { data: additionalServicesData } = useSWRHook(
-    "v1/orders/additional-services"
-  );
-
-  // Extract cargo types from response
-  const cargoTypes = cargoTypesData?.Data?.types || [];
-  // Extract cargo categories from response
-  const cargoCategories = cargoCategoriesData?.Data?.categories || [];
-  const additionalServicesOptions = additionalServicesData?.Data.services || [];
+  const { cargoCategories, cargoTypes, additionalServicesOptions } =
+    useGetSewaArmadaFormOption();
 
   if (isMobile)
     return (

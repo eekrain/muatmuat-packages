@@ -258,4 +258,4 @@ const useGetSewaArmadaFormOption = () => {
   };
 };
 
-export default useGetSewaArmadaFormOptionData;
+export default useGetSewaArmadaFormOption;
