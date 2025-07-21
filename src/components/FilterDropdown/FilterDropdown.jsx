@@ -248,7 +248,7 @@ const FilterDropdown = ({
                       }}
                       appearance={{
                         containerClassName: "h-8 mb-2.5",
-                        inputClassName: "text-xs font-medium",
+                        inputClassName: "text-xs font-medium mt-0",
                       }}
                     />
                   )}

@@ -32,7 +32,7 @@ const Page = () => {
     return <EmptyArmada />;
   }
   return (
-    <div className="max-h-screen w-full space-y-4 py-6">
+    <div className="my-6 max-h-screen w-full space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">Manajemen Armada</h1>
         <div className="flex gap-3">
