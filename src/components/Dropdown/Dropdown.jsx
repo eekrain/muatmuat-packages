@@ -185,7 +185,7 @@ const Dropdown = ({
             )}
             <span className={style.content}>
               {val?.title && (
-                <span className="leading-[14px] font-[600]">{val?.title}</span>
+                <span className="font-[600] leading-[14px]">{val?.title}</span>
               )}
               <span className="line-clamp-2 font-[500]">{val?.name}</span>
             </span>
@@ -241,7 +241,7 @@ const Dropdown = ({
                   )}
                   <span className={style.content}>
                     {val?.title && (
-                      <span className="leading-[14px] font-[600]">
+                      <span className="font-[600] leading-[14px]">
                         {val?.title}
                       </span>
                     )}

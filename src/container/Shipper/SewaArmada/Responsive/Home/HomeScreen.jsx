@@ -372,7 +372,7 @@ const SewaArmadaHomeScreen = () => {
         {/* Brand Section */}
         <div className="my-2 flex h-[61px] w-full items-center justify-between gap-[29px] bg-white px-4 py-3">
           <div className="flex-1">
-            <h2 className="leading-[17.6px] text-base font-semibold text-[#461B02]">
+            <h2 className="text-base font-semibold leading-[17.6px] text-[#461B02]">
               Ayo kirim muatan kamu dengan muatrans!
             </h2>
           </div>
@@ -382,7 +382,7 @@ const SewaArmadaHomeScreen = () => {
               alt="muatrans"
               className="h-4 w-20"
             />
-            <p className="leading-[10px] text-right text-xxs font-semibold text-[#461B02]">
+            <p className="text-right text-xxs font-semibold leading-[10px] text-[#461B02]">
               Cargo Land Transportation Company
             </p>
           </div>
@@ -444,7 +444,7 @@ const SewaArmadaHomeScreen = () => {
             >
               <div className="flex items-center gap-x-2">
                 <IconComponent src="/icons/muatan16.svg" />
-                <span className="leading-[15.4px] max-w-[256px] truncate text-sm font-semibold">
+                <span className="max-w-[256px] truncate text-sm font-semibold leading-[15.4px]">
                   {formValues.informasiMuatan.length === 0 ? (
                     <span className="text-neutral-600">Masukkan Muatan</span>
                   ) : (
@@ -554,7 +554,7 @@ const SewaArmadaHomeScreen = () => {
             >
               <div className="flex items-center gap-x-2">
                 <IconComponent src="/icons/layanan-tambahan.svg" />
-                <span className="leading-[15.4px] text-sm font-semibold text-neutral-600">
+                <span className="text-sm font-semibold leading-[15.4px] text-neutral-600">
                   Pilih Layanan Tambahan
                 </span>
               </div>

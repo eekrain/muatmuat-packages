@@ -17,7 +17,7 @@ const SelectItem = ({ className, children, ...props }) => {
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "leading-[14.4px] flex w-full cursor-pointer items-center justify-between gap-2.5 px-2.5 py-3 text-left text-xs transition-colors duration-150",
+        "flex w-full cursor-pointer items-center justify-between gap-2.5 px-2.5 py-3 text-left text-xs leading-[14.4px] transition-colors duration-150",
         "font-medium text-black outline-none hover:border-none hover:bg-neutral-200 hover:outline-none",
         "data-[state=checked]:bg-neutral-50 data-[state=checked]:font-semibold data-[state=checked]:text-black",
         className
@@ -67,7 +67,7 @@ export const Select = forwardRef(
             data-slot="select-trigger"
             data-size={"sm"}
             className={cn(
-              "leading-[14.4px] flex h-8 items-center justify-between gap-2 rounded-md border px-3 text-xs font-medium transition-colors duration-200",
+              "flex h-8 items-center justify-between gap-2 rounded-md border px-3 text-xs font-medium leading-[14.4px] transition-colors duration-200",
               "bg-white text-black focus:outline-none focus:ring-1 focus:ring-primary-700/20",
               "border-neutral-600 hover:border-primary-700 data-[state=open]:border-primary-700",
               errorMessage && "border-red-500 focus:border-red-500",

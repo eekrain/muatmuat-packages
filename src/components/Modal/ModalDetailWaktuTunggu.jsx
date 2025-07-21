@@ -56,7 +56,7 @@ export const ModalDetailWaktuTunggu = ({
   return (
     <Modal>
       <ModalTrigger>
-        <button className="leading-[14.4px] text-xs font-medium text-primary-700">
+        <button className="text-xs font-medium leading-[14.4px] text-primary-700">
           Lihat Detail Waktu Tunggu
         </button>
       </ModalTrigger>
@@ -65,7 +65,7 @@ export const ModalDetailWaktuTunggu = ({
         type="muatmuat"
       >
         {/* Header */}
-        <h2 className="leading-[19.2px] text-center text-base font-bold text-neutral-900">
+        <h2 className="text-center text-base font-bold leading-[19.2px] text-neutral-900">
           Detail Waktu Tunggu
         </h2>
 
@@ -93,11 +93,11 @@ export const ModalDetailWaktuTunggu = ({
                 onClick={() => toggleDriver(idx)}
               >
                 <div className="flex flex-col items-start gap-2">
-                  <h3 className="text-sm font-semibold text-neutral-900 capsize">
+                  <h3 className="capsize text-sm font-semibold text-neutral-900">
                     Driver : {driver.name}
                   </h3>
                   {driver.durasiTotal && !expandedDrivers[idx] && (
-                    <span className="text-xs font-medium text-neutral-600 capsize">
+                    <span className="capsize text-xs font-medium text-neutral-600">
                       Durasi Total: {driver.durasiTotal}
                     </span>
                   )}
@@ -117,7 +117,7 @@ export const ModalDetailWaktuTunggu = ({
                   expandedDrivers[idx]
                     ? "mt-3 max-h-96 opacity-100"
                     : "mt-0 max-h-0 opacity-0",
-                  "leading-[1.2] text-xs font-medium"
+                  "text-xs font-medium leading-[1.2]"
                 )}
               >
                 {/* Loading Location Details */}

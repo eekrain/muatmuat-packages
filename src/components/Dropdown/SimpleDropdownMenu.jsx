@@ -30,7 +30,7 @@ export const SimpleDropdownContent = ({
 export const SimpleDropdownItem = ({ className, onClick, children }) => (
   <DropdownMenuPrimitive.Item
     className={cn(
-      "leading-[1.2] cursor-pointer px-2.5 py-3 text-xs font-medium outline-none capsize hover:bg-neutral-100",
+      "capsize cursor-pointer px-2.5 py-3 text-xs font-medium leading-[1.2] outline-none hover:bg-neutral-100",
       className
     )}
     onClick={onClick}

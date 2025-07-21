@@ -36,7 +36,7 @@ const DriverRatingForm = ({
             className="h-10 w-10 rounded-[30px]"
           />
           <div className="flex flex-col gap-y-3">
-            <span className="leading-[14.4px] text-xs font-bold text-neutral-900">
+            <span className="text-xs font-bold leading-[14.4px] text-neutral-900">
               {driver.name}
             </span>
             <div className="flex items-center gap-x-1">
@@ -45,7 +45,7 @@ const DriverRatingForm = ({
                 width={12}
                 height={12}
               />
-              <span className="leading-[13px] text-xxs font-medium text-neutral-900">
+              <span className="text-xxs font-medium leading-[13px] text-neutral-900">
                 {driver.licensePlate}
               </span>
             </div>
@@ -54,7 +54,7 @@ const DriverRatingForm = ({
 
         {/* Rating Column */}
         <div className="flex min-w-[214px] flex-col gap-2">
-          <span className="leading-[14.4px] text-xs font-medium text-neutral-600">
+          <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
             Rating Driver
           </span>
           <RatingInput
@@ -146,7 +146,7 @@ const DriverRatingModal = ({ isOpen, setIsOpen, drivers }) => {
       <ModalContent className="flex w-[800px] flex-col items-center gap-y-3 p-6">
         {/* Header */}
         <div className="w-full text-center">
-          <h2 className="leading-[19.2px] text-base font-bold text-neutral-900">
+          <h2 className="text-base font-bold leading-[19.2px] text-neutral-900">
             Ulasan
           </h2>
         </div>

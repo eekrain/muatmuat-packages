@@ -27,7 +27,7 @@ const ConfirmationModal = ({
           {titleText ? (
             <h1
               className={cn(
-                "leading-[19.2px] text-base font-bold text-neutral-900",
+                "text-base font-bold leading-[19.2px] text-neutral-900",
                 titleClassName
               )}
             >
@@ -37,7 +37,7 @@ const ConfirmationModal = ({
           {descriptionText ? (
             <p
               className={cn(
-                "leading-[15.4px] text-center text-sm font-medium text-neutral-900",
+                "text-center text-sm font-medium leading-[15.4px] text-neutral-900",
                 descriptionClassName
               )}
             >

@@ -41,7 +41,7 @@ export const UserDropdown = () => {
       {!isLoggedIn ? (
         <a href={`${process.env.NEXT_PUBLIC_INTERNAL_WEB}login?from=muattrans`}>
           <Button variant="muatparts-primary">
-            <span className="leading-[1] text-sm font-semibold text-neutral-50">
+            <span className="text-sm font-semibold leading-[1] text-neutral-50">
               Masuk
             </span>
           </Button>
@@ -60,7 +60,7 @@ export const UserDropdown = () => {
                 alt={`${dataUser?.name} profile`}
                 className="block size-[20px] overflow-hidden rounded-full border border-neutral-500"
               />
-              <div className="max-w-[104px] text-xs font-medium capsize">
+              <div className="capsize max-w-[104px] text-xs font-medium">
                 <span className="block truncate">{dataUser?.name}</span>
               </div>
             </button>

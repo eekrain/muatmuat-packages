@@ -9,6 +9,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import { toast } from "@/lib/toast";
 import { useLayananTambahanStore } from "@/store/Shipper/forms/layananTambahanStore";
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 
@@ -83,6 +84,19 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
     const isFormValid = validateLayananTambahan();
     console.log("🚀 ~ LayananTambahanScreen ~ formErrors:", locationFormErrors);
     if (!isFormValid) {
+      // Count total errors from both form stores
+      const locationErrorCount = Object.keys(locationFormErrors || {}).filter(
+        (key) => locationFormErrors[key]
+      ).length;
+      const tambahanErrorCount = Object.keys(tambahanFormErrors || {}).filter(
+        (key) => tambahanFormErrors[key]
+      ).length;
+      const totalErrors = locationErrorCount + tambahanErrorCount;
+
+      // Show toast if there are multiple errors
+      if (totalErrors > 1) {
+        toast.error("Terdapat field yang kosong");
+      }
       return;
     }
     navigation.pop();
@@ -115,7 +129,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
               />
 
               <InfoBottomsheet title="Kirim Bukti Fisik Penerimaan Barang">
-                <span className="leading-[15.4px] text-sm font-medium text-neutral-900">
+                <span className="text-sm font-medium leading-[15.4px] text-neutral-900">
                   Pilih opsi ini jika kamu ingin dokumen surat jalan atau
                   dokumen pendukung lainnya, dikembalikan ke alamat tujuan yang
                   kamu isikan. Biaya pengiriman akan mengikuti alamat tujuan
@@ -124,7 +138,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
               </InfoBottomsheet>
             </div>
 
-            <span className="leading-[15.4px] ml-6 text-sm font-medium text-neutral-600">
+            <span className="ml-6 text-sm font-medium leading-[15.4px] text-neutral-600">
               {tambahanFormValues.opsiPegiriman
                 ? (() => {
                     const shippingPrice = parseInt(
@@ -220,30 +234,51 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
             <FormContainer>
               <FormLabel required>Alamat Tujuan</FormLabel>
               <div
-                className=""
+                className={`${isKirimBuktiFisikDisabled ? "cursor-not-allowed" : "cursor-pointer"}`}
                 onClick={() => {
-                  navigation.push("/PencarianLokasi", {
-                    config: {
-                      afterLocationSelected: () => {
-                        navigation.popTo("/LayananTambahan", {});
+                  if (!isKirimBuktiFisikDisabled) {
+                    navigation.push("/PencarianLokasi", {
+                      config: {
+                        afterLocationSelected: () => {
+                          navigation.popTo("/LayananTambahan", {});
+                        },
                       },
-                    },
-                    layout: {
-                      title: "Cari Lokasi Alamat Tujuan",
-                    },
-                  });
+                      layout: {
+                        title: "Cari Lokasi Alamat Tujuan",
+                      },
+                    });
+                  }
                 }}
               >
-                <Input
-                  disabled={isKirimBuktiFisikDisabled}
-                  placeholder="Masukkan Alamat Tujuan"
-                  name="namaLokasi"
-                  type="text"
-                  value={locationFormValues?.dataLokasi?.location?.name}
-                  // Ga perlu onChange ini input kan cuman redirect ke pencarian lokasi
-                  onChange={() => {}}
-                  errorMessage={locationFormErrors?.dataLokasi}
-                />
+                {locationFormValues?.dataLokasi?.location?.name ? (
+                  <div className="flex w-full flex-col gap-y-2">
+                    <div
+                      className={`min-h-[32px] w-full rounded-md border px-3 py-2 ${locationFormErrors?.dataLokasi ? "border-error-400" : "border-neutral-600"} ${isKirimBuktiFisikDisabled ? "cursor-not-allowed border-neutral-600 bg-neutral-200" : "bg-neutral-50"}`}
+                    >
+                      <div
+                        className={`break-words text-xs font-medium leading-[14.4px] max-[600px]:text-sm max-[600px]:font-semibold max-[600px]:leading-[15.4px] ${isKirimBuktiFisikDisabled ? "text-neutral-600" : "text-neutral-900"}`}
+                      >
+                        {locationFormValues?.dataLokasi?.location?.name}
+                      </div>
+                    </div>
+                    {locationFormErrors?.dataLokasi && (
+                      <span className="text-xs font-medium text-error-400">
+                        {locationFormErrors?.dataLokasi}
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <Input
+                    disabled={isKirimBuktiFisikDisabled}
+                    placeholder="Masukkan Alamat Tujuan"
+                    name="namaLokasi"
+                    type="text"
+                    value=""
+                    // Ga perlu onChange ini input kan cuman redirect ke pencarian lokasi
+                    onChange={() => {}}
+                    errorMessage={locationFormErrors?.dataLokasi}
+                  />
+                )}
               </div>
             </FormContainer>
 
@@ -260,7 +295,9 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                 onChange={(e) =>
                   locationSetField("detailLokasi", e.target.value)
                 }
-                errorMessage={locationFormErrors?.detailLokasi}
+                errorMessage={
+                  isLocationDisabled ? "" : locationFormErrors?.detailLokasi
+                }
                 supportiveText={`${locationFormValues.detailLokasi.length}/500`}
               />
             </FormContainer>
@@ -301,7 +338,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
               <span className="leading-[15.4px text-sm font-semibold text-neutral-900">
                 Kabupaten/Kota
               </span>
-              <span className="leading-[13.2px] flex h-2 items-center text-xs font-semibold text-black">
+              <span className="flex h-2 items-center text-xs font-semibold leading-[13.2px] text-black">
                 {locationFormValues.dataLokasi?.city?.name || "-"}
               </span>
             </div>
@@ -311,7 +348,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
               <span className="leading-[15.4px text-sm font-semibold text-neutral-900">
                 Provinsi
               </span>
-              <span className="leading-[13.2px] flex h-2 items-center text-xs font-semibold text-black">
+              <span className="flex h-2 items-center text-xs font-semibold leading-[13.2px] text-black">
                 {locationFormValues.dataLokasi?.province?.name || "-"}
               </span>
             </div>
@@ -378,16 +415,16 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                       {tambahanFormValues.opsiPegiriman ? (
                         <>
                           <span
-                            className={`leading-[15.4px] text-sm font-semibold ${isKirimBuktiFisikDisabled || isLocationDisabled ? "text-neutral-600" : "text-neutral-900"}`}
+                            className={`text-sm font-semibold leading-[15.4px] ${isKirimBuktiFisikDisabled || isLocationDisabled ? "text-neutral-600" : "text-neutral-900"}`}
                           >
                             {tambahanFormValues.opsiPegiriman.courier}
                           </span>
-                          <span className="leading-[13.2px] text-xs font-medium text-neutral-900">
+                          <span className="text-xs font-medium leading-[13.2px] text-neutral-900">
                             {tambahanFormValues.opsiPegiriman.price}
                           </span>
                         </>
                       ) : (
-                        <span className="leading-[15.4px] text-sm font-semibold text-primary-700">
+                        <span className="text-sm font-semibold leading-[15.4px] text-primary-700">
                           Pilih Opsi Pengiriman
                         </span>
                       )}
@@ -410,12 +447,12 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                       tambahanSetField("asuransiPengiriman", e.checked)
                     }
                     label="Pakai Asuransi Pengiriman (Rp10.000)"
-                    className="!leading-[15.6px] !text-xs !font-medium"
+                    className="!text-xs !font-medium !leading-[15.6px]"
                   />
                 ) : null}
               </div>
               {tambahanFormErrors?.opsiPegiriman ? (
-                <span className="leading-[13.2px] text-xs font-medium text-error-400">
+                <span className="text-xs font-medium leading-[13.2px] text-error-400">
                   {tambahanFormErrors?.opsiPegiriman}
                 </span>
               ) : null}
@@ -436,7 +473,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                 )
               }
             >
-              <span className="leading-[15.4px] flex items-center text-sm font-bold text-neutral-900">
+              <span className="flex items-center text-sm font-bold leading-[15.4px] text-neutral-900">
                 Layanan Tambahan Lainnya
               </span>
               <IconComponent
@@ -485,12 +522,12 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                           }}
                         />
                         <InfoBottomsheet title="Bantuan Tambahan">
-                          <p className="leading-[15.4px] text-sm font-medium text-neutral-900">
+                          <p className="text-sm font-medium leading-[15.4px] text-neutral-900">
                             {service.description}
                           </p>
                         </InfoBottomsheet>
                       </FormLabel>
-                      <span className="leading-[15.4px] ml-6 text-sm font-medium text-neutral-600">
+                      <span className="ml-6 text-sm font-medium leading-[15.4px] text-neutral-600">
                         {`Rp.${Number(service.price).toLocaleString("id-ID")}`}
                       </span>
                     </div>

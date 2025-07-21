@@ -148,7 +148,7 @@ export const TimelineContentWithButtonDate = ({
       <div className="flex flex-col gap-[2px]">
         <span
           className={cn(
-            "leading-[1.2] line-clamp-1 text-sm font-medium text-neutral-900",
+            "line-clamp-1 text-sm font-medium leading-[1.2] text-neutral-900",
             appearance?.titleClassname
           )}
         >
@@ -158,7 +158,7 @@ export const TimelineContentWithButtonDate = ({
           <button
             onClick={withButton.onClick}
             className={cn(
-              "leading-[1.2] h-2 w-fit text-xs font-medium text-primary-700",
+              "h-2 w-fit text-xs font-medium leading-[1.2] text-primary-700",
               appearance?.buttonClassname
             )}
           >
@@ -170,7 +170,7 @@ export const TimelineContentWithButtonDate = ({
       {withDate && (
         <span
           className={cn(
-            "leading-[1.2] block w-20 text-right text-xs font-medium text-neutral-500 md:w-fit",
+            "block w-20 text-right text-xs font-medium leading-[1.2] text-neutral-500 md:w-fit",
             appearance?.dateClassname
           )}
         >
@@ -185,7 +185,7 @@ export const TimelineContentAddress = ({ title, className, ...props }) => {
   return (
     <div
       className={cn(
-        "leading-[1.2] w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap pb-4 text-sm font-semibold text-neutral-900 md:text-xs md:font-medium",
+        "w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap pb-4 text-sm font-semibold leading-[1.2] text-neutral-900 md:text-xs md:font-medium",
         className
       )}
       {...props}

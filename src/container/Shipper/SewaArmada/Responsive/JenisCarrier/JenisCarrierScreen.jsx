@@ -48,7 +48,7 @@ const JenisCarrierScreen = () => {
               {/* Header */}
               <div className="mb-6 flex items-center justify-between">
                 <div className="flex items-center gap-1">
-                  <h2 className="leading-[15px] mt-0.5 text-sm font-bold text-black">
+                  <h2 className="mt-0.5 text-sm font-bold leading-[15px] text-black">
                     Rekomendasi Carrier Sesuai Muatan
                   </h2>
                   <InfoBottomsheet title="Rekomendasi Carrier">
@@ -75,7 +75,7 @@ const JenisCarrierScreen = () => {
           <div className="bg-white p-5">
             <div className="mb-6">
               {/* Section Title */}
-              <h2 className="leading-[15px] mb-4 text-sm font-bold text-black">
+              <h2 className="mb-4 text-sm font-bold leading-[15px] text-black">
                 Tidak Direkomendasikan
               </h2>
 
@@ -115,7 +115,7 @@ const CarrierItem = ({ carrier }) => {
       >
         <LightboxPreview image={carrier.image} alt={carrier.name} />
       </LightboxProvider>
-      <h3 className="leading-[15px] text-sm font-bold text-black">
+      <h3 className="text-sm font-bold leading-[15px] text-black">
         {carrier.name}
       </h3>
     </div>

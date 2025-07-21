@@ -31,7 +31,7 @@ export const Alert = ({
   return (
     <div
       className={cn(
-        "leading-[1.2] flex items-center gap-2 rounded-md text-xs font-medium text-neutral-900",
+        "flex items-center gap-2 rounded-md text-xs font-medium leading-[1.2] text-neutral-900",
         bgVariants[variant],
         alertSizes[size],
         className

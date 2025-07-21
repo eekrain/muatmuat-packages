@@ -151,7 +151,7 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
               />
               <span
                 className={cn(
-                  "leading-[14.4px] text-xs font-medium",
+                  "text-xs font-medium leading-[14.4px]",
                   informasiMuatan?.length === 0
                     ? "text-neutral-600"
                     : "text-neutral-900"
@@ -185,7 +185,7 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
               />
               <span
                 className={cn(
-                  "leading-[14.4px] text-xs font-medium",
+                  "text-xs font-medium leading-[14.4px]",
                   isTruckTypeIdDisabled
                     ? "text-neutral-600"
                     : "text-neutral-900"
@@ -212,9 +212,9 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
                   src="/icons/recommended-truck.svg"
                   size="medium"
                 />
-                <span className="leading-[16.8px] text-sm">
+                <span className="text-sm leading-[16.8px]">
                   {"Pakai rekomendasi bisa hemat "}
-                  <span className="leading-[14.4px] text-xs">{`Rp${recommendedTruckPriceDiff.toLocaleString("id-ID")}`}</span>
+                  <span className="text-xs leading-[14.4px]">{`Rp${recommendedTruckPriceDiff.toLocaleString("id-ID")}`}</span>
                 </span>
               </div>
               <IconComponent src="/icons/chevron-right.svg" />

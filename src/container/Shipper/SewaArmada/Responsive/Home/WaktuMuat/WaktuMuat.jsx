@@ -148,7 +148,7 @@ const WaktuMuatBottomsheet = () => {
           onClick={() => setIsBottomsheetOpen(true)}
         >
           <IconComponent src="/icons/calendar16.svg" />
-          <span className="leading-[15.4px] text-sm font-semibold">
+          <span className="text-sm font-semibold leading-[15.4px]">
             {loadTimeStart ? (
               <span className="text-neutral-900">{`${formatDate(loadTimeStart)} WIB`}</span>
             ) : (
@@ -160,7 +160,7 @@ const WaktuMuatBottomsheet = () => {
         </button>
         {showRangeOption ? (
           <>
-            <span className="leading-[13.2px] text-xs font-semibold text-neutral-600">
+            <span className="text-xs font-semibold leading-[13.2px] text-neutral-600">
               Sampai dengan
             </span>
             <button
@@ -168,7 +168,7 @@ const WaktuMuatBottomsheet = () => {
               onClick={() => setIsBottomsheetOpen(true)}
             >
               <IconComponent src="/icons/calendar16.svg" />
-              <span className="leading-[15.4px] text-sm font-semibold">
+              <span className="text-sm font-semibold leading-[15.4px]">
                 {loadTimeEnd ? (
                   <span className="text-neutral-900">{`${formatDate(loadTimeEnd)} WIB`}</span>
                 ) : (
@@ -197,7 +197,7 @@ const WaktuMuatBottomsheet = () => {
                 }
                 label="Instan"
               />
-              <p className="leading-[14.4px] pl-6 text-xs font-medium text-neutral-600">
+              <p className="pl-6 text-xs font-medium leading-[14.4px] text-neutral-600">
                 Pesan jasa angkut untuk penjemputan dan pengiriman segera atau
                 di Hari+1.
               </p>
@@ -214,7 +214,7 @@ const WaktuMuatBottomsheet = () => {
                 }
                 label="Terjadwal"
               />
-              <p className="leading-[14.4px] pl-6 text-xs font-medium text-neutral-600">
+              <p className="pl-6 text-xs font-medium leading-[14.4px] text-neutral-600">
                 Pesan jasa angkut untuk penjemputan dan pengiriman di Hari+2
                 sampai dengan Hari+30.
               </p>
@@ -238,7 +238,7 @@ const WaktuMuatBottomsheet = () => {
               minDate={minDate}
             />
             {bottomsheetFormErrors.loadTimeStart ? (
-              <span className="leading-[13.2px] text-xs font-medium text-error-400">
+              <span className="text-xs font-medium leading-[13.2px] text-error-400">
                 {bottomsheetFormErrors.loadTimeStart}
               </span>
             ) : null}
@@ -246,7 +246,7 @@ const WaktuMuatBottomsheet = () => {
             {bottomsheetFormValues.showRangeOption ? (
               <>
                 {/* Label "Sampai dengan" */}
-                <span className="leading-[13.2px] text-xs font-semibold text-neutral-600">
+                <span className="text-xs font-semibold leading-[13.2px] text-neutral-600">
                   Sampai dengan
                 </span>
 
@@ -263,7 +263,7 @@ const WaktuMuatBottomsheet = () => {
                   minDate={bottomsheetFormValues.loadTimeStart || minDate}
                 />
                 {bottomsheetFormErrors.loadTimeEnd ? (
-                  <span className="leading-[13.2px] text-xs font-medium text-error-400">
+                  <span className="text-xs font-medium leading-[13.2px] text-error-400">
                     {bottomsheetFormErrors.loadTimeEnd}
                   </span>
                 ) : null}
@@ -281,7 +281,7 @@ const WaktuMuatBottomsheet = () => {
                 handleChangeBottomsheetFormValues("showRangeOption", e.checked)
               }
             />
-            <p className="leading-[14.4px] pl-6 text-xs font-medium text-neutral-600">
+            <p className="pl-6 text-xs font-medium leading-[14.4px] text-neutral-600">
               Jika kamu memilih opsi ini, kamu dapat menentukan pukul mulai dan
               pukul akhir untuk penjemputan muatan.
             </p>

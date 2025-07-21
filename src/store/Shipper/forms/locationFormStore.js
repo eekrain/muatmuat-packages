@@ -187,6 +187,23 @@ export const useLocationFormStore = create(
         ) {
           errors.noHPPIC = "Format No. HP Penerima salah";
         } else if (
+          // Deteksi pola berurutan (1234567890, 0987654321)
+          /0123456789|1234567890|0987654321|9876543210/.test(
+            formValues.noHPPIC
+          ) ||
+          // Deteksi pola berulang berlebihan (1111111111, 2222222222, dll)
+          /^(\d)\1{7,}$/.test(formValues.noHPPIC) ||
+          // Deteksi pola berulang 2 digit (1212121212, 1231231231)
+          /^(\d{2})\1{3,}$/.test(formValues.noHPPIC) ||
+          // Deteksi pola berulang 3 digit (1231231231)
+          /^(\d{3})\1{2,}$/.test(formValues.noHPPIC) ||
+          // Deteksi pola berulang 4 digit (1234123412)
+          /^(\d{4})\1{1,}$/.test(formValues.noHPPIC) ||
+          // Deteksi digit yang sama berurutan lebih dari 4 kali
+          /(\d)\1{4,}/.test(formValues.noHPPIC)
+        ) {
+          errors.noHPPIC = "Format No. HP Penerima salah";
+        } else if (
           !formValues.noHPPIC.startsWith("0") &&
           !formValues.noHPPIC.startsWith("62")
         ) {
@@ -249,6 +266,22 @@ const validateNoHPPIC = (noHPPIC, formMode) => {
   if (noHPPIC.length < 8) return "No. HP PIC minimal 8 digit";
   if (noHPPIC.split("")?.every((char) => char === noHPPIC[0]))
     return `Format No. HP PIC lokasi ${formMode === "muat" ? "muat" : "bongkar"} salah`;
+  if (
+    // Deteksi pola berurutan (1234567890, 0987654321)
+    /0123456789|1234567890|0987654321|9876543210/.test(noHPPIC) ||
+    // Deteksi pola berulang berlebihan (1111111111, 2222222222, dll)
+    /^(\d)\1{7,}$/.test(noHPPIC) ||
+    // Deteksi pola berulang 2 digit (1212121212, 1231231231)
+    /^(\d{2})\1{3,}$/.test(noHPPIC) ||
+    // Deteksi pola berulang 3 digit (1231231231)
+    /^(\d{3})\1{2,}$/.test(noHPPIC) ||
+    // Deteksi pola berulang 4 digit (1234123412)
+    /^(\d{4})\1{1,}$/.test(noHPPIC) ||
+    // Deteksi digit yang sama berurutan lebih dari 4 kali
+    /(\d)\1{4,}/.test(noHPPIC)
+  ) {
+    return `Format No. HP PIC lokasi ${formMode === "muat" ? "muat" : "bongkar"} tidak masuk akal`;
+  }
   if (!noHPPIC.startsWith("0") && !noHPPIC.startsWith("62"))
     return `Format No. HP PIC lokasi ${formMode === "muat" ? "muat" : "bongkar"} salah`;
 };

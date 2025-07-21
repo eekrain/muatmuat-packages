@@ -21,7 +21,7 @@ const PageTitle = ({ className, href = null, children }) => {
           }
         }}
       />
-      <h1 className="text-xl font-bold capsize">{children}</h1>
+      <h1 className="capsize text-xl font-bold">{children}</h1>
     </div>
   );
 };

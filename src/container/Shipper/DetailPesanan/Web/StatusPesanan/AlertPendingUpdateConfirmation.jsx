@@ -19,10 +19,10 @@ export const AlertPendingUpdateConfirmation = () => {
       </div>
 
       <div className="flex flex-col gap-y-3">
-        <h3 className="leading-[21.6px] text-lg font-semibold text-neutral-900">
+        <h3 className="text-lg font-semibold leading-[21.6px] text-neutral-900">
           Perubahan lokasi bongkar memerlukan waktu untuk konfirmasi.
         </h3>
-        <p className="leading-[16.8px] text-sm font-medium text-neutral-900">
+        <p className="text-sm font-medium leading-[16.8px] text-neutral-900">
           Terima kasih atas kesabaran kamu.
         </p>
       </div>

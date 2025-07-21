@@ -164,7 +164,7 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
           <ModalHeader type="muattrans" size="small" />
           <div className="flex w-[386px] flex-col items-center justify-center gap-6 px-6 py-9">
             {/* Title */}
-            <h2 className="leading-[19.2px] w-full text-center text-base font-bold text-black">
+            <h2 className="w-full text-center text-base font-bold leading-[19.2px] text-black">
               Batalkan Pesanan
             </h2>
 
@@ -228,7 +228,7 @@ const CancelContentWhenPrepareFleet = ({ isAgreed, setIsAgreed }) => {
   return (
     <>
       {/* Description */}
-      <p className="leading-[15.4px] w-full text-center text-sm font-medium text-black">
+      <p className="w-full text-center text-sm font-medium leading-[15.4px] text-black">
         Apakah Anda yakin ingin membatalkan pesanan? Sebelum melakukan
         pembatalan pesanan, pastikan Anda sudah membaca{" "}
         <a
@@ -250,7 +250,7 @@ const CancelContentWhenPrepareFleet = ({ isAgreed, setIsAgreed }) => {
           value="terms_agreement"
           label=""
         >
-          <span className="leading-[14.4px] text-xs font-medium text-black">
+          <span className="text-xs font-medium leading-[14.4px] text-black">
             Ya, Saya setuju dengan syarat dan ketentuan tersebut
           </span>
         </Checkbox>
@@ -263,7 +263,7 @@ const CancelContentWhenNotPrepareFleet = ({ isAgreed, setIsAgreed }) => {
   return (
     <>
       {/* Description */}
-      <p className="leading-[15.4px] w-full text-center text-sm font-medium text-black">
+      <p className="w-full text-center text-sm font-medium leading-[15.4px] text-black">
         Pembatalan pesanan akan dikenakan biaya admin sebesar Rp75.000/unit.
         <br />
         <br />
@@ -278,7 +278,7 @@ const CancelContentWhenNotPrepareFleet = ({ isAgreed, setIsAgreed }) => {
           value="terms_agreement"
           label=""
         >
-          <span className="leading-[14.4px] text-xs font-medium text-black">
+          <span className="text-xs font-medium leading-[14.4px] text-black">
             Saya menyetujui{" "}
             <a
               href="https://faq.muatmuat.com/pusat-bantuan"

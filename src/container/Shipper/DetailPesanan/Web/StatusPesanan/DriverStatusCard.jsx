@@ -177,7 +177,7 @@ export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
                       driverId={driver.driverId}
                     >
                       <button className="flex items-center gap-x-1">
-                        <span className="leading-[14.4px] text-xs font-medium text-primary-700 capsize">
+                        <span className="capsize text-xs font-medium leading-[14.4px] text-primary-700">
                           Tampilkan QR Code
                         </span>
                         <IconComponent

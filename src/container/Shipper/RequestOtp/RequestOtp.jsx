@@ -130,7 +130,7 @@ const RequestOtp = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
                 loading="eager"
               />
             </div>
-            <div className="leading-[14.4px] mt-[6px] text-xs font-bold">
+            <div className="mt-[6px] text-xs font-bold leading-[14.4px]">
               {t("labelEasyWayTogether")}
             </div>
           </div>
@@ -175,7 +175,7 @@ const RequestOtp = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
                     : "/icons/success-toast.svg"
                 }
               />
-              <span className="leading-[14.4px] text-xs font-semibold">
+              <span className="text-xs font-semibold leading-[14.4px]">
                 {t(notification.message)}
               </span>
             </div>
@@ -185,11 +185,11 @@ const RequestOtp = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
           <div className="flex w-full flex-col items-center">
             {/* Email verification message */}
             {formValues?.verificationMethod === "whatsapp" ? (
-              <div className="leading-[19.2px] max-w-[444px] text-center text-base font-medium text-neutral-50">
+              <div className="max-w-[444px] text-center text-base font-medium leading-[19.2px] text-neutral-50">
                 {t("descWhatsAppOTP")}
               </div>
             ) : (
-              <div className="leading-[19.2px] max-w-[240px] text-center text-base font-medium text-neutral-50">
+              <div className="max-w-[240px] text-center text-base font-medium leading-[19.2px] text-neutral-50">
                 {t("labelCheckEmail")}
               </div>
             )}
@@ -198,10 +198,10 @@ const RequestOtp = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
             <div className="mt-6 flex w-full flex-col items-center">
               <div className="flex w-full flex-wrap items-center justify-center gap-6">
                 <div className="flex items-center gap-3">
-                  <div className="leading-[16.8px] text-sm font-bold text-neutral-50">
+                  <div className="text-sm font-bold leading-[16.8px] text-neutral-50">
                     {`${formValues?.verificationMethod === "whatsapp" ? t("labelOTPPhoneNumber") : t("labelOtpIsSendToEmail")}`}
                   </div>
-                  <div className="leading-[16.8px] max-w-[176px] truncate text-sm font-semibold text-[#EBEBEB]">
+                  <div className="max-w-[176px] truncate text-sm font-semibold leading-[16.8px] text-[#EBEBEB]">
                     {formValues?.verificationMethod === "whatsapp"
                       ? formValues?.verificationData.replace(/-/g, "")
                       : formValues?.verificationData}
@@ -210,7 +210,7 @@ const RequestOtp = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
               </div>
 
               <div className="mt-3 flex items-center justify-center gap-3">
-                <label className="leading-[16.8px] w-[102px] text-sm font-bold text-neutral-50">
+                <label className="w-[102px] text-sm font-bold leading-[16.8px] text-neutral-50">
                   {t("labelEnterOTP")}
                 </label>
                 <InputOTP
@@ -233,7 +233,7 @@ const RequestOtp = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
 
             {/* Warning message */}
             {formValues?.verificationMethod === "email" ? (
-              <div className="leading-[14.4px] mt-6 max-w-[319px] rounded-md bg-[#FFF1A5] px-4 py-3 text-center text-xs font-medium text-neutral-900">
+              <div className="mt-6 max-w-[319px] rounded-md bg-[#FFF1A5] px-4 py-3 text-center text-xs font-medium leading-[14.4px] text-neutral-900">
                 {`${t("labelIfOtpNotFound")} `}
                 <span className="font-bold">{t("labelSpam")}</span>,{" "}
                 <span className="font-bold">{t("labelSosial")}</span>,{" "}
@@ -244,7 +244,7 @@ const RequestOtp = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
             ) : null}
 
             {/* Timer message */}
-            <div className="leading-[19.2px] mt-6 text-center text-base font-medium text-neutral-50">
+            <div className="mt-6 text-center text-base font-medium leading-[19.2px] text-neutral-50">
               {`${t("labelOtpCodeExpiredIn")} `}
               <span className="font-bold">{countdown}</span>
             </div>

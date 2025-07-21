@@ -64,15 +64,15 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
   return (
     <div className="flex items-end gap-x-3">
       <div className="grid flex-1 grid-cols-[220px_1fr] items-center gap-x-3 gap-y-2">
-        <span className="leading-[1.2] text-xs font-medium text-neutral-600">
+        <span className="text-xs font-medium leading-[1.2] text-neutral-600">
           Kode Pesanan
         </span>
 
-        <span className="leading-[1.2] text-xs font-medium text-neutral-600">
+        <span className="text-xs font-medium leading-[1.2] text-neutral-600">
           Status Pesanan
         </span>
 
-        <span className="leading-[16.8px] text-sm font-bold text-neutral-900">
+        <span className="text-sm font-bold leading-[16.8px] text-neutral-900">
           {dataStatusPesanan.orderCode}
         </span>
 
@@ -104,7 +104,7 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
             <Modal closeOnOutsideClick>
               <ModalTrigger>
                 <button className="flex items-center gap-x-1">
-                  <span className="leading-[14.4px] text-xs font-medium text-primary-700">
+                  <span className="text-xs font-medium leading-[14.4px] text-primary-700">
                     Lihat Bukti Pengiriman
                   </span>
                   <IconComponent
@@ -115,20 +115,20 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
               </ModalTrigger>
               <ModalContent type="muatmuat">
                 <div className="flex w-[472px] flex-col gap-y-6 px-6 py-8">
-                  <h1 className="leading-[19.2px] text-center text-base font-bold text-neutral-900">
+                  <h1 className="text-center text-base font-bold leading-[19.2px] text-neutral-900">
                     Bukti Pengiriman Dokumen
                   </h1>
                   <div className="flex flex-col gap-y-4">
                     <div className="flex flex-col gap-y-3">
-                      <span className="leading-[14.4px] text-xs font-semibold text-neutral-900">
+                      <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
                         Tanggal
                       </span>
-                      <span className="leading-[14.4px] text-xs font-medium text-neutral-600">
+                      <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
                         04 Okt 2024 18:00 WIB
                       </span>
                     </div>
                     <div className="flex flex-col gap-y-3">
-                      <span className="leading-[14.4px] text-xs font-semibold text-neutral-900">
+                      <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
                         Foto Bukti Pengiriman
                       </span>
                       <div className="flex items-center gap-x-4">
@@ -155,10 +155,10 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
                     {/* LOGIC BUAT ADA CATATAN ATAU TIDAK */}
                     {true ? (
                       <div className="flex flex-col gap-y-3">
-                        <span className="leading-[14.4px] text-xs font-semibold text-neutral-900">
+                        <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
                           Catatan
                         </span>
-                        <p className="leading-[14.4px] text-xs font-medium text-neutral-600">
+                        <p className="text-xs font-medium leading-[14.4px] text-neutral-600">
                           Kami informasikan bahwa dokumen telah kami kirim dan
                           saat ini sudah diterima oleh Bapak Ervin Sudjatmiko.
                           Mohon konfirmasi apabila ada hal yang perlu
@@ -242,7 +242,7 @@ const ModalAllDriver = ({
   return (
     <Modal open={open} onOpenChange={onOpenChange} closeOnOutsideClick>
       <ModalContent className="p-6">
-        <h2 className="leading-[1.2] mb-3 text-center text-base font-bold">
+        <h2 className="mb-3 text-center text-base font-bold leading-[1.2]">
           Semua Driver
         </h2>
 

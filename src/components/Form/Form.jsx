@@ -21,7 +21,7 @@ export const FormLabel = ({
 }) => (
   <div
     className={cn(
-      "leading-[1.1] md:leading-[1.2] flex w-full items-center gap-1 text-sm font-semibold text-neutral-900 md:h-4 md:w-[174px] md:text-xs md:font-medium md:text-neutral-600",
+      "flex w-full items-center gap-1 text-sm font-semibold leading-[1.1] text-neutral-900 md:h-4 md:w-[174px] md:text-xs md:font-medium md:leading-[1.2] md:text-neutral-600",
       variant === "big" && "md:h-8",
       className
     )}

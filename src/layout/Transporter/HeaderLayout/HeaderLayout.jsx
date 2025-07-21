@@ -131,13 +131,13 @@ const HeaderLayout = ({
         </div>
         <div className="flex items-center gap-x-6">
           <Link
-            className="leading-[12px] text-xs font-medium"
+            className="text-xs font-medium leading-[12px]"
             href={process.env.NEXT_PUBLIC_INTERNAL_WEB}
           >
             Kembali ke muatmuat
           </Link>
           <Link
-            className="leading-[12px] text-xs font-medium"
+            className="text-xs font-medium leading-[12px]"
             href={`${
               process.env.NEXT_PUBLIC_INTERNAL_WEB
             }traffic/redirect_faq?from=gen`}
@@ -151,7 +151,7 @@ const HeaderLayout = ({
                 {menuNotifications.map((menu, key) => (
                   <Link href="#" className="relative" key={key}>
                     <div className="absolute bottom-3 left-3 flex h-3.5 items-center rounded-[30px] border-[1.5px] border-neutral-50 bg-buyer-seller-900 px-1.5">
-                      <span className="leading-[8px] text-xxs font-medium text-neutral-50">
+                      <span className="text-xxs font-medium leading-[8px] text-neutral-50">
                         {menu.count}
                       </span>
                     </div>
@@ -171,7 +171,7 @@ const HeaderLayout = ({
       </div>
 
       {dataUser?.Email && (
-        <div className="leading-[1] flex h-8 items-center gap-6 bg-muat-trans-secondary-900 px-10 text-xs font-medium text-neutral-50">
+        <div className="flex h-8 items-center gap-6 bg-muat-trans-secondary-900 px-10 text-xs font-medium leading-[1] text-neutral-50">
           <span className="block">Menu :</span>
 
           {navigationMenu.map((item) => {

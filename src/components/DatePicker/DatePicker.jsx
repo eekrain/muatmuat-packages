@@ -165,7 +165,7 @@ const DatePicker = ({
         >
           <ImageComponent src="/icons/calendar16.svg" width={16} height={16} />
           <span
-            className={`leading-[14.4px] flex-1 text-xs font-medium ${selectedDate ? "text-neutral-900" : "text-neutral-600"}`}
+            className={`flex-1 text-xs font-medium leading-[14.4px] ${selectedDate ? "text-neutral-900" : "text-neutral-600"}`}
           >
             {selectedDate ? format(selectedDate, "dd MMM yyyy") : placeholder}
           </span>

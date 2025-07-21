@@ -240,7 +240,7 @@ export default function ImageUploaderWeb({
               width={20}
               height={20}
             />
-            <span className="leading-[14.4px] text-xs font-semibold text-neutral-900">
+            <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
               Mengunggah...
             </span>
           </>
@@ -250,7 +250,7 @@ export default function ImageUploaderWeb({
               <>
                 <IconComponent size="small" src="/icons/add_image.svg" />
                 {isBig ? (
-                  <span className="leading-[14.4px] text-xs font-semibold text-neutral-900 group-hover:text-primary-700">
+                  <span className="text-xs font-semibold leading-[14.4px] text-neutral-900 group-hover:text-primary-700">
                     {renderUploadText}
                   </span>
                 ) : null}
@@ -264,7 +264,7 @@ export default function ImageUploaderWeb({
                   src="/icons/restart24.svg"
                 />
                 {isBig ? (
-                  <span className="leading-[14.4px] text-xs font-semibold text-error-400 group-hover:text-primary-700">
+                  <span className="text-xs font-semibold leading-[14.4px] text-error-400 group-hover:text-primary-700">
                     {renderErrorText}
                   </span>
                 ) : null}

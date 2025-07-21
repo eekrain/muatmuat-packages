@@ -303,7 +303,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
             className="icon-fill-secondary-400"
           />
           <div className="flex flex-1 items-center gap-1">
-            <p className="leading-[14.4px] text-xs font-medium text-neutral-900">
+            <p className="text-xs font-medium leading-[14.4px] text-neutral-900">
               Jika ada kendala pada persiapan / perjalanan ke lokasi muat,
               pengiriman mungkin tidak bisa dilanjutkan. Kami akan tetap
               berusaha memberikan solusi terbaik.
@@ -335,13 +335,13 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
 
           {/* Info Text */}
           <div className="flex flex-1 flex-col gap-3">
-            <h3 className="leading-[15.4px] text-sm font-semibold text-neutral-900">
+            <h3 className="text-sm font-semibold leading-[15.4px] text-neutral-900">
               Box - Colt Diesel Engkel
             </h3>
-            <p className="leading-[15.4px] text-sm font-medium text-neutral-900">
+            <p className="text-sm font-medium leading-[15.4px] text-neutral-900">
               Kebutuhan : 1 Unit
             </p>
-            <p className="leading-[15.4px] text-sm font-medium text-neutral-900">
+            <p className="text-sm font-medium leading-[15.4px] text-neutral-900">
               Estimasi Jarak : 178 km
             </p>
           </div>
@@ -372,12 +372,12 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
             </div>
 
             {formErrors.cargoPhotos && (
-              <p className="leading-[14.4px] text-xs font-medium text-error-400">
+              <p className="text-xs font-medium leading-[14.4px] text-error-400">
                 {formErrors.cargoPhotos}
               </p>
             )}
 
-            <p className="leading-[14.4px] text-xs font-medium text-neutral-600">
+            <p className="text-xs font-medium leading-[14.4px] text-neutral-600">
               Maksimal unggah 4 foto muatan dengan format .jpg/.jpeg/.png, besar
               file maks. 10MB
             </p>
@@ -422,14 +422,14 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
         <div className="flex flex-col gap-y-4 bg-neutral-50 p-4">
           {/* Header */}
           <div className="flex items-center gap-1">
-            <h2 className="leading-[15.4px] text-sm font-bold text-neutral-900">
+            <h2 className="text-sm font-bold leading-[15.4px] text-neutral-900">
               Badan Usaha Pemesan
             </h2>
-            <span className="leading-[10px] text-xxs font-semibold text-neutral-900">
+            <span className="text-xxs font-semibold leading-[10px] text-neutral-900">
               (Opsional)
             </span>
             <InfoBottomsheet title="Badan Usaha Pemesan">
-              <p className="leading-[15.4px] text-center text-sm font-medium text-neutral-900">
+              <p className="text-center text-sm font-medium leading-[15.4px] text-neutral-900">
                 Jika kamu mencentang opsi ini kamu akan dikenakan PPh 23
                 terhadap pembayaran sewa jasa angkut yang kamu lakukan
               </p>
@@ -448,7 +448,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
             <div className="mt-2 flex flex-col gap-y-4">
               {/* Field Nama Badan Usaha */}
               <div className="flex flex-col gap-3">
-                <label className="leading-[15.4px] text-sm font-semibold text-neutral-900">
+                <label className="text-sm font-semibold leading-[15.4px] text-neutral-900">
                   Nama Badan Usaha/Perusahaan*
                 </label>
                 <Input
@@ -467,7 +467,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
 
               {/* Field Nomor NPWP */}
               <div className="flex flex-col gap-3">
-                <label className="leading-[15.4px] text-sm font-semibold text-neutral-900">
+                <label className="text-sm font-semibold leading-[15.4px] text-neutral-900">
                   Nomor NPWP*
                 </label>
                 <Input
@@ -508,13 +508,13 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
                 src={selectedOpsiPembayaran.icon}
                 alt="Example image"
               />
-              <span className="leading-[13.2px] text-xs font-semibold text-neutral-900">
+              <span className="text-xs font-semibold leading-[13.2px] text-neutral-900">
                 {selectedOpsiPembayaran.name}
               </span>
             </div>
           ) : null}
           {formErrors?.paymentMethodId ? (
-            <span className="leading-[13.2px] text-xs font-medium text-error-400">
+            <span className="text-xs font-medium leading-[13.2px] text-error-400">
               {formErrors.paymentMethodId}
             </span>
           ) : null}
@@ -530,14 +530,14 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
           <div className="flex flex-col gap-6 border-b border-neutral-400 pb-6">
             {/* Biaya Pesan Jasa Angkut */}
             <div className="flex flex-col gap-y-4">
-              <h3 className="leading-[16.8px] text-sm font-semibold text-neutral-900">
+              <h3 className="text-sm font-semibold leading-[16.8px] text-neutral-900">
                 Biaya Pesan Jasa Angkut
               </h3>
               <div className="flex items-start justify-between gap-3">
-                <span className="leading-[14.4px] flex-1 text-xs font-medium text-neutral-600">
+                <span className="flex-1 text-xs font-medium leading-[14.4px] text-neutral-600">
                   Nominal Pesan Jasa Angkut (1 Unit)
                 </span>
-                <span className="leading-[14.4px] text-right text-xs font-medium text-neutral-900">
+                <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
                   Rp950.000
                 </span>
               </div>
@@ -545,14 +545,14 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
 
             {/* Biaya Asuransi */}
             <div className="flex flex-col gap-y-4">
-              <h3 className="leading-[16.8px] text-sm font-semibold text-neutral-900">
+              <h3 className="text-sm font-semibold leading-[16.8px] text-neutral-900">
                 Biaya Asuransi Barang
               </h3>
               <div className="flex items-start justify-between gap-3">
-                <span className="leading-[14.4px] text-xs font-medium text-neutral-600">
+                <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
                   Nominal Premi Asuransi (1 Unit)
                 </span>
-                <span className="leading-[14.4px] text-right text-xs font-medium text-neutral-900">
+                <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
                   Rp10.000
                 </span>
               </div>
@@ -560,27 +560,27 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
 
             {/* Biaya Layanan Tambahan */}
             <div className="flex flex-col gap-y-4">
-              <h3 className="leading-[16.8px] text-sm font-semibold text-neutral-900">
+              <h3 className="text-sm font-semibold leading-[16.8px] text-neutral-900">
                 Biaya Layanan Tambahan
               </h3>
               <div className="flex items-start justify-between gap-3">
                 <div className="flex flex-col gap-2">
-                  <span className="leading-[14.4px] text-xs font-medium text-neutral-600">
+                  <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
                     Nominal Kirim Bukti Fisik Penerimaan Barang
                   </span>
-                  <button className="leading-[13.2px] text-left text-xs font-semibold text-primary-700">
+                  <button className="text-left text-xs font-semibold leading-[13.2px] text-primary-700">
                     Lihat Detail Pengiriman Dokumen
                   </button>
                 </div>
-                <span className="leading-[14.4px] text-right text-xs font-medium text-neutral-900">
+                <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
                   Rp35.000
                 </span>
               </div>
               <div className="flex items-start justify-between gap-3">
-                <span className="leading-[14.4px] text-xs font-medium text-neutral-600">
+                <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
                   Nominal Bantuan Tambahan
                 </span>
-                <span className="leading-[14.4px] text-right text-xs font-medium text-neutral-900">
+                <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
                   Rp100.000
                 </span>
               </div>
@@ -588,25 +588,25 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
 
             {/* Diskon Voucher */}
             <div className="flex flex-col gap-y-4">
-              <h3 className="leading-[16.8px] text-sm font-semibold text-neutral-900">
+              <h3 className="text-sm font-semibold leading-[16.8px] text-neutral-900">
                 Diskon Voucher
               </h3>
               <div className="flex items-start justify-between gap-3">
                 {selectedVoucher && voucherDiscount > 0 ? (
                   <>
-                    <span className="leading-[14.4px] text-xs font-medium text-neutral-600">
+                    <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
                       Voucher ({selectedVoucher.code})
                     </span>
-                    <span className="leading-[14.4px] text-right text-xs font-medium text-error-400">
+                    <span className="text-right text-xs font-medium leading-[14.4px] text-error-400">
                       -{formatCurrency(voucherDiscount)}
                     </span>
                   </>
                 ) : (
                   <>
-                    <span className="leading-[14.4px] text-xs font-medium text-neutral-600">
+                    <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
                       -
                     </span>
-                    <span className="leading-[14.4px] text-right text-xs font-medium text-error-400">
+                    <span className="text-right text-xs font-medium leading-[14.4px] text-error-400">
                       -
                     </span>
                   </>
@@ -618,22 +618,22 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
           {/* Biaya Lainnya Container */}
           <div className="flex flex-col gap-6 border-b border-neutral-400 pb-6">
             <div className="flex flex-col gap-y-4">
-              <h3 className="leading-[16.8px] text-sm font-semibold text-neutral-900">
+              <h3 className="text-sm font-semibold leading-[16.8px] text-neutral-900">
                 Biaya Lainnya
               </h3>
               <div className="flex items-start justify-between gap-3">
-                <span className="leading-[14.4px] text-xs font-medium text-neutral-600">
+                <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
                   Admin Layanan
                 </span>
-                <span className="leading-[14.4px] text-right text-xs font-medium text-neutral-900">
+                <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
                   Rp10.000
                 </span>
               </div>
               <div className="flex items-start justify-between gap-3">
-                <span className="leading-[14.4px] text-xs font-medium text-neutral-600">
+                <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
                   Pajak
                 </span>
-                <span className="leading-[14.4px] text-right text-xs font-medium text-neutral-900">
+                <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
                   {isBusinessEntity ? formatCurrency(21300) : "-"}
                 </span>
               </div>
@@ -642,10 +642,10 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
 
           {/* Total Biaya */}
           <div className="flex items-start justify-between gap-4">
-            <span className="leading-[16.8px] text-sm font-semibold text-neutral-900">
+            <span className="text-sm font-semibold leading-[16.8px] text-neutral-900">
               Total Biaya
             </span>
-            <span className="leading-[15.4px] text-right text-sm font-semibold text-neutral-900">
+            <span className="text-right text-sm font-semibold leading-[15.4px] text-neutral-900">
               {formatCurrency(
                 baseOrderAmount +
                   10000 + // Biaya Asuransi
@@ -673,7 +673,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
             ) : (
               <IconComponent src="/icons/voucher24.svg" size="medium" />
             )}
-            <span className="leading-[15.4px] text-sm font-semibold text-primary-700">
+            <span className="text-sm font-semibold leading-[15.4px] text-primary-700">
               {selectedVoucher
                 ? "1 Voucher Terpakai"
                 : "Makin hemat pakai voucher"}
@@ -698,15 +698,15 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
             <div className="flex max-h-[calc(75vh_-_54px)] w-full flex-col gap-y-4 overflow-y-auto bg-white px-4 py-6">
               {/* Waktu Muat */}
               <OrderSummarySection className="gap-y-4 font-semibold text-neutral-900">
-                <h4 className="leading-[15.4px] text-sm">Waktu Muat</h4>
-                <span className="leading-[13.2px] text-xs">{`${formatDate(loadTimeStart)}${showRangeOption ? ` s/d ${formatDate(loadTimeEnd)}` : ""}`}</span>
+                <h4 className="text-sm leading-[15.4px]">Waktu Muat</h4>
+                <span className="text-xs leading-[13.2px]">{`${formatDate(loadTimeStart)}${showRangeOption ? ` s/d ${formatDate(loadTimeEnd)}` : ""}`}</span>
               </OrderSummarySection>
               <OrderSummarySection className="gap-y-4 text-neutral-900">
                 <div className="flex items-center justify-between">
-                  <h4 className="leading-[15.4px] text-sm font-semibold">
+                  <h4 className="text-sm font-semibold leading-[15.4px]">
                     Rute
                   </h4>
-                  <span className="leading-[13.2px] text-xs font-medium">
+                  <span className="text-xs font-medium leading-[13.2px]">
                     {"Estimasi 178 km"}
                   </span>
                 </div>
@@ -758,7 +758,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
                 </TimelineContainer>
               </OrderSummarySection>
               <OrderSummarySection className="gap-y-3 text-neutral-900">
-                <h4 className="leading-[15.4px] text-sm font-semibold">
+                <h4 className="text-sm font-semibold leading-[15.4px]">
                   Informasi Armada
                 </h4>
                 <div className="flex items-center gap-x-3">
@@ -771,24 +771,24 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
                     />
                   </div>
                   <div className="flex flex-col gap-y-3">
-                    <span className="leading-[15.4px] text-sm font-semibold">
+                    <span className="text-sm font-semibold leading-[15.4px]">
                       Box - Colt Diesel Engkel
                     </span>
-                    <span className="leading-[15.4px] text-sm font-medium">
+                    <span className="text-sm font-medium leading-[15.4px]">
                       {`Kebutuhan : ${truckCount} Unit`}
                     </span>
                   </div>
                 </div>
               </OrderSummarySection>
               <OrderSummarySection className="gap-y-4 text-neutral-900">
-                <h4 className="leading-[15.4px] text-sm font-semibold">
+                <h4 className="text-sm font-semibold leading-[15.4px]">
                   Informasi Muatan
                 </h4>
                 <div className="flex flex-col gap-y-3">
                   {informasiMuatan.slice(0, 2).map((item, key) => (
                     <div className="flex items-center gap-x-2" key={key}>
                       <IconComponent src="/icons/muatan16.svg" />
-                      <span className="leading-[13.2px] text-xs font-medium text-neutral-900">
+                      <span className="text-xs font-medium leading-[13.2px] text-neutral-900">
                         {`${item.namaMuatan.label} `}
                         <span className="text-neutral-600">{`(${item.beratMuatan.berat.toLocaleString("id-ID")} ${item.beratMuatan.unit})`}</span>
                       </span>
@@ -802,7 +802,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
                       >
                         <BottomSheetTrigger asChild>
                           <button
-                            className="leading-[13.2px] text-xs font-semibold text-primary-700"
+                            className="text-xs font-semibold leading-[13.2px] text-primary-700"
                             onClick={() =>
                               setIsInformasiMuatanBottomsheetOpen(true)
                             }
@@ -821,7 +821,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
                                 key={key}
                               >
                                 <IconComponent src="/icons/muatan16.svg" />
-                                <span className="leading-[13.2px] text-xs font-medium text-neutral-900">
+                                <span className="text-xs font-medium leading-[13.2px] text-neutral-900">
                                   {`${item.namaMuatan.label} `}
                                   <span className="text-neutral-600">{`(${item.beratMuatan.berat.toLocaleString("id-ID")} ${item.beratMuatan.unit})`}</span>
                                 </span>
@@ -834,7 +834,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
                   ) : null}
                 </div>
               </OrderSummarySection>
-              <div className="leading-[13.2px] text-xs font-medium text-neutral-900">
+              <div className="text-xs font-medium leading-[13.2px] text-neutral-900">
                 {"*Dengan memesan jasa angkut ini, kamu telah menyetujui "}
                 <span className="font-semibold text-primary-700">
                   Syarat dan Ketentuan Muatrans
