@@ -61,7 +61,7 @@ const apiResultActiveVehicles = {
           },
           assignedDriver: {
             id: "drv-002",
-            fullName: "Jane Smith",
+            fullName: "Sonya Putri Safira",
             whatsappNumber: "081234567891",
           },
           status: "WAITING_LOADING_TIME",
