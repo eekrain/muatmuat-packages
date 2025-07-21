@@ -136,13 +136,13 @@ const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
   ];
 
   const handleSearch = (value) => {
-    console.log("Search:", value);
+    // Search functionality
     setSearchValue(value);
     setCurrentPage(1); // Reset to first page when searching
   };
 
   const handleFilter = (newFilters) => {
-    console.log("Filters:", newFilters);
+    // Apply filters
     setFilters(newFilters);
     setCurrentPage(1); // Reset to first page when filtering
   };
@@ -196,17 +196,16 @@ const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
 
   const handleSort = (key, direction) => {
     setSortConfig({ key, direction });
-    console.log(`Sorting by ${key} in ${direction} order`);
+    // Sorting by key and direction
     // TODO: Implement actual sorting logic here
     // This would typically involve calling an API with sort parameters
   };
 
   const handleStatusChange = (status) => {
-    console.log("DisplayOptionsBar - Status clicked:", status);
-    console.log("Previous status:", selectedStatus);
+    // Status clicked
     setSelectedStatus(status);
     onStatusChange?.(status);
-    console.log("New status set to:", status);
+    // New status set
   };
 
   // Add warning indicators to rows
@@ -219,13 +218,10 @@ const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
 
   // Prepare display options for status filter
   const getDisplayOptions = () => {
-    console.log("getDisplayOptions called with data:", {
-      status: data?.dataFilter?.status,
-      summary: data?.summary,
-    });
+    // Get display options called
 
     if (!data?.dataFilter?.status) {
-      console.log("No status data available in dataFilter");
+      // No status data available in dataFilter
       return null;
     }
 
@@ -257,7 +253,7 @@ const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
       };
     });
 
-    console.log("Status options with summary counts:", statusOptions);
+    // Status options with summary counts
 
     return {
       statusOptions,
