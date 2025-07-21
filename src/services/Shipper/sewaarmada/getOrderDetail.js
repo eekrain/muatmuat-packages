@@ -3,7 +3,7 @@ import useSWR from "swr";
 import { fetcherMuatrans } from "@/lib/axios";
 import { normalizeOrderDetail } from "@/lib/normalizers/sewaarmada";
 
-export const getOrderDetail = async (url) => {
+export const getOrderDetail = async (url, { type }) => {
   const orderDetail = await fetcherMuatrans.get(url);
 
   const documentDeliveryService =
@@ -19,13 +19,16 @@ export const getOrderDetail = async (url) => {
   }
 
   return {
-    orderType: "INSTANT",
+    orderType: "INSTANT", // Use the provided type or default to "INSTANT"
     formValues: normalizeOrderDetail(
       orderDetail?.data?.Data,
-      tempShippingOptions
+      tempShippingOptions,
+      type
     ),
   };
 };
 
-export const useGetOrderDetail = (orderId) =>
-  useSWR(orderId ? `v1/orders/${orderId}/reorder` : null, getOrderDetail);
+export const useGetOrderDetail = (orderId, type) =>
+  useSWR(orderId ? `v1/orders/${orderId}/reorder` : null, (url) =>
+    getOrderDetail(url, { type })
+  );
