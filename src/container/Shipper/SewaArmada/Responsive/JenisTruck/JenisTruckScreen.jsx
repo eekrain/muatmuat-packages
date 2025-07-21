@@ -78,7 +78,7 @@ const JenisTruckScreen = ({ trucks }) => {
               {/* Header */}
               <div className="flex w-full items-center justify-between">
                 <div className="flex items-center gap-1">
-                  <h2 className="text-[14px] font-bold leading-[15.4px] text-black">
+                  <h2 className="text-sm font-bold leading-[15.4px] text-black">
                     Rekomendasi Truk Sesuai Muatan
                   </h2>
                   <InfoBottomsheet title="Rekomendasi Truk ">
@@ -110,7 +110,7 @@ const JenisTruckScreen = ({ trucks }) => {
             <div className="flex flex-col gap-6">
               {/* Header */}
               <div className="flex flex-col gap-4">
-                <h2 className="text-[14px] font-bold leading-[15.4px] text-black">
+                <h2 className="text-sm font-bold leading-[15.4px] text-black">
                   Tidak Direkomendasikan
                 </h2>
                 <Alert variant="warning">
@@ -168,10 +168,10 @@ const TruckCard = ({ truck, onClick = () => {} }) => (
     <div className="flex flex-1 flex-col gap-3">
       {/* Title and Price */}
       <div className="flex flex-col gap-3">
-        <h3 className="block text-[14px] font-bold leading-[15.4px] text-black">
+        <h3 className="block text-sm font-bold leading-[15.4px] text-black">
           {truck.name}
         </h3>
-        <p className="text-[14px] font-semibold leading-[15.4px] text-black">
+        <p className="text-sm font-semibold leading-[15.4px] text-black">
           {idrFormat(truck.price)}
         </p>
       </div>
@@ -185,10 +185,10 @@ const TruckCard = ({ truck, onClick = () => {} }) => (
             className="size-6 text-amber-900"
           />
           <div className="flex flex-col">
-            <span className="text-[12px] font-semibold leading-[13.2px] text-black">
+            <span className="text-xs font-semibold leading-[13.2px] text-black">
               Estimasi Kapasitas
             </span>
-            <span className="text-[12px] font-bold leading-[13.2px] text-black">
+            <span className="text-xs font-bold leading-[13.2px] text-black">
               {truck.maxWeight} {truck.weightUnit}
             </span>
           </div>
@@ -201,10 +201,10 @@ const TruckCard = ({ truck, onClick = () => {} }) => (
             className="size-6 text-amber-900"
           />
           <div className="flex flex-col">
-            <span className="text-[12px] font-semibold leading-[13.2px] text-black">
+            <span className="text-xs font-semibold leading-[13.2px] text-black">
               Estimasi Dimensi (p x l x t)
             </span>
-            <span className="text-[12px] font-bold leading-[13.2px] text-black">
+            <span className="text-xs font-bold leading-[13.2px] text-black">
               {truck.dimensions.length} {truck.dimensions.dimensionUnit} x{" "}
               {truck.dimensions.width} {truck.dimensions.dimensionUnit} x{" "}
               {truck.dimensions.height} {truck.dimensions.dimensionUnit}
