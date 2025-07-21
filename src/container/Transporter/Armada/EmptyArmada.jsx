@@ -4,13 +4,14 @@ import { Plus } from "lucide-react";
 
 import Button from "@/components/Button/Button";
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
+import PageTitle from "@/components/PageTitle/PageTitle";
 
 const EmptyArmada = () => {
   const router = useRouter();
 
   return (
     <div className="mx-auto max-w-[1232px] py-6">
-      <h1 className="mb-4 text-xl font-bold">Manajemen Armada</h1>
+      <PageTitle withBack={false}>Manajemen Armada</PageTitle>
       <DataEmpty
         title="Belum Ada Armada"
         subtitle="Tambahkan armada pertamamu sekarang!"
