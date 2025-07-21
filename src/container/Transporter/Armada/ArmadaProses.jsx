@@ -12,18 +12,24 @@ import {
   SimpleDropdownItem,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
+import { useGetProcessVehiclesData } from "@/services/Transporter/manajemen-armada/getProcessVehiclesData";
 
-const ArmadaProses = ({
-  data,
-  isLoading,
-  onPageChange,
-  onPerPageChange,
-  onStatusChange,
-}) => {
+const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
   const [selectedStatus, setSelectedStatus] = useState(null);
+  const [searchValue, setSearchValue] = useState("");
+  const [filters, setFilters] = useState({});
+
+  // Fetch vehicles data with pagination, filters and status
+  const { data, isLoading } = useGetProcessVehiclesData({
+    page: currentPage,
+    limit: perPage,
+    search: searchValue,
+    status: selectedStatus,
+    ...filters,
+  });
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -129,14 +135,16 @@ const ArmadaProses = ({
     },
   ];
 
-  const handleSearch = (searchValue) => {
-    console.log("Search:", searchValue);
-    // Implement search logic here
+  const handleSearch = (value) => {
+    console.log("Search:", value);
+    setSearchValue(value);
+    setCurrentPage(1); // Reset to first page when searching
   };
 
-  const handleFilter = (filters) => {
-    console.log("Filters:", filters);
-    // Implement filter logic here
+  const handleFilter = (newFilters) => {
+    console.log("Filters:", newFilters);
+    setFilters(newFilters);
+    setCurrentPage(1); // Reset to first page when filtering
   };
 
   // Transform dataFilter to match FilterDropdown format

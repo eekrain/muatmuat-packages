@@ -14,16 +14,27 @@ import {
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import DriverSelectionModal from "@/components/Modal/DriverSelectionModal";
+import { useGetActiveVehiclesData } from "@/services/Transporter/manajemen-armada/getActiveVehiclesData";
 import { useGetDriversList } from "@/services/Transporter/manajemen-armada/getDriversList";
 import { updateVehicleDriver } from "@/services/Transporter/manajemen-armada/updateVehicleDriver";
 
-const ArmadaAktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
+const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [driverSearchValue, setDriverSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState("");
+  const [filters, setFilters] = useState({});
+
+  // Fetch vehicles data with pagination and filters
+  const { data, isLoading } = useGetActiveVehiclesData({
+    page: currentPage,
+    limit: perPage,
+    search: searchValue,
+    ...filters,
+  });
 
   // Fetch drivers list
   const {
@@ -162,14 +173,16 @@ const ArmadaAktif = ({ data, isLoading, onPageChange, onPerPageChange }) => {
     },
   ];
 
-  const handleSearch = (searchValue) => {
-    console.log("Search:", searchValue);
-    // Implement search logic here
+  const handleSearch = (value) => {
+    console.log("Search:", value);
+    setSearchValue(value);
+    setCurrentPage(1); // Reset to first page when searching
   };
 
-  const handleFilter = (filters) => {
-    console.log("Filters:", filters);
-    // Implement filter logic here
+  const handleFilter = (newFilters) => {
+    console.log("Filters:", newFilters);
+    setFilters(newFilters);
+    setCurrentPage(1); // Reset to first page when filtering
   };
 
   // Transform dataFilter to match FilterDropdown format

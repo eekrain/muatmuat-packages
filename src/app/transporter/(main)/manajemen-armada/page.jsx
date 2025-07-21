@@ -16,19 +16,11 @@ import ArmadaArsip from "@/container/Transporter/Armada/ArmadaArsip";
 import ArmadaNonaktif from "@/container/Transporter/Armada/ArmadaNonaktif";
 import ArmadaProses from "@/container/Transporter/Armada/ArmadaProses";
 import EmptyArmada from "@/container/Transporter/Armada/EmptyArmada";
-import { useGetActiveVehiclesData } from "@/services/Transporter/manajemen-armada/getActiveVehiclesData";
-import { useGetArchivedVehiclesData } from "@/services/Transporter/manajemen-armada/getArchivedVehiclesData";
-import { useGetInactiveVehiclesData } from "@/services/Transporter/manajemen-armada/getInactiveVehiclesData";
-import { useGetProcessVehiclesData } from "@/services/Transporter/manajemen-armada/getProcessVehiclesData";
 import { useGetVehiclesCount } from "@/services/Transporter/manajemen-armada/getVehiclesCount";
 
 const Page = () => {
   const router = useRouter();
   const { data: count } = useGetVehiclesCount();
-  const { data: dataAktif } = useGetActiveVehiclesData();
-  const { data: dataNonaktif } = useGetInactiveVehiclesData();
-  const { data: dataProses } = useGetProcessVehiclesData();
-  const { data: dataArsip } = useGetArchivedVehiclesData();
 
   const isEmpty =
     count?.active === 0 &&
@@ -85,16 +77,16 @@ const Page = () => {
         </TabsList>
 
         <TabsContent value="aktif" className="pt-4">
-          <ArmadaAktif data={dataAktif} />
+          <ArmadaAktif />
         </TabsContent>
         <TabsContent value="nonaktif" className="pt-4">
-          <ArmadaNonaktif data={dataNonaktif} />
+          <ArmadaNonaktif />
         </TabsContent>
         <TabsContent value="proses" className="pt-4">
-          <ArmadaProses data={dataProses} />
+          <ArmadaProses />
         </TabsContent>
         <TabsContent value="arsip" className="pt-4">
-          <ArmadaArsip data={dataArsip} />
+          <ArmadaArsip />
         </TabsContent>
       </Tabs>
     </div>
