@@ -1,12 +1,17 @@
 "use client";
 
+import { useParams } from "next/navigation";
+
 import SewaArmadaWeb from "@/container/Shipper/SewaArmada/Web/SewaArmadaWeb";
 import useDevice from "@/hooks/use-device";
 import { useSWRHook } from "@/hooks/use-swr";
+import { useGetUpdateOrderData } from "@/services/Shipper/sewaarmada/getUpdateOrderData";
 
 const Page = () => {
+  const params = useParams();
   const { isMobile } = useDevice();
 
+  const abc = useGetUpdateOrderData(params.orderId);
   // Fetch cargo types using SWR
   const { data: cargoTypesData } = useSWRHook("v1/orders/cargos/types");
   // Fetch cargo categories using SWR

@@ -805,7 +805,7 @@ const PesananTable = ({
         open={isAllDriverStatusModalOpen}
         onOpenChange={setIsAllDriverStatusModalOpen}
       >
-        <ModalContent>
+        <ModalContent type="muatmuat">
           <div className="flex w-[320px] flex-col items-center gap-y-6 px-6 py-8">
             <h1 className="text-base font-bold leading-[19.2px] text-neutral-900">
               Status Lainnya

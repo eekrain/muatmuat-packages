@@ -7,7 +7,7 @@ import {
 
 const MuatBongkarModal = ({ isOpen, setIsOpen, data, title }) => (
   <Modal closeOnOutsideClick={false} open={isOpen} onOpenChange={setIsOpen}>
-    <ModalContent>
+    <ModalContent type="muatmuat">
       <div className="flex flex-col gap-y-3 p-6">
         {/* Header */}
         <h2 className="text-center text-base font-bold leading-[19.2px] text-neutral-900">
