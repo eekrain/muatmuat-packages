@@ -31,6 +31,7 @@ import { WelcomeCard } from "@/container/Shipper/SewaArmada/Web/WelcomeCard/Welc
 import { useAuth } from "@/hooks/use-auth";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook } from "@/hooks/use-swr";
+import { useTranslation } from "@/hooks/use-translation";
 import { isDev } from "@/lib/constants/is-dev";
 import { useGetUserPreferences } from "@/services/Shipper/sewaarmada/userPreferences";
 import { useLoadingAction } from "@/store/Shared/loadingStore";
@@ -55,6 +56,7 @@ export default function SewaArmadaWeb({
   paymentMethods,
   onFetchTrucks,
 }) {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
@@ -193,6 +195,9 @@ export default function SewaArmadaWeb({
       <LoginModal />
       <WaitingSettlementModal />
       <SelectArmadaModal carrierData={carriers} truckData={trucks} />
+
+      <pre>{t("label.eka", { index: "tes " })}</pre>
+      <pre>{t("label.eka")}</pre>
 
       {isDev && <button onClick={testSubmit}>Test Submit</button>}
     </>

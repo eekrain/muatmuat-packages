@@ -3,6 +3,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -67,6 +68,13 @@ export const TranslationProvider = ({ children }) => {
     useShallow((s) => s.translation)
   );
 
+  const tesTranslation = useMemo(() => {
+    return {
+      "label.eka": "Eka Di mana wkw {index}",
+      ...translation,
+    };
+  }, [translation]);
+
   /**
    * Translation function that replaces placeholders in translation keys with provided parameters
    * @param {string} label - The translation key to look up
@@ -88,15 +96,16 @@ export const TranslationProvider = ({ children }) => {
    */
   const t = useCallback(
     (label, params) => {
-      if (!translation?.[label]) return label;
-
+      if (!tesTranslation?.[label]) return label;
+      const template = tesTranslation[label];
       if (params) {
-        return label.replace(/{(\w+)}/g, (match, key) => params[key]);
+        return template.replace(/\{(\w+)\}/g, (match, key) =>
+          params[key] !== undefined ? params[key] : match
+        );
       }
-
-      return translation[label];
+      return template;
     },
-    [translation]
+    [tesTranslation]
   );
 
   useInitTranslation(store);
