@@ -1,3 +1,4 @@
+import { usePathname } from "next/navigation";
 import { Fragment, useState } from "react";
 
 import Checkbox from "@/components/Form/Checkbox";
@@ -21,6 +22,8 @@ const LayananTambahan = ({
   shippingDetails,
   shippingOption,
 }) => {
+  const pathname = usePathname();
+  const isEditPage = pathname.includes("/ubahpesanan");
   const [isOpen, setIsOpen] = useState(false);
   const [modalType, setModalType] = useState("");
 
@@ -58,6 +61,7 @@ const LayananTambahan = ({
                   {/* Container Checkbox dan Label */}
                   <div className="flex h-[16px] flex-row items-center gap-[4px]">
                     <Checkbox
+                      disabled={isEditPage}
                       onChange={(e) =>
                         handleFirstTime(() => {
                           if (e.checked) {
@@ -100,7 +104,7 @@ const LayananTambahan = ({
                   </div>
 
                   {/* Biaya Layanan */}
-                  <span className="leading-[14.4px] text-xs font-medium text-neutral-900">
+                  <span className="text-xs font-medium leading-[14.4px] text-neutral-900">
                     {`Rp${
                       Number(service.price) === 0
                         ? isSelected && shippingDetails
@@ -126,10 +130,10 @@ const LayananTambahan = ({
                       src="/icons/lokasi16.svg"
                     />
                     <div className="flex flex-1 flex-col gap-y-3 text-neutral-900">
-                      <span className="leading-[14.4px] text-xs font-bold">
+                      <span className="text-xs font-bold leading-[14.4px]">
                         {shippingDetails.destinationAddress}
                       </span>
-                      <p className="leading-[14.4px] text-xs font-medium">
+                      <p className="text-xs font-medium leading-[14.4px]">
                         {shippingDetails.detailAddress}
                       </p>
                       {[
@@ -154,7 +158,7 @@ const LayananTambahan = ({
                             className="icon-fill-muat-trans-secondary-900"
                             src={item.iconSrc}
                           />
-                          <div className="leading-[14.4px] text-xs">
+                          <div className="text-xs leading-[14.4px]">
                             <div className="font-medium">{item.label}</div>
                             <div className="font-semibold">{item.value}</div>
                           </div>
@@ -175,7 +179,7 @@ const LayananTambahan = ({
                         setIsOpen(true);
                       }}
                     >
-                      <span className="leading-[14.4px] text-xs font-medium text-primary-700">
+                      <span className="text-xs font-medium leading-[14.4px] text-primary-700">
                         Ubah
                       </span>
                       <IconComponent
