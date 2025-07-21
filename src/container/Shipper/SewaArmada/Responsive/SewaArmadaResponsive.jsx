@@ -35,6 +35,9 @@ const InformasiMuatanScreen = dynamicScreen(
 const JenisCarrierScreen = dynamicScreen(
   () => import("./JenisCarrier/JenisCarrierScreen")
 );
+const JenisTruckScreen = dynamicScreen(
+  () => import("./JenisTruck/JenisTruckScreen")
+);
 const LayananTambahanScreen = dynamicScreen(
   () => import("./LayananTambahan/LayananTambahanScreen")
 );
@@ -80,7 +83,11 @@ const SewaArmadaResponsive = ({
   cargoCategories,
   additionalServicesOptions,
   paymentMethods,
+  carriers,
+  trucks,
+  handleFetchTrucks,
 }) => {
+  console.log("🚀 ~ carriers:", carriers);
   const navigation = useResponsiveNavigation();
   const { reset } = useImageUploaderActions();
   // useEffect(() => {
@@ -104,7 +111,10 @@ const SewaArmadaResponsive = ({
 
   return (
     <ResponsiveProvider>
-      <ResponsiveRoute path="/" component={<SewaArmadaHomeScreen />} />
+      <ResponsiveRoute
+        path="/"
+        component={<SewaArmadaHomeScreen carriers={carriers} trucks={trucks} />}
+      />
       <ResponsiveRoute
         path="/FormLokasiBongkarMuat"
         component={<FormLokasiBongkarMuatScreen />}
@@ -194,7 +204,16 @@ const SewaArmadaResponsive = ({
 
       <ResponsiveRoute
         path="/JenisCarrier"
-        component={<JenisCarrierScreen />}
+        component={<JenisCarrierScreen carriers={carriers} />}
+      />
+      <ResponsiveRoute
+        path="/JenisTruck"
+        component={
+          <JenisTruckScreen
+            trucks={trucks}
+            handleFetchTrucks={handleFetchTrucks}
+          />
+        }
       />
       <ResponsiveRoute path="/menu" component={<ResponsiveMenuScreen />} />
     </ResponsiveProvider>

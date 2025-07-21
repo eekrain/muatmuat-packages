@@ -152,7 +152,10 @@ export const LightboxPreview = ({ image, index = 0, className, alt }) => {
         alt={alt}
       />
       <div
-        onClick={() => openLightbox(index)}
+        onClick={(e) => {
+          e.stopPropagation();
+          openLightbox(index);
+        }}
         className="absolute right-1 top-1 flex size-5 cursor-pointer items-center justify-center rounded-full bg-white"
       >
         <IconComponent

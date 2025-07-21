@@ -29,7 +29,7 @@ const Page = () => {
     count?.registrationProcess === 0 &&
     count?.archive === 0;
 
-  if (!isEmpty) {
+  if (isEmpty) {
     return <EmptyArmada />;
   }
   return (

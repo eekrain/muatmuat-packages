@@ -18,7 +18,7 @@ import {
 import { useWaitingSettlementModalAction } from "@/store/Shipper/forms/waitingSettlementModalStore";
 
 const Page = () => {
-  const { isMobile } = useDevice();
+  const { isMobile, mounted } = useDevice();
   const searchParams = useSearchParams();
   const urlFormId = searchParams.get("formid");
   const copyOrderId = searchParams.get("orderId");
@@ -66,6 +66,7 @@ const Page = () => {
       ? `v1/orders/carriers/recommended?cargoCategoryId=${cargoCategoryId}`
       : null
   );
+
   // Menggunakan useSWRMutateHook untuk request POST truk
   const { data: trucksData, trigger: fetchTrucks } = useSWRMutateHook(
     "v1/orders/trucks/recommended"
@@ -322,6 +323,8 @@ const Page = () => {
     }
   };
 
+  if (!mounted) return null;
+
   if (isMobile)
     return (
       <SewaArmadaResponsive
@@ -329,6 +332,9 @@ const Page = () => {
         cargoCategories={cargoCategories}
         additionalServicesOptions={additionalServicesOptions}
         paymentMethods={paymentMethods}
+        carriers={carriers}
+        trucks={trucks}
+        handleFetchTrucks={handleFetchTrucks}
       />
     );
 

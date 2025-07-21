@@ -7,19 +7,34 @@ import {
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
 import SearchBarResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/SearchBarResponsiveLayout";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
+import { useSewaArmadaActions } from "@/store/Shipper/forms/sewaArmadaStore";
 import { useResponsiveSearchStore } from "@/store/Shipper/zustand/responsiveSearchStore";
 
-const JenisCarrierScreen = () => {
+const JenisCarrierScreen = ({ carriers }) => {
   const searchValue = useResponsiveSearchStore((s) => s.searchValue);
+  const navigation = useResponsiveNavigation();
 
   const filteredCarriers = useMemo(() => {
-    const mergedCarriers = [...recommendedCarriers, ...notRecommendedCarriers];
+    if (!carriers?.recommendedCarriers || !carriers?.nonRecommendedCarriers)
+      return [];
+
+    const mergedCarriers = [
+      ...carriers?.recommendedCarriers,
+      ...carriers?.nonRecommendedCarriers,
+    ];
 
     return mergedCarriers.filter((carrier) =>
       carrier.name.toLowerCase().includes(searchValue.toLowerCase())
     );
-  }, [searchValue]);
+  }, [searchValue, carriers]);
+
+  const { setField } = useSewaArmadaActions();
+  const handleClick = (carrier) => {
+    setField("carrierId", carrier.carrierId);
+    navigation.popTo("/");
+  };
 
   return (
     <SearchBarResponsiveLayout
@@ -33,7 +48,10 @@ const JenisCarrierScreen = () => {
           <div className="flex flex-col gap-4">
             {filteredCarriers.map((carrier, index) => (
               <Fragment key={carrier.id}>
-                <CarrierItem carrier={carrier} />
+                <CarrierItem
+                  carrier={carrier}
+                  onClick={() => handleClick(carrier)}
+                />
                 {index < filteredCarriers.length - 1 && (
                   <hr className="border-neutral-400" />
                 )}
@@ -60,9 +78,12 @@ const JenisCarrierScreen = () => {
 
               {/* Recommended Carriers List */}
               <div className="flex flex-col gap-4">
-                {recommendedCarriers.map((carrier, index) => (
+                {carriers?.recommendedCarriers.map((carrier, index) => (
                   <Fragment key={carrier.id}>
-                    <CarrierItem carrier={carrier} />
+                    <CarrierItem
+                      carrier={carrier}
+                      onClick={() => handleClick(carrier)}
+                    />
                     {index < recommendedCarriers.length - 1 && (
                       <hr className="border-neutral-400" />
                     )}
@@ -88,7 +109,10 @@ const JenisCarrierScreen = () => {
               <div className="flex flex-col gap-4">
                 {notRecommendedCarriers.map((carrier, index) => (
                   <Fragment key={carrier.id}>
-                    <CarrierItem carrier={carrier} />
+                    <CarrierItem
+                      carrier={carrier}
+                      onClick={() => handleClick(carrier)}
+                    />
                     {index < notRecommendedCarriers.length - 1 && (
                       <hr className="border-neutral-400" />
                     )}
@@ -105,9 +129,15 @@ const JenisCarrierScreen = () => {
 
 export default JenisCarrierScreen;
 
-const CarrierItem = ({ carrier }) => {
+const CarrierItem = ({ carrier, onClick = () => {} }) => {
   return (
-    <div className="flex items-center gap-3">
+    <button
+      className="flex items-center gap-3"
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick?.(carrier.id);
+      }}
+    >
       <LightboxProvider
         className="size-[68px]"
         title={carrier.name}
@@ -118,7 +148,7 @@ const CarrierItem = ({ carrier }) => {
       <h3 className="text-sm font-bold leading-[15px] text-black">
         {carrier.name}
       </h3>
-    </div>
+    </button>
   );
 };
 
