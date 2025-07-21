@@ -21,7 +21,6 @@ const DisplayOptionsBar = ({
           <button
             key={status.value ?? "all"}
             onClick={() => {
-              console.log("DisplayOptionsBar button clicked:", status);
               onStatusChange?.(status.value);
             }}
             className={cn(

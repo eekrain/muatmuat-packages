@@ -1,3 +1,4 @@
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook } from "@/hooks/use-swr";
 import { fetcherPayment } from "@/lib/axios";
 
@@ -205,7 +206,7 @@ const settingsTimeDummyData = {
   currentServerTime: "2025-07-21 15:11:48",
 };
 
-const useGetSewaArmadaFormOptionData = () => {
+const useGetSewaArmadaFormOption = () => {
   // Fetch cargo types using SWR
   const { data: cargoTypesData } = useSWRHook("v1/orders/cargos/types");
   // Fetch cargo categories using SWR
@@ -231,23 +232,43 @@ const useGetSewaArmadaFormOptionData = () => {
   const useDummyData_settingsTime = false;
 
   // Extract cargo types from response
-  const cargoTypes = useDummyData_cargoTypes
-    ? cargoTypesDummyData
-    : cargoTypesData?.Data?.types || [];
+  const cargoTypes = useShallowMemo(
+    () =>
+      useDummyData_cargoTypes
+        ? cargoTypesDummyData
+        : cargoTypesData?.Data?.types || [],
+    [cargoTypesData, useDummyData_cargoTypes]
+  );
   // Extract cargo categories from response
-  const cargoCategories = useDummyData_cargoCategories
-    ? cargoCategoriesDummyData
-    : cargoCategoriesData?.Data?.categories || [];
-  const additionalServicesOptions = useDummyData_additionalServices
-    ? additionalServicesDummyData
-    : additionalServicesData?.Data.services || [];
+  const cargoCategories = useShallowMemo(
+    () =>
+      useDummyData_cargoCategories
+        ? cargoCategoriesDummyData
+        : cargoCategoriesData?.Data?.categories || [],
+    [cargoCategoriesData, useDummyData_cargoCategories]
+  );
+  const additionalServicesOptions = useShallowMemo(
+    () =>
+      useDummyData_additionalServices
+        ? additionalServicesDummyData
+        : additionalServicesData?.Data.services || [],
+    [additionalServicesData, useDummyData_additionalServices]
+  );
   // Use the API data directly or fall back to an empty array
-  const paymentMethods = useDummyData_paymentMethods
-    ? paymentMethodsDummyData
-    : paymentMethodsData?.Data || [];
-  const settingsTime = useDummyData_settingsTime
-    ? settingsTimeDummyData
-    : settingsTimeData?.Data || null;
+  const paymentMethods = useShallowMemo(
+    () =>
+      useDummyData_paymentMethods
+        ? paymentMethodsDummyData
+        : paymentMethodsData?.Data || [],
+    [paymentMethodsData, useDummyData_paymentMethods]
+  );
+  const settingsTime = useShallowMemo(
+    () =>
+      useDummyData_settingsTime
+        ? settingsTimeDummyData
+        : settingsTimeData?.Data || null,
+    [settingsTimeData, useDummyData_settingsTime]
+  );
 
   return {
     cargoTypes,
@@ -258,4 +279,4 @@ const useGetSewaArmadaFormOptionData = () => {
   };
 };
 
-export default useGetSewaArmadaFormOptionData;
+export default useGetSewaArmadaFormOption;

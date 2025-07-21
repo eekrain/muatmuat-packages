@@ -217,11 +217,21 @@ const config = {
           "0%,70%,100%": { opacity: "1" },
           "20%,50%": { opacity: "0" },
         },
+        "collapsible-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-collapsible-content-height)" },
+        },
+        "collapsible-up": {
+          from: { height: "var(--radix-collapsible-content-height)" },
+          to: { height: "0" },
+        },
       },
       animation: {
         enter: "enter 200ms ease-out",
         leave: "leave 150ms ease-in forwards",
         "caret-blink": "caret-blink 1s ease-in-out infinite",
+        "collapsible-down": "collapsible-down 200ms ease-out",
+        "collapsible-up": "collapsible-up 200ms ease-out",
       },
     },
   },
