@@ -5,11 +5,27 @@ import { fetcherMuatrans } from "@/lib/axios";
  * API: GET /v1/orders/vouchers
  */
 export const muatTransGetAvailableVouchers = async (token) => {
+  console.log("🚀 muatTransGetAvailableVouchers called with:", {
+    token: token?.substring(0, 20) + "..." || "No token",
+    endpoint: "/v1/orders/vouchers",
+    timestamp: new Date().toISOString(),
+  });
+
   try {
+    console.log("📡 Making real API call to /v1/orders/vouchers...");
+
     const response = await fetcherMuatrans.get("/v1/orders/vouchers", {
       headers: {
         Authorization: token || "Bearer your_token_here",
       },
+    });
+
+    console.log("📥 Raw API Response:", {
+      status: response.status,
+      statusText: response.statusText,
+      messageCode: response.data?.Message?.Code,
+      messageText: response.data?.Message?.Text,
+      dataLength: response.data?.Data?.vouchers?.length || 0,
     });
 
     // Validasi response structure
@@ -20,8 +36,10 @@ export const muatTransGetAvailableVouchers = async (token) => {
     ) {
       const vouchers = response.data.Data?.vouchers || [];
 
+      console.log("✅ API Success - Processing vouchers:", vouchers.length);
+
       // Transform data untuk konsistensi dengan format yang digunakan di frontend
-      return vouchers.map((voucher) => ({
+      const transformedVouchers = vouchers.map((voucher) => ({
         id: voucher.id,
         code: voucher.code,
         name: voucher.name,
@@ -39,13 +57,22 @@ export const muatTransGetAvailableVouchers = async (token) => {
         usage: voucher.usage || { globalPercentage: 0 },
         isOutOfStock: voucher.isOutOfStock || false,
       }));
+
+      console.log("🔄 Transformed vouchers:", transformedVouchers.length);
+      return transformedVouchers;
     } else {
-      throw new Error(
-        response.data?.Message?.Text || "Failed to fetch vouchers"
-      );
+      const errorMsg =
+        response.data?.Message?.Text || "Failed to fetch vouchers";
+      console.error("❌ API Response Error:", errorMsg);
+      throw new Error(errorMsg);
     }
   } catch (error) {
-    console.error("Error fetching vouchers:", error);
+    console.error("💥 muatTransGetAvailableVouchers Error:", {
+      message: error.message,
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      errorData: error.response?.data,
+    });
 
     // Handle different error types
     if (error.response) {
