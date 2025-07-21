@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 
@@ -32,10 +34,11 @@ import {
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
 import { BannerCarousel } from "../../../../../components/BannerCarousel/BannerCarousel";
+import { JenisArmadaField } from "./JenisArmadaField";
 import { ModalFirstTimer } from "./ModalFirstTimer";
 import WaktuMuatBottomsheet from "./WaktuMuat/WaktuMuat";
 
-const SewaArmadaHomeScreen = () => {
+const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
   const navigation = useResponsiveNavigation();
   const { formValues } = useSewaArmadaStore();
   const { addLokasi, removeLokasi } = useSewaArmadaActions();
@@ -463,61 +466,7 @@ const SewaArmadaHomeScreen = () => {
           </FormContainer>
 
           {/* Jenis Armada Field */}
-          <FormContainer>
-            <FormLabel required>Jenis Armada</FormLabel>
-            <div
-              className="space-y-2"
-              onClick={() => navigation.push("/JenisCarrier")}
-            >
-              {/* Pilih Jenis Carrier */}
-              <div className="flex h-8 w-full items-center gap-2 rounded-md border border-neutral-600 bg-neutral-200 px-3 py-2">
-                <IconComponent
-                  src="/icons/truck-carrier.svg"
-                  className="h-4 w-4 text-neutral-600"
-                />
-                <span className="flex-1 text-sm font-semibold text-neutral-600">
-                  Pilih Jenis Carrier
-                </span>
-                <svg
-                  className="h-4 w-4 text-neutral-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
-
-              {/* Pilih Jenis Truk */}
-              <div className="flex h-8 w-full items-center gap-2 rounded-md border border-neutral-600 bg-neutral-200 px-3 py-2">
-                <IconComponent
-                  src="/icons/truck-jenis.svg"
-                  className="h-4 w-4 text-neutral-600"
-                />
-                <span className="flex-1 text-sm font-semibold text-neutral-600">
-                  Pilih Jenis Truk
-                </span>
-                <svg
-                  className="h-4 w-4 text-neutral-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
-            </div>
-          </FormContainer>
+          <JenisArmadaField carriers={carriers} trucks={trucks} />
 
           {/* Asuransi Barang Field */}
           {/* Belum ada dihide dulu */}

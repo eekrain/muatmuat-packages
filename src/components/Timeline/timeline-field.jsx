@@ -74,9 +74,8 @@ export const TimelineField = ({
                         : "Masukkan Lokasi Bongkar")
                     }
                     className={cn(
-                      "mt-0.5 cursor-pointer pb-0",
-                      !item?.name && "text-neutral-600",
-                      disabled && "cursor-not-allowed"
+                      "min-h-4 cursor-pointer pb-0",
+                      !item?.name && "text-neutral-600"
                     )}
                     onClick={() => !disabled && onEditLocation(index)}
                   />
