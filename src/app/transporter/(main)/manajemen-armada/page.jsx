@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Download, Plus } from "lucide-react";
 
 import Button from "@/components/Button/Button";
+import PageTitle from "@/components/PageTitle/PageTitle";
 import {
   Tabs,
   TabsContent,
@@ -34,7 +35,7 @@ const Page = () => {
   return (
     <div className="my-6 max-h-screen w-full space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">Manajemen Armada</h1>
+        <PageTitle withBack={false}>Manajemen Armada</PageTitle>
         <div className="flex gap-3">
           <Button
             variant="muattrans-primary-secondary"
