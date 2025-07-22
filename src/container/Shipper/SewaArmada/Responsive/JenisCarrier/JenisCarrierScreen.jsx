@@ -152,8 +152,9 @@ const JenisCarrierScreen = ({ carriers }) => {
             className="flex-1 gap-y-3"
             textClass="leading-[14px] !text-sm"
             title={"Tidak ada rekomendasi carrier"}
-            width={127}
-            height={109}
+            width={94}
+            height={76}
+            type="data"
           />
         </div>
       )}
