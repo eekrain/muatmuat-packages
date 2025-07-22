@@ -179,7 +179,7 @@ export const VoucherContainer = ({
               />
             </div>
 
-            <div className="space-y-3 pb-6">
+            <div className="max-h-[400px] space-y-3 overflow-y-auto pb-6">
               {loading ? (
                 <div className="text-center text-sm text-gray-500">
                   Memuat voucher...

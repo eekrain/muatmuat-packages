@@ -759,7 +759,7 @@ const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
                     Diskon
                   </h3>
                   <span className="rounded bg-yellow-200 px-2 py-1 text-xs font-medium text-yellow-800">
-                    Voucher test
+                    Voucher
                   </span>
                 </div>
                 <div className="flex justify-between">
