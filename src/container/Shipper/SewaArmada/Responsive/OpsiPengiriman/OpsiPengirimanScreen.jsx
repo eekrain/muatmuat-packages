@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 
+import { useTranslation } from "@/hooks/use-translation";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import {
   useResponsiveNavigation,
@@ -11,6 +12,7 @@ const OpsiPengiriman = () => {
   const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
   const { setField } = useLayananTambahanStore();
+  const { t } = useTranslation();
 
   const handleSelectOpsiPengiriman = (opsiPengiriman) => {
     setField("opsiPegiriman", opsiPengiriman);
@@ -20,7 +22,7 @@ const OpsiPengiriman = () => {
   return (
     <FormResponsiveLayout
       title={{
-        label: "Opsi Pengiriman",
+        label: t("titleOpsiPengiriman") /* Opsi Pengiriman */,
       }}
     >
       <div className="flex flex-col gap-y-2 bg-neutral-200">
@@ -31,7 +33,11 @@ const OpsiPengiriman = () => {
           >
             {/* Header Section - Category Title */}
             <h3 className="text-sm font-bold capitalize leading-[15.4px] text-neutral-900">
-              {category.category}
+              {
+                t(
+                  `category${category.category.replace(/ /g, "")}`
+                ) /* Category Title */
+              }
             </h3>
 
             {/* Options Section */}

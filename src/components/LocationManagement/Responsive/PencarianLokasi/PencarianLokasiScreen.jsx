@@ -4,6 +4,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { ModalPostalCodeResponsive } from "@/components/LocationManagement/Responsive/ModalPostalCodeResponsive/ModalPostalCodeResponsive";
 import { useLocationContext } from "@/hooks/use-location/use-location";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
+import { useTranslation } from "@/hooks/use-translation";
 import SearchBarResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/SearchBarResponsiveLayout";
 import { normalizeUserSavedLocation } from "@/lib/normalizers/location";
 import {
@@ -223,15 +224,19 @@ const PencarianLokasiScreen = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const { t } = useTranslation();
+
   return (
-    <SearchBarResponsiveLayout placeholder={params.layout.title}>
+    <SearchBarResponsiveLayout
+      placeholder={t("placeholderCariLokasi") /* Cari Lokasi */}
+    >
       <div className="flex h-full flex-col gap-5 px-4 py-5">
         {autoCompleteSearchResult && autoCompleteSearchPhrase ? (
           <div className="flex h-full flex-col gap-4">
             {autoCompleteSearchResult.length > 0 ? (
               <>
                 <h3 className="text-sm font-bold text-neutral-700">
-                  Hasil Pencarian
+                  {t("titleHasilPencarian") /* Hasil Pencarian */}
                 </h3>
                 <div className="flex flex-1 flex-col gap-3">
                   {autoCompleteSearchResult.map((location, index) => (
@@ -260,9 +265,9 @@ const PencarianLokasiScreen = () => {
                   className="h-[114px] w-[134px] object-contain"
                 />
                 <p className="mt-3 text-center text-sm font-semibold">
-                  Keyword
+                  {t("messageKeywordNotFoundLine1") /* Keyword */}
                   <br />
-                  Tidak Ditemukan
+                  {t("messageKeywordNotFoundLine2") /* Tidak Ditemukan */}
                 </p>
               </div>
             ) : null}
@@ -280,7 +285,7 @@ const PencarianLokasiScreen = () => {
                 className="-mt-[2px]"
               />
               <h2 className="text-sm font-semibold text-primary-700">
-                Pilih Lokasi
+                {t("buttonPilihLokasi") /* Pilih Lokasi */}
               </h2>
             </button>
 
@@ -289,7 +294,7 @@ const PencarianLokasiScreen = () => {
                 <div className="h-px w-full bg-neutral-400"></div>
                 <div className="flex flex-col gap-4">
                   <h3 className="text-sm font-bold text-neutral-700">
-                    Pencarian Terakhir
+                    {t("titlePencarianTerakhir") /* Pencarian Terakhir */}
                   </h3>
 
                   <div className="flex flex-col gap-3">
@@ -318,7 +323,7 @@ const PencarianLokasiScreen = () => {
                 <div className="h-px w-full bg-neutral-400" />
                 <div className="flex flex-col gap-4">
                   <h3 className="text-sm font-bold text-neutral-700">
-                    Manajemen Lokasi
+                    {t("titleManajemenLokasi") /* Manajemen Lokasi */}
                   </h3>
 
                   <div className="flex flex-col gap-3">
@@ -343,7 +348,11 @@ const PencarianLokasiScreen = () => {
                     onClick={navigateToPencarianLokasiTersimpan}
                     className="text-right text-xs font-semibold text-primary-700 hover:underline"
                   >
-                    Lihat Manajemen Lokasi
+                    {
+                      t(
+                        "buttonLihatManajemenLokasi"
+                      ) /* Lihat Manajemen Lokasi */
+                    }
                   </button>
                 </div>
               </>
@@ -354,7 +363,7 @@ const PencarianLokasiScreen = () => {
                 <div className="h-px w-full bg-neutral-400"></div>
                 <div className="flex flex-col gap-4">
                   <h3 className="text-sm font-bold text-neutral-700">
-                    Transaksi Terakhir
+                    {t("titleTransaksiTerakhir") /* Transaksi Terakhir */}
                   </h3>
 
                   <div className="flex flex-col gap-3">

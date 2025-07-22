@@ -7,6 +7,7 @@ import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useTranslation } from "@/hooks/use-translation";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
@@ -14,6 +15,7 @@ import { useLayananTambahanStore } from "@/store/Shipper/forms/layananTambahanSt
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 
 const LayananTambahanScreen = ({ additionalServicesOptions }) => {
+  const { t } = useTranslation();
   const navigation = useResponsiveNavigation();
   const shippingData = [
     {
@@ -113,7 +115,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
   return (
     <FormResponsiveLayout
       title={{
-        label: "Layanan Tambahan",
+        label: t("titleLayananTambahanScreen"), // Layanan Tambahan
       }}
     >
       <div className="mb-16 flex flex-col gap-y-2 bg-neutral-200">
@@ -123,17 +125,14 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
           <div className="flex flex-col gap-y-2">
             <div className="flex items-center gap-x-1 text-neutral-900">
               <Checkbox
-                label="Kirim Bukti Fisik Penerimaan Barang"
+                label={t("checkboxKirimBuktiFisik")} // Kirim Bukti Fisik Penerimaan Barang
                 checked={tambahanFormValues.kirimBuktiFisik}
                 onChange={(e) => tambahanSetField("kirimBuktiFisik", e.checked)}
               />
 
-              <InfoBottomsheet title="Kirim Bukti Fisik Penerimaan Barang">
+              <InfoBottomsheet title={t("checkboxKirimBuktiFisik")}>
                 <span className="text-sm font-medium leading-[15.4px] text-neutral-900">
-                  Pilih opsi ini jika kamu ingin dokumen surat jalan atau
-                  dokumen pendukung lainnya, dikembalikan ke alamat tujuan yang
-                  kamu isikan. Biaya pengiriman akan mengikuti alamat tujuan
-                  tersebut.
+                  {t("descKirimBuktiFisik")}
                 </span>
               </InfoBottomsheet>
             </div>
@@ -153,7 +152,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                     const total = shippingPrice + insurancePrice;
                     return `Rp${total.toLocaleString("id-ID")}`;
                   })()
-                : "Rp-"}
+                : t("labelTotalPrice")}
             </span>
           </div>
 
@@ -161,10 +160,10 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
           <div className="flex w-full flex-col gap-6">
             {/* Nama Penerima Field */}
             <FormContainer>
-              <FormLabel required>Nama Penerima</FormLabel>
+              <FormLabel required>{t("labelNamaPenerima")}</FormLabel>
               <Input
                 disabled={isKirimBuktiFisikDisabled}
-                placeholder="Masukkan Nama Penerima"
+                placeholder={t("placeholderNamaPenerima")}
                 icon={{
                   right: (
                     <IconComponent
@@ -191,15 +190,13 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                               locationSetField("namaPIC", contacts[0].name[0]);
                               locationSetField("noHPPIC", contacts[0].tel[0]);
                             } else {
-                              alert("No phone number found.");
+                              alert(t("messageNoPhoneNumber"));
                             }
                           } catch (ex) {
                             console.error("Contact Picker failed", ex);
                           }
                         } else {
-                          alert(
-                            "Contact Picker API is not supported on this browser."
-                          );
+                          alert(t("messageContactPickerNotSupported"));
                           console.warn("navigator.contacts is not available.");
                         }
                       }}
@@ -217,10 +214,10 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
 
             {/* Nomor Handphone Penerima Field */}
             <FormContainer>
-              <FormLabel required>Nomor Handphone Penerima</FormLabel>
+              <FormLabel required>{t("labelNoHPPenerima")}</FormLabel>
               <Input
                 disabled={isKirimBuktiFisikDisabled}
-                placeholder="Contoh: 08xxxxxxxx"
+                placeholder={t("placeholderNoHPPenerima")}
                 name="noHPPIC"
                 type="text"
                 value={locationFormValues.noHPPIC}
@@ -232,7 +229,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
 
             {/* Alamat Tujuan Field */}
             <FormContainer>
-              <FormLabel required>Alamat Tujuan</FormLabel>
+              <FormLabel required>{t("labelAlamatTujuan")}</FormLabel>
               <div
                 className={`${isKirimBuktiFisikDisabled ? "cursor-not-allowed" : "cursor-pointer"}`}
                 onClick={() => {
@@ -244,7 +241,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                         },
                       },
                       layout: {
-                        title: "Cari Lokasi Alamat Tujuan",
+                        title: t("titlePilihLokasiAlamatTujuan"),
                       },
                     });
                   }
@@ -270,7 +267,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                 ) : (
                   <Input
                     disabled={isKirimBuktiFisikDisabled}
-                    placeholder="Masukkan Alamat Tujuan"
+                    placeholder={t("placeholderAlamatTujuan")}
                     name="namaLokasi"
                     type="text"
                     value=""
@@ -284,11 +281,11 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
 
             {/* Detail Alamat Tujuan Field */}
             <FormContainer className="h-[78px]">
-              <FormLabel required>Detail Alamat Tujuan</FormLabel>
+              <FormLabel required>{t("labelDetailAlamatTujuan")}</FormLabel>
               <Input
                 disabled={isKirimBuktiFisikDisabled || isLocationDisabled}
                 maxLength={500}
-                placeholder="Masukkan Detail Alamat Tujuan"
+                placeholder={t("placeholderDetailAlamatTujuan")}
                 name="detailLokasi"
                 type="text"
                 value={locationFormValues.detailLokasi}
@@ -304,11 +301,11 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
 
             {/* Kecamatan Field */}
             <FormContainer>
-              <FormLabel required>Kecamatan</FormLabel>
+              <FormLabel required>{t("labelKecamatan")}</FormLabel>
               <DropdownRadioBottomsheeet
                 disabled={isKirimBuktiFisikDisabled || isLocationDisabled}
                 className="w-full"
-                title="Kecamatan"
+                title={t("labelKecamatan")}
                 options={
                   locationFormValues.dataLokasi?.kecamatanList?.map((item) => ({
                     label: item.name,
@@ -328,15 +325,15 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                     },
                   });
                 }}
-                saveLabel="Simpan"
-                placeHolder="Pilih Kecamatan"
+                saveLabel={t("buttonSave")}
+                placeHolder={t("placeholderKecamatan")}
               />
             </FormContainer>
 
             {/* Kabupaten/Kota Display */}
             <div className="flex flex-col gap-y-4">
               <span className="leading-[15.4px text-sm font-semibold text-neutral-900">
-                Kabupaten/Kota
+                {t("labelCity")}
               </span>
               <span className="flex h-2 items-center text-xs font-semibold leading-[13.2px] text-black">
                 {locationFormValues.dataLokasi?.city?.name || "-"}
@@ -346,7 +343,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
             {/* Provinsi Display */}
             <div className="flex flex-col gap-y-4">
               <span className="leading-[15.4px text-sm font-semibold text-neutral-900">
-                Provinsi
+                {t("labelProvince")}
               </span>
               <span className="flex h-2 items-center text-xs font-semibold leading-[13.2px] text-black">
                 {locationFormValues.dataLokasi?.province?.name || "-"}
@@ -355,11 +352,11 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
 
             {/* Kode Pos Field */}
             <FormContainer>
-              <FormLabel required>Kode Pos</FormLabel>
+              <FormLabel required>{t("labelKodePos")}</FormLabel>
               <DropdownRadioBottomsheeet
                 disabled={isKirimBuktiFisikDisabled || isLocationDisabled}
                 className="w-full"
-                title="Kode Pos"
+                title={t("labelKodePos")}
                 options={
                   locationFormValues.dataLokasi?.postalCodeList?.map(
                     (item) => ({
@@ -381,8 +378,8 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                     },
                   });
                 }}
-                saveLabel="Simpan"
-                placeHolder="Pilih Kode Pos"
+                saveLabel={t("buttonSave")}
+                placeHolder={t("placeholderKodePos")}
               />
             </FormContainer>
 
@@ -425,7 +422,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                         </>
                       ) : (
                         <span className="text-sm font-semibold leading-[15.4px] text-primary-700">
-                          Pilih Opsi Pengiriman
+                          {t("buttonPilihOpsiPengiriman")}
                         </span>
                       )}
                     </div>
@@ -446,7 +443,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                     onChange={(e) =>
                       tambahanSetField("asuransiPengiriman", e.checked)
                     }
-                    label="Pakai Asuransi Pengiriman (Rp10.000)"
+                    label={t("checkboxAsuransiPengiriman")}
                     className="!text-xs !font-medium !leading-[15.6px]"
                   />
                 ) : null}
@@ -474,7 +471,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
               }
             >
               <span className="flex items-center text-sm font-bold leading-[15.4px] text-neutral-900">
-                Layanan Tambahan Lainnya
+                {t("titleLayananTambahanLainnya")}
               </span>
               <IconComponent
                 src="/icons/chevron-up20.svg"
@@ -521,7 +518,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                             }
                           }}
                         />
-                        <InfoBottomsheet title="Bantuan Tambahan">
+                        <InfoBottomsheet title={t("titleBantuanTambahan")}>
                           <p className="text-sm font-medium leading-[15.4px] text-neutral-900">
                             {service.description}
                           </p>
@@ -546,7 +543,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
           onClick={handleSaveLayananTambahan}
           type="button"
         >
-          Simpan
+          {t("buttonSimpan")}
         </Button>
       </ResponsiveFooter>
     </FormResponsiveLayout>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 
 import { useLocationContext } from "@/hooks/use-location/use-location";
+import { useTranslation } from "@/hooks/use-translation";
 import SearchBarResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/SearchBarResponsiveLayout";
 import { normalizeUserSavedLocation } from "@/lib/normalizers/location";
 import {
@@ -15,6 +16,7 @@ const PencarianLokasiTersimpanScreen = () => {
   const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
   const { searchValue, setSearchValue } = useResponsiveSearchStore();
+  const { t } = useTranslation();
 
   const { userSavedLocationResult, handleSelectUserSavedLocation } =
     useLocationContext();
@@ -55,18 +57,22 @@ const PencarianLokasiTersimpanScreen = () => {
         isMainAddress: Boolean(location.IsMainAddress),
       },
       layout: {
-        title: "Ubah Lokasi",
+        title: t("buttonUbahLokasi") /* Ubah Lokasi */,
       },
     });
   };
 
   return (
-    <SearchBarResponsiveLayout placeholder="Cari Lokasi yang Disimpan">
+    <SearchBarResponsiveLayout
+      placeholder={
+        t("placeholderCariLokasiYangDisimpan") /* Cari Lokasi yang Disimpan */
+      }
+    >
       <div className="grid gap-5 px-4 py-5">
         {/* Location Management Section */}
         <div className="flex flex-col gap-4">
           <h3 className="text-sm font-bold text-neutral-700">
-            Manajemen Lokasi
+            {t("titleManajemenLokasi") /* Manajemen Lokasi */}
           </h3>
 
           <div className="flex flex-col gap-3">
