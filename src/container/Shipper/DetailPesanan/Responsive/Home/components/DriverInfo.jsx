@@ -50,6 +50,7 @@ export const DriverInfo = () => {
           <Button
             variant="muatparts-primary-secondary"
             className="h-7 w-full text-xs font-semibold"
+            onClick={() => navigation.push("/detail-driver-status")}
           >
             Detail Status Driver
           </Button>

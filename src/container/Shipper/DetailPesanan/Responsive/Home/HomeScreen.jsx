@@ -62,12 +62,14 @@ const DetailPesananScreen = () => {
         <TabsInfo dataDetailPIC={dataDetailPIC} />
         {true && <RouteInfo />}
         {true && <MethodInfo method={"va_bca"} />}
-        {true && <TransactionSummary />}
+        {true && (
+          <TransactionSummary documentShippingDetail={documentShippingDetail} />
+        )}
       </div>
 
       <BottomSheet open={isOpenBottomsheet} onOpenChange={setIsOpenBottomsheet}>
         <BottomSheetContent>
-          <MenuList documentShippingDetail={documentShippingDetail} />
+          <MenuList />
         </BottomSheetContent>
       </BottomSheet>
 
