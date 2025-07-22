@@ -1,9 +1,9 @@
 import { createContext, useContext, useMemo, useState } from "react";
 
+import { cva } from "class-variance-authority";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import useDevice from "@/hooks/use-device";
-import { cn } from "@/lib/utils";
 
 import IconComponent from "../IconComponent/IconComponent";
 import { Modal, ModalContent } from "../Modal/Modal";
@@ -21,7 +21,81 @@ const LightboxContext = createContext(null);
 /**
  * @param {LightboxProviderProps} props
  */
-export const LightboxProvider = ({ title, images = [], image, children }) => {
+
+export const lightboxModalVariants = cva(
+  "flex w-screen flex-col items-center md:w-[592px] md:bg-white md:px-6 md:pb-3 md:pt-8",
+  {
+    variants: { variant: { shipper: "" } },
+    defaultVariants: { variant: "shipper" },
+  }
+);
+
+export const lightboxTitleVariants = cva(
+  "mb-3 hidden text-center text-base font-bold leading-[1.2] md:block",
+  {
+    variants: { variant: { shipper: "" } },
+    defaultVariants: { variant: "shipper" },
+  }
+);
+
+export const lightboxImageVariants = cva(
+  "w-full bg-black object-contain md:h-[306px] md:w-[544px] md:rounded-[9px]",
+  {
+    variants: { variant: { shipper: "" } },
+    defaultVariants: { variant: "shipper" },
+  }
+);
+
+export const lightboxNavButtonVariants = cva(
+  "absolute top-1/2 hidden size-8 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-lg md:flex",
+  {
+    variants: {
+      variant: { shipper: "" },
+      position: { left: "-left-3", right: "-right-3" },
+    },
+    defaultVariants: { variant: "shipper", position: "left" },
+  }
+);
+
+export const lightboxPreviewThumbVariants = cva(
+  "size-[56px] cursor-pointer rounded-[6px] border-2 border-neutral-400 object-cover",
+  {
+    variants: {
+      variant: { shipper: "" },
+      active: { true: "border-primary-700", false: "" },
+    },
+    defaultVariants: { variant: "shipper", active: false },
+  }
+);
+
+export const lightboxPreviewRootVariants = cva("relative block w-fit", {
+  variants: { variant: { shipper: "" } },
+  defaultVariants: { variant: "shipper" },
+});
+
+export const lightboxPreviewImageVariants = cva(
+  "size-[68px] rounded-xl border object-cover",
+  {
+    variants: { variant: { shipper: "" } },
+    defaultVariants: { variant: "shipper" },
+  }
+);
+
+export const lightboxPreviewIconVariants = cva(
+  "absolute right-1 top-1 flex size-5 cursor-pointer items-center justify-center rounded-full bg-white",
+  {
+    variants: { variant: { shipper: "" } },
+    defaultVariants: { variant: "shipper" },
+  }
+);
+
+export const LightboxProvider = ({
+  title,
+  images = [],
+  image,
+  children,
+  variant = "shipper",
+}) => {
   const { isMobile } = useDevice();
   const [open, setOpen] = useState(false);
   const [current, setCurrent] = useState(0);
@@ -67,31 +141,32 @@ export const LightboxProvider = ({ title, images = [], image, children }) => {
           appearance={{
             backgroudClassname: "bg-black md:bg-black/25",
           }}
-          className={cn(
-            "flex w-screen flex-col items-center md:w-[592px] md:bg-white md:px-6 md:pb-3 md:pt-8"
-          )}
+          className={lightboxModalVariants({ variant })}
           type="lightbox"
         >
-          <h1 className="mb-3 hidden text-center text-base font-bold leading-[1.2] md:block">
-            {title}
-          </h1>
+          <h1 className={lightboxTitleVariants({ variant })}>{title}</h1>
           <div className="relative">
             <img
               src={memoizedImages[current]}
-              className="w-full bg-black object-contain md:h-[306px] md:w-[544px] md:rounded-[9px]"
+              className={lightboxImageVariants({ variant })}
               alt=""
             />
-
             {memoizedImages.length > 1 && (
               <>
                 <button
-                  className="absolute -left-3 top-1/2 hidden size-8 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-lg md:flex"
+                  className={lightboxNavButtonVariants({
+                    variant,
+                    position: "left",
+                  })}
                   onClick={prev}
                 >
                   <ChevronLeft className="size-6" />
                 </button>
                 <button
-                  className="absolute -right-3 top-1/2 hidden size-8 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-lg md:flex"
+                  className={lightboxNavButtonVariants({
+                    variant,
+                    position: "right",
+                  })}
                   onClick={next}
                 >
                   <ChevronRight className="size-6" />
@@ -99,7 +174,6 @@ export const LightboxProvider = ({ title, images = [], image, children }) => {
               </>
             )}
           </div>
-
           {/* Previews of images */}
           {memoizedImages.length > 1 && (
             <div className="mt-3 hidden justify-center gap-2 md:flex md:flex-row">
@@ -107,10 +181,10 @@ export const LightboxProvider = ({ title, images = [], image, children }) => {
                 <img
                   key={image}
                   src={image}
-                  className={cn(
-                    "size-[56px] cursor-pointer rounded-[6px] border-2 border-neutral-400 object-cover",
-                    current === index && "border-primary-700"
-                  )}
+                  className={lightboxPreviewThumbVariants({
+                    variant,
+                    active: current === index,
+                  })}
                   onClick={() => setCurrent(index)}
                   alt=""
                 />
@@ -141,13 +215,19 @@ export const useLightbox = () => {
 /**
  * @param {LightboxPreviewProps} props
  */
-export const LightboxPreview = ({ image, index = 0, className, alt }) => {
+export const LightboxPreview = ({
+  image,
+  index = 0,
+  className,
+  alt,
+  variant = "shipper",
+}) => {
   const { openLightbox } = useLightbox();
 
   return (
-    <div className="relative block w-fit">
+    <div className={lightboxPreviewRootVariants({ variant, className })}>
       <img
-        className={cn("size-[68px] rounded-xl border object-cover", className)}
+        className={lightboxPreviewImageVariants({ variant })}
         src={image}
         alt={alt}
       />
@@ -156,7 +236,7 @@ export const LightboxPreview = ({ image, index = 0, className, alt }) => {
           e.stopPropagation();
           openLightbox(index);
         }}
-        className="absolute right-1 top-1 flex size-5 cursor-pointer items-center justify-center rounded-full bg-white"
+        className={lightboxPreviewIconVariants({ variant })}
       >
         <IconComponent
           src="/icons/zoom12.svg"
@@ -169,7 +249,7 @@ export const LightboxPreview = ({ image, index = 0, className, alt }) => {
   );
 };
 
-export const LightboxTrigger = ({ children }) => {
+export const LightboxTrigger = ({ children, variant = "shipper" }) => {
   const { openLightbox } = useLightbox();
 
   return <div onClick={() => openLightbox(0)}>{children}</div>;
