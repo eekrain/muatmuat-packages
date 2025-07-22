@@ -363,6 +363,7 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
         }}
         onSave={handleSaveDriver}
         vehicleId={selectedVehicle?.id}
+        vehiclePlate={selectedVehicle?.licensePlate}
         currentDriverId={selectedVehicle?.assignedDriver?.id}
         title={selectedVehicle?.assignedDriver ? "Ubah Driver" : "Pilih Driver"}
         drivers={driversData?.drivers || []}
