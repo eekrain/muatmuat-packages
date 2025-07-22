@@ -3,7 +3,6 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -68,13 +67,6 @@ export const TranslationProvider = ({ children }) => {
     useShallow((s) => s.translation)
   );
 
-  const tesTranslation = useMemo(() => {
-    return {
-      "label.eka": "Eka Di mana wkw {index}",
-      ...translation,
-    };
-  }, [translation]);
-
   /**
    * Translation function that replaces placeholders in translation keys with provided parameters
    * @param {string} label - The translation key to look up
@@ -93,19 +85,22 @@ export const TranslationProvider = ({ children }) => {
    *
    * // Fallback to original label if translation not found
    * t('unknown_key') // Returns: "unknown_key"
+   * "label.eka": "Halo {name}, {index}!",
+   * t("label.eka", { index: "tes ", name: "eka" })
+   *
    */
   const t = useCallback(
     (label, params) => {
-      if (!tesTranslation?.[label]) return label;
-      const template = tesTranslation[label];
+      const template = translation[label];
+      if (!template) return label;
+
       if (params) {
-        return template.replace(/\{(\w+)\}/g, (match, key) =>
-          params[key] !== undefined ? params[key] : match
-        );
+        return template.replace(/{(\w+)}/g, (_, key) => params[key]);
       }
+
       return template;
     },
-    [tesTranslation]
+    [translation]
   );
 
   useInitTranslation(store);
@@ -117,6 +112,16 @@ export const TranslationProvider = ({ children }) => {
   );
 };
 
+/**
+ * @typedef {Object} UseTranslationReturn
+ * @property {(label: string, params?: Record<string, string | number>) => string} t - Translation function
+ * @property {boolean} isTranslationsReady - Whether translations are loaded and ready
+ */
+
+/**
+ * Custom hook to access translation function and readiness state.
+ * @returns {UseTranslationReturn}
+ */
 export const useTranslation = () => {
   const store = useContext(TranslationContext);
   if (!store) {

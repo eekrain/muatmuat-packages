@@ -1,6 +1,7 @@
 import { Fragment, useMemo } from "react";
 
 import { Alert } from "@/components/Alert/Alert";
+import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
 import {
   LightboxPreview,
@@ -43,11 +44,27 @@ const JenisCarrierScreen = ({ carriers }) => {
         Boolean(searchValue) && filteredCarriers.length > 0 && "bg-white"
       )}
     >
-      {Boolean(searchValue) && filteredCarriers.length > 0 ? (
+      {Boolean(searchValue) && filteredCarriers.length === 0 ? (
+        <div className="grid h-full items-center justify-center">
+          <DataNotFound
+            className="gap-y-3.5"
+            textClass="leading-[14px] !text-sm"
+            title={
+              <>
+                Keyword
+                <br />
+                Tidak Ditemukan
+              </>
+            }
+            width={127}
+            height={109}
+          />
+        </div>
+      ) : Boolean(searchValue) && filteredCarriers.length > 0 ? (
         <div className="p-5">
           <div className="flex flex-col gap-4">
             {filteredCarriers.map((carrier, index) => (
-              <Fragment key={carrier.id}>
+              <Fragment key={carrier.carrierId}>
                 <CarrierItem
                   carrier={carrier}
                   onClick={() => handleClick(carrier)}
@@ -59,7 +76,7 @@ const JenisCarrierScreen = ({ carriers }) => {
             ))}
           </div>
         </div>
-      ) : (
+      ) : carriers?.recommendedCarriers || carriers?.nonRecommendedCarriers ? (
         <>
           <div className="mb-2 bg-white p-5">
             <div className="mb-6">
@@ -79,7 +96,7 @@ const JenisCarrierScreen = ({ carriers }) => {
               {/* Recommended Carriers List */}
               <div className="flex flex-col gap-4">
                 {carriers?.recommendedCarriers.map((carrier, index) => (
-                  <Fragment key={carrier.id}>
+                  <Fragment key={carrier.carrierId}>
                     <CarrierItem
                       carrier={carrier}
                       onClick={() => handleClick(carrier)}
@@ -108,7 +125,7 @@ const JenisCarrierScreen = ({ carriers }) => {
               {/* Not Recommended Carriers List */}
               <div className="flex flex-col gap-4">
                 {notRecommendedCarriers.map((carrier, index) => (
-                  <Fragment key={carrier.id}>
+                  <Fragment key={carrier.carrierId}>
                     <CarrierItem
                       carrier={carrier}
                       onClick={() => handleClick(carrier)}
@@ -122,6 +139,20 @@ const JenisCarrierScreen = ({ carriers }) => {
             </div>
           </div>
         </>
+      ) : (
+        <div className="flex h-full flex-col">
+          <Alert variant="warning" className="h-[52px] pl-3 pr-6">
+            Untuk sementara kami belum menyediakan carrier yang sesuai dengan
+            informasi berat dan dimensi muatan yang kamu isikan.
+          </Alert>
+          <DataNotFound
+            className="flex-1 gap-y-3"
+            textClass="leading-[14px] !text-sm"
+            title={"Tidak ada rekomendasi carrier"}
+            width={127}
+            height={109}
+          />
+        </div>
       )}
     </SearchBarResponsiveLayout>
   );

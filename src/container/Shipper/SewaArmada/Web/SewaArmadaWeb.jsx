@@ -196,9 +196,6 @@ export default function SewaArmadaWeb({
       <WaitingSettlementModal />
       <SelectArmadaModal carrierData={carriers} truckData={trucks} />
 
-      <pre>{t("label.eka", { index: "tes " })}</pre>
-      <pre>{t("label.eka")}</pre>
-
       {isDev && <button onClick={testSubmit}>Test Submit</button>}
     </>
   );
