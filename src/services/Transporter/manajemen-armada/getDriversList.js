@@ -20,7 +20,7 @@ const apiResultDriversList = {
           activeStatus: "READY_TO_RECEIVE_ORDER",
           simB2ExpiryDate: "2025-12-31",
           isSimExpiryDate: false,
-          currentVehicle: "-",
+          currentVehicle: null,
         },
         {
           id: "550e8400-e29b-41d4-a716-446655440013",
@@ -44,7 +44,7 @@ const apiResultDriversList = {
           activeStatus: "READY_TO_RECEIVE_ORDER",
           simB2ExpiryDate: "2025-12-31",
           isSimExpiryDate: false,
-          currentVehicle: "-",
+          currentVehicle: null,
         },
         {
           id: "550e8400-e29b-41d4-a716-446655440015",
@@ -56,7 +56,7 @@ const apiResultDriversList = {
           activeStatus: "READY_TO_RECEIVE_ORDER",
           simB2ExpiryDate: "2025-12-31",
           isSimExpiryDate: false,
-          currentVehicle: "-",
+          currentVehicle: null,
         },
         {
           id: "550e8400-e29b-41d4-a716-446655440016",
@@ -68,7 +68,7 @@ const apiResultDriversList = {
           activeStatus: "READY_TO_RECEIVE_ORDER",
           simB2ExpiryDate: "2025-12-31",
           isSimExpiryDate: false,
-          currentVehicle: "-",
+          currentVehicle: null,
         },
         {
           id: "550e8400-e29b-41d4-a716-446655440017",
@@ -80,7 +80,7 @@ const apiResultDriversList = {
           activeStatus: "READY_TO_RECEIVE_ORDER",
           simB2ExpiryDate: "2025-12-31",
           isSimExpiryDate: false,
-          currentVehicle: "-",
+          currentVehicle: null,
         },
         {
           id: "550e8400-e29b-41d4-a716-446655440018",
@@ -92,7 +92,7 @@ const apiResultDriversList = {
           activeStatus: "READY_TO_RECEIVE_ORDER",
           simB2ExpiryDate: "2025-12-31",
           isSimExpiryDate: false,
-          currentVehicle: "-",
+          currentVehicle: null,
         },
         {
           id: "550e8400-e29b-41d4-a716-446655440019",
@@ -104,7 +104,7 @@ const apiResultDriversList = {
           activeStatus: "READY_TO_RECEIVE_ORDER",
           simB2ExpiryDate: "2025-12-31",
           isSimExpiryDate: false,
-          currentVehicle: "-",
+          currentVehicle: null,
         },
         {
           id: "550e8400-e29b-41d4-a716-446655440020",
@@ -116,7 +116,7 @@ const apiResultDriversList = {
           activeStatus: "READY_TO_RECEIVE_ORDER",
           simB2ExpiryDate: "2025-12-31",
           isSimExpiryDate: false,
-          currentVehicle: "-",
+          currentVehicle: null,
         },
       ],
       pagination: {
