@@ -52,7 +52,31 @@ const apiResultVehicleDetail = {
         photos: [
           {
             id: "550e8400-e29b-41d4-a716-446655440004",
+            photoType: "STNK",
+            photoName: "STNK.jpg",
+            photoUrl: "https://picsum.photos/200/300",
+          },
+          {
+            id: "550e8400-e29b-41d4-a716-446655440004",
             photoType: "FRONT",
+            photoName: "FRONT.jpg",
+            photoUrl: "https://picsum.photos/200/300",
+          },
+          {
+            id: "550e8400-e29b-41d4-a716-446655440004",
+            photoType: "BEHIND",
+            photoName: "FRONT.jpg",
+            photoUrl: "https://picsum.photos/200/300",
+          },
+          {
+            id: "550e8400-e29b-41d4-a716-446655440004",
+            photoType: "RIGHT",
+            photoName: "FRONT.jpg",
+            photoUrl: "https://picsum.photos/200/300",
+          },
+          {
+            id: "550e8400-e29b-41d4-a716-446655440004",
+            photoType: "LEFT",
             photoName: "FRONT.jpg",
             photoUrl: "https://picsum.photos/200/300",
           },
