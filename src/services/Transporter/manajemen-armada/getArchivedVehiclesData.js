@@ -12,23 +12,23 @@ const apiResultArchivedVehicles = {
       hasData: true,
       vehicles: [
         {
-          id: "550e8400-e29b-41d4-a716-446655440018",
-          photoUrl: "https://picsum.photos/300/300",
+          id: "vhc-011",
+          photoUrl: "/img/mock-armada/two.png",
           licensePlate: "B 1234 ABC",
           truckType: {
-            id: "550e8400-e29b-41d4-a716-446655440000",
+            id: "tt-001",
             name: "Truk Besar",
           },
           carrierType: {
-            id: "550e8400-e29b-41d4-a716-446655440001",
+            id: "ct-001",
             name: "Box",
           },
           vehicleBrand: {
-            id: "550e8400-e29b-41d4-a716-446655440002",
+            id: "vb-001",
             name: "Hino",
           },
           vehicleType: {
-            id: "550e8400-e29b-41d4-a716-446655440003",
+            id: "vt-001",
             name: "Hino Dutro",
           },
           status: "DELETED",
@@ -36,23 +36,23 @@ const apiResultArchivedVehicles = {
           pendingUpdateDriver: true,
         },
         {
-          id: "550e8400-e29b-41d4-a716-446655440019",
-          photoUrl: "https://picsum.photos/300/300",
+          id: "vhc-012",
+          photoUrl: "/img/mock-armada/one.png",
           licensePlate: "B 4567 RST",
           truckType: {
-            id: "550e8400-e29b-41d4-a716-446655440001",
+            id: "tt-002",
             name: "Truk Sedang",
           },
           carrierType: {
-            id: "550e8400-e29b-41d4-a716-446655440002",
+            id: "ct-003",
             name: "Pick Up",
           },
           vehicleBrand: {
-            id: "550e8400-e29b-41d4-a716-446655440002",
+            id: "vb-003",
             name: "Isuzu",
           },
           vehicleType: {
-            id: "550e8400-e29b-41d4-a716-446655440002",
+            id: "vt-003",
             name: "Isuzu Elf",
           },
           status: "DELETED",
@@ -60,23 +60,23 @@ const apiResultArchivedVehicles = {
           pendingUpdateDriver: false,
         },
         {
-          id: "550e8400-e29b-41d4-a716-446655440020",
-          photoUrl: "https://picsum.photos/300/300",
+          id: "vhc-013",
+          photoUrl: "/img/mock-armada/three.png",
           licensePlate: "B 8901 UVW",
           truckType: {
-            id: "550e8400-e29b-41d4-a716-446655440000",
+            id: "tt-001",
             name: "Truk Besar",
           },
           carrierType: {
-            id: "550e8400-e29b-41d4-a716-446655440001",
+            id: "ct-002",
             name: "Flatbed",
           },
           vehicleBrand: {
-            id: "550e8400-e29b-41d4-a716-446655440001",
+            id: "vb-002",
             name: "Mitsubishi",
           },
           vehicleType: {
-            id: "550e8400-e29b-41d4-a716-446655440001",
+            id: "vt-002",
             name: "Mitsubishi Canter",
           },
           status: "DELETED",
@@ -87,32 +87,29 @@ const apiResultArchivedVehicles = {
       pagination: {
         page: 1,
         limit: 10,
-        totalItems: 0,
+        totalItems: 3,
         totalPages: 1,
       },
       dataFilter: {
         truckType: [
-          { id: "550e8400-e29b-41d4-a716-446655440000", value: "Truk Besar" },
-          { id: "550e8400-e29b-41d4-a716-446655440001", value: "Truk Sedang" },
-          { id: "550e8400-e29b-41d4-a716-446655440002", value: "Truk Kecil" },
+          { id: "tt-001", value: "Truk Besar" },
+          { id: "tt-002", value: "Truk Sedang" },
+          { id: "tt-003", value: "Truk Kecil" },
         ],
         carrierType: [
-          { id: "550e8400-e29b-41d4-a716-446655440000", value: "Box" },
-          { id: "550e8400-e29b-41d4-a716-446655440001", value: "Flatbed" },
-          { id: "550e8400-e29b-41d4-a716-446655440002", value: "Pick Up" },
+          { id: "ct-001", value: "Box" },
+          { id: "ct-002", value: "Flatbed" },
+          { id: "ct-003", value: "Pick Up" },
         ],
         vehicleBrand: [
-          { id: "550e8400-e29b-41d4-a716-446655440000", value: "Hino" },
-          { id: "550e8400-e29b-41d4-a716-446655440001", value: "Mitsubishi" },
-          { id: "550e8400-e29b-41d4-a716-446655440002", value: "Isuzu" },
+          { id: "vb-001", value: "Hino" },
+          { id: "vb-002", value: "Mitsubishi" },
+          { id: "vb-003", value: "Isuzu" },
         ],
         vehicleType: [
-          { id: "550e8400-e29b-41d4-a716-446655440000", value: "Hino Dutro" },
-          {
-            id: "550e8400-e29b-41d4-a716-446655440001",
-            value: "Mitsubishi Canter",
-          },
-          { id: "550e8400-e29b-41d4-a716-446655440002", value: "Isuzu Elf" },
+          { id: "vt-001", value: "Hino Dutro" },
+          { id: "vt-002", value: "Mitsubishi Canter" },
+          { id: "vt-003", value: "Isuzu Elf" },
         ],
         status: [{ id: "DELETED", value: "Dihapus" }],
       },
