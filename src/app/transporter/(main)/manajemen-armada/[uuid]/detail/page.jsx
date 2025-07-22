@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import React from "react";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Card, { CardContent } from "@/components/Card/Card";
@@ -15,20 +16,29 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { useGetVehicleDetail } from "@/services/Transporter/manajemen-armada/getVehiclesDetail";
 
+// This component remains unchanged and works as intended.
 const DetailRow = ({
   label,
   children,
   isLink = false,
   hasBorderBottom = true,
 }) => (
-  <div
-    className={`flex items-center justify-between py-4 ${hasBorderBottom ? "border-b-[0.5px] border-neutral-600" : ""}`}
-  >
-    <p className="text-sm text-neutral-700">{label}</p>
-    <div
-      className={`text-sm font-semibold ${isLink ? "text-success-400 underline" : "font-bold text-neutral-900"}`}
-    >
-      {children}
+  <div>
+    <div className="flex items-center justify-between p-4">
+      <div
+        className={`flex h-full w-full flex-row justify-between ${
+          hasBorderBottom ? "border-b-[0.5px] border-neutral-600" : ""
+        }`}
+      >
+        <p className="text-sm text-neutral-700">{label}</p>
+        <div
+          className={`text-sm font-semibold ${
+            isLink ? "text-success-400" : "font-bold text-neutral-900"
+          }`}
+        >
+          {children}
+        </div>
+      </div>
     </div>
   </div>
 );
@@ -43,26 +53,97 @@ const Page = () => {
     { name: "Detail Armada" },
   ];
 
+  // Loading and error states
   if (isLoading) return <div>Loading vehicle details...</div>;
   if (error) return <div>Failed to load data. Please try again.</div>;
 
   const vehicle = data?.vehicle;
   if (!vehicle) return <div>No vehicle data found.</div>;
 
+  // Helper function to format dates
   const formatDate = (dateString) =>
     new Date(dateString).toLocaleDateString("id-ID", {
       year: "numeric",
-      month: "long",
+      month: "short",
       day: "numeric",
     });
 
+  const documentRows = [];
+  documentRows.push(
+    <DetailRow key="nomor-rangka" label="Nomor Rangka">
+      {vehicle.chassisNumber}
+    </DetailRow>
+  );
+  documentRows.push(
+    <DetailRow key="stnk-expiry" label="Masa Berlaku STNK">
+      {formatDate(vehicle.stnkExpiryDate)}
+    </DetailRow>
+  );
+
+  const stnkDoc = vehicle.documents.find((doc) => doc.documentType === "STNK");
+  if (stnkDoc) {
+    documentRows.push(
+      <DetailRow key="stnk-doc" label="Foto STNK" isLink>
+        <Link
+          href={stnkDoc.documentUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {stnkDoc.documentName}
+        </Link>
+      </DetailRow>
+    );
+  }
+
+  const pajakDoc = vehicle.documents.find(
+    (doc) => doc.documentType === "VEHICLE_TAX"
+  );
+  if (pajakDoc) {
+    documentRows.push(
+      <DetailRow key="pajak-doc" label="Foto Pajak Kendaraan" isLink>
+        <Link
+          href={pajakDoc.documentUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {pajakDoc.documentName}
+        </Link>
+      </DetailRow>
+    );
+  }
+
+  documentRows.push(
+    <DetailRow key="kir-number" label="KIR Kendaraan">
+      {vehicle.kirNumber}
+    </DetailRow>
+  );
+  documentRows.push(
+    <DetailRow key="kir-expiry" label="Masa Berlaku KIR">
+      {formatDate(vehicle.kirExpiryDate)}
+    </DetailRow>
+  );
+
+  const kirDoc = vehicle.documents.find((doc) => doc.documentType === "KIR");
+  if (kirDoc) {
+    documentRows.push(
+      <DetailRow key="kir-doc" label="Foto Buku KIR" isLink>
+        <Link
+          href={kirDoc.documentUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {kirDoc.documentName}
+        </Link>
+      </DetailRow>
+    );
+  }
+
   return (
-    <div className="flex flex-col gap-6 py-8">
+    <div className="flex flex-col gap-2 py-8">
       <BreadCrumb data={breadCrumbData} />
       <PageTitle>Detail Armada</PageTitle>
 
-      {/* Main Details Card (remains static) */}
-      <Card className="shadow-muat rounded-2xl border-none p-2 pb-4 pl-2 pr-2 pt-4">
+      <Card className="shadow-muat rounded-2xl border-none">
         <CardContent className="space-y-5 !p-6">
           <div>
             <DetailRow hasBorderBottom={false} label="No. Polisi Kendaraan">
@@ -90,7 +171,13 @@ const Page = () => {
               hasBorderBottom={false}
               label="Dimensi Carrier"
             >{`${vehicle.carrierLength}x${vehicle.carrierWidth}x${vehicle.carrierHeight} m`}</DetailRow>
+            <DetailRow
+              hasBorderBottom={false}
+              label="Dimensi Estimasi Tanggal Pemasangan GPS*"
+            >{`${formatDate(vehicle.gpsInstallationEstimateStartDate)} s/d ${formatDate(vehicle.gpsInstallationEstimateEndDate)}`}</DetailRow>
           </div>
+
+          {/* Vehicle Photos Section */}
           <Collapsible defaultOpen>
             <CollapsibleTrigger className="rounded-t-xl bg-primary-50 px-6 hover:no-underline">
               <h3 className="font-bold text-primary-800">Foto Armada</h3>
@@ -101,11 +188,12 @@ const Page = () => {
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="p-6">
-                {/* We get the 'index' and the 'array' from the map function */}
                 {vehicle.photos.map((photo, index, array) => (
                   <DetailRow
                     key={photo.id}
-                    label={`Foto ${photo.photoType.toLowerCase().replace(/^\w/, (c) => c.toUpperCase())} Kendaraan`}
+                    label={`Foto ${photo.photoType
+                      .toLowerCase()
+                      .replace(/^\w/, (c) => c.toUpperCase())} Kendaraan`}
                     hasBorderBottom={index < array.length - 1}
                   >
                     <div className="relative h-[68px] w-[68px]">
@@ -121,6 +209,8 @@ const Page = () => {
               </div>
             </CollapsibleContent>
           </Collapsible>
+
+          {/* Vehicle Documents Section */}
           <Collapsible defaultOpen>
             <CollapsibleTrigger className="rounded-t-xl bg-primary-50 px-6 hover:no-underline">
               <h3 className="font-bold text-primary-800">Dokumen Armada</h3>
@@ -131,57 +221,10 @@ const Page = () => {
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="p-6">
-                <DetailRow label="Nomor Rangka">
-                  {vehicle.chassisNumber}
-                </DetailRow>
-                <DetailRow label="Masa Berlaku STNK">
-                  {formatDate(vehicle.stnkExpiryDate)}
-                </DetailRow>
-                {vehicle.documents.find(
-                  (doc) => doc.documentType === "STNK"
-                ) && (
-                  <DetailRow label="Foto STNK" isLink>
-                    <Link
-                      href={
-                        vehicle.documents.find(
-                          (doc) => doc.documentType === "STNK"
-                        ).documentUrl
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {
-                        vehicle.documents.find(
-                          (doc) => doc.documentType === "STNK"
-                        ).documentName
-                      }
-                    </Link>
-                  </DetailRow>
-                )}
-                <DetailRow label="KIR Kendaraan">{vehicle.kirNumber}</DetailRow>
-                <DetailRow label="Masa Berlaku KIR">
-                  {formatDate(vehicle.kirExpiryDate)}
-                </DetailRow>
-                {vehicle.documents.find(
-                  (doc) => doc.documentType === "KIR"
-                ) && (
-                  <DetailRow label="Foto Buku KIR" isLink>
-                    <Link
-                      href={
-                        vehicle.documents.find(
-                          (doc) => doc.documentType === "KIR"
-                        ).documentUrl
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {
-                        vehicle.documents.find(
-                          (doc) => doc.documentType === "KIR"
-                        ).documentName
-                      }
-                    </Link>
-                  </DetailRow>
+                {documentRows.map((row, index) =>
+                  React.cloneElement(row, {
+                    hasBorderBottom: index < documentRows.length - 1,
+                  })
                 )}
               </div>
             </CollapsibleContent>
