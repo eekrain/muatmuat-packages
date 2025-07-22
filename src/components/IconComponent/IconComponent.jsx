@@ -4,6 +4,7 @@ import SVG from "react-inlinesvg";
 import style from "./IconComponent.module.scss";
 
 const sizes = {
+  xsmall: 12,
   small: 16,
   medium: 24,
   large: 32,

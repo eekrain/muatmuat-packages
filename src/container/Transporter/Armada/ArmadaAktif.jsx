@@ -14,10 +14,8 @@ import {
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import DriverSelectionModal from "@/components/Modal/DriverSelectionModal";
+import DriverSelectionModal from "@/container/Transporter/Driver/DriverSelectionModal";
 import { useGetActiveVehiclesData } from "@/services/Transporter/manajemen-armada/getActiveVehiclesData";
-import { useGetDriversList } from "@/services/Transporter/manajemen-armada/getDriversList";
-import { updateVehicleDriver } from "@/services/Transporter/manajemen-armada/updateVehicleDriver";
 
 const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
   const router = useRouter();
@@ -27,27 +25,15 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
-  const [driverSearchValue, setDriverSearchValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [filters, setFilters] = useState({});
 
   // Fetch vehicles data with pagination and filters
-  const { data, isLoading } = useGetActiveVehiclesData({
+  const { data, isLoading, mutate } = useGetActiveVehiclesData({
     page: currentPage,
     limit: perPage,
     search: searchValue,
     ...filters,
-  });
-
-  // Fetch drivers list
-  const {
-    data: driversData,
-    error: driversError,
-    isLoading: driversLoading,
-  } = useGetDriversList({
-    page: 1,
-    limit: 10,
-    search: driverSearchValue,
   });
 
   const getStatusBadge = (status) => {
@@ -260,23 +246,13 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
     return "";
   };
 
-  const handleSaveDriver = async (vehicleId, driverId) => {
-    try {
-      await updateVehicleDriver(vehicleId, driverId);
+  const handleDriverUpdateSuccess = () => {
+    // Refresh the vehicles data to reflect the change
+    mutate();
 
-      // After successful API call, refresh the data
-      // You might want to trigger a refetch of the vehicle data here
-      // For example: mutate() if using SWR
-
-      setIsModalOpen(false);
-      setSelectedVehicle(null);
-
-      // Show success message (you might want to use a toast notification)
-      // Driver updated successfully
-    } catch (error) {
-      // Failed to update driver
-      // Show error message (you might want to use a toast notification)
-    }
+    // Close modal and reset state
+    setIsModalOpen(false);
+    setSelectedVehicle(null);
   };
 
   return (
@@ -303,21 +279,12 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
 
       <DriverSelectionModal
         open={isModalOpen}
-        onOpenChange={(open) => {
-          setIsModalOpen(open);
-          if (!open) {
-            setDriverSearchValue(""); // Clear search when modal closes
-          }
-        }}
-        onSave={handleSaveDriver}
+        onOpenChange={setIsModalOpen}
+        onSuccess={handleDriverUpdateSuccess}
         vehicleId={selectedVehicle?.id}
         vehiclePlate={selectedVehicle?.licensePlate}
         currentDriverId={selectedVehicle?.assignedDriver?.id}
         title={selectedVehicle?.assignedDriver ? "Ubah Driver" : "Pilih Driver"}
-        drivers={driversData?.drivers || []}
-        isLoading={driversLoading}
-        error={driversError}
-        onSearch={setDriverSearchValue}
       />
     </>
   );

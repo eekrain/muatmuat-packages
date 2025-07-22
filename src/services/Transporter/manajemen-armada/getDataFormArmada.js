@@ -8,6 +8,7 @@ export const URL_TYPE_CARRIER = "/v1/master/carrier-types";
 export const URL_BRANDS_VEHICLES = "/v1/master/vehicle-brands";
 export const URL_VEHICLES_TYPES = "/v1/master/vehicle-types";
 export const URL_VEHICLES_EXAMPLE_PHOTO = "/v1/examples/vehicle-photos";
+export const URL_VEHICLES_DOCUMENT_EXAMPLE = "/v1/examples/vehicle-documents";
 
 // Mock data fallback
 const mockJenisTruk = {
@@ -145,15 +146,34 @@ const mockVehiclesExamplePhoto = {
   },
 };
 
-function buildQueryString(params) {
-  if (!params) return "";
-  const esc = encodeURIComponent;
-  const query = Object.entries(params)
-    .filter(([_, v]) => v !== undefined && v !== null && v !== "")
-    .map(([k, v]) => `${esc(k)}=${esc(v)}`)
-    .join("&");
-  return query ? `?${query}` : "";
-}
+const mockVehiclesDocumentExample = {
+  data: {
+    Message: {
+      Code: 200,
+      Text: "Contoh dokumen armada berhasil diambil",
+    },
+    Data: {
+      examples: [
+        {
+          documentType: "STNK",
+          documentUrl: "https://cdn.muatrans.com/examples/stnk-example.pdf",
+          description: "Contoh dokumen STNK kendaraan",
+        },
+        {
+          documentType: "VEHICLE_TAX",
+          documentUrl: "https://cdn.muatrans.com/examples/tax-example.pdf",
+          description: "Contoh dokumen pajak kendaraan",
+        },
+        {
+          documentType: "KIR",
+          documentUrl: "https://cdn.muatrans.com/examples/kir-example.pdf",
+          description: "Contoh dokumen KIR kendaraan",
+        },
+      ],
+    },
+    Type: "VEHICLE_DOCUMENT_EXAMPLES",
+  },
+};
 
 // --- FETCHER API EXAMPLE (uncomment when API ready) ---
 // export const fetcherJenisTruk = async (url) => {
@@ -181,6 +201,16 @@ function buildQueryString(params) {
 //   return result?.data;
 // };
 
+function buildQueryString(params) {
+  if (!params) return "";
+  const esc = encodeURIComponent;
+  const query = Object.entries(params)
+    .filter(([_, v]) => v !== undefined && v !== null && v !== "")
+    .map(([k, v]) => `${esc(k)}=${esc(v)}`)
+    .join("&");
+  return query ? `?${query}` : "";
+}
+
 const fetcher = async (url) => {
   if (url.startsWith(URL_JENIS_TRUK)) return mockJenisTruk;
   if (url.startsWith(URL_TYPE_CARRIER)) return mockTypeCarrier;
@@ -188,6 +218,8 @@ const fetcher = async (url) => {
   if (url.startsWith(URL_VEHICLES_TYPES)) return mockVehiclesTypes;
   if (url.startsWith(URL_VEHICLES_EXAMPLE_PHOTO))
     return mockVehiclesExamplePhoto;
+  if (url.startsWith(URL_VEHICLES_DOCUMENT_EXAMPLE))
+    return mockVehiclesDocumentExample;
   throw new Error("Unknown endpoint");
 };
 
@@ -252,4 +284,35 @@ export function useGetVehiclesExamplePhoto(params) {
     isLoading,
     isError: !!error,
   };
+}
+
+export function useGetVehiclesDocumentExample(params) {
+  const endpoint = URL_VEHICLES_DOCUMENT_EXAMPLE + buildQueryString(params);
+  const { data, error, isLoading } = useSWR(endpoint, fetcher);
+  return {
+    data: data?.data?.Data?.examples || [],
+    raw: data,
+    isLoading,
+    isError: !!error,
+  };
+}
+
+/**
+ * Menyimpan data armada baru ke database.
+ * @param {Object} data - Data armada baru sesuai spesifikasi API.
+ * @param {string} token - JWT token untuk autentikasi (Bearer).
+ * @returns {Promise<Object>} Response dari API.
+ */
+export async function postNewVehicle(data, token) {
+  const res = await fetch("/v1/vehicles", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  const json = await res.json();
+  if (!res.ok) throw json;
+  return json;
 }

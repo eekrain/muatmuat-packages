@@ -11,23 +11,23 @@ const apiResultProcessVehicles = {
     Data: {
       vehicles: [
         {
-          id: "550e8400-e29b-41d4-a716-446655440020",
-          photoUrl: "https://picsum.photos/300/300",
+          id: "vhc-007",
+          photoUrl: "/img/mock-armada/three.png",
           licensePlate: "L 9812 KS",
           truckType: {
-            id: "550e8400-e29b-41d4-a716-446655440001",
+            id: "tt-002",
             name: "Medium Truk 6x2",
           },
           carrierType: {
-            id: "550e8400-e29b-41d4-a716-446655440001",
+            id: "ct-004",
             name: "Tangki",
           },
           vehicleBrand: {
-            id: "550e8400-e29b-41d4-a716-446655440002",
+            id: "vb-001",
             name: "Hino",
           },
           vehicleType: {
-            id: "550e8400-e29b-41d4-a716-446655440003",
+            id: "vt-004",
             name: "136 HDL 6x2",
           },
           assignedDriver: null,
@@ -36,23 +36,23 @@ const apiResultProcessVehicles = {
           pendingUpdateDriver: false,
         },
         {
-          id: "550e8400-e29b-41d4-a716-446655440021",
-          photoUrl: "https://picsum.photos/300/300",
+          id: "vhc-008",
+          photoUrl: "/img/mock-armada/one.png",
           licensePlate: "L 8310 SH",
           truckType: {
-            id: "550e8400-e29b-41d4-a716-446655440002",
+            id: "tt-003",
             name: "Colt Diesel Double",
           },
           carrierType: {
-            id: "550e8400-e29b-41d4-a716-446655440002",
+            id: "ct-005",
             name: "Dump",
           },
           vehicleBrand: {
-            id: "550e8400-e29b-41d4-a716-446655440001",
+            id: "vb-002",
             name: "Mitsubishi Fuso",
           },
           vehicleType: {
-            id: "550e8400-e29b-41d4-a716-446655440001",
+            id: "vt-005",
             name: "Canter 74 HD",
           },
           assignedDriver: null,
@@ -61,23 +61,23 @@ const apiResultProcessVehicles = {
           pendingUpdateDriver: false,
         },
         {
-          id: "550e8400-e29b-41d4-a716-446655440022",
-          photoUrl: "https://picsum.photos/300/300",
+          id: "vhc-009",
+          photoUrl: "/img/mock-armada/two.png",
           licensePlate: "L 9812 KS",
           truckType: {
-            id: "550e8400-e29b-41d4-a716-446655440001",
+            id: "tt-002",
             name: "Medium Truk 6x2",
           },
           carrierType: {
-            id: "550e8400-e29b-41d4-a716-446655440001",
+            id: "ct-004",
             name: "Tangki",
           },
           vehicleBrand: {
-            id: "550e8400-e29b-41d4-a716-446655440002",
+            id: "vb-001",
             name: "Hino",
           },
           vehicleType: {
-            id: "550e8400-e29b-41d4-a716-446655440003",
+            id: "vt-004",
             name: "136 HDL 6x2",
           },
           assignedDriver: null,
@@ -86,23 +86,23 @@ const apiResultProcessVehicles = {
           pendingUpdateDriver: false,
         },
         {
-          id: "550e8400-e29b-41d4-a716-446655440023",
-          photoUrl: "https://picsum.photos/300/300",
+          id: "vhc-010",
+          photoUrl: "/img/mock-armada/three.png",
           licensePlate: "L 8310 SH",
           truckType: {
-            id: "550e8400-e29b-41d4-a716-446655440002",
+            id: "tt-003",
             name: "Colt Diesel Double",
           },
           carrierType: {
-            id: "550e8400-e29b-41d4-a716-446655440002",
+            id: "ct-005",
             name: "Dump",
           },
           vehicleBrand: {
-            id: "550e8400-e29b-41d4-a716-446655440001",
+            id: "vb-002",
             name: "Mitsubishi Fuso",
           },
           vehicleType: {
-            id: "550e8400-e29b-41d4-a716-446655440001",
+            id: "vt-005",
             name: "Canter 74 HD",
           },
           assignedDriver: null,
@@ -126,27 +126,28 @@ const apiResultProcessVehicles = {
       },
       dataFilter: {
         truckType: [
-          { id: "550e8400-e29b-41d4-a716-446655440000", value: "Truk Besar" },
-          { id: "550e8400-e29b-41d4-a716-446655440001", value: "Truk Sedang" },
-          { id: "550e8400-e29b-41d4-a716-446655440002", value: "Truk Kecil" },
+          { id: "tt-001", value: "Truk Besar" },
+          { id: "tt-002", value: "Truk Sedang" },
+          { id: "tt-003", value: "Truk Kecil" },
         ],
         carrierType: [
-          { id: "550e8400-e29b-41d4-a716-446655440000", value: "Box" },
-          { id: "550e8400-e29b-41d4-a716-446655440001", value: "Flatbed" },
-          { id: "550e8400-e29b-41d4-a716-446655440002", value: "Pick Up" },
+          { id: "ct-001", value: "Box" },
+          { id: "ct-002", value: "Flatbed" },
+          { id: "ct-003", value: "Pick Up" },
+          { id: "ct-004", value: "Tangki" },
+          { id: "ct-005", value: "Dump" },
         ],
         vehicleBrand: [
-          { id: "550e8400-e29b-41d4-a716-446655440000", value: "Hino" },
-          { id: "550e8400-e29b-41d4-a716-446655440001", value: "Mitsubishi" },
-          { id: "550e8400-e29b-41d4-a716-446655440002", value: "Isuzu" },
+          { id: "vb-001", value: "Hino" },
+          { id: "vb-002", value: "Mitsubishi" },
+          { id: "vb-003", value: "Isuzu" },
         ],
         vehicleType: [
-          { id: "550e8400-e29b-41d4-a716-446655440000", value: "Hino Dutro" },
-          {
-            id: "550e8400-e29b-41d4-a716-446655440001",
-            value: "Mitsubishi Canter",
-          },
-          { id: "550e8400-e29b-41d4-a716-446655440002", value: "Isuzu Elf" },
+          { id: "vt-001", value: "Hino Dutro" },
+          { id: "vt-002", value: "Mitsubishi Canter" },
+          { id: "vt-003", value: "Isuzu Elf" },
+          { id: "vt-004", value: "136 HDL 6x2" },
+          { id: "vt-005", value: "Canter 74 HD" },
         ],
         status: [
           { id: "DALAM_TINJAUAN", value: "Dalam Tinjauan" },

@@ -11,23 +11,23 @@ const apiResultInactiveVehicles = {
     Data: {
       vehicles: [
         {
-          id: "550e8400-e29b-41d4-a716-446655440015",
-          photoUrl: "https://picsum.photos/300/300",
+          id: "vhc-004",
+          photoUrl: "/img/mock-armada/two.png",
           licensePlate: "B 9876 XYZ",
           truckType: {
-            id: "550e8400-e29b-41d4-a716-446655440000",
+            id: "tt-001",
             name: "Truk Besar",
           },
           carrierType: {
-            id: "550e8400-e29b-41d4-a716-446655440001",
+            id: "ct-001",
             name: "Box",
           },
           vehicleBrand: {
-            id: "550e8400-e29b-41d4-a716-446655440002",
+            id: "vb-001",
             name: "Hino",
           },
           vehicleType: {
-            id: "550e8400-e29b-41d4-a716-446655440003",
+            id: "vt-001",
             name: "Hino Dutro",
           },
           assignedDriver: null,
@@ -36,27 +36,27 @@ const apiResultInactiveVehicles = {
           pendingUpdateDriver: false,
         },
         {
-          id: "550e8400-e29b-41d4-a716-446655440016",
-          photoUrl: "https://picsum.photos/300/300",
+          id: "vhc-005",
+          photoUrl: "/img/mock-armada/three.png",
           licensePlate: "B 5432 LMN",
           truckType: {
-            id: "550e8400-e29b-41d4-a716-446655440001",
+            id: "tt-002",
             name: "Truk Sedang",
           },
           carrierType: {
-            id: "550e8400-e29b-41d4-a716-446655440002",
+            id: "ct-003",
             name: "Pick Up",
           },
           vehicleBrand: {
-            id: "550e8400-e29b-41d4-a716-446655440002",
+            id: "vb-003",
             name: "Isuzu",
           },
           vehicleType: {
-            id: "550e8400-e29b-41d4-a716-446655440002",
+            id: "vt-003",
             name: "Isuzu Elf",
           },
           assignedDriver: {
-            id: "550e8400-e29b-41d4-a716-446655440012",
+            id: "drv-004",
             fullName: "Raden Cakradana Ardhanurahman Yudhatama",
             whatsappNumber: "081234567890",
           },
@@ -65,23 +65,23 @@ const apiResultInactiveVehicles = {
           pendingUpdateDriver: false,
         },
         {
-          id: "550e8400-e29b-41d4-a716-446655440017",
-          photoUrl: "https://picsum.photos/300/300",
+          id: "vhc-006",
+          photoUrl: "/img/mock-armada/one.png",
           licensePlate: "B 7890 OPQ",
           truckType: {
-            id: "550e8400-e29b-41d4-a716-446655440000",
+            id: "tt-001",
             name: "Truk Besar",
           },
           carrierType: {
-            id: "550e8400-e29b-41d4-a716-446655440001",
+            id: "ct-002",
             name: "Flatbed",
           },
           vehicleBrand: {
-            id: "550e8400-e29b-41d4-a716-446655440001",
+            id: "vb-002",
             name: "Mitsubishi",
           },
           vehicleType: {
-            id: "550e8400-e29b-41d4-a716-446655440001",
+            id: "vt-002",
             name: "Mitsubishi Canter",
           },
           assignedDriver: null,

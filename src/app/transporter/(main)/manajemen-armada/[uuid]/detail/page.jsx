@@ -1,10 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import React from "react";
 
+import { Alert } from "@/components/Alert/Alert";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
+import Button from "@/components/Button/Button";
 import Card, { CardContent } from "@/components/Card/Card";
 import {
   Collapsible,
@@ -12,26 +14,40 @@ import {
   CollapsibleTrigger,
 } from "@/components/Collapsible";
 import IconComponent from "@/components/IconComponent/IconComponent";
+// Import both LightboxProvider and LightboxPreview
+import {
+  LightboxPreview,
+  LightboxProvider,
+} from "@/components/Lightbox/Lightbox";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import { cn } from "@/lib/utils";
 import { useGetVehicleDetail } from "@/services/Transporter/manajemen-armada/getVehiclesDetail";
 
 const DetailRow = ({
   label,
   children,
   isLink = false,
-  hasBorderBottom = true,
+  hasBorderBottom = false,
 }) => (
   <div
-    className={`flex items-center justify-between py-4 ${hasBorderBottom ? "border-b-[0.5px] border-neutral-600" : ""}`}
+    className={cn(
+      "flex h-full w-full flex-row items-center justify-between pb-4 pt-4 first:pt-0 last:pb-0",
+      hasBorderBottom && "border-b-[0.5px] border-neutral-600"
+    )}
   >
-    <p className="text-sm text-neutral-700">{label}</p>
-    <div
-      className={`text-sm font-semibold ${isLink ? "text-success-400 underline" : "font-bold text-neutral-900"}`}
-    >
+    <p className="text-xs font-medium text-neutral-700">{label}</p>
+    <div className={cn("text-sm font-semibold", isLink && "text-success-400")}>
       {children}
     </div>
   </div>
 );
+
+const VehiclesPhotoTranslate = {
+  FRONT: "Depan",
+  BACK: "Belakang",
+  LEFT: "Kiri",
+  RIGHT: "Kanan",
+};
 
 const Page = () => {
   const { uuid } = useParams();
@@ -52,143 +68,197 @@ const Page = () => {
   const formatDate = (dateString) =>
     new Date(dateString).toLocaleDateString("id-ID", {
       year: "numeric",
-      month: "long",
+      month: "short",
       day: "numeric",
     });
 
-  return (
-    <div className="flex flex-col gap-6 py-8">
-      <BreadCrumb data={breadCrumbData} />
-      <PageTitle>Detail Armada</PageTitle>
+  // Create an array of image URLs to pass to the LightboxProvider
+  const vehicleImages = vehicle.photos.map((photo) => photo.photoUrl);
 
-      {/* Main Details Card (remains static) */}
-      <Card className="shadow-muat rounded-2xl border-none p-2 pb-4 pl-2 pr-2 pt-4">
-        <CardContent className="space-y-5 !p-6">
-          <div>
-            <DetailRow hasBorderBottom={false} label="No. Polisi Kendaraan">
-              {vehicle.licensePlate}
-            </DetailRow>
-            <DetailRow hasBorderBottom={false} label="Jenis Truk">
-              {vehicle.truckType.name}
-            </DetailRow>
-            <DetailRow hasBorderBottom={false} label="Jenis Carrier">
-              {vehicle.carrierType.name}
-            </DetailRow>
-            <DetailRow hasBorderBottom={false} label="Merek Kendaraan">
-              {vehicle.vehicleBrand.name}
-            </DetailRow>
-            <DetailRow hasBorderBottom={false} label="Tipe Kendaraan">
-              {vehicle.vehicleType.name}
-            </DetailRow>
-            <DetailRow
-              hasBorderBottom={false}
-              label="Tahun Registrasi Kendaraan"
-            >
-              {vehicle.registrationYear}
-            </DetailRow>
-            <DetailRow
-              hasBorderBottom={false}
-              label="Dimensi Carrier"
-            >{`${vehicle.carrierLength}x${vehicle.carrierWidth}x${vehicle.carrierHeight} m`}</DetailRow>
+  const documentRows = [];
+  documentRows.push(
+    <DetailRow key="nomor-rangka" label="Nomor Rangka">
+      {vehicle.chassisNumber}
+    </DetailRow>
+  );
+  documentRows.push(
+    <DetailRow key="stnk-expiry" label="Masa Berlaku STNK">
+      {formatDate(vehicle.stnkExpiryDate)}
+    </DetailRow>
+  );
+
+  const stnkDoc = vehicle.documents.find((doc) => doc.documentType === "STNK");
+  if (stnkDoc) {
+    documentRows.push(
+      <DetailRow key="stnk-doc" label="Foto STNK" isLink>
+        <Link
+          href={stnkDoc.documentUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {stnkDoc.documentName}
+        </Link>
+      </DetailRow>
+    );
+  }
+
+  const pajakDoc = vehicle.documents.find(
+    (doc) => doc.documentType === "VEHICLE_TAX"
+  );
+  if (pajakDoc) {
+    documentRows.push(
+      <DetailRow key="pajak-doc" label="Foto Pajak Kendaraan" isLink>
+        <Link
+          href={pajakDoc.documentUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {pajakDoc.documentName}
+        </Link>
+      </DetailRow>
+    );
+  }
+
+  documentRows.push(
+    <DetailRow key="kir-number" label="KIR Kendaraan">
+      {vehicle.kirNumber}
+    </DetailRow>
+  );
+  documentRows.push(
+    <DetailRow key="kir-expiry" label="Masa Berlaku KIR">
+      {formatDate(vehicle.kirExpiryDate)}
+    </DetailRow>
+  );
+
+  const kirDoc = vehicle.documents.find((doc) => doc.documentType === "KIR");
+  if (kirDoc) {
+    documentRows.push(
+      <DetailRow key="kir-doc" label="Foto Buku KIR" isLink>
+        <Link
+          href={kirDoc.documentUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {kirDoc.documentName}
+        </Link>
+      </DetailRow>
+    );
+  }
+
+  return (
+    // 1. Wrap your component with LightboxProvider
+    <LightboxProvider images={vehicleImages} title="Foto Armada">
+      <div className="flex flex-col gap-2 py-6">
+        <BreadCrumb data={breadCrumbData} />
+        <div className="flex items-center justify-between">
+          <PageTitle className="mb-0">Detail Armada</PageTitle>
+          <Button className="h-[32px] w-[112px]">Ubah</Button>
+        </div>
+
+        <Alert size="big" variant="error">
+          <div className="flex flex-col">
+            <h1 className="text-xs font-bold">
+              Verifikasi Data Driver Anda Ditolak!
+            </h1>
+            <p className="text-xs font-medium">
+              Alasan verifikasi ditolak: {vehicle.rejectReason}
+            </p>
           </div>
-          <Collapsible defaultOpen>
-            <CollapsibleTrigger className="rounded-t-xl bg-primary-50 px-6 hover:no-underline">
-              <h3 className="font-bold text-primary-800">Foto Armada</h3>
-              <IconComponent
-                src="/icons/chevron-down.svg"
-                className="h-5 w-5 transition-transform duration-300"
-              />
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <div className="p-6">
-                {/* We get the 'index' and the 'array' from the map function */}
-                {vehicle.photos.map((photo, index, array) => (
-                  <DetailRow
-                    key={photo.id}
-                    label={`Foto ${photo.photoType.toLowerCase().replace(/^\w/, (c) => c.toUpperCase())} Kendaraan`}
-                    hasBorderBottom={index < array.length - 1}
-                  >
-                    <div className="relative h-[68px] w-[68px]">
-                      <Image
-                        src={photo.photoUrl}
+        </Alert>
+
+        <Card className="shadow-muat rounded-2xl border-none">
+          <CardContent className="space-y-5 !p-6">
+            <div>
+              <DetailRow hasBorderBottom={false} label="No. Polisi Kendaraan">
+                {vehicle.licensePlate}
+              </DetailRow>
+              <DetailRow hasBorderBottom={false} label="Jenis Truk">
+                {vehicle.truckType.name}
+              </DetailRow>
+              <DetailRow hasBorderBottom={false} label="Jenis Carrier">
+                {vehicle.carrierType.name}
+              </DetailRow>
+              <DetailRow hasBorderBottom={false} label="Merek Kendaraan">
+                {vehicle.vehicleBrand.name}
+              </DetailRow>
+              <DetailRow hasBorderBottom={false} label="Tipe Kendaraan">
+                {vehicle.vehicleType.name}
+              </DetailRow>
+              <DetailRow
+                hasBorderBottom={false}
+                label="Tahun Registrasi Kendaraan"
+              >
+                {vehicle.registrationYear}
+              </DetailRow>
+              <DetailRow
+                hasBorderBottom={false}
+                label="Dimensi Carrier"
+              >{`${vehicle.carrierLength}x${vehicle.carrierWidth}x${vehicle.carrierHeight} m`}</DetailRow>
+              <DetailRow
+                hasBorderBottom={false}
+                label="Dimensi Estimasi Tanggal Pemasangan GPS*"
+              >{`${formatDate(
+                vehicle.gpsInstallationEstimateStartDate
+              )} s/d ${formatDate(
+                vehicle.gpsInstallationEstimateEndDate
+              )}`}</DetailRow>
+            </div>
+
+            {/* Vehicle Photos Section */}
+            <Collapsible defaultOpen>
+              <CollapsibleTrigger className="rounded-t-md bg-primary-50 px-6 hover:no-underline">
+                <h3 className="font-semibold">Foto Armada</h3>
+                <IconComponent
+                  src="/icons/chevron-down.svg"
+                  className="h-5 w-5 transition-transform duration-300"
+                />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="p-4">
+                  {vehicle.photos.map((photo, index, array) => (
+                    <DetailRow
+                      key={photo.id}
+                      label={`Foto ${
+                        VehiclesPhotoTranslate[photo.photoType] ||
+                        photo.photoType
+                      } Kendaraan`}
+                      hasBorderBottom={index < array.length - 1}
+                    >
+                      {/* 2. Replace the old image with LightboxPreview */}
+                      <LightboxPreview
+                        image={photo.photoUrl}
                         alt={photo.photoName}
-                        fill={true}
-                        className="rounded-md object-cover"
+                        index={index}
                       />
-                    </div>
-                  </DetailRow>
-                ))}
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-          <Collapsible defaultOpen>
-            <CollapsibleTrigger className="rounded-t-xl bg-primary-50 px-6 hover:no-underline">
-              <h3 className="font-bold text-primary-800">Dokumen Armada</h3>
-              <IconComponent
-                src="/icons/chevron-down.svg"
-                className="h-5 w-5 transition-transform duration-300"
-              />
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <div className="p-6">
-                <DetailRow label="Nomor Rangka">
-                  {vehicle.chassisNumber}
-                </DetailRow>
-                <DetailRow label="Masa Berlaku STNK">
-                  {formatDate(vehicle.stnkExpiryDate)}
-                </DetailRow>
-                {vehicle.documents.find(
-                  (doc) => doc.documentType === "STNK"
-                ) && (
-                  <DetailRow label="Foto STNK" isLink>
-                    <Link
-                      href={
-                        vehicle.documents.find(
-                          (doc) => doc.documentType === "STNK"
-                        ).documentUrl
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {
-                        vehicle.documents.find(
-                          (doc) => doc.documentType === "STNK"
-                        ).documentName
-                      }
-                    </Link>
-                  </DetailRow>
-                )}
-                <DetailRow label="KIR Kendaraan">{vehicle.kirNumber}</DetailRow>
-                <DetailRow label="Masa Berlaku KIR">
-                  {formatDate(vehicle.kirExpiryDate)}
-                </DetailRow>
-                {vehicle.documents.find(
-                  (doc) => doc.documentType === "KIR"
-                ) && (
-                  <DetailRow label="Foto Buku KIR" isLink>
-                    <Link
-                      href={
-                        vehicle.documents.find(
-                          (doc) => doc.documentType === "KIR"
-                        ).documentUrl
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {
-                        vehicle.documents.find(
-                          (doc) => doc.documentType === "KIR"
-                        ).documentName
-                      }
-                    </Link>
-                  </DetailRow>
-                )}
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-        </CardContent>
-      </Card>
-    </div>
+                    </DetailRow>
+                  ))}
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+
+            {/* Vehicle Documents Section */}
+            <Collapsible defaultOpen>
+              <CollapsibleTrigger className="rounded-t-md bg-primary-50 px-6 hover:no-underline">
+                <h3 className="font-semibold">Dokumen Armada</h3>
+                <IconComponent
+                  src="/icons/chevron-down.svg"
+                  className="h-5 w-5 transition-transform duration-300"
+                />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="p-4">
+                  {documentRows.map((row, index) =>
+                    React.cloneElement(row, {
+                      hasBorderBottom: index < documentRows.length - 1,
+                    })
+                  )}
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          </CardContent>
+        </Card>
+      </div>
+    </LightboxProvider>
   );
 };
 

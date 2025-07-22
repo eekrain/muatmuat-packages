@@ -4,26 +4,24 @@ import { useEffect, useState } from "react";
 
 import { Search } from "lucide-react";
 
+import Button from "@/components/Button/Button";
+import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import Input from "@/components/Form/Input";
+import IconComponent from "@/components/IconComponent/IconComponent";
+import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import RadioButton from "@/components/Radio/RadioButton";
-
-import Button from "../Button/Button";
-import DataNotFound from "../DataNotFound/DataNotFound";
-import IconComponent from "../IconComponent/IconComponent";
-import { Modal, ModalContent, ModalHeader } from "./Modal";
+import { toast } from "@/lib/toast";
+import { useGetDriversList } from "@/services/Transporter/manajemen-armada/getDriversList";
+import { updateVehicleDriver } from "@/services/Transporter/manajemen-armada/updateVehicleDriver";
 
 const DriverSelectionModal = ({
   open,
   onOpenChange,
-  onSave,
+  onSuccess,
   vehicleId,
-  vehiclePlate = "L 8312 L", // Add vehicle plate prop
+  vehiclePlate = "L 8312 L",
   currentDriverId,
-  title = "Ubah Driver", // Allow custom title
-  drivers = [],
-  isLoading = false,
-  error = null,
-  onSearch,
+  title = "Ubah Driver",
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [selectedDriverId, setSelectedDriverId] = useState(
@@ -32,6 +30,23 @@ const DriverSelectionModal = ({
   const [viewingPhoto, setViewingPhoto] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState(null);
+  const [showVehicleWarning, setShowVehicleWarning] = useState(false);
+  const [driverWithVehicle, setDriverWithVehicle] = useState(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  // Fetch drivers list with integrated API
+  const {
+    data: driversData,
+    error: driversError,
+    isLoading: driversLoading,
+    mutate: refetchDrivers,
+  } = useGetDriversList({
+    page: 1,
+    limit: 50, // Increased limit for better UX
+    search: searchValue,
+  });
+
+  const drivers = driversData?.drivers || [];
 
   // Update selected driver when modal opens with current driver
   useEffect(() => {
@@ -43,36 +58,65 @@ const DriverSelectionModal = ({
     if (!open) {
       setSearchValue("");
       setViewingPhoto(null);
+      setSelectedDriverId(currentDriverId || null);
+      setShowConfirmation(false);
+      setShowVehicleWarning(false);
     }
-  }, [open]);
-
-  // Handle search with debounce
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      onSearch?.(searchValue);
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [searchValue, onSearch]);
+  }, [open, currentDriverId]);
 
   const handleSave = () => {
     if (selectedDriverId && selectedDriverId !== currentDriverId) {
       const driver = drivers.find((d) => d.id === selectedDriverId);
       setSelectedDriver(driver);
-      setShowConfirmation(true);
+
+      // Check if selected driver has a current vehicle
+      if (driver && driver.currentVehicle) {
+        setDriverWithVehicle(driver);
+        setShowVehicleWarning(true);
+      } else {
+        setShowConfirmation(true);
+      }
     }
   };
 
-  const handleConfirm = () => {
-    if (selectedDriverId && onSave) {
-      onSave(vehicleId, selectedDriverId);
-      setShowConfirmation(false);
-      onOpenChange(false);
+  const handleConfirm = async () => {
+    if (selectedDriverId && vehicleId) {
+      setIsUpdating(true);
+      try {
+        await updateVehicleDriver(vehicleId, selectedDriverId);
+
+        // Success handling
+        toast.success("Berhasil mengubah driver");
+        setShowConfirmation(false);
+        onOpenChange(false);
+
+        // Call success callback
+        onSuccess?.(vehicleId, selectedDriverId);
+
+        // Refresh drivers list
+        refetchDrivers();
+      } catch (error) {
+        console.error("Failed to update driver:", error);
+        toast.error("Gagal mengubah driver. Silakan coba lagi.");
+      } finally {
+        setIsUpdating(false);
+      }
     }
   };
 
   const handleCancelConfirm = () => {
     setShowConfirmation(false);
+  };
+
+  const handleVehicleWarningConfirm = () => {
+    setShowVehicleWarning(false);
+    // After confirming the warning, show the confirmation modal
+    setShowConfirmation(true);
+  };
+
+  const handleVehicleWarningCancel = () => {
+    setShowVehicleWarning(false);
+    setDriverWithVehicle(null);
   };
 
   return (
@@ -105,9 +149,6 @@ const DriverSelectionModal = ({
                   alt={viewingPhoto.fullName}
                   className="aspect-square h-full w-full rounded-xl border border-neutral-400 object-cover"
                 />
-                {/* <p className="mt-4 text-sm font-semibold">
-                {viewingPhoto.fullName}
-              </p> */}
               </div>
             ) : (
               <>
@@ -128,11 +169,11 @@ const DriverSelectionModal = ({
 
                 {/* Driver List */}
                 <div className="-mr-3 mt-4 h-[321px] divide-y overflow-y-auto pr-2">
-                  {isLoading ? (
+                  {driversLoading ? (
                     <div className="flex h-[200px] items-center justify-center">
                       <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-700 border-t-transparent"></div>
                     </div>
-                  ) : error ? (
+                  ) : driversError ? (
                     <div className="flex h-[200px] items-center justify-center">
                       <p className="text-sm text-error-400">
                         Gagal memuat data driver
@@ -151,7 +192,6 @@ const DriverSelectionModal = ({
                         onClick={() => setSelectedDriverId(driver.id)}
                       >
                         {/* Driver Photo */}
-
                         <img
                           src={
                             driver.driverPhotoUrl || "/img/default-driver.png"
@@ -185,7 +225,7 @@ const DriverSelectionModal = ({
                                 "h-3 w-3 text-muat-trans-secondary-900"
                               }
                             />
-                            {driver.currentVehicle}
+                            {driver.currentVehicle || "-"}
                           </div>
                         </div>
 
@@ -206,7 +246,9 @@ const DriverSelectionModal = ({
                   variant="muattrans-primary"
                   onClick={handleSave}
                   disabled={
-                    !selectedDriverId || selectedDriverId === currentDriverId
+                    !selectedDriverId ||
+                    selectedDriverId === currentDriverId ||
+                    driversLoading
                   }
                   className="mx-auto mt-4"
                 >
@@ -240,6 +282,7 @@ const DriverSelectionModal = ({
                 className="h-8 w-28"
                 onClick={handleCancelConfirm}
                 type="button"
+                disabled={isUpdating}
               >
                 Batal
               </Button>
@@ -248,6 +291,70 @@ const DriverSelectionModal = ({
                 className="h-8 w-28"
                 onClick={handleConfirm}
                 type="button"
+                disabled={isUpdating}
+              >
+                {isUpdating ? (
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                ) : (
+                  "Ya"
+                )}
+              </Button>
+            </div>
+          </div>
+        </ModalContent>
+      </Modal>
+
+      {/* Vehicle Warning Modal */}
+      <Modal
+        open={showVehicleWarning}
+        onOpenChange={setShowVehicleWarning}
+        closeOnOutsideClick={false}
+      >
+        <ModalContent className="w-[386px]" type="muattrans">
+          <ModalHeader type="muattrans" size="small" />
+          <div className="px-6 py-8">
+            <div className="text-center">
+              <div className="mb-6 text-sm font-medium">
+                <span className="font-bold">{driverWithVehicle?.fullName}</span>{" "}
+                saat ini sedang terpasang dengan{" "}
+                <span className="font-bold">
+                  {" "}
+                  No. Polisi : {driverWithVehicle?.currentVehicle}
+                </span>
+              </div>
+
+              <div className="mb-8 text-sm font-medium">
+                Jika kamu melanjutkan perubahan,{" "}
+                <span className="font-bold">
+                  No. Polisi : {driverWithVehicle?.currentVehicle}
+                </span>{" "}
+                akan terlepas dari driver tersebut.
+                <br />
+                Apakah Anda yakin ingin memasangkan{" "}
+                <span className="font-bold">
+                  {driverWithVehicle?.fullName}
+                </span>{" "}
+                ke{" "}
+                <span className="font-bold">No. Polisi : {vehiclePlate}</span> ?
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center gap-3">
+              <Button
+                variant="muattrans-primary-secondary"
+                className="h-8 w-[104px]"
+                onClick={handleVehicleWarningCancel}
+                type="button"
+                disabled={isUpdating}
+              >
+                Batal
+              </Button>
+              <Button
+                variant="muattrans-primary"
+                className="h-8 w-[104px]"
+                onClick={handleVehicleWarningConfirm}
+                type="button"
+                disabled={isUpdating}
               >
                 Ya
               </Button>
