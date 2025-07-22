@@ -83,7 +83,6 @@ export const InputSearch = ({
   setSearchValue,
   hideDropdown = false,
   errorMessage = null,
-  dropdownRef,
   ...props
 }) => {
   const inputRef = useRef(null);
@@ -119,7 +118,7 @@ export const InputSearch = ({
       searchValue.length > 0 &&
       options.length > 0 &&
       !hideDropdown ? (
-        <div ref={dropdownRef} className="relative">
+        <div className="relative">
           <FilterableMenu
             options={options}
             filterText={searchValue}

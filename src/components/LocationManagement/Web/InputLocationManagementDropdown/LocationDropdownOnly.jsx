@@ -10,7 +10,6 @@ import { Portal } from "@radix-ui/react-portal";
 
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { useRegisterModalPortalNode } from "@/components/Modal/useRegisterModalPortalNode";
 import { cn } from "@/lib/utils";
 
 export const LocationDropdownOnly = ({
@@ -36,9 +35,6 @@ export const LocationDropdownOnly = ({
   const dropdownRef = useRef(null);
   const [dropdownStyle, setDropdownStyle] = useState(null);
   const scrollParentRef = useRef(null);
-
-  // Get the callback ref from the hook
-  const setDropdownRef = useRegisterModalPortalNode([isDropdownSearchOpen]);
 
   // Function to find the first scrollable parent
   const getScrollParent = useCallback((node) => {
@@ -305,7 +301,7 @@ export const LocationDropdownOnly = ({
       />
       {isDropdownSearchOpen && dropdownStyle && (
         <Portal>
-          <div ref={setDropdownRef}>{dropdown}</div>
+          <div>{dropdown}</div>
         </Portal>
       )}
     </div>
