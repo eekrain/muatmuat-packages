@@ -43,6 +43,8 @@ const apiResultVehicleDetail = {
         kirExpiryDate: "2025-12-31",
         status: "ACTIVE",
         rejectReason: "Plat bodong",
+        gpsInstallationEstimateStartDate: "2025-11-31",
+        gpsInstallationEstimateEndDate: "2025-12-31",
         assignedDriver: {
           id: "550e8400-e29b-41d4-a716-446655440012",
           fullName: "John Doe",
@@ -52,31 +54,7 @@ const apiResultVehicleDetail = {
         photos: [
           {
             id: "550e8400-e29b-41d4-a716-446655440004",
-            photoType: "STNK",
-            photoName: "STNK.jpg",
-            photoUrl: "https://picsum.photos/200/300",
-          },
-          {
-            id: "550e8400-e29b-41d4-a716-446655440004",
             photoType: "FRONT",
-            photoName: "FRONT.jpg",
-            photoUrl: "https://picsum.photos/200/300",
-          },
-          {
-            id: "550e8400-e29b-41d4-a716-446655440004",
-            photoType: "BEHIND",
-            photoName: "FRONT.jpg",
-            photoUrl: "https://picsum.photos/200/300",
-          },
-          {
-            id: "550e8400-e29b-41d4-a716-446655440004",
-            photoType: "RIGHT",
-            photoName: "FRONT.jpg",
-            photoUrl: "https://picsum.photos/200/300",
-          },
-          {
-            id: "550e8400-e29b-41d4-a716-446655440004",
-            photoType: "LEFT",
             photoName: "FRONT.jpg",
             photoUrl: "https://picsum.photos/200/300",
           },
@@ -88,6 +66,20 @@ const apiResultVehicleDetail = {
             documentName: "STNK.pdf",
             documentUrl:
               "https://cdn.muatrans.com/vehicles/documents/550e8400-e29b-41d4-a716-446655440008.pdf",
+          },
+          {
+            id: "550e8400-e29b-41d4-a716-446655440009",
+            documentType: "KIR",
+            documentName: "KIR.pdf",
+            documentUrl:
+              "https://cdn.muatrans.com/vehicles/documents/550e8400-e29b-41d4-a716-446655440009.pdf",
+          },
+          {
+            id: "550e8400-e29b-41d4-a716-4466554400010",
+            documentType: "VEHICLE_TAX",
+            documentName: "VEHICLE_TAX.pdf",
+            documentUrl:
+              "https://cdn.muatrans.com/vehicles/documents/550e8400-e29b-41d4-a716-4466554400010.pdf",
           },
         ],
       },

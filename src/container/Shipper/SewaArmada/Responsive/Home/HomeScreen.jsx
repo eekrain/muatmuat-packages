@@ -12,6 +12,10 @@ import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import {
+  LightboxPreview,
+  LightboxProvider,
+} from "@/components/Lightbox/Lightbox";
 import TimelineField from "@/components/Timeline/timeline-field";
 import VoucherCard from "@/components/Voucher/VoucherCard";
 import VoucherEmptyState from "@/components/Voucher/VoucherEmptyState";
@@ -22,6 +26,7 @@ import { useVouchers } from "@/hooks/useVoucher";
 import DefaultResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/DefaultResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { formatDate, formatShortDate } from "@/lib/utils/dateFormat";
 import { validateVoucherClientSide } from "@/lib/utils/voucherValidation";
 import { mockValidateVoucher } from "@/services/Shipper/voucher/mockVoucherService";
@@ -44,6 +49,7 @@ const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
   const { addLokasi, removeLokasi } = useSewaArmadaActions();
   const { setField: setInformasiMuatanField } = useInformasiMuatanStore();
   const isShowCostDetail = true; // nanti pakek usestate
+  const isShowRecommendedTruckButton = true; // nanti pakek logic
 
   const handleEditInformasiMuatan = () => {
     setInformasiMuatanField("cargoTypeId", formValues.cargoTypeId);
@@ -78,7 +84,7 @@ const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
   /* voucher */
   const token = "Bearer your_token_here";
   const MOCK_EMPTY = false;
-  const useMockData = false; // Flag untuk menggunakan mock data - ubah ke false untuk menggunakan API real
+  const useMockData = true; // Flag untuk menggunakan mock data - ubah ke false untuk menggunakan API real
 
   // Gunakan hook voucher untuk mendapatkan data
   let {
@@ -99,6 +105,10 @@ const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
   const [voucherDiscount, setVoucherDiscount] = useState(0);
 
   const [isBottomsheetOpen, setIsBottomsheetOpen] = useState(false);
+  const [
+    isRecommendedTruckBottomsheetOpen,
+    setRecommendedTruckBottomsheetOpen,
+  ] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [tempSelectedVoucher, setTempSelectedVoucher] = useState(null);
   const [selectedVoucher, setSelectedVoucher] = useState(null); // Added this to store the final selected voucher
@@ -368,7 +378,14 @@ const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
   return (
     <DefaultResponsiveLayout mode="default">
       <div
-        className={`w-full bg-neutral-100 ${isShowCostDetail ? "mb-[100px]" : ""}`}
+        className={cn(
+          "w-full bg-neutral-100",
+          isShowCostDetail
+            ? isShowRecommendedTruckButton
+              ? "mb-[116px]"
+              : "mb-[56px]"
+            : ""
+        )}
       >
         <BannerCarousel banners={banners} showControls={false} />
 
@@ -531,12 +548,29 @@ const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
 
       {isShowCostDetail ? (
         <ResponsiveFooter className="flex flex-col gap-y-4">
-          {/* Total Biaya section with integrated voucher */}
-          <div className="flex w-full flex-col rounded bg-primary-50">
-            {/* Voucher section inside Total Biaya div - conditionally rendered based on bottomsheet state */}
+          {/* Pakai rekomendasi */}
+          {isShowRecommendedTruckButton ? (
+            <button
+              className="flex items-center rounded-md bg-primary-50 px-4 py-2"
+              onClick={() => setRecommendedTruckBottomsheetOpen(true)}
+            >
+              <IconComponent
+                src="/icons/recommended-truck-mobile.svg"
+                width={28}
+                height={28}
+              />
+              <div className="ml-3 mr-4 flex-1 text-left text-xs font-semibold leading-[1.1] text-neutral-900">
+                Pakai rekomendasi bisa hemat Rp200.000
+              </div>
+              <IconComponent src="/icons/chevron-right24.svg" size="medium" />
+            </button>
+          ) : null}
 
-            {/* Show voucher discount if selected */}
-            {selectedVoucher && (
+          {/* Total Biaya section with integrated voucher */}
+          {/* Voucher section inside Total Biaya div - conditionally rendered based on bottomsheet state */}
+          {/* Show voucher discount if selected */}
+          {selectedVoucher && (
+            <div className="flex w-full flex-col rounded bg-primary-50">
               <div
                 className="flex cursor-pointer items-center justify-between rounded-lg bg-blue-50 p-3 transition-colors hover:bg-blue-100"
                 onClick={() => setIsBottomsheetOpen(true)}
@@ -556,8 +590,8 @@ const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
                   alt="right-arrow"
                 />
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Action buttons */}
           <div className="flex items-center gap-x-2">
@@ -775,7 +809,7 @@ const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
                     Diskon
                   </h3>
                   <span className="rounded bg-yellow-200 px-2 py-1 text-xs font-medium text-yellow-800">
-                    Voucher test
+                    Voucher
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -867,6 +901,89 @@ const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
                 Lanjut
               </Button>
             </div>
+          </div>
+        </BottomSheetContent>
+      </BottomSheet>
+
+      {/* Bottomsheet Rekomendasi Truk */}
+      <BottomSheet
+        open={isRecommendedTruckBottomsheetOpen}
+        onOpenChange={setRecommendedTruckBottomsheetOpen}
+      >
+        <BottomSheetContent>
+          <BottomSheetHeader>Rekomendasi Kami</BottomSheetHeader>
+          <div className="flex flex-col gap-y-6 px-4 pb-6 pt-7">
+            <div className="flex items-center gap-x-2.5 rounded-md bg-warning-100 p-2">
+              <div className="size-[20px]">
+                <IconComponent
+                  className="text-secondary-400"
+                  src="icons/warning20.svg"
+                  width={20}
+                  height={20}
+                />
+              </div>
+              <p className="text-xs font-medium leading-[1.1] text-neutral-900">
+                Pastikan lokasi muat dan bongkar dapat dijangkau truk
+                rekomendasi kami untuk kelancaran proses
+              </p>
+            </div>
+            <div className="flex gap-x-3">
+              <LightboxProvider
+                className="size-[68px]"
+                title=""
+                image="/img/recommended1.png"
+              >
+                <LightboxPreview image="/img/recommended1.png" alt="" />
+              </LightboxProvider>
+              <div className="flex flex-col gap-y-3">
+                <div className="flex h-[27px] items-center">
+                  <h3 className="text-sm font-bold leading-[1.1] text-neutral-900">
+                    Colt Diesel Engkel
+                  </h3>
+                </div>
+                <span className="text-sm font-semibold leading-[1.1] text-neutral-900">
+                  Rp950.000
+                </span>
+                <div className="flex items-center gap-2">
+                  <IconComponent
+                    src="/icons/jenis-truck/scale.svg"
+                    className="size-6 text-amber-900"
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-xs font-semibold leading-[13.2px] text-black">
+                      Estimasi Kapasitas
+                    </span>
+                    <span className="text-xs font-bold leading-[13.2px] text-black">
+                      2,5 Ton
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <IconComponent
+                    src="/icons/jenis-truck/dimension.svg"
+                    className="size-6 text-amber-900"
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-xs font-semibold leading-[13.2px] text-black">
+                      {"Estimasi Dimensi (p x l x t)"}
+                    </span>
+                    <span className="text-xs font-bold leading-[13.2px] text-black">
+                      {"3,0 m x 1,7 m x 1,6 m"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <Button
+              variant="muatparts-primary"
+              className="w-full"
+              onClick={() => {
+                toast.success("Jenis armada telah berhasil diubah");
+                setRecommendedTruckBottomsheetOpen(false);
+              }}
+            >
+              Terapkan
+            </Button>
           </div>
         </BottomSheetContent>
       </BottomSheet>

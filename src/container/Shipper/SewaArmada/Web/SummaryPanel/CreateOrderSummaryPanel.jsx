@@ -3,23 +3,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import Card from "@/components/Card/Card";
-import IconComponent from "@/components/IconComponent/IconComponent";
-import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { ModalOpsiPembayaran } from "@/components/Modal/ModalOpsiPembayaran";
-import VoucherCard from "@/components/Voucher/VoucherCard";
-import VoucherEmptyState from "@/components/Voucher/VoucherEmptyState";
-import VoucherPopup from "@/components/Voucher/VoucherPopup";
-import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
 import FleetOrderConfirmationModal from "@/container/Shipper/SewaArmada/Web/FleetOrderConfirmationModal/FleetOrderConfirmationModal";
+import { VoucherContainer } from "@/container/Shipper/Voucher/Voucher";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
-import { useVouchers } from "@/hooks/useVoucher";
 import { fetcherMuatrans } from "@/lib/axios";
 import { normalizeFleetOrder } from "@/lib/normalizers/sewaarmada";
 import { cn } from "@/lib/utils";
-import { formatDate, formatShortDate } from "@/lib/utils/dateFormat";
-import { validateVoucherClientSide } from "@/lib/utils/voucherValidation";
-import { mockValidateVoucher } from "@/services/Shipper/voucher/mockVoucherService";
-import { muatTransValidateVoucher } from "@/services/Shipper/voucher/muatTransVoucherService";
+import { useTokenStore } from "@/store/AuthStore/tokenStore";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -39,31 +30,25 @@ export const CreateOrderSummaryPanel = ({
   paymentMethods,
   calculatedPrice,
 }) => {
-  // Voucher related state and hooks
-  const token = "Bearer your_token_here";
+  // Ambil token yang valid dari auth store
+  const authToken = useTokenStore((state) => state.token);
+  const token = authToken ? `Bearer ${authToken}` : null;
+
   const MOCK_EMPTY = false;
   const useMockData = false; // Flag untuk menggunakan mock data - ubah ke false untuk menggunakan API real
 
-  let {
-    vouchers: voucherList,
-    loading,
-    error,
-    refetch,
-  } = useVouchers(token, useMockData, MOCK_EMPTY); // Pass MOCK_EMPTY to hook
+  // Enhanced debugging
+  console.log("🔧 CreateOrderSummaryPanel Debug Info:", {
+    useMockData,
+    hasValidToken: !!token,
+    tokenPreview: `${token?.substring(0, 20)}...` || "No token",
+    timestamp: new Date().toISOString(),
+  });
 
-  // Keep the MOCK_EMPTY override logic from old file for backward compatibility
-  if (MOCK_EMPTY && !loading && !error) {
-    voucherList = [];
-  }
-
-  // No need to override voucherList here since hook handles MOCK_EMPTY
-  const [validationErrors, setValidationErrors] = useState({});
-  const [showVoucherPopup, setShowVoucherPopup] = useState(false);
-  const [searchKeyword, setSearchKeyword] = useState("");
+  // Simplified voucher state - most logic moved to VoucherContainer
   const [toastMessage, setToastMessage] = useState("");
   const [voucherDiscount, setVoucherDiscount] = useState(0);
   const [showVoucherSuccess, setShowVoucherSuccess] = useState(false);
-  const [validatingVoucher, setValidatingVoucher] = useState(null);
 
   const router = useRouter();
 
@@ -74,13 +59,12 @@ export const CreateOrderSummaryPanel = ({
   const formErrors = useSewaArmadaStore((state) => state.formErrors);
 
   const isBusinessEntity = businessEntity.isBusinessEntity;
-
   const { setField, validateForm } = useSewaArmadaActions();
 
   const [isModalConfirmationOpen, setIsModalConfirmationOpen] = useState(false);
 
   // Use baseOrderAmount from old file (950000 instead of 5000000)
-  const baseOrderAmount = 950000;
+  const baseOrderAmount = calculatedPrice?.totalPrice || 950000;
   const adminFee = 10000;
   const taxAmount = isBusinessEntity ? 21300 : 0;
 
@@ -88,12 +72,46 @@ export const CreateOrderSummaryPanel = ({
   const [currentTotal, setCurrentTotal] = useState(baseTotal);
   const [showInfoPopup, setShowInfoPopup] = useState(null);
 
-  const selectedVoucher = useShallowMemo(() => {
-    if (!formValues.voucherId || voucherList.length === 0) {
-      return null;
-    }
-    return voucherList.find((v) => v.id === formValues.voucherId) || null;
-  }, [formValues.voucherId, voucherList]);
+  // Get selected voucher from store
+  const selectedVoucherId = formValues.voucherId;
+
+  // Handler for voucher selection - simplified version
+  const handleVoucherSelect = (voucher) => {
+    console.log("🎯 Voucher selected:", voucher);
+
+    // Set voucher ID in form
+    setField("voucherId", voucher.id);
+
+    // Calculate discount
+    const discount = calculateDiscountAmount(voucher, baseOrderAmount);
+    setVoucherDiscount(discount);
+
+    // Show success toast
+    setToastMessage(`Voucher ${voucher.code} berhasil diterapkan!`);
+    setShowVoucherSuccess(true);
+    setTimeout(() => setToastMessage(""), 3000);
+    setTimeout(() => setShowVoucherSuccess(false), 5000);
+  };
+
+  // Initialize VoucherContainer
+  const voucherContainer = VoucherContainer({
+    selectedVoucher: null, // Will be managed by VoucherContainer
+    baseOrderAmount,
+    onVoucherSelect: handleVoucherSelect,
+    useMockData,
+  });
+
+  // Get selected voucher details for display
+  const selectedVoucherDetails = voucherContainer.voucherList?.find(
+    (v) => v.id === selectedVoucherId
+  );
+
+  console.log("🔍 Voucher Debug:", {
+    selectedVoucherId,
+    selectedVoucherDetails,
+    voucherListLength: voucherContainer.voucherList?.length || 0,
+    voucherDiscount,
+  });
 
   // Keep priceSummary logic from old file with useShallowMemo
   const priceSummary = useShallowMemo(() => {
@@ -130,14 +148,14 @@ export const CreateOrderSummaryPanel = ({
             },
           ]
         : []),
-      ...(selectedVoucher
+      ...(selectedVoucherDetails
         ? [
             {
               title: "Diskon Voucher",
               items: [
                 {
-                  label: `Voucher (${selectedVoucher.code})`,
-                  price: calculatedPrice.voucher,
+                  label: `Voucher (${selectedVoucherDetails.code})`,
+                  price: calculatedPrice.voucher || voucherDiscount,
                 },
               ],
             },
@@ -157,7 +175,13 @@ export const CreateOrderSummaryPanel = ({
         ],
       },
     ];
-  }, [calculatedPrice, truckTypeId, truckCount, selectedVoucher]);
+  }, [
+    calculatedPrice,
+    truckTypeId,
+    truckCount,
+    selectedVoucherDetails,
+    voucherDiscount,
+  ]);
 
   // Also create detailPesanan structure for new logic integration
   // const detailPesanan = [
@@ -197,9 +221,19 @@ export const CreateOrderSummaryPanel = ({
 
   // Calculate total when voucher or base amounts change (from old file logic)
   useEffect(() => {
-    if (selectedVoucher) {
+    if (selectedVoucherId) {
       const discount = calculateDiscountAmount(
-        selectedVoucher,
+        {
+          id: selectedVoucherId,
+          code: "VOUCHER_CODE",
+          discountAmount: 0,
+          discountPercentage: 0,
+          minOrderAmount: 0,
+          quota: 0,
+          validFrom: "2023-01-01",
+          validTo: "2023-12-31",
+          usage: { globalPercentage: 0 },
+        }, // Mock data for selectedVoucher
         baseOrderAmount
       );
       setCurrentTotal(baseOrderAmount - discount);
@@ -208,29 +242,36 @@ export const CreateOrderSummaryPanel = ({
       setCurrentTotal(baseOrderAmount);
       setVoucherDiscount(0);
     }
-  }, [selectedVoucher, baseOrderAmount]);
+  }, [selectedVoucherId, baseOrderAmount]);
 
   // Update voucher discount when selectedVoucher changes (enhanced from new logic)
   useEffect(() => {
-    if (selectedVoucher && selectedVoucher.isValid) {
-      const discount = calculateDiscountAmount(selectedVoucher, baseTotal);
+    if (selectedVoucherId) {
+      const discount = calculateDiscountAmount(
+        {
+          id: selectedVoucherId,
+          code: "VOUCHER_CODE",
+          discountAmount: 0,
+          discountPercentage: 0,
+          minOrderAmount: 0,
+          quota: 0,
+          validFrom: "2023-01-01",
+          validTo: "2023-12-31",
+          usage: { globalPercentage: 0 },
+        }, // Mock data for selectedVoucher
+        baseTotal
+      );
       setVoucherDiscount(discount);
     } else {
       setVoucherDiscount(0);
     }
-  }, [selectedVoucher, baseTotal]);
+  }, [selectedVoucherId, baseTotal]);
 
   // Update current total when base amounts change
   useEffect(() => {
     const newTotal = baseTotal - voucherDiscount;
     setCurrentTotal(newTotal);
   }, [baseTotal, voucherDiscount]);
-
-  const filteredVouchers = voucherList.filter(
-    (v) =>
-      v.code?.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-      v.description?.toLowerCase().includes(searchKeyword.toLowerCase())
-  );
 
   // Function to calculate discount amount based on voucher type (from old file)
   const calculateDiscountAmount = (voucher, total) => {
@@ -243,131 +284,6 @@ export const CreateOrderSummaryPanel = ({
     } else {
       // Use the fixed discountAmount key directly
       return parseFloat(voucher.discountAmount) || 0;
-    }
-  };
-
-  const handleVoucherSelect = async (voucher) => {
-    try {
-      // Clear previous validation errors for all vouchers
-      setValidationErrors({});
-      setValidatingVoucher(voucher.id);
-
-      // Client-side validation first (from new logic)
-      const clientValidation = validateVoucherClientSide(
-        voucher,
-        baseOrderAmount
-      );
-      if (!clientValidation.isValid) {
-        setValidationErrors({
-          [voucher.id]: clientValidation.errorMessage,
-        });
-        return;
-      }
-
-      // Server-side validation using fetcherMuatrans (from old file) or service functions (new)
-      let validationResult;
-
-      if (useMockData) {
-        // Use mock service for testing
-        validationResult = await mockValidateVoucher({
-          voucherId: voucher.id,
-          totalAmount: baseOrderAmount,
-        });
-      } else {
-        // Try new service function first, fallback to direct fetcherMuatrans
-        try {
-          validationResult = await muatTransValidateVoucher({
-            voucherId: voucher.id,
-            totalAmount: calculatedPrice?.totalPrice ?? baseOrderAmount,
-            token: token,
-          });
-        } catch (serviceError) {
-          // Fallback to direct fetcherMuatrans call (from old file)
-          const res = await fetcherMuatrans.post(
-            "/v1/orders/vouchers/validate",
-            {
-              voucherId: voucher.id,
-              totalAmount: calculatedPrice?.totalPrice ?? baseOrderAmount,
-            },
-            {
-              headers: { Authorization: token },
-            }
-          );
-
-          validationResult = {
-            isValid: res.data.Data.isValid !== false,
-            validationMessages: res.data.Data.validationMessages,
-            finalAmount: res.data.Data.finalAmount,
-          };
-        }
-      }
-
-      if (validationResult.isValid) {
-        // Voucher is valid, proceed with selection
-        const discountValue = calculateDiscountAmount(voucher, baseOrderAmount);
-
-        // Use finalAmount from API if available, otherwise calculate manually
-        if (validationResult.finalAmount) {
-          setCurrentTotal(validationResult.finalAmount);
-        }
-
-        const validatedVoucher = {
-          ...voucher,
-          isValid: true,
-          validationResult: validationResult,
-          discountAmount: discountValue, // This will hold the FINAL numerical discount value
-        };
-
-        setField("voucherId", validatedVoucher.id);
-        setShowVoucherPopup(false);
-
-        // Show success toast and highlight (from new logic)
-        setToastMessage(`Voucher ${voucher.code} berhasil diterapkan!`);
-        setShowVoucherSuccess(true);
-        setTimeout(() => setToastMessage(""), 3000);
-        setTimeout(() => setShowVoucherSuccess(false), 5000);
-      } else {
-        // Voucher is invalid, show server error with new error messages
-        const validationMessage =
-          validationResult.validationMessages?.join(", ") ||
-          "Voucher tidak valid";
-
-        setValidationErrors({
-          [voucher.id]: validationMessage,
-        });
-        setField("voucherId", null); // Clear voucher selection
-      }
-    } catch (err) {
-      console.error("Error validating voucher:", err);
-      setField("voucherId", null); // Clear voucher selection
-
-      // Enhanced error handling from old file with new error messages
-      let errorMessage = "Gagal memvalidasi voucher";
-
-      if (err.response && err.response.data && err.response.data.Data) {
-        const errorData = err.response.data.Data;
-        const validationMessage =
-          errorData.validationMessages || "Voucher tidak valid";
-
-        // Use new error message format instead of label codes
-        if (validationMessage === "labelAlertVoucherMTExpired") {
-          errorMessage = "Voucher sudah tidak berlaku";
-        } else if (validationMessage === "labelAlertVoucherMTMinimumOrder") {
-          errorMessage = `Minimal Transaksi Rp ${voucher.minOrderAmount?.toLocaleString("id-ID") || "0"}`;
-        } else if (validationMessage === "labelAlertVoucherMTKuotaHabis") {
-          errorMessage = "Kuota voucher sudah habis";
-        } else {
-          errorMessage = validationMessage;
-        }
-      } else if (err.message) {
-        errorMessage = err.message;
-      }
-
-      setValidationErrors({
-        [voucher.id]: errorMessage,
-      });
-    } finally {
-      setValidatingVoucher(null);
     }
   };
 
@@ -506,11 +422,11 @@ export const CreateOrderSummaryPanel = ({
           </h3>
           <div className="scrollbar-custombadanusaha mr-[-12px] flex max-h-[263px] flex-col gap-y-6 overflow-y-auto pr-2">
             <button
-              onClick={() => setShowVoucherPopup(true)}
-              className="flex w-full items-center justify-between rounded-md border border-blue-600 bg-primary-50 px-4 py-3 text-sm text-blue-700 hover:bg-blue-50"
+              onClick={() => voucherContainer.openVoucherPopup()}
+              className="mb-px flex w-full items-center justify-between rounded-md border border-blue-600 bg-primary-50 px-4 py-3 text-sm text-blue-700 hover:bg-blue-50"
             >
               <div className="flex items-center gap-2">
-                {selectedVoucher ? (
+                {selectedVoucherId ? (
                   <>
                     <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-xs text-white">
                       1
@@ -538,7 +454,7 @@ export const CreateOrderSummaryPanel = ({
             </button>
 
             {/* Selected Voucher Info */}
-            {selectedVoucher && (
+            {selectedVoucherDetails && (
               <div
                 className={`hidden items-center justify-between rounded-md border px-3 py-2 transition-all duration-500 ${
                   showVoucherSuccess
@@ -548,7 +464,7 @@ export const CreateOrderSummaryPanel = ({
               >
                 <div className="flex flex-col">
                   <span className="text-sm font-medium text-green-800">
-                    {selectedVoucher.code}
+                    {selectedVoucherDetails.code}
                   </span>
                   <span className="text-xs text-green-600">
                     Hemat Rp {voucherDiscount.toLocaleString("id-ID")}
@@ -573,125 +489,77 @@ export const CreateOrderSummaryPanel = ({
             )}
 
             {/* Detail Pesanan - Integrated from old file logic */}
-            {
-              priceSummary.length > 0 ? (
-                <>
-                  <span className="text-sm font-semibold leading-[16.8px] text-neutral-900">
-                    Detail Pesanan
-                  </span>
-                  {priceSummary.map(({ title, items }, key) => {
-                    const isDiscountSection = title
-                      .toLowerCase()
-                      .includes("diskon");
-                    return (
-                      <div className="flex flex-col gap-y-3" key={key}>
-                        <span
+            {priceSummary.length > 0 ? (
+              <>
+                <span className="text-sm font-semibold leading-[16.8px] text-neutral-900">
+                  Detail Pesanan
+                </span>
+                {priceSummary.map(({ title, items }, key) => {
+                  const isDiscountSection = title
+                    .toLowerCase()
+                    .includes("diskon");
+                  return (
+                    <div className="flex flex-col gap-y-3" key={key}>
+                      <span
+                        className={
+                          "text-sm font-semibold leading-[16.8px] text-neutral-900"
+                        }
+                      >
+                        {title}
+                      </span>
+                      {items.map(({ label, price }, itemKey) => (
+                        <div
                           className={
-                            "text-sm font-semibold leading-[16.8px] text-neutral-900"
+                            "flex items-center justify-between text-neutral-900"
                           }
+                          key={itemKey}
                         >
-                          {title}
-                        </span>
-                        {items.map(({ label, price }, itemKey) => (
-                          <div
+                          <span
                             className={
-                              "flex items-center justify-between text-neutral-900"
+                              "text-xs font-medium leading-[14.4px] text-neutral-600"
                             }
-                            key={itemKey}
                           >
-                            <span
-                              className={
-                                "text-xs font-medium leading-[14.4px] text-neutral-600"
-                              }
-                            >
-                              {label}
-                            </span>
-                            <span
-                              className={`text-xs font-medium leading-[14.4px] ${isDiscountSection ? "text-[#EE4343]" : "text-neutral-900"}`}
-                            >
-                              {isDiscountSection ? "-" : ""}Rp
-                              {price.toLocaleString("id-ID")}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    );
-                  })}
+                            {label}
+                          </span>
+                          <span
+                            className={`text-xs font-medium leading-[14.4px] ${isDiscountSection ? "text-[#EE4343]" : "text-neutral-900"}`}
+                          >
+                            {isDiscountSection ? "-" : ""}Rp
+                            {price.toLocaleString("id-ID")}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })}
 
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-semibold leading-[16.8px] text-neutral-900">
-                      Sub Total
-                    </span>
-                    <span className="text-sm font-semibold leading-[16.8px] text-neutral-900">
-                      {
-                        calculatedPrice
-                          ? `Rp${calculatedPrice.totalPrice.toLocaleString("id-ID")}`
-                          : "Rp0"
-                        // `Rp${currentTotal.toLocaleString("id-ID")}`
-                      }
-                    </span>
-                  </div>
-                </>
-              ) : null
-              // (
-              //   // Fallback to detailPesanan structure when no calculatedPrice
-              //   detailPesanan.map(({ title, items }, key) => (
-              //     <div className="flex flex-col gap-y-3" key={key}>
-              //       <span className="text-sm font-semibold leading-[16.8px] text-neutral-900">
-              //         {title}
-              //       </span>
-              //       {items.map(({ label, cost, isDiscount }, itemKey) => (
-              //         <div
-              //           className="flex items-center justify-between"
-              //           key={itemKey}
-              //         >
-              //           <span
-              //             className={`text-xs font-medium leading-[14.4px] ${isDiscount ? "text-[#EE4343]" : "text-neutral-600"}`}
-              //           >
-              //             {label}
-              //           </span>
-              //           <span
-              //             className={`text-xs font-medium leading-[14.4px] ${isDiscount ? "text-[#EE4343]" : "text-neutral-900"}`}
-              //           >
-              //             {isDiscount ? "-" : ""}Rp
-              //             {Math.abs(cost).toLocaleString("id-ID")}
-              //           </span>
-              //         </div>
-              //       ))}
-              //       <div className="flex items-center justify-between">
-              //         <span className="text-sm font-semibold leading-[16.8px] text-neutral-900">
-              //           Sub Total
-              //         </span>
-              //         <span className="text-sm font-semibold leading-[16.8px] text-neutral-900">
-              //           {calculatedPrice
-              //             ? `Rp${calculatedPrice.totalPrice.toLocaleString("id-ID")}`
-              //             : `Rp${currentTotal.toLocaleString("id-ID")}`}
-              //         </span>
-              //       </div>
-              //     </div>
-              //   ))
-              // )
-            }
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold leading-[16.8px] text-neutral-900">
+                    Sub Total
+                  </span>
+                  <span className="text-sm font-semibold leading-[16.8px] text-neutral-900">
+                    {calculatedPrice
+                      ? `Rp${calculatedPrice.totalPrice.toLocaleString("id-ID")}`
+                      : "Rp0"}
+                  </span>
+                </div>
+              </>
+            ) : null}
           </div>
         </div>
 
         <div
           className={cn(
             "flex flex-col gap-y-6 rounded-b-xl px-5",
-            priceSummary.length > 0 /*|| detailPesanan.length > 0*/
-              ? "shadow-muat py-6"
-              : "pb-6"
+            priceSummary.length > 0 ? "shadow-muat py-6" : "pb-6"
           )}
         >
           <div className="flex items-center justify-between">
             <span className="text-base font-bold text-black">Total</span>
             <span className="text-base font-bold text-black">
-              {
-                calculatedPrice
-                  ? `Rp${calculatedPrice.totalPrice.toLocaleString("id-ID")}`
-                  : "Rp0"
-                // `Rp${currentTotal.toLocaleString("id-ID")}`
-              }
+              {calculatedPrice
+                ? `Rp${calculatedPrice.totalPrice.toLocaleString("id-ID")}`
+                : "Rp0"}
             </span>
           </div>
           {truckTypeId && (
@@ -705,109 +573,11 @@ export const CreateOrderSummaryPanel = ({
         </div>
       </Card>
 
-      {/* MODAL PILIH VOUCHER */}
-      <Modal open={showVoucherPopup} onOpenChange={setShowVoucherPopup}>
-        <ModalContent className="max-h-[80vh] min-h-fit w-[386px] rounded-xl bg-white px-6 py-6 shadow-2xl">
-          <button
-            onClick={() => setShowVoucherPopup(false)}
-            className="absolute right-4 top-4 text-gray-500 hover:text-gray-700 focus:outline-none"
-            aria-label="Close"
-          ></button>
-
-          <h2 className="mb-4 text-center text-base font-semibold">
-            Pilih Voucher
-          </h2>
-
-          <div className="relative mb-4">
-            <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
-              <IconComponent src="/icons/search.svg" width={20} height={20} />
-            </div>
-            <input
-              disabled={loading || error || filteredVouchers.length === 0}
-              type="text"
-              placeholder="Cari Kode Voucher"
-              value={searchKeyword}
-              onChange={(e) => setSearchKeyword(e.target.value)}
-              className="h-[32px] w-full rounded-lg border border-gray-300 pl-10 pr-4 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div className="space-y-3 pb-6">
-            {loading ? (
-              <div className="flex flex-col items-center justify-center py-8">
-                <div className="mb-3 h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
-                <span className="text-sm text-gray-500">Memuat voucher...</span>
-              </div>
-            ) : error ? (
-              <div className="flex flex-col items-center justify-center py-8 text-red-500">
-                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
-                  <svg
-                    className="h-6 w-6 text-red-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z"
-                    />
-                  </svg>
-                </div>
-                <span className="mb-2 text-center text-sm font-medium">
-                  {error}
-                </span>
-                <button
-                  onClick={refetch}
-                  className="text-xs text-blue-600 underline hover:text-blue-800"
-                >
-                  Coba Lagi
-                </button>
-              </div>
-            ) : searchKeyword.length > 0 && filteredVouchers.length === 0 ? (
-              <VoucherSearchEmpty />
-            ) : filteredVouchers.length === 0 ? (
-              <VoucherEmptyState />
-            ) : (
-              <>
-                <p className="mb-4 text-xs text-gray-500">
-                  Hanya bisa dipilih 1 Voucher
-                </p>
-                {filteredVouchers.map((v) => (
-                  <VoucherCard
-                    key={v.id}
-                    title={v.code}
-                    discountInfo={v.description}
-                    discountAmount={v.discountAmount}
-                    discountPercentage={v.discountPercentage}
-                    discountType={v.discountType}
-                    minTransaksi={v.minOrderAmount}
-                    kuota={v.quota}
-                    usagePercentage={v.usage?.globalPercentage || 0}
-                    isOutOfStock={v.isOutOfStock || false}
-                    startDate={formatShortDate(v.validFrom)}
-                    endDate={formatDate(v.validTo)}
-                    isActive={selectedVoucher?.id === v.id}
-                    onSelect={() => handleVoucherSelect(v)}
-                    validationError={validationErrors[v.id]}
-                    isValidating={validatingVoucher === v.id}
-                  />
-                ))}
-              </>
-            )}
-          </div>
-        </ModalContent>
-      </Modal>
+      {/* MODAL PILIH VOUCHER - menggunakan VoucherContainer */}
+      {voucherContainer.VoucherModal}
 
       {/* POPUP INFO VOUCHER */}
-      {showInfoPopup && (
-        <VoucherPopup
-          open={showVoucherPopup}
-          onOpenChange={setShowVoucherPopup}
-          closeOnOutsideClick={true}
-        />
-      )}
+      {showInfoPopup && <div className="voucher-popup">Info Voucher Popup</div>}
 
       <FleetOrderConfirmationModal
         isOpen={isModalConfirmationOpen}

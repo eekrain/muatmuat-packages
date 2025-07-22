@@ -149,8 +149,8 @@ export default function VoucherCard({
                   : isValidating
                     ? "cursor-default bg-gray-100 text-gray-500"
                     : isActive
-                      ? "bg-transparent text-blue-500 hover:bg-blue-50"
-                      : "bg-transparent text-blue-500 hover:bg-blue-50"
+                      ? "bg-blue-50 bg-transparent text-blue-500"
+                      : "bg-blue-50 bg-transparent text-blue-500"
             }`}
             disabled={isOutOfStock || validationError || isValidating}
           >

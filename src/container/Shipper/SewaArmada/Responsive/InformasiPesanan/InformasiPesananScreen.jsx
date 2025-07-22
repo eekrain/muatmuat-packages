@@ -111,6 +111,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
 
   // Voucher useEffect hooks and calculations
   useEffect(() => {
+    console.log("andyzxc");
     const newTotal = baseTotal - voucherDiscount;
     setCurrentTotal(newTotal);
   }, [baseTotal, voucherDiscount]);
@@ -998,7 +999,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
                       activeIndex={0}
                     >
                       <TimelineContentAddress
-                        title={item.dataLokasi.location.name || ""}
+                        title={item?.dataLokasi?.location?.name || ""}
                       />
                     </TimelineItem>
                   </Fragment>
