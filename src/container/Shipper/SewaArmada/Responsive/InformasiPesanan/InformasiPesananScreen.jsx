@@ -111,6 +111,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
 
   // Voucher useEffect hooks and calculations
   useEffect(() => {
+    console.log("andyzxc");
     const newTotal = baseTotal - voucherDiscount;
     setCurrentTotal(newTotal);
   }, [baseTotal, voucherDiscount]);
