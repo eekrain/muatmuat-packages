@@ -269,7 +269,7 @@ export const ModalClose = ({ children, onClick }) => {
  */
 export const ModalContent = ({
   size = "small",
-  type = "muattrans",
+  type = "muatmuat",
   children,
   className,
   appearance = {
