@@ -78,6 +78,7 @@ export const AuthenticationProvider = ({ children }) => {
         console.error("Error initializing authentication", err);
       } finally {
         setHasInitAuth(true);
+        setIsLoggedIn(true);
       }
     };
 
