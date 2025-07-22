@@ -182,6 +182,8 @@ const Page = () => {
 
             <div className={labelClass}>Merek Kendaraan*</div>
             <SelectFilterRadix
+              addData={true}
+              addLabel="Tambah Merek Kendaraan"
               options={brands.map((item) => ({
                 label: item.name,
                 value: item.id,
@@ -194,10 +196,20 @@ const Page = () => {
               placeholder="Pilih Merek Kendaraan"
               className={selectClass}
               disabled={isLoadingBrands}
+              addModalTitle="Tambah Merek Kendaraan"
+              addModalPlaceholder="Masukkan Merek Kendaraan"
+              addModalMinLength={3}
+              addModalValidate={(val) => /^[a-zA-Z0-9\\s]+$/.test(val)}
+              addModalErrorMessage="Nama merek tidak valid"
+              onAddNew={(newBrand) => {
+                // Tambahkan ke brands atau trigger API
+              }}
             />
 
             <div className={labelClass}>Tipe Kendaraan*</div>
             <SelectFilterRadix
+              addData={true}
+              addLabel="Tambah Tipe Kendaraan"
               options={
                 formData.merekKendaraan && !isLoadingTypes
                   ? filteredTypes.map((item) => ({
@@ -211,6 +223,14 @@ const Page = () => {
               placeholder="Pilih Tipe Kendaraan"
               className={selectClass}
               disabled={!formData.merekKendaraan || isLoadingTypes}
+              addModalTitle="Tambah Tipe Kendaraan"
+              addModalPlaceholder="Masukkan Tipe Kendaraan"
+              addModalMinLength={3}
+              addModalValidate={(val) => /^[a-zA-Z0-9\\s]+$/.test(val)}
+              addModalErrorMessage="Nama tipe tidak valid"
+              onAddNew={(newType) => {
+                // Tambahkan ke brands atau trigger API
+              }}
             />
 
             <div className={labelClass}>Tahun Registrasi Kendaraan*</div>
