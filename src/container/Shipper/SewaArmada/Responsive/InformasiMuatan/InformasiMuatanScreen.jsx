@@ -241,7 +241,11 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories }) => {
                           "border-error-400"
                       )}
                       onClick={() =>
-                        navigation.push("/CariNamaMuatan", { index })
+                        navigation.push("/CariNamaMuatan", {
+                          index,
+                          cargoTypeId: formValues.cargoTypeId,
+                          cargoCategoryId: formValues.cargoCategoryId,
+                        })
                       }
                     >
                       <div className="flex items-center gap-x-2">
