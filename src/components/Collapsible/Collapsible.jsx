@@ -75,7 +75,7 @@ export const CollapsibleContent = React.forwardRef(
         )}
         {...props}
       >
-        <div className="pb-4 pt-0">{children}</div>
+        {children}
       </CollapsiblePrimitive.Content>
     );
   }

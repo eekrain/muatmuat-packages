@@ -14,6 +14,7 @@ import {
 } from "@/components/Collapsible";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import { cn } from "@/lib/utils";
 import { useGetVehicleDetail } from "@/services/Transporter/manajemen-armada/getVehiclesDetail";
 
 // This component remains unchanged and works as intended.
@@ -21,24 +22,17 @@ const DetailRow = ({
   label,
   children,
   isLink = false,
-  hasBorderBottom = true,
+  hasBorderBottom = false,
 }) => (
-  <div>
-    <div className="flex items-center justify-between p-4">
-      <div
-        className={`flex h-full w-full flex-row justify-between ${
-          hasBorderBottom ? "border-b-[0.5px] border-neutral-600" : ""
-        }`}
-      >
-        <p className="text-sm text-neutral-700">{label}</p>
-        <div
-          className={`text-sm font-semibold ${
-            isLink ? "text-success-400" : "font-bold text-neutral-900"
-          }`}
-        >
-          {children}
-        </div>
-      </div>
+  <div
+    className={cn(
+      "flex h-full w-full flex-row justify-between pb-4 pt-4 first:pt-0 last:pb-0",
+      hasBorderBottom && "border-b-[0.5px] border-neutral-600"
+    )}
+  >
+    <p className="text-xs font-medium text-neutral-700">{label}</p>
+    <div className={cn("text-sm font-semibold", isLink && "text-success-400")}>
+      {children}
     </div>
   </div>
 );
@@ -139,7 +133,7 @@ const Page = () => {
   }
 
   return (
-    <div className="flex flex-col gap-2 py-8">
+    <div className="flex flex-col gap-2 py-6">
       <BreadCrumb data={breadCrumbData} />
       <PageTitle>Detail Armada</PageTitle>
 
@@ -180,14 +174,14 @@ const Page = () => {
           {/* Vehicle Photos Section */}
           <Collapsible defaultOpen>
             <CollapsibleTrigger className="rounded-t-xl bg-primary-50 px-6 hover:no-underline">
-              <h3 className="font-bold text-primary-800">Foto Armada</h3>
+              <h3 className="font-semibold">Foto Armada</h3>
               <IconComponent
                 src="/icons/chevron-down.svg"
                 className="h-5 w-5 transition-transform duration-300"
               />
             </CollapsibleTrigger>
             <CollapsibleContent>
-              <div className="p-6">
+              <div className="p-4">
                 {vehicle.photos.map((photo, index, array) => (
                   <DetailRow
                     key={photo.id}
@@ -213,14 +207,14 @@ const Page = () => {
           {/* Vehicle Documents Section */}
           <Collapsible defaultOpen>
             <CollapsibleTrigger className="rounded-t-xl bg-primary-50 px-6 hover:no-underline">
-              <h3 className="font-bold text-primary-800">Dokumen Armada</h3>
+              <h3 className="font-semibold">Dokumen Armada</h3>
               <IconComponent
                 src="/icons/chevron-down.svg"
                 className="h-5 w-5 transition-transform duration-300"
               />
             </CollapsibleTrigger>
             <CollapsibleContent>
-              <div className="p-6">
+              <div className="p-4">
                 {documentRows.map((row, index) =>
                   React.cloneElement(row, {
                     hasBorderBottom: index < documentRows.length - 1,
