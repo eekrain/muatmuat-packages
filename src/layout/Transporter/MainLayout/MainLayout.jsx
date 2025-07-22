@@ -16,21 +16,20 @@ import { useNotificationCounterActions } from "@/store/Shipper/notificationCount
 const MainLayout = ({ children }) => {
   return (
     <Suspense fallback={<LoadingStatic />}>
-      <Script>
-        <TranslationProvider>
-          <LoadingInteractive />
+      <TranslationProvider>
+        <LoadingInteractive />
 
-          <AuthenticationProvider>{children}</AuthenticationProvider>
-        </TranslationProvider>
-        <Toaster />
-      </Script>
+        <AuthenticationProvider>{children}</AuthenticationProvider>
+      </TranslationProvider>
+      <Toaster />
+      <Script />
     </Suspense>
   );
 };
 
 export default MainLayout;
 
-const Script = ({ children }) => {
+const Script = ({}) => {
   useDefaultTimeoutLoading();
   useResetNavigationOnDesktop();
 
@@ -42,7 +41,7 @@ const Script = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <>{children}</>;
+  return null;
 };
 
 const useResetNavigationOnDesktop = () => {

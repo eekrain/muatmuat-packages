@@ -83,10 +83,13 @@ const JenisCarrierScreen = ({ carriers }) => {
               {/* Header */}
               <div className="mb-6 flex items-center justify-between">
                 <div className="flex items-center gap-1">
-                  <h2 className="mt-0.5 text-sm font-bold leading-[15px] text-black">
+                  <h2 className="text-sm font-bold leading-[15px] text-black">
                     Rekomendasi Carrier Sesuai Muatan
                   </h2>
-                  <InfoBottomsheet title="Rekomendasi Carrier">
+                  <InfoBottomsheet
+                    title="Rekomendasi Carrier"
+                    className="mt-0.5"
+                  >
                     Berikut adalah rekomendasi carrier berdasarkan informasi
                     muatan yang kamu isi.
                   </InfoBottomsheet>
@@ -101,7 +104,7 @@ const JenisCarrierScreen = ({ carriers }) => {
                       carrier={carrier}
                       onClick={() => handleClick(carrier)}
                     />
-                    {index < recommendedCarriers.length - 1 && (
+                    {index !== carriers?.recommendedCarriers.length - 1 && (
                       <hr className="border-neutral-400" />
                     )}
                   </Fragment>
@@ -117,20 +120,20 @@ const JenisCarrierScreen = ({ carriers }) => {
                 Tidak Direkomendasikan
               </h2>
 
-              <Alert variant="warning" className="mb-4">
+              <Alert variant="warning" className="mb-6">
                 Pilihan carrier di bawah ini berisiko melebihi batas dimensi
                 atau tidak sesuai dengan informasi muatan
               </Alert>
 
               {/* Not Recommended Carriers List */}
               <div className="flex flex-col gap-4">
-                {notRecommendedCarriers.map((carrier, index) => (
+                {carriers?.nonRecommendedCarriers.map((carrier, index) => (
                   <Fragment key={carrier.carrierId}>
                     <CarrierItem
                       carrier={carrier}
                       onClick={() => handleClick(carrier)}
                     />
-                    {index < notRecommendedCarriers.length - 1 && (
+                    {index !== carriers?.nonRecommendedCarriers.length - 1 && (
                       <hr className="border-neutral-400" />
                     )}
                   </Fragment>
@@ -182,51 +185,3 @@ const CarrierItem = ({ carrier, onClick = () => {} }) => {
     </button>
   );
 };
-
-const recommendedCarriers = [
-  {
-    id: 1,
-    name: "Box",
-    image: "https://picsum.photos/500/300?random=1",
-    type: "recommended",
-  },
-  {
-    id: 2,
-    name: "Bak Terbuka",
-    image: "https://picsum.photos/500/300?random=2",
-    type: "recommended",
-  },
-  {
-    id: 3,
-    name: "Flat Bed",
-    image: "https://picsum.photos/500/300?random=3",
-    type: "recommended",
-  },
-  {
-    id: 4,
-    name: "Wingbox",
-    image: "https://picsum.photos/500/300?random=4",
-    type: "recommended",
-  },
-];
-
-const notRecommendedCarriers = [
-  {
-    id: 5,
-    name: "Reefer",
-    image: "https://picsum.photos/500/300?random=5",
-    type: "not-recommended",
-  },
-  {
-    id: 6,
-    name: "Tangki",
-    image: "https://picsum.photos/500/300?random=6",
-    type: "not-recommended",
-  },
-  {
-    id: 7,
-    name: "Towing",
-    image: "https://picsum.photos/500/300?random=7",
-    type: "not-recommended",
-  },
-];

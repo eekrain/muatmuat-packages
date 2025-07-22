@@ -10,6 +10,8 @@ import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook, useSWRMutateHook } from "@/hooks/use-swr";
 import { getLoadTimes } from "@/lib/utils/dateTime";
 import { useGetOrderDetail } from "@/services/Shipper/sewaarmada/getOrderDetail";
+import { useGetRecommendedCarriers } from "@/services/Shipper/sewaarmada/getRecommendedCarriers";
+import { useGetRecommendedTrucks } from "@/services/Shipper/sewaarmada/getRecommendedTrucks";
 import useGetSewaArmadaFormOptionData from "@/services/Shipper/sewaarmada/getSewaArmadaFormOption";
 import {
   useSewaArmadaActions,
@@ -61,23 +63,14 @@ const Page = () => {
     settingsTime,
   } = useGetSewaArmadaFormOptionData();
   // Fetch recommended carriers from API using SWR
-  const { data: carriersData } = useSWRHook(
-    cargoCategoryId
-      ? `v1/orders/carriers/recommended?cargoCategoryId=${cargoCategoryId}`
-      : null
-  );
+  const { data: carriers } = useGetRecommendedCarriers(cargoCategoryId);
+  const { data: trucks, trigger: fetchTrucks } = useGetRecommendedTrucks();
 
-  // Menggunakan useSWRMutateHook untuk request POST truk
-  const { data: trucksData, trigger: fetchTrucks } = useSWRMutateHook(
-    "v1/orders/trucks/recommended"
-  );
   // Setup SWR mutation hook untuk API calculate-price
   const { trigger: calculatePrice, data: calculatedPriceData } =
     useSWRMutateHook("v1/orders/calculate-price");
 
   const settlementAlertInfo = settlementAlertInfoData?.Data || [];
-  const carriers = carriersData?.Data || null;
-  const trucks = trucksData?.Data || tempTrucks;
   const calculatedPrice = calculatedPriceData?.Data.price || null;
 
   const shippingDetails = useShallowMemo(() => {

@@ -3,12 +3,14 @@ import { useState } from "react";
 import { ChevronLeft, ChevronUp } from "lucide-react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useAuth } from "@/hooks/use-auth";
 import DefaultResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/DefaultResponsiveLayout";
 import { useNotificationCounterStore } from "@/store/Shipper/notificationCounterStore";
 
 const ResponsiveMenuScreen = () => {
   const [isSettingsExpanded, setIsSettingsExpanded] = useState(true);
   const { order } = useNotificationCounterStore();
+  const { dataUser } = useAuth();
 
   const navigationItems = [
     {
@@ -46,14 +48,14 @@ const ResponsiveMenuScreen = () => {
           <div className="flex items-center gap-2.5">
             <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-black">
               <img
-                src="https://picsum.photos/200"
+                src={dataUser?.Avatar}
                 alt="Profile"
                 className="h-full w-full object-cover"
               />
             </div>
             <div className="flex-1">
               <h3 className="mb-3 text-base font-bold leading-tight text-black">
-                Noel Gallagher
+                {dataUser?.name}
               </h3>
               <div className="flex items-center gap-1">
                 <span className="text-sm font-semibold text-black">

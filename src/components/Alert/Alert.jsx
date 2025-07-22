@@ -29,6 +29,9 @@ export const Alert = ({
   variant = "warning",
   size = "sm",
   className,
+  appearance = {
+    labelClassName: "text-neutral-900",
+  },
   children,
 }) => {
   return (
@@ -54,7 +57,9 @@ export const Alert = ({
       )}
 
       {typeof children === "string" ? (
-        <span className="text-neutral-900">{children}</span>
+        <span className={cn("text-neutral-900", appearance.labelClassName)}>
+          {children}
+        </span>
       ) : (
         children
       )}
