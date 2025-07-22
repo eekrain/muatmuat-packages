@@ -85,16 +85,20 @@ export const TranslationProvider = ({ children }) => {
    *
    * // Fallback to original label if translation not found
    * t('unknown_key') // Returns: "unknown_key"
+   * "label.eka": "Halo {name}, {index}!",
+   * t("label.eka", { index: "tes ", name: "eka" })
+   *
    */
   const t = useCallback(
     (label, params) => {
-      if (!translation?.[label]) return label;
+      const template = translation[label];
+      if (!template) return label;
 
       if (params) {
-        return label.replace(/{(\w+)}/g, (match, key) => params[key]);
+        return template.replace(/{(\w+)}/g, (_, key) => params[key]);
       }
 
-      return translation[label];
+      return template;
     },
     [translation]
   );
@@ -108,6 +112,16 @@ export const TranslationProvider = ({ children }) => {
   );
 };
 
+/**
+ * @typedef {Object} UseTranslationReturn
+ * @property {(label: string, params?: Record<string, string | number>) => string} t - Translation function
+ * @property {boolean} isTranslationsReady - Whether translations are loaded and ready
+ */
+
+/**
+ * Custom hook to access translation function and readiness state.
+ * @returns {UseTranslationReturn}
+ */
 export const useTranslation = () => {
   const store = useContext(TranslationContext);
   if (!store) {

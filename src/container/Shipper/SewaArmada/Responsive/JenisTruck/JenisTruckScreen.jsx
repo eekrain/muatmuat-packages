@@ -1,6 +1,7 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 
 import { Alert } from "@/components/Alert/Alert";
+import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import {
@@ -14,25 +15,23 @@ import { idrFormat } from "@/lib/utils/formatters";
 import { useSewaArmadaActions } from "@/store/Shipper/forms/sewaArmadaStore";
 import { useResponsiveSearchStore } from "@/store/Shipper/zustand/responsiveSearchStore";
 
-const JenisTruckScreen = ({ trucks }) => {
+const JenisTruckScreen = ({ trucks, handleFetchTrucks }) => {
   const searchValue = useResponsiveSearchStore((s) => s.searchValue);
   const navigation = useResponsiveNavigation();
 
   // Filtering logic
-  const filtered = useMemo(() => {
-    if (!searchValue) return trucks;
-    const filterFn = (truck) =>
-      truck.name.toLowerCase().includes(searchValue.toLowerCase());
-    return {
-      recommendedTrucks: trucks.recommendedTrucks.filter(filterFn),
-      nonRecommendedTrucks: trucks.nonRecommendedTrucks.filter(filterFn),
-    };
-  }, [searchValue, trucks]);
+  const filteredTrucks = useMemo(() => {
+    if (!trucks?.recommendedTrucks || !trucks?.nonRecommendedTrucks) return [];
 
-  const hasFilteredResults =
-    searchValue &&
-    (filtered.recommendedTrucks.length > 0 ||
-      filtered.nonRecommendedTrucks.length > 0);
+    const mergedTrucks = [
+      ...trucks.recommendedTrucks,
+      ...trucks.nonRecommendedTrucks,
+    ];
+
+    return mergedTrucks.filter((truck) =>
+      truck.name.toLowerCase().includes(searchValue.toLowerCase())
+    );
+  }, [searchValue, trucks]);
 
   const { setField } = useSewaArmadaActions();
   const handleClick = (truck) => {
@@ -40,37 +39,49 @@ const JenisTruckScreen = ({ trucks }) => {
     navigation.popTo("/");
   };
 
+  useEffect(() => {
+    handleFetchTrucks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <SearchBarResponsiveLayout
       placeholder="Cari Jenis Truck"
-      className={cn(Boolean(searchValue) && hasFilteredResults && "bg-white")}
+      className={cn(
+        Boolean(searchValue) && filteredTrucks.length > 0 && "bg-white"
+      )}
     >
-      {Boolean(searchValue) ? (
+      {Boolean(searchValue) && filteredTrucks.length === 0 ? (
+        <div className="grid h-full items-center justify-center">
+          <DataNotFound
+            className="gap-y-3.5"
+            textClass="leading-[14px] !text-sm"
+            title={
+              <>
+                Keyword
+                <br />
+                Tidak Ditemukan
+              </>
+            }
+            width={127}
+            height={109}
+          />
+        </div>
+      ) : Boolean(searchValue) && filteredTrucks.length > 0 ? (
         <div className="p-5">
           <div className="flex flex-col gap-3">
-            {filtered.recommendedTrucks.concat(filtered.nonRecommendedTrucks)
-              .length > 0 ? (
-              filtered.recommendedTrucks
-                .concat(filtered.nonRecommendedTrucks)
-                .map((truck, index, arr) => (
-                  <React.Fragment key={truck.truckTypeId}>
-                    <TruckCard
-                      truck={truck}
-                      onClick={() => handleClick(truck)}
-                    />
-                    {index < arr.length - 1 && (
-                      <hr className="border-neutral-400" />
-                    )}
-                  </React.Fragment>
-                ))
-            ) : (
-              <div className="py-4 text-center text-sm text-neutral-500">
-                Tidak ada truk yang cocok.
-              </div>
-            )}
+            {filteredTrucks.map((truck, index) => (
+              <React.Fragment key={truck.truckTypeId}>
+                <TruckCard truck={truck} onClick={() => handleClick(truck)} />
+                {index < filteredTrucks.length - 1 && (
+                  <hr className="border-neutral-400" />
+                )}
+              </React.Fragment>
+            ))}
           </div>
         </div>
-      ) : (
+      ) : trucks?.recommendedTrucks?.length > 0 ||
+        trucks?.nonRecommendedTrucks?.length > 0 ? (
         <div className="grid grid-cols-1">
           {/* Recommended Section */}
           <div className="flex flex-col gap-6 bg-white px-4 py-5">
@@ -91,7 +102,7 @@ const JenisTruckScreen = ({ trucks }) => {
 
               {/* Recommended Trucks List */}
               <div className="flex flex-col gap-3">
-                {trucks.recommendedTrucks.map((truck) => (
+                {trucks?.recommendedTrucks.map((truck) => (
                   <TruckCard
                     key={truck.truckTypeId}
                     truck={truck}
@@ -121,7 +132,7 @@ const JenisTruckScreen = ({ trucks }) => {
 
               {/* Non-Recommended Trucks List */}
               <div className="flex flex-col gap-3">
-                {trucks.nonRecommendedTrucks.map((truck, index, arr) => (
+                {trucks?.nonRecommendedTrucks.map((truck, index, arr) => (
                   <React.Fragment key={truck.truckTypeId}>
                     <TruckCard
                       truck={truck}
@@ -135,6 +146,20 @@ const JenisTruckScreen = ({ trucks }) => {
               </div>
             </div>
           </div>
+        </div>
+      ) : (
+        <div className="flex h-full flex-col">
+          <Alert variant="warning" className="h-[52px] pl-3 pr-6">
+            Untuk sementara kami belum menyediakan truk yang sesuai dengan
+            informasi berat dan dimensi muatan yang kamu isikan.
+          </Alert>
+          <DataNotFound
+            className="flex-1 gap-y-3"
+            textClass="leading-[14px] !text-sm"
+            title={"Tidak ada rekomendasi truk"}
+            width={127}
+            height={109}
+          />
         </div>
       )}
     </SearchBarResponsiveLayout>

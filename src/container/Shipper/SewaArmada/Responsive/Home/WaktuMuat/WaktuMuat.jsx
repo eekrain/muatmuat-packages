@@ -15,6 +15,7 @@ import Checkbox from "@/components/Form/Checkbox";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
 import usePrevious from "@/hooks/use-previous";
+import { useGetOrderSettingsTime } from "@/services/Shipper/sewaarmada/getOrderSettingsTime";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -46,6 +47,10 @@ const WaktuMuatBottomsheet = () => {
     showRangeOption: false,
   });
   const [bottomsheetFormErrors, setBottomsheetFormErrors] = useState({});
+
+  // Ambil data setting waktu order dari API
+  const { data: orderSettingsData, isLoading: isOrderSettingsLoading } =
+    useGetOrderSettingsTime();
 
   useEffect(() => {
     if (isBottomsheetOpen && !previousIsBottomsheetOpen) {
@@ -81,11 +86,70 @@ const WaktuMuatBottomsheet = () => {
       }));
     }
   };
-
+  console.log(
+    orderSettingsData?.Data?.loadingTime?.minRangeHours,
+    "orderSettingsData"
+  );
   const validateForm = () => {
     const newErrors = {};
+    // Ambil setting dari API, fallback ke default jika belum ada
+    const minRangeHours =
+      orderSettingsData?.Data?.loadingTime?.minRangeHours ?? 1;
+    const maxRangeHours =
+      orderSettingsData?.Data?.loadingTime?.maxRangeHours ?? 8;
+    const instantOrder = orderSettingsData?.Data?.instantOrder;
+    const scheduledOrder = orderSettingsData?.Data?.scheduledOrder;
+    const currentServerTimeStr = orderSettingsData?.Data?.currentServerTime;
+    const orderType = bottomsheetFormValues.orderType;
+    const now = currentServerTimeStr
+      ? new Date(currentServerTimeStr)
+      : new Date();
+
     if (!bottomsheetFormValues.loadTimeStart) {
       newErrors.loadTimeStart = "Tanggal & waktu muat wajib diisi";
+    }
+
+    // Validasi khusus untuk orderType INSTANT
+    if (
+      orderType === "INSTANT" &&
+      instantOrder &&
+      bottomsheetFormValues.loadTimeStart
+    ) {
+      const start = new Date(bottomsheetFormValues.loadTimeStart);
+      const minStart = new Date(
+        now.getTime() + (instantOrder.minHoursFromNow ?? 1) * 60 * 60 * 1000
+      );
+      const maxStart = new Date(
+        now.getTime() + (instantOrder.maxDaysFromNow ?? 1) * 24 * 60 * 60 * 1000
+      );
+      console.log(start, minStart, maxStart, "start,minStart,maxStart");
+      if (start < minStart) {
+        newErrors.loadTimeStart = `Tanggal & waktu muat minimal ${instantOrder.minHoursFromNow} jam dari sekarang`;
+      } else if (start > maxStart) {
+        newErrors.loadTimeStart = `Tanggal & waktu muat maksimal ${instantOrder.maxDaysFromNow} hari dari sekarang`;
+      }
+    }
+
+    // Validasi khusus untuk orderType SCHEDULED
+    if (
+      orderType === "SCHEDULED" &&
+      scheduledOrder &&
+      bottomsheetFormValues.loadTimeStart
+    ) {
+      const start = new Date(bottomsheetFormValues.loadTimeStart);
+      const minStart = new Date(
+        now.getTime() +
+          (scheduledOrder.minDaysFromNow ?? 2) * 24 * 60 * 60 * 1000
+      );
+      const maxStart = new Date(
+        now.getTime() +
+          (scheduledOrder.maxDaysFromNow ?? 30) * 24 * 60 * 60 * 1000
+      );
+      if (start < minStart) {
+        newErrors.loadTimeStart = `Tanggal & waktu muat minimal ${scheduledOrder.minDaysFromNow} hari dari sekarang`;
+      } else if (start > maxStart) {
+        newErrors.loadTimeStart = `Tanggal & waktu muat maksimal ${scheduledOrder.maxDaysFromNow} hari dari sekarang`;
+      }
     }
     if (
       bottomsheetFormValues.loadTimeStart &&
@@ -95,14 +159,12 @@ const WaktuMuatBottomsheet = () => {
       const end = new Date(bottomsheetFormValues.loadTimeEnd);
       const diffMs = end - start;
       const diffHours = diffMs / (1000 * 60 * 60);
-      const eightHoursMs = 8 * 60 * 60 * 1000;
       if (!bottomsheetFormValues.loadTimeEnd) {
         newErrors.loadTimeEnd = "Rentang waktu muat awal & akhir wajib diisi";
-      } else if (diffHours < 1) {
-        newErrors.loadTimeEnd = "Rentang waktu muat awal & akhir minimal 1 jam";
-      } else if (diffMs > eightHoursMs) {
-        newErrors.loadTimeEnd =
-          "Rentang waktu muat awal & akhir maksimal 8 jam";
+      } else if (diffHours < minRangeHours) {
+        newErrors.loadTimeEnd = `Rentang waktu muat awal & akhir minimal ${minRangeHours} jam`;
+      } else if (diffHours > maxRangeHours) {
+        newErrors.loadTimeEnd = `Rentang waktu muat awal & akhir maksimal ${maxRangeHours} jam`;
       }
     }
     setBottomsheetFormErrors(newErrors);
