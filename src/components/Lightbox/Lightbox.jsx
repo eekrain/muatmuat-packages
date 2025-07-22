@@ -168,3 +168,9 @@ export const LightboxPreview = ({ image, index = 0, className, alt }) => {
     </div>
   );
 };
+
+export const LightboxTrigger = ({ children }) => {
+  const { openLightbox } = useLightbox();
+
+  return <div onClick={() => openLightbox(0)}>{children}</div>;
+};
