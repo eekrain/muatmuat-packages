@@ -58,6 +58,24 @@ const apiResultVehicleDetail = {
             photoName: "FRONT.jpg",
             photoUrl: "https://picsum.photos/200/300",
           },
+          {
+            id: "550e8400-e29b-41d4-a716-446655440004",
+            photoType: "BACK",
+            photoName: "BACK.jpg",
+            photoUrl: "https://picsum.photos/200/300",
+          },
+          {
+            id: "550e8400-e29b-41d4-a716-446655440004",
+            photoType: "RIGHT",
+            photoName: "RIGHT.jpg",
+            photoUrl: "https://picsum.photos/200/300",
+          },
+          {
+            id: "550e8400-e29b-41d4-a716-446655440004",
+            photoType: "LEFT",
+            photoName: "LEFT.jpg",
+            photoUrl: "https://picsum.photos/200/300",
+          },
         ],
         documents: [
           {

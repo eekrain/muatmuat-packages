@@ -5,16 +5,19 @@ import IconComponent from "../IconComponent/IconComponent";
 const bgVariants = {
   warning: "bg-warning-100",
   secondary: "bg-secondary-100",
+  error: "bg-error-50",
 };
 
 const iconVariants = {
   warning: "text-secondary-400",
   secondary: "text-warning-900",
+  error: "text-error-400",
 };
 
 const icon = {
   warning: "/icons/warning24.svg",
   secondary: "/icons/warning24.svg",
+  error: "/icons/warning24.svg",
 };
 
 const alertSizes = {
