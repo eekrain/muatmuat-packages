@@ -121,7 +121,8 @@ const Item = ({ index, children }) => {
           />
           {children}
         </div>
-        {index !== values.length - 1 || values.length < maxLocation ? (
+        {values.length !== 1 &&
+        (index !== values.length - 1 || values.length < maxLocation) ? (
           <hr className="my-3 block border-[#C4C4C4]" />
         ) : null}
       </div>
