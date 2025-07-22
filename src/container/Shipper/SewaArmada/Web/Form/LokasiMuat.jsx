@@ -2,7 +2,7 @@ import { usePathname } from "next/navigation";
 
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { LocationModalFormWeb } from "@/components/LocationManagement/Web/LocationModalFormWeb/LocationModalFormWeb";
-import { TimelineField } from "@/components/Timeline/timeline-field";
+import TimelineField from "@/components/Timeline/timeline-field";
 import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
@@ -22,14 +22,17 @@ export const LokasiMuat = () => {
   );
   const { addLokasi, removeLokasi, setField } = useSewaArmadaActions();
 
+  const showRemoveButton =
+    (lokasiMuat && lokasiMuat.length > 1) ||
+    Boolean(lokasiMuat?.[0]?.dataLokasi?.location);
+
   return (
     <>
       <FormContainer>
         <FormLabel required>Lokasi Muat</FormLabel>
 
-        <TimelineField
+        <TimelineField.Root
           disabled={isEditPage}
-          withRemoveButton={!isEditPage}
           variant="muat"
           className="flex-1"
           values={
@@ -39,10 +42,6 @@ export const LokasiMuat = () => {
           onAddLocation={() =>
             handleFirstTime(() => addLokasi("lokasiMuat", null))
           }
-          onDeleteLocation={(index) => {
-            removeLokasi("lokasiMuat", index);
-            setField("truckTypeId", null);
-          }}
           onEditLocation={(index) =>
             handleFirstTime(() => {
               handleOpenModalLocation({
@@ -54,7 +53,23 @@ export const LokasiMuat = () => {
             })
           }
           errorMessage={errorLokasiMuat}
-        />
+        >
+          {lokasiMuat && lokasiMuat.length > 0
+            ? lokasiMuat.map((item, index) => (
+                <TimelineField.Item index={index} key={index}>
+                  {!isEditPage && showRemoveButton && (
+                    <TimelineField.RemoveButton
+                      onClick={() => {
+                        removeLokasi("lokasiMuat", index);
+                        setField("truckTypeId", null);
+                      }}
+                    />
+                  )}
+                </TimelineField.Item>
+              ))
+            : null}
+          <TimelineField.AddButton />
+        </TimelineField.Root>
       </FormContainer>
 
       <LocationModalFormWeb

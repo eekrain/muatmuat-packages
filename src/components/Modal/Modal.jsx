@@ -82,16 +82,6 @@ export const Modal = ({
   /** @type {React.RefObject<HTMLDivElement>} */
   const dialogRef = useRef(null);
 
-  /** @type {React.MutableRefObject<Set<HTMLElement>>} */
-  const allowedRefs = useRef(new Set());
-
-  const registerAllowedNode = useCallback((node) => {
-    if (node) allowedRefs.current.add(node);
-  }, []);
-  const unregisterAllowedNode = useCallback((node) => {
-    if (node) allowedRefs.current.delete(node);
-  }, []);
-
   const isControlled = controlledOpen !== undefined;
   const isOpen = isControlled ? controlledOpen : uncontrolledOpen;
 
@@ -159,45 +149,14 @@ export const Modal = ({
     }
   }, [isOpen]);
 
-  const handleClickOutside = useCallback(
-    /**
-     * @param {MouseEvent} e - The mouse event.
-     */
-    (e) => {
-      if (!closeOnOutsideClick) return;
-
-      // Check if this modal is the topmost one
-      const modals = Array.from(document.querySelectorAll(".modal-parent"));
-      const topmost = modals[modals.length - 1];
-      const thisModalParent = dialogRef.current?.parentElement;
-
-      // Only handle outside click if this modal is the topmost one
-      if (thisModalParent !== topmost) return;
-
-      const isInsideDialog =
-        dialogRef.current && dialogRef.current.contains(e.target);
-      const isInsideAllowed = Array.from(allowedRefs.current).some(
-        (node) =>
-          node && typeof node.contains === "function" && node.contains(e.target)
-      );
-      if (!isInsideDialog && !isInsideAllowed) {
-        close();
-      }
-    },
-    [closeOnOutsideClick, close]
-  );
-
   return (
     <ModalContext.Provider
       value={{
         open,
         close,
         isOpen,
-        handleClickOutside,
         withCloseButton,
         dialogRef,
-        registerAllowedNode,
-        unregisterAllowedNode,
       }}
     >
       {children}
@@ -269,7 +228,7 @@ export const ModalClose = ({ children, onClick }) => {
  */
 export const ModalContent = ({
   size = "small",
-  type = "muattrans",
+  type = "muatmuat",
   children,
   className,
   appearance = {
@@ -277,8 +236,7 @@ export const ModalContent = ({
     closeButtonClassname: "",
   },
 }) => {
-  const { close, isOpen, handleClickOutside, withCloseButton, dialogRef } =
-    useModal();
+  const { close, isOpen, withCloseButton, dialogRef } = useModal();
 
   const iconClassnames = {
     muatmuat: "icon-fill-primary-700",
@@ -320,55 +278,50 @@ export const ModalContent = ({
   }
 
   return (
-    <Portal
-      className={cn(
-        "modal-parent fixed inset-0 z-50 flex items-center justify-center bg-black/25",
-        appearance.backgroudClassname
-      )}
-      onMouseDown={handleClickOutside}
-    >
-      {type === "lightbox" && (
-        <button
-          onClick={close}
-          className="absolute left-4 top-[55px] block text-white md:hidden"
-        >
-          <IconComponent
-            className="text-white"
-            src="/icons/close20.svg"
-            width={24}
-            height={24}
-          />
-        </button>
-      )}
-
+    <Portal>
       <div
-        ref={dialogRef}
         className={cn(
-          "relative rounded-xl bg-neutral-50",
-          type === "lightbox" && "bg-transparent",
-          className
+          "modal-parent fixed inset-0 z-50 flex items-center justify-center", // Removed bg-black/25 here
+          appearance.backgroudClassname
         )}
       >
-        {withCloseButton && (
-          <button
-            className={cn(
-              "absolute right-2 top-2 z-50 flex cursor-pointer items-center justify-center rounded-full bg-neutral-50",
-              appearance.closeButtonClassname
-            )}
-            onClick={close}
-          >
-            <IconComponent
+        {/* Overlay */}
+        <div
+          className="absolute inset-0 bg-black/25"
+          onClick={close}
+          aria-hidden="true"
+        />
+        {/* Dialog */}
+        <div
+          ref={dialogRef}
+          className={cn(
+            "relative z-10 rounded-xl bg-neutral-50",
+            type === "lightbox" && "bg-transparent",
+            className
+          )}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {withCloseButton && (
+            <button
               className={cn(
-                "size-6 md:size-5",
-                iconClassnames[type] || iconClassnames.muattrans,
+                "absolute right-2 top-2 z-50 flex cursor-pointer items-center justify-center rounded-full bg-neutral-50",
                 appearance.closeButtonClassname
               )}
-              src="/icons/close20.svg"
-            />
-          </button>
-        )}
+              onClick={close}
+            >
+              <IconComponent
+                className={cn(
+                  "size-6 md:size-5",
+                  iconClassnames[type] || iconClassnames.muattrans,
+                  appearance.closeButtonClassname
+                )}
+                src="/icons/close20.svg"
+              />
+            </button>
+          )}
 
-        <div className="md:rounded-xl">{children}</div>
+          <div className="md:rounded-xl">{children}</div>
+        </div>
       </div>
     </Portal>
   );

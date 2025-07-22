@@ -6,7 +6,6 @@ import Input from "@/components/Form/Input";
 import { Select } from "@/components/Form/Select";
 import { InputLocationManagementDropdown } from "@/components/LocationManagement/Web/InputLocationManagementDropdown/InputLocationManagementDropdown";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
-import { useRegisterModalPortalNode } from "@/components/Modal/useRegisterModalPortalNode";
 import TextArea from "@/components/TextArea/TextArea";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
@@ -23,10 +22,6 @@ const DeliveryEvidenceModalContent = ({
   shippingDetails,
   setIsOpen,
 }) => {
-  // Get the callback ref from the hook
-  const setKecamatanRef = useRegisterModalPortalNode([]);
-  const setKodePosRef = useRegisterModalPortalNode([]);
-
   const [deliveryEvidenceFormValues, setDeliveryEvidenceFormValues] = useState({
     shippingOptionId: null,
     withInsurance: false,
@@ -242,7 +237,6 @@ const DeliveryEvidenceModalContent = ({
           </label>
 
           <Select
-            ref={setKecamatanRef}
             placeholder="Pilih Kecamatan Tujuan"
             options={
               dataLokasi?.kecamatanList && dataLokasi?.kecamatanList.length > 0
@@ -285,7 +279,6 @@ const DeliveryEvidenceModalContent = ({
           </label>
 
           <Select
-            ref={setKodePosRef}
             placeholder="Pilih Kode Pos"
             options={
               dataLokasi?.postalCodeList &&

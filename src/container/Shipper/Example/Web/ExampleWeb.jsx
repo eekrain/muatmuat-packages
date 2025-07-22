@@ -74,7 +74,7 @@ import {
   TimelineContentWithButtonDate,
   TimelineItem,
 } from "@/components/Timeline";
-import { TimelineField } from "@/components/Timeline/timeline-field";
+import TimelineField from "@/components/Timeline/timeline-field";
 import ToogleButton from "@/components/ToogleButton/ToogleButton";
 import RequestOtp from "@/container/Shipper/RequestOtp/RequestOtp";
 import { useTranslation } from "@/hooks/use-translation";
@@ -846,7 +846,7 @@ const ButtonBottomsheetTooltipForm = () => {
           <div className="flex flex-wrap items-center gap-2">
             <Modal closeOnOutsideClick>
               <ModalTrigger>
-                <Button variant="muattrans-primary">Open Modal</Button>
+                <Button variant="muatparts-primary">Open Modal</Button>
               </ModalTrigger>
               <ModalContent className="w-modal-big">
                 <ModalHeader size="big" />
@@ -1157,31 +1157,40 @@ const ExampleTimelineField = () => {
     <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
       <div className="max-w-[400px]">
         <h1 className="mb-2 text-xl font-bold">Timeline Field Muat</h1>
-
-        <TimelineField
+        <TimelineField.Root
           variant="muat"
-          values={muatValues.map((value) => ({
-            name: value.address,
-          }))}
+          values={muatValues.map((value) => ({ name: value.address }))}
           onAddLocation={handleAddMuatLocation}
-          onDeleteLocation={handleDeleteMuatLocation}
           onEditLocation={(index) =>
             alert(`Handle edit location in index: ${index}`)
           }
-        />
+        >
+          {muatValues.map((_, index) => (
+            <TimelineField.Item index={index} key={index}>
+              <TimelineField.RemoveButton
+                onClick={() => handleDeleteMuatLocation(index)}
+              />
+            </TimelineField.Item>
+          ))}
+          <TimelineField.AddButton />
+        </TimelineField.Root>
       </div>
-
       <div className="max-w-[400px]">
         <h1 className="mb-2 text-xl font-bold">Timeline Field Bongkar</h1>
-
-        <TimelineField
+        <TimelineField.Root
           variant="bongkar"
-          values={muatValues.map((value) => ({
-            name: value.address,
-          }))}
+          values={bongkarValues.map((value) => ({ name: value.address }))}
           onAddLocation={handleAddBongkarLocation}
-          onDeleteLocation={handleDeleteBongkarLocation}
-        />
+        >
+          {bongkarValues.map((_, index) => (
+            <TimelineField.Item index={index} key={index}>
+              <TimelineField.RemoveButton
+                onClick={() => handleDeleteBongkarLocation(index)}
+              />
+            </TimelineField.Item>
+          ))}
+          <TimelineField.AddButton />
+        </TimelineField.Root>
       </div>
     </div>
   );

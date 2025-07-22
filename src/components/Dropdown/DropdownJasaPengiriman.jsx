@@ -12,8 +12,6 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { idrFormat } from "@/lib/utils/formatters";
 
-import { useRegisterModalPortalNode } from "../Modal/useRegisterModalPortalNode";
-
 export const DropdownJasaPengiriman = ({
   shippingOptions = [], // New prop for grouped shipping options
   value = null,
@@ -33,7 +31,6 @@ export const DropdownJasaPengiriman = ({
   const scrollParentRef = useRef(null);
 
   // Get the callback ref from the hook
-  const setDropdownRef = useRegisterModalPortalNode([isOpen]);
 
   // Function to find the first scrollable parent
   const getScrollParent = useCallback((node) => {
@@ -227,7 +224,6 @@ export const DropdownJasaPengiriman = ({
   // Dropdown content
   const dropdown = (
     <div
-      ref={setDropdownRef}
       style={dropdownStyle}
       className="mt-1 overflow-hidden rounded-md border border-neutral-300 bg-white shadow-lg"
     >
@@ -319,7 +315,6 @@ export const DropdownJasaPengiriman = ({
           <Portal>
             <div>
               <div
-                ref={setDropdownRef}
                 style={dropdownStyle}
                 className="shadow-muat mt-1 flex h-[66px] items-center justify-center rounded-md border border-neutral-300 bg-white px-2.5"
               >

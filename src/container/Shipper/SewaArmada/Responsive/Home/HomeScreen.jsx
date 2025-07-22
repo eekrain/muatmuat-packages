@@ -16,7 +16,7 @@ import {
   LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
-import { TimelineField } from "@/components/Timeline/timeline-field";
+import TimelineField from "@/components/Timeline/timeline-field";
 import VoucherCard from "@/components/Voucher/VoucherCard";
 import VoucherEmptyState from "@/components/Voucher/VoucherEmptyState";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
@@ -419,7 +419,7 @@ const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
           {/* Lokasi Muat Field */}
           <FormContainer>
             <FormLabel required>Lokasi Muat</FormLabel>
-            <TimelineField
+            <TimelineField.Root
               variant="muat"
               className="flex-1"
               values={
@@ -428,16 +428,24 @@ const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
                 ) || []
               }
               onAddLocation={() => addLokasi("lokasiMuat", null)}
-              onDeleteLocation={(index) => removeLokasi("lokasiMuat", index)}
               onEditLocation={(index) =>
                 handleEditLokasi({ formMode: "muat", index })
               }
-            />
+            >
+              {(formValues.lokasiMuat || []).map((item, index) => (
+                <TimelineField.Item index={index} key={index}>
+                  <TimelineField.RemoveButton
+                    onClick={() => removeLokasi("lokasiMuat", index)}
+                  />
+                </TimelineField.Item>
+              ))}
+              <TimelineField.AddButton />
+            </TimelineField.Root>
           </FormContainer>
           {/* Lokasi Bongkar Field */}
           <FormContainer>
             <FormLabel required>Lokasi Bongkar</FormLabel>
-            <TimelineField
+            <TimelineField.Root
               variant="bongkar"
               className="flex-1"
               values={
@@ -446,11 +454,19 @@ const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
                 ) || []
               }
               onAddLocation={() => addLokasi("lokasiBongkar", null)}
-              onDeleteLocation={(index) => removeLokasi("lokasiBongkar", index)}
               onEditLocation={(index) =>
                 handleEditLokasi({ formMode: "bongkar", index })
               }
-            />
+            >
+              {(formValues.lokasiBongkar || []).map((item, index) => (
+                <TimelineField.Item index={index} key={index}>
+                  <TimelineField.RemoveButton
+                    onClick={() => removeLokasi("lokasiBongkar", index)}
+                  />
+                </TimelineField.Item>
+              ))}
+              <TimelineField.AddButton />
+            </TimelineField.Root>
           </FormContainer>
 
           {/* Informasi Muatan Field */}
