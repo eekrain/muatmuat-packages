@@ -156,7 +156,7 @@ const AddButton = () => {
             width={20}
             height={20}
             src="/icons/plus-square24.svg"
-            className="-mt-[2px] text-[#176CF7]"
+            className="text-[#176CF7]"
             size="medium"
           />
           <span className="capsize">

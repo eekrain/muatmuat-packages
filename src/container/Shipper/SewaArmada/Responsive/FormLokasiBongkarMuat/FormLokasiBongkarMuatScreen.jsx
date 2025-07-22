@@ -1,8 +1,9 @@
-import { MapPin, User } from "lucide-react";
+import { User } from "lucide-react";
 
 import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import Input from "@/components/Form/Input";
+import IconComponent from "@/components/IconComponent/IconComponent";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useTranslation } from "@/hooks/use-translation";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
@@ -96,7 +97,10 @@ const FormLokasiBongkarMuatScreen = () => {
 
             {/* Location Details */}
             <div className="flex items-center gap-2">
-              <MapPin className="mt-0.5 h-6 w-6 flex-shrink-0 text-[#461B02]" />
+              <IconComponent
+                src="/icons/marker-outline.svg"
+                className="size-6 text-muat-trans-secondary-900"
+              />
               <p className="flex-1 text-sm font-medium leading-[15px] text-black">
                 {formValues.dataLokasi?.location?.name}
               </p>

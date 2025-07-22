@@ -149,7 +149,7 @@ export const NumberInput = forwardRef(
             prefix={prefix}
             placeholder={placeholder}
             className={cn(
-              "mt-[2px] w-full min-w-0 border-none border-transparent bg-transparent text-left text-xs font-medium leading-[14.4px] text-neutral-900 outline-none placeholder:text-neutral-600 max-[600px]:text-sm max-[600px]:font-semibold max-[600px]:leading-[15.4px]",
+              "w-full min-w-0 border-none border-transparent bg-transparent text-left text-xs font-medium leading-[14.4px] text-neutral-900 outline-none placeholder:text-neutral-600 max-[600px]:text-sm max-[600px]:font-semibold max-[600px]:leading-[15.4px]",
               "[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
               appearance.inputClassName
             )}

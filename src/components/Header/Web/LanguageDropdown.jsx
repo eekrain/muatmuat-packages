@@ -36,12 +36,12 @@ const LanguageDropdown = () => {
         className="h-4 w-6 rounded-[5px] border"
         alt="flag"
       />
-      <span className="capsize block pt-[2px] text-xs font-semibold">
+      <span className="capsize block text-xs font-semibold">
         {selectedLanguage?.name}
       </span>
       <ChevronDown
         className={cn(
-          "mt-0.5 h-4 w-4 transition-transform duration-300",
+          "h-4 w-4 transition-transform duration-300",
           open && "rotate-180"
         )}
       />
