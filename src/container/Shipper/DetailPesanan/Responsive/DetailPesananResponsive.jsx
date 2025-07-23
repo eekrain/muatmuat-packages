@@ -8,8 +8,10 @@ import {
 } from "@/lib/responsive-navigation";
 // Import the default screen without dynamic import
 import { dynamicScreen } from "@/lib/utils/dynamic-screen";
+import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
 import { useLoadingAction } from "@/store/Shared/loadingStore";
 
+import CaraPembayaranScreen from "./CaraPembayaran/CaraPembayaranScreen";
 import DetailPesananScreen from "./Home/HomeScreen";
 import UlasanScreen from "./Ulasan/UlasanScreen";
 
@@ -36,6 +38,13 @@ const DetailPesananResponsive = ({}) => {
   // }, []);
   const { setIsGlobalLoading } = useLoadingAction();
 
+  const { data } = useGetDetailPesananData("12345");
+
+  const dataDetailPIC = data?.dataDetailPIC;
+  const dataRingkasanPembayaran = data?.dataRingkasanPembayaran;
+  const documentShippingDetail =
+    data?.dataRingkasanPembayaran.documentShippingDetail;
+  console.log("dataRingkasanPembayaranzzz", dataRingkasanPembayaran);
   useEffect(() => {
     setIsGlobalLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -43,7 +52,24 @@ const DetailPesananResponsive = ({}) => {
 
   return (
     <ResponsiveProvider>
-      <ResponsiveRoute path="/" component={<DetailPesananScreen />} />
+      <ResponsiveRoute
+        path="/"
+        component={
+          <DetailPesananScreen
+            dataDetailPIC={dataDetailPIC}
+            dataRingkasanPembayaran={dataRingkasanPembayaran}
+            documentShippingDetail={documentShippingDetail}
+          />
+        }
+      />
+      <ResponsiveRoute
+        path="/cara-pembayaran"
+        component={
+          <CaraPembayaranScreen
+            dataRingkasanPembayaran={dataRingkasanPembayaran}
+          />
+        }
+      />
       <ResponsiveRoute path="/qr" component={<QRCodeScreen />} />
       <ResponsiveRoute path="/ulasan" component={<UlasanScreen />} />
       <ResponsiveRoute

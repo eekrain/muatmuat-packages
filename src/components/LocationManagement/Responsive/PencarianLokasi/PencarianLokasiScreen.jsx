@@ -282,7 +282,6 @@ const PencarianLokasiScreen = () => {
                 src="/icons/marker-target-outline.svg"
                 width={24}
                 height={24}
-                className="-mt-[2px]"
               />
               <h2 className="text-sm font-semibold text-primary-700">
                 {t("buttonPilihLokasi") /* Pilih Lokasi */}

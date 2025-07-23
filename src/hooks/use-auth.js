@@ -30,6 +30,7 @@ export const AuthenticationProvider = ({ children }) => {
   const [hasInitAuth, setHasInitAuth] = useState(false);
 
   const { setUser, setDataMatrix } = useUserActions();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     console.log("Auth effect:", { isZustandHydrated, hasInitAuth });
@@ -64,6 +65,7 @@ export const AuthenticationProvider = ({ children }) => {
               delete credential.refreshToken;
               delete credential.refreshtoken;
               setUser({ ...credential, isLoggedIn: true });
+              setIsLoggedIn(true);
             }),
           fetcherMuatparts
             .post("v1/user/getUserStatusV3", undefined, cacheConfig)
@@ -76,6 +78,7 @@ export const AuthenticationProvider = ({ children }) => {
         console.error("Error initializing authentication", err);
       } finally {
         setHasInitAuth(true);
+        setIsLoggedIn(true);
       }
     };
 
@@ -90,9 +93,22 @@ export const AuthenticationProvider = ({ children }) => {
   ]);
 
   // Render children only after auth initialization
-  return children;
+  return <>{isLoggedIn && children}</>;
 };
 
+/**
+ *
+ * @typedef {Object} AuthData
+ * @property {Object} dataMatrix
+ * @property {Object} dataUser
+ * @property {Function} logout
+ * @property {boolean} isLoggedIn
+ */
+
+/**
+ *
+ * @returns {AuthData}
+ */
 export const useAuth = () => {
   const dataMatrix = useUserStore(useShallow((state) => state.dataMatrix));
   const dataUser = useUserStore(

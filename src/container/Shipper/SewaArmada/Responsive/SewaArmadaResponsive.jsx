@@ -87,7 +87,6 @@ const SewaArmadaResponsive = ({
   trucks,
   handleFetchTrucks,
 }) => {
-  console.log("🚀 ~ carriers:", carriers);
   const navigation = useResponsiveNavigation();
   const { reset } = useImageUploaderActions();
   // useEffect(() => {

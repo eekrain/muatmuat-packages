@@ -9,6 +9,7 @@ import {
   useResponsiveRouteParams,
 } from "@/lib/responsive-navigation";
 import { searchFilter } from "@/lib/utils/filter";
+import { useGetCargoNames } from "@/services/Shipper/sewaarmada/getCargoNames";
 import { useInformasiMuatanStore } from "@/store/Shipper/forms/informasiMuatanStore";
 import { useResponsiveSearchStore } from "@/store/Shipper/zustand/responsiveSearchStore";
 
@@ -36,14 +37,30 @@ const CariNamaMuatanScreen = () => {
   const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
   const { searchValue, setSearchValue } = useResponsiveSearchStore();
-  const { updateInformasiMuatan } = useInformasiMuatanStore();
+  const { updateInformasiMuatan, formValues } = useInformasiMuatanStore();
+
+  const { cargoTypeId, cargoCategoryId, index } = params;
+
+  // Panggil hook API dengan parameter yang diperlukan
+  const { data, isLoading, error } = useGetCargoNames({
+    cargoTypeId,
+    cargoCategoryId,
+  });
+
+  // Mapping hasil API ke format lama
+  const namaMuatanOptions =
+    data?.Data?.cargoNames?.map((item) => ({
+      value: item.cargoNameId,
+      label: item.name,
+      // Jika ingin menambah properti lain dari API, bisa ditambahkan di sini
+    })) || [];
 
   useEffect(() => {
     setSearchValue("");
   }, []);
 
   const handleSelectNamaMuatan = (namaMuatan) => {
-    updateInformasiMuatan(params.index, "namaMuatan", namaMuatan);
+    updateInformasiMuatan(index, "namaMuatan", namaMuatan);
     navigation.pop();
   };
 

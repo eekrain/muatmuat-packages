@@ -97,7 +97,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
 
       // Show toast if there are multiple errors
       if (totalErrors > 1) {
-        toast.error("Terdapat field yang kosong");
+        toast.error(t("messageFieldKosong"));
       }
       return;
     }
@@ -111,6 +111,34 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
 
   const isLocationDisabled = !locationFormValues?.dataLokasi?.location?.name;
   const isKirimBuktiFisikDisabled = !tambahanFormValues.kirimBuktiFisik;
+
+  // Hitung total harga layanan tambahan lainnya yang dicentang
+  const selectedAdditionalServices =
+    tambahanFormValues.additionalServices || [];
+  const additionalServicesTotal = selectedAdditionalServices.reduce(
+    (sum, selected) => {
+      const found = additionalServicesOptions.find(
+        (opt) => opt.additionalServiceId === selected.serviceId
+      );
+      return found ? sum + Number(found.price) : sum;
+    },
+    0
+  );
+
+  const errorMessageMap = {
+    "Nama Penerima wajib diisi": "errorNamaPenerimaRequired",
+    "Nama Penerima minimal 3 karakter": "errorNamaPenerimaMin3",
+    "Penulisan Nama Penerima tidak valid": "errorNamaPenerimaInvalid",
+    "Nomor Handphone Penerima wajib diisi": "errorNoHPPenerimaRequired",
+    "Nomor Handphone Penerima minimal 8 digit": "errorNoHPPenerimaMin8",
+    "Nomor handphone Penerima tidak valid": "errorNoHPPenerimaInvalid",
+    "Format No. HP Penerima salah": "errorNoHPPenerimaFormat",
+    "Alamat Tujuan wajib diisi": "errorAlamatTujuanRequired",
+    "Detail Alamat Tujuan wajib diisi": "errorDetailAlamatTujuanRequired",
+    "Detail Alamat Tujuan minimal 3 karakter": "errorDetailAlamatTujuanMin3",
+    "Kecamatan wajib diisi": "errorKecamatanRequired",
+    "Kode Pos wajib diisi": "errorKodePosRequired",
+  };
 
   return (
     <FormResponsiveLayout
@@ -149,7 +177,9 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                     const insurancePrice = tambahanFormValues.asuransiPengiriman
                       ? 10000
                       : 0;
-                    const total = shippingPrice + insurancePrice;
+                    // Tambahkan harga layanan tambahan lainnya ke total
+                    const total =
+                      shippingPrice + insurancePrice + additionalServicesTotal;
                     return `Rp${total.toLocaleString("id-ID")}`;
                   })()
                 : t("labelTotalPrice")}
@@ -208,7 +238,14 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                 value={locationFormValues.namaPIC}
                 onChange={(e) => locationSetField("namaPIC", e.target.value)}
                 status={locationFormErrors?.namaPIC ? "error" : null}
-                errorMessage={locationFormErrors?.namaPIC}
+                errorMessage={
+                  locationFormErrors?.namaPIC
+                    ? t(
+                        errorMessageMap[locationFormErrors.namaPIC] ||
+                          locationFormErrors.namaPIC
+                      )
+                    : undefined
+                }
               />
             </FormContainer>
 
@@ -223,7 +260,14 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                 value={locationFormValues.noHPPIC}
                 onChange={(e) => locationSetField("noHPPIC", e.target.value)}
                 status={locationFormErrors?.noHPPIC ? "error" : null}
-                errorMessage={locationFormErrors?.noHPPIC}
+                errorMessage={
+                  locationFormErrors?.noHPPIC
+                    ? t(
+                        errorMessageMap[locationFormErrors.noHPPIC] ||
+                          locationFormErrors.noHPPIC
+                      )
+                    : undefined
+                }
               />
             </FormContainer>
 
@@ -273,7 +317,14 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                     value=""
                     // Ga perlu onChange ini input kan cuman redirect ke pencarian lokasi
                     onChange={() => {}}
-                    errorMessage={locationFormErrors?.dataLokasi}
+                    errorMessage={
+                      locationFormErrors?.dataLokasi
+                        ? t(
+                            errorMessageMap[locationFormErrors.dataLokasi] ||
+                              locationFormErrors.dataLokasi
+                          )
+                        : undefined
+                    }
                   />
                 )}
               </div>
@@ -293,7 +344,14 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                   locationSetField("detailLokasi", e.target.value)
                 }
                 errorMessage={
-                  isLocationDisabled ? "" : locationFormErrors?.detailLokasi
+                  isLocationDisabled
+                    ? ""
+                    : locationFormErrors?.detailLokasi
+                      ? t(
+                          errorMessageMap[locationFormErrors.detailLokasi] ||
+                            locationFormErrors.detailLokasi
+                        )
+                      : undefined
                 }
                 supportiveText={`${locationFormValues.detailLokasi.length}/500`}
               />

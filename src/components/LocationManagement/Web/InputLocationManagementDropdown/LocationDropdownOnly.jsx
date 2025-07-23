@@ -154,7 +154,6 @@ export const LocationDropdownOnly = ({
             src="/icons/marker-target-outline.svg"
             width={20}
             height={20}
-            className="-mt-[2px]"
           />
           <span>Pilih Lokasi</span>
         </button>

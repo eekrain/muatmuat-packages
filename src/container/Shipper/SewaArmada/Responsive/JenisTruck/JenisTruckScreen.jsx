@@ -12,12 +12,16 @@ import SearchBarResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/SearchB
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
 import { idrFormat } from "@/lib/utils/formatters";
-import { useSewaArmadaActions } from "@/store/Shipper/forms/sewaArmadaStore";
+import {
+  useSewaArmadaActions,
+  useSewaArmadaStore,
+} from "@/store/Shipper/forms/sewaArmadaStore";
 import { useResponsiveSearchStore } from "@/store/Shipper/zustand/responsiveSearchStore";
 
 const JenisTruckScreen = ({ trucks, handleFetchTrucks }) => {
   const searchValue = useResponsiveSearchStore((s) => s.searchValue);
   const navigation = useResponsiveNavigation();
+  const orderType = useSewaArmadaStore((s) => s.orderType);
 
   // Filtering logic
   const filteredTrucks = useMemo(() => {
@@ -72,7 +76,11 @@ const JenisTruckScreen = ({ trucks, handleFetchTrucks }) => {
           <div className="flex flex-col gap-3">
             {filteredTrucks.map((truck, index) => (
               <React.Fragment key={truck.truckTypeId}>
-                <TruckCard truck={truck} onClick={() => handleClick(truck)} />
+                <TruckCard
+                  truck={truck}
+                  onClick={() => handleClick(truck)}
+                  orderType={orderType}
+                />
                 {index < filteredTrucks.length - 1 && (
                   <hr className="border-neutral-400" />
                 )}
@@ -102,12 +110,18 @@ const JenisTruckScreen = ({ trucks, handleFetchTrucks }) => {
 
               {/* Recommended Trucks List */}
               <div className="flex flex-col gap-3">
-                {trucks?.recommendedTrucks.map((truck) => (
-                  <TruckCard
-                    key={truck.truckTypeId}
-                    truck={truck}
-                    onClick={() => handleClick(truck)}
-                  />
+                {trucks?.recommendedTrucks.map((truck, index) => (
+                  <React.Fragment key={truck.truckTypeId}>
+                    <TruckCard
+                      key={truck.truckTypeId}
+                      truck={truck}
+                      onClick={() => handleClick(truck)}
+                      orderType={orderType}
+                    />
+                    {index < trucks?.recommendedTrucks.length - 1 && (
+                      <hr className="border-neutral-400" />
+                    )}
+                  </React.Fragment>
                 ))}
               </div>
             </div>
@@ -117,39 +131,36 @@ const JenisTruckScreen = ({ trucks, handleFetchTrucks }) => {
           <div className="h-2 bg-neutral-200"></div>
 
           {/* Non-Recommended Section */}
-          <div className="flex flex-col gap-6 bg-white p-5">
-            <div className="flex flex-col gap-6">
-              {/* Header */}
-              <div className="flex flex-col gap-4">
-                <h2 className="text-sm font-bold leading-[15.4px] text-black">
-                  Tidak Direkomendasikan
-                </h2>
-                <Alert variant="warning">
-                  Pilihan truk di bawah ini berisiko kelebihan muatan atau tidak
-                  sesuai dengan informasi muatan
-                </Alert>
-              </div>
+          <div className="flex flex-col bg-white p-5">
+            {/* Header */}
+            <h2 className="mb-4 text-sm font-bold leading-[15.4px] text-black">
+              Tidak Direkomendasikan
+            </h2>
+            <Alert variant="warning" className="mb-6">
+              Pilihan truk di bawah ini berisiko kelebihan muatan atau tidak
+              sesuai dengan informasi muatan
+            </Alert>
 
-              {/* Non-Recommended Trucks List */}
-              <div className="flex flex-col gap-3">
-                {trucks?.nonRecommendedTrucks.map((truck, index, arr) => (
-                  <React.Fragment key={truck.truckTypeId}>
-                    <TruckCard
-                      truck={truck}
-                      onClick={() => handleClick(truck)}
-                    />
-                    {index < arr.length - 1 && (
-                      <div className="h-px w-full bg-neutral-400"></div>
-                    )}
-                  </React.Fragment>
-                ))}
-              </div>
+            {/* Non-Recommended Trucks List */}
+            <div className="flex flex-col gap-3">
+              {trucks?.nonRecommendedTrucks.map((truck, index) => (
+                <React.Fragment key={truck.truckTypeId}>
+                  <TruckCard
+                    truck={truck}
+                    onClick={() => handleClick(truck)}
+                    orderType={orderType}
+                  />
+                  {index < trucks?.nonRecommendedTrucks.length - 1 && (
+                    <hr className="border-neutral-400" />
+                  )}
+                </React.Fragment>
+              ))}
             </div>
           </div>
         </div>
       ) : (
         <div className="flex h-full flex-col">
-          <Alert variant="warning" className="h-[52px] pl-3 pr-6">
+          <Alert variant="warning" className="h-[52px] pl-3 pr-5">
             Untuk sementara kami belum menyediakan truk yang sesuai dengan
             informasi berat dan dimensi muatan yang kamu isikan.
           </Alert>
@@ -157,8 +168,9 @@ const JenisTruckScreen = ({ trucks, handleFetchTrucks }) => {
             className="flex-1 gap-y-3"
             textClass="leading-[14px] !text-sm"
             title={"Tidak ada rekomendasi truk"}
-            width={127}
-            height={109}
+            width={94}
+            height={76}
+            type="data"
           />
         </div>
       )}
@@ -168,7 +180,7 @@ const JenisTruckScreen = ({ trucks, handleFetchTrucks }) => {
 
 export default JenisTruckScreen;
 
-const TruckCard = ({ truck, onClick = () => {} }) => (
+const TruckCard = ({ truck, onClick = () => {}, orderType }) => (
   <div
     className="flex w-full cursor-pointer items-start gap-3"
     onClick={(e) => {
@@ -203,18 +215,36 @@ const TruckCard = ({ truck, onClick = () => {} }) => (
 
       {/* Specifications */}
       <div className="flex flex-col gap-3">
+        {/* Price */}
+        {orderType === "SCHEDULED" && (
+          <div className="flex items-center gap-2">
+            <IconComponent
+              src="/icons/jenis-truck/truck-price.svg"
+              className="size-6 text-amber-900"
+            />
+            <div className="flex flex-col gap-1">
+              <span className="text-xs font-semibold leading-[13.2px] text-black">
+                Harga per unit
+              </span>
+              <span className="text-xs font-bold leading-[13.2px] text-black">
+                {idrFormat(truck?.price)}
+              </span>
+            </div>
+          </div>
+        )}
+
         {/* Capacity */}
         <div className="flex items-center gap-2">
           <IconComponent
             src="/icons/jenis-truck/scale.svg"
             className="size-6 text-amber-900"
           />
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-1">
             <span className="text-xs font-semibold leading-[13.2px] text-black">
               Estimasi Kapasitas
             </span>
             <span className="text-xs font-bold leading-[13.2px] text-black">
-              {truck.maxWeight} {truck.weightUnit}
+              {truck?.maxWeight} {truck?.weightUnit}
             </span>
           </div>
         </div>
@@ -225,14 +255,14 @@ const TruckCard = ({ truck, onClick = () => {} }) => (
             src="/icons/jenis-truck/dimension.svg"
             className="size-6 text-amber-900"
           />
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-1">
             <span className="text-xs font-semibold leading-[13.2px] text-black">
               Estimasi Dimensi (p x l x t)
             </span>
             <span className="text-xs font-bold leading-[13.2px] text-black">
-              {truck.dimensions.length} {truck.dimensions.dimensionUnit} x{" "}
-              {truck.dimensions.width} {truck.dimensions.dimensionUnit} x{" "}
-              {truck.dimensions.height} {truck.dimensions.dimensionUnit}
+              {truck?.dimensions?.length} {truck?.dimensions?.dimensionUnit} x{" "}
+              {truck?.dimensions?.width} {truck?.dimensions?.dimensionUnit} x{" "}
+              {truck?.dimensions?.height} {truck?.dimensions?.dimensionUnit}
             </span>
           </div>
         </div>

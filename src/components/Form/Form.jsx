@@ -27,7 +27,7 @@ export const FormLabel = ({
     )}
   >
     {typeof children === "string" ? (
-      <label className="mt-[2px]">
+      <label>
         {children}
         {required && <span>*</span>}
         {optional && (

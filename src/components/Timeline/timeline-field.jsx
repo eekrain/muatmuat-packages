@@ -121,7 +121,8 @@ const Item = ({ index, children }) => {
           />
           {children}
         </div>
-        {index !== values.length - 1 || values.length < maxLocation ? (
+        {values.length !== 1 &&
+        (index !== values.length - 1 || values.length < maxLocation) ? (
           <hr className="my-3 block border-[#C4C4C4]" />
         ) : null}
       </div>
@@ -155,7 +156,7 @@ const AddButton = () => {
             width={20}
             height={20}
             src="/icons/plus-square24.svg"
-            className="-mt-[2px] text-[#176CF7]"
+            className="text-[#176CF7]"
             size="medium"
           />
           <span className="capsize">

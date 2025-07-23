@@ -157,6 +157,7 @@ export const Modal = ({
         isOpen,
         withCloseButton,
         dialogRef,
+        closeOnOutsideClick, // Pass to context
       }}
     >
       {children}
@@ -236,7 +237,8 @@ export const ModalContent = ({
     closeButtonClassname: "",
   },
 }) => {
-  const { close, isOpen, withCloseButton, dialogRef } = useModal();
+  const { close, isOpen, withCloseButton, dialogRef, closeOnOutsideClick } =
+    useModal();
 
   const iconClassnames = {
     muatmuat: "icon-fill-primary-700",
@@ -288,9 +290,30 @@ export const ModalContent = ({
         {/* Overlay */}
         <div
           className="absolute inset-0 bg-black/25"
-          onClick={close}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (closeOnOutsideClick) {
+              close?.();
+            }
+          }}
           aria-hidden="true"
         />
+        {type === "lightbox" && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              close?.();
+            }}
+            className="absolute left-4 top-[55px] block text-white md:hidden"
+          >
+            <IconComponent
+              className="text-white"
+              src="/icons/close20.svg"
+              width={24}
+              height={24}
+            />
+          </button>
+        )}
         {/* Dialog */}
         <div
           ref={dialogRef}
@@ -307,7 +330,10 @@ export const ModalContent = ({
                 "absolute right-2 top-2 z-50 flex cursor-pointer items-center justify-center rounded-full bg-neutral-50",
                 appearance.closeButtonClassname
               )}
-              onClick={close}
+              onClick={(e) => {
+                e.stopPropagation();
+                close?.();
+              }}
             >
               <IconComponent
                 className={cn(

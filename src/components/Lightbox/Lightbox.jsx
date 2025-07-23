@@ -4,6 +4,7 @@ import { cva } from "class-variance-authority";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import useDevice from "@/hooks/use-device";
+import { cn } from "@/lib/utils";
 
 import IconComponent from "../IconComponent/IconComponent";
 import { Modal, ModalContent } from "../Modal/Modal";
@@ -39,7 +40,7 @@ export const lightboxTitleVariants = cva(
 );
 
 export const lightboxImageVariants = cva(
-  "w-full bg-black object-contain md:h-[306px] md:w-[544px] md:rounded-[9px]",
+  "w-full object-contain md:h-[306px] md:w-[544px] md:rounded-[9px]",
   {
     variants: { variant: { shipper: "" } },
     defaultVariants: { variant: "shipper" },
@@ -96,7 +97,7 @@ export const LightboxProvider = ({
   children,
   variant = "shipper",
 }) => {
-  const { isMobile } = useDevice();
+  const { isMobile, mounted } = useDevice();
   const [open, setOpen] = useState(false);
   const [current, setCurrent] = useState(0);
 
@@ -116,6 +117,8 @@ export const LightboxProvider = ({
     }
     return images;
   }, [image, images]);
+
+  if (!mounted) return null;
 
   return (
     <LightboxContext.Provider
@@ -141,11 +144,14 @@ export const LightboxProvider = ({
           appearance={{
             backgroudClassname: "bg-black md:bg-black/25",
           }}
-          className={lightboxModalVariants({ variant })}
+          className={cn(
+            lightboxModalVariants({ variant }),
+            "rounded-none bg-white"
+          )}
           type="lightbox"
         >
           <h1 className={lightboxTitleVariants({ variant })}>{title}</h1>
-          <div className="relative">
+          <div className="relative w-full bg-white">
             <img
               src={memoizedImages[current]}
               className={lightboxImageVariants({ variant })}
@@ -225,7 +231,7 @@ export const LightboxPreview = ({
   const { openLightbox } = useLightbox();
 
   return (
-    <div className={lightboxPreviewRootVariants({ variant, className })}>
+    <div className={cn(lightboxPreviewRootVariants({ variant }), className)}>
       <img
         className={lightboxPreviewImageVariants({ variant })}
         src={image}
