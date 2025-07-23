@@ -1,46 +1,17 @@
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 
-import { BottomSheetHeader } from "@/components/Bottomsheet/Bottomsheet";
+import {
+  BottomSheet,
+  BottomSheetContent,
+  BottomSheetHeader,
+} from "@/components/Bottomsheet/Bottomsheet";
 import {
   LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
-import { useTranslation } from "@/hooks/use-translation";
-import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
 
-export const MenuList = () => {
-  const { t } = useTranslation();
-  const navigation = useResponsiveNavigation();
-  const [view, setView] = useState("menu");
-
-  const menus = [
-    {
-      label: "Ringkasan Status Pesanan",
-      onClick: () => navigation.push("/order-summary"),
-    },
-    {
-      label: "Detail Pengiriman Dokumen",
-      onClick: () => setView("shipping"),
-    },
-    {
-      label: "Detail Pembayaran",
-      onClick: () => alert("Detail Pembayaran clicked"),
-    },
-    {
-      label: "Ubah Pesanan",
-      onClick: () => alert("Ubah Pesanan clicked"),
-    },
-    // {
-    //   label: "Batalkan Pesanan",
-    //   onClick: () => alert("Batalkan Pesanan clicked"),
-    // },
-    {
-      label: "Unduh Dokumen Delivery Order (DO)",
-      onClick: () => alert("Unduh Dokumen Delivery Order (DO) clicked"),
-    },
-  ];
-
+export const BottomsheetDocumentShipping = ({ open, onOpenChange }) => {
   const dummyDocumentShippingEvidencePhotos = [
     "/img/recommended1.png",
     "/img/recommended1.png",
@@ -85,9 +56,9 @@ export const MenuList = () => {
     },
   ];
 
-  if (view === "shipping") {
-    return (
-      <>
+  return (
+    <BottomSheet open={open} onOpenChange={onOpenChange}>
+      <BottomSheetContent>
         <BottomSheetHeader>Bukti Pengiriman Dokumen</BottomSheetHeader>
         <div className="flex flex-col gap-y-4 px-4 py-6">
           {documentShippingDetail.map((item, key) => (
@@ -107,24 +78,7 @@ export const MenuList = () => {
             </div>
           ))}
         </div>
-      </>
-    );
-  }
-
-  return (
-    <>
-      <BottomSheetHeader>{t("Menu")}</BottomSheetHeader>
-      <ul className="flex flex-col divide-y divide-neutral-400 p-4 text-sm font-semibold text-neutral-900">
-        {menus.map((menu, index) => (
-          <li
-            key={index}
-            onClick={menu.onClick}
-            className="cursor-pointer py-4"
-          >
-            {t(menu.label)}
-          </li>
-        ))}
-      </ul>
-    </>
+      </BottomSheetContent>
+    </BottomSheet>
   );
 };
