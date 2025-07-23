@@ -8,7 +8,6 @@ import {
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
-import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
 
 import { DriverInfo } from "./components/DriverInfo";
 import { DriverQRCodeAlert } from "./components/DriverQRCodeAlert";
@@ -22,7 +21,11 @@ import { RouteInfo } from "./components/RouteInfo";
 import { TabsInfo } from "./components/TabsInfo";
 import { TransactionSummary } from "./components/TransactionSummary";
 
-const DetailPesananScreen = () => {
+const DetailPesananScreen = ({
+  dataDetailPIC,
+  dataRingkasanPembayaran,
+  documentShippingDetail,
+}) => {
   const DEBUG_MODE = false;
 
   const navigation = useResponsiveNavigation();
@@ -30,13 +33,6 @@ const DetailPesananScreen = () => {
   const [isOpenBottomsheet, setIsOpenBottomsheet] = useState(false);
 
   const [isOpenInfo, setIsOpenInfo] = useState(false);
-
-  const { data } = useGetDetailPesananData("12345");
-
-  const dataDetailPIC = data?.dataDetailPIC;
-  const dataRingkasanPembayaran = data?.dataRingkasanPembayaran;
-  const documentShippingDetail =
-    data?.dataRingkasanPembayaran.documentShippingDetail;
 
   return (
     <FormResponsiveLayout
@@ -51,7 +47,7 @@ const DetailPesananScreen = () => {
     >
       <div className="mb-16 space-y-2 bg-neutral-200">
         {/* <img src="/img/mock-va.png" alt="" /> */}
-        {false && (
+        {true && (
           <PaymentDetail dataRingkasanPembayaran={dataRingkasanPembayaran} />
         )}
 
