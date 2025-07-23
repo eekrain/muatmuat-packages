@@ -9,11 +9,11 @@ import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
+import { BottomsheetMenuList } from "./components/BottomsheetMenuList";
 import { DriverInfo } from "./components/DriverInfo";
 import { DriverQRCodeAlert } from "./components/DriverQRCodeAlert";
 import { FleetStatusAlert } from "./components/FleetStatusAlert";
 import { FooterButton } from "./components/FooterButton";
-import { MenuList } from "./components/MenuList";
 import { MethodInfo } from "./components/MethodInfo";
 import { OrderInfo } from "./components/OrderInfo";
 import { PaymentDetail } from "./components/PaymentDetail";
@@ -21,13 +21,13 @@ import { RouteInfo } from "./components/RouteInfo";
 import { TabsInfo } from "./components/TabsInfo";
 import { TransactionSummary } from "./components/TransactionSummary";
 
+const DEBUG_MODE = false;
+
 const DetailPesananScreen = ({
   dataDetailPIC,
   dataRingkasanPembayaran,
   documentShippingDetail,
 }) => {
-  const DEBUG_MODE = false;
-
   const navigation = useResponsiveNavigation();
 
   const [isOpenBottomsheet, setIsOpenBottomsheet] = useState(false);
@@ -63,11 +63,10 @@ const DetailPesananScreen = ({
         )}
       </div>
 
-      <BottomSheet open={isOpenBottomsheet} onOpenChange={setIsOpenBottomsheet}>
-        <BottomSheetContent>
-          <MenuList />
-        </BottomSheetContent>
-      </BottomSheet>
+      <BottomsheetMenuList
+        open={isOpenBottomsheet}
+        onOpenChange={setIsOpenBottomsheet}
+      />
 
       <BottomSheet open={isOpenInfo} onOpenChange={setIsOpenInfo}>
         <BottomSheetContent>
