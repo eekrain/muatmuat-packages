@@ -16,7 +16,7 @@ const ResponsiveMenuScreen = () => {
     {
       icon: "/icons/menu/daftarpesanan.svg",
       label: "Daftar Pesanan",
-      badge: order,
+      badge: 9,
       badgeColor: "bg-red-500",
     },
     {

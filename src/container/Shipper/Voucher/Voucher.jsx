@@ -170,7 +170,7 @@ export const VoucherContainer = ({
                 <IconComponent src="/icons/search.svg" width={20} height={20} />
               </div>
               <input
-                disabled={filteredVouchers.length === 0 ? true : false}
+                disabled={voucherList.length === 0}
                 type="text"
                 placeholder="Cari Kode Voucher"
                 value={searchKeyword}

@@ -142,7 +142,7 @@ export default function VoucherInfoPopup({
           {/* Terms & Conditions */}
           <div className="px-4 py-3">
             <h3 className="mb-2 text-sm font-semibold">Syarat Dan Ketentuan</h3>
-            <ol className="ml-4 list-decimal text-xs text-gray-700">
+            <ol className="ml-4 list-decimal text-sm text-gray-700">
               {voucher.termsAndConditions.map((t, idx) => (
                 <li key={idx} className="mb-1">
                   {t}
@@ -154,7 +154,7 @@ export default function VoucherInfoPopup({
           {/* Usage Instructions */}
           <div className="px-4 py-3">
             <h3 className="mb-2 text-sm font-semibold">Cara Pemakaian</h3>
-            <ol className="ml-4 list-decimal text-xs text-gray-700">
+            <ol className="ml-4 list-decimal text-sm text-gray-700">
               {voucher.usageInstructions.map((u, idx) => (
                 <li key={idx} className="mb-1">
                   {u}
