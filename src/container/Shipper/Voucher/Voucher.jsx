@@ -19,6 +19,7 @@ import {
 const MOCK_EMPTY = false;
 export const VoucherContainer = ({
   selectedVoucher,
+  selectedVoucherId,
   baseOrderAmount,
   onVoucherSelect,
   useMockData = false, // Add flag for testing
@@ -211,7 +212,7 @@ export const VoucherContainer = ({
                       isOutOfStock={v.isOutOfStock || false}
                       startDate={formatShortDate(v.validFrom)}
                       endDate={formatDate(v.validTo)}
-                      isActive={selectedVoucher?.id === v.id}
+                      isActive={selectedVoucherId === v.id}
                       onSelect={() => handleVoucherSelect(v)}
                       validationError={validationErrors[v.id]}
                     />
