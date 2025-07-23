@@ -1,9 +1,9 @@
 import useSWR from "swr";
 
-import { fetcherMuatparts } from "@/lib/axios";
+import { fetcherMuatrans } from "@/lib/axios";
 
 export const getCancellationReasons = async (url) => {
-  const res = await fetcherMuatparts.get(url);
+  const res = await fetcherMuatrans.get(url);
   const data = res.data?.Data?.reasons;
   if (!data) return [];
   return data.map((val) => ({
