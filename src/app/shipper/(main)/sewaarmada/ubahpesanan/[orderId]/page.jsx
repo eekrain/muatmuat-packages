@@ -42,9 +42,9 @@ const Page = () => {
   const { cargoCategories, cargoTypes, additionalServicesOptions } =
     useGetSewaArmadaFormOption();
   const { data: orderDetailData, isLoading } = useGetOrderDetail(
-    params.orderId,
-    "update"
+    params.orderId
   );
+  // console.log("orderDetailData", orderDetailData);
   // Setup SWR mutation hook untuk API calculate-price
   const { trigger: calculatePrice, data: calculatedPriceData } =
     useSWRMutateHook("v1/orders/calculate-price");
@@ -82,7 +82,8 @@ const Page = () => {
         try {
           // Prepare request payload berdasarkan dokumentasi API
           const requestPayload = {
-            calculationType: "FULL_ORDER_PRICING", // FULL_ORDER_PRICING atau UPDATE_ORDER_PRICING
+            calculationType: "UPDATE_ORDER_PRICING",
+            orderId: params.orderId,
             truckData: {
               carrierId,
               truckTypeId,
@@ -137,6 +138,7 @@ const Page = () => {
     };
     handleCalculatePrice();
   }, [
+    params.orderId,
     orderType,
     carrierId,
     truckTypeId,
@@ -168,8 +170,8 @@ const Page = () => {
       //   carriers={carriers}
       //   trucks={trucks}
       additionalServicesOptions={additionalServicesOptions}
-      //   shippingDetails={shippingDetails}
-      //   shippingOption={shippingOption}
+      shippingDetails={shippingDetails}
+      shippingOption={shippingOption}
       //   calculatedPrice={calculatedPrice}
       //   paymentMethods={paymentMethods}
       //   onFetchTrucks={handleFetchTrucks}

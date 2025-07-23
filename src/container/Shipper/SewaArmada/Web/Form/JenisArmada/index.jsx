@@ -227,7 +227,7 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
           <FormLabel required>Jumlah Armada</FormLabel>
           <div className="">
             <ButtonPlusMinus
-              disabled={!truckTypeId || hasMultipleLocations}
+              disabled={!truckTypeId || hasMultipleLocations || isEditPage}
               onChange={(value) => setField("truckCount", value)}
               minValue={minTruckCount}
               maxValue={10}

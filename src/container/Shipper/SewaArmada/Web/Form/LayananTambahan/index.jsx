@@ -10,6 +10,7 @@ import {
   LocationProvider,
   useLocationContext,
 } from "@/hooks/use-location/use-location";
+import { cn } from "@/lib/utils";
 import { handleFirstTime } from "@/lib/utils/form";
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 import {
@@ -124,7 +125,14 @@ const LayananTambahan = ({
                 {isSendDeliveryEvidenceService &&
                 isSelected &&
                 shippingDetails ? (
-                  <div className="ml-6 flex gap-x-2 rounded-md border border-primary-700 bg-primary-50 p-3">
+                  <div
+                    className={cn(
+                      "ml-6 flex gap-x-2 rounded-md border p-3",
+                      isEditPage
+                        ? "border-neutral-600 bg-neutral-200"
+                        : "border-primary-700 bg-primary-50"
+                    )}
+                  >
                     <IconComponent
                       className="icon-fill-muat-trans-secondary-900"
                       src="/icons/lokasi16.svg"
@@ -165,28 +173,30 @@ const LayananTambahan = ({
                         </div>
                       ))}
                     </div>
-                    <button
-                      className="flex items-center gap-x-2 self-start"
-                      onClick={() => {
-                        setAutoCompleteSearchPhrase(
-                          shippingDetails.destinationAddress
-                        );
-                        setLocationPostalCodeSearchPhrase(
-                          shippingDetails.postalCode
-                        );
-                        reset(shippingDetailsLocation);
-                        setModalType("edit");
-                        setIsOpen(true);
-                      }}
-                    >
-                      <span className="text-xs font-medium leading-[14.4px] text-primary-700">
-                        Ubah
-                      </span>
-                      <IconComponent
-                        className="icon-fill-primary-700"
-                        src="/icons/edit16.svg"
-                      />
-                    </button>
+                    {isEditPage ? null : (
+                      <button
+                        className="flex items-center gap-x-2 self-start"
+                        onClick={() => {
+                          setAutoCompleteSearchPhrase(
+                            shippingDetails.destinationAddress
+                          );
+                          setLocationPostalCodeSearchPhrase(
+                            shippingDetails.postalCode
+                          );
+                          reset(shippingDetailsLocation);
+                          setModalType("edit");
+                          setIsOpen(true);
+                        }}
+                      >
+                        <span className="text-xs font-medium leading-[14.4px] text-primary-700">
+                          Ubah
+                        </span>
+                        <IconComponent
+                          className="icon-fill-primary-700"
+                          src="/icons/edit16.svg"
+                        />
+                      </button>
+                    )}
                   </div>
                 ) : null}
               </Fragment>

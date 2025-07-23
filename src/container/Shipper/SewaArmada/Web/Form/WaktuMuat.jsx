@@ -15,6 +15,7 @@ import {
 export const WaktuMuat = () => {
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
+  const orderType = useSewaArmadaStore((state) => state.orderType);
   const loadTimeStart = useSewaArmadaStore(
     (state) => state.formValues.loadTimeStart
   );
@@ -84,7 +85,7 @@ export const WaktuMuat = () => {
 
         <div className="flex flex-row items-center gap-x-1">
           <Checkbox
-            disabled={isEditPage}
+            disabled={isEditPage && orderType === "INSTANT"}
             label="Dengan Rentang Waktu"
             value="rentang_waktu"
             checked={showRangeOption}
