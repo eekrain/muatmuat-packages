@@ -73,7 +73,7 @@ export const BadanUsahaPemesan = () => {
       newErrors.taxId = "Nomor NPWP wajib diisi";
     } else if (taxId.length < 15) {
       newErrors.taxId = "Nomor NPWP minimal 15 digit";
-    } else if (taxId.length > 15) {
+    } else if (taxId.length > 16) {
       newErrors.taxId = "Nomor NPWP maksimal 16 digit";
     }
 
