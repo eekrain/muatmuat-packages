@@ -9,9 +9,9 @@ import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook, useSWRMutateHook } from "@/hooks/use-swr";
 import { getLoadTimes } from "@/lib/utils/dateTime";
-import { useGetOrderDetail } from "@/services/Shipper/sewaarmada/getOrderDetail";
 import { useGetRecommendedCarriers } from "@/services/Shipper/sewaarmada/getRecommendedCarriers";
 import { useGetRecommendedTrucks } from "@/services/Shipper/sewaarmada/getRecommendedTrucks";
+import { useGetReorderFleetData } from "@/services/Shipper/sewaarmada/getReorderFleetData";
 import useGetSewaArmadaFormOptionData from "@/services/Shipper/sewaarmada/getSewaArmadaFormOption";
 import {
   useSewaArmadaActions,
@@ -36,7 +36,6 @@ const Page = () => {
     informasiMuatan,
     carrierId,
     truckTypeId,
-    tempTrucks,
     truckCount,
     distance,
     distanceUnit,
@@ -48,10 +47,8 @@ const Page = () => {
   const { setField, setFormId, setOrderType, reset } = useSewaArmadaActions();
   const { setWaitingSettlementOrderId } = useWaitingSettlementModalAction();
 
-  const { data: reorderData, isLoading } = useGetOrderDetail(
-    copyOrderId,
-    "reorder"
-  );
+  const { data: reorderData, isLoading } = useGetReorderFleetData(copyOrderId);
+
   const { data: settlementAlertInfoData } = useSWRHook(
     "v1/orders/settlement/alert-info"
   );
@@ -106,7 +103,7 @@ const Page = () => {
         try {
           // Prepare request payload berdasarkan dokumentasi API
           const requestPayload = {
-            calculationType: "FULL_ORDER_PRICING", // FULL_ORDER_PRICING atau UPDATE_ORDER_PRICING
+            calculationType: "FULL_ORDER_PRICING",
             truckData: {
               carrierId,
               truckTypeId,

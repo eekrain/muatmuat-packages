@@ -38,21 +38,17 @@ const normalizeLocation = (location) => {
   };
 };
 
-export const normalizeOrderDetail = (
-  orderDetail,
-  reorderFleet,
+export const normalizeReorderFleet = (
+  reorderFleetData,
   tempShippingOptions
 ) => {
-  const { summary, otherInformation, businessEntity } = orderDetail;
   const {
-    loadTimeStart,
-    loadTimeEnd,
     locations,
-    cargo,
-    carrier,
-    truckType,
-    isHalalLogistic,
-  } = summary;
+    cargos,
+    otherInformation,
+    additionalService,
+    businessEntity,
+  } = reorderFleetData;
   const cargoPhotos = otherInformation.cargoPhotos || [];
   // Filter into pickup and dropoff arrays then sort by sequence
   const pickupLocations = locations
@@ -61,17 +57,15 @@ export const normalizeOrderDetail = (
   const dropoffLocations = locations
     .filter((location) => location.locationType === "DROPOFF")
     .sort((a, b) => a.sequence - b.sequence);
-  console.log("carg", cargo);
+
   return {
     ...defaultValues,
-    loadTimeStart,
-    ...(loadTimeEnd && { loadTimeEnd, showRangeOption: true }),
     lokasiMuat: pickupLocations.map((item) => normalizeLocation(item)),
     lokasiBongkar: dropoffLocations.map((item) => normalizeLocation(item)),
-    cargoTypeId: reorderFleet.otherInformation.cargoTypeId,
-    cargoCategoryId: reorderFleet.otherInformation.cargoCategoryId,
-    isHalalLogistics: isHalalLogistic,
-    informasiMuatan: cargo.map((item) => ({
+    cargoTypeId: otherInformation.cargoTypeId,
+    cargoCategoryId: otherInformation.cargoCategoryId,
+    isHalalLogistics: otherInformation.isHalalLogistics,
+    informasiMuatan: cargos.map((item) => ({
       beratMuatan: {
         berat: item.weight,
         unit: item.weightUnit,
@@ -83,16 +77,13 @@ export const normalizeOrderDetail = (
         unit: item.dimensions.unit,
       },
       namaMuatan: {
-        label: item.name,
-        value: item.cargoId,
+        label: item.cargoName,
+        value: item.cargoNameId,
       },
     })),
     cargoPhotos: cargoPhotos.concat(Array(4 - cargoPhotos.length).fill(null)),
     cargoDescription: otherInformation.cargoDescription,
-    carrierId: carrier.carrierId,
-    truckTypeId: truckType.truckTypeId,
-    truckCount: truckType.totalUnit,
-    additionalServices: reorderFleet.additionalService.map((item) => {
+    additionalServices: additionalService.map((item) => {
       if (!item.isShipping) {
         return {
           serviceId: item.serviceId,
@@ -104,7 +95,6 @@ export const normalizeOrderDetail = (
         .find(
           (courier) => courier.id === item.addressInformation.shippingOptionId
         );
-
       return {
         serviceId: item.serviceId,
         withShipping: item.isShipping,
@@ -130,6 +120,10 @@ export const normalizeOrderDetail = (
     }),
     tempShippingOptions,
     deliveryOrderNumbers: otherInformation.numberDeliveryOrder,
-    businessEntity,
+    businessEntity: {
+      isBusinessEntity: businessEntity.isBusinessEntity,
+      name: businessEntity.name,
+      taxId: businessEntity.npwp,
+    },
   };
 };

@@ -1,3 +1,4 @@
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import Button from "@/components/Button/Button";
@@ -7,6 +8,7 @@ import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
+import { cn } from "@/lib/utils";
 import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
@@ -14,6 +16,8 @@ import {
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
 export const BadanUsahaPemesan = () => {
+  const pathname = usePathname();
+  const isEditPage = pathname.includes("/ubahpesanan");
   const businessEntity = useSewaArmadaStore(
     (state) => state.formValues.businessEntity
   );
@@ -98,6 +102,7 @@ export const BadanUsahaPemesan = () => {
         <div className="flex flex-col gap-y-3">
           <div className="flex h-[16px] flex-row items-center gap-[4px]">
             <Checkbox
+              disabled={isEditPage}
               onChange={({ checked }) =>
                 handleFirstTime(() => handleToggleCheckbox(checked))
               }
@@ -113,7 +118,14 @@ export const BadanUsahaPemesan = () => {
             </InfoTooltip>
           </div>
           {isBusinessEntity && name && taxId ? (
-            <div className="ml-6 flex gap-x-2 rounded-md border border-primary-700 bg-primary-50 p-3">
+            <div
+              className={cn(
+                "ml-6 flex gap-x-2 rounded-md border p-3",
+                isEditPage
+                  ? "border-neutral-600 bg-neutral-200"
+                  : "border-primary-700 bg-primary-50"
+              )}
+            >
               <IconComponent src="/icons/profil-perusahaan16.svg" />
               <div className="flex flex-1 flex-col py-1">
                 <div className="flex w-full flex-col gap-y-3">
@@ -133,21 +145,23 @@ export const BadanUsahaPemesan = () => {
                   </div>
                 </div>
               </div>
-              <button
-                className="flex items-center gap-x-2 self-start"
-                onClick={() => {
-                  setModalType("edit");
-                  setIsModalOpen(true);
-                }}
-              >
-                <span className="text-xs font-medium leading-[14.4px] text-primary-700">
-                  Ubah
-                </span>
-                <IconComponent
-                  className="icon-fill-primary-700"
-                  src="/icons/edit16.svg"
-                />
-              </button>
+              {isEditPage ? null : (
+                <button
+                  className="flex items-center gap-x-2 self-start"
+                  onClick={() => {
+                    setModalType("edit");
+                    setIsModalOpen(true);
+                  }}
+                >
+                  <span className="text-xs font-medium leading-[14.4px] text-primary-700">
+                    Ubah
+                  </span>
+                  <IconComponent
+                    className="icon-fill-primary-700"
+                    src="/icons/edit16.svg"
+                  />
+                </button>
+              )}
             </div>
           ) : null}
         </div>
