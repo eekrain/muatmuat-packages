@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { useState } from "react";
 
+import { useCountdown } from "@/hooks/use-countdown";
 import { idrFormat } from "@/lib/utils/formatters";
 import { isVoucherExpiringSoon } from "@/lib/utils/voucherValidation";
 
@@ -64,6 +65,12 @@ export default function VoucherCard({
     ],
     usageInstructions: ["Masukkan kode Voucher Kamu dan pilih Voucher"],
   };
+
+  // Countdown for vouchers expiring soon
+  const { countdown } = useCountdown({
+    endingDate: endDate,
+    isNeedCountdown: isVoucherExpiringSoon(endDate, 1),
+  });
 
   return (
     <div>
@@ -186,12 +193,25 @@ export default function VoucherCard({
         </div>
       )}
 
-      {/* Expired warning - show if voucher is expiring within 3 days */}
+      {/* Expired warning - show if voucher is expiring within 4 days */}
       {!validationError &&
         !isOutOfStock &&
-        isVoucherExpiringSoon(endDate, 3) && (
+        isVoucherExpiringSoon(endDate, 4) && (
           <div className="w-full py-1 text-xs font-medium text-red-500">
-            ⚠️ Voucher akan berakhir dalam 3 hari
+            {(() => {
+              // If less than 1 day, show countdown in hours
+              const now = new Date();
+              const expiry = new Date(endDate);
+              const diffMs = expiry - now;
+              const diffHours = diffMs / (1000 * 60 * 60);
+              if (diffHours < 24) {
+                return `Sisa ${countdown} lagi`;
+              } else {
+                // Otherwise, show days left
+                const diffDays = Math.ceil(diffHours / 24);
+                return `Berakhir ${diffDays} hari lagi`;
+              }
+            })()}
           </div>
         )}
 
