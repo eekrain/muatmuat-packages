@@ -1,5 +1,3 @@
-import { User } from "lucide-react";
-
 import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import Input from "@/components/Form/Input";
@@ -167,9 +165,6 @@ const FormLokasiBongkarMuatScreen = () => {
                       ? t("placeholderEnterPICNameLoadingLocation")
                       : t("placeholderEnterPICNameUnloadingLocation")
                   }
-                  icon={{
-                    right: <User className="h-4 w-4 text-[#176CF7]" />,
-                  }}
                   value={formValues.namaPIC}
                   onChange={(e) => setField("namaPIC", e.target.value)}
                   errorMessage={formErrors?.namaPIC}

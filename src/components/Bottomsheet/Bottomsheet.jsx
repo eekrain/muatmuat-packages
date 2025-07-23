@@ -79,22 +79,9 @@ export const BottomSheet = ({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, close]);
 
-  const handleClickOutside = useCallback(
-    (e) => {
-      if (
-        closeOnOutsideClick &&
-        sheetRef.current &&
-        !sheetRef.current.contains(e.target)
-      ) {
-        close();
-      }
-    },
-    [closeOnOutsideClick, close]
-  );
-
   return (
     <BottomSheetContext.Provider
-      value={{ open, close, isOpen, handleClickOutside }}
+      value={{ open, close, isOpen, closeOnOutsideClick }}
     >
       {children}
     </BottomSheetContext.Provider>
@@ -130,7 +117,7 @@ export const BottomSheetTrigger = ({
 };
 
 export const BottomSheetContent = ({ children, className }) => {
-  const { isOpen, handleClickOutside, close } = useBottomSheet();
+  const { isOpen, close, closeOnOutsideClick } = useBottomSheet();
   const sheetRef = useRef(null);
   const baseClass =
     "fixed left-0 right-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl w-full max-h-[75vh] mx-auto animate-slideUp";
@@ -234,7 +221,6 @@ export const BottomSheetContent = ({ children, className }) => {
       const finalPosition = Math.max(sheetHeight, viewportHeight);
       setTranslateY(finalPosition);
       setTimeout(() => {
-        setTranslateY(0);
         close();
       }, 250);
     } else {
@@ -243,26 +229,77 @@ export const BottomSheetContent = ({ children, className }) => {
     }
   };
 
+  // Reset drag state when closed
+  React.useEffect(() => {
+    if (!isOpen) {
+      setDragging(false);
+      setTranslateY(0);
+      setVelocity(0);
+      setShouldClose(false);
+      setStartY(0);
+    }
+  }, [isOpen]);
+
   // Attach/remove event listeners
   React.useEffect(() => {
     if (!dragging) return;
-    const move = (e) => onDragMove(e);
-    const up = () => onDragEnd();
 
-    const options = { passive: false };
-    window.addEventListener("touchmove", move, options);
-    window.addEventListener("touchend", up);
-    window.addEventListener("mousemove", move);
-    window.addEventListener("mouseup", up);
+    const handleTouchMove = (e) => {
+      e.preventDefault();
+      onDragMove(e);
+    };
+    const handleMouseMove = (e) => onDragMove(e);
+    const handleTouchEnd = () => onDragEnd();
+    const handleMouseUp = () => onDragEnd();
+
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("touchend", handleTouchEnd);
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
 
     return () => {
-      window.removeEventListener("touchmove", move);
-      window.removeEventListener("touchend", up);
-      window.removeEventListener("mousemove", move);
-      window.removeEventListener("mouseup", up);
+      window.removeEventListener("touchmove", handleTouchMove, {
+        passive: false,
+      });
+      window.removeEventListener("touchend", handleTouchEnd);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dragging, startY, translateY]);
+
+  // Stacking logic: only topmost bottomsheet is visible
+  React.useEffect(() => {
+    if (!isOpen || typeof window === "undefined") return;
+
+    // Delay to ensure all sheets are mounted in the DOM
+    const timeout = setTimeout(() => {
+      const sheets = Array.from(
+        document.querySelectorAll(".bottomsheet-parent")
+      );
+      sheets.forEach((sheet, idx) => {
+        sheet.classList.remove("invisible");
+        // Hide all but the topmost sheet
+        if (idx < sheets.length - 1) {
+          sheet.classList.add("invisible");
+        }
+      });
+    }, 10);
+
+    // Cleanup: when this sheet unmounts, re-check visibility for other sheets
+    return () => {
+      clearTimeout(timeout);
+      const sheets = Array.from(
+        document.querySelectorAll(".bottomsheet-parent")
+      );
+      sheets.forEach((sheet, idx) => {
+        sheet.classList.remove("invisible");
+        if (idx < sheets.length - 1) {
+          sheet.classList.add("invisible");
+        }
+      });
+    };
+  }, [isOpen]);
 
   if (!isOpen || typeof window === "undefined") return null;
 
@@ -275,12 +312,22 @@ export const BottomSheetContent = ({ children, className }) => {
   return (
     <Portal>
       <div
-        className="fixed inset-0 z-50 flex flex-col items-center justify-end bg-neutral-900/30 bg-opacity-40 transition-opacity duration-200"
+        className="bottomsheet-parent fixed inset-0 z-50 flex flex-col items-center justify-end bg-neutral-900/30 bg-opacity-40 transition-opacity duration-200"
         style={{
           backgroundColor: `rgba(38, 38, 38, ${0.3 * backdropOpacity})`,
         }}
-        onMouseDown={handleClickOutside}
       >
+        {/* Overlay for outside click */}
+        <div
+          className="absolute inset-0"
+          aria-hidden="true"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (closeOnOutsideClick) {
+              close();
+            }
+          }}
+        />
         <div
           ref={sheetRef}
           className={cn(baseClass, className)}
@@ -295,7 +342,6 @@ export const BottomSheetContent = ({ children, className }) => {
               : 1,
           }}
           onTouchStart={onDragStart}
-          onTouchMove={(e) => dragging && e.preventDefault()}
           onTouchEnd={onDragEnd}
           onMouseDown={onDragStart}
         >
