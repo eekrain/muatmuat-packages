@@ -16,6 +16,7 @@ import {
   TimelineContentWithButtonDate,
   TimelineItem,
 } from "@/components/Timeline";
+import { useTranslation } from "@/hooks/use-translation";
 import { formatDate } from "@/lib/utils/dateFormat";
 
 import MuatBongkarModal from "./MuatBongkarModal";
@@ -26,6 +27,7 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
   const [modalData, setModalData] = useState(null);
   const [isPickup, setIsPickup] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const { t } = useTranslation();
 
   return (
     // Main Content Card
@@ -324,7 +326,7 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
         isOpen={isLokasiMuatBongkarModalOpen}
         setIsOpen={setIsLokasiMuatBongkarModalOpen}
         data={modalData}
-        title={isPickup ? "Lokasi Muat" : "Lokasi Bongkar"}
+        title={isPickup ? t("titleLokasiMuat") : t("titleLokasiBongkar")}
       />
     </>
   );

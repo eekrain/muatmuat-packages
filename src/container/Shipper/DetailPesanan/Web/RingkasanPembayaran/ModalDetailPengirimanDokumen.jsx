@@ -1,9 +1,21 @@
 import { useMemo } from "react";
 
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
+import { useTranslation } from "@/hooks/use-translation";
 import { idrFormat } from "@/lib/utils/formatters";
 
 export const ModalDetailPengirimanDokumen = ({ dataRingkasanPembayaran }) => {
+  const { t } = useTranslation();
+  const labelMap = {
+    "Nama Penerima": t("labelNamaPenerima"),
+    "Nomor Handphone Penerima": t("labelNoHPPenerima"),
+    "Alamat Tujuan": t("labelAlamatTujuan"),
+    "Detail Alamat Tujuan": t("labelDetailAlamatTujuan"),
+    Kecamatan: t("labelKecamatan"),
+    "Kabupaten/Kota": t("labelCity"),
+    Provinsi: t("labelProvince"),
+    "Kode Pos": t("labelKodePos"),
+  };
   const documentShippingFields = useMemo(() => {
     const data = dataRingkasanPembayaran?.documentShippingDetail;
     if (!data) return [];
@@ -64,14 +76,14 @@ export const ModalDetailPengirimanDokumen = ({ dataRingkasanPembayaran }) => {
     <Modal closeOnOutsideClick>
       <ModalTrigger>
         <button className="text-xs font-medium leading-[14.4px] text-primary-700">
-          Lihat Detail Pengiriman Dokumen
+          {t("buttonLihatDetailPengirimanDokumen")}
         </button>
       </ModalTrigger>
       <ModalContent>
         <div className="flex flex-col gap-y-4 px-6 py-9">
           {/* Header */}
           <h2 className="text-center text-base font-bold leading-[19.2px] text-neutral-900">
-            Detail Pengiriman Dokumen
+            {t("titleDetailPengirimanDokumen")}
           </h2>
 
           {/* Content */}
@@ -83,7 +95,7 @@ export const ModalDetailPengirimanDokumen = ({ dataRingkasanPembayaran }) => {
                 className="flex w-[424px] flex-col items-start gap-3 p-0"
               >
                 <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
-                  {field.label}
+                  {labelMap[field.label] || field.label}
                 </span>
                 <span
                   className={`text-xs font-medium leading-[14.4px] text-neutral-600 ${field.width}`}
@@ -96,7 +108,7 @@ export const ModalDetailPengirimanDokumen = ({ dataRingkasanPembayaran }) => {
             {/* Ekspedisi Section */}
             <div className="flex h-12 w-[424px] flex-col items-start gap-3 p-0">
               <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
-                Ekspedisi Pengiriman
+                {t("labelEkspedisiPengiriman")}
               </span>
 
               {/* Ekspedisi Details */}
@@ -117,7 +129,7 @@ export const ModalDetailPengirimanDokumen = ({ dataRingkasanPembayaran }) => {
                 {/* Insurance */}
                 <div className="flex h-2 w-[424px] flex-row items-center justify-between">
                   <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
-                    Asuransi Pengiriman
+                    {t("labelAsuransiPengiriman")}
                   </span>
                   <span className="text-xs font-medium leading-[14.4px] text-neutral-900">
                     {idrFormat(

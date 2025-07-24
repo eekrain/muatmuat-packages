@@ -132,7 +132,7 @@ export default function SewaArmadaWeb({
         <AlertMultiline items={alertItems} className="mt-0 w-full" />
 
         {/* Main Content */}
-        {shouldShowFirstTimer ? (
+        {orderType === "" ? (
           <FirstTimer />
         ) : (
           <>

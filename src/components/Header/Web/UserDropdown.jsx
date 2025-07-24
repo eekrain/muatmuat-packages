@@ -39,7 +39,9 @@ export const UserDropdown = () => {
   return (
     <>
       {!isLoggedIn ? (
-        <a href={`${process.env.NEXT_PUBLIC_INTERNAL_WEB}login?from=muattrans`}>
+        <a
+          href={`${process.env.NEXT_PUBLIC_INTERNAL_WEB}login?from=muattranshipper`}
+        >
           <Button variant="muatparts-primary">
             <span className="text-sm font-semibold leading-[1] text-neutral-50">
               Masuk
