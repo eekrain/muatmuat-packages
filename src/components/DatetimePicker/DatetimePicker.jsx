@@ -279,6 +279,7 @@ const DatetimePicker = ({
   placeholder = "Tanggal",
   disabled = false,
   status = null,
+  disableDateOnly,
   ...props
 }) => {
   // Ensure we always have a valid Date object
@@ -463,6 +464,7 @@ const DatetimePicker = ({
           {/* MP 22: LB - 0166 */}
           <div className="flex max-w-[100%] overflow-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <DatePicker
+              readOnly={disableDateOnly}
               selected={selectedDate}
               onChange={handleDateChange}
               inline

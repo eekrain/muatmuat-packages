@@ -14,6 +14,7 @@ import { useModalLocation } from "./use-modal-location";
 export const LokasiMuat = () => {
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
+  const orderType = useSewaArmadaStore((state) => state.orderType);
   const { modalConfig, handleOpenModalLocation, handleCloseModalLocation } =
     useModalLocation();
   const lokasiMuat = useSewaArmadaStore((state) => state.formValues.lokasiMuat);
@@ -22,17 +23,13 @@ export const LokasiMuat = () => {
   );
   const { addLokasi, removeLokasi, setField } = useSewaArmadaActions();
 
-  const showRemoveButton =
-    (lokasiMuat && lokasiMuat.length > 1) ||
-    Boolean(lokasiMuat?.[0]?.dataLokasi?.location);
-
   return (
     <>
       <FormContainer>
         <FormLabel required>Lokasi Muat</FormLabel>
 
         <TimelineField.Root
-          disabled={isEditPage}
+          disabled={isEditPage && orderType === "INSTANT"}
           variant="muat"
           className="flex-1"
           values={
@@ -57,7 +54,7 @@ export const LokasiMuat = () => {
           {lokasiMuat && lokasiMuat.length > 0
             ? lokasiMuat.map((item, index) => (
                 <TimelineField.Item index={index} key={index}>
-                  {!isEditPage && showRemoveButton && (
+                  {!isEditPage && (
                     <TimelineField.RemoveButton
                       onClick={() => {
                         removeLokasi("lokasiMuat", index);
@@ -68,7 +65,7 @@ export const LokasiMuat = () => {
                 </TimelineField.Item>
               ))
             : null}
-          <TimelineField.AddButton />
+          {isEditPage ? null : <TimelineField.AddButton />}
         </TimelineField.Root>
       </FormContainer>
 

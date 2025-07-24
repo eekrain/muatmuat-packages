@@ -41,6 +41,7 @@ const createTranslationStore = () =>
         const envProd = process.env.NEXT_PUBLIC_ENVIRONMENT;
         const s3url = process.env.NEXT_PUBLIC_S3_URL;
         const url = `${s3url}content-general/locales/${envProd}/${languageUrl}/common.json`;
+        // const url = `${s3url}content-general/locales/muat-trans/${envProd}/${languageUrl}/common.json`;
 
         try {
           const response = await xior.get(url, cacheConfig);

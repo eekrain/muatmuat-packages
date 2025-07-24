@@ -6,7 +6,7 @@ const FleetOrderConfirmationModal = ({ isOpen, setIsOpen, onOrderFleet }) => {
   return (
     <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick={false}>
       <ModalContent className="w-modal-big">
-        <ModalHeader size="big" />
+        <ModalHeader size="big" type="muattrans" />
         <div className="flex w-[454px] flex-col items-center justify-center gap-6 px-6 py-9">
           {/* Judul Modal */}
           <h2 className="w-full text-center text-base font-bold leading-[19.2px] text-neutral-900">

@@ -19,7 +19,6 @@ import {
 
 export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
   const [isRecommendedTruckOpen, setIsRecommendedTruckOpen] = useState(false);
-
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
@@ -32,6 +31,7 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
     cargoCategoryId,
     informasiMuatan,
     carrierId,
+    truckType,
     truckTypeId,
     minTruckCount,
     truckCount,
@@ -74,26 +74,45 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
   );
 
   const selectedTruck = useShallowMemo(() => {
-    if (!truckTypeId || !trucks) return null;
+    if (isEditPage) {
+      return {
+        image: truckType.image,
+        truckName: truckType.name,
+        price: 100000,
+        maxWeight: truckType.maxWeight,
+        weightUnit: truckType.weightUnit,
+        dimensions: truckType.dimensions,
+      };
+    } else {
+      if (!truckTypeId || !trucks) return null;
 
-    const recommendedTruck = trucks.recommendedTrucks?.find(
-      (item) => item.truckTypeId === truckTypeId
-    );
+      const recommendedTruck = trucks.recommendedTrucks?.find(
+        (item) => item.truckTypeId === truckTypeId
+      );
 
-    if (recommendedTruck) {
-      return { ...recommendedTruck, isRecommended: true };
+      if (recommendedTruck) {
+        return {
+          ...recommendedTruck,
+          truckName: recommendedTruck.name,
+          isRecommended: true,
+        };
+      }
+
+      const nonRecommendedTruck = trucks.nonRecommendedTrucks?.find(
+        (item) => item.truckTypeId === truckTypeId
+      );
+
+      if (nonRecommendedTruck) {
+        return {
+          ...nonRecommendedTruck,
+          truckName: recommendedTruck.name,
+          isRecommended: false,
+        };
+      }
+
+      return null;
     }
-
-    const nonRecommendedTruck = trucks.nonRecommendedTrucks?.find(
-      (item) => item.truckTypeId === truckTypeId
-    );
-
-    if (nonRecommendedTruck) {
-      return { ...nonRecommendedTruck, isRecommended: false };
-    }
-
-    return null;
-  }, [truckTypeId, trucks]);
+  }, [truckTypeId, trucks, isEditPage, truckType]);
 
   const recommendedTruckPriceDiff = useShallowMemo(() => {
     if (!selectedTruck || trucks.length === 0) {
@@ -116,7 +135,6 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
   };
 
   const isTruckTypeIdDisabled =
-    isEditPage ||
     !loadTimeStart ||
     (showRangeOption && !loadTimeEnd) ||
     !lokasiMuat ||
@@ -169,11 +187,11 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
             <button
               className={cn(
                 "flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 px-3",
-                selectedCarrier && !isTruckTypeIdDisabled
+                selectedCarrier && !isTruckTypeIdDisabled && !isEditPage
                   ? "cursor-pointer bg-neutral-50"
                   : "cursor-not-allowed bg-neutral-200"
               )}
-              disabled={isTruckTypeIdDisabled}
+              disabled={isTruckTypeIdDisabled || isEditPage}
               onClick={() =>
                 handleFirstTime(() => handleOpenModal("truckTypeId"))
               }
@@ -191,7 +209,9 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
                     : "text-neutral-900"
                 )}
               >
-                {selectedTruck?.name || "Pilih Jenis Truk"}
+                {isEditPage
+                  ? truckType.name
+                  : selectedTruck?.name || "Pilih Jenis Truk"}
               </span>
               <IconComponent
                 src="/icons/chevron-right.svg"
@@ -201,7 +221,12 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
               />
             </button>
           </div>
-          {selectedTruck ? <SelectedTruck {...selectedTruck} /> : null}
+          {selectedTruck ? (
+            <SelectedTruck
+              {...selectedTruck}
+              carrierName={selectedCarrier?.name}
+            />
+          ) : null}
           {selectedTruck?.isRecommended === false ? (
             <button
               className="flex h-10 w-full items-center justify-between self-start rounded-md border border-primary-700 bg-primary-50 px-3"

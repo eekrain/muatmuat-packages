@@ -6,13 +6,14 @@ import DatetimePicker from "@/components/DatetimePicker/DatetimePicker";
 import Checkbox from "@/components/Form/Checkbox";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
+import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
-export const WaktuMuat = () => {
+export const WaktuMuat = ({ orderStatus }) => {
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
@@ -35,6 +36,17 @@ export const WaktuMuat = () => {
     setField("truckTypeId", null);
   };
 
+  const hasNotDepartedToPickupStatuses = [
+    OrderStatusEnum.PREPARE_FLEET,
+    OrderStatusEnum.WAITING_PAYMENT_1,
+    OrderStatusEnum.WAITING_PAYMENT_2,
+    OrderStatusEnum.SCHEDULED_FLEET,
+    OrderStatusEnum.CONFIRMED,
+  ];
+
+  const hasDepartedToPickup =
+    !hasNotDepartedToPickupStatuses.includes(orderStatus);
+
   // Use current date for minimum date
   const minDate = new Date();
 
@@ -45,6 +57,10 @@ export const WaktuMuat = () => {
         <div className="flex flex-col gap-y-2">
           <div className="flex items-center gap-x-2">
             <DatetimePicker
+              disabled={
+                isEditPage && (orderType === "INSTANT" || hasDepartedToPickup)
+              }
+              disableDateOnly={!hasDepartedToPickup}
               datetimeValue={loadTimeStart}
               onApply={(date) =>
                 handleFirstTime(() => handleDateChange("loadTimeStart", date))
@@ -52,7 +68,7 @@ export const WaktuMuat = () => {
               placeholder="Pilih Tanggal & Waktu Muat"
               status={formErrors.loadTimeStart ? "error" : null}
               className="w-[271px]"
-              minDate={minDate}
+              minDate={isEditPage ? null : minDate}
             />
             {showRangeOption ? (
               <>
@@ -60,15 +76,20 @@ export const WaktuMuat = () => {
                   s/d
                 </span>
                 <DatetimePicker
+                  disableDateOnly={!hasDepartedToPickup}
                   datetimeValue={loadTimeEnd}
                   onApply={(date) =>
                     handleFirstTime(() => handleDateChange("loadTimeEnd", date))
                   }
                   placeholder="Pilih Tanggal & Waktu Muat"
-                  disabled={!loadTimeStart}
+                  disabled={
+                    !loadTimeStart ||
+                    (isEditPage &&
+                      (orderType === "INSTANT" || hasDepartedToPickup))
+                  }
                   status={formErrors.loadTimeEnd ? "error" : null}
                   className="w-[271px]"
-                  minDate={minDate}
+                  minDate={isEditPage ? null : minDate}
                 />
               </>
             ) : null}
@@ -85,7 +106,7 @@ export const WaktuMuat = () => {
 
         <div className="flex flex-row items-center gap-x-1">
           <Checkbox
-            disabled={isEditPage && orderType === "INSTANT"}
+            disabled={isEditPage}
             label="Dengan Rentang Waktu"
             value="rentang_waktu"
             checked={showRangeOption}

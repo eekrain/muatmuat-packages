@@ -1,5 +1,6 @@
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { cn } from "@/lib/utils";
 import { thousandSeparator } from "@/lib/utils/formatters";
 
 const Label = ({ children, tooltip }) => (
@@ -11,7 +12,11 @@ const Label = ({ children, tooltip }) => (
   </div>
 );
 
-export const InformasiMuatanTable = ({ informasiMuatan, onClickUpdate }) => {
+export const InformasiMuatanTable = ({
+  informasiMuatan,
+  onClickUpdate,
+  disableUpdateButton,
+}) => {
   return (
     <div className="rounded-xl border px-4 py-5">
       <div className="h-[36px] border-b border-neutral-400">
@@ -55,11 +60,15 @@ export const InformasiMuatanTable = ({ informasiMuatan, onClickUpdate }) => {
 
             <button
               onClick={onClickUpdate}
-              className="flex w-[54px] items-end justify-center gap-2 text-primary-700"
+              className={cn(
+                "flex w-[54px] items-end justify-center gap-2",
+                disableUpdateButton
+                  ? "cursor-not-allowed text-neutral-600"
+                  : "cursor-pointer text-primary-700"
+              )}
+              disabled={disableUpdateButton}
             >
-              <span className="cursor-pointer text-xs font-medium leading-[14.4px]">
-                Ubah
-              </span>
+              <span className="text-xs font-medium leading-[14.4px]">Ubah</span>
               <div className="flex h-4 w-4 items-center justify-center">
                 <IconComponent
                   src="/icons/pencil-outline.svg"

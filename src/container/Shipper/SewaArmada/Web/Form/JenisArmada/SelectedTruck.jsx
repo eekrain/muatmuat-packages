@@ -6,8 +6,8 @@ import {
 
 export const SelectedTruck = ({
   image,
-  description,
-  name,
+  carrierName,
+  truckName,
   price,
   maxWeight,
   weightUnit,
@@ -49,7 +49,7 @@ export const SelectedTruck = ({
       </LightboxProvider>
       <div className="flex flex-col gap-y-3">
         <span className={"text-xs font-bold leading-[14.4px]"}>
-          {`${description} - ${name}`}
+          {`${carrierName} - ${truckName}`}
         </span>
         <span className={"text-sm font-semibold leading-[15.4px]"}>
           {`Rp${price.toLocaleString("id-ID")}`}

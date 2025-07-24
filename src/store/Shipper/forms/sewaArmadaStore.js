@@ -49,10 +49,13 @@ export const useSewaArmadaStore = create(
         orderType: "",
         formValues: defaultValues,
         formErrors: {},
+        isUpdateOrderSuccess: false,
 
         actions: {
           setFormId: (formId) => set({ formId }),
           setOrderType: (orderType) => set({ orderType }),
+          setUpdateOrderSuccess: (isUpdateOrderSuccess) =>
+            set({ isUpdateOrderSuccess }),
           setField: (field, value) =>
             set((state) => ({
               formValues: { ...state.formValues, [field]: value },
@@ -269,6 +272,7 @@ export const useSewaArmadaActions = () => {
   const {
     setFormId,
     setOrderType,
+    setUpdateOrderSuccess,
     setField,
     setError,
     setCargoPhotos,
@@ -283,6 +287,7 @@ export const useSewaArmadaActions = () => {
   return {
     setFormId,
     setOrderType,
+    setUpdateOrderSuccess,
     setField,
     setError,
     setCargoPhotos,

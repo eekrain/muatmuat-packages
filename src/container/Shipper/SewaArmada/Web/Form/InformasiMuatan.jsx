@@ -1,3 +1,4 @@
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { ChevronRight } from "lucide-react";
@@ -18,6 +19,9 @@ import { InformasiMuatanTable } from "../InformasiMuatan/InformasiMuatanTable";
 export const InformasiMuatan = ({ onFetchTrucks }) => {
   const [isInformasiMuatanModalOpen, setIsInformasiMuatanModalOpen] =
     useState(false);
+  const pathname = usePathname();
+  const isEditPage = pathname.includes("/ubahpesanan");
+  const orderType = useSewaArmadaStore((state) => state.orderType);
   const informasiMuatan = useSewaArmadaStore(
     (state) => state.formValues.informasiMuatan
   );
@@ -36,6 +40,7 @@ export const InformasiMuatan = ({ onFetchTrucks }) => {
           <InformasiMuatanTable
             informasiMuatan={informasiMuatan}
             onClickUpdate={() => setIsInformasiMuatanModalOpen(true)}
+            disableUpdateButton={isEditPage && orderType === "SCHEDULED"}
           />
         ) : (
           <div

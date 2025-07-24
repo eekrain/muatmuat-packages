@@ -35,7 +35,7 @@ export const PaymentDetail = ({ dataRingkasanPembayaran }) => {
       ),
     },
     {
-      title: "Opsi Pembayaran",
+      title: "Nomor Virtual Account",
       content: (
         <div className="flex items-center gap-x-2">
           <div className="text-sm font-medium leading-[1.1] text-primary-700">

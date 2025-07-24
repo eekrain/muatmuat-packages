@@ -9,6 +9,10 @@ import { toast } from "@/lib/toast";
 import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
 import useGetFleetSearchStatus from "@/services/Shipper/detailpesanan/getFleetSearchStatus";
 import { useLoadingAction } from "@/store/Shared/loadingStore";
+import {
+  useSewaArmadaActions,
+  useSewaArmadaStore,
+} from "@/store/Shipper/forms/sewaArmadaStore";
 
 import DetailPesananHeader from "./DetailPesananHeader/DetailPesananHeader";
 import DetailPIC from "./DetailPic/DetailPic";
@@ -19,6 +23,10 @@ import { WaitFleetSearchModal } from "./StatusPesanan/WaitFleetSearch";
 
 const DetailPesananWeb = () => {
   const params = useParams();
+  const isUpdateOrderSuccess = useSewaArmadaStore(
+    (state) => state.isUpdateOrderSuccess
+  );
+  const { setUpdateOrderSuccess } = useSewaArmadaActions();
 
   const breadCrumbData = [
     { name: "Daftar Pesanan", href: "/daftarpesanan" },
@@ -39,6 +47,13 @@ const DetailPesananWeb = () => {
   );
 
   const { setIsGlobalLoading } = useLoadingAction();
+
+  useEffect(() => {
+    if (isUpdateOrderSuccess) {
+      toast.success("Berhasil Ubah Pesanan");
+      setUpdateOrderSuccess(false);
+    }
+  }, [isUpdateOrderSuccess]);
 
   useEffect(() => {
     setIsGlobalLoading(isLoadingDetailPesanan);
