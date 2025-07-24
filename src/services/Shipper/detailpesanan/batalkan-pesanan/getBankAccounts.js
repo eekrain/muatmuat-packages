@@ -8,5 +8,6 @@ export const getBankAccounts = async (url) => {
 };
 
 export const useGetBankAccounts = () => {
-  return useSWR("v1/muatparts/bankAccount", getBankAccounts);
+  // return useSWR("v1/muatparts/bankAccount", getBankAccounts);
+  return [];
 };

@@ -35,7 +35,7 @@ export const CreateOrderSummaryPanel = ({
   const token = authToken ? `Bearer ${authToken}` : null;
 
   const MOCK_EMPTY = false;
-  const useMockData = true; // Flag untuk menggunakan mock data - ubah ke false untuk menggunakan API real
+  const useMockData = false; // Flag untuk menggunakan mock data - ubah ke false untuk menggunakan API real
 
   // Enhanced debugging
   console.log("🔧 CreateOrderSummaryPanel Debug Info:", {

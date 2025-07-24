@@ -202,7 +202,7 @@ const apiResultOrderDetail = {
             weightUnit: "kg",
           },
           adminFee: 10000,
-          totalCharge: 110000,
+          totalCharge: 0, // set 0 for trigger the button
           isPaid: false,
         },
       },

@@ -21,7 +21,7 @@ import { muatTransValidateVoucher } from "@/services/Shipper/voucher/muatTransVo
 const VoucherUsageExample = () => {
   // API Configuration
   const token = "Bearer your_actual_token_here"; // Replace with real token
-  const useMockData = true; // Set to true for testing, false for production
+  const useMockData = false; // Set to true for testing, false for production
   const mockEmpty = false; // Set to true to simulate empty voucher list
 
   // Transaction data - using low amount to test minimum transaction validation

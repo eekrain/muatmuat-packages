@@ -84,7 +84,7 @@ const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
   /* voucher */
   const token = "Bearer your_token_here";
   const MOCK_EMPTY = false;
-  const useMockData = true; // Flag untuk menggunakan mock data - ubah ke false untuk menggunakan API real
+  const useMockData = false; // Flag untuk menggunakan mock data - ubah ke false untuk menggunakan API real
 
   // Gunakan hook voucher untuk mendapatkan data
   let {
