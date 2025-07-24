@@ -35,9 +35,9 @@ const DaftarPesananWeb = ({
     ];
     return settlementAlertInfo
       .map((item, key) => {
-        if (!item.orderId || item.orderId.length === 0) {
-          return null;
-        }
+        // if (!item.orderId || item.orderId.length === 0) {
+        //   return null;
+        // }
         return {
           label: item.alertText,
           link: {

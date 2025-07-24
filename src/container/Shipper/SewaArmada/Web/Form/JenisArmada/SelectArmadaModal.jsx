@@ -14,6 +14,7 @@ import {
 } from "@/container/Shipper/SewaArmada/Web/Form/JenisArmada/ArmadaComponent";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { toast } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import {
   useSelectArmadaModalAction,
   useSelectArmadaModalStore,
@@ -217,7 +218,13 @@ const SelectArmadaModal = ({ carrierData, truckData }) => {
                 )}
               </div>
             ) : (
-              <div>
+              <div
+                className={cn(
+                  filteredData.length === 0
+                    ? ""
+                    : "mr-[-15px] h-[320px] overflow-y-auto pr-2.5"
+                )}
+              >
                 <span className="text-base font-bold leading-[19.2px]">
                   Hasil Pencarian
                 </span>

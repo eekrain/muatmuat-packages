@@ -1,46 +1,13 @@
+import {
+  normalizeAdditionalServices,
+  normalizeCargos,
+  normalizeLocations,
+} from "@/lib/normalizers/sewaarmada/normalizeApiToForm";
 import { defaultValues } from "@/store/Shipper/forms/sewaArmadaStore";
-
-const normalizeLocation = (location) => {
-  return {
-    namaLokasi: "",
-    dataLokasi: {
-      district: {
-        name: location.district,
-        value: location.districtId,
-      },
-      city: {
-        name: location.city,
-        value: location.cityId,
-      },
-      province: {
-        name: location.province,
-        value: location.provinceId,
-      },
-      kecamatanList: [],
-      postalCodeList: [],
-      postalCode: {
-        name: location.postalCode,
-        value: null,
-      },
-      coordinates: {
-        latitude: location.latitude,
-        longitude: location.longitude,
-      },
-      location: {
-        name: location.fullAddress,
-        value: null,
-      },
-    },
-    detailLokasi: location.detailAddress,
-    namaPIC: location.picName,
-    noHPPIC: location.picPhoneNumber,
-    isMainAddress: false,
-  };
-};
 
 export const normalizeOrderDetail = (
   orderDetail,
-  reorderFleet,
+  additionalServices,
   tempShippingOptions
 ) => {
   const { summary, otherInformation, businessEntity } = orderDetail;
@@ -52,82 +19,32 @@ export const normalizeOrderDetail = (
     carrier,
     truckType,
     isHalalLogistic,
+    distance,
   } = summary;
   const cargoPhotos = otherInformation.cargoPhotos || [];
-  // Filter into pickup and dropoff arrays then sort by sequence
-  const pickupLocations = locations
-    .filter((location) => location.locationType === "PICKUP")
-    .sort((a, b) => a.sequence - b.sequence);
-  const dropoffLocations = locations
-    .filter((location) => location.locationType === "DROPOFF")
-    .sort((a, b) => a.sequence - b.sequence);
-  console.log("carg", cargo);
+
   return {
     ...defaultValues,
     loadTimeStart,
     ...(loadTimeEnd && { loadTimeEnd, showRangeOption: true }),
-    lokasiMuat: pickupLocations.map((item) => normalizeLocation(item)),
-    lokasiBongkar: dropoffLocations.map((item) => normalizeLocation(item)),
-    cargoTypeId: reorderFleet.otherInformation.cargoTypeId,
-    cargoCategoryId: reorderFleet.otherInformation.cargoCategoryId,
+    lokasiMuat: normalizeLocations(locations, "PICKUP"),
+    lokasiBongkar: normalizeLocations(locations, "DROPOFF"),
+    cargoTypeId: otherInformation.cargoTypeId,
+    cargoCategoryId: otherInformation.cargoCategoryId,
     isHalalLogistics: isHalalLogistic,
-    informasiMuatan: cargo.map((item) => ({
-      beratMuatan: {
-        berat: item.weight,
-        unit: item.weightUnit,
-      },
-      dimensiMuatan: {
-        panjang: item.dimensions.length,
-        lebar: item.dimensions.width,
-        tinggi: item.dimensions.height,
-        unit: item.dimensions.unit,
-      },
-      namaMuatan: {
-        label: item.name,
-        value: item.cargoId,
-      },
-    })),
+    informasiMuatan: normalizeCargos(cargo),
     cargoPhotos: cargoPhotos.concat(Array(4 - cargoPhotos.length).fill(null)),
     cargoDescription: otherInformation.cargoDescription,
     carrierId: carrier.carrierId,
-    truckTypeId: truckType.truckTypeId,
-    truckCount: truckType.totalUnit,
-    additionalServices: reorderFleet.additionalService.map((item) => {
-      if (!item.isShipping) {
-        return {
-          serviceId: item.serviceId,
-          withShipping: item.isShipping,
-        };
-      }
-      const shippingOption = tempShippingOptions
-        .flatMap((option) => option.expeditions)
-        .find(
-          (courier) => courier.id === item.addressInformation.shippingOptionId
-        );
-
-      return {
-        serviceId: item.serviceId,
-        withShipping: item.isShipping,
-        ...(item.isShipping && {
-          shippingCost: shippingOption.originalCost,
-          shippingDetails: {
-            recipientName: item.addressInformation.recipientName,
-            recipientPhone: item.addressInformation.recipientPhone,
-            destinationAddress: item.addressInformation.fullAddress,
-            detailAddress: item.addressInformation.detailAddress,
-            district: item.addressInformation.district,
-            city: item.addressInformation.city,
-            province: item.addressInformation.province,
-            postalCode: item.addressInformation.postalCode,
-            shippingOptionId: item.addressInformation.shippingOptionId,
-            withInsurance: item.addressInformation.insuranceCost > 0,
-            insuranceCost: item.addressInformation.insuranceCost,
-            latitude: item.addressInformation.latitude,
-            longitude: item.addressInformation.longitude,
-          },
-        }),
-      };
-    }),
+    truckType,
+    // truckTypeId: truckType.truckTypeId,
+    // truckCount: truckType.totalUnit,
+    distance,
+    distanceUnit: "km",
+    additionalServices: normalizeAdditionalServices(
+      additionalServices,
+      tempShippingOptions
+    ),
     tempShippingOptions,
     deliveryOrderNumbers: otherInformation.numberDeliveryOrder,
     businessEntity,

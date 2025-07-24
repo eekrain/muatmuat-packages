@@ -206,7 +206,7 @@ const settingsTimeDummyData = {
   currentServerTime: "2025-07-21 15:11:48",
 };
 
-const useGetSewaArmadaFormOption = () => {
+const useGetSewaArmadaFormOption = (type) => {
   // Fetch cargo types using SWR
   const { data: cargoTypesData } = useSWRHook("v1/orders/cargos/types");
   // Fetch cargo categories using SWR
@@ -219,7 +219,7 @@ const useGetSewaArmadaFormOption = () => {
   );
   // Fetch payment methods using SWR
   const { data: paymentMethodsData } = useSWRHook(
-    "v1/payment/methods",
+    type === "reorder" ? "v1/payment/methods" : null,
     fetcherPayment
   );
   const { data: settingsTimeData } = useSWRHook("v1/orders/settings/time");

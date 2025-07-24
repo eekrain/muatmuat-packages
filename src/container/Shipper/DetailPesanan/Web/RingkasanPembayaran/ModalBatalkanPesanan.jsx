@@ -83,7 +83,7 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
     //   .catch((error) => {
     //     toast.error(error.response.data?.Data?.Message);
     //   });
-    toast.success("Pesanan kamu berhasil dibatalkan");
+    toast.success("Berhasil membatalkan pesanan");
     setIsModalReasonOpen(false);
   };
 

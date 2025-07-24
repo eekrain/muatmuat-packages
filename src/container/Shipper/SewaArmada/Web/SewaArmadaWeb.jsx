@@ -39,6 +39,7 @@ import {
   useSewaArmadaActions,
   useSewaArmadaStore,
 } from "@/store/Shipper/forms/sewaArmadaStore";
+import { useWaitingSettlementModalAction } from "@/store/Shipper/forms/waitingSettlementModalStore";
 
 import UpdateOrderSummaryPanel from "./SummaryPanel/UpdateOrderSummaryPanel";
 
@@ -54,12 +55,14 @@ export default function SewaArmadaWeb({
   shippingOption,
   calculatedPrice,
   paymentMethods,
+  orderStatus,
   onFetchTrucks,
 }) {
   const { t } = useTranslation();
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
+  const { setIsOpen } = useWaitingSettlementModalAction();
 
   const { data: dataBanner, isLoading } = useSWRHook("v1/orders/banner-ads");
   const { data: userPreferences, isLoading: isLoadingUserPreferences } =
@@ -89,6 +92,19 @@ export default function SewaArmadaWeb({
       .map((item, key) => {
         if (!item.orderId || item.orderId.length === 0) {
           return null;
+        }
+        if (key === 1) {
+          return {
+            label: item.alertText,
+            button: (
+              <button
+                className="text-xs font-medium text-primary-700"
+                onClick={() => setIsOpen(true)}
+              >
+                Lihat Pesanan
+              </button>
+            ),
+          };
         }
         return {
           label: item.alertText,
@@ -147,7 +163,7 @@ export default function SewaArmadaWeb({
 
                 {/* Form Fields */}
                 <div className="flex flex-col gap-6">
-                  <WaktuMuat />
+                  <WaktuMuat orderStatus={orderStatus} />
                   <LokasiMuat />
                   <LokasiBongkar />
                   <TipeMuatan cargoTypes={cargoTypes} />
