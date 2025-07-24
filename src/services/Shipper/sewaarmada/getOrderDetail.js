@@ -10,7 +10,6 @@ import { normalizeFetchTruck } from "@/lib/normalizers/sewaarmada/normalizeFetch
 
 const useMockData_getOrderDetail = false;
 const useMockData_getAdditionalServices = false;
-const useMockData_getReorderFleet = false;
 
 const apiResultOrderDetail = {
   Message: {
@@ -238,112 +237,6 @@ const apiResultAdditionalServices = {
   Type: "/v1/orders/1c2a62bc-d4ba-46d6-91ff-ecb9c3eab2b3/additional-services",
 };
 
-const apiResultReorderFleet = {
-  Message: {
-    Code: 200,
-    Text: "OK",
-  },
-  Data: {
-    locations: [
-      {
-        locationId: "d1206df5-7e9d-473d-a93e-ee8544a8ae67",
-        locationType: "PICKUP",
-        sequence: 1,
-        fullAddress:
-          "Galaxy Mall 2, Mulyorejo, Surabaya, Jawa Timur, Indonesia",
-        detailAddress: "",
-        latitude: -7.2741549,
-        longitude: 112.7820621,
-        district: "Mulyorejo",
-        city: "Kota Surabaya",
-        province: "Jawa Timur",
-        postalCode: "60115",
-        picName: "Baba",
-        picPhoneNumber: "08124091247091",
-        districtId: 357826,
-        cityId: 3578,
-        provinceId: 35,
-      },
-      {
-        locationId: "01d182bc-916e-47b6-8b86-3180d8a72b61",
-        locationType: "DROPOFF",
-        sequence: 1,
-        fullAddress:
-          "Pakuwon Mall, Jalan Mayjend. Jonosewojo, Babatan, Surabaya, Jawa Timur, Indonesia",
-        detailAddress: "",
-        latitude: -7.289141399999999,
-        longitude: 112.6757233,
-        district: "Wiyung",
-        city: "Kota Surabaya",
-        province: "Jawa Timur",
-        postalCode: "60227",
-        picName: "Bubu",
-        picPhoneNumber: "0819247091274",
-        districtId: 357820,
-        cityId: 3578,
-        provinceId: 35,
-      },
-    ],
-    cargos: [],
-    additionalService: [
-      {
-        serviceId: "b98a7cc7-54cf-4816-ba77-bb0b410caef0",
-        name: "Kirim Bukti Fisik Penerimaan Barang",
-        price: 0,
-        isShipping: true,
-        shippingCost: 6000,
-        addressInformation: {
-          recipientName: "Lembur Santoso",
-          recipientPhone: "0812937409127",
-          fullAddress:
-            "Widya Mandala Catholic University, Campus Kalijudan, Jalan Kalijudan, Pacar Kembang, Surabaya, Jawa Timur, Indonesia",
-          detailAddress: "Babababa",
-          latitude: -7.260551999999999,
-          longitude: 112.774403,
-          district: "Tambaksari",
-          city: "Kota Surabaya",
-          province: "Jawa Timur",
-          postalCode: "60132",
-          shippingOptionId: "f3d7eea0-1c96-4f99-84ef-cc08c47471d9",
-          courier: "Ninja Xpress",
-          insuranceCost: 1000,
-        },
-      },
-      {
-        serviceId: "96a515fe-ee8c-4456-8af2-249bb0b3250b",
-        name: "Troli",
-        price: 100000,
-        isShipping: false,
-      },
-      {
-        serviceId: "66b24c35-8950-4fd3-8ee1-ae14e0cae7c6",
-        name: "Bantuan Tambahan",
-        price: 100000,
-        isShipping: false,
-      },
-    ],
-    otherInformation: {
-      orderType: "SCHEDULED",
-      cargoTypeId: "f483709a-de4c-4541-b29e-6f4d9a912333",
-      cargoTypeName: "Barang Jadi",
-      cargoCategoryId: "f483709a-de4c-4541-b29e-6f4d9a912333",
-      cargoCategoryName: "Curah",
-      isHalalLogistics: true,
-      cargoPhotos: [
-        "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1753069487119.webp",
-      ],
-      cargoDescription: "Babibu",
-      numberDeliveryOrder: ["DO9712409", "DO818264921"],
-    },
-    businessEntity: {
-      isBusinessEntity: true,
-      name: "PT Lembur Terus",
-      npwp: "123456789012345",
-    },
-  },
-  Type: "/v1/orders/1c2a62bc-d4ba-46d6-91ff-ecb9c3eab2b3/reorder",
-};
-
 export const fetcherOrderDetail = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
 
@@ -374,31 +267,14 @@ export const getAdditionalServices = async (cacheKey) => {
   return result?.data?.Data?.additionalService || [];
 };
 
-export const getReorderFleet = async (cacheKey) => {
-  const orderId = cacheKey.split("/")[1];
-
-  let result;
-
-  if (useMockData_getReorderFleet) {
-    result = apiResultReorderFleet;
-  } else {
-    result = await fetcherMuatrans.get(`v1/orders/${orderId}/reorder`);
-  }
-
-  return result?.data?.Data || {};
-};
-
 export const getOrderDetail = async (cacheKey) => {
   try {
-    const [dataOrderDetail, dataReorderFleet, dataAdditionalServices] =
-      await Promise.all([
-        fetcherOrderDetail(cacheKey),
-        getReorderFleet(cacheKey),
-        getAdditionalServices(cacheKey),
-      ]);
+    const [dataOrderDetail, dataAdditionalServices] = await Promise.all([
+      fetcherOrderDetail(cacheKey),
+      getAdditionalServices(cacheKey),
+    ]);
 
     // console.log("dataOrderDetail", dataOrderDetail);
-    // console.log("dataReorderFleet", dataReorderFleet);
     // console.log("dataAdditionalServices", dataAdditionalServices);
     let tempShippingOptions = [];
     let tempTrucks = [];
@@ -423,7 +299,7 @@ export const getOrderDetail = async (cacheKey) => {
     tempTrucks = fetchTrucksResult?.data?.Data;
 
     // Fetch pilih ekspesidi
-    const documentDeliveryService = dataReorderFleet.additionalService.find(
+    const documentDeliveryService = dataAdditionalServices.find(
       (item) => item.isShipping
     );
     if (documentDeliveryService) {
@@ -438,7 +314,7 @@ export const getOrderDetail = async (cacheKey) => {
       formValues: {
         ...normalizeOrderDetail(
           dataOrderDetail,
-          dataReorderFleet,
+          dataAdditionalServices,
           tempShippingOptions
         ),
         tempTrucks,

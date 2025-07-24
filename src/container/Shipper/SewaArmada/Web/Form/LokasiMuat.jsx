@@ -14,6 +14,7 @@ import { useModalLocation } from "./use-modal-location";
 export const LokasiMuat = () => {
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
+  const orderType = useSewaArmadaStore((state) => state.orderType);
   const { modalConfig, handleOpenModalLocation, handleCloseModalLocation } =
     useModalLocation();
   const lokasiMuat = useSewaArmadaStore((state) => state.formValues.lokasiMuat);
@@ -28,7 +29,7 @@ export const LokasiMuat = () => {
         <FormLabel required>Lokasi Muat</FormLabel>
 
         <TimelineField.Root
-          disabled={isEditPage}
+          disabled={isEditPage && orderType === "INSTANT"}
           variant="muat"
           className="flex-1"
           values={

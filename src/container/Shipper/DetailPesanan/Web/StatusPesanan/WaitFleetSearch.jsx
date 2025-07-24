@@ -43,8 +43,8 @@ export const WaitFleetSearchModal = ({
         setIsShowWaitFleetAlert(!isOpen);
       }}
     >
-      <ModalContent className="w-modal-small">
-        <ModalHeader size="small" />
+      <ModalContent className="w-modal-small" type="muattrans">
+        <ModalHeader type="muattrans" size="small" />
         <div className="flex flex-col items-center gap-y-6 px-6 py-9">
           <h1 className="text-base font-bold leading-[19.2px] text-neutral-900">
             Oops, Volume Pesanan Sedang Tinggi
@@ -60,7 +60,7 @@ export const WaitFleetSearchModal = ({
               <Button
                 variant="muatparts-primary-secondary"
                 className="h-8"
-                // onClick={() => setIsOpen(false)}
+                onClick={() => {}}
                 type="button"
               >
                 Batalkan

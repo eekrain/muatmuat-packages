@@ -14,6 +14,7 @@ import { useModalLocation } from "./use-modal-location";
 export const LokasiBongkar = () => {
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
+  const orderType = useSewaArmadaStore((state) => state.orderType);
   const { modalConfig, handleOpenModalLocation, handleCloseModalLocation } =
     useModalLocation();
   const lokasiBongkar = useSewaArmadaStore(
@@ -66,7 +67,9 @@ export const LokasiBongkar = () => {
                 </TimelineField.Item>
               ))
             : null}
-          <TimelineField.AddButton />
+          {isEditPage && orderType === "SCHEDULED" ? null : (
+            <TimelineField.AddButton />
+          )}
         </TimelineField.Root>
       </FormContainer>
 

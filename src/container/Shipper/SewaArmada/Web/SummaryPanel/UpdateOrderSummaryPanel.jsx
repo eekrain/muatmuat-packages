@@ -1,75 +1,89 @@
+import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
+
+import Button from "@/components/Button/Button";
 import Card from "@/components/Card/Card";
-import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
+import { useSewaArmadaActions } from "@/store/Shipper/forms/sewaArmadaStore";
 
 const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
-  const priceSummary = useShallowMemo(() => {
-    if (!calculatedPrice || !truckTypeId) {
-      return [];
-    }
-    return [
-      {
-        title: "Biaya Pesan Jasa Angkut",
-        items: [
-          {
-            label: `Nominal Pesan Jasa Angkut (${truckCount} Unit)`,
-            price: calculatedPrice.transportFee,
-          },
-        ],
-      },
-      {
-        title: "Biaya Asuransi Barang",
-        items: [
-          {
-            label: "Nominal Premi Asuransi (1 Unit)",
-            price: calculatedPrice.insuranceFee,
-          },
-        ],
-      },
-      ...(calculatedPrice.additionalServiceFee.length > 0
-        ? [
-            {
-              title: "Biaya Layanan Tambahan",
-              items: calculatedPrice.additionalServiceFee.map((item) => ({
-                label: item.name,
-                price: item.totalCost,
-              })),
-            },
-          ]
-        : []),
-      ...(selectedVoucherDetails
-        ? [
-            {
-              title: "Diskon Voucher",
-              items: [
-                {
-                  label: `Voucher (${selectedVoucherDetails.code})`,
-                  price: calculatedPrice.voucher || voucherDiscount,
-                },
-              ],
-            },
-          ]
-        : []),
-      {
-        title: "Biaya Lainnya",
-        items: [
-          {
-            label: "Admin Layanan",
-            price: calculatedPrice.adminFee,
-          },
-          {
-            label: "Pajak",
-            price: calculatedPrice.taxAmount,
-          },
-        ],
-      },
-    ];
-  }, [
-    calculatedPrice,
-    truckTypeId,
-    truckCount,
-    selectedVoucherDetails,
-    voucherDiscount,
-  ]);
+  const params = useParams();
+  const router = useRouter();
+  const { setUpdateOrderSuccess } = useSewaArmadaActions();
+  const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
+  // const priceSummary = useShallowMemo(() => {
+  //   if (!calculatedPrice || !truckTypeId) {
+  //     return [];
+  //   }
+  //   return [
+  //     {
+  //       title: "Biaya Pesan Jasa Angkut",
+  //       items: [
+  //         {
+  //           label: `Nominal Pesan Jasa Angkut (${truckCount} Unit)`,
+  //           price: calculatedPrice.transportFee,
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       title: "Biaya Asuransi Barang",
+  //       items: [
+  //         {
+  //           label: "Nominal Premi Asuransi (1 Unit)",
+  //           price: calculatedPrice.insuranceFee,
+  //         },
+  //       ],
+  //     },
+  //     ...(calculatedPrice.additionalServiceFee.length > 0
+  //       ? [
+  //           {
+  //             title: "Biaya Layanan Tambahan",
+  //             items: calculatedPrice.additionalServiceFee.map((item) => ({
+  //               label: item.name,
+  //               price: item.totalCost,
+  //             })),
+  //           },
+  //         ]
+  //       : []),
+  //     ...(selectedVoucherDetails
+  //       ? [
+  //           {
+  //             title: "Diskon Voucher",
+  //             items: [
+  //               {
+  //                 label: `Voucher (${selectedVoucherDetails.code})`,
+  //                 price: calculatedPrice.voucher || voucherDiscount,
+  //               },
+  //             ],
+  //           },
+  //         ]
+  //       : []),
+  //     {
+  //       title: "Biaya Lainnya",
+  //       items: [
+  //         {
+  //           label: "Admin Layanan",
+  //           price: calculatedPrice.adminFee,
+  //         },
+  //         {
+  //           label: "Pajak",
+  //           price: calculatedPrice.taxAmount,
+  //         },
+  //       ],
+  //     },
+  //   ];
+  // }, [
+  //   calculatedPrice,
+  //   truckTypeId,
+  //   truckCount,
+  //   selectedVoucherDetails,
+  //   voucherDiscount,
+  // ]);
+
+  const handleUpdateOrder = () => {
+    setUpdateOrderSuccess(true);
+    router.push(`/daftarpesanan/detailpesanan/${params.orderId}`);
+  };
 
   return (
     <>
@@ -81,7 +95,9 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-base font-bold leading-[19.2px]">Total</span>
+            <span className="text-base font-bold leading-[19.2px]">
+              Total Tambahan Biaya
+            </span>
             <span className="text-base font-bold leading-[19.2px]">
               {
                 "Rp0"
@@ -92,8 +108,39 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
               }
             </span>
           </div>
+          <Button
+            variant="muatparts-primary"
+            onClick={() => setConfirmationModalOpen(true)}
+          >
+            Lanjut
+          </Button>
         </div>
       </Card>
+
+      <ConfirmationModal
+        size="big"
+        isOpen={isConfirmationModalOpen}
+        setIsOpen={setConfirmationModalOpen}
+        title={{
+          text: "Informasi",
+        }}
+        description={{
+          text: (
+            <>
+              Apakah kamu yakin data yang kamu isi sudah benar? Perubahan
+              pesanan hanya dapat dilakukan <b>satu kali.</b> Pastikan semua
+              informasi telah diperiksa sebelum melanjutkan.
+            </>
+          ),
+        }}
+        cancel={{
+          text: "Kembali",
+        }}
+        confirm={{
+          text: "Simpan Perubahan",
+          onClick: handleUpdateOrder,
+        }}
+      />
     </>
   );
 };

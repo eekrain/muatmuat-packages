@@ -3,6 +3,7 @@ import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import { cn } from "@/lib/utils";
 
 const ConfirmationModal = ({
+  size = "small",
   isOpen,
   setIsOpen,
   title = { text: "", className: "" }, // Added default value here
@@ -19,10 +20,15 @@ const ConfirmationModal = ({
     text: confirmText = "",
     onClick: onConfirm = () => setIsOpen(false),
   } = confirm;
+  const modalClassnames = {
+    small: "w-modal-small",
+    big: "w-modal-big",
+  };
+  const modalClassname = modalClassnames[size] || modalClassnames.small;
   return (
     <Modal closeOnOutsideClick={false} open={isOpen} onOpenChange={setIsOpen}>
-      <ModalContent className="w-modal-small">
-        <ModalHeader size="small" />
+      <ModalContent className={modalClassname} type="muattrans">
+        <ModalHeader size={size} />
         <div className="flex flex-col items-center gap-y-6 px-6 py-9">
           {titleText ? (
             <h1

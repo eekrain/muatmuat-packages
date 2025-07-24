@@ -294,7 +294,7 @@ const DetailPesananHeader = ({
               Dokumen Diterima
             </Button>
           )}
-          {showButtonConfig?.BeriUlasan && (
+          {!showButtonConfig?.BeriUlasan && (
             <Button
               variant="muatparts-primary"
               className="h-8"

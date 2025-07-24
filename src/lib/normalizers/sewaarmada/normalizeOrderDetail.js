@@ -7,7 +7,7 @@ import { defaultValues } from "@/store/Shipper/forms/sewaArmadaStore";
 
 export const normalizeOrderDetail = (
   orderDetail,
-  reorderFleet,
+  additionalServices,
   tempShippingOptions
 ) => {
   const { summary, otherInformation, businessEntity } = orderDetail;
@@ -29,19 +29,20 @@ export const normalizeOrderDetail = (
     ...(loadTimeEnd && { loadTimeEnd, showRangeOption: true }),
     lokasiMuat: normalizeLocations(locations, "PICKUP"),
     lokasiBongkar: normalizeLocations(locations, "DROPOFF"),
-    cargoTypeId: reorderFleet.otherInformation.cargoTypeId,
-    cargoCategoryId: reorderFleet.otherInformation.cargoCategoryId,
+    cargoTypeId: otherInformation.cargoTypeId,
+    cargoCategoryId: otherInformation.cargoCategoryId,
     isHalalLogistics: isHalalLogistic,
     informasiMuatan: normalizeCargos(cargo),
     cargoPhotos: cargoPhotos.concat(Array(4 - cargoPhotos.length).fill(null)),
     cargoDescription: otherInformation.cargoDescription,
     carrierId: carrier.carrierId,
-    truckTypeId: truckType.truckTypeId,
-    truckCount: truckType.totalUnit,
+    truckType,
+    // truckTypeId: truckType.truckTypeId,
+    // truckCount: truckType.totalUnit,
     distance,
     distanceUnit: "km",
     additionalServices: normalizeAdditionalServices(
-      reorderFleet.additionalService,
+      additionalServices,
       tempShippingOptions
     ),
     tempShippingOptions,
