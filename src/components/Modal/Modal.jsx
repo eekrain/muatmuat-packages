@@ -187,33 +187,6 @@ export const ModalTrigger = ({ className, children }) => {
 };
 
 /**
- * @typedef {Object} ModalCloseProps
- * @property {React.ReactNode} children - The content of the close button.
- * @property {() => void} [onClick] - Optional click handler that fires before the modal closes.
- */
-
-/**
- * A component that triggers the closing of the modal when clicked.
- * @param {ModalCloseProps} props
- * @returns {JSX.Element}
- */
-export const ModalClose = ({ children, onClick }) => {
-  const { close } = useModal();
-
-  return (
-    <div
-      className="cursor-pointer"
-      onClick={() => {
-        onClick?.();
-        close();
-      }}
-    >
-      {children}
-    </div>
-  );
-};
-
-/**
  * @typedef {Object} ModalContentProps
  * @property {ModalSize} [size='small'] - The size of the modal content.
  * @property {ModalType} [type='muattrans'] - The type of modal, influencing styling (e.g., header image, icon color).
@@ -386,20 +359,4 @@ export const ModalHeader = ({
       />
     </div>
   );
-};
-
-/**
- * @typedef {Object} ModalFooterProps
- * @property {React.ReactNode} children - The content of the footer.
- * @property {string} [className] - Additional CSS classes for the footer container.
- */
-
-/**
- * A component to display a footer section within the modal.
- * @param {ModalFooterProps} props
- * @returns {JSX.Element}
- */
-export const ModalFooter = ({ children, className }) => {
-  const baseClass = "border-t px-6 py-4 bg-gray-50 rounded-b-2xl";
-  return <div className={className ?? baseClass}>{children}</div>;
 };

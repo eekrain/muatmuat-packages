@@ -2,8 +2,6 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-import useSWR from "swr";
-
 import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Form/Checkbox";
 import {
@@ -15,9 +13,12 @@ import {
 import { ModalAlasanPembatalan } from "@/components/Modal/ModalAlasanPembatalan";
 import { ModalFormRekeningPencairan } from "@/components/RekeningPencairan/ModalFormRekeningPencairan";
 import { ModalFormRequestOtp } from "@/components/RekeningPencairan/ModalFormRequestOtp";
-import { fetcherMuatparts, fetcherMuatrans } from "@/lib/axios";
+import { fetcherMuatparts } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
+import { useGetAvailableBankOptions } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getAvailableBankOptions";
+import { useGetBankAccounts } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getBankAccounts";
+import { useGetCancellationReasons } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getCancellationReasons";
 import {
   useRequestOtpActions,
   useRequestOtpStore,
@@ -32,38 +33,9 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
   const [isModalRekeningOpen, setIsModalRekeningOpen] = useState(false);
   const [isModalOtpOpen, setIsModalOtpOpen] = useState(false);
 
-  const { data: cancelReasons } = useSWR(
-    "v1/orders/cancellation-reasons",
-    async (url) => {
-      const res = await fetcherMuatrans.get(url);
-      const data = res.data?.Data?.reasons;
-      if (!data) return [];
-      return data.map((val) => ({
-        value: val?.reasonId,
-        label: val?.reasonName,
-      }));
-    }
-  );
-
-  const { data: dataRekening } = useSWR(
-    "v1/muatparts/bankAccount",
-    async (url) => {
-      const res = await fetcherMuatparts.get(url);
-      const data = res.data?.Data?.accounts;
-      // return data || [];
-      return [];
-    }
-  );
-
-  const { data: bankOptions } = useSWR("v1/muatparts/banks", async (url) => {
-    const res = await fetcherMuatparts.get(url);
-    const data = res.data?.Data;
-    if (!data) return [];
-    return data.map((val) => ({
-      value: val?.id,
-      label: val?.value,
-    }));
-  });
+  const { data: cancellationReasons } = useGetCancellationReasons();
+  const { data: bankAccounts } = useGetBankAccounts();
+  const { data: bankOptions } = useGetAvailableBankOptions();
 
   const [cancelFormErrors, setCancelFormErrors] = useState({});
   const handleProceedCancelOrder = ({
@@ -90,7 +62,7 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
     }
 
     // If there is no rekening, show modal to add rekening
-    if (!dataRekening || dataRekening?.length === 0) {
+    if (!bankAccounts || bankAccounts?.length === 0) {
       setIsModalBatalkanOpen(false);
       setIsModalReasonOpen(false);
       setIsModalRekeningOpen(true);
@@ -200,7 +172,7 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
       <ModalAlasanPembatalan
         open={isModalReasonOpen}
         onOpenChange={setIsModalReasonOpen}
-        cancelReasons={cancelReasons || []}
+        cancelReasons={cancellationReasons || []}
         errors={cancelFormErrors}
         onSubmit={handleProceedCancelOrder}
         title="Alasan Pembatalan"
@@ -211,7 +183,7 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
         open={isModalRekeningOpen}
         onOpenChange={setIsModalRekeningOpen}
         bankOptions={bankOptions || []}
-        dataRekening={dataRekening}
+        dataRekening={bankAccounts}
         onSave={handleTempSaveRekening}
       />
 

@@ -81,6 +81,9 @@ export const BottomsheetMenuList = ({ open, onOpenChange }) => {
       <BottomsheetAlasanPembatalan
         open={isOpenBottomsheetAlasanPembatalan}
         onOpenChange={setIsOpenBottomsheetAlasanPembatalan}
+        onConfirm={() => {
+          setIsOpenBottomsheetAlasanPembatalan(false);
+        }}
       />
     </>
   );

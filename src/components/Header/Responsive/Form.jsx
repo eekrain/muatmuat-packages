@@ -75,8 +75,7 @@ export const HeaderResponsiveForm = ({
             >
               <IconComponent
                 src="/icons/info-circle24.svg"
-                width={24}
-                height={24}
+                className="size-6"
               />
               <span className="text-xxs font-semibold">Info</span>
             </button>
@@ -86,7 +85,7 @@ export const HeaderResponsiveForm = ({
               onClick={withMenu.onClickMenu || DEFAULT_FUNCTION}
               className="flex w-[38px] flex-col items-center gap-[2px]"
             >
-              <IconComponent src="/icons/menu-dot.svg" width={24} height={24} />
+              <IconComponent src="/icons/menu-dot.svg" className="size-6" />
               <span className="text-xxs font-semibold">Menu</span>
             </button>
           )}
@@ -95,7 +94,7 @@ export const HeaderResponsiveForm = ({
               onClick={withMenu.onClickShare || DEFAULT_FUNCTION}
               className="flex w-[38px] flex-col items-center gap-[2px]"
             >
-              <IconComponent src="/icons/share16.svg" width={24} height={24} />
+              <IconComponent src="/icons/share16.svg" className="size-6" />
               <span className="text-xxs font-semibold">Bagikan</span>
             </button>
           )}

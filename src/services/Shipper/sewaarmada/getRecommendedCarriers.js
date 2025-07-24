@@ -84,4 +84,3 @@ export const useGetRecommendedCarriers = (cargoCategoryId) =>
     cargoCategoryId ? `getRecommendedCarriers/${cargoCategoryId}` : null,
     getRecommendedCarriers
   );
-// faq.muatmuat.com / pusat - bantuan;

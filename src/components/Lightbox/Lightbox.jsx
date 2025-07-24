@@ -144,10 +144,7 @@ export const LightboxProvider = ({
           appearance={{
             backgroudClassname: "bg-black md:bg-black/25",
           }}
-          className={cn(
-            lightboxModalVariants({ variant }),
-            "rounded-none bg-white"
-          )}
+          className={cn(lightboxModalVariants({ variant }), "bg-white")}
           type="lightbox"
         >
           <h1 className={lightboxTitleVariants({ variant })}>{title}</h1>
@@ -231,9 +228,9 @@ export const LightboxPreview = ({
   const { openLightbox } = useLightbox();
 
   return (
-    <div className={cn(lightboxPreviewRootVariants({ variant }), className)}>
+    <div className={cn(lightboxPreviewRootVariants({ variant }))}>
       <img
-        className={lightboxPreviewImageVariants({ variant })}
+        className={cn(lightboxPreviewImageVariants({ variant }), className)}
         src={image}
         alt={alt}
       />

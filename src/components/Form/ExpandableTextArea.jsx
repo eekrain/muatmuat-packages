@@ -42,7 +42,8 @@ export const ExpandableTextArea = ({
           "flex max-h-[100px] min-h-[32px] w-full items-center rounded-[6px] border border-neutral-600",
           isGrow ? "p-3" : "px-3",
           errorMessage && "border-error-400",
-          "focus-within:border-primary-700 hover:border-primary-700"
+          "focus-within:border-primary-700 hover:border-primary-700",
+          disabled && "bg-neutral-200"
         )}
       >
         <textarea

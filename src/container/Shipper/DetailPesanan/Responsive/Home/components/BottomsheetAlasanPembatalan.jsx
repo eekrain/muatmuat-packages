@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   BottomSheet,
@@ -8,7 +8,9 @@ import {
 import Button from "@/components/Button/Button";
 import { ExpandableTextArea } from "@/components/Form/ExpandableTextArea";
 import RadioButton from "@/components/Radio/RadioButton";
-import { useGetCancellationReasons } from "@/services/Shipper/api-az/getCancellationReasons";
+import { toast } from "@/lib/toast";
+import { cn } from "@/lib/utils";
+import { useGetCancellationReasons } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getCancellationReasons";
 
 const cancellationReasons = [
   "Keadaan Darurat / Perubahan Rencana",
@@ -33,25 +35,47 @@ const cancellationReasons = [
 export const BottomsheetAlasanPembatalan = ({
   open,
   onOpenChange,
-  onConfirm,
+  onConfirm = () => alert("onConfirm not implemented"),
 }) => {
-  const { data: cancellationReasons } = useGetCancellationReasons(
-    "v1/orders/cancellation-reasons"
-  );
-  const [selectedReason, setSelectedReason] = useState("");
-  const [otherReasonText, setOtherReasonText] = useState("");
-
-  const handleSelectReason = (reason) => {
-    setSelectedReason(reason);
-  };
+  const { data: cancellationReasons } = useGetCancellationReasons();
+  const [selectedReason, setSelectedReason] = useState(null);
+  const [customReason, setCustomReason] = useState("");
+  const [customReasonError, setCustomReasonError] = useState(null);
+  const [globalError, setGlobalError] = useState(null);
 
   const handleConfirm = () => {
-    const reason =
-      selectedReason === "Lainnya" ? otherReasonText : selectedReason;
-    if (onConfirm) {
-      onConfirm(reason);
+    setCustomReasonError(null);
+    setGlobalError(null);
+
+    if (!selectedReason) {
+      setGlobalError("Alasan pembatalan wajib diisi");
+      return;
     }
+
+    if (
+      selectedReason?.value ===
+        cancellationReasons?.[cancellationReasons.length - 1]?.value &&
+      !customReason
+    ) {
+      setCustomReasonError("Alasan pembatalan wajib diisi");
+      return;
+    }
+
+    // Handle cancel order
+    onConfirm?.();
+    toast.success("Berhasil membatalkan pesanan");
   };
+
+  useEffect(() => {
+    if (!open) {
+      setSelectedReason(null);
+      setCustomReason("");
+      setCustomReasonError(null);
+      setGlobalError(null);
+    }
+  }, [open]);
+
+  if (!cancellationReasons) return null;
 
   return (
     <BottomSheet open={open} onOpenChange={onOpenChange}>
@@ -60,60 +84,56 @@ export const BottomsheetAlasanPembatalan = ({
         <BottomSheetHeader>Alasan Pembatalan</BottomSheetHeader>
 
         {/* Reasons List */}
-        <div className="mt-6 flex-1 space-y-4 overflow-y-auto px-4 pb-4">
-          {cancellationReasons?.map((reason) => (
-            <div
-              key={reason}
-              className="flex cursor-pointer items-center justify-between border-b border-neutral-300 pb-4"
-              onClick={() => handleSelectReason(reason)}
-            >
-              <span className="text-sm font-semibold text-neutral-900">
-                {reason}
-              </span>
-              <RadioButton
-                name="cancellationReason"
-                value={reason}
-                checked={selectedReason === reason}
-                readOnly
-              />
-            </div>
-          ))}
-
-          {/* Other Reason */}
-          <div>
-            <div
-              className="flex cursor-pointer items-center justify-between"
-              onClick={() => handleSelectReason("Lainnya")}
-            >
-              <span className="text-sm font-semibold text-neutral-900">
-                Lainnya
-              </span>
-              <RadioButton
-                name="cancellationReason"
-                value="Lainnya"
-                checked={selectedReason === "Lainnya"}
-                readOnly
-              />
-            </div>
-            {selectedReason === "Lainnya" && (
-              <div className="mt-3">
-                <ExpandableTextArea
-                  value={otherReasonText}
-                  onChange={(e) => setOtherReasonText(e.target.value)}
-                  placeholder="Masukkan Alasan Pembatalan"
-                  maxLength={200}
-                  appearance={{
-                    inputClassName: "resize-none h-8",
-                  }}
-                  withCharCount
+        <div className="mt-6 flex-1 px-4">
+          <div className="flex flex-col gap-4">
+            {cancellationReasons?.map((reason, index) => (
+              <div
+                key={reason?.value || index}
+                className={cn(
+                  "flex cursor-pointer items-center justify-between border-b border-transparent pb-4",
+                  index !== cancellationReasons.length - 1 &&
+                    "border-neutral-300"
+                )}
+                onClick={() => setSelectedReason(reason)}
+              >
+                <span className="text-sm font-semibold text-neutral-900">
+                  {reason?.label}
+                </span>
+                <RadioButton
+                  name="cancellationReason"
+                  value={reason?.value}
+                  checked={selectedReason?.value === reason?.value}
+                  readOnly
                 />
               </div>
-            )}
+            ))}
           </div>
+
+          <ExpandableTextArea
+            value={customReason}
+            onChange={(e) => setCustomReason(e.target.value)}
+            placeholder="Masukkan Alasan Pembatalan"
+            disabled={
+              selectedReason?.value !==
+              cancellationReasons?.[cancellationReasons.length - 1]?.value
+            }
+            errorMessage={customReasonError}
+            maxLength={200}
+            appearance={{
+              inputClassName: "resize-none h-8",
+            }}
+            withCharCount
+          />
+
+          {globalError && (
+            <span className="mt-3 text-xs font-medium text-error-400">
+              {globalError}
+            </span>
+          )}
         </div>
 
         {/* Footer */}
-        <div className="p-4">
+        <div className="p-4 pb-6">
           <Button
             className="w-full"
             variant="muatparts-primary"

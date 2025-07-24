@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Form/Checkbox";
@@ -33,6 +33,12 @@ export const ModalBatalkanPesananResponsive = ({
       setIsAgreed(false); // Reset checkbox state when modal closes
     }
   };
+
+  useEffect(() => {
+    if (!open) {
+      setIsAgreed(false);
+    }
+  }, [open]);
 
   return (
     <>
