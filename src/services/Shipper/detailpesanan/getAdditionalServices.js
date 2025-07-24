@@ -42,7 +42,7 @@ export const getAdditionalServices = async (cacheKey) => {
 
   let result;
 
-  if (useMockData_getAdditionalServices) {
+  if (useMockData) {
     result = apiResult;
   } else {
     result = await fetcherMuatrans.get(
