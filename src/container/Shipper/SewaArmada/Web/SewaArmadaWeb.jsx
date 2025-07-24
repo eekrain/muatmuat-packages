@@ -54,6 +54,7 @@ export default function SewaArmadaWeb({
   shippingOption,
   calculatedPrice,
   paymentMethods,
+  orderStatus,
   onFetchTrucks,
 }) {
   const { t } = useTranslation();
@@ -147,7 +148,7 @@ export default function SewaArmadaWeb({
 
                 {/* Form Fields */}
                 <div className="flex flex-col gap-6">
-                  <WaktuMuat />
+                  <WaktuMuat orderStatus={orderStatus} />
                   <LokasiMuat />
                   <LokasiBongkar />
                   <TipeMuatan cargoTypes={cargoTypes} />

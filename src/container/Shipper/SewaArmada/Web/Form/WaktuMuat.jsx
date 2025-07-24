@@ -12,7 +12,7 @@ import {
   useSewaArmadaStore,
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
-export const WaktuMuat = () => {
+export const WaktuMuat = ({ orderStatus }) => {
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
@@ -37,7 +37,6 @@ export const WaktuMuat = () => {
 
   // Use current date for minimum date
   const minDate = new Date();
-  const isDisabled = isEditPage && orderType === "INSTANT";
 
   return (
     <FormContainer>
@@ -46,7 +45,8 @@ export const WaktuMuat = () => {
         <div className="flex flex-col gap-y-2">
           <div className="flex items-center gap-x-2">
             <DatetimePicker
-              disabled={isDisabled}
+              disabled={isEditPage && orderType === "INSTANT"}
+              disableDateOnly={true}
               datetimeValue={loadTimeStart}
               onApply={(date) =>
                 handleFirstTime(() => handleDateChange("loadTimeStart", date))
@@ -62,12 +62,15 @@ export const WaktuMuat = () => {
                   s/d
                 </span>
                 <DatetimePicker
+                  disableDateOnly={true}
                   datetimeValue={loadTimeEnd}
                   onApply={(date) =>
                     handleFirstTime(() => handleDateChange("loadTimeEnd", date))
                   }
                   placeholder="Pilih Tanggal & Waktu Muat"
-                  disabled={!loadTimeStart || isDisabled}
+                  disabled={
+                    !loadTimeStart || (isEditPage && orderType === "INSTANT")
+                  }
                   status={formErrors.loadTimeEnd ? "error" : null}
                   className="w-[271px]"
                   minDate={minDate}
@@ -87,7 +90,7 @@ export const WaktuMuat = () => {
 
         <div className="flex flex-row items-center gap-x-1">
           <Checkbox
-            disabled={isDisabled}
+            disabled={isEditPage}
             label="Dengan Rentang Waktu"
             value="rentang_waktu"
             checked={showRangeOption}

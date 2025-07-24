@@ -397,8 +397,8 @@ export const getOrderDetail = async (cacheKey) => {
         getAdditionalServices(cacheKey),
       ]);
 
-    console.log("dataOrderDetail", dataOrderDetail);
-    console.log("dataReorderFleet", dataReorderFleet);
+    // console.log("dataOrderDetail", dataOrderDetail);
+    // console.log("dataReorderFleet", dataReorderFleet);
     // console.log("dataAdditionalServices", dataAdditionalServices);
     let tempShippingOptions = [];
     let tempTrucks = [];
@@ -443,6 +443,7 @@ export const getOrderDetail = async (cacheKey) => {
         ),
         tempTrucks,
       },
+      orderStatus: dataOrderDetail.general.orderStatus,
     };
   } catch (error) {
     console.error(
@@ -450,10 +451,6 @@ export const getOrderDetail = async (cacheKey) => {
       error
     );
   }
-
-  // const orderDetail = await fetcherMuatrans.get(url);
-  // console.log("order", orderDetail);
-  // return null;
 };
 
 export const useGetOrderDetail = (orderId) =>

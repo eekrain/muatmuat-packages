@@ -9,6 +9,7 @@ import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRMutateHook } from "@/hooks/use-swr";
 import { useGetOrderDetail } from "@/services/Shipper/sewaarmada/getOrderDetail";
 import { useGetRecommendedCarriers } from "@/services/Shipper/sewaarmada/getRecommendedCarriers";
+import { useGetRecommendedTrucks } from "@/services/Shipper/sewaarmada/getRecommendedTrucks";
 import useGetSewaArmadaFormOption from "@/services/Shipper/sewaarmada/getSewaArmadaFormOption";
 import {
   useSewaArmadaActions,
@@ -39,7 +40,7 @@ const Page = () => {
     businessEntity,
     voucherId,
   } = useSewaArmadaStore((state) => state.formValues);
-
+  console.log("distance", distance);
   const {
     settingsTime,
     cargoCategories,
@@ -51,6 +52,7 @@ const Page = () => {
   );
   // console.log("orderDetailData", orderDetailData);
   const { data: carriers } = useGetRecommendedCarriers(cargoCategoryId);
+  const { data: trucks, trigger: fetchTrucks } = useGetRecommendedTrucks();
   // Setup SWR mutation hook untuk API calculate-price
   const { trigger: calculatePrice, data: calculatedPriceData } =
     useSWRMutateHook("v1/orders/calculate-price");
@@ -81,6 +83,15 @@ const Page = () => {
       });
     }
   }, [isLoading, orderDetailData]);
+
+  useShallowCompareEffect(() => {
+    if (trucks) {
+      setField("tempTrucks", trucks);
+      setField("distance", trucks.priceComponents.estimatedDistance);
+      setField("distanceUnit", trucks.priceComponents.distanceUnit);
+      // setField("estimatedTime", trucks.priceComponents.preparationTime);
+    }
+  }, [trucks]);
 
   useShallowCompareEffect(() => {
     const handleCalculatePrice = async () => {
@@ -157,6 +168,28 @@ const Page = () => {
     voucherId,
   ]);
 
+  const handleFetchTrucks = async ({
+    informasiMuatan: newInformasiMuatan,
+  } = {}) => {
+    // Jika tipe truck dan carrier sudah dipilih, fetch data truk
+    if (carrierId) {
+      const requestBody = normalizeFetchTruck({
+        orderType,
+        loadTimeStart,
+        loadTimeEnd,
+        showRangeOption,
+        lokasiMuat,
+        lokasiBongkar,
+        informasiMuatan,
+        newInformasiMuatan,
+        carrierId,
+      });
+
+      // Send the API request
+      await fetchTrucks(requestBody);
+    }
+  };
+
   if (isMobile)
     return (
       <div>{"Ubah pesanan responsive :)"}</div>
@@ -180,7 +213,8 @@ const Page = () => {
       shippingOption={shippingOption}
       //   calculatedPrice={calculatedPrice}
       //   paymentMethods={paymentMethods}
-      //   onFetchTrucks={handleFetchTrucks}
+      orderStatus={orderDetailData?.orderStatus}
+      onFetchTrucks={handleFetchTrucks}
     />
   );
 };

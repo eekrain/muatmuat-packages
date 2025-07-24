@@ -1,6 +1,76 @@
 import Card from "@/components/Card/Card";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 
-const UpdateOrderSummaryPanel = () => {
+const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
+  const priceSummary = useShallowMemo(() => {
+    if (!calculatedPrice || !truckTypeId) {
+      return [];
+    }
+    return [
+      {
+        title: "Biaya Pesan Jasa Angkut",
+        items: [
+          {
+            label: `Nominal Pesan Jasa Angkut (${truckCount} Unit)`,
+            price: calculatedPrice.transportFee,
+          },
+        ],
+      },
+      {
+        title: "Biaya Asuransi Barang",
+        items: [
+          {
+            label: "Nominal Premi Asuransi (1 Unit)",
+            price: calculatedPrice.insuranceFee,
+          },
+        ],
+      },
+      ...(calculatedPrice.additionalServiceFee.length > 0
+        ? [
+            {
+              title: "Biaya Layanan Tambahan",
+              items: calculatedPrice.additionalServiceFee.map((item) => ({
+                label: item.name,
+                price: item.totalCost,
+              })),
+            },
+          ]
+        : []),
+      ...(selectedVoucherDetails
+        ? [
+            {
+              title: "Diskon Voucher",
+              items: [
+                {
+                  label: `Voucher (${selectedVoucherDetails.code})`,
+                  price: calculatedPrice.voucher || voucherDiscount,
+                },
+              ],
+            },
+          ]
+        : []),
+      {
+        title: "Biaya Lainnya",
+        items: [
+          {
+            label: "Admin Layanan",
+            price: calculatedPrice.adminFee,
+          },
+          {
+            label: "Pajak",
+            price: calculatedPrice.taxAmount,
+          },
+        ],
+      },
+    ];
+  }, [
+    calculatedPrice,
+    truckTypeId,
+    truckCount,
+    selectedVoucherDetails,
+    voucherDiscount,
+  ]);
+
   return (
     <>
       <Card className="shadow-muat sticky top-[124px] flex w-[338px] flex-col gap-0 rounded-xl border-none bg-white">
