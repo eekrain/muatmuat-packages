@@ -48,7 +48,7 @@ export const JenisArmadaField = ({ carriers, trucks }) => {
           />
           <span
             className={cn(
-              "flex-1 text-sm font-semibold text-neutral-600",
+              "line-clamp-1 flex-1 text-sm font-semibold text-neutral-600",
               selectedCarrier && "text-neutral-900"
             )}
           >
@@ -80,7 +80,7 @@ export const JenisArmadaField = ({ carriers, trucks }) => {
           />
           <span
             className={cn(
-              "flex-1 text-sm font-semibold text-neutral-600",
+              "line-clamp-1 flex-1 text-sm font-semibold text-neutral-600",
               selectedTruck && "text-neutral-900"
             )}
           >
