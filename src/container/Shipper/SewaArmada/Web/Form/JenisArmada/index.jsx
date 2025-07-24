@@ -19,7 +19,6 @@ import {
 
 export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
   const [isRecommendedTruckOpen, setIsRecommendedTruckOpen] = useState(false);
-
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
@@ -116,7 +115,6 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
   };
 
   const isTruckTypeIdDisabled =
-    isEditPage ||
     !loadTimeStart ||
     (showRangeOption && !loadTimeEnd) ||
     !lokasiMuat ||
@@ -169,11 +167,11 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
             <button
               className={cn(
                 "flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 px-3",
-                selectedCarrier && !isTruckTypeIdDisabled
+                selectedCarrier && !isTruckTypeIdDisabled && !isEditPage
                   ? "cursor-pointer bg-neutral-50"
                   : "cursor-not-allowed bg-neutral-200"
               )}
-              disabled={isTruckTypeIdDisabled}
+              disabled={isTruckTypeIdDisabled || isEditPage}
               onClick={() =>
                 handleFirstTime(() => handleOpenModal("truckTypeId"))
               }

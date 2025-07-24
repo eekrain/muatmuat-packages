@@ -2,6 +2,11 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 import { normalizeOrderDetail } from "@/lib/normalizers/sewaarmada";
+import {
+  normalizeCargos,
+  normalizeLocations,
+} from "@/lib/normalizers/sewaarmada/normalizeApiToForm";
+import { normalizeFetchTruck } from "@/lib/normalizers/sewaarmada/normalizeFetchTruck";
 
 const useMockData_getOrderDetail = false;
 const useMockData_getAdditionalServices = false;
@@ -396,10 +401,31 @@ export const getOrderDetail = async (cacheKey) => {
     console.log("dataReorderFleet", dataReorderFleet);
     // console.log("dataAdditionalServices", dataAdditionalServices);
     let tempShippingOptions = [];
+    let tempTrucks = [];
+
+    // Fetch truck
+    const { general, summary } = dataOrderDetail;
+    const { orderType } = general;
+    const { cargo, carrier, loadTimeStart, loadTimeEnd, locations } = summary;
+    const fetchTruckRequestBody = normalizeFetchTruck({
+      orderType,
+      loadTimeStart,
+      ...(loadTimeEnd && { loadTimeEnd, showRangeOption: true }),
+      lokasiMuat: normalizeLocations(locations, "PICKUP"),
+      lokasiBongkar: normalizeLocations(locations, "DROPOFF"),
+      informasiMuatan: normalizeCargos(cargo),
+      carrierId: carrier.carrierId,
+    });
+    const fetchTrucksResult = await fetcherMuatrans.post(
+      "v1/orders/trucks/recommended",
+      fetchTruckRequestBody
+    );
+    tempTrucks = fetchTrucksResult?.data?.Data;
+
+    // Fetch pilih ekspesidi
     const documentDeliveryService = dataReorderFleet.additionalService.find(
       (item) => item.isShipping
     );
-
     if (documentDeliveryService) {
       const result = await fetcherMuatrans.post("v1/orders/shipping-options", {
         lat: documentDeliveryService.addressInformation.latitude,
@@ -409,11 +435,14 @@ export const getOrderDetail = async (cacheKey) => {
     }
     return {
       orderType: dataOrderDetail.general.orderType, // Use the provided type or default to "INSTANT"
-      formValues: normalizeOrderDetail(
-        dataOrderDetail,
-        dataReorderFleet,
-        tempShippingOptions
-      ),
+      formValues: {
+        ...normalizeOrderDetail(
+          dataOrderDetail,
+          dataReorderFleet,
+          tempShippingOptions
+        ),
+        tempTrucks,
+      },
     };
   } catch (error) {
     console.error(

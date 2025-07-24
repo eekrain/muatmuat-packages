@@ -173,30 +173,32 @@ const LayananTambahan = ({
                         </div>
                       ))}
                     </div>
-                    {isEditPage ? null : (
-                      <button
-                        className="flex items-center gap-x-2 self-start"
-                        onClick={() => {
-                          setAutoCompleteSearchPhrase(
-                            shippingDetails.destinationAddress
-                          );
-                          setLocationPostalCodeSearchPhrase(
-                            shippingDetails.postalCode
-                          );
-                          reset(shippingDetailsLocation);
-                          setModalType("edit");
-                          setIsOpen(true);
-                        }}
-                      >
-                        <span className="text-xs font-medium leading-[14.4px] text-primary-700">
-                          Ubah
-                        </span>
-                        <IconComponent
-                          className="icon-fill-primary-700"
-                          src="/icons/edit16.svg"
-                        />
-                      </button>
-                    )}
+                    <div className="min-w-[54px]">
+                      {isEditPage ? null : (
+                        <button
+                          className="flex items-center gap-x-2 self-start"
+                          onClick={() => {
+                            setAutoCompleteSearchPhrase(
+                              shippingDetails.destinationAddress
+                            );
+                            setLocationPostalCodeSearchPhrase(
+                              shippingDetails.postalCode
+                            );
+                            reset(shippingDetailsLocation);
+                            setModalType("edit");
+                            setIsOpen(true);
+                          }}
+                        >
+                          <span className="text-xs font-medium leading-[14.4px] text-primary-700">
+                            Ubah
+                          </span>
+                          <IconComponent
+                            className="icon-fill-primary-700"
+                            src="/icons/edit16.svg"
+                          />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ) : null}
               </Fragment>

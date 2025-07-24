@@ -37,6 +37,7 @@ export const WaktuMuat = () => {
 
   // Use current date for minimum date
   const minDate = new Date();
+  const isDisabled = isEditPage && orderType === "INSTANT";
 
   return (
     <FormContainer>
@@ -45,6 +46,7 @@ export const WaktuMuat = () => {
         <div className="flex flex-col gap-y-2">
           <div className="flex items-center gap-x-2">
             <DatetimePicker
+              disabled={isDisabled}
               datetimeValue={loadTimeStart}
               onApply={(date) =>
                 handleFirstTime(() => handleDateChange("loadTimeStart", date))
@@ -65,7 +67,7 @@ export const WaktuMuat = () => {
                     handleFirstTime(() => handleDateChange("loadTimeEnd", date))
                   }
                   placeholder="Pilih Tanggal & Waktu Muat"
-                  disabled={!loadTimeStart}
+                  disabled={!loadTimeStart || isDisabled}
                   status={formErrors.loadTimeEnd ? "error" : null}
                   className="w-[271px]"
                   minDate={minDate}
@@ -85,7 +87,7 @@ export const WaktuMuat = () => {
 
         <div className="flex flex-row items-center gap-x-1">
           <Checkbox
-            disabled={isEditPage && orderType === "INSTANT"}
+            disabled={isDisabled}
             label="Dengan Rentang Waktu"
             value="rentang_waktu"
             checked={showRangeOption}
