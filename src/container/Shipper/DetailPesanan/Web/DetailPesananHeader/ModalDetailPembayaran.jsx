@@ -43,32 +43,30 @@ export const ModalDetailPembayaran = ({
                 : "Ringkasan Pembayaran"}
             </CardPayment.Header>
 
-            <CardPayment.Content className="pl-0 pr-[8px]">
-              <CardPayment.ContainerCollapsible title="Detail Pesanan">
-                <div className="flex flex-col gap-3">
-                  <CardPayment.Item
-                    label="Waktu Pembayaran"
-                    value={formatDate(dataRingkasanPembayaran?.expiredAt)}
-                  />
+            <CardPayment.Body className="pl-0 pr-2">
+              <CardPayment.CollapsibleSection title="Detail Pesanan">
+                <CardPayment.LineItem
+                  label="Waktu Pembayaran"
+                  value={formatDate(dataRingkasanPembayaran?.expiredAt)}
+                />
+                <CardPayment.LineItem
+                  label="Opsi Pembayaran"
+                  valueClassName="flex items-center gap-2"
+                  value={
+                    <>
+                      <IconComponent
+                        src="/icons/payment/va_bca.svg"
+                        width={16}
+                        height={16}
+                        className="bg-white"
+                      />
+                      <span>BCA Virtual Account</span>
+                    </>
+                  }
+                />
 
-                  <CardPayment.Item
-                    label="Opsi Pembayaran"
-                    value={
-                      <>
-                        <IconComponent
-                          src="/icons/payment/va_bca.svg"
-                          width={16}
-                          height={16}
-                          className="bg-white"
-                        />
-                        <span>BCA Virtual Account</span>
-                      </>
-                    }
-                  />
-                </div>
-
-                <CardPayment.ContainerItem title="Biaya Pesan Jasa Angkut">
-                  <CardPayment.Item
+                <CardPayment.Section title="Biaya Pesan Jasa Angkut">
+                  <CardPayment.LineItem
                     label={
                       <span>
                         Nominal Pesan Jasa Angkut <br />
@@ -77,21 +75,20 @@ export const ModalDetailPembayaran = ({
                     }
                     value={idrFormat(dataRingkasanPembayaran?.transportFee)}
                   />
-                </CardPayment.ContainerItem>
+                </CardPayment.Section>
 
-                {dataRingkasanPembayaran?.insuranceFee &&
-                dataRingkasanPembayaran?.insuranceFee > 0 ? (
-                  <CardPayment.ContainerItem title="Biaya Asuransi Barang">
-                    <CardPayment.Item
+                {dataRingkasanPembayaran?.insuranceFee > 0 && (
+                  <CardPayment.Section title="Biaya Asuransi Barang">
+                    <CardPayment.LineItem
                       label="Nominal Premi Asuransi (1 Unit)"
-                      value={idrFormat(dataRingkasanPembayaran?.insuranceFee)}
+                      value={idrFormat(dataRingkasanPembayaran.insuranceFee)}
                     />
-                  </CardPayment.ContainerItem>
-                ) : null}
+                  </CardPayment.Section>
+                )}
 
-                <CardPayment.ContainerItem title="Biaya Layanan Tambahan">
-                  <div className="flex flex-col gap-[2px]">
-                    <CardPayment.Item
+                <CardPayment.Section title="Biaya Layanan Tambahan">
+                  <div className="flex flex-col gap-1">
+                    <CardPayment.LineItem
                       label="Nominal Kirim Bukti Fisik Penerimaan Barang"
                       value={idrFormat(
                         dataRingkasanPembayaran?.documentShippingFee
@@ -101,113 +98,99 @@ export const ModalDetailPembayaran = ({
                       dataRingkasanPembayaran={dataRingkasanPembayaran}
                     />
                   </div>
-                  <CardPayment.Item
+                  <CardPayment.LineItem
                     label="Nominal Bantuan Tambahan"
                     value={idrFormat(
                       dataRingkasanPembayaran?.otherAdditionalService
                         ?.totalPrice
                     )}
                   />
-                </CardPayment.ContainerItem>
+                </CardPayment.Section>
 
-                {dataRingkasanPembayaran?.voucherDiscount &&
-                dataRingkasanPembayaran?.voucherDiscount > 0 ? (
-                  <CardPayment.ContainerItem title="Diskon Voucher">
-                    <CardPayment.Item
+                {dataRingkasanPembayaran?.voucherDiscount > 0 && (
+                  <CardPayment.Section title="Diskon Voucher">
+                    <CardPayment.LineItem
                       label="Voucher (DISKONPENGGUNABARU)"
-                      appearance={{
-                        valueClassName: "text-error-400",
-                      }}
-                      value={`-${idrFormat(dataRingkasanPembayaran?.voucherDiscount)}`}
+                      variant="danger"
+                      value={`-${idrFormat(
+                        dataRingkasanPembayaran.voucherDiscount
+                      )}`}
                     />
-                  </CardPayment.ContainerItem>
-                ) : null}
+                  </CardPayment.Section>
+                )}
 
-                <CardPayment.ContainerItem title="Biaya Lainnya">
+                <CardPayment.Section title="Biaya Lainnya">
+                  <CardPayment.LineItem
+                    label="Admin Layanan"
+                    value={idrFormat(dataRingkasanPembayaran?.adminFee)}
+                  />
+                  <CardPayment.LineItem
+                    label="Pajak"
+                    value={idrFormat(dataRingkasanPembayaran?.tax)}
+                  />
+                </CardPayment.Section>
+              </CardPayment.CollapsibleSection>
+
+              <CardPayment.CollapsibleSection title="Detail Tambahan Biaya">
+                <CardPayment.LineItem
+                  label="Waktu Pembayaran"
+                  value={formatDate(dataRingkasanPembayaran?.expiredAt)}
+                />
+
+                <CardPayment.LineItem
+                  label="Opsi Pembayaran"
+                  valueClassName="flex items-center gap-2"
+                  value={
+                    <>
+                      <IconComponent
+                        src="/icons/payment/va_bca.svg"
+                        width={16}
+                        height={16}
+                        className="bg-white"
+                      />
+                      <span>BCA Virtual Account</span>
+                    </>
+                  }
+                />
+                <CardPayment.Section title="Biaya Waktu Tunggu">
                   <div className="flex flex-col gap-1">
-                    <CardPayment.Item
-                      label="Admin Layanan"
-                      value={idrFormat(dataRingkasanPembayaran?.adminFee)}
-                    />
-
-                    <CardPayment.Item
-                      label="Pajak"
-                      value={idrFormat(dataRingkasanPembayaran?.tax)}
-                    />
-                  </div>
-                </CardPayment.ContainerItem>
-              </CardPayment.ContainerCollapsible>
-
-              <CardPayment.ContainerCollapsible title="Detail Tambahan Biaya">
-                <div className="flex flex-col gap-3">
-                  <CardPayment.Item
-                    label="Waktu Pembayaran"
-                    value={formatDate(dataRingkasanPembayaran?.expiredAt)}
-                  />
-
-                  <CardPayment.Item
-                    label="Opsi Pembayaran"
-                    value={
-                      <>
-                        <IconComponent
-                          src="/icons/payment/va_bca.svg"
-                          width={16}
-                          height={16}
-                          className="bg-white"
-                        />
-                        <span>BCA Virtual Account</span>
-                      </>
-                    }
-                  />
-                </div>
-
-                <CardPayment.ContainerItem title="Biaya Waktu Tunggu">
-                  <div className="flex flex-col gap-[2px]">
-                    <CardPayment.Item
+                    <CardPayment.LineItem
                       label="Nominal Waktu Tunggu (1 Driver)"
                       value={idrFormat(200000)}
                     />
                     <ModalDetailWaktuTunggu />
                   </div>
-                </CardPayment.ContainerItem>
-
-                <CardPayment.ContainerItem title="Biaya Overload Muatan">
-                  <div className="flex flex-col gap-[2px]">
-                    <CardPayment.Item
+                </CardPayment.Section>
+                <CardPayment.Section title="Biaya Overload Muatan">
+                  <div className="flex flex-col gap-1">
+                    <CardPayment.LineItem
                       label="Nominal Overload Muatan (2.000 kg)"
                       value={idrFormat(100000)}
-                      className="h-auto"
                     />
                     <ModalDetailOverloadMuatan
                       dataRingkasanPembayaran={dataRingkasanPembayaran}
                     />
                   </div>
-                </CardPayment.ContainerItem>
-
-                <CardPayment.ContainerItem title="Biaya Lainnya">
-                  <CardPayment.Item
+                </CardPayment.Section>
+                <CardPayment.Section title="Biaya Lainnya">
+                  <CardPayment.LineItem
                     label="Admin Layanan"
                     value={idrFormat(10000)}
                   />
-                </CardPayment.ContainerItem>
-              </CardPayment.ContainerCollapsible>
-
-              <CardPayment.Subtotal
-                label="Subtotal"
-                value={idrFormat(dataRingkasanPembayaran?.totalPrice)}
-              />
-            </CardPayment.Content>
-
+                </CardPayment.Section>
+              </CardPayment.CollapsibleSection>
+            </CardPayment.Body>
             <div className="pr-[13px]">
-              <CardPayment.FooterTotal
-                label="Total"
-                value="Rp 100.000"
-                className="border-t border-neutral-400 px-0 shadow-none"
-              />
+              <CardPayment.Footer className="border-t border-neutral-400 px-0 pt-4 shadow-none">
+                <CardPayment.Total
+                  label="Total"
+                  value={idrFormat(dataRingkasanPembayaran?.totalPrice)}
+                />
+              </CardPayment.Footer>
             </div>
           </CardPayment.Root>
 
-          <div className="w-full pr-[13px]">
+          <div className="mt-6 w-full pr-[13px]">
             <Button
               iconLeft="/icons/download16.svg"
               variant="muatparts-primary-secondary"

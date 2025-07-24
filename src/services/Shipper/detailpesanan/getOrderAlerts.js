@@ -1,6 +1,6 @@
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData_getOrderAlerts = false;
+const useMockData = false; // toggle mock data
 // GET /api/v1/orders/{orderId}/alerts
 const apiResult = {
   data: {
@@ -23,12 +23,12 @@ const apiResult = {
         //   label: "Driver kamu akan dikenakan biaya waktu tunggu.",
         //   info: "",
         // },
-        // {
-        //   type: "SHOW_QRCODE_DRIVER",
-        //   date: "2025-06-03T10:00:00+07:00",
-        //   label: "Harap tunjukkan QR Code ke pihak driver",
-        //   info: "QR Code diperlukan agar driver dapat melanjutkan proses muat atau bongkar barang.",
-        // },
+        {
+          type: "SHOW_QRCODE_DRIVER",
+          date: "2025-06-03T10:00:00+07:00",
+          label: "Harap tunjukkan QR Code ke pihak driver",
+          info: "QR Code diperlukan agar driver dapat melanjutkan proses muat atau bongkar barang.",
+        },
         // {
         //   type: "REFUND_IN_PROCESS",
         //   date: "2025-06-04T10:00:00+07:00",
@@ -63,7 +63,7 @@ const apiResult = {
 export const getOrderAlerts = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
   let result;
-  if (useMockData_getOrderAlerts) {
+  if (useMockData) {
     result = apiResult;
   } else {
     result = await fetcherMuatrans.get(`v1/orders/${orderId}/alerts`);

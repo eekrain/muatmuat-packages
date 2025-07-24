@@ -1,7 +1,7 @@
 import { fetcherMuatrans } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
-const useMockData_getStatusLegend = false;
+const useMockData = false; // toggle mock data
 
 // GET /base_url/v1/orders/{orderId}/status-legend
 const apiResultStatusLegend = {
@@ -58,7 +58,7 @@ export const getStatusLegend = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
 
   let result;
-  if (useMockData_getStatusLegend) {
+  if (useMockData) {
     result = apiResultStatusLegend;
   } else {
     result = await fetcherMuatrans.get(`v1/orders/${orderId}/status-legend`);

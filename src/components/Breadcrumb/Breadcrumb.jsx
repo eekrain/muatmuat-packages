@@ -27,7 +27,7 @@ const BreadCrumb = ({
     );
 
   return (
-    <div className={cn("mb-4 flex items-center gap-[5px]", className)}>
+    <div className={cn("flex items-center gap-[5px]", className)}>
       {data?.map((val, idx) => (
         <div className="flex items-center gap-[5px]" key={idx}>
           {val.href ? (

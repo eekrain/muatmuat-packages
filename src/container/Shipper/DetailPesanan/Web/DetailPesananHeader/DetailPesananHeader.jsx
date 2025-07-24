@@ -200,7 +200,7 @@ const DetailPesananHeader = ({
   return (
     <>
       <div className="my-6 flex items-center justify-between">
-        <PageTitle>
+        <PageTitle className="mb-0">
           <div className="inline-flex items-center gap-1">
             <span>Detail Pesanan</span>
 

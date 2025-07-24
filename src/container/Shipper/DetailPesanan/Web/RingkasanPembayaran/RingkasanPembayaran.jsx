@@ -16,7 +16,7 @@ export const RingkasanPembayaran = ({
   isShowWaitFleetAlert,
 }) => {
   return (
-    <div className="flex w-full flex-col items-center gap-6">
+    <div className="sticky top-[120px] h-fit">
       {/* Card Ringkasan Pembayaran */}
       {LIST_SHOW_PENDING.includes(dataRingkasanPembayaran?.orderStatus) ? (
         <RingkasanPembayaranPendingPayment

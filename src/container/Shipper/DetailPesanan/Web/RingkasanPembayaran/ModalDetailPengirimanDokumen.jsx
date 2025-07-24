@@ -74,10 +74,10 @@ export const ModalDetailPengirimanDokumen = ({ dataRingkasanPembayaran }) => {
 
   return (
     <Modal closeOnOutsideClick>
-      <ModalTrigger>
-        <button className="text-xs font-medium leading-[14.4px] text-primary-700">
+      <ModalTrigger asChild>
+        <span className="inline text-xs font-medium leading-[14.4px] text-primary-700">
           {t("buttonLihatDetailPengirimanDokumen")}
-        </button>
+        </span>
       </ModalTrigger>
       <ModalContent>
         <div className="flex flex-col gap-y-4 px-6 py-9">

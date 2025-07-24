@@ -73,6 +73,7 @@ const DetailRefundPesananWeb = () => {
                   src={PaymentMethodIconFromTitle["BCA Virtual Account"]}
                   width={16}
                   height={16}
+                  alt="BCA Logo"
                 />
                 <span className="text-neutral-900">BCA Virtual Account</span>
               </div>
@@ -89,59 +90,51 @@ const DetailRefundPesananWeb = () => {
         {/* Refund Details Sidebar */}
         <div className="flex max-h-[453px] w-[338px] flex-col gap-4">
           {/* Refund Breakdown */}
-          <CardPayment.Root className="w-full flex-1">
+          <CardPayment.Root className="flex w-full flex-1 flex-col">
             <CardPayment.Header>Detail Pengembalian Dana</CardPayment.Header>
 
-            <CardPayment.Content noScroll>
-              {/* Transportation Cost */}
-              <CardPayment.ContainerItem title="Biaya Pesan Jasa Angkut">
-                <CardPayment.Item
+            <CardPayment.Body>
+              <CardPayment.Section title="Biaya Pesan Jasa Angkut">
+                <CardPayment.LineItem
                   label="Nominal Seluruh Pesan Jasa Angkut"
                   value="Rp1.394.410"
                 />
-              </CardPayment.ContainerItem>
+              </CardPayment.Section>
 
-              {/* Waiting Time Cost */}
-              <CardPayment.ContainerItem title="Biaya Waktu Tunggu">
+              <CardPayment.Section title="Biaya Waktu Tunggu">
                 <div className="flex flex-col gap-0.5">
-                  <CardPayment.Item
+                  <CardPayment.LineItem
                     label="Nominal Waktu Tunggu (1 Driver)"
                     value={idrFormat(100000)}
                   />
                   <ModalDetailWaktuTunggu />
                 </div>
-              </CardPayment.ContainerItem>
+              </CardPayment.Section>
 
-              {/* Administration Cost */}
-              <CardPayment.ContainerItem title="Biaya Administrasi">
-                <CardPayment.Item
+              <CardPayment.Section title="Biaya Administrasi">
+                <CardPayment.LineItem
                   label="Admin Pembatalan"
                   value="-Rp100.000"
-                  appearance={{
-                    valueClassName: "text-red-500",
-                  }}
+                  variant="danger"
                 />
-              </CardPayment.ContainerItem>
+              </CardPayment.Section>
 
-              {/* Other Costs */}
-              <CardPayment.ContainerItem title="Biaya Lainnya">
-                <CardPayment.Item
+              <CardPayment.Section title="Biaya Lainnya">
+                <CardPayment.LineItem
                   label="Admin Refund"
                   value="-Rp10.000"
-                  appearance={{
-                    valueClassName: "text-red-500",
-                  }}
+                  variant="danger"
                 />
-              </CardPayment.ContainerItem>
-            </CardPayment.Content>
+              </CardPayment.Section>
+            </CardPayment.Body>
 
-            <CardPayment.FooterTotal
-              label="Total Pengembalian Dana"
-              value="Rp1.184.410"
-              appearance={{
-                labelClassName: "max-w-[148px]",
-              }}
-            />
+            <CardPayment.Footer className="mt-auto">
+              <CardPayment.Total
+                label="Total Pengembalian Dana"
+                value="Rp1.184.410"
+                labelClassName="max-w-[148px]"
+              />
+            </CardPayment.Footer>
           </CardPayment.Root>
 
           {/* Download Button */}

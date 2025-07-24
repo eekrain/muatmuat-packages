@@ -1,6 +1,6 @@
 import useSWR from "swr";
 
-const useMockData = false;
+const useMockData = false; // toggle mock data
 
 // GET /base_data/v1/orders/tracking/{orderId}/location?driverId={driverId}
 const apiResult = {

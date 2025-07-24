@@ -14,7 +14,7 @@ import { getOrderPaymentData } from "./getOrderPaymentData";
 import { getOrderStatusHistory } from "./getOrderStatusHistory";
 import { getStatusLegend } from "./getStatusLegend";
 
-const useMockData = false;
+const useMockData = false; // toggle mock data
 
 /**
  * Notes dari mas friday
@@ -100,6 +100,34 @@ const locations = [
   },
 ];
 
+const priceCharge = {
+  waitingFee: {
+    totalAmount: 100000,
+    totalDriver: 3,
+  },
+  overloadFee: {
+    totalAmount: 0,
+    totalWeight: 0,
+    weightUnit: "kg",
+  },
+  adminFee: 10000,
+  totalCharge: 0,
+  isPaid: false,
+};
+
+const otherStatus = [
+  // {
+  //   orderStatus: OrderStatusEnum.WAITING_REPAYMENT_1,
+  //   orderTitle: "Proses Muat",
+  //   unitFleetStatus: 2,
+  // },
+  // {
+  //   orderStatus: OrderStatusEnum.PREPARE_DOCUMENT,
+  //   orderTitle: "Proses Muat",
+  //   unitFleetStatus: 1,
+  // },
+];
+
 const apiResultOrderDetail = {
   data: {
     Message: {
@@ -114,7 +142,7 @@ const apiResultOrderDetail = {
         // orderStatus: OrderStatusEnum.LOADING,
         orderStatus: OrderStatusEnum.LOADING,
         orderTitle: "Proses Muat",
-        unitFleetStatus: 2,
+        unitFleetStatus: 1,
         orderType: OrderTypeEnum.INSTANT,
         createdAt: "2024-01-01T10:00:00Z",
         updatedAt: "2024-01-01T14:30:00Z",
@@ -130,7 +158,7 @@ const apiResultOrderDetail = {
           truckTypeId: "f483709a-de4c-4541-b29e-6f4d9a912331",
           name: "Cold Diesel Double",
           image: "https://picsum.photos/300/300",
-          totalUnit: 1,
+          totalUnit: 3,
         },
         loadTimeStart: "2025-02-08T09:00:00Z",
         loadTimeEnd: "2025-02-08T12:00:00Z",
@@ -191,20 +219,7 @@ const apiResultOrderDetail = {
           requiresPayment: false,
         },
 
-        priceCharge: {
-          waitingFee: {
-            totalAmount: 100000,
-            totalDriver: 3,
-          },
-          overloadFee: {
-            totalAmount: 0,
-            totalWeight: 0,
-            weightUnit: "kg",
-          },
-          adminFee: 10000,
-          totalCharge: 0, // set 0 for trigger the button
-          isPaid: false,
-        },
+        priceCharge,
       },
 
       otherInformation: {
@@ -238,18 +253,7 @@ const apiResultOrderDetail = {
         hasPendingChanges: false,
       },
 
-      otherStatus: [
-        {
-          orderStatus: OrderStatusEnum.WAITING_REPAYMENT_1,
-          orderTitle: "Proses Muat",
-          unitFleetStatus: 2,
-        },
-        {
-          orderStatus: OrderStatusEnum.PREPARE_DOCUMENT,
-          orderTitle: "Proses Muat",
-          unitFleetStatus: 1,
-        },
-      ],
+      otherStatus,
     },
     Type: "/v1/orders/550e8400-e29b-41d4-a716-446655440000",
   },

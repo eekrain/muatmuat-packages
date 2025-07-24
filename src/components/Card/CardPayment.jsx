@@ -1,178 +1,153 @@
 import { useState } from "react";
 
-import { ChevronUp } from "lucide-react";
-
+import IconComponent from "@/components/IconComponent/IconComponent";
 import { cn } from "@/lib/utils";
 
-const Root = ({ className, children }) => {
-  return (
-    <div
+const Root = ({ children, className }) => (
+  <div
+    className={cn(
+      "flex w-[338px] flex-col overflow-hidden rounded-xl bg-white shadow-md",
+      className
+    )}
+  >
+    {children}
+  </div>
+);
+
+const Header = ({ children, className }) => (
+  <div className={cn("px-5 pb-6 pt-6", className)}>
+    <h1
       className={cn(
-        "flex flex-col overflow-hidden rounded-xl bg-white shadow-md",
+        "text-base font-bold leading-tight text-neutral-900",
         className
       )}
     >
       {children}
-    </div>
-  );
-};
+    </h1>
+  </div>
+);
 
-const Header = ({ className, children }) => {
-  return (
-    <div className={cn("flex min-h-[59px] items-center px-5", className)}>
-      <span className="capsize w-full text-base font-bold leading-[1.2] text-neutral-900">
-        {children}
-      </span>
-    </div>
-  );
-};
+const Body = ({ children, className }) => (
+  <div className={cn("mb-4 mr-2 flex-1 overflow-y-auto pl-5 pr-3", className)}>
+    <div className="flex flex-col gap-6">{children}</div>
+  </div>
+);
 
-const Content = ({ noScroll = false, className, children }) => {
-  return (
-    <div
-      className={cn(
-        "flex h-full w-full flex-col gap-6 overflow-y-auto bg-white pb-4 pl-5 pr-[8px] pt-0.5",
-        className
-      )}
-    >
-      {children}
-    </div>
-  );
-};
-
-const ContainerCollapsible = ({ title, className, children }) => {
-  const [isOpen, setIsOpen] = useState(true);
-
-  return (
-    <div className={cn("w-full bg-white", className)}>
-      {/* Header */}
-      <button
-        onClick={() => setIsOpen((prev) => !prev)}
-        className={cn(
-          "flex w-full items-center justify-between rounded-sm p-0 outline-none"
-        )}
-        aria-expanded={isOpen}
-        aria-controls="collapsible-content"
-      >
-        <h3 className="text-sm font-semibold leading-[1.2] text-black">
-          {title}
-        </h3>
-        <div className="flex-shrink-0">
-          <ChevronUp
-            className={cn(
-              "h-4 w-4 text-gray-600 transition-transform duration-300 ease-in-out",
-              isOpen ? "rotate-0" : "rotate-180"
-            )}
-          />
-        </div>
-      </button>
-
-      <div
-        id="collapsible-content"
-        className={cn(
-          "flex flex-col gap-6 overflow-hidden opacity-100 transition-all duration-300 ease-in-out",
-          isOpen ? "max-h-[1000px] pt-3 opacity-100" : "max-h-0 opacity-0"
-        )}
-      >
-        {children}
-      </div>
-    </div>
-  );
-};
-
-const ContainerItem = ({ title, className, children }) => {
-  return (
-    <div className={cn("flex flex-col gap-4", className)}>
-      <h3 className="capsize text-sm font-semibold leading-[1.2] text-black">
-        {title}
-      </h3>
-      {children}
-    </div>
-  );
-};
-
-const Item = ({
-  appearance = {
-    labelClassName: "",
-    valueClassName: "",
-  },
+const CollapsibleSection = ({
+  title,
+  children,
   className,
-  label,
-  value,
+  defaultOpen = true,
 }) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const toggleOpen = () => setIsOpen((prev) => !prev);
+
   return (
-    <div
-      className={cn(
-        "flex justify-between text-xs font-medium leading-tight",
-        className
-      )}
-    >
+    <div className={cn("flex flex-col", className)}>
       <div
-        className={cn("max-w-[190px] text-gray-500", appearance.labelClassName)}
+        className="flex cursor-pointer items-center justify-between"
+        onClick={toggleOpen}
+        onKeyDown={(e) => e.key === "Enter" && toggleOpen()}
+        role="button"
+        tabIndex={0}
       >
-        {label}
+        <h2 className="text-sm font-semibold leading-tight text-neutral-900">
+          {title}
+        </h2>
+        <IconComponent
+          src="/icons/chevron-up.svg"
+          className={cn(
+            "h-4 w-4 text-neutral-700 transition-transform duration-300",
+            !isOpen && "rotate-180"
+          )}
+          alt="Toggle details visibility"
+        />
       </div>
       <div
-        className={cn("flex gap-2 text-neutral-900", appearance.valueClassName)}
+        className={cn(
+          "grid transition-all duration-500 ease-in-out",
+          isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        )}
       >
-        {value}
+        <div className="overflow-hidden">
+          <div className="flex flex-col gap-4 pt-4">{children}</div>
+        </div>
       </div>
     </div>
   );
 };
 
-const Subtotal = ({ className, label, value }) => {
-  return (
-    <div
-      className={cn(
-        "flex w-full items-center justify-between text-sm font-semibold leading-[1.2] text-neutral-900",
-        className
-      )}
-    >
-      <span>{label}</span>
+const Section = ({ title, children, className }) => (
+  <div className={cn("flex flex-col gap-3", className)}>
+    <h2 className="text-sm font-semibold leading-tight text-neutral-900">
+      {title}
+    </h2>
+    <div className="flex flex-col gap-3">{children}</div>
+  </div>
+);
 
-      <span>{value}</span>
-    </div>
-  );
-};
-
-const FooterTotal = ({
-  className,
+const LineItem = ({
   label,
   value,
   children,
-  appearance = { labelClassName: "", valueClassName: "" },
+  variant,
+  valueClassName,
+  labelClassName,
 }) => {
+  const valueColorClass =
+    variant === "danger" ? "text-error-400" : "text-neutral-900";
   return (
-    <div
-      className={cn(
-        "w-full px-5 py-6 shadow-[0px_4px_11px_0px_#41414140]",
-        className
-      )}
-    >
-      <div
-        className={
-          "flex justify-between text-base font-bold leading-[1.2] text-neutral-900"
-        }
-      >
-        <span className={appearance.labelClassName}>{label}</span>
-        <span className={appearance.valueClassName}>{value}</span>
+    <div>
+      <div className="flex items-start justify-between gap-6">
+        <p
+          className={cn(
+            "flex-1 text-xs font-medium text-neutral-600",
+            labelClassName
+          )}
+        >
+          {label}
+        </p>
+        <p
+          className={cn(
+            "whitespace-nowrap text-right text-xs font-medium",
+            valueColorClass,
+            valueClassName
+          )}
+        >
+          {value}
+        </p>
       </div>
-
       {children}
     </div>
   );
 };
+
+const Footer = ({ children, className }) => (
+  <div
+    className={cn(
+      "bg-white p-5 shadow-[0_-4px_11px_rgba(65,65,65,0.08)]",
+      className
+    )}
+  >
+    {children}
+  </div>
+);
+
+const Total = ({ label = "Total", value, className }) => (
+  <div className={cn("flex items-center justify-between", className)}>
+    <p className="text-base font-bold text-neutral-900">{label}</p>
+    <p className="text-base font-bold text-neutral-900">{value}</p>
+  </div>
+);
 
 const CardPayment = {
   Root,
   Header,
-  Content,
-  ContainerCollapsible,
-  ContainerItem,
-  Item,
-  Subtotal,
-  FooterTotal,
+  Body,
+  CollapsibleSection,
+  Section,
+  LineItem,
+  Footer,
+  Total,
 };
-
 export default CardPayment;

@@ -13,85 +13,77 @@ export const RingkasanPembayaranTambahanBiaya = ({
   dataRingkasanPembayaran,
 }) => {
   // Fetch payment methods using SWR
-  const { data: paymentMethodsData, mutate: mutatePaymentMethods } = useSWRHook(
+  const { data: paymentMethodsData } = useSWRHook(
     "v1/payment/methods",
     fetcherPayment
   );
 
   const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState(null);
 
+  const waitingFee = dataRingkasanPembayaran?.priceCharge?.waitingFee;
+  const overloadFee = dataRingkasanPembayaran?.priceCharge?.overloadFee;
+  const adminFee = dataRingkasanPembayaran?.priceCharge?.adminFee;
+  const taxAmount = dataRingkasanPembayaran?.priceCharge?.taxAmount;
+
   return (
     <div className="flex w-full flex-col gap-4">
-      <CardPayment.Root className="w-full">
+      <CardPayment.Root className="flex w-full flex-col">
         <CardPayment.Header>Detail Tambahan Biaya</CardPayment.Header>
 
-        <CardPayment.Content noScroll>
-          {dataRingkasanPembayaran?.priceCharge?.waitingFee?.totalAmount &&
-          dataRingkasanPembayaran?.priceCharge?.waitingFee?.totalAmount > 0 ? (
-            <CardPayment.ContainerItem title="Biaya Waktu Tunggu">
-              <CardPayment.Item
-                label={`Nominal Waktu Tunggu (${dataRingkasanPembayaran?.priceCharge?.waitingFee?.totalDriver} Driver)`}
-                value={idrFormat(
-                  dataRingkasanPembayaran?.priceCharge?.waitingFee?.totalAmount
-                )}
+        <CardPayment.Body>
+          {waitingFee?.totalAmount > 0 && (
+            <CardPayment.Section title="Biaya Waktu Tunggu">
+              <CardPayment.LineItem
+                label={`Nominal Waktu Tunggu (${waitingFee.totalDriver} Driver)`}
+                value={idrFormat(waitingFee.totalAmount)}
               />
               <ModalDetailWaktuTunggu />
-            </CardPayment.ContainerItem>
-          ) : null}
+            </CardPayment.Section>
+          )}
 
-          {dataRingkasanPembayaran?.priceCharge?.overloadFee?.totalAmount &&
-          dataRingkasanPembayaran?.priceCharge?.overloadFee?.totalAmount > 0 ? (
-            <CardPayment.ContainerItem title="Biaya Overload Muatan">
-              <CardPayment.Item
-                label={`Nominal Overload Muatan (${Number(dataRingkasanPembayaran?.priceCharge?.overloadFee?.totalWeight).toLocaleString("id-ID")} ${dataRingkasanPembayaran?.priceCharge?.overloadFee?.weightUnit})`}
-                value={idrFormat(
-                  dataRingkasanPembayaran?.priceCharge?.overloadFee?.totalAmount
-                )}
-                className="h-auto"
+          {overloadFee?.totalAmount > 0 && (
+            <CardPayment.Section title="Biaya Overload Muatan">
+              <CardPayment.LineItem
+                label={`Nominal Overload Muatan (${Number(
+                  overloadFee.totalWeight
+                ).toLocaleString("id-ID")} ${overloadFee.weightUnit})`}
+                value={idrFormat(overloadFee.totalAmount)}
               />
               <ModalDetailOverloadMuatan
                 dataRingkasanPembayaran={dataRingkasanPembayaran}
               />
-            </CardPayment.ContainerItem>
-          ) : null}
+            </CardPayment.Section>
+          )}
 
-          {Boolean(dataRingkasanPembayaran?.priceCharge?.adminFee) ||
-          Boolean(dataRingkasanPembayaran?.priceCharge?.taxAmount) ? (
-            <CardPayment.ContainerItem title="Biaya Lainnya">
-              <div className="flex flex-col gap-1">
-                <CardPayment.Item
-                  label="Admin Layanan"
-                  value={idrFormat(
-                    dataRingkasanPembayaran?.priceCharge?.adminFee || 0
-                  )}
-                />
+          {(adminFee || taxAmount) && (
+            <CardPayment.Section title="Biaya Lainnya">
+              <CardPayment.LineItem
+                label="Admin Layanan"
+                value={idrFormat(adminFee || 0)}
+              />
+              <CardPayment.LineItem
+                label="Pajak"
+                value={idrFormat(taxAmount || 0)}
+              />
+            </CardPayment.Section>
+          )}
+        </CardPayment.Body>
 
-                <CardPayment.Item
-                  label="Pajak"
-                  value={idrFormat(
-                    dataRingkasanPembayaran?.priceCharge?.taxAmount || 0
-                  )}
-                />
-              </div>
-            </CardPayment.ContainerItem>
-          ) : null}
-        </CardPayment.Content>
-
-        <CardPayment.FooterTotal
-          label="Total Tambahan Biaya"
-          value={idrFormat(250000)}
-          className="gap-20"
-        >
+        <CardPayment.Footer className="mt-auto flex flex-col">
+          <CardPayment.Total
+            label="Total Tambahan Biaya"
+            value={idrFormat(250000)}
+          />
           {dataRingkasanPembayaran?.orderStatus ===
             OrderStatusEnum.WAITING_REPAYMENT_1 && (
             <ModalOpsiPembayaran
               paymentMethods={paymentMethodsData?.Data}
               selectedPaymentMethodId={selectedPaymentMethodId}
               onSelectedPaymentMethodId={setSelectedPaymentMethodId}
-              className="mt-6"
+              className="mt-4"
             />
           )}
-        </CardPayment.FooterTotal>
+        </CardPayment.Footer>
       </CardPayment.Root>
     </div>
   );

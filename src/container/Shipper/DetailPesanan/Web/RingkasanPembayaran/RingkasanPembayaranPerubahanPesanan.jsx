@@ -17,7 +17,7 @@ export const RingkasanPembayaranPerubahanPesanan = ({
   dataRingkasanPembayaran,
 }) => {
   // Fetch payment methods using SWR
-  const { data: paymentMethodsData, mutate: mutatePaymentMethods } = useSWRHook(
+  const { data: paymentMethodsData } = useSWRHook(
     "v1/payment/methods",
     fetcherPayment
   );
@@ -26,49 +26,45 @@ export const RingkasanPembayaranPerubahanPesanan = ({
 
   return (
     <div className="flex h-[453px] w-full flex-col gap-4">
-      <CardPayment.Root className="w-full">
+      <CardPayment.Root className="flex w-full flex-col">
         <CardPayment.Header>Detail Tambahan Biaya</CardPayment.Header>
 
-        <CardPayment.Content noScroll>
-          <CardPayment.ContainerItem title="Biaya Perubahan Rute">
-            <CardPayment.Item
+        <CardPayment.Body>
+          <CardPayment.Section title="Biaya Perubahan Rute">
+            <CardPayment.LineItem
               label="Selisih Jarak Perubahan Lokasi Bongkar"
               value={idrFormat(150000)}
             />
-          </CardPayment.ContainerItem>
+          </CardPayment.Section>
 
-          <CardPayment.ContainerItem title="Biaya Administrasi">
-            <CardPayment.Item
+          <CardPayment.Section title="Biaya Administrasi">
+            <CardPayment.LineItem
               label="Admin Ubah Pesanan"
               value={idrFormat(50000)}
-              className="h-auto"
             />
-          </CardPayment.ContainerItem>
+          </CardPayment.Section>
 
-          <CardPayment.ContainerItem title="Biaya Lainnya">
-            <div className="flex flex-col gap-1">
-              <CardPayment.Item
-                label="Admin Layanan"
-                value={idrFormat(10000)}
-              />
+          <CardPayment.Section title="Biaya Lainnya">
+            <CardPayment.LineItem
+              label="Admin Layanan"
+              value={idrFormat(10000)}
+            />
+            <CardPayment.LineItem label="Pajak" value={idrFormat(10000)} />
+          </CardPayment.Section>
+        </CardPayment.Body>
 
-              <CardPayment.Item label="Pajak" value={idrFormat(10000)} />
-            </div>
-          </CardPayment.ContainerItem>
-        </CardPayment.Content>
-
-        <CardPayment.FooterTotal
-          label="Total Tambahan Biaya"
-          value={idrFormat(250000)}
-          className="gap-20"
-        >
+        <CardPayment.Footer className="mt-auto flex flex-col">
+          <CardPayment.Total
+            label="Total Tambahan Biaya"
+            value={idrFormat(250000)}
+          />
           <ModalOpsiPembayaran
             paymentMethods={paymentMethodsData?.Data}
             selectedPaymentMethodId={selectedPaymentMethodId}
             onSelectedPaymentMethodId={setSelectedPaymentMethodId}
-            className="mt-6"
+            className="mt-4"
           />
-        </CardPayment.FooterTotal>
+        </CardPayment.Footer>
       </CardPayment.Root>
 
       <ModalBatalkanPerubahanPesanan />
@@ -105,7 +101,7 @@ const ModalBatalkanPerubahanPesanan = () => {
             pesanan lagi
           </p>
 
-          <Button variant="muatparts-primary-secondary" className="w-[178px]]">
+          <Button variant="muatparts-primary-secondary" className="w-[178px]">
             Batalkan Perubahan
           </Button>
         </div>

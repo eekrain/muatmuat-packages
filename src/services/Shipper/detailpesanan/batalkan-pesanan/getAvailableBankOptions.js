@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatparts } from "@/lib/axios";
 
-const useMockData_getAvailableBankOptions = false;
+const useMockData = false; // toggle mock data
 
 const apiResultAvailableBanks = {
   data: {
@@ -126,7 +126,7 @@ const apiResultAvailableBanks = {
 export const getAvailableBankOptions = async (url) => {
   let data;
 
-  if (useMockData_getAvailableBankOptions) {
+  if (useMockData) {
     data = apiResultAvailableBanks.data?.Data;
   } else {
     const res = await fetcherMuatparts.get(url);

@@ -176,8 +176,18 @@ export const Modal = ({
  * @param {ModalTriggerProps} props
  * @returns {JSX.Element}
  */
-export const ModalTrigger = ({ className, children }) => {
+export const ModalTrigger = ({ className, children, asChild = false }) => {
   const { open } = useModal();
+
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(children, {
+      onClick: (e) => {
+        children.props.onClick?.(e);
+        open();
+      },
+      className: cn(children.props.className, className, "cursor-pointer"),
+    });
+  }
 
   return (
     <div className={cn("cursor-pointer", className)} onClick={open}>

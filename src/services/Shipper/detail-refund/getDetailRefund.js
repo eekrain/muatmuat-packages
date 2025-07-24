@@ -1,6 +1,6 @@
 import useSWR from "swr";
 
-const useMockData_getDetailRefund = false;
+const useMockData = false; // toggle mock data
 
 // GET /base_data/v1/orders/tracking/{orderId}/location?driverId={driverId}
 const apiResult = {
@@ -64,7 +64,7 @@ export const getDetailRefund = async (cacheKey) => {
 
   let result;
 
-  if (useMockData_getDetailRefund) {
+  if (useMockData) {
     result = apiResult;
   } else {
     result = await fetcherMuatrans.get(

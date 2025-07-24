@@ -69,7 +69,7 @@ const DetailPesananWeb = () => {
   return (
     <>
       <div className="mx-auto max-w-[1200px] py-8">
-        <BreadCrumb className="!mb-0" data={breadCrumbData} />
+        <BreadCrumb className="mb-0" data={breadCrumbData} />
 
         <DetailPesananHeader
           dataStatusPesanan={dataDetailPesanan?.dataStatusPesanan}

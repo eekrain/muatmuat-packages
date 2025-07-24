@@ -1,7 +1,7 @@
 // /api/v1/orders/{orderId}/additional-services
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData_getAdditionalServices = false;
+const useMockData = false; // toggle mock data
 
 const apiResult = {
   data: {

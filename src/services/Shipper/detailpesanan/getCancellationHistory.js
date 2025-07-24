@@ -1,7 +1,7 @@
 // /api/v1/orders/{orderId}/cancellation-history
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData_getCancellationHistory = false;
+const useMockData = false; // toggle mock data
 
 const apiResult = {
   data: {
@@ -35,7 +35,7 @@ export const getCancellationHistory = async (cacheKey) => {
 
   let result;
 
-  if (useMockData_getCancellationHistory) {
+  if (useMockData) {
     result = apiResult;
   } else {
     result = await fetcherMuatrans

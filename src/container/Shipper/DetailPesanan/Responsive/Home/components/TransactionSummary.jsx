@@ -54,154 +54,86 @@ export const TransactionSummary = ({ documentShippingDetail }) => {
     <>
       <div className="bg-white px-4 py-5">
         <CardPayment.Root>
-          <CardPayment.Header className={"mb-6"}>
+          <CardPayment.Header>
             {isRingkasanTransaksi
               ? "Ringkasan Transaksi"
               : "Ringkasan Pembayaran"}
           </CardPayment.Header>
 
-          <CardPayment.Content noScroll>
-            <CardPayment.ContainerItem title="Biaya Pesan Jasa Angkut">
-              <CardPayment.Item
+          <CardPayment.Body>
+            <CardPayment.Section title="Biaya Pesan Jasa Angkut">
+              <CardPayment.LineItem
                 label={
-                  <span>
+                  <>
                     Nominal Pesan Jasa Angkut <br />
                     (1 Unit)
-                  </span>
+                  </>
                 }
                 value={idrFormat(transportFee)}
               />
-            </CardPayment.ContainerItem>
+            </CardPayment.Section>
 
-            {dataRingkasanPembayaran?.insuranceFee &&
-            dataRingkasanPembayaran?.insuranceFee > 0 ? (
-              <CardPayment.ContainerItem title="Biaya Asuransi Barang">
-                <CardPayment.Item
+            {dataRingkasanPembayaran?.insuranceFee > 0 && (
+              <CardPayment.Section title="Biaya Asuransi Barang">
+                <CardPayment.LineItem
                   label="Nominal Premi Asuransi (1 Unit)"
-                  value={idrFormat(dataRingkasanPembayaran?.insuranceFee)}
+                  value={idrFormat(dataRingkasanPembayaran.insuranceFee)}
                 />
-              </CardPayment.ContainerItem>
-            ) : null}
+              </CardPayment.Section>
+            )}
 
-            <CardPayment.ContainerItem title="Biaya Layanan Tambahan">
-              <CardPayment.Item
-                label={
-                  <div>
-                    <>Nominal Kirim Bukti Fisik Penerimaan Barang</>
-                    <button
-                      onClick={() => setDocumentShippingDetailOpen(true)}
-                      className="h-2 w-fit text-xs font-medium leading-[1.2] text-primary-700"
-                    >
-                      Lihat Detail Pengiriman Dokumen
-                    </button>
-                  </div>
-                }
-                value={idrFormat(dataRingkasanPembayaran?.documentShippingFee)}
-              />
-              {/* <ModalDetailPengirimanDokumen
-              dataRingkasanPembayaran={dataRingkasanPembayaran}
-            /> */}
-              <CardPayment.Item
+            <CardPayment.Section title="Biaya Layanan Tambahan">
+              <CardPayment.LineItem
+                label="Nominal Kirim Bukti Fisik Penerimaan Barang"
+                value={idrFormat(dataRingkasanPembayaran.documentShippingFee)}
+              >
+                <button
+                  onClick={() => setDocumentShippingDetailOpen(true)}
+                  className="mt-1 h-2 w-fit text-xs font-medium leading-[1.2] text-primary-700"
+                >
+                  Lihat Detail Pengiriman Dokumen
+                </button>
+              </CardPayment.LineItem>
+              <CardPayment.LineItem
                 label="Nominal Bantuan Tambahan"
                 value={idrFormat(
-                  dataRingkasanPembayaran?.otherAdditionalService?.totalPrice
+                  dataRingkasanPembayaran.otherAdditionalService?.totalPrice
                 )}
               />
-            </CardPayment.ContainerItem>
+            </CardPayment.Section>
 
-            {dataRingkasanPembayaran?.voucherDiscount &&
-            dataRingkasanPembayaran?.voucherDiscount > 0 ? (
-              <CardPayment.ContainerItem title="Diskon Voucher">
-                <CardPayment.Item
+            {dataRingkasanPembayaran?.voucherDiscount > 0 && (
+              <CardPayment.Section title="Diskon Voucher">
+                <CardPayment.LineItem
                   label="Voucher (DISKONPENGGUNABARU)"
-                  appearance={{
-                    valueClassName: "text-error-400",
-                  }}
-                  value={`-${idrFormat(dataRingkasanPembayaran?.voucherDiscount)}`}
+                  variant="danger"
+                  value={`-${idrFormat(
+                    dataRingkasanPembayaran.voucherDiscount
+                  )}`}
                 />
-              </CardPayment.ContainerItem>
-            ) : null}
+              </CardPayment.Section>
+            )}
 
-            <hr />
+            <hr className="border-neutral-200" />
 
-            <CardPayment.ContainerItem title="Biaya Lainnya">
-              <div className="flex flex-col gap-3">
-                <CardPayment.Item
-                  label="Admin Layanan"
-                  value={idrFormat(dataRingkasanPembayaran?.adminFee)}
-                />
-
-                <CardPayment.Item
-                  label="Pajak"
-                  appearance={{
-                    valueClassName: "text-error-400",
-                  }}
-                  value={`-${idrFormat(dataRingkasanPembayaran?.tax)}`}
-                />
-              </div>
-            </CardPayment.ContainerItem>
-
-            {/* <CardPayment.ContainerCollapsible title="Detail Tambahan Biaya">
-            <div className="flex flex-col gap-3">
-              <CardPayment.Item
-                label="Waktu Pembayaran"
-                value={formatDate(expiredAt)}
-              />
-
-              <CardPayment.Item
-                label="Opsi Pembayaran"
-                value={
-                  <>
-                    <IconComponent
-                      src="/icons/payment/va_bca.svg"
-                      width={16}
-                      height={16}
-                      className="bg-white"
-                    />
-                    <span>BCA Virtual Account</span>
-                  </>
-                }
-              />
-            </div>
-
-            <CardPayment.ContainerItem title="Biaya Waktu Tunggu">
-              <CardPayment.Item
-                label="Nominal Waktu Tunggu (1 Driver)"
-                value={idrFormat(200000)}
-              />
-              <ModalDetailWaktuTunggu
-              />
-            </CardPayment.ContainerItem>
-
-            <CardPayment.ContainerItem title="Biaya Overload Muatan">
-              <CardPayment.Item
-                label="Nominal Overload Muatan (2.000 kg)"
-                value={idrFormat(100000)}
-                className="h-auto"
-              />
-              <ModalDetailOverloadMuatan
-                dataRingkasanPembayaran={dataRingkasanPembayaran}
-              />
-            </CardPayment.ContainerItem>
-
-            <CardPayment.ContainerItem title="Biaya Lainnya">
-              <CardPayment.Item
+            <CardPayment.Section title="Biaya Lainnya">
+              <CardPayment.LineItem
                 label="Admin Layanan"
-                value={idrFormat(10000)}
+                value={idrFormat(dataRingkasanPembayaran.adminFee)}
               />
-            </CardPayment.ContainerItem>
-          </CardPayment.ContainerCollapsible> */}
+              <CardPayment.LineItem
+                label="Pajak"
+                variant="danger"
+                value={`-${idrFormat(dataRingkasanPembayaran.tax)}`}
+              />
+            </CardPayment.Section>
+          </CardPayment.Body>
 
-            {/* <CardPayment.Subtotal
-            label="Subtotal"
-            value={idrFormat(dataRingkasanPembayaran?.totalPrice)}
-          /> */}
-          </CardPayment.Content>
-
-          {/* <CardPayment.FooterTotal
-          label="Total"
-          value={idrFormat(dataRingkasanPembayaran?.totalPrice)}
-        /> */}
+          <CardPayment.Footer>
+            <CardPayment.Total
+              value={idrFormat(dataRingkasanPembayaran.totalPrice)}
+            />
+          </CardPayment.Footer>
         </CardPayment.Root>
       </div>
 
@@ -286,15 +218,6 @@ export const TransactionSummary = ({ documentShippingDetail }) => {
                   {shippingData.courier}
                 </p>
               </div>
-
-              {/* Pricing Info Section */}
-              {/* <div className="py-4">
-              <h3 className="mb-2 font-semibold">{t("Biaya Pengiriman")}</h3>
-              <p className="font-medium text-neutral-600">
-                {idrFormat(shippingData.courierPrice)}
-              </p>
-            </div> */}
-
               <div className="py-4 last:pb-0">
                 <h3 className="mb-2 font-semibold">
                   {t("Asuransi Pengiriman")}
@@ -303,13 +226,6 @@ export const TransactionSummary = ({ documentShippingDetail }) => {
                   {idrFormat(shippingData.insurancePrice)}
                 </p>
               </div>
-
-              {/* <div className="py-4 last:pb-0">
-              <h3 className="mb-2 font-semibold">{t("Total Biaya")}</h3>
-              <p className="font-semibold text-neutral-900">
-                {idrFormat(shippingData.totalPrice)}
-              </p>
-            </div> */}
             </div>
           </div>
         </BottomSheetContent>

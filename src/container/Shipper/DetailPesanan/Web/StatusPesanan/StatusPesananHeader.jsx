@@ -51,9 +51,10 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
   const orderStatusLabel =
     dataStatusPesanan.orderStatus !== OrderStatusEnum.COMPLETED &&
     !dataStatusPesanan.orderStatus.startsWith("CANCELED") &&
-    dataStatusPesanan.unitFleetStatus
-      ? `${t(orderStatusTitleMap[OrderStatusTitle[dataStatusPesanan.orderStatus]])}: ${dataStatusPesanan.unitFleetStatus} Unit`
-      : t(orderStatusTitleMap[OrderStatusTitle[dataStatusPesanan.orderStatus]]);
+    dataStatusPesanan.unitFleetStatus &&
+    dataStatusPesanan.unitFleetStatus > 1
+      ? `${OrderStatusTitle[dataStatusPesanan.orderStatus]}: ${dataStatusPesanan.unitFleetStatus} Unit`
+      : OrderStatusTitle[dataStatusPesanan.orderStatus];
 
   const dummyPhoto = [
     "/img/muatan1.png",
