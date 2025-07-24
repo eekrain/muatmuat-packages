@@ -1,5 +1,6 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import { useEffect } from "react";
 
 import { isDev } from "@/lib/constants/is-dev";
@@ -10,11 +11,12 @@ import { LeftPanel } from "./LeftPanel/LeftPanel";
 import { MapPanel } from "./MapPanel/MapPanel";
 
 const LacakArmadaWeb = () => {
+  const params = useParams();
   const { setIsGlobalLoading } = useLoadingAction();
-  const { data: dataDriverStatus, isLoading } = useGetDriverStatusTimeline({
-    orderId: "123",
-    driverId: "456",
-  });
+  const { data: dataDriverStatus, isLoading } = useGetDriverStatusTimeline(
+    params.orderId,
+    params.driverId
+  );
   useEffect(() => {
     setIsGlobalLoading(isLoading);
     // eslint-disable-next-line react-hooks/exhaustive-deps

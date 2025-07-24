@@ -1,6 +1,6 @@
 import useSWR from "swr";
 
-const useMockData_getTrackingLocations = false;
+const useMockData = false;
 
 // GET /base_data/v1/orders/tracking/{orderId}/location?driverId={driverId}
 const apiResult = {
@@ -62,6 +62,7 @@ const apiResult = {
 };
 
 const normalizeTrackingLocations = (data) => {
+  if (!data) return null;
   const locationMarkers = [];
   const locationPolyline = [];
   for (const point of data.route.pickupPoints) {
@@ -88,17 +89,16 @@ const normalizeTrackingLocations = (data) => {
 export const getTrackingLocations = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
   const driverId = cacheKey.split("/")[2];
-
   let response;
-  if (useMockData_getTrackingLocations) {
+  if (useMockData) {
     response = apiResult;
   } else {
     response = await fetcherMuatrans.get(
       `v1/orders/tracking/${orderId}/location?driverId=${driverId}`
     );
   }
-  return normalizeTrackingLocations(response.data.Data);
+  return normalizeTrackingLocations(response?.data?.Data);
 };
 
-export const useGetTrackingLocations = ({ orderId, driverId }) =>
-  useSWR(`tracking-locations/${orderId}/${driverId}`, getTrackingLocations);
+export const useGetTrackingLocations = (orderId, driverId) =>
+  useSWR(`getTrackingLocations/${orderId}/${driverId}`, getTrackingLocations);

@@ -3,7 +3,7 @@ import useSWR from "swr";
 
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
-const useMockData_getDriverStatusTimeline = false;
+const useMockData = false;
 
 const apiResult = {
   data: {
@@ -329,7 +329,7 @@ const fetcher = async (cacheKey) => {
 
   try {
     let response;
-    if (useMockData_getDriverStatusTimeline) {
+    if (useMockData) {
       response = apiResult;
     } else {
       response = await fetcherMuatrans.get(
@@ -344,7 +344,7 @@ const fetcher = async (cacheKey) => {
   }
 };
 
-export const useGetDriverStatusTimeline = ({ orderId, driverId }) =>
+export const useGetDriverStatusTimeline = (orderId, driverId) =>
   useSWR(
     orderId ? `driverStatusTimeline/${orderId}/${driverId}` : null,
     fetcher
