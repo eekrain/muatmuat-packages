@@ -31,6 +31,7 @@ import NoDeliveryOrder from "@/container/Shipper/SewaArmada/Responsive/Informasi
 import OrderSummarySection from "@/container/Shipper/SewaArmada/Responsive/InformasiPesanan/OrderSummarySection";
 import usePrevious from "@/hooks/use-previous";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useTranslation } from "@/hooks/use-translation";
 import { useVouchers } from "@/hooks/useVoucher";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
@@ -45,6 +46,7 @@ import {
 
 const InformasiPesananScreen = ({ paymentMethods }) => {
   const navigation = useResponsiveNavigation();
+  const { t } = useTranslation();
 
   /* voucher state and logic - from HomeScreen */
   const token = "Bearer your_token_here";
@@ -291,7 +293,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
   return (
     <FormResponsiveLayout
       title={{
-        label: "Informasi Pesanan",
+        label: t("titleInformasiPesanan"), // Informasi Pesanan
       }}
     >
       <div className="mb-[118px] flex flex-col gap-y-2 bg-neutral-200">
@@ -305,9 +307,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
           />
           <div className="flex flex-1 items-center gap-1">
             <p className="text-xs font-medium leading-[14.4px] text-neutral-900">
-              Jika ada kendala pada persiapan / perjalanan ke lokasi muat,
-              pengiriman mungkin tidak bisa dilanjutkan. Kami akan tetap
-              berusaha memberikan solusi terbaik.
+              {t("messageWarningPreparation")}
             </p>
           </div>
         </div>
@@ -340,10 +340,10 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
               Box - Colt Diesel Engkel
             </h3>
             <p className="text-sm font-medium leading-[15.4px] text-neutral-900">
-              Kebutuhan : 1 Unit
+              {t("labelKebutuhanUnit", { unit: 1 })}
             </p>
             <p className="text-sm font-medium leading-[15.4px] text-neutral-900">
-              Estimasi Jarak : 178 km
+              {t("labelEstimasiJarak", { distance: 178, unit: "km" })}
             </p>
           </div>
         </div>
@@ -352,7 +352,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
         <div className="flex flex-col gap-6 bg-neutral-50 p-4">
           <div className="flex flex-col gap-y-4">
             <h2 className="text-sm font-semibold text-neutral-900">
-              Lampiran/Foto Muatan*
+              {t("labelLampiranFotoMuatan")}
             </h2>
 
             {/* Grid Upload Foto */}
@@ -361,7 +361,11 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
                 <Fragment key={key}>
                   <ImageUploaderResponsive
                     onChange={(value) => handleImageUpload(key, value)}
-                    uploadText={key === 0 ? "Foto Utama" : `Foto ${key}`}
+                    uploadText={
+                      key === 0
+                        ? t("labelFotoUtama")
+                        : `${t("labelFoto")} ${key}`
+                    }
                     maxSize={10}
                     className="!size-[72px]"
                     value={cargoPhotos[key]}
@@ -374,13 +378,12 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
 
             {formErrors.cargoPhotos && (
               <p className="text-xs font-medium leading-[14.4px] text-error-400">
-                {formErrors.cargoPhotos}
+                {t(formErrors.cargoPhotos)}
               </p>
             )}
 
             <p className="text-xs font-medium leading-[14.4px] text-neutral-600">
-              Maksimal unggah 4 foto muatan dengan format .jpg/.jpeg/.png, besar
-              file maks. 10MB
+              {t("messageMaxUploadFotoMuatan")}
             </p>
           </div>
 
@@ -388,7 +391,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
           <div className="flex flex-col gap-y-4">
             <div className="flex items-start gap-1">
               <span className="text-sm font-semibold text-neutral-900">
-                Deskripsi Muatan*
+                {t("labelDeskripsiMuatan")}
               </span>
             </div>
 
@@ -402,9 +405,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
                     title: formErrors.cargoDescription,
                   }}
                   resize="none"
-                  placeholder={
-                    "Lengkapi deskripsi informasi muatan Anda dengan rincian spesifik terkait barang yang dikirim, seperti bahan, penggunaan, atau karakteristik unik lainnya."
-                  }
+                  placeholder={t("placeholderDeskripsiMuatan")}
                   value={cargoDescription}
                   onChange={({ target: { name, value } }) =>
                     setField(name, value)
@@ -424,22 +425,21 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
           {/* Header */}
           <div className="flex items-center gap-1">
             <h2 className="text-sm font-bold leading-[15.4px] text-neutral-900">
-              Badan Usaha Pemesan
+              {t("titleBadanUsahaPemesan")}
             </h2>
             <span className="text-xxs font-semibold leading-[10px] text-neutral-900">
-              (Opsional)
+              {t("labelOpsional")}
             </span>
-            <InfoBottomsheet title="Badan Usaha Pemesan">
+            <InfoBottomsheet title={t("titleBadanUsahaPemesan")}>
               <p className="text-center text-sm font-medium leading-[15.4px] text-neutral-900">
-                Jika kamu mencentang opsi ini kamu akan dikenakan PPh 23
-                terhadap pembayaran sewa jasa angkut yang kamu lakukan
+                {t("messagePPh23Info")}
               </p>
             </InfoBottomsheet>
           </div>
 
           {/* Checkbox */}
           <Checkbox
-            label="Centang opsi jika kamu merupakan suatu badan usaha/perusahaan"
+            label={t("checkboxBadanUsahaPemesan")}
             checked={isBusinessEntity}
             onChange={({ checked }) => handleToggleCheckbox(checked)}
           />
@@ -450,11 +450,11 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
               {/* Field Nama Badan Usaha */}
               <div className="flex flex-col gap-3">
                 <label className="text-sm font-semibold leading-[15.4px] text-neutral-900">
-                  Nama Badan Usaha/Perusahaan*
+                  {t("labelNamaBadanUsaha")}
                 </label>
                 <Input
                   name="name"
-                  placeholder="Masukkan Nama Badan Usaha/Perusahaan"
+                  placeholder={t("placeholderNamaBadanUsaha")}
                   value={name}
                   onChange={({ target: { name, value } }) =>
                     setField("businessEntity", {
@@ -469,11 +469,11 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
               {/* Field Nomor NPWP */}
               <div className="flex flex-col gap-3">
                 <label className="text-sm font-semibold leading-[15.4px] text-neutral-900">
-                  Nomor NPWP*
+                  {t("labelNomorNPWP")}
                 </label>
                 <Input
                   name="taxId"
-                  placeholder="Masukkan Nomor NPWP Perusahaan"
+                  placeholder={t("placeholderNomorNPWP")}
                   value={taxId}
                   onChange={({ target: { name, value } }) =>
                     setField("businessEntity", {
@@ -492,13 +492,13 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
         <div className="flex flex-col gap-y-3 bg-neutral-50 p-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-neutral-900">
-              Opsi Pembayaran
+              {t("titleOpsiPembayaran")}
             </h2>
             <button
               className="text-sm font-semibold text-primary-700"
               onClick={() => navigation.push("/OpsiPembayaran")}
             >
-              Pilih
+              {t("buttonPilih")}
             </button>
           </div>
           {selectedOpsiPembayaran ? (
@@ -524,7 +524,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
         {/* Ringkasan Transaksi */}
         <div className="flex flex-col gap-y-6 bg-neutral-50 p-4">
           <h1 className="text-sm font-semibold text-neutral-900">
-            Ringkasan Transaksi
+            {t("titleRingkasanTransaksi")}
           </h1>
 
           {/* Detail Biaya Container */}
@@ -532,11 +532,11 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
             {/* Biaya Pesan Jasa Angkut */}
             <div className="flex flex-col gap-y-4">
               <h3 className="text-sm font-semibold leading-[16.8px] text-neutral-900">
-                Biaya Pesan Jasa Angkut
+                {t("titleBiayaPesanJasaAngkut")}
               </h3>
               <div className="flex items-start justify-between gap-3">
                 <span className="flex-1 text-xs font-medium leading-[14.4px] text-neutral-600">
-                  Nominal Pesan Jasa Angkut (1 Unit)
+                  {t("labelNominalPesanJasaAngkut")}
                 </span>
                 <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
                   Rp950.000
@@ -547,11 +547,11 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
             {/* Biaya Asuransi */}
             <div className="flex flex-col gap-y-4">
               <h3 className="text-sm font-semibold leading-[16.8px] text-neutral-900">
-                Biaya Asuransi Barang
+                {t("titleBiayaAsuransiBarang")}
               </h3>
               <div className="flex items-start justify-between gap-3">
                 <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
-                  Nominal Premi Asuransi (1 Unit)
+                  {t("labelNominalPremiAsuransi")}
                 </span>
                 <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
                   Rp10.000
@@ -562,15 +562,15 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
             {/* Biaya Layanan Tambahan */}
             <div className="flex flex-col gap-y-4">
               <h3 className="text-sm font-semibold leading-[16.8px] text-neutral-900">
-                Biaya Layanan Tambahan
+                {t("titleBiayaLayananTambahan")}
               </h3>
               <div className="flex items-start justify-between gap-3">
                 <div className="flex flex-col gap-2">
                   <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
-                    Nominal Kirim Bukti Fisik Penerimaan Barang
+                    {t("labelNominalKirimBuktiFisik")}
                   </span>
                   <button className="text-left text-xs font-semibold leading-[13.2px] text-primary-700">
-                    Lihat Detail Pengiriman Dokumen
+                    {t("buttonLihatDetailPengirimanDokumen")}
                   </button>
                 </div>
                 <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
@@ -579,7 +579,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
               </div>
               <div className="flex items-start justify-between gap-3">
                 <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
-                  Nominal Bantuan Tambahan
+                  {t("labelNominalBantuanTambahan")}
                 </span>
                 <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
                   Rp100.000
@@ -590,13 +590,13 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
             {/* Diskon Voucher */}
             <div className="flex flex-col gap-y-4">
               <h3 className="text-sm font-semibold leading-[16.8px] text-neutral-900">
-                Diskon Voucher
+                {t("titleDiskonVoucher")}
               </h3>
               <div className="flex items-start justify-between gap-3">
                 {selectedVoucher && voucherDiscount > 0 ? (
                   <>
                     <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
-                      Voucher ({selectedVoucher.code})
+                      {t("labelVoucherCode", { code: selectedVoucher.code })}
                     </span>
                     <span className="text-right text-xs font-medium leading-[14.4px] text-error-400">
                       -{formatCurrency(voucherDiscount)}
@@ -620,11 +620,11 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
           <div className="flex flex-col gap-6 border-b border-neutral-400 pb-6">
             <div className="flex flex-col gap-y-4">
               <h3 className="text-sm font-semibold leading-[16.8px] text-neutral-900">
-                Biaya Lainnya
+                {t("titleBiayaLainnya")}
               </h3>
               <div className="flex items-start justify-between gap-3">
                 <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
-                  Admin Layanan
+                  {t("labelAdminLayanan")}
                 </span>
                 <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
                   Rp10.000
@@ -632,7 +632,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
               </div>
               <div className="flex items-start justify-between gap-3">
                 <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
-                  Pajak
+                  {t("labelPajak")}
                 </span>
                 <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
                   {isBusinessEntity ? formatCurrency(21300) : "-"}
@@ -644,7 +644,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
           {/* Total Biaya */}
           <div className="flex items-start justify-between gap-4">
             <span className="text-sm font-semibold leading-[16.8px] text-neutral-900">
-              Total Biaya
+              {t("titleTotalBiaya")}
             </span>
             <span className="text-right text-sm font-semibold leading-[15.4px] text-neutral-900">
               {formatCurrency(
@@ -676,8 +676,8 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
             )}
             <span className="text-sm font-semibold leading-[15.4px] text-primary-700">
               {selectedVoucher
-                ? "1 Voucher Terpakai"
-                : "Makin hemat pakai voucher"}
+                ? t("messageVoucherUsed")
+                : t("messageVoucherHemat")}
             </span>
           </div>
           <IconComponent src="/icons/chevron-right24.svg" size="medium" />
@@ -692,20 +692,24 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
             onClick={handleValidateInformasiPesanan}
             type="button"
           >
-            Lanjut
+            {t("buttonLanjut")}
           </Button>
           <BottomSheetContent>
-            <BottomSheetHeader>Periksa Pesanan Anda</BottomSheetHeader>
+            <BottomSheetHeader>
+              {t("titlePeriksaPesananAnda")}
+            </BottomSheetHeader>
             <div className="flex max-h-[calc(75vh_-_54px)] w-full flex-col gap-y-4 overflow-y-auto bg-white px-4 py-6">
               {/* Waktu Muat */}
               <OrderSummarySection className="gap-y-4 font-semibold text-neutral-900">
-                <h4 className="text-sm leading-[15.4px]">Waktu Muat</h4>
+                <h4 className="text-sm leading-[15.4px]">
+                  {t("labelWaktuMuat")}
+                </h4>
                 <span className="text-xs leading-[13.2px]">{`${formatDate(loadTimeStart)}${showRangeOption ? ` s/d ${formatDate(loadTimeEnd)}` : ""}`}</span>
               </OrderSummarySection>
               <OrderSummarySection className="gap-y-4 text-neutral-900">
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-semibold leading-[15.4px]">
-                    Rute
+                    {t("labelRute")}
                   </h4>
                   <span className="text-xs font-medium leading-[13.2px]">
                     {"Estimasi 178 km"}
@@ -760,7 +764,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
               </OrderSummarySection>
               <OrderSummarySection className="gap-y-3 text-neutral-900">
                 <h4 className="text-sm font-semibold leading-[15.4px]">
-                  Informasi Armada
+                  {t("titleInformasiArmada")}
                 </h4>
                 <div className="flex items-center gap-x-3">
                   <div className="size-[68px] overflow-hidden rounded-xl border border-neutral-400">
@@ -783,7 +787,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
               </OrderSummarySection>
               <OrderSummarySection className="gap-y-4 text-neutral-900">
                 <h4 className="text-sm font-semibold leading-[15.4px]">
-                  Informasi Muatan
+                  {t("titleInformasiMuatan")}
                 </h4>
                 <div className="flex flex-col gap-y-3">
                   {informasiMuatan.slice(0, 2).map((item, key) => (
@@ -808,12 +812,12 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
                               setIsInformasiMuatanBottomsheetOpen(true)
                             }
                           >
-                            Lihat Muatan Lainnya
+                            {t("buttonLihatMuatanLainnya")}
                           </button>
                         </BottomSheetTrigger>
                         <BottomSheetContent>
                           <BottomSheetHeader>
-                            Informasi Muatan
+                            {t("titleInformasiMuatan")}
                           </BottomSheetHeader>
                           <div className="flex flex-col gap-y-4 px-4 py-6">
                             {informasiMuatan.map((item, key) => (
@@ -836,9 +840,9 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
                 </div>
               </OrderSummarySection>
               <div className="text-xs font-medium leading-[13.2px] text-neutral-900">
-                {"*Dengan memesan jasa angkut ini, kamu telah menyetujui "}
+                {t("messageSyaratKetentuan")}
                 <span className="font-semibold text-primary-700">
-                  Syarat dan Ketentuan Muatrans
+                  {t("labelSyaratKetentuan")}
                 </span>
               </div>
               <Button
@@ -847,7 +851,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
                 onClick={handleCreateOrder}
                 type="button"
               >
-                Pesan Sekarang
+                {t("buttonPesanSekarang")}
               </Button>
             </div>
           </BottomSheetContent>
@@ -861,7 +865,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
             "animate-slideUp fixed bottom-0 left-0 right-0 z-50 mx-auto max-h-[90vh] w-full overflow-y-auto rounded-t-2xl bg-neutral-50 shadow-2xl"
           }
         >
-          <BottomSheetHeader>Pilih Voucher</BottomSheetHeader>
+          <BottomSheetHeader>{t("titlePilihVoucher")}</BottomSheetHeader>
           <div className="flex h-[577px] w-full flex-col gap-4 overflow-y-auto bg-neutral-50 px-4 py-6">
             {/* Search bar */}
             <div className="relative flex items-center rounded-md border border-neutral-400">
@@ -872,7 +876,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Cari Kode Voucher"
+                placeholder={t("placeholderCariKodeVoucher")}
                 className="h-10 w-full rounded-md bg-transparent pl-10 pr-3 text-sm outline-none"
                 disabled={
                   loading || error || !voucherList || voucherList.length === 0
@@ -890,7 +894,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
 
             {/* Voucher selection note */}
             <p className="text-xs font-medium text-neutral-600">
-              Hanya bisa dipilih 1 Voucher
+              {t("messageHanyaSatuVoucher")}
             </p>
 
             {/* Voucher list */}
@@ -899,7 +903,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
                 <div className="flex flex-col items-center justify-center py-8">
                   <div className="mb-3 h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent"></div>
                   <span className="text-sm font-medium text-neutral-600">
-                    Memuat voucher...
+                    {t("messageMemuatVoucher")}
                   </span>
                 </div>
               ) : error ? (
@@ -926,7 +930,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
                     onClick={refetch}
                     className="text-xs text-blue-600 underline hover:text-blue-800"
                   >
-                    Coba Lagi
+                    {t("buttonCobaLagi")}
                   </button>
                 </div>
               ) : searchQuery && filteredVouchers.length === 0 ? (
@@ -966,7 +970,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
                 className="flex-1"
                 onClick={handleApplyVoucher}
               >
-                {tempSelectedVoucher ? "Terapkan" : "Lewati"}
+                {tempSelectedVoucher ? t("buttonTerapkan") : t("buttonLewati")}
               </Button>
             </div>
           </div>
@@ -980,7 +984,9 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
       >
         <BottomSheetContent>
           <BottomSheetHeader>
-            {locationType === "muat" ? "Lokasi Muat" : "Lokasi Bongkar"}
+            {locationType === "muat"
+              ? t("titleLokasiMuat")
+              : t("titleLokasiBongkar")}
           </BottomSheetHeader>
           <div className="flex flex-col gap-y-4 px-4 py-6">
             <TimelineContainer>

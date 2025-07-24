@@ -6,6 +6,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { ModalDetailOverloadMuatan } from "@/components/Modal/ModalDetailOverloadMuatan";
 import { ModalDetailWaktuTunggu } from "@/components/Modal/ModalDetailWaktuTunggu";
 import { WaitFleetSearchButton } from "@/container/Shipper/DetailPesanan/Web/StatusPesanan/WaitFleetSearch";
+import { useTranslation } from "@/hooks/use-translation";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import {
   PaymentMethodIconFromMethod,
@@ -23,6 +24,7 @@ export const RingkasanPembayaranDefault = ({
 }) => {
   const params = useParams();
   const router = useRouter();
+  const { t } = useTranslation();
   const showButtons =
     !dataRingkasanPembayaran?.orderStatus.startsWith("CANCELED") &&
     dataRingkasanPembayaran?.orderStatus !==
@@ -40,23 +42,27 @@ export const RingkasanPembayaranDefault = ({
     <div className="flex max-h-[453px] w-full flex-col gap-4">
       <CardPayment.Root className="flex-1">
         <CardPayment.Header>
-          {isRingkasanTransaksi
-            ? "Ringkasan Transaksi"
-            : "Ringkasan Pembayaran"}
+          {
+            isRingkasanTransaksi
+              ? t("titleRingkasanTransaksi") // Ringkasan Transaksi
+              : t("titleRingkasanPembayaran") // Ringkasan Pembayaran
+          }
         </CardPayment.Header>
 
         <CardPayment.Content>
-          <CardPayment.ContainerCollapsible title="Detail Pesanan">
+          <CardPayment.ContainerCollapsible
+            title={t("titleDetailPesanan") /* Detail Pesanan */}
+          >
             <div className="flex flex-col gap-3">
               {dataRingkasanPembayaran?.expiredAt && (
                 <CardPayment.Item
-                  label="Waktu Pembayaran"
+                  label={t("labelWaktuPembayaran")}
                   value={formatDate(dataRingkasanPembayaran?.expiredAt)}
                 />
               )}
 
               <CardPayment.Item
-                label="Opsi Pembayaran"
+                label={t("labelOpsiPembayaran")}
                 appearance={{
                   valueClassName: "items-center",
                 }}
@@ -75,32 +81,41 @@ export const RingkasanPembayaranDefault = ({
               />
             </div>
 
-            <CardPayment.ContainerItem title="Biaya Pesan Jasa Angkut">
+            <CardPayment.ContainerItem
+              title={
+                t("titleBiayaPesanJasaAngkut") /* Biaya Pesan Jasa Angkut */
+              }
+            >
               <CardPayment.Item
-                label={
-                  <span>
-                    Nominal Pesan Jasa Angkut <br />(
-                    {dataRingkasanPembayaran?.totalTruckUnit} Unit)
-                  </span>
-                }
+                label={t("labelNominalPesanJasaAngkut", {
+                  unit: dataRingkasanPembayaran?.totalTruckUnit,
+                })}
                 value={idrFormat(dataRingkasanPembayaran?.transportFee)}
               />
             </CardPayment.ContainerItem>
 
             {dataRingkasanPembayaran?.insuranceFee &&
             dataRingkasanPembayaran?.insuranceFee > 0 ? (
-              <CardPayment.ContainerItem title="Biaya Asuransi Barang">
+              <CardPayment.ContainerItem
+                title={
+                  t("titleBiayaAsuransiBarang") /* Biaya Asuransi Barang */
+                }
+              >
                 <CardPayment.Item
-                  label="Nominal Premi Asuransi (1 Unit)"
+                  label={t("labelNominalPremiAsuransi")}
                   value={idrFormat(dataRingkasanPembayaran?.insuranceFee)}
                 />
               </CardPayment.ContainerItem>
             ) : null}
 
-            <CardPayment.ContainerItem title="Biaya Layanan Tambahan">
+            <CardPayment.ContainerItem
+              title={
+                t("titleBiayaLayananTambahan") /* Biaya Layanan Tambahan */
+              }
+            >
               <div className="flex flex-col gap-[2px]">
                 <CardPayment.Item
-                  label="Nominal Kirim Bukti Fisik Penerimaan Barang"
+                  label={t("labelNominalKirimBuktiFisik")}
                   value={idrFormat(
                     dataRingkasanPembayaran?.documentShippingFee
                   )}
@@ -110,7 +125,7 @@ export const RingkasanPembayaranDefault = ({
                 />
               </div>
               <CardPayment.Item
-                label="Nominal Bantuan Tambahan"
+                label={t("labelNominalBantuanTambahan")}
                 value={idrFormat(
                   dataRingkasanPembayaran?.otherAdditionalService?.totalPrice
                 )}
@@ -119,9 +134,15 @@ export const RingkasanPembayaranDefault = ({
 
             {dataRingkasanPembayaran?.voucherDiscount &&
             dataRingkasanPembayaran?.voucherDiscount > 0 ? (
-              <CardPayment.ContainerItem title="Diskon Voucher">
+              <CardPayment.ContainerItem
+                title={t("titleDiskonVoucher") /* Diskon Voucher */}
+              >
                 <CardPayment.Item
-                  label="Voucher (DISKONPENGGUNABARU)"
+                  label={t("labelVoucherCode", {
+                    code:
+                      dataRingkasanPembayaran?.voucherCode ||
+                      "DISKONPENGGUNABARU",
+                  })}
                   appearance={{
                     valueClassName: "text-error-400",
                   }}
@@ -130,15 +151,17 @@ export const RingkasanPembayaranDefault = ({
               </CardPayment.ContainerItem>
             ) : null}
 
-            <CardPayment.ContainerItem title="Biaya Lainnya">
+            <CardPayment.ContainerItem
+              title={t("titleBiayaLainnya") /* Biaya Lainnya */}
+            >
               <div className="flex flex-col gap-1">
                 <CardPayment.Item
-                  label="Admin Layanan"
+                  label={t("labelAdminLayanan")}
                   value={idrFormat(dataRingkasanPembayaran?.adminFee)}
                 />
 
                 <CardPayment.Item
-                  label="Pajak"
+                  label={t("labelPajak")}
                   value={idrFormat(dataRingkasanPembayaran?.tax)}
                 />
               </div>
@@ -146,15 +169,17 @@ export const RingkasanPembayaranDefault = ({
           </CardPayment.ContainerCollapsible>
           {dataRingkasanPembayaran?.priceCharge?.waitingFee?.totalAmount >
             0 && (
-            <CardPayment.ContainerCollapsible title="Detail Tambahan Biaya">
+            <CardPayment.ContainerCollapsible
+              title={t("titleDetailTambahanBiaya") /* Detail Tambahan Biaya */}
+            >
               <div className="flex flex-col gap-3">
                 <CardPayment.Item
-                  label="Waktu Pembayaran"
+                  label={t("labelWaktuPembayaran")}
                   value={formatDate(dataRingkasanPembayaran?.expiredAt)}
                 />
 
                 <CardPayment.Item
-                  label="Opsi Pembayaran"
+                  label={t("labelOpsiPembayaran")}
                   value={
                     <>
                       <IconComponent
@@ -179,10 +204,16 @@ export const RingkasanPembayaranDefault = ({
                 />
               </div>
 
-              <CardPayment.ContainerItem title="Biaya Waktu Tunggu">
+              <CardPayment.ContainerItem
+                title={t("titleBiayaWaktuTunggu") /* Biaya Waktu Tunggu */}
+              >
                 <div className="flex flex-col gap-[2px]">
                   <CardPayment.Item
-                    label={`Nominal Waktu Tunggu (${dataRingkasanPembayaran?.priceCharge?.waitingFee?.totalDriver} Driver)`}
+                    label={t("labelNominalWaktuTunggu", {
+                      driver:
+                        dataRingkasanPembayaran?.priceCharge?.waitingFee
+                          ?.totalDriver,
+                    })}
                     value={idrFormat(
                       dataRingkasanPembayaran?.priceCharge?.waitingFee
                         ?.totalAmount
@@ -192,10 +223,18 @@ export const RingkasanPembayaranDefault = ({
                 </div>
               </CardPayment.ContainerItem>
 
-              <CardPayment.ContainerItem title="Biaya Overload Muatan">
+              <CardPayment.ContainerItem
+                title={
+                  t("titleBiayaOverloadMuatan") /* Biaya Overload Muatan */
+                }
+              >
                 <div className="flex flex-col gap-[2px]">
                   <CardPayment.Item
-                    label={`Nominal Overload Muatan (${dataRingkasanPembayaran?.priceCharge?.overloadFee?.totalWeight} kg)`}
+                    label={t("labelNominalOverloadMuatan", {
+                      weight:
+                        dataRingkasanPembayaran?.priceCharge?.overloadFee
+                          ?.totalWeight,
+                    })}
                     value={idrFormat(
                       dataRingkasanPembayaran?.priceCharge?.overloadFee
                         ?.totalAmount
@@ -208,9 +247,11 @@ export const RingkasanPembayaranDefault = ({
                 </div>
               </CardPayment.ContainerItem>
 
-              <CardPayment.ContainerItem title="Biaya Lainnya">
+              <CardPayment.ContainerItem
+                title={t("titleBiayaLainnya") /* Biaya Lainnya */}
+              >
                 <CardPayment.Item
-                  label="Admin Layanan"
+                  label={t("labelAdminLayanan")}
                   value={idrFormat(
                     dataRingkasanPembayaran?.priceCharge?.adminFee
                   )}
@@ -220,13 +261,13 @@ export const RingkasanPembayaranDefault = ({
           )}
 
           <CardPayment.Subtotal
-            label="Subtotal"
+            label={t("labelSubtotal")}
             value={idrFormat(dataRingkasanPembayaran?.totalPrice)}
           />
         </CardPayment.Content>
 
         <CardPayment.FooterTotal
-          label="Total"
+          label={t("labelTotal")}
           value={idrFormat(dataRingkasanPembayaran?.totalPrice)}
         />
       </CardPayment.Root>
@@ -242,7 +283,7 @@ export const RingkasanPembayaranDefault = ({
               onClick={() => {}}
               type="button"
             >
-              Lanjut Pembayaran
+              {t("buttonLanjutPembayaran")}
             </Button>
           ) : dataRingkasanPembayaran?.orderStatus !==
             OrderStatusEnum.PREPARE_FLEET ? (
@@ -254,7 +295,7 @@ export const RingkasanPembayaranDefault = ({
               }
               type="button"
             >
-              Ubah Pesanan
+              {t("buttonUbahPesanan")}
             </Button>
           ) : null}
 
@@ -268,7 +309,7 @@ export const RingkasanPembayaranDefault = ({
               className="h-8 w-full"
               type="button"
             >
-              Batalkan Pesanan
+              {t("buttonBatalkanPesanan")}
             </Button>
           </ModalBatalkanPesanan>
         </div>
