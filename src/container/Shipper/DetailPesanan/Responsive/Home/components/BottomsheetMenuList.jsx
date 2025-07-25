@@ -35,11 +35,13 @@ export const BottomsheetMenuList = ({ open, onOpenChange }) => {
               onClick={() => navigation.push("/order-summary")}
               t={t}
             />
-            <Item
-              label="Detail Pengiriman Dokumen"
-              t={t}
-              onClick={() => setIsOpenDocumentShipping(true)}
-            />
+            {false && (
+              <Item
+                label="Detail Pengiriman Dokumen"
+                t={t}
+                onClick={() => setIsOpenDocumentShipping(true)}
+              />
+            )}
             <Item
               label="Detail Pembayaran"
               onClick={() => alert("Detail Pembayaran clicked")}
@@ -50,14 +52,16 @@ export const BottomsheetMenuList = ({ open, onOpenChange }) => {
               onClick={() => alert("Ubah Pesanan clicked")}
               t={t}
             />
-            <Item
-              label="Batalkan Pesanan"
-              onClick={() => {
-                setIsOpenModalBatalkanPesanan(true);
-                onOpenChange(false);
-              }}
-              t={t}
-            />
+            {false && (
+              <Item
+                label="Batalkan Pesanan"
+                onClick={() => {
+                  setIsOpenModalBatalkanPesanan(true);
+                  onOpenChange(false);
+                }}
+                t={t}
+              />
+            )}
             <Item
               label="Unduh Dokumen Delivery Order (DO)"
               onClick={() => alert("Unduh Dokumen Delivery Order (DO) clicked")}

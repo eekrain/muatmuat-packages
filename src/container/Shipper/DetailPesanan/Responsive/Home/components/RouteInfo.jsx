@@ -52,7 +52,10 @@ export const RouteInfo = () => {
               >
                 <TimelineContentWithButtonDate
                   title={item.title}
-                  withButton={item.withButton}
+                  // withButton={item.withButton}
+                  appearance={{
+                    titleClassname: "text-xs",
+                  }}
                 />
               </TimelineItem>
             ))}

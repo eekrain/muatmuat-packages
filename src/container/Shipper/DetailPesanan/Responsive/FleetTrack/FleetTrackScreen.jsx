@@ -69,7 +69,7 @@ const FleetTrackScreen = () => {
       <ResponsiveFooter className="flex gap-3">
         <Button
           variant="muatparts-primary-secondary"
-          className="flex-1"
+          className="h-10 flex-1 p-0"
           onClick={() => navigation.push("/detail-driver-status")}
           type="button"
         >

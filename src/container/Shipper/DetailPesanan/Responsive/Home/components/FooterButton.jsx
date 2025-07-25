@@ -23,28 +23,34 @@ export const FooterButton = () => {
     BeriUlasan: [OrderStatusEnum.COMPLETED],
   };
 
-  const beriUlasanShow = () => {
-    navigation.push("/ulasan");
-  };
-
   return (
     <>
       <div className="flex gap-2">
-        {true && (
+        {false && (
           <Button
             variant="muatparts-primary-secondary"
             className="w-full p-0"
             onClick={() => alert("Simpan")}
             type="button"
           >
+            Lihat Ulasan
+          </Button>
+        )}
+        {false && (
+          <Button
+            variant="muatparts-primary"
+            className="h-10 w-full p-0"
+            onClick={() => alert("Simpan")}
+            type="button"
+          >
             Pesan Ulang
           </Button>
         )}
-        {true && (
+        {false && (
           <Button
             variant="muatparts-primary"
             className="w-full p-0"
-            onClick={beriUlasanShow}
+            onClick={() => navigation.push("/ulasan")}
             type="button"
           >
             Beri Ulasan
@@ -53,7 +59,7 @@ export const FooterButton = () => {
         {false && (
           <Button
             variant="muatparts-primary"
-            className="w-full p-0"
+            className="h-10 w-full p-0"
             onClick={() => alert("Simpan")}
             type="button"
           >
@@ -61,14 +67,44 @@ export const FooterButton = () => {
           </Button>
         )}
         {false && (
-          <Button
-            variant="muatparts-primary"
-            className="w-full p-0"
-            onClick={() => setReceiveDocumentEvidenceOpen(true)}
-            type="button"
-          >
-            Dokumen Diterima
-          </Button>
+          <>
+            <Button
+              variant="muatparts-primary-secondary"
+              className="h-10 w-full p-0"
+              onClick={() => alert("Simpan")}
+              type="button"
+            >
+              Pesan Ulang
+            </Button>
+            <Button
+              variant="muatparts-primary"
+              className="h-10 w-full p-0"
+              onClick={() => setReceiveDocumentEvidenceOpen(true)}
+              type="button"
+            >
+              Dokumen Diterima
+            </Button>
+          </>
+        )}
+        {true && (
+          <>
+            <Button
+              variant="muatparts-primary-secondary"
+              className="h-10 w-full p-0"
+              onClick={() => alert("Simpan")}
+              type="button"
+            >
+              Pesan Ulang
+            </Button>
+            <Button
+              variant="muatparts-primary"
+              className="h-10 w-full p-0"
+              onClick={() => navigation.push("/ulasan")}
+              type="button"
+            >
+              Beri Ulasan
+            </Button>
+          </>
         )}
         {false && (
           <Button
