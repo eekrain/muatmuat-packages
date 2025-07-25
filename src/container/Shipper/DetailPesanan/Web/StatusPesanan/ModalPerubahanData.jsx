@@ -55,7 +55,7 @@ export const ModalPerubahanData = () => {
   const [heights, setHeights] = useState([]);
 
   return (
-    <Modal>
+    <Modal closeOnOutsideClick>
       <ModalTrigger>
         <button className="text-xs font-medium leading-[14.4px] text-primary-700">
           Lihat Perubahan
@@ -69,6 +69,34 @@ export const ModalPerubahanData = () => {
 
         <div className="w-[752px] rounded-lg border border-neutral-400 pr-[6px]">
           <div className="flex h-[386px] w-full flex-col overflow-y-auto pl-4 pr-[6px]">
+            {/* Waktu Muat Lama */}
+            <div className="box-border flex h-14 w-full flex-row items-center gap-4 border-b border-neutral-400 py-3">
+              <div className="flex h-8 w-8 flex-row items-center justify-center rounded-full bg-[#FFC217] p-2">
+                <div className="flex h-4 w-4 items-center justify-center">
+                  <IconComponent
+                    src="/icons/calendar16.svg"
+                    className="h-4 w-4"
+                  />
+                </div>
+              </div>
+
+              <h2 className="text-xs font-bold leading-tight text-neutral-900">
+                Waktu Muat
+              </h2>
+            </div>
+
+            <div className="flex items-center border-b border-neutral-400 py-3 pl-12">
+              <div className="flex flex-col gap-y-3">
+                <span className="text-xs font-medium text-neutral-600">
+                  Waktu Muat
+                </span>
+                <span className="text-xs font-medium text-neutral-900">
+                  06 Jun 2024 12:00 WIB s/d 06 Jun 2024 16:00 WIB
+                </span>
+              </div>
+            </div>
+
+            {/* Lokasi Muat & Bongkar Lama */}
             <div className="box-border flex h-14 w-full flex-row items-center gap-4 border-b border-neutral-400 py-3">
               <div className="flex h-8 w-8 flex-row items-center justify-center rounded-full bg-[#FFC217] p-2">
                 <div className="flex h-4 w-4 items-center justify-center">

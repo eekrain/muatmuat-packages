@@ -46,6 +46,7 @@ export const ModalQRCodeDriver = ({
           backgroudClassname: "px-4",
           closeButtonClassname: "size-4 md:size-5",
         }}
+        type="muattrans"
       >
         <ModalHeader size="big" />
         <div className="flex w-full flex-col items-center gap-y-6 p-[18px] md:px-6 md:py-9">

@@ -164,8 +164,8 @@ export default function SewaArmadaWeb({
                 {/* Form Fields */}
                 <div className="flex flex-col gap-6">
                   <WaktuMuat orderStatus={orderStatus} />
-                  <LokasiMuat />
-                  <LokasiBongkar />
+                  <LokasiMuat orderStatus={orderStatus} />
+                  <LokasiBongkar orderStatus={orderStatus} />
                   <TipeMuatan cargoTypes={cargoTypes} />
                   <JenisMuatan cargoCategories={cargoCategories} />
                   <SertifikasiHalal />

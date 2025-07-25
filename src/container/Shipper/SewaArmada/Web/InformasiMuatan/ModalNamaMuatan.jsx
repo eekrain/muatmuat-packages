@@ -36,7 +36,7 @@ export const ModalNamaMuatan = ({ open, onOpenChange, onSubmit }) => {
 
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
-      <ModalContent className="w-modal-small">
+      <ModalContent className="w-modal-small" type="muattrans">
         <ModalHeader size="small" />
         <div className="px-6 py-9">
           <div className="flex flex-col items-center justify-center gap-6">

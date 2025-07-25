@@ -11,7 +11,7 @@ import {
 
 import { useModalLocation } from "./use-modal-location";
 
-export const LokasiBongkar = () => {
+export const LokasiBongkar = ({ orderStatus }) => {
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);

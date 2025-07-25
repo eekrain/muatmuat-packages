@@ -108,7 +108,7 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
       if (nonRecommendedTruck) {
         return {
           ...nonRecommendedTruck,
-          truckName: recommendedTruck?.name,
+          truckName: nonRecommendedTruck?.name,
           isRecommended: false,
         };
       }

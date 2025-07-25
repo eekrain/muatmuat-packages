@@ -85,7 +85,7 @@ const ModalBatalkanPerubahanPesanan = () => {
         </Button>
       </ModalTrigger>
 
-      <ModalContent className="w-modal-small">
+      <ModalContent className="w-modal-small" type="muattrans">
         <ModalHeader size="small" />
 
         <div className="flex flex-col items-center gap-6 px-6 py-9 text-neutral-900">

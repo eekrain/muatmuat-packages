@@ -16,6 +16,17 @@ import {
   useSewaArmadaStore,
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
+// Note 25/07/2025
+// ubah pesanan instan
+// cuma bisa tambah atau ganti lokasi bongkar 2 sampek bates maksimal (menuju lokasi bongkar 2)
+// kalo lebih jauh selalu ada tambah biaya
+// kalo sdh menuju lokasi bongkar 2 ada penalti
+
+// ubah pesanan terjadwal
+// blm berangkat bisa rubah semua lokasi muat dan bongkar, tapi ga bisa tambah atau hapus
+// kalo hari h (driver sudah menuju lokasi muat) cuma bisa ganti lokasi bongkar sampai ada driver yang menuju lokasi bongkar 1
+// kalo sdh ada driver menuju lokasi bongkar 1 ada penalti
+
 const Page = () => {
   const params = useParams();
   const { isMobile } = useDevice();

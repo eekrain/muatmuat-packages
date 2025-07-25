@@ -79,6 +79,7 @@ const FormSimpanLokasiScreen = dynamicScreen(
 );
 
 const SewaArmadaResponsive = ({
+  settlementAlertInfo,
   cargoTypes,
   cargoCategories,
   additionalServicesOptions,
@@ -112,7 +113,13 @@ const SewaArmadaResponsive = ({
     <ResponsiveProvider>
       <ResponsiveRoute
         path="/"
-        component={<SewaArmadaHomeScreen carriers={carriers} trucks={trucks} />}
+        component={
+          <SewaArmadaHomeScreen
+            settlementAlertInfo={settlementAlertInfo}
+            carriers={carriers}
+            trucks={trucks}
+          />
+        }
       />
       <ResponsiveRoute
         path="/FormLokasiBongkarMuat"

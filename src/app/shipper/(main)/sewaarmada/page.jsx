@@ -221,6 +221,7 @@ const Page = () => {
   if (isMobile)
     return (
       <SewaArmadaResponsive
+        settlementAlertInfo={settlementAlertInfo}
         cargoTypes={cargoTypes}
         cargoCategories={cargoCategories}
         additionalServicesOptions={additionalServicesOptions}

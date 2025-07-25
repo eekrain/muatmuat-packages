@@ -3,6 +3,7 @@ import { usePathname } from "next/navigation";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { LocationModalFormWeb } from "@/components/LocationManagement/Web/LocationModalFormWeb/LocationModalFormWeb";
 import TimelineField from "@/components/Timeline/timeline-field";
+import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
@@ -11,7 +12,7 @@ import {
 
 import { useModalLocation } from "./use-modal-location";
 
-export const LokasiMuat = () => {
+export const LokasiMuat = ({ orderStatus }) => {
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
@@ -23,9 +24,17 @@ export const LokasiMuat = () => {
   );
   const { addLokasi, removeLokasi, setField } = useSewaArmadaActions();
 
-  const showRemoveButton =
-    (lokasiMuat && lokasiMuat.length > 1) ||
-    Boolean(lokasiMuat?.[0]?.dataLokasi?.location);
+  const hasNotDepartedToPickupStatuses = [
+    OrderStatusEnum.PREPARE_FLEET,
+    OrderStatusEnum.WAITING_PAYMENT_1,
+    OrderStatusEnum.WAITING_PAYMENT_2,
+    OrderStatusEnum.SCHEDULED_FLEET,
+    OrderStatusEnum.CONFIRMED,
+  ];
+  const hasNotDepartedToPickup =
+    hasNotDepartedToPickupStatuses.includes(orderStatus);
+  const needValidateLocationChange =
+    isEditPage && orderType === "SCHEDULED" && hasNotDepartedToPickup;
 
   return (
     <>
@@ -69,13 +78,16 @@ export const LokasiMuat = () => {
                 </TimelineField.Item>
               ))
             : null}
-          {isEditPage ? null : <TimelineField.AddButton />}
+          {isEditPage && orderType === "SCHEDULED" ? null : (
+            <TimelineField.AddButton />
+          )}
         </TimelineField.Root>
       </FormContainer>
 
       <LocationModalFormWeb
         {...modalConfig}
         onOpenChange={handleCloseModalLocation}
+        needValidateLocationChange={needValidateLocationChange}
       />
     </>
   );
