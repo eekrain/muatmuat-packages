@@ -37,7 +37,8 @@ export const RingkasanPembayaranDefault = ({
     dataRingkasanPembayaran?.orderStatus === OrderStatusEnum.COMPLETED ||
     dataRingkasanPembayaran?.orderStatus ===
       OrderStatusEnum.WAITING_PAYMENT_1 ||
-    dataRingkasanPembayaran?.orderStatus?.startsWith("CANCELED");
+    dataRingkasanPembayaran?.orderStatus?.startsWith("CANCELED") ||
+    true;
 
   return (
     <div className="flex max-h-[453px] w-full flex-col gap-4">
@@ -260,19 +261,34 @@ export const RingkasanPembayaranDefault = ({
             </Button>
           ) : null}
 
-          {isShowWaitFleetAlert && <WaitFleetSearchButton />}
-
-          <ModalBatalkanPesanan
-            dataRingkasanPembayaran={dataRingkasanPembayaran}
-          >
+          {/* Sorry banget bro aku gatau kapan ini harus muncul anjir, ingetin aku aja ya nanti */}
+          {/* Ini haruse muncul pas Shipper--Sewa-Armada-Terjadwal LD-J5** */}
+          {false && (
             <Button
-              variant="muattrans-error-secondary"
+              variant="muatparts-primary"
               className="h-8 w-full"
+              onClick={() => alert("Implement konfirmasi pesanan gagal")}
               type="button"
             >
-              {t("buttonBatalkanPesanan")}
+              Ya, Mengerti
             </Button>
-          </ModalBatalkanPesanan>
+          )}
+
+          {isShowWaitFleetAlert && <WaitFleetSearchButton />}
+
+          {true && (
+            <ModalBatalkanPesanan
+              dataRingkasanPembayaran={dataRingkasanPembayaran}
+            >
+              <Button
+                variant="muattrans-error-secondary"
+                className="h-8 w-full"
+                type="button"
+              >
+                {t("buttonBatalkanPesanan")}
+              </Button>
+            </ModalBatalkanPesanan>
+          )}
         </div>
       )}
     </div>

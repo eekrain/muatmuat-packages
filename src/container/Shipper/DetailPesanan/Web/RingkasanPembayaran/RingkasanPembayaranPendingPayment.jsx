@@ -18,78 +18,96 @@ export const RingkasanPembayaranPendingPayment = ({
   });
 
   const handleCopyVA = () => {
-    navigator.clipboard.writeText(dataRingkasanPembayaran?.vaNumber);
-    toast.success("Berhasil menyalin Nomor Virtual Account");
+    if (dataRingkasanPembayaran?.vaNumber) {
+      navigator.clipboard.writeText(dataRingkasanPembayaran.vaNumber);
+      toast.success("Berhasil menyalin Nomor Virtual Account");
+    }
   };
 
   return (
-    <>
-      <CardPayment.Root className="w-full">
-        <CardPayment.Body>
-          <div className="flex items-start justify-between rounded-xl bg-warning-100 px-4 py-6">
-            <div className="text-xs font-medium leading-[1.2]">
-              <div className="text-base font-bold text-secondary-900">
-                Bayar Sebelum
+    <div className="flex flex-col gap-6">
+      <CardPayment.Root className="w-[338px]">
+        <CardPayment.Body className="p-0">
+          <div className="flex flex-col gap-6 px-5 py-6">
+            {/* Payment Deadline Alert */}
+            <div className="flex flex-col items-start gap-3 rounded-xl bg-warning-100 px-4 py-6">
+              <div className="flex w-full items-center justify-between">
+                <h2 className="text-base font-bold text-secondary-900">
+                  Bayar Sebelum
+                </h2>
+                <BadgeStatusPesanan
+                  variant="error"
+                  icon={{ iconLeft: "/icons/clock.svg" }}
+                  className="w-fit bg-error-50 px-2 py-1"
+                >
+                  <span className="font-semibold text-error-400">
+                    {countdown}
+                  </span>
+                </BadgeStatusPesanan>
               </div>
-              <span className="mt-3 block font-medium text-neutral-900">
-                {formatDate(dataRingkasanPembayaran?.expiredAt)}
+              <span className="text-sm font-semibold text-neutral-900">
+                {formatDate(
+                  dataRingkasanPembayaran?.expiredAt,
+                  "dd LLL yyyy HH:mm 'WIB'"
+                )}
               </span>
             </div>
 
-            <BadgeStatusPesanan
-              variant="error"
-              icon={{ iconLeft: "/icons/clock.svg" }}
-              className={"w-fit"}
-            >
-              {countdown}
-            </BadgeStatusPesanan>
-          </div>
+            {/* Payment Details */}
+            <div className="flex flex-col gap-6">
+              <CardPayment.Section title="Opsi Pembayaran" className="gap-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-neutral-900">
+                    Bank{" "}
+                    {PaymentMethodTitle[
+                      dataRingkasanPembayaran?.paymentMethod
+                    ] ?? "BCA"}{" "}
+                    Virtual Account
+                  </span>
+                  <IconComponent
+                    src={`/icons/payment/${dataRingkasanPembayaran?.paymentMethod ?? "bca"}.svg`}
+                    width={24}
+                    height={24}
+                    alt={`${PaymentMethodTitle[dataRingkasanPembayaran?.paymentMethod] ?? "BCA"} logo`}
+                  />
+                </div>
+              </CardPayment.Section>
 
-          <CardPayment.Section title="Opsi Pembayaran">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-neutral-900">
-                Bank{" "}
-                {PaymentMethodTitle[dataRingkasanPembayaran?.paymentMethod]}
-              </span>
-              <IconComponent
-                src={`/icons/payment/${dataRingkasanPembayaran?.paymentMethod}.svg`}
-                width={16}
-                height={16}
-                className="bg-white"
-                alt={`${PaymentMethodTitle[dataRingkasanPembayaran?.paymentMethod]} logo`}
-              />
-            </div>
-          </CardPayment.Section>
-
-          <CardPayment.Section title="Nomor Virtual Account">
-            <div className="flex items-center justify-between">
-              <div className="text-xs font-bold text-neutral-900">
-                {dataRingkasanPembayaran?.vaNumber}
-              </div>
-              <button
-                onClick={handleCopyVA}
-                className="flex items-center gap-1 text-xs font-semibold text-primary-700"
+              <CardPayment.Section
+                title="Nomor Virtual Account"
+                className="gap-2"
               >
-                <span>Salin</span>
-                <IconComponent
-                  src={"/icons/salin.svg"}
-                  width={16}
-                  height={16}
-                  alt="Salin"
-                />
-              </button>
-            </div>
-          </CardPayment.Section>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-neutral-900">
+                    {dataRingkasanPembayaran?.vaNumber}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleCopyVA}
+                    className="flex items-center gap-1 text-xs font-semibold text-primary-700"
+                  >
+                    <span>Salin</span>
+                    <IconComponent
+                      src="/icons/salin.svg"
+                      width={20}
+                      height={20}
+                      alt="Salin"
+                    />
+                  </button>
+                </div>
+              </CardPayment.Section>
 
-          <CardPayment.Section title="Total Tagihan">
-            <div className="text-xs font-bold text-neutral-900">
-              {idrFormat(dataRingkasanPembayaran?.totalPrice)}
+              <CardPayment.Section title="Total Tagihan" className="gap-2">
+                <span className="text-xs font-bold text-neutral-900">
+                  {idrFormat(dataRingkasanPembayaran?.totalPrice)}
+                </span>
+              </CardPayment.Section>
             </div>
-          </CardPayment.Section>
+          </div>
         </CardPayment.Body>
       </CardPayment.Root>
 
       <PaymentInstruction />
-    </>
+    </div>
   );
 };

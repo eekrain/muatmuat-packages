@@ -17,10 +17,10 @@ const Toaster = ({ className }) => {
 
   const bottomOffset = useMemo(() => {
     // Getting the right offset for the toast
-    // 61px is the position of Pusat Bantuan Icon
+    // 29px is the position of Pusat Bantuan Icon
     // 70px is the height of Pusat Bantuan Icon
     // 69px is the offset from the Pusat Bantuan Icon
-    if (!isMobile) return "calc(61px + 70px + 69px)";
+    if (!isMobile) return "calc(29px + 70px + 14px)";
 
     // Getting the height of the responsive footer
     const footerHeight =
@@ -44,8 +44,9 @@ const Toaster = ({ className }) => {
     <Portal>
       <div
         className={cn(
-          "fixed left-0 z-[51] flex w-full flex-col items-end gap-2 px-4 md:right-0 md:mx-0",
-          "pointer-events-none"
+          "pointer-events-none fixed z-[51]", // defaults
+          "left-0 w-full flex-col items-end gap-2 px-4", // mobile specific
+          "md:left-auto md:right-[48px] md:w-fit md:px-0" // desktop specific
         )}
         style={{
           bottom: bottomOffset,

@@ -9,6 +9,7 @@ import {
 } from "@/components/Modal/Modal";
 import useDevice from "@/hooks/use-device";
 import { getStatusScanMetadata } from "@/lib/normalizers/detailpesanan/getStatusScanMetadata";
+import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useGetDriverQRCodeById } from "@/services/Shipper/detailpesanan/getDriverQRCodeById";
 
@@ -29,7 +30,7 @@ export const ModalQRCodeDriver = ({
 
   const handleCopyQrCode = () => {
     navigator.clipboard.writeText(
-      `${process.env.NEXT_PUBLIC_ASSET_REVERSE}/orders/${orderId}/drivers/${driver.driverId}/qr-code`
+      `${window.location.origin}/orders/${orderId}/drivers/${driverId}/qr-code`
     );
     toast.success("Link QR Code berhasil disalin");
   };

@@ -51,6 +51,7 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
   const orderStatusLabel =
     dataStatusPesanan.orderStatus !== OrderStatusEnum.COMPLETED &&
     !dataStatusPesanan.orderStatus.startsWith("CANCELED") &&
+    !dataStatusPesanan.orderStatus.startsWith("WAITING_PAYMENT") &&
     dataStatusPesanan.unitFleetStatus &&
     dataStatusPesanan.unitFleetStatus > 1
       ? `${OrderStatusTitle[dataStatusPesanan.orderStatus]}: ${dataStatusPesanan.unitFleetStatus} Unit`

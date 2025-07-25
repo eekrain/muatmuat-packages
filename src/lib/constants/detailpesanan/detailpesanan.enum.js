@@ -65,6 +65,7 @@ export const OrderStatusIcon = {
   [OrderStatusEnum.CONFIRMED]: "/icons/stepper/stepper-scheduled.svg",
   [OrderStatusEnum.LOADING]: "/icons/stepper/stepper-box.svg",
   [OrderStatusEnum.UNLOADING]: "/icons/stepper/stepper-box-opened.svg",
+  [OrderStatusEnum.FLEET_CHANGE]: "/icons/stepper/stepper-fleet-change.svg",
   [OrderStatusEnum.WAITING_REPAYMENT_1]: "/icons/stepper/stepper-repayment.svg",
   [OrderStatusEnum.WAITING_REPAYMENT_2]: "/icons/stepper/stepper-repayment.svg",
   [OrderStatusEnum.PREPARE_DOCUMENT]:

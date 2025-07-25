@@ -1,5 +1,5 @@
 import { useParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 // import IconComponent from "@/components/IconComponent/IconComponent";
@@ -20,6 +20,7 @@ import DetailPesananHeader from "./DetailPesananHeader/DetailPesananHeader";
 import DetailPIC from "./DetailPic/DetailPic";
 import { RingkasanPembayaran } from "./RingkasanPembayaran/RingkasanPembayaran";
 import RingkasanPesanan from "./RingkasanPesanan/RingkasanPesanan";
+import { ModalPesananGagal } from "./StatusPesanan/ModalPesananGagal";
 import StatusPesanan from "./StatusPesanan/StatusPesanan";
 import { WaitFleetSearchModal } from "./StatusPesanan/WaitFleetSearch";
 
@@ -47,6 +48,8 @@ const DetailPesananWeb = () => {
     dataDetailPesanan?.dataStatusPesanan?.orderStatus ===
       OrderStatusEnum.PREPARE_FLEET
   );
+
+  const [isPesananGagalModalOpen, setIsPesananGagalModalOpen] = useState(false);
 
   const { data: featureAccess, isLoading: isLoadingFeatureAccess } =
     useGetFeatureAccess(params.orderId);
@@ -133,6 +136,11 @@ const DetailPesananWeb = () => {
         setIsShowWaitFleetAlert={setIsShowWaitFleetAlert}
       />
 
+      <ModalPesananGagal
+        open={isPesananGagalModalOpen}
+        onOpenChange={setIsPesananGagalModalOpen}
+      />
+
       {isDev && (
         <>
           <button
@@ -140,7 +148,10 @@ const DetailPesananWeb = () => {
               // toast.error(
               //   "Minimal pilih 1 alasan pembatalan untuk membatalkan pesanan"
               // );
-              toast.success("Pesanan kamu berhasil dibatalkan");
+              // toast.error(
+              //   "Armada akan disiapkan ulang sesuai dengan perubahan yang dilakukan."
+              // );
+              toast.success("Berhasil membatalkan pesanan");
             }}
           >
             tes toast

@@ -28,7 +28,7 @@ export const AvatarDriver = ({
 
       <div
         className={cn(
-          "flex flex-1 flex-col justify-between",
+          "flex h-full flex-1 flex-col justify-between",
           appearance.containerClassName
         )}
       >

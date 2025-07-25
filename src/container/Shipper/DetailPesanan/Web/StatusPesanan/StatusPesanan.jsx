@@ -65,8 +65,7 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
   return (
     <>
       <div className="flex flex-col gap-y-6">
-        {dataStatusPesanan.orderStatus ===
-          OrderStatusEnum.PENDING_PREPARE_FLEET && (
+        {dataStatusPesanan.orderStatus === OrderStatusEnum.PREPARE_FLEET && (
           <AlertPendingPrepareFleet
             orderStatus={dataStatusPesanan.orderStatus}
             expiredAt={dataStatusPesanan.expiredAt}

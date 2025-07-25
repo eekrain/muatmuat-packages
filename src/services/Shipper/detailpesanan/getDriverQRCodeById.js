@@ -52,6 +52,7 @@ export const useGetDriverQRCodeById = (requestData = exampleBody) => {
           requestData
         );
       }
+      // setQRData(null);
       setQRData(result?.data?.Data || null);
     } catch (error) {
       console.log("Error generate QR Code", error);

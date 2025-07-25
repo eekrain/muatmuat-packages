@@ -6,6 +6,7 @@ export const AlertTypeEnum = {
   REFUND_COMPLETED: "REFUND_COMPLETED", //info
   ORDER_CHANGES_CONFIRMATION: "ORDER_CHANGES_CONFIRMATION", //button
   CONFIRMATION_WAITING_PREPARE_FLEET: "CONFIRMATION_WAITING_PREPARE_FLEET", //nothing
+  CANCELED_BY_SYSTEM: "CANCELED_BY_SYSTEM", //nothing
 };
 
 export const AlertLabelEnum = {
@@ -18,6 +19,7 @@ export const AlertLabelEnum = {
   ORDER_CHANGES_CONFIRMATION: "Perubahan pesanan telah kamu lakukan.",
   CONFIRMATION_WAITING_PREPARE_FLEET:
     "Mohon konfirmasi pesanan ini dikarenakan kami membutuhkan waktu lebih lama untuk mempersiapkan armada.",
+  CANCELED_BY_SYSTEM: "Mohon Maaf, Pesanan Tidak Dapat Diproses",
 };
 
 export const AlertInfoEnum = {
@@ -27,4 +29,6 @@ export const AlertInfoEnum = {
     "Pengembalian dana sedang dalam proses, jumlah dana akan disesuakan setelah dikurangi <b>Admin Pembatalan</b> dan <b>Tambahan Biaya</b>. Info lebih lanjut hubungi Customer Service.",
   REFUND_COMPLETED:
     "Proses pengembalian dana telah berhasil dicairkan ke rekening kamu. Info lebih lanjut hubungi Customer Service.",
+  CANCELED_BY_SYSTEM:
+    "Karena tingginya volume pemesanan saat ini, kami belum dapat menyiapkan armada yang sesuai dengan pesananmu. Kami akan mengembalikan dana secara penuh dan memberikan kompensasi sebagai bentuk permohonan maaf atas ketidaknyamanan ini.",
 };

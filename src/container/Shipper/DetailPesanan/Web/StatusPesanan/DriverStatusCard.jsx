@@ -141,6 +141,12 @@ const LIST_HIDE_DRIVER_STATUS = [
 export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
   const pathname = usePathname();
 
+  const SHOW_DRIVER_STATUS =
+    orderStatus !== OrderStatusEnum.WAITING_CONFIRMATION_CHANGES &&
+    !orderStatus.startsWith("WAITING_PAYMENT") &&
+    !LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER.includes(orderStatus) &&
+    !LIST_HIDE_DRIVER_STATUS.includes(driver.orderStatus);
+
   return (
     <>
       <div className="w-full flex-shrink-0">
@@ -149,46 +155,44 @@ export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
           className="flex w-full flex-col gap-y-5 rounded-xl border border-neutral-400 py-5"
         >
           <div className="flex flex-col gap-y-3 px-4">
-            {!orderStatus.startsWith("WAITING_PAYMENT") &&
-              !LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER.includes(orderStatus) &&
-              !LIST_HIDE_DRIVER_STATUS.includes(driver.orderStatus) && (
-                <div className="flex items-center gap-x-3">
-                  {driver.driverStatusTitle && (
-                    <BadgeStatusPesanan
-                      variant={
-                        driver.orderStatus?.startsWith("CANCELED")
-                          ? "error"
-                          : driver.orderStatus === OrderStatusEnum.COMPLETED
-                            ? "success"
-                            : driver.driverStatus.startsWith("WAITING")
-                              ? "warning"
-                              : "primary"
-                      }
-                      className="w-fit"
-                    >
-                      {driver.driverStatusTitle}
-                    </BadgeStatusPesanan>
-                  )}
+            {SHOW_DRIVER_STATUS && (
+              <div className="flex items-center gap-x-3">
+                {driver.driverStatusTitle && (
+                  <BadgeStatusPesanan
+                    variant={
+                      driver.orderStatus?.startsWith("CANCELED")
+                        ? "error"
+                        : driver.orderStatus === OrderStatusEnum.COMPLETED
+                          ? "success"
+                          : driver.driverStatus.startsWith("WAITING")
+                            ? "warning"
+                            : "primary"
+                    }
+                    className="w-fit"
+                  >
+                    {driver.driverStatusTitle}
+                  </BadgeStatusPesanan>
+                )}
 
-                  {/* Modal QR Code Supir */}
-                  {!orderStatus.startsWith("CANCELED") && (
-                    <ModalQRCodeDriver
-                      orderId={orderId}
-                      driverId={driver.driverId}
-                    >
-                      <button className="flex items-center gap-x-1">
-                        <span className="capsize text-xs font-medium leading-[14.4px] text-primary-700">
-                          Tampilkan QR Code
-                        </span>
-                        <IconComponent
-                          src="/icons/chevron-right.svg"
-                          className="icon-blue"
-                        />
-                      </button>
-                    </ModalQRCodeDriver>
-                  )}
-                </div>
-              )}
+                {/* Modal QR Code Supir */}
+                {!orderStatus.startsWith("CANCELED") && (
+                  <ModalQRCodeDriver
+                    orderId={orderId}
+                    driverId={driver.driverId}
+                  >
+                    <button className="flex items-center gap-x-1">
+                      <span className="capsize text-xs font-medium leading-[14.4px] text-primary-700">
+                        Tampilkan QR Code
+                      </span>
+                      <IconComponent
+                        src="/icons/chevron-right.svg"
+                        className="icon-blue"
+                      />
+                    </button>
+                  </ModalQRCodeDriver>
+                )}
+              </div>
+            )}
             <div className="flex items-center justify-between">
               <AvatarDriver
                 name={driver.name}

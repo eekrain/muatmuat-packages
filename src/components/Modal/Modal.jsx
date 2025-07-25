@@ -370,3 +370,18 @@ export const ModalHeader = ({
     </div>
   );
 };
+
+export const ModalClose = ({ asChild, children }) => {
+  const { close } = useModal();
+
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(children, {
+      onClick: (e) => {
+        children.props.onClick?.(e);
+        close();
+      },
+    });
+  }
+
+  return <div onClick={close}>{children}</div>;
+};
