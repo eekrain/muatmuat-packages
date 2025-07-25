@@ -1,11 +1,14 @@
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
+import { useTranslation } from "@/hooks/use-translation";
 import {
   OrderStatusEnum,
   OrderStatusTitle,
 } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
 export const ModalLihatStatusLainnya = ({ otherStatus }) => {
+  const { t } = useTranslation();
+
   return (
     <Modal>
       <ModalTrigger>
@@ -32,8 +35,8 @@ export const ModalLihatStatusLainnya = ({ otherStatus }) => {
               }
               className="w-[272px]"
             >
-              {OrderStatusTitle[status.orderStatus]}: {status.unitFleetStatus}{" "}
-              Unit
+              {t(OrderStatusTitle[status.orderStatus])}:{" "}
+              {status.unitFleetStatus} Unit
             </BadgeStatusPesanan>
           ))}
         </div>

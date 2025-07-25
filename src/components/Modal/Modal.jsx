@@ -169,6 +169,7 @@ export const Modal = ({
  * @typedef {Object} ModalTriggerProps
  * @property {React.ReactNode} children - The content of the trigger.
  * @property {string} [className] - Additional CSS classes for the trigger element.
+ * @property {string} [className] - Additional CSS classes for the trigger element.
  */
 
 /**

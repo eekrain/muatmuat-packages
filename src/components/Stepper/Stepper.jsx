@@ -9,6 +9,7 @@ import {
 
 import { useClientHeight } from "@/hooks/use-client-height";
 import useDevice from "@/hooks/use-device";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 import IconComponent from "../IconComponent/IconComponent";
@@ -99,6 +100,7 @@ export const StepperContainer = ({ totalStep, activeIndex, children }) => {
  * @returns
  */
 export const StepperItem = ({ step, index }) => {
+  const { t } = useTranslation();
   const { titleWidth, activeIndex, titleHeights, setTitleHeights } =
     useContext(Context);
 
@@ -150,7 +152,7 @@ export const StepperItem = ({ step, index }) => {
           className="absolute -bottom-2 left-1/2 -translate-x-1/2 translate-y-full text-center text-xs font-medium leading-[1.2] text-[#000000]"
           style={{ width: titleWidth }}
         >
-          <span className="block font-semibold">{step.label}</span>
+          <span className="block font-semibold">{t(step.label)}</span>
           {step.subtitle && <span className="mt-2 block">{step.subtitle}</span>}
         </div>
       </div>

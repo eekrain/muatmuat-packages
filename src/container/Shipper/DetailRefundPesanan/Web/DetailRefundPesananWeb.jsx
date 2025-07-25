@@ -1,7 +1,6 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useState } from "react";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
@@ -13,10 +12,10 @@ import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
 import { PaymentMethodIconFromTitle } from "@/lib/constants/detailpesanan/payment.enum";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
+import { useGetRefundDetails } from "@/services/Shipper/detail-refund/getRefundDetails";
 
 const DetailRefundPesananWeb = () => {
   const params = useParams();
-  const [isDriverExpanded, setIsDriverExpanded] = useState(false);
 
   const breadcrumbData = [
     { name: "Daftar Pesanan", href: "/daftarpesanan" },
@@ -26,6 +25,13 @@ const DetailRefundPesananWeb = () => {
     },
     { name: "Detail Refund" },
   ];
+
+  // Fetch refund details
+  const { data: refundData } = useGetRefundDetails(params.orderId);
+  // Extract data from API response
+  const bank = refundData?.bankAccount;
+  const breakdown = refundData?.refundBreakdown;
+
   return (
     <div className="mx-auto max-w-[1200px] pt-8">
       {/* Breadcrumb */}
@@ -39,19 +45,28 @@ const DetailRefundPesananWeb = () => {
           {/* Refund Status */}
           <div className="rounded-xl bg-white px-8 py-6 shadow-sm">
             <div className="rounded-xl border px-4 py-5">
-              <StepperContainer activeIndex={1} totalStep={2}>
+              <StepperContainer
+                activeIndex={
+                  refundData?.refundStatus === "REFUND_COMPLETED" ? 1 : 0
+                }
+                totalStep={2}
+              >
                 {[
                   {
                     label: "Pengembalian Dana Diproses",
                     icon: "/icons/stepper/stepper-check-circle.svg",
                     status: "PROCESS_REFUND",
-                    subtitle: formatDate(new Date()),
+                    subtitle: refundData?.requestedAt
+                      ? formatDate(new Date(refundData.requestedAt))
+                      : "-",
                   },
                   {
                     label: "Dana Terkirim",
                     icon: "/icons/stepper/stepper-check-circle.svg",
                     status: "DONE_REFUND",
-                    subtitle: formatDate(new Date()),
+                    subtitle: refundData?.processedAt
+                      ? formatDate(new Date(refundData.processedAt))
+                      : "-",
                   },
                 ].map((step, index) => (
                   <StepperItem key={step.status} step={step} index={index} />
@@ -69,20 +84,30 @@ const DetailRefundPesananWeb = () => {
             <div className="grid grid-cols-[131px_1fr] gap-x-8 gap-y-5 text-xs font-medium leading-[1.2]">
               <span className="text-neutral-600">Nama Bank</span>
               <div className="flex items-center gap-2">
+                {/* Optionally map bankName to icon if available */}
                 <IconComponent
-                  src={PaymentMethodIconFromTitle["BCA Virtual Account"]}
+                  src={
+                    PaymentMethodIconFromTitle[bank?.bankName] ||
+                    "/icons/bank.svg"
+                  }
                   width={16}
                   height={16}
-                  alt="BCA Logo"
+                  alt={bank?.bankName || "Bank Logo"}
                 />
-                <span className="text-neutral-900">BCA Virtual Account</span>
+                <span className="text-neutral-900">
+                  {bank?.bankName || "-"}
+                </span>
               </div>
 
               <span className="text-neutral-600">Nomor Rekening</span>
-              <span className="text-neutral-900">8659856847</span>
+              <span className="text-neutral-900">
+                {bank?.accountNumber || "-"}
+              </span>
 
               <span className="text-neutral-600">Nama Pemilik Rekening</span>
-              <span className="text-neutral-900">NOLA RISKA APRILIA PUTRI</span>
+              <span className="text-neutral-900">
+                {bank?.accountHolderName || "-"}
+              </span>
             </div>
           </div>
         </div>
@@ -97,7 +122,7 @@ const DetailRefundPesananWeb = () => {
               <CardPayment.Section title="Biaya Pesan Jasa Angkut">
                 <CardPayment.LineItem
                   label="Nominal Seluruh Pesan Jasa Angkut"
-                  value="Rp1.394.410"
+                  value={breakdown ? idrFormat(breakdown.originalAmount) : "-"}
                 />
               </CardPayment.Section>
 
@@ -105,7 +130,9 @@ const DetailRefundPesananWeb = () => {
                 <div className="flex flex-col gap-0.5">
                   <CardPayment.LineItem
                     label="Nominal Waktu Tunggu (1 Driver)"
-                    value={idrFormat(100000)}
+                    value={
+                      breakdown ? idrFormat(breakdown.waitingTimeFee) : "-"
+                    }
                   />
                   <ModalDetailWaktuTunggu />
                 </div>
@@ -114,7 +141,9 @@ const DetailRefundPesananWeb = () => {
               <CardPayment.Section title="Biaya Administrasi">
                 <CardPayment.LineItem
                   label="Admin Pembatalan"
-                  value="-Rp100.000"
+                  value={
+                    breakdown ? `-${idrFormat(breakdown.penaltyAmount)}` : "-"
+                  }
                   variant="danger"
                 />
               </CardPayment.Section>
@@ -122,7 +151,7 @@ const DetailRefundPesananWeb = () => {
               <CardPayment.Section title="Biaya Lainnya">
                 <CardPayment.LineItem
                   label="Admin Refund"
-                  value="-Rp10.000"
+                  value={breakdown ? `-${idrFormat(breakdown.adminFee)}` : "-"}
                   variant="danger"
                 />
               </CardPayment.Section>
@@ -131,7 +160,7 @@ const DetailRefundPesananWeb = () => {
             <CardPayment.Footer className="mt-auto">
               <CardPayment.Total
                 label="Total Pengembalian Dana"
-                value="Rp1.184.410"
+                value={breakdown ? idrFormat(breakdown.totalRefundAmount) : "-"}
                 labelClassName="max-w-[148px]"
               />
             </CardPayment.Footer>

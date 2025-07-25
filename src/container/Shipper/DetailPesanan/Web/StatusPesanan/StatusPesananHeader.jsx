@@ -30,22 +30,6 @@ import { ModalDetailAlasanPembatalan } from "./ModalDetailAlasanPembatalan";
 import { ModalLihatStatusLainnya } from "./ModalLihatStatusLainnya";
 
 export const StatusPesananHeader = ({ dataStatusPesanan }) => {
-  const orderStatusTitleMap = {
-    "Mempersiapkan Armada": "statusMempersiapkanArmada",
-    "Menunggu Pembayaran": "statusMenungguPembayaran",
-    "Armada Dijadwalkan": "statusArmadaDijadwalkan",
-    "Pesanan Terkonfirmasi": "statusPesananTerkonfirmasi",
-    "Proses Muat": "statusProsesMuat",
-    "Proses Bongkar": "statusProsesBongkar",
-    "Menunggu Pelunasan": "statusMenungguPelunasan",
-    "Dokumen Sedang Disiapkan": "statusDokumenDisiapkan",
-    "Proses Pengiriman Dokumen": "statusPengirimanDokumen",
-    Selesai: "statusSelesai",
-    Dibatalkan: "statusDibatalkan",
-    "Pergantian Armada": "statusPergantianArmada",
-    "Menunggu Konfirmasi": "statusMenungguKonfirmasi",
-  };
-
   const { t } = useTranslation();
 
   const orderStatusLabel =
@@ -54,8 +38,8 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
     !dataStatusPesanan.orderStatus.startsWith("WAITING_PAYMENT") &&
     dataStatusPesanan.unitFleetStatus &&
     dataStatusPesanan.unitFleetStatus > 1
-      ? `${OrderStatusTitle[dataStatusPesanan.orderStatus]}: ${dataStatusPesanan.unitFleetStatus} Unit`
-      : OrderStatusTitle[dataStatusPesanan.orderStatus];
+      ? `${t(OrderStatusTitle[dataStatusPesanan.orderStatus])}: ${dataStatusPesanan.unitFleetStatus} Unit`
+      : t(OrderStatusTitle[dataStatusPesanan.orderStatus]);
 
   const dummyPhoto = [
     "/img/muatan1.png",
