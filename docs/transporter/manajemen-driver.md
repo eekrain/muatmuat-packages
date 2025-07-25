@@ -117,23 +117,6 @@
 
 - [ ] Draft Management
 
-  - [ ] **ID - 3909** Draft First Time (LD4)
-  - [ ] **ID - 3910** Draft Default (LD4.1)
-  - [ ] **ID - 3911** Draft Terisi Semua (LD4.2)
-  - [ ] **ID - 3912** Alert Draft Field Belum Terisi (LD4.3)
-  - [ ] **ID - 3913** Alert Berhasil Tambah Armada (LD4.4)
-  - [ ] **ID - 3914** Popup Masih Ada Draft (LD4.5)
-  - [ ] **ID - 3915** Pencarian Draft Hover (LD4.6)
-  - [ ] **ID - 3916** Pencarian Draft Typing (LD4.7)
-  - [ ] **ID - 3917** Pencarian Draft Ditemukan (LD4.8)
-  - [ ] **ID - 3918** Pencarian Draft Tidak Ditemukan (LD4.9)
-  - [ ] **ID - 3919** Checkbox Draft Terpilih (LD4.10)
-  - [ ] **ID - 3920** Popup Konfirmasi Hapus (LD4.11)
-  - [ ] **ID - 3921** Alert Berhasil Hapus (LD4.12)
-  - [ ] **ID - 3922** Alert Belum Pilih Armada Untuk Dihapus (LD4.13)
-  - [ ] **ID - 3923** Alert Field Belum Diisi (LD4.14)
-  - [ ] **ID - 3924** Alert Field Belum Diisi B (LD4.14B)
-  - [ ] **ID - 3925** Alert Field Belum Diisi C (LD4.14C)
   - [ ] **ID - 4126** Draft First Time (LD 4)
   - [ ] **ID - 4127** Draft Default (LD 4.1)
   - [ ] **ID - 4128** Field Draft Terisi (LD 4.2)
