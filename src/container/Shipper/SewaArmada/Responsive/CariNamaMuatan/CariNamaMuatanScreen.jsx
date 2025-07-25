@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
@@ -42,18 +42,14 @@ const CariNamaMuatanScreen = () => {
   const { cargoTypeId, cargoCategoryId, index } = params;
 
   // Panggil hook API dengan parameter yang diperlukan
-  const { data, isLoading, error } = useGetCargoNames({
+  const {
+    data: namaMuatanOptions,
+    isLoading,
+    error,
+  } = useGetCargoNames({
     cargoTypeId,
     cargoCategoryId,
   });
-
-  // Mapping hasil API ke format lama
-  const namaMuatanOptions =
-    data?.Data?.cargoNames?.map((item) => ({
-      value: item.cargoNameId,
-      label: item.name,
-      // Jika ingin menambah properti lain dari API, bisa ditambahkan di sini
-    })) || [];
 
   useEffect(() => {
     setSearchValue("");
@@ -68,18 +64,20 @@ const CariNamaMuatanScreen = () => {
     alert("not implemented");
   };
 
-  const filtereNamaMuatanOptions = searchFilter(
-    searchValue,
-    namaMuatanOptions,
-    "label"
+  const filteredNamaMuatanOptions = useMemo(
+    () =>
+      namaMuatanOptions
+        ? searchFilter(searchValue, namaMuatanOptions, "label")
+        : [],
+    [searchValue, namaMuatanOptions]
   );
 
   return (
     <SearchBarResponsiveLayout placeholder="Cari Nama Muatan">
-      {filtereNamaMuatanOptions.length > 0 ? (
+      {filteredNamaMuatanOptions.length > 0 ? (
         <div className="flex min-h-[calc(100vh_-_126px)] flex-col gap-y-4 bg-neutral-100 px-4 py-5">
-          {filtereNamaMuatanOptions.map((item, key) => {
-            const isLastItem = filtereNamaMuatanOptions.length - 1 === key;
+          {filteredNamaMuatanOptions.map((item, key) => {
+            const isLastItem = filteredNamaMuatanOptions.length - 1 === key;
             return (
               <button
                 className={`${isLastItem ? "" : "border-b border-b-neutral-400 pb-4"} flex`}
