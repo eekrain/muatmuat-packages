@@ -26,12 +26,12 @@ const UlasanScreen = () => {
         onClickInfo: () => setIsOpenInfo(true),
         onClickMenu: () => setIsOpenBottomsheet(true),
       }}
-      onClickBackButton={() => alert("onClickBackButton")}
+      onClickBackButton={() => navigation.pop()}
     >
       <div className="mb-16 space-y-2 bg-neutral-200">
         <HeaderComponentUlasan />
-        {[0, 1, 2, 3, 4].map((_, i) => (
-          <ContentUlasan key={i} type={i == 2 ? "list" : "form"} />
+        {[0, 1, 2, 3].map((_, i) => (
+          <ContentUlasan key={i} type={"list"} />
         ))}
       </div>
 

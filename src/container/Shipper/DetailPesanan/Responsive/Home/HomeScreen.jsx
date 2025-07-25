@@ -46,19 +46,20 @@ const DetailPesananScreen = ({
       onClickBackButton={() => alert("onClickBackButton")}
     >
       <div className="mb-16 space-y-2 bg-neutral-200">
-        {/* <img src="/img/mock-va.png" alt="" /> */}
-        {true && (
+        {false && (
           <PaymentDetail dataRingkasanPembayaran={dataRingkasanPembayaran} />
         )}
 
         {false && <FleetStatusAlert />}
         {false && <DriverQRCodeAlert />}
-        <OrderInfo />
+        {true && <OrderInfo />}
         {true && <DriverInfo />}
+
         <TabsInfo dataDetailPIC={dataDetailPIC} />
+
         {true && <RouteInfo />}
-        {true && <MethodInfo method={"va_bca"} />}
-        {true && (
+        {false && <MethodInfo method={"va_bca"} />}
+        {false && (
           <TransactionSummary documentShippingDetail={documentShippingDetail} />
         )}
       </div>
@@ -92,6 +93,12 @@ const DetailPesananScreen = ({
         {false && (
           <div className="flex items-center justify-between">
             <div className="text-sm font-semibold">Total Biaya</div>
+            <div className="text-sm font-bold">Rp1.021.583</div>
+          </div>
+        )}
+        {false && (
+          <div className="flex items-center justify-between">
+            <div className="text-sm font-semibold">Total Tambahan Biaya</div>
             <div className="text-sm font-bold">Rp1.021.583</div>
           </div>
         )}

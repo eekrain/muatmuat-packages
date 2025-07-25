@@ -1,16 +1,19 @@
+import { useState } from "react";
+
 import { ChevronRight } from "lucide-react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
+import {
+  BottomSheet,
+  BottomSheetContent,
+  BottomSheetHeader,
+} from "@/components/Bottomsheet/Bottomsheet";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
 export const OrderInfo = () => {
   const navigation = useResponsiveNavigation();
 
-  // Toggle QR code visibility
-  const toggleQR = () => {
-    console.log("jalan");
-    navigation.push("/qr");
-  };
+  const [isOpenOtherStatus, setIsOpenOtherStatus] = useState();
 
   return (
     <div className="flex w-full flex-col items-start bg-white p-5">
@@ -20,7 +23,7 @@ export const OrderInfo = () => {
           <div className="box-border flex w-full flex-row items-center justify-between border-b border-[#C4C4C4] pb-4">
             <button
               className="flex w-full flex-row items-center justify-between"
-              onClick={toggleQR}
+              onClick={() => navigation.push("/qr")}
             >
               <div className="flex items-center gap-3 text-xs font-semibold text-[#176CF7]">
                 Tampilkan QR Code
@@ -33,7 +36,7 @@ export const OrderInfo = () => {
           <div className="box-border flex w-full flex-row items-center justify-between border-b border-[#C4C4C4] pb-4">
             <button
               className="flex w-full flex-row items-center justify-between"
-              onClick={toggleQR}
+              onClick={() => {}}
             >
               <div className="flex items-center gap-3 text-xs font-semibold text-[#176CF7]">
                 Lihat Resi Pengiriman Dokumen
@@ -58,18 +61,94 @@ export const OrderInfo = () => {
           <span className="text-xs font-medium text-[#7B7B7B]">
             Status Pesanan
           </span>
-          {/* <div className="flex w-full flex-row items-center justify-center rounded-md bg-[#E2F2FF] px-2 py-1">
-            <span className="text-sm font-semibold text-[#176CF7]">
-              Proses Muat
-            </span>
-          </div> */}
 
-          <BadgeStatusPesanan
-            variant="success"
-            className="w-full text-sm font-semibold"
+          {false && (
+            <BadgeStatusPesanan
+              variant="primary"
+              className="w-full text-sm font-semibold"
+            >
+              Proses Muat
+            </BadgeStatusPesanan>
+          )}
+
+          {false && (
+            <BadgeStatusPesanan
+              variant="primary"
+              className="w-full text-sm font-semibold"
+            >
+              Proses Muat : 1 Unit
+            </BadgeStatusPesanan>
+          )}
+          {false && (
+            <BadgeStatusPesanan
+              variant="warning"
+              className="w-full text-sm font-semibold"
+            >
+              Menunggu Pelunasan : 2 Unit
+            </BadgeStatusPesanan>
+          )}
+          {false && (
+            <BadgeStatusPesanan
+              variant="primary"
+              className="w-full text-sm font-semibold"
+            >
+              Dokumen Sedang Disiapkan : 3 Unit
+            </BadgeStatusPesanan>
+          )}
+          {false && (
+            <BadgeStatusPesanan
+              variant="primary"
+              className="w-full text-sm font-semibold"
+            >
+              Proses Pengiriman Dokumen : 3 Unit
+            </BadgeStatusPesanan>
+          )}
+          {true && (
+            <BadgeStatusPesanan
+              variant="success"
+              className="w-full text-sm font-semibold"
+            >
+              Selesai
+            </BadgeStatusPesanan>
+          )}
+
+          {false && (
+            <div className="flex w-full flex-row items-center justify-between">
+              <button
+                className="flex w-full flex-row items-center justify-between"
+                onClick={() => setIsOpenOtherStatus(true)}
+              >
+                <div className="flex items-center gap-3 text-xs font-semibold text-[#176CF7]">
+                  Lihat Status Lainnya
+                </div>
+                <ChevronRight className="h-4 w-4 text-[#176CF7]" />
+              </button>
+            </div>
+          )}
+
+          <BottomSheet
+            open={isOpenOtherStatus}
+            onOpenChange={setIsOpenOtherStatus}
           >
-            Selesai
-          </BadgeStatusPesanan>
+            <BottomSheetContent>
+              <BottomSheetHeader>Status Lainnya</BottomSheetHeader>
+
+              <div className="flex flex-col gap-4 px-4 py-6">
+                <BadgeStatusPesanan
+                  variant="primary"
+                  className="w-full text-sm font-semibold"
+                >
+                  Proses Muat : 1 Unit
+                </BadgeStatusPesanan>
+                <BadgeStatusPesanan
+                  variant="primary"
+                  className="w-full text-sm font-semibold"
+                >
+                  Proses Muat : 3 Unit
+                </BadgeStatusPesanan>
+              </div>
+            </BottomSheetContent>
+          </BottomSheet>
         </div>
       </div>
     </div>

@@ -1,3 +1,5 @@
+import { EllipsisVertical } from "lucide-react";
+
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Button from "@/components/Button/Button";
@@ -10,14 +12,67 @@ export const DriverInfo = () => {
     <div className="box-border flex w-full flex-col items-center justify-center border-b-2 border-[#461B02] bg-white p-5">
       <div className="flex w-full flex-col items-start gap-4">
         {/* Status Badge */}
-        {false && (
-          <BadgeStatusPesanan
-            variant="primary"
-            className="w-fit text-sm font-semibold"
-          >
-            Antri di Lokasi Bongkar 1
-          </BadgeStatusPesanan>
-        )}
+        <div className="flex w-full items-center justify-between">
+          {false && (
+            <BadgeStatusPesanan
+              variant="primary"
+              className="w-fit text-sm font-semibold"
+            >
+              Antri di Lokasi Bongkar 1
+            </BadgeStatusPesanan>
+          )}
+          {false && (
+            <BadgeStatusPesanan
+              variant="primary"
+              className="w-fit text-sm font-semibold"
+            >
+              Sedang Muat di Lokasi 1
+            </BadgeStatusPesanan>
+          )}
+          {false && (
+            <BadgeStatusPesanan
+              variant="primary"
+              className="w-fit text-sm font-semibold"
+            >
+              Sedang Muat
+            </BadgeStatusPesanan>
+          )}
+          {false && (
+            <BadgeStatusPesanan
+              variant="warning"
+              className="w-fit text-sm font-semibold"
+            >
+              Menunggu Pelunasan
+            </BadgeStatusPesanan>
+          )}
+          {false && (
+            <BadgeStatusPesanan
+              variant="primary"
+              className="w-fit text-sm font-semibold"
+            >
+              Dokumen Sedang Disiapkan
+            </BadgeStatusPesanan>
+          )}
+          {false && (
+            <BadgeStatusPesanan
+              variant="primary"
+              className="w-fit text-sm font-semibold"
+            >
+              Proses Pengiriman Dokumen
+            </BadgeStatusPesanan>
+          )}
+
+          {true && (
+            <BadgeStatusPesanan
+              variant="success"
+              className="w-fit text-sm font-semibold"
+            >
+              Selesai
+            </BadgeStatusPesanan>
+          )}
+
+          {true && <EllipsisVertical />}
+        </div>
 
         <AvatarDriver
           name="Noel Gallagher"
@@ -54,6 +109,15 @@ export const DriverInfo = () => {
           >
             Detail Status Driver
           </Button>
+        </div>
+      )}
+      {true && (
+        <div className="mt-4 flex items-center justify-center gap-1">
+          <div className="h-2 w-2 rounded-full bg-neutral-400"></div>
+          <div className="h-2 w-2 rounded-full bg-neutral-400"></div>
+          <div className="h-2 w-8 rounded-full bg-primary-700"></div>
+          <div className="h-2 w-2 rounded-full bg-neutral-400"></div>
+          <div className="h-2 w-2 rounded-full bg-neutral-400"></div>
         </div>
       )}
     </div>

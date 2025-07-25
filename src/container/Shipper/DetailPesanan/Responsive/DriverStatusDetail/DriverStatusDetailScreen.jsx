@@ -3,6 +3,8 @@ import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsi
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { useGetDriverStatusTimeline } from "@/services/Shipper/lacak-armada/getDriverStatusTimeline";
 
+import DriverCard from "../FleetTrack/components/DriverCard";
+
 const DriverStatusDetailScreen = () => {
   const navigation = useResponsiveNavigation();
 
@@ -19,6 +21,7 @@ const DriverStatusDetailScreen = () => {
       onClickBackButton={() => navigation.pop()}
     >
       <div className="mb-16 space-y-2 bg-neutral-200">
+        <DriverCard />
         <div className="bg-white px-4 py-5">
           <DriverTimeline
             dataDriverStatus={data}

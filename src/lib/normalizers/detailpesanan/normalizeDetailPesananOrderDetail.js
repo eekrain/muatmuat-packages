@@ -1,6 +1,7 @@
 import {
   LocationTypeEnum,
   OrderStatusIcon,
+  OrderStatusTitle,
 } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
 export const normalizeDetailPesananOrderDetail = ({
@@ -46,7 +47,7 @@ export const normalizeDetailPesananOrderDetail = ({
           ({ stepStatus, ...item }) => ({
             ...item,
             stepperData: stepStatus.map((step) => ({
-              label: step.statusName,
+              label: OrderStatusTitle[step.statusCode],
               status: step.statusCode,
               icon: OrderStatusIcon[step.statusCode],
             })),
