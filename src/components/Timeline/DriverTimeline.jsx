@@ -8,6 +8,7 @@ import {
   TimelineItem,
 } from "@/components/Timeline";
 import useDevice from "@/hooks/use-device";
+import { useTranslation } from "@/hooks/use-translation";
 import {
   OrderStatusIcon,
   OrderStatusTitle,
@@ -31,17 +32,6 @@ const getStatusCodeMeta = (statusCode) => {
   };
 };
 
-const t = {
-  labelPODMuat: "POD Muat",
-  labelPODBongkar: "POD Bongkar",
-  labelBuktiMuatBarang: "Bukti Muat Barang",
-  labelBuktiBongkarBarang: "Bukti Bongkar Barang",
-  labelPODMuatMulti: "POD Muat di Lokasi {index}",
-  labelPODBongkarMulti: "POD Bongkar di Lokasi {index}",
-  labelBuktiMuatBarangMulti: "Bukti Muat Barang di Lokasi {index}",
-  labelBuktiBongkarBarangMulti: "Bukti Bongkar Barang di Lokasi {index}",
-};
-
 /**
  * @typedef {Object} WithButton
  * @property {(driverStatusItem: DriverStatusItem) => void} onClickProof
@@ -60,6 +50,7 @@ const t = {
  * @returns {React.ReactNode}
  */
 export const DriverTimeline = ({ dataDriverStatus, onClickProof }) => {
+  const { t } = useTranslation();
   const [images, setImages] = useState({ packages: [], pods: [] });
   const [currentStatus, setCurrentStatus] = useState(null);
   const [lightboxActiveIndex, setLightboxActiveIndex] = useState(0);
@@ -71,7 +62,9 @@ export const DriverTimeline = ({ dataDriverStatus, onClickProof }) => {
       const { statusCode, index } = getStatusCodeMeta(
         currentStatus?.statusCode
       );
-      return `Bukti ${DriverStatusLabel[statusCode]}${index > 1 ? index : ""}`;
+      return t("labelBuktiStatus", {
+        statusName: DriverStatusLabel[statusCode] + (index > 1 ? index : ""),
+      });
     }
 
     const { statusCode, index } = getStatusCodeMeta(
@@ -81,22 +74,22 @@ export const DriverTimeline = ({ dataDriverStatus, onClickProof }) => {
     if (lightboxActiveIndex > images.packages.length - 1) {
       if (statusCode.includes("MUAT")) {
         return index > 1
-          ? t.labelPODMuatMulti.replace("{index}", index)
-          : t.labelPODMuat;
+          ? t("labelPODMuatMulti", { index })
+          : t("labelPODMuat");
       } else {
         return index > 1
-          ? t.labelPODBongkarMulti.replace("{index}", index)
-          : t.labelPODBongkar;
+          ? t("labelPODBongkarMulti", { index })
+          : t("labelPODBongkar");
       }
     } else {
       if (statusCode.includes("MUAT")) {
         return index > 1
-          ? t.labelBuktiMuatBarangMulti.replace("{index}", index)
-          : t.labelBuktiMuatBarang;
+          ? t("labelBuktiMuatBarangMulti", { index })
+          : t("labelBuktiMuatBarang");
       } else {
         return index > 1
-          ? t.labelBuktiBongkarBarangMulti.replace("{index}", index)
-          : t.labelBuktiBongkarBarang;
+          ? t("labelBuktiBongkarBarangMulti", { index })
+          : t("labelBuktiBongkarBarang");
       }
     }
   };
@@ -168,12 +161,15 @@ const ItemWithLightbox = ({
   totalLength,
   onClickProof,
 }) => {
+  const { t } = useTranslation();
   const subtitle = () => {
     if (driverStatusItem.statusCode.startsWith("MENUJU_")) {
-      return "Lihat Bukti Muat Barang & POD";
+      return t("labelLihatBuktiMuatBarangPOD");
     }
 
-    return `Lihat Bukti ${driverStatusItem.statusName}`;
+    return t("labelLihatBuktiStatus", {
+      statusName: driverStatusItem.statusName,
+    });
   };
 
   const { openLightbox, current } = useLightbox();
@@ -231,7 +227,9 @@ const ItemWithLightbox = ({
               : "text-neutral-600",
         }}
         onSubtitleClick={() =>
-          alert(`Tampilkan modal untuk ${driverStatusItem.subtitle}`)
+          alert(
+            t("messageTampilkanModal", { subtitle: driverStatusItem.subtitle })
+          )
         }
       />
     </TimelineItem>

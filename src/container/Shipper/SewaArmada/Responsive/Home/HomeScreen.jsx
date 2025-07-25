@@ -22,6 +22,7 @@ import VoucherEmptyState from "@/components/Voucher/VoucherEmptyState";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
 import usePrevious from "@/hooks/use-previous";
 import { useSWRHook } from "@/hooks/use-swr";
+import { useTranslation } from "@/hooks/use-translation";
 import { useVouchers } from "@/hooks/useVoucher";
 import DefaultResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/DefaultResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
@@ -50,6 +51,7 @@ const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
   const { setField: setInformasiMuatanField } = useInformasiMuatanStore();
   const isShowCostDetail = true; // nanti pakek usestate
   const isShowRecommendedTruckButton = true; // nanti pakek logic
+  const { t } = useTranslation();
 
   const handleEditInformasiMuatan = () => {
     setInformasiMuatanField("cargoTypeId", formValues.cargoTypeId);
@@ -560,7 +562,7 @@ const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
                 height={28}
               />
               <div className="ml-3 mr-4 flex-1 text-left text-xs font-semibold leading-[1.1] text-neutral-900">
-                Pakai rekomendasi bisa hemat Rp200.000
+                {t("messageRekomendasiHemat")}
               </div>
               <IconComponent src="/icons/chevron-right24.svg" size="medium" />
             </button>
@@ -911,7 +913,7 @@ const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
         onOpenChange={setRecommendedTruckBottomsheetOpen}
       >
         <BottomSheetContent>
-          <BottomSheetHeader>Rekomendasi Kami</BottomSheetHeader>
+          <BottomSheetHeader>{t("titleRekomendasiKami")}</BottomSheetHeader>
           <div className="flex flex-col gap-y-6 px-4 pb-6 pt-7">
             <div className="flex items-center gap-x-2.5 rounded-md bg-warning-100 p-2">
               <div className="size-[20px]">
@@ -923,8 +925,7 @@ const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
                 />
               </div>
               <p className="text-xs font-medium leading-[1.1] text-neutral-900">
-                Pastikan lokasi muat dan bongkar dapat dijangkau truk
-                rekomendasi kami untuk kelancaran proses
+                {t("messagePastikanLokasi")}
               </p>
             </div>
             <div className="flex gap-x-3">
@@ -951,7 +952,7 @@ const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
                   />
                   <div className="flex flex-col">
                     <span className="text-xs font-semibold leading-[13.2px] text-black">
-                      Estimasi Kapasitas
+                      {t("labelEstimasiKapasitas")}
                     </span>
                     <span className="text-xs font-bold leading-[13.2px] text-black">
                       2,5 Ton
@@ -965,7 +966,7 @@ const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
                   />
                   <div className="flex flex-col">
                     <span className="text-xs font-semibold leading-[13.2px] text-black">
-                      {"Estimasi Dimensi (p x l x t)"}
+                      {t("labelEstimasiDimensi")}
                     </span>
                     <span className="text-xs font-bold leading-[13.2px] text-black">
                       {"3,0 m x 1,7 m x 1,6 m"}
@@ -978,11 +979,11 @@ const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
               variant="muatparts-primary"
               className="w-full"
               onClick={() => {
-                toast.success("Jenis armada telah berhasil diubah");
+                toast.success(t("messageArmadaBerhasilDiubah"));
                 setRecommendedTruckBottomsheetOpen(false);
               }}
             >
-              Terapkan
+              {t("buttonTerapkan")}
             </Button>
           </div>
         </BottomSheetContent>

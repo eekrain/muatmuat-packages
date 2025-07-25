@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 
 const RatingInput = ({
   value = 0,
@@ -8,21 +9,22 @@ const RatingInput = ({
   disabled = false,
   withLabel = true,
 }) => {
+  const { t } = useTranslation();
   const [hover, setHover] = useState(0);
 
   // Helper function to get rating text
   const getRatingLabel = (score) => {
     switch (score) {
       case 1:
-        return "Sangat Buruk";
+        return t("labelSangatBuruk");
       case 2:
-        return "Buruk";
+        return t("labelBuruk");
       case 3:
-        return "Cukup";
+        return t("labelCukup");
       case 4:
-        return "Baik";
+        return t("labelBaik");
       case 5:
-        return "Sangat Baik";
+        return t("labelSangatBaik");
       default:
         return "";
     }

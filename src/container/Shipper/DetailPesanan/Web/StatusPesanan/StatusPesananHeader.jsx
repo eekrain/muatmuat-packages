@@ -17,6 +17,7 @@ import {
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
+import { useTranslation } from "@/hooks/use-translation";
 import {
   OrderStatusEnum,
   OrderStatusTitle,
@@ -29,12 +30,30 @@ import { ModalDetailAlasanPembatalan } from "./ModalDetailAlasanPembatalan";
 import { ModalLihatStatusLainnya } from "./ModalLihatStatusLainnya";
 
 export const StatusPesananHeader = ({ dataStatusPesanan }) => {
+  const orderStatusTitleMap = {
+    "Mempersiapkan Armada": "statusMempersiapkanArmada",
+    "Menunggu Pembayaran": "statusMenungguPembayaran",
+    "Armada Dijadwalkan": "statusArmadaDijadwalkan",
+    "Pesanan Terkonfirmasi": "statusPesananTerkonfirmasi",
+    "Proses Muat": "statusProsesMuat",
+    "Proses Bongkar": "statusProsesBongkar",
+    "Menunggu Pelunasan": "statusMenungguPelunasan",
+    "Dokumen Sedang Disiapkan": "statusDokumenDisiapkan",
+    "Proses Pengiriman Dokumen": "statusPengirimanDokumen",
+    Selesai: "statusSelesai",
+    Dibatalkan: "statusDibatalkan",
+    "Pergantian Armada": "statusPergantianArmada",
+    "Menunggu Konfirmasi": "statusMenungguKonfirmasi",
+  };
+
+  const { t } = useTranslation();
+
   const orderStatusLabel =
     dataStatusPesanan.orderStatus !== OrderStatusEnum.COMPLETED &&
     !dataStatusPesanan.orderStatus.startsWith("CANCELED") &&
     dataStatusPesanan.unitFleetStatus
-      ? `${OrderStatusTitle[dataStatusPesanan.orderStatus]}: ${dataStatusPesanan.unitFleetStatus} Unit`
-      : OrderStatusTitle[dataStatusPesanan.orderStatus];
+      ? `${t(orderStatusTitleMap[OrderStatusTitle[dataStatusPesanan.orderStatus]])}: ${dataStatusPesanan.unitFleetStatus} Unit`
+      : t(orderStatusTitleMap[OrderStatusTitle[dataStatusPesanan.orderStatus]]);
 
   const dummyPhoto = [
     "/img/muatan1.png",

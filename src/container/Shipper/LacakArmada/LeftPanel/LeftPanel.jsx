@@ -7,19 +7,21 @@ import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
 import { useClientHeight } from "@/hooks/use-client-height";
+import { useTranslation } from "@/hooks/use-translation";
 
 const IS_SHOW_ESTIMATE_ARRIVAL = false;
 
 export const LeftPanel = ({ dataDriverStatus }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const params = useParams();
   const breadcrumbItems = [
-    { name: "Daftar Pesanan", href: "/daftarpesanan" },
+    { name: t("labelDaftarPesanan"), href: "/daftarpesanan" },
     {
-      name: "Detail Pesanan",
+      name: t("labelDetailPesanan"),
       href: `/daftarpesanan/detailpesanan/${params.orderId}`,
     },
-    { name: "Lacak Armada" },
+    { name: t("titleLacakArmada") },
   ];
 
   const contentRef = useRef(null);
@@ -32,7 +34,7 @@ export const LeftPanel = ({ dataDriverStatus }) => {
     <div className="grid grid-cols-1 grid-rows-[16px_24px_1fr] gap-6 bg-white px-6 pb-6 pt-8 shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
       <BreadCrumb data={breadcrumbItems} />
 
-      <PageTitle className="mb-0">Lacak Armada</PageTitle>
+      <PageTitle className="mb-0">{t("titleLacakArmada")}</PageTitle>
 
       {dataDriverStatus && (
         <div className="flex flex-col gap-4 rounded-xl border border-[#C4C4C4] pt-5">
@@ -55,7 +57,7 @@ export const LeftPanel = ({ dataDriverStatus }) => {
             <div className="px-4">
               <div className="flex h-[45px] items-center justify-between bg-[#F1F1F1] px-3 text-xs leading-[1.1]">
                 <span className="max-w-[120px] font-medium text-[#7B7B7B]">
-                  Estimasi Tiba di Lokasi Bongkar 2
+                  {t("labelEstimasiTibaLokasiBongkar2")}
                 </span>
                 <span className="font-semibold text-black">
                   4 Okt 2024 05:30 WIB
@@ -65,7 +67,7 @@ export const LeftPanel = ({ dataDriverStatus }) => {
           )}
 
           <h2 className="px-4 text-xs font-semibold leading-[14.4px] text-black">
-            Detail Status Driver
+            {t("titleDetailStatusDriver")}
           </h2>
 
           <div

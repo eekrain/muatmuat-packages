@@ -1,10 +1,12 @@
 import { useState } from "react";
 
 import { ChevronLeft, ChevronUp } from "lucide-react";
+import useSWR from "swr";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useAuth } from "@/hooks/use-auth";
 import DefaultResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/DefaultResponsiveLayout";
+import { fetcherMuatrans } from "@/lib/axios";
 import { useGetProfile } from "@/services/Shipper/sewaarmada/getProfile";
 import { useNotificationCounterStore } from "@/store/Shipper/notificationCounterStore";
 
@@ -12,6 +14,13 @@ const ResponsiveMenuScreen = () => {
   const [isSettingsExpanded, setIsSettingsExpanded] = useState(true);
   const { order } = useNotificationCounterStore();
   const { dataUser } = useAuth();
+
+  // Fetch count by status
+  const { data: countByStatusData } = useSWR("v1/orders/count-by-status", () =>
+    fetcherMuatrans
+      .get("v1/orders/count-by-status")
+      .then((res) => res.data?.Data?.statusCounts || {})
+  );
 
   // Fetch profile data
   const { data, error, isLoading } = useGetProfile();
@@ -21,7 +30,7 @@ const ResponsiveMenuScreen = () => {
     {
       icon: "/icons/menu/daftarpesanan.svg",
       label: "Daftar Pesanan",
-      badge: 9,
+      badge: order || 0,
       badgeColor: "bg-red-500",
     },
     {
@@ -74,7 +83,11 @@ const ResponsiveMenuScreen = () => {
             </div>
             <div className="flex-1">
               <h3 className="mb-3 text-base font-bold leading-tight text-black">
-                {isLoading ? "" : error ? "" : profile?.name || "-"}
+                {isLoading
+                  ? ""
+                  : error
+                    ? "Noel Gallagher"
+                    : profile?.name || "-"}
               </h3>
               <div className="flex items-center gap-1">
                 <span className="text-sm font-semibold text-black">

@@ -74,7 +74,7 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
   );
 
   const selectedTruck = useShallowMemo(() => {
-    if (isEditPage) {
+    if (isEditPage && truckType) {
       return {
         image: truckType.image,
         truckName: truckType.name,
@@ -210,7 +210,7 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
                 )}
               >
                 {isEditPage
-                  ? truckType.name
+                  ? truckType?.name
                   : selectedTruck?.name || "Pilih Jenis Truk"}
               </span>
               <IconComponent
