@@ -2,6 +2,8 @@ import useSWR from "swr";
 
 import fetcherMuatrans from "@/lib/axios";
 
+const useMockData = true; // toggle mock data
+
 // Mock API result for development/testing
 export const mockAPIResult = {
   data: {
@@ -36,16 +38,29 @@ export const mockAPIResult = {
   },
 };
 
-export const getCargoNames = (params) => {
-  // params: { page, limit, ... } (optional)
-  const query = params ? `?${new URLSearchParams(params).toString()}` : "";
-  return fetcherMuatrans.get(`/v1/orders/cargos/names${query}`);
+export const getCargoNames = async (cacheKey) => {
+  const params = cacheKey?.split("/")?.[1];
+
+  let result;
+  if (useMockData) {
+    result = mockAPIResult;
+  } else {
+    const query = params ? `?${new URLSearchParams(params).toString()}` : "";
+    result = await fetcherMuatrans.get(`/v1/orders/cargos/names?${query}`);
+  }
+
+  const data = result.data?.Data?.cargoNames;
+  if (!data) return [];
+  return data.map((item) => ({
+    value: item.cargoNameId,
+    label: item.name,
+    // Jika ingin menambah properti lain dari API, bisa ditambahkan di sini
+  }));
 };
 
-export const useGetCargoNames = (params) => {
-  // params: { page, limit, ... } (optional)
-  const key = params
-    ? ["v1/orders/cargos/names", params]
-    : "v1/orders/cargos/names";
-  return useSWR(key, () => getCargoNames(params));
+export const useGetCargoNames = ({ cargoTypeId, cargoCategoryId }) => {
+  return useSWR(
+    `getCargoNames/${new URLSearchParams({ cargoTypeId, cargoCategoryId }).toString()}`,
+    getCargoNames
+  );
 };
