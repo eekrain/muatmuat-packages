@@ -210,13 +210,17 @@ const PencarianLokasiScreen = () => {
     });
   };
 
-  const resetLocationForm = useLocationFormStore((s) => s.reset);
+  const { setField: setLocationField, reset: resetLocationForm } =
+    useLocationFormStore();
   const hasInit = useRef(false);
   useEffect(() => {
-    // Reset form values when component is mounted
-    // This is to prevent form values from being filled when user navigates back to this page
+    // Reset only location-related fields when component is mounted
+    // This preserves other fields like namaPIC and noHPPIC that user might have filled
     if (!hasInit.current) {
-      resetLocationForm();
+      // Reset only location-specific fields, keep PIC info intact
+      setLocationField("dataLokasi", null);
+      setLocationField("detailLokasi", "");
+      setLocationField("namaLokasi", "");
       resetLocationContext();
 
       hasInit.current = true;

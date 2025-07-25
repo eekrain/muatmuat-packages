@@ -239,6 +239,8 @@ export const useSewaArmadaStore = create(
                 newErrors.businessEntity.taxId = "Nomor NPWP wajib diisi";
               } else if (businessEntity.taxId.trim().length < 15) {
                 newErrors.businessEntity.taxId = "Nomor NPWP minimal 15 digit";
+              } else if (businessEntity.taxId.trim().length > 16) {
+                newErrors.businessEntity.taxId = "Nomor NPWP maksimal 16 digit";
               }
             }
 

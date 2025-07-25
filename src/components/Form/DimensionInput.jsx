@@ -45,6 +45,15 @@ export const DimensionInput = ({
           const val = values.floatValue;
           setValue(val === undefined ? "" : val);
         },
+        isAllowed: (values) => {
+          const { formattedValue, floatValue } = values;
+          // Allow empty values
+          if (!formattedValue || floatValue === undefined) return true;
+          // Convert to string and remove decimal separator to count digits
+          const valueStr = floatValue.toString().replace(".", "");
+          // Limit to 6 digits maximum
+          return valueStr.length <= 6;
+        },
       };
     },
     [appearance.inputClassName]

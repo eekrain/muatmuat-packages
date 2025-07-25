@@ -358,10 +358,15 @@ const DeliveryEvidenceModal = ({
   const additionalServices = useSewaArmadaStore(
     (s) => s.formValues.additionalServices
   );
-  const { reset: resetLocationForm } = useLocationFormStore();
+  const { setField: setLocationField } = useLocationFormStore();
 
   useEffect(() => {
-    if (!isOpen) resetLocationForm();
+    if (!isOpen) {
+      // Reset only location-related fields, preserve PIC information
+      setLocationField("dataLokasi", null);
+      setLocationField("detailLokasi", "");
+      setLocationField("namaLokasi", "");
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
