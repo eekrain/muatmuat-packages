@@ -78,10 +78,13 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
       return {
         image: truckType.image,
         truckName: truckType.name,
-        price: 100000,
+        price: truckType.price,
         maxWeight: truckType.maxWeight,
         weightUnit: truckType.weightUnit,
-        dimensions: truckType.dimensions,
+        dimensions: {
+          ...truckType.dimension,
+          dimensionUnit: truckType.dimension.unit,
+        },
       };
     } else {
       if (!truckTypeId || !trucks) return null;

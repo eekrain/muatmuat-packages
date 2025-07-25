@@ -40,7 +40,7 @@ export const InformasiMuatan = ({ onFetchTrucks }) => {
           <InformasiMuatanTable
             informasiMuatan={informasiMuatan}
             onClickUpdate={() => setIsInformasiMuatanModalOpen(true)}
-            disableUpdateButton={isEditPage && orderType === "SCHEDULED"}
+            disableUpdateButton={isEditPage}
           />
         ) : (
           <div

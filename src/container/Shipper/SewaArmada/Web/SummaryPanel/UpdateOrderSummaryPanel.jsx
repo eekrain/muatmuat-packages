@@ -94,10 +94,10 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
               Detail Tambahan Biaya
             </span>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-base font-bold leading-[19.2px]">
+          <div className="flex justify-between">
+            <div className="max-w-[148px] text-base font-bold leading-[19.2px]">
               Total Tambahan Biaya
-            </span>
+            </div>
             <span className="text-base font-bold leading-[19.2px]">
               {
                 "Rp0"
