@@ -138,6 +138,8 @@ export const normalizeDetailPesananOrderDetail = ({
       paymentLogo: dataOrderDetail.summary?.payment?.paymentLogo,
       vaNumber: dataPayment?.payment?.vaNumber,
       expiredAt: dataPayment?.payment?.expiredAt,
+      expiredAtFromOrderDetail:
+        dataOrderDetail.summary?.payment?.paymentDueDateTime,
       transportFee: dataOrderDetail.summary?.price?.transportFee,
       insuranceFee: dataOrderDetail.summary?.price?.insuranceFee,
       voucherDiscount: dataOrderDetail.summary?.price?.voucherDiscount,

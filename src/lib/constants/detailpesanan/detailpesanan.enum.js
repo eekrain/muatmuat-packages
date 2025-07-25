@@ -34,27 +34,27 @@ export const OrderStatusEnum = {
 };
 
 export const OrderStatusTitle = {
-  PREPARE_FLEET: "statusMempersiapkanArmada",
-  WAITING_PAYMENT_1: "statusMenungguPembayaran", // sebelum generate VA
-  WAITING_PAYMENT_2: "statusMenungguPembayaran", // setelah generate VA
-  SCHEDULED_FLEET: "statusArmadaDijadwalkan",
-  CONFIRMED: "statusPesananTerkonfirmasi",
-  LOADING: "statusProsesMuat",
-  UNLOADING: "statusProsesBongkar",
-  WAITING_REPAYMENT_1: "statusMenungguPelunasan", // sebelum generate VA
-  WAITING_REPAYMENT_2: "statusMenungguPelunasan", // setelah generate VA
-  PREPARE_DOCUMENT: "statusDokumenDisiapkan",
-  DOCUMENT_DELIVERY: "statusPengirimanDokumen",
-  COMPLETED: "statusSelesai",
-  CANCELED_BY_SYSTEM: "statusDibatalkan",
-  CANCELED_BY_SHIPPER: "statusDibatalkan",
-  CANCELED_BY_TRANSPORTER: "statusDibatalkan",
+  PREPARE_FLEET: "Mempersiapkan Armada",
+  WAITING_PAYMENT_1: "Menunggu Pembayaran", // sebelum generate VA
+  WAITING_PAYMENT_2: "Menunggu Pembayaran", // setelah generate VA
+  SCHEDULED_FLEET: "ArmadaDi jadwalkan",
+  CONFIRMED: "Pesanan Terkonfirmasi",
+  LOADING: "Proses Muat",
+  UNLOADING: "Proses Bongkar",
+  WAITING_REPAYMENT_1: "Menunggu Pelunasan", // sebelum generate VA
+  WAITING_REPAYMENT_2: "Menunggu Pelunasan", // setelah generate VA
+  PREPARE_DOCUMENT: "Dokumen Disiapkan",
+  DOCUMENT_DELIVERY: "Pengiriman Dokumen",
+  COMPLETED: "Selesai",
+  CANCELED_BY_SYSTEM: "Dibatalkan",
+  CANCELED_BY_SHIPPER: "Dibatalkan",
+  CANCELED_BY_TRANSPORTER: "Dibatalkan",
 
-  FLEET_CHANGE: "statusPergantianArmada",
-  WAITING_CONFIRMATION_CHANGES: "statusMenungguKonfirmasi",
-  WAITING_PAYMENT_3: "statusMenungguPembayaran",
-  WAITING_PAYMENT_4: "statusMenungguPembayaran",
-  CONFIRMED_CHANGES: "statusPesananTerkonfirmasi",
+  FLEET_CHANGE: "PergantianArmada",
+  WAITING_CONFIRMATION_CHANGES: "MenungguKonfirmasi",
+  WAITING_PAYMENT_3: "MenungguPembayaran",
+  WAITING_PAYMENT_4: "MenungguPembayaran",
+  CONFIRMED_CHANGES: "PesananTerkonfirmasi",
 };
 
 export const OrderStatusIcon = {

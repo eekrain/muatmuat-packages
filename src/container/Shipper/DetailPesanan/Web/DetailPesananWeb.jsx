@@ -7,9 +7,7 @@ import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enu
 import { isDev } from "@/lib/constants/is-dev";
 import { toast } from "@/lib/toast";
 import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
-import { useGetFeatureAccess } from "@/services/Shipper/detailpesanan/getFeatureAccess";
 import useGetFleetSearchStatus from "@/services/Shipper/detailpesanan/getFleetSearchStatus";
-import { useGetPaymentTimer } from "@/services/Shipper/detailpesanan/getPaymentTimer";
 import { useLoadingAction } from "@/store/Shared/loadingStore";
 import {
   useSewaArmadaActions,
@@ -51,12 +49,6 @@ const DetailPesananWeb = () => {
 
   const [isPesananGagalModalOpen, setIsPesananGagalModalOpen] = useState(false);
 
-  const { data: featureAccess, isLoading: isLoadingFeatureAccess } =
-    useGetFeatureAccess(params.orderId);
-
-  const { data: paymentTimer, isLoading: isLoadingPaymentTimer } =
-    useGetPaymentTimer(params.orderId);
-
   const { setIsGlobalLoading } = useLoadingAction();
   useEffect(() => {
     if (isUpdateOrderSuccess) {
@@ -68,7 +60,7 @@ const DetailPesananWeb = () => {
   useEffect(() => {
     setIsGlobalLoading(isLoadingDetailPesanan);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoadingDetailPesanan, isLoadingFeatureAccess, isLoadingPaymentTimer]);
+  }, [isLoadingDetailPesanan]);
   return (
     <>
       <div className="mx-auto max-w-[1200px] py-8">

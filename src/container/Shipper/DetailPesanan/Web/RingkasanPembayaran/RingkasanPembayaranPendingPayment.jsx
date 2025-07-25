@@ -13,10 +13,10 @@ export const RingkasanPembayaranPendingPayment = ({
   dataRingkasanPembayaran,
 }) => {
   const { countdown } = useCountdown({
-    endingDate: dataRingkasanPembayaran?.expiredAt,
+    endingDate: dataRingkasanPembayaran?.expiredAtFromOrderDetail,
     isNeedCountdown: true,
   });
-
+  console.log(dataRingkasanPembayaran, "Tes");
   const handleCopyVA = () => {
     if (dataRingkasanPembayaran?.vaNumber) {
       navigator.clipboard.writeText(dataRingkasanPembayaran.vaNumber);
@@ -47,7 +47,7 @@ export const RingkasanPembayaranPendingPayment = ({
               </div>
               <span className="text-sm font-semibold text-neutral-900">
                 {formatDate(
-                  dataRingkasanPembayaran?.expiredAt,
+                  dataRingkasanPembayaran?.expiredAtFromOrderDetail,
                   "dd LLL yyyy HH:mm 'WIB'"
                 )}
               </span>
