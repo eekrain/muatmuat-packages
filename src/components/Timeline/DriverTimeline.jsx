@@ -127,7 +127,7 @@ export const DriverTimeline = ({ dataDriverStatus, onClickProof }) => {
                   ? "/icons/close-circle.svg"
                   : OrderStatusIcon[parent.mappedOrderStatus]
               }
-              title={OrderStatusTitle[parent.mappedOrderStatus]}
+              title={t(OrderStatusTitle[parent.mappedOrderStatus])}
               withDivider={
                 parentIndex !== dataDriverStatus?.statusDefinitions.length - 1
               }
@@ -140,7 +140,7 @@ export const DriverTimeline = ({ dataDriverStatus, onClickProof }) => {
               }
               canceledAt={parent.date}
               className={
-                parentIndex === 0 && !Boolean(parent?.children) ? "mt-0" : ""
+                parentIndex === 0 && !Boolean(parent?.children) ? "md:mt-0" : ""
               }
             />
           </Fragment>

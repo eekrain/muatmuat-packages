@@ -223,18 +223,18 @@ const apiResult = {
             //     pods: [],
             //   },
             // },
-            // {
-            //   statusCode: "ANTRI_DI_LOKASI_MUAT_1",
-            //   statusName: "Antri di Lokasi Muat",
-            //   date: sub(new Date(), { hours: 18 }).toISOString(),
-            //   requiresQRScan: false,
-            //   requiresPhoto: false,
-            //   triggersWaitingFee: false,
-            //   photoEvidences: {
-            //     packages: [],
-            //     pods: [],
-            //   },
-            // },
+            {
+              statusCode: "ANTRI_DI_LOKASI_MUAT_1",
+              statusName: "Antri di Lokasi Muat",
+              date: sub(new Date(), { hours: 18 }).toISOString(),
+              requiresQRScan: false,
+              requiresPhoto: false,
+              triggersWaitingFee: false,
+              photoEvidences: {
+                packages: [],
+                pods: [],
+              },
+            },
             {
               statusCode: "TIBA_DI_LOKASI_MUAT_1",
               statusName: "Tiba di Lokasi Muat",

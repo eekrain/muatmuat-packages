@@ -56,9 +56,9 @@ export const ModalDetailWaktuTunggu = ({
   return (
     <Modal>
       <ModalTrigger>
-        <button className="text-xs font-medium leading-[14.4px] text-primary-700">
+        <span className="text-xs font-medium leading-[14.4px] text-primary-700">
           Lihat Detail Waktu Tunggu
-        </button>
+        </span>
       </ModalTrigger>
       <ModalContent
         className="flex w-[578px] flex-col gap-y-4 p-6"
