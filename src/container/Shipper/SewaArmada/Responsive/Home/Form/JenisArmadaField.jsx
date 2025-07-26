@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import { useSewaArmadaStore } from "@/store/Shipper/forms/sewaArmadaStore";
 
 export const JenisArmadaField = ({ carriers, trucks }) => {
-  console.log("🚀 ~ JenisArmadaField ~ trucks:", trucks);
   const navigation = useResponsiveNavigation();
 
   const carrierId = useSewaArmadaStore((s) => s.formValues?.carrierId);

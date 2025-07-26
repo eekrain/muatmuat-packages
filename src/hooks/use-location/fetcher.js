@@ -46,7 +46,7 @@ const getLocationByPlaceId = async (location) => {
     new URLSearchParams({ placeId: location.ID })
   );
   const dataDistrict = res.data.Data;
-  const dataNotFound = res.data?.Data?.Message?.Data;
+  const dataNotFound = res.data?.Data?.Message;
 
   let result;
   if (dataDistrict?.Districts?.[0]) {

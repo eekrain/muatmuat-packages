@@ -1618,6 +1618,7 @@ const ExampleInput = () => {
           stepper={1}
           placeholder="Enter a number"
           suffix=" pcs"
+          hideStepper={false}
         />
         <div className="mt-2 text-xs text-neutral-500">
           Value: {numberValue || 0}

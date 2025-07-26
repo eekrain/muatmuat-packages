@@ -39,6 +39,7 @@ export const useAutoComplete = ({
 
   const debouncedTrigger = useDebounceCallback(trigger, 500);
   const searchResult = useMemo(() => data?.slice(0, 3) || [], [data]);
+  const searchResultEmpty = searchResult.length === 0;
 
   useShallowCompareEffect(() => {
     if (autoCompleteSearchPhrase && autoCompleteSearchPhrase?.length >= 3) {
@@ -48,11 +49,11 @@ export const useAutoComplete = ({
     } else if (
       (!autoCompleteSearchPhrase ||
         (autoCompleteSearchPhrase && autoCompleteSearchPhrase.length < 3)) &&
-      searchResult.length > 0
+      !searchResultEmpty
     ) {
       reset();
     }
-  }, [autoCompleteSearchPhrase, debouncedTrigger, searchResult]);
+  }, [autoCompleteSearchPhrase, debouncedTrigger, searchResultEmpty]);
 
   const setLocationPartial = useLocationFormStore((s) => s.setLocationPartial);
 
@@ -61,7 +62,7 @@ export const useAutoComplete = ({
       const result = await fetcher.getLocationByPlaceId(location);
       setLocationPartial(result);
       setDontTriggerPostalCodeModal(false);
-      setCoordinates(result.coordinates);
+      if (result?.coordinates) setCoordinates(result.coordinates);
       setTempLocation(result);
       if (!result?.district?.value) {
         setIsModalPostalCodeOpen(true);
@@ -70,9 +71,14 @@ export const useAutoComplete = ({
         else setLocationPostalCodeSearchPhrase(result.postalCode.value);
       } else {
         if (!isMobile) setAutoCompleteSearchPhrase(result.location.name);
-        fetcher.saveRecentSearchedLocation(result).then(() => {
-          refetchHistoryResult();
-        });
+        fetcher
+          .saveRecentSearchedLocation(result)
+          .then(() => {
+            refetchHistoryResult();
+          })
+          .catch((err) => {
+            console.log("🚀 ~ Error Save Recent Searched Location:", err);
+          });
       }
       setIsDropdownSearchOpen(false);
       return result;

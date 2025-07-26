@@ -1,194 +1,196 @@
 import { forwardRef, useCallback, useEffect, useState } from "react";
 
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import { NumericFormat } from "react-number-format";
 
-import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 /**
- * NumberInput component with increment/decrement buttons and number formatting.
- * Uses Tailwind CSS for styling and cn for class composition.
+ * A number input component styled as a quantity selector with different visual states.
  *
  * @typedef {Object} NumberInputProps
- * @property {number} [stepper] - The amount to increment/decrement by
- * @property {string} [thousandSeparator] - Character to use as thousand separator
- * @property {string} [placeholder] - Input placeholder text
- * @property {number} [defaultValue] - Default value for uncontrolled component
- * @property {number} [min] - Minimum allowed value
- * @property {number} [max] - Maximum allowed value
- * @property {number} [value] - Controlled value
- * @property {string} [suffix] - String to append after the number
- * @property {string} [prefix] - String to prepend before the number
- * @property {(value: number | undefined) => void} [onValueChange] - Callback when value changes
- * @property {boolean} [fixedDecimalScale] - Whether to always show decimal places
- * @property {number} [decimalScale] - Number of decimal places to show
- * @property {Object} [appearance] - Custom appearance options
- * @property {string} [appearance.containerClassName] - Additional classes for container
- * @property {string} [appearance.inputClassName] - Additional classes for input
- * @property {string} [className] - Additional classes for the root element
- * @property {string} [errorMessage] - Error message to display
- * @property {boolean} [hideErrorMessage] - Whether to hide error message
+ * @property {number} [value] - The controlled value of the component.
+ * @property {number} [defaultValue=0] - The initial value for an uncontrolled component.
+ * @property {(value: number | undefined) => void} [onValueChange] - Callback fired when the value changes.
+ * @property {number} [min=0] - The minimum allowed value. Defaults to 0.
+ * @property {number} [max=Infinity] - The maximum allowed value.
+ * @property {number} [stepper=1] - The amount to increment or decrement by.
+ * @property {string} [className] - Additional classes for the root element.
+ * @property {boolean} [disabled=false] - If true, the component is disabled.
+ * @property {string} [thousandSeparator] - Character for thousand separator.
+ * @property {string} [decimalSeparator] - Character for decimal separator.
+ * @property {number} [decimalScale] - Number of decimal places.
+ * @property {boolean} [fixedDecimalScale] - If true, always shows decimal places.
+ * @property {string} [placeholder] - Placeholder text for the input.
  */
 
 /**
- * NumberInput component implementation
  * @type {React.ForwardRefRenderFunction<HTMLInputElement, NumberInputProps>}
  */
 export const NumberInput = forwardRef(
   (
     {
+      value: controlledValue,
+      defaultValue = 0,
+      onValueChange,
+      onChange,
+      min = 0,
+      max = Infinity,
       stepper = 1,
+      className,
+      disabled = false,
       thousandSeparator = ".",
       decimalSeparator = ",",
-      placeholder = "Enter a number",
-      defaultValue,
-      min = -Infinity,
-      max = Infinity,
-      onChange,
-      onValueChange,
-      fixedDecimalScale = false,
       decimalScale = 0,
-      suffix,
-      prefix,
-      value: controlledValue,
-      appearance = {
-        containerClassName: "",
-        inputClassName: "",
-      },
-      className,
-      errorMessage,
-      hideErrorMessage = false,
+      fixedDecimalScale = false,
+      placeholder = "0",
       hideStepper = true,
       ...props
     },
     ref
   ) => {
-    const { t } = useTranslation();
-    const [value, setValue] = useState(controlledValue ?? defaultValue);
+    const isControlled = controlledValue !== undefined;
+    const [internalValue, setInternalValue] = useState(
+      isControlled ? controlledValue : defaultValue
+    );
+    const [stringValue, setStringValue] = useState("");
+    console.log("🚀 ~ stringValue:", stringValue);
+    const [isFocused, setIsFocused] = useState(false);
 
-    const handleIncrement = useCallback(() => {
-      setValue((prev) =>
-        prev === undefined ? stepper : Math.min(prev + stepper, max)
-      );
-    }, [stepper, max]);
-
-    const handleDecrement = useCallback(() => {
-      setValue((prev) =>
-        prev === undefined ? -stepper : Math.max(prev - stepper, min)
-      );
-    }, [stepper, min]);
+    const value = isControlled ? controlledValue : internalValue;
+    console.log("🚀 ~ value:", value);
 
     useEffect(() => {
-      const handleKeyDown = (e) => {
-        if (document.activeElement === ref?.current) {
-          if (e.key === "ArrowUp") {
-            handleIncrement();
-          } else if (e.key === "ArrowDown") {
-            handleDecrement();
-          }
-        }
-      };
-
-      window.addEventListener("keydown", handleKeyDown);
-      return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [handleIncrement, handleDecrement, ref]);
-
-    useEffect(() => {
-      if (controlledValue !== undefined) {
-        setValue(controlledValue);
+      if (isControlled) {
+        setInternalValue(controlledValue);
       }
-    }, [controlledValue]);
+    }, [controlledValue, isControlled]);
 
-    const handleChange = (values) => {
-      const newValue =
-        values.floatValue === undefined ? undefined : values.floatValue;
-      setValue(newValue);
-      if (onChange) {
-        onChange(newValue);
-      } else if (onValueChange) {
+    const triggerChange = (newValue) => {
+      if (!isControlled) {
+        setInternalValue(newValue);
+      }
+      if (onValueChange) {
         onValueChange(newValue);
+      }
+      if (onChange) {
+        onChange({ target: { value: newValue } });
       }
     };
 
-    const handleBlur = () => {
-      if (value !== undefined) {
-        if (value < min) {
-          setValue(min);
-          ref.current.value = String(min);
-        } else if (value > max) {
-          setValue(max);
-          ref.current.value = String(max);
-        }
+    const handleIncrement = useCallback(() => {
+      const currentValue = typeof value === "number" ? value : min;
+      const newValue = Math.min(currentValue + stepper, max);
+      triggerChange(newValue);
+    }, [value, stepper, max, min, onValueChange, isControlled]);
+
+    const handleDecrement = useCallback(() => {
+      const currentValue = typeof value === "number" ? value : min;
+      const newValue = Math.max(currentValue - stepper, min);
+      triggerChange(newValue);
+    }, [value, stepper, min, onValueChange, isControlled]);
+
+    const handleChange = (values) => {
+      setStringValue(values.value);
+      triggerChange(values.floatValue);
+    };
+
+    const handleFocus = () => {
+      setIsFocused(true);
+    };
+
+    const handleInputBlur = (e) => {
+      setIsFocused(false);
+
+      // If value is empty or below min, set to min.
+      if (!Boolean(stringValue) || value < min) {
+        console.log("ran");
+        triggerChange(min);
+      } else if (stringValue > max) {
+        triggerChange(max);
       }
+
+      props?.onBlur?.(e);
     };
 
     return (
-      <div className={cn("flex w-full flex-col gap-y-2", className)}>
-        <div
+      <div
+        className={cn(
+          "flex h-8 w-[110px] items-center rounded-md border border-neutral-600 bg-neutral-50 px-3 py-2 transition-colors",
+          // Disabled State
+          disabled && "bg-neutral-100",
+          isFocused && "border-primary-700",
+          className
+        )}
+      >
+        {!hideStepper && (
+          <button
+            type="button"
+            aria-label="Decrease value"
+            onClick={handleDecrement}
+            disabled={disabled || value <= min}
+            className="disabled:cursor-not-allowed"
+          >
+            <Minus
+              className={cn(
+                "h-4 w-4 transition-colors",
+                disabled || value <= min
+                  ? "text-neutral-500"
+                  : isFocused
+                    ? "text-primary-700"
+                    : "text-neutral-700"
+              )}
+            />
+          </button>
+        )}
+
+        <NumericFormat
+          value={value}
+          onValueChange={handleChange}
+          onFocus={handleFocus}
+          onBlur={handleInputBlur}
+          thousandSeparator={thousandSeparator}
+          decimalSeparator={decimalSeparator}
+          decimalScale={decimalScale}
+          fixedDecimalScale={fixedDecimalScale}
+          allowNegative={min < 0}
+          placeholder={placeholder}
+          disabled={disabled}
           className={cn(
-            "flex h-8 w-full items-center rounded-md border border-neutral-600 bg-neutral-50 px-3 transition-colors",
-            "focus-within:border-primary-700 hover:border-primary-700",
-            errorMessage && "border-error-400",
-            appearance.containerClassName
+            "w-full flex-grow border-none bg-transparent text-sm font-semibold outline-none focus:ring-0 md:text-xs",
+            !hideStepper && "text-center",
+            "disabled:cursor-not-allowed disabled:text-neutral-500",
+            isFocused ? "text-neutral-900" : "text-neutral-900",
+            "[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
+            disabled
+              ? "bg-neutral-100"
+              : isFocused
+                ? "bg-white"
+                : "bg-neutral-50"
           )}
-        >
-          <NumericFormat
-            value={value}
-            onValueChange={handleChange}
-            thousandSeparator={thousandSeparator}
-            decimalSeparator={decimalSeparator}
-            decimalScale={decimalScale}
-            fixedDecimalScale={fixedDecimalScale}
-            allowNegative={min < 0}
-            valueIsNumericString
-            onBlur={handleBlur}
-            max={max}
-            min={min}
-            suffix={suffix}
-            prefix={prefix}
-            placeholder={placeholder}
-            className={cn(
-              "w-full min-w-0 border-none border-transparent bg-transparent text-left text-xs font-medium leading-[14.4px] text-neutral-900 outline-none placeholder:text-neutral-600 max-[600px]:text-sm max-[600px]:font-semibold max-[600px]:leading-[15.4px]",
-              "[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
-              appearance.inputClassName
-            )}
-            getInputRef={ref}
-            {...props}
-          />
-          {!hideStepper && (
-            <div className="flex flex-col border-l border-neutral-600">
-              <button
-                type="button"
-                aria-label="Increase value"
-                className={cn(
-                  "flex h-4 w-8 items-center justify-center border-b border-neutral-600 transition-colors hover:bg-neutral-100",
-                  value === max && "cursor-not-allowed opacity-50"
-                )}
-                onClick={handleIncrement}
-                disabled={value === max}
-              >
-                <ChevronUp size={12} className="text-neutral-900" />
-              </button>
-              <button
-                type="button"
-                aria-label="Decrease value"
-                className={cn(
-                  "flex h-4 w-8 items-center justify-center transition-colors hover:bg-neutral-100",
-                  value === min && "cursor-not-allowed opacity-50"
-                )}
-                onClick={handleDecrement}
-                disabled={value === min}
-              >
-                <ChevronDown size={12} className="text-neutral-900" />
-              </button>
-            </div>
-          )}
-        </div>
-        {!hideErrorMessage && errorMessage && (
-          <div className="flex items-center justify-between text-xs font-medium text-error-400">
-            <span>{t(errorMessage)}</span>
-          </div>
+          getInputRef={ref}
+          {...props}
+        />
+
+        {!hideStepper && (
+          <button
+            type="button"
+            aria-label="Increase value"
+            onClick={handleIncrement}
+            disabled={disabled || value >= max}
+            className="disabled:cursor-not-allowed"
+          >
+            <Plus
+              className={cn(
+                "h-4 w-4 transition-colors",
+                disabled || value >= max
+                  ? "text-neutral-500"
+                  : isFocused
+                    ? "text-primary-700"
+                    : "text-neutral-700"
+              )}
+            />
+          </button>
         )}
       </div>
     );

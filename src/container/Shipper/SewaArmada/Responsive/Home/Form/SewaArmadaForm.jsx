@@ -1,0 +1,212 @@
+import { FormContainer, FormLabel } from "@/components/Form/Form";
+import IconComponent from "@/components/IconComponent/IconComponent";
+import TimelineField from "@/components/Timeline/timeline-field";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import { toast } from "@/lib/toast";
+import { useInformasiMuatanStore } from "@/store/Shipper/forms/informasiMuatanStore";
+import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
+import {
+  useSewaArmadaActions,
+  useSewaArmadaStore,
+} from "@/store/Shipper/forms/sewaArmadaStore";
+
+import { JenisArmadaField } from "./JenisArmadaField";
+import { JumlahArmada } from "./JumlahArmada";
+import WaktuMuatBottomsheet from "./WaktuMuat";
+
+export const SewaArmadaForm = ({ carriers, trucks }) => {
+  const navigation = useResponsiveNavigation();
+  const { formValues } = useSewaArmadaStore();
+  const { addLokasi, removeLokasi } = useSewaArmadaActions();
+  const { setField: setInformasiMuatanField } = useInformasiMuatanStore();
+  const validateLokasiOnSelect = useLocationFormStore(
+    (s) => s.validateLokasiOnSelect
+  );
+
+  const handleEditInformasiMuatan = () => {
+    setInformasiMuatanField("cargoTypeId", formValues.cargoTypeId);
+    setInformasiMuatanField("cargoCategoryId", formValues.cargoCategoryId);
+    setInformasiMuatanField("isHalalLogistics", formValues.isHalalLogistics);
+    if (formValues.informasiMuatan.length > 0) {
+      setInformasiMuatanField("informasiMuatan", formValues.informasiMuatan);
+    }
+    navigation.push("/InformasiMuatan");
+  };
+
+  const handleEditLayananTambahan = () => {
+    navigation.push("/LayananTambahan");
+  };
+
+  const handleEditLokasi = ({ formMode, index }) => {
+    const field = {
+      muat: "lokasiMuat",
+      bongkar: "lokasiBongkar",
+    };
+    const defaultValues = formValues[field[formMode]][index];
+    const params = {
+      formMode,
+      allSelectedLocations: formValues[field[formMode]],
+      index,
+    };
+
+    const navigateToForm = async (defaultValues) => {
+      navigation.push("/FormLokasiBongkarMuat", {
+        config: {
+          ...params,
+          defaultValues,
+        },
+        layout: {
+          title: formMode === "bongkar" ? "Lokasi Bongkar" : "Lokasi Muat",
+        },
+      });
+    };
+
+    if (defaultValues) {
+      navigateToForm(defaultValues);
+    } else {
+      navigation.push("/PencarianLokasi", {
+        config: {
+          ...params,
+          afterLocationSelected: async () => {
+            // delay 500ms untuk menunggu data lokasi terisi
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            const defaultValues = useLocationFormStore.getState().formValues;
+            navigateToForm(defaultValues);
+          },
+          validateLokasiOnSelect: (selectedAddress) => {
+            const error = validateLokasiOnSelect(
+              formMode,
+              index,
+              selectedAddress
+            );
+
+            if (error) {
+              toast.error(error);
+              throw new Error(error);
+            }
+          },
+        },
+        layout: {
+          title:
+            formMode === "bongkar" ? "Cari Lokasi Bongkar" : "Cari Lokasi Muat",
+        },
+      });
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-y-6 bg-white px-4 py-5">
+      {/* Waktu Muat Field */}
+      <FormContainer>
+        <FormLabel required>Waktu Muat</FormLabel>
+        <WaktuMuatBottomsheet />
+      </FormContainer>
+
+      {/* Lokasi Muat Field */}
+      <FormContainer>
+        <FormLabel required>Lokasi Muat</FormLabel>
+        <TimelineField.Root
+          variant="muat"
+          className="flex-1"
+          values={
+            formValues.lokasiMuat?.map(
+              (item) => item?.dataLokasi?.location || null
+            ) || []
+          }
+          onAddLocation={() => addLokasi("lokasiMuat", null)}
+          onEditLocation={(index) =>
+            handleEditLokasi({ formMode: "muat", index })
+          }
+        >
+          {(formValues.lokasiMuat || []).map((item, index) => (
+            <TimelineField.Item index={index} key={index}>
+              <TimelineField.RemoveButton
+                onClick={() => removeLokasi("lokasiMuat", index)}
+              />
+            </TimelineField.Item>
+          ))}
+          <TimelineField.AddButton />
+        </TimelineField.Root>
+      </FormContainer>
+
+      {/* Lokasi Bongkar Field */}
+      <FormContainer>
+        <FormLabel required>Lokasi Bongkar</FormLabel>
+        <TimelineField.Root
+          variant="bongkar"
+          className="flex-1"
+          values={
+            formValues.lokasiBongkar?.map(
+              (item) => item?.dataLokasi?.location || null
+            ) || []
+          }
+          onAddLocation={() => addLokasi("lokasiBongkar", null)}
+          onEditLocation={(index) =>
+            handleEditLokasi({ formMode: "bongkar", index })
+          }
+        >
+          {(formValues.lokasiBongkar || []).map((item, index) => (
+            <TimelineField.Item index={index} key={index}>
+              <TimelineField.RemoveButton
+                onClick={() => removeLokasi("lokasiBongkar", index)}
+              />
+            </TimelineField.Item>
+          ))}
+          <TimelineField.AddButton />
+        </TimelineField.Root>
+      </FormContainer>
+
+      {/* Informasi Muatan Field */}
+      <FormContainer>
+        <FormLabel required>Informasi Muatan</FormLabel>
+        <button
+          className={
+            "flex h-8 w-full items-center justify-between gap-x-2 rounded-md border border-neutral-600 bg-neutral-50 px-3"
+          }
+          onClick={handleEditInformasiMuatan}
+        >
+          <div className="flex items-center gap-x-2">
+            <IconComponent src="/icons/muatan16.svg" />
+            <span className="max-w-[256px] truncate text-sm font-semibold leading-[15.4px]">
+              {formValues.informasiMuatan.length === 0 ? (
+                <span className="text-neutral-600">Masukkan Muatan</span>
+              ) : (
+                <span className="text-neutral-900">
+                  {formValues.informasiMuatan
+                    .map((item) => item.namaMuatan.label)
+                    .join(", ")}
+                </span>
+              )}
+            </span>
+          </div>
+          <div className="size-[16px]">
+            <IconComponent src="/icons/chevron-right.svg" />
+          </div>
+        </button>
+      </FormContainer>
+
+      {/* Jenis Armada Field */}
+      <JenisArmadaField carriers={carriers} trucks={trucks} />
+      <JumlahArmada />
+
+      {/* Layanan Tambahan Field */}
+      <FormContainer>
+        <FormLabel optional>Layanan Tambahan</FormLabel>
+        <button
+          className={
+            "flex h-8 items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-3"
+          }
+          onClick={handleEditLayananTambahan}
+        >
+          <div className="flex items-center gap-x-2">
+            <IconComponent src="/icons/layanan-tambahan.svg" />
+            <span className="text-sm font-semibold leading-[15.4px] text-neutral-600">
+              Pilih Layanan Tambahan
+            </span>
+          </div>
+          <IconComponent src="/icons/chevron-right.svg" />
+        </button>
+      </FormContainer>
+    </div>
+  );
+};

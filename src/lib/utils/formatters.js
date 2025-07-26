@@ -1,7 +1,15 @@
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 
-export const idrFormat = (num, opts) => `Rp${thousandSeparator(num, opts)}`;
+export const idrFormat = (num, opts) =>
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+    ...opts,
+  })
+    .format(num || 0)
+    .replace(/Rp\s+/g, "Rp");
 
 export const thousandSeparator = (num, opts) =>
   new Intl.NumberFormat("id-ID", {
