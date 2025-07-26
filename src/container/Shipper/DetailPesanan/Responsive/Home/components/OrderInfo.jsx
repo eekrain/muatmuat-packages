@@ -8,7 +8,11 @@ import {
   BottomSheetContent,
   BottomSheetHeader,
 } from "@/components/Bottomsheet/Bottomsheet";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { useTranslation } from "@/hooks/use-translation";
+import {
+  OrderStatusEnum,
+  OrderStatusTitle,
+} from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
 export const OrderInfo = ({ dataStatusPesanan }) => {
@@ -16,39 +20,24 @@ export const OrderInfo = ({ dataStatusPesanan }) => {
 
   const [isOpenOtherStatus, setIsOpenOtherStatus] = useState();
 
-  // Determine status variant based on order status
-  const getStatusVariant = () => {
-    if (dataStatusPesanan?.orderStatus?.startsWith("WAITING")) return "warning";
-    if (dataStatusPesanan?.orderStatus?.startsWith("CANCELED")) return "error";
-    if (dataStatusPesanan?.orderStatus === OrderStatusEnum.COMPLETED)
-      return "success";
-    return "primary";
-  };
+  const { t } = useTranslation();
 
-  // Generate status label with unit count if applicable
-  const getStatusLabel = () => {
-    // Jika ada otherStatus array dan length > 0
-    if (
-      Array.isArray(dataStatusPesanan?.otherStatus) &&
-      dataStatusPesanan.otherStatus.length > 0
-    ) {
-      const first = dataStatusPesanan.otherStatus[0];
-      // Jika hanya satu status, tampilkan hanya orderTitle saja
-      //   if (dataStatusPesanan.otherStatus.length === 1) {
-      //     return first.orderTitle;
-      //   }
-      // Jika lebih dari satu, selalu tampilkan orderTitle dan jumlah unit (meskipun title sama)
-      return `${first.orderTitle} : ${first.unitFleetStatus} Unit`;
-    }
-    // Jika tidak, fallback ke orderStatusTitle utama
-    let baseStatus = dataStatusPesanan?.orderStatusTitle;
-    if (!baseStatus) baseStatus = "Unknown Status";
-    const unitCount = dataStatusPesanan?.unitFleetStatus;
-    if (unitCount && unitCount > 1) {
-      return `${baseStatus} : ${unitCount} Unit`;
-    }
-    return baseStatus;
-  };
+  const orderStatusLabel =
+    dataStatusPesanan.orderStatus !== OrderStatusEnum.COMPLETED &&
+    !dataStatusPesanan.orderStatus.startsWith("CANCELED") &&
+    !dataStatusPesanan.orderStatus.startsWith("WAITING_PAYMENT") &&
+    dataStatusPesanan.unitFleetStatus &&
+    dataStatusPesanan.unitFleetStatus > 1
+      ? `${t(OrderStatusTitle[dataStatusPesanan.orderStatus])}: ${dataStatusPesanan.unitFleetStatus} Unit`
+      : t(OrderStatusTitle[dataStatusPesanan.orderStatus]);
+
+  const statusVariant = dataStatusPesanan.orderStatus.startsWith("WAITING")
+    ? "warning"
+    : dataStatusPesanan.orderStatus.startsWith("CANCELED")
+      ? "error"
+      : dataStatusPesanan.orderStatus === OrderStatusEnum.COMPLETED
+        ? "success"
+        : "primary";
 
   return (
     <div className="flex w-full flex-col items-start bg-white p-5">
@@ -101,10 +90,10 @@ export const OrderInfo = ({ dataStatusPesanan }) => {
 
           {dataStatusPesanan?.orderStatus && (
             <BadgeStatusPesanan
-              variant={getStatusVariant()}
+              variant={statusVariant}
               className="w-full text-sm font-semibold"
             >
-              {getStatusLabel()}
+              {orderStatusLabel}
             </BadgeStatusPesanan>
           )}
 
