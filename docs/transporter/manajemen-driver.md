@@ -1,4 +1,4 @@
-### Tambah Driver Form
+### Tambah Driver Form (Syahrul)
 
 - [ ] Registrasi Driver
 
@@ -37,7 +37,7 @@
   - [ ] **ID - 3959** Alert Format File Tidak Sesuai (LD2.28)
   - [ ] **ID - 3960** Alert Semua Field Belum Diisi (LD2.29)
 
-### Tambah Driver Massal
+### Tambah Driver Massal (Jerrie)
 
 - [ ] Onboarding
 
@@ -132,45 +132,7 @@
   - [ ] **ID - 4138** Alert Belum Pilih Driver (LD 4.12)
   - [ ] **ID - 4139** Popup Masih Ada Draft (LD 4.13)
 
-- [ ] Upload Excel
-  - [ ] **ID - 3797** Tambah Armada Excel Default (LD2)
-  - [ ] **ID - 3798** Tambah Armada Excel Mengunggah (LD2.1)
-  - [ ] **ID - 3799** Alert Masih Ada Draft (LD2.1A)
-  - [ ] **ID - 3800** Popup Masih Ada Draft (LD2.1B)
-  - [ ] **ID - 3801** Pencarian Riwayat Hover (LD2.2)
-  - [ ] **ID - 3802** Pencarian Riwayat Typing (LD2.3)
-  - [ ] **ID - 3803** Pencarian Riwayat Ditemukan (LD2.4)
-  - [ ] **ID - 3804** Pencarian Riwayat Tidak Ditemukan (LD2.5)
-  - [ ] **ID - 3805** Sorting Riwayat Ascending (LD2.6)
-  - [ ] **ID - 3806** Sorting Riwayat Descending (LD2.7)
-  - [ ] **ID - 3807** Alert Gagal Unggah File (LD2.8)
-  - [ ] **ID - 3808** Riwayat Tambah Armada Massal Gagal Upload (LD2.9)
-  - [ ] **ID - 3809** Alert Berhasil Upload (LD2.10)
-  - [ ] **ID - 3810** Preview Armada (LD2.11)
-  - [ ] **ID - 3811** Preview Armada Scrolling 1 (LD2.12)
-  - [ ] **ID - 3812** Preview Armada Scrolling 2 (LD2.13)
-  - [ ] **ID - 3813** Hover Foto Armada (LD2.14)
-  - [ ] **ID - 3814** Popup Upload Foto Armada (LD2.15)
-  - [ ] **ID - 3815** Popup Upload Foto Armada Process (LD2.16)
-  - [ ] **ID - 3816** Popup Foto Armada Terupload (LD2.17)
-  - [ ] **ID - 3817** Alert Popup Foto Armada Wajib Diisi (LD2.17B)
-  - [ ] **ID - 3818** Alert Popup File Melebihi Batas (LD2.17C)
-  - [ ] **ID - 3819** Foto Armada Terisi (LD2.18)
-  - [ ] **ID - 3820** File Dokumen Armada Terisi (LD2.19)
-  - [ ] **ID - 3821** Semua Field Terisi (LD2.20)
-  - [ ] **ID - 3822** Alert Field Belum Terisi (LD2.21)
-  - [ ] **ID - 3823** Alert Field Belum Terisi 2 (LD2.22)
-  - [ ] **ID - 3824** Alert Berhasil Tambah Armada (LD2.23)
-  - [ ] **ID - 3825** Pencarian Preview Armada Hover (LD2.24)
-  - [ ] **ID - 3826** Pencarian Preview Armada Typing (LD2.25)
-  - [ ] **ID - 3827** Pencarian Preview Armada Ditemukan (LD2.26)
-  - [ ] **ID - 3828** Pencarian Preview Armada Tidak Ditemukan (LD2.27)
-  - [ ] **ID - 3829** Checkbox Preview Armada Terpilih (LD2.28)
-  - [ ] **ID - 3830** Popup Konfirmasi Hapus (LD2.29)
-  - [ ] **ID - 3831** Alert Berhasil Hapus (LD2.30)
-  - [ ] **ID - 3832** Alert Belum Pilih Armada Untuk Dihapus (LD2.31)
-
-### Manajemen Driver
+### Manajemen Driver (Cakra)
 
 - [ ] Initial Setup Driver
 
@@ -288,7 +250,7 @@
   - [ ] **ID - 4057** SIM Renewal Process (LD9.6)
   - [ ] **ID - 4058** Bulk SIM Operations (LD9.7)
 
-### Ubah Driver
+### Ubah Driver (Syahrul)
 
 - [ ] Form Ubah Driver
   - [ ] **ID - 4047** Form Ubah Driver Terverifikasi (LD8)
