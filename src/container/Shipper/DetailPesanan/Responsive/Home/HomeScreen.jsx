@@ -113,7 +113,9 @@ const DetailPesananScreen = ({
             <div className="text-sm font-bold">Rp1.021.583</div>
           </div>
         )}
-        <FooterButton />
+        <FooterButton
+          orderStatus={dataDetailPesanan?.dataStatusPesanan?.orderStatus}
+        />
       </ResponsiveFooter>
     </FormResponsiveLayout>
   );
