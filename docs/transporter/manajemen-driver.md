@@ -37,7 +37,7 @@
   - [ ] **ID - 3959** Alert Format File Tidak Sesuai (LD2.28)
   - [ ] **ID - 3960** Alert Semua Field Belum Diisi (LD2.29)
 
-### Tambah Driver Massal (Cakra)
+### Tambah Driver Massal (Jerrie)
 
 - [ ] Onboarding
 

@@ -68,7 +68,7 @@
   - [ ] **ID - 3681** Alert Estimasi Pemasangan GPS Wajib Diisi (LD2.53)
   - [ ] **ID - 3682** Alert Field Yang Kosong (LD2.54)
 
-### Tambah Armada Massal (Cakra)
+### Tambah Armada Massal (Jerrie)
 
 - [ ] Informasi Sistem
 
