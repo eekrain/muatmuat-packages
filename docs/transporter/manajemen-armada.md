@@ -1,4 +1,4 @@
-### Tambah Armada Manual
+### Tambah Armada Manual (Ari)
 
 - [ ] Tambah Armada
 
@@ -68,7 +68,7 @@
   - [ ] **ID - 3681** Alert Estimasi Pemasangan GPS Wajib Diisi (LD2.53)
   - [ ] **ID - 3682** Alert Field Yang Kosong (LD2.54)
 
-### Tambah Armada Massal
+### Tambah Armada Massal (Cakra)
 
 - [ ] Informasi Sistem
 
@@ -215,7 +215,7 @@
   - [ ] **ID - 3924** Alert Field Belum Diisi B (LD4.14B)
   - [ ] **ID - 3925** Alert Field Belum Diisi C (LD4.14C)
 
-### Manajemen Armada
+### Manajemen Armada (Cakra)
 
 - [ ] Initial Setup Armada
 
@@ -346,7 +346,7 @@
   - [ ] **ID - 3791** Popup Pilih Driver Terisi (LD9.6)
   - [ ] **ID - 3792** Popup Masa Berlaku SIM Berakhir (LD9.7)
 
-### Ubah Armada
+### Ubah Armada (Ari)
 
 - [ ] Edit Armada
 

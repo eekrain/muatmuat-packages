@@ -1,4 +1,4 @@
-### Tambah Driver Form
+### Tambah Driver Form (Syahrul)
 
 - [ ] Registrasi Driver
 
@@ -37,7 +37,7 @@
   - [ ] **ID - 3959** Alert Format File Tidak Sesuai (LD2.28)
   - [ ] **ID - 3960** Alert Semua Field Belum Diisi (LD2.29)
 
-### Tambah Driver Massal
+### Tambah Driver Massal (Cakra)
 
 - [ ] Onboarding
 
@@ -170,7 +170,7 @@
   - [ ] **ID - 3831** Alert Berhasil Hapus (LD2.30)
   - [ ] **ID - 3832** Alert Belum Pilih Armada Untuk Dihapus (LD2.31)
 
-### Manajemen Driver
+### Manajemen Driver (Cakra)
 
 - [ ] Initial Setup Driver
 
@@ -288,7 +288,7 @@
   - [ ] **ID - 4057** SIM Renewal Process (LD9.6)
   - [ ] **ID - 4058** Bulk SIM Operations (LD9.7)
 
-### Ubah Driver
+### Ubah Driver (Syahrul)
 
 - [ ] Form Ubah Driver
   - [ ] **ID - 4047** Form Ubah Driver Terverifikasi (LD8)
