@@ -1,3 +1,4 @@
+import { useParams } from "next/navigation";
 import { useState } from "react";
 
 import {
@@ -7,7 +8,7 @@ import {
 } from "@/components/Bottomsheet/Bottomsheet";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
-import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
 
 import { BottomsheetMenuList } from "./components/BottomsheetMenuList";
 import { DriverInfo } from "./components/DriverInfo";
@@ -28,7 +29,9 @@ const DetailPesananScreen = ({
   dataRingkasanPembayaran,
   documentShippingDetail,
 }) => {
-  const navigation = useResponsiveNavigation();
+  const params = useParams();
+  const { data: dataDetailPesanan, isLoading: isLoadingDetailPesanan } =
+    useGetDetailPesananData(params.orderId);
 
   const [isOpenBottomsheet, setIsOpenBottomsheet] = useState(false);
 
@@ -52,8 +55,16 @@ const DetailPesananScreen = ({
 
         {false && <FleetStatusAlert />}
         {false && <DriverQRCodeAlert />}
-        {true && <OrderInfo />}
-        {true && <DriverInfo />}
+
+        <OrderInfo dataStatusPesanan={dataDetailPesanan?.dataStatusPesanan} />
+
+        {dataDetailPesanan?.dataStatusPesanan && (
+          <DriverInfo
+            driverStatus={dataDetailPesanan?.dataStatusPesanan?.driverStatus}
+            orderId={dataDetailPesanan?.dataStatusPesanan?.orderId}
+            orderStatus={dataDetailPesanan?.dataStatusPesanan?.orderStatus}
+          />
+        )}
 
         <TabsInfo dataDetailPIC={dataDetailPIC} />
 

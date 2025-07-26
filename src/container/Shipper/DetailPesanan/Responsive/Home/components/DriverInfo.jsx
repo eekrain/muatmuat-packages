@@ -1,107 +1,63 @@
+import { useState } from "react";
+
 import { EllipsisVertical } from "lucide-react";
 
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Button from "@/components/Button/Button";
+import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
-export const DriverInfo = () => {
+export const DriverInfo = ({ driverStatus = [], orderId, orderStatus }) => {
   const navigation = useResponsiveNavigation();
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const DETAIL_STATUS_DRIVER = [
+    OrderStatusEnum.PREPARE_DOCUMENT,
+    OrderStatusEnum.DOCUMENT_DELIVERY,
+    OrderStatusEnum.WAITING_REPAYMENT_1,
+    OrderStatusEnum.WAITING_REPAYMENT_2,
+    OrderStatusEnum.COMPLETED,
+  ];
+
+  if (!driverStatus || driverStatus.length === 0) return null;
+  const driver = driverStatus[currentIndex] || {};
 
   return (
     <div className="box-border flex w-full flex-col items-center justify-center border-b-2 border-[#461B02] bg-white p-5">
       <div className="flex w-full flex-col items-start gap-4">
         {/* Status Badge */}
         <div className="flex w-full items-center justify-between">
-          {false && (
+          {driver.orderStatus && (
             <BadgeStatusPesanan
-              variant="primary"
+              variant={
+                driver.orderStatus?.startsWith("CANCELED")
+                  ? "error"
+                  : driver.orderStatus === OrderStatusEnum.COMPLETED
+                    ? "success"
+                    : driver.driverStatus?.startsWith("WAITING")
+                      ? "warning"
+                      : "primary"
+              }
               className="w-fit text-sm font-semibold"
             >
-              Antri di Lokasi Bongkar 1
+              {driver.driverStatusTitle}
             </BadgeStatusPesanan>
           )}
-          {false && (
-            <BadgeStatusPesanan
-              variant="primary"
-              className="w-fit text-sm font-semibold"
-            >
-              Sedang Muat di Lokasi 1
-            </BadgeStatusPesanan>
-          )}
-          {false && (
-            <BadgeStatusPesanan
-              variant="primary"
-              className="w-fit text-sm font-semibold"
-            >
-              Sedang Muat
-            </BadgeStatusPesanan>
-          )}
-          {false && (
-            <BadgeStatusPesanan
-              variant="warning"
-              className="w-fit text-sm font-semibold"
-            >
-              Menunggu Pelunasan
-            </BadgeStatusPesanan>
-          )}
-          {false && (
-            <BadgeStatusPesanan
-              variant="primary"
-              className="w-fit text-sm font-semibold"
-            >
-              Dokumen Sedang Disiapkan
-            </BadgeStatusPesanan>
-          )}
-          {false && (
-            <BadgeStatusPesanan
-              variant="primary"
-              className="w-fit text-sm font-semibold"
-            >
-              Proses Pengiriman Dokumen
-            </BadgeStatusPesanan>
-          )}
-
-          {true && (
-            <BadgeStatusPesanan
-              variant="success"
-              className="w-fit text-sm font-semibold"
-            >
-              Selesai
-            </BadgeStatusPesanan>
-          )}
-
-          {true && <EllipsisVertical />}
+          <EllipsisVertical />
         </div>
 
         <AvatarDriver
-          name="Noel Gallagher"
-          image="https://picsum.photos/50"
-          licensePlate="B 123456"
+          name={driver.name}
+          image={driver.driverImage}
+          licensePlate={driver.licensePlate}
         />
       </div>
 
       {/* Action Buttons */}
-      {false && (
-        <div className="mt-4 flex w-full flex-row items-center justify-center gap-3">
-          <Button
-            variant="muatparts-primary-secondary"
-            className="h-7 w-full text-xs font-semibold"
-          >
-            Hubungi Driver
-          </Button>
-          <Button
-            variant="muatparts-primary"
-            className="h-7 w-full text-xs font-semibold"
-            onClick={() => navigation.push("/fleet-track")}
-            type="button"
-          >
-            Lacak Armada
-          </Button>
-        </div>
-      )}
-      {true && (
-        <div className="mt-4 flex w-full flex-row items-center justify-center gap-3">
+      <div className="mt-4 flex w-full flex-row items-center justify-center gap-3">
+        {driver.orderStatus?.startsWith("CANCELED") ||
+        DETAIL_STATUS_DRIVER.includes(orderStatus) ? (
           <Button
             variant="muatparts-primary-secondary"
             className="h-7 w-full text-xs font-semibold"
@@ -109,15 +65,46 @@ export const DriverInfo = () => {
           >
             Detail Status Driver
           </Button>
-        </div>
-      )}
-      {true && (
-        <div className="mt-4 flex items-center justify-center gap-1">
-          <div className="h-2 w-2 rounded-full bg-neutral-400"></div>
-          <div className="h-2 w-2 rounded-full bg-neutral-400"></div>
-          <div className="h-2 w-8 rounded-full bg-primary-700"></div>
-          <div className="h-2 w-2 rounded-full bg-neutral-400"></div>
-          <div className="h-2 w-2 rounded-full bg-neutral-400"></div>
+        ) : (
+          <>
+            <Button
+              variant="muatparts-primary-secondary"
+              className="h-7 w-full text-xs font-semibold"
+              onClick={() => {}}
+            >
+              Hubungi Driver
+            </Button>
+            <Button
+              variant="muatparts-primary"
+              className="h-7 w-full text-xs font-semibold"
+              onClick={() =>
+                navigation.push("/fleet-track", {
+                  driverId: driver.driverId,
+                })
+              }
+            >
+              Lacak Armada
+            </Button>
+          </>
+        )}
+      </div>
+
+      {/* Slider Navigation & Indicator (if multiple drivers) */}
+      {driverStatus.length > 1 && (
+        <div className="mt-4 flex w-full flex-col items-center gap-2">
+          {/* Dots Indicator */}
+          <div className="mt-1 flex flex-row items-center gap-1">
+            {driverStatus.map((_, idx) => (
+              <div
+                key={idx}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  idx === currentIndex
+                    ? "w-8 bg-primary-700"
+                    : "w-2 bg-neutral-400"
+                }`}
+              ></div>
+            ))}
+          </div>
         </div>
       )}
     </div>

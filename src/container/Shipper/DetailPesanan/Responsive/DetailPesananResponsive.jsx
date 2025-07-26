@@ -40,6 +40,7 @@ const DetailPesananResponsive = ({}) => {
 
   const { data } = useGetDetailPesananData("12345");
 
+  const dataStatusPesanan = data?.dataStatusPesanan;
   const dataDetailPIC = data?.dataDetailPIC;
   const dataRingkasanPembayaran = data?.dataRingkasanPembayaran;
   const documentShippingDetail =
@@ -76,10 +77,15 @@ const DetailPesananResponsive = ({}) => {
         path="/order-summary"
         component={<OrderSummaryScreen />}
       />
-      <ResponsiveRoute path="/fleet-track" component={<FleetTrackScreen />} />
+      <ResponsiveRoute
+        path="/fleet-track"
+        component={<FleetTrackScreen dataStatusPesanan={dataStatusPesanan} />}
+      />
       <ResponsiveRoute
         path="/detail-driver-status"
-        component={<DriverStatusDetailScreen />}
+        component={
+          <DriverStatusDetailScreen dataStatusPesanan={dataStatusPesanan} />
+        }
       />
       <ResponsiveRoute path="/proof-photo" component={<ProofPhotoScreen />} />
     </ResponsiveProvider>

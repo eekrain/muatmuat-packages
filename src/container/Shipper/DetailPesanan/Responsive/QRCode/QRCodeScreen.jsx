@@ -6,7 +6,10 @@ import {
   BottomSheetHeader,
 } from "@/components/Bottomsheet/Bottomsheet";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
-import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import {
+  useResponsiveNavigation,
+  useResponsiveRouteParams,
+} from "@/lib/responsive-navigation";
 import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
 
 import DriverCard from "./components/DriverCard";
@@ -14,6 +17,7 @@ import QRCode from "./components/QRCode";
 import ShareVia from "./components/ShareVia";
 
 const QRCodeScreen = () => {
+  const params = useResponsiveRouteParams();
   const [isOpenShareVia, setIsOpenShareVia] = useState(false);
   const navigation = useResponsiveNavigation();
   const { data: dataDetailPesanan, isLoading: isLoadingDetailPesanan } =

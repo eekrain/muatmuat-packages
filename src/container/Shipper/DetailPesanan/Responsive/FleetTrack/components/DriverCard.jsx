@@ -1,37 +1,66 @@
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
+
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
+import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { useResponsiveRouteParams } from "@/lib/responsive-navigation";
 
-const DriverCard = () => {
+const DriverCard = ({ data = [] }) => {
+  const params = useResponsiveRouteParams();
+  const searchParams = useSearchParams();
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const isFleetTrack = searchParams.get("screen")?.includes("fleet-track");
+
+  const { driverId } = params;
+
+  // Find the specific driver from data
+
+  // Determine badge variant based on driver status
+  const getBadgeVariant = () => {
+    if (driver.orderStatus?.startsWith("CANCELED")) return "error";
+    if (driver.orderStatus === OrderStatusEnum.COMPLETED) return "success";
+    if (driver.driverStatus?.startsWith("WAITING")) return "warning";
+    return "primary";
+  };
+
+  if (!data || data.length === 0) return null;
+  const driver = isFleetTrack
+    ? data.find((d) => d.driverId === driverId) || data[0] || {}
+    : data[currentIndex] || {};
+
   return (
     <div className="box-border flex w-full flex-col items-center justify-center border-b-2 border-[#461B02] bg-white p-5">
       <div className="flex w-full flex-col items-start gap-4">
         {/* Status Badge */}
-        <BadgeStatusPesanan
-          variant="primary"
-          className="w-fit text-sm font-semibold"
-        >
-          Sedang Muat
-          {/* ------------------------------------------ */}
-          {/* Menuju ke Lokasi Muat 1 */}
-          {/* Tiba di Lokasi Muat 1 */}
-          {/* Antri di Lokasi Muat 1 */}
-          {/* Sedang Muat di Lokasi 1 */}
-          {/* ------------------------------------------ */}
-          {/* Menuju ke Lokasi Muat 2 */}
-        </BadgeStatusPesanan>
+        {driver.driverStatusTitle && (
+          <BadgeStatusPesanan
+            variant={getBadgeVariant()}
+            className="w-fit text-sm font-semibold"
+          >
+            {driver.driverStatusTitle}
+          </BadgeStatusPesanan>
+        )}
 
         <AvatarDriver
-          name="Noel Gallagher"
-          image="https://picsum.photos/50"
-          licensePlate="B 123456"
+          name={driver.name}
+          image={driver.driverImage}
+          licensePlate={driver.licensePlate}
         />
-        {true && (
+        {/* Show stepper dots only if NOT in fleet-track page and multiple drivers */}
+        {!isFleetTrack && data.length > 1 && (
           <div className="mx-auto flex items-center justify-center gap-1">
-            <div className="h-2 w-2 rounded-full bg-neutral-400"></div>
-            <div className="h-2 w-2 rounded-full bg-neutral-400"></div>
-            <div className="h-2 w-8 rounded-full bg-primary-700"></div>
-            <div className="h-2 w-2 rounded-full bg-neutral-400"></div>
-            <div className="h-2 w-2 rounded-full bg-neutral-400"></div>
+            {data.map((_, idx) => (
+              <div
+                key={idx}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  idx === (currentIndex || 0)
+                    ? "w-8 bg-primary-700"
+                    : "w-2 bg-neutral-400"
+                }`}
+              ></div>
+            ))}
           </div>
         )}
       </div>

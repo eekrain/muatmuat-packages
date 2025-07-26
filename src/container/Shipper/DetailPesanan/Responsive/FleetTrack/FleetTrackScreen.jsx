@@ -11,20 +11,26 @@ import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import { MapWithPath } from "@/components/MapContainer/MapWithPath";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
-import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import {
+  useResponsiveNavigation,
+  useResponsiveRouteParams,
+} from "@/lib/responsive-navigation";
 import { useGetTrackingLocations } from "@/services/Shipper/lacak-armada/getTrackingLocations";
 
 import DriverCard from "./components/DriverCard";
 import { MarkerLegends } from "./components/MarkerLegends";
 
-const FleetTrackScreen = () => {
+const FleetTrackScreen = ({ dataStatusPesanan }) => {
   const navigation = useResponsiveNavigation();
+  const params = useResponsiveRouteParams();
+
+  const { driverId, orderId } = params;
 
   const [isOpenBottomsheet, setIsOpenBottomsheet] = useState(false);
 
   const { data } = useGetTrackingLocations({
-    orderId: "123", // Replace with actual order ID
-    driverId: "456", // Replace with actual driver ID
+    orderId,
+    driverId,
   });
 
   return (
@@ -38,7 +44,7 @@ const FleetTrackScreen = () => {
       onClickBackButton={() => navigation.pop()}
     >
       <div className="mb-16 bg-neutral-200">
-        <DriverCard />
+        <DriverCard data={dataStatusPesanan.driverStatus} />
 
         {data && (
           <MapWithPath
