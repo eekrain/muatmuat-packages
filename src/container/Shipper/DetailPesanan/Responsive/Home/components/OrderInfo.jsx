@@ -34,10 +34,10 @@ export const OrderInfo = ({ dataStatusPesanan }) => {
     ) {
       const first = dataStatusPesanan.otherStatus[0];
       // Jika hanya satu status, tampilkan hanya orderTitle saja
-      if (dataStatusPesanan.otherStatus.length === 1) {
-        return first.orderTitle;
-      }
-      // Jika lebih dari satu, tampilkan orderTitle dan jumlah unit
+      //   if (dataStatusPesanan.otherStatus.length === 1) {
+      //     return first.orderTitle;
+      //   }
+      // Jika lebih dari satu, selalu tampilkan orderTitle dan jumlah unit (meskipun title sama)
       return `${first.orderTitle} : ${first.unitFleetStatus} Unit`;
     }
     // Jika tidak, fallback ke orderStatusTitle utama
