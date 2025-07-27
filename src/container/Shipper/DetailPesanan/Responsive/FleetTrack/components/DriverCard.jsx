@@ -34,19 +34,19 @@ const DriverCard = ({ data = [] }) => {
     <div className="box-border flex w-full flex-col items-center justify-center border-b-2 border-[#461B02] bg-white p-5">
       <div className="flex w-full flex-col items-start gap-4">
         {/* Status Badge */}
-        {driver.driverStatusTitle && (
+        {driver?.driverStatusTitle && (
           <BadgeStatusPesanan
             variant={getBadgeVariant()}
             className="w-fit text-sm font-semibold"
           >
-            {driver.driverStatusTitle}
+            {driver?.driverStatusTitle}
           </BadgeStatusPesanan>
         )}
 
         <AvatarDriver
-          name={driver.name}
-          image={driver.driverImage}
-          licensePlate={driver.licensePlate}
+          name={driver?.name}
+          image={driver?.driverImage}
+          licensePlate={driver?.licensePlate}
         />
         {/* Show stepper dots only if NOT in fleet-track page and multiple drivers */}
         {!isFleetTrack && data.length > 1 && (

@@ -44,7 +44,7 @@ const FleetTrackScreen = ({ dataStatusPesanan }) => {
       onClickBackButton={() => navigation.pop()}
     >
       <div className="mb-16 bg-neutral-200">
-        <DriverCard data={dataStatusPesanan.driverStatus} />
+        <DriverCard data={dataStatusPesanan?.driverStatus} />
 
         {data && (
           <MapWithPath
