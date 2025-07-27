@@ -23,19 +23,19 @@ export const OrderInfo = ({ dataStatusPesanan }) => {
   const { t } = useTranslation();
 
   const orderStatusLabel =
-    dataStatusPesanan.orderStatus !== OrderStatusEnum.COMPLETED &&
-    !dataStatusPesanan.orderStatus.startsWith("CANCELED") &&
-    !dataStatusPesanan.orderStatus.startsWith("WAITING_PAYMENT") &&
-    dataStatusPesanan.unitFleetStatus &&
-    dataStatusPesanan.unitFleetStatus > 1
-      ? `${t(OrderStatusTitle[dataStatusPesanan.orderStatus])}: ${dataStatusPesanan.unitFleetStatus} Unit`
-      : t(OrderStatusTitle[dataStatusPesanan.orderStatus]);
+    dataStatusPesanan?.orderStatus !== OrderStatusEnum.COMPLETED &&
+    !dataStatusPesanan?.orderStatus?.startsWith("CANCELED") &&
+    !dataStatusPesanan?.orderStatus?.startsWith("WAITING_PAYMENT") &&
+    dataStatusPesanan?.unitFleetStatus &&
+    dataStatusPesanan?.unitFleetStatus > 1
+      ? `${t(OrderStatusTitle[dataStatusPesanan?.orderStatus])}: ${dataStatusPesanan?.unitFleetStatus} Unit`
+      : t(OrderStatusTitle[dataStatusPesanan?.orderStatus]);
 
-  const statusVariant = dataStatusPesanan.orderStatus.startsWith("WAITING")
+  const statusVariant = dataStatusPesanan?.orderStatus?.startsWith("WAITING")
     ? "warning"
-    : dataStatusPesanan.orderStatus.startsWith("CANCELED")
+    : dataStatusPesanan?.orderStatus?.startsWith("CANCELED")
       ? "error"
-      : dataStatusPesanan.orderStatus === OrderStatusEnum.COMPLETED
+      : dataStatusPesanan?.orderStatus === OrderStatusEnum.COMPLETED
         ? "success"
         : "primary";
 
