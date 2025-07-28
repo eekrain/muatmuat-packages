@@ -192,6 +192,9 @@ export const ModalDetailPembayaran = ({
 
           <div className="mt-6 w-full pr-[13px]">
             <Button
+              appearance={{
+                iconClassname: "text-primary-700",
+              }}
               iconLeft="/icons/download16.svg"
               variant="muatparts-primary-secondary"
               className="h-8 w-full"

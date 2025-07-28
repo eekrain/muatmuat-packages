@@ -246,7 +246,7 @@ const DetailPesananHeader = ({
                   className="h-8"
                   type="button"
                   appearance={{
-                    iconClassName: "-mt-[4px]",
+                    iconClassName: "-mt-[4px] text-primary-700",
                   }}
                 >
                   Unduh
