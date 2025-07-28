@@ -67,7 +67,7 @@ export default function TambahDriverPage() {
     }
 
     if (!formData.masaBerlakuSIM) {
-      newErrors.masaBerlakuSIM = "Masa berlaku SIM wajib diisi";
+      newErrors.masaBerlakuSIM = "Masa berlaku SIM B2 Umum wajib diisi";
     }
 
     if (!formData.fotoSIM) {
@@ -126,7 +126,7 @@ export default function TambahDriverPage() {
         </div>
 
         {/* Information Section */}
-        <Card className="mb-6 p-8">
+        <Card className="h-max-[205px] mb-6 h-full w-full max-w-[818px] border-none p-8">
           <div className="space-y-6">
             <h2 className="text-lg font-semibold text-neutral-900">
               Informasi Driver
@@ -137,7 +137,7 @@ export default function TambahDriverPage() {
               <FormLabel required className="text-neutral-600">
                 Nama Lengkap*
               </FormLabel>
-              <FormContainer>
+              <FormContainer className={"flex w-full max-w-[328px] flex-col"}>
                 <Input
                   type="text"
                   placeholder="Masukkan Nama Lengkap"
@@ -146,10 +146,11 @@ export default function TambahDriverPage() {
                     handleInputChange("namaLengkap", e.target.value)
                   }
                   error={errors.namaLengkap}
-                  className="w-full max-w-[328px]"
+                  className="w-full"
                 />
                 {errors.namaLengkap && (
-                  <span className="mt-1 text-xs text-error-600">
+                  // Add a top margin here for consistent spacing
+                  <span className="-mt-6 text-xs text-error-400">
                     {errors.namaLengkap}
                   </span>
                 )}
@@ -157,9 +158,9 @@ export default function TambahDriverPage() {
 
               {/* No. WhatsApp */}
               <FormLabel required className="text-neutral-600">
-                No. Whatsapp*
+                No.Whatsapp*
               </FormLabel>
-              <FormContainer>
+              <FormContainer className="flex w-full max-w-[328px] flex-col">
                 <Input
                   type="text"
                   placeholder="Contoh : 08xxxxxxxxxxx"
@@ -168,10 +169,10 @@ export default function TambahDriverPage() {
                     handleInputChange("noWhatsapp", e.target.value)
                   }
                   error={errors.noWhatsapp}
-                  className="w-full max-w-[328px]"
+                  className="w-full"
                 />
                 {errors.noWhatsapp && (
-                  <span className="mt-1 text-xs text-error-600">
+                  <span className="-mt-6 block text-xs text-error-400">
                     {errors.noWhatsapp}
                   </span>
                 )}
@@ -181,7 +182,7 @@ export default function TambahDriverPage() {
         </Card>
 
         {/* File and Photo Section */}
-        <Card className="mb-6 p-8">
+        <Card className="mb-6 border-none p-8">
           <div className="space-y-6">
             <div>
               <h2 className="mb-4 text-lg font-semibold text-neutral-900">
@@ -211,9 +212,9 @@ export default function TambahDriverPage() {
                     className="w-[112px]"
                     buttonText="Unggah"
                   />
-                  <span className="text-xs text-neutral-600">
+                  {/* <span className="text-xs text-neutral-600">
                     Format file jpg/png/pdf maks. 10MB
-                  </span>
+                  </span> */}
                 </div>
               </div>
 
@@ -222,21 +223,23 @@ export default function TambahDriverPage() {
                 <FormLabel required className="text-neutral-600">
                   Masa Berlaku SIM B2 Umum*
                 </FormLabel>
-                <FormContainer>
-                  <DatePicker
-                    value={formData.masaBerlakuSIM}
-                    onChange={(date) =>
-                      handleInputChange("masaBerlakuSIM", date)
-                    }
-                    placeholder="Pilih Tanggal"
-                    error={errors.masaBerlakuSIM}
-                    className="w-full max-w-[328px]"
-                  />
-                  {errors.masaBerlakuSIM && (
-                    <span className="mt-1 text-xs text-error-600">
-                      {errors.masaBerlakuSIM}
-                    </span>
-                  )}
+                <FormContainer className="max-w-[328px flex w-full">
+                  <div className="w-full max-w-[328px]">
+                    <DatePicker
+                      value={formData.masaBerlakuSIM}
+                      onChange={(date) =>
+                        handleInputChange("masaBerlakuSIM", date)
+                      }
+                      placeholder="Pilih Tanggal Masa Berlaku SIM B2 Umum"
+                      error={errors.masaBerlakuSIM}
+                      className="w-full"
+                    />
+                    {errors.masaBerlakuSIM && (
+                      <span className="mt-1 block text-xs text-error-400">
+                        {errors.masaBerlakuSIM}
+                      </span>
+                    )}
+                  </div>
                 </FormContainer>
               </div>
 
@@ -245,7 +248,7 @@ export default function TambahDriverPage() {
                 <FormLabel required className="text-neutral-600">
                   Foto SIM B2 Umum*
                 </FormLabel>
-                <div className="flex items-center gap-2">
+                <div className="flex w-full items-center gap-2">
                   <FileUpload
                     value={formData.fotoSIM}
                     onSuccess={(file) => handleInputChange("fotoSIM", file)}
@@ -255,9 +258,9 @@ export default function TambahDriverPage() {
                     className="w-[112px]"
                     buttonText="Unggah"
                   />
-                  <span className="text-xs text-neutral-600">
+                  {/* <span className="text-xs text-neutral-600">
                     Format file jpg/png/pdf maks. 10MB
-                  </span>
+                  </span> */}
                 </div>
               </div>
 

@@ -51,11 +51,14 @@ const FileUpload = ({
     }
   );
 
+  const displayFormats = acceptedFormats
+    .map((format) => format.replace(".", ""))
+    .join("/");
+
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // File size validation
     if (file.size > maxSize * 1024 * 1024) {
       onError("File size exceeds maximum limit");
       return;
@@ -120,11 +123,11 @@ const FileUpload = ({
           </div>
         </div>
       ) : (
-        <div className="flex items-center">
+        <div className="flex w-full items-center">
+          {/* --- MODIFIED: Added shrink-0 and styling to match screenshot --- */}
           <Button
-            className="self-center"
+            className="shrink-0 rounded-full bg-amber-400 px-8 py-2 text-sm font-semibold text-black hover:bg-amber-500"
             name="upload"
-            color="primary"
             onClick={() => fileRef.current.click()}
           >
             {label}
@@ -135,11 +138,12 @@ const FileUpload = ({
               <ProgressBar progress={progress} />
             </div>
           ) : (
-            <div className="ml-2">
-              <div className="text-sm leading-[16.8px] text-neutral-600">
-                Format file {acceptedFormats.join("/")}
+            /* --- MODIFIED: Increased spacing and removed border --- */
+            <div className="ml-4 flex flex-1 flex-col">
+              <div className="text-sm leading-tight text-neutral-600">
+                Format file {displayFormats}
               </div>
-              <div className="text-sm leading-[16.8px] text-neutral-600">
+              <div className="text-sm leading-tight text-neutral-600">
                 maks {maxSize}MB
               </div>
             </div>
