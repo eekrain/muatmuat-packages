@@ -6,11 +6,22 @@ import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import Button from "@/components/Button/Button";
 import { ExpandableTextArea } from "@/components/Form/ExpandableTextArea";
 import { toast } from "@/lib/toast";
+import { formatDate } from "@/lib/utils/dateFormat";
 
-const ContentUlasan = ({ type }) => {
-  const [rating, setRating] = useState(0);
+const ContentUlasan = ({
+  driverId,
+  name,
+  phoneNumber,
+  profileImage,
+  licensePlate,
+  canReview,
+  reviewedAt,
+  rating,
+  review,
+}) => {
+  const [ratingView, setRatingView] = useState(rating);
   const [hoveredStar, setHoveredStar] = useState(0);
-  const [review, setReview] = useState("");
+  const [reviewRating, setReviewRating] = useState(review);
   const [validateUlasan, setvalidateUlasan] = useState(false);
   const rateView = [
     "",
@@ -24,7 +35,7 @@ const ContentUlasan = ({ type }) => {
   const maxLength = 500;
 
   const handleStarClick = (starIndex) => {
-    setRating(starIndex);
+    setRatingView(starIndex);
   };
 
   const handleStarHover = (starIndex) => {
@@ -36,16 +47,15 @@ const ContentUlasan = ({ type }) => {
   };
 
   const handleReviewChange = (value) => {
-    console.log(value);
     if (value.length <= maxLength) {
-      setReview(value);
+      setReviewRating(value);
       setvalidateUlasan(false);
     }
   };
 
   const handleSave = () => {
-    if (rating == 0) {
-      toast.error("Rating driver wajib diisi");
+    if (ratingView == 0) {
+      toast.error("ratingView driver wajib diisi");
     } else {
       alert("jalankan api");
     }
@@ -57,19 +67,19 @@ const ContentUlasan = ({ type }) => {
         {/* Profile Section */}
         <div className="flex items-center gap-2">
           <AvatarDriver
-            name="Noel Gallagher"
-            image="https://picsum.photos/50"
-            licensePlate="B 123456"
+            name={name}
+            image={profileImage}
+            licensePlate={licensePlate}
           />
         </div>
-        {type == "list" ? (
+        {!canReview ? (
           <div className="flex flex-col gap-3">
             <div className="flex flex-col">
               <span className="text-xs font-medium text-[#7B7B7B]">
                 Tanggal Ulasan
               </span>
               <div className="text-xs font-medium text-gray-900">
-                24 Sep 2024 18:00 WIB
+                {formatDate(reviewedAt)}
               </div>
             </div>
             <div className="flex flex-col">
@@ -79,32 +89,25 @@ const ContentUlasan = ({ type }) => {
               <div className="flex items-center gap-3">
                 <div className="flex gap-1">
                   {[1, 2, 3, 4, 5].map((starIndex) => (
-                    <button
+                    <Star
                       key={starIndex}
-                      onClick={() => handleStarClick(starIndex)}
-                      onMouseEnter={() => handleStarHover(starIndex)}
-                      onMouseLeave={handleStarLeave}
-                      className="p-1 transition-transform hover:scale-110"
-                    >
-                      <Star
-                        className={`h-6 w-6 transition-colors ${
-                          starIndex <= (hoveredStar || rating)
-                            ? "fill-yellow-400 text-yellow-400"
-                            : "text-gray-300"
-                        }`}
-                      />
-                    </button>
+                      className={`h-6 w-6 transition-colors ${
+                        starIndex <= (hoveredStar || ratingView)
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "text-gray-300"
+                      }`}
+                    />
                   ))}
                 </div>
                 <span className="text-xs font-medium text-gray-900">
-                  {rateView[hoveredStar || rating]}
+                  {rateView[hoveredStar || ratingView]}
                 </span>
               </div>
             </div>
           </div>
         ) : (
           <>
-            {/* Rating Section */}
+            {/* ratingView Section */}
             <div className="">
               <span className="mb-3 text-base font-medium text-gray-900">
                 Rating Driver<span className="text-gray-900">*</span>
@@ -121,7 +124,7 @@ const ContentUlasan = ({ type }) => {
                     >
                       <Star
                         className={`h-6 w-6 transition-colors ${
-                          starIndex <= (hoveredStar || rating)
+                          starIndex <= (hoveredStar || ratingView)
                             ? "fill-yellow-400 text-yellow-400"
                             : "text-gray-300"
                         }`}
@@ -130,12 +133,12 @@ const ContentUlasan = ({ type }) => {
                   ))}
                 </div>
                 <span className="text-xs font-medium text-gray-900">
-                  {rateView[hoveredStar || rating]}
+                  {rateView[hoveredStar || ratingView]}
                 </span>
               </div>
             </div>
 
-            {/* Review Section */}
+            {/* reviewRating Section */}
             <div className="">
               <h4 className="mb-3 text-base font-medium text-gray-900">
                 Berikan ulasan untuk driver{" "}
@@ -145,14 +148,14 @@ const ContentUlasan = ({ type }) => {
               </h4>
               <div className="relative">
                 <ExpandableTextArea
-                  value={review}
+                  value={reviewRating}
                   maxLength={maxLength}
                   classname="w-full"
                   status={validateUlasan && "error"}
                   onChange={(event) => handleReviewChange(event.target.value)}
                   supportiveText={{
                     title: "",
-                    desc: `${review.length}/${maxLength}`,
+                    desc: `${reviewRating.length}/${maxLength}`,
                   }}
                   withCharCount
                   placeholder={"Tulis ulasan kamu mengenai driver"}

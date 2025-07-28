@@ -7,7 +7,6 @@ import "react-datepicker/dist/react-datepicker.css";
 
 import { cn } from "@/lib/utils";
 
-import style from "../DatetimePicker/DatetimePicker.module.scss";
 import ImageComponent from "../ImageComponent/ImageComponent";
 
 // Helper function to ensure we're working with a proper Date object
@@ -35,7 +34,7 @@ const DatePicker = ({
   placeholder = "Tanggal",
   className = "",
   disabled = false,
-  status = null,
+  errorMessage = null,
 }) => {
   const initialDate = ensureDate(value);
   const [selectedDate, setSelectedDate] = useState(initialDate);
@@ -46,12 +45,8 @@ const DatePicker = ({
   registerLocale("id", id);
 
   useEffect(() => {
-    if (value) {
-      const dateObj = ensureDate(value);
-      if (dateObj) {
-        setSelectedDate(dateObj);
-      }
-    }
+    const dateObj = ensureDate(value);
+    setSelectedDate(dateObj);
   }, [value]);
 
   // Click outside detection
@@ -71,22 +66,14 @@ const DatePicker = ({
   useEffect(() => {
     if (isPickerOpen && pickerRef.current) {
       const pickerRect = pickerRef.current.getBoundingClientRect();
-      const screenWidth = window.innerWidth;
-      const screenHeight = window.innerHeight;
-      const dropdownWidth = 360;
-      const dropdownHeight = 380;
       let position = {};
-      const isRightField = pickerRect.left > screenWidth / 2;
-      if (isRightField) {
+      position.top = "100%";
+      position.marginTop = "8px";
+      // Basic left/right positioning
+      if (pickerRect.left + 360 > window.innerWidth) {
         position.right = 0;
       } else {
         position.left = 0;
-      }
-      if (pickerRect.bottom + dropdownHeight > screenHeight && false) {
-        // never used. dropdown always open to bottom
-      } else {
-        position.top = "100%";
-        position.marginTop = "8px";
       }
       setDropdownPosition(position);
     }
@@ -142,22 +129,15 @@ const DatePicker = ({
   };
 
   return (
-    <div
-      className={`${style.DateTimePickerContainer} relative ${className}`}
-      ref={pickerRef}
-    >
-      <div
-        onClick={() => {
-          if (!disabled) {
-            setIsPickerOpen(!isPickerOpen);
-          }
-        }}
-      >
+    // MODIFIED: Root element now handles vertical layout for error message
+    <div className={cn("flex w-full flex-col gap-y-1", className)}>
+      <div className="relative" ref={pickerRef}>
         <div
+          onClick={() => !disabled && setIsPickerOpen(!isPickerOpen)}
           className={cn(
-            "flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 px-3",
-            status === "error" ? "border-error-400" : "",
-            "hover:border-primary-700",
+            "flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 px-3 transition-colors",
+            // MODIFIED: Border color is now based on `errorMessage` prop
+            errorMessage ? "border-error-400" : "hover:border-primary-700",
             disabled
               ? "cursor-not-allowed bg-neutral-200 hover:border-neutral-600"
               : "cursor-pointer"
@@ -165,41 +145,49 @@ const DatePicker = ({
         >
           <ImageComponent src="/icons/calendar16.svg" width={16} height={16} />
           <span
-            className={`flex-1 text-xs font-medium leading-[14.4px] ${selectedDate ? "text-neutral-900" : "text-neutral-600"}`}
+            className={`flex-1 text-xs font-medium leading-[14.4px] ${
+              selectedDate ? "text-neutral-900" : "text-neutral-600"
+            }`}
           >
             {selectedDate ? format(selectedDate, "dd MMM yyyy") : placeholder}
           </span>
         </div>
-      </div>
-      {isPickerOpen && (
-        <div
-          className="absolute z-10 w-fit max-w-[calc(100dvw-32px)] rounded-lg border border-[#E5E7F0] bg-white shadow-lg"
-          style={dropdownPosition}
-        >
-          <div className="flex max-w-[100%] overflow-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <DatePickerLib
-              selected={selectedDate}
-              onChange={handleDateChange}
-              inline
-              dateFormat="dd MMM yyyy"
-              minDate={ensureDate(minDate)}
-              maxDate={ensureDate(maxDate)}
-              renderCustomHeader={CustomHeader}
-              calendarClassName="!border-0"
-              dayClassName={() =>
-                "rounded-lg text-center !w-[40px] !h-8 !leading-8"
-              }
-              weekDayClassName={() =>
-                "text-center !w-[40px] !h-8 !leading-8 font-medium"
-              }
-              monthClassName={() => "!mt-0"}
-              renderDayContents={(day, date) => (
-                <div className="pickerDayContent rounded">{day}</div>
-              )}
-              locale="id"
-            />
+        {isPickerOpen && (
+          <div
+            className="absolute z-10 w-fit max-w-[calc(100dvw-32px)] rounded-lg border border-[#E5E7F0] bg-white shadow-lg"
+            style={dropdownPosition}
+          >
+            <div className="flex max-w-[100%] overflow-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <DatePickerLib
+                selected={selectedDate}
+                onChange={handleDateChange}
+                inline
+                dateFormat="dd MMM yyyy"
+                minDate={ensureDate(minDate)}
+                maxDate={ensureDate(maxDate)}
+                renderCustomHeader={CustomHeader}
+                calendarClassName="!border-0"
+                dayClassName={() =>
+                  "rounded-lg text-center !w-[40px] !h-8 !leading-8"
+                }
+                weekDayClassName={() =>
+                  "text-center !w-[40px] !h-8 !leading-8 font-medium"
+                }
+                monthClassName={() => "!mt-0"}
+                renderDayContents={(day) => (
+                  <div className="pickerDayContent rounded">{day}</div>
+                )}
+                locale="id"
+              />
+            </div>
           </div>
-        </div>
+        )}
+      </div>
+      {/* MODIFIED: Added this block to display the error message */}
+      {errorMessage && (
+        <span className="text-xs font-medium text-error-400">
+          {errorMessage}
+        </span>
       )}
     </div>
   );

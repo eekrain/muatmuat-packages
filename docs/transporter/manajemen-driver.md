@@ -2,13 +2,13 @@
 
 - [ ] Registrasi Driver
 
-  - [ ] **ID - 3927** Form Tambah Driver Default (LD2)
-  - [ ] **ID - 3928** Form Tambah Driver Hover (LD2.1)
-  - [ ] **ID - 3929** Form Tambah Driver Typing (LD2.2)
-  - [ ] **ID - 3930** Informasi Driver Terisi (LD2.3)
-  - [ ] **ID - 3931** Popup Contoh Foto Driver (LD2.4)
-  - [ ] **ID - 3932** Popup Contoh File KTP (LD2.5)
-  - [ ] **ID - 3933** Contoh File SIM (LD2.6)
+  - [*] **ID - 3927** Form Tambah Driver Default (LD2)
+  - [*] **ID - 3928** Form Tambah Driver Hover (LD2.1)
+  - [*] **ID - 3929** Form Tambah Driver Typing (LD2.2)
+  - [*] **ID - 3930** Informasi Driver Terisi (LD2.3)
+  - [*] **ID - 3931** Popup Contoh Foto Driver (LD2.4)
+  - [*] **ID - 3932** Popup Contoh File KTP (LD2.5)
+  - [*] **ID - 3933** Contoh File SIM (LD2.6)
   - [ ] **ID - 3934** Foto KTP & SIM Terisi (LD2.7)
   - [ ] **ID - 3935** Date Picker (LD2.7B)
   - [ ] **ID - 3936** Masa Berlaku Terisi (LD2.8)

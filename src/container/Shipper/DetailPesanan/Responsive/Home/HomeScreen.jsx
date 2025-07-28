@@ -32,6 +32,8 @@ const DetailPesananScreen = ({
 
   const { data: dataDetailPesanan, isLoading: isLoadingDetailPesanan } =
     useGetDetailPesananData(params.orderId);
+
+  console.log("jalanin aja", dataDetailPesanan);
   const {
     isOpen: isWaitFleetModalOpen,
     isShow: isShowWaitFleetAlert,

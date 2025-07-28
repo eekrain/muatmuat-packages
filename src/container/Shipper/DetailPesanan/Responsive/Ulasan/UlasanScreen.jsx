@@ -8,6 +8,7 @@ import {
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import { ulasanData } from "@/services/Shipper/detailpesanan/getUlasanData";
 
 import ContentUlasan from "./components/ContentUlasan";
 import HeaderComponentUlasan from "./components/HeaderComponentUlasan";
@@ -30,8 +31,8 @@ const UlasanScreen = () => {
     >
       <div className="mb-16 space-y-2 bg-neutral-200">
         <HeaderComponentUlasan />
-        {[0, 1, 2, 3].map((_, i) => (
-          <ContentUlasan key={i} type={"list"} />
+        {ulasanData?.Data?.drivers?.map((item, i) => (
+          <ContentUlasan key={i} {...item} />
         ))}
       </div>
 
