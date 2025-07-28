@@ -8,31 +8,57 @@ import {
   BottomSheetContent,
   BottomSheetHeader,
 } from "@/components/Bottomsheet/Bottomsheet";
+import { useTranslation } from "@/hooks/use-translation";
+import {
+  OrderStatusEnum,
+  OrderStatusTitle,
+} from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
-export const OrderInfo = () => {
+export const OrderInfo = ({ dataStatusPesanan }) => {
   const navigation = useResponsiveNavigation();
 
   const [isOpenOtherStatus, setIsOpenOtherStatus] = useState();
+
+  const { t } = useTranslation();
+
+  const orderStatusLabel =
+    dataStatusPesanan?.orderStatus !== OrderStatusEnum.COMPLETED &&
+    !dataStatusPesanan?.orderStatus?.startsWith("CANCELED") &&
+    !dataStatusPesanan?.orderStatus?.startsWith("WAITING_PAYMENT") &&
+    dataStatusPesanan?.unitFleetStatus &&
+    dataStatusPesanan?.unitFleetStatus > 1
+      ? `${t(OrderStatusTitle[dataStatusPesanan?.orderStatus])}: ${dataStatusPesanan?.unitFleetStatus} Unit`
+      : t(OrderStatusTitle[dataStatusPesanan?.orderStatus]);
+
+  const statusVariant = dataStatusPesanan?.orderStatus?.startsWith("WAITING")
+    ? "warning"
+    : dataStatusPesanan?.orderStatus?.startsWith("CANCELED")
+      ? "error"
+      : dataStatusPesanan?.orderStatus === OrderStatusEnum.COMPLETED
+        ? "success"
+        : "primary";
 
   return (
     <div className="flex w-full flex-col items-start bg-white p-5">
       <div className="flex w-full flex-col items-start gap-4">
         {/* QR Code Toggle Button */}
-        {false && (
-          <div className="box-border flex w-full flex-row items-center justify-between border-b border-[#C4C4C4] pb-4">
-            <button
-              className="flex w-full flex-row items-center justify-between"
-              onClick={() => navigation.push("/qr")}
-            >
-              <div className="flex items-center gap-3 text-xs font-semibold text-[#176CF7]">
-                Tampilkan QR Code
-              </div>
-              <ChevronRight className="h-4 w-4 text-[#176CF7]" />
-            </button>
-          </div>
-        )}
-        {false && (
+        {dataStatusPesanan?.orderStatus &&
+          !dataStatusPesanan?.orderStatus?.startsWith("CANCELED") && (
+            <div className="box-border flex w-full flex-row items-center justify-between border-b border-[#C4C4C4] pb-4">
+              <button
+                className="flex w-full flex-row items-center justify-between"
+                onClick={() => navigation.push("/qr")}
+              >
+                <div className="flex items-center gap-3 text-xs font-semibold text-[#176CF7]">
+                  Tampilkan QR Code
+                </div>
+                <ChevronRight className="h-4 w-4 text-[#176CF7]" />
+              </button>
+            </div>
+          )}
+        {dataStatusPesanan?.orderStatus ===
+          OrderStatusEnum.DOCUMENT_DELIVERY && (
           <div className="box-border flex w-full flex-row items-center justify-between border-b border-[#C4C4C4] pb-4">
             <button
               className="flex w-full flex-row items-center justify-between"
@@ -52,7 +78,7 @@ export const OrderInfo = () => {
             Kode Pesanan
           </span>
           <span className="text-right text-xs font-semibold text-black">
-            INV/MT25AA001
+            {dataStatusPesanan?.orderCode || "N/A"}
           </span>
         </div>
 
@@ -62,69 +88,29 @@ export const OrderInfo = () => {
             Status Pesanan
           </span>
 
-          {false && (
+          {dataStatusPesanan?.orderStatus && (
             <BadgeStatusPesanan
-              variant="primary"
+              variant={statusVariant}
               className="w-full text-sm font-semibold"
             >
-              Proses Muat
+              {orderStatusLabel}
             </BadgeStatusPesanan>
           )}
 
-          {false && (
-            <BadgeStatusPesanan
-              variant="primary"
-              className="w-full text-sm font-semibold"
-            >
-              Proses Muat : 1 Unit
-            </BadgeStatusPesanan>
-          )}
-          {false && (
-            <BadgeStatusPesanan
-              variant="warning"
-              className="w-full text-sm font-semibold"
-            >
-              Menunggu Pelunasan : 2 Unit
-            </BadgeStatusPesanan>
-          )}
-          {false && (
-            <BadgeStatusPesanan
-              variant="primary"
-              className="w-full text-sm font-semibold"
-            >
-              Dokumen Sedang Disiapkan : 3 Unit
-            </BadgeStatusPesanan>
-          )}
-          {false && (
-            <BadgeStatusPesanan
-              variant="primary"
-              className="w-full text-sm font-semibold"
-            >
-              Proses Pengiriman Dokumen : 3 Unit
-            </BadgeStatusPesanan>
-          )}
-          {true && (
-            <BadgeStatusPesanan
-              variant="success"
-              className="w-full text-sm font-semibold"
-            >
-              Selesai
-            </BadgeStatusPesanan>
-          )}
-
-          {false && (
-            <div className="flex w-full flex-row items-center justify-between">
-              <button
-                className="flex w-full flex-row items-center justify-between"
-                onClick={() => setIsOpenOtherStatus(true)}
-              >
-                <div className="flex items-center gap-3 text-xs font-semibold text-[#176CF7]">
-                  Lihat Status Lainnya
-                </div>
-                <ChevronRight className="h-4 w-4 text-[#176CF7]" />
-              </button>
-            </div>
-          )}
+          {dataStatusPesanan?.otherStatus &&
+            dataStatusPesanan?.otherStatus.length > 1 && (
+              <div className="flex w-full flex-row items-center justify-between">
+                <button
+                  className="flex w-full flex-row items-center justify-between"
+                  onClick={() => setIsOpenOtherStatus(true)}
+                >
+                  <div className="flex items-center gap-3 text-xs font-semibold text-[#176CF7]">
+                    Lihat Status Lainnya
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-[#176CF7]" />
+                </button>
+              </div>
+            )}
 
           <BottomSheet
             open={isOpenOtherStatus}
@@ -134,18 +120,23 @@ export const OrderInfo = () => {
               <BottomSheetHeader>Status Lainnya</BottomSheetHeader>
 
               <div className="flex flex-col gap-4 px-4 py-6">
-                <BadgeStatusPesanan
-                  variant="primary"
-                  className="w-full text-sm font-semibold"
-                >
-                  Proses Muat : 1 Unit
-                </BadgeStatusPesanan>
-                <BadgeStatusPesanan
-                  variant="primary"
-                  className="w-full text-sm font-semibold"
-                >
-                  Proses Muat : 3 Unit
-                </BadgeStatusPesanan>
+                {dataStatusPesanan?.otherStatus?.map((status, index) => (
+                  <BadgeStatusPesanan
+                    key={index}
+                    variant={
+                      status.orderStatus?.startsWith("WAITING")
+                        ? "warning"
+                        : status.orderStatus?.startsWith("CANCELED")
+                          ? "error"
+                          : status.orderStatus === OrderStatusEnum.COMPLETED
+                            ? "success"
+                            : "primary"
+                    }
+                    className="w-full text-sm font-semibold"
+                  >
+                    {status.orderTitle}: {status.unitFleetStatus} Unit
+                  </BadgeStatusPesanan>
+                ))}
               </div>
             </BottomSheetContent>
           </BottomSheet>

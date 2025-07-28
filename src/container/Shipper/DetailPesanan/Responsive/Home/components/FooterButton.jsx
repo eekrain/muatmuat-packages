@@ -5,7 +5,7 @@ import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
-export const FooterButton = () => {
+export const FooterButton = ({ orderStatus }) => {
   const navigation = useResponsiveNavigation();
 
   const [isReceiveDocumentEvidenceOpen, setReceiveDocumentEvidenceOpen] =
@@ -23,6 +23,17 @@ export const FooterButton = () => {
     BeriUlasan: [OrderStatusEnum.COMPLETED],
   };
 
+  const isWaitingPayment =
+    orderStatus === OrderStatusEnum.WAITING_PAYMENT_1 ||
+    orderStatus === OrderStatusEnum.WAITING_PAYMENT_2 ||
+    orderStatus === OrderStatusEnum.WAITING_PAYMENT_3 ||
+    orderStatus === OrderStatusEnum.WAITING_PAYMENT_4;
+  const isKnownStatus =
+    orderStatus === OrderStatusEnum.LOADING ||
+    isWaitingPayment ||
+    orderStatus === OrderStatusEnum.DOCUMENT_DELIVERY ||
+    orderStatus === OrderStatusEnum.COMPLETED;
+
   return (
     <>
       <div className="flex gap-2">
@@ -36,7 +47,7 @@ export const FooterButton = () => {
             Lihat Ulasan
           </Button>
         )}
-        {false && (
+        {orderStatus === OrderStatusEnum.LOADING && (
           <Button
             variant="muatparts-primary"
             className="h-10 w-full p-0"
@@ -46,7 +57,7 @@ export const FooterButton = () => {
             Pesan Ulang
           </Button>
         )}
-        {false && (
+        {orderStatus === OrderStatusEnum.COMPLETED && (
           <Button
             variant="muatparts-primary"
             className="w-full p-0"
@@ -56,7 +67,7 @@ export const FooterButton = () => {
             Beri Ulasan
           </Button>
         )}
-        {false && (
+        {isWaitingPayment && (
           <Button
             variant="muatparts-primary"
             className="h-10 w-full p-0"
@@ -66,7 +77,7 @@ export const FooterButton = () => {
             Lanjut Pembayaran
           </Button>
         )}
-        {false && (
+        {orderStatus === OrderStatusEnum.DOCUMENT_DELIVERY && (
           <>
             <Button
               variant="muatparts-primary-secondary"
@@ -86,7 +97,7 @@ export const FooterButton = () => {
             </Button>
           </>
         )}
-        {true && (
+        {orderStatus === OrderStatusEnum.COMPLETED && (
           <>
             <Button
               variant="muatparts-primary-secondary"
@@ -105,6 +116,17 @@ export const FooterButton = () => {
               Beri Ulasan
             </Button>
           </>
+        )}
+        {/* Fallback button jika tidak ada kondisi yang terpenuhi */}
+        {!isKnownStatus && (
+          <Button
+            variant="muatparts-primary"
+            className="h-10 w-full p-0"
+            onClick={() => alert("Simpan")}
+            type="button"
+          >
+            Pesan Ulang
+          </Button>
         )}
         {false && (
           <Button
