@@ -16,7 +16,9 @@ import SelectFilterRadix from "@/components/Form/SelectFilterRadix";
 import ImageUploaderWeb from "@/components/ImageUploader/ImageUploaderWeb";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import Toaster from "@/components/Toaster/Toaster";
 import { useDocumentUpload } from "@/hooks/use-document-upload";
+import { toast } from "@/lib/toast";
 import {
   postNewVehicle,
   useGetBrandsVehicles,
@@ -345,788 +347,796 @@ const Page = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   return (
-    <div className="mx-auto max-w-[818px] py-6">
-      <BreadCrumb data={BREADCRUMB} />
-      <PageTitle>Tambah Armada</PageTitle>
+    <>
+      <div className="mx-auto max-w-[818px] py-6">
+        <BreadCrumb data={BREADCRUMB} />
+        <PageTitle className="mt-4">Tambah Armada</PageTitle>
 
-      {/* Informasi Armada */}
-      <Card className="mb-6 !border-none">
-        <CardHeader className="!border-b-0 pb-4 text-xl font-semibold">
-          Informasi Armada
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="grid grid-cols-[220px_400px] gap-x-6 gap-y-5">
-            <div className={labelClass}>No. Polisi Kendaraan*</div>
-            {renderInputWithError("licensePlate", {
-              placeholder: "Contoh : L 1234 TY",
-              value: formData.licensePlate,
-              onChange: handleLicensePlateChange,
-              onKeyDown: handleLicensePlateKeyDown,
-              className: "w-[328px]",
-            })}
+        {/* Informasi Armada */}
+        <Card className="mb-6 !border-none">
+          <CardHeader className="!border-b-0 pb-4 text-xl font-semibold">
+            Informasi Armada
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="grid grid-cols-[220px_400px] gap-x-6 gap-y-5">
+              <div className={labelClass}>No. Polisi Kendaraan*</div>
+              {renderInputWithError("licensePlate", {
+                placeholder: "Contoh : L 1234 TY",
+                value: formData.licensePlate,
+                onChange: handleLicensePlateChange,
+                onKeyDown: handleLicensePlateKeyDown,
+                className: "w-[328px]",
+              })}
 
-            <div className={labelClass}>Jenis Truk*</div>
-            {renderSelectWithError("truckTypeId", {
-              options: isLoadingTruckTypes
-                ? []
-                : truckTypes.map((item) => ({
-                    label: item.name,
-                    value: item.id,
-                    image: item.icon,
-                  })),
-              value: formData.truckTypeId,
-              onChange: (val) => {
-                handleChange("truckTypeId", val);
-                handleChange("carrierTruckId", "");
-              },
-              placeholder: "Pilih Jenis Truk",
-              classNameOptions: "h-12",
-            })}
-
-            <div className={labelClass}>Jenis Carrier*</div>
-            {renderSelectWithError("carrierTruckId", {
-              options:
-                formData.truckTypeId && !isLoadingCarrier
-                  ? carrierTypes
-                      .filter(
-                        (item) => item.truckTypeId === formData.truckTypeId
-                      )
-                      .map((item) => ({
-                        label: item.name,
-                        value: item.id,
-                        image: item.icon,
-                      }))
-                  : [],
-              value: formData.carrierTruckId,
-              onChange: (val) => handleChange("carrierTruckId", val),
-              placeholder: "Pilih Jenis Carrier",
-              disabled: !formData.truckTypeId || isLoadingCarrier,
-              classNameOptions: "h-12",
-            })}
-
-            <div className={labelClass}>Merek Kendaraan*</div>
-            {renderSelectWithError("vehicleBrandId", {
-              addData: true,
-              addLabel: "Tambah Merek Kendaraan",
-              options: brands.map((item) => ({
-                label: item.name,
-                value: item.id,
-              })),
-              value: formData.vehicleBrandId,
-              onChange: (val) => {
-                handleChange("vehicleBrandId", val);
-                handleChange("vehicleTypeId", "");
-              },
-              placeholder: "Pilih Merek Kendaraan",
-              disabled: isLoadingBrands,
-              addModalTitle: "Tambah Merek Kendaraan",
-              addModalPlaceholder: "Masukkan Merek Kendaraan",
-              addModalMinLength: 3,
-              addModalValidate: (val) => /^[a-zA-Z0-9\s]+$/.test(val),
-              addModalErrorMessage: "Nama merek tidak valid",
-              onAddNew: (newBrand) => {
-                handleChange("vehicleBrandName", newBrand);
-              },
-            })}
-
-            <div className={labelClass}>Tipe Kendaraan*</div>
-            {renderSelectWithError("vehicleTypeId", {
-              addData: true,
-              addLabel: "Tambah Tipe Kendaraan",
-              options:
-                formData.vehicleBrandId && !isLoadingTypes
-                  ? filteredTypes.map((item) => ({
+              <div className={labelClass}>Jenis Truk*</div>
+              {renderSelectWithError("truckTypeId", {
+                options: isLoadingTruckTypes
+                  ? []
+                  : truckTypes.map((item) => ({
                       label: item.name,
                       value: item.id,
-                    }))
-                  : [],
-              value: formData.vehicleTypeId,
-              onChange: (val) => handleChange("vehicleTypeId", val),
-              placeholder: "Pilih Tipe Kendaraan",
-              disabled: !formData.vehicleBrandId || isLoadingTypes,
-              addModalTitle: "Tambah Tipe Kendaraan",
-              addModalPlaceholder: "Masukkan Tipe Kendaraan",
-              addModalMinLength: 3,
-              addModalValidate: (val) => /^[a-zA-Z0-9\s]+$/.test(val),
-              addModalErrorMessage: "Nama tipe tidak valid",
-              onAddNew: (newType) => {
-                handleChange("vehicleTypeName", newType);
-              },
-            })}
+                      image: item.icon,
+                    })),
+                value: formData.truckTypeId,
+                onChange: (val) => {
+                  handleChange("truckTypeId", val);
+                  handleChange("carrierTruckId", "");
+                },
+                placeholder: "Pilih Jenis Truk",
+                classNameOptions: "h-12",
+              })}
 
-            <div className={labelClass}>Tahun Registrasi Kendaraan*</div>
-            <div>
-              <Select
-                options={years}
-                value={formData.registrationYear}
-                onChange={(val) => handleChange("registrationYear", val)}
-                placeholder="Pilih Tahun"
-                className={
-                  selectClass +
-                  (formData.registrationYear ? " text-neutral-900" : "") +
-                  (errors.registrationYear && touchedFields.registrationYear
-                    ? " border-red-500"
-                    : "")
-                }
-                onOpenChange={(open) => {
-                  if (!open) markFieldAsTouched("registrationYear");
-                }}
-              />
-              {renderError("registrationYear")}
-            </div>
+              <div className={labelClass}>Jenis Carrier*</div>
+              {renderSelectWithError("carrierTruckId", {
+                options:
+                  formData.truckTypeId && !isLoadingCarrier
+                    ? carrierTypes
+                        .filter(
+                          (item) => item.truckTypeId === formData.truckTypeId
+                        )
+                        .map((item) => ({
+                          label: item.name,
+                          value: item.id,
+                          image: item.icon,
+                        }))
+                    : [],
+                value: formData.carrierTruckId,
+                onChange: (val) => handleChange("carrierTruckId", val),
+                placeholder: "Pilih Jenis Carrier",
+                disabled: !formData.truckTypeId || isLoadingCarrier,
+                classNameOptions: "h-12",
+              })}
 
-            <div className={labelClass}>Dimensi Carrier (Optional)</div>
-            <div className="flex w-[328px] gap-2">
-              <DimensionInput
-                value={{
-                  p: formData.carrierLength,
-                  l: formData.carrierWidth,
-                  t: formData.carrierHeight,
-                }}
-                onChange={handleDimensionChange}
-              />
-              <Select
-                options={[
-                  { label: "m", value: "m" },
-                  { label: "cm", value: "cm" },
-                ]}
-                value={formData.carrierDimensionUnit}
-                onChange={(val) => handleChange("carrierDimensionUnit", val)}
-                placeholder="m"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+              <div className={labelClass}>Merek Kendaraan*</div>
+              {renderSelectWithError("vehicleBrandId", {
+                addData: true,
+                addLabel: "Tambah Merek Kendaraan",
+                options: brands.map((item) => ({
+                  label: item.name,
+                  value: item.id,
+                })),
+                value: formData.vehicleBrandId,
+                onChange: (val) => {
+                  handleChange("vehicleBrandId", val);
+                  handleChange("vehicleTypeId", "");
+                },
+                placeholder: "Pilih Merek Kendaraan",
+                disabled: isLoadingBrands,
+                addModalTitle: "Tambah Merek Kendaraan",
+                addModalPlaceholder: "Masukkan Merek Kendaraan",
+                addModalMinLength: 3,
+                addModalValidate: (val) => /^[a-zA-Z0-9\s]+$/.test(val),
+                addModalErrorMessage: "Nama merek tidak valid",
+                onAddNew: (newBrand) => {
+                  handleChange("vehicleBrandName", newBrand);
+                },
+              })}
 
-      {/* Foto Armada */}
-      <Card className="mb-6 !border-none">
-        <CardHeader className="!border-b-0 pb-0 text-xl font-semibold">
-          Foto Armada
-          <div className="mt-2 flex items-center gap-1 text-sm">
-            <span className="font-normal">Lihat contoh foto armada</span>
-            <a
-              href="#"
-              className="font-medium text-blue-600 hover:underline"
-              onClick={(e) => {
-                e.preventDefault();
-                setIsPhotoExampleOpen(true);
-                setActivePhotoExampleIdx(0);
-              }}
-            >
-              di sini
-            </a>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-2">
-            <div className="mt-2 grid grid-cols-[180px_1fr] items-start gap-x-3 gap-y-2">
+              <div className={labelClass}>Tipe Kendaraan*</div>
+              {renderSelectWithError("vehicleTypeId", {
+                addData: true,
+                addLabel: "Tambah Tipe Kendaraan",
+                options:
+                  formData.vehicleBrandId && !isLoadingTypes
+                    ? filteredTypes.map((item) => ({
+                        label: item.name,
+                        value: item.id,
+                      }))
+                    : [],
+                value: formData.vehicleTypeId,
+                onChange: (val) => handleChange("vehicleTypeId", val),
+                placeholder: "Pilih Tipe Kendaraan",
+                disabled: !formData.vehicleBrandId || isLoadingTypes,
+                addModalTitle: "Tambah Tipe Kendaraan",
+                addModalPlaceholder: "Masukkan Tipe Kendaraan",
+                addModalMinLength: 3,
+                addModalValidate: (val) => /^[a-zA-Z0-9\s]+$/.test(val),
+                addModalErrorMessage: "Nama tipe tidak valid",
+                onAddNew: (newType) => {
+                  handleChange("vehicleTypeName", newType);
+                },
+              })}
+
+              <div className={labelClass}>Tahun Registrasi Kendaraan*</div>
               <div>
-                <div className="mb-1 text-sm font-normal text-neutral-500">
-                  Foto Armada*
-                </div>
-                <div className="text-xs text-neutral-500">
-                  Pastikan plat kendaraan terlihat jelas.
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <div>
-                  <ImageUploaderWeb
-                    uploadText={"Tampak Depan"}
-                    className="h-[120px] w-[120px]"
-                    value={imgDepan}
-                    onUpload={(img) => {
-                      setImgDepan(img);
-                      markFieldAsTouched("imgDepan");
-                    }}
-                    onClick={() => {
-                      setIsPreviewOpen(true);
-                      setActivePreviewIdx(0);
-                    }}
-                  />
-                  {renderError("imgDepan")}
-                </div>
-                <div>
-                  <ImageUploaderWeb
-                    uploadText={"Tampak Belakang"}
-                    className="h-[120px] w-[120px]"
-                    value={imgBelakang}
-                    onUpload={(img) => {
-                      setImgBelakang(img);
-                      markFieldAsTouched("imgBelakang");
-                    }}
-                    onClick={() => {
-                      setIsPreviewOpen(true);
-                      setActivePreviewIdx(1);
-                    }}
-                  />
-                  {renderError("imgBelakang")}
-                </div>
-                <div>
-                  <ImageUploaderWeb
-                    uploadText={"Tampak Kanan"}
-                    className="h-[120px] w-[120px]"
-                    value={imgKanan}
-                    onUpload={(img) => {
-                      setImgKanan(img);
-                      markFieldAsTouched("imgKanan");
-                    }}
-                    onClick={() => {
-                      setIsPreviewOpen(true);
-                      setActivePreviewIdx(2);
-                    }}
-                  />
-                  {renderError("imgKanan")}
-                </div>
-                <div>
-                  <ImageUploaderWeb
-                    uploadText={"Tampak Kiri"}
-                    className="h-[120px] w-[120px]"
-                    value={imgKiri}
-                    onUpload={(img) => {
-                      setImgKiri(img);
-                      markFieldAsTouched("imgKiri");
-                    }}
-                    onClick={() => {
-                      setIsPreviewOpen(true);
-                      setActivePreviewIdx(3);
-                    }}
-                  />
-                  {renderError("imgKiri")}
-                </div>
-              </div>
-            </div>
-            <div className="ms-44 mt-2 text-center text-xs text-neutral-500">
-              Unggah 1 gambar pada masing-masing tipe dengan format
-              .jpg/.jpeg/.png, besar file maks. 10MB
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Dokumen Armada */}
-      <Card className="mb-6 !border-none">
-        <CardHeader className="!border-b-0 pb-4 text-xl font-semibold">
-          Dokumen Armada
-          <div className="mt-2 flex items-center gap-1 text-sm">
-            <span className="font-normal">Lihat contoh dokumen armada</span>
-            <a
-              href="#"
-              className="font-medium text-blue-600 hover:underline"
-              onClick={(e) => {
-                e.preventDefault();
-                setIsDocumentExampleOpen(true);
-                setActiveDocumentExampleIdx(0);
-              }}
-            >
-              di sini
-            </a>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="grid grid-cols-[220px_328px] gap-x-6 gap-y-5">
-            <div className={labelClass}>Nomor Rangka*</div>
-            {renderInputWithError("chassisNumber", {
-              placeholder: "Nomor Rangka Maksimal 17 Digit",
-              value: formData.chassisNumber,
-              onChange: handleChassisNumberChange,
-              className: "w-[328px]",
-            })}
-
-            <div className={labelClass}>Masa Berlaku STNK*</div>
-            {renderDatePickerWithError("stnkExpiryDate", {
-              value: formData.stnkExpiryDate,
-              onChange: (val) => handleChange("stnkExpiryDate", val),
-              placeholder: "Pilih Tanggal Masa Berlaku STNK",
-            })}
-
-            <div className={labelClass}>Foto STNK*</div>
-            <div className="w-[500px]">
-              <FileUploadDocument
-                value={docStnk}
-                onSuccess={(doc) => {
-                  setDocStnk(doc);
-                  markFieldAsTouched("docStnk");
-                  // console.log("STNK file uploaded:", doc);
-                }}
-                onError={(err) => {
-                  console.error("STNK file upload error:", err);
-                  markFieldAsTouched("docStnk");
-                }}
-                maxSize={10}
-                acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
-              />
-              {renderError("docStnk")}
-            </div>
-
-            <div className={labelClass}>Foto Pajak Kendaraan*</div>
-            <div className="w-[328px]">
-              <FileUploadDocument
-                value={docPajak}
-                onSuccess={(doc) => {
-                  setDocPajak(doc);
-                  markFieldAsTouched("docPajak");
-                  console.log("Pajak file uploaded:", doc);
-                }}
-                onError={(err) => {
-                  console.error("Pajak file upload error:", err);
-                  markFieldAsTouched("docPajak");
-                }}
-                maxSize={10}
-                acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
-              />
-              {renderError("docPajak")}
-            </div>
-
-            <div className={labelClass}>KIR Kendaraan*</div>
-            {renderInputWithError("kirNumber", {
-              placeholder: "Contoh : SBY 123456",
-              value: formData.kirNumber || "",
-              onChange: (e) => handleChange("kirNumber", e.target.value),
-              className: "w-[328px]",
-            })}
-
-            <div className={labelClass}>Masa Berlaku KIR*</div>
-            {renderDatePickerWithError("kirExpiryDate", {
-              value: formData.kirExpiryDate,
-              onChange: (val) => handleChange("kirExpiryDate", val),
-              placeholder: "Pilih Tanggal Masa Berlaku KIR",
-            })}
-
-            <div className={labelClass}>Foto Buku KIR*</div>
-            <div className="w-[328px]">
-              <FileUploadDocument
-                value={docKir}
-                onSuccess={(doc) => {
-                  setDocKir(doc);
-                  markFieldAsTouched("docKir");
-                  // console.log("KIR file uploaded:", doc);
-                }}
-                onError={(err) => {
-                  console.error("KIR file upload error:", err);
-                  markFieldAsTouched("docKir");
-                }}
-                maxSize={10}
-                acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
-              />
-              {renderError("docKir")}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Informasi Pemasangan GPS */}
-      <Card className="mb-6 !border-none">
-        <CardHeader className="!border-b-0 pb-4 text-xl font-semibold">
-          Informasi Pemasangan GPS
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="flex items-start gap-x-6">
-            <div className={labelClass}>Estimasi Tanggal Pemasangan GPS*</div>
-            <div className="flex items-start gap-2">
-              <div>
-                <DatePicker
-                  className={`w-[200px] ${errors.gpsInstallationEstimateStartDate && touchedFields.gpsInstallationEstimateStartDate ? "border-red-500" : ""}`}
-                  value={formData.gpsInstallationEstimateStartDate}
-                  onChange={(val) =>
-                    handleChange("gpsInstallationEstimateStartDate", val)
+                <Select
+                  options={years}
+                  value={formData.registrationYear}
+                  onChange={(val) => handleChange("registrationYear", val)}
+                  placeholder="Pilih Tahun"
+                  className={
+                    selectClass +
+                    (formData.registrationYear ? " text-neutral-900" : "") +
+                    (errors.registrationYear && touchedFields.registrationYear
+                      ? " border-red-500"
+                      : "")
                   }
-                  placeholder="Tanggal Mulai"
                   onOpenChange={(open) => {
-                    if (!open)
-                      markFieldAsTouched("gpsInstallationEstimateStartDate");
+                    if (!open) markFieldAsTouched("registrationYear");
                   }}
                 />
-                {renderError("gpsInstallationEstimateStartDate")}
+                {renderError("registrationYear")}
               </div>
-              <span className="mt-2 text-sm text-neutral-600">s/d</span>
-              <div>
-                <DatePicker
-                  className={`w-[200px] ${errors.gpsInstallationEstimateEndDate && touchedFields.gpsInstallationEstimateEndDate ? "border-red-500" : ""}`}
-                  value={formData.gpsInstallationEstimateEndDate}
-                  onChange={(val) =>
-                    handleChange("gpsInstallationEstimateEndDate", val)
-                  }
-                  placeholder="Tanggal Selesai"
-                  onOpenChange={(open) => {
-                    if (!open)
-                      markFieldAsTouched("gpsInstallationEstimateEndDate");
+
+              <div className={labelClass}>Dimensi Carrier (Optional)</div>
+              <div className="flex w-[328px] gap-2">
+                <DimensionInput
+                  value={{
+                    p: formData.carrierLength,
+                    l: formData.carrierWidth,
+                    t: formData.carrierHeight,
                   }}
+                  onChange={handleDimensionChange}
                 />
-                {renderError("gpsInstallationEstimateEndDate")}
+                <Select
+                  options={[
+                    { label: "m", value: "m" },
+                    { label: "cm", value: "cm" },
+                  ]}
+                  value={formData.carrierDimensionUnit}
+                  onChange={(val) => handleChange("carrierDimensionUnit", val)}
+                  placeholder="m"
+                />
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* Action Buttons */}
-      <div className="ml-auto mt-8 flex w-[620px] justify-end gap-4">
-        {submitError && (
-          <div className="mr-4 self-center text-sm text-red-500">
-            {submitError}
-          </div>
-        )}
-        <Button
-          variant="muattrans-primary-secondary"
-          className="h-[44px] w-[120px] text-base"
-          onClick={() => setIsCancelModalOpen(true)}
-          disabled={isSubmitting}
-        >
-          Batal
-        </Button>
-        <Button
-          variant="muattrans-primary"
-          className={`h-[44px] w-[120px] text-base ${!isFormValid ? "cursor-not-allowed opacity-50" : ""}`}
-          onClick={() => {
-            if (!isFormValid) {
-              // Mark semua field sebagai touched untuk menampilkan semua error
-              const allFields = [
-                "licensePlate",
-                "truckTypeId",
-                "carrierTruckId",
-                "vehicleBrandId",
-                "vehicleTypeId",
-                "registrationYear",
-                "chassisNumber",
-                "stnkExpiryDate",
-                "kirNumber",
-                "kirExpiryDate",
-                "gpsInstallationEstimateStartDate",
-                "gpsInstallationEstimateEndDate",
-                "imgDepan",
-                "imgBelakang",
-                "imgKanan",
-                "imgKiri",
-                "docStnk",
-                "docPajak",
-                "docKir",
-              ];
-              const touchedUpdate = {};
-              allFields.forEach((field) => (touchedUpdate[field] = true));
-              setTouchedFields(touchedUpdate);
-              setSubmitError("Mohon lengkapi semua field yang wajib diisi");
-              return;
-            }
-            setIsSaveModalOpen(true);
-          }}
-          disabled={isSubmitting}
-        >
-          Simpan
-        </Button>
-      </div>
+        {/* Foto Armada */}
+        <Card className="mb-6 !border-none">
+          <CardHeader className="!border-b-0 pb-0 text-xl font-semibold">
+            Foto Armada
+            <div className="mt-2 flex items-center gap-1 text-sm">
+              <span className="font-normal">Lihat contoh foto armada</span>
+              <a
+                href="#"
+                className="font-medium text-blue-600 hover:underline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsPhotoExampleOpen(true);
+                  setActivePhotoExampleIdx(0);
+                }}
+              >
+                di sini
+              </a>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-2">
+              <div className="mt-2 grid grid-cols-[180px_1fr] items-start gap-x-3 gap-y-2">
+                <div>
+                  <div className="mb-1 text-sm font-normal text-neutral-500">
+                    Foto Armada*
+                  </div>
+                  <div className="text-xs text-neutral-500">
+                    Pastikan plat kendaraan terlihat jelas.
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <div>
+                    <ImageUploaderWeb
+                      uploadText={"Tampak Depan"}
+                      className="h-[120px] w-[120px]"
+                      value={imgDepan}
+                      onUpload={(img) => {
+                        setImgDepan(img);
+                        markFieldAsTouched("imgDepan");
+                      }}
+                      onClick={() => {
+                        setIsPreviewOpen(true);
+                        setActivePreviewIdx(0);
+                      }}
+                    />
+                    {renderError("imgDepan")}
+                  </div>
+                  <div>
+                    <ImageUploaderWeb
+                      uploadText={"Tampak Belakang"}
+                      className="h-[120px] w-[120px]"
+                      value={imgBelakang}
+                      onUpload={(img) => {
+                        setImgBelakang(img);
+                        markFieldAsTouched("imgBelakang");
+                      }}
+                      onClick={() => {
+                        setIsPreviewOpen(true);
+                        setActivePreviewIdx(1);
+                      }}
+                    />
+                    {renderError("imgBelakang")}
+                  </div>
+                  <div>
+                    <ImageUploaderWeb
+                      uploadText={"Tampak Kanan"}
+                      className="h-[120px] w-[120px]"
+                      value={imgKanan}
+                      onUpload={(img) => {
+                        setImgKanan(img);
+                        markFieldAsTouched("imgKanan");
+                      }}
+                      onClick={() => {
+                        setIsPreviewOpen(true);
+                        setActivePreviewIdx(2);
+                      }}
+                    />
+                    {renderError("imgKanan")}
+                  </div>
+                  <div>
+                    <ImageUploaderWeb
+                      uploadText={"Tampak Kiri"}
+                      className="h-[120px] w-[120px]"
+                      value={imgKiri}
+                      onUpload={(img) => {
+                        setImgKiri(img);
+                        markFieldAsTouched("imgKiri");
+                      }}
+                      onClick={() => {
+                        setIsPreviewOpen(true);
+                        setActivePreviewIdx(3);
+                      }}
+                    />
+                    {renderError("imgKiri")}
+                  </div>
+                </div>
+              </div>
+              <div className="ms-44 mt-2 text-center text-xs text-neutral-500">
+                Unggah 1 gambar pada masing-masing tipe dengan format
+                .jpg/.jpeg/.png, besar file maks. 10MB
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* Modal Carousel Preview Foto */}
-      {isPreviewOpen && (
-        <Modal open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-          <div className="flex flex-col items-center p-6">
-            <div className="mb-4 text-center text-lg font-bold">
-              {photoList[activePreviewIdx].label}
-            </div>
-            <div className="relative flex w-full max-w-2xl items-center justify-center">
-              <button
-                onClick={() =>
-                  setActivePreviewIdx((prev) =>
-                    prev === 0 ? photoList.length - 1 : prev - 1
-                  )
-                }
-                className="absolute left-10 z-10 rounded-full bg-white p-2 shadow"
-                style={{ left: "-32px" }}
-                aria-label="Sebelumnya"
+        {/* Dokumen Armada */}
+        <Card className="mb-6 !border-none">
+          <CardHeader className="!border-b-0 pb-4 text-xl font-semibold">
+            Dokumen Armada
+            <div className="mt-2 flex items-center gap-1 text-sm">
+              <span className="font-normal">Lihat contoh dokumen armada</span>
+              <a
+                href="#"
+                className="font-medium text-blue-600 hover:underline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsDocumentExampleOpen(true);
+                  setActiveDocumentExampleIdx(0);
+                }}
               >
-                &#60;
-              </button>
-              <img
-                src={photoList[activePreviewIdx].src}
-                alt={photoList[activePreviewIdx].label}
-                className="max-h-[350px] max-w-full rounded-lg object-contain"
-                style={{ minHeight: "200px", background: "#f3f3f3" }}
-              />
-              <button
-                onClick={() =>
-                  setActivePreviewIdx((prev) =>
-                    prev === photoList.length - 1 ? 0 : prev + 1
-                  )
-                }
-                className="absolute right-0 z-10 rounded-full bg-white p-2 shadow"
-                style={{ right: "-32px" }}
-                aria-label="Berikutnya"
-              >
-                &#62;
-              </button>
+                di sini
+              </a>
             </div>
-            <div className="mt-4 flex gap-2">
-              {photoList.map((photo, idx) => (
-                <img
-                  key={idx}
-                  src={photo.src}
-                  alt={photo.label}
-                  className={`h-16 w-16 cursor-pointer rounded-md border-2 ${activePreviewIdx === idx ? "border-primary-700" : "border-transparent"}`}
-                  onClick={() => setActivePreviewIdx(idx)}
-                  style={{ objectFit: "cover", background: "#f3f3f3" }}
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="grid grid-cols-[220px_328px] gap-x-6 gap-y-5">
+              <div className={labelClass}>Nomor Rangka*</div>
+              {renderInputWithError("chassisNumber", {
+                placeholder: "Nomor Rangka Maksimal 17 Digit",
+                value: formData.chassisNumber,
+                onChange: handleChassisNumberChange,
+                className: "w-[328px]",
+              })}
+
+              <div className={labelClass}>Masa Berlaku STNK*</div>
+              {renderDatePickerWithError("stnkExpiryDate", {
+                value: formData.stnkExpiryDate,
+                onChange: (val) => handleChange("stnkExpiryDate", val),
+                placeholder: "Pilih Tanggal Masa Berlaku STNK",
+              })}
+
+              <div className={labelClass}>Foto STNK*</div>
+              <div className="w-[500px]">
+                <FileUploadDocument
+                  value={docStnk}
+                  onSuccess={(doc) => {
+                    setDocStnk(doc);
+                    markFieldAsTouched("docStnk");
+                    // console.log("STNK file uploaded:", doc);
+                  }}
+                  onError={(err) => {
+                    console.error("STNK file upload error:", err);
+                    markFieldAsTouched("docStnk");
+                  }}
+                  maxSize={10}
+                  acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
                 />
-              ))}
-            </div>
-          </div>
-        </Modal>
-      )}
+                {renderError("docStnk")}
+              </div>
 
-      {/* Modal Contoh Foto Armada */}
-      {isPhotoExampleOpen && (
-        <Modal open={isPhotoExampleOpen} onOpenChange={setIsPhotoExampleOpen}>
-          <ModalContent className="min-w-[708px] max-w-[708px]">
-            <div className="flex flex-col items-center p-6">
-              {isLoadingPhotoExamples ? (
-                <div className="text-center">Memuat...</div>
-              ) : photoExamples.length > 0 ? (
-                <>
-                  <div className="mb-2 text-center text-lg font-bold capitalize">
-                    {photoExamples[activePhotoExampleIdx]?.description}
-                  </div>
-                  <PhotoExampleCarousel
-                    images={photoExamples}
-                    index={activePhotoExampleIdx}
-                    onIndexChange={setActivePhotoExampleIdx}
-                    height={391}
-                    showIndicators={false}
-                    width={660}
-                  />
-                  <div className="mt-2 flex gap-4">
-                    {photoExamples.map((photo, idx) => (
-                      <img
-                        key={idx}
-                        src={photo.photoUrl}
-                        alt={photo.description}
-                        className={`h-14 w-14 cursor-pointer rounded-md border-2 ${activePhotoExampleIdx === idx ? "border-primary-700" : "border-transparent"}`}
-                        onClick={() => setActivePhotoExampleIdx(idx)}
-                        style={{ objectFit: "cover", background: "#f3f3f3" }}
-                      />
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <div className="text-center">Tidak ada data contoh foto.</div>
-              )}
-            </div>
-          </ModalContent>
-        </Modal>
-      )}
+              <div className={labelClass}>Foto Pajak Kendaraan*</div>
+              <div className="w-[328px]">
+                <FileUploadDocument
+                  value={docPajak}
+                  onSuccess={(doc) => {
+                    setDocPajak(doc);
+                    markFieldAsTouched("docPajak");
+                    console.log("Pajak file uploaded:", doc);
+                  }}
+                  onError={(err) => {
+                    console.error("Pajak file upload error:", err);
+                    markFieldAsTouched("docPajak");
+                  }}
+                  maxSize={10}
+                  acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
+                />
+                {renderError("docPajak")}
+              </div>
 
-      {/* Modal Contoh Dokumen Armada */}
-      {isDocumentExampleOpen && (
-        <Modal
-          open={isDocumentExampleOpen}
-          onOpenChange={setIsDocumentExampleOpen}
-        >
-          <ModalContent className="min-w-[708px] max-w-[708px]">
-            <div className="flex flex-col items-center p-6">
-              {isLoadingDocumentExamples ? (
-                <div className="text-center">Memuat...</div>
-              ) : documentExamples.length > 0 ? (
-                <>
-                  <div className="mb-2 text-center text-lg font-bold capitalize">
-                    {documentExamples[activeDocumentExampleIdx]?.description}
-                  </div>
-                  <PhotoExampleCarousel
-                    images={documentExamples.map((doc, idx) => ({
-                      ...doc,
-                      url: doc.documentUrl,
-                      alt: doc.description,
-                      id: doc.documentType || idx,
-                    }))}
-                    index={activeDocumentExampleIdx}
-                    onIndexChange={setActiveDocumentExampleIdx}
-                    height={391}
-                    width={660}
-                    showIndicators={false}
-                    renderImage={(doc) =>
-                      doc.documentUrl.endsWith(".pdf") ? (
-                        <div className="flex h-full w-full flex-col items-center justify-center bg-neutral-100">
-                          <img
-                            src="/icons/pdf-icon.svg"
-                            alt="PDF"
-                            className="mb-2 h-16 w-16"
-                          />
-                          <a
-                            href={doc.documentUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm text-blue-600 underline"
-                          >
-                            Lihat PDF
-                          </a>
-                        </div>
-                      ) : (
-                        <img
-                          src={doc.documentUrl}
-                          alt={doc.description}
-                          className="h-full w-full bg-neutral-100 object-contain"
-                          style={{ minHeight: 391, minWidth: 660 }}
-                        />
-                      )
+              <div className={labelClass}>KIR Kendaraan*</div>
+              {renderInputWithError("kirNumber", {
+                placeholder: "Contoh : SBY 123456",
+                value: formData.kirNumber || "",
+                onChange: (e) => handleChange("kirNumber", e.target.value),
+                className: "w-[328px]",
+              })}
+
+              <div className={labelClass}>Masa Berlaku KIR*</div>
+              {renderDatePickerWithError("kirExpiryDate", {
+                value: formData.kirExpiryDate,
+                onChange: (val) => handleChange("kirExpiryDate", val),
+                placeholder: "Pilih Tanggal Masa Berlaku KIR",
+              })}
+
+              <div className={labelClass}>Foto Buku KIR*</div>
+              <div className="w-[328px]">
+                <FileUploadDocument
+                  value={docKir}
+                  onSuccess={(doc) => {
+                    setDocKir(doc);
+                    markFieldAsTouched("docKir");
+                    // console.log("KIR file uploaded:", doc);
+                  }}
+                  onError={(err) => {
+                    console.error("KIR file upload error:", err);
+                    markFieldAsTouched("docKir");
+                  }}
+                  maxSize={10}
+                  acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
+                />
+                {renderError("docKir")}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Informasi Pemasangan GPS */}
+        <Card className="mb-6 !border-none">
+          <CardHeader className="!border-b-0 pb-4 text-xl font-semibold">
+            Informasi Pemasangan GPS
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="flex items-start gap-x-6">
+              <div className={labelClass}>Estimasi Tanggal Pemasangan GPS*</div>
+              <div className="flex items-start gap-2">
+                <div>
+                  <DatePicker
+                    className={`w-[200px] ${errors.gpsInstallationEstimateStartDate && touchedFields.gpsInstallationEstimateStartDate ? "border-red-500" : ""}`}
+                    value={formData.gpsInstallationEstimateStartDate}
+                    onChange={(val) =>
+                      handleChange("gpsInstallationEstimateStartDate", val)
                     }
+                    placeholder="Tanggal Mulai"
+                    onOpenChange={(open) => {
+                      if (!open)
+                        markFieldAsTouched("gpsInstallationEstimateStartDate");
+                    }}
                   />
-                  <div className="mt-2 flex gap-4">
-                    {documentExamples.map((doc, idx) =>
-                      doc.documentUrl.endsWith(".pdf") ? (
-                        <div
-                          key={idx}
-                          className={`flex h-14 w-14 cursor-pointer flex-col items-center justify-center rounded-md border-2 ${activeDocumentExampleIdx === idx ? "border-primary-700" : "border-transparent"} bg-neutral-100`}
-                          onClick={() => setActiveDocumentExampleIdx(idx)}
-                        >
-                          <img
-                            src="/icons/pdf-icon.svg"
-                            alt="PDF"
-                            className="h-8 w-8"
-                          />
-                        </div>
-                      ) : (
+                  {renderError("gpsInstallationEstimateStartDate")}
+                </div>
+                <span className="mt-2 text-sm text-neutral-600">s/d</span>
+                <div>
+                  <DatePicker
+                    className={`w-[200px] ${errors.gpsInstallationEstimateEndDate && touchedFields.gpsInstallationEstimateEndDate ? "border-red-500" : ""}`}
+                    value={formData.gpsInstallationEstimateEndDate}
+                    onChange={(val) =>
+                      handleChange("gpsInstallationEstimateEndDate", val)
+                    }
+                    placeholder="Tanggal Selesai"
+                    onOpenChange={(open) => {
+                      if (!open)
+                        markFieldAsTouched("gpsInstallationEstimateEndDate");
+                    }}
+                  />
+                  {renderError("gpsInstallationEstimateEndDate")}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Action Buttons */}
+        <div className="ml-auto mt-8 flex w-[620px] justify-end gap-4">
+          {/* {submitError && (
+            <div className="mr-4 self-center text-sm text-red-500">
+              {submitError}
+            </div>
+          )} */}
+          <Button
+            variant="muattrans-primary-secondary"
+            className="h-[44px] w-[120px] text-base"
+            onClick={() => setIsCancelModalOpen(true)}
+            disabled={isSubmitting}
+          >
+            Batal
+          </Button>
+          <Button
+            variant="muattrans-primary"
+            className="h-[44px] w-[120px] text-base"
+            onClick={() => {
+              if (!isFormValid) {
+                // Mark semua field sebagai touched untuk menampilkan semua error
+                const allFields = [
+                  "licensePlate",
+                  "truckTypeId",
+                  "carrierTruckId",
+                  "vehicleBrandId",
+                  "vehicleTypeId",
+                  "registrationYear",
+                  "chassisNumber",
+                  "stnkExpiryDate",
+                  "kirNumber",
+                  "kirExpiryDate",
+                  "gpsInstallationEstimateStartDate",
+                  "gpsInstallationEstimateEndDate",
+                  "imgDepan",
+                  "imgBelakang",
+                  "imgKanan",
+                  "imgKiri",
+                  "docStnk",
+                  "docPajak",
+                  "docKir",
+                ];
+                const touchedUpdate = {};
+                allFields.forEach((field) => (touchedUpdate[field] = true));
+                setTouchedFields(touchedUpdate);
+                setSubmitError("Terdapat field yang kosong");
+                toast.error("Terdapat field yang kosong");
+                return;
+              }
+              setIsSaveModalOpen(true);
+            }}
+            // disabled={isSubmitting}
+          >
+            Simpan
+          </Button>
+        </div>
+
+        {/* Modal Carousel Preview Foto */}
+        {isPreviewOpen && (
+          <Modal open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+            <div className="flex flex-col items-center p-6">
+              <div className="mb-4 text-center text-lg font-bold">
+                {photoList[activePreviewIdx].label}
+              </div>
+              <div className="relative flex w-full max-w-2xl items-center justify-center">
+                <button
+                  onClick={() =>
+                    setActivePreviewIdx((prev) =>
+                      prev === 0 ? photoList.length - 1 : prev - 1
+                    )
+                  }
+                  className="absolute left-10 z-10 rounded-full bg-white p-2 shadow"
+                  style={{ left: "-32px" }}
+                  aria-label="Sebelumnya"
+                >
+                  &#60;
+                </button>
+                <img
+                  src={photoList[activePreviewIdx].src}
+                  alt={photoList[activePreviewIdx].label}
+                  className="max-h-[350px] max-w-full rounded-lg object-contain"
+                  style={{ minHeight: "200px", background: "#f3f3f3" }}
+                />
+                <button
+                  onClick={() =>
+                    setActivePreviewIdx((prev) =>
+                      prev === photoList.length - 1 ? 0 : prev + 1
+                    )
+                  }
+                  className="absolute right-0 z-10 rounded-full bg-white p-2 shadow"
+                  style={{ right: "-32px" }}
+                  aria-label="Berikutnya"
+                >
+                  &#62;
+                </button>
+              </div>
+              <div className="mt-4 flex gap-2">
+                {photoList.map((photo, idx) => (
+                  <img
+                    key={idx}
+                    src={photo.src}
+                    alt={photo.label}
+                    className={`h-16 w-16 cursor-pointer rounded-md border-2 ${activePreviewIdx === idx ? "border-primary-700" : "border-transparent"}`}
+                    onClick={() => setActivePreviewIdx(idx)}
+                    style={{ objectFit: "cover", background: "#f3f3f3" }}
+                  />
+                ))}
+              </div>
+            </div>
+          </Modal>
+        )}
+
+        {/* Modal Contoh Foto Armada */}
+        {isPhotoExampleOpen && (
+          <Modal open={isPhotoExampleOpen} onOpenChange={setIsPhotoExampleOpen}>
+            <ModalContent className="min-w-[708px] max-w-[708px]">
+              <div className="flex flex-col items-center p-6">
+                {isLoadingPhotoExamples ? (
+                  <div className="text-center">Memuat...</div>
+                ) : photoExamples.length > 0 ? (
+                  <>
+                    <div className="mb-2 text-center text-lg font-bold capitalize">
+                      {photoExamples[activePhotoExampleIdx]?.description}
+                    </div>
+                    <PhotoExampleCarousel
+                      images={photoExamples}
+                      index={activePhotoExampleIdx}
+                      onIndexChange={setActivePhotoExampleIdx}
+                      height={391}
+                      showIndicators={false}
+                      width={660}
+                    />
+                    <div className="mt-2 flex gap-4">
+                      {photoExamples.map((photo, idx) => (
                         <img
                           key={idx}
-                          src={doc.documentUrl}
-                          alt={doc.description}
-                          className={`h-14 w-14 cursor-pointer rounded-md border-2 ${activeDocumentExampleIdx === idx ? "border-primary-700" : "border-transparent"}`}
-                          onClick={() => setActiveDocumentExampleIdx(idx)}
+                          src={photo.photoUrl}
+                          alt={photo.description}
+                          className={`h-14 w-14 cursor-pointer rounded-md border-2 ${activePhotoExampleIdx === idx ? "border-primary-700" : "border-transparent"}`}
+                          onClick={() => setActivePhotoExampleIdx(idx)}
                           style={{ objectFit: "cover", background: "#f3f3f3" }}
                         />
-                      )
-                    )}
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center">Tidak ada data contoh foto.</div>
+                )}
+              </div>
+            </ModalContent>
+          </Modal>
+        )}
+
+        {/* Modal Contoh Dokumen Armada */}
+        {isDocumentExampleOpen && (
+          <Modal
+            open={isDocumentExampleOpen}
+            onOpenChange={setIsDocumentExampleOpen}
+          >
+            <ModalContent className="min-w-[708px] max-w-[708px]">
+              <div className="flex flex-col items-center p-6">
+                {isLoadingDocumentExamples ? (
+                  <div className="text-center">Memuat...</div>
+                ) : documentExamples.length > 0 ? (
+                  <>
+                    <div className="mb-2 text-center text-lg font-bold capitalize">
+                      {documentExamples[activeDocumentExampleIdx]?.description}
+                    </div>
+                    <PhotoExampleCarousel
+                      images={documentExamples.map((doc, idx) => ({
+                        ...doc,
+                        url: doc.documentUrl,
+                        alt: doc.description,
+                        id: doc.documentType || idx,
+                      }))}
+                      index={activeDocumentExampleIdx}
+                      onIndexChange={setActiveDocumentExampleIdx}
+                      height={391}
+                      width={660}
+                      showIndicators={false}
+                      renderImage={(doc) =>
+                        doc.documentUrl.endsWith(".pdf") ? (
+                          <div className="flex h-full w-full flex-col items-center justify-center bg-neutral-100">
+                            <img
+                              src="/icons/pdf-icon.svg"
+                              alt="PDF"
+                              className="mb-2 h-16 w-16"
+                            />
+                            <a
+                              href={doc.documentUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-blue-600 underline"
+                            >
+                              Lihat PDF
+                            </a>
+                          </div>
+                        ) : (
+                          <img
+                            src={doc.documentUrl}
+                            alt={doc.description}
+                            className="h-full w-full bg-neutral-100 object-contain"
+                            style={{ minHeight: 391, minWidth: 660 }}
+                          />
+                        )
+                      }
+                    />
+                    <div className="mt-2 flex gap-4">
+                      {documentExamples.map((doc, idx) =>
+                        doc.documentUrl.endsWith(".pdf") ? (
+                          <div
+                            key={idx}
+                            className={`flex h-14 w-14 cursor-pointer flex-col items-center justify-center rounded-md border-2 ${activeDocumentExampleIdx === idx ? "border-primary-700" : "border-transparent"} bg-neutral-100`}
+                            onClick={() => setActiveDocumentExampleIdx(idx)}
+                          >
+                            <img
+                              src="/icons/pdf-icon.svg"
+                              alt="PDF"
+                              className="h-8 w-8"
+                            />
+                          </div>
+                        ) : (
+                          <img
+                            key={idx}
+                            src={doc.documentUrl}
+                            alt={doc.description}
+                            className={`h-14 w-14 cursor-pointer rounded-md border-2 ${activeDocumentExampleIdx === idx ? "border-primary-700" : "border-transparent"}`}
+                            onClick={() => setActiveDocumentExampleIdx(idx)}
+                            style={{
+                              objectFit: "cover",
+                              background: "#f3f3f3",
+                            }}
+                          />
+                        )
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center">
+                    Tidak ada data contoh dokumen.
                   </div>
-                </>
-              ) : (
-                <div className="text-center">
-                  Tidak ada data contoh dokumen.
-                </div>
-              )}
+                )}
+              </div>
+            </ModalContent>
+          </Modal>
+        )}
+
+        {/* Save Confirmation Modal */}
+        <Modal open={isSaveModalOpen} onOpenChange={setIsSaveModalOpen}>
+          <ModalContent type="muatmuat" className="w-[386px]">
+            <ModalHeader size="small" />
+            <div className="flex flex-col items-center gap-y-6 px-6 py-9">
+              <h1 className="text-base font-bold leading-[19.2px] text-neutral-900">
+                Apakah kamu yakin menyimpan data ini?
+              </h1>
+              <div className="flex items-center gap-x-2">
+                <Button
+                  variant="muattrans-primary-secondary"
+                  className="h-[44px] w-[120px] text-base"
+                  onClick={() => setIsSaveModalOpen(false)}
+                  disabled={isSubmitting}
+                >
+                  Tidak
+                </Button>
+                <Button
+                  variant="muattrans-primary"
+                  className="h-[44px] w-[120px] text-base"
+                  onClick={async () => {
+                    setIsSubmitting(true);
+                    setSubmitError("");
+                    try {
+                      const dokumenList = [
+                        docStnk && {
+                          documentType: "STNK",
+                          documentUrl: docStnk.url,
+                          documentName: docStnk.name,
+                        },
+                        docPajak && {
+                          documentType: "VEHICLE_TAX",
+                          documentUrl: docPajak.url,
+                          documentName: docPajak.name,
+                        },
+                        docKir && {
+                          documentType: "KIR",
+                          documentUrl: docKir.url,
+                          documentName: docKir.name,
+                        },
+                      ].filter(Boolean);
+                      const payload = {
+                        ...formData,
+                        registrationYear: Number(formData.registrationYear),
+                        carrierLength:
+                          Number(formData.carrierLength) || undefined,
+                        carrierWidth:
+                          Number(formData.carrierWidth) || undefined,
+                        carrierHeight:
+                          Number(formData.carrierHeight) || undefined,
+                        photos: [
+                          imgDepan && {
+                            photoType: "FRONT",
+                            photoUrl: imgDepan,
+                            photoName: "FRONT.jpg",
+                          },
+                          imgBelakang && {
+                            photoType: "BACK",
+                            photoUrl: imgBelakang,
+                            photoName: "BACK.jpg",
+                          },
+                          imgKanan && {
+                            photoType: "LEFT",
+                            photoUrl: imgKanan,
+                            photoName: "LEFT.jpg",
+                          },
+                          imgKiri && {
+                            photoType: "RIGHT",
+                            photoUrl: imgKiri,
+                            photoName: "RIGHT.jpg",
+                          },
+                        ].filter(Boolean),
+                        documents: dokumenList,
+                      };
+                      // TODO: Ganti dengan token asli user
+                      const token = "DUMMY_TOKEN";
+                      await postNewVehicle(payload, token);
+                      setIsSaveModalOpen(false);
+                      router.push("/manajemen-armada");
+                    } catch (err) {
+                      setSubmitError(
+                        err?.Message?.Text || "Gagal menyimpan data"
+                      );
+                    } finally {
+                      setIsSubmitting(false);
+                    }
+                  }}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Menyimpan..." : "Ya"}
+                </Button>
+              </div>
             </div>
           </ModalContent>
         </Modal>
-      )}
 
-      {/* Save Confirmation Modal */}
-      <Modal open={isSaveModalOpen} onOpenChange={setIsSaveModalOpen}>
-        <ModalContent type="muatmuat" className="w-[386px]">
-          <ModalHeader size="small" />
-          <div className="flex flex-col items-center gap-y-6 px-6 py-9">
-            <h1 className="text-base font-bold leading-[19.2px] text-neutral-900">
-              Apakah kamu yakin menyimpan data ini?
-            </h1>
-            <div className="flex items-center gap-x-2">
-              <Button
-                variant="muattrans-primary-secondary"
-                className="h-[44px] w-[120px] text-base"
-                onClick={() => setIsSaveModalOpen(false)}
-                disabled={isSubmitting}
-              >
-                Tidak
-              </Button>
-              <Button
-                variant="muattrans-primary"
-                className="h-[44px] w-[120px] text-base"
-                onClick={async () => {
-                  setIsSubmitting(true);
-                  setSubmitError("");
-                  try {
-                    const dokumenList = [
-                      docStnk && {
-                        documentType: "STNK",
-                        documentUrl: docStnk.url,
-                        documentName: docStnk.name,
-                      },
-                      docPajak && {
-                        documentType: "VEHICLE_TAX",
-                        documentUrl: docPajak.url,
-                        documentName: docPajak.name,
-                      },
-                      docKir && {
-                        documentType: "KIR",
-                        documentUrl: docKir.url,
-                        documentName: docKir.name,
-                      },
-                    ].filter(Boolean);
-                    const payload = {
-                      ...formData,
-                      registrationYear: Number(formData.registrationYear),
-                      carrierLength:
-                        Number(formData.carrierLength) || undefined,
-                      carrierWidth: Number(formData.carrierWidth) || undefined,
-                      carrierHeight:
-                        Number(formData.carrierHeight) || undefined,
-                      photos: [
-                        imgDepan && {
-                          photoType: "FRONT",
-                          photoUrl: imgDepan,
-                          photoName: "FRONT.jpg",
-                        },
-                        imgBelakang && {
-                          photoType: "BACK",
-                          photoUrl: imgBelakang,
-                          photoName: "BACK.jpg",
-                        },
-                        imgKanan && {
-                          photoType: "LEFT",
-                          photoUrl: imgKanan,
-                          photoName: "LEFT.jpg",
-                        },
-                        imgKiri && {
-                          photoType: "RIGHT",
-                          photoUrl: imgKiri,
-                          photoName: "RIGHT.jpg",
-                        },
-                      ].filter(Boolean),
-                      documents: dokumenList,
-                    };
-                    // TODO: Ganti dengan token asli user
-                    const token = "DUMMY_TOKEN";
-                    await postNewVehicle(payload, token);
-                    setIsSaveModalOpen(false);
-                    router.push("/manajemen-armada");
-                  } catch (err) {
-                    setSubmitError(
-                      err?.Message?.Text || "Gagal menyimpan data"
-                    );
-                  } finally {
-                    setIsSubmitting(false);
-                  }
-                }}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Menyimpan..." : "Ya"}
-              </Button>
+        {/* Cancel Confirmation Modal */}
+        <Modal open={isCancelModalOpen} onOpenChange={setIsCancelModalOpen}>
+          <ModalContent type="muatmuat" className="w-[496px]">
+            <ModalHeader type="muatmuat" size="small" />
+            <div className="flex flex-col items-center gap-y-6 px-6 py-9">
+              <p className="text-center text-base font-medium leading-[22.4px] text-neutral-900">
+                Apakah kamu yakin ingin berpindah halaman? Data yang telah diisi
+                tidak akan disimpan
+              </p>
+              <div className="flex items-center gap-x-2">
+                <Button
+                  variant="muattrans-primary-secondary"
+                  className="h-[44px] w-[120px] text-base"
+                  onClick={() => router.push("/transporter/manajemen-armada")}
+                >
+                  Ya
+                </Button>
+                <Button
+                  variant="muattrans-primary"
+                  className="h-[44px] w-[120px] text-base"
+                  onClick={() => setIsCancelModalOpen(false)}
+                >
+                  Batal
+                </Button>
+              </div>
             </div>
-          </div>
-        </ModalContent>
-      </Modal>
-
-      {/* Cancel Confirmation Modal */}
-      <Modal open={isCancelModalOpen} onOpenChange={setIsCancelModalOpen}>
-        <ModalContent type="muatmuat" className="w-[496px]">
-          <ModalHeader type="muatmuat" size="small" />
-          <div className="flex flex-col items-center gap-y-6 px-6 py-9">
-            <p className="text-center text-base font-medium leading-[22.4px] text-neutral-900">
-              Apakah kamu yakin ingin berpindah halaman? Data yang telah diisi
-              tidak akan disimpan
-            </p>
-            <div className="flex items-center gap-x-2">
-              <Button
-                variant="muattrans-primary-secondary"
-                className="h-[44px] w-[120px] text-base"
-                onClick={() => router.push("/transporter/manajemen-armada")}
-              >
-                Ya
-              </Button>
-              <Button
-                variant="muattrans-primary"
-                className="h-[44px] w-[120px] text-base"
-                onClick={() => setIsCancelModalOpen(false)}
-              >
-                Batal
-              </Button>
-            </div>
-          </div>
-        </ModalContent>
-      </Modal>
-    </div>
+          </ModalContent>
+        </Modal>
+      </div>
+      <Toaster />
+    </>
   );
 };
 
