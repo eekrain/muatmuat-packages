@@ -83,8 +83,14 @@ const normalizeTrackingLocations = (data) => {
     });
     locationPolyline.push({ lat: point.latitude, lng: point.longitude });
   }
-
-  const encodedTruckPolyline = data.fleets[0].currentLocation.encodedPolyline;
+  let encodedTruckPolyline = null;
+  if (Array.isArray(data.fleets)) {
+    if (data.fleets.length > 0 && data.fleets[0].currentLocation) {
+      encodedTruckPolyline = data.fleets[0].currentLocation.encodedPolyline;
+    }
+  } else if (data.fleets && data.fleets.currentLocation) {
+    encodedTruckPolyline = data.fleets.currentLocation.encodedPolyline;
+  }
   console.log("DATA TRACKING:", data);
 
   return { locationMarkers, locationPolyline, encodedTruckPolyline };
