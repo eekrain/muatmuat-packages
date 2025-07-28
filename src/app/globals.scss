@@ -420,6 +420,16 @@ body {
 .shadow-muat {
   box-shadow: 0 4px 11px 0 #41414140;
 }
+/* Hide scrollbar for WebKit browsers (Chrome, Safari) */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
 ::-webkit-scrollbar {
   width: 5px;
 }

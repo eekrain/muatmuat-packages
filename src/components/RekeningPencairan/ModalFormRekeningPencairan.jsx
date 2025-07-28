@@ -51,7 +51,7 @@ export const ModalFormRekeningPencairan = ({
 
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
-      <ModalContent className="w-modal-xl">
+      <ModalContent className="w-modal-xl" type="muattrans">
         <ModalHeader type="muattrans" size="xl" />
         <div className="flex flex-col items-center justify-center gap-[22px] px-6 py-9">
           {/* Title */}

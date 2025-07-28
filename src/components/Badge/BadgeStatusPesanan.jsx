@@ -28,7 +28,7 @@ export const BadgeStatusPesanan = ({
   return (
     <div
       className={cn(
-        "capsize inline-flex h-6 w-[176px] items-center justify-center gap-1 rounded-[6px] px-2 text-xs font-semibold leading-[1.2]",
+        "inline-flex h-6 w-[176px] items-center justify-center gap-1 rounded-[6px] px-2 text-xs font-semibold leading-[1.2]",
         badgeVariants[variant],
         className
       )}
@@ -36,7 +36,7 @@ export const BadgeStatusPesanan = ({
       {typeof icon.iconLeft === "string" && (
         <IconComponent src={icon.iconLeft} width={14} height={14} />
       )}
-      <span className="block pt-0.5">{children}</span>
+      <span className="block">{children}</span>
     </div>
   );
 };

@@ -104,7 +104,6 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
     paymentMethodId,
     // deliveryOrder,
   } = formValues;
-  console.log("lokasi", lokasiBongkar, lokasiMuat);
   const { isBusinessEntity, name, taxId } = businessEntity;
 
   // Get actions from Zustand store

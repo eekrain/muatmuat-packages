@@ -40,7 +40,7 @@ export const InformasiMuatan = ({ onFetchTrucks }) => {
           <InformasiMuatanTable
             informasiMuatan={informasiMuatan}
             onClickUpdate={() => setIsInformasiMuatanModalOpen(true)}
-            disableUpdateButton={isEditPage && orderType === "SCHEDULED"}
+            disableUpdateButton={isEditPage}
           />
         ) : (
           <div
@@ -70,7 +70,8 @@ export const InformasiMuatan = ({ onFetchTrucks }) => {
         onSaveInformasiMuatan={async (data) => {
           if (
             truckTypeId &&
-            JSON.stringify(informasiMuatan) !== JSON.stringify(data)
+            JSON.stringify(informasiMuatan) !== JSON.stringify(data) &&
+            !isEditPage
           ) {
             if (compareArraysByNameOnly(informasiMuatan, data)) {
               await onFetchTrucks({

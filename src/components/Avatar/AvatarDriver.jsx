@@ -16,7 +16,9 @@ export const AvatarDriver = ({
   withIcon = true,
 }) => {
   return (
-    <div className={cn("flex items-center gap-2 text-neutral-900", className)}>
+    <div
+      className={cn("flex h-10 items-center gap-2 text-neutral-900", className)}
+    >
       <img
         src={image}
         alt={name}

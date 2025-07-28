@@ -1,7 +1,7 @@
 import { fetcherMuatrans } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
-const useMockData = false; // toggle mock data
+const useMockData = true; // toggle mock data
 
 const stepStatus = [
   {
@@ -12,10 +12,10 @@ const stepStatus = [
     statusCode: OrderStatusEnum.LOADING,
     statusName: "Proses Muat",
   },
-  // {
-  //   statusCode: OrderStatusEnum.UNLOADING,
-  //   statusName: "Proses Bongkar",
-  // },
+  {
+    statusCode: OrderStatusEnum.UNLOADING,
+    statusName: "Proses Bongkar",
+  },
   // {
   //   statusCode: OrderStatusEnum.UNLOADING,
   //   statusName: "Menunggu Pelunasan",
@@ -32,14 +32,14 @@ const stepStatus = [
   //   statusCode: OrderStatusEnum.DOCUMENT_DELIVERY,
   //   statusName: "Proses Pengiriman Dokumen",
   // },
-  // {
-  //   statusCode: OrderStatusEnum.COMPLETED,
-  //   statusName: "Selesai",
-  // },
   {
-    statusCode: OrderStatusEnum.CANCELED_BY_SHIPPER,
-    statusName: "Dibatalkan",
+    statusCode: OrderStatusEnum.COMPLETED,
+    statusName: "Selesai",
   },
+  // {
+  //   statusCode: OrderStatusEnum.CANCELED_BY_SHIPPER,
+  //   statusName: "Dibatalkan",
+  // },
 ];
 
 // GET /base_url/v1/orders/{orderId}/status-history
@@ -56,7 +56,7 @@ const apiResultOrderStatusHistory = {
           name: "Hendra",
           driverImage: "https://picsum.photos/50",
           licensePlate: "B 1234 CD",
-          orderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
+          orderStatus: OrderStatusEnum.LOADING,
           orderStatusTitle: "Sedang Muat",
           driverStatus: "SEDANG_MUAT",
           driverStatusTitle: "Dibatalkan",
@@ -67,7 +67,7 @@ const apiResultOrderStatusHistory = {
           name: "Ardian Eka",
           driverImage: "https://picsum.photos/50",
           licensePlate: "B 1234 CD",
-          orderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
+          orderStatus: OrderStatusEnum.LOADING,
           orderStatusTitle: "Proses Muat",
           driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
           driverStatusTitle: "Dibatalkan",
@@ -78,7 +78,7 @@ const apiResultOrderStatusHistory = {
           name: "Cakra",
           driverImage: "https://picsum.photos/50",
           licensePlate: "B 1234 CD",
-          orderStatus: OrderStatusEnum.UNLOADING,
+          orderStatus: OrderStatusEnum.LOADING,
           orderStatusTitle: "Proses Muat",
           driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
           driverStatusTitle: "Proses Muat",

@@ -22,11 +22,13 @@ const InnerLocationModalFormWeb = ({
   onOpenChange = () => {},
   defaultValues,
   index,
+  needValidateLocationChange,
 }) => {
   const {
     formValues,
     formErrors,
     setField,
+    setLastValidLocation,
     validateLokasiBongkarMuat,
     reset: resetForm,
   } = useLocationFormStore();
@@ -44,7 +46,7 @@ const InnerLocationModalFormWeb = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const isFormValid = validateLokasiBongkarMuat(formMode, index);
+    const isFormValid = validateLokasiBongkarMuat(formMode, index, false);
     if (!isFormValid) return;
 
     onSubmit(formValues);
@@ -61,6 +63,7 @@ const InnerLocationModalFormWeb = ({
         setLocationPostalCodeSearchPhrase(
           defaultValues.dataLokasi.postalCode?.value
         );
+        setLastValidLocation(defaultValues.dataLokasi);
         resetForm(defaultValues);
       }
       hasInit.current = true;
@@ -107,6 +110,7 @@ const InnerLocationModalFormWeb = ({
                       {formMode === "muat" ? "Lokasi Muat*" : "Lokasi Bongkar*"}
                     </label>
                     <InputLocationManagementDropdown
+                      needValidateLocationChange={needValidateLocationChange}
                       errorMessage={formErrors?.dataLokasi}
                       markerIcon={
                         formMode === "muat"

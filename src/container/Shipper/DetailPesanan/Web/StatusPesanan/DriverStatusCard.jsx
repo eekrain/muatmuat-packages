@@ -13,6 +13,7 @@ import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { cn } from "@/lib/utils";
 
+import { getStatusVariant } from "../../utlis";
 import ModalDetailStatusDriver from "./ModalDetailStatusDriver";
 
 export const DriverStatusCard = ({ driverStatus, orderId, orderStatus }) => {
@@ -159,15 +160,9 @@ export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
               <div className="flex items-center gap-x-3">
                 {driver.driverStatusTitle && (
                   <BadgeStatusPesanan
-                    variant={
-                      driver.orderStatus?.startsWith("CANCELED")
-                        ? "error"
-                        : driver.orderStatus === OrderStatusEnum.COMPLETED
-                          ? "success"
-                          : driver.driverStatus.startsWith("WAITING")
-                            ? "warning"
-                            : "primary"
-                    }
+                    variant={getStatusVariant({
+                      orderStatus: driver.orderStatus,
+                    })}
                     className="w-fit"
                   >
                     {driver.driverStatusTitle}

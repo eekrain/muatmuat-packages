@@ -75,7 +75,7 @@ export const lightboxPreviewRootVariants = cva("relative block w-fit", {
 });
 
 export const lightboxPreviewImageVariants = cva(
-  "size-[68px] rounded-xl border object-cover",
+  "size-[68px] rounded-xl border object-contain",
   {
     variants: { variant: { shipper: "" } },
     defaultVariants: { variant: "shipper" },
@@ -144,7 +144,10 @@ export const LightboxProvider = ({
           appearance={{
             backgroudClassname: "bg-black md:bg-black/25",
           }}
-          className={cn(lightboxModalVariants({ variant }), "bg-white")}
+          className={cn(
+            lightboxModalVariants({ variant }),
+            "rounded-none bg-white md:rounded-xl"
+          )}
           type="lightbox"
         >
           <h1 className={lightboxTitleVariants({ variant })}>{title}</h1>

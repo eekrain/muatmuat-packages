@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import DropdownRadioBottomsheeet from "@/components/Dropdown/DropdownRadioBottomsheeet";
@@ -17,6 +17,8 @@ import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
 import { useInformasiMuatanStore } from "@/store/Shipper/forms/informasiMuatanStore";
 import { useSewaArmadaActions } from "@/store/Shipper/forms/sewaArmadaStore";
+
+import { JenisTrukBottomSheet } from "./JenisTrukBottomSheet";
 
 const beratMuatanOptions = [
   {
@@ -43,7 +45,7 @@ const dimensiMuatanOptions = [
   },
 ];
 
-const InformasiMuatanScreen = ({ cargoTypes, cargoCategories }) => {
+const InformasiMuatanScreen = ({ cargoTypes, cargoCategories, trucks }) => {
   const navigation = useResponsiveNavigation();
   const {
     formValues,
@@ -70,6 +72,10 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories }) => {
     navigation.pop();
     // Handle form submission, save to sewaArmadaStore here
   };
+
+  const [openJenisTrukBottomSheet, setOpenJenisTrukBottomSheet] =
+    useState(false);
+  const [selectedTruck, setSelectedTruck] = useState(null);
 
   return (
     <FormResponsiveLayout
@@ -104,8 +110,10 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories }) => {
                   </li>
                 </ul>
                 <p>
-                  Pemilihan tipe muatan yang tepat akan membantu dalam
-                  pengelolaan dan pengiriman.
+                  <center>
+                    Pemilihan tipe muatan yang tepat akan membantu dalam
+                    pengelolaan dan pengiriman.
+                  </center>
                 </p>
               </InfoBottomsheet>
             }
@@ -141,7 +149,7 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories }) => {
           <FormLabel
             required
             tooltip={
-              <InfoBottomsheet title="Tipe Muatan yang Akan Dikirimkan">
+              <InfoBottomsheet title="Informasi Jenis Muatan">
                 <ul>
                   <li>
                     <b>Padat:</b> Muatan yang berbentuk solid.
@@ -163,8 +171,10 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories }) => {
                   </li>
                 </ul>
                 <p>
-                  Pemilihan jenis muatan yang tepat akan membantu dalam
-                  pengelolaan dan pengiriman.
+                  <center>
+                    Pemilihan jenis muatan yang tepat akan membantu dalam
+                    pengelolaan dan pengiriman.
+                  </center>
                 </p>
               </InfoBottomsheet>
             }
@@ -200,7 +210,7 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories }) => {
           <FormLabel
             required
             tooltip={
-              <InfoBottomsheet title="Tipe Muatan yang Akan Dikirimkan">
+              <InfoBottomsheet title="Sertifikasi Halal Logistik">
                 <p>
                   Pilih opsi ini jika pengiriman memerlukan pengelolaan rantai
                   pasok yang memastikan produk tetap sesuai prinsip halal, mulai
@@ -426,6 +436,13 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories }) => {
           })}
         </div>
       </div>
+
+      <JenisTrukBottomSheet
+        open={openJenisTrukBottomSheet}
+        onOpenChange={setOpenJenisTrukBottomSheet}
+        trucks={trucks}
+        onSelectTruck={setSelectedTruck}
+      />
 
       <ResponsiveFooter className="flex gap-3">
         <Button

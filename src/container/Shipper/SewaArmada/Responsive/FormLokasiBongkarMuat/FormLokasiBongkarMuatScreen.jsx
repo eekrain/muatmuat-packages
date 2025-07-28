@@ -1,5 +1,7 @@
 import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
+import { ExpandableTextArea } from "@/components/Form/ExpandableTextArea";
+import { FormContainer, FormLabel } from "@/components/Form/Form";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
@@ -34,7 +36,8 @@ const FormLokasiBongkarMuatScreen = () => {
   const handleSave = () => {
     const isValid = validateLokasiBongkarMuat(
       params.config.formMode,
-      params.config.index
+      params.config.index,
+      true
     );
     if (!isValid) {
       /** Toast Error Setup */
@@ -110,68 +113,50 @@ const FormLokasiBongkarMuatScreen = () => {
         <div className="bg-white px-4 py-5">
           <div className="flex flex-col gap-6">
             {/* Detail Lokasi Field */}
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-1">
-                <label className="text-sm font-semibold leading-[15px] text-black">
-                  {/* "Detail Lokasi" */}
-                  {t("labelLocationDetail")}
-                </label>
-                <span className="text-xxs font-semibold leading-[12px] text-black">
-                  {/* "(Opsional)" */}
-                  {t("textOptional")}
-                </span>
-              </div>
 
-              <div className="flex flex-col gap-3">
-                <div className="relative">
-                  <textarea
-                    value={formValues.detailLokasi}
-                    onChange={(e) => {
-                      const textarea = e.currentTarget;
-                      textarea.style.height = "auto";
-                      textarea.style.height = `${Math.min(textarea.scrollHeight, 72)}px`; // 72px is approximately 3 lines
-                      setField("detailLokasi", textarea.value);
-                    }}
-                    // "Masukkan Detail Lokasi"
-                    placeholder={t("placeholderEnterLocationDetail")}
-                    className="min-h-8 w-full resize-none overflow-y-auto rounded-md border border-neutral-600 bg-white px-3 py-[6px] text-sm font-semibold placeholder:text-neutral-600 focus:border-primary-700 focus:outline-none"
-                    maxLength={500}
-                    rows={1}
-                    style={{ height: "32px" }} // Initial height for 1 line
-                  />
-                </div>
-                <div className="flex items-center justify-between text-xs font-medium leading-[13px] text-neutral-600">
-                  <span className="opacity-0">notes</span>
-                  <span>{formValues.detailLokasi.length}/500</span>
-                </div>
-              </div>
-            </div>
+            <FormContainer>
+              <FormLabel optional>{t("labelLocationDetail")}</FormLabel>
+              <ExpandableTextArea
+                value={formValues.detailLokasi}
+                onChange={(e) => setField("detailLokasi", e.target.value)}
+                placeholder={t("placeholderEnterLocationDetail")}
+                maxLength={500}
+                errorMessage={formErrors?.detailLokasi}
+                appearance={{
+                  inputClassName: "resize-none h-8",
+                }}
+                withCharCount={!!formValues.detailLokasi}
+              />
+            </FormContainer>
 
             {/* Nama PIC Field */}
-            <div className="flex flex-col gap-4">
-              <label className="text-sm font-semibold leading-[15px] text-black">
-                {/* "Nama PIC Lokasi Muat" / "Nama PIC Lokasi Bongkar" */}
+            <FormContainer>
+              <FormLabel required>
                 {params.config.formMode === "muat"
                   ? t("labelPICNameLoadingLocation")
                   : t("labelPICNameUnloadingLocation")}
-                <span className="text-red-500">*</span>
-              </label>
-              <div className="flex flex-col gap-3">
-                <Input
-                  type="text"
-                  // "Masukkan Nama PIC Lokasi Muat" / "Masukkan Nama PIC Lokasi Bongkar"
-                  placeholder={
-                    params.config.formMode === "muat"
-                      ? t("placeholderEnterPICNameLoadingLocation")
-                      : t("placeholderEnterPICNameUnloadingLocation")
-                  }
-                  value={formValues.namaPIC}
-                  onChange={(e) => setField("namaPIC", e.target.value)}
-                  errorMessage={formErrors?.namaPIC}
-                />
-              </div>
-            </div>
+              </FormLabel>
 
+              <Input
+                type="text"
+                // "Masukkan Nama PIC Lokasi Muat" / "Masukkan Nama PIC Lokasi Bongkar"
+                placeholder={
+                  params.config.formMode === "muat"
+                    ? t("placeholderEnterPICNameLoadingLocation")
+                    : t("placeholderEnterPICNameUnloadingLocation")
+                }
+                value={formValues.namaPIC}
+                onChange={(e) => setField("namaPIC", e.target.value)}
+                errorMessage={formErrors?.namaPIC}
+                icon={{
+                  right: "/icons/user-contact.svg",
+                }}
+                appearance={{
+                  inputClassName: "truncate",
+                  iconClassName: "size-4 text-primary-700",
+                }}
+              />
+            </FormContainer>
             {/* No. HP PIC Field */}
             <div className="flex flex-col gap-4">
               <label className="text-sm font-semibold leading-[15px] text-black">
