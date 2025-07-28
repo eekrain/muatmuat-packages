@@ -134,23 +134,25 @@ const DriverNonaktif = ({ onPageChange, onPerPageChange }) => {
   };
 
   return (
-    <DataTable
-      data={data?.drivers || []}
-      columns={columns}
-      searchPlaceholder="Cari Nama Driver, No. HP atau lainnya"
-      totalCountLabel="Driver Nonaktif"
-      currentPage={data?.pagination?.currentPage || currentPage}
-      totalPages={data?.pagination?.totalPages || 1}
-      totalItems={data?.pagination?.totalItems || 0}
-      perPage={data?.pagination?.itemsPerPage || perPage}
-      onPageChange={handlePageChange}
-      onPerPageChange={handlePerPageChange}
-      onSearch={handleSearch}
-      onFilter={handleFilter}
-      onSort={handleSort}
-      loading={isLoading}
-      showPagination
-    />
+    <div className="h-[calc(100vh-300px)]">
+      <DataTable
+        data={data?.drivers || []}
+        columns={columns}
+        searchPlaceholder="Cari Nama Driver, No. HP atau lainnya"
+        totalCountLabel="Driver Nonaktif"
+        currentPage={data?.pagination?.currentPage || currentPage}
+        totalPages={data?.pagination?.totalPages || 1}
+        totalItems={data?.pagination?.totalItems || 0}
+        perPage={data?.pagination?.itemsPerPage || perPage}
+        onPageChange={handlePageChange}
+        onPerPageChange={handlePerPageChange}
+        onSearch={handleSearch}
+        onFilter={handleFilter}
+        onSort={handleSort}
+        loading={isLoading}
+        showPagination
+      />
+    </div>
   );
 };
 

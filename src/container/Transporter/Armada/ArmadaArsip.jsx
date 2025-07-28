@@ -187,25 +187,27 @@ const ArmadaArsip = ({ onPageChange, onPerPageChange }) => {
   };
 
   return (
-    <DataTable
-      data={data?.vehicles || []}
-      columns={columns}
-      searchPlaceholder="Cari No. Polisi, Jenis Truk atau lainnya"
-      totalCountLabel="Armada Arsip"
-      currentPage={data?.pagination?.page || currentPage}
-      totalPages={data?.pagination?.totalPages || 1}
-      totalItems={data?.pagination?.totalItems || 0}
-      perPage={data?.pagination?.limit || perPage}
-      onPageChange={handlePageChange}
-      onPerPageChange={handlePerPageChange}
-      onSearch={handleSearch}
-      onFilter={handleFilter}
-      onSort={handleSort}
-      loading={isLoading}
-      showPagination
-      rowClassName={rowClassName}
-      filterConfig={getFilterConfig()}
-    />
+    <div className="h-[calc(100vh-300px)]">
+      <DataTable
+        data={data?.vehicles || []}
+        columns={columns}
+        searchPlaceholder="Cari No. Polisi, Jenis Truk atau lainnya"
+        totalCountLabel="Armada Arsip"
+        currentPage={data?.pagination?.page || currentPage}
+        totalPages={data?.pagination?.totalPages || 1}
+        totalItems={data?.pagination?.totalItems || 0}
+        perPage={data?.pagination?.limit || perPage}
+        onPageChange={handlePageChange}
+        onPerPageChange={handlePerPageChange}
+        onSearch={handleSearch}
+        onFilter={handleFilter}
+        onSort={handleSort}
+        loading={isLoading}
+        showPagination
+        rowClassName={rowClassName}
+        filterConfig={getFilterConfig()}
+      />
+    </div>
   );
 };
 

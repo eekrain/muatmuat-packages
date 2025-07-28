@@ -241,7 +241,7 @@ const DriverAktif = ({ onPageChange, onPerPageChange }) => {
   };
 
   return (
-    <>
+    <div className="h-[calc(100vh-300px)]">
       <DataTable
         data={data?.drivers || []}
         columns={columns}
@@ -261,7 +261,7 @@ const DriverAktif = ({ onPageChange, onPerPageChange }) => {
         rowClassName={rowClassName}
         filterConfig={getFilterConfig()}
       />
-    </>
+    </div>
   );
 };
 

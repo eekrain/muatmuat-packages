@@ -214,12 +214,7 @@ const DataTable = ({
     };
 
     return (
-      <div
-        className={cn(
-          "h-full overflow-y-auto border-t border-neutral-400"
-          // getTableHeightClass()
-        )}
-      >
+      <div className="h-full overflow-y-auto border-t border-neutral-400">
         <table className="w-full table-auto">
           <thead className="sticky top-0 z-10 bg-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[1px] after:bg-neutral-300">
             <tr>
