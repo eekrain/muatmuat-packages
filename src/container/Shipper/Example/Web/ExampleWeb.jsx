@@ -76,7 +76,7 @@ import {
   TimelineItem,
 } from "@/components/Timeline";
 import TimelineField from "@/components/Timeline/timeline-field";
-import ToogleButton from "@/components/ToogleButton/ToogleButton";
+import Toggle from "@/components/Toggle/Toggle";
 import RequestOtp from "@/container/Shipper/RequestOtp/RequestOtp";
 import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
@@ -842,7 +842,7 @@ const ButtonBottomsheetTooltipForm = () => {
           </Button>
 
           <div>
-            <ToogleButton
+            <Toggle
               onClick={() => toggleCourier("ambilLangsung")}
               value={courierStatus.ambilLangsung}
             />
