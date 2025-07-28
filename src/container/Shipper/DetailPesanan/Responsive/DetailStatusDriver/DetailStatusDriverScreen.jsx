@@ -13,17 +13,17 @@ const DetailStatusDriverScreen = ({ dataStatusPesanan }) => {
   const params = useResponsiveRouteParams();
   const { orderId, driverId } = params;
 
-  const { data } = useGetDriverStatusTimeline({
+  const { data: driverStatusTimeline } = useGetDriverStatusTimeline({
     orderId,
     driverId,
   });
 
+  console.log(
+    "🚀 ~ DetailStatusDriverScreen ~ driverStatusTimeline:",
+    driverStatusTimeline
+  );
   const defaultIndex = dataStatusPesanan?.driverStatus.findIndex(
     (d) => d.driverId === driverId
-  );
-  console.log(
-    "🚀 ~ DetailStatusDriverScreen ~ dataStatusPesanan?.driverStatus:",
-    dataStatusPesanan?.driverStatus
   );
 
   return (
@@ -43,8 +43,10 @@ const DetailStatusDriverScreen = ({ dataStatusPesanan }) => {
         )}
         <div className="bg-white px-4 py-5">
           <DriverTimeline
-            dataDriverStatus={data}
-            onClickProof={() => navigation.push("/proof-photo")}
+            dataDriverStatus={driverStatusTimeline}
+            onClickProof={(driverStatusItem) =>
+              navigation.push("/proof-photo", { driverStatusItem })
+            }
           />
         </div>
       </div>

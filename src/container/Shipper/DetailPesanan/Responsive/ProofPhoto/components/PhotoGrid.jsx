@@ -3,14 +3,7 @@ import {
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
 
-export const PhotoGrid = ({ title }) => {
-  const photos = [
-    "https://picsum.photos/200?random=1",
-    "https://picsum.photos/200?random=2",
-    "https://picsum.photos/200?random=3",
-    "https://picsum.photos/200?random=4",
-  ];
-
+export const PhotoGrid = ({ title, photos = [] }) => {
   return (
     <div className="flex flex-col gap-4 bg-white px-4 py-5">
       <div className="text-sm font-semibold">{title}</div>

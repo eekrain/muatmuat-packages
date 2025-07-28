@@ -33,7 +33,7 @@ export const AuthenticationProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    console.log("Auth effect:", { isZustandHydrated, hasInitAuth });
+    // console.log("Auth effect:", { isZustandHydrated, hasInitAuth });
     // Only run when Zustand is hydrated and we haven't initialized auth yet
     if (!isZustandHydrated || hasInitAuth) return;
 
