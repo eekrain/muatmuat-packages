@@ -39,6 +39,8 @@ const DataTable = ({
   filterConfig = null,
   onSort,
   displayOptions = null,
+
+  tableTitle = null,
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [selectedFilters, setSelectedFilters] = useState({});
@@ -151,6 +153,7 @@ const DataTable = ({
     return (
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
+          {tableTitle && tableTitle}
           {showSearch && (
             <Input
               type="text"
@@ -206,6 +209,7 @@ const DataTable = ({
         return "h-[calc(100dvh-408px)]"; // Base (364px) + display bar (28px + 16px margin)
       } else {
         return "h-[calc(100dvh-364px)]"; // Base only
+        // return "";
       }
     };
 
