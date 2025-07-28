@@ -88,6 +88,14 @@ export const OrderInfo = ({ dataStatusPesanan }) => {
             Status Pesanan
           </span>
 
+          {true && (
+            <BadgeStatusPesanan
+              variant="primary"
+              className="w-full text-sm font-semibold"
+            >
+              Armada Dijadwalkan: 3 Unit
+            </BadgeStatusPesanan>
+          )}
           {dataStatusPesanan?.orderStatus && (
             <BadgeStatusPesanan
               variant={statusVariant}

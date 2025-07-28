@@ -1,11 +1,6 @@
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
-import {
-  BottomSheet,
-  BottomSheetContent,
-  BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
@@ -16,6 +11,7 @@ import { DriverQRCodeAlert } from "./components/DriverQRCodeAlert";
 import { FleetStatusAlert } from "./components/FleetStatusAlert";
 import { FooterButton } from "./components/FooterButton";
 import { MethodInfo } from "./components/MethodInfo";
+import { ModalInformasiSlider } from "./components/ModalInformasiSlider";
 import { OrderInfo } from "./components/OrderInfo";
 import { PaymentDetail } from "./components/PaymentDetail";
 import { RouteInfo } from "./components/RouteInfo";
@@ -33,7 +29,7 @@ const DetailPesananScreen = ({
   const { data: dataDetailPesanan, isLoading: isLoadingDetailPesanan } =
     useGetDetailPesananData(params.orderId);
 
-  const [isOpenBottomsheet, setIsOpenBottomsheet] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const [isOpenInfo, setIsOpenInfo] = useState(false);
 
@@ -44,7 +40,7 @@ const DetailPesananScreen = ({
       }}
       withMenu={{
         onClickInfo: () => setIsOpenInfo(true),
-        onClickMenu: () => setIsOpenBottomsheet(true),
+        onClickMenu: () => setIsMenuOpen(true),
       }}
       onClickBackButton={() => alert("onClickBackButton")}
     >
@@ -75,30 +71,9 @@ const DetailPesananScreen = ({
         )}
       </div>
 
-      <BottomsheetMenuList
-        open={isOpenBottomsheet}
-        onOpenChange={setIsOpenBottomsheet}
-      />
+      <ModalInformasiSlider open={isOpenInfo} onOpenChange={setIsOpenInfo} />
 
-      <BottomSheet open={isOpenInfo} onOpenChange={setIsOpenInfo}>
-        <BottomSheetContent>
-          <BottomSheetHeader>
-            {DEBUG_MODE ? "Log" : "Lokasi Bongkar"}
-          </BottomSheetHeader>
-          {DEBUG_MODE ? (
-            <pre className="h-[700px] overflow-y-scroll">
-              {JSON.stringify(data, null, 2)}
-            </pre>
-          ) : (
-            <img src="/img/mock-bongkar.png" alt="" className="px-4 py-5" />
-
-            // <div className="px-4 py-6 text-sm font-medium">
-            //   QR Code diperlukan agar driver dapat melanjutkan proses muat atau
-            //   bongkar barang.
-            // </div>
-          )}
-        </BottomSheetContent>
-      </BottomSheet>
+      <BottomsheetMenuList open={isMenuOpen} onOpenChange={setIsMenuOpen} />
 
       <ResponsiveFooter className="flex flex-col gap-3">
         {false && (

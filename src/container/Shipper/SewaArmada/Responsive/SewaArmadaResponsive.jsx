@@ -125,6 +125,7 @@ const SewaArmadaResponsive = ({
           <InformasiMuatanScreen
             cargoTypes={cargoTypes}
             cargoCategories={cargoCategories}
+            trucks={trucks}
           />
         }
       />

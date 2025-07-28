@@ -44,7 +44,7 @@ const InnerLocationModalFormWeb = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const isFormValid = validateLokasiBongkarMuat(formMode, index);
+    const isFormValid = validateLokasiBongkarMuat(formMode, index, false);
     if (!isFormValid) return;
 
     onSubmit(formValues);

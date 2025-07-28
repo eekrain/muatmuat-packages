@@ -36,6 +36,7 @@ export const HeaderResponsiveForm = ({
     className: "",
   },
   withMenu = null,
+  variant = "muattrans",
 }) => {
   const navigation = useResponsiveNavigation();
 
@@ -49,7 +50,12 @@ export const HeaderResponsiveForm = ({
       <div className="flex items-center gap-x-3">
         <button onClick={handleBackButton}>
           <IconComponent
-            className="icon-stroke-muat-trans-primary-400 rounded-xl bg-muat-trans-secondary-900"
+            className={cn(
+              "rounded-xl",
+              variant === "muattrans" &&
+                "bg-muat-trans-secondary-900 text-muat-trans-primary-400",
+              variant === "muatmuat" && "bg-neutral-50 text-primary-700"
+            )}
             src="/icons/chevron-left24.svg"
             width={24}
             height={24}
@@ -58,7 +64,8 @@ export const HeaderResponsiveForm = ({
 
         <h1
           className={cn(
-            "mt-1 text-base font-bold leading-[1]",
+            "mt-1 text-base font-bold leading-[1] text-neutral-900",
+            variant === "muatmuat" && "text-white",
             title?.className
           )}
         >
@@ -71,7 +78,11 @@ export const HeaderResponsiveForm = ({
           {withMenu.onClickInfo && (
             <button
               onClick={withMenu.onClickInfo || DEFAULT_FUNCTION}
-              className="flex w-[38px] flex-col items-center gap-[2px]"
+              className={cn(
+                "flex w-[38px] flex-col items-center gap-[2px]",
+                variant === "muattrans" && "text-muat-trans-secondary-900",
+                variant === "muatmuat" && "text-white"
+              )}
             >
               <IconComponent
                 src="/icons/info-circle24.svg"
@@ -83,7 +94,11 @@ export const HeaderResponsiveForm = ({
           {withMenu.onClickMenu && (
             <button
               onClick={withMenu.onClickMenu || DEFAULT_FUNCTION}
-              className="flex w-[38px] flex-col items-center gap-[2px]"
+              className={cn(
+                "flex w-[38px] flex-col items-center gap-[2px]",
+                variant === "muattrans" && "text-muat-trans-secondary-900",
+                variant === "muatmuat" && "text-white"
+              )}
             >
               <IconComponent src="/icons/menu-dot.svg" className="size-6" />
               <span className="text-xxs font-semibold">Menu</span>
@@ -99,6 +114,13 @@ export const HeaderResponsiveForm = ({
             </button>
           )}
         </div>
+      )}
+      {variant === "muatmuat" && (
+        <img
+          src="/img/header-mobile-meteor.png"
+          alt="header-mobile-meteor"
+          className="absolute right-0 h-[62px] w-[152px] object-cover"
+        />
       )}
     </div>
   );

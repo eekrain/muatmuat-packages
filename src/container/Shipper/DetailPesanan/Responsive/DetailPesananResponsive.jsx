@@ -30,6 +30,9 @@ const DriverStatusDetailScreen = dynamicScreen(
 const ProofPhotoScreen = dynamicScreen(
   () => import("./ProofPhoto/ProofPhotoScreen")
 );
+const FormRekeningBankScreen = dynamicScreen(
+  () => import("./FormRekeningBank/FormRekeningBankScreen")
+);
 
 const DetailPesananResponsive = ({}) => {
   // const navigation = useResponsiveNavigation();
@@ -88,6 +91,10 @@ const DetailPesananResponsive = ({}) => {
         }
       />
       <ResponsiveRoute path="/proof-photo" component={<ProofPhotoScreen />} />
+      <ResponsiveRoute
+        path="/FormRekeningBank"
+        component={<FormRekeningBankScreen />}
+      />
     </ResponsiveProvider>
   );
 };

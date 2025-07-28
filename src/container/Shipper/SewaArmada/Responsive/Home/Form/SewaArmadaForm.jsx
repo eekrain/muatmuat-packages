@@ -94,6 +94,11 @@ export const SewaArmadaForm = ({ carriers, trucks }) => {
     }
   };
 
+  const showRemoveButton = {
+    muat: formValues.lokasiMuat && formValues.lokasiMuat.length > 1,
+    bongkar: formValues.lokasiBongkar && formValues.lokasiBongkar.length > 1,
+  };
+
   return (
     <div className="flex flex-col gap-y-6 bg-white px-4 py-5">
       {/* Waktu Muat Field */}
@@ -120,9 +125,11 @@ export const SewaArmadaForm = ({ carriers, trucks }) => {
         >
           {(formValues.lokasiMuat || []).map((item, index) => (
             <TimelineField.Item index={index} key={index}>
-              <TimelineField.RemoveButton
-                onClick={() => removeLokasi("lokasiMuat", index)}
-              />
+              {showRemoveButton.muat && (
+                <TimelineField.RemoveButton
+                  onClick={() => removeLokasi("lokasiMuat", index)}
+                />
+              )}
             </TimelineField.Item>
           ))}
           <TimelineField.AddButton />
@@ -147,9 +154,11 @@ export const SewaArmadaForm = ({ carriers, trucks }) => {
         >
           {(formValues.lokasiBongkar || []).map((item, index) => (
             <TimelineField.Item index={index} key={index}>
-              <TimelineField.RemoveButton
-                onClick={() => removeLokasi("lokasiBongkar", index)}
-              />
+              {showRemoveButton.bongkar && (
+                <TimelineField.RemoveButton
+                  onClick={() => removeLokasi("lokasiBongkar", index)}
+                />
+              )}
             </TimelineField.Item>
           ))}
           <TimelineField.AddButton />

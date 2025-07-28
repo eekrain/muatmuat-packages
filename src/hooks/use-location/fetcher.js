@@ -6,6 +6,7 @@ import {
 } from "@/lib/normalizers/location";
 
 const getLocationByLatLong = async (coordinates) => {
+  console.log("🚀 ~ getLocationByLatLong ~ coordinates:", coordinates);
   const res1 = await fetcherMuatparts.post("/v1/location_by_lat_long", {
     Lat: coordinates.latitude,
     Long: coordinates.longitude,
@@ -46,7 +47,10 @@ const getLocationByPlaceId = async (location) => {
     new URLSearchParams({ placeId: location.ID })
   );
   const dataDistrict = res.data.Data;
-  const dataNotFound = res.data?.Data?.Message;
+  const dataNotFound = normalizeAutoCompleteNotFound(
+    location,
+    res.data?.Data?.Message
+  );
 
   let result;
   if (dataDistrict?.Districts?.[0]) {
@@ -54,12 +58,16 @@ const getLocationByPlaceId = async (location) => {
       ...normalizeDistrictData(dataDistrict),
       location: { name: location.Title, value: location.ID },
     };
-  } else if (dataNotFound) {
-    const temp = normalizeAutoCompleteNotFound(location, dataNotFound);
-    const getDetailedLocation = await getLocationByLatLong(temp.coordinates);
+  } else if (dataNotFound?.coordinates) {
+    const getDetailedLocation = await getLocationByLatLong(
+      dataNotFound.coordinates
+    );
     result = {
       ...getDetailedLocation,
-      location: { name: temp.location.name, value: temp.location.value },
+      location: {
+        name: dataNotFound.location.name,
+        value: dataNotFound.location.value,
+      },
     };
   }
 

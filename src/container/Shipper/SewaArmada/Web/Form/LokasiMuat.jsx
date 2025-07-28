@@ -23,6 +23,10 @@ export const LokasiMuat = () => {
   );
   const { addLokasi, removeLokasi, setField } = useSewaArmadaActions();
 
+  const showRemoveButton =
+    (lokasiMuat && lokasiMuat.length > 1) ||
+    Boolean(lokasiMuat?.[0]?.dataLokasi?.location);
+
   return (
     <>
       <FormContainer>
@@ -54,7 +58,7 @@ export const LokasiMuat = () => {
           {lokasiMuat && lokasiMuat.length > 0
             ? lokasiMuat.map((item, index) => (
                 <TimelineField.Item index={index} key={index}>
-                  {!isEditPage && (
+                  {!isEditPage && showRemoveButton && (
                     <TimelineField.RemoveButton
                       onClick={() => {
                         removeLokasi("lokasiMuat", index);

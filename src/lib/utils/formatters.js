@@ -18,6 +18,16 @@ export const thousandSeparator = (num, opts) =>
     ...opts,
   }).format(num || 0);
 
+export const formatNumberWithComma = (value) => {
+  if (value === null || value === undefined) return "";
+
+  const num = parseFloat(value);
+  if (isNaN(num)) return value;
+
+  // Format to at least 1 decimal place and use comma as separator
+  return num.toFixed(1).replace(".", ",");
+};
+
 // 4 Okt 2024 05:20 WIB
 export const formatDate = (date) => {
   // IF GMT+7 return WIB, IF GMT+8 return WITA, IF GMT+9 return WIT
@@ -30,11 +40,13 @@ export const formatDate = (date) => {
           ? "WIT"
           : null;
 
-  return `${format(
+  const formattedDate = format(
     date,
     timezone ? "dd MMM yyyy HH:mm" : "dd MMM yyyy HH:mm z",
     {
       locale: id,
     }
-  )} ${timezone}`;
+  );
+
+  return `${formattedDate} ${timezone}`;
 };

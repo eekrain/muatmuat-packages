@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import DropdownRadioBottomsheeet from "@/components/Dropdown/DropdownRadioBottomsheeet";
@@ -17,6 +17,8 @@ import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
 import { useInformasiMuatanStore } from "@/store/Shipper/forms/informasiMuatanStore";
 import { useSewaArmadaActions } from "@/store/Shipper/forms/sewaArmadaStore";
+
+import { JenisTrukBottomSheet } from "./JenisTrukBottomSheet";
 
 const beratMuatanOptions = [
   {
@@ -43,7 +45,7 @@ const dimensiMuatanOptions = [
   },
 ];
 
-const InformasiMuatanScreen = ({ cargoTypes, cargoCategories }) => {
+const InformasiMuatanScreen = ({ cargoTypes, cargoCategories, trucks }) => {
   const navigation = useResponsiveNavigation();
   const {
     formValues,
@@ -70,6 +72,10 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories }) => {
     navigation.pop();
     // Handle form submission, save to sewaArmadaStore here
   };
+
+  const [openJenisTrukBottomSheet, setOpenJenisTrukBottomSheet] =
+    useState(false);
+  const [selectedTruck, setSelectedTruck] = useState(null);
 
   return (
     <FormResponsiveLayout
@@ -426,6 +432,13 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories }) => {
           })}
         </div>
       </div>
+
+      <JenisTrukBottomSheet
+        open={openJenisTrukBottomSheet}
+        onOpenChange={setOpenJenisTrukBottomSheet}
+        trucks={trucks}
+        onSelectTruck={setSelectedTruck}
+      />
 
       <ResponsiveFooter className="flex gap-3">
         <Button

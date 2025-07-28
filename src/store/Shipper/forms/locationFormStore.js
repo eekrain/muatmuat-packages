@@ -90,7 +90,7 @@ export const useLocationFormStore = create(
           formValues: newValues ? newValues : defaultValues,
           formErrors: {},
         }),
-      validateLokasiBongkarMuat: (formMode, index) => {
+      validateLokasiBongkarMuat: (formMode, index, isMobile) => {
         const { formValues } = get();
         const allSelectedLocations =
           useSewaArmadaStore.getState().formValues[
@@ -117,8 +117,8 @@ export const useLocationFormStore = create(
 
         const errors = {
           dataLokasi: validateLocation(),
-          namaPIC: validateNamaPIC(formValues.namaPIC),
-          noHPPIC: validateNoHPPIC(formValues.noHPPIC, formMode),
+          namaPIC: validateNamaPIC(formValues.namaPIC, formMode, isMobile),
+          noHPPIC: validateNoHPPIC(formValues.noHPPIC, formMode, isMobile),
         };
 
         set({ formErrors: errors });
@@ -131,8 +131,8 @@ export const useLocationFormStore = create(
         const errors = {
           namaLokasi: validateNamaLokasi(formValues.namaLokasi),
           detailLokasi: validateDetailLokasi(formValues.detailLokasi),
-          namaPIC: validateNamaPIC(formValues.namaPIC),
-          noHPPIC: validateNoHPPIC(formValues.noHPPIC),
+          namaPIC: validateNamaPIC(formValues.namaPIC, formMode, isMobile),
+          noHPPIC: validateNoHPPIC(formValues.noHPPIC, formMode, isMobile),
         };
 
         set({ formErrors: errors });
@@ -253,20 +253,27 @@ const validateDetailLokasi = (detailLokasi) => {
   if (detailLokasi.length < 3) return "Detail Lokasi minimal 3 karakter";
 };
 
-const validateNamaPIC = (namaPIC) => {
-  if (!namaPIC) return "Nama PIC wajib diisi";
-  if (namaPIC.length < 3) return "Nama PIC minimal 3 karakter";
-  // validate it name only alphabet and "'"
-  if (!/^[a-zA-Z' ]+$/.test(namaPIC)) return "Penulisan Nama PIC tidak valid";
+const validateNamaPIC = (namaPIC, formMode, isMobile) => {
+  if (isMobile) {
+    if (!namaPIC)
+      return `Nama PIC lokasi ${formMode === "muat" ? "muat" : "bongkar"} wajib diisi`;
+    if (namaPIC.length < 3)
+      return `Nama PIC lokasi ${formMode === "muat" ? "muat" : "bongkar"} minimal 3 karakter`;
+    // validate it name only alphabet and "'"
+    if (!/^[a-zA-Z' ]+$/.test(namaPIC))
+      return `Penulisan Nama PIC lokasi ${formMode === "muat" ? "muat" : "bongkar"} tidak valid`;
+  } else {
+    if (!namaPIC) return "Nama PIC wajib diisi";
+    if (namaPIC.length < 3) return "Nama PIC minimal 3 karakter";
+    // validate it name only alphabet and "'"
+    if (!/^[a-zA-Z' ]+$/.test(namaPIC)) return "Penulisan Nama PIC tidak valid";
+  }
 };
 
-const validateNoHPPIC = (noHPPIC, formMode) => {
-  if (!noHPPIC) return "No. HP PIC wajib diisi";
-  if (!/^[0-9]+$/.test(noHPPIC)) return "No. HP PIC tidak valid";
-  if (noHPPIC.length < 8) return "No. HP PIC minimal 8 digit";
-  if (noHPPIC.split("")?.every((char) => char === noHPPIC[0]))
-    return `Format No. HP PIC lokasi ${formMode === "muat" ? "muat" : "bongkar"} salah`;
-  if (
+const validateNoHPPIC = (noHPPIC, formMode, isMobile) => {
+  const wrongFormat =
+    noHPPIC.split("")?.every((char) => char === noHPPIC[0]) ||
+    (!noHPPIC.startsWith("0") && !noHPPIC.startsWith("62")) ||
     // Deteksi pola berurutan (1234567890, 0987654321)
     /0123456789|1234567890|0987654321|9876543210/.test(noHPPIC) ||
     // Deteksi pola berulang berlebihan (1111111111, 2222222222, dll)
@@ -278,10 +285,21 @@ const validateNoHPPIC = (noHPPIC, formMode) => {
     // Deteksi pola berulang 4 digit (1234123412)
     /^(\d{4})\1{1,}$/.test(noHPPIC) ||
     // Deteksi digit yang sama berurutan lebih dari 4 kali
-    /(\d)\1{4,}/.test(noHPPIC)
-  ) {
-    return `Format No. HP PIC lokasi ${formMode === "muat" ? "muat" : "bongkar"} tidak masuk akal`;
+    /(\d)\1{4,}/.test(noHPPIC);
+  if (isMobile) {
+    if (!noHPPIC)
+      return `No. HP PIC lokasi ${formMode === "muat" ? "muat" : "bongkar"} wajib diisi`;
+    if (!/^[0-9]+$/.test(noHPPIC))
+      return `No. HP PIC lokasi ${formMode === "muat" ? "muat" : "bongkar"} tidak valid`;
+    if (noHPPIC.length < 8)
+      return `No. HP PIC lokasi ${formMode === "muat" ? "muat" : "bongkar"} minimal 8 digit`;
+    if (wrongFormat)
+      return `Format No. HP PIC lokasi ${formMode === "muat" ? "muat" : "bongkar"} salah`;
+  } else {
+    if (!noHPPIC) return "No. HP PIC wajib diisi";
+    if (!/^[0-9]+$/.test(noHPPIC)) return "No. HP PIC tidak valid";
+    if (noHPPIC.length < 8) return "No. HP PIC minimal 8 digit";
+    if (wrongFormat)
+      return `Format No. HP PIC lokasi ${formMode === "muat" ? "muat" : "bongkar"} salah`;
   }
-  if (!noHPPIC.startsWith("0") && !noHPPIC.startsWith("62"))
-    return `Format No. HP PIC lokasi ${formMode === "muat" ? "muat" : "bongkar"} salah`;
 };
