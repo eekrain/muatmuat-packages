@@ -52,7 +52,7 @@ export const BottomsheetMenuList = ({ open, onOpenChange }) => {
               onClick={() => alert("Ubah Pesanan clicked")}
               t={t}
             />
-            {false && (
+            {true && (
               <Item
                 label="Batalkan Pesanan"
                 onClick={() => {

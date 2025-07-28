@@ -54,6 +54,7 @@ const Input = forwardRef(
         containerClassName: "",
         inputClassName: "",
         errorMessageClassName: "",
+        iconClassName: "",
       },
       errorMessage,
       hideErrorMessage = false,
@@ -87,7 +88,10 @@ const Input = forwardRef(
                   src={{ src: icon.left }}
                   height={16}
                   width={16}
-                  className={cn(errorMessage && "text-error-400")}
+                  className={cn(
+                    appearance.iconClassName,
+                    errorMessage && "text-error-400"
+                  )}
                 />
               ) : (
                 icon.left
@@ -95,7 +99,7 @@ const Input = forwardRef(
             </div>
           )}
           {text.left && (
-            <span className="mr-3 text-xs font-medium leading-[14.4px] text-neutral-900 max-[600px]:text-sm max-[600px]:font-semibold max-[600px]:leading-[15.4px]">
+            <span className="mr-3 text-sm font-semibold text-neutral-900 md:text-xs md:font-medium">
               {text.left}
             </span>
           )}
@@ -109,7 +113,7 @@ const Input = forwardRef(
             placeholder={placeholder}
             disabled={disabled}
             className={cn(
-              "w-full min-w-0 border-none border-transparent bg-transparent text-xs font-medium leading-[14.4px] text-neutral-900 outline-none placeholder:text-neutral-600 max-[600px]:text-sm max-[600px]:font-semibold max-[600px]:leading-[15.4px]",
+              "w-full min-w-0 border-none border-transparent bg-transparent text-sm font-semibold text-neutral-900 outline-none placeholder:text-neutral-600 md:text-xs md:font-medium",
               disabled && "cursor-not-allowed",
               appearance.inputClassName
             )}
@@ -122,7 +126,10 @@ const Input = forwardRef(
                   src={{ src: icon.right }}
                   height={16}
                   width={16}
-                  className={cn(errorMessage && "text-error-400")}
+                  className={cn(
+                    appearance.iconClassName,
+                    errorMessage && "text-error-400"
+                  )}
                 />
               ) : (
                 icon.right
@@ -130,7 +137,7 @@ const Input = forwardRef(
             </div>
           )}
           {text.right && (
-            <span className="ml-3 text-xs font-medium leading-[14.4px] text-neutral-900 max-[600px]:text-sm max-[600px]:font-semibold max-[600px]:leading-[15.4px]">
+            <span className="ml-3 text-sm font-semibold text-neutral-900 md:text-xs md:font-medium">
               {text.right}
             </span>
           )}

@@ -22,6 +22,10 @@ export const LocationProvider = ({ children }) => {
   const [locationPostalCodeSearchPhrase, setLocationPostalCodeSearchPhrase] =
     useState();
   const [isModalPostalCodeOpen, setIsModalPostalCodeOpen] = useState(false);
+  console.log(
+    "🚀 ~ LocationProvider ~ isModalPostalCodeOpen:",
+    isModalPostalCodeOpen
+  );
   const [tempLocation, setTempLocation] = useState(null);
   const [dontTriggerPostalCodeModal, setDontTriggerPostalCodeModal] =
     useState(false);

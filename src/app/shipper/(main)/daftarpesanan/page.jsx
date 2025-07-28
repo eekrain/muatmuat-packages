@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 
+import DaftarPesananResponsive from "@/container/Shipper/DaftarPesanan/Responsive";
 import DaftarPesananWeb from "@/container/Shipper/DaftarPesanan/Web";
 import useDevice from "@/hooks/use-device";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
@@ -129,7 +130,7 @@ const Page = () => {
   };
 
   if (isMobile) {
-    return <div>Responsive sementara</div>;
+    return <DaftarPesananResponsive orders={orders} />;
   }
   return (
     <DaftarPesananWeb

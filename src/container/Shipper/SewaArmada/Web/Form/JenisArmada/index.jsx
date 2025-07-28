@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 
 import minBy from "lodash/minBy";
 
-import ButtonPlusMinus from "@/components/Form/ButtonPlusMinus";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
+import { NumberInput } from "@/components/Form/NumberInput";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RecommendedTruckModal from "@/container/Shipper/SewaArmada/Web/Form/JenisArmada/RecommendedTruckModal";
 import { SelectedTruck } from "@/container/Shipper/SewaArmada/Web/Form/JenisArmada/SelectedTruck";
@@ -78,10 +78,13 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
       return {
         image: truckType.image,
         truckName: truckType.name,
-        price: 100000,
+        price: truckType.price,
         maxWeight: truckType.maxWeight,
         weightUnit: truckType.weightUnit,
-        dimensions: truckType.dimensions,
+        dimensions: {
+          ...truckType.dimension,
+          dimensionUnit: truckType.dimension.unit,
+        },
       };
     } else {
       if (!truckTypeId || !trucks) return null;
@@ -93,7 +96,7 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
       if (recommendedTruck) {
         return {
           ...recommendedTruck,
-          truckName: recommendedTruck.name,
+          truckName: recommendedTruck?.name,
           isRecommended: true,
         };
       }
@@ -105,7 +108,7 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
       if (nonRecommendedTruck) {
         return {
           ...nonRecommendedTruck,
-          truckName: recommendedTruck.name,
+          truckName: nonRecommendedTruck?.name,
           isRecommended: false,
         };
       }
@@ -251,12 +254,17 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
         <FormContainer>
           <FormLabel required>Jumlah Armada</FormLabel>
           <div className="">
-            <ButtonPlusMinus
+            <NumberInput
+              id="jumlah-armada"
               disabled={!truckTypeId || hasMultipleLocations || isEditPage}
-              onChange={(value) => setField("truckCount", value)}
-              minValue={minTruckCount}
-              maxValue={10}
               value={truckCount}
+              stepper={1}
+              min={minTruckCount || 1}
+              max={10}
+              defaultValue={minTruckCount || 1}
+              onValueChange={(val) => setField("truckCount", val)}
+              className="w-[110px]"
+              hideStepper={false}
             />
           </div>
         </FormContainer>

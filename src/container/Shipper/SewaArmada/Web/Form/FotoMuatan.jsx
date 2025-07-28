@@ -37,6 +37,7 @@ export const FotoMuatan = () => {
                     key={key}
                     width={124}
                     height={124}
+                    alt={`Foto Muatan ${key}`}
                   />
                 ))
             : [...Array(4)].map((_, key) => (

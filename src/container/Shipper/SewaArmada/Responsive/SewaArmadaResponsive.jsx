@@ -4,6 +4,7 @@ import { useEffect } from "react";
 
 import CropperPreviewScreen from "@/components/Cropper/CropperPreviewScreen";
 import CropperScreen from "@/components/Cropper/CropperScreen";
+import SearchKecamatanScreen from "@/components/LocationManagement/Responsive/PencarianLokasi/SearchKecamatanScreen";
 // Import the default screen without dynamic import
 import { LocationProvider } from "@/hooks/use-location/use-location";
 import {
@@ -79,6 +80,7 @@ const FormSimpanLokasiScreen = dynamicScreen(
 );
 
 const SewaArmadaResponsive = ({
+  settlementAlertInfo,
   cargoTypes,
   cargoCategories,
   additionalServicesOptions,
@@ -112,7 +114,13 @@ const SewaArmadaResponsive = ({
     <ResponsiveProvider>
       <ResponsiveRoute
         path="/"
-        component={<SewaArmadaHomeScreen carriers={carriers} trucks={trucks} />}
+        component={
+          <SewaArmadaHomeScreen
+            settlementAlertInfo={settlementAlertInfo}
+            carriers={carriers}
+            trucks={trucks}
+          />
+        }
       />
       <ResponsiveRoute
         path="/FormLokasiBongkarMuat"
@@ -125,12 +133,17 @@ const SewaArmadaResponsive = ({
           <InformasiMuatanScreen
             cargoTypes={cargoTypes}
             cargoCategories={cargoCategories}
+            trucks={trucks}
           />
         }
       />
       <ResponsiveRoute
         path="/CariNamaMuatan"
         component={<CariNamaMuatanScreen />}
+      />
+      <ResponsiveRoute
+        path="/SearchKecamatan"
+        component={<SearchKecamatanScreen />}
       />
       <ResponsiveRoute
         path="/LayananTambahan"

@@ -29,6 +29,7 @@ export const LocationDropdownOnly = ({
   errorMessage,
   markerIcon = "/icons/marker-lokasi-muat.svg",
   placeholder = "Masukkan Lokasi",
+  needValidateLocationChange,
 }) => {
   const containerRef = useRef(null);
   const inputRef = useRef(null);
@@ -171,7 +172,7 @@ export const LocationDropdownOnly = ({
               <button
                 key={location.ID + location.Title}
                 onClick={() => {
-                  onSelectSearchResult(location);
+                  onSelectSearchResult(location, needValidateLocationChange);
                   setIsDropdownSearchOpen(false);
                 }}
                 className="flex items-start gap-2"

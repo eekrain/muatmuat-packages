@@ -145,7 +145,7 @@ export const TruckItem = ({
             <LightboxPreview
               image={image}
               alt="Jenis Carrier"
-              className="size-[68px] overflow-hidden rounded-md object-cover"
+              className="size-[68px] overflow-hidden rounded-md"
             />
           </LightboxProvider>
         </button>

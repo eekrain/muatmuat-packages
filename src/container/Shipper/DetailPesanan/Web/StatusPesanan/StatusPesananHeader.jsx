@@ -18,43 +18,24 @@ import {
 } from "@/components/Lightbox/Lightbox";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import { useTranslation } from "@/hooks/use-translation";
-import {
-  OrderStatusEnum,
-  OrderStatusTitle,
-} from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
+import { getOrderStatusLabel, getStatusVariant } from "../../utlis";
 import { DriverStatusCardItem } from "./DriverStatusCard";
 import { ModalDetailAlasanPembatalan } from "./ModalDetailAlasanPembatalan";
 import { ModalLihatStatusLainnya } from "./ModalLihatStatusLainnya";
 
+const dummyPhoto = [
+  "/img/muatan1.png",
+  "/img/muatan2.png",
+  "/img/muatan3.png",
+  "/img/muatan4.png",
+];
+
 export const StatusPesananHeader = ({ dataStatusPesanan }) => {
   const { t } = useTranslation();
-
-  const orderStatusLabel =
-    dataStatusPesanan.orderStatus !== OrderStatusEnum.COMPLETED &&
-    !dataStatusPesanan.orderStatus.startsWith("CANCELED") &&
-    !dataStatusPesanan.orderStatus.startsWith("WAITING_PAYMENT") &&
-    dataStatusPesanan.unitFleetStatus &&
-    dataStatusPesanan.unitFleetStatus > 1
-      ? `${t(OrderStatusTitle[dataStatusPesanan.orderStatus])}: ${dataStatusPesanan.unitFleetStatus} Unit`
-      : t(OrderStatusTitle[dataStatusPesanan.orderStatus]);
-
-  const dummyPhoto = [
-    "/img/muatan1.png",
-    "/img/muatan2.png",
-    "/img/muatan3.png",
-    "/img/muatan4.png",
-  ];
-
-  const statusVariant = dataStatusPesanan.orderStatus.startsWith("WAITING")
-    ? "warning"
-    : dataStatusPesanan.orderStatus.startsWith("CANCELED")
-      ? "error"
-      : dataStatusPesanan.orderStatus === OrderStatusEnum.COMPLETED
-        ? "success"
-        : "primary";
 
   const [isModalAllDriverOpen, setIsModalAllDriverOpen] = useState(false);
 
@@ -90,8 +71,18 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
                 "gap-x-5"
             )}
           >
-            <BadgeStatusPesanan variant={statusVariant} className="w-fit">
-              {orderStatusLabel}
+            <BadgeStatusPesanan
+              variant={getStatusVariant({
+                orderStatus: dataStatusPesanan.orderStatus,
+              })}
+              className="w-fit"
+            >
+              {getOrderStatusLabel({
+                orderStatus: dataStatusPesanan.orderStatus,
+                unitFleetStatus: dataStatusPesanan.unitFleetStatus,
+                totalUnit: dataStatusPesanan.totalUnit,
+                t,
+              })}
             </BadgeStatusPesanan>
             {dataStatusPesanan.orderStatus.startsWith("CANCELED") &&
             dataStatusPesanan.cancellationHistory ? (

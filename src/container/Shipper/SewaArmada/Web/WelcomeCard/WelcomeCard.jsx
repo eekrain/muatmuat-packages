@@ -13,7 +13,7 @@ export const WelcomeCard = () => {
         />
         <div className="flex h-[45px] w-[558px] flex-col items-start gap-3">
           <h2 className="w-full text-center text-base font-bold leading-[19.2px] text-neutral-900">
-            Selamat Datang di Muatrans!
+            Ayo kirim muatan Anda dengan muatrans!
           </h2>
           <p className="w-full text-center text-xs font-medium leading-[14.4px] text-neutral-600">
             Pesen truk kapan saja dan di mana saja dengan mudah. Serta lacak

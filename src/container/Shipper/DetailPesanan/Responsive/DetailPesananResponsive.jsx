@@ -18,17 +18,20 @@ import UlasanScreen from "./Ulasan/UlasanScreen";
 // Dynamic import all the other screens, so that the user doesn't have to wait for the other screens to load
 // Screen components needs to be default exported
 const QRCodeScreen = dynamicScreen(() => import("./QRCode/QRCodeScreen"));
-const OrderSummaryScreen = dynamicScreen(
-  () => import("./OrderSummary/OrderSummaryScreen")
+const RingkasanStatusPesananScreen = dynamicScreen(
+  () => import("./RingkasanStatusPesanan/RingkasanStatusPesananScreen")
 );
-const FleetTrackScreen = dynamicScreen(
-  () => import("./FleetTrack/FleetTrackScreen")
+const LacakArmadaScreen = dynamicScreen(
+  () => import("./LacakArmada/LacakArmadaScreen")
 );
 const DriverStatusDetailScreen = dynamicScreen(
   () => import("./DriverStatusDetail/DriverStatusDetailScreen")
 );
 const ProofPhotoScreen = dynamicScreen(
   () => import("./ProofPhoto/ProofPhotoScreen")
+);
+const FormRekeningBankScreen = dynamicScreen(
+  () => import("./FormRekeningBank/FormRekeningBankScreen")
 );
 
 const DetailPesananResponsive = ({}) => {
@@ -45,7 +48,7 @@ const DetailPesananResponsive = ({}) => {
   const dataRingkasanPembayaran = data?.dataRingkasanPembayaran;
   const documentShippingDetail =
     data?.dataRingkasanPembayaran.documentShippingDetail;
-  console.log("dataRingkasanPembayaranzzz", dataRingkasanPembayaran);
+
   useEffect(() => {
     setIsGlobalLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -75,11 +78,13 @@ const DetailPesananResponsive = ({}) => {
       <ResponsiveRoute path="/ulasan" component={<UlasanScreen />} />
       <ResponsiveRoute
         path="/order-summary"
-        component={<OrderSummaryScreen />}
+        component={
+          <RingkasanStatusPesananScreen dataStatusPesanan={dataStatusPesanan} />
+        }
       />
       <ResponsiveRoute
         path="/fleet-track"
-        component={<FleetTrackScreen dataStatusPesanan={dataStatusPesanan} />}
+        component={<LacakArmadaScreen dataStatusPesanan={dataStatusPesanan} />}
       />
       <ResponsiveRoute
         path="/detail-driver-status"
@@ -88,6 +93,10 @@ const DetailPesananResponsive = ({}) => {
         }
       />
       <ResponsiveRoute path="/proof-photo" component={<ProofPhotoScreen />} />
+      <ResponsiveRoute
+        path="/FormRekeningBank"
+        component={<FormRekeningBankScreen />}
+      />
     </ResponsiveProvider>
   );
 };

@@ -78,6 +78,7 @@ export const normalizeDetailPesananOrderDetail = ({
         dataOrderStatusHistory?.driverStatus?.length > 0,
       hasPriceCharge: newPriceCharge && newPriceCharge?.isPaid === false,
       hasPriceChange: Boolean(newPriceChange),
+      totalUnit: dataOrderDetail.summary?.truckType?.totalUnit || 1,
     };
 
     const route = { muat: [], bongkar: [] };
