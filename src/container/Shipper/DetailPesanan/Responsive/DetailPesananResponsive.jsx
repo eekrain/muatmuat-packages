@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import {
   ResponsiveProvider,
   ResponsiveRoute,
-  useResponsiveNavigation,
 } from "@/lib/responsive-navigation";
 // Import the default screen without dynamic import
 import { dynamicScreen } from "@/lib/utils/dynamic-screen";
@@ -39,10 +38,10 @@ const CariSemuaDriverScreen = dynamicScreen(
 );
 
 const DetailPesananResponsive = ({}) => {
-  const navigation = useResponsiveNavigation();
-  useEffect(() => {
-    navigation.replace("/CariSemuaDriver");
-  }, []);
+  // const navigation = useResponsiveNavigation();
+  // useEffect(() => {
+  //   navigation.replace("/CariSemuaDriver");
+  // }, []);
   const { setIsGlobalLoading } = useLoadingAction();
 
   const { data } = useGetDetailPesananData("12345");
