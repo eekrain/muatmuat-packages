@@ -61,7 +61,6 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
     "🔍 ~  ~ src/container/Shipper/DetailPesanan/Web/StatusPesanan/StatusPesanan.jsx:60 ~ alerts:",
     dataStatusPesanan.alerts
   );
-
   return (
     <>
       <div className="flex flex-col gap-y-6">
@@ -74,7 +73,9 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
 
         {dataStatusPesanan.orderStatus ===
           OrderStatusEnum.WAITING_PAYMENT_1 && (
-          <AlertPendingPayment1 expiredAt={dataStatusPesanan.expiredAt} />
+          <AlertPendingPayment1
+            expiredAt={dataStatusPesanan.expiredAtFromOrderDetail}
+          />
         )}
 
         {dataStatusPesanan.orderStatus ===

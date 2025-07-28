@@ -6,6 +6,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { ModalDetailOverloadMuatan } from "@/components/Modal/ModalDetailOverloadMuatan";
 import { ModalDetailWaktuTunggu } from "@/components/Modal/ModalDetailWaktuTunggu";
 import { WaitFleetSearchButton } from "@/container/Shipper/DetailPesanan/Web/StatusPesanan/WaitFleetSearch";
+import { useSWRMutateHook } from "@/hooks/use-swr";
 import { useTranslation } from "@/hooks/use-translation";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import {
@@ -39,6 +40,31 @@ export const RingkasanPembayaranDefault = ({
       OrderStatusEnum.WAITING_PAYMENT_1 ||
     dataRingkasanPembayaran?.orderStatus?.startsWith("CANCELED") ||
     true;
+
+  const orderId = params?.orderId;
+  console.log(orderId, "order");
+  const { trigger: paymentProcess, isMutating: isLoading } = useSWRMutateHook(
+    orderId ? `v1/orders/${orderId}/payment-process` : null,
+    "POST"
+  );
+
+  const handleLanjutPembayaran = async () => {
+    if (!paymentProcess) return;
+
+    try {
+      const result = await paymentProcess({
+        paymentMethodId: dataRingkasanPembayaran.paymentMethodId,
+      });
+      console.log("Pembayaran berhasil:", result);
+
+      // Contoh tambahan jika ingin redirect atau toast
+      // router.push(`/sewaarmada/pembayaran/${orderId}`);
+      // toast.success("Pembayaran berhasil!");
+    } catch (err) {
+      console.error("Gagal lanjut pembayaran:", err);
+      // toast.error("Terjadi kesalahan saat memproses pembayaran");
+    }
+  };
 
   return (
     <div className="flex max-h-[453px] w-full flex-col gap-4">
@@ -240,9 +266,8 @@ export const RingkasanPembayaranDefault = ({
             <Button
               variant="muatparts-primary"
               className="h-8 w-full"
-              onClick={() => {
-                /* Implement payment continuation logic */
-              }}
+              onClick={handleLanjutPembayaran}
+              disabled={isLoading}
               type="button"
             >
               {t("buttonLanjutPembayaran")}
