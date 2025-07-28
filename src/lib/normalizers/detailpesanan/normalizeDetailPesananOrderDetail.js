@@ -17,10 +17,10 @@ export const normalizeDetailPesananOrderDetail = ({
     const foundDocumentShipping = dataAdditionalServices.find(
       (val) => val.isShipping
     );
-    const foundOtherAdditionalService = dataAdditionalServices.find(
+    const foundOtherAdditionalService = dataAdditionalServices.filter(
       (val) => !val.isShipping
     );
-
+    console.log("foundOtherAdditionalService", foundDocumentShipping);
     const priceCharge = dataOrderDetail.summary?.priceCharge;
     let newPriceCharge = null;
 
@@ -149,8 +149,9 @@ export const normalizeDetailPesananOrderDetail = ({
       orderStatus: dataOrderDetail.general?.orderStatus,
       totalTruckUnit: dataOrderDetail.summary?.truckType?.totalUnit,
       documentShippingDetail: {
-        recipientName: foundDocumentShipping?.recipientName,
-        recipientPhone: foundDocumentShipping?.recipientPhone,
+        recipientName: foundDocumentShipping?.addressInformation?.recipientName,
+        recipientPhone:
+          foundDocumentShipping?.addressInformation?.recipientPhone,
         fullAddress: foundDocumentShipping?.addressInformation?.fullAddress,
         detailAddress: foundDocumentShipping?.addressInformation?.detailAddress,
         district: foundDocumentShipping?.addressInformation?.district,
@@ -158,15 +159,21 @@ export const normalizeDetailPesananOrderDetail = ({
         province: foundDocumentShipping?.addressInformation?.province,
         postalCode: foundDocumentShipping?.addressInformation?.postalCode,
 
-        courier: foundDocumentShipping?.courier,
-        courierPrice: foundDocumentShipping?.courierPrice,
-        insurancePrice: foundDocumentShipping?.insurancePrice,
+        courier: foundDocumentShipping?.addressInformation?.courier,
+        courierPrice: foundDocumentShipping?.price,
+        insurancePrice:
+          foundDocumentShipping?.addressInformation?.insuranceCost,
         totalPrice:
-          (Number(foundDocumentShipping?.courierPrice) || 0) +
-          (Number(foundDocumentShipping?.insurancePrice) || 0),
+          (Number(foundDocumentShipping?.price) || 0) +
+          (Number(foundDocumentShipping?.addressInformation?.insuranceCost) ||
+            0),
       },
       otherAdditionalService: {
-        totalPrice: foundOtherAdditionalService?.courierPrice,
+        totalPrice:
+          foundOtherAdditionalService.reduce(
+            (sum, item) => sum + item.price,
+            0
+          ) || 0,
       },
       priceCharge: newPriceCharge,
       priceChange: newPriceChange,
