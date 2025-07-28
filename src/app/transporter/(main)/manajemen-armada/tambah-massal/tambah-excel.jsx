@@ -12,7 +12,7 @@ import Toggle from "@/components/Toggle/Toggle";
 import { toast } from "@/lib/toast";
 
 const TambahExcel = () => {
-  const { success } = toast;
+  const { success, error } = toast;
   const [list, setList] = useState([]);
   const [stateUpload, setStateUpload] = useState(true);
   const columns = [
@@ -70,107 +70,113 @@ const TambahExcel = () => {
     // Simulate upload process
     setTimeout(() => {
       setIsUploading(false);
-      setList([
-        ...list,
-        {
-          tanggal: new Date().toISOString().split("T")[0],
-          document: file.name,
-          name: "John Doe",
-          status: "Sukses",
-        },
-        {
-          tanggal: new Date().toISOString().split("T")[0],
-          document: file.name,
-          name: "John Doe",
-          status: "Sukses",
-        },
-        {
-          tanggal: new Date().toISOString().split("T")[0],
-          document: file.name,
-          name: "John Doe",
-          status: "Sukses",
-        },
-        {
-          tanggal: new Date().toISOString().split("T")[0],
-          document: file.name,
-          name: "John Doe",
-          status: "Sukses",
-        },
-        {
-          tanggal: new Date().toISOString().split("T")[0],
-          document: file.name,
-          name: "John Doe",
-          status: "Sukses",
-        },
-        {
-          tanggal: new Date().toISOString().split("T")[0],
-          document: file.name,
-          name: "John Doe",
-          status: "Sukses",
-        },
-        {
-          tanggal: new Date().toISOString().split("T")[0],
-          document: file.name,
-          name: "John Doe",
-          status: "Sukses",
-        },
-        {
-          tanggal: new Date().toISOString().split("T")[0],
-          document: file.name,
-          name: "John Doe",
-          status: "Sukses",
-        },
-        {
-          tanggal: new Date().toISOString().split("T")[0],
-          document: file.name,
-          name: "John Doe",
-          status: "Sukses",
-        },
-        {
-          tanggal: new Date().toISOString().split("T")[0],
-          document: file.name,
-          name: "John Doe",
-          status: "Sukses",
-        },
-        {
-          tanggal: new Date().toISOString().split("T")[0],
-          document: file.name,
-          name: "John Doe",
-          status: "Sukses",
-        },
-        {
-          tanggal: new Date().toISOString().split("T")[0],
-          document: file.name,
-          name: "John Doe",
-          status: "Sukses",
-        },
-        {
-          tanggal: new Date().toISOString().split("T")[0],
-          document: file.name,
-          name: "John Doe",
-          status: "Sukses",
-        },
-        {
-          tanggal: new Date().toISOString().split("T")[0],
-          document: file.name,
-          name: "John Doe",
-          status: "Sukses",
-        },
-        {
-          tanggal: new Date().toISOString().split("T")[0],
-          document: file.name,
-          name: "John Doe",
-          status: "Sukses",
-        },
-        {
-          tanggal: new Date().toISOString().split("T")[0],
-          document: file.name,
-          name: "John Doe",
-          status: "Sukses",
-        },
-      ]);
-      // Show success message
-      success(`Berhasil menambah ${20} armada`);
+      if (stateUpload) {
+        setList([
+          ...list,
+          {
+            tanggal: new Date().toISOString().split("T")[0],
+            document: file.name,
+            name: "John Doe",
+            status: "Sukses",
+          },
+          {
+            tanggal: new Date().toISOString().split("T")[0],
+            document: file.name,
+            name: "John Doe",
+            status: "Sukses",
+          },
+          {
+            tanggal: new Date().toISOString().split("T")[0],
+            document: file.name,
+            name: "John Doe",
+            status: "Sukses",
+          },
+          {
+            tanggal: new Date().toISOString().split("T")[0],
+            document: file.name,
+            name: "John Doe",
+            status: "Sukses",
+          },
+          {
+            tanggal: new Date().toISOString().split("T")[0],
+            document: file.name,
+            name: "John Doe",
+            status: "Sukses",
+          },
+          {
+            tanggal: new Date().toISOString().split("T")[0],
+            document: file.name,
+            name: "John Doe",
+            status: "Sukses",
+          },
+          {
+            tanggal: new Date().toISOString().split("T")[0],
+            document: file.name,
+            name: "John Doe",
+            status: "Sukses",
+          },
+          {
+            tanggal: new Date().toISOString().split("T")[0],
+            document: file.name,
+            name: "John Doe",
+            status: "Sukses",
+          },
+          {
+            tanggal: new Date().toISOString().split("T")[0],
+            document: file.name,
+            name: "John Doe",
+            status: "Sukses",
+          },
+          {
+            tanggal: new Date().toISOString().split("T")[0],
+            document: file.name,
+            name: "John Doe",
+            status: "Sukses",
+          },
+          {
+            tanggal: new Date().toISOString().split("T")[0],
+            document: file.name,
+            name: "John Doe",
+            status: "Sukses",
+          },
+          {
+            tanggal: new Date().toISOString().split("T")[0],
+            document: file.name,
+            name: "John Doe",
+            status: "Sukses",
+          },
+          {
+            tanggal: new Date().toISOString().split("T")[0],
+            document: file.name,
+            name: "John Doe",
+            status: "Sukses",
+          },
+          {
+            tanggal: new Date().toISOString().split("T")[0],
+            document: file.name,
+            name: "John Doe",
+            status: "Sukses",
+          },
+          {
+            tanggal: new Date().toISOString().split("T")[0],
+            document: file.name,
+            name: "John Doe",
+            status: "Sukses",
+          },
+          {
+            tanggal: new Date().toISOString().split("T")[0],
+            document: file.name,
+            name: "John Doe",
+            status: "Sukses",
+          },
+        ]);
+        // Show success message
+        success(`Berhasil menambah ${20} armada`);
+      } else {
+        error(
+          "Harap selesaikan data pada menu Draft terlebih dahulu sebelum menambah armada baru."
+        );
+      }
     }, 3000);
   };
 
