@@ -3,6 +3,7 @@ import { usePathname } from "next/navigation";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { LocationModalFormWeb } from "@/components/LocationManagement/Web/LocationModalFormWeb/LocationModalFormWeb";
 import TimelineField from "@/components/Timeline/timeline-field";
+import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
@@ -11,7 +12,7 @@ import {
 
 import { useModalLocation } from "./use-modal-location";
 
-export const LokasiMuat = () => {
+export const LokasiMuat = ({ orderStatus, settingsTime }) => {
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
@@ -23,13 +24,28 @@ export const LokasiMuat = () => {
   );
   const { addLokasi, removeLokasi, setField } = useSewaArmadaActions();
 
+  const hasNotDepartedToPickupStatuses = [
+    OrderStatusEnum.PREPARE_FLEET,
+    OrderStatusEnum.WAITING_PAYMENT_1,
+    OrderStatusEnum.WAITING_PAYMENT_2,
+    OrderStatusEnum.SCHEDULED_FLEET,
+    OrderStatusEnum.CONFIRMED,
+  ];
+  const hasNotDepartedToPickup =
+    hasNotDepartedToPickupStatuses.includes("babi");
+  const needValidateLocationChange =
+    isEditPage && orderType === "SCHEDULED" && hasNotDepartedToPickup;
+
   return (
     <>
       <FormContainer>
         <FormLabel required>Lokasi Muat</FormLabel>
 
         <TimelineField.Root
-          disabled={isEditPage && orderType === "INSTANT"}
+          maxLocation={settingsTime?.location.maxPickup}
+          disabled={
+            isEditPage && !(orderType === "SCHEDULED" && hasNotDepartedToPickup)
+          }
           variant="muat"
           className="flex-1"
           values={
@@ -39,26 +55,36 @@ export const LokasiMuat = () => {
           onAddLocation={() =>
             handleFirstTime(() => addLokasi("lokasiMuat", null))
           }
-          onEditLocation={(index) =>
-            handleFirstTime(() => {
-              handleOpenModalLocation({
-                formMode: "muat",
-                allSelectedLocations: lokasiMuat,
-                defaultValues: lokasiMuat[index],
-                index,
+          onEditLocation={(index) => {
+            if (
+              !(
+                isEditPage &&
+                orderType === "SCHEDULED" &&
+                !hasNotDepartedToPickup
+              )
+            ) {
+              handleFirstTime(() => {
+                handleOpenModalLocation({
+                  formMode: "muat",
+                  allSelectedLocations: lokasiMuat,
+                  defaultValues: lokasiMuat[index],
+                  index,
+                });
               });
-            })
-          }
+            }
+          }}
           errorMessage={errorLokasiMuat}
         >
           {lokasiMuat && lokasiMuat.length > 0
             ? lokasiMuat.map((item, index) => (
                 <TimelineField.Item index={index} key={index}>
-                  {!isEditPage && (
+                  {!isEditPage && lokasiMuat.length > 1 && (
                     <TimelineField.RemoveButton
                       onClick={() => {
                         removeLokasi("lokasiMuat", index);
-                        setField("truckTypeId", null);
+                        if (!isEditPage) {
+                          setField("truckTypeId", null);
+                        }
                       }}
                     />
                   )}
@@ -72,6 +98,7 @@ export const LokasiMuat = () => {
       <LocationModalFormWeb
         {...modalConfig}
         onOpenChange={handleCloseModalLocation}
+        needValidateLocationChange={needValidateLocationChange}
       />
     </>
   );

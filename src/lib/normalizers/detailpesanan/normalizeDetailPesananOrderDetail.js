@@ -20,7 +20,7 @@ export const normalizeDetailPesananOrderDetail = ({
     const foundOtherAdditionalService = dataAdditionalServices.filter(
       (val) => !val.isShipping
     );
-    console.log("foundOtherAdditionalService", foundDocumentShipping);
+
     const priceCharge = dataOrderDetail.summary?.priceCharge;
     let newPriceCharge = null;
 
@@ -68,7 +68,9 @@ export const normalizeDetailPesananOrderDetail = ({
       },
       otherStatus: dataOrderDetail?.otherStatus || [],
       withDocumentShipping: Boolean(foundDocumentShipping),
-      expiredAt: dataPayment?.payment?.expiredAt,
+      expiredAt: dataPayment?.payment?.expiryTime,
+      expiredAtFromOrderDetail:
+        dataOrderDetail.summary?.payment?.paymentDueDateTime,
       alerts: dataAlerts || [],
       cancellationHistory: dataCancellationHistory,
       hasFoundFleet:
@@ -76,6 +78,7 @@ export const normalizeDetailPesananOrderDetail = ({
         dataOrderStatusHistory?.driverStatus?.length > 0,
       hasPriceCharge: newPriceCharge && newPriceCharge?.isPaid === false,
       hasPriceChange: Boolean(newPriceChange),
+      totalUnit: dataOrderDetail.summary?.truckType?.totalUnit || 1,
     };
 
     const route = { muat: [], bongkar: [] };
@@ -135,6 +138,7 @@ export const normalizeDetailPesananOrderDetail = ({
 
     const dataRingkasanPembayaran = {
       paymentMethod: dataOrderDetail.summary?.payment?.paymentMethod,
+      paymentMethodId: dataOrderDetail.summary?.payment?.paymentMethodId,
       paymentLogo: dataOrderDetail.summary?.payment?.paymentLogo,
       vaNumber: dataPayment?.payment?.vaNumber,
       expiredAt: dataPayment?.payment?.expiredAt,

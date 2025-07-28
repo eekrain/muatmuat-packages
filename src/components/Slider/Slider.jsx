@@ -14,17 +14,20 @@ import { cn } from "@/lib/utils";
  * @property {SlideProps[]} slides - Array of slide data
  * @property {Function} [onComplete] - Callback when all slides are viewed
  * @property {Function} [onSlideChange] - Setter to sync with outer state
+ * @property {object} [appearance] - Custom classNames for styling
+ * @property {string} [appearance.titleClassname]
+ * @property {string} [appearance.contentClassname]
  */
 
 /**
  * Onboarding slider component that displays a series of slides with navigation
  * @param {OnboardingSliderProps} props
  */
-
 export default function Slider({
   slides,
   onComplete,
   onSlideChange,
+  className,
   appearance = {
     titleClassname: "",
     contentClassname: "",
@@ -39,67 +42,50 @@ export default function Slider({
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
 
-  // Minimum swipe distance (in px) to trigger slide change
   const minSwipeDistance = 50;
 
   useEffect(() => {
     if (onSlideChange) onSlideChange(currentSlide);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentSlide]);
+  }, [currentSlide, onSlideChange]);
 
-  // Call onComplete when the last slide is viewed
   useEffect(() => {
     if (currentSlide === slides.length - 1 && onComplete) {
       onComplete();
     }
   }, [currentSlide, onComplete, slides.length]);
 
-  /**
-   * Handle the slide transition
-   * @param {number} index - Target slide index
-   * @param {string} dir - Animation direction ('left' or 'right')
-   */
-  const handleSlideChange = (index, dir) => {
-    if (isAnimating || index === currentSlide) {
-      return;
-    }
+  const handleSlideChange = useCallback(
+    (index, dir) => {
+      if (isAnimating || index === currentSlide) {
+        return;
+      }
 
-    setIsAnimating(true);
-    setNextSlideIndex(index);
-    setDirection(dir);
+      setIsAnimating(true);
+      setNextSlideIndex(index);
+      setDirection(dir);
 
-    // Complete the transition after animation
-    setTimeout(() => {
-      setCurrentSlide(index);
-      setNextSlideIndex(null);
-      setDirection(null);
-      setIsAnimating(false);
-    }, 400);
-  };
+      setTimeout(() => {
+        setCurrentSlide(index);
+        setNextSlideIndex(null);
+        setDirection(null);
+        setIsAnimating(false);
+      }, 400);
+    },
+    [isAnimating, currentSlide]
+  );
 
-  /**
-   * Navigate to the next slide with infinite scrolling
-   */
-  const nextSlide = () => {
+  const nextSlide = useCallback(() => {
     const nextIndex = currentSlide === slides.length - 1 ? 0 : currentSlide + 1;
     handleSlideChange(nextIndex, "left");
-  };
+  }, [currentSlide, slides.length, handleSlideChange]);
 
-  /**
-   * Navigate to the previous slide with infinite scrolling
-   */
-  const prevSlide = () => {
+  const prevSlide = useCallback(() => {
     const prevIndex = currentSlide === 0 ? slides.length - 1 : currentSlide - 1;
     handleSlideChange(prevIndex, "right");
-  };
+  }, [currentSlide, slides.length, handleSlideChange]);
 
-  /**
-   * Navigate to a specific slide
-   * @param {number} index - The slide index to navigate to
-   */
   const goToSlide = (index) => {
     if (index === currentSlide) return;
-
     const dir = index > currentSlide ? "left" : "right";
     handleSlideChange(index, dir);
   };
@@ -113,10 +99,7 @@ export default function Slider({
   const handleDragMove = useCallback(
     (clientX) => {
       if (!isDragging) return;
-
       setTouchEnd(clientX);
-
-      // Calculate drag offset for visual feedback
       const offset = clientX - touchStart;
       setDragOffset(offset);
     },
@@ -125,48 +108,26 @@ export default function Slider({
 
   const handleDragEnd = useCallback(() => {
     if (!touchStart || !touchEnd) return;
-
     const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe) {
-      // Go to next slide (with infinite scrolling)
-      const nextIndex =
-        currentSlide === slides.length - 1 ? 0 : currentSlide + 1;
-      handleSlideChange(nextIndex, "left");
-    } else if (isRightSwipe) {
-      // Go to previous slide (with infinite scrolling)
-      const prevIndex =
-        currentSlide === 0 ? slides.length - 1 : currentSlide - 1;
-      handleSlideChange(prevIndex, "right");
+    if (distance > minSwipeDistance) {
+      nextSlide();
+    } else if (distance < -minSwipeDistance) {
+      prevSlide();
     }
-
-    // Reset states
     setTouchStart(null);
     setTouchEnd(null);
     setIsDragging(false);
     setDragOffset(0);
+  }, [touchStart, touchEnd, nextSlide, prevSlide]);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [touchStart, touchEnd, currentSlide, slides.length]);
-
-  // Touch event handlers
   const handleTouchStart = useCallback(
-    (e) => {
-      handleDragStart(e.touches[0].clientX);
-    },
+    (e) => handleDragStart(e.touches[0].clientX),
     [handleDragStart]
   );
-
   const handleTouchMove = useCallback(
-    (e) => {
-      handleDragMove(e.touches[0].clientX);
-    },
+    (e) => handleDragMove(e.touches[0].clientX),
     [handleDragMove]
   );
-
-  // Mouse event handlers
   const handleMouseDown = useCallback(
     (e) => {
       e.preventDefault();
@@ -174,7 +135,6 @@ export default function Slider({
     },
     [handleDragStart]
   );
-
   const handleMouseMove = useCallback(
     (e) => {
       e.preventDefault();
@@ -182,7 +142,6 @@ export default function Slider({
     },
     [handleDragMove]
   );
-
   const handleMouseUp = useCallback(
     (e) => {
       e.preventDefault();
@@ -190,24 +149,18 @@ export default function Slider({
     },
     [handleDragEnd]
   );
-
-  // Add mouse leave handler to prevent stuck dragging state
   const handleMouseLeave = useCallback(() => {
     if (isDragging) {
       handleDragEnd();
     }
   }, [isDragging, handleDragEnd]);
 
-  // Determine slide classes based on animation state
   const getSlideClasses = (index) => {
-    // Current slide
     if (index === currentSlide && nextSlideIndex === null) {
       return `absolute inset-0 opacity-100 transform ${
         isDragging ? `translate-x-[${dragOffset}px]` : "translate-x-0"
       }`;
     }
-
-    // Current slide animating out
     if (index === currentSlide && nextSlideIndex !== null) {
       return `absolute inset-0 transform transition-all duration-300 ease-in-out ${
         direction === "left"
@@ -215,17 +168,9 @@ export default function Slider({
           : "translate-x-full opacity-0"
       }`;
     }
-
-    // Next slide animating in
     if (index === nextSlideIndex) {
-      return `absolute inset-0 transform transition-all duration-300 ease-in-out ${
-        direction === "left"
-          ? "translate-x-0 opacity-100"
-          : "translate-x-0 opacity-100"
-      }`;
+      return "absolute inset-0 transform transition-all duration-300 ease-in-out translate-x-0 opacity-100";
     }
-
-    // Initial position for next slide before animation
     if (nextSlideIndex !== null && index === nextSlideIndex) {
       return `absolute inset-0 transform ${
         direction === "left"
@@ -233,15 +178,27 @@ export default function Slider({
           : "-translate-x-full opacity-0"
       }`;
     }
-
-    // Hidden slides
     return "absolute inset-0 opacity-0";
   };
 
   return (
-    <div className="mx-auto w-full max-w-md overflow-hidden bg-white">
+    <div
+      className={cn(
+        "flex h-full flex-col items-center justify-center",
+        className
+      )}
+    >
+      <h2
+        className={cn(
+          "mb-5 text-base font-bold leading-[1.1] text-neutral-900 md:hidden",
+          appearance.titleClassname
+        )}
+      >
+        {slides[currentSlide]?.title}
+      </h2>
+      {/* Slides Container */}
       <div
-        className="relative h-[200px] cursor-grab overflow-hidden active:cursor-grabbing lg:h-[120px]"
+        className="relative h-[150px] w-full cursor-grab active:cursor-grabbing md:h-[120px]"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleDragEnd}
@@ -250,15 +207,13 @@ export default function Slider({
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseLeave}
       >
-        {/* Render all slides */}
         {slides.map((slide, index) => (
           <div
             key={index}
             className={`${getSlideClasses(
               index
-            )} flex flex-col items-center justify-center px-6 transition-all duration-300 ease-in-out`}
+            )} flex flex-col items-center justify-center transition-all duration-300 ease-in-out`}
             style={{
-              // Set initial position before animation starts
               transform:
                 nextSlideIndex === index && !isAnimating
                   ? `translateX(${direction === "left" ? "100%" : "-100%"})`
@@ -268,20 +223,19 @@ export default function Slider({
             <img
               src={slide.imgSrc}
               alt={slide.title}
-              className="h-[200px] w-[200px] object-contain lg:h-[120px] lg:w-[140px]"
+              className="h-[150px] w-[150px] object-contain md:h-[120px] md:w-[140px]"
             />
           </div>
         ))}
 
-        {/* Navigation arrows - always visible for infinite scrolling */}
+        {/* Desktop Navigation Arrows */}
         <button
           onClick={prevSlide}
           disabled={isAnimating}
-          className={`absolute left-0 top-1/2 hidden h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full bg-white lg:flex ${
-            isAnimating
-              ? "cursor-not-allowed opacity-50"
-              : "opacity-100 hover:bg-gray-100"
-          }`}
+          className={cn(
+            "absolute left-0 top-1/2 hidden h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full bg-white lg:flex",
+            isAnimating && "cursor-not-allowed opacity-50"
+          )}
         >
           <svg
             className="h-6 w-6 text-primary-700"
@@ -297,15 +251,13 @@ export default function Slider({
             />
           </svg>
         </button>
-
         <button
           onClick={nextSlide}
           disabled={isAnimating}
-          className={`absolute right-0 top-1/2 hidden h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full bg-white lg:flex ${
-            isAnimating
-              ? "cursor-not-allowed opacity-50"
-              : "opacity-100 hover:bg-gray-100"
-          }`}
+          className={cn(
+            "absolute right-0 top-1/2 hidden h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full bg-white lg:flex",
+            isAnimating && "cursor-not-allowed opacity-50"
+          )}
         >
           <svg
             className="h-6 w-6 text-primary-700"
@@ -323,37 +275,89 @@ export default function Slider({
         </button>
       </div>
 
-      <h2
-        className={cn(
-          "mb-1 hidden text-center text-lg font-bold leading-[1.2] lg:mt-6 lg:block",
-          appearance.titleClassname
-        )}
-      >
-        {slides[currentSlide]?.title}
-      </h2>
-
-      <div
-        className={cn(
-          "flex h-[81px] max-w-[337px] flex-col justify-between",
-          appearance.contentClassname
-        )}
-      >
-        <div className="flex justify-center text-sm font-medium leading-[1.2] text-neutral-900">
+      {/* Text Content */}
+      <div className="flex flex-1 flex-col items-center gap-5">
+        <h2
+          className={cn(
+            "hidden text-center text-base font-bold leading-[1.1] text-neutral-900 md:block",
+            appearance.titleClassname
+          )}
+        >
+          {slides[currentSlide]?.title}
+        </h2>
+        <div
+          className={cn(
+            "text-sm font-medium leading-[1.1] text-neutral-900",
+            appearance.contentClassname
+          )}
+        >
           {slides[currentSlide]?.content}
         </div>
-        {/* Dots navigation */}
-        <div className="flex h-4 items-center justify-center lg:mt-0">
+      </div>
+
+      {/* Bottom Controls */}
+      <div className="flex w-full flex-col gap-6">
+        {/* Dots Navigation */}
+        <div className="flex h-4 items-center justify-center">
           {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
               disabled={isAnimating}
-              className={`mx-1 h-2 w-2 rounded-full ${
+              className={`mx-1 h-[6px] w-[6px] rounded-full transition-all duration-200 ${
                 currentSlide === index ? "bg-primary-700" : "bg-neutral-400"
-              } transition-all duration-200`}
+              }`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}
+        </div>
+
+        {/* Mobile Navigation Arrows */}
+        <div className="flex items-center justify-end gap-[14px] lg:hidden">
+          <button
+            onClick={prevSlide}
+            disabled={isAnimating}
+            className={cn(
+              "flex h-[31px] w-[31px] items-center justify-center rounded-[12px] border border-neutral-500 bg-white",
+              isAnimating && "cursor-not-allowed opacity-50"
+            )}
+          >
+            <svg
+              className="h-6 w-6 text-neutral-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+          <button
+            onClick={nextSlide}
+            disabled={isAnimating}
+            className={cn(
+              "flex h-[31px] w-[31px] items-center justify-center rounded-[12px] bg-primary-700",
+              isAnimating && "cursor-not-allowed opacity-50"
+            )}
+          >
+            <svg
+              className="h-6 w-6 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
         </div>
       </div>
     </div>

@@ -2,21 +2,30 @@
 
 import { cn } from "@/lib/utils";
 
-const backgroundClassnames = {
-  muatmuat: "bg-neutral-50",
-  muatparts: "bg-muat-parts-non-800",
+const backgroundStyles = {
+  muatmuat: "bg-primary-700",
   muattrans: "bg-muat-trans-primary-400",
 };
 
+/**
+ * @typedef {Object} HeaderResponsiveContainerProps
+ * @property {React.ReactNode} children
+ * @property {string} className
+ * @property {"muatmuat" | "muattrans"} type
+ */
+
+/**
+ * @param {HeaderResponsiveContainerProps} props
+ */
 export const HeaderResponsiveContainer = ({
   children,
   className,
-  type = "muattrans",
+  variant = "muattrans",
 }) => {
   return (
     <div
       className={cn(
-        backgroundClassnames[type],
+        backgroundStyles[variant],
         "sticky left-0 top-0 z-10 w-full",
         className
       )}

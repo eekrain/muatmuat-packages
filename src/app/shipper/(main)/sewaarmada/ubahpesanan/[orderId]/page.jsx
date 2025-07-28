@@ -9,12 +9,22 @@ import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRMutateHook } from "@/hooks/use-swr";
 import { useGetOrderDetail } from "@/services/Shipper/sewaarmada/getOrderDetail";
 import { useGetRecommendedCarriers } from "@/services/Shipper/sewaarmada/getRecommendedCarriers";
-import { useGetRecommendedTrucks } from "@/services/Shipper/sewaarmada/getRecommendedTrucks";
 import useGetSewaArmadaFormOption from "@/services/Shipper/sewaarmada/getSewaArmadaFormOption";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
 } from "@/store/Shipper/forms/sewaArmadaStore";
+
+// Note 25/07/2025
+// ubah pesanan instan
+// cuma bisa tambah atau ganti lokasi bongkar 2 sampek bates maksimal (menuju lokasi bongkar 2)
+// kalo lebih jauh selalu ada tambah biaya
+// kalo sdh menuju lokasi bongkar 2 ada penalti
+
+// ubah pesanan terjadwal
+// blm berangkat bisa rubah semua lokasi muat dan bongkar, tapi ga bisa tambah atau hapus
+// kalo hari h (driver sudah menuju lokasi muat) cuma bisa ganti lokasi bongkar sampai ada driver yang menuju lokasi bongkar 1
+// kalo sdh ada driver menuju lokasi bongkar 1 ada penalti
 
 const Page = () => {
   const params = useParams();
@@ -30,7 +40,7 @@ const Page = () => {
     cargoCategoryId,
     informasiMuatan,
     carrierId,
-    truckTypeId,
+    truckType,
     tempTrucks,
     truckCount,
     distance,
@@ -52,10 +62,20 @@ const Page = () => {
   );
 
   const { data: carriers } = useGetRecommendedCarriers(cargoCategoryId);
-  const { data: trucks, trigger: fetchTrucks } = useGetRecommendedTrucks();
 
+  const { trigger: calculateDistance, data: calculatedDistanceData } =
+    useSWRMutateHook("v1/orders/calculate-distance");
   const { trigger: calculatePrice, data: calculatedPriceData } =
     useSWRMutateHook("v1/orders/calculate-price");
+
+  const calculatedPrice = useShallowMemo(
+    () => calculatedPriceData?.Data.price || null,
+    [calculatedPriceData]
+  );
+  const calculatedDistance = useShallowMemo(
+    () => calculatedDistanceData?.Data || null,
+    [calculatedDistanceData]
+  );
 
   const shippingDetails = useShallowMemo(() => {
     if (additionalServices.length === 0) return null;
@@ -73,6 +93,36 @@ const Page = () => {
   }, [shippingDetails, tempShippingOptions]);
 
   useShallowCompareEffect(() => {
+    const handleCalculateDistance = async () => {
+      try {
+        const requestPayload = {
+          origin: lokasiMuat.map((item) => ({
+            lat: item?.dataLokasi?.coordinates?.latitude || 0,
+            long: item?.dataLokasi?.coordinates?.longitude || 0,
+          })),
+          destination: lokasiBongkar.map((item) => ({
+            lat: item?.dataLokasi?.coordinates?.latitude,
+            long: item?.dataLokasi?.coordinates?.longitude,
+          })),
+        };
+        await calculateDistance(requestPayload);
+      } catch (error) {
+        console.error("Error calculating distance:", error);
+      }
+    };
+    if (lokasiMuat.length > 0 && lokasiBongkar.length > 0) {
+      handleCalculateDistance();
+    }
+  }, [lokasiMuat, lokasiBongkar]);
+
+  useShallowCompareEffect(() => {
+    if (calculatedDistance) {
+      setField("distance", calculatedDistance?.estimatedDistance);
+      setField("distanceUnit", calculatedDistance?.distanceUnit);
+    }
+  }, [calculatedDistance]);
+
+  useShallowCompareEffect(() => {
     if (!isLoading && orderDetailData) {
       setOrderType(orderDetailData.orderType);
       Object.entries(orderDetailData.formValues).forEach(([key, value]) => {
@@ -82,14 +132,6 @@ const Page = () => {
   }, [isLoading, orderDetailData]);
 
   useShallowCompareEffect(() => {
-    if (trucks) {
-      setField("tempTrucks", trucks);
-      setField("distance", trucks.priceComponents.estimatedDistance);
-      setField("distanceUnit", trucks.priceComponents.distanceUnit);
-    }
-  }, [trucks]);
-
-  useShallowCompareEffect(() => {
     const handleCalculatePrice = async () => {
       try {
         const requestPayload = {
@@ -97,7 +139,7 @@ const Page = () => {
           orderId: params.orderId,
           truckData: {
             carrierId,
-            truckTypeId,
+            truckTypeId: truckType.truckTypeId,
             distance,
             distanceUnit,
             orderType,
@@ -136,14 +178,14 @@ const Page = () => {
         console.error("Error calculating price:", error);
       }
     };
-    if (truckTypeId) {
+    if (truckType?.truckTypeId) {
       handleCalculatePrice();
     }
   }, [
     params.orderId,
     orderType,
     carrierId,
-    truckTypeId,
+    truckType?.truckTypeId,
     truckCount,
     distance,
     distanceUnit,
@@ -152,16 +194,6 @@ const Page = () => {
     businessEntity.isBusinessEntity,
     voucherId,
   ]);
-
-  const handleFetchTrucks = async ({
-    informasiMuatan: newInformasiMuatan,
-  } = {}) => {
-    if (carrierId) {
-      // NOTE: Assuming normalizeFetchTruck is defined elsewhere in your project
-      // const requestBody = normalizeFetchTruck({ ... });
-      // await fetchTrucks(requestBody);
-    }
-  };
 
   // FIXED: Added a handler to implement the "Save Changes" flow (Requirement LD-G2.4)
   const handleSaveChanges = () => {
@@ -189,9 +221,8 @@ const Page = () => {
       additionalServicesOptions={additionalServicesOptions}
       shippingDetails={shippingDetails}
       shippingOption={shippingOption}
-      calculatedPrice={calculatedPriceData}
+      calculatedPrice={calculatedPrice}
       orderStatus={orderDetailData?.orderStatus}
-      onFetchTrucks={handleFetchTrucks}
       onSaveChanges={handleSaveChanges}
       isUpdateFlow={true}
     />

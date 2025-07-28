@@ -172,6 +172,9 @@ const DetailRefundPesananWeb = () => {
             variant="muatparts-primary-secondary"
             className="h-8 w-full"
             onClick={() => {}}
+            appearance={{
+              iconClassname: "text-primary-700",
+            }}
             type="button"
           >
             <span className="pt-1">Unduh Bukti Pengembalian Dana</span>

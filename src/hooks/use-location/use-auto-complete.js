@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo } from "react";
 
 import { fetcherMuatparts } from "@/lib/axios";
+import { toast } from "@/lib/toast";
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 import { useResponsiveSearchStore } from "@/store/Shipper/zustand/responsiveSearchStore";
 
@@ -25,6 +26,8 @@ export const useAutoComplete = ({
   const responsiveSearchValue = useResponsiveSearchStore(
     (state) => state.searchValue
   );
+  const { lastValidLocation, setLastValidLocation } = useLocationFormStore();
+
   useEffect(() => {
     if (isMobile) {
       setAutoCompleteSearchPhrase(responsiveSearchValue);
@@ -39,6 +42,7 @@ export const useAutoComplete = ({
 
   const debouncedTrigger = useDebounceCallback(trigger, 500);
   const searchResult = useMemo(() => data?.slice(0, 3) || [], [data]);
+  const searchResultEmpty = searchResult.length === 0;
 
   useShallowCompareEffect(() => {
     if (autoCompleteSearchPhrase && autoCompleteSearchPhrase?.length >= 3) {
@@ -48,20 +52,30 @@ export const useAutoComplete = ({
     } else if (
       (!autoCompleteSearchPhrase ||
         (autoCompleteSearchPhrase && autoCompleteSearchPhrase.length < 3)) &&
-      searchResult.length > 0
+      !searchResultEmpty
     ) {
       reset();
     }
-  }, [autoCompleteSearchPhrase, debouncedTrigger, searchResult]);
+  }, [autoCompleteSearchPhrase, debouncedTrigger, searchResultEmpty]);
 
   const setLocationPartial = useLocationFormStore((s) => s.setLocationPartial);
 
   const handleSelectSearchResult = useCallback(
-    async (location) => {
+    async (location, needValidateLocationChange) => {
       const result = await fetcher.getLocationByPlaceId(location);
+      if (
+        needValidateLocationChange &&
+        result?.city &&
+        result?.city?.value !== lastValidLocation?.city?.value
+      ) {
+        setAutoCompleteSearchPhrase(lastValidLocation?.location?.name);
+        return toast.error(
+          "Perubahan lokasi muat hanya bisa diganti jika masih di kota yang sama."
+        );
+      }
       setLocationPartial(result);
       setDontTriggerPostalCodeModal(false);
-      setCoordinates(result.coordinates);
+      if (result?.coordinates) setCoordinates(result.coordinates);
       setTempLocation(result);
       if (!result?.district?.value) {
         setIsModalPostalCodeOpen(true);
@@ -70,15 +84,21 @@ export const useAutoComplete = ({
         else setLocationPostalCodeSearchPhrase(result.postalCode.value);
       } else {
         if (!isMobile) setAutoCompleteSearchPhrase(result.location.name);
-        fetcher.saveRecentSearchedLocation(result).then(() => {
-          refetchHistoryResult();
-        });
+        setLastValidLocation(result);
+        fetcher
+          .saveRecentSearchedLocation(result)
+          .then(() => {
+            refetchHistoryResult();
+          })
+          .catch((err) => {
+            console.log("🚀 ~ Error Save Recent Searched Location:", err);
+          });
       }
       setIsDropdownSearchOpen(false);
       return result;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [lastValidLocation]
   );
 
   return {

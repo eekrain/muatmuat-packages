@@ -176,7 +176,7 @@ const Page = () => {
       setWaitingSettlementOrderId(settlementAlertInfo[1].orderId);
     }
   }, [settlementAlertInfo]);
-  // console.log("reorder", reorderData);
+
   useShallowCompareEffect(() => {
     if (!copyOrderId || !isLoading) {
       if (reorderData) {
@@ -221,6 +221,7 @@ const Page = () => {
   if (isMobile)
     return (
       <SewaArmadaResponsive
+        settlementAlertInfo={settlementAlertInfo}
         cargoTypes={cargoTypes}
         cargoCategories={cargoCategories}
         additionalServicesOptions={additionalServicesOptions}

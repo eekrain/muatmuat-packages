@@ -39,6 +39,8 @@ const DataTable = ({
   filterConfig = null,
   onSort,
   displayOptions = null,
+
+  tableTitle = null,
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [selectedFilters, setSelectedFilters] = useState({});
@@ -151,6 +153,7 @@ const DataTable = ({
     return (
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
+          {tableTitle && tableTitle}
           {showSearch && (
             <Input
               type="text"
@@ -206,107 +209,100 @@ const DataTable = ({
         return "h-[calc(100dvh-408px)]"; // Base (364px) + display bar (28px + 16px margin)
       } else {
         return "h-[calc(100dvh-364px)]"; // Base only
+        // return "";
       }
     };
 
     return (
       <div
         className={cn(
-          "relative overflow-hidden border-t border-neutral-400",
-          getTableHeightClass()
+          "h-full overflow-y-auto border-t border-neutral-400"
+          // getTableHeightClass()
         )}
       >
-        <div className="absolute inset-0 overflow-auto">
-          <table className="w-full table-auto">
-            <thead className="sticky top-0 z-10 bg-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[1px] after:bg-neutral-300">
-              <tr>
-                {columns.map((column, index) => {
-                  const isSortable =
-                    column.sortable !== false && column.key && onSort;
-                  const isSorted = sortConfig.key === column.key;
+        <table className="w-full table-auto">
+          <thead className="sticky top-0 z-10 bg-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[1px] after:bg-neutral-300">
+            <tr>
+              {columns.map((column, index) => {
+                const isSortable =
+                  column.sortable !== false && column.key && onSort;
+                const isSorted = sortConfig.key === column.key;
 
-                  return (
-                    <th
-                      key={index}
-                      className={cn(
-                        "bg-white px-6 py-4 text-left text-xs font-bold text-neutral-600",
-                        isSortable &&
-                          "cursor-pointer select-none hover:bg-neutral-50",
-                        column.headerClassName
-                      )}
-                      style={column.width ? { width: column.width } : {}}
-                      onClick={() => isSortable && handleSort(column.key)}
-                    >
-                      <div className="flex items-center gap-1">
-                        <span>{column.header}</span>
-                        {isSortable && (
-                          <div className="ml-1">
-                            {!isSorted ? (
-                              <ArrowUpDown className="h-3 w-3 text-neutral-400" />
-                            ) : sortConfig.direction === "asc" ? (
-                              <ArrowUp className="h-3 w-3 text-primary-700" />
-                            ) : (
-                              <ArrowDown className="h-3 w-3 text-primary-700" />
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </th>
-                  );
-                })}
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td
-                    colSpan={columns.length}
-                    className="px-6 py-8 text-center"
-                  >
-                    <div className="flex items-center justify-center">
-                      <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-700 border-t-transparent"></div>
-                    </div>
-                  </td>
-                </tr>
-              ) : data.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={columns.length}
-                    className="px-6 py-8 text-center"
-                  >
-                    {emptyState || (
-                      <DataNotFound
-                        className="gap-y-5"
-                        title="Keyword Tidak Ditemukan"
-                      />
-                    )}
-                  </td>
-                </tr>
-              ) : (
-                data.map((row, rowIndex) => (
-                  <tr
-                    key={rowIndex}
+                return (
+                  <th
+                    key={index}
                     className={cn(
-                      "border-b border-neutral-200 hover:bg-neutral-50",
-                      onRowClick && "cursor-pointer",
-                      rowClassName?.(row, rowIndex)
+                      "bg-white px-6 py-4 text-left text-xs font-bold text-neutral-600",
+                      isSortable &&
+                        "cursor-pointer select-none hover:bg-neutral-50",
+                      column.headerClassName
                     )}
-                    onClick={() => onRowClick?.(row, rowIndex)}
+                    style={column.width ? { width: column.width } : {}}
+                    onClick={() => isSortable && handleSort(column.key)}
                   >
-                    {columns.map((column, colIndex) => (
-                      <td
-                        key={colIndex}
-                        className={cn("px-6 py-4 text-xxs", column.className)}
-                      >
-                        {column.render ? column.render(row) : row[column.key]}
-                      </td>
-                    ))}
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                    <div className="flex items-center gap-1">
+                      <span>{column.header}</span>
+                      {isSortable && (
+                        <div className="ml-1">
+                          {!isSorted ? (
+                            <ArrowUpDown className="h-3 w-3 text-neutral-400" />
+                          ) : sortConfig.direction === "asc" ? (
+                            <ArrowUp className="h-3 w-3 text-primary-700" />
+                          ) : (
+                            <ArrowDown className="h-3 w-3 text-primary-700" />
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan={columns.length} className="px-6 py-8 text-center">
+                  <div className="flex items-center justify-center">
+                    <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-700 border-t-transparent"></div>
+                  </div>
+                </td>
+              </tr>
+            ) : data.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length} className="px-6 py-8 text-center">
+                  {emptyState || (
+                    <DataNotFound
+                      className="gap-y-5"
+                      title="Keyword Tidak Ditemukan"
+                    />
+                  )}
+                </td>
+              </tr>
+            ) : (
+              data.map((row, rowIndex) => (
+                <tr
+                  key={rowIndex}
+                  className={cn(
+                    "border-b border-neutral-200 hover:bg-neutral-50",
+                    onRowClick && "cursor-pointer",
+                    rowClassName?.(row, rowIndex)
+                  )}
+                  onClick={() => onRowClick?.(row, rowIndex)}
+                >
+                  {columns.map((column, colIndex) => (
+                    <td
+                      key={colIndex}
+                      className={cn("px-6 py-4 text-xxs", column.className)}
+                    >
+                      {column.render ? column.render(row) : row[column.key]}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
     );
   };
@@ -317,7 +313,7 @@ const DataTable = ({
     <>
       <div
         className={cn(
-          "w-full space-y-4 overflow-hidden rounded-lg border border-neutral-300 bg-white pt-5",
+          "h-full w-full space-y-4 overflow-hidden rounded-lg border border-neutral-300 bg-white pt-5",
           className
         )}
       >

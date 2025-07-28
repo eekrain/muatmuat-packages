@@ -14,7 +14,7 @@ import { getOrderPaymentData } from "./getOrderPaymentData";
 import { getOrderStatusHistory } from "./getOrderStatusHistory";
 import { getStatusLegend } from "./getStatusLegend";
 
-const useMockData = false; // toggle mock data
+const useMockData = true; // toggle mock data
 
 /**
  * Notes dari mas friday
