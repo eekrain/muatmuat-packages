@@ -45,7 +45,7 @@ export const getRefundDetails = async (orderId) => {
   if (useMockData) {
     result = mockAPIResult;
   } else {
-    result = await fetcherMuatrans.get(`/api/v1/orders/${orderId}/refund`);
+    result = await fetcherMuatrans.get(`/v1/orders/${orderId}/refund`);
   }
 
   return result.data?.Data || null;

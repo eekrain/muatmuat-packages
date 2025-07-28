@@ -98,7 +98,7 @@ export const RingkasanPembayaranDefault = ({
                 <CardPayment.LineItem
                   label={t("labelNominalKirimBuktiFisik")}
                   value={idrFormat(
-                    dataRingkasanPembayaran?.documentShippingFee
+                    dataRingkasanPembayaran?.documentShippingDetail?.totalPrice
                   )}
                 />
                 <ModalDetailPengirimanDokumen
