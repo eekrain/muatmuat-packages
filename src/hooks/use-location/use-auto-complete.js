@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo } from "react";
 
 import { fetcherMuatparts } from "@/lib/axios";
+import { toast } from "@/lib/toast";
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 import { useResponsiveSearchStore } from "@/store/Shipper/zustand/responsiveSearchStore";
 
@@ -25,6 +26,7 @@ export const useAutoComplete = ({
   const responsiveSearchValue = useResponsiveSearchStore(
     (state) => state.searchValue
   );
+  const dataLokasi = useLocationFormStore((s) => s.formValues.dataLokasi);
   useEffect(() => {
     if (isMobile) {
       setAutoCompleteSearchPhrase(responsiveSearchValue);
@@ -58,8 +60,18 @@ export const useAutoComplete = ({
   const setLocationPartial = useLocationFormStore((s) => s.setLocationPartial);
 
   const handleSelectSearchResult = useCallback(
-    async (location) => {
+    async (location, needValidateLocationChange) => {
       const result = await fetcher.getLocationByPlaceId(location);
+      if (
+        needValidateLocationChange &&
+        result?.city &&
+        result?.city?.value !== dataLokasi?.city?.value
+      ) {
+        setAutoCompleteSearchPhrase(dataLokasi?.location?.name);
+        return toast.error(
+          "Perubahan lokasi muat hanya bisa diganti jika masih di kota yang sama."
+        );
+      }
       setLocationPartial(result);
       setDontTriggerPostalCodeModal(false);
       if (result?.coordinates) setCoordinates(result.coordinates);

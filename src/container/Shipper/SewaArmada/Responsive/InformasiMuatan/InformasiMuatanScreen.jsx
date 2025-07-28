@@ -110,8 +110,10 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories, trucks }) => {
                   </li>
                 </ul>
                 <p>
-                  Pemilihan tipe muatan yang tepat akan membantu dalam
-                  pengelolaan dan pengiriman.
+                  <center>
+                    Pemilihan tipe muatan yang tepat akan membantu dalam
+                    pengelolaan dan pengiriman.
+                  </center>
                 </p>
               </InfoBottomsheet>
             }
@@ -147,7 +149,7 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories, trucks }) => {
           <FormLabel
             required
             tooltip={
-              <InfoBottomsheet title="Tipe Muatan yang Akan Dikirimkan">
+              <InfoBottomsheet title="Informasi Jenis Muatan">
                 <ul>
                   <li>
                     <b>Padat:</b> Muatan yang berbentuk solid.
@@ -169,8 +171,10 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories, trucks }) => {
                   </li>
                 </ul>
                 <p>
-                  Pemilihan jenis muatan yang tepat akan membantu dalam
-                  pengelolaan dan pengiriman.
+                  <center>
+                    Pemilihan jenis muatan yang tepat akan membantu dalam
+                    pengelolaan dan pengiriman.
+                  </center>
                 </p>
               </InfoBottomsheet>
             }
@@ -206,7 +210,7 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories, trucks }) => {
           <FormLabel
             required
             tooltip={
-              <InfoBottomsheet title="Tipe Muatan yang Akan Dikirimkan">
+              <InfoBottomsheet title="Sertifikasi Halal Logistik">
                 <p>
                   Pilih opsi ini jika pengiriman memerlukan pengelolaan rantai
                   pasok yang memastikan produk tetap sesuai prinsip halal, mulai

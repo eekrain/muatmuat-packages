@@ -10,8 +10,6 @@ import {
   LocationProvider,
   useLocationContext,
 } from "@/hooks/use-location/use-location";
-import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
-import { toast } from "@/lib/toast";
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 
 import { MapContainer } from "../../../MapContainer/MapContainer";
@@ -79,28 +77,28 @@ const InnerLocationModalFormWeb = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, defaultValues]);
 
-  useShallowCompareEffect(() => {
-    if (isReverting.current) {
-      isReverting.current = false;
-      return;
-    }
-    if (open && needValidateLocationChange) {
-      if (
-        lastDataLokasi &&
-        lastDataLokasi?.city?.value !== formValues.dataLokasi?.city?.value
-      ) {
-        toast.error(
-          "Perubahan lokasi muat hanya bisa diganti jika masih di kota yang sama."
-        );
-        setField("dataLokasi", lastDataLokasi);
-        setAutoCompleteSearchPhrase(lastDataLokasi.location.name);
-        setLocationPostalCodeSearchPhrase(lastDataLokasi.postalCode?.value);
-        isReverting.current = true;
-      } else {
-        setLastDataLokasi(formValues.dataLokasi);
-      }
-    }
-  }, [open, formValues.dataLokasi, lastDataLokasi, needValidateLocationChange]);
+  // useShallowCompareEffect(() => {
+  //   if (isReverting.current) {
+  //     isReverting.current = false;
+  //     return;
+  //   }
+  //   if (open && needValidateLocationChange) {
+  //     if (
+  //       lastDataLokasi &&
+  //       lastDataLokasi?.city?.value !== formValues.dataLokasi?.city?.value
+  //     ) {
+  //       toast.error(
+  //         "Perubahan lokasi muat hanya bisa diganti jika masih di kota yang sama."
+  //       );
+  //       setField("dataLokasi", lastDataLokasi);
+  //       setAutoCompleteSearchPhrase(lastDataLokasi.location.name);
+  //       setLocationPostalCodeSearchPhrase(lastDataLokasi.postalCode?.value);
+  //       isReverting.current = true;
+  //     } else {
+  //       setLastDataLokasi(formValues.dataLokasi);
+  //     }
+  //   }
+  // }, [open, formValues.dataLokasi, lastDataLokasi, needValidateLocationChange]);
 
   return (
     <Modal open={open} onOpenChange={onOpenChange} closeOnOutsideClick>
@@ -135,6 +133,7 @@ const InnerLocationModalFormWeb = ({
                       {formMode === "muat" ? "Lokasi Muat*" : "Lokasi Bongkar*"}
                     </label>
                     <InputLocationManagementDropdown
+                      needValidateLocationChange={needValidateLocationChange}
                       errorMessage={formErrors?.dataLokasi}
                       markerIcon={
                         formMode === "muat"
