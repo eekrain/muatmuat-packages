@@ -11,6 +11,7 @@ import { useTranslation } from "@/hooks/use-translation";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { useLayananTambahanStore } from "@/store/Shipper/forms/layananTambahanStore";
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 
@@ -360,7 +361,36 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
             {/* Kecamatan Field */}
             <FormContainer>
               <FormLabel required>{t("labelKecamatan")}</FormLabel>
-              <DropdownRadioBottomsheeet
+              <button
+                className={cn(
+                  "flex h-8 items-center gap-x-2 rounded-md border border-neutral-600 bg-neutral-50 px-2",
+                  isKirimBuktiFisikDisabled || isLocationDisabled
+                    ? "cursor-not-allowed border-neutral-600 bg-neutral-200 hover:border-neutral-600"
+                    : "cursor-pointer"
+                )}
+                onClick={() => {
+                  navigation.push("/SearchKecamatan", {
+                    kecamatanList: locationFormValues.dataLokasi?.kecamatanList,
+                  });
+                }}
+                disabled={isKirimBuktiFisikDisabled || isLocationDisabled}
+              >
+                <IconComponent src="/icons/search16.svg" />
+                <span
+                  className={cn(
+                    "text-sm font-semibold leading-[15.4px]",
+                    !locationFormValues.dataLokasi?.district ||
+                      isKirimBuktiFisikDisabled ||
+                      isLocationDisabled
+                      ? "text-neutral-600"
+                      : "text-neutral-900"
+                  )}
+                >
+                  {locationFormValues.dataLokasi?.district?.name ||
+                    t("placeholderKecamatan")}
+                </span>
+              </button>
+              {/* <DropdownRadioBottomsheeet
                 disabled={isKirimBuktiFisikDisabled || isLocationDisabled}
                 className="w-full"
                 title={t("labelKecamatan")}
@@ -385,7 +415,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                 }}
                 saveLabel={t("buttonSave")}
                 placeHolder={t("placeholderKecamatan")}
-              />
+              /> */}
             </FormContainer>
 
             {/* Kabupaten/Kota Display */}
