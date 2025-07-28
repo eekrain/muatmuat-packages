@@ -20,7 +20,7 @@ export const normalizeDetailPesananOrderDetail = ({
     const foundOtherAdditionalService = dataAdditionalServices.filter(
       (val) => !val.isShipping
     );
-
+    console.log("foundOtherAdditionalService", dataAdditionalServices);
     const priceCharge = dataOrderDetail.summary?.priceCharge;
     let newPriceCharge = null;
 
@@ -166,10 +166,10 @@ export const normalizeDetailPesananOrderDetail = ({
         courier: foundDocumentShipping?.addressInformation?.courier,
         courierPrice: foundDocumentShipping?.price,
         insurancePrice:
-          foundDocumentShipping?.addressInformation?.insuranceCost,
+          foundDocumentShipping?.addressInformation?.insurancePrice,
         totalPrice:
           (Number(foundDocumentShipping?.price) || 0) +
-          (Number(foundDocumentShipping?.addressInformation?.insuranceCost) ||
+          (Number(foundDocumentShipping?.addressInformation?.insurancePrice) ||
             0),
       },
       otherAdditionalService: {

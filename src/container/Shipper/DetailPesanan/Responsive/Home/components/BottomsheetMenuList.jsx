@@ -28,33 +28,33 @@ export const BottomsheetMenuList = ({ open, onOpenChange }) => {
     <>
       <BottomSheet open={open} onOpenChange={onOpenChange}>
         <BottomSheetContent>
-          <BottomSheetHeader>{t("Menu")}</BottomSheetHeader>
+          <BottomSheetHeader>{t("titleMenu")}</BottomSheetHeader>
           <ul className="flex flex-col divide-y divide-neutral-400 p-4 text-sm font-semibold text-neutral-900">
             <Item
-              label="Ringkasan Status Pesanan"
+              label={t("labelOrderStatusSummary")}
               onClick={() => navigation.push("/order-summary")}
               t={t}
             />
             {false && (
               <Item
-                label="Detail Pengiriman Dokumen"
+                label={t("labelDocumentShippingDetail")}
                 t={t}
                 onClick={() => setIsOpenDocumentShipping(true)}
               />
             )}
             <Item
-              label="Detail Pembayaran"
+              label={t("labelPaymentDetail")}
               onClick={() => alert("Detail Pembayaran clicked")}
               t={t}
             />
             <Item
-              label="Ubah Pesanan"
+              label={t("labelEditOrder")}
               onClick={() => alert("Ubah Pesanan clicked")}
               t={t}
             />
             {true && (
               <Item
-                label="Batalkan Pesanan"
+                label={t("labelCancelOrder")}
                 onClick={() => {
                   setIsOpenModalBatalkanPesanan(true);
                   onOpenChange(false);
@@ -63,7 +63,7 @@ export const BottomsheetMenuList = ({ open, onOpenChange }) => {
               />
             )}
             <Item
-              label="Unduh Dokumen Delivery Order (DO)"
+              label={t("labelDownloadDeliveryOrder")}
               onClick={() => alert("Unduh Dokumen Delivery Order (DO) clicked")}
               t={t}
             />
@@ -96,7 +96,7 @@ export const BottomsheetMenuList = ({ open, onOpenChange }) => {
 const Item = ({ label, onClick, t }) => {
   return (
     <li onClick={onClick} className="cursor-pointer py-4">
-      {t(label)}
+      {label}
     </li>
   );
 };
