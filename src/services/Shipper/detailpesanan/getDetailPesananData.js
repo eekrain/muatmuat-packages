@@ -14,7 +14,7 @@ import { getOrderPaymentData } from "./getOrderPaymentData";
 import { getOrderStatusHistory } from "./getOrderStatusHistory";
 import { getStatusLegend } from "./getStatusLegend";
 
-const useMockData = false; // toggle mock data
+const useMockData = true; // toggle mock data
 
 /**
  * Notes dari mas friday
@@ -140,7 +140,7 @@ const apiResultOrderDetail = {
         transporterOrderCode: "MT.25.AA.001",
         invoiceNumber: "INV/12345678",
         // orderStatus: OrderStatusEnum.LOADING,
-        orderStatus: OrderStatusEnum.CONFIRMED,
+        orderStatus: OrderStatusEnum.COMPLETED,
         orderTitle: "Proses Muat",
         unitFleetStatus: 3,
         orderType: OrderTypeEnum.INSTANT,
@@ -269,7 +269,7 @@ export const fetcherOrderDetail = async (cacheKey) => {
   } else {
     result = await fetcherMuatrans.get(`v1/orders/${orderId}`);
   }
-
+  console.log(result);
   return result?.data?.Data;
 };
 

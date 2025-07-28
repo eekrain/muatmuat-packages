@@ -138,6 +138,14 @@ export const FooterButton = ({ orderStatus }) => {
             Batalkan Pesanan
           </Button>
         )}
+        <Button
+          variant="muatparts-primary"
+          className="w-full p-0"
+          onClick={() => navigation.push("/ulasan")}
+          type="button"
+        >
+          Beri Ulasan
+        </Button>
       </div>
 
       {/* Modal Konfirmasi sudah terima bukti dokumen */}
