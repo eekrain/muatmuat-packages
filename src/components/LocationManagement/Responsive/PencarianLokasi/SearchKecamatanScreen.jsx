@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
@@ -68,7 +69,12 @@ const SearchKecamatanScreen = () => {
         label: "Pilih Kecamatan",
       }}
     >
-      <div className="flex min-h-[calc(100vh-62px)] flex-col gap-y-6 bg-neutral-100 px-4 py-5">
+      <div
+        className={cn(
+          "flex flex-col gap-y-6 bg-neutral-100 px-4 py-5",
+          filteredKecamatan.length > 0 ? "min-h-[calc(100vh-62px)]" : "h-72px"
+        )}
+      >
         <Input
           placeholder="Cari Kecamatan"
           type="text"
@@ -108,6 +114,28 @@ const SearchKecamatanScreen = () => {
           </div>
         ))}
       </div>
+      {filteredKecamatan.length === 0 ? (
+        <div
+          className={cn(
+            "flex min-h-[calc(100vh-134px)] items-center justify-center bg-neutral-100"
+          )}
+        >
+          <DataNotFound
+            className="gap-y-3.5"
+            textClass="leading-[19.2px]"
+            title={
+              <>
+                Keyword
+                <br />
+                Tidak Ditemukan
+              </>
+            }
+            width={134}
+            height={114}
+            type="search"
+          />
+        </div>
+      ) : null}
     </FormResponsiveLayout>
   );
 };
