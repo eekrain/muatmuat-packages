@@ -52,6 +52,7 @@ const VehiclesPhotoTranslate = {
 const Page = () => {
   const { uuid } = useParams();
   const { data, error, isLoading } = useGetVehicleDetail(uuid);
+  console.log(data);
 
   const breadCrumbData = [
     { name: "Manajemen Armada", href: "/manajemen-armada" },
@@ -152,7 +153,9 @@ const Page = () => {
         <BreadCrumb data={breadCrumbData} />
         <div className="flex items-center justify-between">
           <PageTitle className="mb-0">Detail Armada</PageTitle>
-          <Button className="h-[32px] w-[112px]">Ubah</Button>
+          <Button className="h-[32px] w-[112px]" asChild>
+            <Link href={`/manajemen-armada/${uuid}/ubah`}>Ubah</Link>
+          </Button>
         </div>
 
         <Alert size="big" variant="error">

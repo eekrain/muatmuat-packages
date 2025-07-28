@@ -128,8 +128,8 @@ export const useAuth = () => {
     } catch (err) {
       console.warn("Error revoking refresh token", err);
     } finally {
-      authStore.actions.clearToken();
-      userStore.actions.clearUser();
+      // authStore.actions.clearToken();
+      // userStore.actions.clearUser();
 
       // Determine redirect URL based on app mode and environment
       let redirectUrl;
