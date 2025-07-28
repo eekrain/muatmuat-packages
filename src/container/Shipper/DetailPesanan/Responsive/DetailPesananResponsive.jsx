@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import {
   ResponsiveProvider,
   ResponsiveRoute,
+  useResponsiveNavigation,
 } from "@/lib/responsive-navigation";
 // Import the default screen without dynamic import
 import { dynamicScreen } from "@/lib/utils/dynamic-screen";
@@ -33,12 +34,15 @@ const ProofPhotoScreen = dynamicScreen(
 const FormRekeningBankScreen = dynamicScreen(
   () => import("./FormRekeningBank/FormRekeningBankScreen")
 );
+const CariSemuaDriverScreen = dynamicScreen(
+  () => import("./CariSemuaDriver/CariSemuaDriverScreen")
+);
 
 const DetailPesananResponsive = ({}) => {
-  // const navigation = useResponsiveNavigation();
-  // useEffect(() => {
-  //   navigation.replace("/JenisCarrier");
-  // }, []);
+  const navigation = useResponsiveNavigation();
+  useEffect(() => {
+    navigation.replace("/CariSemuaDriver");
+  }, []);
   const { setIsGlobalLoading } = useLoadingAction();
 
   const { data } = useGetDetailPesananData("12345");
@@ -96,6 +100,12 @@ const DetailPesananResponsive = ({}) => {
       <ResponsiveRoute
         path="/FormRekeningBank"
         component={<FormRekeningBankScreen />}
+      />
+      <ResponsiveRoute
+        path="/CariSemuaDriver"
+        component={
+          <CariSemuaDriverScreen dataStatusPesanan={dataStatusPesanan} />
+        }
       />
     </ResponsiveProvider>
   );

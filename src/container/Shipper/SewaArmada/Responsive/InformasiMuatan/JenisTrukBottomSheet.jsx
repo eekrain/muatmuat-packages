@@ -151,7 +151,7 @@ export const JenisTrukBottomSheet = ({
           />
         </div>
       ) : (
-        <div className="flex h-full items-center justify-center">
+        <div className="flex h-full items-center justify-center px-4">
           <DataNotFound type="search" title="Keyword Tidak Ditemukan" />
         </div>
       );
@@ -191,10 +191,10 @@ export const JenisTrukBottomSheet = ({
 
   return (
     <BottomSheet open={open} onOpenChange={onOpenChange}>
-      <BottomSheetContent>
+      <BottomSheetContent className="h-[600px]">
         <BottomSheetHeader>Pilih Jenis Truk</BottomSheetHeader>
 
-        <div className="mt-7 flex h-[480px] h-full flex-col">
+        <div className="mt-7 flex h-full flex-col">
           <div className="flex flex-col gap-3 px-4 pb-4">
             {showTopAlert && (
               <Alert variant="warning">

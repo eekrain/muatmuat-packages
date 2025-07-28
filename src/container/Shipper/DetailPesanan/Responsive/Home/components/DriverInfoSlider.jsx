@@ -112,6 +112,14 @@ const Pagination = ({ count, activeIndex, className }) => {
   );
 };
 
+export const DriverInfo = {
+  Root,
+  Header,
+  Body,
+  Footer,
+  Pagination,
+};
+
 /**
  * The main slider component that orchestrates everything.
  * @param {{ drivers: Driver[] }} props
