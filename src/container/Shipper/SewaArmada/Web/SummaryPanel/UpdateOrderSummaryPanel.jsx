@@ -4,9 +4,11 @@ import { useState } from "react";
 import Button from "@/components/Button/Button";
 import Card from "@/components/Card/Card";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
+import { useTranslation } from "@/hooks/use-translation";
 import { useSewaArmadaActions } from "@/store/Shipper/forms/sewaArmadaStore";
 
 const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
+  const { t } = useTranslation();
   const params = useParams();
   const router = useRouter();
   const { setUpdateOrderSuccess } = useSewaArmadaActions();
@@ -122,22 +124,22 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
         isOpen={isConfirmationModalOpen}
         setIsOpen={setConfirmationModalOpen}
         title={{
-          text: "Informasi",
+          text: t("titleInformasi"),
         }}
         description={{
           text: (
             <>
-              Apakah kamu yakin data yang kamu isi sudah benar? Perubahan
-              pesanan hanya dapat dilakukan <b>satu kali.</b> Pastikan semua
-              informasi telah diperiksa sebelum melanjutkan.
+              {t("messageKonfirmasiUpdateOrder1")}{" "}
+              <b>{t("messageKonfirmasiUpdateOrderBold")}</b>{" "}
+              {t("messageKonfirmasiUpdateOrder2")}
             </>
           ),
         }}
         cancel={{
-          text: "Kembali",
+          text: t("buttonKembali"),
         }}
         confirm={{
-          text: "Simpan Perubahan",
+          text: t("buttonSimpanPerubahan"),
           onClick: handleUpdateOrder,
         }}
       />

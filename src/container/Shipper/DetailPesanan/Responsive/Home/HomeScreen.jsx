@@ -3,7 +3,10 @@ import { useState } from "react";
 
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
+import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
+import useGetFleetSearchStatus from "@/services/Shipper/detailpesanan/getFleetSearchStatus";
 
 import { BottomsheetMenuList } from "./components/BottomsheetMenuList";
 import { DriverInfo } from "./components/DriverInfo";
@@ -26,8 +29,20 @@ const DetailPesananScreen = ({
   documentShippingDetail,
 }) => {
   const params = useParams();
+
   const { data: dataDetailPesanan, isLoading: isLoadingDetailPesanan } =
     useGetDetailPesananData(params.orderId);
+  const {
+    isOpen: isWaitFleetModalOpen,
+    isShow: isShowWaitFleetAlert,
+    setIsOpen: setIsWaitFleetModalOpen,
+    setIsShow: setIsShowWaitFleetAlert,
+  } = useGetFleetSearchStatus(
+    params.orderId,
+    dataDetailPesanan?.dataStatusPesanan?.orderStatus ===
+      OrderStatusEnum.PREPARE_FLEET
+  );
+  const navigation = useResponsiveNavigation();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -61,7 +76,6 @@ const DetailPesananScreen = ({
             orderStatus={dataDetailPesanan?.dataStatusPesanan?.orderStatus}
           />
         )}
-
         <TabsInfo dataDetailPIC={dataDetailPIC} />
 
         {true && <RouteInfo />}

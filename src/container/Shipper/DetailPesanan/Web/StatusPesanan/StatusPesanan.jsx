@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { AlertMultiline } from "@/components/Alert/AlertMultiline";
 import Card, { CardContent } from "@/components/Card/Card";
 import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
@@ -7,17 +9,43 @@ import { AlertPendingUpdateConfirmation } from "@/container/Shipper/DetailPesana
 import { AlertPendingUpdatePayment } from "@/container/Shipper/DetailPesanan/Web/StatusPesanan/AlertPendingUpdatePayment";
 import { DriverStatusCard } from "@/container/Shipper/DetailPesanan/Web/StatusPesanan/DriverStatusCard";
 import { StatusPesananHeader } from "@/container/Shipper/DetailPesanan/Web/StatusPesanan/StatusPesananHeader";
+import { useTranslation } from "@/hooks/use-translation";
 import {
   AlertInfoEnum,
   AlertLabelEnum,
   AlertTypeEnum,
 } from "@/lib/constants/detailpesanan/alert.enum";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { isDev } from "@/lib/constants/is-dev";
+import { toast } from "@/lib/toast";
 
 import { ModalInformasiKenaBiayaWaktuTunggu } from "./ModalInformasiKenaBiayaWaktuTunggu";
 import { ModalPerubahanData } from "./ModalPerubahanData";
 
 const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
+  const { t } = useTranslation();
+
+  // State simulasi status order dan driverStatus
+  const [orderStatusSimulasi, setOrderStatusSimulasi] = useState(null);
+  const [isLoadingKonfirmasi, setIsLoadingKonfirmasi] = useState(false);
+
+  // Status order yang digunakan (simulasi jika ada, jika tidak pakai data asli)
+  const statusOrder = orderStatusSimulasi || dataStatusPesanan.orderStatus;
+  // Driver status yang digunakan (simulasi jika ada, jika tidak pakai data asli)
+
+  // Handler tombol konfirmasi
+  const handleKonfirmasi = () => {
+    setIsLoadingKonfirmasi(true);
+    setOrderStatusSimulasi("CONFIRMED");
+    toast.success(t("messagePesananBerhasilTerkonfirmasi"));
+
+    setTimeout(() => {
+      setOrderStatusSimulasi("LOADING");
+      setIsLoadingKonfirmasi(false);
+      toast.success("messagePesananBerhasilTerkonfirmasi");
+    }, 10000);
+  };
+
   const getContentAlert = ({ type }) => {
     const info = AlertInfoEnum[type];
     if (type === AlertTypeEnum.CONFIRMATION_WAITING_PREPARE_FLEET) return false;
@@ -67,24 +95,21 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
       <div className="flex flex-col gap-y-6">
         {dataStatusPesanan.orderStatus === OrderStatusEnum.PREPARE_FLEET && (
           <AlertPendingPrepareFleet
-            orderStatus={dataStatusPesanan.orderStatus}
+            orderStatus={statusOrder}
             expiredAt={dataStatusPesanan.expiredAt}
           />
         )}
 
-        {dataStatusPesanan.orderStatus ===
-          OrderStatusEnum.WAITING_PAYMENT_1 && (
+        {statusOrder === OrderStatusEnum.WAITING_PAYMENT_1 && (
           <AlertPendingPayment1 expiredAt={dataStatusPesanan.expiredAt} />
         )}
 
-        {dataStatusPesanan.orderStatus ===
-          OrderStatusEnum.WAITING_PAYMENT_3 && (
+        {statusOrder === OrderStatusEnum.WAITING_PAYMENT_3 && (
           <AlertPendingUpdatePayment expiredAt={dataStatusPesanan.expiredAt} />
         )}
 
         {/* Alert Buat Habis Update lokasi bongkar perlu konfirmasi */}
-        {dataStatusPesanan.orderStatus ===
-          OrderStatusEnum.WAITING_CONFIRMATION_CHANGES && (
+        {statusOrder === OrderStatusEnum.WAITING_CONFIRMATION_CHANGES && (
           <AlertPendingUpdateConfirmation />
         )}
 
@@ -108,10 +133,36 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
         <CardContent className="px-8 py-6">
           <div className="flex flex-col gap-2.5">
             {/* Header Section */}
-            <StatusPesananHeader dataStatusPesanan={dataStatusPesanan} />
+            <div className="flex gap-2.5">
+              <StatusPesananHeader
+                dataStatusPesanan={{
+                  ...dataStatusPesanan,
+                  orderStatus: statusOrder,
+                }}
+              />
+              {/* Tombol konfirmasi hanya muncul jika status WAITING_CONFIRMATION_CHANGES */}
+              {isDev &&
+                statusOrder ===
+                  OrderStatusEnum.WAITING_CONFIRMATION_CHANGES && (
+                  <button
+                    onClick={handleKonfirmasi}
+                    disabled={isLoadingKonfirmasi}
+                    style={{
+                      marginBottom: 12,
+                      opacity: isLoadingKonfirmasi ? 0.5 : 1,
+                    }}
+                  >
+                    {isLoadingKonfirmasi
+                      ? "Memproses..."
+                      : "konfirmasi Pesanan"}
+                  </button>
+                )}
+            </div>
 
             {/* Timeline Section */}
-            {dataStatusPesanan.driverStatus?.length > 0 ? (
+            {orderStatusSimulasi !== "CONFIRMED" &&
+            statusOrder !== OrderStatusEnum.WAITING_CONFIRMATION_CHANGES &&
+            dataStatusPesanan.driverStatus?.length > 0 ? (
               <DriverStatusCard
                 driverStatus={dataStatusPesanan.driverStatus}
                 orderId={dataStatusPesanan.orderId}
