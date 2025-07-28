@@ -74,13 +74,11 @@ export const LokasiBongkar = ({ orderStatus, settingsTime }) => {
           {lokasiBongkar && lokasiBongkar.length > 0
             ? lokasiBongkar.map((item, index) => (
                 <TimelineField.Item index={index} key={index}>
-                  {!isEditPage &&
-                    !(orderType === "SCHEDULED" && index === 0) &&
-                    lokasiBongkar.length > 1 && (
-                      <TimelineField.RemoveButton
-                        onClick={() => removeLokasi("lokasiBongkar", index)}
-                      />
-                    )}
+                  {!(isEditPage && index === 0) && lokasiBongkar.length > 1 && (
+                    <TimelineField.RemoveButton
+                      onClick={() => removeLokasi("lokasiBongkar", index)}
+                    />
+                  )}
                 </TimelineField.Item>
               ))
             : null}
