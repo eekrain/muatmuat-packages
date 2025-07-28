@@ -44,9 +44,9 @@ const Toaster = ({ className }) => {
     <Portal>
       <div
         className={cn(
-          "pointer-events-none fixed z-[51]", // defaults
-          "left-0 w-full flex-col items-end gap-2 px-4", // mobile specific
-          "md:left-auto md:right-[48px] md:w-fit md:px-0" // desktop specific
+          "pointer-events-none fixed z-[51] flex flex-col gap-2", // defaults
+          "left-0 w-full px-4", // mobile specific
+          "md:left-auto md:right-[48px] md:w-fit md:items-end md:px-0" // desktop specific
         )}
         style={{
           bottom: bottomOffset,

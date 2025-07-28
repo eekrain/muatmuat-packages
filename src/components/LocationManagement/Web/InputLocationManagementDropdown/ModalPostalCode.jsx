@@ -12,6 +12,7 @@ export const ModalPostalCode = ({
   setSearchValue,
   options,
   onSelectPostalCode,
+  needValidateLocationChange,
 }) => {
   const { t } = useTranslation();
   const [errorMessage, setErrorMessage] = useState("");
@@ -48,7 +49,9 @@ export const ModalPostalCode = ({
             icon={{ left: "/icons/search.svg" }}
             options={options}
             getOptionLabel={(option) => option.Description}
-            onSelectValue={onSelectPostalCode}
+            onSelectValue={(val) =>
+              onSelectPostalCode(val, needValidateLocationChange)
+            }
           />
         </div>
       </ModalContent>

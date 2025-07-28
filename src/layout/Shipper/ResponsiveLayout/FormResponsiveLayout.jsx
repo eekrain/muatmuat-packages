@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
  * @property {HeaderResponsiveFormTitle | undefined} title
  * @property {HeaderResponsiveFormWithMenu | undefined} withMenu
  * @property {React.ReactNode} children
+ * @property {"muatmuat" | "muattrans"} type
  */
 
 /**
@@ -31,14 +32,23 @@ const FormResponsiveLayout = ({
   withMenu,
   children,
   className,
+  variant = "muattrans",
 }) => {
   return (
     <div className="min-h-screen bg-background">
-      <HeaderResponsiveContainer className="flex h-[62px] items-center border-b-2 border-b-muat-trans-secondary-900 px-4">
+      <HeaderResponsiveContainer
+        variant={variant}
+        className={cn(
+          "flex h-[62px] items-center border-b-2 px-4",
+          variant === "muattrans" && "border-b-muat-trans-secondary-900",
+          variant === "muatmuat" && "border-transparent"
+        )}
+      >
         <HeaderResponsiveForm
           onClickBackButton={onClickBackButton}
           title={title}
           withMenu={withMenu}
+          variant={variant}
         />
       </HeaderResponsiveContainer>
 

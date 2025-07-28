@@ -1,12 +1,19 @@
-export const normalizeAutoCompleteNotFound = (data, messageData) => {
+export const normalizeAutoCompleteNotFound = (data, dataNotFound) => {
   return {
     location: {
       name: data.Title,
       value: data.ID,
     },
-    coordinates: {
-      latitude: messageData?.lat,
-      longitude: messageData?.lng,
-    },
+    coordinates: dataNotFound?.lat
+      ? {
+          latitude: dataNotFound?.lat,
+          longitude: dataNotFound?.lng,
+        }
+      : dataNotFound?.Data?.lat
+        ? {
+            latitude: dataNotFound?.Data?.lat,
+            longitude: dataNotFound?.Data?.lng,
+          }
+        : null,
   };
 };

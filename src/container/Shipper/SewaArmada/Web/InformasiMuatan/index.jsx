@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { valibotRegitsolver } from "@hookform/resolvers/valibot";
+import { valibotResolver } from "@hookform/resolvers/valibot";
 // Utility for combining classNames
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import * as v from "valibot";

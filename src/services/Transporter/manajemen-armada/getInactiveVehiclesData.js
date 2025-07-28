@@ -89,6 +89,156 @@ const apiResultInactiveVehicles = {
           warningDocumentExpired: false,
           pendingUpdateDriver: false,
         },
+        {
+          id: "vhc-006",
+          photoUrl: "/img/mock-armada/one.png",
+          licensePlate: "B 7890 OPQ",
+          truckType: {
+            id: "tt-001",
+            name: "Truk Besar",
+          },
+          carrierType: {
+            id: "ct-002",
+            name: "Flatbed",
+          },
+          vehicleBrand: {
+            id: "vb-002",
+            name: "Mitsubishi",
+          },
+          vehicleType: {
+            id: "vt-002",
+            name: "Mitsubishi Canter",
+          },
+          assignedDriver: null,
+          status: "INACTIVE",
+          warningDocumentExpired: false,
+          pendingUpdateDriver: false,
+        },
+        {
+          id: "vhc-006",
+          photoUrl: "/img/mock-armada/one.png",
+          licensePlate: "B 7890 OPQ",
+          truckType: {
+            id: "tt-001",
+            name: "Truk Besar",
+          },
+          carrierType: {
+            id: "ct-002",
+            name: "Flatbed",
+          },
+          vehicleBrand: {
+            id: "vb-002",
+            name: "Mitsubishi",
+          },
+          vehicleType: {
+            id: "vt-002",
+            name: "Mitsubishi Canter",
+          },
+          assignedDriver: null,
+          status: "INACTIVE",
+          warningDocumentExpired: false,
+          pendingUpdateDriver: false,
+        },
+        {
+          id: "vhc-006",
+          photoUrl: "/img/mock-armada/one.png",
+          licensePlate: "B 7890 OPQ",
+          truckType: {
+            id: "tt-001",
+            name: "Truk Besar",
+          },
+          carrierType: {
+            id: "ct-002",
+            name: "Flatbed",
+          },
+          vehicleBrand: {
+            id: "vb-002",
+            name: "Mitsubishi",
+          },
+          vehicleType: {
+            id: "vt-002",
+            name: "Mitsubishi Canter",
+          },
+          assignedDriver: null,
+          status: "INACTIVE",
+          warningDocumentExpired: false,
+          pendingUpdateDriver: false,
+        },
+        {
+          id: "vhc-006",
+          photoUrl: "/img/mock-armada/one.png",
+          licensePlate: "B 7890 OPQ",
+          truckType: {
+            id: "tt-001",
+            name: "Truk Besar",
+          },
+          carrierType: {
+            id: "ct-002",
+            name: "Flatbed",
+          },
+          vehicleBrand: {
+            id: "vb-002",
+            name: "Mitsubishi",
+          },
+          vehicleType: {
+            id: "vt-002",
+            name: "Mitsubishi Canter",
+          },
+          assignedDriver: null,
+          status: "INACTIVE",
+          warningDocumentExpired: false,
+          pendingUpdateDriver: false,
+        },
+        {
+          id: "vhc-006",
+          photoUrl: "/img/mock-armada/one.png",
+          licensePlate: "B 7890 OPQ",
+          truckType: {
+            id: "tt-001",
+            name: "Truk Besar",
+          },
+          carrierType: {
+            id: "ct-002",
+            name: "Flatbed",
+          },
+          vehicleBrand: {
+            id: "vb-002",
+            name: "Mitsubishi",
+          },
+          vehicleType: {
+            id: "vt-002",
+            name: "Mitsubishi Canter",
+          },
+          assignedDriver: null,
+          status: "INACTIVE",
+          warningDocumentExpired: false,
+          pendingUpdateDriver: false,
+        },
+        {
+          id: "vhc-006",
+          photoUrl: "/img/mock-armada/one.png",
+          licensePlate: "B 7890 OPQ",
+          truckType: {
+            id: "tt-001",
+            name: "Truk Besar",
+          },
+          carrierType: {
+            id: "ct-002",
+            name: "Flatbed",
+          },
+          vehicleBrand: {
+            id: "vb-002",
+            name: "Mitsubishi",
+          },
+          vehicleType: {
+            id: "vt-002",
+            name: "Mitsubishi Canter",
+          },
+          assignedDriver: null,
+          status: "INACTIVE",
+          warningDocumentExpired: false,
+          pendingUpdateDriver: false,
+        },
       ],
       pagination: {
         page: 1,

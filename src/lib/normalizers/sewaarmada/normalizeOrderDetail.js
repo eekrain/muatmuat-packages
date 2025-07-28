@@ -20,6 +20,7 @@ export const normalizeOrderDetail = (
     truckType,
     isHalalLogistic,
     distance,
+    price,
   } = summary;
   const cargoPhotos = otherInformation.cargoPhotos || [];
 
@@ -36,9 +37,12 @@ export const normalizeOrderDetail = (
     cargoPhotos: cargoPhotos.concat(Array(4 - cargoPhotos.length).fill(null)),
     cargoDescription: otherInformation.cargoDescription,
     carrierId: carrier.carrierId,
-    truckType,
+    truckType: {
+      ...truckType,
+      price: price.transportFee / truckType.totalUnit,
+    },
     // truckTypeId: truckType.truckTypeId,
-    // truckCount: truckType.totalUnit,
+    truckCount: truckType.totalUnit,
     distance,
     distanceUnit: "km",
     additionalServices: normalizeAdditionalServices(

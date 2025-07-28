@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { Download, Plus } from "lucide-react";
@@ -37,19 +38,19 @@ const Page = () => {
       <div className="flex items-center justify-between">
         <PageTitle withBack={false}>Manajemen Armada</PageTitle>
         <div className="flex gap-3">
-          <Button
-            variant="muattrans-primary-secondary"
-            iconLeft={<Plus size={16} />}
-            onClick={() => {}}
-          >
-            <span className="pt-0.5">{"Tambah Armada Massal"}</span>
-          </Button>
-          <Button
-            iconLeft={<Plus size={16} />}
-            onClick={() => router.push("/manajemen-armada/tambah")}
-          >
-            <span className="pt-0.5">{"Tambah Armada"}</span>
-          </Button>
+          <Link href="/manajemen-armada/tambah-massal">
+            <Button
+              variant="muattrans-primary-secondary"
+              iconLeft={<Plus size={16} />}
+            >
+              <span className="pt-0.5">{"Tambah Armada Massal"}</span>
+            </Button>
+          </Link>
+          <Link href="/manajemen-armada/tambah">
+            <Button iconLeft={<Plus size={16} />}>
+              <span className="pt-0.5">{"Tambah Armada"}</span>
+            </Button>
+          </Link>
           <Button iconLeft={<Download size={16} />} onClick={() => {}}>
             <span className="pt-0.5">{"Unduh"}</span>
           </Button>

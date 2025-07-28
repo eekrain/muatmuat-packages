@@ -63,7 +63,7 @@ export const RouteInfo = () => {
         </div>
         <div className="flex flex-col gap-4 pt-6">
           <h3 className="text-sm font-semibold">Informasi Muatan</h3>
-          <HalalLogistik />
+          {false && <HalalLogistik />}
           <MuatanList />
         </div>
       </div>

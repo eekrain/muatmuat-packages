@@ -6,7 +6,7 @@ import {
 } from "@/lib/responsive-navigation";
 import { useGetDriverStatusTimeline } from "@/services/Shipper/lacak-armada/getDriverStatusTimeline";
 
-import DriverCard from "../FleetTrack/components/DriverCard";
+import DriverCard from "../LacakArmada/components/DriverCard";
 
 const DriverStatusDetailScreen = ({ dataStatusPesanan }) => {
   const navigation = useResponsiveNavigation();

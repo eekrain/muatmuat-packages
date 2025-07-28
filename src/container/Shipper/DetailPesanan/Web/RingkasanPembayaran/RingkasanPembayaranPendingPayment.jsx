@@ -16,7 +16,6 @@ export const RingkasanPembayaranPendingPayment = ({
     endingDate: dataRingkasanPembayaran?.expiredAtFromOrderDetail,
     isNeedCountdown: true,
   });
-  console.log(dataRingkasanPembayaran, "Tes");
   const handleCopyVA = () => {
     if (dataRingkasanPembayaran?.vaNumber) {
       navigator.clipboard.writeText(dataRingkasanPembayaran.vaNumber);
@@ -59,10 +58,10 @@ export const RingkasanPembayaranPendingPayment = ({
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-neutral-900">
                     Bank{" "}
-                    {PaymentMethodTitle[
+                    {/* {PaymentMethodTitle[
                       dataRingkasanPembayaran?.paymentMethod
-                    ] ?? "BCA"}{" "}
-                    Virtual Account
+                    ] ?? "BCA"}{" "} */}
+                    {dataRingkasanPembayaran.paymentMethod || "BCA"}
                   </span>
                   <IconComponent
                     src={`/icons/payment/${dataRingkasanPembayaran?.paymentMethod ?? "bca"}.svg`}

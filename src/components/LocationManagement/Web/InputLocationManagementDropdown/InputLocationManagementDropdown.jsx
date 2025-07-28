@@ -93,6 +93,7 @@ export const InputLocationManagementDropdown = ({
   errorMessage,
   markerIcon,
   placeholder,
+  needValidateLocationChange,
 }) => {
   const [
     isModalSavedLocationManagementOpen,
@@ -161,6 +162,7 @@ export const InputLocationManagementDropdown = ({
         errorMessage={errorMessage}
         markerIcon={markerIcon}
         placeholder={placeholder}
+        needValidateLocationChange={needValidateLocationChange}
       />
 
       <ModalPostalCode
@@ -169,6 +171,7 @@ export const InputLocationManagementDropdown = ({
         setSearchValue={setLocationPostalCodeSearchPhrase}
         options={postalCodeAutoCompleteResult}
         onSelectPostalCode={handleSelectPostalCode}
+        needValidateLocationChange={needValidateLocationChange}
       />
 
       <ModalSavedLocationManagement

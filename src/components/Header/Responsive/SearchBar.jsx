@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
@@ -29,6 +31,12 @@ export const HeaderResponsiveSearchBar = ({
   };
 
   const { searchValue, setSearchValue } = useResponsiveSearchStore();
+
+  // Reset search value when component mounts
+  useEffect(() => {
+    setSearchValue("");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="flex w-full items-center gap-x-3">

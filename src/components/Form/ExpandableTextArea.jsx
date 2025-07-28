@@ -63,19 +63,21 @@ export const ExpandableTextArea = ({
         />
       </div>
 
-      <div
-        className={cn(
-          "flex justify-between text-xs font-medium text-neutral-600",
-          errorMessage && "text-error-400"
-        )}
-      >
-        <div className="flex-1">{t(errorMessage)}</div>
-        {withCharCount && (
-          <div>
-            {value?.length || 0}/{maxLength || 0}
-          </div>
-        )}
-      </div>
+      {withCharCount || errorMessage ? (
+        <div
+          className={cn(
+            "flex justify-between text-xs font-medium text-neutral-600",
+            errorMessage && "text-error-400"
+          )}
+        >
+          <div className="flex-1">{t(errorMessage)}</div>
+          {withCharCount && (
+            <div>
+              {value?.length || 0}/{maxLength || 0}
+            </div>
+          )}
+        </div>
+      ) : null}
     </div>
   );
 };
