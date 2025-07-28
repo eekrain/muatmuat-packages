@@ -1,7 +1,7 @@
 import { fetcherMuatrans } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
-const useMockData = true; // toggle mock data
+const useMockData = false; // toggle mock data
 
 const stepStatus = [
   {
@@ -59,7 +59,7 @@ const apiResultOrderStatusHistory = {
           orderStatus: OrderStatusEnum.LOADING,
           orderStatusTitle: "Sedang Muat",
           driverStatus: "SEDANG_MUAT",
-          driverStatusTitle: "Dibatalkan",
+          driverStatusTitle: "Menuju ke Lokasi Muat",
           stepStatus,
         },
         {
@@ -70,7 +70,7 @@ const apiResultOrderStatusHistory = {
           orderStatus: OrderStatusEnum.LOADING,
           orderStatusTitle: "Proses Muat",
           driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
-          driverStatusTitle: "Dibatalkan",
+          driverStatusTitle: "Menuju ke Lokasi Muat",
           stepStatus,
         },
         {
@@ -81,7 +81,7 @@ const apiResultOrderStatusHistory = {
           orderStatus: OrderStatusEnum.LOADING,
           orderStatusTitle: "Proses Muat",
           driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
-          driverStatusTitle: "Proses Muat",
+          driverStatusTitle: "Menuju ke Lokasi Muat",
           stepStatus,
         },
       ],

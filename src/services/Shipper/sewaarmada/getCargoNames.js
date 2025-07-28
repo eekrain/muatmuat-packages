@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import fetcherMuatrans from "@/lib/axios";
 
-const useMockData = true; // toggle mock data
+const useMockData = false; // toggle mock data
 
 // Mock API result for development/testing
 export const mockAPIResult = {
