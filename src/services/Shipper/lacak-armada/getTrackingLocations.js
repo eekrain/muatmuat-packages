@@ -1,6 +1,8 @@
 import useSWR from "swr";
 
-const useMockData = true; // toggle mock data
+import { fetcherMuatrans } from "@/lib/axios";
+
+const useMockData = false; // toggle mock data
 
 // GET /base_data/v1/orders/tracking/{orderId}/location?driverId={driverId}
 const apiResult = {
@@ -83,6 +85,7 @@ const normalizeTrackingLocations = (data) => {
   }
 
   const encodedTruckPolyline = data.fleets[0].currentLocation.encodedPolyline;
+  console.log("DATA TRACKING:", data);
 
   return { locationMarkers, locationPolyline, encodedTruckPolyline };
 };

@@ -1,7 +1,7 @@
 import { fetcherMuatrans } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
-const useMockData = true; // toggle mock data
+const useMockData = false; // toggle mock data
 
 // GET /base_url/v1/orders/{orderId}/status-legend
 const apiResultStatusLegend = {
