@@ -2,7 +2,7 @@
 
 // Assuming Slider is in this path
 import { Modal, ModalContent } from "@/components/Modal/Modal";
-import Slider from "@/components/Slider/Slider";
+import { Slider } from "@/components/Slider/Slider";
 
 /**
  * @file StatusPesananInfoModal.jsx
@@ -10,7 +10,7 @@ import Slider from "@/components/Slider/Slider";
  */
 
 // Data for the slider slides
-const slides = [
+const onboardingSlides = [
   {
     title: "Status Pesanan",
     imgSrc: "/img/detail-pesanan-first-time/1-status-pesanan.webp",
@@ -52,7 +52,30 @@ export const ModalInformasiSlider = ({ open, onOpenChange }) => {
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <ModalContent className="w-[296px] px-5 pb-[26px] pt-[44px]">
-        <Slider className="h-[380px]" slides={slides} />
+        <Slider.Root items={onboardingSlides}>
+          <div className="flex h-[325px] flex-col items-center gap-5">
+            <Slider.Title />
+
+            {/* A relative container is needed for the absolutely positioned navigation */}
+            <div className="relative flex w-full items-center justify-center">
+              <Slider.Content className="h-[150px] w-[150px]">
+                {(item) => (
+                  <div className="flex h-full items-center justify-center">
+                    <img
+                      src={item.imgSrc}
+                      alt={item.title}
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
+                )}
+              </Slider.Content>
+            </div>
+
+            <Slider.Description className="text-sm font-medium text-neutral-900" />
+          </div>
+          <Slider.Indicator className="mt-auto" />
+          <Slider.MobileNavigation className="mt-6" />
+        </Slider.Root>
       </ModalContent>
     </Modal>
   );

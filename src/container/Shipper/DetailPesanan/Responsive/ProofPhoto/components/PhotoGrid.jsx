@@ -5,10 +5,10 @@ import {
 
 export const PhotoGrid = ({ title }) => {
   const photos = [
-    "https://picsum.photos/360/270",
-    "https://picsum.photos/360/270",
-    "https://picsum.photos/360/270",
-    "https://picsum.photos/360/270",
+    "https://picsum.photos/200?random=1",
+    "https://picsum.photos/200?random=2",
+    "https://picsum.photos/200?random=3",
+    "https://picsum.photos/200?random=4",
   ];
 
   return (

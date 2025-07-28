@@ -24,8 +24,8 @@ const RingkasanStatusPesananScreen = dynamicScreen(
 const LacakArmadaScreen = dynamicScreen(
   () => import("./LacakArmada/LacakArmadaScreen")
 );
-const DriverStatusDetailScreen = dynamicScreen(
-  () => import("./DriverStatusDetail/DriverStatusDetailScreen")
+const DetailStatusDriverScreen = dynamicScreen(
+  () => import("./DetailStatusDriver/DetailStatusDriverScreen")
 );
 const ProofPhotoScreen = dynamicScreen(
   () => import("./ProofPhoto/ProofPhotoScreen")
@@ -86,13 +86,13 @@ const DetailPesananResponsive = ({}) => {
         }
       />
       <ResponsiveRoute
-        path="/fleet-track"
+        path="/LacakArmada"
         component={<LacakArmadaScreen dataStatusPesanan={dataStatusPesanan} />}
       />
       <ResponsiveRoute
-        path="/detail-driver-status"
+        path="/DetailDriverStatus"
         component={
-          <DriverStatusDetailScreen dataStatusPesanan={dataStatusPesanan} />
+          <DetailStatusDriverScreen dataStatusPesanan={dataStatusPesanan} />
         }
       />
       <ResponsiveRoute path="/proof-photo" component={<ProofPhotoScreen />} />

@@ -17,7 +17,7 @@ import {
 } from "@/lib/responsive-navigation";
 import { useGetTrackingLocations } from "@/services/Shipper/lacak-armada/getTrackingLocations";
 
-import DriverCard from "./components/DriverCard";
+import { DriverInfo } from "../Home/components/DriverInfoSlider";
 import { MarkerLegends } from "./components/MarkerLegends";
 
 const LacakArmadaScreen = ({ dataStatusPesanan }) => {
@@ -25,6 +25,7 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
   const params = useResponsiveRouteParams();
 
   const { driverId, orderId } = params;
+  console.log("🚀 ~ LacakArmadaScreen ~ params:", params);
 
   const [isOpenBottomsheet, setIsOpenBottomsheet] = useState(false);
 
@@ -32,6 +33,10 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
     orderId,
     driverId,
   });
+
+  const driver = dataStatusPesanan?.driverStatus.find(
+    (d) => d.driverId === driverId
+  );
 
   return (
     <FormResponsiveLayout
@@ -44,7 +49,15 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
       onClickBackButton={() => navigation.pop()}
     >
       <div className="mb-16 bg-neutral-200">
-        <DriverCard data={dataStatusPesanan?.driverStatus} />
+        {driver && (
+          <DriverInfo.Root className="flex flex-col gap-4 px-4 py-5">
+            <DriverInfo.Header
+              status={driver.driverStatusTitle}
+              withMenu={false}
+            />
+            <DriverInfo.Avatar driver={driver} />
+          </DriverInfo.Root>
+        )}
 
         {data && (
           <MapWithPath
@@ -76,7 +89,12 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
         <Button
           variant="muatparts-primary-secondary"
           className="h-10 flex-1 p-0"
-          onClick={() => navigation.push("/detail-driver-status")}
+          onClick={() =>
+            navigation.push("/DetailDriverStatus", {
+              driverId,
+              orderId,
+            })
+          }
           type="button"
         >
           Detail Status Driver

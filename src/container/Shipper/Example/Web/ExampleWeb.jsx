@@ -55,6 +55,7 @@ import {
 import PageTitle from "@/components/PageTitle/PageTitle";
 import QuantityInput from "@/components/QuantityInput/QuantityInput";
 import RadioButton from "@/components/Radio/RadioButton";
+import { Slider } from "@/components/Slider/Slider";
 import SortingDropdown from "@/components/SortingDropdown/SortingDropdown";
 import {
   StepperContainer,
@@ -507,7 +508,7 @@ const ExampleWeb = () => {
 
       <MapExample />
 
-      {/* <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="w-[700px]">
           <h1 className="mb-2 text-xl font-bold">Pilih Provinsi Example</h1>
           <iframe
@@ -525,29 +526,38 @@ const ExampleWeb = () => {
 
         <div className="border p-4">
           <h1 className="mb-2 text-xl font-bold">Slider Example</h1>
-          <Slider
-            slides={[
-              {
-                title: "Easy Shipping",
-                imgSrc: "https://picsum.photos/200?random=1",
-                content: "Ship your goods with just a few clicks",
-              },
-              {
-                title: "Real-time Tracking",
-                imgSrc: "https://picsum.photos/200?random=2",
-                content: "Track your shipment in real-time",
-              },
-              {
-                title: "Secure Delivery",
-                imgSrc: "https://picsum.photos/200?random=3",
-                content: "Your goods are in safe hands",
-              },
-            ]}
-            onComplete={() => console.log("Slider completed!")}
-            onSlideChange={(index) => console.log("Current slide:", index)}
-          />
+          <div className="w-full px-6 py-9">
+            <Slider.Root
+              items={onboardingSlides}
+              className="flex h-[322px] flex-col items-center justify-center gap-6 p-6"
+            >
+              {/* A relative container is needed for the absolutely positioned navigation */}
+              <div className="relative flex w-full items-center justify-center">
+                <Slider.DesktopNavigation />
+
+                <Slider.Content className="h-[120px] w-[120px]">
+                  {(item) => (
+                    <div className="flex h-full items-center justify-center">
+                      <img
+                        src={item.imgSrc}
+                        alt={item.title}
+                        className="h-full w-full object-contain"
+                      />
+                    </div>
+                  )}
+                </Slider.Content>
+              </div>
+
+              <div className="text-center">
+                <Slider.Title className="mb-3 text-lg font-bold text-neutral-900" />
+                <Slider.Description className="text-sm font-medium text-neutral-900" />
+              </div>
+
+              <Slider.Indicator className="mt-auto" />
+            </Slider.Root>
+          </div>
         </div>
-      </div> */}
+      </div>
 
       <div>
         <h1 className="mb-2 text-xl font-bold">OTP Rekening Web Example</h1>
