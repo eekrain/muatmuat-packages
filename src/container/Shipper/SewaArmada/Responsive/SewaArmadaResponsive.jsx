@@ -4,6 +4,7 @@ import { useEffect } from "react";
 
 import CropperPreviewScreen from "@/components/Cropper/CropperPreviewScreen";
 import CropperScreen from "@/components/Cropper/CropperScreen";
+import SearchKecamatanScreen from "@/components/LocationManagement/Responsive/PencarianLokasi/SearchKecamatanScreen";
 // Import the default screen without dynamic import
 import { LocationProvider } from "@/hooks/use-location/use-location";
 import {
@@ -139,6 +140,10 @@ const SewaArmadaResponsive = ({
       <ResponsiveRoute
         path="/CariNamaMuatan"
         component={<CariNamaMuatanScreen />}
+      />
+      <ResponsiveRoute
+        path="/SearchKecamatan"
+        component={<SearchKecamatanScreen />}
       />
       <ResponsiveRoute
         path="/LayananTambahan"

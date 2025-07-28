@@ -67,6 +67,8 @@ export const useLocationFormStore = create(
     (set, get) => ({
       formValues: defaultValues,
       formErrors: {},
+      lastValidLocation: null,
+      setLastValidLocation: (lastValidLocation) => set({ lastValidLocation }),
       setField: (field, value) =>
         set((state) => ({
           formValues: { ...state.formValues, [field]: value },

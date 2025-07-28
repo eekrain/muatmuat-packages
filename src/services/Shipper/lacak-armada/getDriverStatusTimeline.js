@@ -3,7 +3,7 @@ import useSWR from "swr";
 
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
-const useMockData = false; // toggle mock data
+const useMockData = true; // toggle mock data
 
 const apiResult = {
   data: {

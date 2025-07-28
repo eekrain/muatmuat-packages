@@ -3,7 +3,7 @@ import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
 import { OrderStatusSummary } from "./components/OrderStatusSummary";
 
-const OrderSummaryScreen = () => {
+const RingkasanStatusPesananScreen = ({ dataStatusPesanan }) => {
   const navigation = useResponsiveNavigation();
 
   return (
@@ -14,9 +14,9 @@ const OrderSummaryScreen = () => {
       onClickBackButton={() => navigation.pop()}
     >
       <div className="mb-16 bg-neutral-200">
-        <OrderStatusSummary />
+        <OrderStatusSummary dataStatusPesanan={dataStatusPesanan} />
       </div>
     </FormResponsiveLayout>
   );
 };
-export default OrderSummaryScreen;
+export default RingkasanStatusPesananScreen;

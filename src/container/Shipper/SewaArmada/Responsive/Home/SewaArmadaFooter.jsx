@@ -87,6 +87,7 @@ export const SewaArmadaFooter = ({
         <Button
           variant="muatparts-primary"
           className="h-10 flex-1 rounded-[20px] text-sm font-semibold"
+          onClick={() => navigation.push("/InformasiPesanan")}
         >
           Lanjut
         </Button>

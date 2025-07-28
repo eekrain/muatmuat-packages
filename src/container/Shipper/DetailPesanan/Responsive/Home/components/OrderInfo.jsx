@@ -1,43 +1,16 @@
-import { useState } from "react";
-
 import { ChevronRight } from "lucide-react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
-import {
-  BottomSheet,
-  BottomSheetContent,
-  BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
 import { useTranslation } from "@/hooks/use-translation";
-import {
-  OrderStatusEnum,
-  OrderStatusTitle,
-} from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
+import { getOrderStatusLabel, getStatusVariant } from "../../../utlis";
+import { BottomsheetStatusLainnya } from "./BottomsheetStatusLainnya";
+
 export const OrderInfo = ({ dataStatusPesanan }) => {
-  const navigation = useResponsiveNavigation();
-
-  const [isOpenOtherStatus, setIsOpenOtherStatus] = useState();
-
   const { t } = useTranslation();
-
-  const orderStatusLabel =
-    dataStatusPesanan?.orderStatus !== OrderStatusEnum.COMPLETED &&
-    !dataStatusPesanan?.orderStatus?.startsWith("CANCELED") &&
-    !dataStatusPesanan?.orderStatus?.startsWith("WAITING_PAYMENT") &&
-    dataStatusPesanan?.unitFleetStatus &&
-    dataStatusPesanan?.unitFleetStatus > 1
-      ? `${t(OrderStatusTitle[dataStatusPesanan?.orderStatus])}: ${dataStatusPesanan?.unitFleetStatus} Unit`
-      : t(OrderStatusTitle[dataStatusPesanan?.orderStatus]);
-
-  const statusVariant = dataStatusPesanan?.orderStatus?.startsWith("WAITING")
-    ? "warning"
-    : dataStatusPesanan?.orderStatus?.startsWith("CANCELED")
-      ? "error"
-      : dataStatusPesanan?.orderStatus === OrderStatusEnum.COMPLETED
-        ? "success"
-        : "primary";
+  const navigation = useResponsiveNavigation();
 
   return (
     <div className="flex w-full flex-col items-start bg-white p-5">
@@ -88,66 +61,23 @@ export const OrderInfo = ({ dataStatusPesanan }) => {
             Status Pesanan
           </span>
 
-          {true && (
-            <BadgeStatusPesanan
-              variant="primary"
-              className="w-full text-sm font-semibold"
-            >
-              Armada Dijadwalkan: 3 Unit
-            </BadgeStatusPesanan>
-          )}
           {dataStatusPesanan?.orderStatus && (
             <BadgeStatusPesanan
-              variant={statusVariant}
+              variant={getStatusVariant({
+                orderStatus: dataStatusPesanan.orderStatus,
+              })}
               className="w-full text-sm font-semibold"
             >
-              {orderStatusLabel}
+              {getOrderStatusLabel({
+                orderStatus: dataStatusPesanan.orderStatus,
+                unitFleetStatus: dataStatusPesanan.unitFleetStatus,
+                totalUnit: dataStatusPesanan.totalUnit,
+                t,
+              })}
             </BadgeStatusPesanan>
           )}
 
-          {dataStatusPesanan?.otherStatus &&
-            dataStatusPesanan?.otherStatus.length > 1 && (
-              <div className="flex w-full flex-row items-center justify-between">
-                <button
-                  className="flex w-full flex-row items-center justify-between"
-                  onClick={() => setIsOpenOtherStatus(true)}
-                >
-                  <div className="flex items-center gap-3 text-xs font-semibold text-[#176CF7]">
-                    Lihat Status Lainnya
-                  </div>
-                  <ChevronRight className="h-4 w-4 text-[#176CF7]" />
-                </button>
-              </div>
-            )}
-
-          <BottomSheet
-            open={isOpenOtherStatus}
-            onOpenChange={setIsOpenOtherStatus}
-          >
-            <BottomSheetContent>
-              <BottomSheetHeader>Status Lainnya</BottomSheetHeader>
-
-              <div className="flex flex-col gap-4 px-4 py-6">
-                {dataStatusPesanan?.otherStatus?.map((status, index) => (
-                  <BadgeStatusPesanan
-                    key={index}
-                    variant={
-                      status.orderStatus?.startsWith("WAITING")
-                        ? "warning"
-                        : status.orderStatus?.startsWith("CANCELED")
-                          ? "error"
-                          : status.orderStatus === OrderStatusEnum.COMPLETED
-                            ? "success"
-                            : "primary"
-                    }
-                    className="w-full text-sm font-semibold"
-                  >
-                    {status.orderTitle}: {status.unitFleetStatus} Unit
-                  </BadgeStatusPesanan>
-                ))}
-              </div>
-            </BottomSheetContent>
-          </BottomSheet>
+          <BottomsheetStatusLainnya dataStatusPesanan={dataStatusPesanan} />
         </div>
       </div>
     </div>

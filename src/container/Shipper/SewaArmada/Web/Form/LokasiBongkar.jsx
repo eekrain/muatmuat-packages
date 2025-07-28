@@ -3,6 +3,7 @@ import { usePathname } from "next/navigation";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { LocationModalFormWeb } from "@/components/LocationManagement/Web/LocationModalFormWeb/LocationModalFormWeb";
 import TimelineField from "@/components/Timeline/timeline-field";
+import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
@@ -11,7 +12,7 @@ import {
 
 import { useModalLocation } from "./use-modal-location";
 
-export const LokasiBongkar = ({ orderStatus }) => {
+export const LokasiBongkar = ({ orderStatus, settingsTime }) => {
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
@@ -25,15 +26,24 @@ export const LokasiBongkar = ({ orderStatus }) => {
   );
   const { addLokasi, removeLokasi } = useSewaArmadaActions();
 
-  const showRemoveButton =
-    (lokasiBongkar && lokasiBongkar.length > 1) ||
-    Boolean(lokasiBongkar?.[0]?.dataLokasi?.location);
+  const hasNotDepartedToPickupStatuses = [
+    OrderStatusEnum.PREPARE_FLEET,
+    OrderStatusEnum.WAITING_PAYMENT_1,
+    OrderStatusEnum.WAITING_PAYMENT_2,
+    OrderStatusEnum.SCHEDULED_FLEET,
+    OrderStatusEnum.CONFIRMED,
+  ];
+  const hasNotDepartedToPickup =
+    hasNotDepartedToPickupStatuses.includes("babi");
+  const needValidateLocationChange =
+    isEditPage && orderType === "SCHEDULED" && hasNotDepartedToPickup;
 
   return (
     <>
       <FormContainer>
         <FormLabel required>Lokasi Bongkar</FormLabel>
         <TimelineField.Root
+          maxLocation={settingsTime?.location.maxDropoff}
           variant="bongkar"
           className="flex-1"
           values={
@@ -44,22 +54,27 @@ export const LokasiBongkar = ({ orderStatus }) => {
           onAddLocation={() =>
             handleFirstTime(() => addLokasi("lokasiBongkar", null))
           }
-          onEditLocation={(index) =>
-            handleFirstTime(() => {
-              handleOpenModalLocation({
-                formMode: "bongkar",
-                allSelectedLocations: lokasiBongkar,
-                defaultValues: lokasiBongkar[index],
-                index,
+          onEditLocation={(index) => {
+            if (
+              !isEditPage ||
+              !(isEditPage && orderType === "INSTANT" && index === 0)
+            ) {
+              handleFirstTime(() => {
+                handleOpenModalLocation({
+                  formMode: "bongkar",
+                  allSelectedLocations: lokasiBongkar,
+                  defaultValues: lokasiBongkar[index],
+                  index,
+                });
               });
-            })
-          }
+            }
+          }}
           errorMessage={errorLokasiBongkar}
         >
           {lokasiBongkar && lokasiBongkar.length > 0
             ? lokasiBongkar.map((item, index) => (
                 <TimelineField.Item index={index} key={index}>
-                  {!isEditPage && showRemoveButton && (
+                  {!(isEditPage && index === 0) && lokasiBongkar.length > 1 && (
                     <TimelineField.RemoveButton
                       onClick={() => removeLokasi("lokasiBongkar", index)}
                     />
@@ -67,7 +82,11 @@ export const LokasiBongkar = ({ orderStatus }) => {
                 </TimelineField.Item>
               ))
             : null}
-          {isEditPage && orderType === "SCHEDULED" ? null : (
+          {isEditPage &&
+          !(
+            orderType === "INSTANT" &&
+            lokasiBongkar?.length < settingsTime?.location.maxDropoff
+          ) ? null : (
             <TimelineField.AddButton />
           )}
         </TimelineField.Root>
@@ -76,6 +95,7 @@ export const LokasiBongkar = ({ orderStatus }) => {
       <LocationModalFormWeb
         {...modalConfig}
         onOpenChange={handleCloseModalLocation}
+        needValidateLocationChange={needValidateLocationChange}
       />
     </>
   );
