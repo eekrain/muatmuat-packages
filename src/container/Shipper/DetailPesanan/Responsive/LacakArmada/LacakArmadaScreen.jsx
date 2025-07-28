@@ -20,7 +20,7 @@ import { useGetTrackingLocations } from "@/services/Shipper/lacak-armada/getTrac
 import DriverCard from "./components/DriverCard";
 import { MarkerLegends } from "./components/MarkerLegends";
 
-const FleetTrackScreen = ({ dataStatusPesanan }) => {
+const LacakArmadaScreen = ({ dataStatusPesanan }) => {
   const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
 
@@ -85,4 +85,4 @@ const FleetTrackScreen = ({ dataStatusPesanan }) => {
     </FormResponsiveLayout>
   );
 };
-export default FleetTrackScreen;
+export default LacakArmadaScreen;

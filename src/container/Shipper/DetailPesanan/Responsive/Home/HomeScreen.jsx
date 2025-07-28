@@ -9,7 +9,7 @@ import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDet
 import useGetFleetSearchStatus from "@/services/Shipper/detailpesanan/getFleetSearchStatus";
 
 import { BottomsheetMenuList } from "./components/BottomsheetMenuList";
-import { DriverInfo } from "./components/DriverInfo";
+import DriverInfoSlider from "./components/DriverInfoSlider";
 import { DriverQRCodeAlert } from "./components/DriverQRCodeAlert";
 import { FleetStatusAlert } from "./components/FleetStatusAlert";
 import { FooterButton } from "./components/FooterButton";
@@ -69,13 +69,11 @@ const DetailPesananScreen = ({
 
         <OrderInfo dataStatusPesanan={dataDetailPesanan?.dataStatusPesanan} />
 
-        {dataDetailPesanan?.dataStatusPesanan && (
-          <DriverInfo
-            driverStatus={dataDetailPesanan?.dataStatusPesanan?.driverStatus}
-            orderId={dataDetailPesanan?.dataStatusPesanan?.orderId}
-            orderStatus={dataDetailPesanan?.dataStatusPesanan?.orderStatus}
-          />
-        )}
+        <DriverInfoSlider
+          driverStatus={dataDetailPesanan?.dataStatusPesanan?.driverStatus}
+          orderId={dataDetailPesanan?.dataStatusPesanan?.orderId}
+          orderStatus={dataDetailPesanan?.dataStatusPesanan?.orderStatus}
+        />
         <TabsInfo dataDetailPIC={dataDetailPIC} />
 
         {true && <RouteInfo />}
