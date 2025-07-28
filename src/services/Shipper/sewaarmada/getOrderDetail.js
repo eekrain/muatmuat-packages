@@ -274,8 +274,6 @@ export const getOrderDetail = async (cacheKey) => {
       getAdditionalServices(cacheKey),
     ]);
 
-    // console.log("dataOrderDetail", dataOrderDetail);
-    // console.log("dataAdditionalServices", dataAdditionalServices);
     let tempShippingOptions = [];
     let tempTrucks = [];
 
@@ -310,7 +308,7 @@ export const getOrderDetail = async (cacheKey) => {
       tempShippingOptions = result?.data?.Data.shippingOptions;
     }
     return {
-      orderType: dataOrderDetail.general.orderType, // Use the provided type or default to "INSTANT"
+      orderType: dataOrderDetail.general.orderType,
       formValues: {
         ...normalizeOrderDetail(
           dataOrderDetail,

@@ -20,7 +20,7 @@ export const usePostalCode = ({
   const setLocationPartial = useLocationFormStore(
     (state) => state.setLocationPartial
   );
-  const dataLokasi = useLocationFormStore((s) => s.formValues.dataLokasi);
+  const { lastValidLocation, setLastValidLocation } = useLocationFormStore();
 
   const { data, trigger } = useSWRMutateHook(
     "v1/autocompleteStreetLocal",
@@ -51,15 +51,16 @@ export const usePostalCode = ({
       if (
         needValidateLocationChange &&
         result?.city &&
-        result?.city?.value !== dataLokasi?.city?.value
+        result?.city?.value !== lastValidLocation?.city?.value
       ) {
-        setAutoCompleteSearchPhrase(dataLokasi?.location?.name);
+        setAutoCompleteSearchPhrase(lastValidLocation?.location?.name);
         setIsModalPostalCodeOpen(false);
         return toast.error(
           "Perubahan lokasi muat hanya bisa diganti jika masih di kota yang sama."
         );
       }
       setLocationPartial(result);
+      setLastValidLocation(result);
 
       if (tempLocation?.location?.name && !isMobile)
         setAutoCompleteSearchPhrase(tempLocation.location.name);
@@ -68,7 +69,7 @@ export const usePostalCode = ({
       fetcher.saveRecentSearchedLocation(result);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [tempLocation]
+    [tempLocation, lastValidLocation]
   );
 
   return {

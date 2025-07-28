@@ -1,6 +1,6 @@
 //  dependencies:
 // npm install zustand react-google-maps/api
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import Button from "@/components/Button/Button";
 import Input from "@/components/Form/Input";
@@ -28,11 +28,10 @@ const InnerLocationModalFormWeb = ({
     formValues,
     formErrors,
     setField,
+    setLastValidLocation,
     validateLokasiBongkarMuat,
     reset: resetForm,
   } = useLocationFormStore();
-  const isReverting = useRef(false);
-  const [lastDataLokasi, setLastDataLokasi] = useState(null);
 
   const {
     setAutoCompleteSearchPhrase,
@@ -64,6 +63,7 @@ const InnerLocationModalFormWeb = ({
         setLocationPostalCodeSearchPhrase(
           defaultValues.dataLokasi.postalCode?.value
         );
+        setLastValidLocation(defaultValues.dataLokasi);
         resetForm(defaultValues);
       }
       hasInit.current = true;
@@ -76,29 +76,6 @@ const InnerLocationModalFormWeb = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, defaultValues]);
-
-  // useShallowCompareEffect(() => {
-  //   if (isReverting.current) {
-  //     isReverting.current = false;
-  //     return;
-  //   }
-  //   if (open && needValidateLocationChange) {
-  //     if (
-  //       lastDataLokasi &&
-  //       lastDataLokasi?.city?.value !== formValues.dataLokasi?.city?.value
-  //     ) {
-  //       toast.error(
-  //         "Perubahan lokasi muat hanya bisa diganti jika masih di kota yang sama."
-  //       );
-  //       setField("dataLokasi", lastDataLokasi);
-  //       setAutoCompleteSearchPhrase(lastDataLokasi.location.name);
-  //       setLocationPostalCodeSearchPhrase(lastDataLokasi.postalCode?.value);
-  //       isReverting.current = true;
-  //     } else {
-  //       setLastDataLokasi(formValues.dataLokasi);
-  //     }
-  //   }
-  // }, [open, formValues.dataLokasi, lastDataLokasi, needValidateLocationChange]);
 
   return (
     <Modal open={open} onOpenChange={onOpenChange} closeOnOutsideClick>

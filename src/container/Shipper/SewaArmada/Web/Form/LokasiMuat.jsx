@@ -12,7 +12,7 @@ import {
 
 import { useModalLocation } from "./use-modal-location";
 
-export const LokasiMuat = ({ orderStatus }) => {
+export const LokasiMuat = ({ orderStatus, settingsTime }) => {
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
@@ -32,7 +32,7 @@ export const LokasiMuat = ({ orderStatus }) => {
     OrderStatusEnum.CONFIRMED,
   ];
   const hasNotDepartedToPickup =
-    hasNotDepartedToPickupStatuses.includes(orderStatus);
+    hasNotDepartedToPickupStatuses.includes("babi");
   const needValidateLocationChange =
     isEditPage && orderType === "SCHEDULED" && hasNotDepartedToPickup;
 
@@ -42,7 +42,10 @@ export const LokasiMuat = ({ orderStatus }) => {
         <FormLabel required>Lokasi Muat</FormLabel>
 
         <TimelineField.Root
-          disabled={isEditPage && orderType === "INSTANT"}
+          maxLocation={settingsTime?.location.maxPickup}
+          disabled={
+            isEditPage && !(orderType === "SCHEDULED" && hasNotDepartedToPickup)
+          }
           variant="muat"
           className="flex-1"
           values={
@@ -52,35 +55,43 @@ export const LokasiMuat = ({ orderStatus }) => {
           onAddLocation={() =>
             handleFirstTime(() => addLokasi("lokasiMuat", null))
           }
-          onEditLocation={(index) =>
-            handleFirstTime(() => {
-              handleOpenModalLocation({
-                formMode: "muat",
-                allSelectedLocations: lokasiMuat,
-                defaultValues: lokasiMuat[index],
-                index,
+          onEditLocation={(index) => {
+            if (
+              !(
+                isEditPage &&
+                orderType === "SCHEDULED" &&
+                !hasNotDepartedToPickup
+              )
+            ) {
+              handleFirstTime(() => {
+                handleOpenModalLocation({
+                  formMode: "muat",
+                  allSelectedLocations: lokasiMuat,
+                  defaultValues: lokasiMuat[index],
+                  index,
+                });
               });
-            })
-          }
+            }
+          }}
           errorMessage={errorLokasiMuat}
         >
           {lokasiMuat && lokasiMuat.length > 0
             ? lokasiMuat.map((item, index) => (
                 <TimelineField.Item index={index} key={index}>
-                  {!isEditPage && showRemoveButton && (
+                  {!isEditPage && lokasiMuat.length > 1 && (
                     <TimelineField.RemoveButton
                       onClick={() => {
                         removeLokasi("lokasiMuat", index);
-                        setField("truckTypeId", null);
+                        if (!isEditPage) {
+                          setField("truckTypeId", null);
+                        }
                       }}
                     />
                   )}
                 </TimelineField.Item>
               ))
             : null}
-          {isEditPage && orderType === "SCHEDULED" ? null : (
-            <TimelineField.AddButton />
-          )}
+          {isEditPage ? null : <TimelineField.AddButton />}
         </TimelineField.Root>
       </FormContainer>
 

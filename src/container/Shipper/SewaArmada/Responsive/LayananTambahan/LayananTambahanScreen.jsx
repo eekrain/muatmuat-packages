@@ -103,7 +103,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
     }
     navigation.pop();
   };
-  console.log("locatin", locationFormValues);
+
   const otherAdditionalServices = useShallowMemo(
     () => additionalServicesOptions.filter((item) => !item.withShipping),
     [additionalServicesOptions]

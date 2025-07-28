@@ -42,7 +42,7 @@ export const normalizeOrderDetail = (
       price: price.transportFee / truckType.totalUnit,
     },
     // truckTypeId: truckType.truckTypeId,
-    // truckCount: truckType.totalUnit,
+    truckCount: truckType.totalUnit,
     distance,
     distanceUnit: "km",
     additionalServices: normalizeAdditionalServices(

@@ -1,3 +1,4 @@
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { useSewaArmadaActions } from "@/store/Shipper/forms/sewaArmadaStore";
@@ -18,6 +19,8 @@ const MODE_MAP = {
 export const useModalLocation = () => {
   const [modalConfig, setModalConfig] = useState(defaultModalConfig);
   const { updateLokasi, setField } = useSewaArmadaActions();
+  const pathname = usePathname();
+  const isEditPage = pathname.includes("/ubahpesanan");
 
   const handleOpenModalLocation = ({
     formMode,
@@ -32,7 +35,9 @@ export const useModalLocation = () => {
       defaultValues,
       onSubmit: (newData) => {
         updateLokasi(MODE_MAP[formMode], index, newData);
-        setField("truckTypeId", null);
+        if (!isEditPage) {
+          setField("truckTypeId", null);
+        }
       },
       index,
     });

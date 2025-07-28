@@ -33,7 +33,9 @@ export const WaktuMuat = ({ orderStatus }) => {
     const newDate = new Date(value);
     newDate.setSeconds(0, 0);
     setField(field, newDate);
-    setField("truckTypeId", null);
+    if (!isEditPage) {
+      setField("truckTypeId", null);
+    }
   };
 
   const hasNotDepartedToPickupStatuses = [

@@ -26,7 +26,8 @@ export const useAutoComplete = ({
   const responsiveSearchValue = useResponsiveSearchStore(
     (state) => state.searchValue
   );
-  const dataLokasi = useLocationFormStore((s) => s.formValues.dataLokasi);
+  const { lastValidLocation, setLastValidLocation } = useLocationFormStore();
+
   useEffect(() => {
     if (isMobile) {
       setAutoCompleteSearchPhrase(responsiveSearchValue);
@@ -65,9 +66,9 @@ export const useAutoComplete = ({
       if (
         needValidateLocationChange &&
         result?.city &&
-        result?.city?.value !== dataLokasi?.city?.value
+        result?.city?.value !== lastValidLocation?.city?.value
       ) {
-        setAutoCompleteSearchPhrase(dataLokasi?.location?.name);
+        setAutoCompleteSearchPhrase(lastValidLocation?.location?.name);
         return toast.error(
           "Perubahan lokasi muat hanya bisa diganti jika masih di kota yang sama."
         );
@@ -83,6 +84,7 @@ export const useAutoComplete = ({
         else setLocationPostalCodeSearchPhrase(result.postalCode.value);
       } else {
         if (!isMobile) setAutoCompleteSearchPhrase(result.location.name);
+        setLastValidLocation(result);
         fetcher
           .saveRecentSearchedLocation(result)
           .then(() => {
@@ -96,7 +98,7 @@ export const useAutoComplete = ({
       return result;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [lastValidLocation]
   );
 
   return {

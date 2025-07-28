@@ -70,7 +70,7 @@ const PesananTable = ({
   const [selectedGroupedStatusInfo, setSelectedGroupedStatusInfo] = useState(
     []
   );
-  console.log("selectedGroupedStatusInfo", selectedGroupedStatusInfo);
+
   const selectedFilter = useShallowMemo(
     () =>
       options
