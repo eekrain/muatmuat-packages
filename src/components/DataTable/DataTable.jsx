@@ -291,7 +291,7 @@ const DataTable = ({
     <>
       <div
         className={cn(
-          "h-full w-full space-y-4 overflow-hidden rounded-lg border border-neutral-300 bg-white pt-5",
+          "h-full w-full space-y-4 overflow-hidden rounded-lg border border-neutral-300 bg-white pb-2.5 pt-5",
           className
         )}
       >
