@@ -10,7 +10,7 @@ import {
 } from "@/components/Lightbox/Lightbox";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 
-const TruckSelectionModal = ({ onTruckSelect }) => {
+const TruckSelectionModal = () => {
   const [searchValue, setSearchValue] = useState("");
 
   const recommendedTrucks = [

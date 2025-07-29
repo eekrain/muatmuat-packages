@@ -5,7 +5,7 @@ import {
   useFirstTimerModalStore,
 } from "@/store/Shipper/first-timer/firstTimerModalStore";
 
-const LoginModal = ({}) => {
+const LoginModal = () => {
   const isOpen = useFirstTimerModalStore((state) => state.isOpen);
   const { setIsOpen } = useFirstTimerModalAction();
   return (

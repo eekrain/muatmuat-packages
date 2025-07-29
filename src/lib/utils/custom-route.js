@@ -6,8 +6,8 @@ const getBaseUrl = () => {
 
 // imp_undermaintenance_uat
 export const createUrl = (path) => {
-  if (path.indexOf("https://") == 0) return path;
-  let linkPath = `${getBaseUrl()}${path}`;
+  if (path.indexOf("https://") === 0) return path;
+  const linkPath = `${getBaseUrl()}${path}`;
   return linkPath.replace("/muatparts/muatparts", "/muatparts");
 };
 

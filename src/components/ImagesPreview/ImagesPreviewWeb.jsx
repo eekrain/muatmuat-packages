@@ -64,7 +64,7 @@ const ImagesPreviewWeb = ({
         <div className="absolute top-1/2 z-[1] flex w-full -translate-y-1/2 justify-between px-3">
           {arrowButtons.map((button, key) => (
             <div
-              className="shadow-muat flex cursor-pointer items-center justify-center rounded-3xl bg-neutral-50 p-1"
+              className="flex cursor-pointer items-center justify-center rounded-3xl bg-neutral-50 p-1 shadow-muat"
               key={key}
               onClick={button.onClick}
             >

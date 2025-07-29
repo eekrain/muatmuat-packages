@@ -29,7 +29,7 @@ const MainLayout = ({ children }) => {
 
 export default MainLayout;
 
-const Script = ({}) => {
+const Script = () => {
   useDefaultTimeoutLoading();
   useResetNavigationOnDesktop();
 

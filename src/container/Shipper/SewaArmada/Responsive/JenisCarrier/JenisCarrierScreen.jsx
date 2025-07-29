@@ -22,8 +22,8 @@ const JenisCarrierScreen = ({ carriers }) => {
       return [];
 
     const mergedCarriers = [
-      ...carriers?.recommendedCarriers,
-      ...carriers?.nonRecommendedCarriers,
+      ...(carriers?.recommendedCarriers || []),
+      ...(carriers?.nonRecommendedCarriers || []),
     ];
 
     return mergedCarriers.filter((carrier) =>

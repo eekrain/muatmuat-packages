@@ -11,11 +11,10 @@ export default function PilihProvinsiDemo() {
     <div style={{ minHeight: "100vh", background: "#f9f9f9" }}>
       <PilihProvinsi
         addCourierProvince={async ({ provinceID }) => {
-          console.log(`Saved provinces: ${provinceID.join(", ")}`);
           return Promise.resolve();
         }}
-        onRefresh={() => console.log("Refreshed!")}
-        onBack={() => console.log("Back clicked!")}
+        onRefresh={() => alert("Refreshed!")}
+        onBack={() => alert("Back clicked!")}
         selectedProvinces={selectedProvinces}
         setSelectedProvinces={setSelectedProvinces}
         provinceIds={provinceIds}

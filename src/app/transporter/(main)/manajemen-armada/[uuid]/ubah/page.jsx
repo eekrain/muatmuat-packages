@@ -289,12 +289,12 @@ const Page = () => {
   };
 
   const handleLicensePlateChange = (e) => {
-    let value = e.target.value.toUpperCase().replace(/[^A-Z0-9\s]/g, "");
+    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9\s]/g, "");
     handleChange("licensePlate", value);
   };
 
   const handleChassisNumberChange = (e) => {
-    let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
     handleChange("chassisNumber", value.slice(0, 17));
   };
 

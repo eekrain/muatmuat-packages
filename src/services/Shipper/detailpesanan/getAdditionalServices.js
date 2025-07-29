@@ -1,4 +1,6 @@
 // /api/v1/orders/{orderId}/additional-services
+import useSWR from "swr";
+
 import { fetcherMuatrans } from "@/lib/axios";
 
 const useMockData = false; // toggle mock data
@@ -54,4 +56,4 @@ export const getAdditionalServices = async (cacheKey) => {
 };
 
 export const useGetAdditionalServices = (orderId) =>
-  useSWR(`additional-services/${orderId}`, fetcher);
+  useSWR(`additional-services/${orderId}`, getAdditionalServices);

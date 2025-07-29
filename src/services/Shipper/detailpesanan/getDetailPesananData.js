@@ -309,7 +309,7 @@ export const useGetOrderDetail = (orderId) =>
   useSWR(`order-detail/${orderId}`, fetcherOrderDetail);
 
 const completeFetcher = async (cacheKey) => {
-  const orderId = cacheKey.split("/")[1];
+  // const orderId = cacheKey.split("/")[1];
 
   try {
     const [

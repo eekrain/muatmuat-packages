@@ -110,7 +110,7 @@ const DetailPesananScreen = ({
           ]}
         />
 
-        {false && <FleetStatusAlert />}
+        {DEBUG_MODE && <FleetStatusAlert />}
 
         <OrderInfo dataStatusPesanan={dataStatusPesanan} />
 

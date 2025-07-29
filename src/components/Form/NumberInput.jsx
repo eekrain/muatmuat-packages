@@ -103,7 +103,7 @@ export const NumberInput = forwardRef(
       setIsFocused(false);
 
       // If value is empty or below min, set to min.
-      if (!Boolean(stringValue) || value < min) {
+      if (!stringValue || value < min) {
         console.log("ran");
         triggerChange(min);
       } else if (stringValue > max) {

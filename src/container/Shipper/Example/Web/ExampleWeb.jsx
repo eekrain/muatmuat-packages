@@ -134,7 +134,7 @@ const ExampleWeb = () => {
             subtitle="We couldn't find any products matching your search criteria. Try adjusting your search terms."
             buttonText="Search Again"
             iconPlus={false}
-            onButtonClick={() => console.log("Search again clicked")}
+            onButtonClick={() => alert("Search again clicked")}
           />
         </div>
 
@@ -159,8 +159,8 @@ const ExampleWeb = () => {
             <h2 className="mb-2 text-sm font-medium">Default</h2>
             <DatetimePicker
               datetimeValue={new Date()}
-              onApply={(date) => console.log("Applied date:", date)}
-              onCancel={(date) => console.log("Cancelled date:", date)}
+              onApply={(date) => alert("Applied date:", date)}
+              onCancel={(date) => alert("Cancelled date:", date)}
             />
           </div>
 
@@ -169,8 +169,8 @@ const ExampleWeb = () => {
             <DatetimePicker
               datetimeValue={new Date()}
               minDate={new Date()}
-              onApply={(date) => console.log("Applied date:", date)}
-              onCancel={(date) => console.log("Cancelled date:", date)}
+              onApply={(date) => alert("Applied date:", date)}
+              onCancel={(date) => alert("Cancelled date:", date)}
             />
           </div>
 
@@ -179,8 +179,8 @@ const ExampleWeb = () => {
             <DatetimePicker
               datetimeValue={new Date()}
               maxDate={new Date(new Date().setDate(new Date().getDate() + 7))}
-              onApply={(date) => console.log("Applied date:", date)}
-              onCancel={(date) => console.log("Cancelled date:", date)}
+              onApply={(date) => alert("Applied date:", date)}
+              onCancel={(date) => alert("Cancelled date:", date)}
             />
           </div>
 
@@ -189,8 +189,8 @@ const ExampleWeb = () => {
             <DatetimePicker
               datetimeValue={new Date()}
               disabled={true}
-              onApply={(date) => console.log("Applied date:", date)}
-              onCancel={(date) => console.log("Cancelled date:", date)}
+              onApply={(date) => alert("Applied date:", date)}
+              onCancel={(date) => alert("Cancelled date:", date)}
             />
           </div>
 
@@ -199,8 +199,8 @@ const ExampleWeb = () => {
             <DatetimePicker
               datetimeValue={new Date()}
               status="error"
-              onApply={(date) => console.log("Applied date:", date)}
-              onCancel={(date) => console.log("Cancelled date:", date)}
+              onApply={(date) => alert("Applied date:", date)}
+              onCancel={(date) => alert("Cancelled date:", date)}
             />
           </div>
 
@@ -209,8 +209,8 @@ const ExampleWeb = () => {
             <DatetimePicker
               datetimeValue={new Date()}
               dateFormat="dd/MM/yyyy HH:mm"
-              onApply={(date) => console.log("Applied date:", date)}
-              onCancel={(date) => console.log("Cancelled date:", date)}
+              onApply={(date) => alert("Applied date:", date)}
+              onCancel={(date) => alert("Cancelled date:", date)}
             />
           </div>
         </div>
@@ -228,7 +228,7 @@ const ExampleWeb = () => {
                 { name: "Option 3", value: "3" },
               ]}
               placeholder="Select an option"
-              onSelected={(selected) => console.log("Selected:", selected)}
+              onSelected={(selected) => alert("Selected:", selected)}
             />
           </div>
 
@@ -242,8 +242,8 @@ const ExampleWeb = () => {
                 { name: "Mango", value: "mango" },
               ]}
               placeholder="Search fruits..."
-              onSearchValue={(value) => console.log("Search:", value)}
-              onSelected={(selected) => console.log("Selected:", selected)}
+              onSearchValue={(value) => alert("Search:", value)}
+              onSelected={(selected) => alert("Selected:", selected)}
             />
           </div>
 
@@ -258,7 +258,7 @@ const ExampleWeb = () => {
               ]}
               placeholder="Select colors"
               isMultipleSelected={true}
-              onSelected={(selected) => console.log("Selected:", selected)}
+              onSelected={(selected) => alert("Selected:", selected)}
             />
           </div>
 
@@ -275,8 +275,8 @@ const ExampleWeb = () => {
               ]}
               optionsOtherText="More Options"
               placeholder="Select with custom"
-              onSelected={(selected) => console.log("Selected:", selected)}
-              onClickTextOther={() => console.log("Other options clicked")}
+              onSelected={(selected) => alert("Selected:", selected)}
+              onClickTextOther={() => alert("Other options clicked")}
             />
           </div>
 
@@ -297,7 +297,7 @@ const ExampleWeb = () => {
               ]}
               placeholder="Select with icons"
               leftIconElement={<IconComponent src="/icons/settings.svg" />}
-              onSelected={(selected) => console.log("Selected:", selected)}
+              onSelected={(selected) => alert("Selected:", selected)}
             />
           </div>
 
@@ -310,7 +310,7 @@ const ExampleWeb = () => {
               ]}
               placeholder="Select an option"
               isError={true}
-              onSelected={(selected) => console.log("Selected:", selected)}
+              onSelected={(selected) => alert("Selected:", selected)}
             />
           </div>
         </div>
@@ -330,7 +330,7 @@ const ExampleWeb = () => {
                 { label: "Option 3", value: "3" },
               ]}
               value="1"
-              onChange={(value) => console.log("Selected:", value)}
+              onChange={(value) => alert("Selected:", value)}
               saveLabel="Save"
               placeHolder="Select an option"
             />
@@ -349,7 +349,7 @@ const ExampleWeb = () => {
                 { label: "60265", value: "60265" },
               ]}
               value="60261"
-              onChange={(value) => console.log("Selected postal code:", value)}
+              onChange={(value) => alert("Selected postal code:", value)}
               saveLabel="Simpan"
               placeHolder="Pilih Kode Pos"
             />
@@ -367,7 +367,7 @@ const ExampleWeb = () => {
                 { label: "Extra Large", value: "XL" },
               ]}
               value="M"
-              onChange={(value) => console.log("Selected size:", value)}
+              onChange={(value) => alert("Selected size:", value)}
               saveLabel="Apply"
               placeHolder="Choose size"
             />
@@ -386,7 +386,7 @@ const ExampleWeb = () => {
                 { label: "Books and Stationery", value: "books" },
               ]}
               value="electronics"
-              onChange={(value) => console.log("Selected category:", value)}
+              onChange={(value) => alert("Selected category:", value)}
               saveLabel="Confirm"
               placeHolder="Select category"
             />
@@ -406,7 +406,7 @@ const ExampleWeb = () => {
                 { name: "30 Hari Terakhir", value: "last30days" },
                 { name: "Bulan Ini", value: "thisMonth" },
               ]}
-              onSelect={(selected) => console.log("Selected period:", selected)}
+              onSelect={(selected) => alert("Selected period:", selected)}
             />
           </div>
 
@@ -423,7 +423,7 @@ const ExampleWeb = () => {
                 { name: "01/03/2024 - 15/03/2024", value: "custom1" },
                 { name: "16/02/2024 - 29/02/2024", value: "custom2" },
               ]}
-              onSelect={(selected) => console.log("Selected period:", selected)}
+              onSelect={(selected) => alert("Selected period:", selected)}
             />
           </div>
 
@@ -437,7 +437,7 @@ const ExampleWeb = () => {
                 { name: "Bulan Ini", value: "thisMonth" },
               ]}
               disable={true}
-              onSelect={(selected) => console.log("Selected period:", selected)}
+              onSelect={(selected) => alert("Selected period:", selected)}
             />
           </div>
 
@@ -451,9 +451,7 @@ const ExampleWeb = () => {
                   { name: "30 Hari Terakhir", value: "last30days" },
                   { name: "Bulan Ini", value: "thisMonth" },
                 ]}
-                onSelect={(selected) =>
-                  console.log("Selected period:", selected)
-                }
+                onSelect={(selected) => alert("Selected period:", selected)}
               />
             </div>
           </div>
@@ -528,7 +526,36 @@ const ExampleWeb = () => {
           <h1 className="mb-2 text-xl font-bold">Slider Example</h1>
           <div className="w-full px-6 py-9">
             <Slider.Root
-              items={onboardingSlides}
+              items={[
+                {
+                  title: "Unggah Armada Massal",
+                  imgSrc:
+                    "/img/tambah-armada-massal/popupinformasi-slider-1.png",
+                  content:
+                    "Kamu bisa mengunggah armada secara massal menggunakan fitur ini.",
+                },
+                {
+                  title: "Unggah Armada Massal",
+                  imgSrc:
+                    "/img/tambah-armada-massal/popupinformasi-slider-2.png",
+                  content:
+                    "Ada dua pilihan untuk mengunggah armada secara massal : <ol><li>Menggunakan file excel</li><li>Mengisi kolom yang sudah tersedia</li></ol>",
+                },
+                {
+                  title: "Unggah Dengan Excel",
+                  imgSrc:
+                    "/img/tambah-armada-massal/popupinformasi-slider-3.png",
+                  content:
+                    "Kamu bisa mengunggah dengan langkah :<ol><li>Unduh template</li><li>Isi kolom yang tersedia (kamu bisa melihat contoh sheet prosedur)</li><li>Unggah file excel di kolom yang tersedia</li></ol>",
+                },
+                {
+                  title: "Isi Kolom Massal",
+                  imgSrc:
+                    "/img/tambah-armada-massal/popupinformasi-slider-4.png",
+                  content:
+                    "Kamu bisa mengunggah dengan langkah :<ol><li>Isi kolom yang tersedia</li><li>Klik Simpan (jika ingin menambah armada klik button Tambah padahalaman tersebut)</li></ol>",
+                },
+              ]}
               className="flex h-[322px] flex-col items-center justify-center gap-6 p-6"
             >
               {/* A relative container is needed for the absolutely positioned navigation */}
@@ -905,7 +932,6 @@ const ButtonBottomsheetTooltipForm = () => {
                     <div className="flex flex-row justify-center gap-2">
                       <Button
                         variant="muatparts-primary-secondary"
-                        onClick={() => setOpenControlled(false)}
                         className="h-8 min-w-[132px]"
                         type="muatparts"
                       >
@@ -913,7 +939,6 @@ const ButtonBottomsheetTooltipForm = () => {
                       </Button>
                       <Button
                         variant="muatparts-primary"
-                        onClick={() => setOpenControlled(false)}
                         className="h-8 min-w-[151px]"
                         type="muatparts"
                       >
@@ -1254,8 +1279,8 @@ const ExampleLightbox = () => {
 // Demo Component
 const ExampleDropdownJasaPengiriman = () => {
   const [selectedExpedition, setSelectedExpedition] = useState(null);
-  console.log("selectedExpedition", selectedExpedition);
-  console.log(
+  alert("selectedExpedition", selectedExpedition);
+  alert(
     "🚀 ~ ExampleDropdownJasaPengiriman ~ selectedExpedition:",
     selectedExpedition
   );
@@ -1392,7 +1417,7 @@ const ExampleDropdownJasaPengiriman = () => {
 
   const handleExpeditionChange = (data) => {
     setSelectedExpedition(data);
-    console.log("Expedition data:", data);
+    alert("Expedition data:", data);
   };
 
   return (
@@ -1485,21 +1510,21 @@ const ExampleInput = () => {
           <Checkbox
             label="Default Checkbox"
             onChange={({ checked, value }) =>
-              console.log("Checkbox changed:", { checked, value })
+              alert("Checkbox changed:", { checked, value })
             }
           />
           <Checkbox
             label="Checked by default"
             checked={true}
             onChange={({ checked, value }) =>
-              console.log("Checkbox changed:", { checked, value })
+              alert("Checkbox changed:", { checked, value })
             }
           />
           <Checkbox
             label="Disabled Checkbox"
             disabled={true}
             onChange={({ checked, value }) =>
-              console.log("Checkbox changed:", { checked, value })
+              alert("Checkbox changed:", { checked, value })
             }
           />
           <Checkbox
@@ -1507,13 +1532,13 @@ const ExampleInput = () => {
             disabled={true}
             checked={true}
             onChange={({ checked, value }) =>
-              console.log("Checkbox changed:", { checked, value })
+              alert("Checkbox changed:", { checked, value })
             }
           />
           <Checkbox
             value="custom-value"
             onChange={({ checked, value }) =>
-              console.log("Checkbox changed:", { checked, value })
+              alert("Checkbox changed:", { checked, value })
             }
           >
             <span className="text-primary-700">Custom styled label</span>
@@ -1561,15 +1586,15 @@ const ExampleInput = () => {
         <h1 className="mb-2 text-xl font-bold">Image Uploader with Cropper</h1>
         <div className="flex flex-col gap-4">
           <ImageUploaderWeb
-            getImage={(image) => console.log("Image uploaded:", image)}
+            getImage={(image) => alert("Image uploaded:", image)}
             uploadText="Upload Image"
             errorText="Upload Again"
             maxSize={5}
             isCircle={true}
-            onUpload={(image) => console.log("Image uploaded:", image)}
-            onError={(error) => console.log("Upload error:", error)}
+            onUpload={(image) => alert("Image uploaded:", image)}
+            onError={(error) => alert("Upload error:", error)}
             cropperTitle="Crop Image"
-            onFinishCrop={(file) => console.log("Cropped file:", file)}
+            onFinishCrop={(file) => alert("Cropped file:", file)}
             acceptedFormats={[".jpg", ".jpeg", ".png"]}
           />
         </div>
@@ -1593,7 +1618,7 @@ const ExampleInput = () => {
           value={fileValue}
           onSuccess={(file) => {
             setFileValue(file);
-            console.log("File uploaded:", file);
+            alert("File uploaded:", file);
           }}
           onError={(err) => {
             console.error("File upload error:", err);

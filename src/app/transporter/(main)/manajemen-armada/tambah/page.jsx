@@ -238,9 +238,9 @@ const Page = () => {
   };
 
   const handleLicensePlateChange = (e) => {
-    let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
-    let depan = value.slice(0, 2).replace(/[^A-Z]/g, "");
-    let sisa = value.slice(depan.length);
+    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    const depan = value.slice(0, 2).replace(/[^A-Z]/g, "");
+    const sisa = value.slice(depan.length);
     let tengah = "";
     let belakang = "";
     for (let i = 0; i < sisa.length; i++) {
@@ -271,7 +271,7 @@ const Page = () => {
   };
 
   const handleChassisNumberChange = (e) => {
-    let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
     handleChange("chassisNumber", value.slice(0, 17));
   };
 

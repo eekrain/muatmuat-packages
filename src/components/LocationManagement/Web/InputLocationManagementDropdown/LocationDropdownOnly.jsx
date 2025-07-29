@@ -39,7 +39,7 @@ export const LocationDropdownOnly = ({
 
   // Function to find the first scrollable parent
   const getScrollParent = useCallback((node) => {
-    if (node == null) {
+    if (node === null) {
       return document.documentElement;
     }
     const { overflow, overflowY } = window.getComputedStyle(node);

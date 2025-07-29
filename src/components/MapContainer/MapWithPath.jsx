@@ -53,7 +53,7 @@ const calculateBearing = (start, end) => {
     Math.cos(startLat) * Math.sin(endLat) -
     Math.sin(startLat) * Math.cos(endLat) * Math.cos(dLng);
 
-  let bearing = Math.atan2(y, x) * (180 / Math.PI);
+  const bearing = Math.atan2(y, x) * (180 / Math.PI);
   const result = (bearing + 360) % 360;
   return result; // Normalize to 0-360 degrees
 };

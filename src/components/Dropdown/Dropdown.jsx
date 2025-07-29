@@ -106,7 +106,7 @@ const Dropdown = ({
     setErrorMessage(true);
   };
   const handleSelect = (option) => {
-    if (selected.filter((item) => item.value == option.value).length) {
+    if (selected.filter((item) => item.value === option.value).length) {
       if (isMultipleSelected) {
         const val = selected.filter((item) => item.value !== option.value);
         setSelected(val);
@@ -158,7 +158,7 @@ const Dropdown = ({
             key={index}
             onClick={(e) => {
               if (!isMultipleSelected) {
-                val.value == "tanggal"
+                val.value === "tanggal"
                   ? setDatepicker(true)
                   : handleSelect({
                       value: val.value,
@@ -212,7 +212,7 @@ const Dropdown = ({
                   key={val.name}
                   onClick={(e) => {
                     if (!isMultipleSelected) {
-                      val.value == "tanggal"
+                      val.value === "tanggal"
                         ? setDatepicker(true)
                         : handleSelect({
                             value: val.value,

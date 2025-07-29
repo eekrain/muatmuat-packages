@@ -66,7 +66,7 @@ const DatePicker = ({
   useEffect(() => {
     if (isPickerOpen && pickerRef.current) {
       const pickerRect = pickerRef.current.getBoundingClientRect();
-      let position = {};
+      const position = {};
       position.top = "100%";
       position.marginTop = "8px";
       // Basic left/right positioning

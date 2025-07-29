@@ -140,7 +140,7 @@ export const DriverTimeline = ({ dataDriverStatus, onClickProof }) => {
               }
               canceledAt={parent.date}
               className={
-                parentIndex === 0 && !Boolean(parent?.children) ? "md:mt-0" : ""
+                parentIndex === 0 && !parent?.children ? "md:mt-0" : ""
               }
             />
           </Fragment>

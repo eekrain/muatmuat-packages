@@ -1,6 +1,6 @@
 import { FlatCompat } from "@eslint/eslintrc";
+import js from "@eslint/js";
 import prettier from "eslint-plugin-prettier";
-import react from "eslint-plugin-react";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -12,36 +12,52 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
-  ...compat.extends(
-    "plugin:react/recommended",
-    "next/core-web-vitals",
-    "prettier"
-  ),
+  // 1. Core ESLint rules
+  js.configs.recommended,
+
+  // 2. Next.js presets using the new recommended syntax.
+  // 'next/core-web-vitals' includes React, Hooks, and Next.js specific rules.
+  ...compat.config({
+    extends: [
+      "next/core-web-vitals",
+      "prettier", // This must be last to override formatting rules.
+    ],
+  }),
+
+  // 3. Your custom configurations, rules, and overrides.
   {
-    files: ["src/**/*.{js,jsx,ts,tsx}"],
+    files: ["src/**/*.{js,jsx}"],
     plugins: {
+      // Only plugins for your custom rules are needed here.
       prettier,
-      react,
     },
     rules: {
+      "no-console": "warn",
+      eqeqeq: "error",
+      "no-var": "error",
+      "prefer-const": "error",
+      "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+      "no-constant-condition": "off",
+      "no-constant-binary-expression": "off",
+      "no-useless-escape": "off",
       "prefer-arrow-callback": "error",
       "prefer-template": "error",
       semi: "error",
       quotes: ["error", "double"],
-      // React specific rules (optional overrides)
-      "react/react-in-jsx-scope": "off", // Not needed for React 17+
-      "@next/next/no-img-element": "off", // Disable no-img-element rule
-      "react/jsx-no-undef": "error",
-      "no-undef": "warn",
+
+      // -- Your Other Overrides --
+      "@next/next/no-img-element": "off",
     },
     languageOptions: {
-      parserOptions: {
-        ecmaFeatures: { jsx: true },
+      globals: {
+        React: "readonly",
       },
     },
     settings: {
-      react: {
-        version: "detect",
+      "import/resolver": {
+        node: {
+          extensions: [".js", ".jsx"],
+        },
       },
     },
   },

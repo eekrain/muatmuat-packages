@@ -65,7 +65,7 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
 
   return (
     <>
-      <Card className="shadow-muat sticky top-[124px] flex w-[338px] flex-col gap-0 rounded-xl border-none bg-white">
+      <Card className="sticky top-[124px] flex w-[338px] flex-col gap-0 rounded-xl border-none bg-white shadow-muat">
         <div className="flex flex-col gap-y-6 px-5 py-6 text-neutral-900">
           <div
             className={cn(
@@ -125,7 +125,7 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
         <div
           className={cn(
             "flex flex-col gap-y-6 rounded-b-xl px-5",
-            priceSummary.length > 0 ? "shadow-muat py-6" : "pb-6"
+            priceSummary.length > 0 ? "py-6 shadow-muat" : "pb-6"
           )}
         >
           <div className="flex justify-between">

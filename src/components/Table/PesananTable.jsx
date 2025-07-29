@@ -197,7 +197,7 @@ const PesananTable = ({
 
   return (
     <>
-      <Card className="shadow-muat mt-6 h-auto w-[1232px] border-none">
+      <Card className="mt-6 h-auto w-[1232px] border-none shadow-muat">
         <CardContent className="p-0">
           {/* Table Filter */}
           <div className="flex flex-col gap-y-6 p-6 pt-5">
@@ -597,7 +597,7 @@ const PesananTable = ({
                           <td className="w-[174px] pb-4 pl-0 pr-6 pt-5 align-top">
                             <div className="flex flex-col gap-y-3">
                               {/* Conditional button based on status */}
-                              {latestStatus ==
+                              {latestStatus ===
                               OrderStatusEnum.DOCUMENT_DELIVERY ? (
                                 <Button
                                   onClick={() =>

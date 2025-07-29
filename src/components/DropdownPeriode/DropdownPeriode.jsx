@@ -295,11 +295,11 @@ const DropdownPeriode = ({
               className="!h-8 w-[112px]"
               onClick={() => {
                 let next = true;
-                if (inputDateCustom.start_date == "") {
+                if (inputDateCustom.start_date === "") {
                   setValidate((a) => ({ ...a, start_date: true }));
                   next = false;
                 }
-                if (inputDateCustom.end_date == "") {
+                if (inputDateCustom.end_date === "") {
                   setValidate((a) => ({ ...a, end_date: true }));
                   next = false;
                 }

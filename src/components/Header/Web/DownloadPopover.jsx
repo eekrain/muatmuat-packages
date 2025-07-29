@@ -42,7 +42,7 @@ export const DownloadPopover = () => {
 
       <HoverCard.Portal>
         <HoverCard.Content
-          className="shadow-muat z-20 flex w-[392px] items-center gap-6 rounded-xl bg-white p-8 shadow-lg"
+          className="z-20 flex w-[392px] items-center gap-6 rounded-xl bg-white p-8 shadow-lg shadow-muat"
           sideOffset={5}
           side="bottom"
           align="start"

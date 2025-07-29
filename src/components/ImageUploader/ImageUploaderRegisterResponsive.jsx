@@ -58,7 +58,7 @@ const ImageUploaderRegisterResponsive = ({
 
   const validateFile = (file) => {
     // Normalize MIME type
-    let normalizedType = file.type.toLowerCase();
+    const normalizedType = file.type.toLowerCase();
 
     // List of valid MIME types
     const validTypes = {

@@ -1,6 +1,6 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
 
-export const AlertPendingPrepareFleet = ({}) => {
+export const AlertPendingPrepareFleet = () => {
   return (
     <div className="flex flex-col items-center gap-3 bg-muat-trans-primary-50 px-8 py-4 md:flex-row md:gap-8 md:rounded-2xl">
       <div className="relative size-[72px]">

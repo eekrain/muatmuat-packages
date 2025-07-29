@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { MapWithPath } from "@/components/MapContainer/MapWithPath";
 import { useGetTrackingLocations } from "@/services/Shipper/lacak-armada/getTrackingLocations";
 
-export const MapPanel = ({}) => {
+export const MapPanel = () => {
   const params = useParams();
   const containerRef = useRef(null);
   const [height, setHeight] = useState(0);

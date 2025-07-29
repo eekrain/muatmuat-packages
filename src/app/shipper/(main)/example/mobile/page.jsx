@@ -18,19 +18,6 @@ const ShippingFormPage = () => {
     kode_pos: "60261",
   });
 
-  const [detailAlamatCount, setDetailAlamatCount] = useState(0);
-
-  const handleInputChange = (name, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    if (name === "detail_alamat") {
-      setDetailAlamatCount(value.length);
-    }
-  };
-
   const handleCheckboxChange = (data) => {
     setFormData((prev) => ({
       ...prev,
@@ -156,7 +143,7 @@ const ShippingFormPage = () => {
                     notes
                   </span>
                   <span className="text-right text-xs font-medium leading-3 text-neutral-600">
-                    {detailAlamatCount}/500
+                    {0}/500
                   </span>
                 </div>
               </div>

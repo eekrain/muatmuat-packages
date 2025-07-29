@@ -42,10 +42,10 @@ export const normalizeDetailPesananOrderDetail = ({
       orderStatus: dataOrderDetail.general?.orderStatus,
       unitFleetStatus: dataOrderDetail.general?.unitFleetStatus || 1,
       driverStatus:
-        dataOrderStatusHistory?.driverStatus?.map(
+        (dataOrderStatusHistory?.driverStatus || []).map(
           ({ stepStatus, ...item }) => ({
             ...item,
-            stepperData: stepStatus.map((step) => ({
+            stepperData: (stepStatus || []).map((step) => ({
               label: OrderStatusTitle[step.statusCode],
               status: step.statusCode,
               icon: OrderStatusIcon[step.statusCode],
@@ -83,7 +83,7 @@ export const normalizeDetailPesananOrderDetail = ({
     const route = { muat: [], bongkar: [] };
     const dataDetailPIC = { muat: [], bongkar: [] };
 
-    for (const location of dataOrderDetail.summary?.locations) {
+    for (const location of dataOrderDetail.summary?.locations || []) {
       if (location.locationType === LocationTypeEnum.PICKUP) {
         route.muat.push({
           fullAddress: location.fullAddress,

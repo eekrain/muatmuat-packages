@@ -7,19 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "format": "next lint --fix && prettier --write .",
     "prepare": "husky",
     "zip": "node ./scripts/zip.js",
     "convert-fonts": "node ./scripts/convert-font-sizes-simple.js"
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "npm run convert-fonts",
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{json,md,css,scss,html}": [
-      "prettier --write"
-    ]
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
@@ -65,7 +56,7 @@
   "devDependencies": {
     "@ast-grep/cli": "^0.38.7",
     "@eslint/eslintrc": "^3",
-    "@eslint/js": "^9.27.0",
+    "@eslint/js": "^9.32.0",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "archiver": "^7.0.1",
     "autoprefixer": "^10.4.21",
@@ -73,7 +64,6 @@
     "eslint-config-next": "15.3.2",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.4.0",
-    "eslint-plugin-react": "^7.37.5",
     "husky": "^9.1.7",
     "lint-staged": "^16.0.0",
     "postcss": "^8.5.3",

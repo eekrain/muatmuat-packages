@@ -63,7 +63,7 @@ const MultilevelSelect = ({ options, value, onChange, disabled }) => {
   const renderFirstLevel = () => {
     return (
       <div
-        className="shadow-muat rounded-md border border-neutral-400 bg-neutral-50"
+        className="rounded-md border border-neutral-400 bg-neutral-50 shadow-muat"
         style={{
           position: "relative",
           width: "194px",
@@ -105,7 +105,7 @@ const MultilevelSelect = ({ options, value, onChange, disabled }) => {
     return (
       <div
         className={cn(
-          "shadow-muat absolute left-[194px] z-[2] -ml-[1px] max-h-[160px] rounded-md border border-neutral-400 bg-neutral-50",
+          "absolute left-[194px] z-[2] -ml-[1px] max-h-[160px] rounded-md border border-neutral-400 bg-neutral-50 shadow-muat",
           hasMoreThan5Items
             ? "-mr-[7px] w-[202px] overflow-auto pr-[3px]"
             : "w-[180px]"

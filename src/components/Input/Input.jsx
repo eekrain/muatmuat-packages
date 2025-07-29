@@ -37,9 +37,9 @@ const Input = forwardRef(
       >
         <div
           className={`flex h-8 w-full cursor-pointer items-center rounded-md border border-neutral-600 px-3 ${disabled && style.input_disabled} ${style.input_style} ${
-            status == "error"
+            status === "error"
               ? style.border_red
-              : status == "success"
+              : status === "success"
                 ? style.border_success
                 : ""
           } bg-neutral-50`}
@@ -52,7 +52,7 @@ const Input = forwardRef(
                   src={{ src: icon.left }}
                   height={16}
                   width={16}
-                  className={`${status == "error" ? style.icon_danger : status == "success" ? style.icon_success : ""}`}
+                  className={`${status === "error" ? style.icon_danger : status === "success" ? style.icon_success : ""}`}
                 />
               ) : (
                 icon.left
@@ -81,7 +81,7 @@ const Input = forwardRef(
                   src={{ src: icon.right }}
                   height={16}
                   width={16}
-                  className={`${status == "error" ? style.icon_danger : status == "success" ? style.icon_success : ""}`}
+                  className={`${status === "error" ? style.icon_danger : status === "success" ? style.icon_success : ""}`}
                 />
               ) : (
                 icon.right
@@ -97,9 +97,9 @@ const Input = forwardRef(
         {(supportiveText.title || supportiveText.desc) && (
           <div
             className={`flex items-center justify-between ${style.supportive_text} ${
-              status == "error"
+              status === "error"
                 ? style.text_danger
-                : status == "success"
+                : status === "success"
                   ? style.text_success
                   : ""
             }`}

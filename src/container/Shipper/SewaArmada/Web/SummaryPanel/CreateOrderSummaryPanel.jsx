@@ -392,7 +392,7 @@ export const CreateOrderSummaryPanel = ({
         }
       );
 
-      if (response.data.Message.Code == 200) {
+      if (response.data.Message.Code === 200) {
         // alert("Hore Berhasil Sewa Armada :)");
         // Handle sukses - bisa redirect ke detail pesanan
         router.push(
@@ -416,7 +416,7 @@ export const CreateOrderSummaryPanel = ({
 
   return (
     <>
-      <Card className="shadow-muat sticky top-[124px] flex w-[338px] flex-col gap-0 rounded-xl border-none bg-white">
+      <Card className="sticky top-[124px] flex w-[338px] flex-col gap-0 rounded-xl border-none bg-white shadow-muat">
         <div className="flex flex-col gap-y-6 px-5 py-6">
           <h3 className="text-base font-bold leading-[19.2px] text-neutral-900">
             Ringkasan Transaksi
@@ -552,7 +552,7 @@ export const CreateOrderSummaryPanel = ({
         <div
           className={cn(
             "flex flex-col gap-y-6 rounded-b-xl px-5",
-            priceSummary.length > 0 ? "shadow-muat py-6" : "pb-6"
+            priceSummary.length > 0 ? "py-6 shadow-muat" : "pb-6"
           )}
         >
           <div className="flex items-center justify-between">

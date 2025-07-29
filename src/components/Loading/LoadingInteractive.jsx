@@ -5,9 +5,9 @@ import { useLoadingStore } from "@/store/Shared/loadingStore";
 
 export default function LoadingInteractive() {
   const isGlobalLoading = useLoadingStore((state) => state.isGlobalLoading);
-  console.log("🚀 ~ LoadingInteractive ~ isGlobalLoading:", isGlobalLoading);
   const { isTranslationsReady } = useTranslation();
-  if (false) {
+
+  if (!isGlobalLoading || !isTranslationsReady) {
     return (
       <div className="fixed left-0 top-0 z-[9999] flex h-screen w-screen items-center justify-center bg-black/10 backdrop-blur-md">
         <img
@@ -19,4 +19,6 @@ export default function LoadingInteractive() {
       </div>
     );
   }
+
+  return null;
 }

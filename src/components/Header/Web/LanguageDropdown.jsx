@@ -47,7 +47,7 @@ const LanguageDropdown = () => {
       />
       {/* toggle bahasa */}
       {open && (
-        <div className="shadow-muat absolute left-0 top-6 z-50 flex w-[216px] cursor-pointer flex-col rounded-md border border-neutral-300 bg-neutral-50">
+        <div className="absolute left-0 top-6 z-50 flex w-[216px] cursor-pointer flex-col rounded-md border border-neutral-300 bg-neutral-50 shadow-muat">
           {listLanguages?.map((language, index) => {
             return (
               <span
@@ -63,14 +63,14 @@ const LanguageDropdown = () => {
                   <img src={language.image} className="h-4 w-6" alt="Flag" />
                   <span
                     className={`pt-1 hover:text-muat-trans-primary-600 ${
-                      selectedLanguage.name == language.name && "font-bold"
+                      selectedLanguage.name === language.name && "font-bold"
                     }`}
                   >
                     {language.name}
                   </span>
                 </div>
                 {/* LB - 0601, 25.03 */}
-                {selectedLanguage.name == language.name && (
+                {selectedLanguage.name === language.name && (
                   <ImageComponent
                     src="/img/checkedblue.png"
                     className="h-4 w-4"

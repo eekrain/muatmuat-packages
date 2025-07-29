@@ -42,7 +42,7 @@ const DriverQRCodeMultiScreen = dynamicScreen(
   () => import("./DriverQRCodeMulti/DriverQRCodeMultiScreen")
 );
 
-const DetailPesananResponsive = ({}) => {
+const DetailPesananResponsive = () => {
   // const navigation = useResponsiveNavigation();
   // useEffect(() => {
   //   navigation.replace("/CariSemuaDriver");
