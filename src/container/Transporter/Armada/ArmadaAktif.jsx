@@ -15,6 +15,7 @@ import {
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import DriverSelectionModal from "@/container/Transporter/Driver/DriverSelectionModal";
+import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
 import { useGetActiveVehiclesData } from "@/services/Transporter/manajemen-armada/getActiveVehiclesData";
 
 const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
@@ -37,16 +38,12 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
   });
 
   const getStatusBadge = (status) => {
-    switch (status) {
-      case "ON_DUTY":
-        return <BadgeStatus variant="primary">Bertugas</BadgeStatus>;
-      case "WAITING_LOADING_TIME":
-        return <BadgeStatus variant="warning">Akan Muat Hari Ini</BadgeStatus>;
-      case "READY_FOR_ORDER":
-        return <BadgeStatus variant="success">Siap Menerima Order</BadgeStatus>;
-      default:
-        return <BadgeStatus variant="neutral">{status}</BadgeStatus>;
-    }
+    const statusConfig = getArmadaStatusBadge(status);
+    return (
+      <BadgeStatus variant={statusConfig.variant}>
+        {statusConfig.label}
+      </BadgeStatus>
+    );
   };
 
   const columns = [
@@ -173,8 +170,27 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
   };
 
   const handleFilter = (newFilters) => {
-    // Apply filters
-    setFilters(newFilters);
+    // Apply filters - extract only the ID values
+    const processedFilters = {};
+
+    Object.entries(newFilters).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        // If it's an array of objects with id property, extract just the ids
+        processedFilters[key] = value.map((item) =>
+          typeof item === "object" && item.id ? item.id : item
+        );
+      } else if (typeof value === "object" && value?.id) {
+        // If it's a single object with id property, extract just the id
+        processedFilters[key] = value.id;
+      } else {
+        // Otherwise keep the value as is
+        processedFilters[key] = value;
+      }
+    });
+
+    console.log("Processed filters:", processedFilters);
+
+    setFilters(processedFilters);
     setCurrentPage(1); // Reset to first page when filtering
   };
 

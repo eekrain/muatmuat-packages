@@ -291,7 +291,8 @@ const FilterDropdown = ({
                             value={item.id}
                             label={item.label}
                             appearance={{
-                              labelClassName: "text-xs font-medium",
+                              labelClassName:
+                                "text-xs font-medium line-clamp-2 break-all",
                             }}
                           />
                         </div>
