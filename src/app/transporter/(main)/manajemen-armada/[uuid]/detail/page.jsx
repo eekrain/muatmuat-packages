@@ -186,17 +186,17 @@ const Page = () => {
   return (
     // 1. Wrap your component with LightboxProvider
     <LightboxProvider images={vehicleImages} title="Foto Armada">
-      <div className="flex flex-col gap-2 py-6">
+      <div className="flex flex-col gap-4 pb-11 pt-6">
         <BreadCrumb data={breadCrumbData} />
         <div className="flex items-center justify-between">
           <PageTitle className="mb-0">Detail Armada</PageTitle>
-          <Button className="h-[32px] w-[112px]" asChild>
-            <Link href={`/manajemen-armada/${uuid}/ubah`}>Ubah</Link>
-          </Button>
+          <Link href={`/manajemen-armada/${uuid}/ubah`}>
+            <Button className="h-[32px] w-[112px]">Ubah</Button>
+          </Link>
         </div>
 
         <Alert size="big" variant="error">
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-1">
             <h1 className="text-xs font-bold">
               Verifikasi Data Driver Anda Ditolak!
             </h1>
