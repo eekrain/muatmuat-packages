@@ -111,6 +111,20 @@ const TambahExcel = () => {
     }, 3000);
   };
 
+  const handleSort = (column, sortBy) => {
+    const temp_list = [...list];
+    if (sortBy === "asc") {
+      temp_list.sort((a, b) => (a[column] > b[column] ? 1 : -1));
+    } else if (sortBy === "desc") {
+      temp_list.sort((a, b) => (a[column] < b[column] ? 1 : -1));
+    } else {
+      temp_list.sort((a, b) => (a[column] > b[column] ? 1 : -1)); // Default sort order
+    }
+    setList(temp_list);
+    // Log the sorting action
+    console.log(`Sorted by ${column} in ${sortBy} order`);
+  };
+
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {/* Temporary Toggle (use it to toggle between success upload or fail upload) */}
@@ -213,7 +227,7 @@ const TambahExcel = () => {
             // onPerPageChange={handlePerPageChange}
             // onSearch={handleSearch}
             // onFilter={handleFilter}
-            // onSort={handleSort}
+            onSort={handleSort}
             // loading={isLoading}
             // rowClassName={rowClassName}
             // filterConfig={getFilterConfig()}
