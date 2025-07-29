@@ -23,6 +23,7 @@ const DEFAULT_FUNCTION = () =>
 export const HeaderResponsiveSearchBar = ({
   onClickBackButton,
   placeholder = "Search...",
+  withMenu = null,
 }) => {
   const navigation = useResponsiveNavigation();
   const handleBackButton = () => {
@@ -39,40 +40,60 @@ export const HeaderResponsiveSearchBar = ({
   }, []);
 
   return (
-    <div className="flex w-full items-center gap-x-3">
-      <button onClick={handleBackButton}>
-        <IconComponent
-          className="icon-stroke-muat-trans-primary-400 rounded-xl bg-muat-trans-secondary-900"
-          src="/icons/chevron-left24.svg"
-          width={24}
-          height={24}
-        />
-      </button>
+    <div className="flex w-full items-center justify-between gap-x-4">
+      <div className="flex w-full items-center gap-x-2">
+        <button onClick={handleBackButton}>
+          <IconComponent
+            className="icon-stroke-muat-trans-primary-400 rounded-xl bg-muat-trans-secondary-900"
+            src="/icons/chevron-left24.svg"
+            width={24}
+            height={24}
+          />
+        </button>
 
-      <Input
-        type="text"
-        value={searchValue}
-        onChange={(e) => setSearchValue(e.currentTarget.value)}
-        placeholder={placeholder}
-        className="w-full flex-1"
-        appearance={{
-          containerClassName: "border-none",
-          inputClassName: "mt-1",
-        }}
-        icon={{
-          left: (
-            <IconComponent className="icon-blue" src="/icons/search16.svg" />
-          ),
-          right: searchValue ? (
-            <IconComponent
-              src="/icons/silang.svg"
-              height={16}
-              width={16}
-              onClick={() => setSearchValue("")}
-            />
-          ) : null,
-        }}
-      />
+        <Input
+          type="text"
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.currentTarget.value)}
+          placeholder={placeholder}
+          className="w-full flex-1"
+          appearance={{
+            containerClassName: "border-none",
+          }}
+          icon={{
+            left: (
+              <IconComponent className="icon-blue" src="/icons/search16.svg" />
+            ),
+            right: searchValue ? (
+              <IconComponent
+                src="/icons/silang.svg"
+                height={16}
+                width={16}
+                onClick={() => setSearchValue("")}
+              />
+            ) : null,
+          }}
+        />
+      </div>
+      {withMenu ? (
+        <div className="">
+          {withMenu?.onClickPeriod ? (
+            <button
+              className="flex flex-col items-center gap-y-0.5"
+              onClick={() => withMenu?.onClickPeriod()}
+            >
+              <IconComponent
+                className="icon-fill-muat-trans-secondary-900"
+                src="/icons/calendar24.svg"
+                size="medium"
+              />
+              <span className="text-xxs font-semibold leading-none text-muat-trans-secondary-900">
+                Periode
+              </span>
+            </button>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 };

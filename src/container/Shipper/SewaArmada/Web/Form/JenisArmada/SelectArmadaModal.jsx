@@ -147,7 +147,8 @@ const SelectArmadaModal = ({ carrierData, truckData }) => {
             />
 
             {isTruckOptionsEmpty ? (
-              <div className="flex h-[267px] items-center justify-center">
+              // 25. 18 - Web - LB - 0274
+              <div className="flex min-h-[267px] items-center justify-center">
                 <DataNotFound
                   className="gap-y-3"
                   textClass="text-[#868686]"

@@ -32,7 +32,7 @@ export const LokasiMuat = ({ orderStatus, settingsTime }) => {
     OrderStatusEnum.CONFIRMED,
   ];
   const hasNotDepartedToPickup =
-    hasNotDepartedToPickupStatuses.includes("babi");
+    hasNotDepartedToPickupStatuses.includes(orderStatus);
   const needValidateLocationChange =
     isEditPage && orderType === "SCHEDULED" && hasNotDepartedToPickup;
 

@@ -141,10 +141,11 @@ export const TruckItem = ({
       <div className="flex gap-x-2">
         {/* Nanti dihapus aja button nya */}
         <button onClick={(e) => e.stopPropagation()}>
-          <LightboxProvider image={image} title="Jenis Carrier">
+          {/* 25. 18 - Web - LB - 0273 */}
+          <LightboxProvider image={image} title="Jenis Truk">
             <LightboxPreview
               image={image}
-              alt="Jenis Carrier"
+              alt="Jenis Truk"
               className="size-[68px] overflow-hidden rounded-md"
             />
           </LightboxProvider>
