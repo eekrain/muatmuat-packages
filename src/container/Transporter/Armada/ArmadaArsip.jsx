@@ -16,7 +16,7 @@ import {
 import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
 import { useGetArchivedVehiclesData } from "@/services/Transporter/manajemen-armada/getArchivedVehiclesData";
 
-const ArmadaArsip = ({ onPageChange, onPerPageChange }) => {
+const ArmadaArsip = ({ onPageChange, onPerPageChange, count }) => {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -196,7 +196,7 @@ const ArmadaArsip = ({ onPageChange, onPerPageChange }) => {
         totalCountLabel="Armada Arsip"
         currentPage={data?.pagination?.page || currentPage}
         totalPages={data?.pagination?.totalPages || 1}
-        totalItems={data?.pagination?.totalItems || 0}
+        totalItems={count || data?.pagination?.totalItems || 0}
         perPage={data?.pagination?.limit || perPage}
         onPageChange={handlePageChange}
         onPerPageChange={handlePerPageChange}

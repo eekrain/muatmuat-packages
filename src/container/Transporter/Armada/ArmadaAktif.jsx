@@ -18,7 +18,7 @@ import { DriverSelectionModal } from "@/container/Transporter/Driver/DriverSelec
 import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
 import { useGetActiveVehiclesData } from "@/services/Transporter/manajemen-armada/getActiveVehiclesData";
 
-const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
+const ArmadaAktif = ({ onPageChange, onPerPageChange, count }) => {
   const router = useRouter();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -277,7 +277,7 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
           totalCountLabel="Armada"
           currentPage={data?.pagination?.page || currentPage}
           totalPages={data?.pagination?.totalPages || 1}
-          totalItems={data?.pagination?.totalItems || 0}
+          totalItems={count || data?.pagination?.totalItems || 0}
           perPage={data?.pagination?.limit || perPage}
           onPageChange={handlePageChange}
           onPerPageChange={handlePerPageChange}

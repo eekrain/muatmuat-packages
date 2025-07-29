@@ -16,7 +16,12 @@ import {
 import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
 import { useGetProcessVehiclesData } from "@/services/Transporter/manajemen-armada/getProcessVehiclesData";
 
-const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
+const ArmadaProses = ({
+  onPageChange,
+  onPerPageChange,
+  onStatusChange,
+  count,
+}) => {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -284,7 +289,7 @@ const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
         totalCountLabel="Armada"
         currentPage={data?.pagination?.page || currentPage}
         totalPages={data?.pagination?.totalPages || 1}
-        totalItems={data?.pagination?.totalItems || 0}
+        totalItems={count || data?.pagination?.totalItems || 0}
         perPage={data?.pagination?.limit || perPage}
         onPageChange={handlePageChange}
         onPerPageChange={handlePerPageChange}

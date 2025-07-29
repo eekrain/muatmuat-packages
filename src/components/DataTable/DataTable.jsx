@@ -196,23 +196,6 @@ const DataTable = ({
   };
 
   const renderTable = () => {
-    // Calculate height based on what features are shown
-    const activeFilters = getActiveFilters();
-    const hasActiveFilters = showFilter && activeFilters.length > 0;
-
-    const getTableHeightClass = () => {
-      if (hasActiveFilters && showDisplayView) {
-        return "h-[calc(100dvh-452px)]"; // Base (364px) + filter bar (28px + 16px margin) + display bar (28px + 16px margin)
-      } else if (hasActiveFilters) {
-        return "h-[calc(100dvh-408px)]"; // Base (364px) + filter bar (28px + 16px margin)
-      } else if (showDisplayView) {
-        return "h-[calc(100dvh-408px)]"; // Base (364px) + display bar (28px + 16px margin)
-      } else {
-        return "h-[calc(100dvh-364px)]"; // Base only
-        // return "";
-      }
-    };
-
     return (
       <div className="h-full overflow-y-auto border-t border-neutral-400">
         <table className="w-full table-auto">

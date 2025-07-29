@@ -24,7 +24,12 @@ import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
 import { useGetExpiredVehiclesSummary } from "@/services/Transporter/manajemen-armada/getExpiredVehicles";
 import { useGetInactiveVehiclesData } from "@/services/Transporter/manajemen-armada/getInactiveVehiclesData";
 
-const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
+const ArmadaNonaktif = ({
+  onPageChange,
+  onPerPageChange,
+  onStatusChange,
+  count,
+}) => {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -350,7 +355,7 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
           totalCountLabel="Armada"
           currentPage={data?.pagination?.page || currentPage}
           totalPages={data?.pagination?.totalPages || 1}
-          totalItems={data?.pagination?.totalItems || 0}
+          totalItems={count || data?.pagination?.totalItems || 0}
           perPage={data?.pagination?.limit || perPage}
           onPageChange={handlePageChange}
           onPerPageChange={handlePerPageChange}

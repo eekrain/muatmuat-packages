@@ -125,16 +125,16 @@ const Page = () => {
         </TabsList>
 
         <TabsContent value="aktif" className="pt-4">
-          <ArmadaAktif />
+          <ArmadaAktif count={count?.active || 0} />
         </TabsContent>
         <TabsContent value="nonaktif" className="pt-4">
-          <ArmadaNonaktif />
+          <ArmadaNonaktif count={count?.nonActive || 0} />
         </TabsContent>
         <TabsContent value="proses" className="pt-4">
-          <ArmadaProses />
+          <ArmadaProses count={count?.registrationProcess || 0} />
         </TabsContent>
         <TabsContent value="arsip" className="pt-4">
-          <ArmadaArsip />
+          <ArmadaArsip count={count?.archive || 0} />
         </TabsContent>
       </Tabs>
     </div>
