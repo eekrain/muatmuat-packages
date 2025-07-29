@@ -18,7 +18,6 @@ export const MapPanel = ({}) => {
       setHeight(containerRef.current.clientHeight);
     }
   }, [containerRef]);
-
   return (
     <div ref={containerRef} className="relative flex-1 bg-gray-100">
       {dataTracking && height > 0 && (

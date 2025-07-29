@@ -27,8 +27,7 @@ export function middleware(request) {
   if (process.env.NEXT_PUBLIC_APP_MODE === "transporter") {
     // Redirect root path based on environment
     if (url.pathname === "/") {
-      const isDevEnvironment = process.env.NEXT_PUBLIC_ENVIRONMENT === "dev";
-      url.pathname = isDevEnvironment ? "/dev-login" : "/login";
+      url.pathname = "/login";
       return NextResponse.redirect(url);
     }
 

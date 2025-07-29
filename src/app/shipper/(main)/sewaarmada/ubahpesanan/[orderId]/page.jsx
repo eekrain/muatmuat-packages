@@ -125,9 +125,15 @@ const Page = () => {
   useShallowCompareEffect(() => {
     if (!isLoading && orderDetailData) {
       setOrderType(orderDetailData.orderType);
-      Object.entries(orderDetailData.formValues).forEach(([key, value]) => {
-        setField(key, value);
-      });
+      // Validasi formValues sebelum menggunakan Object.entries
+      if (
+        orderDetailData.formValues &&
+        typeof orderDetailData.formValues === "object"
+      ) {
+        Object.entries(orderDetailData.formValues).forEach(([key, value]) => {
+          setField(key, value);
+        });
+      }
     }
   }, [isLoading, orderDetailData]);
 

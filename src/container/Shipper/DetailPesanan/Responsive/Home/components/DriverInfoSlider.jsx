@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { EllipsisVertical } from "lucide-react";
 
@@ -12,6 +12,9 @@ import {
 } from "@/components/Bottomsheet/Bottomsheet";
 import Button from "@/components/Button/Button";
 import { useSwipe } from "@/hooks/use-swipe";
+import { DriverStatusLabel } from "@/lib/constants/detailpesanan/driver-status.enum";
+import { getStatusScanMetadata } from "@/lib/normalizers/detailpesanan/getStatusScanMetadata";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
 
 /**
@@ -29,35 +32,79 @@ const Root = ({ children, className }) => (
     {children}
   </div>
 );
+/**
+ * @typedef {Object} HeaderProps
+ * @property {string} statusCode
+ * @property {boolean} withMenu
+ * @property {"driver-status" | "status-scan"} mode
+ */
 
-const Header = ({ status, onMenuClick }) => (
-  <div className="flex w-full items-center justify-between">
-    <BadgeStatusPesanan
-      variant="primary"
-      className="bg-primary-50 !px-2 !py-1 text-sm font-semibold text-primary-700"
-    >
-      {status}
-    </BadgeStatusPesanan>
-    <BottomSheet>
-      <BottomSheetTrigger asChild>
-        <button
-          aria-label="More options"
-          className="absolute right-4 top-5 z-10 bg-white p-1" // Positioned absolutely
+/**
+ * @param {HeaderProps} props
+ */
+const Header = ({ statusCode, withMenu = true, mode = "driver-status" }) => {
+  console.log("🚀 ~ Header ~ mode:", mode);
+
+  const navigation = useResponsiveNavigation();
+
+  const statusMeta = useMemo(() => {
+    const response = {};
+    if (mode === "status-scan") {
+      response.scan = getStatusScanMetadata(statusCode);
+    } else if (mode === "driver-status") {
+      response.status = DriverStatusLabel[statusCode];
+    }
+    return response;
+  }, [statusCode, mode]);
+
+  return (
+    <div className="flex w-full items-center justify-between">
+      {statusMeta?.scan && (
+        <BadgeStatusPesanan
+          variant={statusMeta?.scan?.hasScan ? "success" : "error"}
+          className="w-fit"
         >
-          <EllipsisVertical className="h-6 w-6 rounded-full text-black" />
-        </button>
-      </BottomSheetTrigger>
-      <BottomSheetContent>
-        <BottomSheetHeader>Menu</BottomSheetHeader>
-        <div className="mt-6 flex flex-col items-start gap-4 px-4 pb-6">
-          <button className="text-sm font-semibold">Lihat Semua Driver</button>
-        </div>
-      </BottomSheetContent>
-    </BottomSheet>
-  </div>
-);
+          {statusMeta?.scan?.statusText}
+        </BadgeStatusPesanan>
+      )}
+      {statusMeta?.status && (
+        <BadgeStatusPesanan variant={"primary"} className="w-fit">
+          {statusMeta?.status}
+        </BadgeStatusPesanan>
+      )}
+      {withMenu && (
+        <BottomSheet>
+          <BottomSheetTrigger asChild>
+            <button
+              aria-label="More options"
+              className="absolute right-4 top-5 z-10 bg-white p-1" // Positioned absolutely
+            >
+              <EllipsisVertical className="h-6 w-6 rounded-full text-black" />
+            </button>
+          </BottomSheetTrigger>
+          <BottomSheetContent>
+            <BottomSheetHeader>Menu</BottomSheetHeader>
+            <div className="mt-6 flex flex-col items-start gap-4 px-4 pb-6">
+              <button
+                className="text-sm font-semibold"
+                onClick={() =>
+                  navigation.push("/CariSemuaDriver", {
+                    orderId: "12345",
+                    driverId: "12345",
+                  })
+                }
+              >
+                Lihat Semua Driver
+              </button>
+            </div>
+          </BottomSheetContent>
+        </BottomSheet>
+      )}
+    </div>
+  );
+};
 
-const Body = ({ driver }) => (
+const Avatar = ({ driver }) => (
   <div className="w-full">
     <AvatarDriver
       name={driver.name}
@@ -74,18 +121,18 @@ const Body = ({ driver }) => (
   </div>
 );
 
-const Footer = ({ onContact, onTrack }) => (
+const Actions = ({ onDriverContactClicked, onLacakArmadaClicked }) => (
   <div className="flex w-full gap-3">
     <Button
       variant="muatparts-primary-secondary"
-      onClick={onContact}
+      onClick={onDriverContactClicked}
       className="h-7 w-full !rounded-[20px] !border-primary-700 !text-xs !font-semibold !text-primary-700"
     >
       Hubungi Driver
     </Button>
     <Button
       variant="muatparts-primary"
-      onClick={onTrack}
+      onClick={onLacakArmadaClicked}
       className="h-7 w-full !rounded-[20px] bg-primary-700 !text-xs !font-semibold text-white"
     >
       Lacak Armada
@@ -93,7 +140,7 @@ const Footer = ({ onContact, onTrack }) => (
   </div>
 );
 
-const Pagination = ({ count, activeIndex, className }) => {
+const Indicator = ({ count, activeIndex, className }) => {
   if (count <= 1) return null;
   return (
     <div
@@ -112,6 +159,14 @@ const Pagination = ({ count, activeIndex, className }) => {
   );
 };
 
+export const DriverInfo = {
+  Root,
+  Header,
+  Avatar,
+  Actions,
+  Indicator,
+};
+
 /**
  * The main slider component that orchestrates everything.
  * @param {{ drivers: Driver[] }} props
@@ -119,10 +174,10 @@ const Pagination = ({ count, activeIndex, className }) => {
 export default function DriverInfoSlider({
   driverStatus = [],
   orderId,
-  orderStatus,
+  defaultIndex = 0,
 }) {
-  console.log("🚀 ~ driverStatus:", driverStatus);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const navigation = useResponsiveNavigation();
+  const [currentIndex, setCurrentIndex] = useState(defaultIndex);
 
   const nextSlide = useCallback(() => {
     setCurrentIndex((prev) => Math.min(prev + 1, driverStatus.length - 1));
@@ -141,6 +196,8 @@ export default function DriverInfoSlider({
     return null;
   }
 
+  console.log("🚀 ~ driverStatus:", driverStatus);
+
   return (
     <Root>
       <div className="overflow-hidden" {...swipeHandlers}>
@@ -152,23 +209,35 @@ export default function DriverInfoSlider({
           }}
         >
           {driverStatus.map((driver, index) => (
-            <div key={index} className="box-border w-full flex-shrink-0 p-5">
+            <div
+              key={driver?.driverId || index}
+              // className="w-full bg-white p-5"
+              className="w-full flex-shrink-0 p-5"
+            >
               <div className="flex w-full flex-col items-start gap-4">
-                <Header
-                  status={driver.driverStatusTitle}
+                <DriverInfo.Header
+                  statusCode={driver.driverStatus.code}
+                  mode="driver-status"
                   onMenuClick={() => alert(`Menu for ${driver.name}`)}
                 />
-                <Body driver={driver} />
-                <Footer
-                  onContact={() => alert(`Contacting ${driver.name}`)}
-                  onTrack={() => alert(`Tracking ${driver.name}`)}
+                <DriverInfo.Avatar driver={driver} />
+                <DriverInfo.Actions
+                  onDriverContactClicked={() =>
+                    alert(`Contacting ${driver.name}`)
+                  }
+                  onLacakArmadaClicked={() =>
+                    navigation.push("/LacakArmada", {
+                      orderId,
+                      driverId: driver.driverId,
+                    })
+                  }
                 />
               </div>
             </div>
           ))}
         </div>
       </div>
-      <Pagination
+      <DriverInfo.Indicator
         count={driverStatus.length}
         activeIndex={currentIndex}
         className="pb-5"

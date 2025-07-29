@@ -17,15 +17,14 @@ import UlasanScreen from "./Ulasan/UlasanScreen";
 
 // Dynamic import all the other screens, so that the user doesn't have to wait for the other screens to load
 // Screen components needs to be default exported
-const QRCodeScreen = dynamicScreen(() => import("./QRCode/QRCodeScreen"));
 const RingkasanStatusPesananScreen = dynamicScreen(
   () => import("./RingkasanStatusPesanan/RingkasanStatusPesananScreen")
 );
 const LacakArmadaScreen = dynamicScreen(
   () => import("./LacakArmada/LacakArmadaScreen")
 );
-const DriverStatusDetailScreen = dynamicScreen(
-  () => import("./DriverStatusDetail/DriverStatusDetailScreen")
+const DetailStatusDriverScreen = dynamicScreen(
+  () => import("./DetailStatusDriver/DetailStatusDriverScreen")
 );
 const ProofPhotoScreen = dynamicScreen(
   () => import("./ProofPhoto/ProofPhotoScreen")
@@ -33,11 +32,20 @@ const ProofPhotoScreen = dynamicScreen(
 const FormRekeningBankScreen = dynamicScreen(
   () => import("./FormRekeningBank/FormRekeningBankScreen")
 );
+const CariSemuaDriverScreen = dynamicScreen(
+  () => import("./CariSemuaDriver/CariSemuaDriverScreen")
+);
+const DriverQRCodeSingle = dynamicScreen(
+  () => import("./DriverQRCodeSingle/DriverQRCodeSingle")
+);
+const DriverQRCodeMultiScreen = dynamicScreen(
+  () => import("./DriverQRCodeMulti/DriverQRCodeMultiScreen")
+);
 
 const DetailPesananResponsive = ({}) => {
   // const navigation = useResponsiveNavigation();
   // useEffect(() => {
-  //   navigation.replace("/JenisCarrier");
+  //   navigation.replace("/CariSemuaDriver");
   // }, []);
   const { setIsGlobalLoading } = useLoadingAction();
 
@@ -74,7 +82,16 @@ const DetailPesananResponsive = ({}) => {
           />
         }
       />
-      <ResponsiveRoute path="/qr" component={<QRCodeScreen />} />
+      <ResponsiveRoute
+        path="/DriverQRCodeMulti"
+        component={
+          <DriverQRCodeMultiScreen dataStatusPesanan={dataStatusPesanan} />
+        }
+      />
+      <ResponsiveRoute
+        path="/DriverQRCodeSingle"
+        component={<DriverQRCodeSingle />}
+      />
       <ResponsiveRoute path="/ulasan" component={<UlasanScreen />} />
       <ResponsiveRoute
         path="/order-summary"
@@ -83,19 +100,23 @@ const DetailPesananResponsive = ({}) => {
         }
       />
       <ResponsiveRoute
-        path="/fleet-track"
+        path="/LacakArmada"
         component={<LacakArmadaScreen dataStatusPesanan={dataStatusPesanan} />}
       />
       <ResponsiveRoute
-        path="/detail-driver-status"
+        path="/DetailDriverStatus"
         component={
-          <DriverStatusDetailScreen dataStatusPesanan={dataStatusPesanan} />
+          <DetailStatusDriverScreen dataStatusPesanan={dataStatusPesanan} />
         }
       />
       <ResponsiveRoute path="/proof-photo" component={<ProofPhotoScreen />} />
       <ResponsiveRoute
         path="/FormRekeningBank"
         component={<FormRekeningBankScreen />}
+      />
+      <ResponsiveRoute
+        path="/CariSemuaDriver"
+        component={<CariSemuaDriverScreen />}
       />
     </ResponsiveProvider>
   );

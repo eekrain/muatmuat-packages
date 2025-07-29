@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = true; // toggle mock data
+const useMockData = false; // toggle mock data
 
 // Pengembalian Dana Diproses
 // 25 Jul 2025 10:07 WIB // requestedAt
@@ -45,7 +45,7 @@ export const getRefundDetails = async (orderId) => {
   if (useMockData) {
     result = mockAPIResult;
   } else {
-    result = await fetcherMuatrans.get(`/api/v1/orders/${orderId}/refund`);
+    result = await fetcherMuatrans.get(`/v1/orders/${orderId}/refund`);
   }
 
   return result.data?.Data || null;
@@ -53,7 +53,7 @@ export const getRefundDetails = async (orderId) => {
 
 export const useGetRefundDetails = (orderId) => {
   // SWR key includes orderId for cache separation
-  return useSWR(orderId ? `/api/v1/orders/${orderId}/refund` : null, () =>
+  return useSWR(orderId ? `/v1/orders/${orderId}/refund` : null, () =>
     getRefundDetails(orderId)
   );
 };

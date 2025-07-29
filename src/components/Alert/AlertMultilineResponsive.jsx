@@ -1,17 +1,18 @@
 import Link from "next/link";
 
+import { ChevronRightIcon } from "lucide-react";
+
+import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
+import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
-
-import { InfoTooltip } from "../Form/InfoTooltip";
-import IconComponent from "../IconComponent/IconComponent";
 
 /**
  * @typedef {Object} AlertItem
  * @property {string} label - The label text for the item.
  * @property {string} [info] - Additional info for the item.
  * @property {{ label: string, link: string }} [link] - Link object with label and href.
- * @property {import("react").ReactNode} [button] - Button object with label and onClick.
+ * @property {() => void} [onClick] - onClick function to render as button.
  */
 
 /**
@@ -34,7 +35,7 @@ export const AlertMultilineResponsive = ({ className, items = [] }) => {
   return (
     <div
       className={cn(
-        "flex flex-col gap-y-2 rounded-xl bg-secondary-100 px-6 py-4",
+        "flex flex-col gap-y-2 rounded-xl bg-warning-100 px-3 py-2",
         "text-xs font-medium leading-[1.2] text-neutral-900",
         className
       )}
@@ -43,23 +44,19 @@ export const AlertMultilineResponsive = ({ className, items = [] }) => {
         <>
           <div className="flex items-center gap-x-1">
             <IconComponent
-              className="icon-stroke-warning-900"
+              className="text-secondary-400"
               src="/icons/warning20.svg"
               width={20}
               height={20}
             />
-            <span className="capsize font-semibold leading-[1.1]">
-              Pemberitahuan:
-            </span>
+            <span className="font-semibold leading-[1.1]">Pemberitahuan:</span>
           </div>
 
           <ul className="flex w-full list-disc flex-col gap-y-1 pl-10">
             {items.map((item, index) => {
               return (
                 <li key={index}>
-                  <div className="flex items-center justify-between">
-                    <Item item={item} />
-                  </div>
+                  <Item item={item} />
                 </li>
               );
             })}
@@ -68,14 +65,13 @@ export const AlertMultilineResponsive = ({ className, items = [] }) => {
       ) : items.length === 1 ? (
         <div className="flex items-center gap-x-3">
           <IconComponent
-            className="icon-stroke-warning-900"
-            src="/icons/warning24.svg"
-            size="medium"
+            className="text-secondary-400"
+            src="/icons/warning20.svg"
+            width={20}
+            height={20}
           />
 
-          <div className="flex items-center justify-between">
-            <Item item={items[0]} />
-          </div>
+          <Item item={items[0]} />
         </div>
       ) : null}
     </div>
@@ -84,8 +80,24 @@ export const AlertMultilineResponsive = ({ className, items = [] }) => {
 
 const Item = ({ item }) => {
   const { t } = useTranslation();
+
+  if (item?.onClick) {
+    return (
+      <button
+        className="flex w-full items-center justify-between"
+        onClick={() => item?.onClick()}
+      >
+        <span
+          className="info-alert-content"
+          dangerouslySetInnerHTML={{ __html: t(item.label) }}
+        />
+        <ChevronRightIcon className="size-4 text-neutral-700" />
+      </button>
+    );
+  }
+
   return (
-    <>
+    <div className="flex items-center gap-1">
       <span
         className="info-alert-content"
         dangerouslySetInnerHTML={{ __html: t(item.label) }}
@@ -98,16 +110,9 @@ const Item = ({ item }) => {
         >
           {t(item.link.label)}
         </Link>
-      ) : item.button ? (
-        item.button
       ) : item.info ? (
-        <InfoTooltip
-          side="right"
-          render={item.info}
-          className="w-[336px]"
-          appearance={{ iconColor: "text-neutral-700" }}
-        />
+        <InfoBottomsheet title="Informasi" render={item.info} />
       ) : null}
-    </>
+    </div>
   );
 };

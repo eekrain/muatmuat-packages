@@ -1,8 +1,14 @@
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
+import { AlertMultilineResponsive } from "@/components/Alert/AlertMultilineResponsive";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
+import {
+  AlertInfoEnum,
+  AlertLabelEnum,
+  AlertTypeEnum,
+} from "@/lib/constants/detailpesanan/alert.enum";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
@@ -10,7 +16,6 @@ import useGetFleetSearchStatus from "@/services/Shipper/detailpesanan/getFleetSe
 
 import { BottomsheetMenuList } from "./components/BottomsheetMenuList";
 import DriverInfoSlider from "./components/DriverInfoSlider";
-import { DriverQRCodeAlert } from "./components/DriverQRCodeAlert";
 import { FleetStatusAlert } from "./components/FleetStatusAlert";
 import { FooterButton } from "./components/FooterButton";
 import { MethodInfo } from "./components/MethodInfo";
@@ -50,6 +55,34 @@ const DetailPesananScreen = ({
 
   const [isOpenInfo, setIsOpenInfo] = useState(false);
 
+  const getContentAlert = ({ type }) => {
+    const info = AlertInfoEnum[type];
+    if (type === AlertTypeEnum.CONFIRMATION_WAITING_PREPARE_FLEET) return false;
+    if (info) return { label: AlertLabelEnum[type], info };
+
+    if (type === AlertTypeEnum.WAITING_TIME_CHARGE) {
+      return {
+        label: AlertLabelEnum.WAITING_TIME_CHARGE,
+        button: {
+          onClick: () => alert("Lihat Detail"),
+          label: "Lihat Detail",
+        },
+      };
+    }
+
+    if (type === AlertTypeEnum.ORDER_CHANGES_CONFIRMATION) {
+      return {
+        label: AlertLabelEnum.ORDER_CHANGES_CONFIRMATION,
+        button: {
+          onClick: () => alert("Konfirmasi"),
+          label: "Konfirmasi",
+        },
+      };
+    }
+
+    return { label: AlertLabelEnum[type] };
+  };
+
   return (
     <FormResponsiveLayout
       title={{
@@ -66,8 +99,22 @@ const DetailPesananScreen = ({
           <PaymentDetail dataRingkasanPembayaran={dataRingkasanPembayaran} />
         )}
 
+        <AlertMultilineResponsive
+          items={[
+            ...(isShowWaitFleetAlert
+              ? [
+                  {
+                    label: AlertLabelEnum.CONFIRMATION_WAITING_PREPARE_FLEET,
+                  },
+                ]
+              : []),
+            ...(dataDetailPesanan?.dataStatusPesanan?.alerts || [])
+              .map((item) => getContentAlert(item))
+              .filter((val) => Boolean(val)),
+          ]}
+        />
+
         {false && <FleetStatusAlert />}
-        {false && <DriverQRCodeAlert />}
 
         <OrderInfo dataStatusPesanan={dataDetailPesanan?.dataStatusPesanan} />
 

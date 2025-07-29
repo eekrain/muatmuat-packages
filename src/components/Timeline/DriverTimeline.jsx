@@ -55,7 +55,7 @@ export const DriverTimeline = ({ dataDriverStatus, onClickProof }) => {
   const [currentStatus, setCurrentStatus] = useState(null);
   const [lightboxActiveIndex, setLightboxActiveIndex] = useState(0);
 
-  const lightboxTitle = () => {
+  const getTitle = () => {
     if (!currentStatus) return "";
 
     if (!currentStatus?.beforeStatusCode?.includes("SEDANG")) {
@@ -98,7 +98,7 @@ export const DriverTimeline = ({ dataDriverStatus, onClickProof }) => {
     <div>
       <LightboxProvider
         images={[...images.packages, ...images.pods]}
-        title={lightboxTitle()}
+        title={getTitle()}
       >
         {dataDriverStatus?.statusDefinitions.map((parent, parentIndex) => (
           <Fragment key={parent.mappedOrderStatus}>
@@ -178,7 +178,7 @@ const ItemWithLightbox = ({
 
   const handleClickProof = () => {
     if (isMobile && onClickProof) {
-      onClickProof();
+      onClickProof(driverStatusItem);
     } else {
       setImages({
         packages: driverStatusItem.photoEvidences.packages,

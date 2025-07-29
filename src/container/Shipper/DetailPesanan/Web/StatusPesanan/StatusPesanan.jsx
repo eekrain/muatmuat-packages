@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { AlertMultiline } from "@/components/Alert/AlertMultiline";
 import Card, { CardContent } from "@/components/Card/Card";
@@ -29,9 +29,24 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
   const [orderStatusSimulasi, setOrderStatusSimulasi] = useState(null);
   const [isLoadingKonfirmasi, setIsLoadingKonfirmasi] = useState(false);
 
+  // State untuk tracking toast yang sudah ditampilkan
+  const [toastShown, setToastShown] = useState(false);
+
   // Status order yang digunakan (simulasi jika ada, jika tidak pakai data asli)
   const statusOrder = orderStatusSimulasi || dataStatusPesanan.orderStatus;
   // Driver status yang digunakan (simulasi jika ada, jika tidak pakai data asli)
+
+  // useEffect untuk menangani toast ORDER_CHANGES_CONFIRMATION
+  useEffect(() => {
+    const hasOrderChangesConfirmation = dataStatusPesanan.alerts.some(
+      (alert) => alert.type === AlertTypeEnum.ORDER_CHANGES_CONFIRMATION
+    );
+
+    if (hasOrderChangesConfirmation && !toastShown) {
+      toast.error(t("messageArmadaDisiapkanUlang"));
+      setToastShown(true);
+    }
+  }, [dataStatusPesanan.alerts, toastShown, t]);
 
   // Handler tombol konfirmasi
   const handleKonfirmasi = () => {
@@ -89,7 +104,6 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
     "🔍 ~  ~ src/container/Shipper/DetailPesanan/Web/StatusPesanan/StatusPesanan.jsx:60 ~ alerts:",
     dataStatusPesanan.alerts
   );
-
   return (
     <>
       <div className="flex flex-col gap-y-6">
@@ -100,8 +114,11 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
           />
         )}
 
-        {statusOrder === OrderStatusEnum.WAITING_PAYMENT_1 && (
-          <AlertPendingPayment1 expiredAt={dataStatusPesanan.expiredAt} />
+        {dataStatusPesanan.orderStatus ===
+          OrderStatusEnum.WAITING_PAYMENT_1 && (
+          <AlertPendingPayment1
+            expiredAt={dataStatusPesanan.expiredAtFromOrderDetail}
+          />
         )}
 
         {statusOrder === OrderStatusEnum.WAITING_PAYMENT_3 && (

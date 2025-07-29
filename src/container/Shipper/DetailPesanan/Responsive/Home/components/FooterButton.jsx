@@ -37,105 +37,14 @@ export const FooterButton = ({ orderStatus }) => {
   return (
     <>
       <div className="flex gap-2">
-        {false && (
-          <Button
-            variant="muatparts-primary-secondary"
-            className="w-full p-0"
-            onClick={() => alert("Simpan")}
-            type="button"
-          >
-            Lihat Ulasan
-          </Button>
-        )}
-        {orderStatus === OrderStatusEnum.LOADING && (
-          <Button
-            variant="muatparts-primary"
-            className="h-10 w-full p-0"
-            onClick={() => alert("Simpan")}
-            type="button"
-          >
-            Pesan Ulang
-          </Button>
-        )}
-        {isWaitingPayment && (
-          <Button
-            variant="muatparts-primary"
-            className="h-10 w-full p-0"
-            onClick={() => alert("Simpan")}
-            type="button"
-          >
-            Lanjut Pembayaran
-          </Button>
-        )}
-        {orderStatus === OrderStatusEnum.DOCUMENT_DELIVERY && (
-          <>
-            <Button
-              variant="muatparts-primary-secondary"
-              className="h-10 w-full p-0"
-              onClick={() => alert("Simpan")}
-              type="button"
-            >
-              Pesan Ulang
-            </Button>
-            <Button
-              variant="muatparts-primary"
-              className="h-10 w-full p-0"
-              onClick={() => setReceiveDocumentEvidenceOpen(true)}
-              type="button"
-            >
-              Dokumen Diterima
-            </Button>
-          </>
-        )}
-        {orderStatus === OrderStatusEnum.COMPLETED && (
-          <>
-            <Button
-              variant="muatparts-primary-secondary"
-              className="h-10 w-full p-0"
-              onClick={() => alert("Simpan")}
-              type="button"
-            >
-              Pesan Ulang
-            </Button>
-            <Button
-              variant="muatparts-primary"
-              className="h-10 w-full p-0"
-              onClick={() => navigation.push("/ulasan")}
-              type="button"
-            >
-              Beri Ulasan
-            </Button>
-          </>
-        )}
-        {/* Fallback button jika tidak ada kondisi yang terpenuhi */}
-        {!isKnownStatus && (
-          <Button
-            variant="muatparts-primary"
-            className="h-10 w-full p-0"
-            onClick={() => alert("Simpan")}
-            type="button"
-          >
-            Pesan Ulang
-          </Button>
-        )}
-        {false && (
-          <Button
-            variant="muatparts-error-secondary"
-            className="w-full p-0"
-            onClick={() => alert("Simpan")}
-            type="button"
-          >
-            Batalkan Pesanan
-          </Button>
-        )}
-        {/* <Button
+        <Button
           variant="muatparts-primary"
-          className="w-full p-0"
-          onClick={() => navigation.push("/ulasan")}
+          className="h-10 w-full p-0"
+          onClick={() => alert("Simpan")}
           type="button"
         >
-          Beri Ulasan
-        </Button> */}
+          Pesan Ulang
+        </Button>
       </div>
 
       {/* Modal Konfirmasi sudah terima bukti dokumen */}

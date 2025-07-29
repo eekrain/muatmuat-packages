@@ -31,7 +31,7 @@ const RatingInput = ({
   };
 
   return (
-    <div className="flex items-center gap-x-1">
+    <div className="flex items-center [&>*+*]:pl-1">
       {[1, 2, 3, 4, 5].map((item, key) => (
         <button
           disabled={disabled}

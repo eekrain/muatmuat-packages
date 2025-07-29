@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatparts } from "@/lib/axios";
 
-const useMockData = true; // toggle mock data
+const useMockData = false; // toggle mock data
 
 const apiResultAvailableBanks = {
   data: {

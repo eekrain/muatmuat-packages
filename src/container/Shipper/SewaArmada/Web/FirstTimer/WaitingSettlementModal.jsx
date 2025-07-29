@@ -7,7 +7,7 @@ import {
   useWaitingSettlementModalStore,
 } from "@/store/Shipper/forms/waitingSettlementModalStore";
 
-const WaitingSettlementModal = ({}) => {
+const WaitingSettlementModal = () => {
   const isOpen = useWaitingSettlementModalStore((state) => state.isOpen);
   const waitingSettlementOrderId = useWaitingSettlementModalStore(
     (state) => state.waitingSettlementOrderId

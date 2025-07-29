@@ -14,6 +14,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useInformasiMuatanStore } from "@/store/Shipper/forms/informasiMuatanStore";
 import { useSewaArmadaActions } from "@/store/Shipper/forms/sewaArmadaStore";
@@ -74,8 +75,8 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories, trucks }) => {
   };
 
   const [openJenisTrukBottomSheet, setOpenJenisTrukBottomSheet] =
-    useState(false);
-  const [selectedTruck, setSelectedTruck] = useState(null);
+    useState(true);
+  const [selectedTruck, setSelectedTruck] = useState(true);
 
   return (
     <FormResponsiveLayout
@@ -441,7 +442,13 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories, trucks }) => {
         open={openJenisTrukBottomSheet}
         onOpenChange={setOpenJenisTrukBottomSheet}
         trucks={trucks}
-        onSelectTruck={setSelectedTruck}
+        onSelectTruck={(truck) => {
+          setSelectedTruck(truck);
+          setOpenJenisTrukBottomSheet(false);
+          toast.success(
+            "Informasi muatan dan jenis armada telah berhasil diubah"
+          );
+        }}
       />
 
       <ResponsiveFooter className="flex gap-3">

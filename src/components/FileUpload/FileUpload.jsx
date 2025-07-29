@@ -27,6 +27,7 @@ const FileUpload = ({
   onSuccess = () => {},
   value = null,
   acceptedFormats = [".jpg", ".jpeg", ".png"],
+  errorMessage, // Prop for the error message
 }) => {
   const [progress, setProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
@@ -51,13 +52,23 @@ const FileUpload = ({
     }
   );
 
+  const displayFormats = acceptedFormats
+    .map((format) => format.replace(".", ""))
+    .join("/");
+
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // File size validation
+    // Validate format before uploading
+    const fileExtension = `.${file.name.split(".").pop()}`;
+    if (!acceptedFormats.includes(fileExtension.toLowerCase())) {
+      onError(`Format file tidak sesuai. Gunakan: ${displayFormats}`);
+      return;
+    }
+
     if (file.size > maxSize * 1024 * 1024) {
-      onError("File size exceeds maximum limit");
+      onError(`Ukuran file tidak boleh melebihi ${maxSize}MB`);
       return;
     }
 
@@ -70,17 +81,22 @@ const FileUpload = ({
       const response = await triggerUploadPhoto(formData);
 
       if (response.data?.Message?.Code === 200) {
-        onSuccess({
-          url: response.data?.Data?.url,
-          name: response.data?.Data?.name || file.name,
-        });
+        onSuccess(
+          // Pass the original File object along with URL and name
+          Object.assign(file, {
+            url: response.data?.Data?.url,
+            name: response.data?.Data?.name || file.name,
+          })
+        );
       }
     } catch (error) {
-      onError(error);
+      onError(error.message || "Gagal mengunggah file.");
     } finally {
       setProgress(0);
       setIsUploading(false);
-      fileRef.current.value = null;
+      if (fileRef.current) {
+        fileRef.current.value = null;
+      }
     }
   };
 
@@ -108,8 +124,10 @@ const FileUpload = ({
           <div className="flex items-center gap-4">
             <IconComponent
               src="/icons/silang.svg"
-              onclick={handleDelete}
-              className="cursor-pointer"
+              onClick={handleDelete}
+              className="h-4 w-4 cursor-pointer"
+              width={16}
+              height={16}
             />
             <span
               className="cursor-pointer text-xs font-medium leading-[14.4px] text-primary-700"
@@ -120,11 +138,11 @@ const FileUpload = ({
           </div>
         </div>
       ) : (
-        <div className="flex items-center">
+        <div className="flex w-full items-center">
           <Button
-            className="self-center"
+            type="button"
+            className="shrink-0 rounded-full bg-amber-400 px-8 py-2 text-sm font-semibold text-black hover:bg-amber-500"
             name="upload"
-            color="primary"
             onClick={() => fileRef.current.click()}
           >
             {label}
@@ -135,16 +153,22 @@ const FileUpload = ({
               <ProgressBar progress={progress} />
             </div>
           ) : (
-            <div className="ml-2">
-              <div className="text-sm leading-[16.8px] text-neutral-600">
-                Format file {acceptedFormats.join("/")}
+            <div className="ml-4 flex w-full flex-1 flex-col">
+              <div className="text-sm leading-tight text-neutral-600">
+                Format file {displayFormats}
               </div>
-              <div className="text-sm leading-[16.8px] text-neutral-600">
-                maks {maxSize}MB
+              <div className="text-sm leading-tight text-neutral-600">
+                maks. {maxSize}MB
               </div>
             </div>
           )}
         </div>
+      )}
+
+      {errorMessage && (
+        <span className="mt-2 block text-xs text-error-400">
+          {errorMessage}
+        </span>
       )}
     </div>
   );

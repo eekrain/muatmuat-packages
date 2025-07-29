@@ -1,21 +1,112 @@
+import { useTranslation } from "@/hooks/use-translation";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
-import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import { DriverStatusLabel } from "@/lib/constants/detailpesanan/driver-status.enum";
+import {
+  useResponsiveNavigation,
+  useResponsiveRouteParams,
+} from "@/lib/responsive-navigation";
 
 import { PhotoGrid } from "./components/PhotoGrid";
 
+const getStatusCodeMeta = (statusCode) => {
+  const splitted = statusCode.split("_");
+  let index = null;
+  // Remote the last element if it's a number
+  if (!isNaN(Number(splitted[splitted.length - 1]))) {
+    index = Number(splitted[splitted.length - 1]);
+    splitted.pop();
+  }
+
+  return {
+    statusCode: splitted.join("_"),
+    index,
+  };
+};
+
 const ProofPhotoScreen = () => {
   const navigation = useResponsiveNavigation();
+  const params = useResponsiveRouteParams();
+  const { t } = useTranslation();
+  const getFormTitle = () => {
+    if (params?.driverStatusItem?.statusCode.startsWith("MENUJU_")) {
+      return t("labelLihatBuktiMuatBarangPOD");
+    }
+
+    const { statusCode, index } = getStatusCodeMeta(
+      params?.driverStatusItem?.statusCode
+    );
+
+    return t("labelBuktiStatus", {
+      statusName: `${DriverStatusLabel[statusCode]}${
+        index > 0 ? ` ${index}` : ""
+      }`,
+    });
+  };
+
+  const getTitle = (mode) => {
+    if (!params?.driverStatusItem) return "";
+
+    if (!params?.driverStatusItem?.beforeStatusCode?.includes("SEDANG")) {
+      const { statusCode, index } = getStatusCodeMeta(
+        params?.driverStatusItem?.statusCode
+      );
+      return t("labelBuktiStatus", {
+        statusName:
+          DriverStatusLabel[statusCode] + (index > 0 ? ` ${index}` : ""),
+      });
+    }
+
+    const { statusCode, index } = getStatusCodeMeta(
+      params.driverStatusItem?.beforeStatusCode
+    );
+
+    if (mode === "packages") {
+      if (statusCode.includes("MUAT")) {
+        return index > 0
+          ? t("labelBuktiMuatBarangMulti", { index })
+          : t("labelBuktiMuatBarang");
+      } else {
+        return index > 0
+          ? t("labelBuktiBongkarBarangMulti", { index })
+          : t("labelBuktiBongkarBarang");
+      }
+    } else if (mode === "pods") {
+      if (statusCode.includes("MUAT")) {
+        return index > 0
+          ? t("labelPODMuatMulti", { index })
+          : t("labelPODMuat");
+      } else {
+        return index > 0
+          ? t("labelPODBongkarMulti", { index })
+          : t("labelPODBongkar");
+      }
+    }
+
+    return "";
+  };
 
   return (
     <FormResponsiveLayout
       title={{
-        label: "Bukti Tiba di Lokasi Muat 1",
+        label: getFormTitle(),
       }}
       onClickBackButton={() => navigation.pop()}
     >
       <div className="mb-16 space-y-2 bg-neutral-200">
-        <PhotoGrid title={"Bukti Muat Barang di Lokasi 1"} />
-        <PhotoGrid title={"POD Muat di Lokasi 1"} />
+        {params?.driverStatusItem?.photoEvidences?.packages &&
+        params?.driverStatusItem?.photoEvidences?.packages?.length ? (
+          <PhotoGrid
+            title={getTitle("packages")}
+            photos={params?.driverStatusItem?.photoEvidences?.packages}
+          />
+        ) : null}
+        {params?.driverStatusItem?.photoEvidences?.pods &&
+        params?.driverStatusItem?.photoEvidences?.pods?.length ? (
+          <PhotoGrid
+            title={getTitle("pods")}
+            photos={params?.driverStatusItem?.photoEvidences?.pods}
+          />
+        ) : null}
       </div>
     </FormResponsiveLayout>
   );

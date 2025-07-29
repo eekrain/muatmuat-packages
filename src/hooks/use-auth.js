@@ -33,7 +33,7 @@ export const AuthenticationProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    console.log("Auth effect:", { isZustandHydrated, hasInitAuth });
+    // console.log("Auth effect:", { isZustandHydrated, hasInitAuth });
     // Only run when Zustand is hydrated and we haven't initialized auth yet
     if (!isZustandHydrated || hasInitAuth) return;
 
@@ -128,18 +128,15 @@ export const useAuth = () => {
     } catch (err) {
       console.warn("Error revoking refresh token", err);
     } finally {
-      authStore.actions.clearToken();
-      userStore.actions.clearUser();
+      // authStore.actions.clearToken();
+      // userStore.actions.clearUser();
 
       // Determine redirect URL based on app mode and environment
       let redirectUrl;
 
       if (process.env.NEXT_PUBLIC_APP_MODE === "transporter") {
         // Transporter mode: redirect to appropriate login page
-        redirectUrl =
-          process.env.NEXT_PUBLIC_ENVIRONMENT === "dev"
-            ? "/dev-login"
-            : "/login";
+        redirectUrl = "/login";
       } else {
         // Other modes: redirect to external signout
         redirectUrl = `${process.env.NEXT_PUBLIC_INTERNAL_WEB}login/signout`;

@@ -13,6 +13,7 @@ import {
 import { ModalAlasanPembatalan } from "@/components/Modal/ModalAlasanPembatalan";
 import { ModalFormRekeningPencairan } from "@/components/RekeningPencairan/ModalFormRekeningPencairan";
 import { ModalFormRequestOtp } from "@/components/RekeningPencairan/ModalFormRequestOtp";
+import { useTranslation } from "@/hooks/use-translation";
 import { fetcherMuatparts } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
@@ -25,6 +26,7 @@ import {
 } from "@/store/Shipper/forms/requestOtpStore";
 
 export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
   const [isModalBatalkanOpen, setIsModalBatalkanOpen] = useState(false);
@@ -45,16 +47,14 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
   }) => {
     // Validation
     if (!selectedReason) {
-      toast.error(
-        "Minimal pilih 1 alasan pembatalan untuk membatalkan pesanan"
-      );
+      toast.error(t("messageMinimalPilihAlasan"));
       return;
     }
 
     const errors = {};
 
     if (isOtherReason && !customReason)
-      errors.customReason = "Alasan pembatalan harus diisi";
+      errors.customReason = t("messageAlasanPembatalanHarusDiisi");
     setCancelFormErrors(errors);
 
     if (Object.keys(errors)?.length > 0) {
@@ -83,7 +83,7 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
     //   .catch((error) => {
     //     toast.error(error.response.data?.Data?.Message);
     //   });
-    toast.success("Berhasil membatalkan pesanan");
+    toast.success(t("messageBerhasilMembatalkanPesanan"));
     setIsModalReasonOpen(false);
   };
 
@@ -137,7 +137,7 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
           <div className="flex w-[386px] flex-col items-center justify-center gap-6 px-6 py-9">
             {/* Title */}
             <h2 className="w-full text-center text-base font-bold leading-[19.2px] text-black">
-              Batalkan Pesanan
+              {t("titleCancelOrder")}
             </h2>
 
             {dataRingkasanPembayaran?.orderStatus ===
@@ -163,7 +163,7 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
                 setIsModalReasonOpen(true);
               }}
             >
-              Batalkan Pesanan
+              {t("buttonCancelOrder")}
             </Button>
           </div>
         </ModalContent>
@@ -175,7 +175,7 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
         cancelReasons={cancellationReasons || []}
         errors={cancelFormErrors}
         onSubmit={handleProceedCancelOrder}
-        title="Alasan Pembatalan"
+        title={t("titleCancellationReason")}
       />
 
       <ModalFormRekeningPencairan
@@ -197,12 +197,13 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
 };
 
 const CancelContentWhenPrepareFleet = ({ isAgreed, setIsAgreed }) => {
+  const { t } = useTranslation();
+
   return (
     <>
       {/* Description */}
       <p className="w-full text-center text-sm font-medium leading-[15.4px] text-black">
-        Apakah Anda yakin ingin membatalkan pesanan? Sebelum melakukan
-        pembatalan pesanan, pastikan Anda sudah membaca{" "}
+        {t("descConfirmCancelOrder")}{" "}
         <a
           href="https://faq.muatmuat.com/pusat-bantuan"
           target="_blank"
@@ -210,7 +211,7 @@ const CancelContentWhenPrepareFleet = ({ isAgreed, setIsAgreed }) => {
           className="cursor-pointer text-primary-700"
           onClick={(e) => e.stopPropagation()}
         >
-          Syarat dan Ketentuan kami.
+          {t("linkTermsConditions")}
         </a>
       </p>
 
@@ -223,7 +224,7 @@ const CancelContentWhenPrepareFleet = ({ isAgreed, setIsAgreed }) => {
           label=""
         >
           <span className="text-xs font-medium leading-[14.4px] text-black">
-            Ya, Saya setuju dengan syarat dan ketentuan tersebut
+            {t("labelAgreeTerms")}
           </span>
         </Checkbox>
       </div>
@@ -232,14 +233,16 @@ const CancelContentWhenPrepareFleet = ({ isAgreed, setIsAgreed }) => {
 };
 
 const CancelContentWhenNotPrepareFleet = ({ isAgreed, setIsAgreed }) => {
+  const { t } = useTranslation();
+
   return (
     <>
       {/* Description */}
       <p className="w-full text-center text-sm font-medium leading-[15.4px] text-black">
-        Pembatalan pesanan akan dikenakan biaya admin sebesar Rp75.000/unit.
+        {t("descAdminFee")}
         <br />
         <br />
-        Apakah kamu yakin ingin membatalkan pesanan?
+        {t("descConfirmCancelOrder2")}
       </p>
 
       {/* Checkbox with Terms */}
@@ -251,7 +254,7 @@ const CancelContentWhenNotPrepareFleet = ({ isAgreed, setIsAgreed }) => {
           label=""
         >
           <span className="text-xs font-medium leading-[14.4px] text-black">
-            Saya menyetujui{" "}
+            {t("labelAgreeTo")}{" "}
             <a
               href="https://faq.muatmuat.com/pusat-bantuan"
               target="_blank"
@@ -259,7 +262,7 @@ const CancelContentWhenNotPrepareFleet = ({ isAgreed, setIsAgreed }) => {
               className="cursor-pointer text-primary-700"
               onClick={(e) => e.stopPropagation()}
             >
-              Syarat dan Ketentuan Muatrans
+              {t("linkMuatransTerms")}
             </a>
           </span>
         </Checkbox>

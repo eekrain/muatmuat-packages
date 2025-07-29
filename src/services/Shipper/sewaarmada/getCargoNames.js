@@ -1,8 +1,8 @@
 import useSWR from "swr";
 
-import fetcherMuatrans from "@/lib/axios";
+import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = true; // toggle mock data
+const useMockData = false; // toggle mock data
 
 // Mock API result for development/testing
 export const mockAPIResult = {
@@ -46,7 +46,7 @@ export const getCargoNames = async (cacheKey) => {
     result = mockAPIResult;
   } else {
     const query = params ? `?${new URLSearchParams(params).toString()}` : "";
-    result = await fetcherMuatrans.get(`/v1/orders/cargos/names?${query}`);
+    result = await fetcherMuatrans.get(`/v1/orders/cargos/names${query}`);
   }
 
   const data = result.data?.Data?.cargoNames;
