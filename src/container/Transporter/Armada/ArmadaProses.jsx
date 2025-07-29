@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { ChevronDown } from "lucide-react";
@@ -12,9 +13,16 @@ import {
   SimpleDropdownItem,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
+import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
 import { useGetProcessVehiclesData } from "@/services/Transporter/manajemen-armada/getProcessVehiclesData";
 
-const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
+const ArmadaProses = ({
+  onPageChange,
+  onPerPageChange,
+  onStatusChange,
+  count,
+}) => {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
@@ -32,20 +40,12 @@ const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
   });
 
   const getStatusBadge = (status) => {
-    switch (status) {
-      case "DALAM_TINJAUAN":
-        return <BadgeStatus variant="primary">Dalam Tinjauan</BadgeStatus>;
-      case "VERIFIKASI_DITOLAK":
-        return <BadgeStatus variant="error">Verifikasi Ditolak</BadgeStatus>;
-      case "MENUNGGU_PEMASANGAN_GPS":
-        return (
-          <BadgeStatus variant="warning">Menunggu Pemasangan GPS</BadgeStatus>
-        );
-      case "PROSES_KALIBRASI":
-        return <BadgeStatus variant="warning">Proses Kalibrasi</BadgeStatus>;
-      default:
-        return <BadgeStatus variant="neutral">{status}</BadgeStatus>;
-    }
+    const statusConfig = getArmadaStatusBadge(status);
+    return (
+      <BadgeStatus variant={statusConfig.variant}>
+        {statusConfig.label}
+      </BadgeStatus>
+    );
   };
 
   const columns = [
@@ -107,28 +107,44 @@ const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
       render: (row) => (
         <SimpleDropdown>
           <SimpleDropdownTrigger asChild>
-            <button className="flex h-8 flex-row items-center justify-between gap-2 rounded-md border border-neutral-600 bg-white px-3 py-2 shadow-sm transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none">
+            <button className="relative flex h-8 flex-row items-center justify-between gap-2 rounded-md border border-neutral-600 bg-white px-3 py-2 shadow-sm transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none">
               <span className="text-xs font-medium leading-tight text-black">
                 Aksi
               </span>
+              {row.status === "CALIBRATION_PROCESS" && (
+                <span className="absolute -top-1 right-0 h-2 w-2 rounded-full bg-red-500"></span>
+              )}
               <ChevronDown className="h-4 w-4 text-neutral-700" />
             </button>
           </SimpleDropdownTrigger>
 
-          <SimpleDropdownContent className="w-fit">
-            <SimpleDropdownItem onClick={() => {}}>Detail</SimpleDropdownItem>
-            <SimpleDropdownItem onClick={() => {}}>Edit</SimpleDropdownItem>
-            {row.status === "VERIFIKASI_DITOLAK" && (
+          <SimpleDropdownContent className="w-[124px]" align="end">
+            {row.status === "CALIBRATION_PROCESS" && (
               <SimpleDropdownItem onClick={() => {}}>
-                Kirim Ulang Verifikasi
+                <div className="relative">
+                  Test Kalibrasi GPS
+                  <span className="absolute -right-1 -top-1 h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                </div>
               </SimpleDropdownItem>
             )}
-            {row.status === "MENUNGGU_PEMASANGAN_GPS" && (
-              <SimpleDropdownItem onClick={() => {}}>
-                Konfirmasi Pemasangan GPS
-              </SimpleDropdownItem>
+            <SimpleDropdownItem
+              onClick={() =>
+                router.push(`/manajemen-armada/${row.id}/detail?from=process`)
+              }
+            >
+              Detail
+            </SimpleDropdownItem>
+            {row.status === "VERIFICATION_REJECTED" && (
+              <>
+                <SimpleDropdownItem onClick={() => {}}>Ubah</SimpleDropdownItem>
+                <SimpleDropdownItem
+                  onClick={() => {}}
+                  className="text-error-400"
+                >
+                  Hapus
+                </SimpleDropdownItem>
+              </>
             )}
-            <SimpleDropdownItem onClick={() => {}}>Batalkan</SimpleDropdownItem>
           </SimpleDropdownContent>
         </SimpleDropdown>
       ),
@@ -210,7 +226,7 @@ const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
 
   // Add warning indicators to rows
   // const rowClassName = (row) => {
-  //   if (row.status === "VERIFIKASI_DITOLAK") {
+  //   if (row.status === "VERIFICATION_REJECTED") {
   //     return "bg-red-50";
   //   }
   //   return "";
@@ -230,13 +246,13 @@ const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
       if (!data?.summary) return 0;
 
       switch (statusId) {
-        case "DALAM_TINJAUAN":
+        case "IN_REVIEW":
           return data.summary.dalamTinjauan || 0;
-        case "VERIFIKASI_DITOLAK":
+        case "VERIFICATION_REJECTED":
           return data.summary.verifikasiDitolak || 0;
-        case "MENUNGGU_PEMASANGAN_GPS":
+        case "WAITING_GPS_INSTALLATION":
           return data.summary.menungguPemasanganGPS || 0;
-        case "PROSES_KALIBRASI":
+        case "CALIBRATION_PROCESS":
           return data.summary.prosesKalibrasi || 0;
         default:
           return 0;
@@ -249,7 +265,7 @@ const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
         value: item.id,
         label: item.value,
         count: count,
-        hasNotification: item.id === "PROSES_KALIBRASI" && count > 0,
+        hasNotification: item.id === "CALIBRATION_PROCESS" && count > 0,
       };
     });
 
@@ -273,7 +289,7 @@ const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
         totalCountLabel="Armada"
         currentPage={data?.pagination?.page || currentPage}
         totalPages={data?.pagination?.totalPages || 1}
-        totalItems={data?.pagination?.totalItems || 0}
+        totalItems={count || data?.pagination?.totalItems || 0}
         perPage={data?.pagination?.limit || perPage}
         onPageChange={handlePageChange}
         onPerPageChange={handlePerPageChange}

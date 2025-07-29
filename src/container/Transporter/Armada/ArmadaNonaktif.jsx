@@ -1,9 +1,12 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { ChevronDown } from "lucide-react";
 
+import { Alert } from "@/components/Alert/Alert";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import { DataTable } from "@/components/DataTable";
 import {
@@ -13,10 +16,21 @@ import {
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import DriverSelectionModal from "@/container/Transporter/Driver/DriverSelectionModal";
+import {
+  DriverSelectionModal,
+  ExpiredDocumentWarningModal,
+} from "@/container/Transporter/Driver/DriverSelectionModal";
+import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
+import { useGetExpiredVehiclesSummary } from "@/services/Transporter/manajemen-armada/getExpiredVehicles";
 import { useGetInactiveVehiclesData } from "@/services/Transporter/manajemen-armada/getInactiveVehiclesData";
 
-const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
+const ArmadaNonaktif = ({
+  onPageChange,
+  onPerPageChange,
+  onStatusChange,
+  count,
+}) => {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
@@ -25,6 +39,7 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
   const [filters, setFilters] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [showExpiredWarning, setShowExpiredWarning] = useState(false);
 
   // Fetch vehicles data with pagination, filters and status
   const { data, isLoading, mutate } = useGetInactiveVehiclesData({
@@ -35,15 +50,16 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
     ...filters,
   });
 
+  // Fetch expired vehicles summary
+  const { data: summaryData } = useGetExpiredVehiclesSummary();
+
   const getStatusBadge = (status) => {
-    switch (status) {
-      case "UNPAIRED":
-        return <BadgeStatus variant="warning">Belum Dipasangkan</BadgeStatus>;
-      case "INACTIVE":
-        return <BadgeStatus variant="neutral">Nonaktif</BadgeStatus>;
-      default:
-        return <BadgeStatus variant="neutral">{status}</BadgeStatus>;
-    }
+    const statusConfig = getArmadaStatusBadge(status);
+    return (
+      <BadgeStatus variant={statusConfig.variant}>
+        {statusConfig.label}
+      </BadgeStatus>
+    );
   };
 
   const columns = [
@@ -91,7 +107,11 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
                     className="text-neutral-700 hover:text-primary-700"
                     onClick={() => {
                       setSelectedVehicle(row);
-                      setIsModalOpen(true);
+                      if (row.warningDocumentExpired) {
+                        setShowExpiredWarning(true);
+                      } else {
+                        setIsModalOpen(true);
+                      }
                     }}
                   >
                     <IconComponent
@@ -116,7 +136,11 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
                 className="font-semibold text-primary-700 hover:text-primary-700"
                 onClick={() => {
                   setSelectedVehicle(row);
-                  setIsModalOpen(true);
+                  if (row.warningDocumentExpired) {
+                    setShowExpiredWarning(true);
+                  } else {
+                    setIsModalOpen(true);
+                  }
                 }}
               >
                 Pilih Driver
@@ -159,10 +183,13 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
           </SimpleDropdownTrigger>
 
           <SimpleDropdownContent className="w-fit">
-            <SimpleDropdownItem onClick={() => {}}>
-              Aktifkan Armada
+            <SimpleDropdownItem
+              onClick={() =>
+                router.push(`/manajemen-armada/${row.id}/detail?from=inactive`)
+              }
+            >
+              Detail
             </SimpleDropdownItem>
-            <SimpleDropdownItem onClick={() => {}}>Detail</SimpleDropdownItem>
             <SimpleDropdownItem onClick={() => {}}>Edit</SimpleDropdownItem>
             <SimpleDropdownItem onClick={() => {}}>Hapus</SimpleDropdownItem>
           </SimpleDropdownContent>
@@ -244,14 +271,6 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
     // New status set
   };
 
-  // Add warning indicators to rows
-  const rowClassName = (row) => {
-    if (row.warningDocumentExpired) {
-      return "";
-    }
-    return "";
-  };
-
   // Prepare display options for status filter
   const getDisplayOptions = () => {
     // Get display options called
@@ -266,7 +285,7 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
       if (!data?.summary) return 0;
 
       switch (statusId) {
-        case "UNPAIRED":
+        case "NOT_PAIRED":
           return data.summary.unpaired || 0;
         case "INACTIVE":
           return data.summary.inactive || 0;
@@ -281,7 +300,7 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
         value: item.id,
         label: item.value,
         count: count,
-        hasNotification: item.id === "UNPAIRED" && count > 0,
+        hasNotification: item.id === "NOT_PAIRED" && count > 0,
       };
     });
 
@@ -305,9 +324,30 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
     setSelectedVehicle(null);
   };
 
+  const hasAlert = summaryData?.totalExpiringFleets > 0;
+
   return (
     <>
-      <div className="h-[calc(100vh-300px)]">
+      <div
+        className={hasAlert ? "h-[calc(100vh-352px)]" : "h-[calc(100vh-300px)]"}
+      >
+        {hasAlert && (
+          <Alert className="mb-4 bg-secondary-100">
+            <div className="font-medium">
+              Terdapat{" "}
+              <span className="font-bold">
+                {summaryData?.totalExpiringFleets} Armada
+              </span>{" "}
+              dengan masa berlaku STNK atau KIR yang akan segera/telah berakhir.
+              <Link
+                href="/manajemen-armada/expired"
+                className="ml-2 text-primary-700"
+              >
+                Lihat Armada
+              </Link>
+            </div>
+          </Alert>
+        )}
         <DataTable
           data={data?.vehicles || []}
           columns={columns}
@@ -315,7 +355,7 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
           totalCountLabel="Armada"
           currentPage={data?.pagination?.page || currentPage}
           totalPages={data?.pagination?.totalPages || 1}
-          totalItems={data?.pagination?.totalItems || 0}
+          totalItems={count || data?.pagination?.totalItems || 0}
           perPage={data?.pagination?.limit || perPage}
           onPageChange={handlePageChange}
           onPerPageChange={handlePerPageChange}
@@ -326,20 +366,28 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
           showPagination
           showDisplayView={true}
           displayOptions={getDisplayOptions()}
-          rowClassName={rowClassName}
           filterConfig={getFilterConfig()}
         />
       </div>
 
-      <DriverSelectionModal
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-        onSuccess={handleDriverUpdateSuccess}
-        vehicleId={selectedVehicle?.id}
-        vehiclePlate={selectedVehicle?.licensePlate}
-        currentDriverId={selectedVehicle?.assignedDriver?.id}
-        title={selectedVehicle?.assignedDriver ? "Ubah Driver" : "Pilih Driver"}
-      />
+      {isModalOpen && (
+        <DriverSelectionModal
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={handleDriverUpdateSuccess}
+          vehicleId={selectedVehicle?.id}
+          vehiclePlate={selectedVehicle?.licensePlate}
+          currentDriverId={selectedVehicle?.assignedDriver?.id}
+          title={
+            selectedVehicle?.assignedDriver ? "Ubah Driver" : "Pilih Driver"
+          }
+        />
+      )}
+
+      {showExpiredWarning && (
+        <ExpiredDocumentWarningModal
+          onClose={() => setShowExpiredWarning(false)}
+        />
+      )}
     </>
   );
 };

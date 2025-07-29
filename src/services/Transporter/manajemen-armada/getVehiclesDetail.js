@@ -42,7 +42,8 @@ const apiResultVehicleDetail = {
         kirNumber: "KIR123456",
         kirExpiryDate: "2025-12-31",
         status: "ACTIVE",
-        rejectReason: "Plat bodong",
+        rejectReason:
+          "Alasan verifikasi ditolak : Nomor plat tidak sesuai dengan foto plat dan foto STNK. kamu dapat memperbaiki data armada kamu agar dapat kami verifikasi kembali.",
         gpsInstallationEstimateStartDate: "2025-11-31",
         gpsInstallationEstimateEndDate: "2025-12-31",
         assignedDriver: {
@@ -53,25 +54,25 @@ const apiResultVehicleDetail = {
         },
         photos: [
           {
-            id: "550e8400-e29b-41d4-a716-446655440004",
+            id: "img-1",
             photoType: "FRONT",
             photoName: "FRONT.jpg",
             photoUrl: "https://picsum.photos/200/300",
           },
           {
-            id: "550e8400-e29b-41d4-a716-446655440004",
+            id: "img-2",
             photoType: "BACK",
             photoName: "BACK.jpg",
             photoUrl: "https://picsum.photos/200/300",
           },
           {
-            id: "550e8400-e29b-41d4-a716-446655440004",
+            id: "img-3",
             photoType: "RIGHT",
             photoName: "RIGHT.jpg",
             photoUrl: "https://picsum.photos/200/300",
           },
           {
-            id: "550e8400-e29b-41d4-a716-446655440004",
+            id: "img-4",
             photoType: "LEFT",
             photoName: "LEFT.jpg",
             photoUrl: "https://picsum.photos/200/300",

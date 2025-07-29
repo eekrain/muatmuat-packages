@@ -8,8 +8,10 @@ import {
 import Button from "@/components/Button/Button";
 import { ExpandableTextArea } from "@/components/Form/ExpandableTextArea";
 import RadioButton from "@/components/Radio/RadioButton";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { useGetBankAccounts } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getBankAccounts";
 import { useGetCancellationReasons } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getCancellationReasons";
 
 const cancellationReasons = [
@@ -38,6 +40,8 @@ export const BottomsheetAlasanPembatalan = ({
   onConfirm = () => alert("onConfirm not implemented"),
 }) => {
   const { data: cancellationReasons } = useGetCancellationReasons();
+  const { data: bankAccounts } = useGetBankAccounts();
+  const navigation = useResponsiveNavigation();
   const [selectedReason, setSelectedReason] = useState(null);
   const [customReason, setCustomReason] = useState("");
   const [customReasonError, setCustomReasonError] = useState(null);
@@ -61,9 +65,18 @@ export const BottomsheetAlasanPembatalan = ({
       return;
     }
 
-    // Handle cancel order
+    // Check if user has bank accounts
+    if (!bankAccounts || bankAccounts.length === 0) {
+      // User doesn't have bank accounts, navigate to FormRekeningBankScreen
+      onOpenChange(false);
+      navigation.push("/FormRekeningBank");
+      return;
+    }
+
+    // User has bank accounts, proceed with cancellation
     onConfirm?.();
     toast.success("Berhasil membatalkan pesanan");
+    onOpenChange(false);
   };
 
   useEffect(() => {

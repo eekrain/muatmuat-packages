@@ -62,7 +62,7 @@ export default function TambahDriverPage() {
   const router = useRouter();
 
   const breadcrumbItems = [
-    { name: "Manajemen Driver", href: "/transporter/manajemen-driver" },
+    { name: "Manajemen Driver", href: "/manajemen-driver" },
     { name: "Tambah Driver" },
   ];
 
@@ -98,14 +98,14 @@ export default function TambahDriverPage() {
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       toast.success("Driver berhasil ditambahkan");
-      router.push("/transporter/manajemen-driver");
+      router.push("/manajemen-driver");
     } catch (error) {
       toast.error("Gagal menambahkan driver. Silakan coba lagi.");
     }
   };
 
   const handleCancel = () => {
-    router.push("/transporter/manajemen-driver");
+    router.push("/manajemen-driver");
   };
 
   return (

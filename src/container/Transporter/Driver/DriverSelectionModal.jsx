@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import { Search } from "lucide-react";
 
+import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import Input from "@/components/Form/Input";
@@ -15,8 +16,7 @@ import { useGetDriversList } from "@/services/Transporter/manajemen-armada/getDr
 import { updateVehicleDriver } from "@/services/Transporter/manajemen-armada/updateVehicleDriver";
 
 const DriverSelectionModal = ({
-  open,
-  onOpenChange,
+  onClose,
   onSuccess,
   vehicleId,
   vehiclePlate = "L 8312 L",
@@ -48,21 +48,19 @@ const DriverSelectionModal = ({
 
   const drivers = driversData?.drivers || [];
 
-  // Update selected driver when modal opens with current driver
+  // Update selected driver when current driver changes
   useEffect(() => {
     setSelectedDriverId(currentDriverId || null);
-  }, [currentDriverId, open]);
+  }, [currentDriverId]);
 
-  // Clear search and photo view when modal closes
-  useEffect(() => {
-    if (!open) {
-      setSearchValue("");
-      setViewingPhoto(null);
-      setSelectedDriverId(currentDriverId || null);
-      setShowConfirmation(false);
-      setShowVehicleWarning(false);
-    }
-  }, [open, currentDriverId]);
+  // Cleanup function to reset state
+  const resetState = () => {
+    setSearchValue("");
+    setViewingPhoto(null);
+    setSelectedDriverId(currentDriverId || null);
+    setShowConfirmation(false);
+    setShowVehicleWarning(false);
+  };
 
   const handleSave = () => {
     if (selectedDriverId && selectedDriverId !== currentDriverId) {
@@ -88,7 +86,8 @@ const DriverSelectionModal = ({
         // Success handling
         toast.success("Berhasil mengubah driver");
         setShowConfirmation(false);
-        onOpenChange(false);
+        resetState();
+        onClose();
 
         // Call success callback
         onSuccess?.(vehicleId, selectedDriverId);
@@ -122,12 +121,15 @@ const DriverSelectionModal = ({
   return (
     <>
       <Modal
-        open={open}
+        open={true}
         onOpenChange={(newOpen) => {
-          if (!newOpen && viewingPhoto) {
-            setViewingPhoto(null);
-          } else {
-            onOpenChange(newOpen);
+          if (!newOpen) {
+            if (viewingPhoto) {
+              setViewingPhoto(null);
+            } else {
+              resetState();
+              onClose();
+            }
           }
         }}
         closeOnOutsideClick
@@ -206,8 +208,18 @@ const DriverSelectionModal = ({
 
                         {/* Driver Info */}
                         <div className="flex-1">
-                          <div className="mb-2 text-sm font-bold">
-                            {driver.fullName}
+                          <div className="mb-2 flex items-center gap-2 text-sm font-bold">
+                            <div className="line-clamp-1 break-all">
+                              {driver.fullName}
+                            </div>
+                            {driver.isSimExpiryDate && (
+                              <BadgeStatus
+                                variant="error"
+                                className="h-6 w-[165px] shrink-0 p-0 text-xs"
+                              >
+                                Masa Berlaku SIM Berakhir
+                              </BadgeStatus>
+                            )}
                           </div>
                           <div className="mb-1 flex h-3 items-center gap-2 text-xxs">
                             <IconComponent
@@ -366,4 +378,50 @@ const DriverSelectionModal = ({
   );
 };
 
-export default DriverSelectionModal;
+const ExpiredDocumentWarningModal = ({ onClose }) => {
+  return (
+    <Modal
+      open={true}
+      onOpenChange={(newOpen) => {
+        if (!newOpen) {
+          onClose();
+        }
+      }}
+      closeOnOutsideClick={false}
+    >
+      <ModalContent className="w-[386px]" type="muattrans">
+        <ModalHeader type="muattrans" size="small" />
+        <div className="px-6 py-8">
+          <div className="text-center">
+            <div className="mb-6 text-sm font-medium">
+              Armada tidak dapat dipasangkan dengan driver
+              <br />
+              karena{" "}
+              <span className="font-bold">
+                masa berlaku STNK / KIR telah berakhir
+              </span>
+              .
+              <br />
+              Mohon perbarui dokumen STNK / KIR armada
+              <br />
+              sebelum memasangkan dengan seorang driver.
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center">
+            <Button
+              variant="muattrans-primary"
+              className="h-8 w-[136px]"
+              onClick={onClose}
+              type="button"
+            >
+              Mengerti
+            </Button>
+          </div>
+        </div>
+      </ModalContent>
+    </Modal>
+  );
+};
+
+export { DriverSelectionModal, ExpiredDocumentWarningModal };

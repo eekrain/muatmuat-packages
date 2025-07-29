@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { ChevronDown } from "lucide-react";
@@ -12,9 +13,11 @@ import {
   SimpleDropdownItem,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
+import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
 import { useGetArchivedVehiclesData } from "@/services/Transporter/manajemen-armada/getArchivedVehiclesData";
 
-const ArmadaArsip = ({ onPageChange, onPerPageChange }) => {
+const ArmadaArsip = ({ onPageChange, onPerPageChange, count }) => {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
@@ -30,12 +33,12 @@ const ArmadaArsip = ({ onPageChange, onPerPageChange }) => {
   });
 
   const getStatusBadge = (status) => {
-    switch (status) {
-      case "DELETED":
-        return <BadgeStatus variant="error">Dihapus</BadgeStatus>;
-      default:
-        return <BadgeStatus variant="neutral">{status}</BadgeStatus>;
-    }
+    const statusConfig = getArmadaStatusBadge(status);
+    return (
+      <BadgeStatus variant={statusConfig.variant}>
+        {statusConfig.label}
+      </BadgeStatus>
+    );
   };
 
   const columns = [
@@ -99,7 +102,13 @@ const ArmadaArsip = ({ onPageChange, onPerPageChange }) => {
           </SimpleDropdownTrigger>
 
           <SimpleDropdownContent className="w-[124px]" align="end">
-            <SimpleDropdownItem onClick={() => {}}>Detail</SimpleDropdownItem>
+            <SimpleDropdownItem
+              onClick={() =>
+                router.push(`/manajemen-armada/${row.id}/detail?from=archive`)
+              }
+            >
+              Detail
+            </SimpleDropdownItem>
           </SimpleDropdownContent>
         </SimpleDropdown>
       ),
@@ -178,14 +187,6 @@ const ArmadaArsip = ({ onPageChange, onPerPageChange }) => {
     // This would typically involve calling an API with sort parameters
   };
 
-  // Add warning indicators to rows
-  const rowClassName = (row) => {
-    if (row.warningDocumentExpired) {
-      return "";
-    }
-    return "";
-  };
-
   return (
     <div className="h-[calc(100vh-300px)]">
       <DataTable
@@ -195,7 +196,7 @@ const ArmadaArsip = ({ onPageChange, onPerPageChange }) => {
         totalCountLabel="Armada Arsip"
         currentPage={data?.pagination?.page || currentPage}
         totalPages={data?.pagination?.totalPages || 1}
-        totalItems={data?.pagination?.totalItems || 0}
+        totalItems={count || data?.pagination?.totalItems || 0}
         perPage={data?.pagination?.limit || perPage}
         onPageChange={handlePageChange}
         onPerPageChange={handlePerPageChange}
@@ -204,7 +205,6 @@ const ArmadaArsip = ({ onPageChange, onPerPageChange }) => {
         onSort={handleSort}
         loading={isLoading}
         showPagination
-        rowClassName={rowClassName}
         filterConfig={getFilterConfig()}
       />
     </div>

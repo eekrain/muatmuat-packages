@@ -19,7 +19,7 @@ const apiResultVehiclesCount = {
 };
 
 export const fetcherVehiclesCount = async (cacheKey) => {
-  // const result = await fetcherMuatrans.get(`v1/transporter/vehicles/count`);
+  // const result = await fetcherMuatrans.get(`v1/vehicles/count-summary`);
   // return result?.data?.Data || {};
 
   const result = apiResultVehiclesCount;

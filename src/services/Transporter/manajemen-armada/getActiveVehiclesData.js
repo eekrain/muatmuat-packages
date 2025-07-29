@@ -1,5 +1,7 @@
 import useSWR from "swr";
 
+import { fetcherMuatrans } from "@/lib/axios";
+
 const apiResultActiveVehicles = {
   data: {
     Message: {
@@ -141,11 +143,17 @@ const apiResultActiveVehicles = {
 };
 
 export const fetcherActiveVehicles = async (cacheKey) => {
-  // const result = await fetcherMuatrans.get("v1/vehicles/active");
-  // return result?.data?.Data || {};
+  // Extract query string from cache key
+  const queryString = cacheKey.includes("?") ? cacheKey.split("?")[1] : "";
+  const url = queryString
+    ? `v1/vehicles/active?${queryString}`
+    : "v1/vehicles/active";
 
-  const result = apiResultActiveVehicles;
-  return result.data.Data;
+  const result = await fetcherMuatrans.get(url);
+  return result?.data?.Data || {};
+
+  // const result = apiResultActiveVehicles;
+  // return result.data.Data;
 };
 
 export const useGetActiveVehiclesData = (params = {}) => {
