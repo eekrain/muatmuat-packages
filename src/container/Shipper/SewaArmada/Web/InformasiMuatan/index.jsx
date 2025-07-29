@@ -13,6 +13,7 @@ import { Select } from "@/components/Form/Select";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { useTranslation } from "@/hooks/use-translation";
+import { useGetCargoNames } from "@/services/Shipper/sewaarmada/getCargoNames";
 
 import { DropdownSearch } from "./InformasiMuatanDropdown";
 import { ModalNamaMuatan } from "./ModalNamaMuatan";
@@ -109,28 +110,45 @@ export const InformasiMuatanModal = ({
     control,
     name: "informasiMuatan",
   });
-
-  const [listNamaMuatan, setListNamaMuatan] = useState([
-    { value: "71b8881a-66ff-454d-a0c6-66b26b84628d", label: "Furniture Kayu" },
-    {
-      value: "0c57b52d-7e63-46c8-b779-c5697242b471",
-      label: "Elektronik Rumah Tangga",
-    },
-    {
-      value: "949c658e-b4d6-4ca2-8d2f-d69bf1594c4f",
-      label: "Peralatan dan Kebutuhan Kantor",
-    },
-    {
-      value: "38015672-0dab-4523-bda8-867893c95cfb",
-      label: "Produk Makanan Kemasan",
-      selected: true,
-    },
-    {
-      value: "bb93259b-eefb-4915-aff0-3d1f5a3ab241",
-      label: "Produk Minuman Kemasan",
-    },
-  ]);
-
+  const [listNamaMuatan, setListNamaMuatan] = useState([]);
+  // const [listNamaMuatan, setListNamaMuatan] = useState([
+  //   { value: "71b8881a-66ff-454d-a0c6-66b26b84628d", label: "Furniture Kayu" },
+  //   {
+  //     value: "0c57b52d-7e63-46c8-b779-c5697242b471",
+  //     label: "Elektronik Rumah Tangga",
+  //   },
+  //   {
+  //     value: "949c658e-b4d6-4ca2-8d2f-d69bf1594c4f",
+  //     label: "Peralatan dan Kebutuhan Kantor",
+  //   },
+  //   {
+  //     value: "38015672-0dab-4523-bda8-867893c95cfb",
+  //     label: "Produk Makanan Kemasan",
+  //     selected: true,
+  //   },
+  //   {
+  //     value: "bb93259b-eefb-4915-aff0-3d1f5a3ab241",
+  //     label: "Produk Minuman Kemasan",
+  //   },
+  // ]);
+  // const { cargoTypeId, cargoCategoryId } = useSewaArmadaStore((state) => ({
+  //   cargoTypeId: state.formValues.cargoTypeId,
+  //   cargoCategoryId: state.formValues.cargoCategoryId,
+  // }));
+  const rawData = localStorage.getItem("t-sewa-armada");
+  const parsedData = rawData ? JSON.parse(rawData) : null;
+  const cargoTypeId = parsedData.state.formValues.cargoTypeId || "";
+  const cargoCategoryId = parsedData.state.formValues.cargoCategoryId || "";
+  const {
+    data: cargoNames,
+    isLoading,
+    error,
+  } = useGetCargoNames({
+    cargoTypeId,
+    cargoCategoryId,
+  });
+  // const cargoNames =""
+  // const isLoading = false
   const [openModalNamaMuatan, setOpenModalNamaMuatan] = useState(false);
 
   // Handler for form submit (optional, for demo)
@@ -228,13 +246,16 @@ export const InformasiMuatanModal = ({
                           name={`informasiMuatan.${index}.namaMuatan`}
                           render={({ field }) => (
                             <DropdownSearch
-                              placeholder="Pilih Muatan"
-                              options={listNamaMuatan}
+                              placeholder={"Pilih Muatan"}
+                              options={cargoNames || []}
                               value={field.value}
                               onChange={field.onChange}
                               onAddNew={() => setOpenModalNamaMuatan(true)}
                               addNewText="Tambah Nama Muatan"
                               className="w-52"
+                              disabled={
+                                isLoading || !cargoTypeId || !cargoCategoryId
+                              }
                               errorMessage={
                                 errors?.informasiMuatan?.[index]?.namaMuatan
                                   ?.label.message

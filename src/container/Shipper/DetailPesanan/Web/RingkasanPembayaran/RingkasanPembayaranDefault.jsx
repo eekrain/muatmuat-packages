@@ -60,6 +60,7 @@ export const RingkasanPembayaranDefault = ({
       // Contoh tambahan jika ingin redirect atau toast
       // router.push(`/sewaarmada/pembayaran/${orderId}`);
       // toast.success("Pembayaran berhasil!");
+      window.location.reload();
     } catch (err) {
       console.error("Gagal lanjut pembayaran:", err);
       // toast.error("Terjadi kesalahan saat memproses pembayaran");

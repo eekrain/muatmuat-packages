@@ -25,7 +25,7 @@ export const ModalQRCodeDriver = ({
     orderId,
     driverId,
   });
-
+  console.log(qrData, "qrData");
   const statusScan = getStatusScanMetadata(qrData?.driverInfo?.statusScan);
 
   const handleCopyQrCode = () => {

@@ -19,6 +19,7 @@ import {
 } from "@/components/Timeline";
 import MuatBongkarModal from "@/container/Shipper/DetailPesanan/Web/RingkasanPesanan/MuatBongkarModal";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useSWRMutateHook } from "@/hooks/use-swr";
 import { useTranslation } from "@/hooks/use-translation";
 import {
   OrderStatusEnum,
@@ -75,6 +76,14 @@ const PesananTable = ({
   );
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   console.log("selectedGroupedStatusInfo", selectedGroupedStatusInfo);
+
+  // Initialize the document received mutation hook
+  const { trigger: confirmDocumentReceived, isMutating: isConfirmingDocument } =
+    useSWRMutateHook(
+      selectedOrderId ? `v1/orders/${selectedOrderId}/document-received` : null,
+      "POST"
+    );
+
   const selectedFilter = useShallowMemo(
     () =>
       options
@@ -126,11 +135,23 @@ const PesananTable = ({
   const handleKodePesananSort = () => handleSort("invoice");
   const handleTanggalMuatSort = () => handleSort("loadTimeStart");
 
-  const handleReceiveDocument = () => {
-    // Hit API /base_url/v1/orders/{orderId}/document-received
-    alert("Hit API /base_url/v1/orders/{orderId}/document-received");
-    setIsDocumentReceivedModalOpen(false);
-    toast.success(t("messagePesananBerhasilDiselesaikan"));
+  const handleReceiveDocument = async () => {
+    try {
+      const result = await confirmDocumentReceived();
+
+      if (result?.Message?.Code === 200) {
+        toast.success(t("messagePesananBerhasilDiselesaikan"));
+        setIsDocumentReceivedModalOpen(false);
+
+        // Optionally refresh the page or update the order status
+        // router.refresh();
+      } else {
+        toast.error(result?.Message?.Text || "Gagal mengkonfirmasi dokumen");
+      }
+    } catch (error) {
+      console.error("Error confirming document received:", error);
+      toast.error("Terjadi kesalahan saat mengkonfirmasi dokumen");
+    }
   };
 
   const handleReorderFleet = (id) => {
@@ -767,10 +788,12 @@ const PesananTable = ({
         }}
         cancel={{
           text: t("buttonBelum"),
+          disabled: isConfirmingDocument,
         }}
         confirm={{
           text: t("buttonSudah"),
           onClick: handleReceiveDocument,
+          disabled: isConfirmingDocument,
         }}
       />
 

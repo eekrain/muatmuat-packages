@@ -12,8 +12,11 @@ import {
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import DriverRatingModal from "@/container/Shipper/DetailPesanan/Web/DetailPesananHeader/DriverRatingModal";
+import { useSWRMutateHook } from "@/hooks/use-swr";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { useGetOrderDriverReviews } from "@/services/Shipper/detailpesanan/getOrderDriverReviews";
 
 import { ModalDetailPembayaran } from "./ModalDetailPembayaran";
 import { ModalInformasiSlider } from "./ModalInformasiSlider";
@@ -41,41 +44,73 @@ const DetailPesananHeader = ({
 }) => {
   const params = useParams();
   // Sample driver data
-  const drivers = [
-    {
-      driverId: "uuid-driver-1",
-      name: "Ahmad Rahman",
-      phoneNumber: "081234567891",
-      profileImage: "https://example.com/driver1.jpg",
-      licensePlate: "B 1234 CD",
-      canReview: true,
-      reviewedAt: "",
-      rating: 0,
-      review: "",
-    },
-    {
-      driverId: "uuid-driver-2",
-      name: "Budi Santoso",
-      phoneNumber: "081234567892",
-      profileImage: "https://example.com/driver2.jpg",
-      licensePlate: "B 5678 EF",
-      canReview: false,
-      reviewedAt: "2025-02-11T16:00:00Z",
-      rating: 5,
-      review: "Driver sangat baik dan profesional",
-    },
-  ];
-
+  // const drivers = [
+  //   {
+  //     driverId: "uuid-driver-1",
+  //     name: "Ahmad Rahman",
+  //     phoneNumber: "081234567891",
+  //     profileImage: "https://example.com/driver1.jpg",
+  //     licensePlate: "B 1234 CD",
+  //     canReview: true,
+  //     reviewedAt: "",
+  //     rating: 0,
+  //     review: "",
+  //   },
+  //   {
+  //     driverId: "uuid-driver-2",
+  //     name: "Budi Santoso",
+  //     phoneNumber: "081234567892",
+  //     profileImage: "https://example.com/driver2.jpg",
+  //     licensePlate: "B 5678 EF",
+  //     canReview: false,
+  //     reviewedAt: "2025-02-11T16:00:00Z",
+  //     rating: 5,
+  //     review: "Driver sangat baik dan profesional",
+  //   },
+  // ];
+  const { data: driverReviewsData } = useGetOrderDriverReviews(params.orderId);
+  const drivers = driverReviewsData?.drivers || [];
   const router = useRouter();
   const [isDocumentReceivedModalOpen, setIsDocumentReceivedModalOpen] =
     useState(false);
   const [isReorderFleetModalOpen, setIsReorderFleetModalOpen] = useState(false);
   const [isDriverRatingModalOpen, setIsDriverRatingModalOpen] = useState(false);
 
-  const handleReceiveDocument = () => {
-    // Hit API /base_url/v1/orders/{orderId}/document-received
-    alert("Hit API /base_url/v1/orders/{orderId}/document-received");
-    setIsDocumentReceivedModalOpen(false);
+  const { trigger: autoComplete, isMutating: isAutoCompleteMutating } =
+    useSWRMutateHook(
+      params.orderId ? "/v1/orders/auto-complete" : null,
+      "POST"
+    );
+
+  const { trigger: confirmDocumentReceived, isMutating: isConfirmingDocument } =
+    useSWRMutateHook(
+      params.orderId ? `v1/orders/${params.orderId}/document-received` : null,
+      "POST"
+    );
+
+  const handleReceiveDocument = async () => {
+    try {
+      const result = await confirmDocumentReceived();
+
+      if (
+        result?.data?.Message?.Code == 200 ||
+        result?.Message?.Code == 200 ||
+        result?.data?.Message?.Code == 201 ||
+        result?.Message?.Code == 201
+      ) {
+        toast.success("Dokumen berhasil dikonfirmasi diterima");
+        setIsDocumentReceivedModalOpen(false);
+        await autoComplete({});
+
+        // Optionally refresh the page or update the order status
+        // router.refresh();
+      } else {
+        // toast.error(result?.Message?.Text || "Gagal mengkonfirmasi dokumen");
+      }
+    } catch (error) {
+      console.error("Error confirming document received:", error);
+      toast.error("Terjadi kesalahan saat mengkonfirmasi dokumen");
+    }
   };
 
   const handleReorderFleet = (orderId) => {
@@ -88,9 +123,8 @@ const DetailPesananHeader = ({
   };
 
   // Check if all drivers have been reviewed
-  const areAllDriversReviewed = drivers.every(
-    (driver) => driver.canReview === true
-  );
+  const areAllDriversReviewed =
+    drivers.length > 0 && drivers.every((driver) => driver.canReview === false);
 
   const unduhMenu = [
     {
@@ -271,10 +305,12 @@ const DetailPesananHeader = ({
         }}
         cancel={{
           text: "Belum",
+          disabled: isConfirmingDocument,
         }}
         confirm={{
           text: "Sudah",
           onClick: handleReceiveDocument,
+          disabled: isConfirmingDocument,
         }}
       />
 

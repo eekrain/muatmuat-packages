@@ -1,3 +1,4 @@
+import { useParams } from "next/navigation";
 import { useRef, useState } from "react";
 
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
@@ -5,18 +6,27 @@ import Button from "@/components/Button/Button";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
 import { useClientHeight } from "@/hooks/use-client-height";
+import { useGetOrderStatusHistory } from "@/services/Shipper/detailpesanan/getOrderStatusHistory";
 import { useGetDriverStatusTimeline } from "@/services/Shipper/lacak-armada/getDriverStatusTimeline";
 
 const ModalDetailStatusDriver = () => {
+  const params = useParams();
   const [isOpen, setIsOpen] = useState(false);
-  const { data: dataDriverStatus, isLoading } = useGetDriverStatusTimeline({
-    orderId: "123",
-    driverId: "456",
-  });
 
+  // Get order status history to get driver data
+  const { data: orderStatusHistory } = useGetOrderStatusHistory(params.orderId);
+
+  // Get the first driver from the order status history
+  const firstDriver = orderStatusHistory?.driverStatus?.[0];
+  const driverId = firstDriver?.driverId;
+
+  const { data: dataDriverStatus, isLoading } = useGetDriverStatusTimeline(
+    params.orderId,
+    driverId
+  );
   const contentRef = useRef(null);
   const contentHeight = useClientHeight({ ref: contentRef, deps: [isOpen] });
-
+  console.log(dataDriverStatus, "dataDriverStatus");
   return (
     <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick>
       <ModalTrigger>
@@ -38,9 +48,21 @@ const ModalDetailStatusDriver = () => {
         >
           <div className="relative pl-4 pr-[7px]">
             <AvatarDriver
-              name={"Ardian Eka"}
-              image={"https://picsum.photos/50"}
-              licensePlate={"B 1234 CD"}
+              name={
+                dataDriverStatus?.dataDriver?.name ||
+                firstDriver?.name ||
+                "Ardian Eka"
+              }
+              image={
+                dataDriverStatus?.dataDriver?.profileImage ||
+                firstDriver?.driverImage ||
+                "https://picsum.photos/50"
+              }
+              licensePlate={
+                dataDriverStatus?.dataDriver?.licensePlate ||
+                firstDriver?.licensePlate ||
+                ""
+              }
             />
           </div>
 

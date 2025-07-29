@@ -1,5 +1,6 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import { Fragment, useState } from "react";
 
 import Button from "@/components/Button/Button";
@@ -9,6 +10,7 @@ import { Modal, ModalContent } from "@/components/Modal/Modal";
 import TextArea from "@/components/TextArea/TextArea";
 import usePrevious from "@/hooks/use-previous";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
+import { useSWRMutateHook } from "@/hooks/use-swr";
 import { toast } from "@/lib/toast";
 
 const DriverRatingForm = ({
@@ -115,7 +117,14 @@ const DriverRatingForm = ({
 
 const DriverRatingModal = ({ isOpen, setIsOpen, drivers }) => {
   const [driversFormValues, setDriversFormValues] = useState([]);
+  const [loadingIndex, setLoadingIndex] = useState(null);
   const previousIsOpen = usePrevious(isOpen);
+  const params = useParams();
+  const orderId = params.orderId;
+  const { trigger: postReview, isMutating } = useSWRMutateHook(
+    orderId ? `/v1/orders/${orderId}/reviews` : null,
+    "POST"
+  );
 
   useShallowCompareEffect(() => {
     if (isOpen && !previousIsOpen) {
@@ -131,15 +140,29 @@ const DriverRatingModal = ({ isOpen, setIsOpen, drivers }) => {
     );
   };
 
-  const handleSaveReview = (index) => {
+  const handleSaveReview = async (index) => {
     const driver = driversFormValues[index];
-
     if ((driver.rating || 0) === 0) {
       return toast.error("Rating driver wajib diisi");
     }
+    setLoadingIndex(index);
+    try {
+      const response = await postReview({
+        orderId, // wajib dikirim ke backend
+        driverId: driver.driverId,
+        rating: driver.rating,
+        review: driver.review || "",
+      });
 
-    toast.success("Ulasan berhasil disimpan");
+      setIsOpen(false);
+      toast.success("Ulasan berhasil disimpan");
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingIndex(null);
+    }
   };
+  console.log(drivers, "drivers");
 
   return (
     <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick>

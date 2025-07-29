@@ -284,7 +284,6 @@ const transformDriverStatusData = (data) => {
     statusTitle: data.statusTitle,
     licensePlate: data.licensePlate,
   };
-
   // 2. Create a deep copy of statusDefinitions to avoid mutating the original apiResult
   const newStatusDefinitions = JSON.parse(
     JSON.stringify(data.statusDefinitions)
