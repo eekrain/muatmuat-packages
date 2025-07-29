@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { ChevronRight, ChevronUp } from "lucide-react";
@@ -46,6 +47,7 @@ const ResponsiveMenuScreen = () => {
   const [isSettingsExpanded, setIsSettingsExpanded] = useState(true);
   const { order } = useNotificationCounterStore();
   const { dataUser } = useAuth();
+  const router = useRouter();
 
   // NOTES: Sudah di implementasi di notificationCounterStore.js  dan use-auth.js
   // const { data: countByStatusData } = useSWR("v1/orders/count-by-status", () =>
@@ -62,6 +64,7 @@ const ResponsiveMenuScreen = () => {
       label: "Daftar Pesanan",
       badge: order || 0,
       badgeColor: "bg-red-500",
+      onClick: () => router.push("/daftarpesanan"),
     },
     {
       icon: "/icons/menu/pusatbantuan.svg",
@@ -122,6 +125,7 @@ const ResponsiveMenuScreen = () => {
                 label={item.label}
                 badge={item.badge}
                 badgeColor={item.badgeColor}
+                onClick={item.onClick}
               />
             ))}
           </div>

@@ -84,7 +84,9 @@ export const HeaderResponsiveDefault = ({
     <div className="flex w-full items-center justify-between self-center">
       <div
         className={
-          dataUser ? "flex items-center gap-x-3" : "flex w-full justify-between"
+          dataUser?.isLoggedIn
+            ? "flex items-center gap-x-3"
+            : "flex w-full justify-between"
         }
       >
         <button onClick={handleBackButton}>
@@ -96,9 +98,9 @@ export const HeaderResponsiveDefault = ({
           />
         </button>
         <ImageComponent src="/icons/muattrans.svg" width={120} height={24} />
-        {dataUser ? null : <div className="size-[24px]" />}
+        {dataUser?.isLoggedIn ? null : <div className="size-[24px]" />}
       </div>
-      {dataUser ? (
+      {dataUser?.isLoggedIn ? (
         <div className="flex items-center gap-x-3">
           {menuIcons.map((menuIcon, key) => (
             <button
