@@ -32,7 +32,7 @@ const apiResultInactiveVehicles = {
           },
           assignedDriver: null,
           status: "NOT_PAIRED",
-          warningDocumentExpired: false,
+          warningDocumentExpired: true,
           pendingUpdateDriver: false,
         },
         {

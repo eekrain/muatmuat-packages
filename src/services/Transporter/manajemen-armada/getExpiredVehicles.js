@@ -1,5 +1,6 @@
 import useSWR from "swr";
 
+// Mock data for expired vehicles list
 const apiResultExpiredVehicles = {
   data: {
     Message: {
@@ -68,10 +69,26 @@ const apiResultExpiredVehicles = {
   },
 };
 
+// Mock data for expired vehicles summary
+const apiResultExpiredVehiclesSummary = {
+  data: {
+    Message: {
+      Code: 200,
+      Text: "Success",
+    },
+    Data: {
+      totalExpiringFleets: 1,
+      showAlert: true,
+    },
+    Type: "EXPIRING_DOCUMENTS_SUMMARY",
+  },
+};
+
+// Expired vehicles list fetcher and hook
 export const fetcherExpiredVehicles = async (cacheKey) => {
   // Extract query string from cache key
   // const queryString = cacheKey.includes('?') ? cacheKey.split('?')[1] : '';
-  // const url = queryString ? `v1/fleets/expiring-documents?${queryString}` : 'v1/vehicles/expired';
+  // const url = queryString ? `v1/vehicles/expiring-documents?${queryString}` : 'v1/vehicles/expired';
 
   // const result = await fetcherMuatrans.get(url);
   // return result?.data?.Data || {};
@@ -85,4 +102,17 @@ export const useGetExpiredVehicles = (params = {}) => {
   const cacheKey = `expired-vehicles${queryParams ? `?${queryParams}` : ""}`;
 
   return useSWR(cacheKey, fetcherExpiredVehicles);
+};
+
+// Expired vehicles summary fetcher and hook
+export const fetcherExpiredVehiclesSummary = async () => {
+  // const result = await fetcherMuatrans.get('v1/vehicles/expiring-documents/summary');
+  // return result?.data?.Data || {};
+
+  const result = apiResultExpiredVehiclesSummary;
+  return result.data.Data;
+};
+
+export const useGetExpiredVehiclesSummary = () => {
+  return useSWR("expired-vehicles-summary", fetcherExpiredVehiclesSummary);
 };

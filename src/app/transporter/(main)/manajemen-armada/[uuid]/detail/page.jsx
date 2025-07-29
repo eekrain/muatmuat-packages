@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import React from "react";
 
 import { Alert } from "@/components/Alert/Alert";
@@ -51,14 +51,51 @@ const VehiclesPhotoTranslate = {
 
 const Page = () => {
   const { uuid } = useParams();
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from");
+
   const { data, error, isLoading } = useGetVehicleDetail(uuid);
   console.log(data);
 
-  const breadCrumbData = [
-    { name: "Manajemen Armada", href: "/manajemen-armada" },
-    { name: "Armada Aktif", href: "/active-armada?tab=active" },
-    { name: "Detail Armada" },
-  ];
+  // Dynamic breadcrumb based on "from" parameter
+  const getBreadcrumbData = () => {
+    const base = [{ name: "Manajemen Armada", href: "/manajemen-armada" }];
+
+    // Add intermediate breadcrumb based on where user came from
+    if (from === "active") {
+      base.push({
+        name: "Armada Aktif",
+        href: "/manajemen-armada?tab=active",
+      });
+    } else if (from === "inactive") {
+      base.push({
+        name: "Armada Nonaktif",
+        href: "/manajemen-armada?tab=inactive",
+      });
+    } else if (from === "process") {
+      base.push({
+        name: "Proses Pendaftaran",
+        href: "/manajemen-armada?tab=process",
+      });
+    } else if (from === "archive") {
+      base.push({
+        name: "Arsip",
+        href: "/manajemen-armada?tab=archive",
+      });
+    } else if (from === "expired") {
+      base.push({
+        name: "Perlu Pembaruan STNK/KIR",
+        href: "/manajemen-armada/expired",
+      });
+    }
+
+    // Add current page
+    base.push({ name: "Detail Armada" });
+
+    return base;
+  };
+
+  const breadCrumbData = getBreadcrumbData();
 
   if (isLoading) return <div>Loading vehicle details...</div>;
   if (error) return <div>Failed to load data. Please try again.</div>;

@@ -1258,7 +1258,7 @@ const Page = () => {
                 <Button
                   variant="muattrans-primary-secondary"
                   className="h-[44px] w-[120px] text-base"
-                  onClick={() => router.push("/transporter/manajemen-armada")}
+                  onClick={() => router.push("/manajemen-armada")}
                 >
                   Ya
                 </Button>

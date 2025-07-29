@@ -14,7 +14,7 @@ import {
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import DriverSelectionModal from "@/container/Transporter/Driver/DriverSelectionModal";
+import { DriverSelectionModal } from "@/container/Transporter/Driver/DriverSelectionModal";
 import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
 import { useGetActiveVehiclesData } from "@/services/Transporter/manajemen-armada/getActiveVehiclesData";
 
@@ -153,7 +153,9 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
               </SimpleDropdownItem>
             )}
             <SimpleDropdownItem
-              onClick={() => router.push(`/manajemen-armada/${row.id}/detail`)}
+              onClick={() =>
+                router.push(`/manajemen-armada/${row.id}/detail?from=active`)
+              }
             >
               Detail
             </SimpleDropdownItem>
@@ -254,14 +256,6 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
     // This would typically involve calling an API with sort parameters
   };
 
-  // Add warning indicators to rows
-  const rowClassName = (row) => {
-    if (row.warningDocumentExpired || row.pendingUpdateDriver) {
-      return "";
-    }
-    return "";
-  };
-
   const handleDriverUpdateSuccess = () => {
     // Refresh the vehicles data to reflect the change
     mutate();
@@ -290,20 +284,22 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
           onSort={handleSort}
           loading={isLoading}
           showPagination
-          rowClassName={rowClassName}
           filterConfig={getFilterConfig()}
         />
       </div>
 
-      <DriverSelectionModal
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-        onSuccess={handleDriverUpdateSuccess}
-        vehicleId={selectedVehicle?.id}
-        vehiclePlate={selectedVehicle?.licensePlate}
-        currentDriverId={selectedVehicle?.assignedDriver?.id}
-        title={selectedVehicle?.assignedDriver ? "Ubah Driver" : "Pilih Driver"}
-      />
+      {isModalOpen && (
+        <DriverSelectionModal
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={handleDriverUpdateSuccess}
+          vehicleId={selectedVehicle?.id}
+          vehiclePlate={selectedVehicle?.licensePlate}
+          currentDriverId={selectedVehicle?.assignedDriver?.id}
+          title={
+            selectedVehicle?.assignedDriver ? "Ubah Driver" : "Pilih Driver"
+          }
+        />
+      )}
     </>
   );
 };

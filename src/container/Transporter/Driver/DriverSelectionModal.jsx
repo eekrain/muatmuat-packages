@@ -15,8 +15,7 @@ import { useGetDriversList } from "@/services/Transporter/manajemen-armada/getDr
 import { updateVehicleDriver } from "@/services/Transporter/manajemen-armada/updateVehicleDriver";
 
 const DriverSelectionModal = ({
-  open,
-  onOpenChange,
+  onClose,
   onSuccess,
   vehicleId,
   vehiclePlate = "L 8312 L",
@@ -48,21 +47,19 @@ const DriverSelectionModal = ({
 
   const drivers = driversData?.drivers || [];
 
-  // Update selected driver when modal opens with current driver
+  // Update selected driver when current driver changes
   useEffect(() => {
     setSelectedDriverId(currentDriverId || null);
-  }, [currentDriverId, open]);
+  }, [currentDriverId]);
 
-  // Clear search and photo view when modal closes
-  useEffect(() => {
-    if (!open) {
-      setSearchValue("");
-      setViewingPhoto(null);
-      setSelectedDriverId(currentDriverId || null);
-      setShowConfirmation(false);
-      setShowVehicleWarning(false);
-    }
-  }, [open, currentDriverId]);
+  // Cleanup function to reset state
+  const resetState = () => {
+    setSearchValue("");
+    setViewingPhoto(null);
+    setSelectedDriverId(currentDriverId || null);
+    setShowConfirmation(false);
+    setShowVehicleWarning(false);
+  };
 
   const handleSave = () => {
     if (selectedDriverId && selectedDriverId !== currentDriverId) {
@@ -88,7 +85,8 @@ const DriverSelectionModal = ({
         // Success handling
         toast.success("Berhasil mengubah driver");
         setShowConfirmation(false);
-        onOpenChange(false);
+        resetState();
+        onClose();
 
         // Call success callback
         onSuccess?.(vehicleId, selectedDriverId);
@@ -122,12 +120,15 @@ const DriverSelectionModal = ({
   return (
     <>
       <Modal
-        open={open}
+        open={true}
         onOpenChange={(newOpen) => {
-          if (!newOpen && viewingPhoto) {
-            setViewingPhoto(null);
-          } else {
-            onOpenChange(newOpen);
+          if (!newOpen) {
+            if (viewingPhoto) {
+              setViewingPhoto(null);
+            } else {
+              resetState();
+              onClose();
+            }
           }
         }}
         closeOnOutsideClick
@@ -366,4 +367,50 @@ const DriverSelectionModal = ({
   );
 };
 
-export default DriverSelectionModal;
+const ExpiredDocumentWarningModal = ({ onClose }) => {
+  return (
+    <Modal
+      open={true}
+      onOpenChange={(newOpen) => {
+        if (!newOpen) {
+          onClose();
+        }
+      }}
+      closeOnOutsideClick={false}
+    >
+      <ModalContent className="w-[386px]" type="muattrans">
+        <ModalHeader type="muattrans" size="small" />
+        <div className="px-6 py-8">
+          <div className="text-center">
+            <div className="mb-6 text-sm font-medium">
+              Armada tidak dapat dipasangkan dengan driver
+              <br />
+              karena{" "}
+              <span className="font-bold">
+                masa berlaku STNK / KIR telah berakhir
+              </span>
+              .
+              <br />
+              Mohon perbarui dokumen STNK / KIR armada
+              <br />
+              sebelum memasangkan dengan seorang driver.
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center">
+            <Button
+              variant="muattrans-primary"
+              className="h-8 w-[136px]"
+              onClick={onClose}
+              type="button"
+            >
+              Mengerti
+            </Button>
+          </div>
+        </div>
+      </ModalContent>
+    </Modal>
+  );
+};
+
+export { DriverSelectionModal, ExpiredDocumentWarningModal };

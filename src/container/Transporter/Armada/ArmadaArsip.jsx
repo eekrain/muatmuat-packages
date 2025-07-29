@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { ChevronDown } from "lucide-react";
@@ -16,6 +17,7 @@ import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
 import { useGetArchivedVehiclesData } from "@/services/Transporter/manajemen-armada/getArchivedVehiclesData";
 
 const ArmadaArsip = ({ onPageChange, onPerPageChange }) => {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
@@ -100,7 +102,13 @@ const ArmadaArsip = ({ onPageChange, onPerPageChange }) => {
           </SimpleDropdownTrigger>
 
           <SimpleDropdownContent className="w-[124px]" align="end">
-            <SimpleDropdownItem onClick={() => {}}>Detail</SimpleDropdownItem>
+            <SimpleDropdownItem
+              onClick={() =>
+                router.push(`/manajemen-armada/${row.id}/detail?from=archive`)
+              }
+            >
+              Detail
+            </SimpleDropdownItem>
           </SimpleDropdownContent>
         </SimpleDropdown>
       ),
@@ -179,14 +187,6 @@ const ArmadaArsip = ({ onPageChange, onPerPageChange }) => {
     // This would typically involve calling an API with sort parameters
   };
 
-  // Add warning indicators to rows
-  const rowClassName = (row) => {
-    if (row.warningDocumentExpired) {
-      return "";
-    }
-    return "";
-  };
-
   return (
     <div className="h-[calc(100vh-300px)]">
       <DataTable
@@ -205,7 +205,6 @@ const ArmadaArsip = ({ onPageChange, onPerPageChange }) => {
         onSort={handleSort}
         loading={isLoading}
         showPagination
-        rowClassName={rowClassName}
         filterConfig={getFilterConfig()}
       />
     </div>

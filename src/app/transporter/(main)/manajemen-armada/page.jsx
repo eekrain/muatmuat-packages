@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { Download, Plus } from "lucide-react";
 
@@ -22,7 +23,48 @@ import { useGetVehiclesCount } from "@/services/Transporter/manajemen-armada/get
 
 const Page = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { data: count } = useGetVehiclesCount();
+
+  // Map query param values to tab values
+  const getTabValue = (queryValue) => {
+    const tabMap = {
+      active: "aktif",
+      inactive: "nonaktif",
+      process: "proses",
+      archive: "arsip",
+    };
+    return tabMap[queryValue] || "aktif";
+  };
+
+  // Map tab values to query param values
+  const getQueryValue = (tabValue) => {
+    const queryMap = {
+      aktif: "active",
+      nonaktif: "inactive",
+      proses: "process",
+      arsip: "archive",
+    };
+    return queryMap[tabValue] || "active";
+  };
+
+  // Get initial tab value from query parameter
+  const tabParam = searchParams.get("tab");
+  const initialTab = getTabValue(tabParam);
+  const [selectedTab, setSelectedTab] = useState(initialTab);
+
+  // Update tab when query parameter changes
+  useEffect(() => {
+    const newTab = getTabValue(tabParam);
+    setSelectedTab(newTab);
+  }, [tabParam]);
+
+  // Handle tab change
+  const handleTabChange = (value) => {
+    setSelectedTab(value);
+    const queryValue = getQueryValue(value);
+    router.push(`/manajemen-armada?tab=${queryValue}`);
+  };
 
   const isEmpty =
     count?.active === 0 &&
@@ -57,7 +99,11 @@ const Page = () => {
         </div>
       </div>
 
-      <Tabs className="w-full" defaultValue="aktif">
+      <Tabs
+        className="w-full"
+        value={selectedTab}
+        onValueChange={handleTabChange}
+      >
         <TabsList className="w-8/12">
           <TabsTriggerWithSeparator value="aktif" activeColor="primary-700">
             Armada Aktif {count?.active ? `(${count.active})` : ""}

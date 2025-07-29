@@ -183,7 +183,7 @@ const Page = () => {
   const breadcrumbData = [
     {
       name: "Manajemen Armada",
-      href: "/transporter/manajemen-armada",
+      href: "/manajemen-armada",
     },
     {
       name: "Perlu Pembaruan STNK/KIR",

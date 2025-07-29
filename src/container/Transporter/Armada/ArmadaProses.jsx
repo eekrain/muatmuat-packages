@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { ChevronDown } from "lucide-react";
@@ -16,6 +17,7 @@ import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
 import { useGetProcessVehiclesData } from "@/services/Transporter/manajemen-armada/getProcessVehiclesData";
 
 const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
@@ -109,7 +111,13 @@ const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
           </SimpleDropdownTrigger>
 
           <SimpleDropdownContent className="w-fit">
-            <SimpleDropdownItem onClick={() => {}}>Detail</SimpleDropdownItem>
+            <SimpleDropdownItem
+              onClick={() =>
+                router.push(`/manajemen-armada/${row.id}/detail?from=process`)
+              }
+            >
+              Detail
+            </SimpleDropdownItem>
             <SimpleDropdownItem onClick={() => {}}>Edit</SimpleDropdownItem>
             {row.status === "VERIFICATION_REJECTED" && (
               <SimpleDropdownItem onClick={() => {}}>

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { ChevronDown } from "lucide-react";
@@ -15,11 +16,16 @@ import {
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import DriverSelectionModal from "@/container/Transporter/Driver/DriverSelectionModal";
+import {
+  DriverSelectionModal,
+  ExpiredDocumentWarningModal,
+} from "@/container/Transporter/Driver/DriverSelectionModal";
 import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
+import { useGetExpiredVehiclesSummary } from "@/services/Transporter/manajemen-armada/getExpiredVehicles";
 import { useGetInactiveVehiclesData } from "@/services/Transporter/manajemen-armada/getInactiveVehiclesData";
 
 const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
@@ -28,6 +34,7 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
   const [filters, setFilters] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [showExpiredWarning, setShowExpiredWarning] = useState(false);
 
   // Fetch vehicles data with pagination, filters and status
   const { data, isLoading, mutate } = useGetInactiveVehiclesData({
@@ -37,6 +44,9 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
     status: selectedStatus,
     ...filters,
   });
+
+  // Fetch expired vehicles summary
+  const { data: summaryData } = useGetExpiredVehiclesSummary();
 
   const getStatusBadge = (status) => {
     const statusConfig = getArmadaStatusBadge(status);
@@ -92,7 +102,11 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
                     className="text-neutral-700 hover:text-primary-700"
                     onClick={() => {
                       setSelectedVehicle(row);
-                      setIsModalOpen(true);
+                      if (row.warningDocumentExpired) {
+                        setShowExpiredWarning(true);
+                      } else {
+                        setIsModalOpen(true);
+                      }
                     }}
                   >
                     <IconComponent
@@ -117,7 +131,11 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
                 className="font-semibold text-primary-700 hover:text-primary-700"
                 onClick={() => {
                   setSelectedVehicle(row);
-                  setIsModalOpen(true);
+                  if (row.warningDocumentExpired) {
+                    setShowExpiredWarning(true);
+                  } else {
+                    setIsModalOpen(true);
+                  }
                 }}
               >
                 Pilih Driver
@@ -160,10 +178,13 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
           </SimpleDropdownTrigger>
 
           <SimpleDropdownContent className="w-fit">
-            <SimpleDropdownItem onClick={() => {}}>
-              Aktifkan Armada
+            <SimpleDropdownItem
+              onClick={() =>
+                router.push(`/manajemen-armada/${row.id}/detail?from=inactive`)
+              }
+            >
+              Detail
             </SimpleDropdownItem>
-            <SimpleDropdownItem onClick={() => {}}>Detail</SimpleDropdownItem>
             <SimpleDropdownItem onClick={() => {}}>Edit</SimpleDropdownItem>
             <SimpleDropdownItem onClick={() => {}}>Hapus</SimpleDropdownItem>
           </SimpleDropdownContent>
@@ -245,14 +266,6 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
     // New status set
   };
 
-  // Add warning indicators to rows
-  const rowClassName = (row) => {
-    if (row.warningDocumentExpired) {
-      return "";
-    }
-    return "";
-  };
-
   // Prepare display options for status filter
   const getDisplayOptions = () => {
     // Get display options called
@@ -306,7 +319,7 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
     setSelectedVehicle(null);
   };
 
-  const hasAlert = true; // You can modify this condition based on your requirements
+  const hasAlert = summaryData?.totalExpiringFleets > 0;
 
   return (
     <>
@@ -316,8 +329,11 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
         {hasAlert && (
           <Alert className="mb-4 bg-secondary-100">
             <div className="font-medium">
-              Terdapat <span className="font-bold">3 Armada</span> dengan masa
-              berlaku STNK atau KIR yang akan segera/telah berakhir.
+              Terdapat{" "}
+              <span className="font-bold">
+                {summaryData?.totalExpiringFleets} Armada
+              </span>{" "}
+              dengan masa berlaku STNK atau KIR yang akan segera/telah berakhir.
               <Link
                 href="/manajemen-armada/expired"
                 className="ml-2 text-primary-700"
@@ -345,20 +361,28 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
           showPagination
           showDisplayView={true}
           displayOptions={getDisplayOptions()}
-          rowClassName={rowClassName}
           filterConfig={getFilterConfig()}
         />
       </div>
 
-      <DriverSelectionModal
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-        onSuccess={handleDriverUpdateSuccess}
-        vehicleId={selectedVehicle?.id}
-        vehiclePlate={selectedVehicle?.licensePlate}
-        currentDriverId={selectedVehicle?.assignedDriver?.id}
-        title={selectedVehicle?.assignedDriver ? "Ubah Driver" : "Pilih Driver"}
-      />
+      {isModalOpen && (
+        <DriverSelectionModal
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={handleDriverUpdateSuccess}
+          vehicleId={selectedVehicle?.id}
+          vehiclePlate={selectedVehicle?.licensePlate}
+          currentDriverId={selectedVehicle?.assignedDriver?.id}
+          title={
+            selectedVehicle?.assignedDriver ? "Ubah Driver" : "Pilih Driver"
+          }
+        />
+      )}
+
+      {showExpiredWarning && (
+        <ExpiredDocumentWarningModal
+          onClose={() => setShowExpiredWarning(false)}
+        />
+      )}
     </>
   );
 };
