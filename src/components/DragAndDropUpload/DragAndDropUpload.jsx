@@ -63,6 +63,7 @@ const DragAndDropUpload = ({
 
   const openFileDialog = () => {
     if (fileInputRef.current) {
+      fileInputRef.current.value = null;
       fileInputRef.current.click();
     }
   };

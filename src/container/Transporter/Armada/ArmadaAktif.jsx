@@ -14,15 +14,16 @@ import {
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import DriverSelectionModal from "@/container/Transporter/Driver/DriverSelectionModal";
+import { DriverSelectionModal } from "@/container/Transporter/Driver/DriverSelectionModal";
+import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
 import { useGetActiveVehiclesData } from "@/services/Transporter/manajemen-armada/getActiveVehiclesData";
 
-const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
+const ArmadaAktif = ({ onPageChange, onPerPageChange, count }) => {
   const router = useRouter();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const [sortConfig, setSortConfig] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [searchValue, setSearchValue] = useState("");
@@ -34,19 +35,16 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
     limit: perPage,
     search: searchValue,
     ...filters,
+    ...sortConfig,
   });
 
   const getStatusBadge = (status) => {
-    switch (status) {
-      case "ON_DUTY":
-        return <BadgeStatus variant="primary">Bertugas</BadgeStatus>;
-      case "WAITING_LOADING_TIME":
-        return <BadgeStatus variant="warning">Akan Muat Hari Ini</BadgeStatus>;
-      case "READY_FOR_ORDER":
-        return <BadgeStatus variant="success">Siap Menerima Order</BadgeStatus>;
-      default:
-        return <BadgeStatus variant="neutral">{status}</BadgeStatus>;
-    }
+    const statusConfig = getArmadaStatusBadge(status);
+    return (
+      <BadgeStatus variant={statusConfig.variant}>
+        {statusConfig.label}
+      </BadgeStatus>
+    );
   };
 
   const columns = [
@@ -66,7 +64,7 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
       ),
     },
     {
-      key: "licensePlate",
+      key: "vehicle",
       header: "Nama Kendaraan",
       render: (row) => (
         <div className="space-y-1">
@@ -112,12 +110,12 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
       ),
     },
     {
-      key: "vehicleBrand",
+      key: "brand",
       header: "Merek Kendaraan",
       render: (row) => row.vehicleBrand?.name || "-",
     },
     {
-      key: "vehicleType",
+      key: "type",
       header: "Tipe Kendaraan",
       render: (row) => row.vehicleType?.name || "-",
     },
@@ -156,7 +154,9 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
               </SimpleDropdownItem>
             )}
             <SimpleDropdownItem
-              onClick={() => router.push(`/manajemen-armada/${row.id}/detail`)}
+              onClick={() =>
+                router.push(`/manajemen-armada/${row.id}/detail?from=active`)
+              }
             >
               Detail
             </SimpleDropdownItem>
@@ -173,8 +173,27 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
   };
 
   const handleFilter = (newFilters) => {
-    // Apply filters
-    setFilters(newFilters);
+    // Apply filters - extract only the ID values
+    const processedFilters = {};
+
+    Object.entries(newFilters).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        // If it's an array of objects with id property, extract just the ids
+        processedFilters[key] = value.map((item) =>
+          typeof item === "object" && item.id ? item.id : item
+        );
+      } else if (typeof value === "object" && value?.id) {
+        // If it's a single object with id property, extract just the id
+        processedFilters[key] = value.id;
+      } else {
+        // Otherwise keep the value as is
+        processedFilters[key] = value;
+      }
+    });
+
+    console.log("Processed filters:", processedFilters);
+
+    setFilters(processedFilters);
     setCurrentPage(1); // Reset to first page when filtering
   };
 
@@ -231,19 +250,12 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
     onPerPageChange?.(limit);
   };
 
-  const handleSort = (key, direction) => {
-    setSortConfig({ key, direction });
-    // Sorting by key and direction
-    // TODO: Implement actual sorting logic here
-    // This would typically involve calling an API with sort parameters
-  };
-
-  // Add warning indicators to rows
-  const rowClassName = (row) => {
-    if (row.warningDocumentExpired || row.pendingUpdateDriver) {
-      return "";
+  const handleSort = (sort, order) => {
+    if (sort || order) {
+      setSortConfig({ sort, order });
+    } else {
+      setSortConfig();
     }
-    return "";
   };
 
   const handleDriverUpdateSuccess = () => {
@@ -265,7 +277,7 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
           totalCountLabel="Armada"
           currentPage={data?.pagination?.page || currentPage}
           totalPages={data?.pagination?.totalPages || 1}
-          totalItems={data?.pagination?.totalItems || 0}
+          totalItems={count || data?.pagination?.totalItems || 0}
           perPage={data?.pagination?.limit || perPage}
           onPageChange={handlePageChange}
           onPerPageChange={handlePerPageChange}
@@ -274,20 +286,22 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
           onSort={handleSort}
           loading={isLoading}
           showPagination
-          rowClassName={rowClassName}
           filterConfig={getFilterConfig()}
         />
       </div>
 
-      <DriverSelectionModal
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-        onSuccess={handleDriverUpdateSuccess}
-        vehicleId={selectedVehicle?.id}
-        vehiclePlate={selectedVehicle?.licensePlate}
-        currentDriverId={selectedVehicle?.assignedDriver?.id}
-        title={selectedVehicle?.assignedDriver ? "Ubah Driver" : "Pilih Driver"}
-      />
+      {isModalOpen && (
+        <DriverSelectionModal
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={handleDriverUpdateSuccess}
+          vehicleId={selectedVehicle?.id}
+          vehiclePlate={selectedVehicle?.licensePlate}
+          currentDriverId={selectedVehicle?.assignedDriver?.id}
+          title={
+            selectedVehicle?.assignedDriver ? "Ubah Driver" : "Pilih Driver"
+          }
+        />
+      )}
     </>
   );
 };

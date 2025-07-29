@@ -18,7 +18,7 @@ import TambahExcel from "./tambah-excel";
 
 export default function TambahMassal() {
   return (
-    <div className="my-6 max-h-screen w-full space-y-4">
+    <div className="my-6 max-h-screen w-full space-y-4 pb-20">
       {/* Header  */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">

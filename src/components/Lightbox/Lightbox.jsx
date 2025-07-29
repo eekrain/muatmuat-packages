@@ -185,7 +185,7 @@ export const LightboxProvider = ({
             <div className="mt-3 hidden justify-center gap-2 md:flex md:flex-row">
               {memoizedImages.map((image, index) => (
                 <img
-                  key={image}
+                  key={`${index}_${image}`}
                   src={image}
                   className={lightboxPreviewThumbVariants({
                     variant,

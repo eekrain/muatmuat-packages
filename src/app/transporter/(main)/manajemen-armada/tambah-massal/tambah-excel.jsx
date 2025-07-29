@@ -8,17 +8,25 @@ import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import { DataTable } from "@/components/DataTable";
 import DragAndDropUpload from "@/components/DragAndDropUpload/DragAndDropUpload";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import Toggle from "@/components/Toggle/Toggle";
+import { isDev } from "@/lib/constants/is-dev";
 import { toast } from "@/lib/toast";
+import { formatDate } from "@/lib/utils/dateFormat";
 
 const TambahExcel = () => {
-  const { success } = toast;
+  const { success, error } = toast;
   const [list, setList] = useState([]);
+  const [stateUpload, setStateUpload] = useState(true);
   const columns = [
     {
       key: "tanggal",
       header: "Tanggal",
       width: "80px",
       sortable: true,
+      render: (row) => {
+        const date = new Date(row.tanggal);
+        return formatDate(date);
+      },
     },
     {
       key: "document",
@@ -42,23 +50,36 @@ const TambahExcel = () => {
       header: "Status",
       width: "80px",
       sortable: false,
+      render: (row) => (
+        <>
+          {row.status === "Sukses"
+            ? "Berhasil menambah armada"
+            : "Gagal menambah armada"}
+        </>
+      ),
     },
     {
       key: "action",
       header: "Tindakan",
       width: "80px",
       sortable: false,
-      render: (row) => (
-        <button className="flex items-center gap-1 font-medium text-primary-700">
-          Unduh Report
-          <IconComponent
-            src="/icons/download16.svg"
-            alt="download"
-            width={16}
-            height={16}
-          />
-        </button>
-      ),
+      render: (row) => {
+        if (row.status === "Gagal") {
+          return (
+            <button className="flex items-center gap-1 font-medium text-primary-700">
+              Unduh Report
+              <IconComponent
+                src="/icons/download16.svg"
+                alt="download"
+                width={16}
+                height={16}
+              />
+            </button>
+          );
+        } else {
+          return <>-</>;
+        }
+      },
     },
   ];
   const [isUploading, setIsUploading] = useState(false);
@@ -71,19 +92,37 @@ const TambahExcel = () => {
       setList([
         ...list,
         {
-          tanggal: new Date().toISOString().split("T")[0],
+          tanggal: new Date().toISOString(),
           document: file.name,
           name: "John Doe",
-          status: "Sukses",
+          status: stateUpload ? "Sukses" : "Gagal",
         },
       ]);
-      // Show success message
-      success(`Berhasil menambah ${20} armada`);
+      if (stateUpload) {
+        // Show success message
+        success(`Berhasil menambah ${20} armada`);
+      } else {
+        error(
+          "Harap selesaikan data pada menu Draft terlebih dahulu sebelum menambah armada baru."
+        );
+      }
     }, 3000);
   };
 
   return (
     <div className="grid grid-cols-2 gap-4">
+      {/* Temporary Toggle (use it to toggle between success upload or fail upload) */}
+      {isDev && (
+        <div className="col-span-2">
+          <Toggle
+            value={stateUpload}
+            textActive="Sukses unggah file"
+            textInactive="Gagal unggah file"
+            onClick={() => setStateUpload(!stateUpload)}
+          />
+        </div>
+      )}
+
       {/* Card 1: Download Template */}
       <div className="flex flex-1 flex-col rounded-lg bg-white p-6 shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
         <div className="flex flex-col items-start gap-4 self-stretch">
@@ -149,7 +188,7 @@ const TambahExcel = () => {
       </div>
 
       {/* Card 3: Riwayat Unggahan */}
-      <div className="col-span-2 flex flex-1 flex-col rounded-lg bg-white shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
+      <div className="col-span-2 flex max-h-[400px] flex-1 flex-col rounded-lg bg-white shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
         {list.length > 0 ? (
           <DataTable
             data={list}
@@ -167,6 +206,7 @@ const TambahExcel = () => {
                 Riwayat Unggahan 90 Hari Terakhir
               </h2>
             }
+            fixedHeight={true}
             // onPageChange={handlePageChange}
             // onPerPageChange={handlePerPageChange}
             // onSearch={handleSearch}

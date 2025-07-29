@@ -59,14 +59,14 @@ const HeaderLayout = ({
       isDropdown: true,
       dropdownItems: [
         {
-          id: "dashboard-main",
-          label: "Dashboard Utama",
-          href: "/dashboard",
+          id: "dashboard-analytics",
+          label: "Dashboard Analytics",
+          href: "/dashboard/analytics",
         },
         {
-          id: "dashboard-analytics",
-          label: "Analytics",
-          href: "/dashboard/analytics",
+          id: "dashboard-real-time",
+          label: "Dashboard Real-time",
+          href: "/dashboard/real-time",
         },
       ],
     },
@@ -107,9 +107,19 @@ const HeaderLayout = ({
       isDropdown: true,
       dropdownItems: [
         {
-          id: "laporan-1",
-          label: "Laporan",
-          onClick: () => alert("Handle redirect to laporan"),
+          id: "laporan-pendapatan",
+          label: "Laporan Pendapatan",
+          href: "/laporan/pendapatan",
+        },
+        {
+          id: "laporan-pencairan-dana",
+          label: "Laporan Pencairan Dana",
+          href: "/laporan/pencairan-dana",
+        },
+        {
+          id: "laporan-aktivitas-armada-driver",
+          label: "Laporan Aktivitas Armada & Driver",
+          href: "/laporan/aktivitas-armada-driver",
         },
       ],
     },
