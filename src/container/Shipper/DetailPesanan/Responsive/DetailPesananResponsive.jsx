@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import {
   ResponsiveProvider,
   ResponsiveRoute,
-  useResponsiveNavigation,
 } from "@/lib/responsive-navigation";
 // Import the default screen without dynamic import
 import { dynamicScreen } from "@/lib/utils/dynamic-screen";
@@ -25,8 +24,8 @@ const RingkasanStatusPesananScreen = dynamicScreen(
 const LacakArmadaScreen = dynamicScreen(
   () => import("./LacakArmada/LacakArmadaScreen")
 );
-const DriverStatusDetailScreen = dynamicScreen(
-  () => import("./DriverStatusDetail/DriverStatusDetailScreen")
+const DetailStatusDriverScreen = dynamicScreen(
+  () => import("./DetailStatusDriver/DetailStatusDriverScreen")
 );
 const ProofPhotoScreen = dynamicScreen(
   () => import("./ProofPhoto/ProofPhotoScreen")
@@ -39,10 +38,10 @@ const CariSemuaDriverScreen = dynamicScreen(
 );
 
 const DetailPesananResponsive = ({}) => {
-  const navigation = useResponsiveNavigation();
-  useEffect(() => {
-    navigation.replace("/CariSemuaDriver");
-  }, []);
+  // const navigation = useResponsiveNavigation();
+  // useEffect(() => {
+  //   navigation.replace("/CariSemuaDriver");
+  // }, []);
   const { setIsGlobalLoading } = useLoadingAction();
 
   const { data } = useGetDetailPesananData("12345");
@@ -87,13 +86,13 @@ const DetailPesananResponsive = ({}) => {
         }
       />
       <ResponsiveRoute
-        path="/fleet-track"
+        path="/LacakArmada"
         component={<LacakArmadaScreen dataStatusPesanan={dataStatusPesanan} />}
       />
       <ResponsiveRoute
-        path="/detail-driver-status"
+        path="/DetailDriverStatus"
         component={
-          <DriverStatusDetailScreen dataStatusPesanan={dataStatusPesanan} />
+          <DetailStatusDriverScreen dataStatusPesanan={dataStatusPesanan} />
         }
       />
       <ResponsiveRoute path="/proof-photo" component={<ProofPhotoScreen />} />

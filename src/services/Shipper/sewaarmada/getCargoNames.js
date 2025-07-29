@@ -46,7 +46,6 @@ export const getCargoNames = async (cacheKey) => {
     result = mockAPIResult;
   } else {
     const query = params ? `?${new URLSearchParams(params).toString()}` : "";
-
     result = await fetcherMuatrans.get(`/v1/orders/cargos/names${query}`);
   }
 

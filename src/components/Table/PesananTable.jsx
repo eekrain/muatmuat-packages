@@ -19,6 +19,7 @@ import {
 } from "@/components/Timeline";
 import MuatBongkarModal from "@/container/Shipper/DetailPesanan/Web/RingkasanPesanan/MuatBongkarModal";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useTranslation } from "@/hooks/use-translation";
 import {
   OrderStatusEnum,
   OrderStatusTitle,
@@ -41,19 +42,21 @@ const PesananTable = ({
   lastFilterField,
   tabs,
 }) => {
+  const { t } = useTranslation();
+
   // Updated options with new structure
   const options = [
     {
       key: "status",
-      label: "Status",
+      label: t("labelStatus"),
       children: [
-        { value: "CONFIRMED", label: "Pesanan Terkonfirmasi" },
-        { value: "SCHEDULED_FLEET", label: "Armada Dijadwalkan" },
-        { value: "LOADING", label: "Proses Muat" },
-        { value: "UNLOADING", label: "Proses Bongkar" },
-        { value: "PREPARE_DOCUMENT", label: "Dokumen Sedang Disiapkan" },
-        { value: "COMPLETED", label: "Selesai" },
-        { value: "CANCELED", label: "Dibatalkan" },
+        { value: "CONFIRMED", label: t("labelPesananTerkonfirmasi") },
+        { value: "SCHEDULED_FLEET", label: t("labelArmadaDijadwalkan") },
+        { value: "LOADING", label: t("labelProsesMuat") },
+        { value: "UNLOADING", label: t("labelProsesBongkar") },
+        { value: "PREPARE_DOCUMENT", label: t("labelDokumenSedangDisiapkan") },
+        { value: "COMPLETED", label: t("labelSelesai") },
+        { value: "CANCELED", label: t("labelDibatalkan") },
       ],
     },
   ];
@@ -70,7 +73,8 @@ const PesananTable = ({
   const [selectedGroupedStatusInfo, setSelectedGroupedStatusInfo] = useState(
     []
   );
-
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
+  console.log("selectedGroupedStatusInfo", selectedGroupedStatusInfo);
   const selectedFilter = useShallowMemo(
     () =>
       options
@@ -126,16 +130,17 @@ const PesananTable = ({
     // Hit API /base_url/v1/orders/{orderId}/document-received
     alert("Hit API /base_url/v1/orders/{orderId}/document-received");
     setIsDocumentReceivedModalOpen(false);
-    toast.success("Pesanan berhasil diselesaikan");
+    toast.success(t("messagePesananBerhasilDiselesaikan"));
   };
 
   const handleReorderFleet = (id) => {
     if (id) {
-      alert("Pesan ulang");
+      router.push(`/sewaarmada?orderId=${id}`);
     } else {
       router.push("/sewaarmada");
     }
     setIsReorderFleetModalOpen(false);
+    setSelectedOrderId(null);
   };
 
   const openLocationModal = (order) => {
@@ -184,7 +189,7 @@ const PesananTable = ({
                     hasNoOrders || (!hasFilteredOrders && !queryParams.search)
                   }
                   appearance={{ containerClassName: "w-[262px]" }}
-                  placeholder="Cari Pesanan"
+                  placeholder={t("placeholderCariPesanan")}
                   icon={{
                     left: "/icons/search16.svg",
                     right: tempSearch ? (
@@ -218,7 +223,7 @@ const PesananTable = ({
               {searchOnly ? null : (
                 <div className="flex items-center gap-x-3">
                   <span className="text-xs font-bold leading-[14.4px] text-neutral-900">
-                    Tampilkan:
+                    {t("labelTampilkan")}
                   </span>
                   {tabs.map((tab, key) => {
                     // Check if this is the "Semua" tab (empty value) and if the current queryParams.status
@@ -253,7 +258,7 @@ const PesananTable = ({
                   className="text-xs font-bold leading-[14.4px] text-primary-700"
                   onClick={() => onChangeQueryParams("status", "")}
                 >
-                  Hapus Semua Filter
+                  {t("buttonHapusSemuaFilter")}
                 </button>
                 <TagBubble
                   withRemove={{
@@ -276,7 +281,7 @@ const PesananTable = ({
                   <tr className="border-y border-neutral-400 text-xs font-bold leading-[14.4px] text-neutral-600">
                     <th className="w-[156px] px-6 py-5 text-left">
                       <div className="flex items-center gap-x-2">
-                        <span>Kode Pesanan</span>
+                        <span>{t("labelKodePesanan")}</span>
                         <IconComponent
                           src={getSortIcon("invoice")}
                           onClick={handleKodePesananSort}
@@ -288,7 +293,7 @@ const PesananTable = ({
                     </th>
                     <th className="w-[156px] py-5 pl-0 pr-6 text-left">
                       <div className="flex items-center gap-x-2">
-                        <span>Tanggal Muat</span>
+                        <span>{t("labelTanggalMuat")}</span>
                         <IconComponent
                           src={getSortIcon("loadTimeStart")}
                           onClick={handleTanggalMuatSort}
@@ -301,13 +306,13 @@ const PesananTable = ({
                       </div>
                     </th>
                     <th className="w-[156px] py-5 pl-0 pr-6 text-left">
-                      Lokasi
+                      {t("labelLokasi")}
                     </th>
                     <th className="w-[200px] py-5 pl-0 pr-6 text-left">
-                      Armada
+                      {t("labelArmada")}
                     </th>
                     <th className="w-[232px] py-5 pl-0 pr-6 text-left">
-                      Status
+                      {t("labelStatusHeader")}
                     </th>
                     <th className="w-[174px] py-5 pl-0 pr-6"></th>
                   </tr>
@@ -400,7 +405,7 @@ const PesananTable = ({
                                   onClick={() => openLocationModal(order)}
                                   className="text-xs font-medium text-primary-700"
                                 >
-                                  Lihat Lokasi Lainnya
+                                  {t("buttonLihatLokasiLainnya")}
                                 </button>
                               )}
                             </div>
@@ -423,7 +428,7 @@ const PesananTable = ({
                                 </span>
                                 <div className="flex items-center gap-1">
                                   <span className="text-xxs font-medium text-neutral-600">
-                                    Carrier :
+                                    {t("labelCarrier")}
                                   </span>
                                   <span className="text-xxs font-medium text-neutral-900">
                                     {order.vehicle?.carrierName || "N/A"}
@@ -437,8 +442,9 @@ const PesananTable = ({
                                       width={14}
                                       height={14}
                                     />
-                                    <span className="text-xxs font-medium text-neutral-900">
-                                      {order.vehicle?.truckCount || 0} Unit
+                                    <span className="text-nowrap text-xxs font-medium text-neutral-900">
+                                      {order.vehicle?.truckCount || 0}{" "}
+                                      {t("labelUnit")}
                                     </span>
                                   </div>
                                   <div className="h-[2px] w-[2px] rounded-full bg-neutral-600"></div>
@@ -533,7 +539,7 @@ const PesananTable = ({
                                   }
                                   className="w-fit"
                                 >
-                                  {`${latestStatus?.statusLabel} : ${order.vehicle?.truckCount} Unit`}
+                                  {`${latestStatus?.statusLabel} : ${order.vehicle?.truckCount} ${t("labelUnit")}`}
                                 </BadgeStatusPesanan>
                               </button>
                             ) : (
@@ -580,24 +586,33 @@ const PesananTable = ({
                                   variant="muatparts-primary"
                                   className="w-full"
                                 >
-                                  Selesaikan Pesanan
+                                  {t("buttonSelesaikanPesanan")}
                                 </Button>
                               ) : latestStatus === OrderStatusEnum.COMPLETED ? (
                                 <Button
                                   variant="muatparts-primary"
                                   className="w-full"
                                 >
-                                  Beri Ulasan
+                                  {t("buttonBeriUlasan")}
                                 </Button>
-                              ) : beforeLoadingStatus.includes(latestStatus) ? (
+                              ) : beforeLoadingStatus.includes(latestStatus) ||
+                                latestStatus.statusCode ===
+                                  OrderStatusEnum.COMPLETED ||
+                                latestStatus.statusCode ===
+                                  OrderStatusEnum.CANCELED_BY_SHIPPER ||
+                                latestStatus.statusCode ===
+                                  OrderStatusEnum.CANCELED_BY_SYSTEM ||
+                                latestStatus.statusCode ===
+                                  OrderStatusEnum.CANCELED_BY_TRANSPORTER ? (
                                 <Button
                                   variant="muatparts-primary"
                                   className="w-full"
                                   onClick={() => {
+                                    setSelectedOrderId(order.orderId);
                                     setIsReorderFleetModalOpen(true);
                                   }}
                                 >
-                                  Pesan Ulang
+                                  {t("buttonPesanUlang")}
                                 </Button>
                               ) : null}
                               <Button
@@ -609,7 +624,7 @@ const PesananTable = ({
                                   )
                                 }
                               >
-                                Detail
+                                {t("buttonDetail")}
                               </Button>
                             </div>
                           </td>
@@ -628,8 +643,8 @@ const PesananTable = ({
                                   <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
                                     {order.statusInfo?.[0]?.statusCode ===
                                     "WAITING_PAYMENT"
-                                      ? "Lakukan pembayaran sebelum "
-                                      : "Lakukan pelunasan sebelum "}
+                                      ? t("messageLakukanPembayaranSebelum")
+                                      : t("messageLakukanPelunasanSebelum")}
                                     <span className="font-bold">
                                       {formatDate(order.paymentDeadline)}
                                     </span>
@@ -638,7 +653,7 @@ const PesananTable = ({
                                 {order.statusInfo?.[0]?.statusCode ===
                                 "WAITING_REPAYMENT" ? (
                                   <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
-                                    {"Tambahan Biaya "}
+                                    {t("labelTambahanBiaya")}
                                     <span className="font-bold">{`Rp${order.additionalCost.toLocaleString("id-ID")}`}</span>
                                   </span>
                                 ) : null}
@@ -656,7 +671,7 @@ const PesananTable = ({
                                   size="medium"
                                 />
                                 <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
-                                  Pesanan membutuhkan konfirmasi
+                                  {t("messagePesananMembutuhkanKonfirmasi")}
                                 </span>
                               </div>
                             </td>
@@ -672,7 +687,7 @@ const PesananTable = ({
                                   size="medium"
                                 />
                                 <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
-                                  Pengembalian dana sedang dalam proses.
+                                  {t("messagePengembalianDanaDalamProses")}
                                 </span>
                               </div>
                             </td>
@@ -695,7 +710,7 @@ const PesananTable = ({
                       <DataNotFound
                         className="gap-y-5"
                         textClass="text-[#868686] leading-[19.2px] w-[197px]"
-                        title="Keyword Tidak Ditemukan"
+                        title={t("titleKeywordTidakDitemukan")}
                         width={142}
                         height={122}
                         type="search"
@@ -704,7 +719,7 @@ const PesananTable = ({
                       <DataNotFound
                         className="gap-y-3"
                         textClass="text-[#868686] w-[117px]"
-                        title="Tidak ada data"
+                        title={t("titleTidakAdaData")}
                         width={96}
                         height={77}
                       />
@@ -719,12 +734,12 @@ const PesananTable = ({
                 <DataNotFound
                   className="gap-y-3"
                   textClass="text-[#868686] leading-[19.2px] w-[289px]"
-                  title="Oops, daftar pesananmu masih kosong"
+                  title={t("titleDaftarPesananKosong")}
                   width={96}
                   height={77}
                 />
                 <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
-                  Mulai buat pesanan sekarang untuk kebutuhan pengiriman kamu
+                  {t("messageMulaiBuatPesanan")}
                 </span>
                 <Button
                   className="max-w-[135px]"
@@ -732,7 +747,7 @@ const PesananTable = ({
                   onClick={() => router.push("/sewaarmada")}
                   type="button"
                 >
-                  Buat Pesanan
+                  {t("buttonBuatPesanan")}
                 </Button>
               </div>
             </div>
@@ -745,17 +760,16 @@ const PesananTable = ({
         isOpen={isDocumentReceivedModalOpen}
         setIsOpen={setIsDocumentReceivedModalOpen}
         title={{
-          text: "Informasi",
+          text: t("titleInformasi"),
         }}
         description={{
-          // eslint-disable-next-line quotes
-          text: 'Klik "Sudah", jika kamu sudah menerima bukti dokumen untuk menyelesaikan pesanan.',
+          text: t("messageKlikSudahJikaSudahMenerimaDokumen"),
         }}
         cancel={{
-          text: "Belum",
+          text: t("buttonBelum"),
         }}
         confirm={{
-          text: "Sudah",
+          text: t("buttonSudah"),
           onClick: handleReceiveDocument,
         }}
       />
@@ -765,16 +779,16 @@ const PesananTable = ({
         isOpen={isReorderFleetModalOpen}
         setIsOpen={setIsReorderFleetModalOpen}
         description={{
-          text: "Apakah kamu ingin menyalin pesanan ini untuk digunakan kembali atau membuat pesanan baru dengan detail yang berbeda?",
+          text: t("messageApakahInginMenyalinPesanan"),
           className: "leading-[16.8px]",
         }}
         cancel={{
-          text: "Pesan Baru",
+          text: t("buttonPesanBaru"),
           onClick: () => handleReorderFleet(),
         }}
         confirm={{
-          text: "Pesan Ulang",
-          onClick: () => handleReorderFleet(1),
+          text: t("buttonPesanUlangModal"),
+          onClick: () => handleReorderFleet(selectedOrderId),
         }}
       />
 
@@ -783,7 +797,7 @@ const PesananTable = ({
         isOpen={isLokasiMuatBongkarModalOpen}
         setIsOpen={setIsLokasiMuatBongkarModalOpen}
         data={selectedLocations}
-        title="Lokasi"
+        title={t("titleLokasi")}
       />
 
       <Modal
@@ -794,7 +808,7 @@ const PesananTable = ({
         <ModalContent type="muatmuat">
           <div className="flex w-[320px] flex-col items-center gap-y-6 px-6 py-8">
             <h1 className="text-base font-bold leading-[19.2px] text-neutral-900">
-              Status Lainnya
+              {t("titleStatusLainnya")}
             </h1>
             <div className="flex w-full flex-col gap-y-2">
               {selectedGroupedStatusInfo.map((status, key) => (
@@ -823,7 +837,7 @@ const PesananTable = ({
                     }
                     className="w-full"
                   >
-                    {`${status.statusLabel} : ${status.count} Unit`}
+                    {`${status.statusLabel} : ${status.count} ${t("labelUnit")}`}
                   </BadgeStatusPesanan>
                 </Fragment>
               ))}

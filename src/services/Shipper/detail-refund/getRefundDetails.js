@@ -53,7 +53,7 @@ export const getRefundDetails = async (orderId) => {
 
 export const useGetRefundDetails = (orderId) => {
   // SWR key includes orderId for cache separation
-  return useSWR(orderId ? `/api/v1/orders/${orderId}/refund` : null, () =>
+  return useSWR(orderId ? `/v1/orders/${orderId}/refund` : null, () =>
     getRefundDetails(orderId)
   );
 };

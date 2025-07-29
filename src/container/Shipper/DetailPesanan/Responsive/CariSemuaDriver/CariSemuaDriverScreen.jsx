@@ -63,10 +63,12 @@ const CariSemuaDriverScreen = ({ dataStatusPesanan }) => {
                   status={driver.driverStatusTitle}
                   onMenuClick={() => alert(`Menu for ${driver.name}`)}
                 />
-                <DriverInfo.Body driver={driver} />
-                <DriverInfo.Footer
-                  onContact={() => alert(`Contacting ${driver.name}`)}
-                  onTrack={() => alert(`Tracking ${driver.name}`)}
+                <DriverInfo.Avatar driver={driver} />
+                <DriverInfo.Actions
+                  onDriverContactClicked={() =>
+                    alert(`Contacting ${driver.name}`)
+                  }
+                  onLacakArmadaClicked={() => alert(`Tracking ${driver.name}`)}
                 />
               </div>
             </div>
