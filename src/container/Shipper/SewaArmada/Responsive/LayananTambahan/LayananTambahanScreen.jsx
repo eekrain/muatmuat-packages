@@ -219,7 +219,10 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                               contacts[0].tel.length > 0
                             ) {
                               locationSetField("namaPIC", contacts[0].name[0]);
-                              locationSetField("noHPPIC", contacts[0].tel[0]);
+                              locationSetField(
+                                "noHPPIC",
+                                contacts[0].tel[0].replace("+62", "0")
+                              );
                             } else {
                               alert(t("messageNoPhoneNumber"));
                             }

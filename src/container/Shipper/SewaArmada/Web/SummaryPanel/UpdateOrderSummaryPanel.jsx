@@ -15,7 +15,6 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
   const router = useRouter();
   const { setUpdateOrderSuccess } = useSewaArmadaActions();
   const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
-  console.log("calculated", calculatedPrice);
 
   const priceSummary = useShallowMemo(() => {
     if (!calculatedPrice || calculatedPrice?.totalPrice <= 0) {
@@ -165,9 +164,13 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
           ),
         }}
         cancel={{
+          // 25. 18 - Web - LB - 0275
+          classname: "min-w-[170px]",
           text: t("buttonKembali"),
         }}
         confirm={{
+          // 25. 18 - Web - LB - 0275
+          classname: "min-w-[170px]",
           text: t("buttonSimpanPerubahan"),
           onClick: handleUpdateOrder,
         }}

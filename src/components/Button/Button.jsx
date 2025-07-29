@@ -114,7 +114,7 @@ const Button = ({
       ) : (
         iconLeft
       )}
-      <span className="capsize">{children}</span>
+      <span>{children}</span>
       {typeof iconRight === "string" ? (
         <IconComponent
           loader={false}

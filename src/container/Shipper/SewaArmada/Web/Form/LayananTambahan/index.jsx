@@ -144,34 +144,37 @@ const LayananTambahan = ({
                       <p className="text-xs font-medium leading-[14.4px]">
                         {shippingDetails.detailAddress}
                       </p>
-                      {[
-                        {
-                          iconSrc: "/icons/profile16.svg",
-                          label: "Nama Penerima :",
-                          value: shippingDetails.recipientName,
-                        },
-                        {
-                          iconSrc: "/icons/call16.svg",
-                          label: "Nomor Handphone Penerima : ",
-                          value: shippingDetails.recipientPhone,
-                        },
-                        {
-                          iconSrc: "/icons/transporter16.svg",
-                          label: "Ekspedisi Pengiriman : ",
-                          value: shippingOption?.courierName,
-                        },
-                      ].map((item, key) => (
-                        <div className="flex items-center gap-x-2" key={key}>
-                          <IconComponent
-                            className="icon-fill-muat-trans-secondary-900"
-                            src={item.iconSrc}
-                          />
-                          <div className="text-xs leading-[14.4px]">
-                            <div className="font-medium">{item.label}</div>
-                            <div className="font-semibold">{item.value}</div>
+                      {/* 25. 18 - Web - LB - 0081 */}
+                      <div className="flex flex-col gap-y-2">
+                        {[
+                          {
+                            iconSrc: "/icons/profile16.svg",
+                            label: "Nama Penerima :",
+                            value: shippingDetails.recipientName,
+                          },
+                          {
+                            iconSrc: "/icons/call16.svg",
+                            label: "Nomor Handphone Penerima : ",
+                            value: shippingDetails.recipientPhone,
+                          },
+                          {
+                            iconSrc: "/icons/transporter16.svg",
+                            label: "Ekspedisi Pengiriman : ",
+                            value: shippingOption?.courierName,
+                          },
+                        ].map((item, key) => (
+                          <div className="flex items-center gap-x-2" key={key}>
+                            <IconComponent
+                              className="icon-fill-muat-trans-secondary-900"
+                              src={item.iconSrc}
+                            />
+                            <div className="text-xs leading-[14.4px]">
+                              <div className="font-medium">{item.label}</div>
+                              <div className="font-semibold">{item.value}</div>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                     <div className="min-w-[54px]">
                       {isEditPage ? null : (
