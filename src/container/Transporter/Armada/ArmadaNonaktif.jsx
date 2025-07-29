@@ -182,7 +182,17 @@ const ArmadaNonaktif = ({
             </button>
           </SimpleDropdownTrigger>
 
-          <SimpleDropdownContent className="w-fit">
+          <SimpleDropdownContent className="w-[133px]" align="end">
+            {row.status === "INACTIVE" && (
+              <>
+                <SimpleDropdownItem onClick={() => {}}>
+                  Lihat Agenda Driver
+                </SimpleDropdownItem>
+                <SimpleDropdownItem onClick={() => {}}>
+                  Aktifkan
+                </SimpleDropdownItem>
+              </>
+            )}
             <SimpleDropdownItem
               onClick={() =>
                 router.push(`/manajemen-armada/${row.id}/detail?from=inactive`)
@@ -190,8 +200,17 @@ const ArmadaNonaktif = ({
             >
               Detail
             </SimpleDropdownItem>
-            <SimpleDropdownItem onClick={() => {}}>Edit</SimpleDropdownItem>
-            <SimpleDropdownItem onClick={() => {}}>Hapus</SimpleDropdownItem>
+            {row.status === "NOT_PAIRED" && (
+              <>
+                <SimpleDropdownItem onClick={() => {}}>Ubah</SimpleDropdownItem>
+                <SimpleDropdownItem
+                  className="text-error-400"
+                  onClick={() => {}}
+                >
+                  Hapus
+                </SimpleDropdownItem>
+              </>
+            )}
           </SimpleDropdownContent>
         </SimpleDropdown>
       ),
@@ -212,7 +231,7 @@ const ArmadaNonaktif = ({
 
   // Transform dataFilter to match FilterDropdown format
   const getFilterConfig = () => {
-    if (!data?.dataFilter) return null;
+    if (!data?.dataFilter) return {};
 
     return {
       categories: [
@@ -275,7 +294,7 @@ const ArmadaNonaktif = ({
   const getDisplayOptions = () => {
     // Get display options called
 
-    if (!data?.dataFilter?.status) {
+    if (!data?.dataFilter?.status.length > 0) {
       // No status data available in dataFilter
       return null;
     }
