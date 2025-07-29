@@ -128,6 +128,7 @@ request body
 - **Always interpolate variables (such as IDs) directly into the SWR cache key. Do not leave placeholders like `{orderId}` in the cache key.**
 - The request body is passed in the `{ arg }` object when calling the mutation's `trigger` function.
 - Example:
+
   ```js
   // CORRECT: Interpolate orderId into the cache key
   export const useCreateDriverReview = (orderId) =>
@@ -135,8 +136,10 @@ request body
       fetcherMuatrans.post(url, arg)
     );
   ```
+
   // INCORRECT: Do NOT leave placeholders in the cache key
   // useSWRMutation("/api/v1/orders/{orderId}/reviews", ...)
+
   ```
 
   ```

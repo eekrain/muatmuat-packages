@@ -55,7 +55,7 @@ const ContentUlasan = ({
 
   const handleSave = () => {
     if (ratingView == 0) {
-      toast.error("ratingView driver wajib diisi");
+      toast.error("rating driver wajib diisi");
     } else {
       alert("jalankan api");
     }
@@ -73,8 +73,8 @@ const ContentUlasan = ({
           />
         </div>
         {!canReview ? (
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-col">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
               <span className="text-xs font-medium text-[#7B7B7B]">
                 Tanggal Ulasan
               </span>
@@ -82,7 +82,7 @@ const ContentUlasan = ({
                 {formatDate(reviewedAt)}
               </div>
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col gap-2">
               <span className="text-xs font-medium text-[#7B7B7B]">
                 Rating Driver
               </span>
@@ -93,7 +93,7 @@ const ContentUlasan = ({
                       key={starIndex}
                       className={`h-6 w-6 transition-colors ${
                         starIndex <= (hoveredStar || ratingView)
-                          ? "fill-yellow-400 text-yellow-400"
+                          ? "fill-[#FEA010] text-[#FEA010]"
                           : "text-gray-300"
                       }`}
                     />
@@ -104,12 +104,22 @@ const ContentUlasan = ({
                 </span>
               </div>
             </div>
+            {review && (
+              <div className="flex flex-col gap-2">
+                <span className="text-xs font-medium text-[#7B7B7B]">
+                  Ulasan
+                </span>
+                <div className="text-xs font-medium text-gray-900">
+                  {review}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <>
             {/* ratingView Section */}
             <div className="">
-              <span className="mb-3 text-base font-medium text-gray-900">
+              <span className="mb-3 text-sm font-medium text-gray-900">
                 Rating Driver<span className="text-gray-900">*</span>
               </span>
               <div className="flex items-center gap-3">
@@ -125,14 +135,14 @@ const ContentUlasan = ({
                       <Star
                         className={`h-6 w-6 transition-colors ${
                           starIndex <= (hoveredStar || ratingView)
-                            ? "fill-yellow-400 text-yellow-400"
+                            ? "fill-[#FEA010] text-[#FEA010]"
                             : "text-gray-300"
                         }`}
                       />
                     </button>
                   ))}
                 </div>
-                <span className="text-xs font-medium text-gray-900">
+                <span className="text-sm text-xs font-medium text-gray-900">
                   {rateView[hoveredStar || ratingView]}
                 </span>
               </div>
@@ -140,9 +150,9 @@ const ContentUlasan = ({
 
             {/* reviewRating Section */}
             <div className="">
-              <h4 className="mb-3 text-base font-medium text-gray-900">
+              <h4 className="mb-3 text-sm font-medium text-gray-900">
                 Berikan ulasan untuk driver{" "}
-                <span className="text-base font-medium text-gray-900">
+                <span className="text-sm font-medium text-gray-900">
                   (Opsional)
                 </span>
               </h4>
@@ -169,7 +179,7 @@ const ContentUlasan = ({
               onClick={handleSave}
               type="button"
             >
-              Beri Ulasan
+              Simpan
             </Button>
           </>
         )}

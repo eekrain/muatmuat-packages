@@ -30,7 +30,7 @@ const UlasanScreen = () => {
       onClickBackButton={() => navigation.pop()}
     >
       <div className="mb-16 space-y-2 bg-neutral-200">
-        <HeaderComponentUlasan />
+        <HeaderComponentUlasan orderCode={ulasanData?.Data?.orderCode} />
         {ulasanData?.Data?.drivers?.map((item, i) => (
           <ContentUlasan key={i} {...item} />
         ))}
