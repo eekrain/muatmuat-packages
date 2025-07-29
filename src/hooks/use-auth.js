@@ -136,10 +136,7 @@ export const useAuth = () => {
 
       if (process.env.NEXT_PUBLIC_APP_MODE === "transporter") {
         // Transporter mode: redirect to appropriate login page
-        redirectUrl =
-          process.env.NEXT_PUBLIC_ENVIRONMENT === "dev"
-            ? "/dev-login"
-            : "/login";
+        redirectUrl = "/login";
       } else {
         // Other modes: redirect to external signout
         redirectUrl = `${process.env.NEXT_PUBLIC_INTERNAL_WEB}login/signout`;
