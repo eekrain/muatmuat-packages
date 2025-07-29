@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 import { ChevronDown } from "lucide-react";
 
+import { Alert } from "@/components/Alert/Alert";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import { DataTable } from "@/components/DataTable";
 import {
@@ -14,6 +16,7 @@ import {
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import DriverSelectionModal from "@/container/Transporter/Driver/DriverSelectionModal";
+import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
 import { useGetInactiveVehiclesData } from "@/services/Transporter/manajemen-armada/getInactiveVehiclesData";
 
 const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
@@ -36,14 +39,12 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
   });
 
   const getStatusBadge = (status) => {
-    switch (status) {
-      case "UNPAIRED":
-        return <BadgeStatus variant="warning">Belum Dipasangkan</BadgeStatus>;
-      case "INACTIVE":
-        return <BadgeStatus variant="neutral">Nonaktif</BadgeStatus>;
-      default:
-        return <BadgeStatus variant="neutral">{status}</BadgeStatus>;
-    }
+    const statusConfig = getArmadaStatusBadge(status);
+    return (
+      <BadgeStatus variant={statusConfig.variant}>
+        {statusConfig.label}
+      </BadgeStatus>
+    );
   };
 
   const columns = [
@@ -266,7 +267,7 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
       if (!data?.summary) return 0;
 
       switch (statusId) {
-        case "UNPAIRED":
+        case "NOT_PAIRED":
           return data.summary.unpaired || 0;
         case "INACTIVE":
           return data.summary.inactive || 0;
@@ -281,7 +282,7 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
         value: item.id,
         label: item.value,
         count: count,
-        hasNotification: item.id === "UNPAIRED" && count > 0,
+        hasNotification: item.id === "NOT_PAIRED" && count > 0,
       };
     });
 
@@ -305,9 +306,27 @@ const ArmadaNonaktif = ({ onPageChange, onPerPageChange, onStatusChange }) => {
     setSelectedVehicle(null);
   };
 
+  const hasAlert = true; // You can modify this condition based on your requirements
+
   return (
     <>
-      <div className="h-[calc(100vh-300px)]">
+      <div
+        className={hasAlert ? "h-[calc(100vh-352px)]" : "h-[calc(100vh-300px)]"}
+      >
+        {hasAlert && (
+          <Alert className="mb-4 bg-secondary-100">
+            <div className="font-medium">
+              Terdapat <span className="font-bold">3 Armada</span> dengan masa
+              berlaku STNK atau KIR yang akan segera/telah berakhir.
+              <Link
+                href="/manajemen-armada/expired"
+                className="ml-2 text-primary-700"
+              >
+                Lihat Armada
+              </Link>
+            </div>
+          </Alert>
+        )}
         <DataTable
           data={data?.vehicles || []}
           columns={columns}

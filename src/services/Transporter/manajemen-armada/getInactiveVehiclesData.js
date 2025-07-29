@@ -31,7 +31,7 @@ const apiResultInactiveVehicles = {
             name: "Hino Dutro",
           },
           assignedDriver: null,
-          status: "UNPAIRED",
+          status: "NOT_PAIRED",
           warningDocumentExpired: false,
           pendingUpdateDriver: false,
         },
@@ -276,7 +276,7 @@ const apiResultInactiveVehicles = {
           { id: "550e8400-e29b-41d4-a716-446655440002", value: "Isuzu Elf" },
         ],
         status: [
-          { id: "UNPAIRED", value: "Belum Dipasangkan" },
+          { id: "NOT_PAIRED", value: "Belum Dipasangkan" },
           { id: "INACTIVE", value: "Nonaktif" },
         ],
       },

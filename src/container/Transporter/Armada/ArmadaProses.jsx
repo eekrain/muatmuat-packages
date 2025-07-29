@@ -12,6 +12,7 @@ import {
   SimpleDropdownItem,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
+import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
 import { useGetProcessVehiclesData } from "@/services/Transporter/manajemen-armada/getProcessVehiclesData";
 
 const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
@@ -32,20 +33,12 @@ const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
   });
 
   const getStatusBadge = (status) => {
-    switch (status) {
-      case "DALAM_TINJAUAN":
-        return <BadgeStatus variant="primary">Dalam Tinjauan</BadgeStatus>;
-      case "VERIFIKASI_DITOLAK":
-        return <BadgeStatus variant="error">Verifikasi Ditolak</BadgeStatus>;
-      case "MENUNGGU_PEMASANGAN_GPS":
-        return (
-          <BadgeStatus variant="warning">Menunggu Pemasangan GPS</BadgeStatus>
-        );
-      case "PROSES_KALIBRASI":
-        return <BadgeStatus variant="warning">Proses Kalibrasi</BadgeStatus>;
-      default:
-        return <BadgeStatus variant="neutral">{status}</BadgeStatus>;
-    }
+    const statusConfig = getArmadaStatusBadge(status);
+    return (
+      <BadgeStatus variant={statusConfig.variant}>
+        {statusConfig.label}
+      </BadgeStatus>
+    );
   };
 
   const columns = [
@@ -118,12 +111,12 @@ const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
           <SimpleDropdownContent className="w-fit">
             <SimpleDropdownItem onClick={() => {}}>Detail</SimpleDropdownItem>
             <SimpleDropdownItem onClick={() => {}}>Edit</SimpleDropdownItem>
-            {row.status === "VERIFIKASI_DITOLAK" && (
+            {row.status === "VERIFICATION_REJECTED" && (
               <SimpleDropdownItem onClick={() => {}}>
                 Kirim Ulang Verifikasi
               </SimpleDropdownItem>
             )}
-            {row.status === "MENUNGGU_PEMASANGAN_GPS" && (
+            {row.status === "WAITING_GPS_INSTALLATION" && (
               <SimpleDropdownItem onClick={() => {}}>
                 Konfirmasi Pemasangan GPS
               </SimpleDropdownItem>
@@ -210,7 +203,7 @@ const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
 
   // Add warning indicators to rows
   // const rowClassName = (row) => {
-  //   if (row.status === "VERIFIKASI_DITOLAK") {
+  //   if (row.status === "VERIFICATION_REJECTED") {
   //     return "bg-red-50";
   //   }
   //   return "";
@@ -230,13 +223,13 @@ const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
       if (!data?.summary) return 0;
 
       switch (statusId) {
-        case "DALAM_TINJAUAN":
+        case "IN_REVIEW":
           return data.summary.dalamTinjauan || 0;
-        case "VERIFIKASI_DITOLAK":
+        case "VERIFICATION_REJECTED":
           return data.summary.verifikasiDitolak || 0;
-        case "MENUNGGU_PEMASANGAN_GPS":
+        case "WAITING_GPS_INSTALLATION":
           return data.summary.menungguPemasanganGPS || 0;
-        case "PROSES_KALIBRASI":
+        case "CALIBRATION_PROCESS":
           return data.summary.prosesKalibrasi || 0;
         default:
           return 0;
@@ -249,7 +242,7 @@ const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
         value: item.id,
         label: item.value,
         count: count,
-        hasNotification: item.id === "PROSES_KALIBRASI" && count > 0,
+        hasNotification: item.id === "CALIBRATION_PROCESS" && count > 0,
       };
     });
 

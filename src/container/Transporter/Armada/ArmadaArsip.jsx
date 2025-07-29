@@ -12,6 +12,7 @@ import {
   SimpleDropdownItem,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
+import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
 import { useGetArchivedVehiclesData } from "@/services/Transporter/manajemen-armada/getArchivedVehiclesData";
 
 const ArmadaArsip = ({ onPageChange, onPerPageChange }) => {
@@ -30,12 +31,12 @@ const ArmadaArsip = ({ onPageChange, onPerPageChange }) => {
   });
 
   const getStatusBadge = (status) => {
-    switch (status) {
-      case "DELETED":
-        return <BadgeStatus variant="error">Dihapus</BadgeStatus>;
-      default:
-        return <BadgeStatus variant="neutral">{status}</BadgeStatus>;
-    }
+    const statusConfig = getArmadaStatusBadge(status);
+    return (
+      <BadgeStatus variant={statusConfig.variant}>
+        {statusConfig.label}
+      </BadgeStatus>
+    );
   };
 
   const columns = [
