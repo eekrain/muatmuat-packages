@@ -1,11 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-// --- Imports for React Hook Form and Valibot ---
 import { valibotResolver } from "@hookform/resolvers/valibot";
-import { ChevronLeft } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import * as v from "valibot";
 
@@ -17,10 +15,30 @@ import FileUpload from "@/components/FileUpload/FileUpload";
 import { FormLabel } from "@/components/Form/Form";
 import Input from "@/components/Form/Input";
 import ImageUploaderWeb from "@/components/ImageUploader/ImageUploaderWeb";
+import {
+  LightboxProvider,
+  LightboxTrigger,
+} from "@/components/Lightbox/Lightbox";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
+import PageTitle from "@/components/PageTitle/PageTitle";
 import { toast } from "@/lib/toast";
 
-// --- 1. Define the Valibot Schema ---
-// This schema centralizes all validation logic based on your task list.
+const MAX_FILE_SIZE_MB = 10;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
+const fileSchema = (requiredMessage, acceptedFormats) =>
+  v.pipe(
+    v.nonNullable(v.instance(File, requiredMessage), requiredMessage),
+    v.check((file) => {
+      const fileExtension = `.${file.name.split(".").pop()?.toLowerCase()}`;
+      return acceptedFormats.includes(fileExtension);
+    }, "Format file tidak sesuai ketentuan"),
+    v.check(
+      (file) => file.size <= MAX_FILE_SIZE_BYTES,
+      `Ukuran file melebihi ${MAX_FILE_SIZE_MB}MB`
+    )
+  );
+
 const driverSchema = v.object({
   namaLengkap: v.pipe(
     v.string("Nama lengkap wajib diisi"),
@@ -34,47 +52,66 @@ const driverSchema = v.object({
   noWhatsapp: v.pipe(
     v.string("Nomor WhatsApp wajib diisi"),
     v.minLength(1, "Nomor WhatsApp wajib diisi"),
-    v.regex(
-      /^08\d{8,}$/,
-      "Format nomor WhatsApp tidak valid (contoh: 081234567890)"
-    )
+    v.minLength(10, "No. Whatsapp minimal 8 digit"),
+    v.regex(/^08\d{8,}$/, "Format No. Whatsapp salah"),
+    v.checkAsync(async (input) => {
+      console.log(`[VALIDATION START] Checking number: ${input}`);
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      const registeredNumbers = ["081234567890"];
+      if (registeredNumbers.includes(input)) {
+        console.log(`[VALIDATION FAIL] Number ${input} is already registered.`);
+        return false;
+      }
+      console.log(`[VALIDATION PASS] Number ${input} is available.`);
+      return true;
+    }, "No. Whatsapp telah terdaftar")
   ),
-  // For files and dates, we check that they are not null on submission.
-  fotoKTP: v.nonNullable(
-    v.instance(File, "Foto KTP wajib diunggah"),
-    "Foto KTP wajib diunggah"
-  ),
+  fotoKTP: fileSchema("Foto KTP wajib diunggah", [
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".pdf",
+  ]),
   masaBerlakuSIM: v.nonNullable(
     v.instance(Date, "Masa berlaku SIM B2 Umum wajib diisi"),
     "Masa berlaku SIM B2 Umum wajib diisi"
   ),
-  fotoSIM: v.nonNullable(
-    v.instance(File, "Foto SIM wajib diunggah"),
-    "Foto SIM wajib diunggah"
-  ),
-  fotoDriver: v.nonNullable(
-    v.instance(File, "Foto driver wajib diunggah"),
-    "Foto driver wajib diunggah"
-  ),
+  fotoSIM: fileSchema("Foto SIM wajib diunggah", [
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".pdf",
+  ]),
+  fotoDriver: fileSchema("Foto driver wajib diunggah", [
+    ".jpg",
+    ".jpeg",
+    ".png",
+  ]),
 });
+
+const exampleImages = [
+  "https://picsum.photos/200/300",
+  "https://picsum.photos/id/237/200/300",
+  "https://picsum.photos/seed/picsum/200/300",
+];
 
 export default function TambahDriverPage() {
   const router = useRouter();
+  // State for the submission confirmation modal
+  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
+  const [formData, setFormData] = useState(null);
+  const [isSubmittingFinal, setIsSubmittingFinal] = useState(false);
 
-  const breadcrumbItems = [
-    { name: "Manajemen Driver", href: "/manajemen-driver" },
-    { name: "Tambah Driver" },
-  ];
+  // State for the navigation confirmation modal
+  const [isNavModalOpen, setIsNavModalOpen] = useState(false);
+  const [nextPath, setNextPath] = useState("");
 
-  // --- 2. Initialize React Hook Form ---
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm({
-    // Use the Valibot schema as the resolver
     resolver: valibotResolver(driverSchema),
-    // Set default values for the form
     defaultValues: {
       namaLengkap: "",
       noWhatsapp: "",
@@ -83,60 +120,80 @@ export default function TambahDriverPage() {
       fotoSIM: null,
       fotoDriver: null,
     },
-    // Validate on blur for a better user experience
     mode: "onBlur",
   });
 
-  // --- 3. Create the Submit Handler ---
-  // This function only runs if validation passes.
-  const onSubmit = async (data) => {
-    // `data` is the validated form data from the schema
-    console.log("Validated Data:", data);
+  // --- Handlers for Submission Flow ---
+  const handleOpenSubmitModal = (data) => {
+    setFormData(data);
+    setIsSubmitModalOpen(true);
+  };
+
+  const handleFinalSubmit = async () => {
+    if (!formData) return;
+    setIsSubmitModalOpen(false);
+    setIsSubmittingFinal(true);
+
+    toast.info("Mengunggah data dan file...");
+
+    const apiFormData = new FormData();
+    apiFormData.append("namaLengkap", formData.namaLengkap);
+    apiFormData.append("noWhatsapp", formData.noWhatsapp);
+    apiFormData.append("masaBerlakuSIM", formData.masaBerlakuSIM.toISOString());
+    apiFormData.append("fotoKTP", formData.fotoKTP);
+    apiFormData.append("fotoSIM", formData.fotoSIM);
+    apiFormData.append("fotoDriver", formData.fotoDriver);
 
     try {
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      toast.success("Driver berhasil ditambahkan");
+      toast.success("Driver baru berhasil ditambahkan!");
       router.push("/manajemen-driver");
     } catch (error) {
       toast.error("Gagal menambahkan driver. Silakan coba lagi.");
+    } finally {
+      setIsSubmittingFinal(false);
     }
   };
 
-  const handleCancel = () => {
-    router.push("/manajemen-driver");
+  // --- Handlers for Navigation Flow ---
+  const handleNavigation = (path) => {
+    if (!isDirty) {
+      router.push(path);
+    } else {
+      setNextPath(path);
+      setIsNavModalOpen(true);
+    }
   };
+
+  const handleConfirmNavigation = () => {
+    setIsNavModalOpen(false);
+    router.push(nextPath);
+  };
+
+  const breadcrumbItems = [
+    { name: "Manajemen Driver", href: "/manajemen-driver" },
+    { name: "Tambah Driver" },
+  ];
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <div className="mx-auto w-full max-w-[818px] px-4 py-8">
-        <div className="mb-4">
+      <div className="mx-auto w-full max-w-[818px] gap-4 px-4 py-6">
+        <div className="mb-4 space-y-4">
           <BreadCrumb data={breadcrumbItems} />
-        </div>
-        <div className="mb-6 flex items-center gap-3">
-          <button
-            onClick={() => router.back()}
-            className="flex h-6 w-6 items-center justify-center"
-          >
-            <ChevronLeft className="h-6 w-6 text-primary-700" />
-          </button>
-          <h1 className="text-xl font-bold text-neutral-900">Tambah Driver</h1>
+          <PageTitle>Tambah Driver</PageTitle>
         </div>
 
-        {/* --- 4. Wrap Everything in a Form Element --- */}
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(handleOpenSubmitModal)}>
+          {/* Form Content ... (shortened for brevity) */}
           <Card className="mb-6 border-none p-8">
             <h2 className="mb-4 text-lg font-semibold text-neutral-900">
               Informasi Driver
             </h2>
             <div className="space-y-6">
-              {/* Nama Lengkap */}
               <div className="grid gap-6 md:grid-cols-[178px_1fr]">
                 <FormLabel required className="text-neutral-600">
                   Nama Lengkap
                 </FormLabel>
-                {/* --- 5. Use Controller for Each Input --- */}
                 <Controller
                   name="namaLengkap"
                   control={control}
@@ -150,8 +207,6 @@ export default function TambahDriverPage() {
                   )}
                 />
               </div>
-
-              {/* No Whatsapp */}
               <div className="grid gap-6 md:grid-cols-[178px_1fr]">
                 <FormLabel required className="text-neutral-600">
                   No. Whatsapp
@@ -164,7 +219,6 @@ export default function TambahDriverPage() {
                       {...field}
                       type="tel"
                       inputMode="numeric"
-                      // Sanitize input while typing
                       onChange={(e) =>
                         field.onChange(e.target.value.replace(/[^0-9]/g, ""))
                       }
@@ -178,149 +232,162 @@ export default function TambahDriverPage() {
             </div>
           </Card>
 
-          <Card className="mb-6 border-none p-8">
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold text-neutral-900">
-                File dan Foto Driver
-              </h2>
-              <p className="text-xs text-neutral-700">
-                Lihat contoh file dan foto{" "}
-                <Link href="#" className="font-semibold text-primary-700">
-                  di sini
-                </Link>
-              </p>
-            </div>
-
-            <div className="space-y-6">
-              {/* Foto KTP */}
-              <div className="grid gap-6 md:grid-cols-[178px_1fr]">
-                <FormLabel required className="text-neutral-600">
-                  Foto KTP
-                </FormLabel>
-                <Controller
-                  name="fotoKTP"
-                  control={control}
-                  render={({ field }) => (
-                    <div className="w-full max-w-[328px]">
-                      <FileUpload
+          <LightboxProvider images={exampleImages} title="Contoh File dan Foto">
+            <Card className="mb-6 border-none p-8">
+              <div className="mb-4 space-y-4">
+                <h2 className="text-lg font-semibold text-neutral-900">
+                  File dan Foto Driver
+                </h2>
+                <p className="flex flex-row items-center gap-1 text-xs text-neutral-700">
+                  Lihat contoh file dan foto{" "}
+                  <LightboxTrigger>
+                    <a className="cursor-pointer font-semibold text-primary-700">
+                      di sini
+                    </a>
+                  </LightboxTrigger>
+                </p>
+              </div>
+              <div className="space-y-6">
+                <div className="grid gap-6 md:grid-cols-[178px_1fr]">
+                  <FormLabel required className="text-neutral-600">
+                    Foto KTP
+                  </FormLabel>
+                  <Controller
+                    name="fotoKTP"
+                    control={control}
+                    render={({ field }) => (
+                      <div className="w-full max-w-[328px]">
+                        <FileUpload
+                          value={field.value}
+                          onSuccess={(file) => field.onChange(file)}
+                          onError={(err) => toast.error(err)}
+                          maxSize={MAX_FILE_SIZE_MB}
+                          acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
+                          errorMessage={errors.fotoKTP?.message}
+                        />
+                      </div>
+                    )}
+                  />
+                </div>
+                <div className="grid items-start gap-6 md:grid-cols-[178px_1fr]">
+                  <FormLabel required className="pt-1.5 text-neutral-600">
+                    Masa Berlaku SIM B2 Umum
+                  </FormLabel>
+                  <Controller
+                    name="masaBerlakuSIM"
+                    control={control}
+                    render={({ field }) => (
+                      <DatePicker
                         value={field.value}
-                        onSuccess={(file) => field.onChange(file)}
-                        onError={(err) => toast.error(err)}
-                        maxSize={10}
-                        acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
-                        buttonText="Unggah"
-                        errorMessage={errors.fotoKTP?.message}
+                        onChange={(date) => field.onChange(date)}
+                        placeholder="Pilih Tanggal Masa Berlaku SIM B2 Umum"
+                        errorMessage={errors.masaBerlakuSIM?.message}
+                        className="w-full max-w-[328px]"
                       />
-                    </div>
-                  )}
-                />
+                    )}
+                  />
+                </div>
+                <div className="grid gap-6 md:grid-cols-[178px_1fr]">
+                  <FormLabel required className="text-neutral-600">
+                    Foto SIM B2
+                  </FormLabel>
+                  <Controller
+                    name="fotoSIM"
+                    control={control}
+                    render={({ field }) => (
+                      <div className="w-full max-w-[328px]">
+                        <FileUpload
+                          value={field.value}
+                          onSuccess={(file) => field.onChange(file)}
+                          onError={(err) => toast.error(err)}
+                          maxSize={MAX_FILE_SIZE_MB}
+                          acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
+                          errorMessage={errors.fotoSIM?.message}
+                        />
+                      </div>
+                    )}
+                  />
+                </div>
+                <div className="grid gap-6 md:grid-cols-[178px_1fr]">
+                  <FormLabel required className="text-neutral-600">
+                    Foto Driver
+                  </FormLabel>
+                  <Controller
+                    name="fotoDriver"
+                    control={control}
+                    render={({ field }) => (
+                      <div className="w-full max-w-[328px]">
+                        <ImageUploaderWeb
+                          value={field.value}
+                          onUpload={(image) => field.onChange(image)}
+                          isNull={!!errors.fotoDriver}
+                          className="h-[124px] w-[124px]"
+                          uploadText="Unggah"
+                          errorText="Unggah Ulang"
+                          maxSize={MAX_FILE_SIZE_MB}
+                          acceptedFormats={[".jpg", ".jpeg", ".png"]}
+                          cropperTitle="Sesuaikan Foto Driver"
+                        />
+                        {errors.fotoDriver ? (
+                          <span className="mt-2 block text-xs text-error-400">
+                            {errors.fotoDriver.message}
+                          </span>
+                        ) : (
+                          <p className="mt-2 text-xs text-neutral-600">
+                            Format .jpg/.jpeg/.png, maks. {MAX_FILE_SIZE_MB}MB
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  />
+                </div>
               </div>
+            </Card>
+          </LightboxProvider>
 
-              {/* Masa Berlaku SIM */}
-              <div className="grid items-start gap-6 md:grid-cols-[178px_1fr]">
-                <FormLabel required className="pt-1.5 text-neutral-600">
-                  Masa Berlaku SIM B2 Umum
-                </FormLabel>
-                <Controller
-                  name="masaBerlakuSIM"
-                  control={control}
-                  render={({ field }) => (
-                    <DatePicker
-                      value={field.value}
-                      onChange={(date) => field.onChange(date)}
-                      placeholder="Pilih Tanggal Masa Berlaku SIM B2 Umum"
-                      errorMessage={errors.masaBerlakuSIM?.message}
-                      className="w-full max-w-[328px]"
-                    />
-                  )}
-                />
-              </div>
-
-              {/* Foto SIM */}
-              <div className="grid gap-6 md:grid-cols-[178px_1fr]">
-                <FormLabel required className="text-neutral-600">
-                  Foto SIM B2
-                </FormLabel>
-                <Controller
-                  name="fotoSIM"
-                  control={control}
-                  render={({ field }) => (
-                    <div className="w-full max-w-[328px]">
-                      <FileUpload
-                        value={field.value}
-                        onSuccess={(file) => field.onChange(file)}
-                        onError={(err) => toast.error(err)}
-                        maxSize={10}
-                        acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
-                        buttonText="Unggah"
-                        errorMessage={errors.fotoSIM?.message}
-                      />
-                    </div>
-                  )}
-                />
-              </div>
-
-              {/* Foto Driver */}
-              <div className="grid gap-6 md:grid-cols-[178px_1fr]">
-                <FormLabel required className="text-neutral-600">
-                  Foto Driver
-                </FormLabel>
-                <Controller
-                  name="fotoDriver"
-                  control={control}
-                  render={({ field }) => (
-                    <div className="w-full max-w-[328px]">
-                      <ImageUploaderWeb
-                        // RHF's `onChange` handles setting the value
-                        onUpload={(image) => field.onChange(image)}
-                        onError={(error) => toast.error(error)}
-                        // Pass the error state to trigger the red border
-                        isNull={!!errors.fotoDriver}
-                        className="h-[124px] w-[124px]"
-                        uploadText="Unggah"
-                        errorText="Unggah Ulang"
-                        maxSize={10}
-                        acceptedFormats={[".jpg", ".jpeg", ".png"]}
-                      />
-                      {errors.fotoDriver ? (
-                        <span className="mt-2 block text-xs text-error-400">
-                          {errors.fotoDriver.message}
-                        </span>
-                      ) : (
-                        <p className="mt-2 text-xs text-neutral-600">
-                          Unggah foto driver dengan format .jpg/.jpeg/.png,
-                          besar file maks. 10MB
-                        </p>
-                      )}
-                    </div>
-                  )}
-                />
-              </div>
-            </div>
-          </Card>
-
-          {/* Action Buttons */}
           <div className="flex justify-end gap-3">
             <Button
               type="button"
               variant="muattrans-secondary"
-              onClick={handleCancel}
-              disabled={isSubmitting}
+              onClick={() => handleNavigation("/manajemen-driver")}
+              disabled={isSubmitting || isSubmittingFinal}
               className="min-w-[112px]"
             >
               Batal
             </Button>
             <Button
-              type="submit" // Use type="submit" to trigger form submission
+              type="submit"
               variant="muattrans-primary"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isSubmittingFinal}
               className="min-w-[112px]"
             >
-              {isSubmitting ? "Menyimpan..." : "Simpan"}
+              {isSubmitting || isSubmittingFinal ? "Menyimpan..." : "Simpan"}
             </Button>
           </div>
         </form>
       </div>
+
+      {/* Modal for Submitting */}
+      <ConfirmationModal
+        isOpen={isSubmitModalOpen}
+        setIsOpen={setIsSubmitModalOpen}
+        description={{
+          text: "Apakah kamu yakin menyimpan data ini?",
+        }}
+        cancel={{ text: "Batal" }}
+        confirm={{ text: "Yakin", onClick: handleFinalSubmit }}
+      />
+
+      {/* Modal for Navigating Away */}
+      <ConfirmationModal
+        isOpen={isNavModalOpen}
+        setIsOpen={setIsNavModalOpen}
+        description={{
+          text: "Apakah kamu yakin ingin berpindah halaman? Data yang telah diisi tidak akan disimpan",
+        }}
+        cancel={{ text: "Batal" }}
+        confirm={{ text: "Yakin", onClick: handleConfirmNavigation }}
+      />
     </div>
   );
 }

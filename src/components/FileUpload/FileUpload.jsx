@@ -1,23 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
-
-import { useSWRMutateHook } from "@/hooks/use-swr";
-import { fetcherMuatparts } from "@/lib/axios";
+import { useRef } from "react";
 
 import Button from "../Button/Button";
 import IconComponent from "../IconComponent/IconComponent";
-
-const ProgressBar = ({ progress }) => {
-  return (
-    <div className="relative h-[14px] w-[168px] self-center overflow-hidden rounded-[20px] bg-neutral-200">
-      <div
-        className="absolute left-0 top-0 h-full bg-primary-700 transition-all duration-200"
-        style={{ width: `${progress}%` }}
-      />
-    </div>
-  );
-};
 
 const FileUpload = ({
   className,
@@ -27,81 +13,52 @@ const FileUpload = ({
   onSuccess = () => {},
   value = null,
   acceptedFormats = [".jpg", ".jpeg", ".png"],
-  errorMessage, // Prop for the error message
+  errorMessage,
 }) => {
-  const [progress, setProgress] = useState(0);
-  const [isUploading, setIsUploading] = useState(false);
   const fileRef = useRef(null);
-
-  const { trigger: triggerUploadPhoto } = useSWRMutateHook(
-    "v1/muatparts/product/photo",
-    "POST",
-    (url, arg) => {
-      return fetcherMuatparts({
-        url,
-        method: "POST",
-        data: arg,
-        headers: { "Content-Type": "multipart/form-data" },
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          setProgress(percentCompleted);
-        },
-      });
-    }
-  );
 
   const displayFormats = acceptedFormats
     .map((format) => format.replace(".", ""))
     .join("/");
 
-  const handleFileChange = async (e) => {
+  const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (!file) return;
-
-    // Validate format before uploading
-    const fileExtension = `.${file.name.split(".").pop()}`;
-    if (!acceptedFormats.includes(fileExtension.toLowerCase())) {
-      onError(`Format file tidak sesuai. Gunakan: ${displayFormats}`);
-      return;
-    }
-
-    if (file.size > maxSize * 1024 * 1024) {
-      onError(`Ukuran file tidak boleh melebihi ${maxSize}MB`);
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      setProgress(0);
-      setIsUploading(true);
-      const response = await triggerUploadPhoto(formData);
-
-      if (response.data?.Message?.Code === 200) {
-        onSuccess(
-          // Pass the original File object along with URL and name
-          Object.assign(file, {
-            url: response.data?.Data?.url,
-            name: response.data?.Data?.name || file.name,
-          })
-        );
-      }
-    } catch (error) {
-      onError(error.message || "Gagal mengunggah file.");
-    } finally {
-      setProgress(0);
-      setIsUploading(false);
+    if (!file) {
+      // If user cancels file selection, do nothing
       if (fileRef.current) {
         fileRef.current.value = null;
       }
+      return;
     }
+
+    // Client-side validation for format
+    const fileExtension = `.${file.name.split(".").pop().toLowerCase()}`;
+    if (!acceptedFormats.includes(fileExtension)) {
+      onError("Format file tidak sesuai ketentuan");
+      if (fileRef.current) {
+        fileRef.current.value = null;
+      }
+      return;
+    }
+
+    // Client-side validation for size
+    if (file.size > maxSize * 1024 * 1024) {
+      onError(`Ukuran file melebihi ${maxSize}MB`);
+      if (fileRef.current) {
+        fileRef.current.value = null;
+      }
+      return;
+    }
+
+    // If validation passes, send the raw File object to the parent form
+    onSuccess(file);
   };
 
   const handleDelete = () => {
     onSuccess(null);
+    if (fileRef.current) {
+      fileRef.current.value = null;
+    }
   };
 
   return (
@@ -116,10 +73,12 @@ const FileUpload = ({
       {value ? (
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-y-2">
-            <span className="text-xs font-medium leading-[14.4px] text-success-400">
+            <span
+              className="truncate text-xs font-medium leading-[14.4px] text-success-400"
+              title={value.name}
+            >
               {value.name}
             </span>
-            {isUploading ? <ProgressBar progress={progress} /> : null}
           </div>
           <div className="flex items-center gap-4">
             <IconComponent
@@ -128,6 +87,7 @@ const FileUpload = ({
               className="h-4 w-4 cursor-pointer"
               width={16}
               height={16}
+              alt="Hapus file"
             />
             <span
               className="cursor-pointer text-xs font-medium leading-[14.4px] text-primary-700"
@@ -147,21 +107,14 @@ const FileUpload = ({
           >
             {label}
           </Button>
-
-          {isUploading ? (
-            <div className="ml-4">
-              <ProgressBar progress={progress} />
+          <div className="ml-4 flex w-full flex-1 flex-col">
+            <div className="text-sm leading-tight text-neutral-600">
+              Format file {displayFormats}
             </div>
-          ) : (
-            <div className="ml-4 flex w-full flex-1 flex-col">
-              <div className="text-sm leading-tight text-neutral-600">
-                Format file {displayFormats}
-              </div>
-              <div className="text-sm leading-tight text-neutral-600">
-                maks. {maxSize}MB
-              </div>
+            <div className="text-sm leading-tight text-neutral-600">
+              maks. {maxSize}MB
             </div>
-          )}
+          </div>
         </div>
       )}
 

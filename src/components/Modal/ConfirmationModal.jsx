@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 
 const ConfirmationModal = ({
   size = "small",
+  variant = "primary",
   isOpen,
   setIsOpen,
   title = { text: "", className: "" }, // Added default value here
@@ -58,7 +59,7 @@ const ConfirmationModal = ({
           ) : null}
           <div className="flex items-center gap-x-2">
             <Button
-              variant="muatparts-primary-secondary"
+              variant="muattrans-primary-secondary"
               // 25. 18 - Web - LB - 0275
               className={cn("h-8", cancelClassname)}
               onClick={onCancel}
@@ -67,7 +68,7 @@ const ConfirmationModal = ({
               {cancelText}
             </Button>
             <Button
-              variant="muatparts-primary"
+              variant="muattrans-primary"
               // 25. 18 - Web - LB - 0275
               className={cn("h-8", confirmClassname)}
               onClick={onConfirm}
