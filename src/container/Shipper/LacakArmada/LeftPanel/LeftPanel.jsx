@@ -33,7 +33,6 @@ export const LeftPanel = ({ dataDriverStatus }) => {
   return (
     <div className="grid grid-cols-1 grid-rows-[16px_24px_1fr] gap-6 bg-white px-6 pb-6 pt-8 shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
       <BreadCrumb data={breadcrumbItems} />
-
       <PageTitle className="mb-0">{t("titleLacakArmada")}</PageTitle>
 
       {dataDriverStatus && (

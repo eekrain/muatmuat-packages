@@ -1,11 +1,3 @@
-import { Info } from "lucide-react";
-
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalTrigger,
-} from "@/components/Modal/Modal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import {
   Tabs,
@@ -14,25 +6,20 @@ import {
   TabsTriggerWithSeparator,
 } from "@/components/Tabs/Tabs";
 
-import TambahExcel from "./tambah-excel";
+import PopUpInformasi from "./components/PopUpInformasi";
+import TambahArmadaMassal from "./components/Tabs/TambahArmadaMassal/TambahArmadaMassal";
+import TambahExcel from "./components/Tabs/TambahExcel/TambahExcel";
 
 export default function TambahMassal() {
   return (
-    <div className="my-6 max-h-screen w-full space-y-4 pb-20">
+    <div className="my-6 max-h-screen w-full space-y-4 px-6 pb-20">
       {/* Header  */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <PageTitle className="mb-0" withBack={false}>
             Tambah Armada Massal
           </PageTitle>
-          <Modal>
-            <ModalTrigger>
-              <Info className="size-5" />
-            </ModalTrigger>
-            <ModalContent className="w-modal-small">
-              <ModalHeader size="small" />
-            </ModalContent>
-          </Modal>
+          <PopUpInformasi />
         </div>
       </div>
 
@@ -59,10 +46,9 @@ export default function TambahMassal() {
         <TabsContent value="tambah_armada_excel" className="pt-4">
           <TambahExcel />
         </TabsContent>
-        <TabsContent
-          value="tambah_armada_massal"
-          className="pt-4"
-        ></TabsContent>
+        <TabsContent value="tambah_armada_massal" className="pt-4">
+          <TambahArmadaMassal />
+        </TabsContent>
         <TabsContent value="draft" className="pt-4"></TabsContent>
       </Tabs>
     </div>

@@ -1,4 +1,6 @@
 // /api/v1/orders/{orderId}/cancellation-history
+import useSWR from "swr";
+
 import { fetcherMuatrans } from "@/lib/axios";
 
 const useMockData = false; // toggle mock data
@@ -50,4 +52,4 @@ export const getCancellationHistory = async (cacheKey) => {
 };
 
 export const useGetCancellationHistory = (orderId) =>
-  useSWR(`cancellation-history/${orderId}`, fetcher);
+  useSWR(`cancellation-history/${orderId}`, getCancellationHistory);

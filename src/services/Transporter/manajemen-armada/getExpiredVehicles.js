@@ -1,5 +1,9 @@
 import useSWR from "swr";
 
+import { fetcherMuatrans } from "@/lib/axios";
+
+const isMockExpiredVehicles = true;
+
 // Mock data for expired vehicles list
 const apiResultExpiredVehicles = {
   data: {
@@ -87,14 +91,18 @@ const apiResultExpiredVehiclesSummary = {
 // Expired vehicles list fetcher and hook
 export const fetcherExpiredVehicles = async (cacheKey) => {
   // Extract query string from cache key
-  // const queryString = cacheKey.includes('?') ? cacheKey.split('?')[1] : '';
-  // const url = queryString ? `v1/vehicles/expiring-documents?${queryString}` : 'v1/vehicles/expired';
+  const queryString = cacheKey.includes("?") ? cacheKey.split("?")[1] : "";
+  const url = queryString
+    ? `v1/vehicles/expiring-documents?${queryString}`
+    : "v1/vehicles/expiring-documents";
 
-  // const result = await fetcherMuatrans.get(url);
-  // return result?.data?.Data || {};
+  if (isMockExpiredVehicles) {
+    const result = apiResultExpiredVehicles;
+    return result.data.Data;
+  }
 
-  const result = apiResultExpiredVehicles;
-  return result.data.Data;
+  const result = await fetcherMuatrans.get(url);
+  return result?.data?.Data || {};
 };
 
 export const useGetExpiredVehicles = (params = {}) => {
@@ -106,11 +114,15 @@ export const useGetExpiredVehicles = (params = {}) => {
 
 // Expired vehicles summary fetcher and hook
 export const fetcherExpiredVehiclesSummary = async () => {
-  // const result = await fetcherMuatrans.get('v1/vehicles/expiring-documents/summary');
-  // return result?.data?.Data || {};
+  if (isMockExpiredVehicles) {
+    const result = apiResultExpiredVehiclesSummary;
+    return result.data.Data;
+  }
 
-  const result = apiResultExpiredVehiclesSummary;
-  return result.data.Data;
+  const result = await fetcherMuatrans.get(
+    "v1/vehicles/expiring-documents/summary"
+  );
+  return result?.data?.Data || {};
 };
 
 export const useGetExpiredVehiclesSummary = () => {

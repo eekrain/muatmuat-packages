@@ -34,7 +34,6 @@ const PesananTable = ({
   onChangeQueryParams,
   tempSearch,
   setTempSearch,
-  hasOrders,
   orders,
   isOrdersLoading,
   searchOnly = false,

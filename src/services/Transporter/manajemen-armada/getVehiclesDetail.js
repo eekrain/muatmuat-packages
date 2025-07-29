@@ -1,6 +1,8 @@
 import useSWR from "swr";
 
-// import { fetcherMuatrans } from "@/lib/axios";
+import { fetcherMuatrans } from "@/lib/axios";
+
+const isMockVehicleDetail = true;
 
 const apiResultVehicleDetail = {
   data: {
@@ -108,12 +110,16 @@ const apiResultVehicleDetail = {
 };
 
 export const fetcherVehicleDetail = async (cacheKey) => {
-  // A real implementation would use the vehicle ID from the cacheKey
-  // const result = await fetcherMuatrans.get(`v1/transporter/vehicles/detail/${vehicleId}`);
-  // return result?.data?.Data || {};
+  // Extract vehicle ID from cache key
+  const vehicleId = cacheKey.split("/")[1]?.split("?")[0];
 
-  const result = apiResultVehicleDetail;
-  return result.data.Data;
+  if (isMockVehicleDetail) {
+    const result = apiResultVehicleDetail;
+    return result.data.Data;
+  }
+
+  const result = await fetcherMuatrans.get(`v1/vehicles/${vehicleId}`);
+  return result?.data?.Data || {};
 };
 
 export const useGetVehicleDetail = (vehicleId, params = {}) => {

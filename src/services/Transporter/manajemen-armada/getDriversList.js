@@ -1,6 +1,8 @@
 import useSWR from "swr";
 
-// import { fetcherMuatrans } from "@/lib/axios";
+import { fetcherMuatrans } from "@/lib/axios";
+
+const isMockDriversList = true;
 
 const apiResultDriversList = {
   data: {
@@ -131,39 +133,41 @@ const apiResultDriversList = {
 };
 
 export const fetcherDriversList = async (_, params = {}) => {
-  // const { page = 1, limit = 10, search = "" } = params;
+  const { page = 1, limit = 10, search = "" } = params;
 
-  // const result = await fetcherMuatrans.get(`v1/transporter/drivers`, {
-  //   params: {
-  //     page,
-  //     limit,
-  //     search,
-  //   },
-  // });
-  // return result?.data?.Data || {};
+  if (isMockDriversList) {
+    const result = apiResultDriversList;
 
-  const result = apiResultDriversList;
+    // Simulate search filtering
+    if (params.search) {
+      const searchLower = params.search.toLowerCase();
+      const filteredDrivers = result.data.Data.drivers.filter(
+        (driver) =>
+          driver.fullName.toLowerCase().includes(searchLower) ||
+          driver.whatsappNumber.includes(params.search)
+      );
 
-  // Simulate search filtering
-  if (params.search) {
-    const searchLower = params.search.toLowerCase();
-    const filteredDrivers = result.data.Data.drivers.filter(
-      (driver) =>
-        driver.fullName.toLowerCase().includes(searchLower) ||
-        driver.whatsappNumber.includes(params.search)
-    );
+      return {
+        drivers: filteredDrivers,
+        pagination: {
+          ...result.data.Data.pagination,
+          totalItems: filteredDrivers.length,
+          totalPages: Math.ceil(filteredDrivers.length / params.limit || 10),
+        },
+      };
+    }
 
-    return {
-      drivers: filteredDrivers,
-      pagination: {
-        ...result.data.Data.pagination,
-        totalItems: filteredDrivers.length,
-        totalPages: Math.ceil(filteredDrivers.length / params.limit || 10),
-      },
-    };
+    return result.data.Data;
   }
 
-  return result.data.Data;
+  const result = await fetcherMuatrans.get("v1/drivers", {
+    params: {
+      page,
+      limit,
+      search,
+    },
+  });
+  return result?.data?.Data || {};
 };
 
 export const useGetDriversList = (params = {}) => {

@@ -1,21 +1,27 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
 
+import { AlertMultilineResponsive } from "@/components/Alert/AlertMultilineResponsive";
 import { BannerCarousel } from "@/components/BannerCarousel/BannerCarousel";
+import { BrandSection } from "@/container/Shipper/SewaArmada/Responsive/Home/BrandSection";
+import DetailBiayaBottomSheet from "@/container/Shipper/SewaArmada/Responsive/Home/DetailBiayaBottomSheet";
+import { SewaArmadaForm } from "@/container/Shipper/SewaArmada/Responsive/Home/Form/SewaArmadaForm";
+import { ModalFirstTimer } from "@/container/Shipper/SewaArmada/Responsive/Home/ModalFirstTimer";
+import { RecommendedTruckBottomsheet } from "@/container/Shipper/SewaArmada/Responsive/Home/RecommendedTruckBottomsheet";
+import { SewaArmadaFooter } from "@/container/Shipper/SewaArmada/Responsive/Home/SewaArmadaFooter";
+import { VoucherSelectionBottomsheet } from "@/container/Shipper/SewaArmada/Responsive/Home/Voucher/VoucherSelectionBottomsheet";
+import { useVoucher } from "@/container/Shipper/SewaArmada/Responsive/Home/Voucher/useVoucher";
+import WaitingSettlementModal from "@/container/Shipper/SewaArmada/Responsive/Home/WaitingSettemenetModal";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook } from "@/hooks/use-swr";
 import DefaultResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/DefaultResponsiveLayout";
+import { useWaitingSettlementModalAction } from "@/store/Shipper/forms/waitingSettlementModalStore";
 
-import { BrandSection } from "./BrandSection";
-import DetailBiayaBottomSheet from "./DetailBiayaBottomSheet";
-import { SewaArmadaForm } from "./Form/SewaArmadaForm";
-import { ModalFirstTimer } from "./ModalFirstTimer";
-import { RecommendedTruckBottomsheet } from "./RecommendedTruckBottomsheet";
-import { SewaArmadaFooter } from "./SewaArmadaFooter";
-import { VoucherSelectionBottomsheet } from "./Voucher/VoucherSelectionBottomsheet";
-import { useVoucher } from "./Voucher/useVoucher";
-
-const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
+const SewaArmadaHomeScreen = ({ carriers, trucks, settlementAlertInfo }) => {
+  const router = useRouter();
+  const { setIsOpen } = useWaitingSettlementModalAction();
   // Banner data
   const parentRef = useRef(null);
   const { data: dataBanner } = useSWRHook("v1/orders/banner-ads");
@@ -56,10 +62,47 @@ const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
     pajak: -21300, // Pajak negatif sesuai screenshot
   };
 
+  const alertItems = useShallowMemo(() => {
+    if (!settlementAlertInfo) return [];
+
+    const listPesananUrl = [
+      "/daftarpesanan/pesananmenunggupembayaran",
+      "/daftarpesanan/pesananmenunggupelunasan",
+      "/daftarpesanan/butuhkonfirmasianda",
+    ];
+
+    return settlementAlertInfo
+      .map((item, key) => {
+        if (!item.orderId || item.orderId.length === 0) {
+          return null;
+        }
+        if (key === 1) {
+          return {
+            label: item.alertText,
+            onClick: () => setIsOpen(true),
+          };
+        }
+        return {
+          label: item.alertText,
+          onClick: () =>
+            router.push(
+              item.orderId.length === 1
+                ? `/daftarpesanan/detailpesanan/${item.orderId[0]}`
+                : listPesananUrl[key]
+            ),
+        };
+      })
+      .filter(Boolean);
+  }, [settlementAlertInfo]);
+
   return (
     <DefaultResponsiveLayout mode="default">
       <div ref={parentRef} className="w-full bg-neutral-100">
         <BannerCarousel banners={banners} showControls={false} />
+        <AlertMultilineResponsive
+          items={alertItems}
+          className="mt-2 w-full rounded-none"
+        />
         <BrandSection />
         <SewaArmadaForm carriers={carriers} trucks={trucks} />
       </div>
@@ -109,6 +152,7 @@ const SewaArmadaHomeScreen = ({ carriers, trucks }) => {
       />
 
       <ModalFirstTimer />
+      <WaitingSettlementModal />
     </DefaultResponsiveLayout>
   );
 };

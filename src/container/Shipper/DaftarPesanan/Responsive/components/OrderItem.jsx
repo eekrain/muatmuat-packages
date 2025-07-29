@@ -8,10 +8,14 @@ import {
   TimelineContentWithButtonDate,
   TimelineItem,
 } from "@/components/Timeline";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import DriverStatusBottomsheet from "@/container/Shipper/DaftarPesanan/Responsive/components/DriverStatusBottomsheet";
+import LocationBottomsheet from "@/container/Shipper/DaftarPesanan/Responsive/components/LocationBottomsheet";
+import { useTranslation } from "@/hooks/use-translation";
+import {
+  OrderStatusEnum,
+  OrderStatusTitle,
+} from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { formatDate } from "@/lib/utils/dateFormat";
-
-import LocationBottomsheet from "./LocationBottomsheet";
 
 const OrderItem = ({
   orderId,
@@ -20,14 +24,21 @@ const OrderItem = ({
   loadTimeEnd,
   vehicle,
   locations,
-  statusInfo,
+  statusInfo = [],
 }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   // State buat bottomsheet lokasi muat bongkar
   const [isLocationBottomsheetOpen, setLocationBottomsheetOpen] =
     useState(false);
   const [locationType, setLocationType] = useState("");
   const [selectedLocations, setSelectedLocations] = useState([]);
+  // State buat bottomsheet status driver
+  const [isAllDriverStatusModalOpen, setIsAllDriverStatusModalOpen] =
+    useState(false);
+  const [selectedGroupedStatusInfo, setSelectedGroupedStatusInfo] = useState(
+    []
+  );
 
   const armadaData = [
     {
@@ -52,6 +63,7 @@ const OrderItem = ({
 
   // Get the first item (earliest in the enum)
   const latestStatus = sortedArray[0];
+
   return (
     <>
       <div className="flex flex-col gap-y-4 bg-neutral-50 p-4">
@@ -73,7 +85,7 @@ const OrderItem = ({
                     className={`whitespace-normal text-xs font-semibold leading-[1.1] ${
                       key === firstPickupDropoff?.length - 1 ? "pb-0" : ""
                     }`}
-                    title={item.fullAddress}
+                    title={item?.fullAddress}
                     withButton={
                       key === 0 && locations.pickup.length > 1
                         ? {
@@ -101,32 +113,105 @@ const OrderItem = ({
             ))}
           </TimelineContainer>
           <div className="pl-7">
-            <BadgeStatusPesanan
-              variant={
-                latestStatus?.statusLabel ===
-                  OrderStatusEnum.WAITING_PAYMENT_1 ||
-                latestStatus?.statusLabel ===
-                  OrderStatusEnum.WAITING_PAYMENT_2 ||
-                latestStatus?.statusLabel ===
-                  OrderStatusEnum.WAITING_REPAYMENT_1 ||
-                latestStatus?.statusLabel ===
-                  OrderStatusEnum.WAITING_REPAYMENT_2
-                  ? "warning"
-                  : latestStatus?.statusLabel ===
-                        OrderStatusEnum.CANCELED_BY_SHIPPER ||
-                      latestStatus?.statusLabel ===
-                        OrderStatusEnum.CANCELED_BY_SYSTEM ||
-                      latestStatus?.statusLabel ===
-                        OrderStatusEnum.CANCELED_BY_TRANSPORTER
-                    ? "error"
-                    : latestStatus?.statusLabel === OrderStatusEnum.COMPLETED
-                      ? "success"
-                      : "primary"
-              }
-              className="w-full"
-            >
-              {latestStatus?.statusLabel}
-            </BadgeStatusPesanan>
+            {vehicle?.truckCount > 1 || statusInfo.length > 1 ? (
+              <button
+                className="w-full"
+                onClick={() => {
+                  // Create an empty result object
+                  const result = {};
+
+                  // First pass: group by statusLabel and count
+                  statusInfo.forEach((item) => {
+                    const { statusLabel } = item;
+
+                    if (!result[statusLabel]) {
+                      result[statusLabel] = {
+                        statusLabel,
+                        statusCode: item.statusCode,
+                        count:
+                          vehicle?.truckCount > 1 ? vehicle?.truckCount : 1,
+                      };
+                    } else {
+                      result[statusLabel].count++;
+                    }
+                  });
+
+                  // Convert to array for sorting
+                  const resultArray = Object.values(result);
+
+                  // Create ordering map (status code -> index in OrderStatusTitle)
+                  const orderIndices = {};
+                  Object.keys(OrderStatusTitle).forEach((code, index) => {
+                    orderIndices[code] = index;
+                  });
+
+                  // Sort based on the ordering
+                  resultArray.sort((a, b) => {
+                    return (
+                      orderIndices[a.statusCode] - orderIndices[b.statusCode]
+                    );
+                  });
+
+                  setSelectedGroupedStatusInfo(resultArray);
+                  setIsAllDriverStatusModalOpen(true);
+                }}
+              >
+                <BadgeStatusPesanan
+                  variant={
+                    latestStatus?.statusLabel ===
+                      OrderStatusEnum.WAITING_PAYMENT_1 ||
+                    latestStatus?.statusLabel ===
+                      OrderStatusEnum.WAITING_PAYMENT_2 ||
+                    latestStatus?.statusLabel ===
+                      OrderStatusEnum.WAITING_REPAYMENT_1 ||
+                    latestStatus?.statusLabel ===
+                      OrderStatusEnum.WAITING_REPAYMENT_2
+                      ? "warning"
+                      : latestStatus?.statusLabel ===
+                            OrderStatusEnum.CANCELED_BY_SHIPPER ||
+                          latestStatus?.statusLabel ===
+                            OrderStatusEnum.CANCELED_BY_SYSTEM ||
+                          latestStatus?.statusLabel ===
+                            OrderStatusEnum.CANCELED_BY_TRANSPORTER
+                        ? "error"
+                        : latestStatus?.statusLabel ===
+                            OrderStatusEnum.COMPLETED
+                          ? "success"
+                          : "primary"
+                  }
+                  className="w-full"
+                >
+                  {`${latestStatus?.statusLabel} : ${vehicle?.truckCount} ${t("labelUnit")}`}
+                </BadgeStatusPesanan>
+              </button>
+            ) : (
+              <BadgeStatusPesanan
+                variant={
+                  latestStatus?.statusLabel ===
+                    OrderStatusEnum.WAITING_PAYMENT_1 ||
+                  latestStatus?.statusLabel ===
+                    OrderStatusEnum.WAITING_PAYMENT_2 ||
+                  latestStatus?.statusLabel ===
+                    OrderStatusEnum.WAITING_REPAYMENT_1 ||
+                  latestStatus?.statusLabel ===
+                    OrderStatusEnum.WAITING_REPAYMENT_2
+                    ? "warning"
+                    : latestStatus?.statusLabel ===
+                          OrderStatusEnum.CANCELED_BY_SHIPPER ||
+                        latestStatus?.statusLabel ===
+                          OrderStatusEnum.CANCELED_BY_SYSTEM ||
+                        latestStatus?.statusLabel ===
+                          OrderStatusEnum.CANCELED_BY_TRANSPORTER
+                      ? "error"
+                      : latestStatus?.statusLabel === OrderStatusEnum.COMPLETED
+                        ? "success"
+                        : "primary"
+                }
+                className="w-full"
+              >
+                {latestStatus?.statusLabel}
+              </BadgeStatusPesanan>
+            )}
           </div>
         </div>
         <div className="flex gap-x-4">
@@ -155,6 +240,13 @@ const OrderItem = ({
         setOpen={setLocationBottomsheetOpen}
         locationType={locationType}
         selectedLocations={selectedLocations}
+      />
+
+      {/* Bottomsheet status driver */}
+      <DriverStatusBottomsheet
+        isOpen={isAllDriverStatusModalOpen}
+        setOpen={setIsAllDriverStatusModalOpen}
+        selectedGroupedStatusInfo={selectedGroupedStatusInfo}
       />
     </>
   );

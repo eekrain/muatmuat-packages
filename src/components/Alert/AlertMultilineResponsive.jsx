@@ -2,11 +2,10 @@ import Link from "next/link";
 
 import { ChevronRightIcon } from "lucide-react";
 
+import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
+import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
-
-import { InfoBottomsheet } from "../Form/InfoBottomsheet";
-import IconComponent from "../IconComponent/IconComponent";
 
 /**
  * @typedef {Object} AlertItem
@@ -45,14 +44,12 @@ export const AlertMultilineResponsive = ({ className, items = [] }) => {
         <>
           <div className="flex items-center gap-x-1">
             <IconComponent
-              className="icon-stroke-warning-900"
+              className="text-secondary-400"
               src="/icons/warning20.svg"
               width={20}
               height={20}
             />
-            <span className="capsize font-semibold leading-[1.1]">
-              Pemberitahuan:
-            </span>
+            <span className="font-semibold leading-[1.1]">Pemberitahuan:</span>
           </div>
 
           <ul className="flex w-full list-disc flex-col gap-y-1 pl-10">
@@ -69,8 +66,9 @@ export const AlertMultilineResponsive = ({ className, items = [] }) => {
         <div className="flex items-center gap-x-3">
           <IconComponent
             className="text-secondary-400"
-            src="/icons/warning24.svg"
-            size="medium"
+            src="/icons/warning20.svg"
+            width={20}
+            height={20}
           />
 
           <Item item={items[0]} />
@@ -85,7 +83,10 @@ const Item = ({ item }) => {
 
   if (item?.onClick) {
     return (
-      <button className="flex w-full items-center justify-between">
+      <button
+        className="flex w-full items-center justify-between"
+        onClick={() => item?.onClick()}
+      >
         <span
           className="info-alert-content"
           dangerouslySetInnerHTML={{ __html: t(item.label) }}

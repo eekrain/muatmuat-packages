@@ -130,7 +130,21 @@ const Page = () => {
   };
 
   if (isMobile) {
-    return <DaftarPesananResponsive orders={orders} />;
+    return (
+      <DaftarPesananResponsive
+        queryParams={queryParams}
+        onChangeQueryParams={handleChangeQueryParams}
+        orders={orders}
+        pagination={pagination}
+        isOrdersLoading={isOrdersLoading}
+        settlementAlertInfo={settlementAlertInfo}
+        hasNoOrders={hasNoOrders}
+        lastFilterField={lastFilterField}
+        tabs={tabs}
+        currentPeriodValue={currentPeriodValue}
+        setCurrentPeriodValue={setCurrentPeriodValue}
+      />
+    );
   }
   return (
     <DaftarPesananWeb
