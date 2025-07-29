@@ -40,13 +40,15 @@ const CariSemuaDriverScreen = ({ dataStatusPesanan }) => {
       }}
       onClickBackButton={() => navigation.pop()}
     >
-      <div className="mb-16 flex h-full flex-col">
-        <div className="space-y-4 bg-neutral-50 px-4 py-5">
-          <OrderCode dataStatusPesanan={dataStatusPesanan} />
-          <OrderStatus dataStatusPesanan={dataStatusPesanan} />
-        </div>
+      <div className="mb-16 flex h-full flex-col gap-2">
+        {!searchValue && (
+          <div className="space-y-4 bg-neutral-50 px-4 py-5">
+            <OrderCode dataStatusPesanan={dataStatusPesanan} />
+            <OrderStatus dataStatusPesanan={dataStatusPesanan} />
+          </div>
+        )}
 
-        {!filteredDriver?.length ? (
+        {searchValue && !filteredDriver?.length ? (
           <DataNotFound
             className="h-full flex-1 gap-y-5"
             textClass="text-[#868686] leading-[19.2px] w-[197px]"
@@ -57,11 +59,14 @@ const CariSemuaDriverScreen = ({ dataStatusPesanan }) => {
           />
         ) : (
           filteredDriver?.map((driver, index) => (
-            <div key={index} className="w-full flex-shrink-0 bg-neutral-50 p-5">
+            <div
+              key={index}
+              className="relative w-full flex-shrink-0 bg-neutral-50 p-5"
+            >
               <div className="flex w-full flex-col items-start gap-4">
                 <DriverInfo.Header
                   status={driver.driverStatusTitle}
-                  onMenuClick={() => alert(`Menu for ${driver.name}`)}
+                  withMenu={false}
                 />
                 <DriverInfo.Avatar driver={driver} />
                 <DriverInfo.Actions

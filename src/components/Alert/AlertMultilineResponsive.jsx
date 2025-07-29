@@ -111,7 +111,7 @@ const Item = ({ item }) => {
           {t(item.link.label)}
         </Link>
       ) : item.info ? (
-        <InfoBottomsheet title="Informasi">{item.info}</InfoBottomsheet>
+        <InfoBottomsheet title="Informasi" render={item.info} />
       ) : null}
     </div>
   );

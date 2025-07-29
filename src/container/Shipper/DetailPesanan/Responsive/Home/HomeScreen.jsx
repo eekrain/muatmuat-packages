@@ -114,7 +114,7 @@ const DetailPesananScreen = ({
           ]}
         />
 
-        {true && <FleetStatusAlert />}
+        {false && <FleetStatusAlert />}
 
         <OrderInfo dataStatusPesanan={dataDetailPesanan?.dataStatusPesanan} />
 

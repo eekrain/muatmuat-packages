@@ -17,7 +17,6 @@ import UlasanScreen from "./Ulasan/UlasanScreen";
 
 // Dynamic import all the other screens, so that the user doesn't have to wait for the other screens to load
 // Screen components needs to be default exported
-const QRCodeScreen = dynamicScreen(() => import("./QRCode/QRCodeScreen"));
 const RingkasanStatusPesananScreen = dynamicScreen(
   () => import("./RingkasanStatusPesanan/RingkasanStatusPesananScreen")
 );
@@ -35,6 +34,12 @@ const FormRekeningBankScreen = dynamicScreen(
 );
 const CariSemuaDriverScreen = dynamicScreen(
   () => import("./CariSemuaDriver/CariSemuaDriverScreen")
+);
+const DriverQRCodeSingle = dynamicScreen(
+  () => import("./DriverQRCodeSingle/DriverQRCodeSingle")
+);
+const DriverQRCodeMultiScreen = dynamicScreen(
+  () => import("./DriverQRCodeMulti/DriverQRCodeMultiScreen")
 );
 
 const DetailPesananResponsive = ({}) => {
@@ -77,7 +82,16 @@ const DetailPesananResponsive = ({}) => {
           />
         }
       />
-      <ResponsiveRoute path="/qr" component={<QRCodeScreen />} />
+      <ResponsiveRoute
+        path="/DriverQRCodeMulti"
+        component={
+          <DriverQRCodeMultiScreen dataStatusPesanan={dataStatusPesanan} />
+        }
+      />
+      <ResponsiveRoute
+        path="/DriverQRCodeSingle"
+        component={<DriverQRCodeSingle />}
+      />
       <ResponsiveRoute path="/ulasan" component={<UlasanScreen />} />
       <ResponsiveRoute
         path="/order-summary"
@@ -102,9 +116,7 @@ const DetailPesananResponsive = ({}) => {
       />
       <ResponsiveRoute
         path="/CariSemuaDriver"
-        component={
-          <CariSemuaDriverScreen dataStatusPesanan={dataStatusPesanan} />
-        }
+        component={<CariSemuaDriverScreen />}
       />
     </ResponsiveProvider>
   );

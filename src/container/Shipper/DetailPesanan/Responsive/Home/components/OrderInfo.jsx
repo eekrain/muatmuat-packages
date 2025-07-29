@@ -64,7 +64,7 @@ export const OrderInfo = ({ dataStatusPesanan }) => {
             <div className="box-border flex w-full flex-row items-center justify-between border-b border-[#C4C4C4] pb-4">
               <button
                 className="flex w-full flex-row items-center justify-between"
-                onClick={() => navigation.push("/qr")}
+                onClick={() => navigation.push("/DriverQRCodeMulti")}
               >
                 <div className="flex items-center gap-3 text-xs font-semibold text-[#176CF7]">
                   Tampilkan QR Code

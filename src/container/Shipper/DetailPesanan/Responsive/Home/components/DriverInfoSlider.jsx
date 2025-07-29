@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { EllipsisVertical } from "lucide-react";
 
@@ -12,6 +12,8 @@ import {
 } from "@/components/Bottomsheet/Bottomsheet";
 import Button from "@/components/Button/Button";
 import { useSwipe } from "@/hooks/use-swipe";
+import { DriverStatusLabel } from "@/lib/constants/detailpesanan/driver-status.enum";
+import { getStatusScanMetadata } from "@/lib/normalizers/detailpesanan/getStatusScanMetadata";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
 
@@ -30,37 +32,77 @@ const Root = ({ children, className }) => (
     {children}
   </div>
 );
+/**
+ * @typedef {Object} HeaderProps
+ * @property {string} statusCode
+ * @property {boolean} withMenu
+ * @property {"driver-status" | "status-scan"} mode
+ */
 
-const Header = ({ status, withMenu = true }) => (
-  <div className="flex w-full items-center justify-between">
-    <BadgeStatusPesanan
-      variant="primary"
-      className="bg-primary-50 px-2 py-1 text-sm font-semibold text-primary-700"
-    >
-      {status}
-    </BadgeStatusPesanan>
-    {withMenu && (
-      <BottomSheet>
-        <BottomSheetTrigger asChild>
-          <button
-            aria-label="More options"
-            className="absolute right-4 top-5 z-10 bg-white p-1" // Positioned absolutely
-          >
-            <EllipsisVertical className="h-6 w-6 rounded-full text-black" />
-          </button>
-        </BottomSheetTrigger>
-        <BottomSheetContent>
-          <BottomSheetHeader>Menu</BottomSheetHeader>
-          <div className="mt-6 flex flex-col items-start gap-4 px-4 pb-6">
-            <button className="text-sm font-semibold">
-              Lihat Semua Driver
+/**
+ * @param {HeaderProps} props
+ */
+const Header = ({ statusCode, withMenu = true, mode = "driver-status" }) => {
+  console.log("🚀 ~ Header ~ mode:", mode);
+
+  const navigation = useResponsiveNavigation();
+
+  const statusMeta = useMemo(() => {
+    const response = {};
+    if (mode === "status-scan") {
+      response.scan = getStatusScanMetadata(statusCode);
+    } else if (mode === "driver-status") {
+      response.status = DriverStatusLabel[statusCode];
+    }
+    return response;
+  }, [statusCode, mode]);
+
+  return (
+    <div className="flex w-full items-center justify-between">
+      {statusMeta?.scan && (
+        <BadgeStatusPesanan
+          variant={statusMeta?.scan?.hasScan ? "success" : "error"}
+          className="w-fit"
+        >
+          {statusMeta?.scan?.statusText}
+        </BadgeStatusPesanan>
+      )}
+      {statusMeta?.status && (
+        <BadgeStatusPesanan variant={"primary"} className="w-fit">
+          {statusMeta?.status}
+        </BadgeStatusPesanan>
+      )}
+      {withMenu && (
+        <BottomSheet>
+          <BottomSheetTrigger asChild>
+            <button
+              aria-label="More options"
+              className="absolute right-4 top-5 z-10 bg-white p-1" // Positioned absolutely
+            >
+              <EllipsisVertical className="h-6 w-6 rounded-full text-black" />
             </button>
-          </div>
-        </BottomSheetContent>
-      </BottomSheet>
-    )}
-  </div>
-);
+          </BottomSheetTrigger>
+          <BottomSheetContent>
+            <BottomSheetHeader>Menu</BottomSheetHeader>
+            <div className="mt-6 flex flex-col items-start gap-4 px-4 pb-6">
+              <button
+                className="text-sm font-semibold"
+                onClick={() =>
+                  navigation.push("/CariSemuaDriver", {
+                    orderId: "12345",
+                    driverId: "12345",
+                  })
+                }
+              >
+                Lihat Semua Driver
+              </button>
+            </div>
+          </BottomSheetContent>
+        </BottomSheet>
+      )}
+    </div>
+  );
+};
 
 const Avatar = ({ driver }) => (
   <div className="w-full">
@@ -154,6 +196,8 @@ export default function DriverInfoSlider({
     return null;
   }
 
+  console.log("🚀 ~ driverStatus:", driverStatus);
+
   return (
     <Root>
       <div className="overflow-hidden" {...swipeHandlers}>
@@ -172,7 +216,8 @@ export default function DriverInfoSlider({
             >
               <div className="flex w-full flex-col items-start gap-4">
                 <DriverInfo.Header
-                  status={driver.driverStatusTitle}
+                  statusCode={driver.driverStatus.code}
+                  mode="driver-status"
                   onMenuClick={() => alert(`Menu for ${driver.name}`)}
                 />
                 <DriverInfo.Avatar driver={driver} />

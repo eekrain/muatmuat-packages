@@ -16,13 +16,13 @@ import DriverCard from "./components/DriverCard";
 import QRCode from "./components/QRCode";
 import ShareVia from "./components/ShareVia";
 
-const QRCodeScreen = () => {
+const DriverQRCodeSingle = () => {
   const params = useResponsiveRouteParams();
-  const [isOpenShareVia, setIsOpenShareVia] = useState(false);
+  const [isOpenShareVia, DriverQRCodeMultiSsetIsOpenShareVia] = useState(false);
   const navigation = useResponsiveNavigation();
   const { data: dataDetailPesanan, isLoading: isLoadingDetailPesanan } =
     useGetDetailPesananData(params.orderId);
-  console.log(dataDetailPesanan);
+
   return (
     <FormResponsiveLayout
       title={{
@@ -47,4 +47,4 @@ const QRCodeScreen = () => {
     </FormResponsiveLayout>
   );
 };
-export default QRCodeScreen;
+export default DriverQRCodeSingle;
