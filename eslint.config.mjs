@@ -31,6 +31,8 @@ const eslintConfig = [
       // React specific rules (optional overrides)
       "react/react-in-jsx-scope": "off", // Not needed for React 17+
       "@next/next/no-img-element": "off", // Disable no-img-element rule
+      "react/jsx-no-undef": "error",
+      "no-undef": "error",
     },
     languageOptions: {
       parserOptions: {
