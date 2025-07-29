@@ -12,14 +12,14 @@ const apiResultDriversList = {
       drivers: [
         {
           id: "550e8400-e29b-41d4-a716-446655440012",
-          fullName: "Ahmad Maulana",
+          fullName: "Raden Cakradana Ardhanurahman Yudhatama",
           whatsappNumber: "082231001231",
           driverPhotoUrl:
             "/img/mock-armada/96f3e307242fe2a40610399e1d9d7a279944c89c.jpg",
           status: "ACTIVE",
           activeStatus: "READY_TO_RECEIVE_ORDER",
           simB2ExpiryDate: "2025-12-31",
-          isSimExpiryDate: false,
+          isSimExpiryDate: true,
           currentVehicle: null,
         },
         {
@@ -31,7 +31,7 @@ const apiResultDriversList = {
           status: "ACTIVE",
           activeStatus: "ON_DUTY",
           simB2ExpiryDate: "2025-12-31",
-          isSimExpiryDate: false,
+          isSimExpiryDate: true,
           currentVehicle: "L 2312 AL",
         },
         {

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import { Search } from "lucide-react";
 
+import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import Input from "@/components/Form/Input";
@@ -207,8 +208,18 @@ const DriverSelectionModal = ({
 
                         {/* Driver Info */}
                         <div className="flex-1">
-                          <div className="mb-2 text-sm font-bold">
-                            {driver.fullName}
+                          <div className="mb-2 flex items-center gap-2 text-sm font-bold">
+                            <div className="line-clamp-1 break-all">
+                              {driver.fullName}
+                            </div>
+                            {driver.isSimExpiryDate && (
+                              <BadgeStatus
+                                variant="error"
+                                className="h-6 w-[165px] shrink-0 p-0 text-xs"
+                              >
+                                Masa Berlaku SIM Berakhir
+                              </BadgeStatus>
+                            )}
                           </div>
                           <div className="mb-1 flex h-3 items-center gap-2 text-xxs">
                             <IconComponent
