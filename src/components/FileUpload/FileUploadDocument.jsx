@@ -53,7 +53,6 @@ const FileUploadDocument = ({
     "POST",
     fetcherMuatrans,
     {
-      headers: { "Content-Type": "multipart/form-data" },
       onUploadProgress: (progressEvent) => {
         const percentCompleted = Math.round(
           (progressEvent.loaded * 100) / progressEvent.total
@@ -92,7 +91,7 @@ const FileUploadDocument = ({
 
       console.log("Upload response:", response);
 
-      if (response?.Message?.Code === 200) {
+      if (response?.Message?.Code >= 200 && response?.Message?.Code < 300) {
         const fileData = {
           url: response.Data.documentUrl,
           name: response.Data.originalFileName,

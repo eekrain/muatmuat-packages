@@ -156,6 +156,7 @@ const Page = () => {
     watch,
     formState: { errors, isValid },
     trigger,
+    clearErrors,
   } = useForm({
     resolver: valibotResolver(fleetInformationSchema),
     mode: "onChange",
@@ -727,6 +728,7 @@ const Page = () => {
                   onSuccess={(doc) => {
                     setDocStnk(doc);
                     markFieldAsTouched("docStnk");
+                    clearErrors("docStnk"); // Add this line
                     // console.log("STNK file uploaded:", doc);
                   }}
                   onError={(err) => {
@@ -746,6 +748,7 @@ const Page = () => {
                   onSuccess={(doc) => {
                     setDocPajak(doc);
                     markFieldAsTouched("docPajak");
+                    clearErrors("docPajak"); // Add this line
                     console.log("Pajak file uploaded:", doc);
                   }}
                   onError={(err) => {

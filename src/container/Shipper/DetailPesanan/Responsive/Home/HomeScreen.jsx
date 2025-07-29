@@ -125,9 +125,13 @@ const DetailPesananScreen = ({
         />
         <TabsInfo dataDetailPIC={dataDetailPIC} />
 
-        {true && <RouteInfo />}
-        {false && <MethodInfo method={"va_bca"} />}
-        {false && (
+        {true && (
+          <RouteInfo
+            dataDetailPesanan={dataDetailPesanan?.dataRingkasanPesanan}
+          />
+        )}
+        {true && <MethodInfo method={"va_bca"} />}
+        {true && (
           <TransactionSummary documentShippingDetail={documentShippingDetail} />
         )}
       </div>
