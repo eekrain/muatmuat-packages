@@ -8,7 +8,7 @@ import {
 } from "../Bottomsheet/Bottomsheet";
 import IconComponent from "../IconComponent/IconComponent";
 
-export const InfoBottomsheet = ({ className, title, children }) => {
+export const InfoBottomsheet = ({ className, title, children, render }) => {
   return (
     <BottomSheet>
       <BottomSheetTrigger
@@ -18,9 +18,16 @@ export const InfoBottomsheet = ({ className, title, children }) => {
       </BottomSheetTrigger>
       <BottomSheetContent>
         <BottomSheetHeader>{title}</BottomSheetHeader>
-        <div className="info-bottomsheet-content px-4 py-6 text-sm font-medium leading-[1.1]">
-          {children}
-        </div>
+        {render ? (
+          <div
+            className="info-bottomsheet-content px-4 py-6 text-sm font-medium leading-[1.1]"
+            dangerouslySetInnerHTML={{ __html: render }}
+          />
+        ) : (
+          <div className="info-bottomsheet-content px-4 py-6 text-sm font-medium leading-[1.1]">
+            {children}
+          </div>
+        )}
       </BottomSheetContent>
     </BottomSheet>
   );

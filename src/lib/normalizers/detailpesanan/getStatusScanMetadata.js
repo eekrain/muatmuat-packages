@@ -5,6 +5,11 @@ export const getStatusScanMetadata = (statusScan = null) => {
   let statusText = "";
   if (splitStatus.length < 3) return { hasScan, statusText, statusTitle };
 
+  // Get index location if available
+  const indexLocation = splitStatus.slice(-1)?.[0];
+  const indexString = (i) => (!isNaN(Number(i)) ? ` ${i}` : "");
+
+  // Get status title
   statusTitle = `QR Code Lokasi ${splitStatus[2][0].toUpperCase()}${splitStatus[2].slice(1).toLowerCase()}${splitStatus[3] ? ` ${splitStatus[3]}` : ""}`;
 
   if (splitStatus[0] === "BELUM" && splitStatus[1] === "SCAN") {
@@ -13,15 +18,20 @@ export const getStatusScanMetadata = (statusScan = null) => {
     hasScan = true;
   }
 
-  if (hasScan) {
-    statusText = `Sudah Scan di Lokasi ${splitStatus[2][0].toUpperCase()}${splitStatus[2].slice(1).toLowerCase()}${splitStatus[3] ? ` ${splitStatus[3]}` : ""}`;
+  if (splitStatus[3] === "MUAT") {
+    if (hasScan)
+      statusText = `Sudah Scan di Lokasi Muat${indexString(indexLocation)}`;
+    else statusText = `Belum Scan di Lokasi Muat${indexString(indexLocation)}`;
   } else {
-    statusText = `Belum Scan di Lokasi ${splitStatus[2][0].toUpperCase()}${splitStatus[2].slice(1).toLowerCase()}${splitStatus[3] ? ` ${splitStatus[3]}` : ""}`;
+    if (hasScan)
+      statusText = `Sudah Scan di Lokasi Bongkar${indexString(indexLocation)}`;
+    else
+      statusText = `Belum Scan di Lokasi Bongkar${indexString(indexLocation)}`;
   }
 
   return {
-    statusTitle: statusTitle,
+    statusTitle,
     hasScan,
-    statusText: statusText,
+    statusText,
   };
 };
