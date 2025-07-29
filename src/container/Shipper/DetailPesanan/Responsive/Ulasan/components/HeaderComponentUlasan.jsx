@@ -1,6 +1,6 @@
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 
-const HeaderComponentUlasan = () => {
+const HeaderComponentUlasan = ({ orderCode }) => {
   return (
     <div className="flex w-full flex-col items-start bg-white p-5">
       <div className="flex w-full flex-col items-start gap-4">
@@ -10,7 +10,7 @@ const HeaderComponentUlasan = () => {
             Kode Pesanan
           </span>
           <span className="text-right text-xs font-semibold text-black">
-            INV/MT25AA001
+            {orderCode}
           </span>
         </div>
 

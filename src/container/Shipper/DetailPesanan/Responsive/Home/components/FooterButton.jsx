@@ -57,16 +57,6 @@ export const FooterButton = ({ orderStatus }) => {
             Pesan Ulang
           </Button>
         )}
-        {orderStatus === OrderStatusEnum.COMPLETED && (
-          <Button
-            variant="muatparts-primary"
-            className="w-full p-0"
-            onClick={() => navigation.push("/ulasan")}
-            type="button"
-          >
-            Beri Ulasan
-          </Button>
-        )}
         {isWaitingPayment && (
           <Button
             variant="muatparts-primary"
@@ -138,14 +128,14 @@ export const FooterButton = ({ orderStatus }) => {
             Batalkan Pesanan
           </Button>
         )}
-        <Button
+        {/* <Button
           variant="muatparts-primary"
           className="w-full p-0"
           onClick={() => navigation.push("/ulasan")}
           type="button"
         >
           Beri Ulasan
-        </Button>
+        </Button> */}
       </div>
 
       {/* Modal Konfirmasi sudah terima bukti dokumen */}
