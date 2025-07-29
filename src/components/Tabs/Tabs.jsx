@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 const TabsContext = createContext();
 
 // Custom hook to use tabs context
-const useTabs = () => {
+export const useTabs = () => {
   const context = useContext(TabsContext);
   if (!context) {
     throw new Error("Tab components must be used within a Tabs provider");

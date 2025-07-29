@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import Button from "@/components/Button/Button";
@@ -14,9 +15,9 @@ import { toast } from "@/lib/toast";
 import { formatDate } from "@/lib/utils/dateFormat";
 
 const TambahExcel = () => {
-  const { success, error } = toast;
   const [list, setList] = useState([]);
   const [stateUpload, setStateUpload] = useState(true);
+  const router = useRouter();
   const columns = [
     {
       key: "tanggal",
@@ -100,9 +101,10 @@ const TambahExcel = () => {
       ]);
       if (stateUpload) {
         // Show success message
-        success(`Berhasil menambah ${20} armada`);
+        toast.success(`Berhasil menambah ${20} armada`);
+        router.push("/manajemen-armada/tambah-massal/preview-armada");
       } else {
-        error(
+        toast.error(
           "Harap selesaikan data pada menu Draft terlebih dahulu sebelum menambah armada baru."
         );
       }
@@ -110,10 +112,10 @@ const TambahExcel = () => {
   };
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {/* Temporary Toggle (use it to toggle between success upload or fail upload) */}
       {isDev && (
-        <div className="col-span-2">
+        <div className="md:col-span-2">
           <Toggle
             value={stateUpload}
             textActive="Sukses unggah file"
@@ -188,7 +190,7 @@ const TambahExcel = () => {
       </div>
 
       {/* Card 3: Riwayat Unggahan */}
-      <div className="col-span-2 flex max-h-[400px] flex-1 flex-col rounded-lg bg-white shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
+      <div className="flex max-h-[400px] flex-1 flex-col rounded-lg bg-white shadow-[0px_4px_11px_rgba(65,65,65,0.25)] md:col-span-2">
         {list.length > 0 ? (
           <DataTable
             data={list}

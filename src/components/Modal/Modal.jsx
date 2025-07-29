@@ -355,19 +355,34 @@ const widthStyles = {
  * @param {ModalHeaderProps} props
  * @returns {JSX.Element}
  */
-export const ModalHeader = ({
-  className,
-  type = "muattrans",
-  size = "small",
-}) => {
+export const ModalHeader = ({ className }) => {
   return (
-    <div className="overflow-hidden rounded-t-xl">
-      <img
-        src={`/img/${type}-header-${size}.png`}
-        height={70}
-        className={cn("rounded-t-xl", widthStyles[size], className)}
-        alt="Modal Header"
-      />
+    <div
+      className={cn(
+        "relative flex h-[70px] justify-between overflow-hidden rounded-t-xl bg-muat-trans-primary-400",
+        className
+      )}
+    >
+      <div className="">
+        <img
+          alt="svg header modal kiri"
+          src="/img/header-modal/header-kiri.svg"
+          className="h-full w-full object-cover"
+        />
+      </div>
+      <div className="my-auto">
+        <img
+          alt="logo muatmuat header coklat"
+          src="/img/header-modal/muatmuat-brown.svg"
+        />
+      </div>
+      <div className="">
+        <img
+          alt="svg header modal kanan "
+          src="/img/header-modal/header-kanan.svg"
+          className="h-full w-full object-cover"
+        />
+      </div>
     </div>
   );
 };

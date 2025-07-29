@@ -161,7 +161,7 @@ const DesktopNavigation = ({
   return (
     <div
       className={cn(
-        "absolute inset-x-0 top-1/2 z-10 flex -translate-y-1/2 justify-between",
+        "absolute inset-x-0 top-1/2 z-10 mt-3 flex -translate-y-1/2 justify-between",
         className
       )}
     >
@@ -266,7 +266,7 @@ const Title = ({ className }) => {
   return (
     <h2
       className={cn(
-        "text-center text-base font-bold text-neutral-900",
+        "h-[44px] overflow-hidden text-center text-base font-bold text-neutral-900",
         className
       )}
     >
@@ -275,11 +275,25 @@ const Title = ({ className }) => {
   );
 };
 
-const Description = ({ className }) => {
+const Description = ({ className, ...props }) => {
   const { items, currentSlide } = useSlider();
   const item = items[currentSlide];
-
-  return <p className={className}>{item?.content}</p>;
+  if (typeof item?.content === "string") {
+    return (
+      <p
+        className={cn("slider-list h-[102px] overflow-y-auto", className)}
+        dangerouslySetInnerHTML={{ __html: item.content }}
+      />
+    );
+  }
+  return (
+    <div
+      className={cn("slider-list h-[102px] overflow-y-auto", className)}
+      {...props}
+    >
+      {props.dangerouslySetInnerHTML ? null : item?.content}
+    </div>
+  );
 };
 
 export const Slider = {

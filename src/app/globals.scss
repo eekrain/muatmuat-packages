@@ -537,3 +537,20 @@ body {
     font-weight: 600;
   }
 }
+
+.slider-list {
+  ol {
+    @apply list-decimal;
+
+    list-style-position: inside;
+  }
+}
+
+.table-tambah-armada-massal {
+  th {
+    @apply px-4;
+  }
+  td {
+    @apply px-4;
+  }
+}
