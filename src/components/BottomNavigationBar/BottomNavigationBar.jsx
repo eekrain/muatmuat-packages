@@ -35,7 +35,7 @@ const BottomNavigationBar = () => {
         >
           <IconComponent src="/icons/profile24.svg" size="medium" />
           <span className="text-xs font-medium leading-none text-neutral-600">
-            Profile
+            Profil
           </span>
         </Link>
         <Image
