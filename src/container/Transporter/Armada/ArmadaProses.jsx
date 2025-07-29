@@ -102,15 +102,26 @@ const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
       render: (row) => (
         <SimpleDropdown>
           <SimpleDropdownTrigger asChild>
-            <button className="flex h-8 flex-row items-center justify-between gap-2 rounded-md border border-neutral-600 bg-white px-3 py-2 shadow-sm transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none">
+            <button className="relative flex h-8 flex-row items-center justify-between gap-2 rounded-md border border-neutral-600 bg-white px-3 py-2 shadow-sm transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none">
               <span className="text-xs font-medium leading-tight text-black">
                 Aksi
               </span>
+              {row.status === "CALIBRATION_PROCESS" && (
+                <span className="absolute -top-1 right-0 h-2 w-2 rounded-full bg-red-500"></span>
+              )}
               <ChevronDown className="h-4 w-4 text-neutral-700" />
             </button>
           </SimpleDropdownTrigger>
 
-          <SimpleDropdownContent className="w-fit">
+          <SimpleDropdownContent className="w-[124px]" align="end">
+            {row.status === "CALIBRATION_PROCESS" && (
+              <SimpleDropdownItem onClick={() => {}}>
+                <div className="relative">
+                  Test Kalibrasi GPS
+                  <span className="absolute -right-1 -top-1 h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                </div>
+              </SimpleDropdownItem>
+            )}
             <SimpleDropdownItem
               onClick={() =>
                 router.push(`/manajemen-armada/${row.id}/detail?from=process`)
@@ -118,18 +129,17 @@ const ArmadaProses = ({ onPageChange, onPerPageChange, onStatusChange }) => {
             >
               Detail
             </SimpleDropdownItem>
-            <SimpleDropdownItem onClick={() => {}}>Edit</SimpleDropdownItem>
             {row.status === "VERIFICATION_REJECTED" && (
-              <SimpleDropdownItem onClick={() => {}}>
-                Kirim Ulang Verifikasi
-              </SimpleDropdownItem>
+              <>
+                <SimpleDropdownItem onClick={() => {}}>Ubah</SimpleDropdownItem>
+                <SimpleDropdownItem
+                  onClick={() => {}}
+                  className="text-error-400"
+                >
+                  Hapus
+                </SimpleDropdownItem>
+              </>
             )}
-            {row.status === "WAITING_GPS_INSTALLATION" && (
-              <SimpleDropdownItem onClick={() => {}}>
-                Konfirmasi Pemasangan GPS
-              </SimpleDropdownItem>
-            )}
-            <SimpleDropdownItem onClick={() => {}}>Batalkan</SimpleDropdownItem>
           </SimpleDropdownContent>
         </SimpleDropdown>
       ),

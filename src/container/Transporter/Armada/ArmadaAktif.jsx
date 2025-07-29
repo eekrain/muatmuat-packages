@@ -23,7 +23,7 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const [sortConfig, setSortConfig] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [searchValue, setSearchValue] = useState("");
@@ -35,6 +35,7 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
     limit: perPage,
     search: searchValue,
     ...filters,
+    ...sortConfig,
   });
 
   const getStatusBadge = (status) => {
@@ -63,7 +64,7 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
       ),
     },
     {
-      key: "licensePlate",
+      key: "vehicle",
       header: "Nama Kendaraan",
       render: (row) => (
         <div className="space-y-1">
@@ -109,12 +110,12 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
       ),
     },
     {
-      key: "vehicleBrand",
+      key: "brand",
       header: "Merek Kendaraan",
       render: (row) => row.vehicleBrand?.name || "-",
     },
     {
-      key: "vehicleType",
+      key: "type",
       header: "Tipe Kendaraan",
       render: (row) => row.vehicleType?.name || "-",
     },
@@ -249,11 +250,12 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange }) => {
     onPerPageChange?.(limit);
   };
 
-  const handleSort = (key, direction) => {
-    setSortConfig({ key, direction });
-    // Sorting by key and direction
-    // TODO: Implement actual sorting logic here
-    // This would typically involve calling an API with sort parameters
+  const handleSort = (sort, order) => {
+    if (sort || order) {
+      setSortConfig({ sort, order });
+    } else {
+      setSortConfig();
+    }
   };
 
   const handleDriverUpdateSuccess = () => {
