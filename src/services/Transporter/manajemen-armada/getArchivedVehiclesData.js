@@ -1,6 +1,8 @@
 import useSWR from "swr";
 
-// import { fetcherMuatrans } from "@/lib/axios";
+import { fetcherMuatrans } from "@/lib/axios";
+
+const isMockArchivedVehicles = true;
 
 const apiResultArchivedVehicles = {
   data: {
@@ -119,11 +121,19 @@ const apiResultArchivedVehicles = {
 };
 
 export const fetcherArchivedVehicles = async (cacheKey) => {
-  // const result = await fetcherMuatrans.get(`v1/transporter/vehicles/archived`);
-  // return result?.data?.Data || {};
+  // Extract query string from cache key
+  const queryString = cacheKey.includes("?") ? cacheKey.split("?")[1] : "";
+  const url = queryString
+    ? `v1/vehicles/archived?${queryString}`
+    : "v1/vehicles/archived";
 
-  const result = apiResultArchivedVehicles;
-  return result.data.Data;
+  if (isMockArchivedVehicles) {
+    const result = apiResultArchivedVehicles;
+    return result.data.Data;
+  }
+
+  const result = await fetcherMuatrans.get(url);
+  return result?.data?.Data || {};
 };
 
 export const useGetArchivedVehiclesData = (params = {}) => {

@@ -1,6 +1,8 @@
 import useSWR from "swr";
 
-// import { fetcherMuatrans } from "@/lib/axios";
+import { fetcherMuatrans } from "@/lib/axios";
+
+const isMockInactiveVehicles = true;
 
 const apiResultInactiveVehicles = {
   data: {
@@ -286,11 +288,19 @@ const apiResultInactiveVehicles = {
 };
 
 export const fetcherInactiveVehicles = async (cacheKey) => {
-  // const result = await fetcherMuatrans.get(`v1/transporter/vehicles/inactive`);
-  // return result?.data?.Data || {};
+  // Extract query string from cache key
+  const queryString = cacheKey.includes("?") ? cacheKey.split("?")[1] : "";
+  const url = queryString
+    ? `v1/vehicles/inactive?${queryString}`
+    : "v1/vehicles/inactive";
 
-  const result = apiResultInactiveVehicles;
-  return result.data.Data;
+  if (isMockInactiveVehicles) {
+    const result = apiResultInactiveVehicles;
+    return result.data.Data;
+  }
+
+  const result = await fetcherMuatrans.get(url);
+  return result?.data?.Data || {};
 };
 
 export const useGetInactiveVehiclesData = (params = {}) => {

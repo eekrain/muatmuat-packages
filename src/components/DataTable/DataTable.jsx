@@ -185,9 +185,9 @@ const DataTable = ({
         </div>
         <div className="flex items-center gap-3">
           {headerActions}
-          {showTotalCount && totalItems !== undefined && (
+          {showTotalCount && (
             <div className="text-sm font-semibold text-neutral-900">
-              Total : {totalItems} {totalCountLabel}
+              Total : {data.length} {totalCountLabel}
             </div>
           )}
         </div>

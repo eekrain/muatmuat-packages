@@ -144,7 +144,7 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange, count }) => {
             </button>
           </SimpleDropdownTrigger>
 
-          <SimpleDropdownContent className="w-fit">
+          <SimpleDropdownContent className="w-[133px]" align="end">
             <SimpleDropdownItem onClick={() => {}}>
               Lihat Agenda Driver
             </SimpleDropdownItem>

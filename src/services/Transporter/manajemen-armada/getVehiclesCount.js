@@ -1,6 +1,8 @@
 import useSWR from "swr";
 
-// import { fetcherMuatrans } from "@/lib/axios";
+import { fetcherMuatrans } from "@/lib/axios";
+
+const isMockVehiclesCount = false;
 
 const apiResultVehiclesCount = {
   data: {
@@ -18,12 +20,14 @@ const apiResultVehiclesCount = {
   },
 };
 
-export const fetcherVehiclesCount = async (cacheKey) => {
-  // const result = await fetcherMuatrans.get(`v1/vehicles/count-summary`);
-  // return result?.data?.Data || {};
+export const fetcherVehiclesCount = async () => {
+  if (isMockVehiclesCount) {
+    const result = apiResultVehiclesCount;
+    return result.data.Data;
+  }
 
-  const result = apiResultVehiclesCount;
-  return result.data.Data;
+  const result = await fetcherMuatrans.get("v1/vehicles/count-summary");
+  return result?.data?.Data || {};
 };
 
 export const useGetVehiclesCount = () => {

@@ -1,6 +1,8 @@
 import useSWR from "swr";
 
-// import { fetcherMuatrans } from "@/lib/axios";
+import { fetcherMuatrans } from "@/lib/axios";
+
+const isMockProcessVehicles = true;
 
 const apiResultProcessVehicles = {
   data: {
@@ -162,11 +164,19 @@ const apiResultProcessVehicles = {
 };
 
 export const fetcherProcessVehicles = async (cacheKey) => {
-  // const result = await fetcherMuatrans.get(`v1/transporter/vehicles/process`);
-  // return result?.data?.Data || {};
+  // Extract query string from cache key
+  const queryString = cacheKey.includes("?") ? cacheKey.split("?")[1] : "";
+  const url = queryString
+    ? `v1/vehicles/process?${queryString}`
+    : "v1/vehicles/process";
 
-  const result = apiResultProcessVehicles;
-  return result.data.Data;
+  if (isMockProcessVehicles) {
+    const result = apiResultProcessVehicles;
+    return result.data.Data;
+  }
+
+  const result = await fetcherMuatrans.get(url);
+  return result?.data?.Data || {};
 };
 
 export const useGetProcessVehiclesData = (params = {}) => {

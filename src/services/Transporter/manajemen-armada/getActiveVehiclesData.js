@@ -2,6 +2,8 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
+const isMockActiveVehicles = false;
+
 const apiResultActiveVehicles = {
   data: {
     Message: {
@@ -149,11 +151,13 @@ export const fetcherActiveVehicles = async (cacheKey) => {
     ? `v1/vehicles/active?${queryString}`
     : "v1/vehicles/active";
 
+  if (isMockActiveVehicles) {
+    const result = apiResultActiveVehicles;
+    return result.data.Data;
+  }
+
   const result = await fetcherMuatrans.get(url);
   return result?.data?.Data || {};
-
-  // const result = apiResultActiveVehicles;
-  // return result.data.Data;
 };
 
 export const useGetActiveVehiclesData = (params = {}) => {
