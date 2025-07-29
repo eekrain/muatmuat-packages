@@ -37,6 +37,7 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
   const driver = dataStatusPesanan?.driverStatus.find(
     (d) => d.driverId === driverId
   );
+  console.log("🚀 ~ LacakArmadaScreen ~ driver:", driver);
 
   return (
     <FormResponsiveLayout
@@ -52,8 +53,9 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
         {driver && (
           <DriverInfo.Root className="flex flex-col gap-4 px-4 py-5">
             <DriverInfo.Header
-              status={driver.driverStatusTitle}
+              statusCode={driver.driverStatus}
               withMenu={false}
+              mode="driver-status"
             />
             <DriverInfo.Avatar driver={driver} />
           </DriverInfo.Root>

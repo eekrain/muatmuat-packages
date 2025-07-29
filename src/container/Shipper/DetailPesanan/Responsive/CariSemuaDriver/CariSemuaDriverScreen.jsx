@@ -65,7 +65,7 @@ const CariSemuaDriverScreen = ({ dataStatusPesanan }) => {
             >
               <div className="flex w-full flex-col items-start gap-4">
                 <DriverInfo.Header
-                  status={driver.driverStatusTitle}
+                  statusCode={driver.driverStatus}
                   withMenu={false}
                 />
                 <DriverInfo.Avatar driver={driver} />
