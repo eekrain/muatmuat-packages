@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import { Fragment, useState } from "react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
@@ -22,6 +23,7 @@ import { formatDate } from "@/lib/utils/dateFormat";
 
 const DaftarPesananResponsive = ({ orders }) => {
   console.log("orders", orders);
+  const router = useRouter();
   // State buat bottomsheet lokasi muat bongkar
   const [isLocationBottomsheetOpen, setLocationBottomsheetOpen] =
     useState(false);
@@ -178,7 +180,9 @@ const DaftarPesananResponsive = ({ orders }) => {
               <Button
                 className="w-full"
                 variant="muatparts-primary-secondary"
-                onClick={() => {}}
+                onClick={() =>
+                  router.push(`/daftarpesanan/detailpesanan/${order.orderId}`)
+                }
               >
                 Detail
               </Button>
