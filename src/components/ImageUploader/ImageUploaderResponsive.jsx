@@ -77,7 +77,7 @@ export default function ImageUploaderResponsive({
 
   const getFile = (e) => {
     let files;
-    let file;
+    let file = e.target.files[0];
 
     if (e.dataTransfer) {
       files = e.dataTransfer.files;
@@ -185,7 +185,6 @@ export default function ImageUploaderResponsive({
     cameraRef.current.value = null;
     fileRef.current.value = null;
     setImage(null);
-    getImage(null);
     e.stopPropagation();
   };
 

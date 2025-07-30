@@ -54,7 +54,7 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
   const useMockData = false; // Flag untuk menggunakan mock data - ubah ke false untuk menggunakan API real
 
   // Gunakan hook voucher untuk mendapatkan data
-  let {
+  const {
     vouchers: voucherList,
     loading,
     error,

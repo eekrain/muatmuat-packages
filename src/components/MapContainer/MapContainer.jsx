@@ -103,7 +103,7 @@ export const MapContainer = ({
       }
       const newInfoWindow = new window.google.maps.InfoWindow({
         content: textLabel
-          ? `<div style=\"font-weight:500;font-size: text-sm;margin:0;padding:0;line-height:1.2;\">${textLabel}</div>`
+          ? `<div style="font-weight:500;font-size: text-sm;margin:0;padding:0;line-height:1.2;">${textLabel}</div>`
           : "",
         position: {
           lat: coordinates.latitude,

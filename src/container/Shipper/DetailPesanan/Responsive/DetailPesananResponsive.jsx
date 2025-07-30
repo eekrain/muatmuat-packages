@@ -35,14 +35,14 @@ const FormRekeningBankScreen = dynamicScreen(
 const CariSemuaDriverScreen = dynamicScreen(
   () => import("./CariSemuaDriver/CariSemuaDriverScreen")
 );
-const DriverQRCodeSingle = dynamicScreen(
-  () => import("./DriverQRCodeSingle/DriverQRCodeSingle")
+const DriverQRCodeSingleScreen = dynamicScreen(
+  () => import("./DriverQRCodeSingle/DriverQRCodeSingleScreen")
 );
 const DriverQRCodeMultiScreen = dynamicScreen(
   () => import("./DriverQRCodeMulti/DriverQRCodeMultiScreen")
 );
 
-const DetailPesananResponsive = ({}) => {
+const DetailPesananResponsive = () => {
   // const navigation = useResponsiveNavigation();
   // useEffect(() => {
   //   navigation.replace("/CariSemuaDriver");
@@ -52,6 +52,7 @@ const DetailPesananResponsive = ({}) => {
   const { data } = useGetDetailPesananData("12345");
 
   const dataStatusPesanan = data?.dataStatusPesanan;
+  const dataRingkasanPesanan = data?.dataRingkasanPesanan;
   const dataDetailPIC = data?.dataDetailPIC;
   const dataRingkasanPembayaran = data?.dataRingkasanPembayaran;
   const documentShippingDetail =
@@ -68,12 +69,15 @@ const DetailPesananResponsive = ({}) => {
         path="/"
         component={
           <DetailPesananScreen
+            dataStatusPesanan={dataStatusPesanan}
+            dataRingkasanPesanan={dataRingkasanPesanan}
             dataDetailPIC={dataDetailPIC}
             dataRingkasanPembayaran={dataRingkasanPembayaran}
             documentShippingDetail={documentShippingDetail}
           />
         }
       />
+
       <ResponsiveRoute
         path="/cara-pembayaran"
         component={
@@ -90,7 +94,7 @@ const DetailPesananResponsive = ({}) => {
       />
       <ResponsiveRoute
         path="/DriverQRCodeSingle"
-        component={<DriverQRCodeSingle />}
+        component={<DriverQRCodeSingleScreen />}
       />
       <ResponsiveRoute path="/ulasan" component={<UlasanScreen />} />
       <ResponsiveRoute

@@ -140,7 +140,7 @@ const apiResultOrderDetail = {
         transporterOrderCode: "MT.25.AA.001",
         invoiceNumber: "INV/12345678",
         // orderStatus: OrderStatusEnum.LOADING,
-        orderStatus: OrderStatusEnum.COMPLETED,
+        orderStatus: OrderStatusEnum.WAITING_PAYMENT_1,
         orderTitle: "Proses Muat",
         unitFleetStatus: 3,
         orderType: OrderTypeEnum.INSTANT,
@@ -163,7 +163,7 @@ const apiResultOrderDetail = {
         loadTimeStart: "2025-02-08T09:00:00Z",
         loadTimeEnd: "2025-02-08T12:00:00Z",
         locations: locations,
-        isHalalLogistic: false,
+        isHalalLogistic: true,
         canReview: false,
         isEdit: false,
         cargo: [
@@ -172,6 +172,38 @@ const apiResultOrderDetail = {
             cargoTypeName: "Elektronik",
             cargoCategoryName: "Peralatan",
             name: "Electronics",
+            weight: 500.0,
+            weightUnit: "kg",
+            dimensions: {
+              length: 2.0,
+              width: 1.0,
+              height: 1.5,
+              unit: "m",
+            },
+            sequence: 1,
+          },
+
+          {
+            cargoId: "550e8400-e29b-41d4-a716-446655440005",
+            cargoTypeName: "Elektronik",
+            cargoCategoryName: "Peralatan",
+            name: "Alat Rumah Tangga",
+            weight: 500.0,
+            weightUnit: "kg",
+            dimensions: {
+              length: 2.0,
+              width: 1.0,
+              height: 1.5,
+              unit: "m",
+            },
+            sequence: 1,
+          },
+
+          {
+            cargoId: "550e8400-e29b-41d4-a716-446655440006",
+            cargoTypeName: "Elektronik",
+            cargoCategoryName: "Peralatan",
+            name: "Furniture",
             weight: 500.0,
             weightUnit: "kg",
             dimensions: {
@@ -277,7 +309,7 @@ export const useGetOrderDetail = (orderId) =>
   useSWR(`order-detail/${orderId}`, fetcherOrderDetail);
 
 const completeFetcher = async (cacheKey) => {
-  const orderId = cacheKey.split("/")[1];
+  // const orderId = cacheKey.split("/")[1];
 
   try {
     const [

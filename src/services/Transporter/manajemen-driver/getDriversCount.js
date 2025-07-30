@@ -1,7 +1,5 @@
 import useSWR from "swr";
 
-import { fetcherMuatrans } from "@/lib/axios";
-
 const apiResultDriversCount = {
   data: {
     Message: {

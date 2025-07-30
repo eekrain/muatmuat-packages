@@ -191,7 +191,7 @@ const PilihProvinsi = ({
           />
         </div>
       )}
-      <div className="shadow-muat fixed bottom-0 left-0 flex w-full gap-x-2 bg-neutral-50 px-4 py-3">
+      <div className="fixed bottom-0 left-0 flex w-full gap-x-2 bg-neutral-50 px-4 py-3 shadow-muat">
         <Button
           className="flex h-10 w-full max-w-full items-center !font-semibold"
           variant="muatparts-primary-secondary"

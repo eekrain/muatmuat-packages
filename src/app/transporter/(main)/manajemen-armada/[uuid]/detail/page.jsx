@@ -206,7 +206,7 @@ const Page = () => {
           </div>
         </Alert>
 
-        <Card className="shadow-muat rounded-2xl border-none">
+        <Card className="rounded-2xl border-none shadow-muat">
           <CardContent className="space-y-5 !p-6">
             <div>
               <DetailRow hasBorderBottom={false} label="No. Polisi Kendaraan">

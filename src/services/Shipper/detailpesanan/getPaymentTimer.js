@@ -2,6 +2,8 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
+const useMockData = false; // toggle mock data
+
 // Mock API result for development/testing
 export const mockAPIResult = {
   data: {
@@ -20,8 +22,6 @@ export const mockAPIResult = {
     Type: "PAYMENT_TIMER",
   },
 };
-
-const useMockData = false;
 
 export const getPaymentTimer = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];

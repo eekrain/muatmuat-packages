@@ -56,3 +56,9 @@ export const getLoadTimes = (loadTimeStart, showRangeOption, loadTimeEnd) => {
 
   return result;
 };
+
+export const addMinutes = (date, minutes) => {
+  const newDate = new Date(date);
+  newDate.setMinutes(newDate.getMinutes() + minutes);
+  return newDate;
+};

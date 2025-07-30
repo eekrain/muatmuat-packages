@@ -401,7 +401,7 @@ export const CreateOrderSummaryPanel = ({
         }
       );
 
-      if (response.data.Message.Code == 200) {
+      if (response.data.Message.Code === 200) {
         // alert("Hore Berhasil Sewa Armada :)");
         // Handle sukses - bisa redirect ke detail pesanan
         const fleet = await fetcherMuatrans.post(

@@ -58,7 +58,7 @@ const CropperPreviewResponsive = ({
           {description}
         </div>
       </div>
-      <div className="shadow-muat fixed bottom-0 left-0 w-full bg-neutral-50 px-4 py-3">
+      <div className="fixed bottom-0 left-0 w-full bg-neutral-50 px-4 py-3 shadow-muat">
         <Button
           className="h-8 w-full max-w-full"
           variant="muatparts-primary"

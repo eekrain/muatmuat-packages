@@ -84,7 +84,7 @@ const ExampleFormWithMenuLayout = () => {
   );
 };
 
-const ExampleResponsive = ({}) => {
+const ExampleResponsive = () => {
   return (
     <ResponsiveProvider>
       <ResponsiveRoute path="/" component={<ExampleDefaultLayout />} />

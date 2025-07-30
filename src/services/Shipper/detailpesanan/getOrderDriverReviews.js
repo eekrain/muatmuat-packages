@@ -4,8 +4,8 @@ import { fetcherMuatrans } from "@/lib/axios";
 
 const useMockData = false; // toggle mock data
 
-// GET /api/v1/orders/{orderId}/review
-const apiResultDriverReviews = {
+// Mock API result for development/testing
+export const mockAPIResult = {
   data: {
     Message: {
       Code: 200,
@@ -19,7 +19,8 @@ const apiResultDriverReviews = {
           driverId: "uuid-driver-1",
           name: "Ahmad Rahman",
           phoneNumber: "081234567891",
-          profileImage: "https://example.com/driver1.jpg",
+          profileImage:
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Carmen_di_Musinsa_Beauty_Festa_Pop-Up_Store_2025.jpg/640px-Carmen_di_Musinsa_Beauty_Festa_Pop-Up_Store_2025.jpg",
           licensePlate: "B 1234 CD",
           canReview: true,
           reviewedAt: "",
@@ -30,7 +31,8 @@ const apiResultDriverReviews = {
           driverId: "uuid-driver-2",
           name: "Budi Santoso",
           phoneNumber: "081234567892",
-          profileImage: "https://example.com/driver2.jpg",
+          profileImage:
+            "https://m.media-amazon.com/images/M/MV5BZjhlMmNjZWUtYzI1MS00OGNkLWI1NTEtNjNkZWM4ZTZmNDhhXkEyXkFqcGc@._V1_.jpg",
           licensePlate: "B 5678 EF",
           canReview: false,
           reviewedAt: "2025-02-11T16:00:00Z",
@@ -38,19 +40,18 @@ const apiResultDriverReviews = {
           review: "Driver sangat baik dan profesional",
         },
       ],
-    },
-    summary: {
-      totalReviews: 1,
-      averageRating: 5,
-      ratingDistribution: {
-        5: 1,
-        4: 0,
-        3: 0,
-        2: 0,
-        1: 0,
+      summary: {
+        totalReviews: 1,
+        averageRating: 5,
+        ratingDistribution: {
+          5: 1,
+          4: 0,
+          3: 0,
+          2: 0,
+          1: 0,
+        },
       },
     },
-    Type: "GET_ORDER_DRIVER_REVIEWS",
   },
 };
 
@@ -59,7 +60,7 @@ export const getOrderDriverReviews = async (cacheKey) => {
 
   let result;
   if (useMockData) {
-    result = apiResultDriverReviews;
+    result = mockAPIResult;
   } else {
     result = await fetcherMuatrans
       .get(`v1/orders/${orderId}/reviews`)

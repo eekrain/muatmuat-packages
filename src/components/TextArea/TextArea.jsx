@@ -55,9 +55,9 @@ const TextArea = ({
         className={`flex w-full gap-[8px] p-12 ${
           disabled && style.input_disabled
         } ${style.input_style} ${
-          status == "error"
+          status === "error"
             ? style.border_red
-            : status == "success"
+            : status === "success"
               ? style.border_success
               : ""
         }`}
@@ -78,10 +78,10 @@ const TextArea = ({
       </div>
       {
         <div
-          className={`flex justify-between ${style.supportive_text} ${
-            status == "error"
+          className={`flex items-center justify-between ${style.supportive_text} ${
+            status === "error"
               ? style.text_danger
-              : status == "success"
+              : status === "success"
                 ? style.text_success
                 : ""
           }`}
@@ -114,7 +114,6 @@ TextArea.propTypes = {
   supportiveText: PropTypes.object,
   disabled: PropTypes.bool,
   status: PropTypes.oneOf(["success", "error"]),
-  supportiveText: PropTypes.object,
   width: PropTypes.object,
   resize: PropTypes.string,
   maxLength: PropTypes.number,

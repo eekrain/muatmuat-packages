@@ -93,10 +93,10 @@ const DetailPesananHeader = ({
       const result = await confirmDocumentReceived();
 
       if (
-        result?.data?.Message?.Code == 200 ||
-        result?.Message?.Code == 200 ||
-        result?.data?.Message?.Code == 201 ||
-        result?.Message?.Code == 201
+        result?.data?.Message?.Code === 200 ||
+        result?.Message?.Code === 200 ||
+        result?.data?.Message?.Code === 201 ||
+        result?.Message?.Code === 201
       ) {
         toast.success("Dokumen berhasil dikonfirmasi diterima");
         setIsDocumentReceivedModalOpen(false);
@@ -257,7 +257,7 @@ const DetailPesananHeader = ({
               }
               className={cn(
                 "h-8",
-                !Boolean(dataStatusPesanan?.hasFoundFleet) &&
+                !dataStatusPesanan?.hasFoundFleet &&
                   dataStatusPesanan?.orderStatus !==
                     OrderStatusEnum.SCHEDULED_FLEET
                   ? "w-[162px]"

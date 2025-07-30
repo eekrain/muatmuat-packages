@@ -198,6 +198,8 @@ const UnggahFoto = ({ resultCrop }) => {
   );
 
   const { t } = useTranslation();
+  const [showToast, setShowToast] = useState(false);
+  const [dataToast, setDataToast] = useState({ type: "", message: "" });
 
   const handleImageResult = async ({ result, error }) => {
     if (error) {

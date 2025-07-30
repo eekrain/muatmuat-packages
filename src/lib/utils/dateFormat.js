@@ -107,9 +107,9 @@ class ClasifyDate {
   }
   getClasifyPeriodeByRange(value) {
     const newDate = new Date(value);
-    let date = newDate.getDate();
-    let month = newDate.getMonth() + 1;
-    let year = newDate.getFullYear();
+    const date = newDate.getDate();
+    const month = newDate.getMonth() + 1;
+    const year = newDate.getFullYear();
     return `${year}-${month.toString().padStart(2, "0")}-${date
       .toString()
       .padStart(2, "0")}`;

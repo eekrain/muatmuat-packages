@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 const Root = ({ children, className }) => (
   <div
     className={cn(
-      "flex w-[338px] flex-col overflow-hidden rounded-xl bg-white shadow-md",
+      "flex w-full flex-col bg-white md:w-[338px] md:overflow-hidden md:rounded-xl md:shadow-md",
       className
     )}
   >
@@ -15,10 +15,10 @@ const Root = ({ children, className }) => (
 );
 
 const Header = ({ children, className }) => (
-  <div className={cn("px-5 pb-6 pt-6", className)}>
+  <div className={cn("py-5 md:px-5 md:py-6", className)}>
     <h1
       className={cn(
-        "text-base font-bold leading-tight text-neutral-900",
+        "text-sm font-semibold leading-tight text-neutral-900 md:text-base md:font-bold",
         className
       )}
     >
@@ -28,8 +28,13 @@ const Header = ({ children, className }) => (
 );
 
 const Body = ({ children, className }) => (
-  <div className={cn("mb-4 mr-2 flex-1 overflow-y-auto pl-5 pr-3", className)}>
-    <div className="flex flex-col gap-6">{children}</div>
+  <div
+    className={cn(
+      "flex-1 md:mb-4 md:mr-2 md:overflow-y-auto md:pl-5 md:pr-3",
+      className
+    )}
+  >
+    <div className="flex flex-col md:gap-6">{children}</div>
   </div>
 );
 
@@ -70,7 +75,7 @@ const CollapsibleSection = ({
         )}
       >
         <div className="overflow-hidden">
-          <div className="flex flex-col gap-4 pt-4">{children}</div>
+          <div className="flex flex-col gap-3 pt-4">{children}</div>
         </div>
       </div>
     </div>
@@ -78,7 +83,7 @@ const CollapsibleSection = ({
 };
 
 const Section = ({ title, children, className }) => (
-  <div className={cn("flex flex-col gap-3", className)}>
+  <div className={cn("flex flex-col gap-4 md:gap-3", className)}>
     <h2 className="text-sm font-semibold leading-tight text-neutral-900">
       {title}
     </h2>
@@ -93,21 +98,19 @@ const LineItem = ({
   variant,
   valueClassName,
   labelClassName,
+  className,
 }) => {
   const valueColorClass =
     variant === "danger" ? "text-error-400" : "text-neutral-900";
   return (
-    <div>
-      <div className="flex items-start justify-between gap-6">
-        <p
-          className={cn(
-            "flex-1 text-xs font-medium text-neutral-600",
-            labelClassName
-          )}
+    <div className={cn(className)}>
+      <div className="flex items-start justify-between gap-3 md:gap-6">
+        <span
+          className={cn("text-xs font-medium text-neutral-600", labelClassName)}
         >
           {label}
-        </p>
-        <p
+        </span>
+        <span
           className={cn(
             "whitespace-nowrap text-right text-xs font-medium",
             valueColorClass,
@@ -115,7 +118,7 @@ const LineItem = ({
           )}
         >
           {value}
-        </p>
+        </span>
       </div>
       {children}
     </div>
@@ -125,7 +128,7 @@ const LineItem = ({
 const Footer = ({ children, className }) => (
   <div
     className={cn(
-      "bg-white p-5 shadow-[0_-4px_11px_rgba(65,65,65,0.08)]",
+      "bg-white py-5 shadow-[0_-4px_11px_rgba(65,65,65,0.08)] md:px-5",
       className
     )}
   >

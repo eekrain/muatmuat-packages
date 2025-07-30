@@ -1,4 +1,5 @@
 import { addMinutes } from "date-fns";
+import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
@@ -42,6 +43,5 @@ export const getOrderPaymentData = async (cacheKey) => {
 
   return result?.data?.Data || null;
 };
-
 export const useGetOrderPaymentData = (orderId) =>
   useSWR(`order-payment/${orderId}`, getOrderPaymentData);

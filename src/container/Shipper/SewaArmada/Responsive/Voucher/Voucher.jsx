@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   BottomSheet,
@@ -11,6 +11,14 @@ import {
   useSewaArmadaActions,
   useSewaArmadaStore,
 } from "@/store/Shipper/forms/sewaArmadaStore";
+
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
 
 const VoucherBottomSheet = ({
   isBottomsheetVoucherOpen,

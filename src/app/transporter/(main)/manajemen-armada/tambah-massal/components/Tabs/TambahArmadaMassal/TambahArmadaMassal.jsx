@@ -85,6 +85,7 @@ const TambahArmadaMassal = () => {
 
   const [stateToggle, setStateToggle] = useState(false);
   const [isDraft, setIsDraft] = useState(false);
+  const [addArmadaImageModal, setAddArmadaImageModal] = useState(false);
 
   const formMethods = useForm({
     defaultValues: {

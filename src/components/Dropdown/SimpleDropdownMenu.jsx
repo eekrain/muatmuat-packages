@@ -15,7 +15,7 @@ export const SimpleDropdownContent = ({
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Content
         className={cn(
-          "shadow-muat z-50 mt-1 flex max-w-[194px] flex-col overflow-hidden rounded-md border border-neutral-300 bg-neutral-50",
+          "z-50 mt-1 flex max-w-[194px] flex-col overflow-hidden rounded-md border border-neutral-300 bg-neutral-50 shadow-muat",
           className
         )}
         side={side}

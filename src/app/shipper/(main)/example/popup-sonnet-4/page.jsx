@@ -75,7 +75,7 @@ const PilihJenisTrukModal = () => {
     },
   ];
 
-  const TruckItem = ({ truck, isRecommended = true }) => (
+  const TruckItem = ({ truck }) => (
     <div className="flex flex-row items-start gap-2 border-b border-neutral-400 pb-3 pt-3">
       {/* Truck Image with Lightbox */}
       <div className="relative h-[68px] w-[68px] flex-shrink-0">

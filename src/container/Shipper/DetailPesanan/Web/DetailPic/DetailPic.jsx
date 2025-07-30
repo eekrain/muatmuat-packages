@@ -123,7 +123,7 @@ const DetailPIC = ({ dataDetailPIC }) => {
   };
 
   return (
-    <div className="shadow-muat flex flex-col items-center rounded-xl bg-neutral-50 p-8">
+    <div className="flex flex-col items-center rounded-xl bg-neutral-50 p-8 shadow-muat">
       {/* Header Section */}
       <div className="flex w-full items-center justify-between">
         <h1 className="text-lg font-semibold leading-[21.6px] text-neutral-900">

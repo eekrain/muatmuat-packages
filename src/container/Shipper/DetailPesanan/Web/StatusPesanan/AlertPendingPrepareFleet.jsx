@@ -1,17 +1,17 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
 
-export const AlertPendingPrepareFleet = ({}) => {
+export const AlertPendingPrepareFleet = () => {
   return (
     <div className="flex flex-col items-center gap-3 bg-muat-trans-primary-50 px-8 py-4 md:flex-row md:gap-8 md:rounded-2xl">
       <div className="relative size-[72px]">
         <IconComponent
-          src={"/icons/loader-truck-spinner.svg"}
+          src={"/icons/loader-truck/desktop-circle-spinner.svg"}
           width={72}
           height={72}
           className="absolute left-0 top-0 animate-spin"
         />
         <IconComponent
-          src={"/icons/loader-truck-icon.svg"}
+          src={"/icons/loader-truck/desktop-truck-icon.svg"}
           width={32}
           height={32}
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"

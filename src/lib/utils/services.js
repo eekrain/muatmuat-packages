@@ -70,15 +70,15 @@ export function CopyClipboard(val, id, setState) {
 }
 
 export function generateVariantCombination(combination, variant1, variant2) {
-  let variant_1 = variant1?.filter((val) => combination?.code?.includes(val));
-  let variant_2 = variant2?.filter((val) => combination?.code?.includes(val));
+  const variant_1 = variant1?.filter((val) => combination?.code?.includes(val));
+  const variant_2 = variant2?.filter((val) => combination?.code?.includes(val));
   if (variant_2) return `${variant_1}-${variant_2}`;
   return variant_1;
 }
 
 export function sortMainAddressOnTop(address) {
-  const primary = address?.filter((val) => val?.IsMainAddress == 1) || [];
-  const old = address?.filter((val) => val?.IsMainAddress != 1) || [];
+  const primary = address?.filter((val) => val?.IsMainAddress === 1) || [];
+  const old = address?.filter((val) => val?.IsMainAddress !== 1) || [];
   const tmp = [...primary, ...old];
   return tmp;
 }
@@ -112,7 +112,7 @@ export function metaSearchParams(object) {
           }
           if (Array.isArray(val[1]) && val[1].length) {
             // LBM
-            if (val[1].length == 1) return `${val[0]}=${val[1]},`;
+            if (val[1].length === 1) return `${val[0]}=${val[1]},`;
             return `${val[0]}=${val[1]?.join(",")}`;
           }
           return `${val[0]}=${val[1]}`;
@@ -129,8 +129,8 @@ export function metaSearchParams(object) {
         if (!isNaN(Number(val?.split("=")[1])))
           return { [val?.split("=")[0]]: Number(val?.split("=")[1]) };
         if (val?.split("=")[0] !== "q" && val?.split("=")[1]?.includes(",")) {
-          let arr = val?.split("=")[1]?.split(",");
-          let newArr = arr?.map((a) => {
+          const arr = val?.split("=")[1]?.split(",");
+          const newArr = arr?.map((a) => {
             if (!isNaN(Number(a))) return Number(a);
             return a;
           });

@@ -321,7 +321,7 @@ const DatetimePicker = ({
       const dropdownWidth = 360;
       const dropdownHeight = 380;
 
-      let position = {};
+      const position = {};
       const isRightField = pickerRect.left > screenWidth / 2;
 
       if (isRightField) {

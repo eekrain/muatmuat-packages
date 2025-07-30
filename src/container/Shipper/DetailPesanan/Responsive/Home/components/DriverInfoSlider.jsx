@@ -12,7 +12,7 @@ import {
 } from "@/components/Bottomsheet/Bottomsheet";
 import Button from "@/components/Button/Button";
 import { useSwipe } from "@/hooks/use-swipe";
-import { DriverStatusLabel } from "@/lib/constants/detailpesanan/driver-status.enum";
+import { getDriverStatusMetadata } from "@/lib/normalizers/detailpesanan/getDriverStatusMetadata";
 import { getStatusScanMetadata } from "@/lib/normalizers/detailpesanan/getStatusScanMetadata";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
@@ -43,9 +43,6 @@ const Root = ({ children, className }) => (
  * @param {HeaderProps} props
  */
 const Header = ({ statusCode, withMenu = true, mode = "driver-status" }) => {
-  console.log("🚀 ~ Header ~ statusCode:", statusCode);
-  console.log("🚀 ~ Header ~ mode:", mode);
-
   const navigation = useResponsiveNavigation();
 
   const statusMeta = useMemo(() => {
@@ -53,7 +50,7 @@ const Header = ({ statusCode, withMenu = true, mode = "driver-status" }) => {
     if (mode === "status-scan") {
       response.scan = getStatusScanMetadata(statusCode);
     } else if (mode === "driver-status") {
-      response.status = DriverStatusLabel[statusCode];
+      response.status = getDriverStatusMetadata(statusCode);
     }
     return response;
   }, [statusCode, mode]);
@@ -70,7 +67,7 @@ const Header = ({ statusCode, withMenu = true, mode = "driver-status" }) => {
       )}
       {statusMeta?.status && (
         <BadgeStatusPesanan variant={"primary"} className="w-fit">
-          {statusMeta?.status}
+          {`${statusMeta?.status?.label}${statusMeta?.status?.index ? ` ${statusMeta?.status?.index}` : ""}`}
         </BadgeStatusPesanan>
       )}
       {withMenu && (
@@ -216,7 +213,6 @@ export default function DriverInfoSlider({
               className="w-full flex-shrink-0 p-5"
             >
               <div className="flex w-full flex-col items-start gap-4">
-                <p>{driver.driverStatus}</p>
                 <DriverInfo.Header
                   statusCode={driver.driverStatus}
                   mode="driver-status"

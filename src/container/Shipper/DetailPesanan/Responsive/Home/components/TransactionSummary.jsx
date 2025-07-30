@@ -53,87 +53,81 @@ export const TransactionSummary = ({ documentShippingDetail }) => {
   return (
     <>
       <div className="bg-white px-4 py-5">
-        <CardPayment.Root>
-          <CardPayment.Header>
+        <CardPayment.Root className="mx-auto w-full">
+          <CardPayment.Header className="py-0">
             {isRingkasanTransaksi
               ? "Ringkasan Transaksi"
               : "Ringkasan Pembayaran"}
           </CardPayment.Header>
 
-          <CardPayment.Body>
-            <CardPayment.Section title="Biaya Pesan Jasa Angkut">
-              <CardPayment.LineItem
-                label={
-                  <>
-                    Nominal Pesan Jasa Angkut <br />
-                    (1 Unit)
-                  </>
-                }
-                value={idrFormat(transportFee)}
-              />
-            </CardPayment.Section>
-
-            {dataRingkasanPembayaran?.insuranceFee > 0 && (
-              <CardPayment.Section title="Biaya Asuransi Barang">
+          <CardPayment.Body className="mt-6">
+            {/* Main content area with bottom border */}
+            <div className="flex flex-col gap-6 border-neutral-400">
+              <CardPayment.Section title="Biaya Pesan Jasa Angkut">
                 <CardPayment.LineItem
-                  label="Nominal Premi Asuransi (1 Unit)"
-                  value={idrFormat(dataRingkasanPembayaran.insuranceFee)}
+                  label="Nominal Pesan Jasa Angkut (1 Unit)"
+                  value={idrFormat(transportFee)}
                 />
               </CardPayment.Section>
-            )}
 
-            <CardPayment.Section title="Biaya Layanan Tambahan">
-              <CardPayment.LineItem
-                label="Nominal Kirim Bukti Fisik Penerimaan Barang"
-                value={idrFormat(dataRingkasanPembayaran.documentShippingFee)}
-              >
-                <button
-                  onClick={() => setDocumentShippingDetailOpen(true)}
-                  className="mt-1 h-2 w-fit text-xs font-medium leading-[1.2] text-primary-700"
+              {dataRingkasanPembayaran?.insuranceFee > 0 && (
+                <CardPayment.Section title="Biaya Asuransi Barang">
+                  <CardPayment.LineItem
+                    label="Nominal Premi Asuransi (1 Unit)"
+                    value={idrFormat(dataRingkasanPembayaran.insuranceFee)}
+                  />
+                </CardPayment.Section>
+              )}
+
+              <CardPayment.Section title="Biaya Layanan Tambahan">
+                <CardPayment.LineItem
+                  label="Nominal Kirim Bukti Fisik Penerimaan Barang"
+                  labelClassName="w-[200px]"
+                  value={idrFormat(dataRingkasanPembayaran.documentShippingFee)}
                 >
-                  Lihat Detail Pengiriman Dokumen
-                </button>
-              </CardPayment.LineItem>
-              <CardPayment.LineItem
-                label="Nominal Bantuan Tambahan"
-                value={idrFormat(
-                  dataRingkasanPembayaran.otherAdditionalService?.totalPrice
-                )}
-              />
-            </CardPayment.Section>
-
-            {dataRingkasanPembayaran?.voucherDiscount > 0 && (
-              <CardPayment.Section title="Diskon Voucher">
+                  <button
+                    onClick={() => setDocumentShippingDetailOpen(true)}
+                    className="text-xs font-semibold leading-tight text-primary-700"
+                  >
+                    Lihat Detail Pengiriman Dokumen
+                  </button>
+                </CardPayment.LineItem>
                 <CardPayment.LineItem
-                  label="Voucher (DISKONPENGGUNABARU)"
-                  variant="danger"
-                  value={`-${idrFormat(
-                    dataRingkasanPembayaran.voucherDiscount
-                  )}`}
+                  label="Nominal Bantuan Tambahan"
+                  value={idrFormat(
+                    dataRingkasanPembayaran.otherAdditionalService?.totalPrice
+                  )}
                 />
               </CardPayment.Section>
-            )}
 
-            <hr className="border-neutral-200" />
-
-            <CardPayment.Section title="Biaya Lainnya">
-              <CardPayment.LineItem
-                label="Admin Layanan"
-                value={idrFormat(dataRingkasanPembayaran.adminFee)}
-              />
-              <CardPayment.LineItem
-                label="Pajak"
-                variant="danger"
-                value={`-${idrFormat(dataRingkasanPembayaran.tax)}`}
-              />
-            </CardPayment.Section>
+              {dataRingkasanPembayaran?.voucherDiscount > 0 && (
+                <CardPayment.Section title="Diskon Voucher">
+                  <CardPayment.LineItem
+                    label="Voucher (DISKONPENGGUNABARU)"
+                    variant="danger"
+                    value={`-${idrFormat(
+                      dataRingkasanPembayaran.voucherDiscount
+                    )}`}
+                  />
+                </CardPayment.Section>
+              )}
+            </div>
+            <hr className="my-6" />
+            {/* 'Biaya Lainnya' Section */}
+            <div className="flex flex-col gap-6">
+              <CardPayment.Section title="Biaya Lainnya">
+                <CardPayment.LineItem
+                  label="Admin Layanan"
+                  value={idrFormat(dataRingkasanPembayaran.adminFee)}
+                />
+                <CardPayment.LineItem
+                  label="Pajak"
+                  variant="danger"
+                  value={`-${idrFormat(dataRingkasanPembayaran.tax)}`}
+                />
+              </CardPayment.Section>
+            </div>
           </CardPayment.Body>
-
-          <CardPayment.Footer>
-            <CardPayment.Total
-              value={idrFormat(dataRingkasanPembayaran.totalPrice)}
-            />
-          </CardPayment.Footer>
         </CardPayment.Root>
       </div>
 

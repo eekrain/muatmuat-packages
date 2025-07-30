@@ -18,7 +18,7 @@ export const getStatusScanMetadata = (statusScan = null) => {
     hasScan = true;
   }
 
-  if (splitStatus[3] === "MUAT") {
+  if (splitStatus[2] === "MUAT") {
     if (hasScan)
       statusText = `Sudah Scan di Lokasi Muat${indexString(indexLocation)}`;
     else statusText = `Belum Scan di Lokasi Muat${indexString(indexLocation)}`;

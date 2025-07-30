@@ -16,7 +16,7 @@ const MenuItem = ({ imgUrl, title, variant, onClick }) => {
     <button
       className={cn(
         "flex w-full cursor-pointer items-center gap-2 px-[18px] py-2 font-medium text-neutral-900 hover:bg-neutral-100",
-        variant == "danger" && "text-error-400"
+        variant === "danger" && "text-error-400"
       )}
       onClick={onClick}
     >
@@ -70,7 +70,7 @@ export const UserDropdown = () => {
 
           <HoverCard.Portal>
             <HoverCard.Content
-              className="shadow-muat z-20 flex w-[174px] flex-col justify-between rounded-md border border-neutral-300 bg-neutral-50"
+              className="z-20 flex w-[174px] flex-col justify-between rounded-md border border-neutral-300 bg-neutral-50 shadow-muat"
               side="bottom"
               align="end"
               sideOffset={4}

@@ -10,7 +10,7 @@ import {
 } from "@/services/Shipper/sewaarmada/userPreferences";
 import { useFirstTimerSewaArmadaApp } from "@/store/Shipper/first-timer/sewaArmadaApp";
 
-export const ModalFirstTimer = ({}) => {
+export const ModalFirstTimer = () => {
   const [open, setOpen] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [saving, setSaving] = useState(false);

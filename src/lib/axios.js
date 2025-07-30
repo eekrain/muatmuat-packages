@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import xior from "xior";
 
 import { useTokenStore } from "@/store/AuthStore/tokenStore";

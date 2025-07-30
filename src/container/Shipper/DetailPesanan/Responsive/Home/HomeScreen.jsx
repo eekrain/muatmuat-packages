@@ -10,10 +10,9 @@ import {
   AlertTypeEnum,
 } from "@/lib/constants/detailpesanan/alert.enum";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
-import { useResponsiveNavigation } from "@/lib/responsive-navigation";
-import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
 import useGetFleetSearchStatus from "@/services/Shipper/detailpesanan/getFleetSearchStatus";
 
+import { AlertPendingPayment } from "./components/AlertPendingPayment";
 import { BottomsheetMenuList } from "./components/BottomsheetMenuList";
 import DriverInfoSlider from "./components/DriverInfoSlider";
 import { FleetStatusAlert } from "./components/FleetStatusAlert";
@@ -29,16 +28,14 @@ import { TransactionSummary } from "./components/TransactionSummary";
 const DEBUG_MODE = false;
 
 const DetailPesananScreen = ({
+  dataStatusPesanan,
+  dataRingkasanPesanan,
   dataDetailPIC,
   dataRingkasanPembayaran,
   documentShippingDetail,
 }) => {
   const params = useParams();
 
-  const { data: dataDetailPesanan, isLoading: isLoadingDetailPesanan } =
-    useGetDetailPesananData(params.orderId);
-
-  console.log("jalanin aja", dataDetailPesanan);
   const {
     isOpen: isWaitFleetModalOpen,
     isShow: isShowWaitFleetAlert,
@@ -46,10 +43,8 @@ const DetailPesananScreen = ({
     setIsShow: setIsShowWaitFleetAlert,
   } = useGetFleetSearchStatus(
     params.orderId,
-    dataDetailPesanan?.dataStatusPesanan?.orderStatus ===
-      OrderStatusEnum.PREPARE_FLEET
+    dataStatusPesanan?.orderStatus === OrderStatusEnum.PREPARE_FLEET
   );
-  const navigation = useResponsiveNavigation();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -95,7 +90,8 @@ const DetailPesananScreen = ({
       onClickBackButton={() => alert("onClickBackButton")}
     >
       <div className="mb-16 space-y-2 bg-neutral-200">
-        {false && (
+        <AlertPendingPayment />
+        {true && (
           <PaymentDetail dataRingkasanPembayaran={dataRingkasanPembayaran} />
         )}
 
@@ -108,37 +104,29 @@ const DetailPesananScreen = ({
                   },
                 ]
               : []),
-            ...(dataDetailPesanan?.dataStatusPesanan?.alerts || [])
+            ...(dataStatusPesanan?.alerts || [])
               .map((item) => getContentAlert(item))
               .filter((val) => Boolean(val)),
           ]}
         />
 
-        {false && <FleetStatusAlert />}
+        {DEBUG_MODE && <FleetStatusAlert />}
 
-        <OrderInfo dataStatusPesanan={dataDetailPesanan?.dataStatusPesanan} />
+        <OrderInfo dataStatusPesanan={dataStatusPesanan} />
 
         <DriverInfoSlider
-          driverStatus={dataDetailPesanan?.dataStatusPesanan?.driverStatus}
-          orderId={dataDetailPesanan?.dataStatusPesanan?.orderId}
-          orderStatus={dataDetailPesanan?.dataStatusPesanan?.orderStatus}
+          driverStatus={dataStatusPesanan?.driverStatus}
+          orderId={dataStatusPesanan?.orderId}
+          orderStatus={dataStatusPesanan?.orderStatus}
         />
         <TabsInfo dataDetailPIC={dataDetailPIC} />
 
-        {true && (
-          <RouteInfo
-            dataDetailPesanan={dataDetailPesanan?.dataRingkasanPesanan}
-          />
-        )}
+        {false && <RouteInfo dataDetailPesanan={dataRingkasanPesanan} />}
         {true && <MethodInfo method={"va_bca"} />}
         {true && (
           <TransactionSummary documentShippingDetail={documentShippingDetail} />
         )}
       </div>
-
-      <ModalInformasiSlider open={isOpenInfo} onOpenChange={setIsOpenInfo} />
-
-      <BottomsheetMenuList open={isMenuOpen} onOpenChange={setIsMenuOpen} />
 
       <ResponsiveFooter className="flex flex-col gap-3">
         {false && (
@@ -153,10 +141,11 @@ const DetailPesananScreen = ({
             <div className="text-sm font-bold">Rp1.021.583</div>
           </div>
         )}
-        <FooterButton
-          orderStatus={dataDetailPesanan?.dataStatusPesanan?.orderStatus}
-        />
+        <FooterButton orderStatus={dataStatusPesanan?.orderStatus} />
       </ResponsiveFooter>
+
+      <ModalInformasiSlider open={isOpenInfo} onOpenChange={setIsOpenInfo} />
+      <BottomsheetMenuList open={isMenuOpen} onOpenChange={setIsMenuOpen} />
     </FormResponsiveLayout>
   );
 };

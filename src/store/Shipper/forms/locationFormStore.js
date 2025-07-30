@@ -84,7 +84,7 @@ export const useLocationFormStore = create(
           },
         })),
       setErrors: (formErrors) =>
-        set((state) => ({
+        set(() => ({
           formErrors,
         })),
       reset: (newValues) =>
@@ -133,8 +133,8 @@ export const useLocationFormStore = create(
         const errors = {
           namaLokasi: validateNamaLokasi(formValues.namaLokasi),
           detailLokasi: validateDetailLokasi(formValues.detailLokasi),
-          namaPIC: validateNamaPIC(formValues.namaPIC, formMode, isMobile),
-          noHPPIC: validateNoHPPIC(formValues.noHPPIC, formMode, isMobile),
+          namaPIC: validateNamaPIC(formValues.namaPIC),
+          noHPPIC: validateNoHPPIC(formValues.noHPPIC),
         };
 
         set({ formErrors: errors });
@@ -146,12 +146,10 @@ export const useLocationFormStore = create(
           useSewaArmadaStore.getState().formValues[
             formMode === "muat" ? "lokasiMuat" : "lokasiBongkar"
           ];
-        console.log("🚀 ~ allSelectedLocations:", allSelectedLocations);
 
         const foundLocationIndex = allSelectedLocations.findIndex(
           (item) => item?.dataLokasi?.location?.name === selectedAddress
         );
-        console.log("🚀 ~ foundLocationIndex:", foundLocationIndex);
 
         if (foundLocationIndex !== -1 && foundLocationIndex !== index)
           return formMode === "muat"

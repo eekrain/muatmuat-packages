@@ -11,18 +11,6 @@ export const FooterButton = ({ orderStatus }) => {
   const [isReceiveDocumentEvidenceOpen, setReceiveDocumentEvidenceOpen] =
     useState(false);
 
-  const ALLOW_LIST = {
-    DetailRefund: [
-      OrderStatusEnum.CANCELED_BY_SHIPPER,
-      OrderStatusEnum.CANCELED_BY_SYSTEM,
-      OrderStatusEnum.CANCELED_BY_TRANSPORTER,
-    ],
-    Unduh: "ALL",
-    PesanUlang: "ALL",
-    DokumenDiterima: [OrderStatusEnum.DOCUMENT_DELIVERY],
-    BeriUlasan: [OrderStatusEnum.COMPLETED],
-  };
-
   const isWaitingPayment =
     orderStatus === OrderStatusEnum.WAITING_PAYMENT_1 ||
     orderStatus === OrderStatusEnum.WAITING_PAYMENT_2 ||
@@ -34,9 +22,10 @@ export const FooterButton = ({ orderStatus }) => {
     orderStatus === OrderStatusEnum.DOCUMENT_DELIVERY ||
     orderStatus === OrderStatusEnum.COMPLETED;
 
-  return (
-    <>
-      <div className="flex gap-2">
+  const renderButtons = () => {
+    // Pesan Ulang button for LOADING status
+    if (orderStatus === OrderStatusEnum.LOADING) {
+      return (
         <Button
           variant="muatparts-primary"
           className="h-10 w-full p-0"
@@ -45,7 +34,106 @@ export const FooterButton = ({ orderStatus }) => {
         >
           Pesan Ulang
         </Button>
-      </div>
+      );
+    }
+
+    // Beri Ulasan button for COMPLETED status (single button)
+    if (orderStatus === OrderStatusEnum.COMPLETED) {
+      return (
+        <Button
+          variant="muatparts-primary"
+          className="w-full p-0"
+          onClick={() => navigation.push("/ulasan")}
+          type="button"
+        >
+          Beri Ulasan
+        </Button>
+      );
+    }
+
+    // Lanjut Pembayaran button for waiting payment
+    if (isWaitingPayment) {
+      return (
+        <Button
+          variant="muatparts-primary"
+          className="h-10 w-full p-0"
+          onClick={() => alert("Simpan")}
+          type="button"
+        >
+          Lanjut Pembayaran
+        </Button>
+      );
+    }
+
+    // Multiple buttons for DOCUMENT_DELIVERY status
+    if (orderStatus === OrderStatusEnum.DOCUMENT_DELIVERY) {
+      return (
+        <>
+          <Button
+            variant="muatparts-primary-secondary"
+            className="h-10 w-full p-0"
+            onClick={() => alert("Simpan")}
+            type="button"
+          >
+            Pesan Ulang
+          </Button>
+          <Button
+            variant="muatparts-primary"
+            className="h-10 w-full p-0"
+            onClick={() => setReceiveDocumentEvidenceOpen(true)}
+            type="button"
+          >
+            Dokumen Diterima
+          </Button>
+        </>
+      );
+    }
+
+    // Multiple buttons for COMPLETED status (duplicate case)
+    if (orderStatus === OrderStatusEnum.COMPLETED) {
+      return (
+        <>
+          <Button
+            variant="muatparts-primary-secondary"
+            className="h-10 w-full p-0"
+            onClick={() => alert("Simpan")}
+            type="button"
+          >
+            Pesan Ulang
+          </Button>
+          <Button
+            variant="muatparts-primary"
+            className="h-10 w-full p-0"
+            onClick={() => navigation.push("/ulasan")}
+            type="button"
+          >
+            Beri Ulasan
+          </Button>
+        </>
+      );
+    }
+
+    // Pesan Ulang button for unknown status
+    if (!isKnownStatus) {
+      return (
+        <Button
+          variant="muatparts-primary"
+          className="h-10 w-full p-0"
+          onClick={() => alert("Simpan")}
+          type="button"
+        >
+          Pesan Ulang
+        </Button>
+      );
+    }
+
+    // Return null if no conditions are met
+    return null;
+  };
+
+  return (
+    <>
+      <div className="flex gap-2">{renderButtons()}</div>
 
       {/* Modal Konfirmasi sudah terima bukti dokumen */}
       <Modal

@@ -68,17 +68,17 @@ export const useSewaArmadaStore = create(
           setCargoPhotos: (index, value) =>
             set((state) => {
               let updated = [...state.formValues.cargoPhotos];
-              if (value == null) {
+              if (value === null) {
                 updated[index] = null;
                 updated = updated
-                  .filter((item) => item != null)
+                  .filter((item) => item !== null)
                   .concat(
                     new Array(state.formValues.cargoPhotos.length).fill(null)
                   )
                   .slice(0, state.formValues.cargoPhotos.length);
               } else {
                 const emptyIndex = updated.findIndex(
-                  (item, i) => item == null && i < index
+                  (item, i) => item === null && i < index
                 );
                 if (emptyIndex !== -1) {
                   updated[emptyIndex] = value;
@@ -98,7 +98,6 @@ export const useSewaArmadaStore = create(
               },
             })),
           updateLokasi: (field, index, newValue) => {
-            console.log("Tes njir", { field, index, newValue });
             set((state) => ({
               formValues: {
                 ...state.formValues,
@@ -217,11 +216,6 @@ export const useSewaArmadaStore = create(
                 "Deskripsi muatan minimal 3 karakter";
             }
 
-            // Validate badan usaha fields if checkbox is checked
-            console.log(
-              "businessEntity.isBusinessEntity",
-              businessEntity.isBusinessEntity
-            );
             if (businessEntity.isBusinessEntity) {
               newErrors.businessEntity = {};
               if (!businessEntity.name.trim()) {
