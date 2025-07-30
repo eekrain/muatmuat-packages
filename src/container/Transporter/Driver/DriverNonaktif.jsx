@@ -32,7 +32,7 @@ const DriverNonaktif = ({
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const [sortConfig, setSortConfig] = useState();
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [searchValue, setSearchValue] = useState("");
   const [filters, setFilters] = useState({});
@@ -47,6 +47,7 @@ const DriverNonaktif = ({
     search: searchValue,
     status: selectedStatus,
     ...filters,
+    ...sortConfig,
   });
 
   // Fetch expired drivers summary
@@ -188,7 +189,7 @@ const DriverNonaktif = ({
           </SimpleDropdownTrigger>
 
           <SimpleDropdownContent className="w-[133px]" align="end">
-            {row.driverStatus === "INACTIVE" && (
+            {row.driverStatus === "NON_ACTIVE" && (
               <>
                 <SimpleDropdownItem onClick={() => {}}>
                   Lihat Agenda Driver
@@ -275,11 +276,8 @@ const DriverNonaktif = ({
     onPerPageChange?.(limit);
   };
 
-  const handleSort = (key, direction) => {
-    setSortConfig({ key, direction });
-    // Sorting by key and direction
-    // TODO: Implement actual sorting logic here
-    // This would typically involve calling an API with sort parameters
+  const handleSort = (sorr, order) => {
+    setSortConfig({ sorr, order });
   };
 
   const handleStatusChange = (status) => {
@@ -293,7 +291,7 @@ const DriverNonaktif = ({
   const getDisplayOptions = () => {
     // Get display options called
 
-    if (!data?.dataFilter?.status?.length > 0) {
+    if (!data?.dataFilter?.driverStatus?.length > 0) {
       // No status data available in dataFilter
       return null;
     }
@@ -304,15 +302,15 @@ const DriverNonaktif = ({
 
       switch (statusId) {
         case "NOT_PAIRED":
-          return data.summary.unpaired || 0;
-        case "INACTIVE":
+          return data.summary.unassigned || 0;
+        case "NON_ACTIVE":
           return data.summary.inactive || 0;
         default:
           return 0;
       }
     };
 
-    const statusOptions = data.dataFilter.status.map((item) => {
+    const statusOptions = data.dataFilter.driverStatus.map((item) => {
       const count = getCountFromSummary(item.id);
       return {
         value: item.id,
@@ -328,8 +326,7 @@ const DriverNonaktif = ({
       statusOptions,
       currentStatus: selectedStatus,
       onStatusChange: handleStatusChange,
-      totalCount:
-        data?.summary?.totalInactive || data?.pagination?.totalItems || 0,
+      totalCount: count || 0,
     };
   };
 
@@ -373,7 +370,7 @@ const DriverNonaktif = ({
           totalCountLabel="Driver"
           currentPage={data?.pagination?.page || currentPage}
           totalPages={data?.pagination?.totalPages || 1}
-          totalItems={count || data?.pagination?.totalItems || 0}
+          totalItems={count || 0}
           perPage={data?.pagination?.limit || perPage}
           onPageChange={handlePageChange}
           onPerPageChange={handlePerPageChange}

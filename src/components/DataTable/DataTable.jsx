@@ -171,7 +171,7 @@ const DataTable = ({
                         setSearchValue("");
                         onSearch?.("");
                       }}
-                      className="flex items-center justify-center rounded p-0.5 hover:bg-neutral-200"
+                      className="flex items-center justify-center rounded-full p-0.5 hover:bg-neutral-200"
                     >
                       <X className="h-3 w-3 text-neutral-600" />
                     </button>

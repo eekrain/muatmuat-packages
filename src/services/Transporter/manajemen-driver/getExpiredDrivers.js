@@ -73,7 +73,7 @@ export const useGetExpiredDriversSummary = () => {
   const fetcher = async (url) => {
     await new Promise((resolve) => setTimeout(resolve, 500));
     return {
-      totalExpiringDrivers: 8,
+      totalExpiringDrivers: 0,
       expiringThisWeek: 3,
       expiringThisMonth: 5,
       expired: 0,
