@@ -1,3 +1,19 @@
+// Legacy export for backward compatibility
+// export const DriverStatusLabel = {
+//   MENUJU_KE_LOKASI_MUAT: "labelMenujuKeLokasiMuat",
+//   TIBA_DI_LOKASI_MUAT: "labelTibaDiLokasiMuat",
+//   ANTRI_DI_LOKASI_MUAT: "labelAntriDiLokasiMuat",
+//   SEDANG_MUAT: "labelSedangMuat",
+
+//   MENUJU_KE_LOKASI_BONGKAR: "labelMenujuKeLokasiBongkar",
+//   TIBA_DI_LOKASI_BONGKAR: "labelTibaDiLokasiBongkar",
+//   ANTRI_DI_LOKASI_BONGKAR: "labelAntriDiLokasiBongkar",
+//   SEDANG_BONGKAR: "labelSedangBongkar",
+
+//   PENGIRIMAN_MUATAN_SELESAI: "labelPengirimanMuatanSelesai",
+//   MENUNGGU_ARMADA_PENGGANTI: "labelMenungguArmadaPengganti",
+//   MUATAN_PINDAH_ARMADA: "labelMuatanPindahArmada",
+//   ARMADA_PENGGANTI_BERJALAN: "labelArmadaPenggantiBerjalan",
 // Name nanti jadiin label multibahasa yoo
 export const DriverStatusEnum = {
   LOADING: {

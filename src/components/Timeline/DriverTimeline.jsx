@@ -63,7 +63,7 @@ export const DriverTimeline = ({ dataDriverStatus, onClickProof }) => {
         currentStatus?.statusCode
       );
       return t("labelBuktiStatus", {
-        statusName: DriverStatusLabel[statusCode] + (index > 1 ? index : ""),
+        statusName: `${t(DriverStatusLabel[statusCode])}${index > 1 ? ` ${index}` : ""}`,
       });
     }
 

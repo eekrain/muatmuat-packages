@@ -114,6 +114,7 @@ const SewaArmadaHomeScreen = ({ carriers, trucks, settlementAlertInfo }) => {
         }
         onRecommendedTruckClick={() => setRecommendedTruckBottomsheetOpen(true)}
         parentRef={parentRef}
+        trucks={trucks}
       />
 
       {/* Voucher Selection BottomSheet */}
@@ -149,6 +150,7 @@ const SewaArmadaHomeScreen = ({ carriers, trucks, settlementAlertInfo }) => {
       <RecommendedTruckBottomsheet
         isOpen={isRecommendedTruckBottomsheetOpen}
         onOpenChange={setRecommendedTruckBottomsheetOpen}
+        trucks={trucks}
       />
 
       <ModalFirstTimer />

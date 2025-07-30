@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { ChevronRight } from "lucide-react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
@@ -54,6 +56,7 @@ export const OrderStatus = ({
 export const OrderInfo = ({ dataStatusPesanan }) => {
   const { t } = useTranslation();
   const navigation = useResponsiveNavigation();
+  const [isOpenOtherStatus, setIsOpenOtherStatus] = useState(false);
 
   return (
     <div className="flex w-full flex-col items-start bg-white p-5">

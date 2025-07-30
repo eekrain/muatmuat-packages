@@ -63,7 +63,7 @@ export default function MultiDriverQRCodeScreen({ dataStatusPesanan }) {
               className="flex flex-col gap-4 border-none px-4 py-5"
             >
               <DriverInfo.Header
-                statusCode={driver.driverStatus.code}
+                statusCode={driver.driverStatus}
                 withMenu={false}
                 mode="status-scan"
               />

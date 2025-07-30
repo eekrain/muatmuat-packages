@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
@@ -16,6 +16,7 @@ export const SewaArmadaFooter = ({
   onOpenVoucherSelection,
   onRecommendedTruckClick,
   parentRef,
+  trucks,
 }) => {
   const navigation = useResponsiveNavigation();
   const { t } = useTranslation();
@@ -23,9 +24,20 @@ export const SewaArmadaFooter = ({
   console.log("🚀 ~ formValues:", formValues);
   const footerRef = useRef(null);
 
-  const isShowRecommendedTruckButton = false;
   const isShowCostDetail = true;
   const isShowTotalCost = true;
+
+  // Check if selected truck is non-recommended
+  const isShowRecommendedTruckButton = useMemo(() => {
+    if (!trucks || !formValues.truckTypeId) return false;
+
+    const nonRecommendedTrucks = trucks.nonRecommendedTrucks || [];
+    const isNonRecommendedTruck = nonRecommendedTrucks.some(
+      (truck) => truck.truckTypeId === formValues.truckTypeId
+    );
+
+    return isNonRecommendedTruck;
+  }, [trucks, formValues.truckTypeId]);
 
   useEffect(() => {
     if (parentRef.current && footerRef.current) {

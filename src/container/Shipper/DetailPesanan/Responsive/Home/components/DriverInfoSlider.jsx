@@ -43,6 +43,7 @@ const Root = ({ children, className }) => (
  * @param {HeaderProps} props
  */
 const Header = ({ statusCode, withMenu = true, mode = "driver-status" }) => {
+  console.log("🚀 ~ Header ~ statusCode:", statusCode);
   console.log("🚀 ~ Header ~ mode:", mode);
 
   const navigation = useResponsiveNavigation();
@@ -215,8 +216,9 @@ export default function DriverInfoSlider({
               className="w-full flex-shrink-0 p-5"
             >
               <div className="flex w-full flex-col items-start gap-4">
+                <p>{driver.driverStatus}</p>
                 <DriverInfo.Header
-                  statusCode={driver.driverStatus.code}
+                  statusCode={driver.driverStatus}
                   mode="driver-status"
                   onMenuClick={() => alert(`Menu for ${driver.name}`)}
                 />
