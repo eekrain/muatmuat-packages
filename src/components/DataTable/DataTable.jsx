@@ -291,11 +291,11 @@ const DataTable = ({
     <>
       <div
         className={cn(
-          "h-full w-full space-y-4 overflow-hidden rounded-lg border border-neutral-300 bg-white pb-2.5 pt-5",
+          "flex h-full w-full flex-col overflow-hidden rounded-lg border border-neutral-300 bg-white",
           className
         )}
       >
-        <div className="space-y-4 px-6">
+        <div className="flex-shrink-0 space-y-4 px-6 py-5">
           {renderHeader()}
           {showFilter && activeFilters.length > 0 && (
             <ActiveFiltersBar
@@ -320,7 +320,7 @@ const DataTable = ({
             type="data"
           />
         ) : (
-          renderTable()
+          <div className="flex-1 overflow-hidden">{renderTable()}</div>
         )}
       </div>
       {showPagination && !loading && data.length > 0 && (
