@@ -95,7 +95,7 @@ const ArmadaNonaktif = ({
       header: "Driver",
       width: "280px",
       render: (row) => (
-        <div className="space-y-2">
+        <div className="space-y-1">
           <div className="flex items-end gap-3 text-xxs font-semibold">
             {row.assignedDriver?.fullName ? (
               <>
