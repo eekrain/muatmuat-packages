@@ -1,5 +1,5 @@
 // RingkasanPembayaran.jsx
-import { usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import Button from "@/components/Button/Button";
@@ -14,7 +14,7 @@ import { ModalAlasanPembatalan } from "@/components/Modal/ModalAlasanPembatalan"
 import { ModalFormRekeningPencairan } from "@/components/RekeningPencairan/ModalFormRekeningPencairan";
 import { ModalFormRequestOtp } from "@/components/RekeningPencairan/ModalFormRequestOtp";
 import { useTranslation } from "@/hooks/use-translation";
-import { fetcherMuatparts } from "@/lib/axios";
+import { fetcherMuatparts, fetcherMuatrans } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 import { useGetAvailableBankOptions } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getAvailableBankOptions";
@@ -38,7 +38,7 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
   const { data: cancellationReasons } = useGetCancellationReasons();
   const { data: bankAccounts } = useGetBankAccounts();
   const { data: bankOptions } = useGetAvailableBankOptions();
-
+  const params = useParams();
   const [cancelFormErrors, setCancelFormErrors] = useState({});
   const handleProceedCancelOrder = ({
     selectedReason,
@@ -68,22 +68,21 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
       setIsModalRekeningOpen(true);
       return;
     }
-
     // // Implement cancel order
-    // const body = {
-    //   reasonId: selectedReason,
-    //   additionalInfo: isOtherReason ? customReason : "",
-    // };
+    const body = {
+      reasonId: selectedReason,
+      additionalInfo: isOtherReason ? customReason : "",
+    };
 
-    // fetcherMuatrans
-    //   .post(`v1/orders/${routerParams.orderId}/cancel`, body)
-    //   .then((response) => {
-    //     toast.success(response.data?.Data?.Message);
-    //   })
-    //   .catch((error) => {
-    //     toast.error(error.response.data?.Data?.Message);
-    //   });
-    toast.success(t("messageBerhasilMembatalkanPesanan"));
+    fetcherMuatrans
+      .post(`v1/orders/${params.orderId}/cancel`, body)
+      .then((response) => {
+        toast.success(t("messageBerhasilMembatalkanPesanan"));
+      })
+      .catch((error) => {
+        toast.error(error.response.data?.Data?.Message);
+      });
+
     setIsModalReasonOpen(false);
   };
 
