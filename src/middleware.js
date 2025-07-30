@@ -36,6 +36,19 @@ export function middleware(request) {
     return NextResponse.rewrite(url);
   }
 
+  // --- CS SUBDOMAIN HANDLER ---
+  if (process.env.NEXT_PUBLIC_APP_MODE === "cs") {
+    // Redirect root path based on environment
+    if (url.pathname === "/") {
+      url.pathname = "/login";
+      return NextResponse.redirect(url);
+    }
+
+    // Rewrite all cs paths
+    url.pathname = `/cs${url.pathname}`;
+    return NextResponse.rewrite(url);
+  }
+
   // --- SHIPPER SUBDOMAIN HANDLER ---
   if (process.env.NEXT_PUBLIC_APP_MODE === "shipper") {
     // 1. Redirect / to /sewaarmada
