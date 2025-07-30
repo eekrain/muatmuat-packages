@@ -5,7 +5,7 @@ import { fetcherMuatrans } from "@/lib/axios";
 const useMockData = false; // toggle mock data
 
 // Mock API result for development/testing
-export let mockAPIResult = {
+export const mockAPIResult = {
   data: {
     Message: {
       Code: 200,
