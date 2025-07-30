@@ -1,22 +1,57 @@
-import { useState } from "react";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import {
   BottomSheet,
   BottomSheetContent,
   BottomSheetHeader,
 } from "@/components/Bottomsheet/Bottomsheet";
-import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
-import { ulasanData } from "@/services/Shipper/detailpesanan/getUlasanData";
+import { useGetOrderDriverReviews } from "@/services/Shipper/detailpesanan/getOrderDriverReviews";
 
 import ContentUlasan from "./components/ContentUlasan";
 import HeaderComponentUlasan from "./components/HeaderComponentUlasan";
 
 const UlasanScreen = () => {
+  const params = useParams();
   const navigation = useResponsiveNavigation();
   const [isOpenBottomsheet, setIsOpenBottomsheet] = useState(false);
   const [isOpenInfo, setIsOpenInfo] = useState(false);
+
+  const { data: ulasanData } = useGetOrderDriverReviews(params.orderId);
+
+  // Nanti kalo integrasi api, kode dibawah bisa dihapus. tinggal refetch aja si useGetOrderDriverReviews
+  const [localReviewData, setLocalReviewData] = useState(null);
+  // Update local state when API data changes
+  useEffect(() => {
+    if (ulasanData) {
+      setLocalReviewData(ulasanData);
+    }
+  }, [ulasanData]);
+
+  // Function to update review data after successful submission
+  const handleReviewSubmitted = (driverId, reviewData) => {
+    if (localReviewData?.drivers) {
+      const updatedDrivers = localReviewData.drivers.map((driver) => {
+        if (driver.driverId === driverId) {
+          return {
+            ...driver,
+            canReview: false,
+            reviewedAt: reviewData.ratedAt,
+            rating: reviewData.rating,
+            review: reviewData.review,
+          };
+        }
+        return driver;
+      });
+
+      setLocalReviewData({
+        ...localReviewData,
+        drivers: updatedDrivers,
+      });
+    }
+  };
 
   return (
     <FormResponsiveLayout
@@ -30,9 +65,14 @@ const UlasanScreen = () => {
       onClickBackButton={() => navigation.pop()}
     >
       <div className="mb-16 space-y-2 bg-neutral-200">
-        <HeaderComponentUlasan orderCode={ulasanData?.Data?.orderCode} />
-        {ulasanData?.Data?.drivers?.map((item, i) => (
-          <ContentUlasan key={i} {...item} />
+        <HeaderComponentUlasan orderCode={localReviewData?.orderCode} />
+        {localReviewData?.drivers?.map((item) => (
+          <ContentUlasan
+            key={item?.driverId}
+            {...item}
+            onReviewSubmitted={handleReviewSubmitted}
+            orderId={params.orderId}
+          />
         ))}
       </div>
 
@@ -47,8 +87,6 @@ const UlasanScreen = () => {
           <BottomSheetHeader>Informasi</BottomSheetHeader>
         </BottomSheetContent>
       </BottomSheet>
-
-      <ResponsiveFooter className="flex gap-3"></ResponsiveFooter>
     </FormResponsiveLayout>
   );
 };

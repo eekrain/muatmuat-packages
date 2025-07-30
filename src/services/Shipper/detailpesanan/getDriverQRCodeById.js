@@ -4,6 +4,7 @@ import { addMinutes, isPast } from "date-fns";
 
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { fetcherMuatrans } from "@/lib/axios";
+import { DriverStatusScanEnum } from "@/lib/constants/detailpesanan/driver-status.enum";
 
 const useMockData = false; // toggle mock data
 
@@ -21,7 +22,7 @@ const apiResultQRCode = {
         driverImage: "https://picsum.photos/50",
         name: "Hendra",
         licensePlate: "B 1234 CD",
-        statusScan: "SUDAH_SCAN_MUAT",
+        statusScan: DriverStatusScanEnum.BELUM_SCAN_MUAT,
       },
       shareLink: "https://app.muattrans.com/qr/ABC123XYZ789",
       expiryTime: addMinutes(new Date(), 15),

@@ -2,9 +2,14 @@ import { useEffect, useRef, useState } from "react";
 
 import { differenceInSeconds } from "date-fns";
 
-export const useCountdown = ({ endingDate, isNeedCountdown }) => {
+export const useCountdown = ({
+  endingDate,
+  isNeedCountdown,
+  withHours = true,
+}) => {
   const [isCountdownFinished, setIsCountdownFinished] = useState(false);
   const [countdown, setCountdown] = useState("");
+  console.log("🚀 ~ countdown:", countdown);
   const intervalRef = useRef();
 
   useEffect(() => {
@@ -15,7 +20,7 @@ export const useCountdown = ({ endingDate, isNeedCountdown }) => {
         const diffInSeconds = differenceInSeconds(dueDate, now);
 
         if (diffInSeconds <= 0) {
-          setCountdown("00:00");
+          setCountdown(withHours ? "00:00:00" : "00:00");
           setIsCountdownFinished(true);
           clearInterval(intervalRef.current);
           return;
@@ -24,12 +29,11 @@ export const useCountdown = ({ endingDate, isNeedCountdown }) => {
         const hours = Math.floor(diffInSeconds / 3600);
         const minutes = Math.floor((diffInSeconds % 3600) / 60);
         const seconds = diffInSeconds % 60;
+        const hh = hours.toString().padStart(2, "0");
+        const mm = minutes.toString().padStart(2, "0");
+        const ss = seconds.toString().padStart(2, "0");
 
-        setCountdown(
-          `${hours.toString().padStart(2, "0")}:${minutes
-            .toString()
-            .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
-        );
+        setCountdown(withHours ? `${hh}:${mm}:${ss}` : `${mm}:${ss}`);
       };
 
       updateCountdown();

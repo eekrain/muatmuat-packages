@@ -119,8 +119,6 @@ export const BottomSheetTrigger = ({
 export const BottomSheetContent = ({ children, className }) => {
   const { isOpen, close, closeOnOutsideClick } = useBottomSheet();
   const sheetRef = useRef(null);
-  const baseClass =
-    "fixed left-0 right-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl w-full max-h-[75vh] mx-auto animate-slideUp";
 
   // Drag state
   const [dragging, setDragging] = React.useState(false);
@@ -310,51 +308,50 @@ export const BottomSheetContent = ({ children, className }) => {
   );
 
   return (
-    <Portal>
+    <Portal className="bottomsheet-parent fixed left-0 top-0 z-50 min-h-screen w-screen">
+      {/* Overlay for background and outside click */}
       <div
-        className="bottomsheet-parent fixed inset-0 z-50 flex flex-col items-center justify-end bg-neutral-900/30 bg-opacity-40 transition-opacity duration-200"
+        className="absolute inset-0 h-full w-full transition-opacity duration-200"
         style={{
           backgroundColor: `rgba(38, 38, 38, ${0.3 * backdropOpacity})`,
         }}
+        aria-hidden="true"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (closeOnOutsideClick) {
+            close();
+          }
+        }}
+      />
+      <div
+        ref={sheetRef}
+        className={cn(
+          "animate-slideUp absolute bottom-0 left-0 z-50 max-h-[75vh] w-screen rounded-t-2xl bg-white shadow-2xl",
+          className
+        )}
+        style={{
+          transform: `translateY(${translateY}px)`,
+          transition: dragging
+            ? "none"
+            : "transform 0.3s cubic-bezier(0.4,0,0.2,1)",
+          touchAction: "none",
+          opacity: dragging
+            ? Math.max(0.3, 1 - translateY / (window.innerHeight * 0.4))
+            : 1,
+        }}
+        onTouchStart={onDragStart}
+        onTouchEnd={onDragEnd}
+        onMouseDown={onDragStart}
       >
-        {/* Overlay for outside click */}
-        <div
-          className="absolute inset-0"
-          aria-hidden="true"
-          onClick={(e) => {
-            e.stopPropagation();
-            if (closeOnOutsideClick) {
-              close();
+        {/* Enhanced drag handle with visual feedback */}
+        <div className="flex cursor-grab select-none justify-center pb-4 pt-2 active:cursor-grabbing">
+          <div
+            className={
+              "h-1.5 w-[38px] rounded-sm bg-[#DDDDDD] transition-colors duration-200"
             }
-          }}
-        />
-        <div
-          ref={sheetRef}
-          className={cn(baseClass, className)}
-          style={{
-            transform: `translateY(${translateY}px)`,
-            transition: dragging
-              ? "none"
-              : "transform 0.3s cubic-bezier(0.4,0,0.2,1)",
-            touchAction: "none",
-            opacity: dragging
-              ? Math.max(0.3, 1 - translateY / (window.innerHeight * 0.4))
-              : 1,
-          }}
-          onTouchStart={onDragStart}
-          onTouchEnd={onDragEnd}
-          onMouseDown={onDragStart}
-        >
-          {/* Enhanced drag handle with visual feedback */}
-          <div className="flex cursor-grab select-none justify-center pb-4 pt-2 active:cursor-grabbing">
-            <div
-              className={
-                "h-1.5 w-[38px] rounded-sm bg-[#DDDDDD] transition-colors duration-200"
-              }
-            />
-          </div>
-          {children}
+          />
         </div>
+        {children}
       </div>
     </Portal>
   );

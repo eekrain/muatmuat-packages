@@ -121,6 +121,7 @@ export const normalizeDetailPesananOrderDetail = ({
       },
       cargos:
         dataOrderDetail.summary?.cargo.map((val) => ({
+          cargoId: val.cargoId,
           name: val.name,
           weight: val.weight,
           weightUnit: val.weightUnit,

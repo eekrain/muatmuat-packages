@@ -78,3 +78,10 @@ export const DriverStatusLabel = Object.values(DriverStatusEnum)
     acc[status.code] = status.name;
     return acc;
   }, {});
+
+export const DriverStatusScanEnum = {
+  BELUM_SCAN_MUAT: "BELUM_SCAN_MUAT",
+  SUDAH_SCAN_MUAT: "SUDAH_SCAN_MUAT",
+  BELUM_SCAN_BONGKAR: "BELUM_SCAN_BONGKAR",
+  SUDAH_SCAN_BONGKAR: "SUDAH_SCAN_BONGKAR",
+};

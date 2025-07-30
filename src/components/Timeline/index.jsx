@@ -117,7 +117,7 @@ export const TimelineItem = ({
           )}
         >
           {!variant.startsWith("bullet") && (
-            <div className="md:-ml=[1px] -mt-[1px] text-xxs md:mt-[1px]">
+            <div className="mt-[1px] text-xxs md:-ml-[1px] md:mt-[1px]">
               {index + 1}
             </div>
           )}
@@ -150,7 +150,7 @@ export const TimelineContentWithButtonDate = ({
       <div className="flex flex-col gap-[2px]">
         <span
           className={cn(
-            "line-clamp-2 text-sm font-semibold leading-[1.2] text-neutral-900 md:line-clamp-1 md:font-medium",
+            "line-clamp-1 break-all text-sm font-semibold leading-[1.2] text-neutral-900 md:font-medium",
             appearance?.titleClassname
           )}
         >
