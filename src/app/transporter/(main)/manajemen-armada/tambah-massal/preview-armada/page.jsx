@@ -19,7 +19,6 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import Select from "@/components/Select";
-import SelectExample from "@/components/Select/SelectExample";
 import { toast } from "@/lib/toast";
 
 import FileUploadInput from "./components/FileUploadInput";
