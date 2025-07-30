@@ -14,7 +14,7 @@ import {
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import { useGetArchiveDriversData } from "@/services/Transporter/manajemen-driver/getArchiveDriversData";
 
-const DriverArsip = ({ onPageChange, onPerPageChange }) => {
+const DriverArsip = ({ count, onPageChange, onPerPageChange }) => {
   const router = useRouter();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -139,7 +139,7 @@ const DriverArsip = ({ onPageChange, onPerPageChange }) => {
         totalCountLabel="Driver Arsip"
         currentPage={data?.pagination?.currentPage || currentPage}
         totalPages={data?.pagination?.totalPages || 1}
-        totalItems={data?.pagination?.totalItems || 0}
+        totalItems={count || 0}
         perPage={data?.pagination?.itemsPerPage || perPage}
         onPageChange={handlePageChange}
         onPerPageChange={handlePerPageChange}

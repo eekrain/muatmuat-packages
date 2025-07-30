@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { ArrowDown, ArrowUp, ArrowUpDown, Search } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, Search, X } from "lucide-react";
 
 import FilterDropdown from "@/components/FilterDropdown";
 import Input from "@/components/Form/Input";
@@ -164,6 +164,18 @@ const DataTable = ({
               disabled={isDisabled}
               icon={{
                 left: <Search className="h-4 w-4 text-neutral-500" />,
+                right:
+                  searchValue.length > 2 ? (
+                    <button
+                      onClick={() => {
+                        setSearchValue("");
+                        onSearch?.("");
+                      }}
+                      className="flex items-center justify-center rounded p-0.5 hover:bg-neutral-200"
+                    >
+                      <X className="h-3 w-3 text-neutral-600" />
+                    </button>
+                  ) : null,
               }}
               appearance={{
                 containerClassName: "h-8 w-[262px]",

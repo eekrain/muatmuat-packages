@@ -15,7 +15,7 @@ import {
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import { useGetProcessDriversData } from "@/services/Transporter/manajemen-driver/getProcessDriversData";
 
-const DriverProses = ({ onPageChange, onPerPageChange }) => {
+const DriverProses = ({ count, onPageChange, onPerPageChange }) => {
   const router = useRouter();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -161,7 +161,7 @@ const DriverProses = ({ onPageChange, onPerPageChange }) => {
         totalCountLabel="Proses Pendaftaran"
         currentPage={data?.pagination?.currentPage || currentPage}
         totalPages={data?.pagination?.totalPages || 1}
-        totalItems={data?.pagination?.totalItems || 0}
+        totalItems={count || 0}
         perPage={data?.pagination?.itemsPerPage || perPage}
         onPageChange={handlePageChange}
         onPerPageChange={handlePerPageChange}

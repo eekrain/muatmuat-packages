@@ -15,13 +15,16 @@ import {
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import DriverDelegasiModal from "@/components/Modal/DriverDelegasiModal";
 import Toggle from "@/components/Toggle/Toggle";
 import { FleetSelectionModal } from "@/container/Transporter/Armada/FleetSelectionModal";
 import { getDriverStatusBadge } from "@/lib/utils/driverStatus";
 import { getPhoneNumberStatus } from "@/lib/utils/phoneNumberStatus";
+import { useGetDriverDelegationPopupPreference } from "@/services/Transporter/driver-delegation/getPopupPreference";
+import { useUpdateDriverDelegationStatus } from "@/services/Transporter/driver-delegation/updateDelegationStatus";
 import { useGetActiveDriversData } from "@/services/Transporter/manajemen-driver/getActiveDriversData";
 
-const DriverAktif = ({ onPageChange, onPerPageChange }) => {
+const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
   const router = useRouter();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,6 +41,7 @@ const DriverAktif = ({ onPageChange, onPerPageChange }) => {
     limit: perPage,
     search: searchValue,
     ...filters,
+    ...sortConfig,
   });
 
   const columns = [
@@ -191,7 +195,7 @@ const DriverAktif = ({ onPageChange, onPerPageChange }) => {
 
   // Transform dataFilter to match FilterDropdown format
   const getFilterConfig = () => {
-    if (!data?.dataFilter) return null;
+    if (!data?.dataFilter) return {};
 
     return {
       categories: [
@@ -256,7 +260,19 @@ const DriverAktif = ({ onPageChange, onPerPageChange }) => {
     setSelectedDriver(null);
   };
 
+  // Driver Delegasi state
   const [driverDelegasi, setDriverDelegasi] = useState(false);
+  const [showDelegasiModal, setShowDelegasiModal] = useState(false);
+
+  // Fetch user's popup preference using SWR
+  const { data: popupPreference, mutate: mutatePopupPreference } =
+    useGetDriverDelegationPopupPreference();
+
+  // Hook for updating driver delegation status
+  const { trigger: updateDelegationStatus } = useUpdateDriverDelegationStatus();
+
+  // Determine if user has seen modal based on API response
+  const hasSeenModal = popupPreference?.shouldShowPopup === false;
 
   const renderDriverDelegasiSwitch = () => {
     return (
@@ -274,7 +290,37 @@ const DriverAktif = ({ onPageChange, onPerPageChange }) => {
           value={driverDelegasi}
           textActive="Aktif"
           textInactive="Nonaktif"
-          onClick={() => setDriverDelegasi(!driverDelegasi)}
+          onClick={async () => {
+            if (!driverDelegasi) {
+              // Turning ON
+              setDriverDelegasi(true);
+              if (!hasSeenModal) {
+                setShowDelegasiModal(true);
+              }
+
+              // TODO: Update all active drivers' delegation status
+              // This requires clarification on whether:
+              // 1. We update all drivers at once
+              // 2. There's a different API endpoint for global settings
+              // 3. This is a per-driver setting that should be moved to the driver row
+
+              // For now, here's how it would work for a single driver:
+              // try {
+              //   await updateDelegationStatus({
+              //     driverId: 'driver-id-here',
+              //     delegationEnabled: true
+              //   });
+              // } catch (error) {
+              //   console.error("Failed to update delegation status:", error);
+              //   setDriverDelegasi(false); // Revert on error
+              // }
+            } else {
+              // Turning OFF - no modal needed
+              setDriverDelegasi(false);
+
+              // TODO: Same as above - need to update driver(s) delegation status
+            }
+          }}
         />
       </div>
     );
@@ -290,7 +336,7 @@ const DriverAktif = ({ onPageChange, onPerPageChange }) => {
           totalCountLabel="Driver"
           currentPage={data?.pagination?.currentPage || currentPage}
           totalPages={data?.pagination?.totalPages || 1}
-          totalItems={data?.pagination?.totalItems || 0}
+          totalItems={count || 0}
           perPage={data?.pagination?.itemsPerPage || perPage}
           onPageChange={handlePageChange}
           onPerPageChange={handlePerPageChange}
@@ -315,6 +361,17 @@ const DriverAktif = ({ onPageChange, onPerPageChange }) => {
           title={selectedDriver?.fleet ? "Ubah Armada" : "Pilih Armada"}
         />
       )}
+
+      <DriverDelegasiModal
+        open={showDelegasiModal}
+        onOpenChange={setShowDelegasiModal}
+        onClose={(doNotShowAgain) => {
+          if (doNotShowAgain) {
+            // Refresh the popup preference data
+            mutatePopupPreference();
+          }
+        }}
+      />
     </>
   );
 };
