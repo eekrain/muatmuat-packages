@@ -635,7 +635,6 @@ export default function PreviewArmada() {
           setAddArmadaImageModal(false);
         }}
       />
-      <SelectExample />
     </div>
   );
 }
