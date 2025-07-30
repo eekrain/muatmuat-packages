@@ -13,7 +13,9 @@ import {
   SimpleDropdownItem,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
+import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import Toggle from "@/components/Toggle/Toggle";
 import { FleetSelectionModal } from "@/container/Transporter/Armada/FleetSelectionModal";
 import { getDriverStatusBadge } from "@/lib/utils/driverStatus";
 import { getPhoneNumberStatus } from "@/lib/utils/phoneNumberStatus";
@@ -157,7 +159,7 @@ const DriverAktif = ({ onPageChange, onPerPageChange }) => {
             </button>
           </SimpleDropdownTrigger>
 
-          <SimpleDropdownContent className="w-fit">
+          <SimpleDropdownContent className="w-fit" align="end">
             <SimpleDropdownItem onClick={() => {}}>
               Lihat Agenda Driver
             </SimpleDropdownItem>
@@ -195,7 +197,7 @@ const DriverAktif = ({ onPageChange, onPerPageChange }) => {
       categories: [
         { key: "truckType", label: "Jenis Truk" },
         { key: "carrierType", label: "Jenis Carrier" },
-        { key: "verificationStatus", label: "Status Verifikasi" },
+        { key: "verificationStatus", label: "Status Nomor Whatsapp" },
         { key: "driverStatus", label: "Status Driver" },
       ],
       data: {
@@ -254,6 +256,30 @@ const DriverAktif = ({ onPageChange, onPerPageChange }) => {
     setSelectedDriver(null);
   };
 
+  const [driverDelegasi, setDriverDelegasi] = useState(false);
+
+  const renderDriverDelegasiSwitch = () => {
+    return (
+      <div className="flex items-center gap-3">
+        <div className="flex gap-1">
+          <div className="text-xs font-semibold">Driver Delegasi</div>
+          <InfoTooltip side="left">
+            <p>
+              Fitur yang memungkinkan driver mengambil pesanan instan secara
+              langsung, sementara pesanan terjadwal tetap dikelola transporter.
+            </p>
+          </InfoTooltip>
+        </div>
+        <Toggle
+          value={driverDelegasi}
+          textActive="Aktif"
+          textInactive="Nonaktif"
+          onClick={() => setDriverDelegasi(!driverDelegasi)}
+        />
+      </div>
+    );
+  };
+
   return (
     <>
       <div className="h-[calc(100vh-300px)]">
@@ -275,6 +301,7 @@ const DriverAktif = ({ onPageChange, onPerPageChange }) => {
           showPagination
           rowClassName={rowClassName}
           filterConfig={getFilterConfig()}
+          headerActions={renderDriverDelegasiSwitch()}
         />
       </div>
 

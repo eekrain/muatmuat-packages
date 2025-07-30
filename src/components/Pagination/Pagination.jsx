@@ -81,7 +81,7 @@ const Pagination = ({
           className={cn(
             "rounded p-1",
             currentPage === 1
-              ? "cursor-not-allowed text-neutral-400"
+              ? "hidden cursor-not-allowed text-neutral-400"
               : "text-neutral-700"
           )}
           aria-label="Previous page"
@@ -118,7 +118,7 @@ const Pagination = ({
           disabled={currentPage === totalPages}
           className={`rounded p-1 ${
             currentPage === totalPages
-              ? "cursor-not-allowed text-neutral-400"
+              ? "hidden cursor-not-allowed text-neutral-400"
               : "text-neutral-700"
           }`}
           aria-label="Next page"

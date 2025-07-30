@@ -183,7 +183,7 @@ const DataTable = ({
             />
           )}
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col items-end gap-2">
           {headerActions}
           {showTotalCount && (
             <div className="text-sm font-semibold text-neutral-900">
