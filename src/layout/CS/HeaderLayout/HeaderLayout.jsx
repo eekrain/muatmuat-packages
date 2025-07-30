@@ -69,28 +69,16 @@ const HeaderLayout = ({
       icon: "/icons/header-transporter/monitoring.svg",
     },
     {
-      id: "user",
-      label: "Data User",
-      href: "/user",
-      icon: "/icons/header-transporter/driver.svg",
-    },
-    {
-      id: "transporter",
-      label: "Transporter Management",
-      href: "/transporter",
-      icon: "/icons/header-transporter/armada.svg",
-    },
-    {
-      id: "shipper",
-      label: "Shipper Management",
-      href: "/shipper",
-      icon: "/icons/header-transporter/pesanan.svg",
-    },
-    {
       id: "order",
-      label: "Order Management",
+      label: "Daftar Pesanan",
       href: "/order",
       icon: "/icons/header-transporter/agenda.svg",
+    },
+    {
+      id: "user",
+      label: "Daftar User",
+      href: "/user",
+      icon: "/icons/header-transporter/driver.svg",
     },
     {
       id: "laporan",
@@ -114,12 +102,6 @@ const HeaderLayout = ({
           href: "/laporan/aktivitas",
         },
       ],
-    },
-    {
-      id: "pengaturan",
-      label: "Pengaturan",
-      href: "/pengaturan",
-      icon: "/icons/header-transporter/pengaturan.svg",
     },
   ];
 
