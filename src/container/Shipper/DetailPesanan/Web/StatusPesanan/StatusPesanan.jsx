@@ -57,18 +57,18 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
     setTimeout(() => {
       setOrderStatusSimulasi("LOADING");
       setIsLoadingKonfirmasi(false);
-      toast.success("messagePesananBerhasilTerkonfirmasi");
+      toast.success(t("messagePesananBerhasilTerkonfirmasi"));
     }, 10000);
   };
 
   const getContentAlert = ({ type }) => {
     const info = AlertInfoEnum[type];
     if (type === AlertTypeEnum.CONFIRMATION_WAITING_PREPARE_FLEET) return false;
-    if (info) return { label: AlertLabelEnum[type], info };
+    if (info) return { label: t(AlertLabelEnum[type]), info: t(info) };
 
     if (type === AlertTypeEnum.WAITING_TIME_CHARGE) {
       return {
-        label: AlertLabelEnum.WAITING_TIME_CHARGE,
+        label: t(AlertLabelEnum.WAITING_TIME_CHARGE),
         button: (
           <ModalInformasiKenaBiayaWaktuTunggu
             data={[
@@ -92,12 +92,12 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
 
     if (type === AlertTypeEnum.ORDER_CHANGES_CONFIRMATION) {
       return {
-        label: AlertLabelEnum.ORDER_CHANGES_CONFIRMATION,
+        label: t(AlertLabelEnum.ORDER_CHANGES_CONFIRMATION),
         button: <ModalPerubahanData />,
       };
     }
 
-    return { label: AlertLabelEnum[type] };
+    return { label: t(AlertLabelEnum[type]) };
   };
 
   console.log(
@@ -135,7 +135,7 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
             ...(isShowWaitFleetAlert
               ? [
                   {
-                    label: AlertLabelEnum.CONFIRMATION_WAITING_PREPARE_FLEET,
+                    label: t(AlertLabelEnum.CONFIRMATION_WAITING_PREPARE_FLEET),
                   },
                 ]
               : []),
@@ -170,8 +170,8 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
                     }}
                   >
                     {isLoadingKonfirmasi
-                      ? "Memproses..."
-                      : "konfirmasi Pesanan"}
+                      ? t("buttonMemproses")
+                      : t("buttonKonfirmasiPesanan")}
                   </button>
                 )}
             </div>

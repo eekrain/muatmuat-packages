@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import {
   BottomSheet,
   BottomSheetContent,
@@ -11,11 +13,37 @@ import {
 } from "@/components/Lightbox/Lightbox";
 import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
+import { idrFormat } from "@/lib/utils/formatters";
+import { useSewaArmadaActions } from "@/store/Shipper/forms/sewaArmadaStore";
 
-export const RecommendedTruckBottomsheet = ({ isOpen, onOpenChange }) => {
+export const RecommendedTruckBottomsheet = ({
+  isOpen,
+  onOpenChange,
+  trucks,
+}) => {
   const { t } = useTranslation();
+  const { setField } = useSewaArmadaActions();
+
+  // Get the first (cheapest) recommended truck
+  const recommendedTruck = useMemo(() => {
+    if (!trucks?.recommendedTrucks || trucks.recommendedTrucks.length === 0) {
+      return null;
+    }
+    // Sort by price to get the cheapest one
+    return trucks.recommendedTrucks.sort((a, b) => a.price - b.price)[0];
+  }, [trucks]);
 
   const handleApplyRecommendedTruck = () => {
+    if (!recommendedTruck) {
+      toast.error("Tidak ada truk rekomendasi yang tersedia");
+      return;
+    }
+
+    // Update the store with the recommended truck
+    setField("truckTypeId", recommendedTruck.truckTypeId);
+    setField("truckCount", recommendedTruck.unit || 1);
+    setField("minTruckCount", recommendedTruck.unit || 1);
+
     toast.success(t("messageArmadaBerhasilDiubah"));
     onOpenChange(false);
   };
@@ -42,18 +70,21 @@ export const RecommendedTruckBottomsheet = ({ isOpen, onOpenChange }) => {
             <LightboxProvider
               className="size-[68px]"
               title=""
-              image="/img/recommended1.png"
+              image={recommendedTruck?.image}
             >
-              <LightboxPreview image="/img/recommended1.png" alt="" />
+              <LightboxPreview
+                image={recommendedTruck?.image}
+                alt={recommendedTruck?.name}
+              />
             </LightboxProvider>
             <div className="flex flex-col gap-y-3">
               <div className="flex h-[27px] items-center">
                 <h3 className="text-sm font-bold leading-[1.1] text-neutral-900">
-                  Colt Diesel Engkel
+                  {recommendedTruck?.name}
                 </h3>
               </div>
               <span className="text-sm font-semibold leading-[1.1] text-neutral-900">
-                Rp950.000
+                {idrFormat(recommendedTruck?.price)}
               </span>
               <div className="flex items-center gap-2">
                 <IconComponent
@@ -65,7 +96,7 @@ export const RecommendedTruckBottomsheet = ({ isOpen, onOpenChange }) => {
                     {t("labelEstimasiKapasitas")}
                   </span>
                   <span className="text-xs font-bold leading-[13.2px] text-black">
-                    2,5 Ton
+                    {recommendedTruck?.maxWeight} {recommendedTruck?.weightUnit}
                   </span>
                 </div>
               </div>
@@ -79,7 +110,10 @@ export const RecommendedTruckBottomsheet = ({ isOpen, onOpenChange }) => {
                     {t("labelEstimasiDimensi")}
                   </span>
                   <span className="text-xs font-bold leading-[13.2px] text-black">
-                    {"3,0 m x 1,7 m x 1,6 m"}
+                    {recommendedTruck?.dimensions?.length} x{" "}
+                    {recommendedTruck?.dimensions?.width} x{" "}
+                    {recommendedTruck?.dimensions?.height}{" "}
+                    {recommendedTruck?.dimensions?.dimensionUnit}
                   </span>
                 </div>
               </div>
