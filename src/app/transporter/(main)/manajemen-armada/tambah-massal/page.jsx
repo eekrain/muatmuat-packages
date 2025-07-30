@@ -38,7 +38,11 @@ export default function TambahMassal() {
           >
             Tambah Armada Massal
           </TabsTriggerWithSeparator>
-          <TabsTriggerWithSeparator value="draft" activeColor="primary-700">
+          <TabsTriggerWithSeparator
+            value="draft"
+            activeColor="primary-700"
+            showSeparator={false}
+          >
             Draft
           </TabsTriggerWithSeparator>
         </TabsList>
