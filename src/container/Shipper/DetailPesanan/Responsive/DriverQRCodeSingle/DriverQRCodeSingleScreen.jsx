@@ -24,7 +24,7 @@ const DriverQRCodeSingleScreen = () => {
   return (
     <FormResponsiveLayout
       title={{
-        label: "QR Code Lokasi Muat 1",
+        label: "QR Code Lokasi Muat",
       }}
       withMenu={{
         onClickShare: () => setIsOpenShareVia(true),

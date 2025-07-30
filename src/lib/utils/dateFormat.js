@@ -1,62 +1,35 @@
+import { addDays, format, parseISO, subDays } from "date-fns";
+import { id } from "date-fns/locale";
+
 export function formatDate(isoString, padDay = false) {
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "Mei",
-    "Jun",
-    "Jul",
-    "Agu",
-    "Sep",
-    "Okt",
-    "Nov",
-    "Des",
-  ];
+  if (!isoString) return "";
 
-  const date = new Date(isoString);
+  const date = parseISO(isoString);
 
-  // Konversi ke zona waktu WIB (GMT+7)
+  // Format the date using date-fns with Indonesian locale
+  // The format will be: "30 Sep 2025 12:00 WIB"
+  const formattedDate = format(
+    date,
+    padDay ? "dd MMM yyyy HH:mm" : "d MMM yyyy HH:mm",
+    {
+      locale: id,
+    }
+  );
 
-  const day = padDay ? String(date.getDate()).padStart(2, "0") : date.getDate();
-  const month = months[date.getMonth()];
-  const year = date.getFullYear();
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-
-  //30 sept 2025 12:00 wib
-  return `${day} ${month} ${year} ${hours}:${minutes} WIB`;
+  // Add WIB timezone indicator
+  return `${formattedDate} WIB`;
 }
-// 25. 03 - QC Plan - Web - Pengecekan Ronda Muatparts - Tahap 2 - LB - 0429
+
 export function formatDateFullMonth(isoString) {
-  const months = [
-    "Januari",
-    "Februari",
-    "Maret",
-    "April",
-    "Mei",
-    "Juni",
-    "Juli",
-    "Agustus",
-    "September",
-    "Oktober",
-    "November",
-    "Desember",
-  ];
+  const date = parseISO(isoString);
 
-  const date = new Date(isoString);
+  // Format with full month names in Indonesian
+  const formattedDate = format(date, "d MMMM yyyy HH:mm", {
+    locale: id,
+  });
 
-  // Konversi ke zona waktu WIB (GMT+7)
-  // 25. 03 - QC Plan - Web - Pengecekan Ronda Muatparts - Tahap 2 - LB - 0366
-  // date.setHours(date.getUTCHours() + 7); ilham ngawur
-
-  const day = date.getDate();
-  const month = months[date.getMonth()];
-  const year = date.getFullYear();
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-
-  return `${day} ${month} ${year} ${hours}:${minutes} WIB`;
+  // Add WIB timezone indicator
+  return `${formattedDate} WIB`;
 }
 
 export function formatDateInput(dateString, ops = [], wib = true, newFormat) {
@@ -93,53 +66,38 @@ class ClasifyDate {
     this.month = currentDate.getMonth() + 1;
     this.year = currentDate.getFullYear();
   }
+
   getClasifyPeriode(val) {
     const today = new Date();
-    const date = new Date(new Date().setDate(today.getDate() - val)).getDate();
-    const month =
-      new Date(new Date().setDate(today.getDate() - val)).getMonth() + 1;
-    const year = new Date(
-      new Date().setDate(today.getDate() - val)
-    ).getFullYear();
-    return `${year}-${month.toString().padStart(2, "0")}-${date
-      .toString()
-      .padStart(2, "0")}`;
+    const pastDate = subDays(today, val);
+    return format(pastDate, "yyyy-MM-dd");
   }
+
   getClasifyPeriodeByRange(value) {
-    const newDate = new Date(value);
-    const date = newDate.getDate();
-    const month = newDate.getMonth() + 1;
-    const year = newDate.getFullYear();
-    return `${year}-${month.toString().padStart(2, "0")}-${date
-      .toString()
-      .padStart(2, "0")}`;
+    const newDate = parseISO(value);
+    return format(newDate, "yyyy-MM-dd");
   }
 }
 export const clasifyformatdate = new ClasifyDate();
 
 export const getAdjustedDate = (daysToAdd) => {
   const today = new Date();
-  today.setDate(today.getDate() + daysToAdd);
-  return today;
+  return addDays(today, daysToAdd);
 };
 
 export function convertDate(dateString) {
-  const inputDate = new Date(dateString);
-  // 25. 03 - QC Plan - Web - Pengecekan Ronda Muatparts - Tahap 2 - LB - 0562
-  const WIB_OFFSET_IN_HOURS = 0;
-  const WIBDate = new Date(
-    inputDate.getTime() + WIB_OFFSET_IN_HOURS * 60 * 60 * 1000
-  );
-  const options = {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZoneName: "short",
-  };
-  const formattedDate = WIBDate.toLocaleDateString("en-US", options);
-  return formattedDate?.replace("GMT+7", "");
+  try {
+    const inputDate = parseISO(dateString);
+
+    // Format the date in English locale with timezone
+    const formattedDate = format(inputDate, "d MMM yyyy HH:mm", {
+      locale: "en-US",
+    });
+
+    return formattedDate;
+  } catch (error) {
+    return "";
+  }
 }
 
 export const formatShortDate = (isoString) => {
@@ -148,86 +106,57 @@ export const formatShortDate = (isoString) => {
     return "";
   }
 
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "Mei",
-    "Jun",
-    "Jul",
-    "Agu",
-    "Sep",
-    "Okt",
-    "Nov",
-    "Des",
-  ];
+  try {
+    const date = parseISO(isoString);
 
-  // Create a valid date object
-  // Handle strings with or without the Z suffix
-  const date = new Date(isoString);
+    // Format with short month names in Indonesian
+    const formattedDate = format(date, "d MMM yyyy", {
+      locale: id,
+    });
 
-  // Check if date is valid
-  if (isNaN(date.getTime())) {
+    return formattedDate;
+  } catch (error) {
     return "";
   }
-
-  const day = date.getDate();
-  const month = months[date.getMonth()];
-  const year = date.getFullYear();
-
-  //result 1 JAN 2025
-  return `${day} ${month} ${year}`;
 };
 
 export const formatDateRange = (startDate, endDate) => {
-  // Define month names in Indonesian
-  const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "Mei",
-    "Jun",
-    "Jul",
-    "Agu",
-    "Sep",
-    "Okt",
-    "Nov",
-    "Des",
-  ];
-
   // Helper function to format a single date
   const formatSingleDate = (dateString) => {
-    const date = new Date(dateString);
-    const day = date.getDate();
-    const month = monthNames[date.getMonth()];
-    const year = date.getFullYear();
-    return `${day} ${month} ${year}`;
+    try {
+      const date = parseISO(dateString);
+      return format(date, "d MMM yyyy", { locale: id });
+    } catch (error) {
+      return "";
+    }
   };
 
   // Helper function to check time remaining until end date
   const getTimeRemaining = (endDateString) => {
-    const now = new Date();
-    const end = new Date(endDateString);
-    const diffTime = end.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
+    try {
+      const now = new Date();
+      const end = parseISO(endDateString);
+      const diffTime = end.getTime() - now.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
 
-    if (diffTime <= 0) {
-      return null; // Already ended
+      if (diffTime <= 0) {
+        return null; // Already ended
+      }
+
+      if (diffHours <= 24) {
+        return "Berakhir 24 jam lagi";
+      }
+
+      if (diffDays <= 7) {
+        // Show "n hari lagi" for up to 7 days
+        return `Berakhir ${diffDays} hari lagi`;
+      }
+
+      return null; // Use normal date format
+    } catch (error) {
+      return null;
     }
-
-    if (diffHours <= 24) {
-      return "Berakhir 24 jam lagi";
-    }
-
-    if (diffDays <= 7) {
-      // Show "n hari lagi" for up to 7 days
-      return `Berakhir ${diffDays} hari lagi`;
-    }
-
-    return null; // Use normal date format
   };
 
   // Handle different scenarios
@@ -251,16 +180,15 @@ export const formatDateRange = (startDate, endDate) => {
   }
 
   // Format as normal date range
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+  try {
+    const start = parseISO(startDate);
+    const end = parseISO(endDate);
 
-  const startDay = start.getDate();
-  const startMonth = monthNames[start.getMonth()];
-  const startYear = start.getFullYear();
+    const startFormatted = format(start, "d MMM yyyy", { locale: id });
+    const endFormatted = format(end, "d MMM yyyy", { locale: id });
 
-  const endDay = end.getDate();
-  const endMonth = monthNames[end.getMonth()];
-  const endYear = end.getFullYear();
-
-  return `${startDay} ${startMonth} ${startYear} - ${endDay} ${endMonth} ${endYear}`;
+    return `${startFormatted} - ${endFormatted}`;
+  } catch (error) {
+    return "";
+  }
 };

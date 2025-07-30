@@ -22,7 +22,7 @@ import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enu
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
-import { getOrderStatusLabel, getStatusVariant } from "../../utlis";
+import { getOrderStatusLabel, getStatusVariant } from "../../utils";
 import { DriverStatusCardItem } from "./DriverStatusCard";
 import { ModalDetailAlasanPembatalan } from "./ModalDetailAlasanPembatalan";
 import { ModalLihatStatusLainnya } from "./ModalLihatStatusLainnya";

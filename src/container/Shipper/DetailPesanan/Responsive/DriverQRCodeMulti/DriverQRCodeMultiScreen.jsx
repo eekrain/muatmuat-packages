@@ -29,7 +29,7 @@ export default function MultiDriverQRCodeScreen({ dataStatusPesanan }) {
   return (
     <FormResponsiveLayout
       title={{
-        label: "QR Code Lokasi Muat 1",
+        label: "QR Code Lokasi Muat/Bongkar",
       }}
       withMenu={{
         onClickShare: () => setIsShareBottomsheetOpen(true),

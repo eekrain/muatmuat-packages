@@ -7,7 +7,7 @@ import {
 } from "@/components/Stepper/Stepper";
 import { useTranslation } from "@/hooks/use-translation";
 
-import { getOrderStatusLabel, getStatusVariant } from "../../../utlis";
+import { getOrderStatusLabel, getStatusVariant } from "../../../utils";
 
 export const DriverStatusCard = ({ driver, orderId, orderStatus }) => {
   const { t } = useTranslation();

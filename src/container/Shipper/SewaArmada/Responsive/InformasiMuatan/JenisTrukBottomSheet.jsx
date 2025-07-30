@@ -151,9 +151,11 @@ export const JenisTrukBottomSheet = ({
           />
         </div>
       ) : (
-        <div className="flex h-full items-center justify-center px-4">
-          <DataNotFound type="search" title="Keyword Tidak Ditemukan" />
-        </div>
+        <DataNotFound
+          className="mt-24"
+          type="search"
+          title="Keyword Tidak Ditemukan"
+        />
       );
     }
 

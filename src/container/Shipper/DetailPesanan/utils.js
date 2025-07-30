@@ -7,8 +7,10 @@ export const shouldShowUnitFleetStatus = ({
   orderStatus,
   unitFleetStatus,
   totalUnit,
+  isShowUnitFleetStatus,
 }) => {
   return (
+    isShowUnitFleetStatus &&
     orderStatus !== OrderStatusEnum.COMPLETED &&
     !orderStatus.startsWith("CANCELED") &&
     !orderStatus.startsWith("WAITING_PAYMENT") &&
@@ -22,8 +24,14 @@ export const getOrderStatusLabel = ({
   unitFleetStatus,
   totalUnit,
   t,
+  isShowUnitFleetStatus = true,
 }) =>
-  shouldShowUnitFleetStatus({ orderStatus, unitFleetStatus, totalUnit })
+  shouldShowUnitFleetStatus({
+    orderStatus,
+    unitFleetStatus,
+    totalUnit,
+    isShowUnitFleetStatus,
+  })
     ? `${t(OrderStatusTitle[orderStatus])}: ${unitFleetStatus} Unit`
     : t(OrderStatusTitle[orderStatus]);
 

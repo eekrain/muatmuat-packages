@@ -100,10 +100,6 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
     return { label: t(AlertLabelEnum[type]) };
   };
 
-  console.log(
-    "🔍 ~  ~ src/container/Shipper/DetailPesanan/Web/StatusPesanan/StatusPesanan.jsx:60 ~ alerts:",
-    dataStatusPesanan.alerts
-  );
   return (
     <>
       <div className="flex flex-col gap-y-6">
