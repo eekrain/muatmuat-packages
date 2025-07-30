@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 import Button from "../Button/Button";
 import IconComponent from "../IconComponent/IconComponent";
@@ -16,6 +16,7 @@ const FileUpload = ({
   errorMessage,
 }) => {
   const fileRef = useRef(null);
+  const [internalError, setInternalError] = useState(null);
 
   const displayFormats = acceptedFormats
     .map((format) => format.replace(".", ""))
@@ -23,43 +24,48 @@ const FileUpload = ({
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+    setInternalError(null);
+
     if (!file) {
-      // If user cancels file selection, do nothing
       if (fileRef.current) {
         fileRef.current.value = null;
       }
       return;
     }
 
-    // Client-side validation for format
     const fileExtension = `.${file.name.split(".").pop().toLowerCase()}`;
     if (!acceptedFormats.includes(fileExtension)) {
-      onError("Format file tidak sesuai ketentuan");
+      const message = "Format file tidak sesuai ketentuan";
+      onError(message);
+      setInternalError(message);
       if (fileRef.current) {
         fileRef.current.value = null;
       }
       return;
     }
 
-    // Client-side validation for size
     if (file.size > maxSize * 1024 * 1024) {
-      onError(`Ukuran file melebihi ${maxSize}MB`);
+      const message = `Ukuran file melebihi ${maxSize}MB`;
+      onError(message);
+      setInternalError(message);
       if (fileRef.current) {
         fileRef.current.value = null;
       }
       return;
     }
 
-    // If validation passes, send the raw File object to the parent form
     onSuccess(file);
   };
 
   const handleDelete = () => {
     onSuccess(null);
+    setInternalError(null);
     if (fileRef.current) {
       fileRef.current.value = null;
     }
   };
+
+  const displayedError = errorMessage || internalError;
 
   return (
     <div className={className}>
@@ -74,7 +80,7 @@ const FileUpload = ({
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-y-2">
             <span
-              className="truncate text-xs font-medium leading-[14.4px] text-success-400"
+              className="line-clamp-1 max-w-[239px] truncate break-all text-xs font-medium text-success-400"
               title={value.name}
             >
               {value.name}
@@ -108,19 +114,19 @@ const FileUpload = ({
             {label}
           </Button>
           <div className="ml-4 flex w-full flex-1 flex-col">
-            <div className="text-sm leading-tight text-neutral-600">
+            <div className="text-xs leading-tight text-neutral-600">
               Format file {displayFormats}
             </div>
-            <div className="text-sm leading-tight text-neutral-600">
+            <div className="text-xs leading-tight text-neutral-600">
               maks. {maxSize}MB
             </div>
           </div>
         </div>
       )}
 
-      {errorMessage && (
+      {displayedError && (
         <span className="mt-2 block text-xs text-error-400">
-          {errorMessage}
+          {displayedError}
         </span>
       )}
     </div>

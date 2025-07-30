@@ -1,7 +1,10 @@
+import { useEffect, useState } from "react";
+
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import CardPayment from "@/components/Card/CardPayment";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useCountdown } from "@/hooks/use-countdown";
+import { useSWRMutateHook } from "@/hooks/use-swr";
 import { PaymentMethodTitle } from "@/lib/constants/detailpesanan/payment.enum";
 import { toast } from "@/lib/toast";
 import { formatDate } from "@/lib/utils/dateFormat";
@@ -16,6 +19,35 @@ export const RingkasanPembayaranPendingPayment = ({
     endingDate: dataRingkasanPembayaran?.expiredAtFromOrderDetail,
     isNeedCountdown: true,
   });
+  const [hasAutoCanceled, setHasAutoCanceled] = useState(false);
+
+  const { trigger: triggerAutoCancel, isMutating: isAutoCanceling } =
+    useSWRMutateHook(
+      dataRingkasanPembayaran?.orderId
+        ? `/v1/orders/${dataRingkasanPembayaran.orderId}/auto-cancel-process`
+        : null,
+      "POST"
+    );
+
+  useEffect(() => {
+    if (
+      countdown === "00:00:00" &&
+      !hasAutoCanceled &&
+      dataRingkasanPembayaran?.orderId
+    ) {
+      setHasAutoCanceled(true);
+      triggerAutoCancel({
+        cancelType: "AUTO_CANCEL_NO_FLEET",
+        loadTimeStart: dataRingkasanPembayaran.loadTimeStart,
+        autoCancelTriggeredAt: new Date().toISOString(),
+        reasonId: "550e8400-e29b-41d4-a716-446655440250",
+        hasActivePopup: false,
+      })
+        .then(() => toast.success("Pesanan dibatalkan otomatis."))
+        .catch(() => toast.error("Gagal auto-cancel pesanan."));
+    }
+  }, [countdown, hasAutoCanceled, dataRingkasanPembayaran, triggerAutoCancel]);
+
   const handleCopyVA = () => {
     if (dataRingkasanPembayaran?.vaNumber) {
       navigator.clipboard.writeText(dataRingkasanPembayaran.vaNumber);

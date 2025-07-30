@@ -369,6 +369,15 @@ export const CreateOrderSummaryPanel = ({
       calculatedPrice
     );
 
+    // Debug: Log the complete order data being sent to API
+    console.log("🚀 API Request Debug:", {
+      orderFleetData,
+      cargoPhotos: orderFleetData.cargoPhotos,
+      photoCount: orderFleetData.cargoPhotos?.length || 0,
+      hasPhotos:
+        orderFleetData.cargoPhotos?.some((photo) => photo !== null) || false,
+    });
+
     // Validate order data before sending
     // const result = validateOrderData(orderFleetData);
     // console.log("Validation result:", result);
@@ -395,6 +404,15 @@ export const CreateOrderSummaryPanel = ({
       if (response.data.Message.Code == 200) {
         // alert("Hore Berhasil Sewa Armada :)");
         // Handle sukses - bisa redirect ke detail pesanan
+        const fleet = await fetcherMuatrans.post(
+          `/v1/orders/${response.data.Data.orderId}/blast-to-fleet`,
+          {
+            headers: { Authorization: token },
+          }
+        );
+        router.push(
+          `/daftarpesanan/detailpesanan/${response.data.Data.orderId}`
+        );
         router.push(
           `/daftarpesanan/detailpesanan/${response.data.Data.orderId}`
         );
@@ -416,7 +434,7 @@ export const CreateOrderSummaryPanel = ({
 
   return (
     <>
-      <Card className="shadow-muat sticky top-[124px] flex w-[338px] flex-col gap-0 rounded-xl border-none bg-white">
+      <Card className="sticky top-[124px] flex w-[338px] flex-col gap-0 rounded-xl border-none bg-white shadow-muat">
         <div className="flex flex-col gap-y-6 px-5 py-6">
           <h3 className="text-base font-bold leading-[19.2px] text-neutral-900">
             Ringkasan Transaksi
@@ -552,7 +570,7 @@ export const CreateOrderSummaryPanel = ({
         <div
           className={cn(
             "flex flex-col gap-y-6 rounded-b-xl px-5",
-            priceSummary.length > 0 ? "shadow-muat py-6" : "pb-6"
+            priceSummary.length > 0 ? "py-6 shadow-muat" : "pb-6"
           )}
         >
           <div className="flex items-center justify-between">
