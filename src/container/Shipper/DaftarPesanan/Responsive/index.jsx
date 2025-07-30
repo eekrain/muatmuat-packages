@@ -1,11 +1,13 @@
 import { useRouter } from "next/navigation";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 
 import BottomNavigationBar from "@/components/BottomNavigationBar/BottomNavigationBar";
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import OrderItem from "@/container/Shipper/DaftarPesanan/Responsive/components/OrderItem";
+import PeriodDropdown from "@/container/Shipper/DaftarPesanan/Responsive/components/PeriodDropdown";
+import { useTranslation } from "@/hooks/use-translation";
 import SearchBarResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/SearchBarResponsiveLayout";
 import { cn } from "@/lib/utils";
 
@@ -24,11 +26,45 @@ const DaftarPesananResponsive = ({
 }) => {
   console.log("orders", orders);
   const router = useRouter();
+  const [isPeriodBottomsheetOpen, setPeriodBottomsheetOpen] = useState(false);
+  const { t } = useTranslation();
+  const periodOptions = [
+    {
+      name: `${t("EksekusiTenderIndexSemuaPeriode")} (Default)`,
+      value: "",
+      format: "day",
+    },
+    {
+      name: t("AppMuatpartsAnalisaProdukHariIni"),
+      value: 0,
+      format: "day",
+    },
+    {
+      name: t("AppMuatpartsAnalisaProduk1MingguTerakhir"),
+      value: 7,
+      format: "day",
+    },
+    {
+      name: t("AppMuatpartsAnalisaProduk30HariTerakhir"),
+      value: 30,
+      format: "month",
+    },
+    {
+      name: t("AppMuatpartsAnalisaProduk90HariTerakhir"),
+      value: 90,
+      format: "month",
+    },
+    {
+      name: t("AppMuatpartsAnalisaProduk1TahunTerakhir"),
+      value: 365,
+      format: "year",
+    },
+  ];
 
   return (
     <SearchBarResponsiveLayout
       withMenu={{
-        onClickPeriod: () => {},
+        onClickPeriod: () => setPeriodBottomsheetOpen(true),
       }}
       placeholder="Cari Pesanan"
     >
@@ -107,6 +143,13 @@ const DaftarPesananResponsive = ({
         )}
       </div>
       <BottomNavigationBar />
+
+      {/* Bottomsheet pilih periode */}
+      <PeriodDropdown
+        isOpen={isPeriodBottomsheetOpen}
+        setIsOpen={setPeriodBottomsheetOpen}
+        options={periodOptions}
+      />
     </SearchBarResponsiveLayout>
   );
 };
