@@ -74,7 +74,7 @@ const DriverRatingForm = ({
                 Berikan ulasan untuk driver (Opsional)
               </span>
               <TextArea
-                value={driver.review || ""}
+                value={driver.review || "-"}
                 onChange={(e) =>
                   handleChangeFormValues("review", e.target.value)
                 }

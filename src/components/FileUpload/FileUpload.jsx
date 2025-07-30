@@ -74,7 +74,7 @@ const FileUpload = ({
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-y-2">
             <span
-              className="truncate text-xs font-medium leading-[14.4px] text-success-400"
+              className="line-clamp-1 max-w-[239px] truncate break-all text-xs font-medium text-success-400"
               title={value.name}
             >
               {value.name}
@@ -108,10 +108,10 @@ const FileUpload = ({
             {label}
           </Button>
           <div className="ml-4 flex w-full flex-1 flex-col">
-            <div className="text-sm leading-tight text-neutral-600">
+            <div className="text-xs leading-tight text-neutral-600">
               Format file {displayFormats}
             </div>
-            <div className="text-sm leading-tight text-neutral-600">
+            <div className="text-xs leading-tight text-neutral-600">
               maks. {maxSize}MB
             </div>
           </div>

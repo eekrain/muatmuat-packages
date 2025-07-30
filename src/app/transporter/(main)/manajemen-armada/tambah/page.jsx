@@ -159,7 +159,7 @@ const Page = () => {
     clearErrors,
   } = useForm({
     resolver: valibotResolver(fleetInformationSchema),
-    mode: "onChange",
+    mode: "onBlur",
     defaultValues: {
       licensePlate: "",
       truckTypeId: "",
@@ -225,7 +225,6 @@ const Page = () => {
 
   const handleChange = (field, value) => {
     setValue(field, value);
-    trigger(field);
   };
 
   const handleDimensionChange = (dim) => {

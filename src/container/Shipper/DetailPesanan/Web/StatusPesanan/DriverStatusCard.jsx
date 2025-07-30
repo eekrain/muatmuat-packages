@@ -131,6 +131,7 @@ const LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER = [
   OrderStatusEnum.DOCUMENT_DELIVERY,
   OrderStatusEnum.WAITING_REPAYMENT_1,
   OrderStatusEnum.WAITING_REPAYMENT_2,
+  OrderStatusEnum.CANCELED_BY_SHIPPER,
   OrderStatusEnum.COMPLETED,
 ];
 
@@ -141,7 +142,6 @@ const LIST_HIDE_DRIVER_STATUS = [
 
 export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
   const pathname = usePathname();
-
   const SHOW_DRIVER_STATUS =
     orderStatus !== OrderStatusEnum.WAITING_CONFIRMATION_CHANGES &&
     !orderStatus.startsWith("WAITING_PAYMENT") &&

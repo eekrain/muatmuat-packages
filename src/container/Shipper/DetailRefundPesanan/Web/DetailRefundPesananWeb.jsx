@@ -13,6 +13,7 @@ import { PaymentMethodIconFromTitle } from "@/lib/constants/detailpesanan/paymen
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
 import { useGetRefundDetails } from "@/services/Shipper/detail-refund/getRefundDetails";
+import { useGetWaitingTime } from "@/services/Shipper/detailpesanan/getWaitingTime";
 
 const DetailRefundPesananWeb = () => {
   const params = useParams();
@@ -31,6 +32,24 @@ const DetailRefundPesananWeb = () => {
   // Extract data from API response
   const bank = refundData?.bankAccount;
   const breakdown = refundData?.refundBreakdown;
+
+  const { data: waitingTimeRaw } = useGetWaitingTime(params.orderId);
+
+  // Mapping ke format drivers untuk ModalDetailWaktuTunggu
+  const waitingTimeDrivers = (waitingTimeRaw || []).map((item) => ({
+    name: item.name,
+    durasiTotal: item.waitingTime
+      ? `${Math.floor(item.waitingTime / 60)} Jam ${item.waitingTime % 60} Menit`
+      : undefined,
+    data: [
+      {
+        detail: `Plat: ${item.licensePlate}`,
+        startDate: item.startWaitingTime,
+        endDate: item.endWaitingTime,
+        totalPrice: item.waitingFee,
+      },
+    ],
+  }));
 
   return (
     <div className="mx-auto max-w-[1200px] pt-8">
@@ -134,7 +153,7 @@ const DetailRefundPesananWeb = () => {
                       breakdown ? idrFormat(breakdown.waitingTimeFee) : "-"
                     }
                   />
-                  <ModalDetailWaktuTunggu />
+                  <ModalDetailWaktuTunggu drivers={waitingTimeDrivers} />
                 </div>
               </CardPayment.Section>
 

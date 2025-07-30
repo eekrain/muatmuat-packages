@@ -13,7 +13,7 @@ const apiResultActiveDrivers = {
           name: "John Doe Driver",
           phoneNumber: "081234567890",
           profileImage: "/img/mock-armada/driver.png",
-          driverStatus: "AVAILABLE",
+          driverStatus: "READY_FOR_ORDER",
           verificationStatus: "VERIFIED",
           fleet: {
             id: "660e8400-e29b-41d4-a716-446655440000",
@@ -37,7 +37,7 @@ const apiResultActiveDrivers = {
           profileImage:
             "/img/mock-armada/047379f720d4d796e68d0fd7a289a30bd4d2e0ac.jpg",
           driverStatus: "ON_DUTY",
-          verificationStatus: "VERIFIED",
+          verificationStatus: "NOT_VERIFIED",
           fleet: {
             id: "660e8400-e29b-41d4-a716-446655440001",
             licensePlate: "B 5678 DEF",
@@ -59,7 +59,7 @@ const apiResultActiveDrivers = {
           phoneNumber: "081234567892",
           profileImage:
             "/img/mock-armada/96f3e307242fe2a40610399e1d9d7a279944c89c.jpg",
-          driverStatus: "REST",
+          driverStatus: "NOT_PAIRED",
           verificationStatus: "VERIFIED",
           fleet: null,
           createdAt: "2025-01-14T14:15:00Z",
@@ -72,8 +72,8 @@ const apiResultActiveDrivers = {
           phoneNumber: "081234567893",
           profileImage:
             "/img/mock-armada/d6869c8f3993048b066679deb82fe2198af78db3.jpg",
-          driverStatus: "AVAILABLE",
-          verificationStatus: "UNVERIFIED",
+          driverStatus: "WAITING_LOADING_TIME",
+          verificationStatus: "NOT_VERIFIED",
           fleet: {
             id: "660e8400-e29b-41d4-a716-446655440002",
             licensePlate: "B 9012 GHI",
@@ -88,6 +88,54 @@ const apiResultActiveDrivers = {
           createdAt: "2025-01-13T11:45:00Z",
           warningDocumentExpired: true,
           pendingUpdateDriver: false,
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440004",
+          name: "Sarah Williams",
+          phoneNumber: "081234567894",
+          profileImage: "/img/mock-armada/driver.png",
+          driverStatus: "NON_ACTIVE",
+          verificationStatus: "VERIFIED",
+          fleet: {
+            id: "660e8400-e29b-41d4-a716-446655440003",
+            licensePlate: "B 3456 JKL",
+            truckType: {
+              id: "770e8400-e29b-41d4-a716-446655440003",
+              name: "Wingbox",
+              carrierTruck: {
+                name: "Box",
+              },
+            },
+          },
+          createdAt: "2025-01-12T09:00:00Z",
+          warningDocumentExpired: false,
+          pendingUpdateDriver: false,
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440005",
+          name: "David Lee",
+          phoneNumber: "081249088083",
+          profileImage:
+            "/img/mock-armada/96f3e307242fe2a40610399e1d9d7a279944c89c.jpg",
+          driverStatus: "IN_PROGRESS",
+          verificationStatus: "VERIFIED",
+          fleet: null,
+          createdAt: "2025-01-11T16:30:00Z",
+          warningDocumentExpired: false,
+          pendingUpdateDriver: false,
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440007",
+          name: "James Wilson",
+          phoneNumber: "081234567897",
+          profileImage:
+            "/img/mock-armada/d6869c8f3993048b066679deb82fe2198af78db3.jpg",
+          driverStatus: "REJECTED",
+          verificationStatus: "NOT_VERIFIED",
+          fleet: null,
+          createdAt: "2025-01-09T10:15:00Z",
+          warningDocumentExpired: true,
+          pendingUpdateDriver: true,
         },
       ],
       pagination: {
