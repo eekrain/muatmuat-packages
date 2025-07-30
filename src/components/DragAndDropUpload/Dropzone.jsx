@@ -10,16 +10,17 @@ import IconComponent from "../IconComponent/IconComponent";
 /** Drag and Drop File Upload Component
  *
  * @param {Function} onUpload - Callback function to handle file upload
- * @param {boolean} isUploading - Flag to indicate if a file is being uploaded
+ * @param {boolean} loading - Flag to indicate if a file is being uploaded
  * @param {File} file - The file to be uploaded
  * @param {string} errorText - Error message to display when upload fails
  * @returns {JSX.Element}
  */
-const DragAndDropUpload = ({
+const DropzoneComponent = ({
   onUpload,
-  isUploading = false,
+  loading,
   file,
-  errorText = "",
+  renderPlaceholder,
+  ...props
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
@@ -73,7 +74,7 @@ const DragAndDropUpload = ({
       className={cn(
         "flex h-32 w-full flex-col items-center justify-center rounded-lg border-2 border-dashed",
         isDragging ? "border-primary-700" : "border-neutral-300",
-        isUploading
+        loading
           ? "bg-neutral-100"
           : "cursor-pointer bg-white hover:border-primary-500"
       )}
@@ -88,18 +89,33 @@ const DragAndDropUpload = ({
         ref={fileInputRef}
         className="hidden"
         onChange={handleFileSelect}
-        accept="image/*"
-        disabled={isUploading}
+        disabled={loading}
+        {...props}
       />
-      {isUploading ? (
-        <div className="flex flex-col items-center gap-4">
-          <LoaderCircle className="size-5 animate-spin text-primary-700" />
-          <p className="text-xs font-semibold text-neutral-900">
-            Mengunggah...
-          </p>
-        </div>
+      {loading ? (
+        renderPlaceholder?.loading ? (
+          renderPlaceholder?.loading
+        ) : (
+          <div className="flex flex-col items-center gap-4">
+            <LoaderCircle className="size-5 animate-spin text-primary-700" />
+            <p className="text-xs font-semibold text-neutral-900">
+              Mengunggah...
+            </p>
+          </div>
+        )
       ) : file ? (
-        <p>{file.name}</p>
+        renderPlaceholder?.fileUploaded ? (
+          renderPlaceholder?.fileUploaded
+        ) : (
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-xs font-semibold text-neutral-900">
+              {file.name} ({(file.size / 1024).toFixed(2)} KB)
+            </p>
+          </div>
+        )
+      ) : // <p>{file.name}</p>
+      renderPlaceholder?.default ? (
+        renderPlaceholder?.default
       ) : (
         <div className="flex flex-col items-center gap-4">
           <IconComponent
@@ -126,13 +142,27 @@ const DragAndDropUpload = ({
   );
 };
 
-DragAndDropUpload.propTypes = {
+DropzoneComponent.propTypes = {
   onUpload: PropTypes.func.isRequired,
-  isUploading: PropTypes.bool,
+  loading: PropTypes.bool,
+  placeholder: PropTypes.string,
+  renderPlaceholder: PropTypes.shape({
+    loading: PropTypes.node,
+    fileUploaded: PropTypes.node,
+    error: PropTypes.node,
+    default: PropTypes.node,
+  }),
 };
 
-DragAndDropUpload.defaultProps = {
-  isUploading: false,
+DropzoneComponent.defaultProps = {
+  loading: false,
+  placeholder: null,
+  renderPlaceholder: {
+    loading: null,
+    fileUploaded: null,
+    error: null,
+    default: null,
+  },
 };
 
-export default DragAndDropUpload;
+export default DropzoneComponent;

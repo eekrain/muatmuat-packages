@@ -7,11 +7,12 @@ import { useState } from "react";
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import { DataTable } from "@/components/DataTable";
-import DragAndDropUpload from "@/components/DragAndDropUpload/DragAndDropUpload";
+import DropzoneComponent from "@/components/Dropzone/Dropzone";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Toggle from "@/components/Toggle/Toggle";
 import { isDev } from "@/lib/constants/is-dev";
 import { toast } from "@/lib/toast";
+import { isExcelFile } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";
 
 const TambahExcel = () => {
@@ -84,6 +85,7 @@ const TambahExcel = () => {
     },
   ];
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState(null);
 
   const handleUpload = (file) => {
     setIsUploading(true);
@@ -96,13 +98,20 @@ const TambahExcel = () => {
           tanggal: new Date().toISOString(),
           document: file.name,
           name: "John Doe",
-          status: stateUpload ? "Sukses" : "Gagal",
+          status: stateUpload && isExcelFile(file) ? "Sukses" : "Gagal",
         },
       ]);
+      // setUploadedFile(file);
       if (stateUpload) {
         // Show success message
-        toast.success(`Berhasil menambah ${20} armada`);
-        router.push("/manajemen-armada/tambah-massal/preview-armada");
+        if (isExcelFile(file)) {
+          toast.success(`Berhasil menambah ${20} armada`);
+          router.push("/manajemen-armada/tambah-massal/preview-armada");
+        } else {
+          toast.error(
+            "Gagal menambah armada.\n Periksa laporan untuk mengetahu armada yang gagal ditambahkan."
+          );
+        }
       } else {
         toast.error(
           "Harap selesaikan data pada menu Draft terlebih dahulu sebelum menambah armada baru."
@@ -196,9 +205,12 @@ const TambahExcel = () => {
           </p>
         </div>
         <div className="flex-grow">
-          <DragAndDropUpload
+          <DropzoneComponent
             onUpload={handleUpload}
-            isUploading={isUploading}
+            file={uploadedFile}
+            loading={isUploading}
+            placeholder="Seret dan lepas file di sini atau klik untuk memilih file"
+            className={"w-full"}
           />
         </div>
       </div>

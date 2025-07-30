@@ -51,6 +51,7 @@ export const Select = forwardRef(
       disabled = false,
       className = "w-full",
       errorMessage = null,
+      searchable = false,
       ...props
     },
     ref

@@ -1,5 +1,6 @@
 "use client";
 
+import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
@@ -11,11 +12,17 @@ import Button from "@/components/Button/Button";
 import DatePicker from "@/components/DatePicker/DatePicker";
 import Checkbox from "@/components/Form/Checkbox";
 import DimensionInput from "@/components/Form/DimensionInput";
+import Dropdown from "@/components/Form/Dropdown";
 import Input from "@/components/Form/Input";
-import { Select } from "@/components/Form/Select";
+// import { Select } from "@/components/Form/Select";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import Select from "@/components/Select";
+import SelectExample from "@/components/Select/SelectExample";
+import { toast } from "@/lib/toast";
 
+import FileUploadInput from "./components/FileUploadInput";
 import ModalAddArmadaImage from "./components/ModalAddImage";
 
 // Define units
@@ -37,19 +44,35 @@ const dimensionUnits = [
 ];
 
 const defaultInformasiMuatan = {
-  namaMuatan: {
-    label: "",
-    value: null,
+  informasi_armada: {
+    images: {
+      image_armada_depan: null,
+      image_armada_kiri: null,
+      image_armada_kanan: null,
+      image_armada_belakang: null,
+    },
   },
-  beratMuatan: {
-    berat: "",
-    unit: "kg",
-  },
-  dimensiMuatan: {
+  jenis_truk: "",
+  jenis_carrier: "",
+  merek_kendaraan: "",
+  tipe_kendaraan: "",
+  tahun_registrasi_kendaraan: "",
+  dimensi_carrier: {
     panjang: "",
     lebar: "",
     tinggi: "",
     unit: "m",
+  },
+  nomor_rangka: "",
+  masa_berlaku_stnk: "",
+  foto_stnk: null,
+  foto_pajak_kendaraan: null,
+  nomor_kir: "",
+  masa_berlaku_kir: "",
+  foto_buku_kir: null,
+  estimasi_tanggal_pemasangan_gps: {
+    mulai: "",
+    selesai: "",
   },
 };
 
@@ -93,8 +116,10 @@ export default function PreviewArmada() {
   const [isDraft, setIsDraft] = useState(false);
   const [selectAll, setSelectAll] = useState(false);
   const [selectedRowIndex, setSelectedRowIndex] = useState([]);
+  const [activeIndex, setActiveIndex] = useState();
 
   const [addArmadaImageModal, setAddArmadaImageModal] = useState(false);
+  const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
 
   const formMethods = useForm({
     defaultValues: {
@@ -110,6 +135,8 @@ export default function PreviewArmada() {
     control,
     reset,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
   } = formMethods;
 
@@ -118,11 +145,22 @@ export default function PreviewArmada() {
     name: "informasiMuatan",
   });
 
+  const onClickHapus = () => {
+    if (selectedRowIndex.length === 0) {
+      // error("Tidak ada baris yang dipilih");
+      toast.error("Harap pilih 1 armada untuk menghapus");
+      return;
+    }
+    setConfirmDeleteModal(true);
+  };
+
   const handleRemove = () => {
     if (selectedRowIndex.length === 0) {
       // error("Tidak ada baris yang dipilih");
+      toast.error("Harap pilih 1 armada untuk menghapus");
       return;
     }
+
     const newFields = fields.filter(
       (_, index) => !selectedRowIndex.includes(index)
     );
@@ -133,6 +171,13 @@ export default function PreviewArmada() {
     if (newFields.length === 0) {
       append(defaultInformasiMuatan);
     }
+    setConfirmDeleteModal(false);
+    toast.success("Berhasil hapus armada");
+  };
+
+  const handleSaveAsDraft = () => {
+    toast.success("Berhasil tambah sebagai draft");
+    redirect("/manajemen-armada/tambah-massal");
   };
 
   useEffect(() => {
@@ -168,7 +213,7 @@ export default function PreviewArmada() {
             </Button>
             <Button
               onClick={() => {
-                handleRemove();
+                onClickHapus();
               }}
               variant="muatparts-error-secondary"
             >
@@ -183,95 +228,100 @@ export default function PreviewArmada() {
           <div className="max-h-[296px] w-full overflow-auto rounded-lg border border-neutral-600">
             <table className="table-tambah-armada-massal w-full table-fixed overflow-auto">
               <thead className="sticky top-0 z-50 border-b border-neutral-500 bg-white text-left">
-                <th className="w-[16px] px-4 py-5">
-                  <Checkbox
-                    label=""
-                    checked={selectAll}
-                    onChange={() => {
-                      setSelectAll(!selectAll);
-                    }}
-                  />
-                </th>
-                <th className="w-[232px]">
-                  <span className="text-xs font-semibold text-gray-500">
-                    Armada*
-                  </span>
-                </th>
-                <th className="w-[180px]">
-                  <span className="text-xs font-semibold text-gray-500">
-                    Jenis Truk*
-                  </span>
-                </th>
-                <th className="w-[180px]">
-                  <span className="text-xs font-semibold text-gray-500">
-                    Jenis Carrier*
-                  </span>
-                </th>
-                <th className="w-[180px]">
-                  <span className="text-xs font-semibold text-gray-500">
-                    Merek Kendaraan*
-                  </span>
-                </th>
-                <th className="w-[180px]">
-                  <span className="text-xs font-semibold text-gray-500">
-                    Tipe Kendaraan*
-                  </span>
-                </th>
-                <th className="w-[180px]">
-                  <span className="text-xs font-semibold text-gray-500">
-                    Tahun Registrasi Kendaraan*
-                  </span>
-                </th>
-                <th className="w-[261px]">
-                  <span className="text-xs font-semibold text-gray-500">
-                    Dimensi Carrier (Opsional)
-                  </span>
-                </th>
-                <th className="w-[180px]">
-                  <span className="text-xs font-semibold text-gray-500">
-                    Nomor Rangka*
-                  </span>
-                </th>
-                <th className="w-[180px]">
-                  <span className="text-xs font-semibold text-gray-500">
-                    Masa Berlaku STNK*
-                  </span>
-                </th>
-                <th className="w-[98px]">
-                  <span className="text-xs font-semibold text-gray-500">
-                    Foto STNK*
-                  </span>
-                </th>
-                <th className="w-[133px]">
-                  <span className="text-xs font-semibold text-gray-500">
-                    Foto Pajak Kendaraan*
-                  </span>
-                </th>
-                <th className="w-[180px]">
-                  <span className="text-xs font-semibold text-gray-500">
-                    KIR Kendaraan*
-                  </span>
-                </th>
-                <th className="w-[180px]">
-                  <span className="text-xs font-semibold text-gray-500">
-                    Masa Berlaku KIR*
-                  </span>
-                </th>
-                <th className="w-[98px]">
-                  <span className="text-xs font-semibold text-gray-500">
-                    Foto Buku KIR*
-                  </span>
-                </th>
-                <th className="w-[394px]">
-                  <span className="text-xs font-semibold text-gray-500">
-                    Estimasi Tanggal Pemasangan GPS*
-                  </span>
-                </th>
+                <tr>
+                  <th className="sticky left-0 w-[16px] bg-white px-4 py-5">
+                    <Checkbox
+                      label=""
+                      checked={selectAll}
+                      onChange={() => {
+                        setSelectAll(!selectAll);
+                      }}
+                    />
+                  </th>
+                  <th className="w-[232px]">
+                    <span className="text-xs font-semibold text-gray-500">
+                      Armada*
+                    </span>
+                  </th>
+                  <th className="w-[180px]">
+                    <span className="text-xs font-semibold text-gray-500">
+                      Jenis Truk*
+                    </span>
+                  </th>
+                  <th className="w-[180px]">
+                    <span className="text-xs font-semibold text-gray-500">
+                      Jenis Carrier*
+                    </span>
+                  </th>
+                  <th className="w-[180px]">
+                    <span className="text-xs font-semibold text-gray-500">
+                      Merek Kendaraan*
+                    </span>
+                  </th>
+                  <th className="w-[180px]">
+                    <span className="text-xs font-semibold text-gray-500">
+                      Tipe Kendaraan*
+                    </span>
+                  </th>
+                  <th className="w-[180px]">
+                    <span className="text-xs font-semibold text-gray-500">
+                      Tahun Registrasi Kendaraan*
+                    </span>
+                  </th>
+                  <th className="w-[261px]">
+                    <span className="text-xs font-semibold text-gray-500">
+                      Dimensi Carrier (Opsional)
+                    </span>
+                  </th>
+                  <th className="w-[180px]">
+                    <span className="text-xs font-semibold text-gray-500">
+                      Nomor Rangka*
+                    </span>
+                  </th>
+                  <th className="w-[180px]">
+                    <span className="text-xs font-semibold text-gray-500">
+                      Masa Berlaku STNK*
+                    </span>
+                  </th>
+                  <th className="w-[98px]">
+                    <span className="text-xs font-semibold text-gray-500">
+                      Foto STNK*
+                    </span>
+                  </th>
+                  <th className="w-[133px]">
+                    <span className="text-xs font-semibold text-gray-500">
+                      Foto Pajak Kendaraan*
+                    </span>
+                  </th>
+                  <th className="w-[180px]">
+                    <span className="text-xs font-semibold text-gray-500">
+                      KIR Kendaraan*
+                    </span>
+                  </th>
+                  <th className="w-[180px]">
+                    <span className="text-xs font-semibold text-gray-500">
+                      Masa Berlaku KIR*
+                    </span>
+                  </th>
+                  <th className="w-[98px]">
+                    <span className="text-xs font-semibold text-gray-500">
+                      Foto Buku KIR*
+                    </span>
+                  </th>
+                  <th className="w-[394px]">
+                    <span className="text-xs font-semibold text-gray-500">
+                      Estimasi Tanggal Pemasangan GPS*
+                    </span>
+                  </th>
+                </tr>
               </thead>
               <tbody>
                 {control._formValues.informasiMuatan.map((_, index) => (
                   <tr key={`item-${index}`} className="px-4">
-                    <td key={index} className="py-5">
+                    <td
+                      key={index}
+                      className="sticky left-0 z-50 bg-white py-5 pr-4"
+                    >
                       <Checkbox
                         label=""
                         checked={selectedRowIndex.includes(index)}
@@ -294,81 +344,180 @@ export default function PreviewArmada() {
                     <td className="flex gap-3 py-5">
                       <label
                         onClick={() => {
+                          setActiveIndex(index);
                           setAddArmadaImageModal(true);
                         }}
                         htmlFor={`foto-armada-${index}`}
                       >
-                        <div className="w-fit cursor-pointer rounded-lg border border-dashed border-neutral-600 p-2 hover:border-primary-700 hover:text-primary-700">
-                          <IconComponent src="/icons/add-image20.svg" />
-                        </div>
+                        {watch(
+                          `informasiMuatan.${index}.informasi_armada.images.image_armada_depan`
+                        ) ? (
+                          <img
+                            src={URL.createObjectURL(
+                              watch(
+                                `informasiMuatan.${index}.informasi_armada.images.image_armada_depan`
+                              )
+                            )}
+                            alt="Foto Armada Depan"
+                            className="w-12 shrink cursor-pointer rounded-lg object-cover"
+                          />
+                        ) : (
+                          <div className="w-fit cursor-pointer rounded-lg border border-dashed border-neutral-600 p-2 hover:border-primary-700 hover:text-primary-700">
+                            <IconComponent src="/icons/add-image20.svg" />
+                          </div>
+                        )}
                       </label>
-                      {/* <input
-                        type="file"
-                        id={`foto-armada-${index}`}
-                        className="hidden"
-                      /> */}
 
                       <Input placeholder="Contoh : L 1234 TY" />
                     </td>
                     <td>
-                      <Select
-                        options={[
-                          {
-                            value: "truk",
-                            label: "Truk",
-                          },
-                        ]}
+                      <Dropdown
+                        value={watch(`informasiMuatan.${index}.jenis_truk`)}
+                        onChange={(value) => {
+                          setValue(
+                            `informasiMuatan.${index}.jenis_truk`,
+                            value
+                          );
+                        }}
                         placeholder="Pilih Jenis Truk"
                       />
                     </td>
                     <td>
-                      <Select
-                        options={[
-                          {
-                            value: "truk",
-                            label: "Truk",
-                          },
-                        ]}
+                      <Dropdown
+                        disabled={!watch(`informasiMuatan.${index}.jenis_truk`)}
+                        value={watch(`informasiMuatan.${index}.jenis_carrier`)}
+                        onChange={(value) => {
+                          setValue(
+                            `informasiMuatan.${index}.jenis_carrier`,
+                            value
+                          );
+                        }}
                         placeholder="Pilih Jenis Carrier"
                       />
                     </td>
                     <td>
-                      <Select
-                        options={[
-                          {
-                            value: "truk",
-                            label: "Truk",
-                          },
-                        ]}
-                        placeholder="Pilih Merek Kendaraan"
+                      <Dropdown
+                        value={watch(
+                          `informasiMuatan.${index}.merek_kendaraan`
+                        )}
+                        onChange={(value) => {
+                          setValue(
+                            `informasiMuatan.${index}.merek_kendaraan`,
+                            value
+                          );
+                        }}
+                        placeholder="Pilih Jenis Merek Kendaraan"
                       />
                     </td>
                     <td>
-                      <Select
-                        options={[
-                          {
-                            value: "truk",
-                            label: "Truk",
-                          },
-                        ]}
+                      <Dropdown
+                        disabled={
+                          !watch(`informasiMuatan.${index}.merek_kendaraan`)
+                        }
+                        value={watch(`informasiMuatan.${index}.tipe_kendaraan`)}
+                        onChange={(value) => {
+                          setValue(
+                            `informasiMuatan.${index}.tipe_kendaraan`,
+                            value
+                          );
+                        }}
                         placeholder="Pilih Tipe Kendaraan"
                       />
                     </td>
                     <td>
-                      <Select
-                        options={[
-                          {
-                            value: "truk",
-                            label: "Truk",
-                          },
-                        ]}
-                        placeholder="Pilih Tahun"
-                      />
+                      <Select.Root
+                        onValueChange={(value) => {
+                          setValue(
+                            `informasiMuatan.${index}.tahun_registrasi_kendaraan`,
+                            value
+                          );
+                        }}
+                        value={watch(
+                          `informasiMuatan.${index}.tahun_registrasi_kendaraan`
+                        )}
+                      >
+                        <Select.Trigger>
+                          <Select.Value placeholder="Pilih Tipe Kendaraan" />
+                        </Select.Trigger>
+                        <Select.Content>
+                          {Array.from({ length: 100 }, (_, i) => {
+                            const year = new Date().getFullYear() - i;
+                            return (
+                              <Select.Item
+                                key={year}
+                                value={year.toString()}
+                                className="py-2 text-xs font-medium"
+                              >
+                                {year}
+                              </Select.Item>
+                            );
+                          })}
+                        </Select.Content>
+                      </Select.Root>
                     </td>
                     <td>
                       <div className="flex items-center gap-3">
-                        <DimensionInput />
-                        <Select defaultValue="m" options={dimensionUnits} />
+                        <DimensionInput
+                          manual={{
+                            lebar: {
+                              value: watch(
+                                `informasiMuatan.${index}.dimensi_carrier.lebar`
+                              ),
+                              setValue: (value) =>
+                                setValue(
+                                  `informasiMuatan.${index}.dimensi_carrier.lebar`,
+                                  value
+                                ),
+                            },
+                            panjang: {
+                              value: watch(
+                                `informasiMuatan.${index}.dimensi_carrier.panjang`
+                              ),
+                              setValue: (value) =>
+                                setValue(
+                                  `informasiMuatan.${index}.dimensi_carrier.panjang`,
+                                  value
+                                ),
+                            },
+                            tinggi: {
+                              value: watch(
+                                `informasiMuatan.${index}.dimensi_carrier.tinggi`
+                              ),
+                              setValue: (value) =>
+                                setValue(
+                                  `informasiMuatan.${index}.dimensi_carrier.tinggi`,
+                                  value
+                                ),
+                            },
+                          }}
+                        />
+                        <Select.Root
+                          onValueChange={(value) => {
+                            setValue(
+                              `informasiMuatan.${index}.dimensi_carrier.unit`,
+                              value
+                            );
+                          }}
+                          value={watch(
+                            `informasiMuatan.${index}.dimensi_carrier.unit`
+                          )}
+                        >
+                          <Select.Trigger>
+                            <Select.Value placeholder="Pilih Tipe Kendaraan" />
+                          </Select.Trigger>
+                          <Select.Content>
+                            {dimensionUnits.map((unit) => (
+                              <Select.Item
+                                key={unit.value}
+                                value={unit.value}
+                                className="py-2 text-xs font-medium"
+                              >
+                                {unit.label}
+                              </Select.Item>
+                            ))}
+                          </Select.Content>
+                        </Select.Root>
+                        {/* <Select defaultValue="m" options={dimensionUnits} /> */}
                       </div>
                     </td>
                     <td>
@@ -378,29 +527,26 @@ export default function PreviewArmada() {
                       <DatePicker placeholder="Pilih Tanggal" />
                     </td>
                     <td>
-                      <label
-                        htmlFor={`foto-stnk-${index}`}
-                        className="text-xs font-medium text-primary-700"
-                      >
-                        Upload File
-                      </label>
-                      <input
-                        type="file"
+                      <FileUploadInput
                         id={`foto-stnk-${index}`}
-                        className="hidden"
+                        value={watch(`informasiMuatan.${index}.foto_stnk`)}
+                        onChange={(file) => {
+                          setValue(`informasiMuatan.${index}.foto_stnk`, file);
+                        }}
                       />
                     </td>
                     <td>
-                      <label
-                        htmlFor={`foto-pajak-kendaraan-${index}`}
-                        className="text-xs font-medium text-primary-700"
-                      >
-                        Upload File
-                      </label>
-                      <input
-                        type="file"
+                      <FileUploadInput
                         id={`foto-pajak-kendaraan-${index}`}
-                        className="hidden"
+                        value={watch(
+                          `informasiMuatan.${index}.foto_pajak_kendaraan`
+                        )}
+                        onChange={(file) => {
+                          setValue(
+                            `informasiMuatan.${index}.foto_pajak_kendaraan`,
+                            file
+                          );
+                        }}
                       />
                     </td>
                     <td>
@@ -410,25 +556,24 @@ export default function PreviewArmada() {
                       <DatePicker placeholder="Pilih Tanggal" />
                     </td>
                     <td>
-                      <label
-                        htmlFor={`foto-buku-kir-${index}`}
-                        className="text-xs font-medium text-primary-700 hover:cursor-pointer hover:text-primary-800 hover:underline"
-                      >
-                        Upload File
-                      </label>
-                      <input
-                        type="file"
+                      <FileUploadInput
                         id={`foto-buku-kir-${index}`}
-                        className="hidden"
+                        value={watch(`informasiMuatan.${index}.foto_buku_kir`)}
+                        onChange={(file) => {
+                          setValue(
+                            `informasiMuatan.${index}.foto_buku_kir`,
+                            file
+                          );
+                        }}
                       />
                     </td>
                     <td>
                       <div className="flex items-center gap-2">
-                        {/* <DatePicker placeholder="Pilih Tanggal" /> */}
-                        <input
+                        <DatePicker placeholder="Pilih Tanggal" />
+                        {/* <input
                           className="rounded-lg border border-neutral-400 p-2 text-xs font-medium"
                           type="date"
-                        />
+                        /> */}
                         <span className="text-xs font-medium">s/d</span>
                         <DatePicker placeholder="Pilih Tanggal" />
                       </div>
@@ -441,13 +586,56 @@ export default function PreviewArmada() {
         </div>
         {/* Table */}
       </div>
+      <div className="mt-4 flex w-full items-end justify-end gap-3">
+        <Button
+          onClick={() => {
+            handleSaveAsDraft();
+          }}
+          variant="muattrans-primary-secondary"
+        >
+          Simpan Sebagai Draft
+        </Button>
+        <Button>Simpan</Button>
+      </div>
+      <ConfirmationModal
+        isOpen={confirmDeleteModal}
+        setIsOpen={setConfirmDeleteModal}
+        title={{
+          text: "Apakah kamu yakin untuk menghapus armada ?",
+          className: "text-sm font-medium text-center",
+        }}
+        confirm={{
+          text: "Hapus",
+          onClick: () => {
+            // Handle delete action
+            handleRemove();
+          },
+        }}
+        cancel={{
+          text: "Batal",
+          onClick: () => {
+            setConfirmDeleteModal(false);
+          },
+        }}
+      >
+        Apakah kamu yakin ingin menghapus armada yang telah dipilih? Tindakan
+        ini tidak dapat dibatalkan.
+      </ConfirmationModal>
       <ModalAddArmadaImage
         isOpen={addArmadaImageModal}
         onClose={() => {
           setAddArmadaImageModal(false);
         }}
-        images={[]}
+        value={watch(`informasiMuatan.${activeIndex}.informasi_armada.images`)}
+        onSave={(images) => {
+          setValue(
+            `informasiMuatan.${activeIndex}.informasi_armada.images`,
+            images
+          );
+          setAddArmadaImageModal(false);
+        }}
       />
+      <SelectExample />
     </div>
   );
 }
