@@ -13,7 +13,7 @@ import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { cn } from "@/lib/utils";
 
-import { getStatusVariant } from "../../utlis";
+import { getStatusVariant } from "../../utils";
 import ModalDetailStatusDriver from "./ModalDetailStatusDriver";
 
 export const DriverStatusCard = ({ driverStatus, orderId, orderStatus }) => {

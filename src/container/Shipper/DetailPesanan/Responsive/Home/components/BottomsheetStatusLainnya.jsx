@@ -11,7 +11,7 @@ import {
 } from "@/components/Bottomsheet/Bottomsheet";
 import { useTranslation } from "@/hooks/use-translation";
 
-import { getOrderStatusLabel, getStatusVariant } from "../../../utlis";
+import { getOrderStatusLabel, getStatusVariant } from "../../../utils";
 
 export const BottomsheetStatusLainnya = ({ dataStatusPesanan }) => {
   const { t } = useTranslation();

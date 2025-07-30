@@ -1,30 +1,34 @@
 import { useState } from "react";
 
 import Button from "@/components/Button/Button";
+import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
-export const FooterButton = ({ orderStatus }) => {
+const WHITELIST_PESAN_ULANG = [
+  OrderStatusEnum.CONFIRM_FLEET,
+  OrderStatusEnum.LOADING,
+  OrderStatusEnum.UNLOADING,
+  OrderStatusEnum.COMPLETED,
+];
+
+const WHITELIST_PAYMENT_FOOTER = [
+  OrderStatusEnum.WAITING_PAYMENT_1,
+  OrderStatusEnum.WAITING_PAYMENT_2,
+  OrderStatusEnum.WAITING_PAYMENT_3,
+  OrderStatusEnum.WAITING_PAYMENT_4,
+];
+
+export const FooterDetailPesanan = ({ dataStatusPesanan }) => {
   const navigation = useResponsiveNavigation();
 
   const [isReceiveDocumentEvidenceOpen, setReceiveDocumentEvidenceOpen] =
     useState(false);
 
-  const isWaitingPayment =
-    orderStatus === OrderStatusEnum.WAITING_PAYMENT_1 ||
-    orderStatus === OrderStatusEnum.WAITING_PAYMENT_2 ||
-    orderStatus === OrderStatusEnum.WAITING_PAYMENT_3 ||
-    orderStatus === OrderStatusEnum.WAITING_PAYMENT_4;
-  const isKnownStatus =
-    orderStatus === OrderStatusEnum.LOADING ||
-    isWaitingPayment ||
-    orderStatus === OrderStatusEnum.DOCUMENT_DELIVERY ||
-    orderStatus === OrderStatusEnum.COMPLETED;
-
   const renderButtons = () => {
     // Pesan Ulang button for LOADING status
-    if (orderStatus === OrderStatusEnum.LOADING) {
+    if (dataStatusPesanan?.orderStatus === OrderStatusEnum.LOADING) {
       return (
         <Button
           variant="muatparts-primary"
@@ -38,7 +42,7 @@ export const FooterButton = ({ orderStatus }) => {
     }
 
     // Beri Ulasan button for COMPLETED status (single button)
-    if (orderStatus === OrderStatusEnum.COMPLETED) {
+    if (dataStatusPesanan?.orderStatus === OrderStatusEnum.COMPLETED) {
       return (
         <Button
           variant="muatparts-primary"
@@ -52,21 +56,32 @@ export const FooterButton = ({ orderStatus }) => {
     }
 
     // Lanjut Pembayaran button for waiting payment
-    if (isWaitingPayment) {
+    if (WHITELIST_PAYMENT_FOOTER.includes(dataStatusPesanan?.orderStatus)) {
       return (
-        <Button
-          variant="muatparts-primary"
-          className="h-10 w-full p-0"
-          onClick={() => alert("Simpan")}
-          type="button"
-        >
-          Lanjut Pembayaran
-        </Button>
+        <>
+          <Button
+            variant="muatparts-primary"
+            className="h-10 w-full p-0"
+            onClick={() => alert("Simpan")}
+            type="button"
+          >
+            Lanjut Pembayaran
+          </Button>
+
+          <Button
+            variant="muatparts-error-secondary"
+            className="h-10 w-full p-0"
+            onClick={() => alert("Simpan")}
+            type="button"
+          >
+            Batalkan Pesanan
+          </Button>
+        </>
       );
     }
 
     // Multiple buttons for DOCUMENT_DELIVERY status
-    if (orderStatus === OrderStatusEnum.DOCUMENT_DELIVERY) {
+    if (dataStatusPesanan?.orderStatus === OrderStatusEnum.DOCUMENT_DELIVERY) {
       return (
         <>
           <Button
@@ -90,7 +105,7 @@ export const FooterButton = ({ orderStatus }) => {
     }
 
     // Multiple buttons for COMPLETED status (duplicate case)
-    if (orderStatus === OrderStatusEnum.COMPLETED) {
+    if (dataStatusPesanan?.orderStatus === OrderStatusEnum.COMPLETED) {
       return (
         <>
           <Button
@@ -114,7 +129,7 @@ export const FooterButton = ({ orderStatus }) => {
     }
 
     // Pesan Ulang button for unknown status
-    if (!isKnownStatus) {
+    if (WHITELIST_PESAN_ULANG.includes(dataStatusPesanan?.orderStatus)) {
       return (
         <Button
           variant="muatparts-primary"
@@ -133,9 +148,17 @@ export const FooterButton = ({ orderStatus }) => {
 
   return (
     <>
-      <div className="flex gap-2">{renderButtons()}</div>
+      <ResponsiveFooter className="flex flex-col gap-4">
+        {dataStatusPesanan?.orderStatus ===
+          OrderStatusEnum.WAITING_PAYMENT_1 && (
+          <div className="flex items-center justify-between">
+            <div className="text-sm font-semibold">Total Biaya</div>
+            <div className="text-sm font-bold">Rp1.021.583</div>
+          </div>
+        )}
+        <div className="flex gap-2">{renderButtons()}</div>
+      </ResponsiveFooter>
 
-      {/* Modal Konfirmasi sudah terima bukti dokumen */}
       <Modal
         open={isReceiveDocumentEvidenceOpen}
         onOpenChange={setReceiveDocumentEvidenceOpen}

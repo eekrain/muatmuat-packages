@@ -19,6 +19,8 @@ import { useSWRHook } from "@/hooks/use-swr";
 import DefaultResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/DefaultResponsiveLayout";
 import { useWaitingSettlementModalAction } from "@/store/Shipper/forms/waitingSettlementModalStore";
 
+import LoginRequiredModal from "./LoginRequiredModal";
+
 const SewaArmadaHomeScreen = ({ carriers, trucks, settlementAlertInfo }) => {
   const router = useRouter();
   const { setIsOpen } = useWaitingSettlementModalAction();
@@ -155,6 +157,7 @@ const SewaArmadaHomeScreen = ({ carriers, trucks, settlementAlertInfo }) => {
 
       <ModalFirstTimer />
       <WaitingSettlementModal />
+      <LoginRequiredModal open={false} onOpenChange={() => {}} />
     </DefaultResponsiveLayout>
   );
 };

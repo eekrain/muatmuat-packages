@@ -40,7 +40,7 @@ export const RouteInfo = ({ dataDetailPesanan }) => {
   return (
     <>
       <div className="rounded-lg bg-white px-4 py-5 shadow-sm">
-        <div className="flex flex-col gap-4 pb-4">
+        <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold">Rute</h3>
             {dataDetailPesanan?.estimatedDistance && (
@@ -93,7 +93,10 @@ export const RouteInfo = ({ dataDetailPesanan }) => {
             )}
           </TimelineContainer>
         </div>
-        <div className="flex flex-col gap-4 pt-6">
+
+        <hr className="my-6" />
+
+        <div className="flex flex-col gap-4">
           <h3 className="text-sm font-semibold">Informasi Muatan</h3>
           {dataDetailPesanan?.isHalalLogistics && <HalalLogistik />}
           {dataDetailPesanan?.cargos?.map((cargo) => (

@@ -8,10 +8,11 @@ import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
 
-export const PaymentDetail = ({ dataRingkasanPembayaran }) => {
+export const PendingPaymentDetail = ({ dataRingkasanPembayaran }) => {
   const { countdown } = useCountdown({
     endingDate: dataRingkasanPembayaran?.expiredAt,
     isNeedCountdown: true,
+    withHours: true,
   });
   const navigation = useResponsiveNavigation();
   // console.log("dataRingkasanPembayaran", dataRingkasanPembayaran);

@@ -36,25 +36,34 @@ const exampleBody = {
   driverId: "550e8400-e29b-41d4-a716-446655440090",
 };
 
-export const useGetDriverQRCodeById = (requestData = exampleBody) => {
+export const useGetDriverQRCodeById = ({ orderId, driverId } = exampleBody) => {
   const [qrData, setQRData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const intervalRef = useRef(null);
 
   const generateQRCode = async () => {
-    if (!requestData) return;
+    if (!orderId || !driverId) return;
     try {
       let result;
       if (useMockData) {
         result = apiResultQRCode;
       } else {
-        result = await fetcherMuatrans.post(
-          "v1/orders/qr-codes/generate",
-          requestData
-        );
+        result = await fetcherMuatrans.post("v1/orders/qr-codes/generate", {
+          orderId,
+          driverId,
+        });
       }
-      // setQRData(null);
-      setQRData(result?.data?.Data || null);
+      setQRData(
+        driverId === "550e8400-e29b-41d4-a716-446655440021"
+          ? {
+              ...result.data.Data,
+              driverInfo: {
+                ...result.data.Data.driverInfo,
+                statusScan: DriverStatusScanEnum.SUDAH_SCAN_MUAT,
+              },
+            }
+          : result.data.Data
+      );
     } catch (error) {
       console.log("Error generate QR Code", error);
     } finally {
@@ -77,7 +86,7 @@ export const useGetDriverQRCodeById = (requestData = exampleBody) => {
     }, 1000 * 60);
 
     return () => clearInterval(intervalRef.current);
-  }, [requestData]);
+  }, [orderId, driverId]);
 
   return { qrData, isLoading };
 };
