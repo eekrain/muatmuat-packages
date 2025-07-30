@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ChevronRightIcon } from "lucide-react";
 
 import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
+import { InfoBottomsheetDriverCharge } from "@/components/Form/InfoBottomsheetDriverCharge";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
@@ -110,6 +111,8 @@ const Item = ({ item }) => {
         >
           {t(item.link.label)}
         </Link>
+      ) : item.label === "messageWaitingTimeCharge" ? (
+        <InfoBottomsheetDriverCharge title="Informasi" />
       ) : item.info ? (
         <InfoBottomsheet title="Informasi" render={item.info} />
       ) : null}
