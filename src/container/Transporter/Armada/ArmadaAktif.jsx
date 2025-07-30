@@ -80,26 +80,28 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange, count }) => {
       header: "Driver",
       width: "280px",
       render: (row) => (
-        <div className="space-y-2">
+        <div className="space-y-1">
           <div className="flex items-end gap-3">
             <div className="line-clamp-1 h-3 flex-1 break-all text-xxs font-semibold">
               {row.assignedDriver?.fullName || "-"}
             </div>
 
-            <div className="flex gap-1">
-              <button
-                className="text-neutral-700 hover:text-primary-700"
-                onClick={() => {
-                  setSelectedVehicle(row);
-                  setIsModalOpen(true);
-                }}
-              >
-                <IconComponent size={12} src={"/icons/pencil-outline.svg"} />
-              </button>
-              <button className="text-neutral-700 hover:text-primary-700">
-                <IconComponent size={12} src={"/icons/unlink.svg"} />
-              </button>
-            </div>
+            {row.assignedDriver && (
+              <div className="flex gap-1">
+                <button
+                  className="text-neutral-700 hover:text-primary-700"
+                  onClick={() => {
+                    setSelectedVehicle(row);
+                    setIsModalOpen(true);
+                  }}
+                >
+                  <IconComponent size={12} src={"/icons/pencil-outline.svg"} />
+                </button>
+                <button className="text-neutral-700 hover:text-primary-700">
+                  <IconComponent size={12} src={"/icons/unlink.svg"} />
+                </button>
+              </div>
+            )}
           </div>
           <div className="text-xxs font-medium text-neutral-600">
             {row.assignedDriver?.whatsappNumber
