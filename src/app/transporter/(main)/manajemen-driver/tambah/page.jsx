@@ -102,7 +102,7 @@ export default function TambahDriverPage() {
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting, isDirty },
+    formState: { errors, isSubmitting, isDirty, isSubmitted },
     setError,
   } = useForm({
     resolver: valibotResolver(driverSchema, { abortEarly: false }),
@@ -114,7 +114,8 @@ export default function TambahDriverPage() {
       fotoSIM: null,
       fotoDriver: null,
     },
-    mode: "onBlur",
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
 
   const handleOpenSubmitModal = (data) => {
@@ -406,8 +407,12 @@ export default function TambahDriverPage() {
         description={{
           text: "Apakah kamu yakin menyimpan data ini?",
         }}
-        cancel={{ text: "Tidak" }}
-        confirm={{ text: "Ya", onClick: handleFinalSubmit }}
+        cancel={{ text: "Tidak", classname: "w-[112px]" }}
+        confirm={{
+          text: "Ya",
+          onClick: handleFinalSubmit,
+          classname: "w-[112px]",
+        }}
       />
 
       <ConfirmationModal
@@ -416,8 +421,15 @@ export default function TambahDriverPage() {
         description={{
           text: "Apakah kamu yakin ingin berpindah halaman? Data yang telah diisi tidak akan disimpan",
         }}
-        cancel={{ text: "Batal" }}
-        confirm={{ text: "Yakin", onClick: handleConfirmNavigation }}
+        cancel={{
+          text: "Ya",
+          classname: "w-[112px]",
+          onClick: handleConfirmNavigation,
+        }}
+        confirm={{
+          text: "Batal",
+          classname: "w-[112px]",
+        }}
       />
     </div>
   );
