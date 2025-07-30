@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useState } from "react";
 
 import { useCountdown } from "@/hooks/use-countdown";
+import { useTranslation } from "@/hooks/use-translation";
 import { idrFormat } from "@/lib/utils/formatters";
 import { isVoucherExpiringSoon } from "@/lib/utils/voucherValidation";
 
@@ -26,6 +27,7 @@ export default function VoucherCard({
   isValidating = false, // Loading state for validation
 }) {
   const [showInfoPopup, setShowInfoPopup] = useState(false);
+  const { t } = useTranslation();
 
   // This function is purely for text display in VoucherCard if needed,
   // the actual calculation happens in SummaryPanel.
@@ -34,9 +36,9 @@ export default function VoucherCard({
       discountType === "percentage" &&
       typeof discountPercentage === "number"
     ) {
-      return `Diskon ${discountPercentage}%`; // Display as percentage
+      return `${t("labelDiscount")} ${discountPercentage}%`; // Display as percentage
     } else if (discountType === "fixed" && typeof discountAmount === "number") {
-      return `Diskon Rp ${discountAmount.toLocaleString("id-ID")}`;
+      return `${t("labelDiscount")} Rp ${discountAmount.toLocaleString("id-ID")}`;
     }
     return ""; // No specific discount display if type/value is missing
   };
@@ -56,14 +58,14 @@ export default function VoucherCard({
     usagePercentage: usagePercentage,
     minOrderAmount: minTransaksi,
     termsAndConditions: [
-      `Maksimal berlaku untuk transaksi dengan ${discountText}`,
-      `Minimum belanja ${idrFormat(minTransaksi)}`,
-      "Pembayaran yang berlaku: BCA Virtual Account",
-      "1 promo berlaku untuk 2 kali transaksi selama periode promo",
-      "Promo tidak dapat digabungkan dengan promo lain",
-      "Promo berlaku di aplikasi Muatparts berbasis iOS dan/atau Android versi terbaru",
+      `${t("descMaxApplicable")} ${discountText}`,
+      `${t("descMinPurchase")} ${idrFormat(minTransaksi)}`,
+      t("descPaymentMethod"),
+      t("descPromoLimit"),
+      t("descPromoNotCombinable"),
+      t("descAppCompatibility"),
     ],
-    usageInstructions: ["Masukkan kode Voucher Kamu dan pilih Voucher"],
+    usageInstructions: [t("descUsageInstruction")],
   };
 
   // Countdown for vouchers expiring soon
@@ -125,9 +127,15 @@ export default function VoucherCard({
               {/* If you want to show the specific discount type and amount/percentage on the card: */}
               {discountText && <li>{discountText}</li>}
               {minTransaksi && (
-                <li>Min. Transaksi: {idrFormat(minTransaksi)}</li>
+                <li>
+                  {t("labelMinTransaction")}: {idrFormat(minTransaksi)}
+                </li>
               )}
-              {kuota && <li>Kuota: {kuota}</li>}
+              {kuota && (
+                <li>
+                  {t("labelQuota")}: {kuota}
+                </li>
+              )}
             </ul>
 
             <div className="mb-1 h-2 w-full overflow-hidden rounded-full bg-gray-200">
@@ -139,7 +147,7 @@ export default function VoucherCard({
 
             <div className="mb-2 flex items-center justify-between">
               <span className="text-xs text-gray-600">
-                Kuota Voucher Telah Terpakai {usagePercentage}%
+                {t("descQuotaUsed")} {usagePercentage}%
               </span>
             </div>
           </div>
@@ -171,12 +179,12 @@ export default function VoucherCard({
             {isValidating ? (
               <div className="flex items-center gap-1">
                 <div className="h-3 w-3 animate-spin rounded-full border border-gray-400 border-t-transparent"></div>
-                Validasi...
+                {t("buttonValidating")}
               </div>
             ) : isActive ? (
-              "Dipakai"
+              t("buttonApplied")
             ) : (
-              "Pakai"
+              t("buttonUse")
             )}
           </button>
         </div>
@@ -189,7 +197,7 @@ export default function VoucherCard({
 
       {isOutOfStock && !validationError && (
         <div className="w-full border-red-300 py-1 text-xs font-medium text-red-500">
-          Kuota Voucher sudah habis
+          {t("errorVoucherOutOfStock")}
         </div>
       )}
 
@@ -205,11 +213,11 @@ export default function VoucherCard({
               const diffMs = expiry - now;
               const diffHours = diffMs / (1000 * 60 * 60);
               if (diffHours < 24) {
-                return `Sisa ${countdown} lagi`;
+                return `${t("descTimeRemaining")} ${countdown} ${t("descAgain")}`;
               } else {
                 // Otherwise, show days left
                 const diffDays = Math.ceil(diffHours / 24);
-                return `Berakhir ${diffDays} hari lagi`;
+                return `${t("descExpiresIn")} ${diffDays} ${t("descDaysAgain")}`;
               }
             })()}
           </div>

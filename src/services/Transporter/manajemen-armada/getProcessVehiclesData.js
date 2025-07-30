@@ -172,7 +172,32 @@ export const fetcherProcessVehicles = async (cacheKey) => {
 
   if (isMockProcessVehicles) {
     const result = apiResultProcessVehicles;
-    return result.data.Data;
+
+    // Parse query parameters to get status filter
+    const urlParams = new URLSearchParams(queryString);
+    const statusFilter = urlParams.get("status");
+
+    const filteredData = { ...result.data.Data };
+
+    // Filter vehicles based on status if status parameter is provided and not null
+    if (statusFilter && statusFilter !== "null") {
+      filteredData.vehicles = result.data.Data.vehicles.filter(
+        (vehicle) => vehicle.status === statusFilter
+      );
+
+      // Update pagination data based on filtered results
+      filteredData.pagination = {
+        ...filteredData.pagination,
+        totalItems: filteredData.vehicles.length,
+        totalPages: Math.ceil(
+          filteredData.vehicles.length /
+            (parseInt(urlParams.get("limit")) || 10)
+        ),
+      };
+    }
+    // If status is null or not provided, show all vehicles (no filtering)
+
+    return filteredData;
   }
 
   const result = await fetcherMuatrans.get(url);

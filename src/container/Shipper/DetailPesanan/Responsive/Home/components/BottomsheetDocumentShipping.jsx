@@ -9,9 +9,12 @@ import {
   LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 export const BottomsheetDocumentShipping = ({ open, onOpenChange }) => {
+  const { t } = useTranslation();
+
   const dummyDocumentShippingEvidencePhotos = [
     "/img/recommended1.png",
     "/img/recommended1.png",
@@ -21,7 +24,7 @@ export const BottomsheetDocumentShipping = ({ open, onOpenChange }) => {
 
   const documentShippingDetail = [
     {
-      title: "Tanggal",
+      title: t("labelDate"),
       content: (
         <span className="text-xs font-medium leading-[1.1] text-neutral-900">
           04 Okt 2024 18:00 WIB
@@ -29,7 +32,7 @@ export const BottomsheetDocumentShipping = ({ open, onOpenChange }) => {
       ),
     },
     {
-      title: "Foto Bukti Pengiriman",
+      title: t("labelShippingEvidencePhoto"),
       content: (
         <div className="flex items-center gap-x-3">
           {dummyDocumentShippingEvidencePhotos.map((photo, index) => (
@@ -43,7 +46,7 @@ export const BottomsheetDocumentShipping = ({ open, onOpenChange }) => {
       ),
     },
     {
-      title: "Catatan",
+      title: t("labelNote"),
       content: (
         <span className="text-xs font-medium leading-[1.1] text-neutral-900">
           Kami informasikan bahwa dokumen telah kami kirim dan saat ini sudah
@@ -59,7 +62,9 @@ export const BottomsheetDocumentShipping = ({ open, onOpenChange }) => {
   return (
     <BottomSheet open={open} onOpenChange={onOpenChange}>
       <BottomSheetContent>
-        <BottomSheetHeader>Bukti Pengiriman Dokumen</BottomSheetHeader>
+        <BottomSheetHeader>
+          {t("titleDocumentShippingEvidence")}
+        </BottomSheetHeader>
         <div className="flex flex-col gap-y-4 px-4 py-6">
           {documentShippingDetail.map((item, key) => (
             <div

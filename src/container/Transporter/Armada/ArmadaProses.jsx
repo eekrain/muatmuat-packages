@@ -39,6 +39,14 @@ const ArmadaProses = ({
     ...filters,
   });
 
+  // Debug log to verify filtering
+  console.log("Current selectedStatus:", selectedStatus);
+  console.log("Filtered vehicles count:", data?.vehicles?.length);
+  console.log(
+    "Vehicles statuses:",
+    data?.vehicles?.map((v) => v.status)
+  );
+
   const getStatusBadge = (status) => {
     const statusConfig = getArmadaStatusBadge(status);
     return (
@@ -220,6 +228,7 @@ const ArmadaProses = ({
   const handleStatusChange = (status) => {
     // Status clicked
     setSelectedStatus(status);
+    setCurrentPage(1); // Reset to first page when status changes
     onStatusChange?.(status);
     // New status set
   };

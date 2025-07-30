@@ -59,7 +59,7 @@ const DevLoginContainer = ({ onSuccessRedirect = "/manajemen-armada" }) => {
     try {
       // API call to muatparts auth
       const response = await xior.get(
-        `http://localhost:3012/v1/muatparts/auth/login/backdoor?email=${encodeURIComponent(formData.email)}`
+        `http://192.168.36.10:3012/v1/muatparts/auth/login/backdoor?email=${encodeURIComponent(formData.email)}`
       );
 
       // Set tokens in the store
