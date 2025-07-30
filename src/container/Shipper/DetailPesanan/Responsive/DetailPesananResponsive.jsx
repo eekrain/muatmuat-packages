@@ -1,5 +1,6 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import { useEffect } from "react";
 
 import {
@@ -47,9 +48,10 @@ const DetailPesananResponsive = () => {
   // useEffect(() => {
   //   navigation.replace("/CariSemuaDriver");
   // }, []);
+  const params = useParams();
   const { setIsGlobalLoading } = useLoadingAction();
 
-  const { data } = useGetDetailPesananData("12345");
+  const { data } = useGetDetailPesananData(params.orderId);
 
   const dataStatusPesanan = data?.dataStatusPesanan;
   const dataRingkasanPesanan = data?.dataRingkasanPesanan;
