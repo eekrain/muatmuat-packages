@@ -12,7 +12,12 @@ const BottomNavigationBar = () => {
           className="absolute bottom-[39px] left-1/2 -translate-x-1/2 transform"
           href="/sewaarmada"
         >
-          <Image src="/icons/muatrans-add-button.svg" width={64} height={64} />
+          <Image
+            alt="add-button"
+            src="/icons/muatrans-add-button.svg"
+            width={64}
+            height={64}
+          />
         </Link>
         <Link
           className="z-[1] flex h-[66px] w-[70px] flex-col items-center justify-end gap-y-2"
@@ -39,10 +44,12 @@ const BottomNavigationBar = () => {
           </span>
         </Link>
         <Image
-          className="absolute bottom-0 left-0 h-[66px] w-full object-cover"
+          alt="bottomnavbar"
+          className="absolute bottom-0 left-0 h-[66px] w-auto w-full object-cover"
           src="/icons/bottom-navigation-bar.svg"
           width={100}
           height={66}
+          priority
         />
       </div>
     </div>

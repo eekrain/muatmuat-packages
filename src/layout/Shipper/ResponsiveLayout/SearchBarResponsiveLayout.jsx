@@ -21,6 +21,7 @@ const SearchBarResponsiveLayout = ({
   placeholder,
   className,
   withMenu,
+  onEnterPress,
 }) => {
   return (
     <div className="min-h-screen bg-background">
@@ -29,6 +30,7 @@ const SearchBarResponsiveLayout = ({
           onClickBackButton={onClickBackButton}
           placeholder={placeholder}
           withMenu={withMenu}
+          onEnterPress={onEnterPress}
         />
       </HeaderResponsiveContainer>
       <main

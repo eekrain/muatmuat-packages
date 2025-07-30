@@ -49,7 +49,7 @@ const DropdownRadioBottomsheeet = ({
           className
         )}
         onClick={() => {
-          if (!disabled) setIsBottomsheetOpen(true);
+          setIsBottomsheetOpen(true);
         }}
         disabled={disabled}
       >

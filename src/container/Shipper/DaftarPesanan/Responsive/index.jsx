@@ -24,7 +24,6 @@ const DaftarPesananResponsive = ({
   currentPeriodValue,
   setCurrentPeriodValue,
 }) => {
-  console.log("orders", orders);
   const router = useRouter();
   const [isPeriodBottomsheetOpen, setPeriodBottomsheetOpen] = useState(false);
   const { t } = useTranslation();
@@ -61,17 +60,60 @@ const DaftarPesananResponsive = ({
     },
   ];
 
+  const handleChangePeriod = ({ startDate, endDate, value }) => {
+    if (value === "custom") {
+      onChangeQueryParams("startDate", startDate);
+      onChangeQueryParams("endDate", endDate);
+    } else if (value === "") {
+      onChangeQueryParams("startDate", null);
+      onChangeQueryParams("endDate", null);
+    } else {
+      // Get local dates using direct component extraction, not toISOString()
+      const getLocalDateString = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      };
+
+      // Get today as end date
+      const today = new Date();
+      const endDate = getLocalDateString(today);
+
+      // Calculate start date
+      let startDate;
+      if (value === 0) {
+        // Today
+        startDate = endDate;
+      } else {
+        // Other periods (7 days, 30 days, etc.)
+        const startDateObj = new Date();
+        // Set to noon to avoid any date boundary issues
+        startDateObj.setHours(12, 0, 0, 0);
+        startDateObj.setDate(today.getDate() - value);
+        startDate = getLocalDateString(startDateObj);
+      }
+
+      onChangeQueryParams("startDate", startDate);
+      onChangeQueryParams("endDate", endDate);
+    }
+  };
+
+  const hasFilteredOrders = orders.length > 0;
+
   return (
     <SearchBarResponsiveLayout
       withMenu={{
         onClickPeriod: () => setPeriodBottomsheetOpen(true),
+        periodSelected: queryParams.startDate && queryParams.endDate,
       }}
+      onEnterPress={(value) => onChangeQueryParams("search", value)}
       placeholder="Cari Pesanan"
     >
       <div
         className={cn(
-          "flex min-h-[calc(100vh_-_62px)] flex-col gap-y-2 bg-neutral-200 text-neutral-900",
-          hasNoOrders ? "" : "mb-[110px]"
+          "flex min-h-[calc(100vh_-_62px)] flex-col bg-neutral-200 text-neutral-900",
+          hasNoOrders || !hasFilteredOrders ? "gap-y-0" : "mb-[110px] gap-y-2"
         )}
       >
         {/* Filter */}
@@ -113,11 +155,40 @@ const DaftarPesananResponsive = ({
         </div>
         {/* List Pesanan */}
         {isOrdersLoading ? null : !hasNoOrders ? (
-          orders.map((order, key) => (
-            <Fragment key={key}>
-              <OrderItem {...order} />
-            </Fragment>
-          ))
+          !hasFilteredOrders ? (
+            <div className="flex w-full pb-6">
+              <div
+                className={cn(
+                  "flex min-h-[calc(100vh_-_198px)] w-full items-center justify-center"
+                )}
+              >
+                {lastFilterField === "search" ? (
+                  <DataNotFound
+                    className="gap-y-3"
+                    textClass="text-[#868686] leading-[1.1] w-[197px]"
+                    title={t("titleKeywordTidakDitemukan")}
+                    width={127}
+                    height={109}
+                  />
+                ) : (
+                  <DataNotFound
+                    className="gap-y-3"
+                    textClass="text-[#868686] w-[117px]"
+                    title={t("titleTidakAdaData")}
+                    width={94}
+                    height={76}
+                    type="data"
+                  />
+                )}
+              </div>
+            </div>
+          ) : (
+            orders.map((order, key) => (
+              <Fragment key={key}>
+                <OrderItem {...order} />
+              </Fragment>
+            ))
+          )
         ) : (
           <div className="flex min-h-[calc(100vh_-_198px)] items-center justify-center">
             <div className="flex max-w-[328px] flex-col gap-y-3">
@@ -127,7 +198,7 @@ const DaftarPesananResponsive = ({
                 title="Oops, daftar pesananmu masih kosong"
                 width={94}
                 height={76}
-                type="search"
+                type="data"
               />
               <div className="max-w-[320px] text-center text-xs font-medium text-neutral-600">
                 Mulai buat pesanan sekarang untuk kebutuhan pengiriman kamu
@@ -149,6 +220,7 @@ const DaftarPesananResponsive = ({
         isOpen={isPeriodBottomsheetOpen}
         setIsOpen={setPeriodBottomsheetOpen}
         options={periodOptions}
+        onChange={handleChangePeriod}
       />
     </SearchBarResponsiveLayout>
   );

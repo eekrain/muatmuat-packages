@@ -3,6 +3,7 @@ import { Fragment, useState } from "react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Button from "@/components/Button/Button";
+import ConfirmationModalResponsive from "@/components/Modal/ConfirmationModalResponsive";
 import {
   TimelineContainer,
   TimelineContentWithButtonDate,
@@ -15,6 +16,7 @@ import {
   OrderStatusEnum,
   OrderStatusTitle,
 } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { toast } from "@/lib/toast";
 import { formatDate } from "@/lib/utils/dateFormat";
 
 const OrderItem = ({
@@ -39,6 +41,9 @@ const OrderItem = ({
   const [selectedGroupedStatusInfo, setSelectedGroupedStatusInfo] = useState(
     []
   );
+  const [isDocumentReceivedModalOpen, setIsDocumentReceivedModalOpen] =
+    useState(false);
+  const [isReorderFleetModalOpen, setIsReorderFleetModalOpen] = useState(false);
 
   const armadaData = [
     {
@@ -63,6 +68,19 @@ const OrderItem = ({
 
   // Get the first item (earliest in the enum)
   const latestStatus = sortedArray[0];
+
+  const beforeLoadingStatus = [
+    OrderStatusEnum.PREPARE_FLEET,
+    OrderStatusEnum.WAITING_PAYMENT_1,
+    OrderStatusEnum.WAITING_PAYMENT_2,
+    OrderStatusEnum.SCHEDULED_FLEET,
+    OrderStatusEnum.CONFIRMED,
+  ];
+
+  const handleReceiveDocument = async () => {
+    toast.success(t("messagePesananBerhasilDiselesaikan"));
+    setIsDocumentReceivedModalOpen(false);
+  };
 
   return (
     <>
@@ -225,13 +243,49 @@ const OrderItem = ({
             </div>
           ))}
         </div>
-        <Button
-          className="w-full"
-          variant="muatparts-primary-secondary"
-          onClick={() => router.push(`/daftarpesanan/detailpesanan/${orderId}`)}
-        >
-          Detail
-        </Button>
+        <div className="flex items-center gap-x-3">
+          <Button
+            className="w-full text-xs leading-[1.1]"
+            variant="muatparts-primary-secondary"
+            onClick={() =>
+              router.push(`/daftarpesanan/detailpesanan/${orderId}`)
+            }
+          >
+            Detail
+          </Button>
+          {latestStatus === OrderStatusEnum.DOCUMENT_DELIVERY ? (
+            <Button
+              onClick={() => setIsDocumentReceivedModalOpen(true)}
+              variant="muatparts-primary"
+              className="w-full text-xs leading-[1.1]"
+            >
+              {t("buttonSelesaikanPesanan")}
+            </Button>
+          ) : latestStatus === OrderStatusEnum.COMPLETED ? (
+            <Button
+              variant="muatparts-primary"
+              className="w-full text-xs leading-[1.1]"
+            >
+              {t("buttonBeriUlasan")}
+            </Button>
+          ) : beforeLoadingStatus.includes(latestStatus) ||
+            latestStatus.statusCode === OrderStatusEnum.COMPLETED ||
+            latestStatus.statusCode === OrderStatusEnum.CANCELED_BY_SHIPPER ||
+            latestStatus.statusCode === OrderStatusEnum.CANCELED_BY_SYSTEM ||
+            latestStatus.statusCode ===
+              OrderStatusEnum.CANCELED_BY_TRANSPORTER ? (
+            <Button
+              variant="muatparts-primary"
+              className="w-full text-xs leading-[1.1]"
+              onClick={() => {
+                // setSelectedOrderId(order.orderId);
+                setIsReorderFleetModalOpen(true);
+              }}
+            >
+              {t("buttonPesanUlang")}
+            </Button>
+          ) : null}
+        </div>
       </div>
 
       {/* Bottomsheet Lokasi Muat Bongkar */}
@@ -247,6 +301,23 @@ const OrderItem = ({
         isOpen={isAllDriverStatusModalOpen}
         setOpen={setIsAllDriverStatusModalOpen}
         selectedGroupedStatusInfo={selectedGroupedStatusInfo}
+      />
+
+      {/* Modal Konfirmasi Dokumen Diterima */}
+      <ConfirmationModalResponsive
+        isOpen={isDocumentReceivedModalOpen}
+        setIsOpen={setIsDocumentReceivedModalOpen}
+        title={{ text: "Informasi" }}
+        description={{
+          text: 'Klik "Sudah", jika kamu sudah menerima bukti dokumen untuk menyelesaikan pesanan.',
+        }}
+        cancel={{
+          text: t("buttonBelum"),
+        }}
+        confirm={{
+          text: t("buttonSudah"),
+          onClick: handleReceiveDocument,
+        }}
       />
     </>
   );

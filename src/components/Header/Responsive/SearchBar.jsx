@@ -24,6 +24,7 @@ export const HeaderResponsiveSearchBar = ({
   onClickBackButton,
   placeholder = "Search...",
   withMenu = null,
+  onEnterPress,
 }) => {
   const navigation = useResponsiveNavigation();
   const handleBackButton = () => {
@@ -69,24 +70,40 @@ export const HeaderResponsiveSearchBar = ({
                 src="/icons/silang.svg"
                 height={16}
                 width={16}
-                onClick={() => setSearchValue("")}
+                onClick={() => {
+                  setSearchValue("");
+                  onEnterPress("");
+                }}
               />
             ) : null,
           }}
+          onKeyDown={(e) =>
+            onEnterPress && e.key === "Enter" && onEnterPress(searchValue)
+          }
         />
       </div>
       {withMenu ? (
-        <div className="">
+        <div className="flex items-center">
           {withMenu?.onClickPeriod ? (
             <button
               className="flex flex-col items-center gap-y-0.5"
               onClick={() => withMenu?.onClickPeriod()}
             >
-              <IconComponent
-                className="icon-fill-muat-trans-secondary-900"
-                src="/icons/calendar24.svg"
-                size="medium"
-              />
+              {withMenu?.periodSelected ? (
+                <div className="flex size-[24px] items-center justify-center rounded-full bg-muat-trans-secondary-900">
+                  <IconComponent
+                    src="/icons/calendar17.svg"
+                    width={17}
+                    height={17}
+                  />
+                </div>
+              ) : (
+                <IconComponent
+                  className="icon-fill-muat-trans-secondary-900"
+                  src="/icons/calendar24.svg"
+                  size="medium"
+                />
+              )}
               <span className="text-xxs font-semibold leading-none text-muat-trans-secondary-900">
                 Periode
               </span>

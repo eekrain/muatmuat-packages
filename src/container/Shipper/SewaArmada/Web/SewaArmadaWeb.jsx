@@ -28,10 +28,8 @@ import SelectArmadaModal from "@/container/Shipper/SewaArmada/Web/Form/JenisArma
 import SertifikasiHalal from "@/container/Shipper/SewaArmada/Web/Form/SertifikasiHalal";
 import { CreateOrderSummaryPanel } from "@/container/Shipper/SewaArmada/Web/SummaryPanel/CreateOrderSummaryPanel";
 import { WelcomeCard } from "@/container/Shipper/SewaArmada/Web/WelcomeCard/WelcomeCard";
-import { useAuth } from "@/hooks/use-auth";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook } from "@/hooks/use-swr";
-import { useTranslation } from "@/hooks/use-translation";
 import { isDev } from "@/lib/constants/is-dev";
 import { useGetUserPreferences } from "@/services/Shipper/sewaarmada/userPreferences";
 import { useLoadingAction } from "@/store/Shared/loadingStore";
@@ -58,7 +56,6 @@ export default function SewaArmadaWeb({
   orderStatus,
   onFetchTrucks,
 }) {
-  const { t } = useTranslation();
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
@@ -133,11 +130,6 @@ export default function SewaArmadaWeb({
     const isValidForm = validateForm();
     console.log("🚀 ~ file: SewaArmadaWeb.jsx:61 ~ isValidForm:", isValidForm);
   };
-
-  const { isLoggedIn } = useAuth();
-  const shouldShowFirstTimer = isLoggedIn
-    ? userPreferences?.Data?.shouldShowPopup === true
-    : orderType === "";
 
   return (
     <>
