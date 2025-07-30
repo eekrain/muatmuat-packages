@@ -26,7 +26,6 @@ const ModalDetailStatusDriver = () => {
   );
   const contentRef = useRef(null);
   const contentHeight = useClientHeight({ ref: contentRef, deps: [isOpen] });
-  console.log(dataDriverStatus, "dataDriverStatus");
   return (
     <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick>
       <ModalTrigger>

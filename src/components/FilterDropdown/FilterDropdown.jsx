@@ -226,7 +226,10 @@ const FilterDropdown = ({
             >
               <Popover.Trigger asChild>
                 <div
-                  className="flex h-8 cursor-pointer items-center justify-between px-2.5 text-left transition-all hover:bg-neutral-100"
+                  className={cn(
+                    "flex h-8 cursor-pointer items-center justify-between px-2.5 text-left transition-all hover:bg-neutral-100",
+                    openPopovers[category.key] && "bg-neutral-100"
+                  )}
                   onMouseEnter={() => handleMouseEnter(category.key)}
                   onMouseLeave={() => handleMouseLeave(category.key)}
                 >
@@ -241,31 +244,33 @@ const FilterDropdown = ({
                   side="right"
                   align="start"
                   sideOffset={4}
-                  className="shadow-muat z-50 w-[194px] rounded-md border border-neutral-400 bg-white p-2.5"
+                  className="z-50 w-[194px] overflow-hidden rounded-md border border-neutral-400 bg-white shadow-muat"
                   onMouseEnter={() => handleMouseEnter(category.key)}
                   onMouseLeave={() => handleMouseLeave(category.key)}
                   onOpenAutoFocus={(e) => e.preventDefault()}
                 >
                   {/* Search Input */}
                   {searchable && (
-                    <Input
-                      type="text"
-                      value={searchQueries[category.key] || ""}
-                      onChange={(e) =>
-                        handleSearchChange(category.key, e.target.value)
-                      }
-                      placeholder={searchPlaceholder.replace(
-                        "{category}",
-                        category.label || ""
-                      )}
-                      icon={{
-                        left: <Search className="h-4 w-4 text-neutral-500" />,
-                      }}
-                      appearance={{
-                        containerClassName: "h-8 mb-2.5",
-                        inputClassName: "text-xs font-medium mt-0",
-                      }}
-                    />
+                    <div className="p-2.5">
+                      <Input
+                        type="text"
+                        value={searchQueries[category.key] || ""}
+                        onChange={(e) =>
+                          handleSearchChange(category.key, e.target.value)
+                        }
+                        placeholder={searchPlaceholder.replace(
+                          "{category}",
+                          category.label || ""
+                        )}
+                        icon={{
+                          left: <Search className="h-4 w-4 text-neutral-500" />,
+                        }}
+                        appearance={{
+                          containerClassName: "h-8",
+                          inputClassName: "text-xs font-medium mt-0",
+                        }}
+                      />
+                    </div>
                   )}
 
                   {/* Items List */}
@@ -279,7 +284,7 @@ const FilterDropdown = ({
                         <div
                           key={item.id}
                           className={cn(
-                            "flex h-8 items-center px-2",
+                            "flex h-8 items-center px-3 hover:cursor-pointer hover:bg-neutral-100",
                             itemClassName
                           )}
                         >
