@@ -1,0 +1,30 @@
+import {
+  OrderStatusEnum,
+  OrderStatusTitle,
+} from "@/lib/constants/detailpesanan/detailpesanan.enum";
+
+export const getStatusPesananMetadata = ({
+  orderStatus,
+  unitFleetStatus,
+  totalUnit,
+  t,
+  isShowUnitFleetStatus = true,
+}) => {
+  let variant = "primary";
+  if (orderStatus.startsWith("WAITING")) variant = "warning";
+  else if (orderStatus.startsWith("CANCELED")) variant = "error";
+  else if (orderStatus === OrderStatusEnum.COMPLETED) variant = "success";
+
+  return {
+    variant,
+    label:
+      isShowUnitFleetStatus &&
+      orderStatus !== OrderStatusEnum.COMPLETED &&
+      !orderStatus.startsWith("CANCELED") &&
+      !orderStatus.startsWith("WAITING_PAYMENT") &&
+      unitFleetStatus &&
+      totalUnit > 1
+        ? `${t(OrderStatusTitle[orderStatus])}: ${unitFleetStatus} Unit`
+        : t(OrderStatusTitle[orderStatus]),
+  };
+};

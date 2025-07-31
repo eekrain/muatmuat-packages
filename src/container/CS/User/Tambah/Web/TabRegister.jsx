@@ -22,7 +22,7 @@ const ICON = {
       alt="Check Icon"
       width={28}
       height={28}
-      className="text-green-500"
+      className="text-success-400"
     />
   ),
   incomplete: (
@@ -31,7 +31,7 @@ const ICON = {
       alt="Cross Circle Icon"
       width={28}
       height={28}
-      className="text-slate-400"
+      className="text-neutral-500"
     />
   ),
 };
@@ -40,7 +40,9 @@ const ChecklistItem = ({ title, status, active, isLast, onClick }) => (
   <div
     className={cn(
       "group relative flex w-[308px] cursor-pointer items-center overflow-x-hidden rounded-[2px] transition-colors duration-200",
-      active ? "bg-[#FFFBEB]" : "bg-white hover:bg-[#f7f7f7] focus:bg-[#FFFBEB]"
+      active
+        ? "bg-muat-trans-primary-50"
+        : "bg-neutral-50 hover:bg-[#f7f7f7] focus:bg-muat-trans-primary-50"
     )}
     style={{ minWidth: 308, minHeight: 54, height: 54 }}
     onClick={onClick}
@@ -51,7 +53,7 @@ const ChecklistItem = ({ title, status, active, isLast, onClick }) => (
     {active && (
       <div
         className={cn(
-          "absolute -left-5 top-1/2 h-0 w-[42px] -translate-y-1/2 rotate-[-90deg] rounded-[12px] border-t-[12px] border-[#FFC217]"
+          "absolute -left-5 top-1/2 h-0 w-[42px] -translate-y-1/2 rotate-[-90deg] rounded-[12px] border-t-[12px] border-muat-trans-primary-400"
         )}
       ></div>
     )}
@@ -66,8 +68,6 @@ const ChecklistItem = ({ title, status, active, isLast, onClick }) => (
         <div className="min-w-0 flex-1">
           <div
             className={cn(
-              // Ganti 'text-md' jika sudah extend, default Tailwind tidak ada 14px
-              // 'text-md' ||
               "truncate text-sm font-semibold leading-[120%] text-black"
             )}
           >
@@ -76,7 +76,7 @@ const ChecklistItem = ({ title, status, active, isLast, onClick }) => (
           <div
             className={cn(
               "mt-0.5 text-sm font-medium leading-[120%]",
-              status === "finished" ? "text-green-500" : "text-[#EE4343]"
+              status === "finished" ? "text-success-400" : "text-error-400"
             )}
           >
             {status === "finished" ? "Data lengkap" : "Data belum lengkap"}
@@ -90,7 +90,7 @@ const ChecklistItem = ({ title, status, active, isLast, onClick }) => (
               alt="Edit Icon"
               width={20}
               height={20}
-              className="text-gray-400 hover:text-gray-500"
+              className="text-neutral-700 hover:text-neutral-500"
             />
           </span>
         )}

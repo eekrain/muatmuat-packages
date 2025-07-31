@@ -18,10 +18,6 @@ const DetailStatusDriverScreen = ({ dataStatusPesanan }) => {
     driverId,
   });
 
-  console.log(
-    "🚀 ~ DetailStatusDriverScreen ~ driverStatusTimeline:",
-    driverStatusTimeline
-  );
   const defaultIndex = dataStatusPesanan?.driverStatus.findIndex(
     (d) => d.driverId === driverId
   );
@@ -47,6 +43,7 @@ const DetailStatusDriverScreen = ({ dataStatusPesanan }) => {
             onClickProof={(driverStatusItem) =>
               navigation.push("/proof-photo", { driverStatusItem })
             }
+            withMenu={false}
           />
         </div>
       </div>

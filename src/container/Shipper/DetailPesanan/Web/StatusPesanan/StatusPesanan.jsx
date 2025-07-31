@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { AlertMultiline } from "@/components/Alert/AlertMultiline";
 import Card, { CardContent } from "@/components/Card/Card";
+import { ConditionalDiv } from "@/components/Card/ConditionalDiv";
 import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
 import { AlertPendingPayment1 } from "@/container/Shipper/DetailPesanan/Web/StatusPesanan/AlertPendingPayment1";
 import { AlertPendingPrepareFleet } from "@/container/Shipper/DetailPesanan/Web/StatusPesanan/AlertPendingPrepareFleet";
@@ -11,16 +12,13 @@ import { DriverStatusCard } from "@/container/Shipper/DetailPesanan/Web/StatusPe
 import { StatusPesananHeader } from "@/container/Shipper/DetailPesanan/Web/StatusPesanan/StatusPesananHeader";
 import { useTranslation } from "@/hooks/use-translation";
 import {
-  AlertInfoEnum,
   AlertLabelEnum,
   AlertTypeEnum,
 } from "@/lib/constants/detailpesanan/alert.enum";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { isDev } from "@/lib/constants/is-dev";
+import { getAlertMetadata } from "@/lib/normalizers/detailpesanan/getAlertMetadata";
 import { toast } from "@/lib/toast";
-
-import { ModalInformasiKenaBiayaWaktuTunggu } from "./ModalInformasiKenaBiayaWaktuTunggu";
-import { ModalPerubahanData } from "./ModalPerubahanData";
 
 const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
   const { t } = useTranslation();
@@ -61,48 +59,24 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
     }, 10000);
   };
 
-  const getContentAlert = ({ type }) => {
-    const info = AlertInfoEnum[type];
-    if (type === AlertTypeEnum.CONFIRMATION_WAITING_PREPARE_FLEET) return false;
-    if (info) return { label: t(AlertLabelEnum[type]), info: t(info) };
-
-    if (type === AlertTypeEnum.WAITING_TIME_CHARGE) {
-      return {
-        label: t(AlertLabelEnum.WAITING_TIME_CHARGE),
-        button: (
-          <ModalInformasiKenaBiayaWaktuTunggu
-            data={[
-              {
-                name: "Noel Gallagher",
-                licensePlate: "AE 666 LBA",
-              },
-              {
-                name: "Noel Gallagher",
-                licensePlate: "AE 666 LBA",
-              },
-              {
-                name: "Noel Gallagher",
-                licensePlate: "AE 666 LBA",
-              },
-            ]}
-          />
-        ),
-      };
-    }
-
-    if (type === AlertTypeEnum.ORDER_CHANGES_CONFIRMATION) {
-      return {
-        label: t(AlertLabelEnum.ORDER_CHANGES_CONFIRMATION),
-        button: <ModalPerubahanData />,
-      };
-    }
-
-    return { label: t(AlertLabelEnum[type]) };
-  };
+  const orderAlerts = useMemo(() => {
+    return [
+      ...(isShowWaitFleetAlert
+        ? [
+            {
+              label: AlertLabelEnum.CONFIRMATION_WAITING_PREPARE_FLEET,
+            },
+          ]
+        : []),
+      ...(dataStatusPesanan?.alerts || [])
+        .map((item) => getAlertMetadata(item?.type, t))
+        .filter((val) => Boolean(val)),
+    ];
+  }, [dataStatusPesanan?.alerts, isShowWaitFleetAlert, t]);
 
   return (
     <>
-      <div className="flex flex-col gap-y-6">
+      <ConditionalDiv className="flex flex-col gap-y-6">
         {dataStatusPesanan.orderStatus === OrderStatusEnum.PREPARE_FLEET && (
           <AlertPendingPrepareFleet
             orderStatus={statusOrder}
@@ -126,21 +100,8 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
           <AlertPendingUpdateConfirmation />
         )}
 
-        <AlertMultiline
-          items={[
-            ...(isShowWaitFleetAlert
-              ? [
-                  {
-                    label: t(AlertLabelEnum.CONFIRMATION_WAITING_PREPARE_FLEET),
-                  },
-                ]
-              : []),
-            ...dataStatusPesanan.alerts
-              .map((item) => getContentAlert(item))
-              .filter((val) => Boolean(val)),
-          ]}
-        />
-      </div>
+        {orderAlerts.length > 0 && <AlertMultiline items={orderAlerts} />}
+      </ConditionalDiv>
 
       <Card className="rounded-xl border-none">
         <CardContent className="px-8 py-6">

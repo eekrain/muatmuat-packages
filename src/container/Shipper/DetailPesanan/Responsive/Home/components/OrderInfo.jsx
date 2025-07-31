@@ -5,11 +5,11 @@ import { ChevronRight } from "lucide-react";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import { useTranslation } from "@/hooks/use-translation";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { getStatusPesananMetadata } from "@/lib/normalizers/detailpesanan/getStatusPesananMetadata";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
-import { getOrderStatusLabel, getStatusVariant } from "../../../utils";
-import { BottomsheetDocumentShipping } from "./BottomsheetDocumentShipping";
-import { BottomsheetStatusLainnya } from "./BottomsheetStatusLainnya";
+import { BottomsheetDocumentShipping } from "./Bottomsheet/BottomsheetDocumentShipping";
+import { BottomsheetStatusLainnya } from "./Bottomsheet/BottomsheetStatusLainnya";
 
 export const OrderCode = ({ dataStatusPesanan }) => {
   const { t } = useTranslation();
@@ -30,6 +30,14 @@ export const OrderStatus = ({
   withStatusLainnya = true,
 }) => {
   const { t } = useTranslation();
+  const statusMeta = dataStatusPesanan
+    ? getStatusPesananMetadata({
+        orderStatus: dataStatusPesanan.orderStatus,
+        unitFleetStatus: dataStatusPesanan.unitFleetStatus,
+        totalUnit: dataStatusPesanan.totalUnit,
+        t,
+      })
+    : null;
   return (
     <div className="flex w-full flex-col items-start gap-3">
       <span className="text-xs font-medium text-[#7B7B7B]">
@@ -38,17 +46,10 @@ export const OrderStatus = ({
 
       {dataStatusPesanan?.orderStatus && (
         <BadgeStatusPesanan
-          variant={getStatusVariant({
-            orderStatus: dataStatusPesanan.orderStatus,
-          })}
+          variant={statusMeta?.variant}
           className="w-full text-sm font-semibold"
         >
-          {getOrderStatusLabel({
-            orderStatus: dataStatusPesanan.orderStatus,
-            unitFleetStatus: dataStatusPesanan.unitFleetStatus,
-            totalUnit: dataStatusPesanan.totalUnit,
-            t,
-          })}
+          {statusMeta?.label}
         </BadgeStatusPesanan>
       )}
 

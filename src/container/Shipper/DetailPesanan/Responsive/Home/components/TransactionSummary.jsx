@@ -9,12 +9,6 @@ import CardPayment from "@/components/Card/CardPayment";
 import { useTranslation } from "@/hooks/use-translation";
 import { idrFormat } from "@/lib/utils/formatters";
 
-// Dummy components and data for completion
-const ModalDetailPengirimanDokumen = ({ dataRingkasanPembayaran }) => <div />;
-const ModalDetailWaktuTunggu = ({ driver }) => <div />;
-const ModalDetailOverloadMuatan = ({ dataRingkasanPembayaran }) => <div />;
-
-// Dummy data for demonstration
 const dataRingkasanPembayaran = {
   insuranceFee: 50000,
   documentShippingFee: 25000,
@@ -29,7 +23,6 @@ export const TransactionSummary = ({ documentShippingDetail }) => {
   const isRingkasanTransaksi = true;
   const { t } = useTranslation();
 
-  const expiredAt = new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString();
   const transportFee = 950000;
 
   const [isDocumentShippingDetailOpen, setDocumentShippingDetailOpen] =

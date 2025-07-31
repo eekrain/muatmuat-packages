@@ -53,9 +53,9 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
         {driver && (
           <DriverInfo.Root className="flex flex-col gap-4 px-4 py-5">
             <DriverInfo.Header
-              statusCode={driver.driverStatus}
+              orderStatus={driver.orderStatus}
+              driverStatus={driver.driverStatus}
               withMenu={false}
-              mode="driver-status"
             />
             <DriverInfo.Avatar driver={driver} />
           </DriverInfo.Root>
@@ -92,7 +92,7 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
           variant="muatparts-primary-secondary"
           className="h-10 flex-1 p-0"
           onClick={() =>
-            navigation.push("/DetailDriverStatus", {
+            navigation.push("/DetailStatusDriverScreen", {
               driverId,
               orderId,
             })

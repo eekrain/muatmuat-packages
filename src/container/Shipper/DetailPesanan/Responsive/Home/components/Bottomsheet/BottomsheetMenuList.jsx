@@ -7,12 +7,17 @@ import {
 } from "@/components/Bottomsheet/Bottomsheet";
 import { useTranslation } from "@/hooks/use-translation";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import { cn } from "@/lib/utils";
 
+import { ModalBatalkanPesananResponsive } from "../ModalBatalkanPesananResponsive";
 import { BottomsheetAlasanPembatalan } from "./BottomsheetAlasanPembatalan";
 import { BottomsheetDocumentShipping } from "./BottomsheetDocumentShipping";
-import { ModalBatalkanPesananResponsive } from "./ModalBatalkanPesananResponsive";
 
-export const BottomsheetMenuList = ({ open, onOpenChange }) => {
+export const BottomsheetMenuList = ({
+  open,
+  onOpenChange,
+  dataStatusPesanan,
+}) => {
   const [isOpenDocumentShipping, setIsOpenDocumentShipping] = useState(false);
   const [isOpenModalBatalkanPesanan, setIsOpenModalBatalkanPesanan] =
     useState(false);
@@ -29,13 +34,13 @@ export const BottomsheetMenuList = ({ open, onOpenChange }) => {
       <BottomSheet open={open} onOpenChange={onOpenChange}>
         <BottomSheetContent>
           <BottomSheetHeader>{t("titleMenu")}</BottomSheetHeader>
-          <ul className="flex flex-col divide-y divide-neutral-400 p-4 text-sm font-semibold text-neutral-900">
+          <ul className="my-6 flex flex-col gap-4 px-4 text-sm font-semibold text-neutral-900">
             <Item
               label={t("labelOrderStatusSummary")}
               onClick={() => navigation.push("/order-summary")}
               t={t}
             />
-            {false && (
+            {dataStatusPesanan?.withDocumentShipping && (
               <Item
                 label={t("labelDocumentShippingDetail")}
                 t={t}
@@ -47,12 +52,14 @@ export const BottomsheetMenuList = ({ open, onOpenChange }) => {
               onClick={() => alert("Detail Pembayaran clicked")}
               t={t}
             />
-            <Item
-              label={t("labelEditOrder")}
-              onClick={() => alert("Ubah Pesanan clicked")}
-              t={t}
-            />
-            {true && (
+            {dataStatusPesanan?.isChangeable && (
+              <Item
+                label={t("labelEditOrder")}
+                onClick={() => alert("Ubah Pesanan clicked")}
+                t={t}
+              />
+            )}
+            {dataStatusPesanan?.isCancellable && (
               <Item
                 label={t("labelCancelOrder")}
                 onClick={() => {
@@ -63,6 +70,7 @@ export const BottomsheetMenuList = ({ open, onOpenChange }) => {
               />
             )}
             <Item
+              className="border-transparent pb-0"
               label={t("labelDownloadDeliveryOrder")}
               onClick={() => alert("Unduh Dokumen Delivery Order (DO) clicked")}
               t={t}
@@ -93,9 +101,15 @@ export const BottomsheetMenuList = ({ open, onOpenChange }) => {
   );
 };
 
-const Item = ({ label, onClick, t }) => {
+const Item = ({ className, label, onClick, t }) => {
   return (
-    <li onClick={onClick} className="cursor-pointer py-4">
+    <li
+      onClick={onClick}
+      className={cn(
+        "cursor-pointer border-b border-neutral-400 pb-4 text-sm",
+        className
+      )}
+    >
       {label}
     </li>
   );

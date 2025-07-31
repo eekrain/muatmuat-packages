@@ -10,8 +10,7 @@ import {
   BottomSheetTrigger,
 } from "@/components/Bottomsheet/Bottomsheet";
 import { useTranslation } from "@/hooks/use-translation";
-
-import { getOrderStatusLabel, getStatusVariant } from "../../../utils";
+import { getStatusPesananMetadata } from "@/lib/normalizers/detailpesanan/getStatusPesananMetadata";
 
 export const BottomsheetStatusLainnya = ({ dataStatusPesanan }) => {
   const { t } = useTranslation();
@@ -36,22 +35,24 @@ export const BottomsheetStatusLainnya = ({ dataStatusPesanan }) => {
         <BottomSheetHeader>Status Lainnya</BottomSheetHeader>
 
         <div className="flex flex-col gap-4 px-4 py-6">
-          {dataStatusPesanan?.otherStatus?.map((status, index) => (
-            <BadgeStatusPesanan
-              key={index}
-              variant={getStatusVariant({
-                orderStatus: status.orderStatus,
-              })}
-              className="w-full text-sm font-semibold"
-            >
-              {getOrderStatusLabel({
-                orderStatus: status.orderStatus,
-                unitFleetStatus: dataStatusPesanan.unitFleetStatus,
-                totalUnit: dataStatusPesanan.totalUnit,
-                t,
-              })}
-            </BadgeStatusPesanan>
-          ))}
+          {dataStatusPesanan?.otherStatus?.map((status, index) => {
+            const statusMeta = getStatusPesananMetadata({
+              orderStatus: status.orderStatus,
+              unitFleetStatus: status.unitFleetStatus,
+              totalUnit: dataStatusPesanan.totalUnit,
+              t,
+            });
+
+            return (
+              <BadgeStatusPesanan
+                key={index}
+                variant={statusMeta.variant}
+                className="w-full text-sm font-semibold"
+              >
+                {statusMeta.label}
+              </BadgeStatusPesanan>
+            );
+          })}
         </div>
       </BottomSheetContent>
     </BottomSheet>

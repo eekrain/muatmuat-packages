@@ -7,8 +7,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { useResponsiveSearchStore } from "@/store/Shipper/zustand/responsiveSearchStore";
 
-const DEFAULT_FUNCTION = () =>
-  alert("Responsive SearchBar Header: No function provided");
+import { HeaderButtonBack } from ".";
 
 /**
  * @typedef {Object} HeaderResponsiveSearchBarProps
@@ -43,14 +42,7 @@ export const HeaderResponsiveSearchBar = ({
   return (
     <div className="flex w-full items-center justify-between gap-x-4">
       <div className="flex w-full items-center gap-x-2">
-        <button onClick={handleBackButton}>
-          <IconComponent
-            className="icon-stroke-muat-trans-primary-400 rounded-xl bg-muat-trans-secondary-900"
-            src="/icons/chevron-left24.svg"
-            width={24}
-            height={24}
-          />
-        </button>
+        <HeaderButtonBack onClick={handleBackButton} variant="muattrans" />
 
         <Input
           type="text"

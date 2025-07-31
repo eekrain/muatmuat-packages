@@ -1,21 +1,44 @@
+import {
+  OrderStatusEnum,
+  OrderStatusTitle,
+} from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { DriverStatusLabel } from "@/lib/constants/detailpesanan/driver-status.enum";
 
-export const getDriverStatusMetadata = (driverStatus = null) => {
+const SHOULD_RETURNS_ORDER_STATUS = [
+  OrderStatusEnum.WAITING_REPAYMENT_1,
+  OrderStatusEnum.WAITING_REPAYMENT_2,
+  OrderStatusEnum.PREPARE_DOCUMENT,
+  OrderStatusEnum.DOCUMENT_DELIVERY,
+  OrderStatusEnum.COMPLETED,
+];
+
+export const getDriverStatusMetadata = (
+  driverStatus = null,
+  orderStatus = null,
+  t
+) => {
+  let variant = "primary";
   let label = "";
-  let index = 0;
   const splitStatus = driverStatus?.split?.("_");
-  if (!splitStatus) return { label, index };
+  if (!splitStatus) return { variant, label };
+
+  if (orderStatus.startsWith("WAITING")) variant = "warning";
+  else if (orderStatus.startsWith("CANCELED")) variant = "error";
+  else if (orderStatus === OrderStatusEnum.COMPLETED) variant = "success";
+
+  if (SHOULD_RETURNS_ORDER_STATUS.includes(orderStatus)) {
+    label = t(OrderStatusTitle[orderStatus]);
+    return { variant, label };
+  }
 
   const locationIndex = Number(splitStatus.slice(-1)?.[0]);
   if (isNaN(locationIndex)) {
-    label = DriverStatusLabel[driverStatus];
-    return { label, index };
+    label = t(DriverStatusLabel[driverStatus]);
+    return { variant, label };
   }
 
   const newStatus = splitStatus.slice(0, -1).join("_");
-  console.log("🚀 ~ getDriverStatusMetadata ~ newStatus:", newStatus);
-  index = locationIndex;
-  label = DriverStatusLabel[newStatus];
+  label = `${t(DriverStatusLabel[newStatus])} ${locationIndex}`;
 
-  return { label, index };
+  return { variant, label };
 };

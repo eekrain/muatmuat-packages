@@ -110,7 +110,7 @@ const DetailPesananResponsive = () => {
         component={<LacakArmadaScreen dataStatusPesanan={dataStatusPesanan} />}
       />
       <ResponsiveRoute
-        path="/DetailDriverStatus"
+        path="/DetailStatusDriverScreen"
         component={
           <DetailStatusDriverScreen dataStatusPesanan={dataStatusPesanan} />
         }
@@ -122,7 +122,9 @@ const DetailPesananResponsive = () => {
       />
       <ResponsiveRoute
         path="/CariSemuaDriver"
-        component={<CariSemuaDriverScreen />}
+        component={
+          <CariSemuaDriverScreen dataStatusPesanan={dataStatusPesanan} />
+        }
       />
     </ResponsiveProvider>
   );
