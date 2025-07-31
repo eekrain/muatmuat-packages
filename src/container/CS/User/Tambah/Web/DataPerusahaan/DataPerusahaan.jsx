@@ -1,11 +1,11 @@
 import InformasiPendaftar from "./InformasiPendaftar";
 import InformasiPerusahaan from "./InformasiPerusahaan";
 
-function DataPerusahaan() {
+function DataPerusahaan({ activeIdx }) {
   return (
     <>
-      <InformasiPendaftar />
-      <InformasiPerusahaan />
+      {activeIdx === 0 && <InformasiPendaftar />}
+      {activeIdx === 1 && <InformasiPerusahaan />}
     </>
   );
 }
