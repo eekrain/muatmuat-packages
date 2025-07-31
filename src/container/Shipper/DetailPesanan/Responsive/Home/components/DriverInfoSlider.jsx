@@ -14,6 +14,7 @@ import {
 import Button from "@/components/Button/Button";
 import { useSwipe } from "@/hooks/use-swipe";
 import { useTranslation } from "@/hooks/use-translation";
+import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { getDriverStatusMetadata } from "@/lib/normalizers/detailpesanan/getDriverStatusMetadata";
 import { getStatusScanMetadata } from "@/lib/normalizers/detailpesanan/getStatusScanMetadata";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
@@ -132,24 +133,58 @@ const Avatar = ({ driver }) => (
   </div>
 );
 
-const Actions = ({ onDriverContactClicked, onLacakArmadaClicked }) => (
-  <div className="flex w-full gap-3">
-    <Button
-      variant="muatparts-primary-secondary"
-      onClick={onDriverContactClicked}
-      className="h-7 w-full !rounded-[20px] !border-primary-700 !text-xs !font-semibold !text-primary-700"
-    >
-      Hubungi Driver
-    </Button>
-    <Button
-      variant="muatparts-primary"
-      onClick={onLacakArmadaClicked}
-      className="h-7 w-full !rounded-[20px] bg-primary-700 !text-xs !font-semibold text-white"
-    >
-      Lacak Armada
-    </Button>
-  </div>
-);
+const Actions = ({
+  driver,
+  orderStatus,
+  onDriverContactClicked,
+  onLacakArmadaClicked,
+}) => {
+  const navigation = useResponsiveNavigation();
+  const LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER = [
+    OrderStatusEnum.PREPARE_DOCUMENT,
+    OrderStatusEnum.DOCUMENT_DELIVERY,
+    OrderStatusEnum.WAITING_REPAYMENT_1,
+    OrderStatusEnum.WAITING_REPAYMENT_2,
+    OrderStatusEnum.CANCELED_BY_SHIPPER,
+    OrderStatusEnum.COMPLETED,
+  ];
+  return (
+    <div className="flex w-full gap-3">
+      {driver.orderStatus?.startsWith("CANCELED") ||
+      LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER.includes(orderStatus) ? (
+        <Button
+          variant="muatparts-primary-secondary"
+          onClick={() =>
+            navigation.push("/DetailStatusDriverScreen", {
+              driverId: driver.driverId,
+              orderId: driver.orderId,
+            })
+          }
+          className="h-7 w-full !rounded-[20px] !border-primary-700 !text-xs !font-semibold !text-primary-700"
+        >
+          Detail Status Driver
+        </Button>
+      ) : (
+        <>
+          <Button
+            variant="muatparts-primary-secondary"
+            onClick={onDriverContactClicked}
+            className="h-7 w-full !rounded-[20px] !border-primary-700 !text-xs !font-semibold !text-primary-700"
+          >
+            Hubungi Driver
+          </Button>
+          <Button
+            variant="muatparts-primary"
+            onClick={onLacakArmadaClicked}
+            className="h-7 w-full !rounded-[20px] bg-primary-700 !text-xs !font-semibold text-white"
+          >
+            Lacak Armada
+          </Button>
+        </>
+      )}
+    </div>
+  );
+};
 
 const Indicator = ({ count, activeIndex, className }) => {
   if (count <= 1) return null;
@@ -185,6 +220,7 @@ export const DriverInfo = {
 export default function DriverInfoSlider({
   driverStatus = [],
   orderId,
+  orderStatus,
   defaultIndex = 0,
 }) {
   const navigation = useResponsiveNavigation();
@@ -232,6 +268,8 @@ export default function DriverInfoSlider({
                 />
                 <DriverInfo.Avatar driver={driver} />
                 <DriverInfo.Actions
+                  driver={driver}
+                  orderStatus={orderStatus}
                   onDriverContactClicked={() =>
                     alert(`Contacting ${driver.name}`)
                   }
