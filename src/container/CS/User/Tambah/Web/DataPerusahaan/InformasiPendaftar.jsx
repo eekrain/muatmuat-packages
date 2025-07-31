@@ -12,6 +12,7 @@ import ImageUploudWithModal from "@/components/FileUpload/ImageUploudWithModal";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import Input from "@/components/Form/Input";
 import { Select } from "@/components/Form/Select";
+import SelectFilterRadix from "@/components/Form/SelectFilterRadix";
 import { MyTextArea } from "@/components/Form/TextArea";
 
 const informasiPendaftarSchema = v.object({
@@ -186,6 +187,7 @@ function InformasiPendaftar() {
     <form onSubmit={handleSubmit(onSubmit)} className="w-full">
       <Card className={"rounded-xl border-none p-6"}>
         <div className="max-w-[70%]">
+          <h3 className="mb-4 text-lg font-semibold">Data Perusahaan</h3>
           <div>
             <h3 className="mb-6 text-sm font-semibold">Informasi Pendaftar</h3>
             <FormContainer>
@@ -285,7 +287,7 @@ function InformasiPendaftar() {
               />
 
               <FormLabel required>Kecamatan</FormLabel>
-              <Select
+              <SelectFilterRadix
                 options={kecamatanOptions}
                 value={watchedValues.locationData?.district}
                 onChange={(value) => setValue("locationData.district", value)}
@@ -300,7 +302,7 @@ function InformasiPendaftar() {
               <p className="text-xs font-medium">Jawa Timur</p>
 
               <FormLabel required>Kode Pos</FormLabel>
-              <Select
+              <SelectFilterRadix
                 options={kodePosOptions}
                 value={watchedValues.locationData?.postalCode}
                 onChange={(value) => setValue("locationData.postalCode", value)}
@@ -336,7 +338,7 @@ function InformasiPendaftar() {
             </h3>
             <FormContainer>
               <FormLabel required>Nama Bank</FormLabel>
-              <Select
+              <SelectFilterRadix
                 options={bankOptions}
                 value={watchedValues.bankId}
                 onChange={(value) => setValue("bankId", value)}
