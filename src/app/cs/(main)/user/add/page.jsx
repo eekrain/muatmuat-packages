@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 
+import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Card from "@/components/Card/Card";
+import PageTitle from "@/components/PageTitle/PageTitle";
 import DataPerusahaan from "@/container/CS/User/Tambah/Web/DataPerusahaan/DataPerusahaan";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +18,12 @@ const checklistItemsData = [
   {
     title: "Kontak PIC",
   },
+];
+
+const breadcrumbData = [
+  { name: "Daftar User", href: "/user" },
+  { name: "Transporter", href: "/user/transporter" },
+  { name: "Tambah Transporter" }, // Aktif karena tidak ada href
 ];
 
 const ICON = {
@@ -176,34 +184,38 @@ const Page = () => {
   };
 
   return (
-    <div className="flex w-full items-start gap-6 px-10 py-8">
-      <Card className={"border-none p-6"}>
-        <DataPerusahaan />
-      </Card>
-      <Card
-        className={"mt-5 w-max overflow-hidden rounded-xl border-none pt-6"}
-      >
-        <div className="space-y-0">
-          {checklistItemsData.map((item, idx) => (
-            <ChecklistItem
-              key={item.title}
-              title={item.title}
-              status={itemsStatus[idx]}
-              active={activeIdx === idx}
-              isLast={idx === checklistItemsData.length - 1}
-              onClick={() => handleItemClick(idx)}
-            />
-          ))}
-          <div className="px-5 pb-5 pt-4">
-            <button
-              className="w-full cursor-not-allowed rounded-lg bg-gray-100 py-2 text-base font-semibold text-gray-400"
-              disabled
-            >
-              Tambahkan Transporter
-            </button>
+    <div className="px-10">
+      <BreadCrumb className={"mb-4 mt-6"} data={breadcrumbData} />
+      <PageTitle>Tambah Transporter</PageTitle>
+      <div className="flex w-full items-start gap-6 pb-8">
+        <Card className={"border-none p-6"}>
+          <DataPerusahaan />
+        </Card>
+        <Card
+          className={"mt-5 w-max overflow-hidden rounded-xl border-none pt-6"}
+        >
+          <div className="space-y-0">
+            {checklistItemsData.map((item, idx) => (
+              <ChecklistItem
+                key={item.title}
+                title={item.title}
+                status={itemsStatus[idx]}
+                active={activeIdx === idx}
+                isLast={idx === checklistItemsData.length - 1}
+                onClick={() => handleItemClick(idx)}
+              />
+            ))}
+            <div className="px-5 pb-5 pt-4">
+              <button
+                className="w-full cursor-not-allowed rounded-lg bg-gray-100 py-2 text-base font-semibold text-gray-400"
+                disabled
+              >
+                Tambahkan Transporter
+              </button>
+            </div>
           </div>
-        </div>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 };
