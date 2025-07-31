@@ -400,19 +400,9 @@ export const CreateOrderSummaryPanel = ({
           headers: { Authorization: token },
         }
       );
-
       if (response.data.Message.Code === 200) {
         // alert("Hore Berhasil Sewa Armada :)");
         // Handle sukses - bisa redirect ke detail pesanan
-        const fleet = await fetcherMuatrans.post(
-          `/v1/orders/${response.data.Data.orderId}/blast-to-fleet`,
-          {
-            headers: { Authorization: token },
-          }
-        );
-        router.push(
-          `/daftarpesanan/detailpesanan/${response.data.Data.orderId}`
-        );
         router.push(
           `/daftarpesanan/detailpesanan/${response.data.Data.orderId}`
         );

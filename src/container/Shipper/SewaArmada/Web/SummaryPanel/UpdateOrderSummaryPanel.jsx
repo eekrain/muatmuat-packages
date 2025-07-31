@@ -7,13 +7,19 @@ import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
-import { useSewaArmadaActions } from "@/store/Shipper/forms/sewaArmadaStore";
+import { useUpdateOrder } from "@/services/Shipper/sewaarmada/updateOrder";
+import { useSewaArmadaStore } from "@/store/Shipper/forms/sewaArmadaStore";
 
 const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
   const { t } = useTranslation();
   const params = useParams();
   const router = useRouter();
-  const { setUpdateOrderSuccess } = useSewaArmadaActions();
+  const { setUpdateOrderSuccess } = useSewaArmadaStore(
+    (state) => state.actions
+  );
+  const formValues = useSewaArmadaStore((state) => state.formValues);
+  const orderType = useSewaArmadaStore((state) => state.orderType);
+  const { trigger, isMutating, error, data } = useUpdateOrder(params.orderId);
   const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
 
   const priceSummary = useShallowMemo(() => {
@@ -58,9 +64,29 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
     ];
   }, [calculatedPrice]);
 
-  const handleUpdateOrder = () => {
-    setUpdateOrderSuccess(true);
+  const handleUpdateOrder = async () => {
     router.push(`/daftarpesanan/detailpesanan/${params.orderId}`);
+
+    // router.push(`/daftarpesanan/detailpesanan/${response.data.data.orderId}`);
+    // try {
+    //   const payload = normalizeUpdateOrder(orderType, formValues, calculatedPrice);
+    //   const response = await trigger(payload);
+    //   if (response?.Message?.Code === 200) {
+    //     setUpdateOrderSuccess(true);
+    //   } else {
+    //     alert(
+    //       response?.data?.message?.text ||
+    //         "Validation error from server"
+    //     );
+    //   }
+    // } catch (err) {
+    //   // Enhanced error handling
+    //   if (err?.response?.data) {
+    //     alert(`Error: ${err.response.data.message?.text || "Unknown error"}`);
+    //   } else {
+    //     alert("Terjadi kesalahan. Silakan coba lagi.");
+    //   }
+    // }
   };
 
   return (

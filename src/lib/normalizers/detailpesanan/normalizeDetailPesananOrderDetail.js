@@ -160,6 +160,7 @@ export const normalizeDetailPesananOrderDetail = ({
       totalPrice: dataOrderDetail.summary?.price?.totalPrice,
       orderStatus: dataOrderDetail.general?.orderStatus,
       totalTruckUnit: dataOrderDetail.summary?.truckType?.totalUnit,
+      loadTimeStart: dataOrderDetail.summary?.loadTimeStart,
       documentShippingDetail: foundDocumentShipping
         ? {
             recipientName:

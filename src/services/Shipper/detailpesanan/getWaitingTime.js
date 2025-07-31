@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = false; // toggle mock data
+const useMockData = true; // toggle mock data
 
 // GET /api/v1/orders/${orderId}/waiting-time
 const apiResult = {
@@ -34,8 +34,7 @@ export const getWaitingTime = async (cacheKey) => {
   } else {
     result = await fetcherMuatrans.get(`v1/orders/${orderId}/waiting-time`);
   }
-
-  return result?.data?.Data?.waitingTime || [];
+  return result?.Data?.waitingTime || [];
 };
 
 export const useGetWaitingTime = (orderId) =>
