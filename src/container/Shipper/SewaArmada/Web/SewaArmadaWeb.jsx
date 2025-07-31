@@ -158,11 +158,11 @@ export default function SewaArmadaWeb({
                   <WaktuMuat orderStatus={orderStatus} />
                   <LokasiMuat
                     orderStatus={orderStatus}
-                    settingsTime={settingsTime}
+                    maxLocation={settingsTime?.location.maxPickup}
                   />
                   <LokasiBongkar
                     orderStatus={orderStatus}
-                    settingsTime={settingsTime}
+                    maxLocation={settingsTime?.location.maxDropoff}
                   />
                   <TipeMuatan cargoTypes={cargoTypes} />
                   <JenisMuatan cargoCategories={cargoCategories} />

@@ -12,7 +12,7 @@ import {
 
 import { useModalLocation } from "./use-modal-location";
 
-export const LokasiMuat = ({ orderStatus, settingsTime }) => {
+export const LokasiMuat = ({ orderStatus, maxLocation }) => {
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
@@ -42,7 +42,7 @@ export const LokasiMuat = ({ orderStatus, settingsTime }) => {
         <FormLabel required>Lokasi Muat</FormLabel>
 
         <TimelineField.Root
-          maxLocation={settingsTime?.location.maxPickup}
+          maxLocation={maxLocation}
           disabled={
             isEditPage && !(orderType === "SCHEDULED" && hasNotDepartedToPickup)
           }

@@ -81,6 +81,7 @@ const FormSimpanLokasiScreen = dynamicScreen(
 
 const SewaArmadaResponsive = ({
   settlementAlertInfo,
+  settingsTime,
   cargoTypes,
   cargoCategories,
   additionalServicesOptions,
@@ -117,6 +118,7 @@ const SewaArmadaResponsive = ({
         component={
           <SewaArmadaHomeScreen
             settlementAlertInfo={settlementAlertInfo}
+            settingsTime={settingsTime}
             carriers={carriers}
             trucks={trucks}
           />
@@ -134,6 +136,7 @@ const SewaArmadaResponsive = ({
             cargoTypes={cargoTypes}
             cargoCategories={cargoCategories}
             trucks={trucks}
+            onFetchTrucks={handleFetchTrucks}
           />
         }
       />
