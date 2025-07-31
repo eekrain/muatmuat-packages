@@ -3,7 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { ChevronDown } from "lucide-react";
+// 1. Import ChevronUp
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import { DataTable } from "@/components/DataTable";
@@ -34,6 +35,9 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
   const [filters, setFilters] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState(null);
+
+  // 2. Add state to track which dropdown is open, using the row ID as the key
+  const [openDropdowns, setOpenDropdowns] = useState({});
 
   // Fetch drivers data with pagination and filters
   const { data, isLoading, mutate } = useGetActiveDriversData({
@@ -153,13 +157,24 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
       width: "120px",
       sortable: false,
       render: (row) => (
-        <SimpleDropdown>
+        // 3. Control the dropdown's open state
+        <SimpleDropdown
+          open={openDropdowns[row.id] || false}
+          onOpenChange={(isOpen) =>
+            setOpenDropdowns((prev) => ({ ...prev, [row.id]: isOpen }))
+          }
+        >
           <SimpleDropdownTrigger asChild>
             <button className="flex h-8 flex-row items-center justify-between gap-2 rounded-md border border-neutral-600 bg-white px-3 py-2 shadow-sm transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none">
               <span className="text-xs font-medium leading-tight text-black">
                 Aksi
               </span>
-              <ChevronDown className="h-4 w-4 text-neutral-700" />
+              {/* 4. Conditionally render the icon based on the open state */}
+              {openDropdowns[row.id] ? (
+                <ChevronUp className="h-4 w-4 text-neutral-700" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-neutral-700" />
+              )}
             </button>
           </SimpleDropdownTrigger>
 
@@ -183,6 +198,7 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
     },
   ];
 
+  // ... rest of the component remains the same
   const handleSearch = (value) => {
     setSearchValue(value);
     setCurrentPage(1);
@@ -193,7 +209,6 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
     setCurrentPage(1);
   };
 
-  // Transform dataFilter to match FilterDropdown format
   const getFilterConfig = () => {
     if (!data?.dataFilter) return {};
 
@@ -252,26 +267,19 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
   };
 
   const handleFleetUpdateSuccess = () => {
-    // Refresh the drivers data to reflect the change
     mutate();
-
-    // Close modal and reset state
     setIsModalOpen(false);
     setSelectedDriver(null);
   };
 
-  // Driver Delegasi state
   const [driverDelegasi, setDriverDelegasi] = useState(false);
   const [showDelegasiModal, setShowDelegasiModal] = useState(false);
 
-  // Fetch user's popup preference using SWR
   const { data: popupPreference, mutate: mutatePopupPreference } =
     useGetDriverDelegationPopupPreference();
 
-  // Hook for updating driver delegation status
   const { trigger: updateDelegationStatus } = useUpdateDriverDelegationStatus();
 
-  // Determine if user has seen modal based on API response
   const hasSeenModal = popupPreference?.shouldShowPopup === false;
 
   const renderDriverDelegasiSwitch = () => {
@@ -292,33 +300,12 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
           textInactive="Nonaktif"
           onClick={async () => {
             if (!driverDelegasi) {
-              // Turning ON
               setDriverDelegasi(true);
               if (!hasSeenModal) {
                 setShowDelegasiModal(true);
               }
-
-              // TODO: Update all active drivers' delegation status
-              // This requires clarification on whether:
-              // 1. We update all drivers at once
-              // 2. There's a different API endpoint for global settings
-              // 3. This is a per-driver setting that should be moved to the driver row
-
-              // For now, here's how it would work for a single driver:
-              // try {
-              //   await updateDelegationStatus({
-              //     driverId: 'driver-id-here',
-              //     delegationEnabled: true
-              //   });
-              // } catch (error) {
-              //   console.error("Failed to update delegation status:", error);
-              //   setDriverDelegasi(false); // Revert on error
-              // }
             } else {
-              // Turning OFF - no modal needed
               setDriverDelegasi(false);
-
-              // TODO: Same as above - need to update driver(s) delegation status
             }
           }}
         />
@@ -367,7 +354,6 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
         onOpenChange={setShowDelegasiModal}
         onClose={(doNotShowAgain) => {
           if (doNotShowAgain) {
-            // Refresh the popup preference data
             mutatePopupPreference();
           }
         }}

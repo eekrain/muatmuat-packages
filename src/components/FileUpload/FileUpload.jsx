@@ -11,12 +11,26 @@ const FileUpload = ({
   maxSize = 5,
   onError = () => {},
   onSuccess = () => {},
-  value = null,
+  value = null, // Can now be a File object, a URL string, or null
   acceptedFormats = [".jpg", ".jpeg", ".png"],
   errorMessage,
 }) => {
   const fileRef = useRef(null);
   const [internalError, setInternalError] = useState(null);
+
+  // --- MODIFICATION START ---
+  // Check the type of the 'value' prop to determine behavior.
+  const isFileInstance = value instanceof File;
+  const isUrlString = typeof value === "string" && value.trim() !== "";
+  const hasValue = isFileInstance || isUrlString;
+
+  // Determine the file name to display, whether from a File object or a URL.
+  const displayName = isFileInstance
+    ? value.name
+    : isUrlString
+      ? value.split("/").pop() // Extracts 'file.jpg' from 'https://.../file.jpg'
+      : "";
+  // --- MODIFICATION END ---
 
   const displayFormats = acceptedFormats
     .map((format) => format.replace(".", ""))
@@ -76,14 +90,16 @@ const FileUpload = ({
         accept={acceptedFormats.join(",")}
         onChange={handleFileChange}
       />
-      {value ? (
+      {/* Use the new 'hasValue' boolean for conditional rendering */}
+      {hasValue ? (
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-y-2">
             <span
               className="line-clamp-1 max-w-[239px] truncate break-all text-xs font-medium text-success-400"
-              title={value.name}
+              // Use the new 'displayName' for both the title and text
+              title={displayName}
             >
-              {value.name}
+              {displayName}
             </span>
           </div>
           <div className="flex items-center gap-4">

@@ -18,41 +18,48 @@ export default function ImageUploaderWeb({
   isCircle = false,
   onUpload = () => {},
   onError = () => {},
-  value = null,
+  value = null, // This prop can be a File, string (URL), or null
   isBig = true,
   cropperTitle,
   acceptedFormats = [".jpg", ".jpeg", ".png"],
 }) {
   const imageRef = useRef(null);
-  const [imageSrc, setImageSrc] = useState(null); // Image source for the cropper modal
+  const [imageSrc, setImageSrc] = useState(null);
   const [isCropperOpen, setIsCropperOpen] = useState(false);
-  const [preview, setPreview] = useState(null); // Image preview URL
-  const [error, setError] = useState(false); // Internal state for file selection errors ONLY
+  const [preview, setPreview] = useState(null);
+  const [error, setError] = useState(false);
 
-  // Effect to create a preview URL from the File object passed in `value`
+  // --- THIS IS THE KEY LOGIC ---
+  // This effect correctly handles the 'value' prop from the parent.
   useEffect(() => {
+    // 1. If 'value' is a File object (from a new upload), create a temporary local URL for preview.
     if (value instanceof File) {
       const objectUrl = URL.createObjectURL(value);
       setPreview(objectUrl);
-      setError(false); // Clear internal error when a valid file is received
+      setError(false);
+      // Clean up the temporary URL when the component unmounts or the value changes.
       return () => URL.revokeObjectURL(objectUrl);
-    } else if (typeof value === "string") {
+    }
+    // 2. If 'value' is a string (an asset link), use it directly as the preview URL.
+    //    This is perfect for edit pages.
+    else if (typeof value === "string" && value) {
       setPreview(value);
       setError(false);
-    } else {
+    }
+    // 3. If 'value' is null or anything else, clear the preview.
+    else {
       setPreview(null);
     }
-  }, [value]);
+  }, [value]); // This hook re-runs whenever the `value` prop changes.
 
   const handleFileSelect = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // --- Client-side validation ---
     const fileExtension = `.${file.name.split(".").pop()?.toLowerCase()}`;
     if (!acceptedFormats.includes(fileExtension)) {
       toast.error("Format file tidak sesuai ketentuan");
-      setError(true); // Set internal error for wrong format
+      setError(true);
       onError("Format file tidak sesuai.");
       imageRef.current.value = null;
       return;
@@ -60,18 +67,17 @@ export default function ImageUploaderWeb({
 
     if (file.size > maxSize * 1024 * 1024) {
       toast.error(`Ukuran file melebihi ${maxSize}MB`);
-      setError(true); // Set internal error for size
+      setError(true);
       onError(`Ukuran file melebihi ${maxSize}MB`);
       imageRef.current.value = null;
       return;
     }
 
-    // If validation passes, read the file and open the cropper
     const reader = new FileReader();
     reader.onloadend = () => {
       setImageSrc(reader.result);
       setIsCropperOpen(true);
-      setError(false); // Clear any previous errors
+      setError(false);
     };
     reader.readAsDataURL(file);
   };
@@ -86,13 +92,13 @@ export default function ImageUploaderWeb({
 
   const removeImage = (e) => {
     e.stopPropagation();
-    onUpload(null); // Clear the value in the parent form
+    onUpload(null);
     if (imageRef.current) {
       imageRef.current.value = null;
     }
     setImageSrc(null);
     setPreview(null);
-    setError(false); // Explicitly reset internal error state on removal
+    setError(false);
   };
 
   return (

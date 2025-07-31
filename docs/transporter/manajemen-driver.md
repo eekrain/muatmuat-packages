@@ -252,8 +252,8 @@
 
 ### Ubah Driver (Syahrul)
 
-- [ ] Form Ubah Driver
-  - [ ] **ID - 4047** Form Ubah Driver Terverifikasi (LD8)
-  - [ ] **ID - 4048** Popup Konfirmasi Simpan Data (LD8.1)
-  - [ ] **ID - 4049** Alert Berhasil Ubah Driver (LD8.2)
-  - [ ] **ID - 4050** Form Ubah Driver Verifikasi Ditolak (LD8.3)
+- [*] Form Ubah Driver
+  - [*] **ID - 4047** Form Ubah Driver Terverifikasi (LD8)
+  - [*] **ID - 4048** Popup Konfirmasi Simpan Data (LD8.1)
+  - [*] **ID - 4049** Alert Berhasil Ubah Driver (LD8.2)
+  - [*] **ID - 4050** Form Ubah Driver Verifikasi Ditolak (LD8.3)

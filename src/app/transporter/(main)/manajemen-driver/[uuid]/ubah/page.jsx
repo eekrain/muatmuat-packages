@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { Controller, useForm } from "react-hook-form";
@@ -20,30 +20,43 @@ import {
   LightboxProvider,
   LightboxTrigger,
 } from "@/components/Lightbox/Lightbox";
+import LoadingStatic from "@/components/Loading/LoadingStatic";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { toast } from "@/lib/toast";
 import { useUploadFile } from "@/services/Shared/uploadFile";
-// Import the SWR mutation hook and the upload service
-import { useCreateDriver } from "@/services/Transporter/manajemen-driver/createDriver";
+// Import the SWR hooks for getting details and updating
+import { useGetDriverDetail } from "@/services/Transporter/manajemen-driver/getDriverDetail";
+import { useUpdateDriver } from "@/services/Transporter/manajemen-driver/updateDriver";
 
 const MAX_FILE_SIZE_MB = 10;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
-const fileSchema = (requiredMessage, acceptedFormats) =>
-  v.pipe(
-    v.nonNullable(v.instance(File, requiredMessage), requiredMessage),
-    v.check((file) => {
-      const fileExtension = `.${file.name.split(".").pop()?.toLowerCase()}`;
-      return acceptedFormats.includes(fileExtension);
-    }, "Format file tidak sesuai ketentuan"),
-    v.check(
-      (file) => file.size <= MAX_FILE_SIZE_BYTES,
-      `Ukuran file melebihi ${MAX_FILE_SIZE_MB}MB`
-    )
+// --- FIX: Updated schema to accept File, string (URL), or null ---
+const optionalFileSchema = (acceptedFormats) =>
+  v.union(
+    [
+      v.string("File tidak valid"), // Allows existing URL strings
+      v.null_(), // Allows null if the file is removed
+      v.pipe(
+        // Validates only if a new File object is present
+        v.instance(File),
+        v.check((file) => {
+          const fileExtension = `.${file.name.split(".").pop()?.toLowerCase()}`;
+          return acceptedFormats.includes(fileExtension);
+        }, "Format file tidak sesuai ketentuan"),
+        v.check(
+          (file) => file.size <= MAX_FILE_SIZE_BYTES,
+          `Ukuran file melebihi ${MAX_FILE_SIZE_MB}MB`
+        )
+      ),
+    ],
+    "File tidak valid"
   );
+// --- END FIX ---
 
-const driverSchema = v.object({
+// Main schema for updating a driver (no changes needed here)
+const updateDriverSchema = v.object({
   namaLengkap: v.pipe(
     v.string("Nama lengkap wajib diisi"),
     v.minLength(1, "Nama lengkap wajib diisi"),
@@ -59,27 +72,13 @@ const driverSchema = v.object({
     v.minLength(10, "No. Whatsapp minimal 8 digit"),
     v.regex(/^08\d{8,}$/, "Format No. Whatsapp salah")
   ),
-  fotoKTP: fileSchema("Foto KTP wajib diunggah", [
-    ".jpg",
-    ".jpeg",
-    ".png",
-    ".pdf",
-  ]),
+  fotoKTP: optionalFileSchema([".jpg", ".jpeg", ".png", ".pdf"]),
   masaBerlakuSIM: v.nonNullable(
     v.instance(Date, "Masa berlaku SIM B2 Umum wajib diisi"),
     "Masa berlaku SIM B2 Umum wajib diisi"
   ),
-  fotoSIM: fileSchema("Foto SIM wajib diunggah", [
-    ".jpg",
-    ".jpeg",
-    ".png",
-    ".pdf",
-  ]),
-  fotoDriver: fileSchema("Foto driver wajib diunggah", [
-    ".jpg",
-    ".jpeg",
-    ".png",
-  ]),
+  fotoSIM: optionalFileSchema([".jpg", ".jpeg", ".png", ".pdf"]),
+  fotoDriver: optionalFileSchema([".jpg", ".jpeg", ".png"]),
 });
 
 const exampleImages = [
@@ -90,23 +89,33 @@ const exampleImages = [
 
 export default function UbahDriverPage() {
   const router = useRouter();
+  const params = useParams();
+  const driverId = params.uuid;
+
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [formData, setFormData] = useState(null);
   const [isNavModalOpen, setIsNavModalOpen] = useState(false);
   const [nextPath, setNextPath] = useState("");
-  const { trigger: createDriver, isMutating: isCreatingDriver } =
-    useCreateDriver();
+
+  const {
+    data: driverDetail,
+    isLoading: isLoadingDriver,
+    error: driverError,
+  } = useGetDriverDetail(driverId);
+  const { trigger: updateDriver, isMutating: isUpdatingDriver } =
+    useUpdateDriver(driverId);
   const { trigger: uploadFile, isMutating: isUploading } = useUploadFile();
 
-  const isSubmittingFinal = isCreatingDriver || isUploading;
+  const isSubmittingFinal = isUpdatingDriver || isUploading;
 
   const {
     control,
     handleSubmit,
     formState: { errors, isSubmitting, isDirty },
     setError,
+    reset,
   } = useForm({
-    resolver: valibotResolver(driverSchema, { abortEarly: false }),
+    resolver: valibotResolver(updateDriverSchema, { abortEarly: false }),
     defaultValues: {
       namaLengkap: "",
       noWhatsapp: "",
@@ -118,6 +127,31 @@ export default function UbahDriverPage() {
     mode: "onBlur",
   });
 
+  // Effect to populate the form with fetched driver data
+  useEffect(() => {
+    if (driverDetail) {
+      const ktpDocument = driverDetail.documents.find(
+        (doc) => doc.documentType === "KTP"
+      );
+      const simDocument = driverDetail.documents.find(
+        (doc) => doc.documentType === "SIM_B2_UMUM"
+      );
+      const profilePhoto = driverDetail.photos.find(
+        (photo) => photo.photoType === "PROFILE"
+      );
+
+      reset({
+        namaLengkap: driverDetail.name,
+        noWhatsapp: driverDetail.phoneNumber,
+        masaBerlakuSIM: new Date(driverDetail.simExpiryDate),
+        // Set URLs for initial display, which is now valid with the new schema
+        fotoKTP: ktpDocument?.documentUrl || null,
+        fotoSIM: simDocument?.documentUrl || null,
+        fotoDriver: profilePhoto?.photoUrl || null,
+      });
+    }
+  }, [driverDetail, reset]);
+
   const handleOpenSubmitModal = (data) => {
     setFormData(data);
     setIsSubmitModalOpen(true);
@@ -128,43 +162,82 @@ export default function UbahDriverPage() {
   };
 
   const handleFinalSubmit = async () => {
-    if (!formData) return;
+    if (!formData || !driverDetail) return;
     setIsSubmitModalOpen(false);
+
     try {
-      const [ktpResponse, simResponse, driverResponse] = await Promise.all([
-        uploadFile(formData.fotoKTP),
-        uploadFile(formData.fotoSIM),
-        uploadFile(formData.fotoDriver),
-      ]);
+      const uploadIfNeeded = async (fileOrUrl) => {
+        if (fileOrUrl instanceof File) {
+          const response = await uploadFile(fileOrUrl);
+          return {
+            url: response.Data.fileUrl,
+            name: fileOrUrl.name,
+          };
+        }
+        return null; // No new file to upload
+      };
+
+      const [ktpUploadResult, simUploadResult, driverUploadResult] =
+        await Promise.all([
+          uploadIfNeeded(formData.fotoKTP),
+          uploadIfNeeded(formData.fotoSIM),
+          uploadIfNeeded(formData.fotoDriver),
+        ]);
+
+      const originalKtp = driverDetail.documents.find(
+        (doc) => doc.documentType === "KTP"
+      );
+      const originalSim = driverDetail.documents.find(
+        (doc) => doc.documentType === "SIM_B2_UMUM"
+      );
+      const originalPhoto = driverDetail.photos.find(
+        (p) => p.photoType === "PROFILE"
+      );
+
+      const documentsPayload = [];
+      const photosPayload = [];
+      const simExpiryDateString = formData.masaBerlakuSIM
+        .toISOString()
+        .split("T")[0];
+
+      if (originalKtp || ktpUploadResult) {
+        documentsPayload.push({
+          id: originalKtp?.id,
+          documentType: "KTP",
+          documentUrl: ktpUploadResult?.url || originalKtp?.documentUrl,
+          documentName: ktpUploadResult?.name || originalKtp?.documentName,
+        });
+      }
+
+      if (originalSim || simUploadResult) {
+        documentsPayload.push({
+          id: originalSim?.id,
+          documentType: "SIM_B2_UMUM",
+          documentUrl: simUploadResult?.url || originalSim?.documentUrl,
+          documentName: simUploadResult?.name || originalSim?.documentName,
+          expiryDate: simExpiryDateString,
+        });
+      }
+
+      if (originalPhoto || driverUploadResult) {
+        photosPayload.push({
+          id: originalPhoto?.id,
+          photoType: "PROFILE",
+          photoUrl: driverUploadResult?.url || originalPhoto?.photoUrl,
+          photoName: driverUploadResult?.name || originalPhoto?.photoName,
+        });
+      }
 
       const apiPayload = {
         name: formData.namaLengkap,
         phoneNumber: formData.noWhatsapp,
-        simExpiryDate: formData.masaBerlakuSIM.toISOString().split("T")[0],
-        documents: [
-          {
-            documentType: "KTP",
-            documentUrl: ktpResponse.Data.fileUrl,
-            documentName: formData.fotoKTP.name,
-          },
-          {
-            documentType: "SIM_B2_UMUM",
-            documentUrl: simResponse.Data.fileUrl,
-            documentName: formData.fotoSIM.name,
-          },
-        ],
-        photos: [
-          {
-            photoType: "PROFILE",
-            photoUrl: driverResponse.Data.fileUrl,
-            photoName: formData.fotoDriver.name,
-          },
-        ],
+        simExpiryDate: simExpiryDateString,
+        documents: documentsPayload,
+        photos: photosPayload,
       };
 
-      console.log("Payload:", apiPayload);
-      await createDriver(apiPayload);
-      toast.success("Berhasil menambahkan driver");
+      await updateDriver(apiPayload);
+      toast.success("Berhasil memperbarui driver");
       router.push("/manajemen-driver");
     } catch (error) {
       const validationErrors = error?.response?.data?.Data?.validationErrors;
@@ -177,10 +250,10 @@ export default function UbahDriverPage() {
           message: "No. Whatsapp telah terdaftar",
         });
         toast.error(
-          "Gagal menambahkan driver: Nomor Whatsapp telah terdaftar."
+          "Gagal memperbarui driver: Nomor Whatsapp telah terdaftar."
         );
       } else {
-        toast.error("Gagal menambahkan driver. Silakan coba lagi.");
+        toast.error("Gagal memperbarui driver. Silakan coba lagi.");
       }
     }
   };
@@ -201,15 +274,32 @@ export default function UbahDriverPage() {
 
   const breadcrumbItems = [
     { name: "Manajemen Driver", href: "/manajemen-driver" },
-    { name: "Driver Nonaktif", href: "/manajemen-driver" },
-    { name: "Tambah Driver" },
+    { name: "Ubah Driver" },
   ];
+
+  if (isLoadingDriver) {
+    return <LoadingStatic />;
+  }
+
+  if (driverError) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background">
+        <p className="text-lg text-neutral-700">Gagal memuat data driver.</p>
+        <Button onClick={() => router.back()} className="mt-4">
+          Kembali
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <div className="mx-auto w-full max-w-[818px] gap-4 px-4 py-6">
         <div className="mb-4 space-y-4">
-          <BreadCrumb data={breadcrumbItems} />
+          <BreadCrumb
+            data={breadcrumbItems}
+            onItemClick={(href) => handleNavigation(href)}
+          />
           <PageTitle>Ubah Driver</PageTitle>
           <Alert variant="secondary">
             <div className="my-2 flex flex-col gap-2 text-xs text-neutral-900">
@@ -293,9 +383,7 @@ export default function UbahDriverPage() {
               </div>
               <div className="space-y-6">
                 <div className="grid gap-6 md:grid-cols-[178px_1fr]">
-                  <FormLabel required className="text-neutral-600">
-                    Foto KTP
-                  </FormLabel>
+                  <FormLabel className="text-neutral-600">Foto KTP</FormLabel>
                   <Controller
                     name="fotoKTP"
                     control={control}
@@ -331,7 +419,7 @@ export default function UbahDriverPage() {
                   />
                 </div>
                 <div className="grid gap-6 md:grid-cols-[178px_1fr]">
-                  <FormLabel required className="text-neutral-600">
+                  <FormLabel className="text-neutral-600">
                     Foto SIM B2
                   </FormLabel>
                   <Controller
@@ -351,7 +439,7 @@ export default function UbahDriverPage() {
                   />
                 </div>
                 <div className="grid gap-6 md:grid-cols-[178px_1fr]">
-                  <FormLabel required className="text-neutral-600">
+                  <FormLabel className="text-neutral-600">
                     Foto Driver
                   </FormLabel>
                   <Controller
@@ -390,7 +478,7 @@ export default function UbahDriverPage() {
           <div className="flex justify-end gap-3">
             <Button
               type="button"
-              variant="muattrans-secondary"
+              variant="muattrans-primary-secondary"
               onClick={() => handleNavigation("/manajemen-driver")}
               disabled={isSubmitting || isSubmittingFinal}
               className="min-w-[112px]"
@@ -400,7 +488,7 @@ export default function UbahDriverPage() {
             <Button
               type="submit"
               variant="muattrans-primary"
-              disabled={isSubmitting || isSubmittingFinal}
+              disabled={isSubmitting || isSubmittingFinal || !isDirty}
               className="min-w-[112px]"
             >
               {isSubmitting || isSubmittingFinal ? "Menyimpan..." : "Simpan"}
@@ -413,7 +501,7 @@ export default function UbahDriverPage() {
         isOpen={isSubmitModalOpen}
         setIsOpen={setIsSubmitModalOpen}
         description={{
-          text: "Apakah kamu yakin menyimpan data ini?",
+          text: "Apakah kamu yakin memperbarui data ini?",
         }}
         cancel={{ text: "Batal" }}
         confirm={{ text: "Yakin", onClick: handleFinalSubmit }}
@@ -423,7 +511,7 @@ export default function UbahDriverPage() {
         isOpen={isNavModalOpen}
         setIsOpen={setIsNavModalOpen}
         description={{
-          text: "Apakah kamu yakin ingin berpindah halaman? Data yang telah diisi tidak akan disimpan",
+          text: "Apakah kamu yakin ingin berpindah halaman? Data yang telah diubah tidak akan disimpan",
         }}
         cancel={{ text: "Batal" }}
         confirm={{ text: "Yakin", onClick: handleConfirmNavigation }}

@@ -66,7 +66,7 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
 
   const handleUpdateOrder = async () => {
     router.push(`/daftarpesanan/detailpesanan/${params.orderId}`);
-
+    setUpdateOrderSuccess(true);
     // router.push(`/daftarpesanan/detailpesanan/${response.data.data.orderId}`);
     // try {
     //   const payload = normalizeUpdateOrder(orderType, formValues, calculatedPrice);
