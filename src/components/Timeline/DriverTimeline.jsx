@@ -194,7 +194,7 @@ const ItemWithLightbox = ({
         label: subtitle(),
         onClick: handleClickProof,
       }
-    : null;
+    : undefined;
 
   // Sync active index from Lightbox Provider
   useEffect(() => {

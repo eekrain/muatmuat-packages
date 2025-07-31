@@ -9,6 +9,9 @@ export const LocationTypeEnum = {
   DROPOFF: "DROPOFF",
 };
 
+// URUTAN DISINI SANGAT PENTING, JIKA ADA PERUBAHAN PASTIKAN UPDATE JG DI SEMUA TEMPAT
+// MENENTUKAN KONDISI BUTTON YANG AKAN TAMPIL, AKAN DI DAPATKAN INDEX SEBAGAI RANK
+// MISAL JIKA RANK < 6 (UNLOADING), MAKA BUTTON BATAL PESANAN DI BOTTOMSHEET AKAN TAMPIL
 export const OrderStatusEnum = {
   PREPARE_FLEET: "PREPARE_FLEET",
   WAITING_PAYMENT_1: "WAITING_PAYMENT_1",
@@ -31,6 +34,10 @@ export const OrderStatusEnum = {
   WAITING_PAYMENT_3: "WAITING_PAYMENT_3",
   WAITING_PAYMENT_4: "WAITING_PAYMENT_4",
   CONFIRMED_CHANGES: "CONFIRMED_CHANGES",
+};
+
+export const getOrderStatusRank = (orderStatus) => {
+  return Object.values(OrderStatusEnum).indexOf(orderStatus);
 };
 
 export const OrderStatusTitle = {
@@ -71,7 +78,7 @@ export const OrderStatusIcon = {
   [OrderStatusEnum.PREPARE_DOCUMENT]:
     "/icons/stepper/stepper-document-preparing.svg",
   [OrderStatusEnum.DOCUMENT_DELIVERY]:
-    "/icons/stepper/stepper-document-preparing.svg",
+    "/icons/stepper/stepper-document-delivery.svg",
   [OrderStatusEnum.COMPLETED]: "/icons/stepper/stepper-completed.svg",
   [OrderStatusEnum.CANCELED_BY_SYSTEM]: "/icons/close20.svg",
   [OrderStatusEnum.CANCELED_BY_SHIPPER]: "/icons/close20.svg",

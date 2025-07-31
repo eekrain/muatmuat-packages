@@ -1,10 +1,11 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { TabsContent } from "@/components/Tabs/Tabs";
 
-export const DetailPICMobile = ({ dataDetailPIC }) => {
+export const TabContentDetailPIC = ({ dataDetailPIC }) => {
   const { muat, bongkar } = dataDetailPIC || { muat: [], bongkar: [] };
 
   return (
-    <div className="space-y-2 bg-neutral-200">
+    <TabsContent value="detail-pic" className="space-y-2 bg-neutral-200">
       {/* Pickup Locations Section */}
       <div className="bg-white px-4 py-5">
         <h1 className="mb-4 text-sm font-bold">Detail PIC Lokasi Muat</h1>
@@ -16,7 +17,7 @@ export const DetailPICMobile = ({ dataDetailPIC }) => {
               className={index === 0 ? "pb-6" : "pt-6"}
             >
               <h2 className="mb-3 text-sm font-semibold">
-                Lokasi Muat {location.sequence}
+                Lokasi Muat {muat.length > 1 ? ` ${location.sequence}` : ""}
               </h2>
 
               {/* Address */}
@@ -86,7 +87,8 @@ export const DetailPICMobile = ({ dataDetailPIC }) => {
               className={index === 0 ? "pb-6" : "pt-6"}
             >
               <h2 className="mb-3 text-sm font-semibold">
-                Lokasi Bongkar {location.sequence}
+                Lokasi Bongkar
+                {bongkar.length > 1 ? ` ${location.sequence}` : ""}
               </h2>
 
               {/* Address */}
@@ -144,6 +146,6 @@ export const DetailPICMobile = ({ dataDetailPIC }) => {
           ))}
         </div>
       </div>
-    </div>
+    </TabsContent>
   );
 };

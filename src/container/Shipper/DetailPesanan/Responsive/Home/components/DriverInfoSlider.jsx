@@ -13,6 +13,7 @@ import {
 } from "@/components/Bottomsheet/Bottomsheet";
 import Button from "@/components/Button/Button";
 import { useSwipe } from "@/hooks/use-swipe";
+import { useTranslation } from "@/hooks/use-translation";
 import { getDriverStatusMetadata } from "@/lib/normalizers/detailpesanan/getDriverStatusMetadata";
 import { getStatusScanMetadata } from "@/lib/normalizers/detailpesanan/getStatusScanMetadata";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
@@ -33,6 +34,7 @@ const Root = ({ children, className }) => (
     {children}
   </div>
 );
+
 /**
  * @typedef {Object} HeaderProps
  * @property {string} statusCode
@@ -43,19 +45,26 @@ const Root = ({ children, className }) => (
 /**
  * @param {HeaderProps} props
  */
-const Header = ({ statusCode, withMenu = true, mode = "driver-status" }) => {
+const Header = ({
+  statusScan,
+  orderStatus,
+  driverStatus,
+  withMenu = true,
+  mode = "driver-status",
+}) => {
+  const { t } = useTranslation();
   const params = useParams();
   const navigation = useResponsiveNavigation();
 
   const statusMeta = useMemo(() => {
     const response = {};
-    if (mode === "status-scan") {
-      response.scan = getStatusScanMetadata(statusCode);
-    } else if (mode === "driver-status") {
-      response.status = getDriverStatusMetadata(statusCode);
+    if (mode === "status-scan" && statusScan) {
+      response.scan = getStatusScanMetadata(statusScan);
+    } else if (mode === "driver-status" && driverStatus && orderStatus) {
+      response.status = getDriverStatusMetadata(driverStatus, orderStatus, t);
     }
     return response;
-  }, [statusCode, mode]);
+  }, [driverStatus, mode]);
 
   return (
     <div className="flex w-full items-center justify-between">
@@ -68,8 +77,11 @@ const Header = ({ statusCode, withMenu = true, mode = "driver-status" }) => {
         </BadgeStatusPesanan>
       )}
       {statusMeta?.status && (
-        <BadgeStatusPesanan variant={"primary"} className="w-fit">
-          {`${statusMeta?.status?.label}${statusMeta?.status?.index ? ` ${statusMeta?.status?.index}` : ""}`}
+        <BadgeStatusPesanan
+          variant={statusMeta?.status?.variant}
+          className="w-fit"
+        >
+          {statusMeta?.status?.label}
         </BadgeStatusPesanan>
       )}
       {withMenu && (
@@ -84,13 +96,12 @@ const Header = ({ statusCode, withMenu = true, mode = "driver-status" }) => {
           </BottomSheetTrigger>
           <BottomSheetContent>
             <BottomSheetHeader>Menu</BottomSheetHeader>
-            <div className="mt-6 flex flex-col items-start gap-4 px-4 pb-6">
+            <div className="mt-6 flex flex-col gap-4 px-4 pb-6">
               <button
-                className="text-sm font-semibold"
+                className="w-full text-left text-sm font-semibold"
                 onClick={() =>
                   navigation.push("/CariSemuaDriver", {
                     orderId: params.orderId,
-                    driverId: "12345",
                   })
                 }
               >
@@ -196,8 +207,6 @@ export default function DriverInfoSlider({
     return null;
   }
 
-  console.log("🚀 ~ driverStatus:", driverStatus);
-
   return (
     <Root>
       <div className="overflow-hidden" {...swipeHandlers}>
@@ -216,7 +225,8 @@ export default function DriverInfoSlider({
             >
               <div className="flex w-full flex-col items-start gap-4">
                 <DriverInfo.Header
-                  statusCode={driver.driverStatus}
+                  orderStatus={driver.orderStatus}
+                  driverStatus={driver.driverStatus}
                   mode="driver-status"
                   onMenuClick={() => alert(`Menu for ${driver.name}`)}
                 />

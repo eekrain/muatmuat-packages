@@ -10,10 +10,11 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { ModalQRCodeDriver } from "@/components/Modal/ModalQRCodeDriver";
 import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
+import { useTranslation } from "@/hooks/use-translation";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { getStatusPesananMetadata } from "@/lib/normalizers/detailpesanan/getStatusPesananMetadata";
 import { cn } from "@/lib/utils";
 
-import { getStatusVariant } from "../../utils";
 import ModalDetailStatusDriver from "./ModalDetailStatusDriver";
 
 export const DriverStatusCard = ({ driverStatus, orderId, orderStatus }) => {
@@ -141,12 +142,20 @@ const LIST_HIDE_DRIVER_STATUS = [
 ];
 
 export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const SHOW_DRIVER_STATUS =
     orderStatus !== OrderStatusEnum.WAITING_CONFIRMATION_CHANGES &&
     !orderStatus.startsWith("WAITING_PAYMENT") &&
     !LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER.includes(orderStatus) &&
     !LIST_HIDE_DRIVER_STATUS.includes(driver.orderStatus);
+
+  const statusMeta = getStatusPesananMetadata({
+    orderStatus: driver.orderStatus,
+    unitFleetStatus: driver.unitFleetStatus,
+    totalUnit: driver.totalUnit,
+    t,
+  });
 
   return (
     <>
@@ -160,12 +169,10 @@ export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
               <div className="flex items-center gap-x-3">
                 {driver.driverStatusTitle && (
                   <BadgeStatusPesanan
-                    variant={getStatusVariant({
-                      orderStatus: driver.orderStatus,
-                    })}
+                    variant={statusMeta.variant}
                     className="w-fit"
                   >
-                    {driver.driverStatusTitle}
+                    {statusMeta.label}
                   </BadgeStatusPesanan>
                 )}
 
