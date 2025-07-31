@@ -158,25 +158,24 @@ export const FooterDetailPesanan = ({
       {renderButtons.length > 0 ? (
         <ResponsiveFooter className="flex flex-col gap-4">
           {dataStatusPesanan?.orderStatus ===
-            OrderStatusEnum.WAITING_PAYMENT_1 && (
-            <div className="flex items-center justify-between">
-              <div className="text-sm font-semibold">Total Biaya</div>
-              <div className="text-sm font-bold">
-                {idrFormat(dataRingkasanPembayaran?.totalPrice)}
-              </div>
-            </div>
-          )}
-
-          {dataStatusPesanan?.orderStatus ===
-            OrderStatusEnum.WAITING_REPAYMENT_1 &&
-            dataRingkasanPembayaran?.priceCharge && (
+            OrderStatusEnum.WAITING_PAYMENT_1 &&
+            dataRingkasanPembayaran?.totalPrice && (
               <div className="flex items-center justify-between">
                 <div className="text-sm font-semibold">Total Biaya</div>
                 <div className="text-sm font-bold">
-                  {idrFormat(dataRingkasanPembayaran?.priceCharge?.totalCharge)}
+                  {idrFormat(dataRingkasanPembayaran?.totalPrice)}
                 </div>
               </div>
             )}
+
+          {dataRingkasanPembayaran?.priceCharge && (
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-semibold">Total Biaya</div>
+              <div className="text-sm font-bold">
+                {idrFormat(dataRingkasanPembayaran?.priceCharge?.totalCharge)}
+              </div>
+            </div>
+          )}
 
           <div className="flex gap-2">
             {renderButtons.map((button) => (

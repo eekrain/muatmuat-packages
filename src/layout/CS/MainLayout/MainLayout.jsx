@@ -46,13 +46,13 @@ const Script = () => {
 
 const useResetNavigationOnDesktop = () => {
   const router = useRouter();
-  const { isMobile, mounted } = useDevice();
+  const { isMobile } = useDevice();
   const { replace: replaceNavigation } = useResponsiveNavigation();
   const searchParams = useSearchParams();
   const screenSearchParam = searchParams.get("screen");
 
   useEffect(() => {
-    if (!mounted || !screenSearchParam) return;
+    if (!screenSearchParam) return;
     if (!isMobile) {
       const currentSeach = new URLSearchParams(window.location.search);
       currentSeach.delete("screen");
@@ -62,7 +62,7 @@ const useResetNavigationOnDesktop = () => {
       replaceNavigation("/");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMobile, mounted, screenSearchParam]);
+  }, [isMobile, screenSearchParam]);
 };
 
 const useDefaultTimeoutLoading = () => {
