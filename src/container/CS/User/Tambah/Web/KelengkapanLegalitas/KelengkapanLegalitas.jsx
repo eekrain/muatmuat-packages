@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import FileUploadDocument from "@/components/FileUpload/FileUploadDocument";
+import FileUploadMultiple from "@/components/FileUpload/FileUploudMultiple";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import Input from "@/components/Form/Input";
 
@@ -30,9 +31,9 @@ function KelengkapanLegalitas() {
       <FormContainer>
         {/* NIB */}
         <FormLabel required>NIB</FormLabel>
-        <FileUploadDocument
+        <FileUploadMultiple
           maxSize={5}
-          acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
+          acceptedFormats={[".jpg", ".png", ".pdf", ".zip"]}
           onSuccess={setNib}
           onError={handleFileError}
           value={nib}
@@ -49,9 +50,9 @@ function KelengkapanLegalitas() {
 
         {/* NPWP */}
         <FormLabel required>NPWP Perusahaan</FormLabel>
-        <FileUploadDocument
+        <FileUploadMultiple
           maxSize={5}
-          acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
+          acceptedFormats={[".jpg", ".png", ".pdf", ".zip"]}
           onSuccess={setNpwp}
           onError={handleFileError}
           value={npwp}
@@ -68,9 +69,9 @@ function KelengkapanLegalitas() {
 
         {/* KTP */}
         <FormLabel required>KTP Pendaftar/Pemegang Akun</FormLabel>
-        <FileUploadDocument
+        <FileUploadMultiple
           maxSize={5}
-          acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
+          acceptedFormats={[".jpg", ".png", ".pdf", ".zip"]}
           onSuccess={setKtp}
           onError={handleFileError}
           value={ktp}
@@ -88,9 +89,9 @@ function KelengkapanLegalitas() {
 
         {/* Cover Akta Pendirian */}
         <FormLabel required>Cover Akta Pendirian</FormLabel>
-        <FileUploadDocument
+        <FileUploadMultiple
           maxSize={5}
-          acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
+          acceptedFormats={[".jpg", ".png", ".pdf", ".zip"]}
           onSuccess={setAktaPendirian}
           onError={handleFileError}
           value={aktaPendirian}
@@ -99,9 +100,9 @@ function KelengkapanLegalitas() {
 
         {/* SK Kemenkumham dan Akta Pendirian */}
         <FormLabel required>SK Kemenkumham dan Akta Pendirian</FormLabel>
-        <FileUploadDocument
+        <FileUploadMultiple
           maxSize={5}
-          acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
+          acceptedFormats={[".jpg", ".png", ".pdf", ".zip"]}
           onSuccess={setSkKemenkumham}
           onError={handleFileError}
           value={skKemenkumham}
@@ -110,9 +111,9 @@ function KelengkapanLegalitas() {
 
         {/* Cover Akta Perubahan (bila ada) */}
         <FormLabel>Cover Akta Perubahan (bila ada)</FormLabel>
-        <FileUploadDocument
+        <FileUploadMultiple
           maxSize={5}
-          acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
+          acceptedFormats={[".jpg", ".png", ".pdf", ".zip"]}
           onSuccess={setAktaPerubahan}
           onError={handleFileError}
           value={aktaPerubahan}
@@ -121,9 +122,9 @@ function KelengkapanLegalitas() {
 
         {/* SK Kemenkumham dan Akta Perubahan (bila ada) */}
         <FormLabel>SK Kemenkumham dan Akta Perubahan (bila ada)</FormLabel>
-        <FileUploadDocument
+        <FileUploadMultiple
           maxSize={5}
-          acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
+          acceptedFormats={[".jpg", ".png", ".pdf", ".zip"]}
           onSuccess={setSkKemenkumhamPerubahan}
           onError={handleFileError}
           value={skKemenkumhamPerubahan}
@@ -132,9 +133,9 @@ function KelengkapanLegalitas() {
 
         {/* Sertifikat Standar (bila ada) */}
         <FormLabel>Sertifikat Standar (bila ada)</FormLabel>
-        <FileUploadDocument
+        <FileUploadMultiple
           maxSize={5}
-          acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
+          acceptedFormats={[".jpg", ".png", ".pdf", ".zip"]}
           onSuccess={setSertifikatStandar}
           onError={handleFileError}
           value={sertifikatStandar}

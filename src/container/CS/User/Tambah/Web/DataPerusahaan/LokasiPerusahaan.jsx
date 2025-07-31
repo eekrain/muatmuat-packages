@@ -4,17 +4,15 @@ import { useState } from "react";
 
 import Button from "@/components/Button/Button";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
-import Input from "@/components/Form/Input";
 import SelectFilterRadix from "@/components/Form/SelectFilterRadix";
 import { MyTextArea } from "@/components/Form/TextArea";
+import { InputLocationManagementDropdown } from "@/components/LocationManagement/Web/InputLocationManagementDropdown/InputLocationManagementDropdown";
 import { MapContainer } from "@/components/MapContainer/MapContainer";
 
 function LokasiPerusahaan() {
   const [alamat, setAlamat] = useState("");
-  const [lokasi, setLokasi] = useState("");
+  //   const [lokasi, setLokasi] = useState("");
   const [kecamatan, setKecamatan] = useState("");
-  const [kota, setKota] = useState("");
-  const [provinsi, setProvinsi] = useState("");
   const [kodePos, setKodePos] = useState("");
   const [coordinates, setCoordinates] = useState({
     latitude: -7.2575,
@@ -43,7 +41,6 @@ function LokasiPerusahaan() {
         <MyTextArea
           placeholder="Contoh : Nama Jalan (bila tidak diemukan), Gedung, No. Rumah/Patokan, Blok/Unit"
           maxLength={225}
-          hasCharCount
           appearance={{
             inputClassName: "h-[80px]",
           }}
@@ -54,11 +51,9 @@ function LokasiPerusahaan() {
 
         {/* Lokasi */}
         <FormLabel required>Lokasi</FormLabel>
-        <Input
-          type="text"
+        <InputLocationManagementDropdown
+          markerIcon={false}
           placeholder="Masukkan Lokasi Perusahaan"
-          value={lokasi}
-          onChange={(e) => setLokasi(e.target.value)}
         />
 
         {/* Kecamatan */}
