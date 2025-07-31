@@ -21,7 +21,6 @@ export const InformasiMuatan = ({ onFetchTrucks }) => {
     useState(false);
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
-  const orderType = useSewaArmadaStore((state) => state.orderType);
   const informasiMuatan = useSewaArmadaStore(
     (state) => state.formValues.informasiMuatan
   );

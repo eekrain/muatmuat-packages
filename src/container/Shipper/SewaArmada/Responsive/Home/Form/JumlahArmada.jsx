@@ -30,12 +30,12 @@ export const JumlahArmada = () => {
   }
 
   return (
-    <div>
+    <div className="flex flex-col gap-y-4">
       <label
         htmlFor="jumlah-armada"
-        className="mb-2 block text-sm font-medium text-neutral-700"
+        className="block text-sm font-semibold leading-[1.1] text-neutral-900"
       >
-        Jumlah Armada
+        Jumlah Armada*
       </label>
       <NumberInput
         id="jumlah-armada"

@@ -222,6 +222,7 @@ const Page = () => {
     return (
       <SewaArmadaResponsive
         settlementAlertInfo={settlementAlertInfo}
+        settingsTime={settingsTime}
         cargoTypes={cargoTypes}
         cargoCategories={cargoCategories}
         additionalServicesOptions={additionalServicesOptions}

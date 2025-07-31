@@ -21,7 +21,12 @@ import { useWaitingSettlementModalAction } from "@/store/Shipper/forms/waitingSe
 
 import LoginRequiredModal from "./LoginRequiredModal";
 
-const SewaArmadaHomeScreen = ({ carriers, trucks, settlementAlertInfo }) => {
+const SewaArmadaHomeScreen = ({
+  settlementAlertInfo,
+  settingsTime,
+  carriers,
+  trucks,
+}) => {
   const router = useRouter();
   const { setIsOpen } = useWaitingSettlementModalAction();
   // Banner data
@@ -106,7 +111,11 @@ const SewaArmadaHomeScreen = ({ carriers, trucks, settlementAlertInfo }) => {
           className="mt-2 w-full rounded-none"
         />
         <BrandSection />
-        <SewaArmadaForm carriers={carriers} trucks={trucks} />
+        <SewaArmadaForm
+          settingsTime={settingsTime}
+          carriers={carriers}
+          trucks={trucks}
+        />
       </div>
 
       <SewaArmadaFooter

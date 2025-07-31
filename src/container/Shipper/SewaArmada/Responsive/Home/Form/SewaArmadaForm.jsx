@@ -14,7 +14,7 @@ import { JenisArmadaField } from "./JenisArmadaField";
 import { JumlahArmada } from "./JumlahArmada";
 import WaktuMuatBottomsheet from "./WaktuMuat";
 
-export const SewaArmadaForm = ({ carriers, trucks }) => {
+export const SewaArmadaForm = ({ settingsTime, carriers, trucks }) => {
   const navigation = useResponsiveNavigation();
   const { formValues } = useSewaArmadaStore();
   const { addLokasi, removeLokasi } = useSewaArmadaActions();
@@ -111,6 +111,7 @@ export const SewaArmadaForm = ({ carriers, trucks }) => {
       <FormContainer>
         <FormLabel required>Lokasi Muat</FormLabel>
         <TimelineField.Root
+          maxLocation={settingsTime?.location.maxPickup}
           variant="muat"
           className="flex-1"
           values={
@@ -140,6 +141,7 @@ export const SewaArmadaForm = ({ carriers, trucks }) => {
       <FormContainer>
         <FormLabel required>Lokasi Bongkar</FormLabel>
         <TimelineField.Root
+          maxLocation={settingsTime?.location.maxDropoff}
           variant="bongkar"
           className="flex-1"
           values={

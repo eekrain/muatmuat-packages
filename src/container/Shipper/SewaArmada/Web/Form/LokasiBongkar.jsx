@@ -12,7 +12,7 @@ import {
 
 import { useModalLocation } from "./use-modal-location";
 
-export const LokasiBongkar = ({ orderStatus, settingsTime }) => {
+export const LokasiBongkar = ({ orderStatus, maxLocation }) => {
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
@@ -43,7 +43,7 @@ export const LokasiBongkar = ({ orderStatus, settingsTime }) => {
       <FormContainer>
         <FormLabel required>Lokasi Bongkar</FormLabel>
         <TimelineField.Root
-          maxLocation={settingsTime?.location.maxDropoff}
+          maxLocation={maxLocation}
           variant="bongkar"
           className="flex-1"
           values={
@@ -84,8 +84,7 @@ export const LokasiBongkar = ({ orderStatus, settingsTime }) => {
             : null}
           {isEditPage &&
           !(
-            orderType === "INSTANT" &&
-            lokasiBongkar?.length < settingsTime?.location.maxDropoff
+            orderType === "INSTANT" && lokasiBongkar?.length < maxLocation
           ) ? null : (
             <TimelineField.AddButton />
           )}

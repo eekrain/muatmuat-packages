@@ -19,7 +19,10 @@ import {
   useSelectArmadaModalAction,
   useSelectArmadaModalStore,
 } from "@/store/Shipper/forms/selectArmadaModalStore";
-import { useSewaArmadaActions } from "@/store/Shipper/forms/sewaArmadaStore";
+import {
+  useSewaArmadaActions,
+  useSewaArmadaStore,
+} from "@/store/Shipper/forms/sewaArmadaStore";
 
 // Main Popup Component
 const SelectArmadaModal = ({ carrierData, truckData }) => {
@@ -30,6 +33,7 @@ const SelectArmadaModal = ({ carrierData, truckData }) => {
   const { setIsOpen, setIsDimensionOrWeightChanged } =
     useSelectArmadaModalAction();
 
+  const orderType = useSewaArmadaStore((state) => state.orderType);
   const { setField } = useSewaArmadaActions();
 
   useEffect(() => {
@@ -71,7 +75,7 @@ const SelectArmadaModal = ({ carrierData, truckData }) => {
       ].find((truck) => {
         return truck.truckTypeId === item;
       });
-      setField("truckCount", selectedTruck.unit);
+      setField("truckCount", orderType === "INSTANT" ? 1 : selectedTruck.unit);
       setField("minTruckCount", selectedTruck.unit);
     }
     if (type === "carrierId") {
