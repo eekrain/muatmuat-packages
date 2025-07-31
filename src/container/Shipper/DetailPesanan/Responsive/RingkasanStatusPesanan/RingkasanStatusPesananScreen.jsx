@@ -63,13 +63,15 @@ const RingkasanStatusPesananScreen = ({ dataStatusPesanan }) => {
               </BadgeStatusPesanan>
 
               <StepperContainer activeIndex={0} totalStep={6}>
-                {dataStatusPesanan?.legendStatus.map((step, index) => (
-                  <StepperItemResponsive
-                    key={step.label}
-                    step={step}
-                    index={index}
-                  />
-                ))}
+                {dataStatusPesanan?.legendStatus?.stepperData.map(
+                  (step, index) => (
+                    <StepperItemResponsive
+                      key={step.label}
+                      step={step}
+                      index={index}
+                    />
+                  )
+                )}
               </StepperContainer>
             </div>
           )}
