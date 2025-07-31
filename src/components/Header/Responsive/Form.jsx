@@ -4,6 +4,8 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
 
+import { HeaderButtonBack } from ".";
+
 const DEFAULT_FUNCTION = () =>
   alert("Responsive Form Header: No function provided");
 
@@ -48,19 +50,7 @@ export const HeaderResponsiveForm = ({
   return (
     <div className="flex w-full items-center justify-between">
       <div className="flex items-center gap-x-3">
-        <button onClick={handleBackButton}>
-          <IconComponent
-            className={cn(
-              "rounded-xl",
-              variant === "muattrans" &&
-                "bg-muat-trans-secondary-900 text-muat-trans-primary-400",
-              variant === "muatmuat" && "bg-neutral-50 text-primary-700"
-            )}
-            src="/icons/chevron-left24.svg"
-            width={24}
-            height={24}
-          />
-        </button>
+        <HeaderButtonBack onClick={handleBackButton} variant={variant} />
 
         <h1
           className={cn(

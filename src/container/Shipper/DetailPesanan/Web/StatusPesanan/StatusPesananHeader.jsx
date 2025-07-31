@@ -19,10 +19,10 @@ import {
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import { useTranslation } from "@/hooks/use-translation";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { getStatusPesananMetadata } from "@/lib/normalizers/detailpesanan/getStatusPesananMetadata";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
-import { getOrderStatusLabel, getStatusVariant } from "../../utils";
 import { DriverStatusCardItem } from "./DriverStatusCard";
 import { ModalDetailAlasanPembatalan } from "./ModalDetailAlasanPembatalan";
 import { ModalLihatStatusLainnya } from "./ModalLihatStatusLainnya";
@@ -46,6 +46,13 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
     toast.success("Link QR Code Semua Driver Berhasil Disalin");
     setIsModalAllDriverOpen(false);
   };
+
+  const statusMeta = getStatusPesananMetadata({
+    orderStatus: dataStatusPesanan.orderStatus,
+    unitFleetStatus: dataStatusPesanan.unitFleetStatus,
+    totalUnit: dataStatusPesanan.totalUnit,
+    t,
+  });
 
   return (
     <div className="flex items-end gap-x-3">
@@ -71,18 +78,8 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
                 "gap-x-5"
             )}
           >
-            <BadgeStatusPesanan
-              variant={getStatusVariant({
-                orderStatus: dataStatusPesanan.orderStatus,
-              })}
-              className="w-fit"
-            >
-              {getOrderStatusLabel({
-                orderStatus: dataStatusPesanan.orderStatus,
-                unitFleetStatus: dataStatusPesanan.unitFleetStatus,
-                totalUnit: dataStatusPesanan.totalUnit,
-                t,
-              })}
+            <BadgeStatusPesanan variant={statusMeta.variant} className="w-fit">
+              {statusMeta.label}
             </BadgeStatusPesanan>
             {dataStatusPesanan.orderStatus.startsWith("CANCELED") &&
             dataStatusPesanan.cancellationHistory ? (
@@ -219,10 +216,6 @@ const ModalAllDriver = ({
   orderStatus,
   copyAllDriverQRCodeLink,
 }) => {
-  console.log(
-    "🔍 ~  ~ src/container/DetailPesanan/Web/StatusPesanan/StatusPesananHeader.jsx:277 ~ driverStatus:",
-    driverStatus
-  );
   const [search, setSearch] = useState("");
 
   const filteredDriverStatus = useMemo(() => {

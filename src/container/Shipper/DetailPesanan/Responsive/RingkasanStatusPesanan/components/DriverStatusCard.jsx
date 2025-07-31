@@ -1,4 +1,3 @@
-import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Button from "@/components/Button/Button";
 import {
@@ -6,58 +5,52 @@ import {
   StepperItemResponsive,
 } from "@/components/Stepper/Stepper";
 import { useTranslation } from "@/hooks/use-translation";
+import { getDriverStatusMetadata } from "@/lib/normalizers/detailpesanan/getDriverStatusMetadata";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
-import { getOrderStatusLabel, getStatusVariant } from "../../../utils";
+import { DriverInfo } from "../../Home/components/DriverInfoSlider";
 
-export const DriverStatusCard = ({ driver, orderId, orderStatus }) => {
+export const DriverStatusCard = ({ driver, orderStatus }) => {
+  const navigation = useResponsiveNavigation();
   const { t } = useTranslation();
+  const statusMeta = getDriverStatusMetadata(
+    driver.driverStatus,
+    orderStatus,
+    t
+  );
+
   return (
-    <div className="box-border flex w-full flex-col items-center justify-center bg-white p-5">
-      <div className="flex w-full flex-col items-start gap-4">
-        <AvatarDriver
-          name={driver.name}
-          image={driver.driverImage}
-          licensePlate={driver.licensePlate}
-        />
+    <DriverInfo.Root
+      key={driver.driverId}
+      className="relative flex flex-col gap-4 border-none px-4 py-5"
+    >
+      <DriverInfo.Avatar driver={driver} />
 
-        {/* Status Badge */}
-        {true && (
-          <BadgeStatusPesanan
-            variant={getStatusVariant({
-              orderStatus: orderStatus,
-            })}
-            className="w-full text-sm font-semibold"
-          >
-            {getOrderStatusLabel({
-              orderStatus: orderStatus,
-              t,
-            })}
-          </BadgeStatusPesanan>
-        )}
+      <BadgeStatusPesanan variant={statusMeta?.variant} className="w-full">
+        {statusMeta?.label}
+      </BadgeStatusPesanan>
 
-        <StepperContainer
-          activeIndex={driver.activeIndex || 0}
-          totalStep={driver.stepperData?.length || 0}
-        >
-          {driver.stepperData?.map((step, index) => (
-            <StepperItemResponsive
-              key={step.status}
-              step={step}
-              index={index}
-            />
-          ))}
-        </StepperContainer>
-      </div>
+      <StepperContainer
+        activeIndex={driver.activeIndex || 0}
+        totalStep={driver.stepperData?.length || 0}
+      >
+        {driver.stepperData?.map((step, index) => (
+          <StepperItemResponsive key={step.status} step={step} index={index} />
+        ))}
+      </StepperContainer>
 
-      {/* Action Buttons */}
-      <div className="mt-4 flex w-full flex-row items-center justify-center gap-3">
-        <Button
-          variant="muatparts-primary-secondary"
-          className="h-7 w-full text-xs font-semibold"
-        >
-          Detail Status Driver
-        </Button>
-      </div>
-    </div>
+      <Button
+        variant="muatparts-primary-secondary"
+        className="h-7 w-full text-xs font-semibold"
+        onClick={() =>
+          navigation.push("/DetailStatusDriverScreen", {
+            driverId: driver.driverId,
+            orderId: driver.orderId,
+          })
+        }
+      >
+        Detail Status Driver
+      </Button>
+    </DriverInfo.Root>
   );
 };

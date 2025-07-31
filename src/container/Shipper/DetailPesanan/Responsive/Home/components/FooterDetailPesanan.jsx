@@ -1,163 +1,190 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import { idrFormat } from "@/lib/utils/formatters";
 
-const WHITELIST_PESAN_ULANG = [
-  OrderStatusEnum.CONFIRM_FLEET,
-  OrderStatusEnum.LOADING,
-  OrderStatusEnum.UNLOADING,
-  OrderStatusEnum.COMPLETED,
-];
-
-const WHITELIST_PAYMENT_FOOTER = [
-  OrderStatusEnum.WAITING_PAYMENT_1,
-  OrderStatusEnum.WAITING_PAYMENT_2,
-  OrderStatusEnum.WAITING_PAYMENT_3,
-  OrderStatusEnum.WAITING_PAYMENT_4,
-];
-
-export const FooterDetailPesanan = ({ dataStatusPesanan }) => {
+export const FooterDetailPesanan = ({
+  dataStatusPesanan,
+  dataRingkasanPembayaran,
+}) => {
   const navigation = useResponsiveNavigation();
 
   const [isReceiveDocumentEvidenceOpen, setReceiveDocumentEvidenceOpen] =
     useState(false);
 
-  const renderButtons = () => {
-    // Pesan Ulang button for LOADING status
-    if (dataStatusPesanan?.orderStatus === OrderStatusEnum.LOADING) {
-      return (
-        <Button
-          variant="muatparts-primary"
-          className="h-10 w-full p-0"
-          onClick={() => alert("Simpan")}
-          type="button"
-        >
-          Pesan Ulang
-        </Button>
-      );
-    }
-
-    // Beri Ulasan button for COMPLETED status (single button)
-    if (dataStatusPesanan?.orderStatus === OrderStatusEnum.COMPLETED) {
-      return (
-        <Button
-          variant="muatparts-primary"
-          className="w-full p-0"
-          onClick={() => navigation.push("/ulasan")}
-          type="button"
-        >
-          Beri Ulasan
-        </Button>
-      );
-    }
-
-    // Lanjut Pembayaran button for waiting payment
-    if (WHITELIST_PAYMENT_FOOTER.includes(dataStatusPesanan?.orderStatus)) {
-      return (
-        <>
+  const renderButtons = useShallowMemo(() => {
+    let components = [
+      {
+        id: "pesan-ulang",
+        variant: "muatparts-primary",
+        el: (variant) => (
           <Button
-            variant="muatparts-primary"
-            className="h-10 w-full p-0"
-            onClick={() => alert("Simpan")}
-            type="button"
-          >
-            Lanjut Pembayaran
-          </Button>
-
-          <Button
-            variant="muatparts-error-secondary"
-            className="h-10 w-full p-0"
-            onClick={() => alert("Simpan")}
-            type="button"
-          >
-            Batalkan Pesanan
-          </Button>
-        </>
-      );
-    }
-
-    // Multiple buttons for DOCUMENT_DELIVERY status
-    if (dataStatusPesanan?.orderStatus === OrderStatusEnum.DOCUMENT_DELIVERY) {
-      return (
-        <>
-          <Button
-            variant="muatparts-primary-secondary"
+            variant={variant}
             className="h-10 w-full p-0"
             onClick={() => alert("Simpan")}
             type="button"
           >
             Pesan Ulang
           </Button>
-          <Button
-            variant="muatparts-primary"
-            className="h-10 w-full p-0"
-            onClick={() => setReceiveDocumentEvidenceOpen(true)}
-            type="button"
-          >
-            Dokumen Diterima
-          </Button>
-        </>
-      );
-    }
+        ),
+      },
+    ];
 
-    // Multiple buttons for COMPLETED status (duplicate case)
-    if (dataStatusPesanan?.orderStatus === OrderStatusEnum.COMPLETED) {
-      return (
-        <>
+    if (
+      dataStatusPesanan?.orderStatus === OrderStatusEnum.COMPLETED &&
+      dataStatusPesanan?.reviewData?.canReview
+    ) {
+      components.push({
+        id: "beri-ulasan",
+        variant: "muatparts-primary",
+        el: (variant) => (
           <Button
-            variant="muatparts-primary-secondary"
-            className="h-10 w-full p-0"
-            onClick={() => alert("Simpan")}
-            type="button"
-          >
-            Pesan Ulang
-          </Button>
-          <Button
-            variant="muatparts-primary"
+            variant={variant}
             className="h-10 w-full p-0"
             onClick={() => navigation.push("/ulasan")}
             type="button"
           >
             Beri Ulasan
           </Button>
-        </>
-      );
+        ),
+      });
+    } else if (
+      dataStatusPesanan?.orderStatus === OrderStatusEnum.DOCUMENT_DELIVERY
+    ) {
+      components.push({
+        id: "dokumen-diterima",
+        variant: "muatparts-primary",
+        el: (variant) => (
+          <Button
+            variant={variant}
+            className="h-10 w-full p-0"
+            onClick={() => setReceiveDocumentEvidenceOpen(true)}
+            type="button"
+          >
+            Dokumen Diterima
+          </Button>
+        ),
+      });
+    } else if (
+      dataStatusPesanan?.orderStatus === OrderStatusEnum.WAITING_PAYMENT_1 ||
+      dataStatusPesanan?.orderStatus === OrderStatusEnum.WAITING_PAYMENT_3
+    ) {
+      components = [
+        {
+          id: "batalkan-pesanan",
+          variant: "muatparts-error-secondary",
+          el: (variant) => (
+            <Button
+              variant={variant}
+              className="h-10 w-full p-0"
+              onClick={() => alert("Simpan")}
+              type="button"
+            >
+              Batalkan Pesanan
+            </Button>
+          ),
+        },
+        {
+          id: "lanjut-pembayaran",
+          variant: "muatparts-primary",
+          el: (variant) => (
+            <Button
+              variant={variant}
+              className="h-10 w-full p-0"
+              onClick={() => alert("Simpan")}
+              type="button"
+            >
+              Lanjut Pembayaran
+            </Button>
+          ),
+        },
+      ];
+    } else if (
+      dataStatusPesanan?.orderStatus === OrderStatusEnum.WAITING_PAYMENT_2
+    ) {
+      components = [];
+    } else if (
+      dataStatusPesanan?.orderStatus === OrderStatusEnum.WAITING_PAYMENT_4
+    ) {
+      components.unshift({
+        id: "batalkan-pesanan",
+        variant: "muatparts-error",
+        el: (variant) => (
+          <Button
+            variant={variant}
+            className="h-10 w-full p-0"
+            onClick={() => alert("Simpan")}
+            type="button"
+          >
+            Batalkan Pesanan
+          </Button>
+        ),
+      });
+    } else if (
+      dataStatusPesanan?.orderStatus === OrderStatusEnum.WAITING_REPAYMENT_1
+    ) {
+      components = [
+        {
+          id: "lanjut-pembayaran",
+          variant: "muatparts-primary",
+          el: (variant) => (
+            <Button
+              variant={variant}
+              className="h-10 w-full p-0"
+              onClick={() => alert("Simpan")}
+              type="button"
+            >
+              Lanjut Pembayaran
+            </Button>
+          ),
+        },
+      ];
     }
 
-    // Pesan Ulang button for unknown status
-    if (WHITELIST_PESAN_ULANG.includes(dataStatusPesanan?.orderStatus)) {
-      return (
-        <Button
-          variant="muatparts-primary"
-          className="h-10 w-full p-0"
-          onClick={() => alert("Simpan")}
-          type="button"
-        >
-          Pesan Ulang
-        </Button>
-      );
+    if (components.length > 1 && components[0].id === "pesan-ulang") {
+      components[0].variant = "muatparts-primary-secondary";
     }
 
-    // Return null if no conditions are met
-    return null;
-  };
+    return components;
+  }, [dataStatusPesanan]);
 
   return (
     <>
-      <ResponsiveFooter className="flex flex-col gap-4">
-        {dataStatusPesanan?.orderStatus ===
-          OrderStatusEnum.WAITING_PAYMENT_1 && (
-          <div className="flex items-center justify-between">
-            <div className="text-sm font-semibold">Total Biaya</div>
-            <div className="text-sm font-bold">Rp1.021.583</div>
+      {renderButtons.length > 0 ? (
+        <ResponsiveFooter className="flex flex-col gap-4">
+          {dataStatusPesanan?.orderStatus ===
+            OrderStatusEnum.WAITING_PAYMENT_1 && (
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-semibold">Total Biaya</div>
+              <div className="text-sm font-bold">
+                {idrFormat(dataRingkasanPembayaran?.totalPrice)}
+              </div>
+            </div>
+          )}
+
+          {dataStatusPesanan?.orderStatus ===
+            OrderStatusEnum.WAITING_REPAYMENT_1 &&
+            dataRingkasanPembayaran?.priceCharge && (
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold">Total Biaya</div>
+                <div className="text-sm font-bold">
+                  {idrFormat(dataRingkasanPembayaran?.priceCharge?.totalCharge)}
+                </div>
+              </div>
+            )}
+
+          <div className="flex gap-2">
+            {renderButtons.map((button) => (
+              <Fragment key={button.id}>{button.el(button.variant)}</Fragment>
+            ))}
           </div>
-        )}
-        <div className="flex gap-2">{renderButtons()}</div>
-      </ResponsiveFooter>
+        </ResponsiveFooter>
+      ) : null}
 
       <Modal
         open={isReceiveDocumentEvidenceOpen}

@@ -2,6 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { DriverStatusEnum } from "@/lib/constants/detailpesanan/driver-status.enum";
 
 const useMockData = false; // toggle mock data
 
@@ -19,21 +20,21 @@ const stepStatus = [
     statusName: "Proses Bongkar",
   },
   // {
-  //   statusCode: OrderStatusEnum.UNLOADING,
-  //   statusName: "Menunggu Pelunasan",
-  // },
-  // {
   //   statusCode: OrderStatusEnum.FLEET_CHANGE,
   //   statusName: "Proses Pergantian Armada",
   // },
-  // {
-  //   statusCode: OrderStatusEnum.PREPARE_DOCUMENT,
-  //   statusName: "Dokumen Sedang Disiapkan",
-  // },
-  // {
-  //   statusCode: OrderStatusEnum.DOCUMENT_DELIVERY,
-  //   statusName: "Proses Pengiriman Dokumen",
-  // },
+  {
+    statusCode: OrderStatusEnum.WAITING_REPAYMENT_2,
+    statusName: "Proses Pergantian Armada",
+  },
+  {
+    statusCode: OrderStatusEnum.PREPARE_DOCUMENT,
+    statusName: "Dokumen Sedang Disiapkan",
+  },
+  {
+    statusCode: OrderStatusEnum.DOCUMENT_DELIVERY,
+    statusName: "Proses Pengiriman Dokumen",
+  },
   {
     statusCode: OrderStatusEnum.COMPLETED,
     statusName: "Selesai",
@@ -58,9 +59,9 @@ const apiResultOrderStatusHistory = {
           name: "Hendra",
           driverImage: "https://picsum.photos/50",
           licensePlate: "B 1234 CD",
-          orderStatus: OrderStatusEnum.LOADING,
+          orderStatus: OrderStatusEnum.UNLOADING,
           orderStatusTitle: "Sedang Muat",
-          driverStatus: "SEDANG_MUAT",
+          driverStatus: DriverStatusEnum.UNLOADING.TIBA.code,
           driverStatusTitle: "Menuju ke Lokasi Muat",
           stepStatus,
         },
@@ -69,23 +70,23 @@ const apiResultOrderStatusHistory = {
           name: "Ardian Eka",
           driverImage: "https://picsum.photos/50",
           licensePlate: "B 1234 CD",
-          orderStatus: OrderStatusEnum.LOADING,
+          orderStatus: OrderStatusEnum.UNLOADING,
           orderStatusTitle: "Proses Muat",
-          driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
+          driverStatus: DriverStatusEnum.UNLOADING.TIBA.code,
           driverStatusTitle: "Menuju ke Lokasi Muat",
           stepStatus,
         },
-        // {
-        //   driverId: "550e8400-e29b-41d4-a716-446655440023",
-        //   name: "Cakra",
-        //   driverImage: "https://picsum.photos/50",
-        //   licensePlate: "B 1234 CD",
-        //   orderStatus: OrderStatusEnum.LOADING,
-        //   orderStatusTitle: "Proses Muat",
-        //   driverStatus: "MENUJU_KE_LOKASI_MUAT_1",
-        //   driverStatusTitle: "Menuju ke Lokasi Muat",
-        //   stepStatus,
-        // },
+        {
+          driverId: "550e8400-e29b-41d4-a716-446655440023",
+          name: "Cakra",
+          driverImage: "https://picsum.photos/50",
+          licensePlate: "B 1234 CD",
+          orderStatus: OrderStatusEnum.UNLOADING,
+          orderStatusTitle: "Proses Muat",
+          driverStatus: DriverStatusEnum.UNLOADING.TIBA.code,
+          driverStatusTitle: "Menuju ke Lokasi Muat",
+          stepStatus,
+        },
       ],
     },
     Type: "ORDER_STATUS_HISTORY",
