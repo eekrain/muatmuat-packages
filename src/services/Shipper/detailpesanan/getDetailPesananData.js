@@ -137,7 +137,7 @@ const apiResultOrderDetail = {
     },
     Data: {
       // Menentukan bisa nggaknya buat ubah pesanan
-      isChangeable: false,
+      isChangeable: true,
       // Menentukan bisa nggaknya buat batalkan pesanan
       isCancellable: false,
       // Menentukan bisa nggaknya buat ngasih review
