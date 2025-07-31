@@ -1,106 +1,164 @@
 "use client";
 
-import { useState } from "react";
+import { valibotResolver } from "@hookform/resolvers/valibot";
+import { useForm } from "react-hook-form";
+import * as v from "valibot";
 
+import Button from "@/components/Button/Button";
+import Card from "@/components/Card/Card";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import Input from "@/components/Form/Input";
 
+const kontakPICSchema = v.object({
+  contacts: v.tuple([
+    v.object({
+      name: v.pipe(v.string(), v.minLength(1, "Nama wajib diisi")),
+      position: v.pipe(v.string(), v.minLength(1, "Jabatan wajib diisi")),
+      phone: v.pipe(
+        v.string(),
+        v.minLength(1, "Nomor HP wajib diisi"),
+        v.regex(/^08[0-9]{8,11}$/, "Format nomor HP tidak valid")
+      ),
+    }),
+    v.optional(
+      v.object({
+        name: v.optional(v.string()),
+        position: v.optional(v.string()),
+        phone: v.optional(
+          v.pipe(
+            v.string(),
+            v.regex(/^08[0-9]{8,11}$/, "Format nomor HP tidak valid")
+          )
+        ),
+      })
+    ),
+    v.optional(
+      v.object({
+        name: v.optional(v.string()),
+        position: v.optional(v.string()),
+        phone: v.optional(
+          v.pipe(
+            v.string(),
+            v.regex(/^08[0-9]{8,11}$/, "Format nomor HP tidak valid")
+          )
+        ),
+      })
+    ),
+  ]),
+});
+
 function KontakPIC() {
-  // PIC 1
-  const [namaPIC1, setNamaPIC1] = useState("");
-  const [jabatanPIC1, setJabatanPIC1] = useState("");
-  const [noHPPIC1, setNoHPPIC1] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: valibotResolver(kontakPICSchema),
+    defaultValues: {
+      contacts: [
+        { name: "", position: "", phone: "" }, // PIC 1 (required)
+        { name: "", position: "", phone: "" }, // PIC 2 (optional)
+        { name: "", position: "", phone: "" }, // PIC 3 (optional)
+      ],
+    },
+  });
 
-  // PIC 2
-  const [namaPIC2, setNamaPIC2] = useState("");
-  const [jabatanPIC2, setJabatanPIC2] = useState("");
-  const [noHPPIC2, setNoHPPIC2] = useState("");
-
-  // PIC 3
-  const [namaPIC3, setNamaPIC3] = useState("");
-  const [jabatanPIC3, setJabatanPIC3] = useState("");
-  const [noHPPIC3, setNoHPPIC3] = useState("");
+  const onSubmit = (data) => {
+    // Handle form submission here
+  };
 
   return (
-    <div>
-      <h3 className="mb-6 text-lg font-semibold">Kontak PIC</h3>
-      <FormContainer>
-        {/* PIC 1 */}
-        <FormLabel required>Nama PIC 1</FormLabel>
-        <Input
-          type="text"
-          placeholder="Nama PIC 1"
-          value={namaPIC1}
-          onChange={(e) => setNamaPIC1(e.target.value)}
-        />
+    <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+      <Card className={"rounded-xl border-none p-6"}>
+        <div className="max-w-[70%]">
+          <div>
+            <h3 className="mb-6 text-lg font-semibold">Kontak PIC</h3>
+            <FormContainer>
+              {/* PIC 1 */}
+              <FormLabel required>Nama PIC 1</FormLabel>
+              <Input
+                type="text"
+                placeholder="Nama PIC 1"
+                {...register("contacts.0.name")}
+                errorMessage={errors.contacts?.[0]?.name?.message}
+              />
 
-        <FormLabel required>Jabatan PIC 1</FormLabel>
-        <Input
-          type="text"
-          placeholder="Jabatan PIC 1"
-          value={jabatanPIC1}
-          onChange={(e) => setJabatanPIC1(e.target.value)}
-        />
+              <FormLabel required>Jabatan PIC 1</FormLabel>
+              <Input
+                type="text"
+                placeholder="Jabatan PIC 1"
+                {...register("contacts.0.position")}
+                errorMessage={errors.contacts?.[0]?.position?.message}
+              />
 
-        <FormLabel required>No. HP PIC 1</FormLabel>
-        <Input
-          type="text"
-          placeholder="Contoh : 08xxxxxxxxxx"
-          value={noHPPIC1}
-          onChange={(e) => setNoHPPIC1(e.target.value)}
-        />
+              <FormLabel required>No. HP PIC 1</FormLabel>
+              <Input
+                type="text"
+                placeholder="Contoh : 08xxxxxxxxxx"
+                {...register("contacts.0.phone")}
+                errorMessage={errors.contacts?.[0]?.phone?.message}
+              />
 
-        {/* PIC 2 */}
-        <FormLabel>Nama PIC 2</FormLabel>
-        <Input
-          type="text"
-          placeholder="Nama PIC 2"
-          value={namaPIC2}
-          onChange={(e) => setNamaPIC2(e.target.value)}
-        />
+              {/* PIC 2 */}
+              <FormLabel>Nama PIC 2</FormLabel>
+              <Input
+                type="text"
+                placeholder="Nama PIC 2"
+                {...register("contacts.1.name")}
+                errorMessage={errors.contacts?.[1]?.name?.message}
+              />
 
-        <FormLabel>Jabatan PIC 2</FormLabel>
-        <Input
-          type="text"
-          placeholder="Jabatan PIC 2"
-          value={jabatanPIC2}
-          onChange={(e) => setJabatanPIC2(e.target.value)}
-        />
+              <FormLabel>Jabatan PIC 2</FormLabel>
+              <Input
+                type="text"
+                placeholder="Jabatan PIC 2"
+                {...register("contacts.1.position")}
+                errorMessage={errors.contacts?.[1]?.position?.message}
+              />
 
-        <FormLabel>No. HP PIC 2</FormLabel>
-        <Input
-          type="text"
-          placeholder="Contoh : 08xxxxxxxxxx"
-          value={noHPPIC2}
-          onChange={(e) => setNoHPPIC2(e.target.value)}
-        />
+              <FormLabel>No. HP PIC 2</FormLabel>
+              <Input
+                type="text"
+                placeholder="Contoh : 08xxxxxxxxxx"
+                {...register("contacts.1.phone")}
+                errorMessage={errors.contacts?.[1]?.phone?.message}
+              />
 
-        {/* PIC 3 */}
-        <FormLabel>Nama PIC 3</FormLabel>
-        <Input
-          type="text"
-          placeholder="Nama PIC 3"
-          value={namaPIC3}
-          onChange={(e) => setNamaPIC3(e.target.value)}
-        />
+              {/* PIC 3 */}
+              <FormLabel>Nama PIC 3</FormLabel>
+              <Input
+                type="text"
+                placeholder="Nama PIC 3"
+                {...register("contacts.2.name")}
+                errorMessage={errors.contacts?.[2]?.name?.message}
+              />
 
-        <FormLabel>Jabatan PIC 3</FormLabel>
-        <Input
-          type="text"
-          placeholder="Jabatan PIC 3"
-          value={jabatanPIC3}
-          onChange={(e) => setJabatanPIC3(e.target.value)}
-        />
+              <FormLabel>Jabatan PIC 3</FormLabel>
+              <Input
+                type="text"
+                placeholder="Jabatan PIC 3"
+                {...register("contacts.2.position")}
+                errorMessage={errors.contacts?.[2]?.position?.message}
+              />
 
-        <FormLabel>No. HP PIC 3</FormLabel>
-        <Input
-          type="text"
-          placeholder="Contoh : 08xxxxxxxxxx"
-          value={noHPPIC3}
-          onChange={(e) => setNoHPPIC3(e.target.value)}
-        />
-      </FormContainer>
-    </div>
+              <FormLabel>No. HP PIC 3</FormLabel>
+              <Input
+                type="text"
+                placeholder="Contoh : 08xxxxxxxxxx"
+                {...register("contacts.2.phone")}
+                errorMessage={errors.contacts?.[2]?.phone?.message}
+              />
+            </FormContainer>
+          </div>
+        </div>
+      </Card>
+      <div className="mt-6 flex items-end justify-end gap-3">
+        <Button variant="muattrans-primary-secondary">Sebelumnya</Button>
+        <Button type="submit" variant="muattrans-primary">
+          Simpan
+        </Button>
+      </div>
+    </form>
   );
 }
 

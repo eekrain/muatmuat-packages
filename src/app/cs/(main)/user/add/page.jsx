@@ -9,7 +9,6 @@ import Form from "@/container/CS/User/Tambah/Web/Form";
 import { TabRegister } from "@/container/CS/User/Tambah/Web/TabRegister";
 
 const Page = () => {
-  // Status: "finished" | "incomplete"
   const [itemsStatus, setItemsStatus] = useState([
     "finished",
     "finished",
@@ -27,10 +26,8 @@ const Page = () => {
       <BreadCrumb className={"mb-4 mt-6"} data={breadcrumbData} />
       <PageTitle>Tambah Transporter</PageTitle>
       <div className="flex w-full items-start gap-6 pb-8">
-        <Card className={"border-none p-6"}>
-          <Form activeIdx={activeIdx} />
-        </Card>
-        <Card className={"mt-5 w-max rounded-xl border-none pt-6"}>
+        <Form activeIdx={activeIdx} />
+        <Card className={"w-max rounded-xl border-none pt-6"}>
           <TabRegister
             activeIdx={activeIdx}
             setActiveIdx={setActiveIdx}

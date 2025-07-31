@@ -5,65 +5,87 @@ export const useTransporterFormStore = create(
   persist(
     (set, get) => ({
       forms: {},
-      actions: {
-        setForm: (key, data) => {
-          set((state) => ({
-            forms: {
-              ...state.forms,
-              [key]: data,
+
+      setForm: (key, data) => {
+        set((state) => ({
+          forms: {
+            ...state.forms,
+            [key]: data,
+          },
+        }));
+      },
+
+      updateFormField: (key, field, value) => {
+        const currentForm = get().forms[key] || {};
+        set((state) => ({
+          forms: {
+            ...state.forms,
+            [key]: {
+              ...currentForm,
+              [field]: value,
             },
-          }));
-        },
-        updateFormField: (key, field, value) => {
-          const form = get().forms[key] || {};
-          set((state) => ({
-            forms: {
-              ...state.forms,
-              [key]: {
-                ...form,
-                [field]: value,
-              },
-            },
-          }));
-        },
-        removeForm: (key) => {
-          const { [key]: removed, ...rest } = get().forms;
-          set({ forms: rest });
-        },
-        resetForm: (key) => {
-          set((state) => ({
-            forms: {
-              ...state.forms,
-              [key]: {},
-            },
-          }));
-        },
+          },
+        }));
+      },
+
+      removeForm: (key) => {
+        const { [key]: _, ...rest } = get().forms;
+        set({ forms: rest });
+      },
+
+      resetForm: (key) => {
+        set((state) => ({
+          forms: {
+            ...state.forms,
+            [key]: undefined,
+          },
+        }));
+      },
+
+      getForm: (key) => {
+        return get().forms[key] || {};
+      },
+
+      isFormComplete: (key) => {
+        const form = get().forms[key];
+        if (!form) return false;
+        const requiredFields = [
+          "transporterId",
+          "registrantName",
+          "registrantEmail",
+        ];
+        return requiredFields.every(
+          (field) => form[field] && form[field].trim() !== ""
+        );
       },
     }),
     {
-      name: "transporter-forms", // Semua form tersimpan di localStorage dalam satu objek
+      name: "transporter-forms",
       storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        forms: state.forms,
+      }),
     }
   )
 );
 
-// Menyimpan form ke key "v"
-// const { setForm } = useTransporterFormStore((state) => state.actions);
+export const transporterFormStore = useTransporterFormStore.getState();
 
-// setForm("v", {
-//   transporterId: "uuid-transporter",
-//   registrantName: "John Doe",
-//   // ...data lainnya
-// });
+export const getTransporterForm = (key) => transporterFormStore.getForm(key);
 
-// Mengupdate field tertentu
-// const { updateFormField } = useTransporterFormStore((state) => state.actions);
+export const isTransporterFormComplete = (key) =>
+  transporterFormStore.isFormComplete(key);
 
-// updateFormField("v", "registrantEmail", "john@update.com");
+export const getAllTransporterForms = () => transporterFormStore.forms;
 
-// Mengambil data form
-// const formData = useTransporterFormStore((state) => state.forms["v"]);
+export const setTransporterForm = (key, data) =>
+  transporterFormStore.setForm(key, data);
 
-// Reset Data Form
-// const { resetForm } = useTransporterFormStore((state) => state.actions);
-// resetForm("v");
+export const updateTransporterFormField = (key, field, value) =>
+  transporterFormStore.updateFormField(key, field, value);
+
+export const removeTransporterForm = (key) =>
+  transporterFormStore.removeForm(key);
+
+export const resetTransporterForm = (key) =>
+  transporterFormStore.resetForm(key);

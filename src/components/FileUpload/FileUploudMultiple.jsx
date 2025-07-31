@@ -27,6 +27,7 @@ const FileUploadMultiple = ({
   onSuccess = () => {},
   value = [],
   acceptedFormats = [".jpg", ".jpeg", ".png", ".pdf"],
+  errorMessage = "",
 }) => {
   const [progress, setProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
@@ -226,6 +227,11 @@ const FileUploadMultiple = ({
             )}
           </div>
         </div>
+        {errorMessage && (
+          <div className="text-xs font-medium text-error-400">
+            {errorMessage}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,148 +1,271 @@
 "use client";
 
-import { useState } from "react";
+import { valibotResolver } from "@hookform/resolvers/valibot";
+import { useForm } from "react-hook-form";
+import * as v from "valibot";
 
-import FileUploadDocument from "@/components/FileUpload/FileUploadDocument";
+import Button from "@/components/Button/Button";
+import Card from "@/components/Card/Card";
 import FileUploadMultiple from "@/components/FileUpload/FileUploudMultiple";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import Input from "@/components/Form/Input";
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const ACCEPTED_TYPES = ["image/jpeg", "image/png", "application/pdf"];
+
+// File format and size validation
+const fileValidation = (isRequired = false) =>
+  v.custom((value) => {
+    if (!value) return !isRequired; // Allow empty for optional fields
+    if (!(value instanceof File)) return false;
+    if (value.size > MAX_FILE_SIZE) {
+      throw new Error("Ukuran file maksimal 10MB");
+    }
+    if (!ACCEPTED_TYPES.includes(value.type)) {
+      throw new Error("Format file harus .jpg/.png/.pdf");
+    }
+    return true;
+  }, "Format file harus .jpg/.png/.pdf dan maksimal 10MB");
+
+// Array validation for multiple files
+const fileArrayValidation = (isRequired = false) =>
+  v.pipe(
+    v.array(fileValidation(true)),
+    v.minLength(isRequired ? 1 : 0, "File wajib diunggah")
+  );
+
+export const kelengkapanLegalitasSchema = v.object({
+  // Document number validations
+  nibNumber: v.pipe(
+    v.string("Nomor NIB wajib diisi"),
+    v.regex(/^\d+$/, "Nomor NIB hanya boleh berisi angka"),
+    v.length(13, "Nomor NIB harus 13 digit")
+  ),
+  npwpNumber: v.pipe(
+    v.string("Nomor NPWP wajib diisi"),
+    v.regex(/^\d+$/, "Nomor NPWP hanya boleh berisi angka"),
+    v.length(15, "Nomor NPWP harus 15 digit")
+  ),
+  ktpNumber: v.pipe(
+    v.string("Nomor KTP wajib diisi"),
+    v.regex(/^\d+$/, "Nomor KTP hanya boleh berisi angka"),
+    v.length(16, "Nomor KTP harus 16 digit")
+  ),
+
+  // Document file validations
+  documents: v.object({
+    // Mandatory files
+    nib: fileArrayValidation(true), // Required
+    npwp: fileArrayValidation(true), // Required
+    ktp: fileArrayValidation(true), // Required
+    aktaPendirian: fileArrayValidation(true), // Required
+    skKemenkumham: fileArrayValidation(true), // Required
+
+    // Optional files
+    aktaPerubahan: fileArrayValidation(false), // Optional
+    skKemenkumhamPerubahan: fileArrayValidation(false), // Optional
+    sertifikatStandar: fileArrayValidation(false), // Optional
+  }),
+});
+
 function KelengkapanLegalitas() {
-  const [nib, setNib] = useState(null);
-  const [noNib, setNoNib] = useState("");
-  const [npwp, setNpwp] = useState(null);
-  const [noNpwp, setNoNpwp] = useState("");
-  const [ktp, setKtp] = useState(null);
-  const [noKtp, setNoKtp] = useState("");
-  const [aktaPendirian, setAktaPendirian] = useState(null);
-  const [skKemenkumham, setSkKemenkumham] = useState(null);
-  const [aktaPerubahan, setAktaPerubahan] = useState(null);
-  const [skKemenkumhamPerubahan, setSkKemenkumhamPerubahan] = useState(null);
-  const [sertifikatStandar, setSertifikatStandar] = useState(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+  } = useForm({
+    resolver: valibotResolver(kelengkapanLegalitasSchema),
+    defaultValues: {
+      nibNumber: null,
+      npwpNumber: null,
+      ktpNumber: null,
+      documents: {
+        nib: [], // Required
+        npwp: [], // Required
+        ktp: [], // Required
+        aktaPendirian: [], // Required
+        skKemenkumham: [], // Required
+        aktaPerubahan: [], // Optional
+        skKemenkumhamPerubahan: [], // Optional
+        sertifikatStandar: [], // Optional
+      },
+    },
+  });
+
+  // Watch form values for real-time validation
+  const watchedValues = watch();
+
+  const onSubmit = (data) => {
+    console.log("Form data:", data);
+    // Handle form submission here
+  };
+
+  const handleMultipleFileUpload = (fieldName, files) => {
+    setValue(`documents.${fieldName}`, files);
+  };
 
   const handleFileError = (error) => {
     console.error("File upload error:", error);
-    // Handle error - show toast notification etc.
+    // Handle file upload errors
   };
 
+  console.log(errors);
   return (
-    <div>
-      <h3 className="mb-6 text-lg font-semibold">Kelengkapan Legalitas</h3>
-      <FormContainer>
-        {/* NIB */}
-        <FormLabel required>NIB</FormLabel>
-        <FileUploadMultiple
-          maxSize={5}
-          acceptedFormats={[".jpg", ".png", ".pdf", ".zip"]}
-          onSuccess={setNib}
-          onError={handleFileError}
-          value={nib}
-          label="Upload"
-          className="mb-2"
-        />
-        <FormLabel required>Nomor NIB</FormLabel>
-        <Input
-          type="text"
-          placeholder="13 Digit No. NIB"
-          value={noNib}
-          onChange={(e) => setNoNib(e.target.value)}
-        />
+    <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+      <Card className={"rounded-xl border-none p-6"}>
+        <div className="max-w-[70%]">
+          <div>
+            <h3 className="mb-6 text-lg font-semibold">
+              Kelengkapan Legalitas
+            </h3>
+            <FormContainer>
+              {/* NIB */}
+              <FormLabel required>NIB</FormLabel>
+              <FileUploadMultiple
+                maxSize={5}
+                acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
+                onSuccess={(files) => handleMultipleFileUpload("nib", files)}
+                onError={handleFileError}
+                value={watchedValues.documents?.nib || []}
+                label="Upload"
+                className="mb-2"
+                errorMessage={errors.documents?.nib?.message}
+              />
 
-        {/* NPWP */}
-        <FormLabel required>NPWP Perusahaan</FormLabel>
-        <FileUploadMultiple
-          maxSize={5}
-          acceptedFormats={[".jpg", ".png", ".pdf", ".zip"]}
-          onSuccess={setNpwp}
-          onError={handleFileError}
-          value={npwp}
-          label="Upload"
-          className="mb-2"
-        />
-        <FormLabel required>Nomor NPWP Perusahaan</FormLabel>
-        <Input
-          type="text"
-          placeholder="Min. 15 Digit No. NPWP"
-          value={noNpwp}
-          onChange={(e) => setNoNpwp(e.target.value)}
-        />
+              <FormLabel required>Nomor NIB</FormLabel>
+              <Input
+                type="number"
+                placeholder="13 Digit No. NIB"
+                {...register("nibNumber")}
+                errorMessage={errors.nibNumber?.message}
+              />
 
-        {/* KTP */}
-        <FormLabel required>KTP Pendaftar/Pemegang Akun</FormLabel>
-        <FileUploadMultiple
-          maxSize={5}
-          acceptedFormats={[".jpg", ".png", ".pdf", ".zip"]}
-          onSuccess={setKtp}
-          onError={handleFileError}
-          value={ktp}
-          label="Upload"
-          className="mb-2"
-        />
+              {/* NPWP */}
+              <FormLabel required>NPWP Perusahaan</FormLabel>
+              <FileUploadMultiple
+                maxSize={5}
+                acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
+                onSuccess={(files) => handleMultipleFileUpload("npwp", files)}
+                onError={handleFileError}
+                value={watchedValues.documents?.npwp || []}
+                label="Upload"
+                className="mb-2"
+                errorMessage={errors.documents?.npwp?.message}
+              />
 
-        <FormLabel required>Nomor KTP Pendaftar</FormLabel>
-        <Input
-          type="text"
-          placeholder="16 Digit No. KTP Pendaftar"
-          value={noKtp}
-          onChange={(e) => setNoKtp(e.target.value)}
-        />
+              <FormLabel required>Nomor NPWP Perusahaan</FormLabel>
+              <Input
+                type="number"
+                placeholder="Min. 15 Digit No. NPWP"
+                {...register("npwpNumber")}
+                errorMessage={errors.npwpNumber?.message}
+              />
 
-        {/* Cover Akta Pendirian */}
-        <FormLabel required>Cover Akta Pendirian</FormLabel>
-        <FileUploadMultiple
-          maxSize={5}
-          acceptedFormats={[".jpg", ".png", ".pdf", ".zip"]}
-          onSuccess={setAktaPendirian}
-          onError={handleFileError}
-          value={aktaPendirian}
-          label="Upload"
-        />
+              {/* KTP */}
+              <FormLabel required>KTP Pendaftar/Pemegang Akun</FormLabel>
+              <FileUploadMultiple
+                maxSize={5}
+                acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
+                onSuccess={(files) => handleMultipleFileUpload("ktp", files)}
+                onError={handleFileError}
+                value={watchedValues.documents?.ktp || []}
+                label="Upload"
+                className="mb-2"
+                errorMessage={errors.documents?.ktp?.message}
+              />
 
-        {/* SK Kemenkumham dan Akta Pendirian */}
-        <FormLabel required>SK Kemenkumham dan Akta Pendirian</FormLabel>
-        <FileUploadMultiple
-          maxSize={5}
-          acceptedFormats={[".jpg", ".png", ".pdf", ".zip"]}
-          onSuccess={setSkKemenkumham}
-          onError={handleFileError}
-          value={skKemenkumham}
-          label="Upload"
-        />
+              <FormLabel required>Nomor KTP Pendaftar</FormLabel>
+              <Input
+                type="number"
+                placeholder="16 Digit No. KTP Pendaftar"
+                {...register("ktpNumber")}
+                errorMessage={errors.ktpNumber?.message}
+              />
 
-        {/* Cover Akta Perubahan (bila ada) */}
-        <FormLabel>Cover Akta Perubahan (bila ada)</FormLabel>
-        <FileUploadMultiple
-          maxSize={5}
-          acceptedFormats={[".jpg", ".png", ".pdf", ".zip"]}
-          onSuccess={setAktaPerubahan}
-          onError={handleFileError}
-          value={aktaPerubahan}
-          label="Upload"
-        />
+              {/* Cover Akta Pendirian */}
+              <FormLabel required>Cover Akta Pendirian</FormLabel>
+              <FileUploadMultiple
+                maxSize={5}
+                acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
+                onSuccess={(files) =>
+                  handleMultipleFileUpload("aktaPendirian", files)
+                }
+                onError={handleFileError}
+                value={watchedValues.documents?.aktaPendirian || []}
+                label="Upload"
+                errorMessage={errors.documents?.aktaPendirian?.message}
+              />
 
-        {/* SK Kemenkumham dan Akta Perubahan (bila ada) */}
-        <FormLabel>SK Kemenkumham dan Akta Perubahan (bila ada)</FormLabel>
-        <FileUploadMultiple
-          maxSize={5}
-          acceptedFormats={[".jpg", ".png", ".pdf", ".zip"]}
-          onSuccess={setSkKemenkumhamPerubahan}
-          onError={handleFileError}
-          value={skKemenkumhamPerubahan}
-          label="Upload"
-        />
+              {/* SK Kemenkumham dan Akta Pendirian */}
+              <FormLabel required>SK Kemenkumham dan Akta Pendirian</FormLabel>
+              <FileUploadMultiple
+                maxSize={5}
+                acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
+                onSuccess={(files) =>
+                  handleMultipleFileUpload("skKemenkumham", files)
+                }
+                onError={handleFileError}
+                value={watchedValues.documents?.skKemenkumham || []}
+                label="Upload"
+                errorMessage={errors.documents?.skKemenkumham?.message}
+              />
 
-        {/* Sertifikat Standar (bila ada) */}
-        <FormLabel>Sertifikat Standar (bila ada)</FormLabel>
-        <FileUploadMultiple
-          maxSize={5}
-          acceptedFormats={[".jpg", ".png", ".pdf", ".zip"]}
-          onSuccess={setSertifikatStandar}
-          onError={handleFileError}
-          value={sertifikatStandar}
-          label="Upload"
-        />
-      </FormContainer>
-    </div>
+              {/* Cover Akta Perubahan (bila ada) */}
+              <FormLabel>Cover Akta Perubahan (bila ada)</FormLabel>
+              <FileUploadMultiple
+                maxSize={5}
+                acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
+                onSuccess={(files) =>
+                  handleMultipleFileUpload("aktaPerubahan", files)
+                }
+                onError={handleFileError}
+                value={watchedValues.documents?.aktaPerubahan || []}
+                label="Upload"
+                errorMessage={errors.documents?.aktaPerubahan?.message}
+              />
+
+              {/* SK Kemenkumham dan Akta Perubahan (bila ada) */}
+              <FormLabel>
+                SK Kemenkumham dan Akta Perubahan (bila ada)
+              </FormLabel>
+              <FileUploadMultiple
+                maxSize={5}
+                acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
+                onSuccess={(files) =>
+                  handleMultipleFileUpload("skKemenkumhamPerubahan", files)
+                }
+                onError={handleFileError}
+                value={watchedValues.documents?.skKemenkumhamPerubahan || []}
+                label="Upload"
+                errorMessage={errors.documents?.skKemenkumhamPerubahan?.message}
+              />
+
+              {/* Sertifikat Standar (bila ada) */}
+              <FormLabel>Sertifikat Standar (bila ada)</FormLabel>
+              <FileUploadMultiple
+                maxSize={5}
+                acceptedFormats={[".jpg", ".jpeg", ".png", ".pdf"]}
+                onSuccess={(files) =>
+                  handleMultipleFileUpload("sertifikatStandar", files)
+                }
+                onError={handleFileError}
+                value={watchedValues.documents?.sertifikatStandar || []}
+                label="Upload"
+                errorMessage={errors.documents?.sertifikatStandar?.message}
+              />
+            </FormContainer>
+          </div>
+        </div>
+      </Card>
+      <div className="mt-6 flex items-end justify-end gap-3">
+        <Button variant="muattrans-primary-secondary">Sebelumnya</Button>
+        <Button type="submit" variant="muattrans-primary">
+          Simpan
+        </Button>
+      </div>
+    </form>
   );
 }
 
