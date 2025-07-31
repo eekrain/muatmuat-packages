@@ -43,6 +43,7 @@ const DetailStatusDriverScreen = ({ dataStatusPesanan }) => {
             onClickProof={(driverStatusItem) =>
               navigation.push("/proof-photo", { driverStatusItem })
             }
+            withMenu={false}
           />
         </div>
       </div>

@@ -49,7 +49,11 @@ const getStatusCodeMeta = (statusCode) => {
  * @param {DriverTimelineProps} props
  * @returns {React.ReactNode}
  */
-export const DriverTimeline = ({ dataDriverStatus, onClickProof }) => {
+export const DriverTimeline = ({
+  dataDriverStatus,
+  onClickProof,
+  withMenu = true,
+}) => {
   const { t } = useTranslation();
   const [images, setImages] = useState({ packages: [], pods: [] });
   const [currentStatus, setCurrentStatus] = useState(null);
