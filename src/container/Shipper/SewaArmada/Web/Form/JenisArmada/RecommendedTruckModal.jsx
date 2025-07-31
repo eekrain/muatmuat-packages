@@ -7,18 +7,22 @@ import {
   WarningBadge,
 } from "@/container/Shipper/SewaArmada/Web/Form/JenisArmada/ArmadaComponent";
 import { toast } from "@/lib/toast";
-import { useSewaArmadaActions } from "@/store/Shipper/forms/sewaArmadaStore";
+import {
+  useSewaArmadaActions,
+  useSewaArmadaStore,
+} from "@/store/Shipper/forms/sewaArmadaStore";
 
 const RecommendedTruckModal = ({ isOpen, setIsOpen, recommendedTrucks }) => {
   const [selectedTruckTypeId, setSelectedTruckTypeId] = useState(null);
 
+  const orderType = useSewaArmadaStore((state) => state.orderType);
   const { setField } = useSewaArmadaActions();
 
   const handleSelectRecommendedTruck = () => {
     const selectedTruck = recommendedTrucks.find(
       (item) => item.truckTypeId === selectedTruckTypeId
     );
-    setField("truckCount", selectedTruck.unit);
+    setField("truckCount", orderType === "INSTANT" ? 1 : selectedTruck.unit);
     setField("minTruckCount", selectedTruck.unit);
     setField("truckTypeId", selectedTruckTypeId);
     setIsOpen(false);

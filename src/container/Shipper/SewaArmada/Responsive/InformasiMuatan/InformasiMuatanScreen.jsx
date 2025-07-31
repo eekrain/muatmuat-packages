@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { Fragment, useState } from "react";
 
 import Button from "@/components/Button/Button";
@@ -16,8 +17,12 @@ import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsi
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { compareArraysByNameOnly } from "@/lib/utils/array";
 import { useInformasiMuatanStore } from "@/store/Shipper/forms/informasiMuatanStore";
-import { useSewaArmadaActions } from "@/store/Shipper/forms/sewaArmadaStore";
+import {
+  useSewaArmadaActions,
+  useSewaArmadaStore,
+} from "@/store/Shipper/forms/sewaArmadaStore";
 
 import { JenisTrukBottomSheet } from "./JenisTrukBottomSheet";
 
@@ -46,7 +51,14 @@ const dimensiMuatanOptions = [
   },
 ];
 
-const InformasiMuatanScreen = ({ cargoTypes, cargoCategories, trucks }) => {
+const InformasiMuatanScreen = ({
+  cargoTypes,
+  cargoCategories,
+  trucks,
+  onFetchTrucks,
+}) => {
+  const pathname = usePathname();
+  const isEditPage = pathname.includes("/ubahpesanan");
   const navigation = useResponsiveNavigation();
   const {
     formValues,
@@ -59,12 +71,43 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories, trucks }) => {
     validateForm,
   } = useInformasiMuatanStore();
   const { setField: setSewaArmadaField } = useSewaArmadaActions();
+  const orderType = useSewaArmadaStore((state) => state.orderType);
+  const informasiMuatan = useSewaArmadaStore(
+    (state) => state.formValues.informasiMuatan
+  );
+  const truckTypeId = useSewaArmadaStore(
+    (state) => state.formValues.truckTypeId
+  );
 
-  const handleSaveInformasiMuatan = () => {
+  const [openJenisTrukBottomSheet, setOpenJenisTrukBottomSheet] =
+    useState(false);
+  const [selectedTruck, setSelectedTruck] = useState(true);
+
+  const handleSaveInformasiMuatan = async () => {
     console.log("🚀 ~ handleSaveInformasiMuatan ~ formValues:", formValues);
     if (!validateForm()) {
       console.log("Form has errors", formErrors);
       return;
+    }
+
+    if (
+      truckTypeId &&
+      JSON.stringify(informasiMuatan) !==
+        JSON.stringify(formValues.informasiMuatan) &&
+      !isEditPage
+    ) {
+      if (
+        compareArraysByNameOnly(informasiMuatan, formValues.informasiMuatan)
+      ) {
+        await onFetchTrucks({
+          informasiMuatan: formValues.informasiMuatan,
+        });
+        setOpenJenisTrukBottomSheet(true);
+        return;
+      } else {
+        setSewaArmadaField("carrierId", null);
+        setSewaArmadaField("truckTypeId", null);
+      }
     }
 
     Object.entries(formValues).forEach(([key, value]) => {
@@ -73,10 +116,6 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories, trucks }) => {
     navigation.pop();
     // Handle form submission, save to sewaArmadaStore here
   };
-
-  const [openJenisTrukBottomSheet, setOpenJenisTrukBottomSheet] =
-    useState(true);
-  const [selectedTruck, setSelectedTruck] = useState(true);
 
   return (
     <FormResponsiveLayout
@@ -443,11 +482,19 @@ const InformasiMuatanScreen = ({ cargoTypes, cargoCategories, trucks }) => {
         onOpenChange={setOpenJenisTrukBottomSheet}
         trucks={trucks}
         onSelectTruck={(truck) => {
-          setSelectedTruck(truck);
+          setSewaArmadaField("truckTypeId", truck.truckTypeId);
+          setSewaArmadaField(
+            "truckCount",
+            orderType === "INSTANT" ? 1 : truck.unit
+          );
           setOpenJenisTrukBottomSheet(false);
           toast.success(
             "Informasi muatan dan jenis armada telah berhasil diubah"
           );
+          Object.entries(formValues).forEach(([key, value]) => {
+            setSewaArmadaField(key, value);
+          });
+          navigation.pop();
         }}
       />
 

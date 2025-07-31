@@ -24,11 +24,11 @@ const TruckSpecItem = ({ iconSrc, label, children }) => (
       className="size-6 shrink-0 text-amber-900"
       alt={`${label} icon`}
     />
-    <div className="flex flex-col">
-      <span className="text-xs font-semibold leading-tight text-black">
+    <div className="flex flex-col gap-x-2">
+      <span className="text-xs font-semibold leading-[1.1] text-neutral-900">
         {label}
       </span>
-      <span className="text-xs font-bold leading-tight text-black">
+      <span className="text-xs font-bold leading-[1.1] text-neutral-900">
         {children}
       </span>
     </div>
@@ -54,14 +54,18 @@ const TruckCard = ({ truck, onClick }) => {
       <LightboxProvider image={truck.image} title={truck.name}>
         <LightboxPreview image={truck.image} alt={truck.name} />
       </LightboxProvider>
-      <div className="flex flex-1 flex-col gap-3">
-        <div>
-          <h3 className="text-sm font-bold text-black">{truck.name}</h3>
-          <p className="mt-1 text-sm font-semibold text-black">
+      <div className="flex flex-1 flex-col gap-y-3">
+        <div className="flex flex-col gap-y-3">
+          <div className="flex h-7 items-center">
+            <h3 className="text-sm font-bold leading-[1.1] text-neutral-900">
+              {truck.name}
+            </h3>
+          </div>
+          <p className="text-sm font-semibold leading-[1.1] text-neutral-900">
             {idrFormat(truck.calculatedPrice)}
           </p>
         </div>
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-y-3">
           <TruckSpecItem
             iconSrc="/icons/jenis-truck/scale.svg"
             label="Estimasi Kapasitas"
@@ -92,9 +96,9 @@ const TruckList = ({ trucks, onTruckClick, withDividerOnLastItem = true }) => (
       <React.Fragment key={truck.truckTypeId}>
         <TruckCard truck={truck} onClick={onTruckClick} />
         {withDividerOnLastItem ? (
-          <hr className="border-neutral-300" />
+          <hr className="border-neutral-400" />
         ) : index < trucks.length - 1 ? (
-          <hr className="border-neutral-300" />
+          <hr className="border-neutral-400" />
         ) : null}
       </React.Fragment>
     ))}
@@ -143,16 +147,14 @@ export const JenisTrukBottomSheet = ({
   const renderContent = () => {
     if (searchValue) {
       return filteredTrucks.length > 0 ? (
-        <div className="px-4 py-5">
-          <TruckList
-            trucks={filteredTrucks}
-            onTruckClick={handleTruckSelection}
-            withDividerOnLastItem={false}
-          />
-        </div>
+        <TruckList
+          trucks={filteredTrucks}
+          onTruckClick={handleTruckSelection}
+          withDividerOnLastItem={false}
+        />
       ) : (
         <DataNotFound
-          className="mt-24"
+          className="h-full gap-y-5"
           type="search"
           title="Keyword Tidak Ditemukan"
         />
@@ -162,8 +164,8 @@ export const JenisTrukBottomSheet = ({
     return (
       <>
         {recommendedTrucks.length > 0 && (
-          <section className="flex flex-col gap-y-4 px-4">
-            <h2 className="text-sm font-bold text-black">
+          <section className="flex flex-col gap-y-4">
+            <h2 className="text-sm font-bold text-neutral-900">
               Rekomendasi Truk Sesuai Muatan
             </h2>
             <TruckList
@@ -173,14 +175,16 @@ export const JenisTrukBottomSheet = ({
           </section>
         )}
         {nonRecommendedTrucks.length > 0 && (
-          <section className="mt-4 flex flex-col gap-3 px-4">
-            <h2 className="text-sm font-bold text-black">
-              Tidak Direkomendasikan
-            </h2>
-            <Alert variant="warning" className="">
-              Pilihan truk di bawah ini berisiko kelebihan muatan atau tidak
-              sesuai dengan informasi muatan
-            </Alert>
+          <section className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
+              <h2 className="text-sm font-bold text-neutral-900">
+                Tidak Direkomendasikan
+              </h2>
+              <Alert variant="warning" className="">
+                Pilihan truk di bawah ini berisiko kelebihan muatan atau tidak
+                sesuai dengan informasi muatan
+              </Alert>
+            </div>
             <TruckList
               trucks={nonRecommendedTrucks}
               onTruckClick={handleTruckSelection}
@@ -196,10 +200,10 @@ export const JenisTrukBottomSheet = ({
       <BottomSheetContent className="h-[600px]">
         <BottomSheetHeader>Pilih Jenis Truk</BottomSheetHeader>
 
-        <div className="mt-7 flex h-full flex-col">
-          <div className="flex flex-col gap-3 px-4 pb-4">
+        <div className="flex flex-col gap-y-6 px-4 pb-6 pt-7">
+          <div className="flex flex-col gap-y-3">
             {showTopAlert && (
-              <Alert variant="warning">
+              <Alert className="h-[50px] py-0 leading-[1.1]" variant="warning">
                 Berat / dimensi muatan melebihi kapasitas truk yang telah
                 dipilih. Mohon pilih truk dengan kapasitas yang sesuai.
               </Alert>
@@ -208,17 +212,21 @@ export const JenisTrukBottomSheet = ({
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               placeholder="Cari Jenis Truk"
-              leftIcon={
-                <IconComponent
-                  src="/icons/search.svg"
-                  className="text-neutral-500"
-                  alt="Search Icon"
-                />
-              }
+              icon={{
+                left: "/icons/search16.svg",
+                right: searchValue ? (
+                  <IconComponent
+                    src="/icons/silang.svg"
+                    onClick={() => setSearchValue("")}
+                  />
+                ) : null,
+              }}
             />
           </div>
 
-          <div className="flex-1 overflow-y-auto">{renderContent()}</div>
+          <div className="flex h-[234px] flex-col gap-y-4 overflow-y-auto">
+            {renderContent()}
+          </div>
         </div>
       </BottomSheetContent>
     </BottomSheet>

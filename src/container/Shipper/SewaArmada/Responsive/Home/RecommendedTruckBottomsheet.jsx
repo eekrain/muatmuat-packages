@@ -14,7 +14,10 @@ import {
 import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { idrFormat } from "@/lib/utils/formatters";
-import { useSewaArmadaActions } from "@/store/Shipper/forms/sewaArmadaStore";
+import {
+  useSewaArmadaActions,
+  useSewaArmadaStore,
+} from "@/store/Shipper/forms/sewaArmadaStore";
 
 export const RecommendedTruckBottomsheet = ({
   isOpen,
@@ -22,6 +25,7 @@ export const RecommendedTruckBottomsheet = ({
   trucks,
 }) => {
   const { t } = useTranslation();
+  const orderType = useSewaArmadaStore((state) => state.orderType);
   const { setField } = useSewaArmadaActions();
 
   // Get the first (cheapest) recommended truck
@@ -41,7 +45,10 @@ export const RecommendedTruckBottomsheet = ({
 
     // Update the store with the recommended truck
     setField("truckTypeId", recommendedTruck.truckTypeId);
-    setField("truckCount", recommendedTruck.unit || 1);
+    setField(
+      "truckCount",
+      orderType === "INSTANT" ? 1 : recommendedTruck.unit || 1
+    );
     setField("minTruckCount", recommendedTruck.unit || 1);
 
     toast.success(t("messageArmadaBerhasilDiubah"));
