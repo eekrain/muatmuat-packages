@@ -4,18 +4,17 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
-import { Edit } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import * as v from "valibot";
 
 import Button from "@/components/Button/Button";
-import DatePicker from "@/components/DatePicker/DatePicker";
-import Checkbox from "@/components/Form/Checkbox";
-import Input from "@/components/Form/Input";
-import { Select } from "@/components/Form/Select";
-import IconComponent from "@/components/IconComponent/IconComponent";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import { useTabs } from "@/components/Tabs/Tabs";
+import { toast } from "@/lib/toast";
+
+import ModalAddArmadaImage from "../../../preview-armada/components/ModalAddImage/ModalAddImage";
+import ArmadaTable from "../../ArmadaTable/ArmadaTable";
 
 // Define units
 const weightUnits = [
@@ -84,8 +83,14 @@ const TambahArmadaMassal = () => {
   const { onValueChange } = useTabs();
 
   const [stateToggle, setStateToggle] = useState(false);
-  const [isDraft, setIsDraft] = useState(true);
+  const [isDraft, setIsDraft] = useState(false);
+  const [selectAll, setSelectAll] = useState(false);
+  const [selectedRowIndex, setSelectedRowIndex] = useState([]);
+  const [activeIndex, setActiveIndex] = useState();
+  const [searchValue, setSearchValue] = useState("");
+
   const [addArmadaImageModal, setAddArmadaImageModal] = useState(false);
+  const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
 
   const formMethods = useForm({
     defaultValues: {
@@ -101,6 +106,8 @@ const TambahArmadaMassal = () => {
     control,
     reset,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
   } = formMethods;
 
@@ -108,6 +115,62 @@ const TambahArmadaMassal = () => {
     control,
     name: "informasiMuatan",
   });
+
+  const handleAddRow = () => {
+    append(defaultInformasiMuatan);
+  };
+
+  const handleDeleteRows = () => {
+    if (selectedRowIndex.length === 0) {
+      toast.error("Harap pilih 1 armada untuk menghapus");
+      return;
+    }
+    setConfirmDeleteModal(true);
+  };
+
+  const handleSelectAll = (checked) => {
+    setSelectAll(checked);
+  };
+
+  const handleSelectRow = (selectedRows) => {
+    setSelectedRowIndex(selectedRows);
+  };
+
+  const handleCellValueChange = (rowIndex, fieldPath, value) => {
+    console.log("handleCellValueChange", rowIndex, fieldPath, value);
+    setValue(`informasiMuatan.${rowIndex}.${fieldPath}`, value);
+  };
+
+  const handleImageClick = (index) => {
+    setActiveIndex(index);
+    setAddArmadaImageModal(true);
+  };
+
+  const handleSearchChange = (value) => {
+    setSearchValue(value);
+    // Add search logic here if needed
+  };
+
+  const handleRemove = () => {
+    if (selectedRowIndex.length === 0) {
+      // error("Tidak ada baris yang dipilih");
+      toast.error("Harap pilih 1 armada untuk menghapus");
+      return;
+    }
+
+    const newFields = fields.filter(
+      (_, index) => !selectedRowIndex.includes(index)
+    );
+    remove(selectedRowIndex);
+    setSelectedRowIndex([]);
+    setSelectAll(false);
+    reset({ informasiMuatan: newFields });
+    if (newFields.length === 0) {
+      append(defaultInformasiMuatan);
+    }
+    setConfirmDeleteModal(false);
+    toast.success("Berhasil hapus armada");
+  };
   return (
     <div className="rounded-lg bg-white shadow-muat">
       {/* Temporary Toggle (use it to toggle between success upload or fail upload) */}
@@ -122,264 +185,20 @@ const TambahArmadaMassal = () => {
         </div>
       )} */}
       {/* Header Table */}
-      <div className="flex items-center justify-between px-6 py-5">
-        <div className="flex items-center gap-3">
-          <Input
-            icon={{ left: "/icons/search.svg" }}
-            appearance={{ iconClassName: "text-neutral-700" }}
-            className="!w-fit !p-0 font-medium"
-            placeholder="Cari Armada"
-          />
-          <Button
-            onClick={() => {
-              append(defaultInformasiMuatan);
-            }}
-            variant="muatparts-primary-secondary"
-          >
-            Tambah
-          </Button>
-          <Button variant="muatparts-error-secondary">Hapus</Button>
-        </div>
-        <p className="font-semibold">Total : 20 Armada</p>
-      </div>
-      {/* Table */}
-      <div className="p-4">
-        {/* Table Header */}
-        <div className="grid w-full grid-cols-[16px_32px_232px_180px_180px_180px_180px_180px_261px_180px_180px_98px_133px_180px_180px_98px_394px] gap-4 overflow-x-auto rounded-lg border border-neutral-500 p-4">
-          <div className="flex items-center">
-            <Checkbox label="" />
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">Aksi</span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">Armada*</span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Jenis Truk*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Jenis Carrier*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Merek Kendaraan*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Tipe Kendaraan*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Tahun Registrasi Kendaraan*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Dimensi Carrier (Opsional)
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Nomor Rangka*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Masa Berlaku STNK*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Foto STNK*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Foto Pajak Kendaraan*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              KIR Kendaraan*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Masa Berlaku KIR*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Foto Buku KIR*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Estimasi Tanggal Pemasangan GPS*
-            </span>
-          </div>
-          {control._formValues.informasiMuatan.map((_, index) => (
-            <>
-              <div key={index} className="flex items-center">
-                <Checkbox label="" />
-              </div>
-              <div>
-                <button className="rounded-[100%] bg-neutral-200 p-2 text-neutral-700 hover:bg-neutral-300 hover:text-neutral-800">
-                  <Edit className="size-4" />
-                </button>
-              </div>
-              <div className="flex gap-3">
-                <div>
-                  <label
-                    onClick={() => {
-                      setAddArmadaImageModal(true);
-                    }}
-                    htmlFor={`foto-armada-${index}`}
-                  >
-                    <div className="w-fit cursor-pointer rounded-lg border-2 border-dashed border-neutral-300 p-2">
-                      <IconComponent src="/icons/add-image20.svg" />
-                    </div>
-                  </label>
-                  {/* <input
-                    type="file"
-                    id={`foto-armada-${index}`}
-                    className="hidden"
-                  /> */}
-                </div>
-                <Input placeholder="Contoh : L 1234 TY" />
-              </div>
-              <div>
-                <Select
-                  options={[
-                    {
-                      value: "truk",
-                      label: "Truk",
-                    },
-                  ]}
-                  placeholder="Pilih Jenis Truk"
-                />
-              </div>
-              <div>
-                <Select
-                  options={[
-                    {
-                      value: "truk",
-                      label: "Truk",
-                    },
-                  ]}
-                  placeholder="Pilih Jenis Carrier"
-                />
-              </div>
-              <div>
-                <Select
-                  options={[
-                    {
-                      value: "truk",
-                      label: "Truk",
-                    },
-                  ]}
-                  placeholder="Pilih Merek Kendaraan"
-                />
-              </div>
-              <div>
-                <Select
-                  options={[
-                    {
-                      value: "truk",
-                      label: "Truk",
-                    },
-                  ]}
-                  placeholder="Pilih Tipe Kendaraan"
-                />
-              </div>
-              <div>
-                <Select
-                  options={[
-                    {
-                      value: "truk",
-                      label: "Truk",
-                    },
-                  ]}
-                  placeholder="Pilih Tahun"
-                />
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-3 rounded-lg border border-neutral-600 p-2 text-xs font-medium">
-                  <input placeholder="p" className="w-8 text-center" />
-                  <span>x</span>
-                  <input placeholder="l" className="w-8 text-center" />
-                  <span>x</span>
-                  <input placeholder="t" className="w-8 text-center" />
-                </div>
-                <Select defaultValue="m" options={dimensionUnits} />
-              </div>
-              <div>
-                <Input placeholder="Maksimal 17 Digit" />
-              </div>
-              <div className="relative">
-                <DatePicker placeholder="Pilih Tanggal" />
-              </div>
-              <div>
-                <label
-                  htmlFor={`foto-stnk-${index}`}
-                  className="text-xs font-medium text-primary-700"
-                >
-                  Upload File
-                </label>
-                <input
-                  type="file"
-                  id={`foto-stnk-${index}`}
-                  className="hidden"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor={`foto-pajak-kendaraan-${index}`}
-                  className="text-xs font-medium text-primary-700"
-                >
-                  Upload File
-                </label>
-                <input
-                  type="file"
-                  id={`foto-pajak-kendaraan-${index}`}
-                  className="hidden"
-                />
-              </div>
-              <div>
-                <Input placeholder="Contoh: SBY 123456" />
-              </div>
-              <div className="relative">
-                <DatePicker placeholder="Pilih Tanggal" />
-              </div>
-              <div>
-                <label
-                  htmlFor={`foto-buku-kir-${index}`}
-                  className="text-xs font-medium text-primary-700 hover:cursor-pointer hover:text-primary-800 hover:underline"
-                >
-                  Upload File
-                </label>
-                <input
-                  type="file"
-                  id={`foto-buku-kir-${index}`}
-                  className="hidden"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <DatePicker placeholder="Pilih Tanggal" />
-                <span className="text-xs font-medium">s/d</span>
-                <DatePicker placeholder="Pilih Tanggal" />
-              </div>
-            </>
-          ))}
-        </div>
-      </div>
+      <ArmadaTable
+        // data={control._formValues.informasiMuatan}
+        data={watch("informasiMuatan")}
+        selectedRows={selectedRowIndex}
+        selectAll={selectAll}
+        searchValue={searchValue}
+        onSearchChange={handleSearchChange}
+        onSelectAll={handleSelectAll}
+        onSelectRow={handleSelectRow}
+        onAddRow={handleAddRow}
+        onDeleteRows={handleDeleteRows}
+        onCellValueChange={handleCellValueChange}
+        onImageClick={handleImageClick}
+      />
 
       <Modal
         open={isDraft}
@@ -411,6 +230,44 @@ const TambahArmadaMassal = () => {
           </div>
         </ModalContent>
       </Modal>
+      <ConfirmationModal
+        isOpen={confirmDeleteModal}
+        setIsOpen={setConfirmDeleteModal}
+        title={{
+          text: "Apakah kamu yakin untuk menghapus armada ?",
+          className: "text-sm font-medium text-center",
+        }}
+        confirm={{
+          text: "Hapus",
+          onClick: () => {
+            // Handle delete action
+            handleRemove();
+          },
+        }}
+        cancel={{
+          text: "Batal",
+          onClick: () => {
+            setConfirmDeleteModal(false);
+          },
+        }}
+      >
+        Apakah kamu yakin ingin menghapus armada yang telah dipilih? Tindakan
+        ini tidak dapat dibatalkan.
+      </ConfirmationModal>
+      <ModalAddArmadaImage
+        isOpen={addArmadaImageModal}
+        onClose={() => {
+          setAddArmadaImageModal(false);
+        }}
+        value={watch(`informasiMuatan.${activeIndex}.informasi_armada.images`)}
+        onSave={(images) => {
+          setValue(
+            `informasiMuatan.${activeIndex}.informasi_armada.images`,
+            images
+          );
+          setAddArmadaImageModal(false);
+        }}
+      />
     </div>
   );
 };

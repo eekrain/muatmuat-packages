@@ -11,6 +11,7 @@ export default function Dropdown({
   className,
   placeholder,
   searchPlaceholder,
+  options,
 }) {
   const [searchValue, setSearchValue] = useState("");
   const data = [
@@ -34,7 +35,7 @@ export default function Dropdown({
       <Select.Trigger placeholder={placeholder}>
         {/* <Select.Value placeholder={placeholder}/> */}
         <Select.Value placeholder={placeholder}>
-          {data?.filter((item) => item.value === value)[0]?.label}
+          {options?.filter((item) => item.value === value)[0]?.label}
         </Select.Value>
       </Select.Trigger>
       <Select.Content
@@ -42,10 +43,10 @@ export default function Dropdown({
         searchPlaceholder={searchPlaceholder}
         className="w-64"
       >
-        {data?.filter((rows) =>
+        {options?.filter((rows) =>
           rows.label.toLowerCase().includes(searchValue.toLowerCase())
         ).length > 0 ? (
-          data
+          options
             ?.filter((rows) =>
               rows.label.toLowerCase().includes(searchValue.toLowerCase())
             )
@@ -57,7 +58,9 @@ export default function Dropdown({
                 className="!py-1"
               >
                 <div className="flex items-center gap-2">
-                  <img src={item.image} alt={item.label} className="w-8" />
+                  {item.image && (
+                    <img src={item.image} alt={item.label} className="w-8" />
+                  )}
                   <span className="text-xs font-medium">{item.label}</span>
                 </div>
               </Select.Item>
