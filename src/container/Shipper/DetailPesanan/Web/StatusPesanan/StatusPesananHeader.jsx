@@ -38,6 +38,7 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
   const { t } = useTranslation();
 
   const [isModalAllDriverOpen, setIsModalAllDriverOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const copyAllDriverQRCodeLink = () => {
     const orderId = dataStatusPesanan.orderId;
@@ -55,7 +56,7 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
   });
 
   return (
-    <div className="flex items-end gap-x-3">
+    <div className="flex w-full items-end gap-x-3">
       <div className="grid flex-1 grid-cols-[220px_1fr] items-center gap-x-3 gap-y-2">
         <span className="text-xs font-medium leading-[1.2] text-neutral-600">
           Kode Pesanan
@@ -172,13 +173,25 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
 
       {dataStatusPesanan.driverStatus.length > 1 && (
         <div className="w-[127px]">
-          <SimpleDropdown>
+          <SimpleDropdown onOpenChange={setIsDropdownOpen}>
             <SimpleDropdownTrigger asChild>
-              <button className="flex h-8 flex-row items-center justify-between gap-2 rounded-md border border-neutral-600 bg-white px-3 py-2 shadow-sm transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none">
-                <span className="text-xs font-medium leading-tight text-black">
+              <button
+                className={cn(
+                  "flex h-8 flex-row items-center justify-between gap-2 rounded-md border bg-white px-3 py-2 shadow-sm transition-colors duration-150 focus:outline-none",
+                  isDropdownOpen
+                    ? "border-primary-700 bg-gray-50"
+                    : "border-neutral-600 hover:border-primary-700 hover:bg-gray-50"
+                )}
+              >
+                <span className="text-nowrap text-xs font-medium leading-tight text-black">
                   Menu Lainnya
                 </span>
-                <ChevronDown className="h-4 w-4 text-neutral-700" />
+                <ChevronDown
+                  className={cn(
+                    "h-4 w-4 text-neutral-700 transition-transform duration-150",
+                    isDropdownOpen && "rotate-180"
+                  )}
+                />
               </button>
             </SimpleDropdownTrigger>
 

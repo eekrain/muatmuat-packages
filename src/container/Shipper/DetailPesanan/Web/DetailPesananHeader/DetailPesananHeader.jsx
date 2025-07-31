@@ -306,11 +306,13 @@ const DetailPesananHeader = ({
         cancel={{
           text: "Belum",
           disabled: isConfirmingDocument,
+          classname: "bg-white text-primary-700 border-primary-700",
         }}
         confirm={{
-          text: "Sudah",
+          text: "Sudah Menerima",
           onClick: handleReceiveDocument,
           disabled: isConfirmingDocument,
+          classname: "bg-primary-700 text-white hover:bg-primary-700",
         }}
       />
 
