@@ -7,6 +7,8 @@ import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { useAuth } from "@/hooks/use-auth";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
+import { HeaderButtonBack } from ".";
+
 /**
  * @typedef {Object} DefaultResponsiveLayoutProps
  * @property {"default" | "menu"} mode
@@ -89,14 +91,7 @@ export const HeaderResponsiveDefault = ({
             : "flex w-full justify-between"
         }
       >
-        <button onClick={handleBackButton}>
-          <IconComponent
-            className="icon-stroke-muat-trans-primary-400 rounded-xl bg-muat-trans-secondary-900"
-            src="/icons/chevron-left24.svg"
-            width={24}
-            height={24}
-          />
-        </button>
+        <HeaderButtonBack onClick={handleBackButton} variant="muattrans" />
         <ImageComponent src="/icons/muattrans.svg" width={120} height={24} />
         {dataUser?.isLoggedIn ? null : <div className="size-[24px]" />}
       </div>

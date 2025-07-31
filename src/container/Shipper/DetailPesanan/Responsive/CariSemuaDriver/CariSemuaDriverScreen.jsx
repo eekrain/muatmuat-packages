@@ -1,28 +1,18 @@
+import { useParams } from "next/navigation";
 import { useMemo } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import SearchBarResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/SearchBarResponsiveLayout";
-import {
-  useResponsiveNavigation,
-  useResponsiveRouteParams,
-} from "@/lib/responsive-navigation";
-import { useGetDriverStatusTimeline } from "@/services/Shipper/lacak-armada/getDriverStatusTimeline";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { useResponsiveSearchStore } from "@/store/Shipper/zustand/responsiveSearchStore";
 
 import { DriverInfo } from "../Home/components/DriverInfoSlider";
 import { OrderCode, OrderStatus } from "../Home/components/OrderInfo";
 
 const CariSemuaDriverScreen = ({ dataStatusPesanan }) => {
+  const params = useParams();
   const navigation = useResponsiveNavigation();
-  const params = useResponsiveRouteParams();
   const searchValue = useResponsiveSearchStore((state) => state.searchValue);
-
-  const { orderId, driverId } = params;
-
-  const { data } = useGetDriverStatusTimeline({
-    orderId,
-    driverId,
-  });
 
   const filteredDriver = useMemo(() => {
     const drivers = dataStatusPesanan?.driverStatus;
@@ -65,7 +55,8 @@ const CariSemuaDriverScreen = ({ dataStatusPesanan }) => {
             >
               <div className="flex w-full flex-col items-start gap-4">
                 <DriverInfo.Header
-                  statusCode={driver.driverStatus}
+                  orderStatus={driver.orderStatus}
+                  driverStatus={driver.driverStatus}
                   withMenu={false}
                 />
                 <DriverInfo.Avatar driver={driver} />
@@ -73,7 +64,12 @@ const CariSemuaDriverScreen = ({ dataStatusPesanan }) => {
                   onDriverContactClicked={() =>
                     alert(`Contacting ${driver.name}`)
                   }
-                  onLacakArmadaClicked={() => alert(`Tracking ${driver.name}`)}
+                  onLacakArmadaClicked={() =>
+                    navigation.push("/LacakArmada", {
+                      orderId: params.orderId,
+                      driverId: driver.driverId,
+                    })
+                  }
                 />
               </div>
             </div>

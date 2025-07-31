@@ -13,33 +13,21 @@ import {
   TimelineItem,
 } from "@/components/Timeline";
 
-const RouteLocationItem = ({ item, index, total, type }) => (
-  <TimelineItem
-    key={index}
-    variant={type === "muat" ? "number-muat" : "number-bongkar"}
-    totalLength={total}
-    index={index}
-  >
-    <TimelineContentWithButtonDate title={item.fullAddress} />
-  </TimelineItem>
-);
-
 export const RouteInfo = ({ dataDetailPesanan }) => {
-  console.log("🚀 ~ RouteInfo ~ dataDetailPesanan:", dataDetailPesanan);
-  const [bottomSheetTitle, setBottomSheetTitle] = useState("");
+  const [mode, setMode] = useState("");
   const [bottomSheetData, setBottomSheetData] = useState([]);
 
   const muat = dataDetailPesanan?.route?.muat ?? [];
   const bongkar = dataDetailPesanan?.route?.bongkar ?? [];
 
   const handleShowMore = (type, data) => {
-    setBottomSheetTitle(type === "muat" ? "Lokasi Muat" : "Lokasi Bongkar");
+    setMode(type === "muat" ? "Lokasi Muat" : "Lokasi Bongkar");
     setBottomSheetData(data);
   };
 
   return (
     <>
-      <div className="rounded-lg bg-white px-4 py-5 shadow-sm">
+      <div className="bg-white px-4 py-5 shadow-sm">
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold">Rute</h3>
@@ -58,6 +46,7 @@ export const RouteInfo = ({ dataDetailPesanan }) => {
                 activeIndex={0}
               >
                 <TimelineContentWithButtonDate
+                  appearance={{ titleClassname: "text-xs" }}
                   title={muat[0].fullAddress}
                   withButton={
                     muat.length > 1
@@ -78,6 +67,7 @@ export const RouteInfo = ({ dataDetailPesanan }) => {
                 activeIndex={0}
               >
                 <TimelineContentWithButtonDate
+                  appearance={{ titleClassname: "text-xs" }}
                   className="pb-0"
                   title={bongkar[0].fullAddress}
                   withButton={
@@ -122,17 +112,20 @@ export const RouteInfo = ({ dataDetailPesanan }) => {
         }}
       >
         <BottomSheetContent>
-          <BottomSheetHeader>{bottomSheetTitle}</BottomSheetHeader>
+          <BottomSheetHeader>
+            {mode === "muat" ? "Lokasi Muat" : "Lokasi Bongkar"}
+          </BottomSheetHeader>
           <div className="p-4">
             <TimelineContainer>
               {bottomSheetData.map((item, index) => (
-                <RouteLocationItem
+                <TimelineItem
                   key={index}
-                  item={item}
-                  type={bottomSheetTitle === "Lokasi Muat" ? "muat" : "bongkar"}
+                  variant={mode === "muat" ? "number-muat" : "number-bongkar"}
+                  totalLength={bottomSheetData.length}
                   index={index}
-                  total={bottomSheetData.length}
-                />
+                >
+                  <TimelineContentWithButtonDate title={item.fullAddress} />
+                </TimelineItem>
               ))}
             </TimelineContainer>
           </div>

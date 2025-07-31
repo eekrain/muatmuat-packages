@@ -10,6 +10,7 @@ import { normalizeDetailPesananOrderDetail } from "@/lib/normalizers/detailpesan
 import { getAdditionalServices } from "./getAdditionalServices";
 import { getCancellationHistory } from "./getCancellationHistory";
 import { getOrderAlerts } from "./getOrderAlerts";
+import { getOrderDriverReviews } from "./getOrderDriverReviews";
 import { getOrderPaymentData } from "./getOrderPaymentData";
 import { getOrderStatusHistory } from "./getOrderStatusHistory";
 import { getStatusLegend } from "./getStatusLegend";
@@ -111,7 +112,7 @@ const priceCharge = {
     weightUnit: "kg",
   },
   adminFee: 10000,
-  totalCharge: 0,
+  totalCharge: 110000,
   isPaid: false,
 };
 
@@ -135,12 +136,20 @@ const apiResultOrderDetail = {
       Text: "Order detail retrieved successfully",
     },
     Data: {
+      // Menentukan bisa nggaknya buat ubah pesanan
+      isChangeable: false,
+      // Menentukan bisa nggaknya buat batalkan pesanan
+      isCancellable: false,
+      // Menentukan bisa nggaknya buat ngasih review
+      canReview: false,
+      cancellationDeadline: "2025-06-24T15:00:00.000Z",
+      hasCancellationPenalty: false,
       general: {
         orderId: "550e8400-e29b-41d4-a716-446655440000",
         transporterOrderCode: "MT.25.AA.001",
         invoiceNumber: "INV/12345678",
         // orderStatus: OrderStatusEnum.LOADING,
-        orderStatus: OrderStatusEnum.LOADING,
+        orderStatus: OrderStatusEnum.UNLOADING,
         orderTitle: "Proses Muat",
         unitFleetStatus: 3,
         orderType: OrderTypeEnum.INSTANT,
@@ -164,7 +173,6 @@ const apiResultOrderDetail = {
         loadTimeEnd: "2025-02-08T12:00:00Z",
         locations: locations,
         isHalalLogistic: false,
-        canReview: false,
         isEdit: false,
         cargo: [
           {
@@ -263,10 +271,6 @@ const apiResultOrderDetail = {
         numberDeliveryOrder: ["DO123456", "DO123457"],
       },
       changeCount: 0,
-      isChangeable: false,
-      isCancellable: false,
-      cancellationDeadline: "2025-06-24T15:00:00.000Z",
-      hasCancellationPenalty: false,
       drivers: [],
       documents: {
         doNumber: "",
@@ -301,7 +305,7 @@ export const fetcherOrderDetail = async (cacheKey) => {
   } else {
     result = await fetcherMuatrans.get(`v1/orders/${orderId}`);
   }
-  console.log(result);
+
   return result?.data?.Data;
 };
 
@@ -320,6 +324,7 @@ const completeFetcher = async (cacheKey) => {
       dataAlerts,
       dataCancellationHistory,
       dataLegendStatus,
+      dataReview,
     ] = await Promise.all([
       fetcherOrderDetail(cacheKey),
       getOrderStatusHistory(cacheKey),
@@ -328,6 +333,7 @@ const completeFetcher = async (cacheKey) => {
       getOrderAlerts(cacheKey),
       getCancellationHistory(cacheKey),
       getStatusLegend(cacheKey),
+      getOrderDriverReviews(cacheKey),
     ]);
 
     const data = normalizeDetailPesananOrderDetail({
@@ -338,10 +344,12 @@ const completeFetcher = async (cacheKey) => {
       dataAdditionalServices,
       dataCancellationHistory,
       dataLegendStatus,
+      dataReview,
     });
 
     return data;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(
       "🚀 ~ file: getDetailPesananData.js:280 ~ fetcher ~ error:",
       error

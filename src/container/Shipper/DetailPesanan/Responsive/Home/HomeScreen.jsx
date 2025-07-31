@@ -2,31 +2,29 @@ import { useParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { AlertMultilineResponsive } from "@/components/Alert/AlertMultilineResponsive";
+import {
+  Tabs,
+  TabsList,
+  TabsTriggerWithSeparator,
+} from "@/components/Tabs/Tabs";
 import { useTranslation } from "@/hooks/use-translation";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
-import {
-  AlertInfoEnum,
-  AlertLabelEnum,
-  AlertTypeEnum,
-} from "@/lib/constants/detailpesanan/alert.enum";
+import { AlertLabelEnum } from "@/lib/constants/detailpesanan/alert.enum";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { getAlertMetadata } from "@/lib/normalizers/detailpesanan/getAlertMetadata";
 import useGetFleetSearchStatus from "@/services/Shipper/detailpesanan/getFleetSearchStatus";
 
-import { BottomsheetMenuList } from "./components/BottomsheetMenuList";
+import { BottomsheetMenuList } from "./components/Bottomsheet/BottomsheetMenuList";
 import DriverInfoSlider from "./components/DriverInfoSlider";
-import { FleetStatusAlert } from "./components/FleetStatusAlert";
 import { FooterDetailPesanan } from "./components/FooterDetailPesanan";
-import { MethodInfo } from "./components/MethodInfo";
 import { ModalInformasiSlider } from "./components/ModalInformasiSlider";
 import { OrderInfo } from "./components/OrderInfo";
-import { PendingPaymentAlert } from "./components/PendingPaymentAlert";
-import { PendingPaymentDetail } from "./components/PendingPaymentDetail";
-import { PendingPrepareFleetAlert } from "./components/PendingPrepareFleetAlert";
-import { RouteInfo } from "./components/RouteInfo";
-import { TabsInfo } from "./components/TabsInfo";
-import { TransactionSummary } from "./components/TransactionSummary";
-
-const DEBUG_MODE = false;
+import { PendingPaymentAlert } from "./components/Pending/PendingPaymentAlert";
+import { PendingPaymentDetail } from "./components/Pending/PendingPaymentDetail";
+import { PendingPrepareFleetAlert } from "./components/Pending/PendingPrepareFleetAlert";
+import { TabContentDetailPIC } from "./components/Tab/TabContentDetailPIC";
+import { TabContentInformasiLainnya } from "./components/Tab/TabContentInformasiLainnya";
+import { TabContentRingkasan } from "./components/Tab/TabContentRingkasan";
 
 const WHITELIST_PREPARE_FLEET = [OrderStatusEnum.PREPARE_FLEET];
 const WHITELIST_FLEET_FOUND = [OrderStatusEnum.WAITING_PAYMENT_1];
@@ -36,40 +34,6 @@ const WHITELIST_PENDING_PAYMENT = [
   OrderStatusEnum.WAITING_PAYMENT_4,
   OrderStatusEnum.WAITING_REPAYMENT_2,
 ];
-
-const BLACKLIST_ROUTE_INFO = [
-  OrderStatusEnum.PREPARE_FLEET,
-  OrderStatusEnum.WAITING_PAYMENT_1,
-  OrderStatusEnum.WAITING_PAYMENT_2,
-];
-
-const getContentAlert = (type, t) => {
-  const info = AlertInfoEnum[type];
-  if (type === AlertTypeEnum.CONFIRMATION_WAITING_PREPARE_FLEET) return false;
-  if (info) return { label: t(AlertLabelEnum[type]), info };
-
-  if (type === AlertTypeEnum.WAITING_TIME_CHARGE) {
-    return {
-      label: t(AlertLabelEnum.WAITING_TIME_CHARGE),
-      button: {
-        onClick: () => alert("Lihat Detail"),
-        label: "Lihat Detail",
-      },
-    };
-  }
-
-  if (type === AlertTypeEnum.ORDER_CHANGES_CONFIRMATION) {
-    return {
-      label: t(AlertLabelEnum.ORDER_CHANGES_CONFIRMATION),
-      button: {
-        onClick: () => alert("Konfirmasi"),
-        label: "Konfirmasi",
-      },
-    };
-  }
-
-  return { label: AlertLabelEnum[type] };
-};
 
 const DetailPesananScreen = ({
   dataStatusPesanan,
@@ -104,7 +68,7 @@ const DetailPesananScreen = ({
           ]
         : []),
       ...(dataStatusPesanan?.alerts || [])
-        .map((item) => getContentAlert(item?.type, t))
+        .map((item) => getAlertMetadata(item?.type, t))
         .filter((val) => Boolean(val)),
     ];
   }, [dataStatusPesanan?.alerts, isShowWaitFleetAlert, t]);
@@ -135,8 +99,6 @@ const DetailPesananScreen = ({
 
         <AlertMultilineResponsive items={orderAlerts} />
 
-        {DEBUG_MODE && <FleetStatusAlert />}
-
         <OrderInfo dataStatusPesanan={dataStatusPesanan} />
 
         <DriverInfoSlider
@@ -144,27 +106,43 @@ const DetailPesananScreen = ({
           orderId={dataStatusPesanan?.orderId}
           orderStatus={dataStatusPesanan?.orderStatus}
         />
-        <TabsInfo
-          dataStatusPesanan={dataStatusPesanan}
-          dataDetailPIC={dataDetailPIC}
-          dataRingkasanPesanan={dataRingkasanPesanan}
-        />
 
-        {!BLACKLIST_ROUTE_INFO.includes(dataStatusPesanan?.orderStatus) && (
-          <RouteInfo dataDetailPesanan={dataRingkasanPesanan} />
-        )}
-        {true && <MethodInfo method={"va_bca"} />}
-        {true && (
-          <TransactionSummary documentShippingDetail={documentShippingDetail} />
-        )}
+        <Tabs className="w-full bg-white" defaultValue={"ringkasan"}>
+          <TabsList className="w-full">
+            <TabsTriggerWithSeparator value="ringkasan">
+              Ringkasan
+            </TabsTriggerWithSeparator>
+            <TabsTriggerWithSeparator value="informasi-lainnya">
+              Informasi Lainnya
+            </TabsTriggerWithSeparator>
+            <TabsTriggerWithSeparator value="detail-pic" showSeparator={false}>
+              Detail PIC
+            </TabsTriggerWithSeparator>
+          </TabsList>
+          <TabContentRingkasan
+            dataStatusPesanan={dataStatusPesanan}
+            dataRingkasanPesanan={dataRingkasanPesanan}
+            documentShippingDetail={documentShippingDetail}
+          />
+
+          <TabContentInformasiLainnya />
+          <TabContentDetailPIC dataDetailPIC={dataDetailPIC} />
+        </Tabs>
       </div>
 
-      <FooterDetailPesanan dataStatusPesanan={dataStatusPesanan} />
+      <FooterDetailPesanan
+        dataStatusPesanan={dataStatusPesanan}
+        dataRingkasanPembayaran={dataRingkasanPembayaran}
+      />
+
+      {/* <pre>{JSON.stringify(dataStatusPesanan, null, 2)}</pre> */}
 
       <ModalInformasiSlider open={isOpenInfo} onOpenChange={setIsOpenInfo} />
-      <BottomsheetMenuList open={isMenuOpen} onOpenChange={setIsMenuOpen} />
-
-      <pre>{JSON.stringify(dataStatusPesanan, null, 2)}</pre>
+      <BottomsheetMenuList
+        open={isMenuOpen}
+        onOpenChange={setIsMenuOpen}
+        dataStatusPesanan={dataStatusPesanan}
+      />
     </FormResponsiveLayout>
   );
 };

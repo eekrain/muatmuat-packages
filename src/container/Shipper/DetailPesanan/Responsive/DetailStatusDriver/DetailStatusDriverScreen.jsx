@@ -18,10 +18,6 @@ const DetailStatusDriverScreen = ({ dataStatusPesanan }) => {
     driverId,
   });
 
-  console.log(
-    "🚀 ~ DetailStatusDriverScreen ~ driverStatusTimeline:",
-    driverStatusTimeline
-  );
   const defaultIndex = dataStatusPesanan?.driverStatus.findIndex(
     (d) => d.driverId === driverId
   );

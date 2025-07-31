@@ -12,6 +12,7 @@ export const normalizeDetailPesananOrderDetail = ({
   dataAlerts,
   dataCancellationHistory,
   dataLegendStatus,
+  dataReview,
 }) => {
   try {
     const foundDocumentShipping = dataAdditionalServices.find(
@@ -34,6 +35,10 @@ export const normalizeDetailPesananOrderDetail = ({
       newPriceChange = priceChange;
     }
 
+    const reviewData = {
+      canReview: Boolean(dataOrderDetail?.canReview),
+      ...(dataReview ? dataReview : {}),
+    };
     const dataStatusPesanan = {
       orderId: dataOrderDetail.general?.orderId,
       orderCode:
@@ -78,6 +83,9 @@ export const normalizeDetailPesananOrderDetail = ({
       hasPriceCharge: newPriceCharge && newPriceCharge?.isPaid === false,
       hasPriceChange: Boolean(newPriceChange),
       totalUnit: dataOrderDetail.summary?.truckType?.totalUnit || 1,
+      reviewData,
+      isCancellable: Boolean(dataOrderDetail?.isCancellable),
+      isChangeable: Boolean(dataOrderDetail?.isChangeable),
     };
 
     const route = { muat: [], bongkar: [] };
@@ -152,33 +160,40 @@ export const normalizeDetailPesananOrderDetail = ({
       totalPrice: dataOrderDetail.summary?.price?.totalPrice,
       orderStatus: dataOrderDetail.general?.orderStatus,
       totalTruckUnit: dataOrderDetail.summary?.truckType?.totalUnit,
-      documentShippingDetail: {
-        recipientName: foundDocumentShipping?.addressInformation?.recipientName,
-        recipientPhone:
-          foundDocumentShipping?.addressInformation?.recipientPhone,
-        fullAddress: foundDocumentShipping?.addressInformation?.fullAddress,
-        detailAddress: foundDocumentShipping?.addressInformation?.detailAddress,
-        district: foundDocumentShipping?.addressInformation?.district,
-        city: foundDocumentShipping?.addressInformation?.city,
-        province: foundDocumentShipping?.addressInformation?.province,
-        postalCode: foundDocumentShipping?.addressInformation?.postalCode,
+      documentShippingDetail: foundDocumentShipping
+        ? {
+            recipientName:
+              foundDocumentShipping?.addressInformation?.recipientName,
+            recipientPhone:
+              foundDocumentShipping?.addressInformation?.recipientPhone,
+            fullAddress: foundDocumentShipping?.addressInformation?.fullAddress,
+            detailAddress:
+              foundDocumentShipping?.addressInformation?.detailAddress,
+            district: foundDocumentShipping?.addressInformation?.district,
+            city: foundDocumentShipping?.addressInformation?.city,
+            province: foundDocumentShipping?.addressInformation?.province,
+            postalCode: foundDocumentShipping?.addressInformation?.postalCode,
 
-        courier: foundDocumentShipping?.addressInformation?.courier,
-        courierPrice: foundDocumentShipping?.price,
-        insurancePrice:
-          foundDocumentShipping?.addressInformation?.insurancePrice,
-        totalPrice:
-          (Number(foundDocumentShipping?.price) || 0) +
-          (Number(foundDocumentShipping?.addressInformation?.insurancePrice) ||
-            0),
-      },
-      otherAdditionalService: {
-        totalPrice:
-          foundOtherAdditionalService.reduce(
-            (sum, item) => sum + item.price,
-            0
-          ) || 0,
-      },
+            courier: foundDocumentShipping?.addressInformation?.courier,
+            courierPrice: foundDocumentShipping?.price,
+            insurancePrice:
+              foundDocumentShipping?.addressInformation?.insurancePrice,
+            totalPrice:
+              (Number(foundDocumentShipping?.price) || 0) +
+              (Number(
+                foundDocumentShipping?.addressInformation?.insurancePrice
+              ) || 0),
+          }
+        : null,
+      otherAdditionalService: foundOtherAdditionalService
+        ? {
+            totalPrice:
+              foundOtherAdditionalService.reduce(
+                (sum, item) => sum + item.price,
+                0
+              ) || 0,
+          }
+        : null,
       priceCharge: newPriceCharge,
       priceChange: newPriceChange,
     };

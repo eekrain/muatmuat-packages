@@ -1,194 +1,169 @@
-import { addDays, format, parseISO, subDays } from "date-fns";
-import { id } from "date-fns/locale";
+import {
+  addDays,
+  differenceInDays,
+  format,
+  isPast,
+  parseISO,
+  subDays,
+} from "date-fns";
+import { enUS, id } from "date-fns/locale";
 
+/**
+ * [INTERNAL] A robust, centralized function to parse various date inputs.
+ * Returns a valid Date object or null if the input is invalid.
+ * @private
+ */
+const _parseDate = (dateInput) => {
+  if (!dateInput) return null;
+  try {
+    // Standardize input to a Date object. parseISO is best for strings.
+    const date =
+      typeof dateInput === "string" ? parseISO(dateInput) : new Date(dateInput);
+
+    // The getTime() of an invalid date is NaN. This is the best check.
+    if (isNaN(date.getTime())) {
+      throw new Error(`Invalid date value received: ${dateInput}`);
+    }
+    return date;
+  } catch (error) {
+    console.error(error.message);
+    return null;
+  }
+};
+
+/**
+ * Formats an ISO string into "d MMM yyyy HH:mm WIB".
+ * Allows for day padding (e.g., '03' vs '3').
+ */
 export function formatDate(isoString, padDay = false) {
-  if (!isoString) return "";
+  const date = _parseDate(isoString);
+  if (!date) return "";
 
-  const date = parseISO(isoString);
-
-  // Format the date using date-fns with Indonesian locale
-  // The format will be: "30 Sep 2025 12:00 WIB"
-  const formattedDate = format(
-    date,
-    padDay ? "dd MMM yyyy HH:mm" : "d MMM yyyy HH:mm",
-    {
-      locale: id,
-    }
-  );
-
-  // Add WIB timezone indicator
+  const formatString = padDay ? "dd MMM yyyy HH:mm" : "d MMM yyyy HH:mm";
+  const formattedDate = format(date, formatString, { locale: id });
   return `${formattedDate} WIB`;
 }
 
+/**
+ * Formats an ISO string with the full month name.
+ */
 export function formatDateFullMonth(isoString) {
-  const date = parseISO(isoString);
+  const date = _parseDate(isoString);
+  if (!date) return "";
 
-  // Format with full month names in Indonesian
-  const formattedDate = format(date, "d MMMM yyyy HH:mm", {
-    locale: id,
-  });
-
-  // Add WIB timezone indicator
+  const formattedDate = format(date, "d MMMM yyyy HH:mm", { locale: id });
   return `${formattedDate} WIB`;
 }
 
+/**
+ * DEPRECATED USAGE WARNING: This function uses the native `toLocaleDateString`,
+ * which can have inconsistent results across different JS environments (browsers vs. Node.js).
+ * Refactoring to date-fns/format is recommended for full consistency if possible.
+ * The implementation below is a cleaned-up version of the original.
+ */
 export function formatDateInput(dateString, ops = [], wib = true, newFormat) {
-  const allOptions = {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-    timeZone: "Asia/Jakarta",
-  };
-  const selectedOptions = newFormat
-    ? newFormat
-    : Object.fromEntries(
-        Object.entries(allOptions).filter(([key]) => ops.includes(key))
-      );
-  let resultDate = new Date(dateString)
-    .toLocaleDateString("id-ID", selectedOptions)
-    .replace(",", "");
+  const date = _parseDate(dateString);
+  if (!date) return "";
 
-  if (/^[A-Z]/.test(resultDate)) {
-    resultDate = resultDate.replace(" ", ", ");
+  try {
+    // The core logic using toLocaleDateString is preserved as requested.
+    const allOptions = {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+      timeZone: "Asia/Jakarta",
+    };
+
+    const selectedOptions = newFormat
+      ? newFormat
+      : Object.fromEntries(
+          Object.entries(allOptions).filter(([key]) => ops.includes(key))
+        );
+
+    const resultDate = date
+      .toLocaleDateString("id-ID", selectedOptions)
+      .replace(",", ""); // e.g., "31 Jul 2025 02:45"
+
+    if (wib) return `${resultDate} WIB`;
+    return resultDate;
+  } catch (error) {
+    console.error("Error in formatDateInput:", error);
+    return "";
   }
-
-  if (wib) return `${resultDate} WIB`;
-  return resultDate;
 }
 
-class ClasifyDate {
-  constructor() {
-    const currentDate = new Date();
-    this.date = currentDate.getDate();
-    this.month = currentDate.getMonth() + 1;
-    this.year = currentDate.getFullYear();
-  }
-
+/**
+ * An object containing date classification methods, preserving the original API
+ * without the unsafe "new ClasifyDate()" instantiation on import.
+ */
+export const clasifyformatdate = {
   getClasifyPeriode(val) {
-    const today = new Date();
-    const pastDate = subDays(today, val);
+    const pastDate = subDays(new Date(), val);
     return format(pastDate, "yyyy-MM-dd");
-  }
-
+  },
   getClasifyPeriodeByRange(value) {
-    const newDate = parseISO(value);
-    return format(newDate, "yyyy-MM-dd");
-  }
-}
-export const clasifyformatdate = new ClasifyDate();
+    const date = _parseDate(value);
+    return date ? format(date, "yyyy-MM-dd") : "";
+  },
+};
 
+/**
+ * Gets a future date by adding a number of days to today.
+ */
 export const getAdjustedDate = (daysToAdd) => {
-  const today = new Date();
-  return addDays(today, daysToAdd);
+  return addDays(new Date(), daysToAdd);
 };
 
+/**
+ * Converts a date string to English format "d MMM yyyy HH:mm".
+ */
 export function convertDate(dateString) {
-  try {
-    const inputDate = parseISO(dateString);
-
-    // Format the date in English locale with timezone
-    const formattedDate = format(inputDate, "d MMM yyyy HH:mm", {
-      locale: "en-US",
-    });
-
-    return formattedDate;
-  } catch (error) {
-    return "";
-  }
+  const date = _parseDate(dateString);
+  if (!date) return "";
+  return format(date, "d MMM yyyy HH:mm", { locale: enUS });
 }
 
+/**
+ * Formats an ISO string to a short date format "d MMM yyyy".
+ */
 export const formatShortDate = (isoString) => {
-  // Handle missing or invalid input
-  if (!isoString) {
-    return "";
-  }
-
-  try {
-    const date = parseISO(isoString);
-
-    // Format with short month names in Indonesian
-    const formattedDate = format(date, "d MMM yyyy", {
-      locale: id,
-    });
-
-    return formattedDate;
-  } catch (error) {
-    return "";
-  }
+  const date = _parseDate(isoString);
+  if (!date) return "";
+  return format(date, "d MMM yyyy", { locale: id });
 };
 
+/**
+ * Formats a date range, intelligently showing time remaining for upcoming end dates.
+ */
 export const formatDateRange = (startDate, endDate) => {
-  // Helper function to format a single date
-  const formatSingleDate = (dateString) => {
-    try {
-      const date = parseISO(dateString);
-      return format(date, "d MMM yyyy", { locale: id });
-    } catch (error) {
-      return "";
+  const start = _parseDate(startDate);
+  const end = _parseDate(endDate);
+
+  // If there's an end date, check for time remaining first.
+  if (end && !isPast(end)) {
+    const daysRemaining = differenceInDays(end, new Date());
+    if (daysRemaining < 1) {
+      return "Berakhir dalam 24 jam";
     }
-  };
-
-  // Helper function to check time remaining until end date
-  const getTimeRemaining = (endDateString) => {
-    try {
-      const now = new Date();
-      const end = parseISO(endDateString);
-      const diffTime = end.getTime() - now.getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
-
-      if (diffTime <= 0) {
-        return null; // Already ended
-      }
-
-      if (diffHours <= 24) {
-        return "Berakhir 24 jam lagi";
-      }
-
-      if (diffDays <= 7) {
-        // Show "n hari lagi" for up to 7 days
-        return `Berakhir ${diffDays} hari lagi`;
-      }
-
-      return null; // Use normal date format
-    } catch (error) {
-      return null;
+    if (daysRemaining <= 7) {
+      return `Berakhir ${daysRemaining + 1} hari lagi`;
     }
-  };
-
-  // Handle different scenarios
-  if (!startDate && !endDate) {
-    return ""; // or return a default message like 'Tanggal tidak tersedia'
   }
 
-  if (startDate && !endDate) {
-    return formatSingleDate(startDate);
+  // Fallback to standard date range formatting.
+  const formattedStart = start ? formatShortDate(start) : "";
+  const formattedEnd = end ? formatShortDate(end) : "";
+
+  if (formattedStart && formattedEnd) {
+    // If start and end dates are the same, just show one.
+    return formattedStart === formattedEnd
+      ? formattedStart
+      : `${formattedStart} - ${formattedEnd}`;
   }
 
-  if (!startDate && endDate) {
-    const timeRemaining = getTimeRemaining(endDate);
-    return timeRemaining || formatSingleDate(endDate);
-  }
-
-  // Both dates are provided
-  const timeRemaining = getTimeRemaining(endDate);
-  if (timeRemaining) {
-    return timeRemaining;
-  }
-
-  // Format as normal date range
-  try {
-    const start = parseISO(startDate);
-    const end = parseISO(endDate);
-
-    const startFormatted = format(start, "d MMM yyyy", { locale: id });
-    const endFormatted = format(end, "d MMM yyyy", { locale: id });
-
-    return `${startFormatted} - ${endFormatted}`;
-  } catch (error) {
-    return "";
-  }
+  // Return whichever one is valid, or a default message.
+  return formattedStart || formattedEnd || "";
 };

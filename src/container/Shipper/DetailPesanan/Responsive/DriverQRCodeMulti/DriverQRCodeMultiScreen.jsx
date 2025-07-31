@@ -89,7 +89,7 @@ const DriverQRItem = ({ driver, orderId }) => {
       className="flex flex-col gap-4 border-none px-4 py-5"
     >
       <DriverInfo.Header
-        statusCode={qrData?.driverInfo?.statusScan}
+        statusScan={qrData?.driverInfo?.statusScan}
         withMenu={false}
         mode="status-scan"
       />
