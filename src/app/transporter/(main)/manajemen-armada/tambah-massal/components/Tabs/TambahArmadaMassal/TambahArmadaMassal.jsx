@@ -381,7 +381,12 @@ const TambahArmadaMassal = () => {
         </div>
       </div>
 
-      <Modal open={isDraft} onOpenChange={() => setIsDraft(!isDraft)}>
+      <Modal
+        open={isDraft}
+        onOpenChange={() => {
+          onValueChange("draft");
+        }}
+      >
         <ModalContent className="w-modal-small text-center">
           <ModalHeader size="small" />
           <div className="flex flex-col items-center gap-4 px-6 py-9 text-black">
