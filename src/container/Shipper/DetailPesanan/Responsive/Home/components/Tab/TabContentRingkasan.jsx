@@ -6,6 +6,7 @@ import { TabsContent } from "@/components/Tabs/Tabs";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { formatDate } from "@/lib/utils/dateFormat";
 
+import AdditionalFeesDetail from "../AdditionalFeesDetail";
 import { MethodInfo } from "../MethodInfo";
 import { RouteInfo } from "../RouteInfo";
 import { TransactionSummary } from "../TransactionSummary";
@@ -22,7 +23,7 @@ export const TabContentRingkasan = ({
   documentShippingDetail,
 }) => {
   return (
-    <TabsContent value="ringkasan" className="space-y-2 bg-neutral-200">
+    <TabsContent value="ringkasan" className="mb-28 space-y-2 bg-neutral-200">
       <div className="bg-neutral-50 px-4 py-5">
         <h3 className="mb-4 text-sm font-semibold text-neutral-900">
           Informasi Armada
@@ -59,6 +60,7 @@ export const TabContentRingkasan = ({
       {true && (
         <TransactionSummary documentShippingDetail={documentShippingDetail} />
       )}
+      {true && <AdditionalFeesDetail />}
     </TabsContent>
   );
 };

@@ -4,8 +4,24 @@ import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 
-const PageTitle = ({ className, href = null, children, withBack = true }) => {
+const PageTitle = ({
+  className,
+  href = null,
+  children,
+  withBack = true,
+  onClick = null,
+}) => {
   const router = useRouter();
+
+  const handleBackClick = () => {
+    if (onClick) {
+      onClick();
+    } else if (href) {
+      router.push(href);
+    } else {
+      router.back();
+    }
+  };
 
   return (
     <div className={cn("mb-4 flex items-center gap-3", className)}>
@@ -16,13 +32,7 @@ const PageTitle = ({ className, href = null, children, withBack = true }) => {
           height={24}
           className="cursor-pointer"
           alt="Back"
-          onClick={() => {
-            if (href) {
-              router.push(href);
-            } else {
-              router.back();
-            }
-          }}
+          onClick={handleBackClick}
         />
       )}
       <h1 className="capsize text-xl font-bold">{children}</h1>
