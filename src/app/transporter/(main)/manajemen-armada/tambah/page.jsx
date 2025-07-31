@@ -38,6 +38,10 @@ const Page = () => {
   const { uploadDocument } = useDocumentUpload();
   const { t, isTranslationsReady } = useTranslation();
 
+  // Search states for dropdowns - must be declared before hooks
+  const [brandSearch, setBrandSearch] = useState("");
+  const [typeSearch, setTypeSearch] = useState("");
+
   // Valibot validation schema for fleet information form
   const fleetInformationSchema = v.object({
     // Required fields
@@ -201,6 +205,29 @@ const Page = () => {
   // Function untuk menandai field sebagai touched
   const markFieldAsTouched = (fieldName) => {
     trigger(fieldName);
+  };
+
+  // Function untuk mengecek apakah form sudah diisi
+  const isFormFilled = () => {
+    const formValues = watch();
+    const requiredFields = [
+      "licensePlate",
+      "truckTypeId",
+      "carrierTruckId",
+      "vehicleBrandId",
+      "vehicleTypeId",
+      "registrationYear",
+      "chassisNumber",
+      "stnkExpiryDate",
+      "kirNumber",
+      "kirExpiryDate",
+    ];
+
+    // Check if any required field has been filled
+    return requiredFields.some((field) => {
+      const value = formValues[field];
+      return value && value !== "" && value !== null;
+    });
   };
 
   // Update form values when images/documents change
@@ -367,13 +394,19 @@ const Page = () => {
   const { data: truckTypes, isLoading: isLoadingTruckTypes } =
     useGetDataJenisTruk();
   const { data: carrierTypes, isLoading: isLoadingCarrier } =
-    useGetDataTypeCarrier();
-  const { data: brands, isLoading: isLoadingBrands } = useGetBrandsVehicles();
-  const { data: vehicleTypes, isLoading: isLoadingTypes } =
-    useGetVehiclesTypes();
-  const filteredTypes = vehicleTypes.filter(
-    (item) => item.vehicleBrandId === watch("vehicleBrandId")
+    useGetDataTypeCarrier({ truckTypeId: watch("truckTypeId") });
+  const { data: brands, isLoading: isLoadingBrands } = useGetBrandsVehicles({
+    search: brandSearch,
+  });
+  const { data: vehicleTypes, isLoading: isLoadingTypes } = useGetVehiclesTypes(
+    {
+      vehicleBrandId: watch("vehicleBrandId"),
+      search: typeSearch,
+    }
   );
+
+  // Vehicle types are already filtered by API based on vehicleBrandId
+  const filteredTypes = vehicleTypes || [];
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: currentYear - 1950 }, (_, i) => {
@@ -396,6 +429,7 @@ const Page = () => {
 
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [isBackModalOpen, setIsBackModalOpen] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -428,7 +462,19 @@ const Page = () => {
     <>
       <div className="mx-auto max-w-[818px] py-6">
         <BreadCrumb data={BREADCRUMB} />
-        <PageTitle className="mt-4">{t("titleAddFleet")}</PageTitle>
+        <PageTitle
+          className="mt-4"
+          withBack={true}
+          onClick={() => {
+            if (isFormFilled()) {
+              setIsBackModalOpen(true);
+            } else {
+              router.back();
+            }
+          }}
+        >
+          {t("titleAddFleet")}
+        </PageTitle>
 
         {/* Informasi Armada */}
         <Card className="mb-6 !border-none">
@@ -450,7 +496,7 @@ const Page = () => {
               {renderSelectWithError("truckTypeId", {
                 options: isLoadingTruckTypes
                   ? []
-                  : truckTypes.map((item) => ({
+                  : (truckTypes || []).map((item) => ({
                       label: item.name,
                       value: item.id,
                       image: item.icon,
@@ -468,15 +514,11 @@ const Page = () => {
               {renderSelectWithError("carrierTruckId", {
                 options:
                   watch("truckTypeId") && !isLoadingCarrier
-                    ? carrierTypes
-                        .filter(
-                          (item) => item.truckTypeId === watch("truckTypeId")
-                        )
-                        .map((item) => ({
-                          label: item.name,
-                          value: item.id,
-                          image: item.icon,
-                        }))
+                    ? (carrierTypes || []).map((item) => ({
+                        label: item.name,
+                        value: item.id,
+                        image: item.icon,
+                      }))
                     : [],
                 value: watch("carrierTruckId"),
                 onChange: (val) => handleChange("carrierTruckId", val),
@@ -489,7 +531,7 @@ const Page = () => {
               {renderSelectWithError("vehicleBrandId", {
                 addData: true,
                 addLabel: t("buttonAddVehicleBrand"),
-                options: brands.map((item) => ({
+                options: (brands || []).map((item) => ({
                   label: item.name,
                   value: item.id,
                 })),
@@ -497,9 +539,16 @@ const Page = () => {
                 onChange: (val) => {
                   handleChange("vehicleBrandId", val);
                   handleChange("vehicleTypeId", "");
+                  setTypeSearch(""); // Reset vehicle type search when brand changes
+                  setBrandSearch(""); // Reset brand search after selection
                 },
                 placeholder: t("placeholderVehicleBrand"),
                 disabled: isLoadingBrands,
+                searchable: true,
+                onSearch: (searchTerm) => {
+                  console.log("Brand search triggered:", searchTerm);
+                  setBrandSearch(searchTerm);
+                },
                 addModalTitle: t("buttonAddVehicleBrand"),
                 addModalPlaceholder: t("placeholderAddVehicleBrand"),
                 addModalMinLength: 3,
@@ -522,9 +571,16 @@ const Page = () => {
                       }))
                     : [],
                 value: watch("vehicleTypeId"),
-                onChange: (val) => handleChange("vehicleTypeId", val),
+                onChange: (val) => {
+                  handleChange("vehicleTypeId", val);
+                  setTypeSearch(""); // Reset type search after selection
+                },
                 placeholder: t("placeholderVehicleType"),
                 disabled: !watch("vehicleBrandId") || isLoadingTypes,
+                searchable: true,
+                onSearch: (searchTerm) => {
+                  setTypeSearch(searchTerm);
+                },
                 addModalTitle: t("buttonAddVehicleType"),
                 addModalPlaceholder: t("placeholderAddVehicleType"),
                 addModalMinLength: 3,
@@ -731,7 +787,6 @@ const Page = () => {
                     // console.log("STNK file uploaded:", doc);
                   }}
                   onError={(err) => {
-                    console.error("STNK file upload error:", err);
                     markFieldAsTouched("docStnk");
                   }}
                   maxSize={10}
@@ -748,10 +803,8 @@ const Page = () => {
                     setDocPajak(doc);
                     markFieldAsTouched("docPajak");
                     clearErrors("docPajak"); // Add this line
-                    console.log("Pajak file uploaded:", doc);
                   }}
-                  onError={(err) => {
-                    console.error("Pajak file upload error:", err);
+                  onError={() => {
                     markFieldAsTouched("docPajak");
                   }}
                   maxSize={10}
@@ -992,7 +1045,7 @@ const Page = () => {
               <div className="flex flex-col items-center p-6">
                 {isLoadingPhotoExamples ? (
                   <div className="text-center">{t("messageLoading")}</div>
-                ) : photoExamples.length > 0 ? (
+                ) : (photoExamples || []).length > 0 ? (
                   <>
                     <div className="mb-2 text-center text-lg font-bold capitalize">
                       {photoExamples[activePhotoExampleIdx]?.description}
@@ -1006,7 +1059,7 @@ const Page = () => {
                       width={660}
                     />
                     <div className="mt-2 flex gap-4">
-                      {photoExamples.map((photo, idx) => (
+                      {(photoExamples || []).map((photo, idx) => (
                         <img
                           key={idx}
                           src={photo.photoUrl}
@@ -1038,13 +1091,13 @@ const Page = () => {
               <div className="flex flex-col items-center p-6">
                 {isLoadingDocumentExamples ? (
                   <div className="text-center">{t("messageLoading")}</div>
-                ) : documentExamples.length > 0 ? (
+                ) : (documentExamples || []).length > 0 ? (
                   <>
                     <div className="mb-2 text-center text-lg font-bold capitalize">
                       {documentExamples[activeDocumentExampleIdx]?.description}
                     </div>
                     <PhotoExampleCarousel
-                      images={documentExamples.map((doc, idx) => ({
+                      images={(documentExamples || []).map((doc, idx) => ({
                         ...doc,
                         url: doc.documentUrl,
                         alt: doc.description,
@@ -1083,7 +1136,7 @@ const Page = () => {
                       }
                     />
                     <div className="mt-2 flex gap-4">
-                      {documentExamples.map((doc, idx) =>
+                      {(documentExamples || []).map((doc, idx) =>
                         doc.documentUrl.endsWith(".pdf") ? (
                           <div
                             key={idx}
@@ -1175,6 +1228,34 @@ const Page = () => {
                   variant="muattrans-primary"
                   className="h-[44px] w-[120px] text-base"
                   onClick={() => setIsCancelModalOpen(false)}
+                >
+                  {t("buttonCancel")}
+                </Button>
+              </div>
+            </div>
+          </ModalContent>
+        </Modal>
+
+        {/* Back Confirmation Modal */}
+        <Modal open={isBackModalOpen} onOpenChange={setIsBackModalOpen}>
+          <ModalContent type="muatmuat" className="w-[496px]">
+            <ModalHeader type="muatmuat" size="small" />
+            <div className="flex flex-col items-center gap-y-6 px-6 py-9">
+              <p className="text-center text-base font-medium leading-[22.4px] text-neutral-900">
+                {t("titleConfirmCancel")}
+              </p>
+              <div className="flex items-center gap-x-2">
+                <Button
+                  variant="muattrans-primary-secondary"
+                  className="h-[44px] w-[120px] text-base"
+                  onClick={() => router.back()}
+                >
+                  {t("buttonYes")}
+                </Button>
+                <Button
+                  variant="muattrans-primary"
+                  className="h-[44px] w-[120px] text-base"
+                  onClick={() => setIsBackModalOpen(false)}
                 >
                   {t("buttonCancel")}
                 </Button>
