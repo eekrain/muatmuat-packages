@@ -15,6 +15,7 @@ const SelectFilterRadix = ({
   value = null,
   onChange = () => {},
   onAddNew = null,
+  onSearch = null, // New prop for server-side search
   addLabel = "Tambah Data Baru",
   placeholder = "Pilih...",
   className = "",
@@ -28,6 +29,7 @@ const SelectFilterRadix = ({
   addModalMinLength = 3,
   addModalValidate = (val) => /^[a-zA-Z0-9\s]+$/.test(val),
   addModalErrorMessage = "Input tidak valid",
+  onOpenChange = null, // New prop for open/close events
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOption, setSelectedOption] = useState(value);
@@ -36,16 +38,28 @@ const SelectFilterRadix = ({
   const [showAddModal, setShowAddModal] = useState(false);
   const [addModalValue, setAddModalValue] = useState("");
   const [addModalError, setAddModalError] = useState("");
+  const searchTimeoutRef = useRef(null);
 
-  // Filter options based on search term
-  const filteredOptions = options.filter((option) =>
-    option.label.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter options based on search term (only for client-side filtering)
+  // For server-side search, we rely on the options prop which comes from API
+  const filteredOptions = onSearch
+    ? options // Use all options from API when server-side search is enabled
+    : options.filter((option) =>
+        option.label.toLowerCase().includes(searchTerm.toLowerCase())
+      );
 
   // Clear search input when dropdown close
   useEffect(() => {
-    if (!open) setSearchTerm("");
-  }, [open]);
+    if (!open) {
+      setSearchTerm("");
+      // Clear any pending search timeout
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+      // Call onSearch with empty string to reset search
+      if (onSearch) onSearch("");
+    }
+  }, [open, onSearch]);
 
   // Update selected option when value prop changes
   useEffect(() => {
@@ -91,12 +105,31 @@ const SelectFilterRadix = ({
   };
 
   const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
+    const newSearchTerm = e.target.value;
+    setSearchTerm(newSearchTerm);
+
+    // Clear previous timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    // Debounce search to avoid too many API calls
+    searchTimeoutRef.current = setTimeout(() => {
+      if (onSearch) {
+        onSearch(newSearchTerm);
+      }
+    }, 300); // 300ms delay
   };
 
   return (
     <>
-      <Popover.Root open={open} onOpenChange={setOpen}>
+      <Popover.Root
+        open={open}
+        onOpenChange={(isOpen) => {
+          setOpen(isOpen);
+          if (onOpenChange) onOpenChange(isOpen);
+        }}
+      >
         <Popover.Trigger asChild>
           <button
             type="button"
@@ -157,7 +190,17 @@ const SelectFilterRadix = ({
                 />
                 {searchTerm && (
                   <button
-                    onClick={() => setSearchTerm("")}
+                    onClick={() => {
+                      setSearchTerm("");
+                      // Clear any pending search timeout
+                      if (searchTimeoutRef.current) {
+                        clearTimeout(searchTimeoutRef.current);
+                      }
+                      // Immediately trigger search with empty string
+                      if (onSearch) {
+                        onSearch("");
+                      }
+                    }}
                     className="flex-shrink-0 rounded hover:bg-neutral-100"
                     type="button"
                     aria-label="Clear search"

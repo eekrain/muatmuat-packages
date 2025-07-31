@@ -125,6 +125,10 @@ const Page = () => {
   const { data, error, isLoading } = useGetVehicleDetail(uuid);
   const { t, isTranslationsReady } = useTranslation();
 
+  // Add search state variables at the top
+  const [brandSearch, setBrandSearch] = useState("");
+  const [typeSearch, setTypeSearch] = useState("");
+
   const fleetInformationSchema = isTranslationsReady
     ? createFleetInformationSchema(t)
     : v.object({});
@@ -309,13 +313,19 @@ const Page = () => {
   const { data: truckTypes, isLoading: isLoadingTruckTypes } =
     useGetDataJenisTruk();
   const { data: carrierTypes, isLoading: isLoadingCarrier } =
-    useGetDataTypeCarrier();
-  const { data: brands, isLoading: isLoadingBrands } = useGetBrandsVehicles();
-  const { data: vehicleTypes, isLoading: isLoadingTypes } =
-    useGetVehiclesTypes();
-  const filteredTypes = vehicleTypes.filter(
-    (item) => item.vehicleBrandId === watch("vehicleBrandId")
+    useGetDataTypeCarrier({ truckTypeId: watch("truckTypeId") });
+  const { data: brands, isLoading: isLoadingBrands } = useGetBrandsVehicles({
+    search: brandSearch,
+  });
+  const { data: vehicleTypes, isLoading: isLoadingTypes } = useGetVehiclesTypes(
+    {
+      vehicleBrandId: watch("vehicleBrandId"),
+      search: typeSearch,
+    }
   );
+
+  // Use vehicleTypes directly as it's already filtered by API
+  const filteredTypes = vehicleTypes || [];
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: currentYear - 1950 }, (_, i) => {
@@ -491,15 +501,11 @@ const Page = () => {
                 <SelectFilterRadix
                   options={
                     watch("truckTypeId") && !isLoadingCarrier
-                      ? carrierTypes
-                          .filter(
-                            (item) => item.truckTypeId === watch("truckTypeId")
-                          )
-                          .map((item) => ({
-                            label: item.name,
-                            value: item.id,
-                            image: item.icon,
-                          }))
+                      ? (carrierTypes || []).map((item) => ({
+                          label: item.name,
+                          value: item.id,
+                          image: item.icon,
+                        }))
                       : []
                   }
                   value={watch("carrierTruckId")}
@@ -517,7 +523,7 @@ const Page = () => {
                 <SelectFilterRadix
                   addData
                   addLabel={t("buttonAddVehicleBrand")}
-                  options={brands.map((item) => ({
+                  options={(brands || []).map((item) => ({
                     label: item.name,
                     value: item.id,
                   }))}
@@ -525,6 +531,8 @@ const Page = () => {
                   onChange={(val) => {
                     handleChange("vehicleBrandId", val);
                     handleChange("vehicleTypeId", "");
+                    setTypeSearch(""); // Reset vehicle type search when brand changes
+                    setBrandSearch(""); // Reset brand search after selection
                   }}
                   placeholder={t("placeholderVehicleBrand")}
                   disabled={isLoadingBrands}
@@ -534,6 +542,10 @@ const Page = () => {
                   onAddNew={(newBrand) =>
                     handleChange("vehicleBrandName", newBrand)
                   }
+                  searchable={true}
+                  onSearch={(searchTerm) => {
+                    setBrandSearch(searchTerm);
+                  }}
                   className={selectClass}
                 />
                 {renderError("vehicleBrandId")}
@@ -553,7 +565,10 @@ const Page = () => {
                       : []
                   }
                   value={watch("vehicleTypeId")}
-                  onChange={(val) => handleChange("vehicleTypeId", val)}
+                  onChange={(val) => {
+                    handleChange("vehicleTypeId", val);
+                    setTypeSearch(""); // Reset type search after selection
+                  }}
                   placeholder={t("placeholderVehicleType")}
                   disabled={!watch("vehicleBrandId") || isLoadingTypes}
                   addModalTitle={t("buttonAddVehicleType")}
@@ -562,6 +577,10 @@ const Page = () => {
                   onAddNew={(newType) =>
                     handleChange("vehicleTypeName", newType)
                   }
+                  searchable={true}
+                  onSearch={(searchTerm) => {
+                    setTypeSearch(searchTerm);
+                  }}
                   className={selectClass}
                 />
                 {renderError("vehicleTypeId")}

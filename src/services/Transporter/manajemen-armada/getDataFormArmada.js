@@ -1,6 +1,8 @@
 import useSWR from "swr";
 
-// import fetcherMuatrans from "@/lib/axios"; // Uncomment this when using real API
+import { fetcherMuatrans } from "@/lib/axios";
+
+const useMockData = true; // toggle mock data
 
 // Endpoint constants
 export const URL_JENIS_TRUK = "/v1/master/truck-types";
@@ -10,8 +12,8 @@ export const URL_VEHICLES_TYPES = "/v1/master/vehicle-types";
 export const URL_VEHICLES_EXAMPLE_PHOTO = "/v1/examples/vehicle-photos";
 export const URL_VEHICLES_DOCUMENT_EXAMPLE = "/v1/examples/vehicle-documents";
 
-// Mock data fallback
-const mockJenisTruk = {
+// Mock API results for development/testing
+export const mockJenisTruk = {
   data: {
     Message: {
       Code: 200,
@@ -35,7 +37,7 @@ const mockJenisTruk = {
   },
 };
 
-const mockTypeCarrier = {
+export const mockTypeCarrier = {
   data: {
     Message: {
       Code: 200,
@@ -43,6 +45,7 @@ const mockTypeCarrier = {
     },
     Data: {
       carrierTypes: [
+        // Carriers for Colt Diesel Double (550e8400-e29b-41d4-a716-446655440000)
         {
           id: "550e8400-e29b-41d4-a716-446655440001",
           name: "Box",
@@ -55,13 +58,26 @@ const mockTypeCarrier = {
           icon: "/img/mock-add-armada/carrier/flatbed.png",
           truckTypeId: "550e8400-e29b-41d4-a716-446655440000",
         },
+        // Carriers for Tractor Head 4x2 (550e8400-e29b-41d3-a716-446655440000)
+        {
+          id: "550e8400-e29b-41d4-a716-446655440002",
+          name: "Container",
+          icon: "/img/mock-add-armada/carrier/container.png",
+          truckTypeId: "550e8400-e29b-41d3-a716-446655440000",
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440003",
+          name: "Low Bed",
+          icon: "/img/mock-add-armada/carrier/lowbed.png",
+          truckTypeId: "550e8400-e29b-41d3-a716-446655440000",
+        },
       ],
     },
     Type: "CARRIER_TYPES_LIST",
   },
 };
 
-const mockBrandsVehicles = {
+export const mockBrandsVehicles = {
   data: {
     Message: {
       Code: 200,
@@ -74,11 +90,31 @@ const mockBrandsVehicles = {
           name: "Hino",
           description: "Merek kendaraan Hino",
         },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440006",
+          name: "Mitsubishi Fuso",
+          description: "Merek kendaraan Mitsubishi Fuso",
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440007",
+          name: "Isuzu",
+          description: "Merek kendaraan Isuzu",
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440012",
+          name: "Toyota",
+          description: "Merek kendaraan Toyota",
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440013",
+          name: "Daihatsu",
+          description: "Merek kendaraan Daihatsu",
+        },
       ],
       pagination: {
         page: 1,
         limit: 10,
-        totalItems: 8,
+        totalItems: 5,
         totalPages: 1,
       },
     },
@@ -86,7 +122,7 @@ const mockBrandsVehicles = {
   },
 };
 
-const mockVehiclesTypes = {
+export const mockVehiclesTypes = {
   data: {
     Message: {
       Code: 200,
@@ -94,17 +130,76 @@ const mockVehiclesTypes = {
     },
     Data: {
       vehicleTypes: [
+        // Types for Hino (550e8400-e29b-41d4-a716-446655440002)
         {
           id: "550e8400-e29b-41d4-a716-446655440003",
           name: "Hino Dutro",
           description: "Tipe kendaraan Hino Dutro",
           vehicleBrandId: "550e8400-e29b-41d4-a716-446655440002",
         },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440004",
+          name: "Hino Ranger",
+          description: "Tipe kendaraan Hino Ranger",
+          vehicleBrandId: "550e8400-e29b-41d4-a716-446655440002",
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440005",
+          name: "Hino 500 Series",
+          description: "Tipe kendaraan Hino 500 Series",
+          vehicleBrandId: "550e8400-e29b-41d4-a716-446655440002",
+        },
+        // Types for Mitsubishi Fuso (550e8400-e29b-41d4-a716-446655440006)
+        {
+          id: "550e8400-e29b-41d4-a716-446655440008",
+          name: "Canter",
+          description: "Tipe kendaraan Mitsubishi Canter",
+          vehicleBrandId: "550e8400-e29b-41d4-a716-446655440006",
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440009",
+          name: "Fighter",
+          description: "Tipe kendaraan Mitsubishi Fighter",
+          vehicleBrandId: "550e8400-e29b-41d4-a716-446655440006",
+        },
+        // Types for Isuzu (550e8400-e29b-41d4-a716-446655440007)
+        {
+          id: "550e8400-e29b-41d4-a716-446655440010",
+          name: "Elf",
+          description: "Tipe kendaraan Isuzu Elf",
+          vehicleBrandId: "550e8400-e29b-41d4-a716-446655440007",
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440011",
+          name: "Giga",
+          description: "Tipe kendaraan Isuzu Giga",
+          vehicleBrandId: "550e8400-e29b-41d4-a716-446655440007",
+        },
+        // Types for Toyota (550e8400-e29b-41d4-a716-446655440012)
+        {
+          id: "550e8400-e29b-41d4-a716-446655440014",
+          name: "Dyna",
+          description: "Tipe kendaraan Toyota Dyna",
+          vehicleBrandId: "550e8400-e29b-41d4-a716-446655440012",
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440015",
+          name: "Hiace",
+          description: "Tipe kendaraan Toyota Hiace",
+          vehicleBrandId: "550e8400-e29b-41d4-a716-446655440012",
+        },
+        // Types for Daihatsu (550e8400-e29b-41d4-a716-446655440013)
+        {
+          id: "550e8400-e29b-41d4-a716-446655440016",
+          name: "Gran Max",
+          description: "Tipe kendaraan Daihatsu Gran Max",
+          vehicleBrandId: "550e8400-e29b-41d4-a716-446655440013",
+        },
       ],
       pagination: {
         page: 1,
         limit: 10,
-        totalItems: 4,
+        totalItems: 10,
         totalPages: 1,
       },
     },
@@ -112,7 +207,7 @@ const mockVehiclesTypes = {
   },
 };
 
-const mockVehiclesExamplePhoto = {
+export const mockVehiclesExamplePhoto = {
   data: {
     Message: {
       Code: 200,
@@ -146,7 +241,7 @@ const mockVehiclesExamplePhoto = {
   },
 };
 
-const mockVehiclesDocumentExample = {
+export const mockVehiclesDocumentExample = {
   data: {
     Message: {
       Code: 200,
@@ -175,127 +270,287 @@ const mockVehiclesDocumentExample = {
   },
 };
 
-// --- FETCHER API EXAMPLE (uncomment when API ready) ---
-// export const fetcherJenisTruk = async (url) => {
-//   const result = await fetcherMuatrans.get(url);
-//   return result?.data;
-// };
-//
-// export const fetcherTypeCarrier = async (url) => {
-//   const result = await fetcherMuatrans.get(url);
-//   return result?.data;
-// };
-//
-// export const fetcherBrandsVehicles = async (url) => {
-//   const result = await fetcherMuatrans.get(url);
-//   return result?.data;
-// };
-//
-// export const fetcherVehiclesTypes = async (url) => {
-//   const result = await fetcherMuatrans.get(url);
-//   return result?.data;
-// };
-//
-// export const fetcherVehiclesExamplePhoto = async (url) => {
-//   const result = await fetcherMuatrans.get(url);
-//   return result?.data;
-// };
+export const getDataJenisTruk = async (cacheKey) => {
+  const params = cacheKey?.split("/")?.[1];
 
-function buildQueryString(params) {
-  if (!params) return "";
-  const esc = encodeURIComponent;
-  const query = Object.entries(params)
-    .filter(([_, v]) => v !== undefined && v !== null && v !== "")
-    .map(([k, v]) => `${esc(k)}=${esc(v)}`)
-    .join("&");
-  return query ? `?${query}` : "";
-}
+  let result;
+  if (useMockData) {
+    result = mockJenisTruk;
+  } else {
+    const query = params ? `?${new URLSearchParams(params).toString()}` : "";
+    result = await fetcherMuatrans.get(`${URL_JENIS_TRUK}${query}`);
+  }
 
-const fetcher = async (url) => {
-  if (url.startsWith(URL_JENIS_TRUK)) return mockJenisTruk;
-  if (url.startsWith(URL_TYPE_CARRIER)) return mockTypeCarrier;
-  if (url.startsWith(URL_BRANDS_VEHICLES)) return mockBrandsVehicles;
-  if (url.startsWith(URL_VEHICLES_TYPES)) return mockVehiclesTypes;
-  if (url.startsWith(URL_VEHICLES_EXAMPLE_PHOTO))
-    return mockVehiclesExamplePhoto;
-  if (url.startsWith(URL_VEHICLES_DOCUMENT_EXAMPLE))
-    return mockVehiclesDocumentExample;
-  throw new Error("Unknown endpoint");
+  return result?.data?.Data?.truckTypes || [];
 };
 
-export function useGetDataJenisTruk(params) {
-  const endpoint = URL_JENIS_TRUK + buildQueryString(params);
-  // SWR with mock fetcher (replace with fetcherJenisTruk for real API)
-  // return useSWR(endpoint, fetcherJenisTruk);
-  const { data, error, isLoading } = useSWR(endpoint, fetcher);
-  return {
-    data: data?.data?.Data?.truckTypes || [],
-    raw: data,
-    isLoading,
-    isError: !!error,
-  };
-}
+export const getDataTypeCarrier = async (cacheKey) => {
+  const params = cacheKey?.split("/")?.[1];
+  const searchParams = params
+    ? new URLSearchParams(params)
+    : new URLSearchParams();
+  const truckTypeId = searchParams.get("truckTypeId");
 
-export function useGetDataTypeCarrier(params) {
-  const endpoint = URL_TYPE_CARRIER + buildQueryString(params);
-  // return useSWR(endpoint, fetcherTypeCarrier);
-  const { data, error, isLoading } = useSWR(endpoint, fetcher);
-  return {
-    data: data?.data?.Data?.carrierTypes || [],
-    raw: data,
-    isLoading,
-    isError: !!error,
-  };
-}
+  // Don't fetch if truckTypeId is not provided
+  if (!truckTypeId) {
+    return [];
+  }
 
-export function useGetBrandsVehicles(params) {
-  const endpoint = URL_BRANDS_VEHICLES + buildQueryString(params);
-  // return useSWR(endpoint, fetcherBrandsVehicles);
-  const { data, error, isLoading } = useSWR(endpoint, fetcher);
-  return {
-    data: data?.data?.Data?.vehicleBrands || [],
-    pagination: data?.data?.Data?.pagination,
-    raw: data,
-    isLoading,
-    isError: !!error,
-  };
-}
+  let result;
+  if (useMockData) {
+    // Filter mock data based on truckTypeId
+    const filteredCarriers = mockTypeCarrier.data.Data.carrierTypes.filter(
+      (carrier) => carrier.truckTypeId === truckTypeId
+    );
+    result = {
+      ...mockTypeCarrier,
+      data: {
+        ...mockTypeCarrier.data,
+        Data: {
+          ...mockTypeCarrier.data.Data,
+          carrierTypes: filteredCarriers,
+        },
+      },
+    };
+  } else {
+    const query = `?${searchParams.toString()}`;
+    result = await fetcherMuatrans.get(`${URL_TYPE_CARRIER}${query}`);
+  }
 
-export function useGetVehiclesTypes(params) {
-  const endpoint = URL_VEHICLES_TYPES + buildQueryString(params);
-  // return useSWR(endpoint, fetcherVehiclesTypes);
-  const { data, error, isLoading } = useSWR(endpoint, fetcher);
-  return {
-    data: data?.data?.Data?.vehicleTypes || [],
-    pagination: data?.data?.Data?.pagination,
-    raw: data,
-    isLoading,
-    isError: !!error,
-  };
-}
+  return result?.data?.Data?.carrierTypes || [];
+};
 
-export function useGetVehiclesExamplePhoto(params) {
-  const endpoint = URL_VEHICLES_EXAMPLE_PHOTO + buildQueryString(params);
-  // return useSWR(endpoint, fetcherVehiclesExamplePhoto);
-  const { data, error, isLoading } = useSWR(endpoint, fetcher);
-  return {
-    data: data?.data?.Data?.examples || [],
-    raw: data,
-    isLoading,
-    isError: !!error,
-  };
-}
+export const getBrandsVehicles = async (cacheKey) => {
+  const params = cacheKey?.split("/")?.[1];
+  const searchParams = params
+    ? new URLSearchParams(params)
+    : new URLSearchParams();
+  const searchTerm = searchParams.get("search") || "";
 
-export function useGetVehiclesDocumentExample(params) {
-  const endpoint = URL_VEHICLES_DOCUMENT_EXAMPLE + buildQueryString(params);
-  const { data, error, isLoading } = useSWR(endpoint, fetcher);
+  let result;
+  if (useMockData) {
+    // Filter mock data based on search term
+    let filteredBrands = mockBrandsVehicles.data.Data.vehicleBrands;
+
+    if (searchTerm) {
+      filteredBrands = filteredBrands.filter((brand) =>
+        brand.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    result = {
+      ...mockBrandsVehicles,
+      data: {
+        ...mockBrandsVehicles.data,
+        Data: {
+          ...mockBrandsVehicles.data.Data,
+          vehicleBrands: filteredBrands,
+          pagination: {
+            ...mockBrandsVehicles.data.Data.pagination,
+            totalItems: filteredBrands.length,
+          },
+        },
+      },
+    };
+  } else {
+    const query = params ? `?${new URLSearchParams(params).toString()}` : "";
+    result = await fetcherMuatrans.get(`${URL_BRANDS_VEHICLES}${query}`);
+  }
+
   return {
-    data: data?.data?.Data?.examples || [],
-    raw: data,
+    data: result?.data?.Data?.vehicleBrands || [],
+    pagination: result?.data?.Data?.pagination,
+    raw: result,
+  };
+};
+
+export const getVehiclesTypes = async (cacheKey) => {
+  const params = cacheKey?.split("/")?.[1];
+  const searchParams = params
+    ? new URLSearchParams(params)
+    : new URLSearchParams();
+  const vehicleBrandId = searchParams.get("vehicleBrandId");
+  const searchTerm = searchParams.get("search") || "";
+
+  // Don't fetch if vehicleBrandId is not provided
+  if (!vehicleBrandId) {
+    return {
+      data: [],
+      pagination: null,
+      raw: null,
+    };
+  }
+
+  let result;
+  if (useMockData) {
+    // Filter mock data based on vehicleBrandId and search term
+    let filteredTypes = mockVehiclesTypes.data.Data.vehicleTypes.filter(
+      (type) => type.vehicleBrandId === vehicleBrandId
+    );
+
+    if (searchTerm) {
+      filteredTypes = filteredTypes.filter((type) =>
+        type.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    result = {
+      ...mockVehiclesTypes,
+      data: {
+        ...mockVehiclesTypes.data,
+        Data: {
+          ...mockVehiclesTypes.data.Data,
+          vehicleTypes: filteredTypes,
+          pagination: {
+            ...mockVehiclesTypes.data.Data.pagination,
+            totalItems: filteredTypes.length,
+          },
+        },
+      },
+    };
+  } else {
+    const query = `?${searchParams.toString()}`;
+    result = await fetcherMuatrans.get(`${URL_VEHICLES_TYPES}${query}`);
+  }
+
+  return {
+    data: result?.data?.Data?.vehicleTypes || [],
+    pagination: result?.data?.Data?.pagination,
+    raw: result,
+  };
+};
+
+export const getVehiclesExamplePhoto = async (cacheKey) => {
+  const params = cacheKey?.split("/")?.[1];
+
+  let result;
+  if (useMockData) {
+    result = mockVehiclesExamplePhoto;
+  } else {
+    const query = params ? `?${new URLSearchParams(params).toString()}` : "";
+    result = await fetcherMuatrans.get(`${URL_VEHICLES_EXAMPLE_PHOTO}${query}`);
+  }
+
+  return result?.data?.Data?.examples || [];
+};
+
+export const getVehiclesDocumentExample = async (cacheKey) => {
+  const params = cacheKey?.split("/")?.[1];
+
+  let result;
+  if (useMockData) {
+    result = mockVehiclesDocumentExample;
+  } else {
+    const query = params ? `?${new URLSearchParams(params).toString()}` : "";
+    result = await fetcherMuatrans.get(
+      `${URL_VEHICLES_DOCUMENT_EXAMPLE}${query}`
+    );
+  }
+
+  return result?.data?.Data?.examples || [];
+};
+
+export const useGetDataJenisTruk = (params) => {
+  const paramsString = params ? new URLSearchParams(params).toString() : "";
+  const { data, error, isLoading } = useSWR(
+    `getDataJenisTruk/${paramsString}`,
+    getDataJenisTruk
+  );
+  return {
+    data: data || [],
     isLoading,
     isError: !!error,
   };
-}
+};
+
+export const useGetDataTypeCarrier = (params) => {
+  const paramsString = params ? new URLSearchParams(params).toString() : "";
+  const truckTypeId = params?.truckTypeId;
+
+  // Only fetch when truckTypeId is provided
+  const { data, error, isLoading } = useSWR(
+    truckTypeId ? `getDataTypeCarrier/${paramsString}` : null,
+    getDataTypeCarrier
+  );
+  return {
+    data: data || [],
+    isLoading,
+    isError: !!error,
+  };
+};
+
+export const useGetBrandsVehicles = (params) => {
+  const paramsString = params ? new URLSearchParams(params).toString() : "";
+  const { data, error, isLoading } = useSWR(
+    `getBrandsVehicles/${paramsString}`,
+    getBrandsVehicles
+  );
+  return {
+    data: data?.data || [],
+    pagination: data?.pagination,
+    raw: data?.raw,
+    isLoading,
+    isError: !!error,
+  };
+};
+
+export const useGetVehiclesTypes = (params) => {
+  const paramsString = params ? new URLSearchParams(params).toString() : "";
+  const vehicleBrandId = params?.vehicleBrandId;
+
+  // Only fetch when vehicleBrandId is provided
+  const { data, error, isLoading } = useSWR(
+    vehicleBrandId ? `getVehiclesTypes/${paramsString}` : null,
+    getVehiclesTypes
+  );
+  return {
+    data: data?.data || [],
+    pagination: data?.pagination,
+    raw: data?.raw,
+    isLoading,
+    isError: !!error,
+  };
+};
+
+export const useGetVehiclesExamplePhoto = (params) => {
+  const paramsString = params ? new URLSearchParams(params).toString() : "";
+  const { data, error, isLoading } = useSWR(
+    `getVehiclesExamplePhoto/${paramsString}`,
+    getVehiclesExamplePhoto
+  );
+  return {
+    data: data || [],
+    isLoading,
+    isError: !!error,
+  };
+};
+
+export const useGetVehiclesDocumentExample = (params) => {
+  const paramsString = params ? new URLSearchParams(params).toString() : "";
+  const { data, error, isLoading } = useSWR(
+    `getVehiclesDocumentExample/${paramsString}`,
+    getVehiclesDocumentExample
+  );
+  return {
+    data: data || [],
+    isLoading,
+    isError: !!error,
+  };
+};
+
+// Mock API result for postNewVehicle
+export const mockPostNewVehicleResult = {
+  Message: {
+    Code: 201,
+    Text: "Armada berhasil ditambahkan",
+  },
+  Data: {
+    vehicleId: "550e8400-e29b-41d4-a716-446655440099",
+    status: "PENDING_APPROVAL",
+    createdAt: new Date().toISOString(),
+  },
+  Type: "NEW_VEHICLE_CREATED",
+};
 
 /**
  * Menyimpan data armada baru ke database.
@@ -304,6 +559,12 @@ export function useGetVehiclesDocumentExample(params) {
  * @returns {Promise<Object>} Response dari API.
  */
 export async function postNewVehicle(data, token) {
+  if (useMockData) {
+    // Simulate API delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return mockPostNewVehicleResult;
+  }
+
   const res = await fetch("/v1/vehicles", {
     method: "POST",
     headers: {
