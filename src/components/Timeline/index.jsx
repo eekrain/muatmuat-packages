@@ -117,7 +117,7 @@ export const TimelineItem = ({
           )}
         >
           {!variant.startsWith("bullet") && (
-            <div className="mt-[1px] text-xxs md:-ml-[1px] md:mt-[1px]">
+            <div className="-ml-[0.5px] -mt-[0.5px] text-xxs md:-ml-[1px] md:mt-[1px]">
               {index + 1}
             </div>
           )}
