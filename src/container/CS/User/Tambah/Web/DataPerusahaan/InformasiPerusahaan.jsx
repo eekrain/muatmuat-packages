@@ -2,30 +2,26 @@
 
 import { useState } from "react";
 
-import Button from "@/components/Button/Button";
+import ImageUploadWithCrop from "@/components/FileUpload/ImageUploudWithModal";
+import ImageUploudWithModal from "@/components/FileUpload/ImageUploudWithModal";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import Input from "@/components/Form/Input";
 import { Select } from "@/components/Form/Select";
+
 // Ensure this import path is correct
-import IconComponent from "@/components/IconComponent/IconComponent";
 
 function InformasiPerusahaan() {
-  // State for each field
-  const [logoPerusahaan, setLogoPerusahaan] = useState(null); // For file upload
+  const [logoFile, setLogoFile] = useState(null);
+
+  const handleUploadSuccess = (file) => {
+    setLogoFile(file);
+    // Kamu bisa langsung upload ke server di sini jika perlu
+    // atau simpan base64/blob/URL.createObjectURL
+  };
   const [namaPerusahaan, setNamaPerusahaan] = useState("");
   // Initialize badanUsaha to an empty string so the placeholder is shown initially
   const [badanUsaha, setBadanUsaha] = useState("");
   const [noTeleponPerusahaan, setNoTeleponPerusahaan] = useState("");
-
-  // Function to handle file upload
-  const handleLogoUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      // You might want to add validation here for file type and size
-      setLogoPerusahaan(file);
-      console.log("File selected:", file.name);
-    }
-  };
 
   // Define options for "Badan Usaha"
   // REMOVE THE PLACEHOLDER OPTION FROM HERE
@@ -44,44 +40,7 @@ function InformasiPerusahaan() {
       <FormContainer>
         {/* Logo Perusahaan */}
         <FormLabel required>Logo Perusahaan</FormLabel>
-        <div className="mb-4 flex items-center space-x-4">
-          <div className="flex h-[76px] w-[76px] cursor-pointer items-center justify-center overflow-hidden rounded-full border border-gray-500 bg-neutral-200">
-            {logoPerusahaan ? (
-              <img
-                src={URL.createObjectURL(logoPerusahaan)}
-                alt="Company Logo Preview"
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <label htmlFor="logo-upload" className="cursor-pointer">
-                {" "}
-                {/* Wrap IconComponent with a label for clickability */}
-                <IconComponent
-                  src="/icons/photo.svg"
-                  width={18}
-                  height={18}
-                  className="text-neutral-700"
-                />
-              </label>
-            )}
-            <input
-              type="file"
-              accept=".jpg,.png"
-              onChange={handleLogoUpload}
-              className="hidden"
-              id="logo-upload"
-            />
-          </div>
-          <Button
-            type="button"
-            onClick={() => document.getElementById("logo-upload").click()}
-          >
-            Upload Logo
-          </Button>
-          <span className="text-sm text-neutral-500">
-            Format file jpg/png max. 10MB
-          </span>
-        </div>
+        <ImageUploudWithModal />
 
         {/* Nama Perusahaan */}
         <FormLabel required>Nama Perusahaan</FormLabel>
