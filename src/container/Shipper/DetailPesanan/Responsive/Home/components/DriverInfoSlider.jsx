@@ -1,3 +1,4 @@
+import { useParams } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 
 import { EllipsisVertical } from "lucide-react";
@@ -43,6 +44,7 @@ const Root = ({ children, className }) => (
  * @param {HeaderProps} props
  */
 const Header = ({ statusCode, withMenu = true, mode = "driver-status" }) => {
+  const params = useParams();
   const navigation = useResponsiveNavigation();
 
   const statusMeta = useMemo(() => {
@@ -87,7 +89,7 @@ const Header = ({ statusCode, withMenu = true, mode = "driver-status" }) => {
                 className="text-sm font-semibold"
                 onClick={() =>
                   navigation.push("/CariSemuaDriver", {
-                    orderId: "12345",
+                    orderId: params.orderId,
                     driverId: "12345",
                   })
                 }

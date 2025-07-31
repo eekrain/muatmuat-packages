@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { ChevronRight } from "lucide-react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
@@ -6,12 +8,16 @@ import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enu
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
 import { getOrderStatusLabel, getStatusVariant } from "../../../utils";
+import { BottomsheetDocumentShipping } from "./BottomsheetDocumentShipping";
 import { BottomsheetStatusLainnya } from "./BottomsheetStatusLainnya";
 
 export const OrderCode = ({ dataStatusPesanan }) => {
+  const { t } = useTranslation();
   return (
     <div className="box-border flex w-full flex-row items-start justify-between border-b border-[#C4C4C4] pb-4">
-      <span className="text-xs font-medium text-[#7B7B7B]">Kode Pesanan</span>
+      <span className="text-xs font-medium text-[#7B7B7B]">
+        {t("labelOrderCode")}
+      </span>
       <span className="text-right text-xs font-semibold text-black">
         {dataStatusPesanan?.orderCode || "N/A"}
       </span>
@@ -26,7 +32,9 @@ export const OrderStatus = ({
   const { t } = useTranslation();
   return (
     <div className="flex w-full flex-col items-start gap-3">
-      <span className="text-xs font-medium text-[#7B7B7B]">Status Pesanan</span>
+      <span className="text-xs font-medium text-[#7B7B7B]">
+        {t("labelOrderStatus")}
+      </span>
 
       {dataStatusPesanan?.orderStatus && (
         <BadgeStatusPesanan
@@ -59,6 +67,8 @@ const LIST_SHOW_QR_CODE_BUTTON = [
 export const OrderInfo = ({ dataStatusPesanan }) => {
   const { t } = useTranslation();
   const navigation = useResponsiveNavigation();
+  // const [isOpenOtherStatus, setIsOpenOtherStatus] = useState(false);
+  const [isOpenDocumentShipping, setIsOpenDocumentShipping] = useState(false);
 
   return (
     <div className="flex w-full flex-col items-start bg-white p-5">
@@ -71,7 +81,7 @@ export const OrderInfo = ({ dataStatusPesanan }) => {
               onClick={() => navigation.push("/DriverQRCodeMulti")}
             >
               <div className="flex items-center gap-3 text-xs font-semibold text-[#176CF7]">
-                Tampilkan QR Code
+                {t("buttonShowQRCode")}
               </div>
               <ChevronRight className="h-4 w-4 text-[#176CF7]" />
             </button>
@@ -82,10 +92,10 @@ export const OrderInfo = ({ dataStatusPesanan }) => {
           <div className="box-border flex w-full flex-row items-center justify-between border-b border-[#C4C4C4] pb-4">
             <button
               className="flex w-full flex-row items-center justify-between"
-              onClick={() => {}}
+              onClick={() => setIsOpenDocumentShipping(true)}
             >
               <div className="flex items-center gap-3 text-xs font-semibold text-[#176CF7]">
-                Lihat Resi Pengiriman Dokumen
+                {t("buttonViewDocumentShippingReceipt")}
               </div>
               <ChevronRight className="h-4 w-4 text-[#176CF7]" />
             </button>
@@ -98,6 +108,12 @@ export const OrderInfo = ({ dataStatusPesanan }) => {
         {/* Order Status */}
         <OrderStatus dataStatusPesanan={dataStatusPesanan} />
       </div>
+
+      {/* Document Shipping Bottomsheet */}
+      <BottomsheetDocumentShipping
+        open={isOpenDocumentShipping}
+        onOpenChange={setIsOpenDocumentShipping}
+      />
     </div>
   );
 };

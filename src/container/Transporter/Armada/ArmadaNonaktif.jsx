@@ -329,8 +329,7 @@ const ArmadaNonaktif = ({
       statusOptions,
       currentStatus: selectedStatus,
       onStatusChange: handleStatusChange,
-      totalCount:
-        data?.summary?.totalInactive || data?.pagination?.totalItems || 0,
+      totalCount: count || 0,
     };
   };
 
@@ -374,7 +373,7 @@ const ArmadaNonaktif = ({
           totalCountLabel="Armada"
           currentPage={data?.pagination?.page || currentPage}
           totalPages={data?.pagination?.totalPages || 1}
-          totalItems={count || data?.pagination?.totalItems || 0}
+          totalItems={count || 0}
           perPage={data?.pagination?.limit || perPage}
           onPageChange={handlePageChange}
           onPerPageChange={handlePerPageChange}

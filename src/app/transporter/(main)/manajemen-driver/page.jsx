@@ -78,16 +78,16 @@ const Page = () => {
         </TabsList>
 
         <TabsContent value="aktif" className="pt-4">
-          <DriverAktif />
+          <DriverAktif count={count?.active || 0} />
         </TabsContent>
         <TabsContent value="nonaktif" className="pt-4">
-          <DriverNonaktif />
+          <DriverNonaktif count={count?.nonActive || 0} />
         </TabsContent>
         <TabsContent value="proses" className="pt-4">
-          <DriverProses />
+          <DriverProses count={count?.registrationProcess || 0} />
         </TabsContent>
         <TabsContent value="arsip" className="pt-4">
-          <DriverArsip />
+          <DriverArsip count={count?.archive || 0} />
         </TabsContent>
       </Tabs>
     </div>

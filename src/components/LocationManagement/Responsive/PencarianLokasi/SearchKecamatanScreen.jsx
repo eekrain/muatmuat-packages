@@ -4,6 +4,7 @@ import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useTranslation } from "@/hooks/use-translation";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import {
   useResponsiveNavigation,
@@ -43,6 +44,7 @@ const SearchKecamatanScreen = () => {
   const params = useResponsiveRouteParams();
   const { setLocationPartial } = useLocationFormStore();
   const [search, setSearch] = useState("");
+  const { t } = useTranslation();
 
   const filteredKecamatan = useShallowMemo(() => {
     if (!search) return transformByFirstLetter(params.kecamatanList);
@@ -66,7 +68,7 @@ const SearchKecamatanScreen = () => {
   return (
     <FormResponsiveLayout
       title={{
-        label: "Pilih Kecamatan",
+        label: t("titleSelectDistrict"),
       }}
     >
       <div
@@ -76,7 +78,7 @@ const SearchKecamatanScreen = () => {
         )}
       >
         <Input
-          placeholder="Cari Kecamatan"
+          placeholder={t("placeholderSearchDistrict")}
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -124,11 +126,9 @@ const SearchKecamatanScreen = () => {
             className="gap-y-3.5"
             textClass="leading-[19.2px]"
             title={
-              <>
-                Keyword
-                <br />
-                Tidak Ditemukan
-              </>
+              <span
+                dangerouslySetInnerHTML={{ __html: t("titleKeywordNotFound") }}
+              />
             }
             width={134}
             height={114}
