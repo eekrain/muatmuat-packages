@@ -48,6 +48,7 @@ const ArmadaNonaktif = ({
     search: searchValue,
     status: selectedStatus,
     ...filters,
+    ...sortConfig,
   });
 
   // Fetch expired vehicles summary
@@ -277,10 +278,11 @@ const ArmadaNonaktif = ({
   };
 
   const handleSort = (sort, order) => {
-    setSortConfig({ sort, order });
-    // Sorting by sort and order
-    // TODO: Implement actual sorting logic here
-    // This would typically involve calling an API with sort parameters
+    if (sort || order) {
+      setSortConfig({ sort, order });
+    } else {
+      setSortConfig();
+    }
   };
 
   const handleStatusChange = (status) => {

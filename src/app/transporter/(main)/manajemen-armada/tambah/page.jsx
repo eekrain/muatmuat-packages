@@ -42,6 +42,10 @@ const Page = () => {
   const [brandSearch, setBrandSearch] = useState("");
   const [typeSearch, setTypeSearch] = useState("");
 
+  // Local state for newly added items
+  const [newBrands, setNewBrands] = useState([]);
+  const [newVehicleTypes, setNewVehicleTypes] = useState([]);
+
   // Valibot validation schema for fleet information form
   const fleetInformationSchema = v.object({
     // Required fields
@@ -263,6 +267,73 @@ const Page = () => {
     trigger("carrierHeight");
   };
 
+  // Function to handle adding new vehicle brand
+  const handleAddNewBrand = async (newBrandName) => {
+    console.log("handleAddNewBrand called with:", newBrandName);
+    try {
+      // Create new brand object with generated ID
+      const newBrand = {
+        id: `brand_${Date.now()}`, // Generate temporary ID
+        name: newBrandName,
+        description: `Merek kendaraan ${newBrandName}`,
+      };
+
+      console.log("New brand created:", newBrand);
+      console.log("Current brands:", brands);
+
+      // Add to local state for newly added brands
+      setNewBrands((prev) => [...prev, newBrand]);
+
+      // Set the new brand as selected
+      handleChange("vehicleBrandId", newBrand.id);
+      handleChange("vehicleBrandName", newBrandName);
+
+      // Clear brand search
+      setBrandSearch("");
+
+      console.log("Brand added successfully:", newBrand);
+    } catch (error) {
+      console.error("Error adding brand:", error);
+    }
+  };
+
+  // Function to handle adding new vehicle type
+  const handleAddNewVehicleType = async (newTypeName) => {
+    console.log("handleAddNewVehicleType called with:", newTypeName);
+    try {
+      const currentBrandId = watch("vehicleBrandId");
+      if (!currentBrandId) {
+        console.error("No brand selected");
+        return;
+      }
+
+      // Create new type object with generated ID
+      const newType = {
+        id: `type_${Date.now()}`, // Generate temporary ID
+        name: newTypeName,
+        vehicleBrandId: currentBrandId,
+        description: `Tipe kendaraan ${newTypeName}`,
+      };
+
+      console.log("New type created:", newType);
+      console.log("Current types:", vehicleTypes);
+
+      // Add to local state for newly added types
+      setNewVehicleTypes((prev) => [...prev, newType]);
+
+      // Set the new type as selected
+      handleChange("vehicleTypeId", newType.id);
+      handleChange("vehicleTypeName", newTypeName);
+
+      // Clear type search
+      setTypeSearch("");
+
+      console.log("Vehicle type added successfully:", newType);
+    } catch (error) {
+      console.error("Error adding vehicle type:", error);
+    }
+  };
+
   const handleLicensePlateChange = (e) => {
     const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
     const depan = value.slice(0, 2).replace(/[^A-Z]/g, "");
@@ -395,15 +466,21 @@ const Page = () => {
     useGetDataJenisTruk();
   const { data: carrierTypes, isLoading: isLoadingCarrier } =
     useGetDataTypeCarrier({ truckTypeId: watch("truckTypeId") });
-  const { data: brands, isLoading: isLoadingBrands } = useGetBrandsVehicles({
+  const {
+    data: brands,
+    isLoading: isLoadingBrands,
+    mutate: mutateBrands,
+  } = useGetBrandsVehicles({
     search: brandSearch,
   });
-  const { data: vehicleTypes, isLoading: isLoadingTypes } = useGetVehiclesTypes(
-    {
-      vehicleBrandId: watch("vehicleBrandId"),
-      search: typeSearch,
-    }
-  );
+  const {
+    data: vehicleTypes,
+    isLoading: isLoadingTypes,
+    mutate: mutateVehicleTypes,
+  } = useGetVehiclesTypes({
+    vehicleBrandId: watch("vehicleBrandId"),
+    search: typeSearch,
+  });
 
   // Vehicle types are already filtered by API based on vehicleBrandId
   const filteredTypes = vehicleTypes || [];
@@ -531,7 +608,7 @@ const Page = () => {
               {renderSelectWithError("vehicleBrandId", {
                 addData: true,
                 addLabel: t("buttonAddVehicleBrand"),
-                options: (brands || []).map((item) => ({
+                options: [...(brands || []), ...newBrands].map((item) => ({
                   label: item.name,
                   value: item.id,
                 })),
@@ -554,9 +631,7 @@ const Page = () => {
                 addModalMinLength: 3,
                 addModalValidate: (val) => /^[a-zA-Z0-9\s]+$/.test(val),
                 addModalErrorMessage: t("errorInvalidBrandName"),
-                onAddNew: (newBrand) => {
-                  handleChange("vehicleBrandName", newBrand);
-                },
+                onAddNew: handleAddNewBrand,
               })}
 
               <div className={labelClass}>{t("labelVehicleType")}</div>
@@ -565,7 +640,13 @@ const Page = () => {
                 addLabel: t("buttonAddVehicleType"),
                 options:
                   watch("vehicleBrandId") && !isLoadingTypes
-                    ? filteredTypes.map((item) => ({
+                    ? [
+                        ...filteredTypes,
+                        ...newVehicleTypes.filter(
+                          (type) =>
+                            type.vehicleBrandId === watch("vehicleBrandId")
+                        ),
+                      ].map((item) => ({
                         label: item.name,
                         value: item.id,
                       }))
@@ -586,9 +667,7 @@ const Page = () => {
                 addModalMinLength: 3,
                 addModalValidate: (val) => /^[a-zA-Z0-9\s]+$/.test(val),
                 addModalErrorMessage: t("errorInvalidTypeName"),
-                onAddNew: (newType) => {
-                  handleChange("vehicleTypeName", newType);
-                },
+                onAddNew: handleAddNewVehicleType,
               })}
 
               <div className={labelClass}>{t("labelRegistrationYear")}</div>

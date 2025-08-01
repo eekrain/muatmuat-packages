@@ -217,22 +217,22 @@ export const mockVehiclesExamplePhoto = {
       examples: [
         {
           photoType: "FRONT",
-          photoUrl: "https://cdn.muatrans.com/examples/vehicle-front.jpg",
+          photoUrl: "/img/depan.png",
           description: "Contoh foto armada dari depan",
         },
         {
           photoType: "BACK",
-          photoUrl: "https://cdn.muatrans.com/examples/vehicle-back.jpg",
+          photoUrl: "/img/belakang.png",
           description: "Contoh foto armada dari belakang",
         },
         {
           photoType: "LEFT",
-          photoUrl: "https://cdn.muatrans.com/examples/vehicle-left.jpg",
+          photoUrl: "/img/kiri.png",
           description: "Contoh foto armada dari kiri",
         },
         {
           photoType: "RIGHT",
-          photoUrl: "https://cdn.muatrans.com/examples/vehicle-right.jpg",
+          photoUrl: "/img/kanan.png",
           description: "Contoh foto armada dari kanan",
         },
       ],
