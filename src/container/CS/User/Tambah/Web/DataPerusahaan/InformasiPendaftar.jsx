@@ -16,10 +16,8 @@ import SelectFilterRadix from "@/components/Form/SelectFilterRadix";
 import { MyTextArea } from "@/components/Form/TextArea";
 import { MapContainer } from "@/components/MapContainer/MapContainer";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
-import {
-  LocationProvider,
-  useLocationContext,
-} from "@/hooks/use-location/use-location";
+import { LocationProvider } from "@/hooks/use-location/use-location";
+import { toast } from "@/lib/toast";
 
 import { LocationDropdownInput } from "../../InputLocationDropdown/LocationDropdownInput";
 
@@ -27,30 +25,36 @@ const informasiPendaftarSchema = v.object({
   transporterId: v.optional(v.string()),
 
   registrantName: v.pipe(
-    v.string(),
-    v.minLength(1, "Nama pendaftar wajib diisi")
+    v.string("Nama pendaftar wajib diisi"),
+    v.minLength(3, "Nama pendaftar minimal 3 karakter"),
+    v.regex(/^[a-zA-Z0-9 ]+$/, "Nama tidak boleh mengandung simbol")
   ),
+
   registrantPosition: v.pipe(v.string(), v.minLength(1, "Jabatan wajib diisi")),
   registrantWhatsapp: v.pipe(
+    v.custom(
+      (value) => value && typeof value === "string" && value.trim() !== "",
+      "Nomor Whatsapp wajib diisi"
+    ),
     v.string(),
-    v.minLength(1, "Nomor Whatsapp wajib diisi"),
-    v.regex(
-      /^08[0-9]{8,11}$/,
-      "Format nomor Whatsapp tidak valid (contoh: 08xxxxxxxxxx)"
-    )
+    v.minLength(8, "Nomor Whatsapp minimal 8 digit"),
+    v.regex(/^08[0-9]{6,11}$/, "Format No. Whatsapp salah")
   ),
+
   registrantEmail: v.pipe(
     v.string(),
     v.minLength(1, "Email wajib diisi"),
-    v.email("Format email tidak valid")
+    v.email("Penulisan email salah")
   ),
 
-  companyLogo: v.custom((value) => {
-    if (!value || !(value instanceof File)) return true; // Optional field
-    const validTypes = ["image/jpeg", "image/png"];
-    const maxSize = 10 * 1024 * 1024;
-    return validTypes.includes(value.type) && value.size <= maxSize;
-  }, "Logo harus berupa file JPG/PNG dengan ukuran maksimal 10MB"),
+  companyLogo: v.pipe(
+    v.custom((value) => value instanceof File, "Logo Perusahaan wajib diisi"),
+    v.custom((value) => {
+      const validTypes = ["image/jpeg", "image/png"];
+      const maxSize = 10 * 1024 * 1024;
+      return validTypes.includes(value.type) && value.size <= maxSize;
+    }, "Logo harus berupa file JPG/PNG dengan ukuran maksimal 10MB")
+  ),
 
   companyName: v.pipe(
     v.string(),
@@ -110,6 +114,8 @@ function InformasiPendaftar() {
     handleSubmit,
     register,
     formState: { errors },
+    trigger,
+    getValues,
     watch,
   } = useForm({
     resolver: valibotResolver(informasiPendaftarSchema),
@@ -176,9 +182,50 @@ function InformasiPendaftar() {
     { label: "Bank CIMB Niaga", value: "cimb" },
   ];
 
+  const isAllRequiredFieldsEmpty = () => {
+    const values = getValues();
+
+    const requiredFields = [
+      "registrantName",
+      "registrantPosition",
+      "registrantWhatsapp",
+      "registrantEmail",
+      "companyLogo",
+      "companyName",
+      "businessEntityType",
+      "companyPhone",
+      "companyAddress",
+      "bankId",
+      "accountNumber",
+      "accountName",
+    ];
+
+    return requiredFields.every((fieldPath) => {
+      const value = fieldPath
+        .split(".")
+        .reduce((obj, key) => obj?.[key], values);
+      if (typeof value === "string") return value.trim() === "";
+      return value === null;
+    });
+  };
+
+  const handleValidateAndSubmit = async (e) => {
+    e.preventDefault();
+
+    const isValid = await trigger();
+
+    if (!isValid) {
+      if (isAllRequiredFieldsEmpty()) {
+        toast.error("Isi semua inputan yang bertanda bintang (*)");
+      }
+      return;
+    }
+
+    handleSubmit(onSubmit)();
+  };
+
   const onSubmit = (data) => {
-    // Handle form submission here
-    console.log(data);
+    console.log("Form data:", data);
   };
 
   const handleLogoUpload = (file) => {
@@ -193,7 +240,7 @@ function InformasiPendaftar() {
 
   return (
     <LocationProvider>
-      <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+      <form onSubmit={handleValidateAndSubmit} className="w-full">
         <Card className={"rounded-xl border-none p-6"}>
           <div className="max-w-[75%]">
             <h3 className="mb-4 text-lg font-semibold">Data Perusahaan</h3>
@@ -242,12 +289,14 @@ function InformasiPendaftar() {
               </h3>
               <FormContainer>
                 <FormLabel required>Logo Perusahaan</FormLabel>
-                <ImageUploudWithModal onUploadSuccess={handleLogoUpload} />
-                {errors.companyLogo && (
-                  <p className="mt-1 text-sm text-error-500">
-                    {errors.companyLogo.message}
-                  </p>
-                )}
+                <div>
+                  <ImageUploudWithModal onUploadSuccess={handleLogoUpload} />
+                  {errors.companyLogo && (
+                    <p className="mt-1 text-xs font-medium text-error-400">
+                      {errors.companyLogo.message}
+                    </p>
+                  )}
+                </div>
 
                 <FormLabel required>Nama Perusahaan</FormLabel>
                 <Input
