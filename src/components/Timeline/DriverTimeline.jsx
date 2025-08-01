@@ -10,6 +10,7 @@ import {
 import useDevice from "@/hooks/use-device";
 import { useTranslation } from "@/hooks/use-translation";
 import {
+  OrderStatusEnum,
   OrderStatusIcon,
   OrderStatusTitle,
 } from "@/lib/constants/detailpesanan/detailpesanan.enum";
@@ -54,6 +55,7 @@ export const DriverTimeline = ({
   onClickProof,
   withMenu = true,
 }) => {
+  console.log("🚀 ~ dataDriverStatus:", dataDriverStatus);
   const { t } = useTranslation();
   const [images, setImages] = useState({ packages: [], pods: [] });
   const [currentStatus, setCurrentStatus] = useState(null);
@@ -107,7 +109,7 @@ export const DriverTimeline = ({
         {dataDriverStatus?.statusDefinitions.map((parent, parentIndex) => (
           <Fragment key={parent.mappedOrderStatus}>
             {parent?.children && parent.children.length > 0 ? (
-              <TimelineContainer>
+              <TimelineContainer className="mb-5">
                 {parent.children.map((driverStatusItem, index) => (
                   <ItemWithLightbox
                     key={driverStatusItem.statusCode}
@@ -133,7 +135,12 @@ export const DriverTimeline = ({
               }
               title={t(OrderStatusTitle[parent.mappedOrderStatus])}
               withDivider={
-                parentIndex !== dataDriverStatus?.statusDefinitions.length - 1
+                parentIndex !==
+                  dataDriverStatus?.statusDefinitions.length - 1 &&
+                parent.mappedOrderStatus !== OrderStatusEnum.DOCUMENT_DELIVERY
+              }
+              withLine={
+                parent.mappedOrderStatus === OrderStatusEnum.DOCUMENT_DELIVERY
               }
               variant={
                 parent.mappedOrderStatus.startsWith("CANCELED")
@@ -246,49 +253,79 @@ const iconStyles = {
   inactive: "bg-neutral-200 text-neutral-600 border-neutral-400",
 };
 
+/**
+ * An item in a vertical timeline, responsible for drawing a connector to the next item.
+ *
+ * @param {object} props
+ * @param {string} props.icon - The source path for the icon.
+ * @param {string} props.title - The main title of the timeline event.
+ * @param {'canceled' | 'active' | 'inactive'} [props.variant='inactive'] - The style variant of the item.
+ * @param {string | Date} [props.canceledAt] - Optional timestamp, displayed on the right.
+ * @param {string} [props.className] - Optional container class name.
+ * @param {boolean} [props.isLast=false] - Should be true if it's the last item in the list to prevent drawing a final connector line.
+ */
 const ParentItem = ({
   icon,
   title,
-  withDivider = true,
   variant = "inactive",
   canceledAt = null,
   className,
+  withLine = false,
+  withDivider = true,
+  withButton,
 }) => {
   return (
-    <>
-      <div
-        className={cn(
-          "mt-4 grid grid-cols-[32px_1fr] items-center gap-3 md:mt-5",
-          className
-        )}
-      >
-        <div
-          className={cn(
-            "flex h-8 w-8 items-center justify-center rounded-full border border-transparent",
-            iconStyles[variant]
+    <div className="w-full">
+      <div className={cn("flex items-center gap-3", className)}>
+        {/* Icon and Connector Line Column */}
+        <div className="flex flex-col items-center self-stretch">
+          <div
+            className={cn(
+              "flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-transparent",
+              iconStyles[variant]
+            )}
+          >
+            <IconComponent src={icon} className="h-5 w-5 md:h-4 md:w-4" />
+          </div>
+          {/* Render connector line if it's not the last item */}
+          {withLine && (
+            <div className="w-0 flex-1 border-l-2 border-dashed border-neutral-400" />
           )}
-        >
-          <IconComponent src={icon} className="h-5 w-5 md:h-4 md:w-4" />
         </div>
 
+        {/* Content Section */}
         <div
-          className={cn(
-            "flex items-center justify-between text-sm font-bold leading-[1.2] text-neutral-600",
-            variant === "canceled" && "text-neutral-900",
-            variant === "active" && "text-neutral-900"
-          )}
+          className={cn("w-full flex-1", withLine && "pb-8 md:pb-8 md:pt-2")}
         >
-          <span>{title}</span>
-          {canceledAt && (
-            <span
-              className={cn(
-                "block w-20 text-right text-xs font-medium leading-[1.2] text-neutral-600 md:w-fit",
-                variant === "canceled" && "text-neutral-900"
+          <div
+            className={cn(
+              "flex items-center justify-between text-sm font-bold leading-[1.2] text-neutral-600",
+              (variant === "active" || variant === "canceled") &&
+                "text-neutral-900"
+            )}
+          >
+            <div className="relative">
+              <span>{title}</span>
+              {withButton?.label && (
+                <button
+                  onClick={() => withButton?.onClick?.()}
+                  className="absolute bottom-0 left-0 translate-y-full text-xs font-medium text-primary-700"
+                >
+                  {withButton.label}
+                </button>
               )}
-            >
-              {formatDate(canceledAt)}
-            </span>
-          )}
+            </div>
+            {canceledAt && (
+              <span
+                className={cn(
+                  "block w-20 text-right text-xs font-medium leading-[1.2] text-neutral-600 md:w-fit",
+                  variant === "canceled" && "text-neutral-900"
+                )}
+              >
+                {formatDate(canceledAt)}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -298,6 +335,6 @@ const ParentItem = ({
           <hr className="w-full border-neutral-400" />
         </div>
       )}
-    </>
+    </div>
   );
 };

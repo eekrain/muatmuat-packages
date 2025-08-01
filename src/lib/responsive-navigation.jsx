@@ -1,5 +1,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
+
+// MODIFIED: Imported useEffect
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -33,7 +35,6 @@ import { zustandDevtools } from "./utils";
  */
 
 /** @type {import('zustand').UseBoundStore<import('zustand').StoreApi<NavigationState>>} */
-// Create a global, persistent store
 const useNavigationStore = create(
   persist(
     zustandDevtools(
@@ -80,7 +81,6 @@ const useNavigationStore = create(
       name: "responsive-navigation",
       partialize: (state) => ({ stack: state.stack }),
       onRehydrateStorage: () => (state, error) => {
-        // This function is called after hydration
         setTimeout(() => {
           state?.actions?.setHasHydrated?.();
         }, 1000);
@@ -89,23 +89,23 @@ const useNavigationStore = create(
   )
 );
 
-// Helper: Validate if a path is allowed (customize as needed)
 const isValidScreenPath = (path) =>
   typeof path === "string" && path.startsWith("/");
 
-// ResponsiveProvider now syncs stack to searchParams and vice versa
 export const ResponsiveProvider = ({ children }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const screenSearchParam = searchParams.get("screen");
   const stack = useNavigationStore(useShallow((state) => state.stack));
-  const { replace: replaceNavigation, setHasReady: setNavigationHasReady } =
-    useNavigationStore((state) => state.actions);
+  const {
+    replace: replaceNavigation,
+    setHasReady: setNavigationHasReady,
+    popTo,
+  } = useNavigationStore((state) => state.actions);
   const isNavigationHydrated = useNavigationStore((state) => state.isHydrated);
   const hasCheckedInitial = useRef(false);
   const { isMobile } = useDevice();
 
-  // On mount: check if searchParam 'screen' matches stack top, else reset stack
   useShallowCompareEffect(() => {
     if (hasCheckedInitial.current || !isMobile || !isNavigationHydrated) return;
     hasCheckedInitial.current = true;
@@ -134,57 +134,64 @@ export const ResponsiveProvider = ({ children }) => {
   useShallowCompareEffect(() => {
     if (!isMobile || !isNavigationHydrated) return;
     const currentStack = stack[stack.length - 1];
-    const stackString = encodeURIComponent(currentStack?.path);
+    if (!currentStack) return; // Guard against empty stack
+
+    const stackString = encodeURIComponent(currentStack.path);
     if (screenSearchParam !== stackString) {
       const params = new URLSearchParams(window.location.search);
       params.set("screen", stackString);
-      router.replace(`${window.location.pathname}?${params.toString()}`, {
+
+      // MODIFICATION 1: Use `push` to create browser history entries.
+      router.push(`${window.location.pathname}?${params.toString()}`, {
         scroll: false,
       });
     }
   }, [stack, screenSearchParam, isMobile, isNavigationHydrated]);
 
+  // NEW: Listen for browser back/forward button clicks
+  useEffect(() => {
+    const handlePopState = (event) => {
+      const newScreen =
+        new URLSearchParams(window.location.search).get("screen") ?? "/";
+      const decodedScreen = decodeURIComponent(newScreen);
+
+      const currentStack = useNavigationStore.getState().stack;
+      const topOfStackPath = currentStack[currentStack.length - 1]?.path;
+
+      // Only sync if the URL state is different from the stack state
+      if (decodedScreen !== topOfStackPath) {
+        popTo(decodedScreen); // Your existing popTo logic is perfect for this.
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [popTo]); // Dependency on popTo action from the store
+
   return children;
 };
 
-/**
- * Hook to access stack navigation actions (push, pop, replace, popTo, popToTop).
- * @returns {{
- *   push: (path: string, params?: Record<string, any>) => void,
- *   pop: () => void,
- *   popTo: (path: string) => void,
- *   popToTop: () => void,
- *   replace: (path: string, params?: Record<string, any>) => void
- * }}
- */
 export const useResponsiveNavigation = () => {
-  const { push, pop, popTo, popToTop, replace } = useNavigationStore(
+  const router = useRouter(); // MODIFIED: get router
+  const { push, popTo, popToTop, replace } = useNavigationStore(
     (state) => state.actions
   );
+
+  // MODIFICATION 2: The `pop` action should now trigger a browser back navigation.
+  const pop = () => {
+    router.back();
+  };
+
   return { push, pop, popTo, popToTop, replace };
 };
 
-/**
- * Hook to access the route parameters of the current route.
- * @returns {Record<string, any>} Route parameters passed during navigation.
- */
 export const useResponsiveRouteParams = () => {
   const stack = useNavigationStore(useShallow((state) => state.stack));
   return stack[stack.length - 1]?.params || {};
 };
 
-/**
- * Renders the component if the current route matches.
- * Supports `index` routes and optional layout as a React component.
- *
- * @param {{
- *   path?: string,
- *   component: React.ReactNode,
- *   index?: boolean,
- *   layout?: (children: React.ReactNode) => React.ReactNode
- * }} props
- * @returns {React.ReactNode | null}
- */
 export const ResponsiveRoute = ({ path, component }) => {
   const stack = useNavigationStore(
     useShallow((state) => state.stack.slice(-1))
@@ -192,7 +199,7 @@ export const ResponsiveRoute = ({ path, component }) => {
   const isNavigationReady = useNavigationStore((state) => state.isReady);
   const current = stack[stack.length - 1];
 
-  if (path !== current.path || !isNavigationReady) return null;
+  if (path !== current?.path || !isNavigationReady) return null;
 
   return component;
 };

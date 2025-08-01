@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { ChevronDown } from "lucide-react";
 
+import BadgeStatus from "@/components/Badge/BadgeStatus";
 import { DataTable } from "@/components/DataTable";
 import {
   SimpleDropdown,
@@ -12,23 +13,41 @@ import {
   SimpleDropdownItem,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
+import { getDriverStatusBadge } from "@/lib/utils/driverStatus";
 import { useGetArchiveDriversData } from "@/services/Transporter/manajemen-driver/getArchiveDriversData";
 
-const DriverArsip = ({ count, onPageChange, onPerPageChange }) => {
+const DriverArsip = ({
+  onPageChange,
+  onPerPageChange,
+  onStatusChange,
+  count,
+}) => {
   const router = useRouter();
-
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const [sortConfig, setSortConfig] = useState();
+  const [selectedStatus, setSelectedStatus] = useState(null);
   const [searchValue, setSearchValue] = useState("");
   const [filters, setFilters] = useState({});
 
-  const { data, isLoading } = useGetArchiveDriversData({
+  // Fetch drivers data with pagination, filters and status
+  const { data, isLoading, mutate } = useGetArchiveDriversData({
     page: currentPage,
     limit: perPage,
     search: searchValue,
+    status: selectedStatus,
     ...filters,
+    ...sortConfig,
   });
+
+  const getStatusBadge = (status) => {
+    const statusConfig = getDriverStatusBadge(status);
+    return (
+      <BadgeStatus variant={statusConfig.variant}>
+        {statusConfig.label}
+      </BadgeStatus>
+    );
+  };
 
   const columns = [
     {
@@ -37,7 +56,7 @@ const DriverArsip = ({ count, onPageChange, onPerPageChange }) => {
       width: "80px",
       sortable: false,
       render: (row) => (
-        <div className="h-12 w-12 overflow-hidden rounded-full">
+        <div className="h-12 w-12 overflow-hidden rounded-md">
           <img
             src={row.profileImage || "/img/default-avatar.png"}
             alt={row.name}
@@ -49,32 +68,21 @@ const DriverArsip = ({ count, onPageChange, onPerPageChange }) => {
     {
       key: "name",
       header: "Nama Driver",
+      render: (row) => <div className="text-xs font-bold">{row.name}</div>,
+    },
+    {
+      key: "phoneNumber",
+      header: "No. Whatsapp",
       render: (row) => (
-        <div className="space-y-1">
-          <div className="text-xs font-bold">{row.name}</div>
-          <div className="text-xxs font-medium text-neutral-600">
-            {row.phoneNumber}
-          </div>
-        </div>
+        <div className="text-xxs font-semibold">{row.phoneNumber || "-"}</div>
       ),
     },
     {
-      key: "archivedDate",
-      header: "Tanggal Diarsipkan",
-      render: (row) => (
-        <div className="text-xs">
-          {row.archivedDate
-            ? new Date(row.archivedDate).toLocaleDateString("id-ID")
-            : "-"}
-        </div>
-      ),
-    },
-    {
-      key: "archiveReason",
-      header: "Alasan Diarsipkan",
-      render: (row) => (
-        <div className="text-xs">{row.archiveReason || "-"}</div>
-      ),
+      key: "status",
+      header: "Status",
+      sortable: false,
+      width: "170px",
+      render: (row) => getStatusBadge(row.driverStatus),
     },
     {
       key: "action",
@@ -92,10 +100,11 @@ const DriverArsip = ({ count, onPageChange, onPerPageChange }) => {
             </button>
           </SimpleDropdownTrigger>
 
-          <SimpleDropdownContent className="w-fit">
-            <SimpleDropdownItem onClick={() => {}}>Pulihkan</SimpleDropdownItem>
+          <SimpleDropdownContent className="w-[133px]" align="end">
             <SimpleDropdownItem
-              onClick={() => router.push(`/manajemen-driver/${row.id}/detail`)}
+              onClick={() =>
+                router.push(`/manajemen-driver/${row.id}/detail?from=archive`)
+              }
             >
               Detail
             </SimpleDropdownItem>
@@ -106,13 +115,15 @@ const DriverArsip = ({ count, onPageChange, onPerPageChange }) => {
   ];
 
   const handleSearch = (value) => {
+    // Search functionality
     setSearchValue(value);
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to first page when searching
   };
 
   const handleFilter = (newFilters) => {
+    // Apply filters
     setFilters(newFilters);
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to first page when filtering
   };
 
   const handlePageChange = (page) => {
@@ -122,12 +133,17 @@ const DriverArsip = ({ count, onPageChange, onPerPageChange }) => {
 
   const handlePerPageChange = (limit) => {
     setPerPage(limit);
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to first page when changing items per page
     onPerPageChange?.(limit);
   };
 
-  const handleSort = (key, direction) => {
-    setSortConfig({ key, direction });
+  const handleSort = (sorr, order) => {
+    setSortConfig({ sorr, order });
+  };
+
+  // Prepare display options for status filter
+  const getDisplayOptions = () => {
+    return null; // No status filter for archived drivers
   };
 
   return (
@@ -136,7 +152,7 @@ const DriverArsip = ({ count, onPageChange, onPerPageChange }) => {
         data={data?.drivers || []}
         columns={columns}
         searchPlaceholder="Cari Nama Driver, No. HP atau lainnya"
-        totalCountLabel="Driver Arsip"
+        totalCountLabel="Driver"
         currentPage={data?.pagination?.currentPage || currentPage}
         totalPages={data?.pagination?.totalPages || 1}
         totalItems={count || 0}
@@ -148,6 +164,8 @@ const DriverArsip = ({ count, onPageChange, onPerPageChange }) => {
         onSort={handleSort}
         loading={isLoading}
         showPagination
+        showDisplayView={true}
+        displayOptions={getDisplayOptions()}
       />
     </div>
   );

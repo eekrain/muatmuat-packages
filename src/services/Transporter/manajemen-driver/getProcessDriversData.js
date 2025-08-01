@@ -2,7 +2,6 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-// Aktifkan mock
 const isMockProcessDrivers = true;
 
 const apiResultProcessDrivers = {
@@ -14,78 +13,84 @@ const apiResultProcessDrivers = {
     Data: {
       drivers: [
         {
-          id: "111e8400-e29b-41d4-a716-446655440000",
-          name: "Rio Haryanto",
-          phoneNumber: "081111111111",
-          profileImage: "/img/mock-armada/driver-1.jpg",
-          submittedDate: "2025-01-20T08:00:00Z",
-          processStatus: "PENDING_VERIFICATION",
+          id: "550e8400-e29b-41d4-a716-446655440000",
+          name: "Bob Johnson Driver",
+          phoneNumber: "081123456789",
+          profileImage:
+            "/img/mock-armada/96f3e307242fe2a40610399e1d9d7a279944c89c.jpg",
+          driverStatus: "IN_PROGRESS",
+          createdAt: "2025-01-16T08:30:00Z",
         },
         {
-          id: "111e8400-e29b-41d4-a716-446655440001",
-          name: "Siti Aminah",
-          phoneNumber: "082222222222",
-          profileImage: "/img/mock-armada/driver-2.jpg",
-          submittedDate: "2025-01-21T09:15:00Z",
-          processStatus: "IN_REVIEW",
+          id: "550e8400-e29b-41d4-a716-446655440001",
+          name: "Alice Williams",
+          phoneNumber: "081234567890",
+          profileImage:
+            "/img/mock-armada/047379f720d4d796e68d0fd7a289a30bd4d2e0ac.jpg",
+          driverStatus: "REJECTED",
+          createdAt: "2025-01-15T14:20:00Z",
         },
         {
-          id: "111e8400-e29b-41d4-a716-446655440002",
-          name: "Yusuf Wijaya",
-          phoneNumber: "083333444555",
-          profileImage: "/img/mock-armada/driver-3.jpg",
-          submittedDate: "2025-01-22T13:45:00Z",
-          processStatus: "ADDITIONAL_DOCS_REQUIRED",
+          id: "550e8400-e29b-41d4-a716-446655440002",
+          name: "Charlie Brown",
+          phoneNumber: "081345678901",
+          profileImage:
+            "/img/mock-armada/d6869c8f3993048b066679deb82fe2198af78db3.jpg",
+          driverStatus: "IN_PROGRESS",
+          createdAt: "2025-01-14T09:15:00Z",
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440003",
+          name: "David Lee",
+          phoneNumber: "081456789012",
+          profileImage: "/img/mock-armada/driver.png",
+          driverStatus: "REJECTED",
+          createdAt: "2025-01-13T16:45:00Z",
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440004",
+          name: "Emma Davis",
+          phoneNumber: "081567890123",
+          profileImage:
+            "/img/mock-armada/96f3e307242fe2a40610399e1d9d7a279944c89c.jpg",
+          driverStatus: "IN_PROGRESS",
+          createdAt: "2025-01-12T11:30:00Z",
         },
       ],
       pagination: {
         currentPage: 1,
         totalPages: 1,
-        totalItems: 3,
+        totalItems: 5,
         itemsPerPage: 10,
         hasNextPage: false,
         hasPreviousPage: false,
       },
       summary: {
-        total: 3,
-        pending: 1,
-        inReview: 1,
-        docsRequired: 1,
+        total: 5,
+        underReview: 3,
+        rejected: 2,
+      },
+      dataFilter: {
+        driverStatus: [
+          { id: "IN_PROGRESS", value: "Dalam Tinjauan" },
+          { id: "REJECTED", value: "Verifikasi Ditolak" },
+        ],
       },
     },
-    Type: "GET_PROCESS_DRIVERS",
+    Type: "GET_REGISTRATION_PROCESS_DRIVERS",
   },
 };
 
 export const fetcherProcessDrivers = async (cacheKey) => {
+  // Extract query string from cache key
   const queryString = cacheKey.includes("?") ? cacheKey.split("?")[1] : "";
   const url = queryString
-    ? `v1/drivers/process?${queryString}`
-    : "v1/drivers/process";
+    ? `v1/drivers/registration-process?${queryString}`
+    : "v1/drivers/registration-process";
 
   if (isMockProcessDrivers) {
     const result = apiResultProcessDrivers;
-
-    // Filter berdasarkan query (contoh: processStatus)
-    const urlParams = new URLSearchParams(queryString);
-    const statusFilter = urlParams.get("processStatus");
-
-    let filteredDrivers = result.data.Data.drivers;
-
-    if (statusFilter && statusFilter !== "null") {
-      filteredDrivers = filteredDrivers.filter(
-        (driver) => driver.processStatus === statusFilter
-      );
-    }
-
-    return {
-      ...result.data.Data,
-      drivers: filteredDrivers,
-      pagination: {
-        ...result.data.Data.pagination,
-        totalItems: filteredDrivers.length,
-      },
-    };
+    return result.data.Data;
   }
 
   const result = await fetcherMuatrans.get(url);

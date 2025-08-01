@@ -1,3 +1,5 @@
+"use client";
+
 import { useRouter } from "next/navigation";
 import { Fragment, useState } from "react";
 
@@ -9,9 +11,24 @@ import OrderItem from "@/container/Shipper/DaftarPesanan/Responsive/components/O
 import PeriodDropdown from "@/container/Shipper/DaftarPesanan/Responsive/components/PeriodDropdown";
 import { useTranslation } from "@/hooks/use-translation";
 import SearchBarResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/SearchBarResponsiveLayout";
+import {
+  ResponsiveProvider,
+  ResponsiveRoute,
+} from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
 
-const DaftarPesananResponsive = ({
+const DaftarPesananResponsive = ({ ...props }) => {
+  return (
+    <ResponsiveProvider>
+      <ResponsiveRoute
+        path="/"
+        component={<DaftarPesananResponsiveInner {...props} />}
+      />
+    </ResponsiveProvider>
+  );
+};
+
+const DaftarPesananResponsiveInner = ({
   queryParams,
   onChangeQueryParams,
   orders,

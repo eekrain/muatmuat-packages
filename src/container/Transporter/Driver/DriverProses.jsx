@@ -13,39 +13,40 @@ import {
   SimpleDropdownItem,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
+import { getDriverStatusBadge } from "@/lib/utils/driverStatus";
 import { useGetProcessDriversData } from "@/services/Transporter/manajemen-driver/getProcessDriversData";
 
-const DriverProses = ({ count, onPageChange, onPerPageChange }) => {
+const DriverProses = ({
+  onPageChange,
+  onPerPageChange,
+  onStatusChange,
+  count,
+}) => {
   const router = useRouter();
-
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const [sortConfig, setSortConfig] = useState();
+  const [selectedStatus, setSelectedStatus] = useState(null);
   const [searchValue, setSearchValue] = useState("");
   const [filters, setFilters] = useState({});
 
-  const { data, isLoading } = useGetProcessDriversData({
+  // Fetch drivers data with pagination, filters and status
+  const { data, isLoading, mutate } = useGetProcessDriversData({
     page: currentPage,
     limit: perPage,
     search: searchValue,
+    status: selectedStatus,
     ...filters,
+    ...sortConfig,
   });
 
-  const getProcessStatusBadge = (status) => {
-    switch (status) {
-      case "PENDING_VERIFICATION":
-        return <BadgeStatus variant="warning">Menunggu Verifikasi</BadgeStatus>;
-      case "IN_REVIEW":
-        return <BadgeStatus variant="info">Sedang Ditinjau</BadgeStatus>;
-      case "ADDITIONAL_DOCS_REQUIRED":
-        return (
-          <BadgeStatus variant="warning">
-            Dokumen Tambahan Diperlukan
-          </BadgeStatus>
-        );
-      default:
-        return <BadgeStatus variant="neutral">{status}</BadgeStatus>;
-    }
+  const getStatusBadge = (status) => {
+    const statusConfig = getDriverStatusBadge(status);
+    return (
+      <BadgeStatus variant={statusConfig.variant}>
+        {statusConfig.label}
+      </BadgeStatus>
+    );
   };
 
   const columns = [
@@ -55,7 +56,7 @@ const DriverProses = ({ count, onPageChange, onPerPageChange }) => {
       width: "80px",
       sortable: false,
       render: (row) => (
-        <div className="h-12 w-12 overflow-hidden rounded-full">
+        <div className="h-12 w-12 overflow-hidden rounded-md">
           <img
             src={row.profileImage || "/img/default-avatar.png"}
             alt={row.name}
@@ -67,31 +68,21 @@ const DriverProses = ({ count, onPageChange, onPerPageChange }) => {
     {
       key: "name",
       header: "Nama Driver",
+      render: (row) => <div className="text-xs font-bold">{row.name}</div>,
+    },
+    {
+      key: "phoneNumber",
+      header: "No. Whatsapp",
       render: (row) => (
-        <div className="space-y-1">
-          <div className="text-xs font-bold">{row.name}</div>
-          <div className="text-xxs font-medium text-neutral-600">
-            {row.phoneNumber}
-          </div>
-        </div>
+        <div className="text-xxs font-semibold">{row.phoneNumber || "-"}</div>
       ),
     },
     {
-      key: "submittedDate",
-      header: "Tanggal Daftar",
-      render: (row) => (
-        <div className="text-xs">
-          {row.submittedDate
-            ? new Date(row.submittedDate).toLocaleDateString("id-ID")
-            : "-"}
-        </div>
-      ),
-    },
-    {
-      key: "processStatus",
-      header: "Status Proses",
+      key: "status",
+      header: "Status",
       sortable: false,
-      render: (row) => getProcessStatusBadge(row.processStatus),
+      width: "170px",
+      render: (row) => getStatusBadge(row.driverStatus),
     },
     {
       key: "action",
@@ -109,15 +100,22 @@ const DriverProses = ({ count, onPageChange, onPerPageChange }) => {
             </button>
           </SimpleDropdownTrigger>
 
-          <SimpleDropdownContent className="w-fit">
-            <SimpleDropdownItem onClick={() => {}}>
-              Tinjau Dokumen
-            </SimpleDropdownItem>
-            <SimpleDropdownItem onClick={() => {}}>
-              Verifikasi
-            </SimpleDropdownItem>
+          <SimpleDropdownContent className="w-[133px]" align="end">
+            {row.driverStatus === "REJECTED" && (
+              <>
+                <SimpleDropdownItem onClick={() => {}}>Ubah</SimpleDropdownItem>
+                <SimpleDropdownItem
+                  className="text-error-400"
+                  onClick={() => {}}
+                >
+                  Hapus
+                </SimpleDropdownItem>
+              </>
+            )}
             <SimpleDropdownItem
-              onClick={() => router.push(`/manajemen-driver/${row.id}/detail`)}
+              onClick={() =>
+                router.push(`/manajemen-driver/${row.id}/detail?from=process`)
+              }
             >
               Detail
             </SimpleDropdownItem>
@@ -128,13 +126,15 @@ const DriverProses = ({ count, onPageChange, onPerPageChange }) => {
   ];
 
   const handleSearch = (value) => {
+    // Search functionality
     setSearchValue(value);
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to first page when searching
   };
 
   const handleFilter = (newFilters) => {
+    // Apply filters
     setFilters(newFilters);
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to first page when filtering
   };
 
   const handlePageChange = (page) => {
@@ -144,12 +144,61 @@ const DriverProses = ({ count, onPageChange, onPerPageChange }) => {
 
   const handlePerPageChange = (limit) => {
     setPerPage(limit);
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to first page when changing items per page
     onPerPageChange?.(limit);
   };
 
-  const handleSort = (key, direction) => {
-    setSortConfig({ key, direction });
+  const handleSort = (sorr, order) => {
+    setSortConfig({ sorr, order });
+  };
+
+  const handleStatusChange = (status) => {
+    // Status clicked
+    setSelectedStatus(status);
+    onStatusChange?.(status);
+    // New status set
+  };
+
+  // Prepare display options for status filter
+  const getDisplayOptions = () => {
+    // Get display options called
+
+    if (!data?.dataFilter?.driverStatus?.length > 0) {
+      // No status data available in dataFilter
+      return null;
+    }
+
+    // Map status IDs to summary keys
+    const getCountFromSummary = (statusId) => {
+      if (!data?.summary) return 0;
+
+      switch (statusId) {
+        case "IN_PROGRESS":
+          return data.summary.underReview || 0;
+        case "REJECTED":
+          return data.summary.rejected || 0;
+        default:
+          return 0;
+      }
+    };
+
+    const statusOptions = data.dataFilter.driverStatus.map((item) => {
+      const count = getCountFromSummary(item.id);
+      return {
+        value: item.id,
+        label: item.value,
+        count: count,
+      };
+    });
+
+    // Status options with summary counts
+
+    return {
+      statusOptions,
+      currentStatus: selectedStatus,
+      onStatusChange: handleStatusChange,
+      totalCount: count || 0,
+    };
   };
 
   return (
@@ -158,7 +207,7 @@ const DriverProses = ({ count, onPageChange, onPerPageChange }) => {
         data={data?.drivers || []}
         columns={columns}
         searchPlaceholder="Cari Nama Driver, No. HP atau lainnya"
-        totalCountLabel="Proses Pendaftaran"
+        totalCountLabel="Driver"
         currentPage={data?.pagination?.currentPage || currentPage}
         totalPages={data?.pagination?.totalPages || 1}
         totalItems={count || 0}
@@ -170,6 +219,8 @@ const DriverProses = ({ count, onPageChange, onPerPageChange }) => {
         onSort={handleSort}
         loading={isLoading}
         showPagination
+        showDisplayView={true}
+        displayOptions={getDisplayOptions()}
       />
     </div>
   );

@@ -24,7 +24,7 @@ const cacheConfig = {
     "Cache-Control": "public, max-age=604800, stale-while-revalidate=3600",
   },
 };
-
+const useMockTranslation = true;
 const createTranslationStore = () =>
   createStore((set) => ({
     // State
@@ -44,8 +44,16 @@ const createTranslationStore = () =>
         // const url = `${s3url}content-general/locales/muat-trans/${envProd}/${languageUrl}/common.json`;
 
         try {
-          const response = await xior.get(url, cacheConfig);
-          set({ translation: response.data });
+          if (useMockTranslation) {
+            const [common, mock] = await Promise.all([
+              xior.get(url, cacheConfig),
+              xior.get(`/mock-common-${languageUrl}.json`, cacheConfig),
+            ]);
+            set({ translation: { ...common.data, ...mock.data } });
+          } else {
+            const response = await xior.get(url, cacheConfig);
+            set({ translation: response.data });
+          }
         } catch (error) {
           console.error(
             `Error fetching ${languageUrl} translations: ${error.message}`

@@ -190,14 +190,9 @@ const DriverNonaktif = ({
 
           <SimpleDropdownContent className="w-[133px]" align="end">
             {row.driverStatus === "NON_ACTIVE" && (
-              <>
-                <SimpleDropdownItem onClick={() => {}}>
-                  Lihat Agenda Driver
-                </SimpleDropdownItem>
-                <SimpleDropdownItem onClick={() => {}}>
-                  Aktifkan
-                </SimpleDropdownItem>
-              </>
+              <SimpleDropdownItem onClick={() => {}}>
+                Lihat Agenda Driver
+              </SimpleDropdownItem>
             )}
             <SimpleDropdownItem
               onClick={() =>
@@ -216,6 +211,11 @@ const DriverNonaktif = ({
                   Hapus
                 </SimpleDropdownItem>
               </>
+            )}
+            {row.driverStatus === "NON_ACTIVE" && (
+              <SimpleDropdownItem onClick={() => {}}>
+                Aktifkan
+              </SimpleDropdownItem>
             )}
           </SimpleDropdownContent>
         </SimpleDropdown>
