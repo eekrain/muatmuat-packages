@@ -15,6 +15,7 @@ import Checkbox from "@/components/Form/Checkbox";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
 import usePrevious from "@/hooks/use-previous";
+import { OrderTypeEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { useGetOrderSettingsTime } from "@/services/Shipper/sewaarmada/getOrderSettingsTime";
 import {
   useSewaArmadaActions,
@@ -111,7 +112,7 @@ const WaktuMuatBottomsheet = () => {
 
     // Validasi khusus untuk orderType INSTANT
     if (
-      orderType === "INSTANT" &&
+      orderType === OrderTypeEnum.INSTANT &&
       instantOrder &&
       bottomsheetFormValues.loadTimeStart
     ) {
@@ -132,7 +133,7 @@ const WaktuMuatBottomsheet = () => {
 
     // Validasi khusus untuk orderType SCHEDULED
     if (
-      orderType === "SCHEDULED" &&
+      orderType === OrderTypeEnum.SCHEDULED &&
       scheduledOrder &&
       bottomsheetFormValues.loadTimeStart
     ) {
@@ -252,8 +253,10 @@ const WaktuMuatBottomsheet = () => {
             <div className="flex flex-col gap-y-3">
               <RadioButton
                 name="orderType"
-                value="INSTANT"
-                checked={bottomsheetFormValues.orderType === "INSTANT"}
+                value={OrderTypeEnum.INSTANT}
+                checked={
+                  bottomsheetFormValues.orderType === OrderTypeEnum.INSTANT
+                }
                 onClick={(data) =>
                   handleChangeBottomsheetFormValues("orderType", data.value)
                 }
@@ -269,8 +272,10 @@ const WaktuMuatBottomsheet = () => {
             <div className="flex flex-col gap-y-3">
               <RadioButton
                 name="orderType"
-                value="SCHEDULED"
-                checked={bottomsheetFormValues.orderType === "SCHEDULED"}
+                value={OrderTypeEnum.SCHEDULED}
+                checked={
+                  bottomsheetFormValues.orderType === OrderTypeEnum.SCHEDULED
+                }
                 onClick={(data) =>
                   handleChangeBottomsheetFormValues("orderType", data.value)
                 }

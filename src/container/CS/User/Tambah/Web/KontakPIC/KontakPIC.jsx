@@ -56,9 +56,9 @@ function KontakPIC() {
     resolver: valibotResolver(kontakPICSchema),
     defaultValues: {
       contacts: [
-        { name: "", position: "", phone: "" }, // PIC 1 (required)
-        { name: "", position: "", phone: "" }, // PIC 2 (optional)
-        { name: "", position: "", phone: "" }, // PIC 3 (optional)
+        { name: "", position: "", phone: "", level: 1 }, // PIC 1 (required)
+        { name: "", position: "", phone: "", level: 2 }, // PIC 2 (optional)
+        { name: "", position: "", phone: "", level: 3 }, // PIC 3 (optional)
       ],
     },
   });
@@ -70,7 +70,7 @@ function KontakPIC() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-full">
       <Card className={"rounded-xl border-none p-6"}>
-        <div className="max-w-[70%]">
+        <div className="max-w-[75%]">
           <div>
             <h3 className="mb-6 text-lg font-semibold">Kontak PIC</h3>
             <FormContainer>
@@ -93,7 +93,7 @@ function KontakPIC() {
 
               <FormLabel required>No. HP PIC 1</FormLabel>
               <Input
-                type="text"
+                type="number"
                 placeholder="Contoh : 08xxxxxxxxxx"
                 {...register("contacts.0.phone")}
                 errorMessage={errors.contacts?.[0]?.phone?.message}
@@ -118,7 +118,7 @@ function KontakPIC() {
 
               <FormLabel>No. HP PIC 2</FormLabel>
               <Input
-                type="text"
+                type="number"
                 placeholder="Contoh : 08xxxxxxxxxx"
                 {...register("contacts.1.phone")}
                 errorMessage={errors.contacts?.[1]?.phone?.message}
@@ -143,7 +143,7 @@ function KontakPIC() {
 
               <FormLabel>No. HP PIC 3</FormLabel>
               <Input
-                type="text"
+                type="number"
                 placeholder="Contoh : 08xxxxxxxxxx"
                 {...register("contacts.2.phone")}
                 errorMessage={errors.contacts?.[2]?.phone?.message}

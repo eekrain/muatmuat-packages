@@ -6,7 +6,10 @@ import DatetimePicker from "@/components/DatetimePicker/DatetimePicker";
 import Checkbox from "@/components/Form/Checkbox";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import {
+  OrderStatusEnum,
+  OrderTypeEnum,
+} from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
@@ -60,7 +63,8 @@ export const WaktuMuat = ({ orderStatus }) => {
           <div className="flex items-center gap-x-2">
             <DatetimePicker
               disabled={
-                isEditPage && (orderType === "INSTANT" || hasDepartedToPickup)
+                isEditPage &&
+                (orderType === OrderTypeEnum.INSTANT || hasDepartedToPickup)
               }
               disableDateOnly={!hasDepartedToPickup}
               datetimeValue={loadTimeStart}
@@ -87,7 +91,8 @@ export const WaktuMuat = ({ orderStatus }) => {
                   disabled={
                     !loadTimeStart ||
                     (isEditPage &&
-                      (orderType === "INSTANT" || hasDepartedToPickup))
+                      (orderType === OrderTypeEnum.INSTANT ||
+                        hasDepartedToPickup))
                   }
                   status={formErrors.loadTimeEnd ? "error" : null}
                   className="w-[271px]"

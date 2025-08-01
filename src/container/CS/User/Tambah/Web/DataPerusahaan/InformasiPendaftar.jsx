@@ -14,6 +14,14 @@ import Input from "@/components/Form/Input";
 import { Select } from "@/components/Form/Select";
 import SelectFilterRadix from "@/components/Form/SelectFilterRadix";
 import { MyTextArea } from "@/components/Form/TextArea";
+import { MapContainer } from "@/components/MapContainer/MapContainer";
+import { Modal, ModalContent } from "@/components/Modal/Modal";
+import {
+  LocationProvider,
+  useLocationContext,
+} from "@/hooks/use-location/use-location";
+
+import { LocationDropdownInput } from "../../InputLocationDropdown/LocationDropdownInput";
 
 const informasiPendaftarSchema = v.object({
   transporterId: v.optional(v.string()),
@@ -37,14 +45,12 @@ const informasiPendaftarSchema = v.object({
     v.email("Format email tidak valid")
   ),
 
-  companyLogo: v.optional(
-    v.custom((value) => {
-      if (!value || !(value instanceof File)) return true; // Optional field
-      const validTypes = ["image/jpeg", "image/png"];
-      const maxSize = 10 * 1024 * 1024;
-      return validTypes.includes(value.type) && value.size <= maxSize;
-    }, "Logo harus berupa file JPG/PNG dengan ukuran maksimal 10MB")
-  ),
+  companyLogo: v.custom((value) => {
+    if (!value || !(value instanceof File)) return true; // Optional field
+    const validTypes = ["image/jpeg", "image/png"];
+    const maxSize = 10 * 1024 * 1024;
+    return validTypes.includes(value.type) && value.size <= maxSize;
+  }, "Logo harus berupa file JPG/PNG dengan ukuran maksimal 10MB"),
 
   companyName: v.pipe(
     v.string(),
@@ -67,8 +73,8 @@ const informasiPendaftarSchema = v.object({
     v.string(),
     v.minLength(1, "Alamat perusahaan wajib diisi")
   ),
-  addressType: v.optional(v.string()),
   locationData: v.object({
+    location: v.pipe(v.string(), v.minLength(1, "Lokasi wajib diisi")),
     latitude: v.pipe(v.string(), v.minLength(1, "Latitude wajib diisi")),
     longitude: v.pipe(v.string(), v.minLength(1, "Longitude wajib diisi")),
     district: v.pipe(v.string(), v.minLength(1, "Kecamatan wajib diisi")),
@@ -94,9 +100,10 @@ const informasiPendaftarSchema = v.object({
 
 function InformasiPendaftar() {
   const [coordinates, setCoordinates] = useState({
-    lat: 7.2575,
-    lng: 112.7521,
+    latitude: -7.254235,
+    longitude: 112.736583,
   });
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
 
   const {
     setValue,
@@ -117,10 +124,11 @@ function InformasiPendaftar() {
       businessEntityType: "",
       companyPhone: "",
       companyAddress: "",
-      addressType: "HEAD_OFFICE",
+      addressType: "",
       locationData: {
-        latitude: "",
-        longitude: "",
+        latitude: 7.2575,
+        longitude: 112.7521,
+        location: "",
         district: "",
         city: "",
         province: "",
@@ -169,8 +177,8 @@ function InformasiPendaftar() {
   ];
 
   const onSubmit = (data) => {
-    console.log("Form data:", data);
     // Handle form submission here
+    console.log(data);
   };
 
   const handleLogoUpload = (file) => {
@@ -179,198 +187,274 @@ function InformasiPendaftar() {
 
   const handleMapPositionChange = (newCoordinates) => {
     setCoordinates(newCoordinates);
-    setValue("locationData.latitude", newCoordinates.lat.toString());
-    setValue("locationData.longitude", newCoordinates.lng.toString());
+    setValue("locationData.latitude", newCoordinates.latitude.toString());
+    setValue("locationData.longitude", newCoordinates.longitude.toString());
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-full">
-      <Card className={"rounded-xl border-none p-6"}>
-        <div className="max-w-[70%]">
-          <h3 className="mb-4 text-lg font-semibold">Data Perusahaan</h3>
-          <div>
-            <h3 className="mb-6 text-sm font-semibold">Informasi Pendaftar</h3>
-            <FormContainer>
-              <FormLabel required>Nama Lengkap Pendaftar</FormLabel>
-              <Input
-                type="text"
-                placeholder="Masukkan Nama Lengkap Pendaftar"
-                {...register("registrantName")}
-                errorMessage={errors.registrantName?.message}
-              />
+    <LocationProvider>
+      <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+        <Card className={"rounded-xl border-none p-6"}>
+          <div className="max-w-[75%]">
+            <h3 className="mb-4 text-lg font-semibold">Data Perusahaan</h3>
+            <div>
+              <h3 className="mb-6 text-sm font-semibold">
+                Informasi Pendaftar
+              </h3>
+              <FormContainer>
+                <FormLabel required>Nama Lengkap Pendaftar</FormLabel>
+                <Input
+                  type="text"
+                  placeholder="Masukkan Nama Lengkap Pendaftar"
+                  {...register("registrantName")}
+                  errorMessage={errors.registrantName?.message}
+                />
 
-              <FormLabel required>Jabatan Pendaftar</FormLabel>
-              <Input
-                type="text"
-                placeholder="Masukkan Jabatan Pendaftar"
-                {...register("registrantPosition")}
-                errorMessage={errors.registrantPosition?.message}
-              />
+                <FormLabel required>Jabatan Pendaftar</FormLabel>
+                <Input
+                  type="text"
+                  placeholder="Masukkan Jabatan Pendaftar"
+                  {...register("registrantPosition")}
+                  errorMessage={errors.registrantPosition?.message}
+                />
 
-              <FormLabel required>No. Whatsapp Pendaftar</FormLabel>
-              <Input
-                type="text"
-                placeholder="Contoh: 08xxxxxxxxxx"
-                {...register("registrantWhatsapp")}
-                errorMessage={errors.registrantWhatsapp?.message}
-              />
+                <FormLabel required>No. Whatsapp Pendaftar</FormLabel>
+                <Input
+                  type="number"
+                  placeholder="Contoh: 08xxxxxxxxxx"
+                  {...register("registrantWhatsapp")}
+                  errorMessage={errors.registrantWhatsapp?.message}
+                />
 
-              <FormLabel required>Email Pendaftar</FormLabel>
-              <Input
-                type="email"
-                placeholder="Masukkan Email Pendaftar"
-                {...register("registrantEmail")}
-                errorMessage={errors.registrantEmail?.message}
-              />
-            </FormContainer>
+                <FormLabel required>Email Pendaftar</FormLabel>
+                <Input
+                  type="email"
+                  placeholder="Masukkan Email Pendaftar"
+                  {...register("registrantEmail")}
+                  errorMessage={errors.registrantEmail?.message}
+                />
+              </FormContainer>
+            </div>
+
+            <div>
+              <h3 className="my-6 text-sm font-semibold">
+                Informasi Perusahaan
+              </h3>
+              <FormContainer>
+                <FormLabel required>Logo Perusahaan</FormLabel>
+                <ImageUploudWithModal onUploadSuccess={handleLogoUpload} />
+                {errors.companyLogo && (
+                  <p className="mt-1 text-sm text-error-500">
+                    {errors.companyLogo.message}
+                  </p>
+                )}
+
+                <FormLabel required>Nama Perusahaan</FormLabel>
+                <Input
+                  type="text"
+                  placeholder="Masukkan Nama Perusahaan"
+                  {...register("companyName")}
+                  errorMessage={errors.companyName?.message}
+                />
+
+                <FormLabel required>Badan Usaha</FormLabel>
+                <Select
+                  options={badanUsahaOptions}
+                  value={watchedValues.businessEntityType}
+                  onChange={(value) => setValue("businessEntityType", value)}
+                  placeholder="Pilih Badan Usaha"
+                  errorMessage={errors.businessEntityType?.message}
+                />
+
+                <FormLabel required>No. Telepon Perusahaan</FormLabel>
+                <Input
+                  type="number"
+                  placeholder="Contoh: 08xxxxxxxxxx"
+                  {...register("companyPhone")}
+                  errorMessage={errors.companyPhone?.message}
+                />
+              </FormContainer>
+            </div>
+
+            <div className="flex flex-col">
+              <h3 className="my-6 text-sm font-semibold">Informasi Lokasi</h3>
+              <FormContainer>
+                <FormLabel required>Alamat</FormLabel>
+                <MyTextArea
+                  placeholder="Contoh : Nama Jalan (bila tidak diemukan), Gedung, No. Rumah/Patokan, Blok/Unit"
+                  maxLength={225}
+                  value={watch("companyAddress")}
+                  onChange={(e) => setValue("companyAddress", e.target.value)}
+                  errorMessage={errors.companyAddress?.message}
+                  appearance={{
+                    inputClassName: "h-[80px]",
+                  }}
+                />
+
+                <FormLabel required>Lokasi</FormLabel>
+                <div>
+                  <LocationDropdownInput
+                    markerIcon={""}
+                    placeholder="Cari lokasi"
+                    className="mb-4 w-full"
+                  />
+                  {errors.locationData?.location && (
+                    <p className="mt-1 text-xs font-medium text-error-400">
+                      {errors.locationData.location.message}
+                    </p>
+                  )}
+                </div>
+
+                <FormLabel required>Kecamatan</FormLabel>
+                <div>
+                  <SelectFilterRadix
+                    options={kecamatanOptions}
+                    value={watchedValues.locationData?.district}
+                    onChange={(value) =>
+                      setValue("locationData.district", value)
+                    }
+                    placeholder="Pilih Kecamatan"
+                    errorMessage={errors.locationData?.district?.message}
+                  />
+                </div>
+
+                <FormLabel required>Kota</FormLabel>
+                <p className="text-xs font-medium">Surabaya</p>
+
+                <FormLabel required>Provinsi</FormLabel>
+                <p className="text-xs font-medium">Jawa Timur</p>
+
+                <FormLabel required>Kode Pos</FormLabel>
+                <div>
+                  <SelectFilterRadix
+                    options={kodePosOptions}
+                    value={watchedValues.locationData?.postalCode}
+                    onChange={(value) =>
+                      setValue("locationData.postalCode", value)
+                    }
+                    placeholder="Pilih Kode Pos"
+                    errorMessage={errors.locationData?.postalCode?.message}
+                  />
+                </div>
+
+                <FormLabel required>Titik Lokasi</FormLabel>
+                <div>
+                  <button
+                    type="button"
+                    className="relative h-[154px] w-[80%] overflow-hidden rounded-lg"
+                    onClick={() => setIsLocationModalOpen(true)}
+                  >
+                    <MapContainer
+                      coordinates={coordinates}
+                      onPositionChange={handleMapPositionChange}
+                      className="pointer-events-none h-full w-full"
+                      textLabel={`${coordinates.latitude}, ${coordinates.longitude}`}
+                    />
+                    <div className="hover absolute bottom-0 right-0 w-full rounded-b-lg bg-muat-trans-primary-400 px-4 py-1 text-center text-white transition-colors hover:bg-muat-trans-primary-500">
+                      <span className="text-sm font-semibold text-muat-trans-primary-900">
+                        Atur Pin Lokasi
+                      </span>
+                    </div>
+                  </button>
+                  {(errors.locationData?.latitude ||
+                    errors.locationData?.longitude) && (
+                    <p className="mt-1 text-xs font-medium text-error-400">
+                      Titik lokasi wajib diisi
+                    </p>
+                  )}
+
+                  <Modal
+                    open={isLocationModalOpen}
+                    onOpenChange={setIsLocationModalOpen}
+                    closeOnOutsideClick
+                  >
+                    <ModalContent
+                      type="muatmuat"
+                      size="big"
+                      className="w-[920px]"
+                      appearance={{
+                        closeButtonClassname: "!size-8",
+                      }}
+                    >
+                      <div className="flex gap-4 px-6 py-4">
+                        <MapContainer
+                          coordinates={coordinates}
+                          onPositionChange={handleMapPositionChange}
+                          className="h-[380px] w-[600px]"
+                          textLabel={`${coordinates.latitude}, ${coordinates.longitude}`}
+                        />
+                        <div className="my-4 flex flex-1 flex-col justify-between">
+                          <div>
+                            <h3 className="mb-4 text-lg font-semibold">
+                              Atur Pin Lokasi
+                            </h3>
+                            <LocationDropdownInput
+                              placeholder="Cari lokasi"
+                              markerIcon="/icons/marker-lokasi-muat.svg"
+                              className="mb-4 w-full"
+                            />
+                          </div>
+
+                          <Button
+                            variant="muattrans-primary"
+                            onClick={() => {
+                              // Handle save location
+                              setIsLocationModalOpen(false);
+                            }}
+                            className="w-fit self-center"
+                          >
+                            Simpan Lokasi
+                          </Button>
+                        </div>
+                      </div>
+                    </ModalContent>
+                  </Modal>
+                </div>
+              </FormContainer>
+            </div>
+
+            <div>
+              <h3 className="my-6 text-sm font-semibold">
+                Informasi Rekening Perusahaan
+              </h3>
+              <FormContainer>
+                <FormLabel required>Nama Bank</FormLabel>
+                <div>
+                  <SelectFilterRadix
+                    options={bankOptions}
+                    value={watchedValues.bankId}
+                    onChange={(value) => setValue("bankId", value)}
+                    placeholder="Pilih Bank"
+                    errorMessage={errors.bankId?.message}
+                  />
+                </div>
+
+                <FormLabel required>Nomor Rekening</FormLabel>
+                <Input
+                  type="number"
+                  placeholder="Masukkan Nomor Rekening"
+                  {...register("accountNumber")}
+                  errorMessage={errors.accountNumber?.message}
+                />
+
+                <FormLabel required>Nama Pemilik Rekening</FormLabel>
+                <Input
+                  type="text"
+                  placeholder="Masukkan Nama Pemilik Rekening"
+                  {...register("accountName")}
+                  errorMessage={errors.accountName?.message}
+                />
+              </FormContainer>
+            </div>
           </div>
-
-          <div>
-            <h3 className="my-6 text-sm font-semibold">Informasi Perusahaan</h3>
-            <FormContainer>
-              <FormLabel required>Logo Perusahaan</FormLabel>
-              <ImageUploudWithModal onUploadSuccess={handleLogoUpload} />
-              {errors.companyLogo && (
-                <p className="mt-1 text-sm text-error-500">
-                  {errors.companyLogo.message}
-                </p>
-              )}
-
-              <FormLabel required>Nama Perusahaan</FormLabel>
-              <Input
-                type="text"
-                placeholder="Masukkan Nama Perusahaan"
-                {...register("companyName")}
-                errorMessage={errors.companyName?.message}
-              />
-
-              <FormLabel required>Badan Usaha</FormLabel>
-              <Select
-                options={badanUsahaOptions}
-                value={watchedValues.businessEntityType}
-                onChange={(value) => setValue("businessEntityType", value)}
-                placeholder="Pilih Badan Usaha"
-                errorMessage={errors.businessEntityType?.message}
-              />
-
-              <FormLabel required>No. Telepon Perusahaan</FormLabel>
-              <Input
-                type="text"
-                placeholder="Contoh: 08xxxxxxxxxx"
-                {...register("companyPhone")}
-                errorMessage={errors.companyPhone?.message}
-              />
-            </FormContainer>
-          </div>
-
-          <div className="flex flex-col">
-            <h3 className="my-6 text-sm font-semibold">Informasi Lokasi</h3>
-            <FormContainer>
-              <FormLabel required>Alamat</FormLabel>
-              <MyTextArea
-                placeholder="Contoh : Nama Jalan (bila tidak diemukan), Gedung, No. Rumah/Patokan, Blok/Unit"
-                maxLength={225}
-                value={watch("companyAddress")}
-                onChange={(e) => setValue("companyAddress", e.target.value)}
-                errorMessage={errors.companyAddress?.message}
-                appearance={{
-                  inputClassName: "h-[80px]",
-                }}
-              />
-
-              <FormLabel required>Lokasi</FormLabel>
-              <Input
-                type="text"
-                placeholder="Masukkan Lokasi"
-                {...register("addressType")}
-                errorMessage={errors.addressType?.message}
-              />
-
-              <FormLabel required>Kecamatan</FormLabel>
-              <SelectFilterRadix
-                options={kecamatanOptions}
-                value={watchedValues.locationData?.district}
-                onChange={(value) => setValue("locationData.district", value)}
-                placeholder="Pilih Kecamatan"
-                errorMessage={errors.locationData?.district?.message}
-              />
-
-              <FormLabel required>Kota</FormLabel>
-              <p className="text-xs font-medium">Surabaya</p>
-
-              <FormLabel required>Provinsi</FormLabel>
-              <p className="text-xs font-medium">Jawa Timur</p>
-
-              <FormLabel required>Kode Pos</FormLabel>
-              <SelectFilterRadix
-                options={kodePosOptions}
-                value={watchedValues.locationData?.postalCode}
-                onChange={(value) => setValue("locationData.postalCode", value)}
-                placeholder="Pilih Kode Pos"
-                errorMessage={errors.locationData?.postalCode?.message}
-              />
-
-              <FormLabel required>Titik Lokasi</FormLabel>
-              <div className="h-[200px] w-full overflow-hidden rounded-lg">
-                {/* <MapContainer
-              coordinates={coordinates}
-              onPositionChange={handleMapPositionChange}
-              className="h-full w-full"
-            /> */}
-              </div>
-              <Button
-                type="button"
-                variant="muattrans-primary"
-                className="mt-2"
-                onClick={() => {
-                  // Handle pin location setting
-                  alert("Pin location button clicked");
-                }}
-              >
-                Atur Pin Lokasi
-              </Button>
-            </FormContainer>
-          </div>
-
-          <div>
-            <h3 className="my-6 text-sm font-semibold">
-              Informasi Rekening Perusahaan
-            </h3>
-            <FormContainer>
-              <FormLabel required>Nama Bank</FormLabel>
-              <SelectFilterRadix
-                options={bankOptions}
-                value={watchedValues.bankId}
-                onChange={(value) => setValue("bankId", value)}
-                placeholder="Pilih Bank"
-                errorMessage={errors.bankId?.message}
-              />
-
-              <FormLabel required>Nomor Rekening</FormLabel>
-              <Input
-                type="text"
-                placeholder="Masukkan Nomor Rekening"
-                {...register("accountNumber")}
-                errorMessage={errors.accountNumber?.message}
-              />
-
-              <FormLabel required>Nama Pemilik Rekening</FormLabel>
-              <Input
-                type="text"
-                placeholder="Masukkan Nama Pemilik Rekening"
-                {...register("accountName")}
-                errorMessage={errors.accountName?.message}
-              />
-            </FormContainer>
-          </div>
+        </Card>
+        <div className="mt-6 flex items-end justify-end">
+          <Button type="submit" variant="muattrans-primary" className="px-8">
+            Simpan
+          </Button>
         </div>
-      </Card>
-      <div className="mt-6 flex items-end justify-end">
-        <Button type="submit" variant="muattrans-primary" className="px-8">
-          Simpan
-        </Button>
-      </div>
-    </form>
+      </form>
+    </LocationProvider>
   );
 }
 

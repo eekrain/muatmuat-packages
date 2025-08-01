@@ -115,7 +115,7 @@ function KelengkapanLegalitas() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-full">
       <Card className={"rounded-xl border-none p-6"}>
-        <div className="max-w-[70%]">
+        <div className="w-full max-w-[75%]">
           <div>
             <h3 className="mb-6 text-lg font-semibold">
               Kelengkapan Legalitas
@@ -153,6 +153,7 @@ function KelengkapanLegalitas() {
                 label="Upload"
                 className="mb-2"
                 errorMessage={errors.documents?.npwp?.message}
+                single
               />
 
               <FormLabel required>Nomor NPWP Perusahaan</FormLabel>
@@ -174,6 +175,7 @@ function KelengkapanLegalitas() {
                 label="Upload"
                 className="mb-2"
                 errorMessage={errors.documents?.ktp?.message}
+                single
               />
 
               <FormLabel required>Nomor KTP Pendaftar</FormLabel>

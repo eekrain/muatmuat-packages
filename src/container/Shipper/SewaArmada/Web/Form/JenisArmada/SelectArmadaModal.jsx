@@ -13,6 +13,7 @@ import {
   WarningBadge,
 } from "@/container/Shipper/SewaArmada/Web/Form/JenisArmada/ArmadaComponent";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { OrderTypeEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import {
@@ -75,7 +76,10 @@ const SelectArmadaModal = ({ carrierData, truckData }) => {
       ].find((truck) => {
         return truck.truckTypeId === item;
       });
-      setField("truckCount", orderType === "INSTANT" ? 1 : selectedTruck.unit);
+      setField(
+        "truckCount",
+        orderType === OrderTypeEnum.INSTANT ? 1 : selectedTruck.unit
+      );
       setField("minTruckCount", selectedTruck.unit);
     }
     if (type === "carrierId") {

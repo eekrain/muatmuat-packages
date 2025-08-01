@@ -13,7 +13,9 @@ import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
+import { useTranslation } from "@/hooks/use-translation";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
+import { OrderTypeEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -57,6 +59,7 @@ const InformasiMuatanScreen = ({
   trucks,
   onFetchTrucks,
 }) => {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const navigation = useResponsiveNavigation();
@@ -120,7 +123,11 @@ const InformasiMuatanScreen = ({
   return (
     <FormResponsiveLayout
       title={{
-        label: "Informasi Muatan",
+        label: t(
+          "InformasiMuatanScreen.titleInformasiMuatan",
+          {},
+          "Informasi Muatan"
+        ),
       }}
     >
       <div className="mb-16 grid grid-cols-1 gap-2">
@@ -129,36 +136,21 @@ const InformasiMuatanScreen = ({
           <FormLabel
             required
             tooltip={
-              <InfoBottomsheet title="Tipe Muatan yang Akan Dikirimkan">
-                <ul>
-                  <li>
-                    <b>Bahan Mentah :</b> Material atau komponen yang belum
-                    diproses.
-                  </li>
-                  <li>
-                    <b>Barang Setengah Jadi :</b> Produk yang telah mengalami
-                    beberapa tahap proses tapi belum selesai.
-                  </li>
-                  <li>
-                    <b>Barang Jadi :</b> Produk akhir yang siap untuk digunakan
-                    atau dijual.
-                  </li>
-                  <li>
-                    <b>Lainnya :</b> Bahan / barang yang tidak sesuai dengan
-                    jenis diatas, namun tetap memiliki fungsi dalam proses
-                    produksi atau distribusi.
-                  </li>
-                </ul>
-                <p>
-                  <center>
-                    Pemilihan tipe muatan yang tepat akan membantu dalam
-                    pengelolaan dan pengiriman.
-                  </center>
-                </p>
-              </InfoBottomsheet>
+              <InfoBottomsheet
+                title={t(
+                  "InformasiMuatanScreen.titleCargoTypeToBeShipped",
+                  {},
+                  "Tipe Muatan yang Akan Dikirimkan"
+                )}
+                render={t(
+                  "InformasiMuatanScreen.infoBottomsheetCargoTypeDescription",
+                  {},
+                  "<ul><li><b>Bahan Mentah :</b> Material atau komponen yang belum diproses.</li><li><b>Barang Setengah Jadi :</b> Produk yang telah mengalami beberapa tahap proses tapi belum selesai.</li><li><b>Barang Jadi :</b> Produk akhir yang siap untuk digunakan atau dijual.</li><li><b>Lainnya :</b> Bahan / barang yang tidak sesuai dengan jenis diatas, namun tetap memiliki fungsi dalam proses produksi atau distribusi.</li></ul><p><center>Pemilihan tipe muatan yang tepat akan membantu dalam pengelolaan dan pengiriman.</center></p>"
+                )}
+              />
             }
           >
-            Tipe Muatan
+            {t("InformasiMuatanScreen.labelCargoType", {}, "Tipe Muatan")}
           </FormLabel>
 
           {/* Radio Button Group */}
@@ -189,37 +181,21 @@ const InformasiMuatanScreen = ({
           <FormLabel
             required
             tooltip={
-              <InfoBottomsheet title="Informasi Jenis Muatan">
-                <ul>
-                  <li>
-                    <b>Padat:</b> Muatan yang berbentuk solid.
-                  </li>
-                  <li>
-                    <b>Cair:</b> Muatan dalam bentuk cairan, biasanya
-                    membutuhkan penanganan khusus.
-                  </li>
-                  <li>
-                    <b>Curah:</b> Muatan yang dikirim secara massal, seperti
-                    biji-bijian atau pasir.
-                  </li>
-                  <li>
-                    <b>Kendaraan:</b> Muatan berupa alat transportasi yang perlu
-                    diangkut.
-                  </li>
-                  <li>
-                    <b>Container:</b> Muatan yang dikemas dalam suatu container.
-                  </li>
-                </ul>
-                <p>
-                  <center>
-                    Pemilihan jenis muatan yang tepat akan membantu dalam
-                    pengelolaan dan pengiriman.
-                  </center>
-                </p>
-              </InfoBottomsheet>
+              <InfoBottomsheet
+                title={t(
+                  "InformasiMuatanScreen.titleCargoCategoryInformation",
+                  {},
+                  "Informasi Jenis Muatan"
+                )}
+                render={t(
+                  "InformasiMuatanScreen.infoBottomsheetCargoCategoryDescription",
+                  {},
+                  "<ul><li><b>Padat:</b> Muatan yang berbentuk solid.</li><li><b>Cair:</b> Muatan dalam bentuk cairan, biasanya membutuhkan penanganan khusus.</li><li><b>Curah:</b> Muatan yang dikirim secara massal, seperti biji-bijian atau pasir.</li><li><b>Kendaraan:</b> Muatan berupa alat transportasi yang perlu diangkut.</li><li><b>Container:</b> Muatan yang dikemas dalam suatu container.</li></ul><p><center>Pemilihan jenis muatan yang tepat akan membantu dalam pengelolaan dan pengiriman.</center></p>"
+                )}
+              />
             }
           >
-            Jenis Muatan
+            {t("InformasiMuatanScreen.labelCargoCategory", {}, "Jenis Muatan")}
           </FormLabel>
 
           {/* Radio Button Group */}
@@ -250,16 +226,25 @@ const InformasiMuatanScreen = ({
           <FormLabel
             required
             tooltip={
-              <InfoBottomsheet title="Sertifikasi Halal Logistik">
-                <p>
-                  Pilih opsi ini jika pengiriman memerlukan pengelolaan rantai
-                  pasok yang memastikan produk tetap sesuai prinsip halal, mulai
-                  dari transportasi hingga penyimpanan
-                </p>
-              </InfoBottomsheet>
+              <InfoBottomsheet
+                title={t(
+                  "InformasiMuatanScreen.titleHalalLogisticsCertification",
+                  {},
+                  "Sertifikasi Halal Logistik"
+                )}
+                render={t(
+                  "InformasiMuatanScreen.infoBottomsheetHalalLogisticsDescription",
+                  {},
+                  "<p>Pilih opsi ini jika pengiriman memerlukan pengelolaan rantai pasok yang memastikan produk tetap sesuai prinsip halal, mulai dari transportasi hingga penyimpanan</p>"
+                )}
+              />
             }
           >
-            Sertifikasi Halal Logistik
+            {t(
+              "InformasiMuatanScreen.labelHalalLogisticsCertification",
+              {},
+              "Sertifikasi Halal Logistik"
+            )}
           </FormLabel>
 
           {/* Checkbox Section */}
@@ -267,7 +252,11 @@ const InformasiMuatanScreen = ({
             <Checkbox
               checked={formValues.isHalalLogistics}
               onChange={(e) => setField("isHalalLogistics", e.checked)}
-              label="Centang opsi jika pengiriman memerlukan armada dengan sertifikat halal logistik"
+              label={t(
+                "InformasiMuatanScreen.labelHalalLogisticsCheckbox",
+                {},
+                "Centang opsi jika pengiriman memerlukan armada dengan sertifikat halal logistik"
+              )}
               value="halal_certification"
               className="w-full"
             />
@@ -282,7 +271,13 @@ const InformasiMuatanScreen = ({
               <Fragment key={index}>
                 {/* Nama Muatan Field */}
                 <FormContainer>
-                  <FormLabel required>Nama Muatan</FormLabel>
+                  <FormLabel required>
+                    {t(
+                      "InformasiMuatanScreen.labelCargoName",
+                      {},
+                      "Nama Muatan"
+                    )}
+                  </FormLabel>
                   <div className="flex w-full flex-col">
                     <button
                       className={cn(
@@ -306,14 +301,23 @@ const InformasiMuatanScreen = ({
                             !muatan.namaMuatan.label && "text-neutral-600"
                           )}
                         >
-                          {muatan.namaMuatan.label || "Pilih Nama Muatan"}
+                          {muatan.namaMuatan.label ||
+                            t(
+                              "InformasiMuatanScreen.placeholderSelectCargoName",
+                              {},
+                              "Pilih Nama Muatan"
+                            )}
                         </span>
                       </div>
                       <IconComponent src="/icons/chevron-right.svg" />
                     </button>
                     {formErrors[`informasiMuatan.${index}.namaMuatan`] && (
                       <span className="mt-3 text-xs font-medium leading-[13.2px] text-error-400">
-                        Muatan wajib dipilih
+                        {t(
+                          "InformasiMuatanScreen.messageErrorCargoMustBeSelected",
+                          {},
+                          "Muatan wajib dipilih"
+                        )}
                       </span>
                     )}
                   </div>
@@ -324,17 +328,25 @@ const InformasiMuatanScreen = ({
                   <FormLabel
                     required
                     tooltip={
-                      <InfoBottomsheet title="Tipe Muatan yang Akan Dikirimkan">
-                        <p>
-                          Pilih opsi ini jika pengiriman memerlukan pengelolaan
-                          rantai pasok yang memastikan produk tetap sesuai
-                          prinsip halal, mulai dari transportasi hingga
-                          penyimpanan
-                        </p>
-                      </InfoBottomsheet>
+                      <InfoBottomsheet
+                        title={t(
+                          "InformasiMuatanScreen.titleCargoTypeToBeShipped",
+                          {},
+                          "Tipe Muatan yang Akan Dikirimkan"
+                        )}
+                        render={t(
+                          "InformasiMuatanScreen.infoBottomsheetHalalLogisticsDescription",
+                          {},
+                          "<p>Pilih opsi ini jika pengiriman memerlukan pengelolaan rantai pasok yang memastikan produk tetap sesuai prinsip halal, mulai dari transportasi hingga penyimpanan</p>"
+                        )}
+                      />
                     }
                   >
-                    Berat Muatan
+                    {t(
+                      "InformasiMuatanScreen.labelCargoWeight",
+                      {},
+                      "Berat Muatan"
+                    )}
                   </FormLabel>
 
                   <div className="flex gap-2.5">
@@ -362,13 +374,21 @@ const InformasiMuatanScreen = ({
                           `informasiMuatan.${index}.beratMuatan.berat`
                         ] && "border-red-500"
                       )}
-                      title="Berat Muatan"
+                      title={t(
+                        "InformasiMuatanScreen.titleCargoWeight",
+                        {},
+                        "Berat Muatan"
+                      )}
                       options={beratMuatanOptions}
                       value={muatan.beratMuatan.unit}
                       onChange={(value) =>
                         updateBeratMuatan(index, "unit", value)
                       }
-                      saveLabel="Terapkan"
+                      saveLabel={t(
+                        "InformasiMuatanScreen.buttonApply",
+                        {},
+                        "Terapkan"
+                      )}
                     />
                   </div>
                 </FormContainer>
@@ -378,26 +398,25 @@ const InformasiMuatanScreen = ({
                   <FormLabel
                     optional
                     tooltip={
-                      <InfoBottomsheet title="Tipe Muatan yang Akan Dikirimkan">
-                        <ul>
-                          <li>
-                            <b>Panjang :</b> Ukuran terpanjang dari muatan.
-                          </li>
-                          <li>
-                            <b>Lebar :</b> Ukuran terlebar dari muatan.
-                          </li>
-                          <li>
-                            <b>Tinggi :</b> Ukuran tertinggi dari muatan
-                          </li>
-                        </ul>
-                        <p>
-                          Pengisian dimensi yang tepat akan membantu dalam
-                          pengelolaan dan pengiriman.
-                        </p>
-                      </InfoBottomsheet>
+                      <InfoBottomsheet
+                        title={t(
+                          "InformasiMuatanScreen.titleCargoTypeToBeShipped",
+                          {},
+                          "Tipe Muatan yang Akan Dikirimkan"
+                        )}
+                        render={t(
+                          "InformasiMuatanScreen.infoBottomsheetCargoDimensions",
+                          {},
+                          "<ul><li><b>Panjang :</b> Ukuran terpanjang dari muatan.</li><li><b>Lebar :</b> Ukuran terlebar dari muatan.</li><li><b>Tinggi :</b> Ukuran tertinggi dari muatan</li></ul><p>Pengisian dimensi yang tepat akan membantu dalam pengelolaan dan pengiriman.</p>"
+                        )}
+                      />
                     }
                   >
-                    Dimensi Muatan
+                    {t(
+                      "InformasiMuatanScreen.labelCargoDimensions",
+                      {},
+                      "Dimensi Muatan"
+                    )}
                   </FormLabel>
 
                   <div className="flex items-center gap-2.5">
@@ -432,13 +451,21 @@ const InformasiMuatanScreen = ({
                     </div>
                     <DropdownRadioBottomsheeet
                       className="w-[65px]"
-                      title="Dimensi Muatan"
+                      title={t(
+                        "InformasiMuatanScreen.titleCargoDimensions",
+                        {},
+                        "Dimensi Muatan"
+                      )}
                       options={dimensiMuatanOptions}
                       value={muatan.dimensiMuatan.unit}
                       onChange={(value) =>
                         updateDimensiMuatan(index, "unit", value)
                       }
-                      saveLabel="Terapkan"
+                      saveLabel={t(
+                        "InformasiMuatanScreen.buttonApply",
+                        {},
+                        "Terapkan"
+                      )}
                     />
                   </div>
                 </FormContainer>
@@ -485,11 +512,15 @@ const InformasiMuatanScreen = ({
           setSewaArmadaField("truckTypeId", truck.truckTypeId);
           setSewaArmadaField(
             "truckCount",
-            orderType === "INSTANT" ? 1 : truck.unit
+            orderType === OrderTypeEnum.INSTANT ? 1 : truck.unit
           );
           setOpenJenisTrukBottomSheet(false);
           toast.success(
-            "Informasi muatan dan jenis armada telah berhasil diubah"
+            t(
+              "InformasiMuatanScreen.messageSuccessCargoAndFleetInfoUpdated",
+              {},
+              "Informasi muatan dan jenis armada telah berhasil diubah"
+            )
           );
           Object.entries(formValues).forEach(([key, value]) => {
             setSewaArmadaField(key, value);
@@ -505,7 +536,7 @@ const InformasiMuatanScreen = ({
           onClick={handleSaveInformasiMuatan}
           type="button"
         >
-          Simpan
+          {t("InformasiMuatanScreen.buttonSave", {}, "Simpan")}
         </Button>
       </ResponsiveFooter>
     </FormResponsiveLayout>

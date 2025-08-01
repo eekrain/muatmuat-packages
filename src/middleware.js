@@ -9,6 +9,7 @@ const LIST_PUBLIC_FILES = [
   "/logo.png",
   "/icons/",
   "/img/",
+  "/api/",
 ];
 
 export function middleware(request) {

@@ -10,9 +10,9 @@ import { TabRegister } from "@/container/CS/User/Tambah/Web/TabRegister";
 
 const Page = () => {
   const [itemsStatus, setItemsStatus] = useState([
-    "finished",
-    "finished",
-    "incomplete",
+    "incomplete", // finished (toogle)
+    "incomplete", // finished (toogle)
+    "incomplete", // finished (toogle)
   ]);
   const breadcrumbData = [
     { name: "Daftar User", href: "/user" },

@@ -8,9 +8,9 @@ const apiResultDriversCount = {
     },
     Data: {
       active: 3,
-      nonActive: 0,
-      registrationProcess: 0,
-      archive: 0,
+      nonActive: 1,
+      registrationProcess: 1,
+      archive: 1,
     },
     Type: "GET_DRIVERS_COUNT",
   },

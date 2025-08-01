@@ -389,7 +389,7 @@ const PesananTable = ({
                               ${
                                 order.loadTimeEnd
                                   ? ` s/d ${formatDate(order.loadTimeEnd)}`
-                                  : null
+                                  : ""
                               }`}
                             </span>
                           </td>
@@ -536,23 +536,23 @@ const PesananTable = ({
                               >
                                 <BadgeStatusPesanan
                                   variant={
-                                    latestStatus?.statusLabel ===
+                                    latestStatus?.statusCode ===
                                       OrderStatusEnum.WAITING_PAYMENT_1 ||
-                                    latestStatus?.statusLabel ===
+                                    latestStatus?.statusCode ===
                                       OrderStatusEnum.WAITING_PAYMENT_2 ||
-                                    latestStatus?.statusLabel ===
+                                    latestStatus?.statusCode ===
                                       OrderStatusEnum.WAITING_REPAYMENT_1 ||
-                                    latestStatus?.statusLabel ===
+                                    latestStatus?.statusCode ===
                                       OrderStatusEnum.WAITING_REPAYMENT_2
                                       ? "warning"
-                                      : latestStatus?.statusLabel ===
+                                      : latestStatus?.statusCode ===
                                             OrderStatusEnum.CANCELED_BY_SHIPPER ||
-                                          latestStatus?.statusLabel ===
+                                          latestStatus?.statusCode ===
                                             OrderStatusEnum.CANCELED_BY_SYSTEM ||
-                                          latestStatus?.statusLabel ===
+                                          latestStatus?.statusCode ===
                                             OrderStatusEnum.CANCELED_BY_TRANSPORTER
                                         ? "error"
-                                        : latestStatus?.statusLabel ===
+                                        : latestStatus?.statusCode ===
                                             OrderStatusEnum.COMPLETED
                                           ? "success"
                                           : "primary"
@@ -565,23 +565,23 @@ const PesananTable = ({
                             ) : (
                               <BadgeStatusPesanan
                                 variant={
-                                  latestStatus ===
+                                  latestStatus?.statusCode ===
                                     OrderStatusEnum.WAITING_PAYMENT_1 ||
-                                  latestStatus ===
+                                  latestStatus?.statusCode ===
                                     OrderStatusEnum.WAITING_PAYMENT_2 ||
-                                  latestStatus ===
+                                  latestStatus?.statusCode ===
                                     OrderStatusEnum.WAITING_REPAYMENT_1 ||
-                                  latestStatus ===
+                                  latestStatus?.statusCode ===
                                     OrderStatusEnum.WAITING_REPAYMENT_2
                                     ? "warning"
-                                    : latestStatus ===
+                                    : latestStatus?.statusCode ===
                                           OrderStatusEnum.CANCELED_BY_SHIPPER ||
-                                        latestStatus ===
+                                        latestStatus?.statusCode ===
                                           OrderStatusEnum.CANCELED_BY_SYSTEM ||
-                                        latestStatus ===
+                                        latestStatus?.statusCode ===
                                           OrderStatusEnum.CANCELED_BY_TRANSPORTER
                                       ? "error"
-                                      : latestStatus ===
+                                      : latestStatus?.statusCode ===
                                           OrderStatusEnum.COMPLETED
                                         ? "success"
                                         : "primary"
@@ -597,7 +597,7 @@ const PesananTable = ({
                           <td className="w-[174px] pb-4 pl-0 pr-6 pt-5 align-top">
                             <div className="flex flex-col gap-y-3">
                               {/* Conditional button based on status */}
-                              {latestStatus ===
+                              {latestStatus?.statusCode ===
                               OrderStatusEnum.DOCUMENT_DELIVERY ? (
                                 <Button
                                   onClick={() =>
@@ -608,22 +608,27 @@ const PesananTable = ({
                                 >
                                   {t("buttonSelesaikanPesanan")}
                                 </Button>
-                              ) : latestStatus === OrderStatusEnum.COMPLETED ? (
+                              ) : latestStatus?.statusCode ===
+                                OrderStatusEnum.COMPLETED ? (
                                 <Button
                                   variant="muatparts-primary"
                                   className="w-full"
                                 >
                                   {t("buttonBeriUlasan")}
                                 </Button>
-                              ) : beforeLoadingStatus.includes(latestStatus) ||
-                                latestStatus.statusCode ===
-                                  OrderStatusEnum.COMPLETED ||
-                                latestStatus.statusCode ===
-                                  OrderStatusEnum.CANCELED_BY_SHIPPER ||
-                                latestStatus.statusCode ===
-                                  OrderStatusEnum.CANCELED_BY_SYSTEM ||
-                                latestStatus.statusCode ===
-                                  OrderStatusEnum.CANCELED_BY_TRANSPORTER ? (
+                              ) : !(
+                                  beforeLoadingStatus.includes(
+                                    latestStatus?.statusCode
+                                  ) ||
+                                  latestStatus?.statusCode ===
+                                    OrderStatusEnum.COMPLETED ||
+                                  latestStatus?.statusCode ===
+                                    OrderStatusEnum.CANCELED_BY_SHIPPER ||
+                                  latestStatus?.statusCode ===
+                                    OrderStatusEnum.CANCELED_BY_SYSTEM ||
+                                  latestStatus?.statusCode ===
+                                    OrderStatusEnum.CANCELED_BY_TRANSPORTER
+                                ) ? (
                                 <Button
                                   variant="muatparts-primary"
                                   className="w-full"

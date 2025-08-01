@@ -137,7 +137,7 @@ const apiResultOrderDetail = {
     },
     Data: {
       // Menentukan bisa nggaknya buat ubah pesanan
-      isChangeable: true,
+      isChangeable: false,
       // Menentukan bisa nggaknya buat batalkan pesanan
       isCancellable: false,
       // Menentukan bisa nggaknya buat ngasih review
@@ -149,7 +149,7 @@ const apiResultOrderDetail = {
         transporterOrderCode: "MT.25.AA.001",
         invoiceNumber: "INV/12345678",
         // orderStatus: OrderStatusEnum.LOADING,
-        orderStatus: OrderStatusEnum.UNLOADING,
+        orderStatus: OrderStatusEnum.DOCUMENT_DELIVERY,
         orderTitle: "Proses Muat",
         unitFleetStatus: 3,
         orderType: OrderTypeEnum.INSTANT,

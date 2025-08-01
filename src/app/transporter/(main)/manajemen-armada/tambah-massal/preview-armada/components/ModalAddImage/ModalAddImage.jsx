@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 
 import Button from "@/components/Button/Button";
-import ImageUploaderWeb from "@/components/ImageUploader/ImageUploaderWeb";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import { toast } from "@/lib/toast";
-import { cn } from "@/lib/utils";
+import { useUploadVehiclePhotos } from "@/services/Transporter/manajemen-armada/postUploadVehiclePhotos";
+
+import UploadVehiclePhotos from "../UploadVehiclePhotos/UploadVehiclePhotos";
 
 /**
  * @typedef {Object} ModalAddArmadaImageProps
@@ -21,13 +22,15 @@ import { cn } from "@/lib/utils";
  * @param {ModalAddArmadaImageProps} props - Component properties.
  */
 
-export default function ModalAddArmadaImage({
+export default function ModalAddImage({
   // Array of images to be uploaded
   value,
   isOpen,
   onClose,
   onSave,
 }) {
+  const { trigger, isMutating, data, error } = useUploadVehiclePhotos();
+
   const [images, setImages] = useState(
     value || {
       image_armada_depan: null,
@@ -37,15 +40,18 @@ export default function ModalAddArmadaImage({
     }
   );
   const [isError, setIsError] = useState(false);
+  const [uploadError, setUploadError] = useState();
+
   const handleImageChange = (imageType, image) => {
     setImages((prev) => ({
       ...prev,
       [imageType]: image,
     }));
-    if (isError) {
-      setIsError(false);
-    }
   };
+
+  useEffect(() => {
+    console.log("images", images);
+  }, [images]);
 
   const handleClose = () => {
     setImages({
@@ -78,7 +84,7 @@ export default function ModalAddArmadaImage({
     if (value) {
       setImages(value);
     }
-  }, []);
+  }, [value]);
   return (
     <Modal
       open={isOpen}
@@ -96,54 +102,51 @@ export default function ModalAddArmadaImage({
             </p>
           </div>
           <div className="flex w-full items-center justify-center gap-4">
-            <ImageUploaderWeb
+            {/* <ImageUploaderWeb
               value={images.image_armada_depan}
               onUpload={(image) =>
                 handleImageChange("image_armada_depan", image)
               }
-              errorText={"Foto armada wajib diisi"}
               uploadText={"Tampak Depan"}
               className={cn(
                 "aspect-square size-full",
                 isError && !images.image_armada_depan && "!border-error-500"
               )}
               onError={(errorMessage) => toast.error(errorMessage)}
+              isLoading={isMutating}
+              isError={error}
+            /> */}
+            <UploadVehiclePhotos
+              value={images.image_armada_depan}
+              onUpload={(image) =>
+                handleImageChange("image_armada_depan", image)
+              }
+              isError={isError && !images.image_armada_depan}
+              placeholder="Tampak Depan"
             />
-            <ImageUploaderWeb
+            <UploadVehiclePhotos
               value={images.image_armada_belakang}
               onUpload={(image) =>
                 handleImageChange("image_armada_belakang", image)
               }
-              uploadText={"Tampak Belakang"}
-              className={cn(
-                "aspect-square size-full",
-                isError && !images.image_armada_belakang && "!border-error-500"
-              )}
-              onError={(errorMessage) => toast.error(errorMessage)}
+              isError={isError && !images.image_armada_belakang}
+              placeholder="Tampak Belakang"
             />
-            <ImageUploaderWeb
-              value={images.image_armada_kanan}
-              onUpload={(image) =>
-                handleImageChange("image_armada_kanan", image)
-              }
-              uploadText={"Tampak Kanan"}
-              className={cn(
-                "aspect-square size-full",
-                isError && !images.image_armada_kanan && "!border-error-500"
-              )}
-              onError={(errorMessage) => toast.error(errorMessage)}
-            />
-            <ImageUploaderWeb
+            <UploadVehiclePhotos
               value={images.image_armada_kiri}
               onUpload={(image) =>
                 handleImageChange("image_armada_kiri", image)
               }
-              uploadText={"Tampak Kiri"}
-              className={cn(
-                "aspect-square size-full",
-                isError && !images.image_armada_kiri && "!border-error-500"
-              )}
-              onError={(errorMessage) => toast.error(errorMessage)}
+              isError={isError && !images.image_armada_kiri}
+              placeholder="Tampak Kiri"
+            />
+            <UploadVehiclePhotos
+              value={images.image_armada_kanan}
+              onUpload={(image) =>
+                handleImageChange("image_armada_kanan", image)
+              }
+              isError={isError && !images.image_armada_kanan}
+              placeholder="Tampak Kanan"
             />
           </div>
           <Button onClick={handleSave} className="!w-fit !min-w-[112px]">

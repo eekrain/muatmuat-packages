@@ -22,6 +22,10 @@ const LIST_PUBLIC_ROUTES = [
     method: "exact",
   },
   {
+    path: "/rdp-login",
+    method: "exact",
+  },
+  {
     // /orders/orderId/drivers/driverId/qr-code
     path: /^\/orders\/[^\/]+\/drivers\/[^\/]+\/qr-code$/,
     method: "regex",
@@ -104,8 +108,8 @@ export const createAxios = (baseURL) => {
 };
 
 // For compatibility with existing code
-const axios = createAxios(process.env.NEXT_PUBLIC_INTERNAL_API);
-export default axios;
+// const axios = createAxios(process.env.NEXT_PUBLIC_INTERNAL_API);
+// export default axios;
 
 // API's with different target baseURL
 export const fetcherMuatparts = createAxios(
@@ -115,3 +119,4 @@ export const fetcherMuatrans = createAxios(
   process.env.NEXT_PUBLIC_MUATRANS_API
 );
 export const fetcherPayment = createAxios(process.env.NEXT_PUBLIC_PAYMENT_API);
+export const fetcherMock = createAxios();

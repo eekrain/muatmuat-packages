@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 
 import { useSWRMutateHook } from "@/hooks/use-swr";
 import { fetcherMuatrans } from "@/lib/axios";
+import { toast } from "@/lib/toast";
 
 import Button from "../Button/Button";
 import IconComponent from "../IconComponent/IconComponent";
@@ -28,6 +29,7 @@ const FileUploadMultiple = ({
   value = [],
   acceptedFormats = [".jpg", ".jpeg", ".png", ".pdf"],
   errorMessage = "",
+  single = false,
 }) => {
   const [progress, setProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
@@ -68,6 +70,10 @@ const FileUploadMultiple = ({
         onError(
           `Ukuran file "${file.name}" melebihi batas maksimal ${maxSize}MB`
         );
+        toast.error(
+          `Ukuran file "${file.name}" melebihi batas maksimal ${maxSize}MB`
+        );
+
         continue;
       }
 
@@ -76,11 +82,28 @@ const FileUploadMultiple = ({
         onError(
           `Format file "${file.name}" tidak didukung. Format yang diterima: ${acceptedFormats.join(", ")}`
         );
+        toast.error(
+          `Format file "${file.name}" tidak didukung. Format yang diterima: ${acceptedFormats.join(", ")}`
+        );
         continue;
       }
 
       const formData = new FormData();
       formData.append("document", file);
+
+      if (single) {
+        if (newUploadedFiles.length > 0) {
+          onSuccess([newUploadedFiles[0]]); // ganti file jika sudah ada
+        }
+      } else if (Number.isInteger(replacingIndex)) {
+        const updatedFiles = [...(value || [])];
+        if (newUploadedFiles.length > 0) {
+          updatedFiles[replacingIndex] = newUploadedFiles[0];
+          onSuccess(updatedFiles);
+        }
+      } else {
+        onSuccess([...(value || []), ...newUploadedFiles]);
+      }
 
       try {
         // Reset progress for new upload
@@ -113,9 +136,13 @@ const FileUploadMultiple = ({
           newUploadedFiles.push(fileData);
         } else {
           onError(response?.Message?.Text || `Gagal mengunggah ${file.name}`);
+          toast.error(
+            response?.Message?.Text || `Gagal mengunggah ${file.name}`
+          );
         }
       } catch (error) {
         onError(error.message || `Gagal mengunggah ${file.name}`);
+        toast.error(error.message || `Gagal mengunggah ${file.name}`);
       }
     }
 
@@ -166,19 +193,22 @@ const FileUploadMultiple = ({
         accept={acceptedFormats.join(",")}
         onChange={handleFileChange}
         disabled={isUploading}
-        multiple={!Number.isInteger(replacingIndex)}
+        multiple={!Number.isInteger(replacingIndex) && !single}
       />
 
       <div className="flex flex-col items-start gap-y-2">
         <div className="flex items-center">
-          <Button
-            className="self-start"
-            name="upload"
-            color="primary"
-            onClick={handleTriggerUpload}
-          >
-            {label}
-          </Button>
+          {!(single && value.length > 0) && (
+            <Button
+              type="button"
+              className="self-start"
+              name="upload"
+              color="primary"
+              onClick={handleTriggerUpload}
+            >
+              {label}
+            </Button>
+          )}
           <div className="ml-2 flex flex-col items-start gap-y-1">
             {Array.isArray(value) && value.length > 0 && (
               <div className="ml-4 flex flex-col gap-y-3">
@@ -193,11 +223,13 @@ const FileUploadMultiple = ({
                       </div>
                     </div>
                     <div className="flex flex-shrink-0 items-center gap-4">
-                      <IconComponent
-                        src="/icons/silang.svg"
-                        onClick={() => handleDelete(index)}
-                        className={`cursor-pointer hover:text-neutral-700 ${isUploading ? "cursor-not-allowed opacity-50" : ""}`}
-                      />
+                      <button type="button" onClick={() => handleDelete(index)}>
+                        <IconComponent
+                          src="/icons/silang.svg"
+                          className={`cursor-pointer hover:text-neutral-700 ${isUploading ? "cursor-not-allowed opacity-50" : ""}`}
+                        />
+                      </button>
+
                       <span
                         className={`cursor-pointer text-xs font-medium leading-[14.4px] text-primary-700 hover:text-primary-800 ${isUploading ? "cursor-not-allowed opacity-50" : ""}`}
                         onClick={() => handleReplace(index)}

@@ -3,7 +3,10 @@ import { usePathname } from "next/navigation";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { LocationModalFormWeb } from "@/components/LocationManagement/Web/LocationModalFormWeb/LocationModalFormWeb";
 import TimelineField from "@/components/Timeline/timeline-field";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import {
+  OrderStatusEnum,
+  OrderTypeEnum,
+} from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { handleFirstTime } from "@/lib/utils/form";
 import {
   useSewaArmadaActions,
@@ -36,7 +39,9 @@ export const LokasiBongkar = ({ orderStatus, maxLocation }) => {
   const hasNotDepartedToPickup =
     hasNotDepartedToPickupStatuses.includes(orderStatus);
   const needValidateLocationChange =
-    isEditPage && orderType === "SCHEDULED" && hasNotDepartedToPickup;
+    isEditPage &&
+    orderType === OrderTypeEnum.SCHEDULED &&
+    hasNotDepartedToPickup;
 
   return (
     <>
@@ -57,7 +62,11 @@ export const LokasiBongkar = ({ orderStatus, maxLocation }) => {
           onEditLocation={(index) => {
             if (
               !isEditPage ||
-              !(isEditPage && orderType === "INSTANT" && index === 0)
+              !(
+                isEditPage &&
+                orderType === OrderTypeEnum.INSTANT &&
+                index === 0
+              )
             ) {
               handleFirstTime(() => {
                 handleOpenModalLocation({
@@ -84,7 +93,8 @@ export const LokasiBongkar = ({ orderStatus, maxLocation }) => {
             : null}
           {isEditPage &&
           !(
-            orderType === "INSTANT" && lokasiBongkar?.length < maxLocation
+            orderType === OrderTypeEnum.INSTANT &&
+            lokasiBongkar?.length < maxLocation
           ) ? null : (
             <TimelineField.AddButton />
           )}
