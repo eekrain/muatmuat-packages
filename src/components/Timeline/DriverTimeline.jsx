@@ -142,6 +142,14 @@ export const DriverTimeline = ({
               withLine={
                 parent.mappedOrderStatus === OrderStatusEnum.DOCUMENT_DELIVERY
               }
+              withButton={
+                parent?.shippingEvidence?.photo.length > 0
+                  ? {
+                      label: "Lihat Bukti Pengiriman",
+                      onClick: () => {},
+                    }
+                  : null
+              }
               variant={
                 parent.mappedOrderStatus.startsWith("CANCELED")
                   ? "canceled"
