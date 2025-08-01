@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import { DataTable } from "@/components/DataTable";
@@ -13,7 +13,10 @@ import {
   SimpleDropdownItem,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
+import { toast } from "@/lib/toast";
 import { getDriverStatusBadge } from "@/lib/utils/driverStatus";
+import { deleteDriver } from "@/services/Transporter/manajemen-driver/deleteDriver";
 import { useGetProcessDriversData } from "@/services/Transporter/manajemen-driver/getProcessDriversData";
 
 const DriverProses = ({
@@ -29,6 +32,10 @@ const DriverProses = ({
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [searchValue, setSearchValue] = useState("");
   const [filters, setFilters] = useState({});
+  const [confirmDeleteDriver, setConfirmDeleteDriver] = useState(false);
+  const [selectedDriver, setSelectedDriver] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [openDropdowns, setOpenDropdowns] = useState({});
 
   // Fetch drivers data with pagination, filters and status
   const { data, isLoading, mutate } = useGetProcessDriversData({
@@ -90,28 +97,26 @@ const DriverProses = ({
       width: "120px",
       sortable: false,
       render: (row) => (
-        <SimpleDropdown>
+        <SimpleDropdown
+          open={openDropdowns[row.id] || false}
+          onOpenChange={(isOpen) =>
+            setOpenDropdowns((prev) => ({ ...prev, [row.id]: isOpen }))
+          }
+        >
           <SimpleDropdownTrigger asChild>
             <button className="flex h-8 flex-row items-center justify-between gap-2 rounded-md border border-neutral-600 bg-white px-3 py-2 shadow-sm transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none">
               <span className="text-xs font-medium leading-tight text-black">
                 Aksi
               </span>
-              <ChevronDown className="h-4 w-4 text-neutral-700" />
+              {openDropdowns[row.id] ? (
+                <ChevronUp className="h-4 w-4 text-neutral-700" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-neutral-700" />
+              )}
             </button>
           </SimpleDropdownTrigger>
 
           <SimpleDropdownContent className="w-[133px]" align="end">
-            {row.driverStatus === "REJECTED" && (
-              <>
-                <SimpleDropdownItem onClick={() => {}}>Ubah</SimpleDropdownItem>
-                <SimpleDropdownItem
-                  className="text-error-400"
-                  onClick={() => {}}
-                >
-                  Hapus
-                </SimpleDropdownItem>
-              </>
-            )}
             <SimpleDropdownItem
               onClick={() =>
                 router.push(`/manajemen-driver/${row.id}/detail?from=process`)
@@ -119,6 +124,20 @@ const DriverProses = ({
             >
               Detail
             </SimpleDropdownItem>
+            {row.driverStatus === "REJECTED" && (
+              <>
+                <SimpleDropdownItem onClick={() => {}}>Ubah</SimpleDropdownItem>
+                <SimpleDropdownItem
+                  className="text-error-400"
+                  onClick={() => {
+                    setSelectedDriver(row);
+                    setConfirmDeleteDriver(true);
+                  }}
+                >
+                  Hapus
+                </SimpleDropdownItem>
+              </>
+            )}
           </SimpleDropdownContent>
         </SimpleDropdown>
       ),
@@ -201,28 +220,72 @@ const DriverProses = ({
     };
   };
 
+  const handleDeleteDriver = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteDriver(selectedDriver?.id);
+      toast.success("Berhasil menghapus driver");
+      setConfirmDeleteDriver(false);
+      setSelectedDriver(null);
+      mutate();
+    } catch (error) {
+      console.error("Failed to delete driver:", error);
+      toast.error("Gagal menghapus driver. Silakan coba lagi.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
-    <div className="h-[calc(100vh-300px)]">
-      <DataTable
-        data={data?.drivers || []}
-        columns={columns}
-        searchPlaceholder="Cari Nama Driver, No. HP atau lainnya"
-        totalCountLabel="Driver"
-        currentPage={data?.pagination?.currentPage || currentPage}
-        totalPages={data?.pagination?.totalPages || 1}
-        totalItems={count || 0}
-        perPage={data?.pagination?.itemsPerPage || perPage}
-        onPageChange={handlePageChange}
-        onPerPageChange={handlePerPageChange}
-        onSearch={handleSearch}
-        onFilter={handleFilter}
-        onSort={handleSort}
-        loading={isLoading}
-        showPagination
-        showDisplayView={true}
-        displayOptions={getDisplayOptions()}
+    <>
+      <div className="h-[calc(100vh-300px)]">
+        <DataTable
+          data={data?.drivers || []}
+          columns={columns}
+          searchPlaceholder="Cari Nama Driver, No. HP atau lainnya"
+          totalCountLabel="Driver"
+          currentPage={data?.pagination?.currentPage || currentPage}
+          totalPages={data?.pagination?.totalPages || 1}
+          totalItems={count || 0}
+          perPage={data?.pagination?.itemsPerPage || perPage}
+          onPageChange={handlePageChange}
+          onPerPageChange={handlePerPageChange}
+          onSearch={handleSearch}
+          onFilter={handleFilter}
+          onSort={handleSort}
+          loading={isLoading}
+          showPagination
+          showDisplayView={true}
+          displayOptions={getDisplayOptions()}
+        />
+      </div>
+
+      <ConfirmationModal
+        isOpen={confirmDeleteDriver}
+        setIsOpen={setConfirmDeleteDriver}
+        description={{
+          text: (
+            <p className="text-center">
+              Apakah kamu yakin ingin menghapus driver
+              <br />
+              <b>{selectedDriver?.name}</b>?
+            </p>
+          ),
+        }}
+        confirm={{
+          text: "Ya",
+          onClick: handleDeleteDriver,
+          disabled: isDeleting,
+        }}
+        cancel={{
+          text: "Tidak",
+          onClick: () => {
+            setConfirmDeleteDriver(false);
+            setSelectedDriver(null);
+          },
+        }}
       />
-    </div>
+    </>
   );
 };
 

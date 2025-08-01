@@ -276,8 +276,8 @@ const DriverNonaktif = ({
     onPerPageChange?.(limit);
   };
 
-  const handleSort = (sorr, order) => {
-    setSortConfig({ sorr, order });
+  const handleSort = (sort, order) => {
+    setSortConfig({ sort, order });
   };
 
   const handleStatusChange = (status) => {
