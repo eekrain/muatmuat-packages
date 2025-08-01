@@ -62,7 +62,9 @@ export const ModalDetailPembayaran = ({
               <CardPayment.CollapsibleSection title="Detail Pesanan">
                 <CardPayment.LineItem
                   label="Waktu Pembayaran"
-                  value={formatDate(dataRingkasanPembayaran?.expiredAt)}
+                  value={formatDate(
+                    dataRingkasanPembayaran?.paymentDueDateTime
+                  )}
                 />
                 <CardPayment.LineItem
                   label="Opsi Pembayaran"
@@ -151,7 +153,9 @@ export const ModalDetailPembayaran = ({
               <CardPayment.CollapsibleSection title="Detail Tambahan Biaya">
                 <CardPayment.LineItem
                   label="Waktu Pembayaran"
-                  value={formatDate(dataRingkasanPembayaran?.expiredAt)}
+                  value={formatDate(
+                    dataRingkasanPembayaran?.paymentDueDateTime
+                  )}
                 />
                 <CardPayment.LineItem
                   label="Opsi Pembayaran"

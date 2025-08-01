@@ -16,7 +16,7 @@ export const RingkasanPembayaranPendingPayment = ({
   dataRingkasanPembayaran,
 }) => {
   const { countdown } = useCountdown({
-    endingDate: dataRingkasanPembayaran?.expiredAtFromOrderDetail,
+    endingDate: dataRingkasanPembayaran?.paymentDueDateTime,
     isNeedCountdown: true,
   });
   const [hasAutoCanceled, setHasAutoCanceled] = useState(false);
@@ -58,8 +58,8 @@ export const RingkasanPembayaranPendingPayment = ({
   return (
     <div className="flex flex-col gap-6">
       <CardPayment.Root className="w-[338px]">
-        <CardPayment.Body className="p-0">
-          <div className="flex flex-col gap-6 px-5 py-6">
+        <CardPayment.Body className="md:m-0 md:px-5 md:py-6">
+          <div className="flex flex-col gap-6">
             {/* Payment Deadline Alert */}
             <div className="flex flex-col items-start gap-3 rounded-xl bg-warning-100 px-4 py-6">
               <div className="flex w-full items-center justify-between">
@@ -78,7 +78,7 @@ export const RingkasanPembayaranPendingPayment = ({
               </div>
               <span className="text-sm font-semibold text-neutral-900">
                 {formatDate(
-                  dataRingkasanPembayaran?.expiredAtFromOrderDetail,
+                  dataRingkasanPembayaran?.paymentDueDateTime,
                   "dd LLL yyyy HH:mm 'WIB'"
                 )}
               </span>

@@ -23,8 +23,8 @@ export const getAlertMetadata = (type, t) => {
     return {
       label: t(AlertLabelEnum.ORDER_CHANGES_CONFIRMATION),
       button: {
-        onClick: () => alert("Konfirmasi"),
-        label: "Konfirmasi",
+        onClick: () => alert("Lihat Perubahan"),
+        label: "Lihat Perubahan",
       },
     };
   }

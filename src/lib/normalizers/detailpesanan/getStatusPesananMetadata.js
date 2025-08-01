@@ -1,6 +1,7 @@
 import {
   OrderStatusEnum,
   OrderStatusTitle,
+  OrderTypeEnum,
 } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
 export const getStatusPesananMetadata = ({
@@ -9,6 +10,7 @@ export const getStatusPesananMetadata = ({
   totalUnit,
   t,
   isShowUnitFleetStatus = true,
+  orderType,
 }) => {
   let variant = "primary";
   if (orderStatus.startsWith("WAITING")) variant = "warning";
@@ -18,6 +20,7 @@ export const getStatusPesananMetadata = ({
   return {
     variant,
     label:
+      orderType === OrderTypeEnum.SCHEDULED &&
       isShowUnitFleetStatus &&
       orderStatus !== OrderStatusEnum.COMPLETED &&
       !orderStatus.startsWith("CANCELED") &&

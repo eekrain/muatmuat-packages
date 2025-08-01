@@ -31,7 +31,7 @@ export const normalizeDetailPesananOrderDetail = ({
     const priceChange = dataOrderDetail.summary?.priceChange;
     let newPriceChange = null;
 
-    if (priceChange?.totalCharge && priceChange?.totalCharge > 0) {
+    if (priceChange?.totalAdjustment && priceChange?.totalAdjustment > 0) {
       newPriceChange = priceChange;
     }
 
@@ -40,6 +40,7 @@ export const normalizeDetailPesananOrderDetail = ({
       ...(dataReview ? dataReview : {}),
     };
     const dataStatusPesanan = {
+      orderType: dataOrderDetail.general?.orderType,
       orderId: dataOrderDetail.general?.orderId,
       orderCode:
         dataOrderDetail.general?.invoiceNumber ||
@@ -72,9 +73,7 @@ export const normalizeDetailPesananOrderDetail = ({
       },
       otherStatus: dataOrderDetail?.otherStatus || [],
       withDocumentShipping: Boolean(foundDocumentShipping),
-      expiredAt: dataPayment?.payment?.expiryTime,
-      expiredAtFromOrderDetail:
-        dataOrderDetail.summary?.payment?.paymentDueDateTime,
+      paymentDueDateTime: dataOrderDetail.summary?.payment?.paymentDueDateTime,
       alerts: dataAlerts || [],
       cancellationHistory: dataCancellationHistory,
       hasFoundFleet:
@@ -149,9 +148,7 @@ export const normalizeDetailPesananOrderDetail = ({
       paymentMethodId: dataOrderDetail.summary?.payment?.paymentMethodId,
       paymentLogo: dataOrderDetail.summary?.payment?.paymentLogo,
       vaNumber: dataPayment?.payment?.vaNumber,
-      expiredAt: dataPayment?.payment?.expiryTime,
-      expiredAtFromOrderDetail:
-        dataOrderDetail.summary?.payment?.paymentDueDateTime,
+      paymentDueDateTime: dataOrderDetail.summary?.payment?.paymentDueDateTime,
       transportFee: dataOrderDetail.summary?.price?.transportFee,
       insuranceFee: dataOrderDetail.summary?.price?.insuranceFee,
       voucherDiscount: dataOrderDetail.summary?.price?.voucherDiscount,

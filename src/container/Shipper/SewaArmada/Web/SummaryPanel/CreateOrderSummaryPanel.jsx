@@ -169,10 +169,15 @@ export const CreateOrderSummaryPanel = ({
             label: "Admin Layanan",
             price: calculatedPrice.adminFee,
           },
-          {
-            label: "Pajak",
-            price: calculatedPrice.taxAmount,
-          },
+          // 25. 18 - Web - LB - 0302
+          ...(isBusinessEntity
+            ? [
+                {
+                  label: "Pajak",
+                  price: calculatedPrice.taxAmount,
+                },
+              ]
+            : []),
         ],
       },
     ];

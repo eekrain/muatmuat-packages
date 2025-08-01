@@ -10,7 +10,7 @@ import { idrFormat } from "@/lib/utils/formatters";
 
 export const PendingPaymentDetail = ({ dataRingkasanPembayaran }) => {
   const { countdown } = useCountdown({
-    endingDate: dataRingkasanPembayaran?.expiredAt,
+    endingDate: dataRingkasanPembayaran?.paymentDueDateTime,
     isNeedCountdown: true,
     withHours: true,
   });
@@ -74,7 +74,7 @@ export const PendingPaymentDetail = ({ dataRingkasanPembayaran }) => {
             Bayar Sebelum
           </h3>
           <span className="text-xs font-medium leading-[1.1] text-neutral-900">
-            {formatDate(dataRingkasanPembayaran?.expiredAt)}
+            {formatDate(dataRingkasanPembayaran?.paymentDueDateTime)}
           </span>
         </div>
         <BadgeStatusPesanan

@@ -29,11 +29,12 @@ export const OrderStatusEnum = {
   CANCELED_BY_SHIPPER: "CANCELED_BY_SHIPPER",
   CANCELED_BY_TRANSPORTER: "CANCELED_BY_TRANSPORTER",
 
-  FLEET_CHANGE: "FLEET_CHANGE",
-  WAITING_CONFIRMATION_CHANGES: "WAITING_CONFIRMATION_CHANGES",
   WAITING_PAYMENT_3: "WAITING_PAYMENT_3",
   WAITING_PAYMENT_4: "WAITING_PAYMENT_4",
+  WAITING_CONFIRMATION_CHANGES: "WAITING_CONFIRMATION_CHANGES",
+  PREPARE_FLEET_CHANGES: "PREPARE_FLEET_CHANGES",
   CONFIRMED_CHANGES: "CONFIRMED_CHANGES",
+  FLEET_CHANGE: "FLEET_CHANGE",
 };
 
 export const getOrderStatusRank = (orderStatus) => {
@@ -57,11 +58,12 @@ export const OrderStatusTitle = {
   CANCELED_BY_SHIPPER: "statusDibatalkan",
   CANCELED_BY_TRANSPORTER: "statusDibatalkan",
 
-  FLEET_CHANGE: "statusPergantianArmada",
+  WAITING_PAYMENT_3: "statusMenungguPembayaran", // sebelum generate VA
+  WAITING_PAYMENT_4: "statusMenungguPembayaran", // setelah generate VA
   WAITING_CONFIRMATION_CHANGES: "statusMenungguKonfirmasi",
-  WAITING_PAYMENT_3: "statusMenungguPembayaran",
-  WAITING_PAYMENT_4: "statusMenungguPembayaran",
+  PREPARE_FLEET_CHANGES: "statusMempersiapkanArmada",
   CONFIRMED_CHANGES: "statusPesananTerkonfirmasi",
+  FLEET_CHANGE: "statusPergantianArmada",
 };
 
 export const OrderStatusIcon = {

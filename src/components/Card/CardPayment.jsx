@@ -138,7 +138,10 @@ const Footer = ({ children, className }) => (
 
 const Total = ({ label = "Total", value, className }) => (
   <div className={cn("flex items-center justify-between", className)}>
-    <p className="text-sm font-bold text-neutral-900 md:text-base">{label}</p>
+    <p
+      className="text-sm font-bold text-neutral-900 md:text-base"
+      dangerouslySetInnerHTML={{ __html: label }}
+    />
     <p className="text-sm font-bold text-neutral-900 md:text-base">{value}</p>
   </div>
 );

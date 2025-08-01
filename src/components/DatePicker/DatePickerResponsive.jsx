@@ -72,7 +72,8 @@ const DatePickerResponsive = ({
       <span
         className={cn(
           "text-sm font-semibold leading-[1.1]",
-          disabled ? "text-neutral-600" : "text-neutral-900"
+          // 25. 18 - Web - LB - 0279
+          disabled || !value ? "text-neutral-600" : "text-neutral-900"
         )}
       >
         {displayText}

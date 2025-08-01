@@ -81,10 +81,10 @@ export const RingkasanPembayaranDefault = ({
 
         <CardPayment.Body>
           <CardPayment.CollapsibleSection title={t("titleDetailPesanan")}>
-            {dataRingkasanPembayaran?.expiredAt && (
+            {dataRingkasanPembayaran?.paymentDueDateTime && (
               <CardPayment.LineItem
                 label={t("labelWaktuPembayaran")}
-                value={formatDate(dataRingkasanPembayaran.expiredAt)}
+                value={formatDate(dataRingkasanPembayaran.paymentDueDateTime)}
               />
             )}
             <CardPayment.LineItem
@@ -178,7 +178,7 @@ export const RingkasanPembayaranDefault = ({
             >
               <CardPayment.LineItem
                 label={t("labelWaktuPembayaran")}
-                value={formatDate(dataRingkasanPembayaran?.expiredAt)}
+                value={formatDate(dataRingkasanPembayaran?.paymentDueDateTime)}
               />
               <CardPayment.LineItem
                 label={t("labelOpsiPembayaran")}

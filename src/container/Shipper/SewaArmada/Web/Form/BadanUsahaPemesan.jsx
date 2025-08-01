@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Form/Checkbox";
-import { FormContainer, FormLabel } from "@/components/Form/Form";
+import { FormContainer } from "@/components/Form/Form";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -96,9 +96,13 @@ export const BadanUsahaPemesan = () => {
   return (
     <>
       <FormContainer>
-        <FormLabel variant="small" optional>
-          Tipe Pemesan
-        </FormLabel>
+        {/* 25. 18 - Web - LB - 0001 */}
+        <div className="text-sm font-semibold leading-[1.1] text-neutral-900 md:h-4 md:w-[174px] md:text-xs md:font-medium md:leading-[1.2] md:text-neutral-600">
+          <span>Badan Usaha Pemesan</span>
+          <span className="block text-xxs md:text-xs md:font-medium md:italic md:text-neutral-500">
+            (Opsional)
+          </span>
+        </div>
         <div className="flex flex-col gap-y-3">
           <div className="flex h-[16px] flex-row items-center gap-[4px]">
             <Checkbox
@@ -106,7 +110,8 @@ export const BadanUsahaPemesan = () => {
               onChange={({ checked }) =>
                 handleFirstTime(() => handleToggleCheckbox(checked))
               }
-              label="Centang jika kamu adalah suatu perusahaan/badan usaha"
+              // 25. 18 - Web - LB - 0001
+              label="Centang jika kamu merupakan suatu badan usaha/perusahan"
               checked={isBusinessEntity || isModalOpen}
               value="isBusinessEntity"
             />

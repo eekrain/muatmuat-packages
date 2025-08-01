@@ -29,9 +29,9 @@ export const useCountdown = ({
         const hours = Math.floor(diffInSeconds / 3600);
         const minutes = Math.floor((diffInSeconds % 3600) / 60);
         const seconds = diffInSeconds % 60;
-        const hh = hours.toString().padStart(2, "0");
-        const mm = minutes.toString().padStart(2, "0");
-        const ss = seconds.toString().padStart(2, "0");
+        const hh = !isNaN(hours) ? hours.toString().padStart(2, "0") : "00";
+        const mm = !isNaN(minutes) ? minutes.toString().padStart(2, "0") : "00";
+        const ss = !isNaN(seconds) ? seconds.toString().padStart(2, "0") : "00";
 
         setCountdown(withHours ? `${hh}:${mm}:${ss}` : `${mm}:${ss}`);
       };

@@ -96,7 +96,12 @@ const Item = ({ item }) => {
           {t(item.link.label)}
         </Link>
       ) : item.button ? (
-        item.button
+        <button
+          className="text-xs font-medium text-primary-700"
+          onClick={item.button.onClick}
+        >
+          {t(item.button.label)}
+        </button>
       ) : item.info ? (
         <InfoTooltip
           side="right"
