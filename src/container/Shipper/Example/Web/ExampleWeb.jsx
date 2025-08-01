@@ -7,10 +7,12 @@ import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import { BannerCarousel } from "@/components/BannerCarousel/BannerCarousel";
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
   BottomSheetHeader,
+  BottomSheetTitle,
   BottomSheetTrigger,
-} from "@/components/Bottomsheet/Bottomsheet";
+} from "@/components/Bottomsheet/BottomSheet";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import Card, {
@@ -975,7 +977,10 @@ const ButtonBottomsheetTooltipForm = () => {
               <Button variant="muatparts-primary">Bottomsheet</Button>
             </BottomSheetTrigger>
             <BottomSheetContent>
-              <BottomSheetHeader>Bagikan Produk</BottomSheetHeader>
+              <BottomSheetHeader>
+                <BottomSheetClose />
+                <BottomSheetTitle>Bagikan Produk</BottomSheetTitle>
+              </BottomSheetHeader>
               <div className="divide-y px-4">
                 <button className="w-full px-6 py-4 text-left">
                   Ringkasan Status Pesanan

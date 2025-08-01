@@ -1,8 +1,11 @@
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
+  BottomSheetFooter,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import VoucherCard from "@/components/Voucher/VoucherCard";
@@ -33,8 +36,11 @@ export const VoucherSelectionBottomsheet = ({
           "animate-slideUp fixed bottom-0 left-0 right-0 z-50 mx-auto max-h-[90vh] w-full overflow-y-auto rounded-t-2xl bg-white shadow-2xl"
         }
       >
-        <BottomSheetHeader>Pilih Voucher</BottomSheetHeader>
-        <div className="flex h-[577px] w-full flex-col gap-4 overflow-y-auto bg-white px-4 py-6">
+        <BottomSheetHeader>
+          <BottomSheetClose />
+          <BottomSheetTitle>Pilih Voucher</BottomSheetTitle>
+        </BottomSheetHeader>
+        <div className="flex w-full flex-col gap-4 overflow-y-auto bg-white px-4">
           {/* Search bar */}
           <div className="relative flex items-center rounded-md border border-neutral-400">
             <div className="absolute left-3">
@@ -130,18 +136,16 @@ export const VoucherSelectionBottomsheet = ({
               </div>
             )}
           </div>
-
-          {/* Apply button */}
-          <div className="sticky bottom-0 flex items-center bg-white pt-4">
-            <Button
-              variant="muatparts-primary"
-              className="flex-1"
-              onClick={onApplyVoucher}
-            >
-              {tempSelectedVoucher ? "Terapkan" : "Lewati"}
-            </Button>
-          </div>
         </div>
+        <BottomSheetFooter>
+          <Button
+            variant="muatparts-primary"
+            className="w-full"
+            onClick={onApplyVoucher}
+          >
+            {tempSelectedVoucher ? "Terapkan" : "Lewati"}
+          </Button>
+        </BottomSheetFooter>
       </BottomSheetContent>
     </BottomSheet>
   );

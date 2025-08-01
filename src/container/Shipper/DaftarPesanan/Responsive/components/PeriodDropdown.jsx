@@ -2,9 +2,12 @@ import { useState } from "react";
 
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
+  BottomSheetFooter,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import Button from "@/components/Button/Button";
 import DatePickerResponsive from "@/components/DatePicker/DatePickerResponsive";
 import RadioButton from "@/components/Radio/RadioButton";
@@ -66,8 +69,11 @@ const PeriodDropdown = ({ isOpen, setIsOpen, options, onChange }) => {
   return (
     <BottomSheet open={isOpen} onOpenChange={setIsOpen}>
       <BottomSheetContent>
-        <BottomSheetHeader>Pilih Periode</BottomSheetHeader>
-        <div className="flex h-[380px] flex-col gap-y-4 overflow-y-auto px-4 py-6">
+        <BottomSheetHeader>
+          <BottomSheetClose />
+          <BottomSheetTitle>Pilih Periode</BottomSheetTitle>
+        </BottomSheetHeader>
+        <div className="flex h-[380px] flex-col gap-y-4 overflow-y-auto px-4">
           {options.map((item, key) => (
             <div
               className="flex w-full items-center justify-between border-b border-b-neutral-400 pb-4"
@@ -133,14 +139,16 @@ const PeriodDropdown = ({ isOpen, setIsOpen, options, onChange }) => {
               </div>
             ) : null}
           </div>
+        </div>
+        <BottomSheetFooter>
           <Button
-            className="h-10 max-w-full"
+            className="h-10 w-full"
             variant="muatparts-primary"
             onClick={handleApplyPeriodFilter}
           >
             Terapkan
           </Button>
-        </div>
+        </BottomSheetFooter>
       </BottomSheetContent>
     </BottomSheet>
   );

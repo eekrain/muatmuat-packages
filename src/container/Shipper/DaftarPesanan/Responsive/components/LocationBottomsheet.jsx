@@ -2,9 +2,11 @@ import { Fragment } from "react";
 
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import {
   TimelineContainer,
   TimelineContentAddress,
@@ -25,8 +27,11 @@ const LocationBottomsheet = ({
   return (
     <BottomSheet open={isOpen} onOpenChange={setOpen}>
       <BottomSheetContent>
-        <BottomSheetHeader>{locationLabel}</BottomSheetHeader>
-        <div className="w-full px-4 py-6">
+        <BottomSheetHeader>
+          <BottomSheetClose />
+          <BottomSheetTitle>{locationLabel}</BottomSheetTitle>
+        </BottomSheetHeader>
+        <div className="w-full px-4 pb-6">
           <TimelineContainer>
             {selectedLocations?.map((item, key) => (
               <Fragment key={key}>

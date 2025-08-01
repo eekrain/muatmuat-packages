@@ -8,9 +8,11 @@ import { useSWRConfig } from "swr";
 import { useHeader } from "@/common/ResponsiveContext";
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import { useTranslation } from "@/context/TranslationProvider";
 import { toast } from "@/lib/toast";
 import SWRHandler from "@/services/useSWRHook";
@@ -368,7 +370,10 @@ const ImageUploaderRegisterResponsive = ({
       <BottomSheet open={isBottomSheetOpen} onOpenChange={setIsBottomSheetOpen}>
         <BottomSheetContent>
           <BottomSheetHeader>
-            {t("labelPilihSumberFoto") || "Pilih Sumber Foto"}
+            <BottomSheetClose />
+            <BottomSheetTitle>
+              {t("labelPilihSumberFoto") || "Pilih Sumber Foto"}
+            </BottomSheetTitle>
           </BottomSheetHeader>
           <div className="flex items-center justify-evenly py-4">
             {uploadOptions.map((option, index) => (

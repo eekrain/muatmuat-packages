@@ -1,8 +1,10 @@
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 
 // Data for share options. Assumed icon paths.
 const shareOptions = [
@@ -34,8 +36,11 @@ export const BottomsheetShareVia = ({ open, onOpenChange }) => {
   return (
     <BottomSheet open={open} onOpenChange={onOpenChange}>
       <BottomSheetContent>
-        <BottomSheetHeader>Bagikan</BottomSheetHeader>
-        <div className="mt-6 px-4 pb-6">
+        <BottomSheetHeader>
+          <BottomSheetClose />
+          <BottomSheetTitle>Bagikan</BottomSheetTitle>
+        </BottomSheetHeader>
+        <div className="px-4 pb-6">
           <span className="text-sm font-medium">Bagikan melalui</span>
 
           <div className="mt-[14px] flex flex-wrap justify-center gap-6">

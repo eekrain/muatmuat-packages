@@ -65,7 +65,7 @@ const apiResultOrderStatusHistory = {
           licensePlate: "B 1234 CD",
           orderStatus: OrderStatusEnum.UNLOADING,
           orderStatusTitle: "Sedang Muat",
-          driverStatus: DriverStatusEnum.UNLOADING.BONGKAR.code,
+          driverStatus: DriverStatusEnum.UNLOADING.MENUJU.code,
           driverStatusTitle: "Menuju ke Lokasi Muat",
           stepStatus,
         },

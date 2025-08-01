@@ -2,9 +2,11 @@ import { useState } from "react";
 
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import CardPayment from "@/components/Card/CardPayment";
 import { useTranslation } from "@/hooks/use-translation";
 import { idrFormat } from "@/lib/utils/formatters";
@@ -131,10 +133,13 @@ export const TransactionSummary = ({ documentShippingDetail }) => {
       >
         <BottomSheetContent>
           <BottomSheetHeader>
-            {t("Detail Pengiriman Dokumen")}
+            <BottomSheetClose />
+            <BottomSheetTitle>
+              {t("Detail Pengiriman Dokumen")}
+            </BottomSheetTitle>
           </BottomSheetHeader>
 
-          <div className="my-6 mr-1 h-[68vh] overflow-y-auto px-4 text-xs text-neutral-900">
+          <div className="mr-1 h-[68vh] overflow-y-auto pb-6 pl-4 pr-3 text-xs text-neutral-900">
             <div className="divide-y divide-neutral-200">
               {/* Recipient Info Section */}
               <div className="py-4 first:pt-0">

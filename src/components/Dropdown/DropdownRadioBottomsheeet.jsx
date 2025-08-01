@@ -2,9 +2,12 @@ import { useEffect, useState } from "react";
 
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
+  BottomSheetFooter,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
@@ -67,8 +70,11 @@ const DropdownRadioBottomsheeet = ({
         />
       </button>
       <BottomSheetContent>
-        <BottomSheetHeader>{title}</BottomSheetHeader>
-        <div className="flex flex-col gap-y-4 px-4 py-6">
+        <BottomSheetHeader>
+          <BottomSheetClose />
+          <BottomSheetTitle>{title}</BottomSheetTitle>
+        </BottomSheetHeader>
+        <div className="flex flex-col gap-y-4 px-4">
           {options.map((option, key) => {
             const isLastItem = options.length - 1 === key;
             return (
@@ -88,14 +94,16 @@ const DropdownRadioBottomsheeet = ({
               </div>
             );
           })}
+        </div>
+        <BottomSheetFooter>
           <Button
-            className="h-10 max-w-full"
+            className="h-10 w-full"
             variant="muatparts-primary"
             onClick={handleSelectOption}
           >
             {saveLabel}
           </Button>
-        </div>
+        </BottomSheetFooter>
       </BottomSheetContent>
     </BottomSheet>
   );

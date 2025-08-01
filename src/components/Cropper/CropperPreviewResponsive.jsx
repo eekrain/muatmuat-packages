@@ -3,9 +3,11 @@ import { useState } from "react";
 
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import HeaderMobile from "@/container/HeaderMobile/HeaderMobile";
 
 import Button from "../Button/Button";
@@ -69,7 +71,10 @@ const CropperPreviewResponsive = ({
       </div>
       <BottomSheet open={isBottomSheetOpen} onOpenChange={setIsBottomSheetOpen}>
         <BottomSheetContent>
-          <BottomSheetHeader>Pilih Sumber Foto</BottomSheetHeader>
+          <BottomSheetHeader>
+            <BottomSheetClose />
+            <BottomSheetTitle>Pilih Sumber Foto</BottomSheetTitle>
+          </BottomSheetHeader>
           <div className="flex justify-around py-4">
             {uploadOptions.map((option, key) => (
               <div className="flex flex-col items-center gap-y-4" key={key}>

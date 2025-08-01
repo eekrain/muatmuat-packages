@@ -7,10 +7,12 @@ import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
   BottomSheetHeader,
+  BottomSheetTitle,
   BottomSheetTrigger,
-} from "@/components/Bottomsheet/Bottomsheet";
+} from "@/components/Bottomsheet/BottomSheet";
 import Button from "@/components/Button/Button";
 import { useSwipe } from "@/hooks/use-swipe";
 import { useTranslation } from "@/hooks/use-translation";
@@ -96,8 +98,11 @@ const Header = ({
             </button>
           </BottomSheetTrigger>
           <BottomSheetContent>
-            <BottomSheetHeader>Menu</BottomSheetHeader>
-            <div className="mt-6 flex flex-col gap-4 px-4 pb-6">
+            <BottomSheetHeader>
+              <BottomSheetClose />
+              <BottomSheetTitle>Menu</BottomSheetTitle>
+            </BottomSheetHeader>
+            <div className="flex flex-col gap-4 px-4 pb-6">
               <button
                 className="w-full text-left text-sm font-semibold"
                 onClick={() =>

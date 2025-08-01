@@ -2,9 +2,11 @@ import { useState } from "react";
 
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import { HalalLogistik } from "@/components/HalalLogistik/HalalLogistik";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import {
@@ -113,9 +115,12 @@ export const RouteInfo = ({ dataDetailPesanan }) => {
       >
         <BottomSheetContent>
           <BottomSheetHeader>
-            {mode === "muat" ? "Lokasi Muat" : "Lokasi Bongkar"}
+            <BottomSheetClose />
+            <BottomSheetTitle>
+              {mode === "muat" ? "Lokasi Muat" : "Lokasi Bongkar"}
+            </BottomSheetTitle>
           </BottomSheetHeader>
-          <div className="p-4">
+          <div className="px-4">
             <TimelineContainer>
               {bottomSheetData.map((item, index) => (
                 <TimelineItem
