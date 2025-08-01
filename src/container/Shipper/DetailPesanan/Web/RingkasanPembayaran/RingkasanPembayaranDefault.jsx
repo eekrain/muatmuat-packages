@@ -15,6 +15,8 @@ import {
 } from "@/lib/constants/detailpesanan/payment.enum";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
+import { useGetOverloadData } from "@/services/Shipper/detailpesanan/getOverloadData";
+import { useGetWaitingTime } from "@/services/Shipper/detailpesanan/getWaitingTime";
 
 import { ModalBatalkanPesanan } from "./ModalBatalkanPesanan";
 import { ModalDetailPengirimanDokumen } from "./ModalDetailPengirimanDokumen";
@@ -47,6 +49,8 @@ export const RingkasanPembayaranDefault = ({
     orderId ? `v1/orders/${orderId}/payment-process` : null,
     "POST"
   );
+  const { data: waitingTimeRaw } = useGetWaitingTime(params.orderId);
+  const { data: overloadData } = useGetOverloadData(params.orderId);
 
   const handleLanjutPembayaran = async () => {
     if (!paymentProcess) return;
@@ -66,7 +70,6 @@ export const RingkasanPembayaranDefault = ({
       // toast.error("Terjadi kesalahan saat memproses pembayaran");
     }
   };
-
   return (
     <div className="flex max-h-[453px] w-full flex-col gap-4">
       <CardPayment.Root className="flex-1">
@@ -145,7 +148,7 @@ export const RingkasanPembayaranDefault = ({
                 <CardPayment.LineItem
                   label={t("labelVoucherCode", {
                     code:
-                      dataRingkasanPembayaran?.voucherCode ||
+                      dataRingkasanPembayaran?.voucherDiscount ||
                       "DISKONPENGGUNABARU",
                   })}
                   variant="danger"
@@ -216,7 +219,7 @@ export const RingkasanPembayaranDefault = ({
                         ?.totalAmount
                     )}
                   />
-                  <ModalDetailWaktuTunggu />
+                  <ModalDetailWaktuTunggu drivers={waitingTimeRaw} />
                 </div>
               </CardPayment.Section>
 
@@ -233,9 +236,7 @@ export const RingkasanPembayaranDefault = ({
                         ?.totalAmount
                     )}
                   />
-                  <ModalDetailOverloadMuatan
-                    dataRingkasanPembayaran={dataRingkasanPembayaran}
-                  />
+                  <ModalDetailOverloadMuatan drivers={overloadData} />
                 </div>
               </CardPayment.Section>
 
