@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 
 import { useSWRMutateHook } from "@/hooks/use-swr";
 import { fetcherMuatrans } from "@/lib/axios";
+import { toast } from "@/lib/toast";
 
 import Button from "../Button/Button";
 import IconComponent from "../IconComponent/IconComponent";
@@ -69,12 +70,19 @@ const FileUploadMultiple = ({
         onError(
           `Ukuran file "${file.name}" melebihi batas maksimal ${maxSize}MB`
         );
+        toast.error(
+          `Ukuran file "${file.name}" melebihi batas maksimal ${maxSize}MB`
+        );
+
         continue;
       }
 
       const fileExtension = `.${file.name.split(".").pop().toLowerCase()}`;
       if (!acceptedFormats.includes(fileExtension)) {
         onError(
+          `Format file "${file.name}" tidak didukung. Format yang diterima: ${acceptedFormats.join(", ")}`
+        );
+        toast.error(
           `Format file "${file.name}" tidak didukung. Format yang diterima: ${acceptedFormats.join(", ")}`
         );
         continue;
@@ -128,9 +136,13 @@ const FileUploadMultiple = ({
           newUploadedFiles.push(fileData);
         } else {
           onError(response?.Message?.Text || `Gagal mengunggah ${file.name}`);
+          toast.error(
+            response?.Message?.Text || `Gagal mengunggah ${file.name}`
+          );
         }
       } catch (error) {
         onError(error.message || `Gagal mengunggah ${file.name}`);
+        toast.error(error.message || `Gagal mengunggah ${file.name}`);
       }
     }
 
@@ -211,11 +223,13 @@ const FileUploadMultiple = ({
                       </div>
                     </div>
                     <div className="flex flex-shrink-0 items-center gap-4">
-                      <IconComponent
-                        src="/icons/silang.svg"
-                        onClick={() => handleDelete(index)}
-                        className={`cursor-pointer hover:text-neutral-700 ${isUploading ? "cursor-not-allowed opacity-50" : ""}`}
-                      />
+                      <button type="button" onClick={() => handleDelete(index)}>
+                        <IconComponent
+                          src="/icons/silang.svg"
+                          className={`cursor-pointer hover:text-neutral-700 ${isUploading ? "cursor-not-allowed opacity-50" : ""}`}
+                        />
+                      </button>
+
                       <span
                         className={`cursor-pointer text-xs font-medium leading-[14.4px] text-primary-700 hover:text-primary-800 ${isUploading ? "cursor-not-allowed opacity-50" : ""}`}
                         onClick={() => handleReplace(index)}

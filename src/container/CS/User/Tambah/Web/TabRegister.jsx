@@ -1,5 +1,6 @@
 "use client";
 
+import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { cn } from "@/lib/utils";
 
@@ -117,17 +118,36 @@ export const TabRegister = ({ activeIdx, setActiveIdx, itemsStatus }) => {
         />
       ))}
       <div className="px-5 pb-5 pt-4">
-        <button
-          className={cn(
-            "w-full rounded-3xl py-2 text-sm font-semibold disabled:cursor-not-allowed",
-            isAllFinished
-              ? "bg-muat-trans-primary-400 text-muat-trans-secondary-900"
-              : "bg-neutral-200 text-neutral-600"
-          )}
-          disabled={!isAllFinished}
-        >
-          Tambahkan Transporter
-        </button>
+        {!isAllFinished ? (
+          <InfoTooltip
+            side="top"
+            trigger={
+              <button
+                className={cn(
+                  "w-full rounded-3xl py-2 text-sm font-semibold disabled:cursor-not-allowed",
+                  "bg-neutral-200 text-neutral-600"
+                )}
+                disabled
+              >
+                Tambahkan Transporter
+              </button>
+            }
+          >
+            <p className="text-sm">
+              Lengkapi dan simpan semua data terlebih dahulu untuk menambahkan
+              Transporter
+            </p>
+          </InfoTooltip>
+        ) : (
+          <button
+            className={cn(
+              "w-full rounded-3xl py-2 text-sm font-semibold",
+              "bg-muat-trans-primary-400 text-muat-trans-secondary-900"
+            )}
+          >
+            Tambahkan Transporter
+          </button>
+        )}
       </div>
     </div>
   );

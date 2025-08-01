@@ -8,10 +8,10 @@
   "businessEntityType": "PT",
   "companyPhone": "02112345678",
   "companyAddress": "Jl. Sudirman No. 123",
-  "addressType": "HEAD_OFFICE",
   "locationData": {
     "latitude": -6.208763,
     "longitude": 106.845599,
+    "location": "Tanah Abang, Jakarta Pusat, DKI Jakarta",
     "district": "Tanah Abang",
     "city": "Jakarta Pusat",
     "province": "DKI Jakarta",
