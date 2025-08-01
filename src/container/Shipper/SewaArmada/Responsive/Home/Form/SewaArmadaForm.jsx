@@ -244,7 +244,7 @@ export const SewaArmadaForm = ({
               const currentService = additionalServicesOptions.find(
                 (item) => item.additionalServiceId === service.serviceId
               );
-              const cost = service.withShipping ? 35000 : currentService.price;
+              const cost = service.withShipping ? 35000 : currentService?.price;
               return (
                 <div
                   className="flex items-center justify-between gap-x-2"
@@ -257,11 +257,11 @@ export const SewaArmadaForm = ({
                       </span>
                     </div>
                     <div className="max-w-[176px] flex-1 truncate text-sm font-semibold leading-[1.1] text-neutral-900">
-                      {currentService.name}
+                      {currentService?.name}
                     </div>
                   </div>
                   <span className="text-sm font-semibold leading-[1.1] text-neutral-900">
-                    {`Rp${cost.toLocaleString("id-ID")}`}
+                    {`Rp${cost ? cost.toLocaleString("id-ID") : 0}`}
                   </span>
                 </div>
               );
