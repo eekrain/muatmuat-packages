@@ -26,6 +26,7 @@ const SewaArmadaHomeScreen = ({
   settingsTime,
   carriers,
   trucks,
+  additionalServicesOptions,
 }) => {
   const router = useRouter();
   const { setIsOpen } = useWaitingSettlementModalAction();
@@ -115,6 +116,7 @@ const SewaArmadaHomeScreen = ({
           settingsTime={settingsTime}
           carriers={carriers}
           trucks={trucks}
+          additionalServicesOptions={additionalServicesOptions}
         />
       </div>
 
