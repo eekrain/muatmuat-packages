@@ -26,7 +26,7 @@ const TambahExcel = () => {
       width: "80px",
       sortable: true,
       render: (row) => {
-        const date = new Date(row.tanggal);
+        const date = new Date(row.tanggal).toISOString();
         return formatDate(date);
       },
     },

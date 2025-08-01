@@ -61,6 +61,7 @@ const SelectTrigger = ({
   className,
   children,
   errorMessage,
+  isError = false,
 }) => {
   const { value, disabled, open } = useSelect();
 
@@ -77,7 +78,7 @@ const SelectTrigger = ({
             open && "border-primary-700 text-neutral-900",
             !open &&
               "border-neutral-600 text-neutral-900 hover:border-primary-700",
-            errorMessage && "border-error-500",
+            (errorMessage || isError) && "border-error-400",
             className
           )}
         >

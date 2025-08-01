@@ -121,6 +121,7 @@ const SewaArmadaResponsive = ({
             settingsTime={settingsTime}
             carriers={carriers}
             trucks={trucks}
+            additionalServicesOptions={additionalServicesOptions}
           />
         }
       />
@@ -186,7 +187,13 @@ const SewaArmadaResponsive = ({
       {/* STEP 2 */}
       <ResponsiveRoute
         path="/InformasiPesanan"
-        component={<InformasiPesananScreen paymentMethods={paymentMethods} />}
+        component={
+          <InformasiPesananScreen
+            carriers={carriers}
+            trucks={trucks}
+            paymentMethods={paymentMethods}
+          />
+        }
       />
       <ResponsiveRoute
         path="/Cropper"

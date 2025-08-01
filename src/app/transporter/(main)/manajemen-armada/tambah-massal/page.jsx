@@ -7,6 +7,7 @@ import {
 } from "@/components/Tabs/Tabs";
 
 import PopUpInformasi from "./components/PopUpInformasi";
+import Draft from "./components/Tabs/Draft/Draft";
 import TambahArmadaMassal from "./components/Tabs/TambahArmadaMassal/TambahArmadaMassal";
 import TambahExcel from "./components/Tabs/TambahExcel/TambahExcel";
 
@@ -51,9 +52,11 @@ export default function TambahMassal() {
           <TambahExcel />
         </TabsContent>
         <TabsContent value="tambah_armada_massal" className="pt-4">
-          <TambahArmadaMassal />
+          <TambahArmadaMassal isDraftAvailable={true} />
         </TabsContent>
-        <TabsContent value="draft" className="pt-4"></TabsContent>
+        <TabsContent value="draft" className="pt-4">
+          <Draft isDraftAvailable={true} />
+        </TabsContent>
       </Tabs>
     </div>
   );

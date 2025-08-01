@@ -25,7 +25,7 @@ const ArmadaProses = ({
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [searchValue, setSearchValue] = useState("");
   const [filters, setFilters] = useState({});
@@ -218,9 +218,9 @@ const ArmadaProses = ({
     onPerPageChange?.(limit);
   };
 
-  const handleSort = (key, direction) => {
-    setSortConfig({ key, direction });
-    // Sorting by key and direction
+  const handleSort = (sort, order) => {
+    setSortConfig({ sort, order });
+    // Sorting by sort and order
     // TODO: Implement actual sorting logic here
     // This would typically involve calling an API with sort parameters
   };

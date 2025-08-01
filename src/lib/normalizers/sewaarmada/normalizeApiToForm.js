@@ -53,8 +53,8 @@ export const normalizeCargos = (cargos) =>
       unit: item.dimensions.unit,
     },
     namaMuatan: {
-      label: item.name,
-      value: item.cargoId,
+      label: item.name || item.cargoName,
+      value: item.cargoId || item.cargoNameId,
     },
   }));
 

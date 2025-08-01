@@ -31,6 +31,29 @@ const apiResultActiveDrivers = {
           pendingUpdateDriver: true,
         },
         {
+          id: "550e8400-e29b-41d4-a716-4466554400100",
+          name: "Jane Smith",
+          phoneNumber: "081234567891",
+          profileImage:
+            "/img/mock-armada/047379f720d4d796e68d0fd7a289a30bd4d2e0ac.jpg",
+          driverStatus: "ON_DUTY",
+          verificationStatus: "NOT_VERIFIED",
+          fleet: {
+            id: "660e8400-e29b-41d4-a716-446655440001",
+            licensePlate: "B 5678 DEF",
+            truckType: {
+              id: "770e8400-e29b-41d4-a716-446655440001",
+              name: "CDE Box",
+              carrierTruck: {
+                name: "Box",
+              },
+            },
+          },
+          createdAt: "2025-01-15T08:20:00Z",
+          warningDocumentExpired: false,
+          pendingUpdateDriver: true,
+        },
+        {
           id: "550e8400-e29b-41d4-a716-446655440001",
           name: "Jane Smith",
           phoneNumber: "081234567891",

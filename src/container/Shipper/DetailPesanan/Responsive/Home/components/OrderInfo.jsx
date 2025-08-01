@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { ChevronRight } from "lucide-react";
 
@@ -60,22 +60,34 @@ export const OrderStatus = ({
   );
 };
 
-const LIST_SHOW_QR_CODE_BUTTON = [
-  OrderStatusEnum.LOADING,
-  OrderStatusEnum.UNLOADING,
-];
-
 export const OrderInfo = ({ dataStatusPesanan }) => {
   const { t } = useTranslation();
   const navigation = useResponsiveNavigation();
   // const [isOpenOtherStatus, setIsOpenOtherStatus] = useState(false);
   const [isOpenDocumentShipping, setIsOpenDocumentShipping] = useState(false);
 
+  const isShowQRCodeButton = useMemo(() => {
+    const LIST_SHOW_QR_CODE_BUTTON = [
+      OrderStatusEnum.LOADING,
+      OrderStatusEnum.UNLOADING,
+    ];
+    const driverNeedsQRCode = dataStatusPesanan?.driverStatus?.find(
+      (driver) =>
+        driver.driverStatus.startsWith("MENUJU_") ||
+        driver.driverStatus.startsWith("TIBA_") ||
+        driver.driverStatus.startsWith("ANTRI_")
+    );
+    return (
+      LIST_SHOW_QR_CODE_BUTTON.includes(dataStatusPesanan?.orderStatus) &&
+      driverNeedsQRCode
+    );
+  }, [dataStatusPesanan?.driverStatus, dataStatusPesanan?.orderStatus]);
+
   return (
     <div className="flex w-full flex-col items-start bg-white p-5">
       <div className="flex w-full flex-col items-start gap-4">
         {/* QR Code Toggle Button */}
-        {LIST_SHOW_QR_CODE_BUTTON.includes(dataStatusPesanan?.orderStatus) && (
+        {isShowQRCodeButton && (
           <div className="box-border flex w-full flex-row items-center justify-between border-b border-[#C4C4C4] pb-4">
             <button
               className="flex w-full flex-row items-center justify-between"

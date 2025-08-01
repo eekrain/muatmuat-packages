@@ -53,7 +53,10 @@ const ConfirmReceiveDocumentModal = ({
               <Button
                 variant="muatparts-primary-secondary"
                 // 25. 18 - Web - LB - 0275
-                className={cn("h-7 w-[112px]", cancelClassname)}
+                className={cn(
+                  "h-7 w-[112px] text-xs leading-[1.1]",
+                  cancelClassname
+                )}
                 onClick={onCancel}
                 type="button"
               >
@@ -62,7 +65,10 @@ const ConfirmReceiveDocumentModal = ({
               <Button
                 variant="muatparts-primary"
                 // 25. 18 - Web - LB - 0275
-                className={cn("h-7 w-[112px]", confirmClassname)}
+                className={cn(
+                  "h-7 w-[112px] text-xs leading-[1.1]",
+                  confirmClassname
+                )}
                 onClick={onConfirm}
                 type="button"
               >

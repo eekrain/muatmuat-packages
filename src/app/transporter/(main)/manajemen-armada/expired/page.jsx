@@ -23,7 +23,7 @@ const Page = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
   const [searchValue, setSearchValue] = useState("");
   const [filters, setFilters] = useState({});
 
@@ -175,8 +175,8 @@ const Page = () => {
     setCurrentPage(1);
   };
 
-  const handleSort = (key, direction) => {
-    setSortConfig({ key, direction });
+  const handleSort = (sort, order) => {
+    setSortConfig({ sort, order });
   };
 
   // Breadcrumb data

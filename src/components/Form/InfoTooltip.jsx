@@ -38,10 +38,7 @@ export function InfoTooltip({
               <IconComponent
                 loader={false}
                 src={{ src: icon }}
-                className={cn(
-                  "h-4 w-4 text-neutral-600",
-                  appearance.iconClassName
-                )}
+                className={cn("h-4 w-4", appearance.iconClassName)}
               />
             </div>
           )}

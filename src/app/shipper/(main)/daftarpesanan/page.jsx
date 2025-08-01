@@ -10,7 +10,7 @@ import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook } from "@/hooks/use-swr";
 
 const Page = () => {
-  const { isMobile } = useDevice();
+  const { isMobile, mounted } = useDevice();
   const defaultQueryParams = {
     page: 1,
     limit: 10,
@@ -128,6 +128,8 @@ const Page = () => {
     );
     setLastFilterField(field);
   };
+
+  if (!mounted) return null;
 
   if (isMobile) {
     return (

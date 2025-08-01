@@ -118,9 +118,9 @@ const apiResultNonActiveDrivers = {
         hasPreviousPage: false,
       },
       summary: {
-        total: 0,
-        unassigned: 0,
-        inactive: 0,
+        total: 5,
+        unassigned: 3,
+        inactive: 2,
       },
       dataFilter: {
         truckType: [
@@ -158,7 +158,32 @@ export const fetcherNonActiveDrivers = async (cacheKey) => {
 
   if (isMockNonActiveDrivers) {
     const result = apiResultNonActiveDrivers;
-    return result.data.Data;
+
+    // Parse query parameters for filtering
+    const urlParams = new URLSearchParams(queryString);
+    const statusFilter = urlParams.get("status");
+
+    let filteredDrivers = result.data.Data.drivers;
+
+    // Apply status filter if provided
+    if (statusFilter && statusFilter !== "null") {
+      filteredDrivers = result.data.Data.drivers.filter(
+        (driver) => driver.driverStatus === statusFilter
+      );
+    }
+
+    // Keep original summary counts static (don't change based on filter)
+    const originalSummary = result.data.Data.summary;
+
+    return {
+      ...result.data.Data,
+      drivers: filteredDrivers,
+      summary: originalSummary, // Keep original counts
+      pagination: {
+        ...result.data.Data.pagination,
+        totalItems: filteredDrivers.length, // Only this changes based on filter
+      },
+    };
   }
 
   const result = await fetcherMuatrans.get(url);
