@@ -9,9 +9,15 @@ import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
 import { useSewaArmadaStore } from "@/store/Shipper/forms/sewaArmadaStore";
 
-const SelectionField = ({ iconSrc, value, placeholder, onClick }) => (
-  <div
-    className="flex h-8 w-full cursor-pointer items-center gap-2 rounded-md border border-neutral-600 bg-neutral-50 px-3 py-2 transition-colors hover:bg-neutral-100"
+const SelectionField = ({ iconSrc, value, placeholder, onClick, disabled }) => (
+  <button
+    className={cn(
+      "flex h-8 w-full items-center gap-2 rounded-md border border-neutral-600 px-3 py-2 transition-colors hover:bg-neutral-100",
+      disabled
+        ? "cursor-not-allowed bg-neutral-200"
+        : "cursor-pointer bg-neutral-50"
+    )}
+    disabled={disabled}
     onClick={onClick}
     onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onClick()}
     role="button"
@@ -19,25 +25,37 @@ const SelectionField = ({ iconSrc, value, placeholder, onClick }) => (
   >
     <IconComponent
       src={iconSrc}
-      className="h-4 w-4 shrink-0 text-neutral-600"
+      className={cn(
+        "h-4 w-4 shrink-0",
+        disabled ? "text-neutral-600" : "text-neutral-700"
+      )}
     />
     <span
       className={cn(
-        "line-clamp-1 flex-1 text-sm font-semibold",
+        "line-clamp-1 flex-1 self-start text-left text-sm font-semibold leading-[1.1]",
         value ? "text-neutral-900" : "text-neutral-600"
       )}
     >
       {value || placeholder}
     </span>
     <ChevronRight className="h-4 w-4 shrink-0 text-neutral-600" />
-  </div>
+  </button>
 );
 
 export const JenisArmadaField = ({ carriers, trucks }) => {
   const navigation = useResponsiveNavigation();
 
-  const carrierId = useSewaArmadaStore((s) => s.formValues?.carrierId);
-  const truckTypeId = useSewaArmadaStore((s) => s.formValues?.truckTypeId);
+  const {
+    loadTimeStart,
+    loadTimeEnd,
+    showRangeOption,
+    lokasiMuat,
+    lokasiBongkar,
+    cargoCategoryId,
+    informasiMuatan,
+    carrierId,
+    truckTypeId,
+  } = useSewaArmadaStore((state) => state.formValues);
 
   const selectedCarrier = useMemo(() => {
     if (!carriers || !carrierId) return null;
@@ -57,17 +75,28 @@ export const JenisArmadaField = ({ carriers, trucks }) => {
     return allTrucks.find((t) => t.truckTypeId === truckTypeId);
   }, [trucks, truckTypeId]);
 
+  const isTruckTypeIdDisabled =
+    !loadTimeStart ||
+    (showRangeOption && !loadTimeEnd) ||
+    !lokasiMuat ||
+    !lokasiBongkar ||
+    !cargoCategoryId ||
+    informasiMuatan.length === 0 ||
+    !carrierId;
+
   return (
     <FormContainer>
       <FormLabel required>Jenis Armada</FormLabel>
       <div className="space-y-2">
         <SelectionField
+          disabled={informasiMuatan?.length === 0}
           iconSrc="/icons/truck-carrier.svg"
           value={selectedCarrier?.name}
           placeholder="Pilih Jenis Carrier"
           onClick={() => navigation.push("/JenisCarrier")}
         />
         <SelectionField
+          disabled={isTruckTypeIdDisabled}
           iconSrc="/icons/truck-jenis.svg"
           value={selectedTruck?.name}
           placeholder="Pilih Jenis Truk"

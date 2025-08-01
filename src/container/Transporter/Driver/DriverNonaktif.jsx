@@ -19,6 +19,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { FleetSelectionModal } from "@/container/Transporter/Armada/FleetSelectionModal";
 import { ExpiredDocumentWarningModal } from "@/container/Transporter/Driver/DriverSelectionModal";
+import { toast } from "@/lib/toast";
 import { getDriverStatusBadge } from "@/lib/utils/driverStatus";
 import { getPhoneNumberStatus } from "@/lib/utils/phoneNumberStatus";
 import { useGetExpiredDriversSummary } from "@/services/Transporter/manajemen-driver/getExpiredDrivers";
@@ -76,15 +77,15 @@ const DriverNonaktif = ({
         ),
       },
       confirm: {
-        text: "Aktifkan",
+        text: "Ya",
         onClick: () => {
           // Add activate logic here
-          console.log("Driver activated:", row.id);
+          toast.success("Berhasil mengaktifkan driver");
           setIsConfirmationModalOpen(false);
         },
-        classname: "font-bold",
+        classname: "w-[112px]",
       },
-      cancel: { text: "Batal" },
+      cancel: { text: "Tidak", classname: "w-[112px]" },
     });
     setIsConfirmationModalOpen(true);
   };
@@ -95,14 +96,15 @@ const DriverNonaktif = ({
         text: "Apakah kamu yakin ingin menghapus driver ini?",
       },
       confirm: {
-        text: "Hapus",
+        text: "Ya",
         onClick: () => {
           // Add delete logic here
           console.log("Driver deleted:", row.id);
           setIsConfirmationModalOpen(false);
         },
+        classname: "w-[112px]",
       },
-      cancel: { text: "Batal" },
+      cancel: { text: "Tidak", classname: "w-[112px]" },
     });
     setIsConfirmationModalOpen(true);
   };
@@ -235,14 +237,9 @@ const DriverNonaktif = ({
 
           <SimpleDropdownContent className="w-[133px]" align="end">
             {row.driverStatus === "NON_ACTIVE" && (
-              <>
-                <SimpleDropdownItem onClick={() => {}}>
-                  Lihat Agenda Driver
-                </SimpleDropdownItem>
-                <SimpleDropdownItem onClick={() => handleActivateClick(row)}>
-                  Aktifkan
-                </SimpleDropdownItem>
-              </>
+              <SimpleDropdownItem onClick={() => {}}>
+                Lihat Agenda Driver
+              </SimpleDropdownItem>
             )}
             <SimpleDropdownItem
               onClick={() =>
@@ -251,6 +248,11 @@ const DriverNonaktif = ({
             >
               Detail
             </SimpleDropdownItem>
+            {row.driverStatus === "NON_ACTIVE" && (
+              <SimpleDropdownItem onClick={() => handleActivateClick(row)}>
+                Aktifkan
+              </SimpleDropdownItem>
+            )}
             {row.driverStatus === "NOT_PAIRED" && (
               <>
                 <SimpleDropdownItem onClick={() => {}}>Ubah</SimpleDropdownItem>

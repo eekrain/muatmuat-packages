@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { Loader2 } from "lucide-react";
+
 import CropperWeb from "@/components/Cropper/CropperWeb";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { toast } from "@/lib/toast";
@@ -22,6 +24,8 @@ export default function ImageUploaderWeb({
   isBig = true,
   cropperTitle,
   acceptedFormats = [".jpg", ".jpeg", ".png"],
+  isLoading,
+  isError,
 }) {
   const imageRef = useRef(null);
   const [imageSrc, setImageSrc] = useState(null);
@@ -101,6 +105,14 @@ export default function ImageUploaderWeb({
     setError(false);
   };
 
+  useEffect(() => {
+    if (isError) {
+      setError(true);
+    } else {
+      setError(false);
+    }
+  }, [isError]);
+
   return (
     <>
       <div
@@ -167,16 +179,27 @@ export default function ImageUploaderWeb({
           )}
 
           {/* State 1: Initial state (no preview, no internal error) */}
-          {!preview && !error && (
-            <>
-              <IconComponent size="small" src="/icons/add_image.svg" />
-              {isBig && (
-                <span className="text-xs font-semibold leading-[14.4px] text-neutral-900 group-hover:text-primary-700">
-                  {uploadText}
-                </span>
-              )}
-            </>
-          )}
+          {!preview &&
+            !error &&
+            (!isLoading ? (
+              <>
+                <IconComponent size="small" src="/icons/add_image.svg" />
+                {isBig && (
+                  <span className="text-xs font-semibold leading-[14.4px] text-neutral-900 group-hover:text-primary-700">
+                    {uploadText}
+                  </span>
+                )}
+              </>
+            ) : (
+              <>
+                <Loader2 className="animate-spin text-primary-700" />
+                {isBig && (
+                  <span className="text-xs font-semibold leading-[14.4px] text-neutral-900 group-hover:text-primary-700">
+                    Mengunggah...
+                  </span>
+                )}
+              </>
+            ))}
         </>
       </div>
       {isCropperOpen && (

@@ -44,6 +44,7 @@ const OrderItem = ({
   const [isDocumentReceivedModalOpen, setIsDocumentReceivedModalOpen] =
     useState(false);
   const [isReorderFleetModalOpen, setIsReorderFleetModalOpen] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
 
   const armadaData = [
     {
@@ -76,6 +77,16 @@ const OrderItem = ({
     OrderStatusEnum.SCHEDULED_FLEET,
     OrderStatusEnum.CONFIRMED,
   ];
+
+  const handleReorderFleet = (id) => {
+    if (id) {
+      router.push(`/sewaarmada?orderId=${id}`);
+    } else {
+      router.push("/sewaarmada");
+    }
+    setIsReorderFleetModalOpen(false);
+    setSelectedOrderId(null);
+  };
 
   const handleReceiveDocument = async () => {
     toast.success(t("messagePesananBerhasilDiselesaikan"));
@@ -253,7 +264,7 @@ const OrderItem = ({
           >
             Detail
           </Button>
-          {latestStatus === OrderStatusEnum.DOCUMENT_DELIVERY ? (
+          {latestStatus?.statusCode === OrderStatusEnum.DOCUMENT_DELIVERY ? (
             <Button
               onClick={() => setIsDocumentReceivedModalOpen(true)}
               variant="muatparts-primary"
@@ -261,24 +272,27 @@ const OrderItem = ({
             >
               {t("buttonSelesaikanPesanan")}
             </Button>
-          ) : latestStatus === OrderStatusEnum.COMPLETED ? (
+          ) : latestStatus?.statusCode === OrderStatusEnum.COMPLETED ? (
             <Button
               variant="muatparts-primary"
               className="w-full text-xs leading-[1.1]"
             >
               {t("buttonBeriUlasan")}
             </Button>
-          ) : beforeLoadingStatus.includes(latestStatus) ||
-            latestStatus.statusCode === OrderStatusEnum.COMPLETED ||
-            latestStatus.statusCode === OrderStatusEnum.CANCELED_BY_SHIPPER ||
-            latestStatus.statusCode === OrderStatusEnum.CANCELED_BY_SYSTEM ||
-            latestStatus.statusCode ===
-              OrderStatusEnum.CANCELED_BY_TRANSPORTER ? (
+          ) : !(
+              beforeLoadingStatus.includes(latestStatus?.statusCode) ||
+              latestStatus?.statusCode === OrderStatusEnum.COMPLETED ||
+              latestStatus?.statusCode ===
+                OrderStatusEnum.CANCELED_BY_SHIPPER ||
+              latestStatus?.statusCode === OrderStatusEnum.CANCELED_BY_SYSTEM ||
+              latestStatus?.statusCode ===
+                OrderStatusEnum.CANCELED_BY_TRANSPORTER
+            ) ? (
             <Button
               variant="muatparts-primary"
               className="w-full text-xs leading-[1.1]"
               onClick={() => {
-                // setSelectedOrderId(order.orderId);
+                setSelectedOrderId(orderId);
                 setIsReorderFleetModalOpen(true);
               }}
             >
@@ -301,6 +315,28 @@ const OrderItem = ({
         isOpen={isAllDriverStatusModalOpen}
         setOpen={setIsAllDriverStatusModalOpen}
         selectedGroupedStatusInfo={selectedGroupedStatusInfo}
+      />
+
+      {/* Modal Pesan Ulang */}
+      <ConfirmationModalResponsive
+        isOpen={isReorderFleetModalOpen}
+        setIsOpen={setIsReorderFleetModalOpen}
+        description={{
+          text: (
+            <>
+              Apakah kamu ingin menyalin <br /> pesanan ini untuk digunakan
+              kembali atau membuat pesanan baru dengan detail yang berbeda?
+            </>
+          ),
+        }}
+        cancel={{
+          text: t("buttonPesanBaru"),
+          onClick: () => handleReorderFleet(),
+        }}
+        confirm={{
+          text: t("buttonPesanUlangModal"),
+          onClick: () => handleReorderFleet(selectedOrderId),
+        }}
       />
 
       {/* Modal Konfirmasi Dokumen Diterima */}

@@ -44,7 +44,7 @@ import {
   useSewaArmadaStore,
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
-const InformasiPesananScreen = ({ paymentMethods }) => {
+const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
   const navigation = useResponsiveNavigation();
   const { t } = useTranslation();
 
@@ -97,9 +97,13 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
     lokasiMuat,
     lokasiBongkar,
     informasiMuatan,
-    truckCount,
     cargoPhotos,
     cargoDescription,
+    carrierId,
+    truckTypeId,
+    truckCount,
+    distance,
+    distanceUnit,
     businessEntity,
     paymentMethodId,
     // deliveryOrder,
@@ -279,6 +283,24 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
     alert("buat logic buat pesan armada");
   };
 
+  const selectedCarrier = useShallowMemo(() => {
+    if (!carriers || !carrierId) return null;
+    const allCarriers = [
+      ...(carriers.recommendedCarriers || []),
+      ...(carriers.nonRecommendedCarriers || []),
+    ];
+    return allCarriers.find((c) => c.carrierId === carrierId);
+  }, [carriers, carrierId]);
+
+  const selectedTruck = useShallowMemo(() => {
+    if (!trucks || !truckTypeId) return null;
+    const allTrucks = [
+      ...(trucks.recommendedTrucks || []),
+      ...(trucks.nonRecommendedTrucks || []),
+    ];
+    return allTrucks.find((t) => t.truckTypeId === truckTypeId);
+  }, [trucks, truckTypeId]);
+  console.log("selectedCarrier", selectedCarrier, selectedTruck);
   const selectedOpsiPembayaran = useShallowMemo(
     () =>
       paymentMethodId
@@ -336,13 +358,13 @@ const InformasiPesananScreen = ({ paymentMethods }) => {
           {/* Info Text */}
           <div className="flex flex-1 flex-col gap-3">
             <h3 className="text-sm font-semibold leading-[15.4px] text-neutral-900">
-              Box - Colt Diesel Engkel
+              {`${selectedCarrier.name} - ${selectedTruck.name}`}
             </h3>
             <p className="text-sm font-medium leading-[15.4px] text-neutral-900">
-              {t("labelKebutuhanUnit", { unit: 1 })}
+              {t("labelKebutuhanUnit", { unit: truckCount })}
             </p>
             <p className="text-sm font-medium leading-[15.4px] text-neutral-900">
-              {t("labelEstimasiJarak", { distance: 178, unit: "km" })}
+              {t("labelEstimasiJarak", { distance, unit: distanceUnit })}
             </p>
           </div>
         </div>

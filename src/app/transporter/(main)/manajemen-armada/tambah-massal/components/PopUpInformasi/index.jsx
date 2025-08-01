@@ -38,7 +38,12 @@ export default function PopUpInformasi() {
   return (
     <Modal>
       <ModalTrigger>
-        <IconComponent src="/icons/info16.svg" width={24} height={24} />
+        <IconComponent
+          src="/icons/info16.svg"
+          width={24}
+          height={24}
+          className="stroke-[1.5] text-neutral-600"
+        />
       </ModalTrigger>
       <ModalContent className="w-modal-small">
         <ModalHeader size="small" />

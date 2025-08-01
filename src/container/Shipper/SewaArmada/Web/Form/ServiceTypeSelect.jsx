@@ -1,6 +1,7 @@
 import { usePathname } from "next/navigation";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { OrderTypeEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { cn } from "@/lib/utils";
 import {
   useSewaArmadaActions,
@@ -19,14 +20,14 @@ export const ServiceTypeSelect = () => {
       <button
         className={cn(
           "flex h-[136px] w-[385px] cursor-pointer flex-col items-center justify-center gap-y-3 rounded-xl border border-neutral-400 bg-white p-6 hover:border-[#FFC217]",
-          orderType === "INSTANT"
+          orderType === OrderTypeEnum.INSTANT
             ? isEditPage
               ? "cursor-not-allowed border-neutral-600 bg-neutral-200 hover:border-neutral-600 hover:bg-neutral-200"
               : "border-[#FFC217] bg-[#FFF5C6]"
             : isEditPage && "cursor-not-allowed hover:border-neutral-400"
         )}
         disabled={isEditPage}
-        onClick={() => setOrderType("INSTANT")}
+        onClick={() => setOrderType(OrderTypeEnum.INSTANT)}
       >
         <div className="flex size-8 items-center justify-center">
           <IconComponent
@@ -46,14 +47,14 @@ export const ServiceTypeSelect = () => {
       <button
         className={cn(
           "flex h-[136px] w-[385px] cursor-pointer flex-col items-center justify-center gap-y-3 rounded-xl border border-neutral-400 bg-white p-6 hover:border-[#FFC217]",
-          orderType === "SCHEDULED"
+          orderType === OrderTypeEnum.SCHEDULED
             ? isEditPage
               ? "cursor-not-allowed border-neutral-600 bg-neutral-200 hover:border-neutral-600 hover:bg-neutral-200"
               : "border-[#FFC217] bg-[#FFF5C6]"
             : isEditPage && "cursor-not-allowed hover:border-neutral-400"
         )}
         disabled={isEditPage}
-        onClick={() => setOrderType("SCHEDULED")}
+        onClick={() => setOrderType(OrderTypeEnum.SCHEDULED)}
       >
         <div className="flex size-8 items-center justify-center">
           <IconComponent

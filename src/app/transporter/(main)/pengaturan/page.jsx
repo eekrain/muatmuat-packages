@@ -8,43 +8,54 @@ import { XCircle } from "lucide-react";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
 import Card, { CardContent } from "@/components/Card/Card";
-import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ProvinceSelectionModal,
+} from "@/components/Modal";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import { useGetMasterProvinces } from "@/services/Transporter/pengaturan/getDataAreaMuat";
 
 export default function Page() {
   const router = useRouter();
 
-  // Form state to track if any data has been filled
-  const [formData, setFormData] = useState({
-    areaMuat: "",
-    areaBongkar: "",
-    muatanDilayani: "",
-    halalLogistik: false,
-  });
-
   // Modal state
   const [isBackModalOpen, setIsBackModalOpen] = useState(false);
+  const [isAreaMuatModalOpen, setIsAreaMuatModalOpen] = useState(false);
+  const [isAreaBongkarModalOpen, setIsAreaBongkarModalOpen] = useState(false);
+  const [searchProvince, setSearchProvince] = useState("");
 
-  // Check if any form data has been filled
-  const hasFormData = Object.values(formData).some(
-    (value) => value !== "" && value !== false
-  );
+  // Fetch provinces data with search
+  const { provinces, isLoading } = useGetMasterProvinces({
+    q: searchProvince,
+    excludeExisting: false,
+  });
 
-  // Handle back navigation
-  const handleBack = () => {
-    if (hasFormData) {
-      setIsBackModalOpen(true);
-    } else {
-      router.back();
-    }
+  // Handle search provinces
+  const handleSearchProvinces = (searchTerm) => {
+    setSearchProvince(searchTerm);
   };
 
-  // Handle form data changes
-  const handleFormChange = (field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  // Handle save provinces dengan context
+  const handleSaveProvinces = (
+    selectedProvincesData,
+    selectedProvinceIds,
+    context
+  ) => {
+    if (context === "area-muat") {
+      // Save logic untuk Area Muat
+      console.log("Saving Area Muat provinces:", selectedProvincesData);
+      console.log("Area Muat province IDs:", selectedProvinceIds);
+      // TODO: Call API untuk save area muat
+      // await saveAreaMuat(selectedProvinceIds);
+    } else if (context === "area-bongkar") {
+      // Save logic untuk Area Bongkar
+      console.log("Saving Area Bongkar provinces:", selectedProvincesData);
+      console.log("Area Bongkar province IDs:", selectedProvinceIds);
+      // TODO: Call API untuk save area bongkar
+      // await saveAreaBongkar(selectedProvinceIds);
+    }
   };
 
   return (
@@ -76,7 +87,7 @@ export default function Page() {
                 <div className="ml-4 flex-shrink-0">
                   <Button
                     variant="muattrans-primary"
-                    onClick={() => handleFormChange("areaMuat", "filled")}
+                    onClick={() => setIsAreaMuatModalOpen(true)}
                   >
                     Tambah Area Muat
                   </Button>
@@ -106,7 +117,7 @@ export default function Page() {
                 <div className="ml-4 flex-shrink-0">
                   <Button
                     variant="muattrans-primary"
-                    onClick={() => handleFormChange("areaBongkar", "filled")}
+                    onClick={() => setIsAreaBongkarModalOpen(true)}
                   >
                     Tambah Area Bongkar
                   </Button>
@@ -129,13 +140,13 @@ export default function Page() {
                   </div>
                   <p className="text-sm text-neutral-600">
                     Atur muatan yang kamu layani sekarang untuk mendapatkan
-                    muatan yang sesuai
+                    muatan yang sesuai dengan kapasitas armada kamu
                   </p>
                 </div>
                 <div className="ml-4 flex-shrink-0">
                   <Button
                     variant="muattrans-primary"
-                    onClick={() => handleFormChange("muatanDilayani", "filled")}
+                    onClick={() => router.push("/pengaturan/muatan-dilayani")}
                   >
                     Tambah Muatan Dilayani
                   </Button>
@@ -147,9 +158,11 @@ export default function Page() {
             <div className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <h3 className="mb-2 text-lg font-semibold text-neutral-900">
-                    Layanan Halal Logistik
-                  </h3>
+                  <div className="mb-2 flex items-center gap-2">
+                    <h3 className="text-lg font-semibold text-neutral-900">
+                      Layanan Halal Logistik
+                    </h3>
+                  </div>
                   <p className="text-sm text-neutral-600">
                     Tentukan area kerja kamu agar pekerjaanmu menjadi lebih
                     efektif dan efisien. muatrans hanya menawarkan permintaan
@@ -159,7 +172,7 @@ export default function Page() {
                 <div className="ml-4 flex-shrink-0">
                   <Button
                     variant="muattrans-primary"
-                    onClick={() => handleFormChange("halalLogistik", true)}
+                    onClick={() => router.push("/pengaturan/halal-logistik")}
                   >
                     Daftar Halal Logistik
                   </Button>
@@ -169,6 +182,30 @@ export default function Page() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Area Muat Province Selection Modal */}
+      <ProvinceSelectionModal
+        isOpen={isAreaMuatModalOpen}
+        onClose={() => setIsAreaMuatModalOpen(false)}
+        onSave={handleSaveProvinces}
+        title="Pilih Provinsi Area Muat"
+        provinces={provinces}
+        isLoading={isLoading}
+        onSearch={handleSearchProvinces}
+        saveContext="area-muat"
+      />
+
+      {/* Area Bongkar Province Selection Modal */}
+      <ProvinceSelectionModal
+        isOpen={isAreaBongkarModalOpen}
+        onClose={() => setIsAreaBongkarModalOpen(false)}
+        onSave={handleSaveProvinces}
+        title="Pilih Provinsi Area Bongkar"
+        provinces={provinces}
+        isLoading={isLoading}
+        onSearch={handleSearchProvinces}
+        saveContext="area-bongkar"
+      />
 
       {/* Back Confirmation Modal */}
       <Modal open={isBackModalOpen} onOpenChange={setIsBackModalOpen}>

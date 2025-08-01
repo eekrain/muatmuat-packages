@@ -14,9 +14,14 @@ import { JenisArmadaField } from "./JenisArmadaField";
 import { JumlahArmada } from "./JumlahArmada";
 import WaktuMuatBottomsheet from "./WaktuMuat";
 
-export const SewaArmadaForm = ({ settingsTime, carriers, trucks }) => {
+export const SewaArmadaForm = ({
+  settingsTime,
+  carriers,
+  trucks,
+  additionalServicesOptions,
+}) => {
   const navigation = useResponsiveNavigation();
-  const { formValues } = useSewaArmadaStore();
+  const formValues = useSewaArmadaStore((state) => state.formValues);
   const { addLokasi, removeLokasi } = useSewaArmadaActions();
   const { setField: setInformasiMuatanField } = useInformasiMuatanStore();
   const validateLokasiOnSelect = useLocationFormStore(
@@ -202,21 +207,67 @@ export const SewaArmadaForm = ({ settingsTime, carriers, trucks }) => {
 
       {/* Layanan Tambahan Field */}
       <FormContainer>
-        <FormLabel optional>Layanan Tambahan</FormLabel>
-        <button
-          className={
-            "flex h-8 items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-3"
+        <FormLabel
+          className="justify-between"
+          optional
+          tooltip={
+            formValues.additionalServices.length === 0 ? null : (
+              <button
+                className="text-xs font-semibold leading-[1.1] text-primary-700"
+                onClick={handleEditLayananTambahan}
+              >
+                Ubah Layanan
+              </button>
+            )
           }
-          onClick={handleEditLayananTambahan}
         >
-          <div className="flex items-center gap-x-2">
-            <IconComponent src="/icons/layanan-tambahan.svg" />
-            <span className="text-sm font-semibold leading-[15.4px] text-neutral-600">
-              Pilih Layanan Tambahan
-            </span>
+          Layanan Tambahan
+        </FormLabel>
+        {formValues.additionalServices.length === 0 ? (
+          <button
+            className={
+              "flex h-8 items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-3"
+            }
+            onClick={handleEditLayananTambahan}
+          >
+            <div className="flex items-center gap-x-2">
+              <IconComponent src="/icons/layanan-tambahan.svg" />
+              <span className="text-sm font-semibold leading-[15.4px] text-neutral-600">
+                Pilih Layanan Tambahan
+              </span>
+            </div>
+            <IconComponent src="/icons/chevron-right.svg" />
+          </button>
+        ) : (
+          <div className="flex flex-col gap-y-3 rounded-md border border-neutral-600 px-3 py-2">
+            {formValues.additionalServices.map((service, key) => {
+              const currentService = additionalServicesOptions.find(
+                (item) => item.additionalServiceId === service.serviceId
+              );
+              const cost = service.withShipping ? 35000 : currentService?.price;
+              return (
+                <div
+                  className="flex items-center justify-between gap-x-2"
+                  key={key}
+                >
+                  <div className="flex flex-1 items-center gap-x-2">
+                    <div className="flex size-[16px] items-center justify-center rounded-[90px] border border-primary-700">
+                      <span className="text-xxs font-bold leading-none text-primary-700">
+                        {key + 1}
+                      </span>
+                    </div>
+                    <div className="max-w-[176px] flex-1 truncate text-sm font-semibold leading-[1.1] text-neutral-900">
+                      {currentService?.name}
+                    </div>
+                  </div>
+                  <span className="text-sm font-semibold leading-[1.1] text-neutral-900">
+                    {`Rp${cost ? cost.toLocaleString("id-ID") : 0}`}
+                  </span>
+                </div>
+              );
+            })}
           </div>
-          <IconComponent src="/icons/chevron-right.svg" />
-        </button>
+        )}
       </FormContainer>
     </div>
   );

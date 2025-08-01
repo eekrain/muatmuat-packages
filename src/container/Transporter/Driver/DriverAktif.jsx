@@ -26,7 +26,6 @@ import { getPhoneNumberStatus } from "@/lib/utils/phoneNumberStatus";
 import { useGetDriverDelegationPopupPreference } from "@/services/Transporter/driver-delegation/getPopupPreference";
 import { useUpdateDriverDelegationStatus } from "@/services/Transporter/driver-delegation/updateDelegationStatus";
 import { unlinkDriver } from "@/services/Transporter/manajemen-armada/unlinkDriver";
-import { deleteDriver } from "@/services/Transporter/manajemen-driver/deleteDriver";
 import { useGetActiveDriversData } from "@/services/Transporter/manajemen-driver/getActiveDriversData";
 
 const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
@@ -161,10 +160,12 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
         const statusConfig = getDriverStatusBadge(row.driverStatus);
         return (
           <BadgeStatus variant={statusConfig.variant}>
-            {row.driverStatus === "ON_DUTY" && (
+            {row.driverStatus === "ON_DUTY" && row.pendingUpdateDriver && (
               <InfoTooltip
                 side="left"
-                appearance={{ iconClassName: "text-blue-700 mr-1" }}
+                appearance={{
+                  iconClassName: "text-primary-700 mr-1 size-3.5",
+                }}
               >
                 <p>
                   Driver sedang bertugas. Status akan diperbarui setelah pesanan
@@ -222,15 +223,6 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
               onClick={() => router.push(`/manajemen-driver/${row.id}/detail`)}
             >
               Detail
-            </SimpleDropdownItem>
-            <SimpleDropdownItem
-              onClick={() => {
-                setSelectedDriver(row);
-                setConfirmDeleteDriver(true);
-              }}
-              className="text-red-600 hover:text-red-700"
-            >
-              Hapus
             </SimpleDropdownItem>
           </SimpleDropdownContent>
         </SimpleDropdown>
@@ -297,13 +289,6 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
 
   const handleSort = (sort, order) => {
     setSortConfig({ sort, order });
-  };
-
-  const rowClassName = (row) => {
-    if (row.warningDocumentExpired || row.pendingUpdateDriver) {
-      return "";
-    }
-    return "";
   };
 
   const handleFleetUpdateSuccess = () => {
@@ -386,22 +371,6 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
     }
   };
 
-  const handleDeleteDriver = async () => {
-    setIsUpdating(true);
-    try {
-      await deleteDriver(selectedDriver?.id);
-      toast.success("Berhasil menghapus driver");
-      setConfirmDeleteDriver(false);
-      setSelectedDriver(null);
-      mutate();
-    } catch (error) {
-      console.error("Failed to delete driver:", error);
-      toast.error("Gagal menghapus driver. Silakan coba lagi.");
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
   return (
     <>
       <div className="h-[calc(100vh-300px)]">
@@ -421,7 +390,6 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
           onSort={handleSort}
           loading={isLoading}
           showPagination
-          rowClassName={rowClassName}
           filterConfig={getFilterConfig()}
           headerActions={renderDriverDelegasiSwitch()}
         />
@@ -468,10 +436,10 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
         setIsOpen={setNonaktifkanDriver}
         description={{
           text: (
-            <p>
+            <>
               Apakah kamu yakin ingin menonaktifkan driver{" "}
               <b>{selectedDriver?.name}</b>?
-            </p>
+            </>
           ),
         }}
         confirm={{
@@ -479,37 +447,14 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
           onClick: () => {
             handleNonaktifkanDriver();
           },
+          classname: "w-[112px]",
         }}
         cancel={{
           text: "Tidak",
           onClick: () => {
             setNonaktifkanDriver(false);
           },
-        }}
-      />
-
-      <ConfirmationModal
-        isOpen={confirmDeleteDriver}
-        setIsOpen={setConfirmDeleteDriver}
-        description={{
-          text: (
-            <p className="text-center">
-              Apakah kamu yakin ingin menghapus driver{" "}
-              <b>{selectedDriver?.name}</b>?
-            </p>
-          ),
-        }}
-        confirm={{
-          text: "Ya",
-          onClick: () => {
-            handleDeleteDriver();
-          },
-        }}
-        cancel={{
-          text: "Tidak",
-          onClick: () => {
-            setConfirmDeleteDriver(false);
-          },
+          classname: "w-[112px]",
         }}
       />
 

@@ -3,385 +3,116 @@
 import Link from "next/link";
 import { useState } from "react";
 
-import { valibotResolver } from "@hookform/resolvers/valibot";
-import { Edit } from "lucide-react";
-import { useFieldArray, useForm } from "react-hook-form";
-import * as v from "valibot";
-
 import Button from "@/components/Button/Button";
-import DatePicker from "@/components/DatePicker/DatePicker";
-import Checkbox from "@/components/Form/Checkbox";
-import Input from "@/components/Form/Input";
-import { Select } from "@/components/Form/Select";
-import IconComponent from "@/components/IconComponent/IconComponent";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import { useTabs } from "@/components/Tabs/Tabs";
+import {
+  handleVehicleCellValueChange,
+  handleVehicleSaveAsDraft,
+  handleVehicleSubmit,
+  validateVehicleForm,
+  vehicleDefaultValues,
+  vehicleFormSchema,
+} from "@/config/forms/vehicleFormConfig";
+import { useTableForm } from "@/hooks/useTableForm";
 
-// Define units
-const weightUnits = [
-  { value: "kg", label: "kg" },
-  {
-    value: "liter",
-    label: "Liter",
-  },
-  {
-    value: "ton",
-    label: "Ton",
-  },
-];
+import ModalAddArmadaImage from "../../../preview-armada/components/ModalAddImage/ModalAddImage";
+import ArmadaTable from "../../ArmadaTable/ArmadaTable";
 
-const dimensionUnits = [
-  { value: "m", label: "m" },
-  { value: "cm", label: "cm" },
-];
-
-const defaultInformasiMuatan = {
-  namaMuatan: {
-    label: "",
-    value: null,
-  },
-  beratMuatan: {
-    berat: "",
-    unit: "kg",
-  },
-  dimensiMuatan: {
-    panjang: "",
-    lebar: "",
-    tinggi: "",
-    unit: "m",
-  },
-};
-
-const informasiMuatanSchema = v.object({
-  namaMuatan: v.object({
-    label: v.pipe(v.string(), v.minLength(1, "Nama muatan harus diisi")),
-    value: v.nullable(v.string()),
-  }),
-  beratMuatan: v.object({
-    berat: v.pipe(v.number("Wajib diisi"), v.minValue(1, "Wajib diisi")),
-    unit: v.string(),
-  }),
-  dimensiMuatan: v.object({
-    // the value might be empty string or a number, so make sure to transform it to a number
-    panjang: v.pipe(
-      v.any(),
-      v.transform((input) => (input ? Number(input) : 0))
-    ),
-    lebar: v.pipe(
-      v.any(),
-      v.transform((input) => (input ? Number(input) : 0))
-    ),
-    tinggi: v.pipe(
-      v.any(),
-      v.transform((input) => (input ? Number(input) : 0))
-    ),
-    unit: v.string(),
-  }),
-});
-
-const TambahArmadaMassal = () => {
-  // const { success, error } = toast;
+const TambahArmadaMassal = ({ isDraftAvailable }) => {
   const { onValueChange } = useTabs();
 
-  const [stateToggle, setStateToggle] = useState(false);
-  const [isDraft, setIsDraft] = useState(false);
+  const [isDraft] = useState(isDraftAvailable);
+  const [activeIndex, setActiveIndex] = useState();
   const [addArmadaImageModal, setAddArmadaImageModal] = useState(false);
 
-  const formMethods = useForm({
-    defaultValues: {
-      informasiMuatan: [defaultInformasiMuatan],
-    },
-    resolver: valibotResolver(
-      v.object({
-        informasiMuatan: v.array(informasiMuatanSchema),
-      })
-    ),
-  });
+  // Custom handlers for this vehicle form
+  const handleSubmit = (value) => {
+    handleVehicleSubmit(value);
+  };
+
+  const handleSaveAsDraft = (value) => {
+    handleVehicleSaveAsDraft(value);
+  };
+
+  // Use the reusable table form hook for vehicle data
   const {
-    control,
-    reset,
-    handleSubmit,
-    formState: { errors },
-  } = formMethods;
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "informasiMuatan",
+    errors,
+    watch,
+    selectAll,
+    selectedRowIndex,
+    searchValue,
+    confirmDeleteModal,
+    setConfirmDeleteModal,
+    handleAddRow,
+    handleDeleteRows,
+    handleSelectAll,
+    handleSelectRow,
+    handleCellValueChange,
+    handleSearchChange,
+    handleRemove,
+    handleSubmit: onSubmit,
+    setValue,
+  } = useTableForm({
+    defaultValues: vehicleDefaultValues,
+    schema: vehicleFormSchema,
+    onSubmit: handleSubmit,
+    onSaveAsDraft: handleSaveAsDraft,
+    validateAndShowErrors: validateVehicleForm,
+    handleCellValueChange: handleVehicleCellValueChange,
+    fieldArrayName: "informasiMuatan",
   });
-  return (
-    <div className="rounded-lg bg-white shadow-muat">
-      {/* Temporary Toggle (use it to toggle between success upload or fail upload) */}
-      {/* {isDev && (
-        <div className="md:col-span-2">
-          <Toggle
-            value={stateToggle}
-            textActive="Sukses unggah file"
-            textInactive="Gagal unggah file"
-            onClick={() => setStateToggle(!stateToggle)}
-          />
-        </div>
-      )} */}
-      {/* Header Table */}
-      <div className="flex items-center justify-between px-6 py-5">
-        <div className="flex items-center gap-3">
-          <Input
-            icon={{ left: "/icons/search.svg" }}
-            appearance={{ iconClassName: "text-neutral-700" }}
-            className="!w-fit !p-0 font-medium"
-            placeholder="Cari Armada"
-          />
-          <Button
-            onClick={() => {
-              append(defaultInformasiMuatan);
-            }}
-            variant="muatparts-primary-secondary"
-          >
-            Tambah
-          </Button>
-          <Button variant="muatparts-error-secondary">Hapus</Button>
-        </div>
-        <p className="font-semibold">Total : 20 Armada</p>
-      </div>
-      {/* Table */}
-      <div className="p-4">
-        {/* Table Header */}
-        <div className="grid w-full grid-cols-[16px_32px_232px_180px_180px_180px_180px_180px_261px_180px_180px_98px_133px_180px_180px_98px_394px] gap-4 overflow-x-auto rounded-lg border border-neutral-500 p-4">
-          <div className="flex items-center">
-            <Checkbox label="" />
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">Aksi</span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">Armada*</span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Jenis Truk*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Jenis Carrier*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Merek Kendaraan*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Tipe Kendaraan*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Tahun Registrasi Kendaraan*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Dimensi Carrier (Opsional)
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Nomor Rangka*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Masa Berlaku STNK*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Foto STNK*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Foto Pajak Kendaraan*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              KIR Kendaraan*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Masa Berlaku KIR*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Foto Buku KIR*
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs font-semibold text-gray-500">
-              Estimasi Tanggal Pemasangan GPS*
-            </span>
-          </div>
-          {control._formValues.informasiMuatan.map((_, index) => (
-            <>
-              <div key={index} className="flex items-center">
-                <Checkbox label="" />
-              </div>
-              <div>
-                <button className="rounded-[100%] bg-neutral-200 p-2 text-neutral-700 hover:bg-neutral-300 hover:text-neutral-800">
-                  <Edit className="size-4" />
-                </button>
-              </div>
-              <div className="flex gap-3">
-                <div>
-                  <label
-                    onClick={() => {
-                      setAddArmadaImageModal(true);
-                    }}
-                    htmlFor={`foto-armada-${index}`}
-                  >
-                    <div className="w-fit cursor-pointer rounded-lg border-2 border-dashed border-neutral-300 p-2">
-                      <IconComponent src="/icons/add-image20.svg" />
-                    </div>
-                  </label>
-                  {/* <input
-                    type="file"
-                    id={`foto-armada-${index}`}
-                    className="hidden"
-                  /> */}
-                </div>
-                <Input placeholder="Contoh : L 1234 TY" />
-              </div>
-              <div>
-                <Select
-                  options={[
-                    {
-                      value: "truk",
-                      label: "Truk",
-                    },
-                  ]}
-                  placeholder="Pilih Jenis Truk"
-                />
-              </div>
-              <div>
-                <Select
-                  options={[
-                    {
-                      value: "truk",
-                      label: "Truk",
-                    },
-                  ]}
-                  placeholder="Pilih Jenis Carrier"
-                />
-              </div>
-              <div>
-                <Select
-                  options={[
-                    {
-                      value: "truk",
-                      label: "Truk",
-                    },
-                  ]}
-                  placeholder="Pilih Merek Kendaraan"
-                />
-              </div>
-              <div>
-                <Select
-                  options={[
-                    {
-                      value: "truk",
-                      label: "Truk",
-                    },
-                  ]}
-                  placeholder="Pilih Tipe Kendaraan"
-                />
-              </div>
-              <div>
-                <Select
-                  options={[
-                    {
-                      value: "truk",
-                      label: "Truk",
-                    },
-                  ]}
-                  placeholder="Pilih Tahun"
-                />
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-3 rounded-lg border border-neutral-600 p-2 text-xs font-medium">
-                  <input placeholder="p" className="w-8 text-center" />
-                  <span>x</span>
-                  <input placeholder="l" className="w-8 text-center" />
-                  <span>x</span>
-                  <input placeholder="t" className="w-8 text-center" />
-                </div>
-                <Select defaultValue="m" options={dimensionUnits} />
-              </div>
-              <div>
-                <Input placeholder="Maksimal 17 Digit" />
-              </div>
-              <div className="relative">
-                <DatePicker placeholder="Pilih Tanggal" />
-              </div>
-              <div>
-                <label
-                  htmlFor={`foto-stnk-${index}`}
-                  className="text-xs font-medium text-primary-700"
-                >
-                  Upload File
-                </label>
-                <input
-                  type="file"
-                  id={`foto-stnk-${index}`}
-                  className="hidden"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor={`foto-pajak-kendaraan-${index}`}
-                  className="text-xs font-medium text-primary-700"
-                >
-                  Upload File
-                </label>
-                <input
-                  type="file"
-                  id={`foto-pajak-kendaraan-${index}`}
-                  className="hidden"
-                />
-              </div>
-              <div>
-                <Input placeholder="Contoh: SBY 123456" />
-              </div>
-              <div className="relative">
-                <DatePicker placeholder="Pilih Tanggal" />
-              </div>
-              <div>
-                <label
-                  htmlFor={`foto-buku-kir-${index}`}
-                  className="text-xs font-medium text-primary-700 hover:cursor-pointer hover:text-primary-800 hover:underline"
-                >
-                  Upload File
-                </label>
-                <input
-                  type="file"
-                  id={`foto-buku-kir-${index}`}
-                  className="hidden"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <DatePicker placeholder="Pilih Tanggal" />
-                <span className="text-xs font-medium">s/d</span>
-                <DatePicker placeholder="Pilih Tanggal" />
-              </div>
-            </>
-          ))}
-        </div>
-      </div>
 
-      <Modal open={isDraft} onOpenChange={() => setIsDraft(!isDraft)}>
+  const handleImageClick = (index) => {
+    setActiveIndex(index);
+    setAddArmadaImageModal(true);
+  };
+  return (
+    <div className="rounded-lg">
+      {/* Header Table */}
+      <form onSubmit={onSubmit}>
+        <ArmadaTable
+          data={watch("informasiMuatan")}
+          selectedRows={selectedRowIndex}
+          selectAll={selectAll}
+          searchValue={searchValue}
+          onSearchChange={handleSearchChange}
+          onSelectAll={handleSelectAll}
+          onSelectRow={handleSelectRow}
+          onAddRow={handleAddRow}
+          onDeleteRows={handleDeleteRows}
+          onCellValueChange={handleCellValueChange}
+          onImageClick={handleImageClick}
+          errors={errors.informasiMuatan}
+        />
+        <div className="flex items-center justify-end">
+          <div className="mt-4 flex w-full items-end justify-end gap-3">
+            <Button
+              onClick={handleSaveAsDraft}
+              variant="muattrans-primary-secondary"
+              type="button"
+            >
+              Simpan Sebagai Draft
+            </Button>
+            <Button
+              type="submit"
+              onClick={() => {
+                handleSubmit();
+              }}
+            >
+              Simpan
+            </Button>
+          </div>
+        </div>
+      </form>
+
+      <Modal
+        open={isDraft}
+        onOpenChange={() => {
+          onValueChange("draft");
+        }}
+      >
         <ModalContent className="w-modal-small text-center">
           <ModalHeader size="small" />
           <div className="flex flex-col items-center gap-4 px-6 py-9 text-black">
@@ -406,6 +137,43 @@ const TambahArmadaMassal = () => {
           </div>
         </ModalContent>
       </Modal>
+
+      <ConfirmationModal
+        isOpen={confirmDeleteModal}
+        setIsOpen={setConfirmDeleteModal}
+        title={{
+          text: "Apakah kamu yakin untuk menghapus armada ?",
+          className: "text-sm font-medium text-center",
+        }}
+        confirm={{
+          text: "Hapus",
+          onClick: handleRemove,
+        }}
+        cancel={{
+          text: "Batal",
+          onClick: () => {
+            setConfirmDeleteModal(false);
+          },
+        }}
+      >
+        Apakah kamu yakin ingin menghapus armada yang telah dipilih? Tindakan
+        ini tidak dapat dibatalkan.
+      </ConfirmationModal>
+
+      <ModalAddArmadaImage
+        isOpen={addArmadaImageModal}
+        onClose={() => {
+          setAddArmadaImageModal(false);
+        }}
+        value={watch(`informasiMuatan.${activeIndex}.informasi_armada.images`)}
+        onSave={(images) => {
+          setValue(
+            `informasiMuatan.${activeIndex}.informasi_armada.images`,
+            images
+          );
+          setAddArmadaImageModal(false);
+        }}
+      />
     </div>
   );
 };
