@@ -9,6 +9,7 @@ import Card from "@/components/Card/Card";
 import FileUploadMultiple from "@/components/FileUpload/FileUploudMultiple";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import Input from "@/components/Form/Input";
+import { toast } from "@/lib/toast";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "application/pdf"];
@@ -74,6 +75,8 @@ function KelengkapanLegalitas() {
     handleSubmit,
     formState: { errors },
     setValue,
+    trigger,
+    getValues,
     watch,
   } = useForm({
     resolver: valibotResolver(kelengkapanLegalitasSchema),
@@ -97,9 +100,43 @@ function KelengkapanLegalitas() {
   // Watch form values for real-time validation
   const watchedValues = watch();
 
+  const isAllRequiredLegalitasFieldsEmpty = (values) => {
+    const requiredFields = [
+      "nibNumber",
+      "npwpNumber",
+      "ktpNumber",
+      "documents.nib",
+      "documents.npwp",
+      "documents.ktp",
+      "documents.aktaPendirian",
+      "documents.skKemenkumham",
+    ];
+
+    return requiredFields.every((path) => {
+      const value = path.split(".").reduce((acc, key) => acc?.[key], values);
+      if (Array.isArray(value)) return value.length === 0;
+      return value === null || value === undefined || value === "";
+    });
+  };
+
   const onSubmit = (data) => {
     console.log("Form data:", data);
     // Handle form submission here
+  };
+
+  const handleValidateAndSubmit = async (e) => {
+    e.preventDefault(); // cegah reload
+    const isValid = await trigger();
+    const values = getValues();
+
+    if (!isValid) {
+      if (isAllRequiredLegalitasFieldsEmpty(values)) {
+        toast.error("Isi semua inputan yang bertanda bintang (*)");
+      }
+      return;
+    }
+
+    handleSubmit(onSubmit)();
   };
 
   const handleMultipleFileUpload = (fieldName, files) => {
@@ -111,9 +148,8 @@ function KelengkapanLegalitas() {
     // Handle file upload errors
   };
 
-  console.log(errors);
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+    <form onSubmit={handleValidateAndSubmit} className="w-full">
       <Card className={"rounded-xl border-none p-6"}>
         <div className="w-full max-w-[75%]">
           <div>
