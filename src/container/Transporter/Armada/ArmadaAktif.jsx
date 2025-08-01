@@ -125,6 +125,7 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange, count }) => {
       key: "status",
       header: "Status",
       sortable: false,
+      width: "200px",
       render: (row) => {
         // Use the status directly from the data
         return getStatusBadge(row.status);
