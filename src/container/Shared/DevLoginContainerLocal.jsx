@@ -12,7 +12,9 @@ const getInputType = (input) => {
   return emailRegex.test(input) ? "email" : "phone";
 };
 
-const DevLoginContainer = ({ onSuccessRedirect = "/manajemen-armada" }) => {
+const DevLoginContainerLocal = ({
+  onSuccessRedirect = "/manajemen-armada",
+}) => {
   const [formData, setFormData] = useState({
     emailOrPhone: "",
     password: "",
@@ -256,4 +258,4 @@ const DevLoginContainer = ({ onSuccessRedirect = "/manajemen-armada" }) => {
   );
 };
 
-export default DevLoginContainer;
+export default DevLoginContainerLocal;
