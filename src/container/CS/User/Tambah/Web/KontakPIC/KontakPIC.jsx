@@ -93,7 +93,7 @@ function KontakPIC() {
 
               <FormLabel required>No. HP PIC 1</FormLabel>
               <Input
-                type="text"
+                type="number"
                 placeholder="Contoh : 08xxxxxxxxxx"
                 {...register("contacts.0.phone")}
                 errorMessage={errors.contacts?.[0]?.phone?.message}
@@ -118,7 +118,7 @@ function KontakPIC() {
 
               <FormLabel>No. HP PIC 2</FormLabel>
               <Input
-                type="text"
+                type="number"
                 placeholder="Contoh : 08xxxxxxxxxx"
                 {...register("contacts.1.phone")}
                 errorMessage={errors.contacts?.[1]?.phone?.message}
@@ -143,7 +143,7 @@ function KontakPIC() {
 
               <FormLabel>No. HP PIC 3</FormLabel>
               <Input
-                type="text"
+                type="number"
                 placeholder="Contoh : 08xxxxxxxxxx"
                 {...register("contacts.2.phone")}
                 errorMessage={errors.contacts?.[2]?.phone?.message}

@@ -153,6 +153,7 @@ function KelengkapanLegalitas() {
                 label="Upload"
                 className="mb-2"
                 errorMessage={errors.documents?.npwp?.message}
+                single
               />
 
               <FormLabel required>Nomor NPWP Perusahaan</FormLabel>
@@ -174,6 +175,7 @@ function KelengkapanLegalitas() {
                 label="Upload"
                 className="mb-2"
                 errorMessage={errors.documents?.ktp?.message}
+                single
               />
 
               <FormLabel required>Nomor KTP Pendaftar</FormLabel>

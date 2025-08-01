@@ -14,6 +14,7 @@ import Input from "@/components/Form/Input";
 import { Select } from "@/components/Form/Select";
 import SelectFilterRadix from "@/components/Form/SelectFilterRadix";
 import { MyTextArea } from "@/components/Form/TextArea";
+import { MapContainer } from "@/components/MapContainer/MapContainer";
 
 const informasiPendaftarSchema = v.object({
   transporterId: v.optional(v.string()),
@@ -94,8 +95,8 @@ const informasiPendaftarSchema = v.object({
 
 function InformasiPendaftar() {
   const [coordinates, setCoordinates] = useState({
-    lat: 7.2575,
-    lng: 112.7521,
+    latitude: -7.254235,
+    longitude: 112.736583,
   });
 
   const {
@@ -117,10 +118,10 @@ function InformasiPendaftar() {
       businessEntityType: "",
       companyPhone: "",
       companyAddress: "",
-      addressType: "HEAD_OFFICE",
+      addressType: "",
       locationData: {
-        latitude: "",
-        longitude: "",
+        latitude: 7.2575,
+        longitude: 112.7521,
         district: "",
         city: "",
         province: "",
@@ -179,8 +180,8 @@ function InformasiPendaftar() {
 
   const handleMapPositionChange = (newCoordinates) => {
     setCoordinates(newCoordinates);
-    setValue("locationData.latitude", newCoordinates.lat.toString());
-    setValue("locationData.longitude", newCoordinates.lng.toString());
+    setValue("locationData.latitude", newCoordinates.latitude.toString());
+    setValue("locationData.longitude", newCoordinates.longitude.toString());
   };
 
   return (
@@ -209,7 +210,7 @@ function InformasiPendaftar() {
 
               <FormLabel required>No. Whatsapp Pendaftar</FormLabel>
               <Input
-                type="text"
+                type="number"
                 placeholder="Contoh: 08xxxxxxxxxx"
                 {...register("registrantWhatsapp")}
                 errorMessage={errors.registrantWhatsapp?.message}
@@ -255,7 +256,7 @@ function InformasiPendaftar() {
 
               <FormLabel required>No. Telepon Perusahaan</FormLabel>
               <Input
-                type="text"
+                type="number"
                 placeholder="Contoh: 08xxxxxxxxxx"
                 {...register("companyPhone")}
                 errorMessage={errors.companyPhone?.message}
@@ -287,13 +288,15 @@ function InformasiPendaftar() {
               />
 
               <FormLabel required>Kecamatan</FormLabel>
-              <SelectFilterRadix
-                options={kecamatanOptions}
-                value={watchedValues.locationData?.district}
-                onChange={(value) => setValue("locationData.district", value)}
-                placeholder="Pilih Kecamatan"
-                errorMessage={errors.locationData?.district?.message}
-              />
+              <div>
+                <SelectFilterRadix
+                  options={kecamatanOptions}
+                  value={watchedValues.locationData?.district}
+                  onChange={(value) => setValue("locationData.district", value)}
+                  placeholder="Pilih Kecamatan"
+                  errorMessage={errors.locationData?.district?.message}
+                />
+              </div>
 
               <FormLabel required>Kota</FormLabel>
               <p className="text-xs font-medium">Surabaya</p>
@@ -302,33 +305,44 @@ function InformasiPendaftar() {
               <p className="text-xs font-medium">Jawa Timur</p>
 
               <FormLabel required>Kode Pos</FormLabel>
-              <SelectFilterRadix
-                options={kodePosOptions}
-                value={watchedValues.locationData?.postalCode}
-                onChange={(value) => setValue("locationData.postalCode", value)}
-                placeholder="Pilih Kode Pos"
-                errorMessage={errors.locationData?.postalCode?.message}
-              />
+              <div>
+                <SelectFilterRadix
+                  options={kodePosOptions}
+                  value={watchedValues.locationData?.postalCode}
+                  onChange={(value) =>
+                    setValue("locationData.postalCode", value)
+                  }
+                  placeholder="Pilih Kode Pos"
+                  errorMessage={errors.locationData?.postalCode?.message}
+                />
+              </div>
 
               <FormLabel required>Titik Lokasi</FormLabel>
-              <div className="h-[200px] w-full overflow-hidden rounded-lg">
-                {/* <MapContainer
-              coordinates={coordinates}
-              onPositionChange={handleMapPositionChange}
-              className="h-full w-full"
-            /> */}
-              </div>
-              <Button
+              <button
                 type="button"
-                variant="muattrans-primary"
-                className="mt-2"
-                onClick={() => {
-                  // Handle pin location setting
-                  alert("Pin location button clicked");
-                }}
+                className="relative h-[154px] w-[80%] overflow-hidden rounded-lg"
               >
-                Atur Pin Lokasi
-              </Button>
+                <MapContainer
+                  coordinates={coordinates}
+                  onPositionChange={handleMapPositionChange}
+                  className="h-full w-full"
+                  textLabel={`${coordinates.latitude}, ${coordinates.longitude}`}
+                />
+                <button
+                  type="button"
+                  className="hover absolute bottom-0 right-0 w-full rounded-b-lg bg-muat-trans-primary-400 px-4 py-1 text-center text-white transition-colors hover:bg-muat-trans-primary-500"
+                >
+                  <span className="text-sm font-semibold text-muat-trans-primary-900">
+                    Atur Pin Lokasi
+                  </span>
+                </button>
+              </button>
+              {(errors.locationData?.latitude ||
+                errors.locationData?.longitude) && (
+                <p className="mt-1 text-sm text-error-500">
+                  Titik lokasi wajib diisi
+                </p>
+              )}
             </FormContainer>
           </div>
 
@@ -338,17 +352,19 @@ function InformasiPendaftar() {
             </h3>
             <FormContainer>
               <FormLabel required>Nama Bank</FormLabel>
-              <SelectFilterRadix
-                options={bankOptions}
-                value={watchedValues.bankId}
-                onChange={(value) => setValue("bankId", value)}
-                placeholder="Pilih Bank"
-                errorMessage={errors.bankId?.message}
-              />
+              <div>
+                <SelectFilterRadix
+                  options={bankOptions}
+                  value={watchedValues.bankId}
+                  onChange={(value) => setValue("bankId", value)}
+                  placeholder="Pilih Bank"
+                  errorMessage={errors.bankId?.message}
+                />
+              </div>
 
               <FormLabel required>Nomor Rekening</FormLabel>
               <Input
-                type="text"
+                type="number"
                 placeholder="Masukkan Nomor Rekening"
                 {...register("accountNumber")}
                 errorMessage={errors.accountNumber?.message}

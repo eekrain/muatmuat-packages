@@ -28,6 +28,7 @@ const FileUploadMultiple = ({
   value = [],
   acceptedFormats = [".jpg", ".jpeg", ".png", ".pdf"],
   errorMessage = "",
+  single = false,
 }) => {
   const [progress, setProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
@@ -81,6 +82,20 @@ const FileUploadMultiple = ({
 
       const formData = new FormData();
       formData.append("document", file);
+
+      if (single) {
+        if (newUploadedFiles.length > 0) {
+          onSuccess([newUploadedFiles[0]]); // ganti file jika sudah ada
+        }
+      } else if (Number.isInteger(replacingIndex)) {
+        const updatedFiles = [...(value || [])];
+        if (newUploadedFiles.length > 0) {
+          updatedFiles[replacingIndex] = newUploadedFiles[0];
+          onSuccess(updatedFiles);
+        }
+      } else {
+        onSuccess([...(value || []), ...newUploadedFiles]);
+      }
 
       try {
         // Reset progress for new upload
@@ -166,19 +181,22 @@ const FileUploadMultiple = ({
         accept={acceptedFormats.join(",")}
         onChange={handleFileChange}
         disabled={isUploading}
-        multiple={!Number.isInteger(replacingIndex)}
+        multiple={!Number.isInteger(replacingIndex) && !single}
       />
 
       <div className="flex flex-col items-start gap-y-2">
         <div className="flex items-center">
-          <Button
-            className="self-start"
-            name="upload"
-            color="primary"
-            onClick={handleTriggerUpload}
-          >
-            {label}
-          </Button>
+          {!(single && value.length > 0) && (
+            <Button
+              type="button"
+              className="self-start"
+              name="upload"
+              color="primary"
+              onClick={handleTriggerUpload}
+            >
+              {label}
+            </Button>
+          )}
           <div className="ml-2 flex flex-col items-start gap-y-1">
             {Array.isArray(value) && value.length > 0 && (
               <div className="ml-4 flex flex-col gap-y-3">
