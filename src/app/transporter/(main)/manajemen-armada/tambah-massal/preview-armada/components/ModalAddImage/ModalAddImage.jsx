@@ -84,7 +84,7 @@ export default function ModalAddImage({
     if (value) {
       setImages(value);
     }
-  }, []);
+  }, [value]);
   return (
     <Modal
       open={isOpen}

@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import {
+  defaultInformasiArmada,
   handleVehicleCellValueChange,
   handleVehicleSaveAsDraft,
   handleVehicleSubmit,
@@ -14,11 +15,88 @@ import {
   vehicleFormSchema,
 } from "@/config/forms/vehicleFormConfig";
 import { useTableForm } from "@/hooks/useTableForm";
+import { useGetFleetsDrafts } from "@/services/Transporter/manajemen-armada/getFleetsDrafts";
 
 import ModalAddArmadaImage from "../../../preview-armada/components/ModalAddImage/ModalAddImage";
 import ArmadaTable from "../../ArmadaTable/ArmadaTable";
 
+// Function to map API draft data to form structure
+const mapDraftsToFormData = (drafts) => {
+  if (!drafts || !Array.isArray(drafts) || drafts.length === 0) {
+    return vehicleDefaultValues;
+  }
+
+  const informasiMuatan = drafts.map((draft) => ({
+    id: draft.id, // Keep draft ID for reference
+    informasi_armada: {
+      images: {
+        // Map photos to form image structure
+        image_armada_depan:
+          draft.photos?.find((p) => p.photoType === "FRONT")?.photoUrl || null,
+        image_armada_kiri:
+          draft.photos?.find((p) => p.photoType === "LEFT")?.photoUrl || null,
+        image_armada_kanan:
+          draft.photos?.find((p) => p.photoType === "RIGHT")?.photoUrl || null,
+        image_armada_belakang:
+          draft.photos?.find((p) => p.photoType === "BACK")?.photoUrl || null,
+      },
+    },
+    licensePlate: draft.licensePlate || "",
+    jenis_truk: draft.truckTypeId || "",
+    jenis_carrier: draft.carrierTypeId || "",
+    merek_kendaraan_name: draft.vehicleBrand || "",
+    merek_kendaraan_id: draft.vehicleBrandId || "",
+    tipe_kendaraan_name: draft.vehicleType || "",
+    tipe_kendaraan_id: draft.vehicleTypeId || "",
+    tahun_registrasi_kendaraan: draft.registrationYear?.toString() || "",
+    dimensi_carrier: {
+      panjang: draft.carrierLength?.toString() || "",
+      lebar: draft.carrierWidth?.toString() || "",
+      tinggi: draft.carrierHeight?.toString() || "",
+      unit: draft.carrierDimensionUnit || "m",
+    },
+    nomor_rangka: draft.chassisNumber || "",
+    masa_berlaku_stnk: draft.stnkExpiryDate
+      ? new Date(draft.stnkExpiryDate)
+      : "",
+    foto_stnk: {
+      documentUrl:
+        draft.documents?.find((d) => d.documentType === "STNK")?.documentUrl ||
+        null,
+      name:
+        draft.documents?.find((d) => d.documentType === "STNK")?.documentName ||
+        null,
+    },
+    foto_pajak_kendaraan: {
+      documentUrl:
+        draft.documents?.find((d) => d.documentType === "PAJAK")?.documentUrl ||
+        null,
+      name: draft.documents?.find((d) => d.documentType === "PAJAK")
+        ?.documentName,
+    },
+    nomor_kir: draft.kirNumber || "",
+    masa_berlaku_kir: draft.kirExpiryDate ? new Date(draft.kirExpiryDate) : "",
+    foto_buku_kir:
+      draft.documents?.find((d) => d.documentType === "KIR")?.documentUrl ||
+      null,
+    estimasi_tanggal_pemasangan_gps: {
+      mulai: draft.gpsInstallationEstimateStartDate
+        ? new Date(draft.gpsInstallationEstimateStartDate)
+        : "",
+      selesai: draft.gpsInstallationEstimateEndDate
+        ? new Date(draft.gpsInstallationEstimateEndDate)
+        : "",
+    },
+  }));
+
+  return { informasiMuatan };
+};
+
 const Draft = ({ isDraftAvailable }) => {
+  const isFirstMount = useRef(true);
+  const { data, isLoading, error } = useGetFleetsDrafts(
+    isDraftAvailable ? "/v1/fleet/drafts" : null
+  );
   const [activeIndex, setActiveIndex] = useState();
   const [addArmadaImageModal, setAddArmadaImageModal] = useState(false);
 
@@ -40,7 +118,6 @@ const Draft = ({ isDraftAvailable }) => {
     searchValue,
     confirmDeleteModal,
     setConfirmDeleteModal,
-    handleAddRow,
     handleDeleteRows,
     handleSelectAll,
     handleSelectRow,
@@ -49,8 +126,10 @@ const Draft = ({ isDraftAvailable }) => {
     handleRemove,
     handleSubmit: onSubmit,
     setValue,
+    reset,
+    append,
   } = useTableForm({
-    defaultValues: vehicleDefaultValues,
+    defaultValues: vehicleDefaultValues, // Always start with default values
     schema: vehicleFormSchema,
     onSubmit: handleSubmit,
     onSaveAsDraft: handleSaveAsDraft,
@@ -59,12 +138,54 @@ const Draft = ({ isDraftAvailable }) => {
     fieldArrayName: "informasiMuatan",
   });
 
+  // Custom handleAddRow to ensure we always add empty rows
+  const handleAddRow = () => {
+    append(defaultInformasiArmada);
+  };
+
+  // Update form data when API data loads
+  useEffect(() => {
+    if (
+      data?.Data?.drafts &&
+      data.Data.drafts.length > 0 &&
+      isFirstMount.current
+    ) {
+      const formData = mapDraftsToFormData(data.Data.drafts);
+      reset(formData);
+      isFirstMount.current = false;
+    }
+  }, [data, reset]);
+
   const handleImageClick = (index) => {
     setActiveIndex(index);
     setAddArmadaImageModal(true);
   };
 
   if (!isDraftAvailable) {
+    return (
+      <div className="flex h-[280px] w-full items-center justify-center rounded-xl bg-white p-8 shadow-md">
+        <DataNotFound type="data" title="Belum ada Draft Armada" />
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[280px] w-full items-center justify-center rounded-xl bg-white p-8 shadow-md">
+        <div className="text-neutral-500">Loading drafts...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-[280px] w-full items-center justify-center rounded-xl bg-white p-8 shadow-md">
+        <DataNotFound type="error" title="Gagal memuat draft armada" />
+      </div>
+    );
+  }
+
+  if (!data?.Data?.drafts || data.Data.drafts.length === 0) {
     return (
       <div className="flex h-[280px] w-full items-center justify-center rounded-xl bg-white p-8 shadow-md">
         <DataNotFound type="data" title="Belum ada Draft Armada" />

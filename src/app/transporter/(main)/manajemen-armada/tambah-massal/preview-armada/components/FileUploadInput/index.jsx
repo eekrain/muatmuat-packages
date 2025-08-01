@@ -1,4 +1,6 @@
-import { useEffect } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 
 import { toast } from "@/lib/toast";
 import { useUploadVehicleDocuments } from "@/services/Transporter/manajemen-armada/postUploadVehicleDocuments";
@@ -16,7 +18,9 @@ const FileUploadInput = ({
   hasError = false,
 }) => {
   const { trigger } = useUploadVehicleDocuments();
-  const hasFile = value && (value.name || value.documentUrl);
+  const [hasFile, setHasFile] = useState(
+    value && (value.name || value.documentUrl)
+  );
   const displayText =
     successText || (hasFile ? value.name || value.name : null);
   const fileExtension =
@@ -42,6 +46,10 @@ const FileUploadInput = ({
 
   useEffect(() => {
     // File upload tracking
+    if (value && (value.name || value.documentUrl)) {
+      console.log("File uploaded:", value);
+      setHasFile(true);
+    }
   }, [value]);
 
   return (
@@ -49,7 +57,7 @@ const FileUploadInput = ({
       {hasFile ? (
         <div className="flex flex-col gap-1 text-xs font-medium">
           <div className="flex text-success-700">
-            <p className="line-clamp-1">{displayText}</p>
+            <p className="line-clamp-1 w-full">{displayText}</p>
             <span>.{fileExtension}</span>
           </div>
           <label
