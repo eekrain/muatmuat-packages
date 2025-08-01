@@ -1,9 +1,10 @@
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import ImageUploaderWeb from "@/components/ImageUploader/ImageUploaderWeb";
+import { useSWRMutateHook } from "@/hooks/use-swr";
 import { cn } from "@/lib/utils";
 import { handleFirstTime } from "@/lib/utils/form";
 import {
@@ -19,8 +20,25 @@ export const FotoMuatan = () => {
   );
   const formErrors = useSewaArmadaStore((state) => state.formErrors);
   const { setCargoPhotos } = useSewaArmadaActions();
+  const [activeIndex, setActiveIndex] = useState(null);
 
-  const handleImageUpload = (index, img) => setCargoPhotos(index, img);
+  const { trigger, isMutating } = useSWRMutateHook("v1/orders/upload", "POST");
+
+  const handleImageUpload = async (index, image) => {
+    if (!image) {
+      setCargoPhotos(index, image);
+    }
+    setActiveIndex(index);
+    const formData = new FormData();
+    formData.append("file", image);
+    await trigger(formData)
+      .then((response) => {
+        setCargoPhotos(index, response.Data.photoUrl);
+      })
+      .catch((err) => {
+        console.error("Error uploading image:", err);
+      });
+  };
 
   return (
     <FormContainer>
@@ -43,13 +61,15 @@ export const FotoMuatan = () => {
             : [...Array(4)].map((_, key) => (
                 <Fragment key={key}>
                   <ImageUploaderWeb
-                    getImage={(value) =>
+                    onUpload={(value) =>
                       handleFirstTime(() => handleImageUpload(key, value))
                     }
+                    isCircle
                     uploadText={key === 0 ? "Foto Utama" : `Foto ${key}`}
                     maxSize={10}
                     className="!size-[124px]"
                     value={cargoPhotos?.[key]}
+                    isLoading={isMutating && activeIndex === key}
                     isNull={formErrors.cargoPhotos}
                     cropperTitle="Upload Foto Muatan"
                   />

@@ -144,7 +144,8 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
     !lokasiBongkar ||
     !cargoCategoryId ||
     informasiMuatan.length === 0 ||
-    !carrierId;
+    !carrierId ||
+    isEditPage;
 
   return (
     <>
@@ -190,11 +191,11 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
             <button
               className={cn(
                 "flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 px-3",
-                selectedCarrier && !isTruckTypeIdDisabled && !isEditPage
-                  ? "cursor-pointer bg-neutral-50"
-                  : "cursor-not-allowed bg-neutral-200"
+                isTruckTypeIdDisabled
+                  ? "cursor-not-allowed bg-neutral-200"
+                  : "cursor-pointer bg-neutral-50"
               )}
-              disabled={isTruckTypeIdDisabled || isEditPage}
+              disabled={isTruckTypeIdDisabled}
               onClick={() =>
                 handleFirstTime(() => handleOpenModal("truckTypeId"))
               }

@@ -12,6 +12,7 @@ import {
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
 import { useTranslation } from "@/hooks/use-translation";
+import { OrderTypeEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 import { idrFormat } from "@/lib/utils/formatters";
 import {
@@ -47,7 +48,7 @@ export const RecommendedTruckBottomsheet = ({
     setField("truckTypeId", recommendedTruck.truckTypeId);
     setField(
       "truckCount",
-      orderType === "INSTANT" ? 1 : recommendedTruck.unit || 1
+      orderType === OrderTypeEnum.INSTANT ? 1 : recommendedTruck.unit || 1
     );
     setField("minTruckCount", recommendedTruck.unit || 1);
 

@@ -6,6 +6,7 @@ import {
   TruckItem,
   WarningBadge,
 } from "@/container/Shipper/SewaArmada/Web/Form/JenisArmada/ArmadaComponent";
+import { OrderTypeEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 import {
   useSewaArmadaActions,
@@ -22,7 +23,10 @@ const RecommendedTruckModal = ({ isOpen, setIsOpen, recommendedTrucks }) => {
     const selectedTruck = recommendedTrucks.find(
       (item) => item.truckTypeId === selectedTruckTypeId
     );
-    setField("truckCount", orderType === "INSTANT" ? 1 : selectedTruck.unit);
+    setField(
+      "truckCount",
+      orderType === OrderTypeEnum.INSTANT ? 1 : selectedTruck.unit
+    );
     setField("minTruckCount", selectedTruck.unit);
     setField("truckTypeId", selectedTruckTypeId);
     setIsOpen(false);

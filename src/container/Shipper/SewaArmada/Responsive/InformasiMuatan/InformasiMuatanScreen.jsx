@@ -15,6 +15,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
 import { useTranslation } from "@/hooks/use-translation";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
+import { OrderTypeEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -511,7 +512,7 @@ const InformasiMuatanScreen = ({
           setSewaArmadaField("truckTypeId", truck.truckTypeId);
           setSewaArmadaField(
             "truckCount",
-            orderType === "INSTANT" ? 1 : truck.unit
+            orderType === OrderTypeEnum.INSTANT ? 1 : truck.unit
           );
           setOpenJenisTrukBottomSheet(false);
           toast.success(
