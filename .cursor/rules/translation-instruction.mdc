@@ -1,0 +1,608 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# AI Agent Instructions: Codebase Translation & Refactoring
+
+## 1. Objective
+
+Your primary goal is to analyze a given component file, identify all user-facing Indonesian strings, refactor the code to use a custom `t()` translation function, and generate a CSV report containing all the translation keys and their corresponding values in English and Chinese.
+
+## 2. Phase 1: Analyze the Component
+
+First, meticulously scan the code and identify all hardcoded, user-facing strings that require translation.
+
+Look for strings in these locations:
+
+- **JSX Text Nodes**: Any text directly between JSX tags (e.g., `<div>`, `<span>`, `<p>`)
+- **Component Props**: Common string props that render text to the UI (e.g., `title`, `label`, `placeholder`)
+- **JavaScript Logic**: Strings used in variables, constants, or function returns that are eventually rendered in the UI, such as error messages, alerts, and notifications
+- **InfoBottomsheet Components**: Special handling for components with HTML content (see Phase 2.4)
+- **InfoTooltip Components**: Special handling for tooltip components with HTML content (see Phase 2.5)
+
+## 3. Phase 2: Generate Labels & Handle Dynamic Values
+
+For each string identified, perform the following steps.
+
+### 3.1. Generate a Unique, Context-Aware Label
+
+Create a unique key for each string following these conventions:
+
+- **Format**: Use camelCase
+- **Structure**: Use a hierarchical pattern like `{ComponentName}.{context}{Section}{Description}` to ensure clarity and avoid collisions
+- **Component Prefix**: Always prefix the label with the component name (e.g., `InformasiMuatanScreen.titleInformasiMuatan`)
+
+#### Label Naming Patterns
+
+- **Error Messages**: `{ComponentName}.messageError{Context}{Description}`
+  - Example: `InformasiMuatanScreen.messageErrorNamaKurangDari3Karakter`
+- **Form Labels**: `{ComponentName}.label{Component}{Field}`
+  - Example: `InformasiMuatanScreen.labelOrderInfoCustomerName`
+- **Button Text**: `{ComponentName}.button{Action}{Context}`
+  - Example: `InformasiMuatanScreen.buttonSaveOrder`, `InformasiMuatanScreen.buttonCancelPayment`
+- **Navigation & Tabs**: `{ComponentName}.nav{Section}{Item}` or `{ComponentName}.tab{Section}{Name}`
+  - Example: `InformasiMuatanScreen.navOrderDetailRingkasan`, `InformasiMuatanScreen.tabOtherInformation`
+- **Titles & Headings**: `{ComponentName}.title{Page/Section}`
+  - Example: `InformasiMuatanScreen.titleOrderDetail`
+- **General Content**: `{ComponentName}.{Component}{Section}{Content}`
+  - Example: `InformasiMuatanScreen.orderInfoStatusActive`
+- **InfoBottomsheet Content**: `{ComponentName}.infoBottomsheet{Component}{Content}`
+  - Example: `InformasiMuatanScreen.infoBottomsheetCargoTypeDimensions`
+- **InfoTooltip Content**: `{ComponentName}.infoTooltip{Component}{Content}`
+  - Example: `InformasiMuatanScreen.infoTooltipHalalLogistics`
+
+### 3.2. Handle Dynamic Values
+
+Analyze the string for dynamic data (variables, numbers). If found, replace it with a descriptive, named placeholder in curly braces.
+
+**Examples:**
+
+- Original: `"Kebutuhan: 3 Unit"` → Processed: `"Kebutuhan: {number} Unit"`
+- Original: `"Menampilkan 5 dari 20 item"` → Processed: `"Menampilkan {current} dari {total} item"`
+
+### 3.3. Translate the Text
+
+Translate the processed string (with placeholders) into English and Chinese.
+
+**Example:**
+
+- **Original (ID)**: `"Kebutuhan: {number} Unit"`
+- **English (EN)**: `"Requirement: {number} Unit"`
+- **Chinese (ZH)**: `"需求：{number} 单位"`
+
+### 3.4. Special Handling: InfoBottomsheet Components
+
+When encountering `InfoBottomsheet` components with HTML content, follow these special steps:
+
+#### Step 1: Identify InfoBottomsheet Content
+
+Look for components like:
+
+```jsx
+<InfoBottomsheet title="Some Title">
+  <ul>
+    <li>
+      <b>Label:</b> Description
+    </li>
+    <li>
+      <b>Label:</b> Description
+    </li>
+  </ul>
+  <p>Additional content</p>
+</InfoBottomsheet>
+```
+
+#### Step 2: Minify HTML Content
+
+Convert the HTML content to a single minified string:
+
+**Before:**
+
+```jsx
+<InfoBottomsheet title="Tipe Muatan yang Akan Dikirimkan">
+  <ul>
+    <li>
+      <b>Panjang :</b> Ukuran terpanjang dari muatan.
+    </li>
+    <li>
+      <b>Lebar :</b> Ukuran terlebar dari muatan.
+    </li>
+    <li>
+      <b>Tinggi :</b> Ukuran tertinggi dari muatan
+    </li>
+  </ul>
+  <p>
+    Pengisian dimensi yang tepat akan membantu dalam pengelolaan dan pengiriman.
+  </p>
+</InfoBottomsheet>
+```
+
+**After (Minified):**
+
+```jsx
+"<ul><li><b>Panjang :</b> Ukuran terpanjang dari muatan.</li><li><b>Lebar :</b> Ukuran terlebar dari muatan.</li><li><b>Tinggi :</b> Ukuran tertinggi dari muatan</li></ul><p>Pengisian dimensi yang tepat akan membantu dalam pengelolaan dan pengiriman.</p>";
+```
+
+#### Step 3: Generate Translation Label
+
+Create a unique label for the minified content:
+
+- **Pattern**: `{ComponentName}.infoBottomsheet{Component}{Content}`
+- **Example**: `InformasiMuatanScreen.infoBottomsheetCargoTypeDimensions`
+
+#### Step 4: Translate the Minified HTML
+
+Translate the entire minified HTML string while preserving HTML tags:
+
+**Indonesian:**
+
+```html
+"
+<ul>
+  <li><b>Panjang :</b> Ukuran terpanjang dari muatan.</li>
+  <li><b>Lebar :</b> Ukuran terlebar dari muatan.</li>
+  <li><b>Tinggi :</b> Ukuran tertinggi dari muatan</li>
+</ul>
+<p>
+  Pengisian dimensi yang tepat akan membantu dalam pengelolaan dan pengiriman.
+</p>
+"
+```
+
+**English:**
+
+```html
+"
+<ul>
+  <li><b>Length:</b> The longest dimension of the cargo.</li>
+  <li><b>Width:</b> The widest dimension of the cargo.</li>
+  <li><b>Height:</b> The tallest dimension of the cargo</li>
+</ul>
+<p>Filling in the correct dimensions will help in management and shipping.</p>
+"
+```
+
+**Chinese:**
+
+```html
+"
+<ul>
+  <li><b>长度：</b> 货物的最长尺寸。</li>
+  <li><b>宽度：</b> 货物的最宽尺寸。</li>
+  <li><b>高度：</b> 货物的最高尺寸</li>
+</ul>
+<p>填写正确的尺寸将有助于管理和运输。</p>
+"
+```
+
+#### Step 5: Implement Translation
+
+Replace the InfoBottomsheet content with the `render` prop:
+
+**Before:**
+
+```jsx
+<InfoBottomsheet title="Tipe Muatan yang Akan Dikirimkan">
+  <ul>
+    <li>
+      <b>Panjang :</b> Ukuran terpanjang dari muatan.
+    </li>
+    <li>
+      <b>Lebar :</b> Ukuran terlebar dari muatan.
+    </li>
+    <li>
+      <b>Tinggi :</b> Ukuran tertinggi dari muatan
+    </li>
+  </ul>
+  <p>
+    Pengisian dimensi yang tepat akan membantu dalam pengelolaan dan pengiriman.
+  </p>
+</InfoBottomsheet>
+```
+
+**After:**
+
+```jsx
+<InfoBottomsheet
+  title={t(
+    "InformasiMuatanScreen.titleCargoTypeDimensions",
+    {},
+    "Tipe Muatan yang Akan Dikirimkan"
+  )}
+  render={t(
+    "InformasiMuatanScreen.infoBottomsheetCargoTypeDimensions",
+    {},
+    "<ul><li><b>Panjang :</b> Ukuran terpanjang dari muatan.</li><li><b>Lebar :</b> Ukuran terlebar dari muatan.</li><li><b>Tinggi :</b> Ukuran tertinggi dari muatan</li></ul><p>Pengisian dimensi yang tepat akan membantu dalam pengelolaan dan pengiriman.</p>"
+  )}
+/>
+```
+
+### 3.5. Special Handling: InfoTooltip Components
+
+When encountering `InfoTooltip` components with HTML content, follow these special steps:
+
+#### Step 1: Identify InfoTooltip Content
+
+Look for components like:
+
+```jsx
+<InfoTooltip className="w-[336px]" side="right">
+  <p>
+    Centang opsi ini jika pengiriman memerlukan pengelolaan rantai pasok yang
+    memastikan produk tetap sesuai prinsip halal, mulai dari transportasi hingga
+    penyimpanan
+  </p>
+</InfoTooltip>
+```
+
+#### Step 2: Minify HTML Content
+
+Convert the HTML content to a single minified string:
+
+**Before:**
+
+```jsx
+<InfoTooltip className="w-[336px]" side="right">
+  <p>
+    Centang opsi ini jika pengiriman memerlukan pengelolaan rantai pasok yang
+    memastikan produk tetap sesuai prinsip halal, mulai dari transportasi hingga
+    penyimpanan
+  </p>
+</InfoTooltip>
+```
+
+**After (Minified):**
+
+```jsx
+"<p>Centang opsi ini jika pengiriman memerlukan pengelolaan rantai pasok yang memastikan produk tetap sesuai prinsip halal, mulai dari transportasi hingga penyimpanan</p>";
+```
+
+#### Step 3: Generate Translation Label
+
+Create a unique label for the minified content:
+
+- **Pattern**: `{ComponentName}.infoTooltip{Component}{Content}`
+- **Example**: `InformasiMuatanScreen.infoTooltipHalalLogistics`
+
+#### Step 4: Translate the Minified HTML
+
+Translate the entire minified HTML string while preserving HTML tags:
+
+**Indonesian:**
+
+```html
+"
+<p>
+  Centang opsi ini jika pengiriman memerlukan pengelolaan rantai pasok yang
+  memastikan produk tetap sesuai prinsip halal, mulai dari transportasi hingga
+  penyimpanan
+</p>
+"
+```
+
+**English:**
+
+```html
+"
+<p>
+  Check this option if shipping requires supply chain management that ensures
+  products remain compliant with halal principles, from transportation to
+  storage
+</p>
+"
+```
+
+**Chinese:**
+
+```html
+"
+<p>如果运输需要确保产品从运输到储存都符合清真原则的供应链管理，请勾选此选项</p>
+"
+```
+
+#### Step 5: Implement Translation
+
+Replace the InfoTooltip content with the `render` prop:
+
+**Before:**
+
+```jsx
+<InfoTooltip className="w-[336px]" side="right">
+  <p>
+    Centang opsi ini jika pengiriman memerlukan pengelolaan rantai pasok yang
+    memastikan produk tetap sesuai prinsip halal, mulai dari transportasi hingga
+    penyimpanan
+  </p>
+</InfoTooltip>
+```
+
+**After:**
+
+```jsx
+<InfoTooltip
+  className="w-[336px]"
+  side="right"
+  render={t(
+    "InformasiMuatanScreen.infoTooltipHalalLogistics",
+    {},
+    "<p>Centang opsi ini jika pengiriman memerlukan pengelolaan rantai pasok yang memastikan produk tetap sesuai prinsip halal, mulai dari transportasi hingga penyimpanan</p>"
+  )}
+/>
+```
+
+## 4. Phase 3: Refactor the Code
+
+Modify the source code to implement the translations.
+
+### Import the Hook
+
+Add the `useTranslation` import statement at the top of the file.
+
+```javascript
+import { useTranslation } from "@/hooks/use-translation";
+```
+
+### Instantiate the Hook
+
+Call `useTranslation()` at the top of the component body to get the `t` function.
+
+```javascript
+const { t } = useTranslation();
+```
+
+### Replace the String
+
+Replace the original hardcoded string with a call to the `t()` function.
+
+**Structure**: `t("ComponentName.yourUniqueLabel", { dynamicKey: variable }, "Original Fallback Text")`
+
+- **Argument 1**: The unique label you generated (with component prefix)
+- **Argument 2**: An object with keys matching your placeholders and values pointing to the dynamic variables. Pass `null` or `{}` if there are no dynamic values
+- **Argument 3**: The original, untranslated string to use as a fallback
+
+## 5. Phase 4: Generate CSV Report
+
+After refactoring, generate a single CSV file that catalogues all translations.
+
+### CSV Column Format
+
+| Column                     | Description                                 |
+| -------------------------- | ------------------------------------------- |
+| `component_name`           | Name of the component being translated      |
+| `original_text_indonesian` | Original Indonesian text                    |
+| `english_translation`      | English translation                         |
+| `unique_label`             | The unique label/key used in `t()` function |
+| `chinese_translation`      | Chinese translation                         |
+
+## 6. Phase 5: Generate Separate Language Files
+
+After generating the CSV report, create separate JSON files for each language in the public directory.
+
+### File Locations and Structure
+
+- **Indonesian**: `public/mock-common-id.json`
+- **English**: `public/mock-common-en.json`
+- **Chinese**: `public/mock-common-cn.json`
+
+### File Generation Process
+
+1. **Read Existing Files**: If the language files already exist, read their current content
+2. **Merge New Translations**: Add new translation keys to the existing structure for each language
+3. **Maintain Structure**: Ensure each JSON file contains only the translations for that specific language
+4. **Update Files**: Write the merged content back to the respective language files
+
+### Example File Structures
+
+#### `public/mock-common-id.json` (Indonesian)
+
+```json
+{
+  "InformasiMuatanScreen.titleDetailPesanan": "Detail Pesanan",
+  "InformasiMuatanScreen.tabRingkasan": "Ringkasan",
+  "InformasiMuatanScreen.tabInformasiLainnya": "Informasi Lainnya",
+  "InformasiMuatanScreen.tabDetailPIC": "Detail PIC",
+  "InformasiMuatanScreen.titleCargoTypeDimensions": "Tipe Muatan yang Akan Dikirimkan",
+  "InformasiMuatanScreen.infoBottomsheetCargoTypeDimensions": "<ul><li><b>Panjang :</b> Ukuran terpanjang dari muatan.</li><li><b>Lebar :</b> Ukuran terlebar dari muatan.</li><li><b>Tinggi :</b> Ukuran tertinggi dari muatan</li></ul><p>Pengisian dimensi yang tepat akan membantu dalam pengelolaan dan pengiriman.</p>",
+  "InformasiMuatanScreen.infoTooltipHalalLogistics": "<p>Centang opsi ini jika pengiriman memerlukan pengelolaan rantai pasok yang memastikan produk tetap sesuai prinsip halal, mulai dari transportasi hingga penyimpanan</p>"
+}
+```
+
+#### `public/mock-common-en.json` (English)
+
+```json
+{
+  "InformasiMuatanScreen.titleDetailPesanan": "Order Details",
+  "InformasiMuatanScreen.tabRingkasan": "Summary",
+  "InformasiMuatanScreen.tabInformasiLainnya": "Other Information",
+  "InformasiMuatanScreen.tabDetailPIC": "PIC Details",
+  "InformasiMuatanScreen.titleCargoTypeDimensions": "Cargo Type to be Shipped",
+  "InformasiMuatanScreen.infoBottomsheetCargoTypeDimensions": "<ul><li><b>Length:</b> The longest dimension of the cargo.</li><li><b>Width:</b> The widest dimension of the cargo.</li><li><b>Height:</b> The tallest dimension of the cargo</li></ul><p>Filling in the correct dimensions will help in management and shipping.</p>",
+  "InformasiMuatanScreen.infoTooltipHalalLogistics": "<p>Check this option if shipping requires supply chain management that ensures products remain compliant with halal principles, from transportation to storage</p>"
+}
+```
+
+#### `public/mock-common-cn.json` (Chinese)
+
+```json
+{
+  "InformasiMuatanScreen.titleDetailPesanan": "订单详情",
+  "InformasiMuatanScreen.tabRingkasan": "摘要",
+  "InformasiMuatanScreen.tabInformasiLainnya": "其他信息",
+  "InformasiMuatanScreen.tabDetailPIC": "PIC详情",
+  "InformasiMuatanScreen.titleCargoTypeDimensions": "要运送的货物类型",
+  "InformasiMuatanScreen.infoBottomsheetCargoTypeDimensions": "<ul><li><b>长度：</b> 货物的最长尺寸。</li><li><b>宽度：</b> 货物的最宽尺寸。</li><li><b>高度：</b> 货物的最高尺寸</li></ul><p>填写正确的尺寸将有助于管理和运输。</p>",
+  "InformasiMuatanScreen.infoTooltipHalalLogistics": "<p>如果运输需要确保产品从运输到储存都符合清真原则的供应链管理，请勾选此选项</p>"
+}
+```
+
+### Merging Strategy
+
+When merging with existing translations:
+
+1. **Preserve Existing**: Keep all existing translation keys and values in each language file
+2. **Add New**: Add new translation keys to the respective language files
+3. **Avoid Duplicates**: Ensure no duplicate keys are created within each language file
+4. **Maintain Consistency**: Ensure all language files have the same keys (but different values)
+
+## 7. Complete Example Walkthrough
+
+### Before Translation: DetailPesananScreen.jsx
+
+```javascript
+import { useParams } from "next/navigation";
+
+const DetailPesananScreen = ({ dataStatusPesanan }) => {
+  const params = useParams();
+
+  return (
+    <FormResponsiveLayout
+      title={{
+        label: "Detail Pesanan",
+      }}
+    >
+      <div className="mb-16 space-y-2 bg-neutral-200">
+        <AlertMultilineResponsive items={orderAlerts} />
+        <OrderInfo dataStatusPesanan={dataStatusPesanan} />
+
+        <Tabs className="w-full bg-white" defaultValue={"ringkasan"}>
+          <TabsList className="w-full">
+            <TabsTriggerWithSeparator value="ringkasan">
+              Ringkasan
+            </TabsTriggerWithSeparator>
+            <TabsTriggerWithSeparator value="informasi-lainnya">
+              Informasi Lainnya
+            </TabsTriggerWithSeparator>
+            <TabsTriggerWithSeparator value="detail-pic" showSeparator={false}>
+              Detail PIC
+            </TabsTriggerWithSeparator>
+          </TabsList>
+        </Tabs>
+      </div>
+    </FormResponsiveLayout>
+  );
+};
+```
+
+### After Translation: DetailPesananScreen.jsx
+
+```javascript
+import { useParams } from "next/navigation";
+
+import { useTranslation } from "@/hooks/use-translation";
+
+const DetailPesananScreen = ({ dataStatusPesanan }) => {
+  const { t } = useTranslation();
+  const params = useParams();
+
+  return (
+    <FormResponsiveLayout
+      title={{
+        label: t(
+          "DetailPesananScreen.titleDetailPesanan",
+          {},
+          "Detail Pesanan"
+        ),
+      }}
+    >
+      <div className="mb-16 space-y-2 bg-neutral-200">
+        <AlertMultilineResponsive items={orderAlerts} />
+        <OrderInfo dataStatusPesanan={dataStatusPesanan} />
+
+        <Tabs className="w-full bg-white" defaultValue={"ringkasan"}>
+          <TabsList className="w-full">
+            <TabsTriggerWithSeparator value="ringkasan">
+              {t("DetailPesananScreen.tabRingkasan", {}, "Ringkasan")}
+            </TabsTriggerWithSeparator>
+            <TabsTriggerWithSeparator value="informasi-lainnya">
+              {t(
+                "DetailPesananScreen.tabInformasiLainnya",
+                {},
+                "Informasi Lainnya"
+              )}
+            </TabsTriggerWithSeparator>
+            <TabsTriggerWithSeparator value="detail-pic" showSeparator={false}>
+              {t("DetailPesananScreen.tabDetailPIC", {}, "Detail PIC")}
+            </TabsTriggerWithSeparator>
+          </TabsList>
+        </Tabs>
+      </div>
+    </FormResponsiveLayout>
+  );
+};
+```
+
+### Generated CSV Output
+
+```csv
+component_name,original_text_indonesian,english_translation,unique_label,chinese_translation
+DetailPesananScreen,Detail Pesanan,Order Details,DetailPesananScreen.titleDetailPesanan,订单详情
+DetailPesananScreen,Ringkasan,Summary,DetailPesananScreen.tabRingkasan,摘要
+DetailPesananScreen,Informasi Lainnya,Other Information,DetailPesananScreen.tabInformasiLainnya,其他信息
+DetailPesananScreen,Detail PIC,PIC Details,DetailPesananScreen.tabDetailPIC,PIC详情
+```
+
+### Generated Language Files
+
+#### `public/mock-common-id.json`
+
+```json
+{
+  "DetailPesananScreen.titleDetailPesanan": "Detail Pesanan",
+  "DetailPesananScreen.tabRingkasan": "Ringkasan",
+  "DetailPesananScreen.tabInformasiLainnya": "Informasi Lainnya",
+  "DetailPesananScreen.tabDetailPIC": "Detail PIC"
+}
+```
+
+#### `public/mock-common-en.json`
+
+```json
+{
+  "DetailPesananScreen.titleDetailPesanan": "Order Details",
+  "DetailPesananScreen.tabRingkasan": "Summary",
+  "DetailPesananScreen.tabInformasiLainnya": "Other Information",
+  "DetailPesananScreen.tabDetailPIC": "PIC Details"
+}
+```
+
+#### `public/mock-common-cn.json`
+
+```json
+{
+  "DetailPesananScreen.titleDetailPesanan": "订单详情",
+  "DetailPesananScreen.tabRingkasan": "摘要",
+  "DetailPesananScreen.tabInformasiLainnya": "其他信息",
+  "DetailPesananScreen.tabDetailPIC": "PIC详情"
+}
+```
+
+## 8. Checklist & Best Practices
+
+### Agent Checklist
+
+- [ ] Identify all hardcoded strings in the component
+- [ ] Generate a unique, context-aware label for each string with component prefix
+- [ ] Correctly identify and handle dynamic values with placeholders
+- [ ] Import and instantiate the `useTranslation` hook
+- [ ] Replace all hardcoded strings with `t()` function calls
+- [ ] Provide the original string as the fallback text
+- [ ] Generate a complete CSV with all required columns and accurate translations
+- [ ] Generate or update separate language files in the public directory
+- [ ] Merge new translations with existing ones in each language file
+- [ ] Ensure all language files have the same keys (but different values)
+- [ ] **Special: For InfoBottomsheet components, minify HTML content and translate as single string**
+- [ ] **Special: Use `render` prop for InfoBottomsheet content translation**
+- [ ] **Special: For InfoTooltip components, minify HTML content and translate as single string**
+- [ ] **Special: Use `render` prop for InfoTooltip content translation**
+
+### Best Practices
+
+- **Labels**: Use descriptive, hierarchical names that include component context and always prefix with component name
+- **Dynamic Values**: Use clear placeholder names (e.g., `{count}` instead of `{val}`)
+- **Implementation**: Always place `useTranslation()` at the top of the component with other hooks
+- **CSV**: Ensure component names are accurate for better organization and maintain consistent formatting
+- **Language Files**: Maintain separate files for each language in the public directory
+- **File Management**: Always read existing language files before adding new translations to avoid overwriting
+- **InfoBottomsheet**: Minify HTML content to single line, preserve HTML tags in translation, use `render` prop for implementation
+- **InfoTooltip**: Minify HTML content to single line, preserve HTML tags in translation, use `render` prop for implementation
