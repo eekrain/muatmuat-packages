@@ -1,9 +1,10 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { OrderTypeEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
 export const ArmadaOption = ({ title, description, iconType, onClick }) => {
   // Icon path based on type
   const iconPath =
-    iconType === "instant"
+    iconType === OrderTypeEnum.INSTANT
       ? "/icons/muattrans-instan.svg"
       : "/icons/muattrans-terjadwal32.svg";
 
