@@ -26,7 +26,7 @@ export default function DesktopLayout({ children }) {
       <HeaderWeb notifCounter={{ notification, chat }} />
       <div
         className={cn(
-          "relative min-h-[calc(100dvh-60px)] w-screen overflow-x-clip",
+          "relative min-h-[calc(100dvh-60px)]",
           isLoggedIn && "min-h-[calc(100dvh-92px)]"
         )}
       >
