@@ -7,6 +7,7 @@ export const DriverStatus = {
   IN_PROGRESS: "IN_PROGRESS",
   VERIFIED: "VERIFIED",
   REJECTED: "REJECTED",
+  DELETED: "DELETED",
 };
 
 export const DRIVER_STATUS_CONFIG = {
@@ -36,6 +37,10 @@ export const DRIVER_STATUS_CONFIG = {
   },
   [DriverStatus.REJECTED]: {
     label: "Verifikasi Ditolak",
+    variant: "error",
+  },
+  [DriverStatus.DELETED]: {
+    label: "Dihapus",
     variant: "error",
   },
 };
