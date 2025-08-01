@@ -1,11 +1,11 @@
 import useSWR from "swr";
 
-import { fetcherMuatrans, fetcherMuatransMock } from "@/lib/axios";
+import { fetcherMock, fetcherMuatrans } from "@/lib/axios";
 
 const isMockUploadFile = true;
 export const fetcherDropdownVehicle = async (url, { arg }) => {
   if (isMockUploadFile) {
-    const result = await fetcherMuatransMock.get(`/api/${url}`, arg ?? null);
+    const result = await fetcherMock.get(`/api/${url}`, arg ?? null);
     return result.data;
   }
   const result = await fetcherMuatrans.get(url, arg);
