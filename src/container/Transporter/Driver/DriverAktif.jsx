@@ -163,7 +163,9 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
             {row.driverStatus === "ON_DUTY" && row.pendingUpdateDriver && (
               <InfoTooltip
                 side="left"
-                appearance={{ iconClassName: "text-blue-700 mr-1" }}
+                appearance={{
+                  iconClassName: "text-primary-700 mr-1",
+                }}
               >
                 <p>
                   Driver sedang bertugas. Status akan diperbarui setelah pesanan

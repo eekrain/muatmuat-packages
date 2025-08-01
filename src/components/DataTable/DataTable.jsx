@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Search, X } from "lucide-react";
+import { X } from "lucide-react";
 
 import FilterDropdown from "@/components/FilterDropdown";
 import Input from "@/components/Form/Input";
@@ -164,7 +164,9 @@ const DataTable = ({
               onKeyUp={handleSearchKeyUp}
               disabled={isDisabled}
               icon={{
-                left: <Search className="h-4 w-4 text-neutral-500" />,
+                left: (
+                  <IconComponent src="/icons/datatable-search.svg" width={12} />
+                ),
                 right:
                   searchValue.length > 2 ? (
                     <button
