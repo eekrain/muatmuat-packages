@@ -6,7 +6,11 @@ import IconComponent from "../IconComponent/IconComponent";
 const BottomNavigationBar = () => {
   // kalo ada yg perlu custom bisa bantu pakek props, saya lagi malas :), nanti dapat pahala
   return (
-    <div className="fixed bottom-0 flex h-[103px] w-full justify-between">
+    // 25. 18 - Web - LB - 0283
+    <div
+      className="fixed bottom-0 flex h-[103px] w-full justify-between"
+      id="responsive-footer"
+    >
       <div className="relative flex h-[66px] w-full flex-row items-end justify-between self-end bg-transparent px-5 pb-[7px]">
         <Link
           className="absolute bottom-[39px] left-1/2 -translate-x-1/2 transform"

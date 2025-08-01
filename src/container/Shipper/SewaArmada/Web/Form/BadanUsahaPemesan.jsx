@@ -97,7 +97,8 @@ export const BadanUsahaPemesan = () => {
     <>
       <FormContainer>
         <FormLabel variant="small" optional>
-          Tipe Pemesan
+          {/* 25. 18 - Web - LB - 0001 */}
+          Badan Usaha Pemesan
         </FormLabel>
         <div className="flex flex-col gap-y-3">
           <div className="flex h-[16px] flex-row items-center gap-[4px]">
@@ -106,7 +107,8 @@ export const BadanUsahaPemesan = () => {
               onChange={({ checked }) =>
                 handleFirstTime(() => handleToggleCheckbox(checked))
               }
-              label="Centang jika kamu adalah suatu perusahaan/badan usaha"
+              // 25. 18 - Web - LB - 0001
+              label="Centang jika kamu merupakan suatu badan usaha/perusahan"
               checked={isBusinessEntity || isModalOpen}
               value="isBusinessEntity"
             />

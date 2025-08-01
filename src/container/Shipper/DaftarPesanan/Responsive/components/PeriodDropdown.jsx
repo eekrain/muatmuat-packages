@@ -68,27 +68,22 @@ const PeriodDropdown = ({ isOpen, setIsOpen, options, onChange }) => {
       <BottomSheetContent>
         <BottomSheetHeader>Pilih Periode</BottomSheetHeader>
         <div className="flex h-[380px] flex-col gap-y-4 overflow-y-auto px-4 py-6">
-          {options.map((item, key) => {
-            const isChecked =
-              (item.value === "" && !tempValue) ||
-              (tempValue && tempValue?.value === item.value);
-            return (
-              <div
-                className="flex w-full items-center justify-between border-b border-b-neutral-400 pb-4"
-                key={key}
-              >
-                <span className="text-sm font-semibold leading-[1.1] text-neutral-900">
-                  {item.name}
-                </span>
-                <RadioButton
-                  name={item.name}
-                  value={item.value}
-                  checked={tempValue === item.value}
-                  onClick={({ value }) => setTempValue(value)}
-                />
-              </div>
-            );
-          })}
+          {options.map((item, key) => (
+            <div
+              className="flex w-full items-center justify-between border-b border-b-neutral-400 pb-4"
+              key={key}
+            >
+              <span className="text-sm font-semibold leading-[1.1] text-neutral-900">
+                {item.name}
+              </span>
+              <RadioButton
+                name={item.name}
+                value={item.value}
+                checked={tempValue === item.value}
+                onClick={({ value }) => setTempValue(value)}
+              />
+            </div>
+          ))}
           <div className="flex w-full items-center justify-between">
             <span className="text-sm font-semibold leading-[1.1] text-neutral-900">
               Pilih Periode
