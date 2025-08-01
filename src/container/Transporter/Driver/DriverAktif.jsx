@@ -164,7 +164,7 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
               <InfoTooltip
                 side="left"
                 appearance={{
-                  iconClassName: "text-primary-700 mr-1",
+                  iconClassName: "text-primary-700 mr-1 size-3.5",
                 }}
               >
                 <p>

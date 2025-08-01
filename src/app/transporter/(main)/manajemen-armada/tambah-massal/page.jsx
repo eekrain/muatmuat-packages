@@ -1,3 +1,5 @@
+"use client";
+
 import PageTitle from "@/components/PageTitle/PageTitle";
 import {
   Tabs,
@@ -5,6 +7,7 @@ import {
   TabsList,
   TabsTriggerWithSeparator,
 } from "@/components/Tabs/Tabs";
+import { useGetFleetsDraftCheck } from "@/services/Transporter/manajemen-armada/getFleetsDraftCheck";
 
 import PopUpInformasi from "./components/PopUpInformasi";
 import Draft from "./components/Tabs/Draft/Draft";
@@ -12,6 +15,7 @@ import TambahArmadaMassal from "./components/Tabs/TambahArmadaMassal/TambahArmad
 import TambahExcel from "./components/Tabs/TambahExcel/TambahExcel";
 
 export default function TambahMassal() {
+  const { data } = useGetFleetsDraftCheck("/v1/fleet/drafts/check");
   return (
     <div className="my-6 max-h-screen w-full space-y-4 px-6 pb-20">
       {/* Header  */}
@@ -52,10 +56,12 @@ export default function TambahMassal() {
           <TambahExcel />
         </TabsContent>
         <TabsContent value="tambah_armada_massal" className="pt-4">
-          <TambahArmadaMassal isDraftAvailable={true} />
+          <TambahArmadaMassal
+            isDraftAvailable={data?.Data?.hasExistingDrafts}
+          />
         </TabsContent>
         <TabsContent value="draft" className="pt-4">
-          <Draft isDraftAvailable={true} />
+          <Draft isDraftAvailable={data?.Data?.hasExistingDrafts} />
         </TabsContent>
       </Tabs>
     </div>

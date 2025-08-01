@@ -1,3 +1,4 @@
+import { useParams } from "next/navigation";
 import { useState } from "react";
 
 import CardPayment from "@/components/Card/CardPayment";
@@ -8,23 +9,56 @@ import { useSWRHook } from "@/hooks/use-swr";
 import { fetcherPayment } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { idrFormat } from "@/lib/utils/formatters";
+import { useGetOverloadData } from "@/services/Shipper/detailpesanan/getOverloadData";
+import { useGetWaitingTime } from "@/services/Shipper/detailpesanan/getWaitingTime";
 
 export const RingkasanPembayaranTambahanBiaya = ({
   dataRingkasanPembayaran,
 }) => {
+  const params = useParams();
   // Fetch payment methods using SWR
   const { data: paymentMethodsData } = useSWRHook(
     "v1/payment/methods",
     fetcherPayment
   );
-
+  const { data: waitingTimeRaw } = useGetWaitingTime(params.orderId);
+  const { data: overloadData } = useGetOverloadData(params.orderId);
+  console.log(waitingTimeRaw, "tes");
   const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState(null);
+
+  // Transform waiting time data to match the expected structure
+  // const transformedWaitingTime = waitingTimeRaw?.map((item) => {
+  //   const waitingTimeHours = parseFloat(item.waitingTime);
+  //   const formattedWaitingTime = waitingTimeHours >= 1
+  //     ? `${waitingTimeHours} Jam`
+  //     : `${Math.round(waitingTimeHours * 60)} Menit`;
+
+  //   return {
+  //     name: item.name,
+  //     durasiTotal: formattedWaitingTime,
+  //     data: [
+  //       {
+  //         detail: `${item.locationType === 'PICKUP' ? 'Lokasi Muat' : 'Lokasi Bongkar'} ${item.locationSequence} : ${formattedWaitingTime}`,
+  //         startDate: item.startWaitingTime,
+  //         endDate: item.endWaitingTime,
+  //         totalPrice: item.waitingFee,
+  //       },
+  //     ],
+  //   };
+  // }) || [];
+
+  // Transform overload data to match the expected structure
+  // const transformedOverloadData = overloadData?.map((item) => ({
+  //   driverName: item.name,
+  //   amount: item.overloadFee,
+  //   overloadWeight: `${item.weight.toLocaleString("id-ID")} ${item.weightUnit}`,
+  // })) || [];
 
   const waitingFee = dataRingkasanPembayaran?.priceCharge?.waitingFee;
   const overloadFee = dataRingkasanPembayaran?.priceCharge?.overloadFee;
+  const totalCharge = dataRingkasanPembayaran?.priceCharge?.totalCharge;
   const adminFee = dataRingkasanPembayaran?.priceCharge?.adminFee;
   const taxAmount = dataRingkasanPembayaran?.priceCharge?.taxAmount;
-
   return (
     <div className="flex w-full flex-col gap-4">
       <CardPayment.Root className="flex w-full flex-col">
@@ -37,7 +71,7 @@ export const RingkasanPembayaranTambahanBiaya = ({
                 label={`Nominal Waktu Tunggu (${waitingFee.totalDriver} Driver)`}
                 value={idrFormat(waitingFee.totalAmount)}
               />
-              <ModalDetailWaktuTunggu />
+              <ModalDetailWaktuTunggu drivers={waitingTimeRaw} />
             </CardPayment.Section>
           )}
 
@@ -49,9 +83,7 @@ export const RingkasanPembayaranTambahanBiaya = ({
                 ).toLocaleString("id-ID")} ${overloadFee.weightUnit})`}
                 value={idrFormat(overloadFee.totalAmount)}
               />
-              <ModalDetailOverloadMuatan
-                dataRingkasanPembayaran={dataRingkasanPembayaran}
-              />
+              <ModalDetailOverloadMuatan drivers={overloadData} />
             </CardPayment.Section>
           )}
 
@@ -72,7 +104,7 @@ export const RingkasanPembayaranTambahanBiaya = ({
         <CardPayment.Footer className="mt-auto flex flex-col">
           <CardPayment.Total
             label="Total Tambahan Biaya"
-            value={idrFormat(250000)}
+            value={idrFormat(totalCharge || 0)}
           />
           {dataRingkasanPembayaran?.orderStatus ===
             OrderStatusEnum.WAITING_REPAYMENT_1 && (

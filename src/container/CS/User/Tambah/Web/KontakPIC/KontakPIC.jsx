@@ -8,6 +8,9 @@ import Button from "@/components/Button/Button";
 import Card from "@/components/Card/Card";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import Input from "@/components/Form/Input";
+import { toast } from "@/lib/toast";
+
+const phoneRegex = /^08[0-9]{8,11}$/;
 
 const kontakPICSchema = v.object({
   contacts: v.tuple([
@@ -17,7 +20,7 @@ const kontakPICSchema = v.object({
       phone: v.pipe(
         v.string(),
         v.minLength(1, "Nomor HP wajib diisi"),
-        v.regex(/^08[0-9]{8,11}$/, "Format nomor HP tidak valid")
+        v.regex(phoneRegex, "Format nomor HP tidak valid")
       ),
     }),
     v.optional(
@@ -25,10 +28,7 @@ const kontakPICSchema = v.object({
         name: v.optional(v.string()),
         position: v.optional(v.string()),
         phone: v.optional(
-          v.pipe(
-            v.string(),
-            v.regex(/^08[0-9]{8,11}$/, "Format nomor HP tidak valid")
-          )
+          v.string([v.regex(phoneRegex, "Format nomor HP tidak valid")])
         ),
       })
     ),
@@ -37,10 +37,7 @@ const kontakPICSchema = v.object({
         name: v.optional(v.string()),
         position: v.optional(v.string()),
         phone: v.optional(
-          v.pipe(
-            v.string(),
-            v.regex(/^08[0-9]{8,11}$/, "Format nomor HP tidak valid")
-          )
+          v.string([v.regex(phoneRegex, "Format nomor HP tidak valid")])
         ),
       })
     ),
@@ -52,24 +49,38 @@ function KontakPIC() {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm({
     resolver: valibotResolver(kontakPICSchema),
     defaultValues: {
       contacts: [
-        { name: "", position: "", phone: "", level: 1 }, // PIC 1 (required)
-        { name: "", position: "", phone: "", level: 2 }, // PIC 2 (optional)
-        { name: "", position: "", phone: "", level: 3 }, // PIC 3 (optional)
+        { name: "", position: "", phone: "", level: 1 },
+        { name: "", position: "", phone: "", level: 2 },
+        { name: "", position: "", phone: "", level: 3 },
       ],
     },
   });
 
+  const watched = watch();
+
   const onSubmit = (data) => {
-    // Handle form submission here
+    console.log("Form submitted:", data);
+  };
+
+  const onInvalid = () => {
+    const pic1 = watched.contacts?.[0];
+
+    const isAllEmpty =
+      !pic1?.name?.trim() && !pic1?.position?.trim() && !pic1?.phone?.trim();
+
+    if (isAllEmpty) {
+      toast.error("Wajib diisi semua");
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-full">
-      <Card className={"rounded-xl border-none p-6"}>
+    <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="w-full">
+      <Card className="rounded-xl border-none p-6">
         <div className="max-w-[75%]">
           <div>
             <h3 className="mb-6 text-lg font-semibold">Kontak PIC</h3>

@@ -35,37 +35,6 @@ const DetailRefundPesananWeb = () => {
 
   const { data: waitingTimeRaw } = useGetWaitingTime(params.orderId);
 
-  // Mapping ke format drivers untuk ModalDetailWaktuTunggu
-  const waitingTimeDrivers = (waitingTimeRaw || []).map((item) => {
-    // Helper function to safely convert date string to ISO string
-    const safeDateToISO = (dateString) => {
-      if (!dateString) return new Date().toISOString();
-      try {
-        const date = new Date(dateString);
-        return isNaN(date.getTime())
-          ? new Date().toISOString()
-          : date.toISOString();
-      } catch (error) {
-        return new Date().toISOString();
-      }
-    };
-
-    return {
-      name: item.name || "Driver",
-      durasiTotal: item.waitingTime
-        ? `${Math.floor(item.waitingTime / 60)} Jam ${item.waitingTime % 60} Menit`
-        : undefined,
-      data: [
-        {
-          detail: `Plat: ${item.licensePlate || "-"}`,
-          startDate: safeDateToISO(item.startWaitingTime),
-          endDate: safeDateToISO(item.endWaitingTime),
-          totalPrice: item.waitingFee || 0,
-        },
-      ],
-    };
-  });
-  console.log(waitingTimeRaw, "waitingtime");
   return (
     <div className="mx-auto max-w-[1200px] pt-8">
       {/* Breadcrumb */}
@@ -168,7 +137,7 @@ const DetailRefundPesananWeb = () => {
                       breakdown ? idrFormat(breakdown.waitingTimeFee) : "-"
                     }
                   />
-                  <ModalDetailWaktuTunggu drivers={waitingTimeDrivers} />
+                  <ModalDetailWaktuTunggu drivers={waitingTimeRaw} />
                 </div>
               </CardPayment.Section>
 

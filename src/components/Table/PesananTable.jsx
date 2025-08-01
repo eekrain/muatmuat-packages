@@ -389,7 +389,7 @@ const PesananTable = ({
                               ${
                                 order.loadTimeEnd
                                   ? ` s/d ${formatDate(order.loadTimeEnd)}`
-                                  : null
+                                  : ""
                               }`}
                             </span>
                           </td>

@@ -7,6 +7,7 @@ import { DimensionInput } from "@/components/Form/DimensionInput";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Select from "@/components/Select";
+import { cn } from "@/lib/utils";
 
 import FileUploadInput from "../../preview-armada/components/FileUploadInput";
 import ModalAddImage from "../../preview-armada/components/ModalAddImage/ModalAddImage";
@@ -379,7 +380,7 @@ const ArmadaTableRow = ({
         <Checkbox label="" checked={isSelected} onChange={onCheckboxChange} />
       </td>
 
-      <td className="flex gap-3 py-5">
+      <td className="flex items-center gap-3 py-5">
         <label
           onClick={() => onImageClick?.(index)}
           htmlFor={`foto-armada-${index}`}
@@ -388,7 +389,13 @@ const ArmadaTableRow = ({
             <img
               src={data.informasi_armada.images.image_armada_depan}
               alt="Foto Armada Depan"
-              className="w-12 shrink cursor-pointer rounded-lg object-cover"
+              className={cn(
+                "w-12 shrink cursor-pointer rounded-lg object-cover",
+                hasError("informasi_armada.images.image_armada_belakang") ||
+                  hasError("informasi_armada.images.image_armada_kiri") ||
+                  (hasError("informasi_armada.images.image_armada_depan") &&
+                    "border-error-400 hover:border-error-400")
+              )}
             />
           ) : (
             <div

@@ -1,3 +1,5 @@
+import { useParams } from "next/navigation";
+
 import Button from "@/components/Button/Button";
 import CardPayment from "@/components/Card/CardPayment";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -7,6 +9,8 @@ import { ModalDetailWaktuTunggu } from "@/components/Modal/ModalDetailWaktuTungg
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
+import { useGetOverloadData } from "@/services/Shipper/detailpesanan/getOverloadData";
+import { useGetWaitingTime } from "@/services/Shipper/detailpesanan/getWaitingTime";
 
 import { ModalDetailPengirimanDokumen } from "../RingkasanPembayaran/ModalDetailPengirimanDokumen";
 
@@ -19,6 +23,17 @@ export const ModalDetailPembayaran = ({
     dataRingkasanPembayaran?.orderStatus ===
       OrderStatusEnum.WAITING_PAYMENT_1 ||
     dataRingkasanPembayaran?.orderStatus?.startsWith("CANCELED");
+  const params = useParams();
+
+  const { data: waitingTimeRaw } = useGetWaitingTime(params.orderId);
+  const { data: overloadData } = useGetOverloadData(params.orderId);
+
+  // Transform waiting time data to match the expected structure
+  const waitingFee = dataRingkasanPembayaran?.priceCharge?.waitingFee;
+  const overloadFee = dataRingkasanPembayaran?.priceCharge?.overloadFee;
+  const totalCharge = dataRingkasanPembayaran?.priceCharge?.totalCharge;
+  const adminFee = dataRingkasanPembayaran?.priceCharge?.adminFee;
+  const taxAmount = dataRingkasanPembayaran?.priceCharge?.taxAmount;
 
   return (
     <Modal>
@@ -54,13 +69,14 @@ export const ModalDetailPembayaran = ({
                   valueClassName="flex items-center gap-2"
                   value={
                     <>
-                      <IconComponent
-                        src="/icons/payment/va_bca.svg"
-                        width={16}
-                        height={16}
-                        className="bg-white"
+                      <img
+                        src={dataRingkasanPembayaran?.paymentLogo}
+                        alt={dataRingkasanPembayaran?.paymentMethod}
+                        className="h-4 w-4 bg-white"
                       />
-                      <span>BCA Virtual Account</span>
+                      <span className="capsize">
+                        {dataRingkasanPembayaran?.paymentMethod}
+                      </span>
                     </>
                   }
                 />
@@ -91,7 +107,8 @@ export const ModalDetailPembayaran = ({
                     <CardPayment.LineItem
                       label="Nominal Kirim Bukti Fisik Penerimaan Barang"
                       value={idrFormat(
-                        dataRingkasanPembayaran?.documentShippingFee
+                        dataRingkasanPembayaran?.documentShippingDetail
+                          ?.totalPrice
                       )}
                     />
                     <ModalDetailPengirimanDokumen
@@ -136,7 +153,6 @@ export const ModalDetailPembayaran = ({
                   label="Waktu Pembayaran"
                   value={formatDate(dataRingkasanPembayaran?.expiredAt)}
                 />
-
                 <CardPayment.LineItem
                   label="Opsi Pembayaran"
                   valueClassName="flex items-center gap-2"
@@ -148,34 +164,38 @@ export const ModalDetailPembayaran = ({
                         height={16}
                         className="bg-white"
                       />
-                      <span>BCA Virtual Account</span>
+                      <span>{dataRingkasanPembayaran?.paymentMethod}</span>
                     </>
                   }
                 />
                 <CardPayment.Section title="Biaya Waktu Tunggu">
                   <div className="flex flex-col gap-1">
                     <CardPayment.LineItem
-                      label="Nominal Waktu Tunggu (1 Driver)"
-                      value={idrFormat(200000)}
+                      label={`Nominal Waktu Tunggu (${waitingFee.totalDriver} Driver)`}
+                      value={idrFormat(waitingFee.totalAmount)}
                     />
-                    <ModalDetailWaktuTunggu />
+                    <ModalDetailWaktuTunggu drivers={waitingTimeRaw} />
                   </div>
                 </CardPayment.Section>
                 <CardPayment.Section title="Biaya Overload Muatan">
                   <div className="flex flex-col gap-1">
                     <CardPayment.LineItem
-                      label="Nominal Overload Muatan (2.000 kg)"
-                      value={idrFormat(100000)}
+                      label={`Nominal Overload Muatan (${Number(
+                        overloadFee.totalWeight
+                      ).toLocaleString("id-ID")} ${overloadFee.weightUnit})`}
+                      value={idrFormat(overloadFee.totalAmount)}
                     />
-                    <ModalDetailOverloadMuatan
-                      dataRingkasanPembayaran={dataRingkasanPembayaran}
-                    />
+                    <ModalDetailOverloadMuatan drivers={overloadData} />
                   </div>
                 </CardPayment.Section>
                 <CardPayment.Section title="Biaya Lainnya">
                   <CardPayment.LineItem
                     label="Admin Layanan"
-                    value={idrFormat(10000)}
+                    value={idrFormat(dataRingkasanPembayaran?.adminFee)}
+                  />
+                  <CardPayment.LineItem
+                    label="Pajak"
+                    value={idrFormat(dataRingkasanPembayaran?.tax)}
                   />
                 </CardPayment.Section>
               </CardPayment.CollapsibleSection>
@@ -184,7 +204,9 @@ export const ModalDetailPembayaran = ({
               <CardPayment.Footer className="border-t border-neutral-400 px-0 pt-4 shadow-none">
                 <CardPayment.Total
                   label="Total"
-                  value={idrFormat(dataRingkasanPembayaran?.totalPrice)}
+                  value={idrFormat(
+                    dataRingkasanPembayaran?.totalPrice + totalCharge
+                  )}
                 />
               </CardPayment.Footer>
             </div>
