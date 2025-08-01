@@ -14,10 +14,14 @@ import Input from "@/components/Form/Input";
 import { Select } from "@/components/Form/Select";
 import SelectFilterRadix from "@/components/Form/SelectFilterRadix";
 import { MyTextArea } from "@/components/Form/TextArea";
-import { InputLocationManagementDropdown } from "@/components/LocationManagement/Web/InputLocationManagementDropdown/InputLocationManagementDropdown";
 import { MapContainer } from "@/components/MapContainer/MapContainer";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
-import { LocationProvider } from "@/hooks/use-location/use-location";
+import {
+  LocationProvider,
+  useLocationContext,
+} from "@/hooks/use-location/use-location";
+
+import { LocationDropdownInput } from "../../InputLocationDropdown/LocationDropdownInput";
 
 const informasiPendaftarSchema = v.object({
   transporterId: v.optional(v.string()),
@@ -124,6 +128,7 @@ function InformasiPendaftar() {
       locationData: {
         latitude: 7.2575,
         longitude: 112.7521,
+        location: "",
         district: "",
         city: "",
         province: "",
@@ -171,11 +176,9 @@ function InformasiPendaftar() {
     { label: "Bank CIMB Niaga", value: "cimb" },
   ];
 
-  console.log(errors);
-
   const onSubmit = (data) => {
-    console.log("Form data:", data);
     // Handle form submission here
+    console.log(data);
   };
 
   const handleLogoUpload = (file) => {
@@ -290,7 +293,7 @@ function InformasiPendaftar() {
 
                 <FormLabel required>Lokasi</FormLabel>
                 <div>
-                  <InputLocationManagementDropdown
+                  <LocationDropdownInput
                     markerIcon={""}
                     placeholder="Cari lokasi"
                     className="mb-4 w-full"
@@ -385,7 +388,7 @@ function InformasiPendaftar() {
                             <h3 className="mb-4 text-lg font-semibold">
                               Atur Pin Lokasi
                             </h3>
-                            <InputLocationManagementDropdown
+                            <LocationDropdownInput
                               placeholder="Cari lokasi"
                               markerIcon="/icons/marker-lokasi-muat.svg"
                               className="mb-4 w-full"
