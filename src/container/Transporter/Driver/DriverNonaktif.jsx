@@ -70,7 +70,7 @@ const DriverNonaktif = ({
       description: {
         text: (
           <>
-            Apakah Anda yakin ingin mengaktifkan driver{" "}
+            Apakah kamu yakin ingin mengaktifkan driver{" "}
             <span className="font-bold">{row.name}</span>?
           </>
         ),
@@ -92,7 +92,7 @@ const DriverNonaktif = ({
   const handleDeleteClick = (row) => {
     setConfirmationModalConfig({
       description: {
-        text: "Apakah Kamu yakin ingin menghapus driver ini?",
+        text: "Apakah kamu yakin ingin menghapus driver ini?",
       },
       confirm: {
         text: "Hapus",
