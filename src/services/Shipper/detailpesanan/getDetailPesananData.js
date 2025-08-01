@@ -1,3 +1,4 @@
+import { addMinutes } from "date-fns";
 import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
@@ -112,8 +113,17 @@ const priceCharge = {
     weightUnit: "kg",
   },
   adminFee: 10000,
-  totalCharge: 110000,
+  totalCharge: 0,
   isPaid: false,
+};
+
+const priceChange = {
+  additionalCost: 550000,
+  penaltyFee: 50000,
+  adminFee: 10000,
+  taxAmount: -6000,
+  totalAdjustment: 666000,
+  requiresPayment: true,
 };
 
 const otherStatus = [
@@ -149,9 +159,9 @@ const apiResultOrderDetail = {
         transporterOrderCode: "MT.25.AA.001",
         invoiceNumber: "INV/12345678",
         // orderStatus: OrderStatusEnum.LOADING,
-        orderStatus: OrderStatusEnum.DOCUMENT_DELIVERY,
+        orderStatus: OrderStatusEnum.WAITING_CONFIRMATION_CHANGES,
         orderTitle: "Proses Muat",
-        unitFleetStatus: 3,
+        unitFleetStatus: 1,
         orderType: OrderTypeEnum.INSTANT,
         createdAt: "2024-01-01T10:00:00Z",
         updatedAt: "2024-01-01T14:30:00Z",
@@ -225,7 +235,7 @@ const apiResultOrderDetail = {
         ],
         payment: {
           paymentMethod: "BCA Virtual Account",
-          paymentDueDateTime: "",
+          paymentDueDateTime: addMinutes(new Date(), 90).toISOString(),
           paymentLogo:
             "https://azlogistik.s3.ap-southeast-3.amazonaws.com/dev/file-1736740281046.webp",
         },
@@ -249,16 +259,7 @@ const apiResultOrderDetail = {
           },
           overloadFee: 100000,
         },
-
-        priceChange: {
-          additionalCost: 0,
-          penaltyFee: 0,
-          adminFee: 0,
-          taxAmount: 0,
-          totalAdjustment: 0,
-          requiresPayment: false,
-        },
-
+        priceChange,
         priceCharge,
       },
 

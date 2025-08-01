@@ -24,6 +24,13 @@ export const RingkasanPembayaranPerubahanPesanan = ({
 
   const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState(null);
 
+  const priceChange = dataRingkasanPembayaran?.priceChange;
+  const additionalCost = priceChange?.additionalCost;
+  const penaltyFee = priceChange?.penaltyFee;
+  const adminFee = priceChange?.adminFee;
+  const taxAmount = priceChange?.taxAmount;
+  const totalAdjustment = priceChange?.totalAdjustment;
+
   return (
     <div className="flex h-[453px] w-full flex-col gap-4">
       <CardPayment.Root className="flex w-full flex-col">
@@ -33,30 +40,30 @@ export const RingkasanPembayaranPerubahanPesanan = ({
           <CardPayment.Section title="Biaya Perubahan Rute">
             <CardPayment.LineItem
               label="Selisih Jarak Perubahan Lokasi Bongkar"
-              value={idrFormat(150000)}
+              value={idrFormat(additionalCost)}
             />
           </CardPayment.Section>
 
           <CardPayment.Section title="Biaya Administrasi">
             <CardPayment.LineItem
               label="Admin Ubah Pesanan"
-              value={idrFormat(50000)}
+              value={idrFormat(penaltyFee)}
             />
           </CardPayment.Section>
 
           <CardPayment.Section title="Biaya Lainnya">
             <CardPayment.LineItem
               label="Admin Layanan"
-              value={idrFormat(10000)}
+              value={idrFormat(adminFee)}
             />
-            <CardPayment.LineItem label="Pajak" value={idrFormat(10000)} />
+            <CardPayment.LineItem label="Pajak" value={idrFormat(taxAmount)} />
           </CardPayment.Section>
         </CardPayment.Body>
 
         <CardPayment.Footer className="mt-auto flex flex-col">
           <CardPayment.Total
-            label="Total Tambahan Biaya"
-            value={idrFormat(250000)}
+            label="Total Tambahan<br/>Biaya"
+            value={idrFormat(totalAdjustment)}
           />
           <ModalOpsiPembayaran
             paymentMethods={paymentMethodsData?.Data}

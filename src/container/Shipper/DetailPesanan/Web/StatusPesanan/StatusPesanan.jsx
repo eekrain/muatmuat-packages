@@ -16,7 +16,6 @@ import {
   AlertTypeEnum,
 } from "@/lib/constants/detailpesanan/alert.enum";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
-import { isDev } from "@/lib/constants/is-dev";
 import { getAlertMetadata } from "@/lib/normalizers/detailpesanan/getAlertMetadata";
 import { toast } from "@/lib/toast";
 
@@ -73,6 +72,7 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
         .filter((val) => Boolean(val)),
     ];
   }, [dataStatusPesanan?.alerts, isShowWaitFleetAlert, t]);
+  console.log("🚀 ~ orderAlerts ~ orderAlerts:", orderAlerts);
 
   return (
     <>
@@ -80,19 +80,23 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
         {dataStatusPesanan.orderStatus === OrderStatusEnum.PREPARE_FLEET && (
           <AlertPendingPrepareFleet
             orderStatus={statusOrder}
-            expiredAt={dataStatusPesanan.expiredAt}
+            paymentDueDateTime={dataStatusPesanan.paymentDueDateTime}
           />
         )}
 
         {dataStatusPesanan.orderStatus ===
           OrderStatusEnum.WAITING_PAYMENT_1 && (
           <AlertPendingPayment1
-            expiredAt={dataStatusPesanan.expiredAtFromOrderDetail}
+            paymentDueDateTime={
+              dataStatusPesanan.paymentDueDateTimeFromOrderDetail
+            }
           />
         )}
 
         {statusOrder === OrderStatusEnum.WAITING_PAYMENT_3 && (
-          <AlertPendingUpdatePayment expiredAt={dataStatusPesanan.expiredAt} />
+          <AlertPendingUpdatePayment
+            paymentDueDateTime={dataStatusPesanan.paymentDueDateTime}
+          />
         )}
 
         {/* Alert Buat Habis Update lokasi bongkar perlu konfirmasi */}
@@ -115,7 +119,7 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
                 }}
               />
               {/* Tombol konfirmasi hanya muncul jika status WAITING_CONFIRMATION_CHANGES */}
-              {isDev &&
+              {/* {isDev &&
                 statusOrder ===
                   OrderStatusEnum.WAITING_CONFIRMATION_CHANGES && (
                   <button
@@ -130,12 +134,11 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
                       ? t("buttonMemproses")
                       : t("buttonKonfirmasiPesanan")}
                   </button>
-                )}
+                )} */}
             </div>
 
             {/* Timeline Section */}
             {orderStatusSimulasi !== "CONFIRMED" &&
-            statusOrder !== OrderStatusEnum.WAITING_CONFIRMATION_CHANGES &&
             dataStatusPesanan.driverStatus?.length > 0 ? (
               <DriverStatusCard
                 driverStatus={dataStatusPesanan.driverStatus}

@@ -8,7 +8,7 @@ import RatingInput from "@/components/Form/RatingInput";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import TextArea from "@/components/TextArea/TextArea";
-import usePrevious from "@/hooks/use-previous";
+import { usePrevious } from "@/hooks/use-previous";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useSWRMutateHook } from "@/hooks/use-swr";
 import { toast } from "@/lib/toast";

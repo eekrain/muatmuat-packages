@@ -86,9 +86,13 @@ const DetailPesananScreen = ({
     >
       <div className="mb-16 space-y-2 bg-neutral-200">
         {WHITELIST_PREPARE_FLEET.includes(dataStatusPesanan?.orderStatus) ? (
-          <PendingPrepareFleetAlert expiredAt={dataStatusPesanan?.expiredAt} />
+          <PendingPrepareFleetAlert
+            paymentDueDateTime={dataStatusPesanan?.paymentDueDateTime}
+          />
         ) : WHITELIST_FLEET_FOUND.includes(dataStatusPesanan?.orderStatus) ? (
-          <PendingPaymentAlert expiredAt={dataRingkasanPembayaran?.expiredAt} />
+          <PendingPaymentAlert
+            paymentDueDateTime={dataRingkasanPembayaran?.expiredAt}
+          />
         ) : WHITELIST_PENDING_PAYMENT.includes(
             dataStatusPesanan?.orderStatus
           ) ? (

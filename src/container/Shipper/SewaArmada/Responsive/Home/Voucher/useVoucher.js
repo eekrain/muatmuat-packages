@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import usePrevious from "@/hooks/use-previous";
+import { usePrevious } from "@/hooks/use-previous";
 import { useTranslation } from "@/hooks/use-translation";
 import { useVouchers } from "@/hooks/useVoucher";
 import { toast } from "@/lib/toast";

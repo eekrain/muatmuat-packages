@@ -273,19 +273,22 @@ const validateNamaPIC = (namaPIC, formMode, isMobile) => {
 const validateNoHPPIC = (noHPPIC, formMode, isMobile) => {
   const wrongFormat =
     noHPPIC.split("")?.every((char) => char === noHPPIC[0]) ||
-    (!noHPPIC.startsWith("0") && !noHPPIC.startsWith("62")) ||
-    // Deteksi pola berurutan (1234567890, 0987654321)
-    /0123456789|1234567890|0987654321|9876543210/.test(noHPPIC) ||
-    // Deteksi pola berulang berlebihan (1111111111, 2222222222, dll)
-    /^(\d)\1{7,}$/.test(noHPPIC) ||
-    // Deteksi pola berulang 2 digit (1212121212, 1231231231)
-    /^(\d{2})\1{3,}$/.test(noHPPIC) ||
-    // Deteksi pola berulang 3 digit (1231231231)
-    /^(\d{3})\1{2,}$/.test(noHPPIC) ||
-    // Deteksi pola berulang 4 digit (1234123412)
-    /^(\d{4})\1{1,}$/.test(noHPPIC) ||
-    // Deteksi digit yang sama berurutan lebih dari 4 kali
-    /(\d)\1{4,}/.test(noHPPIC);
+    (!noHPPIC.startsWith("0") && !noHPPIC.startsWith("62"));
+
+  //Ojo ngarang bro, neng KO ne gak ngene
+  // // Deteksi pola berurutan (1234567890, 0987654321)
+  // /0123456789|1234567890|0987654321|9876543210/.test(noHPPIC) ||
+  // // Deteksi pola berulang berlebihan (1111111111, 2222222222, dll)
+  // /^(\d)\1{7,}$/.test(noHPPIC) ||
+  // // Deteksi pola berulang 2 digit (1212121212, 1231231231)
+  // /^(\d{2})\1{3,}$/.test(noHPPIC) ||
+  // // Deteksi pola berulang 3 digit (1231231231)
+  // /^(\d{3})\1{2,}$/.test(noHPPIC) ||
+  // // Deteksi pola berulang 4 digit (1234123412)
+  // /^(\d{4})\1{1,}$/.test(noHPPIC) ||
+  // // Deteksi digit yang sama berurutan lebih dari 4 kali
+  // /(\d)\1{4,}/.test(noHPPIC);
+
   if (isMobile) {
     if (!noHPPIC)
       return `No. HP PIC lokasi ${formMode === "muat" ? "muat" : "bongkar"} wajib diisi`;

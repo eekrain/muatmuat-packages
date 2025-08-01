@@ -1,9 +1,9 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useCountdown } from "@/hooks/use-countdown";
 
-export const AlertPendingUpdatePayment = ({ expiredAt }) => {
+export const AlertPendingUpdatePayment = ({ paymentDueDateTime }) => {
   const { countdown } = useCountdown({
-    endingDate: expiredAt,
+    endingDate: paymentDueDateTime,
     isNeedCountdown: true,
   });
 
