@@ -170,7 +170,7 @@ export const FooterDetailPesanan = ({
 
           {dataRingkasanPembayaran?.priceCharge && (
             <div className="flex items-center justify-between">
-              <div className="text-sm font-semibold">Total Biaya</div>
+              <div className="text-sm font-semibold">Total Tambahan Biaya</div>
               <div className="text-sm font-bold">
                 {idrFormat(dataRingkasanPembayaran?.priceCharge?.totalCharge)}
               </div>

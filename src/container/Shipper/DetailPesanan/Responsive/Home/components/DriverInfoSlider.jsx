@@ -133,12 +133,7 @@ const Avatar = ({ driver }) => (
   </div>
 );
 
-const Actions = ({
-  driver,
-  orderStatus,
-  onDriverContactClicked,
-  onLacakArmadaClicked,
-}) => {
+const Actions = ({ driver, onDriverContactClicked, onLacakArmadaClicked }) => {
   const navigation = useResponsiveNavigation();
   const LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER = [
     OrderStatusEnum.PREPARE_DOCUMENT,
@@ -151,7 +146,7 @@ const Actions = ({
   return (
     <div className="flex w-full gap-3">
       {driver.orderStatus?.startsWith("CANCELED") ||
-      LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER.includes(orderStatus) ? (
+      LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER.includes(driver.orderStatus) ? (
         <Button
           variant="muatparts-primary-secondary"
           onClick={() =>
@@ -269,7 +264,6 @@ export default function DriverInfoSlider({
                 <DriverInfo.Avatar driver={driver} />
                 <DriverInfo.Actions
                   driver={driver}
-                  orderStatus={orderStatus}
                   onDriverContactClicked={() =>
                     alert(`Contacting ${driver.name}`)
                   }
