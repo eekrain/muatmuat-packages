@@ -379,7 +379,7 @@ const ArmadaTableRow = ({
         <Checkbox label="" checked={isSelected} onChange={onCheckboxChange} />
       </td>
 
-      <td className="flex gap-3 py-5">
+      <td className="flex items-center gap-3 py-5">
         <label
           onClick={() => onImageClick?.(index)}
           htmlFor={`foto-armada-${index}`}
