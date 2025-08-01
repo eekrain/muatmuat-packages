@@ -6,10 +6,12 @@ import Button from "@/components/Button/Button";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
 import { useClientHeight } from "@/hooks/use-client-height";
+import { useTranslation } from "@/hooks/use-translation";
 import { useGetOrderStatusHistory } from "@/services/Shipper/detailpesanan/getOrderStatusHistory";
 import { useGetDriverStatusTimeline } from "@/services/Shipper/lacak-armada/getDriverStatusTimeline";
 
 const ModalDetailStatusDriver = () => {
+  const { t } = useTranslation();
   const params = useParams();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -30,12 +32,20 @@ const ModalDetailStatusDriver = () => {
     <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick>
       <ModalTrigger>
         <Button variant="muatparts-primary-secondary">
-          Detail Status Driver
+          {t(
+            "ModalDetailStatusDriver.buttonDetailStatusDriver",
+            {},
+            "Detail Status Driver"
+          )}
         </Button>
       </ModalTrigger>
       <ModalContent className="w-[800px] p-6" type="muatmuat">
         <h2 className="mb-3 text-center text-base font-bold leading-[19.2px] text-black">
-          Detail Status Driver
+          {t(
+            "ModalDetailStatusDriver.titleDetailStatusDriver",
+            {},
+            "Detail Status Driver"
+          )}
         </h2>
 
         <div

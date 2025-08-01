@@ -13,6 +13,7 @@ import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import DriverRatingModal from "@/container/Shipper/DetailPesanan/Web/DetailPesananHeader/DriverRatingModal";
 import { useSWRMutateHook } from "@/hooks/use-swr";
+import { useTranslation } from "@/hooks/use-translation";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -42,6 +43,7 @@ const DetailPesananHeader = ({
   dataRingkasanPembayaran,
   isShowWaitFleetAlert,
 }) => {
+  const { t } = useTranslation();
   const params = useParams();
   // Sample driver data
   // const drivers = [
@@ -98,7 +100,13 @@ const DetailPesananHeader = ({
         result?.data?.Message?.Code === 201 ||
         result?.Message?.Code === 201
       ) {
-        toast.success("Dokumen berhasil dikonfirmasi diterima");
+        toast.success(
+          t(
+            "DetailPesananHeader.toastDokumenBerhasil",
+            {},
+            "Dokumen berhasil dikonfirmasi diterima"
+          )
+        );
         setIsDocumentReceivedModalOpen(false);
         await autoComplete({});
 
@@ -109,7 +117,13 @@ const DetailPesananHeader = ({
       }
     } catch (error) {
       console.error("Error confirming document received:", error);
-      toast.error("Terjadi kesalahan saat mengkonfirmasi dokumen");
+      toast.error(
+        t(
+          "DetailPesananHeader.toastErrorKonfirmasi",
+          {},
+          "Terjadi kesalahan saat mengkonfirmasi dokumen"
+        )
+      );
     }
   };
 
@@ -128,13 +142,21 @@ const DetailPesananHeader = ({
 
   const unduhMenu = [
     {
-      label: "Unduh Bukti Pembayaran",
+      label: t(
+        "DetailPesananHeader.menuUnduhBuktiPembayaran",
+        {},
+        "Unduh Bukti Pembayaran"
+      ),
       onClick: () => {
         alert("Handle unduh bukti pembayaran");
       },
     },
     {
-      label: "Unduh Dokumen Delivery Order",
+      label: t(
+        "DetailPesananHeader.menuUnduhDokumenDeliveryOrder",
+        {},
+        "Unduh Dokumen Delivery Order"
+      ),
       onClick: () => {
         alert("Handle unduh dokumen delivery order");
       },
@@ -197,7 +219,13 @@ const DetailPesananHeader = ({
       <div className="my-6 flex items-center justify-between">
         <PageTitle className="mb-0">
           <div className="inline-flex items-center gap-1">
-            <span>Detail Pesanan</span>
+            <span>
+              {t(
+                "DetailPesananHeader.titleDetailPesanan",
+                {},
+                "Detail Pesanan"
+              )}
+            </span>
 
             <ModalInformasiSlider />
           </div>
@@ -212,7 +240,11 @@ const DetailPesananHeader = ({
                 className="h-8"
                 type="button"
               >
-                Detail Refund
+                {t(
+                  "DetailPesananHeader.buttonDetailRefund",
+                  {},
+                  "Detail Refund"
+                )}
               </Button>
             </Link>
           )}
@@ -234,7 +266,7 @@ const DetailPesananHeader = ({
                     iconClassName: "-mt-[4px] text-primary-700",
                   }}
                 >
-                  Unduh
+                  {t("DetailPesananHeader.buttonUnduh", {}, "Unduh")}
                 </Button>
               </SimpleDropdownTrigger>
 
@@ -266,7 +298,7 @@ const DetailPesananHeader = ({
               onClick={() => setIsReorderFleetModalOpen(true)}
               type="button"
             >
-              Pesan Ulang
+              {t("DetailPesananHeader.buttonPesanUlang", {}, "Pesan Ulang")}
             </Button>
           )}
           {showButtonConfig?.DokumenDiterima && (
@@ -276,7 +308,11 @@ const DetailPesananHeader = ({
               onClick={() => setIsDocumentReceivedModalOpen(true)}
               type="button"
             >
-              Dokumen Diterima
+              {t(
+                "DetailPesananHeader.buttonDokumenDiterima",
+                {},
+                "Dokumen Diterima"
+              )}
             </Button>
           )}
           {showButtonConfig?.BeriUlasan && (
@@ -286,7 +322,9 @@ const DetailPesananHeader = ({
               onClick={() => setIsDriverRatingModalOpen(true)}
               type="button"
             >
-              {areAllDriversReviewed ? "Lihat Ulasan" : "Beri Ulasan"}
+              {areAllDriversReviewed
+                ? t("DetailPesananHeader.buttonLihatUlasan", {}, "Lihat Ulasan")
+                : t("DetailPesananHeader.buttonBeriUlasan", {}, "Beri Ulasan")}
             </Button>
           )}
         </div>
@@ -297,19 +335,26 @@ const DetailPesananHeader = ({
         isOpen={isDocumentReceivedModalOpen}
         setIsOpen={setIsDocumentReceivedModalOpen}
         title={{
-          text: "Informasi",
+          text: t("DetailPesananHeader.modalTitleInformasi", {}, "Informasi"),
         }}
         description={{
-          // eslint-disable-next-line quotes
-          text: 'Klik "Sudah", jika kamu sudah menerima bukti dokumen untuk menyelesaikan pesanan.',
+          text: t(
+            "DetailPesananHeader.modalDescriptionDokumenDiterima",
+            {},
+            'Klik "Sudah", jika kamu sudah menerima bukti dokumen untuk menyelesaikan pesanan.'
+          ),
         }}
         cancel={{
-          text: "Belum",
+          text: t("DetailPesananHeader.modalButtonBelum", {}, "Belum"),
           disabled: isConfirmingDocument,
           classname: "bg-white text-primary-700 border-primary-700",
         }}
         confirm={{
-          text: "Sudah Menerima",
+          text: t(
+            "DetailPesananHeader.modalButtonSudahMenerima",
+            {},
+            "Sudah Menerima"
+          ),
           onClick: handleReceiveDocument,
           disabled: isConfirmingDocument,
           classname: "bg-primary-700 text-white hover:bg-primary-700",
@@ -321,15 +366,23 @@ const DetailPesananHeader = ({
         isOpen={isReorderFleetModalOpen}
         setIsOpen={setIsReorderFleetModalOpen}
         description={{
-          text: "Apakah kamu ingin menyalin pesanan ini untuk digunakan kembali atau membuat pesanan baru dengan detail yang berbeda?",
+          text: t(
+            "DetailPesananHeader.modalDescriptionPesanUlang",
+            {},
+            "Apakah kamu ingin menyalin pesanan ini untuk digunakan kembali atau membuat pesanan baru dengan detail yang berbeda?"
+          ),
           className: "leading-[16.8px]",
         }}
         cancel={{
-          text: "Pesan Baru",
+          text: t("DetailPesananHeader.modalButtonPesanBaru", {}, "Pesan Baru"),
           onClick: () => handleReorderFleet(),
         }}
         confirm={{
-          text: "Pesan Ulang",
+          text: t(
+            "DetailPesananHeader.modalButtonPesanUlang",
+            {},
+            "Pesan Ulang"
+          ),
           onClick: () => handleReorderFleet(params.orderId),
         }}
       />

@@ -3,10 +3,12 @@ import { useState } from "react";
 import { ChevronUp } from "lucide-react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 export const KeteranganStatusPesanan = ({ legendStatus }) => {
   const [isOpen, setIsOpen] = useState(true);
+  const { t } = useTranslation();
 
   if (!legendStatus?.stepperData?.length) return null;
 
@@ -20,7 +22,7 @@ export const KeteranganStatusPesanan = ({ legendStatus }) => {
         aria-controls="collapsible-legends"
       >
         <h3 className="font-bold text-neutral-900">
-          Keterangan Status Pesanan
+          {t("titleOrderStatusInfo")}
         </h3>
         <div className="flex-shrink-0">
           <ChevronUp
