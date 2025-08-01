@@ -16,6 +16,7 @@ import {
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { FleetSelectionModal } from "@/container/Transporter/Armada/FleetSelectionModal";
 import { ExpiredDocumentWarningModal } from "@/container/Transporter/Driver/DriverSelectionModal";
 import { getDriverStatusBadge } from "@/lib/utils/driverStatus";
@@ -39,6 +40,8 @@ const DriverNonaktif = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [showExpiredWarning, setShowExpiredWarning] = useState(false);
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+  const [confirmationModalConfig, setConfirmationModalConfig] = useState({});
 
   // Fetch drivers data with pagination, filters and status
   const { data, isLoading, mutate } = useGetNonActiveDriversData({
@@ -60,6 +63,48 @@ const DriverNonaktif = ({
         {statusConfig.label}
       </BadgeStatus>
     );
+  };
+
+  const handleActivateClick = (row) => {
+    setConfirmationModalConfig({
+      description: {
+        text: (
+          <>
+            Apakah Anda yakin ingin mengaktifkan driver{" "}
+            <span className="font-bold">{row.name}</span>?
+          </>
+        ),
+      },
+      confirm: {
+        text: "Aktifkan",
+        onClick: () => {
+          // Add activate logic here
+          console.log("Driver activated:", row.id);
+          setIsConfirmationModalOpen(false);
+        },
+        classname: "font-bold",
+      },
+      cancel: { text: "Batal" },
+    });
+    setIsConfirmationModalOpen(true);
+  };
+
+  const handleDeleteClick = (row) => {
+    setConfirmationModalConfig({
+      description: {
+        text: "Apakah Kamu yakin ingin menghapus driver ini?",
+      },
+      confirm: {
+        text: "Hapus",
+        onClick: () => {
+          // Add delete logic here
+          console.log("Driver deleted:", row.id);
+          setIsConfirmationModalOpen(false);
+        },
+      },
+      cancel: { text: "Batal" },
+    });
+    setIsConfirmationModalOpen(true);
   };
 
   const columns = [
@@ -190,9 +235,14 @@ const DriverNonaktif = ({
 
           <SimpleDropdownContent className="w-[133px]" align="end">
             {row.driverStatus === "NON_ACTIVE" && (
-              <SimpleDropdownItem onClick={() => {}}>
-                Lihat Agenda Driver
-              </SimpleDropdownItem>
+              <>
+                <SimpleDropdownItem onClick={() => {}}>
+                  Lihat Agenda Driver
+                </SimpleDropdownItem>
+                <SimpleDropdownItem onClick={() => handleActivateClick(row)}>
+                  Aktifkan
+                </SimpleDropdownItem>
+              </>
             )}
             <SimpleDropdownItem
               onClick={() =>
@@ -206,16 +256,11 @@ const DriverNonaktif = ({
                 <SimpleDropdownItem onClick={() => {}}>Ubah</SimpleDropdownItem>
                 <SimpleDropdownItem
                   className="text-error-400"
-                  onClick={() => {}}
+                  onClick={() => handleDeleteClick(row)}
                 >
                   Hapus
                 </SimpleDropdownItem>
               </>
-            )}
-            {row.driverStatus === "NON_ACTIVE" && (
-              <SimpleDropdownItem onClick={() => {}}>
-                Aktifkan
-              </SimpleDropdownItem>
             )}
           </SimpleDropdownContent>
         </SimpleDropdown>
@@ -283,7 +328,6 @@ const DriverNonaktif = ({
   const handleStatusChange = (status) => {
     // Status clicked
     setSelectedStatus(status);
-    setCurrentPage(1); // Reset to first page when changing status
     onStatusChange?.(status);
     // New status set
   };
@@ -311,23 +355,23 @@ const DriverNonaktif = ({
       }
     };
 
-    // Don't add "Semua" here since DisplayOptionsBar will add it
     const statusOptions = data.dataFilter.driverStatus.map((item) => {
       const count = getCountFromSummary(item.id);
       return {
         value: item.id,
         label: item.value,
-        count: count, // Always use static count from summary
+        count: count,
         hasNotification: item.id === "NOT_PAIRED" && count > 0,
       };
     });
 
     // Status options with summary counts
+
     return {
       statusOptions,
       currentStatus: selectedStatus,
       onStatusChange: handleStatusChange,
-      totalCount: data?.summary?.total || 0, // Always use total from summary
+      totalCount: count || 0,
     };
   };
 
@@ -371,9 +415,7 @@ const DriverNonaktif = ({
           totalCountLabel="Driver"
           currentPage={data?.pagination?.page || currentPage}
           totalPages={data?.pagination?.totalPages || 1}
-          totalItems={
-            data?.pagination?.totalItems || data?.drivers?.length || 0
-          }
+          totalItems={count || 0}
           perPage={data?.pagination?.limit || perPage}
           onPageChange={handlePageChange}
           onPerPageChange={handlePerPageChange}
@@ -402,6 +444,14 @@ const DriverNonaktif = ({
       {showExpiredWarning && (
         <ExpiredDocumentWarningModal
           onClose={() => setShowExpiredWarning(false)}
+        />
+      )}
+
+      {isConfirmationModalOpen && (
+        <ConfirmationModal
+          isOpen={isConfirmationModalOpen}
+          setIsOpen={setIsConfirmationModalOpen}
+          {...confirmationModalConfig}
         />
       )}
     </>
