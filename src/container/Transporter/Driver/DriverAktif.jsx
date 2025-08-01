@@ -26,6 +26,7 @@ import { getPhoneNumberStatus } from "@/lib/utils/phoneNumberStatus";
 import { useGetDriverDelegationPopupPreference } from "@/services/Transporter/driver-delegation/getPopupPreference";
 import { useUpdateDriverDelegationStatus } from "@/services/Transporter/driver-delegation/updateDelegationStatus";
 import { unlinkDriver } from "@/services/Transporter/manajemen-armada/unlinkDriver";
+import { deleteDriver } from "@/services/Transporter/manajemen-driver/deleteDriver";
 import { useGetActiveDriversData } from "@/services/Transporter/manajemen-driver/getActiveDriversData";
 
 const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
@@ -33,7 +34,7 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
   const [searchValue, setSearchValue] = useState("");
   const [filters, setFilters] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,6 +42,7 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
   const [confirmUnlinkDriver, setConfirmUnlinkDriver] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [nonaktifkanDriver, setNonaktifkanDriver] = useState(false);
+  const [confirmDeleteDriver, setConfirmDeleteDriver] = useState(false);
 
   // 2. Add state to track which dropdown is open, using the row ID as the key
   const [openDropdowns, setOpenDropdowns] = useState({});
@@ -221,6 +223,15 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
             >
               Detail
             </SimpleDropdownItem>
+            <SimpleDropdownItem
+              onClick={() => {
+                setSelectedDriver(row);
+                setConfirmDeleteDriver(true);
+              }}
+              className="text-red-600 hover:text-red-700"
+            >
+              Hapus
+            </SimpleDropdownItem>
           </SimpleDropdownContent>
         </SimpleDropdown>
       ),
@@ -284,8 +295,8 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
     onPerPageChange?.(limit);
   };
 
-  const handleSort = (key, direction) => {
-    setSortConfig({ key, direction });
+  const handleSort = (sort, order) => {
+    setSortConfig({ sort, order });
   };
 
   const rowClassName = (row) => {
@@ -375,6 +386,22 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
     }
   };
 
+  const handleDeleteDriver = async () => {
+    setIsUpdating(true);
+    try {
+      await deleteDriver(selectedDriver?.id);
+      toast.success("Berhasil menghapus driver");
+      setConfirmDeleteDriver(false);
+      setSelectedDriver(null);
+      mutate();
+    } catch (error) {
+      console.error("Failed to delete driver:", error);
+      toast.error("Gagal menghapus driver. Silakan coba lagi.");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   return (
     <>
       <div className="h-[calc(100vh-300px)]">
@@ -457,6 +484,31 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
           text: "Tidak",
           onClick: () => {
             setNonaktifkanDriver(false);
+          },
+        }}
+      />
+
+      <ConfirmationModal
+        isOpen={confirmDeleteDriver}
+        setIsOpen={setConfirmDeleteDriver}
+        description={{
+          text: (
+            <p className="text-center">
+              Apakah kamu yakin ingin menghapus driver{" "}
+              <b>{selectedDriver?.name}</b>?
+            </p>
+          ),
+        }}
+        confirm={{
+          text: "Ya",
+          onClick: () => {
+            handleDeleteDriver();
+          },
+        }}
+        cancel={{
+          text: "Tidak",
+          onClick: () => {
+            setConfirmDeleteDriver(false);
           },
         }}
       />

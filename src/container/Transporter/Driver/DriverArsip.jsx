@@ -137,8 +137,8 @@ const DriverArsip = ({
     onPerPageChange?.(limit);
   };
 
-  const handleSort = (sorr, order) => {
-    setSortConfig({ sorr, order });
+  const handleSort = (sort, order) => {
+    setSortConfig({ sort, order });
   };
 
   // Prepare display options for status filter

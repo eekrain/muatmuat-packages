@@ -1,9 +1,10 @@
 import { useState } from "react";
 
-import { ArrowDown, ArrowUp, ArrowUpDown, Search, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 import FilterDropdown from "@/components/FilterDropdown";
 import Input from "@/components/Form/Input";
+import IconComponent from "@/components/IconComponent/IconComponent";
 import { cn } from "@/lib/utils";
 
 import ActiveFiltersBar from "../ActiveFiltersBar/ActiveFiltersBar";
@@ -44,7 +45,7 @@ const DataTable = ({
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [selectedFilters, setSelectedFilters] = useState({});
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
 
   const handleSearch = (value) => {
     setSearchValue(value);
@@ -116,31 +117,31 @@ const DataTable = ({
     onFilter?.({});
   };
 
-  const handleSort = (key) => {
+  const handleSort = (sort) => {
     if (!onSort) return;
 
-    let newDirection = null;
-    let newKey = key;
+    let newOrder = null;
+    let newSort = sort;
 
-    if (sortConfig.key === key) {
+    if (sortConfig.sort === sort) {
       // Same column: cycle through asc → desc → null
-      if (sortConfig.direction === "asc") {
-        newDirection = "desc";
-      } else if (sortConfig.direction === "desc") {
-        newDirection = null;
-        newKey = null;
+      if (sortConfig.order === "asc") {
+        newOrder = "desc";
+      } else if (sortConfig.order === "desc") {
+        newOrder = null;
+        newSort = null;
       } else {
-        newDirection = "asc";
+        newOrder = "asc";
       }
     } else {
       // Different column: start with asc
-      newDirection = "asc";
+      newOrder = "asc";
     }
 
-    setSortConfig({ key: newKey, direction: newDirection });
+    setSortConfig({ sort: newSort, order: newOrder });
 
-    if (newDirection) {
-      onSort(newKey, newDirection);
+    if (newOrder) {
+      onSort(newSort, newOrder);
     } else {
       // Notify parent that sorting is cleared
       onSort(null, null);
@@ -216,7 +217,7 @@ const DataTable = ({
               {columns.map((column, index) => {
                 const isSortable =
                   column.sortable !== false && column.key && onSort;
-                const isSorted = sortConfig.key === column.key;
+                const isSorted = sortConfig.sort === column.key;
 
                 return (
                   <th
@@ -230,18 +231,22 @@ const DataTable = ({
                     style={column.width ? { width: column.width } : {}}
                     onClick={() => isSortable && handleSort(column.key)}
                   >
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-3">
                       <span>{column.header}</span>
                       {isSortable && (
-                        <div className="ml-1">
-                          {!isSorted ? (
-                            <ArrowUpDown className="h-3 w-3 text-neutral-400" />
-                          ) : sortConfig.direction === "asc" ? (
-                            <ArrowUp className="h-3 w-3 text-primary-700" />
-                          ) : (
-                            <ArrowDown className="h-3 w-3 text-primary-700" />
-                          )}
-                        </div>
+                        <IconComponent
+                          src={
+                            !isSorted
+                              ? "/icons/default-sort.svg"
+                              : sortConfig.order === "asc"
+                                ? "/icons/asc-sort.svg"
+                                : "/icons/desc-sort.svg"
+                          }
+                          height={13}
+                          className={
+                            !isSorted ? "text-neutral-400" : "text-primary-700"
+                          }
+                        />
                       )}
                     </div>
                   </th>
