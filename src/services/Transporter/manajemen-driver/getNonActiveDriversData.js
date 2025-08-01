@@ -12,102 +12,102 @@ const apiResultNonActiveDrivers = {
     },
     Data: {
       drivers: [
-        // {
-        //   id: "550e8400-e29b-41d4-a716-446655440000",
-        //   name: "Jane Smith Driver",
-        //   phoneNumber: "081987654321",
-        //   profileImage:
-        //     "/img/mock-armada/96f3e307242fe2a40610399e1d9d7a279944c89c.jpg",
-        //   driverStatus: "NOT_PAIRED",
-        //   verificationStatus: "VERIFIED",
-        //   fleet: null,
-        //   lastActive: "2025-01-15T10:30:00Z",
-        //   inactiveReason: "Cuti",
-        //   createdAt: "2025-01-15T10:30:00Z",
-        // },
-        // {
-        //   id: "550e8400-e29b-41d4-a716-446655440001",
-        //   name: "Ahmad Rizky",
-        //   phoneNumber: "081234567890",
-        //   profileImage:
-        //     "/img/mock-armada/047379f720d4d796e68d0fd7a289a30bd4d2e0ac.jpg",
-        //   driverStatus: "NON_ACTIVE",
-        //   verificationStatus: "NOT_VERIFIED",
-        //   fleet: {
-        //     id: "660e8400-e29b-41d4-a716-446655440000",
-        //     licensePlate: "B 1234 ABC",
-        //     truckType: {
-        //       id: "770e8400-e29b-41d4-a716-446655440000",
-        //       name: "CDD Box",
-        //       carrierTruck: {
-        //         name: "Box",
-        //       },
-        //     },
-        //   },
-        //   lastActive: "2025-01-10T08:20:00Z",
-        //   inactiveReason: "Sakit",
-        //   createdAt: "2024-12-01T10:30:00Z",
-        //   warningDocumentExpired: true,
-        // },
-        // {
-        //   id: "550e8400-e29b-41d4-a716-446655440002",
-        //   name: "Budi Santoso",
-        //   phoneNumber: "081555666777",
-        //   profileImage:
-        //     "/img/mock-armada/d6869c8f3993048b066679deb82fe2198af78db3.jpg",
-        //   driverStatus: "NOT_PAIRED",
-        //   verificationStatus: "VERIFIED",
-        //   fleet: null,
-        //   lastActive: "2025-01-05T14:15:00Z",
-        //   inactiveReason: null,
-        //   createdAt: "2024-11-15T09:00:00Z",
-        // },
-        // {
-        //   id: "550e8400-e29b-41d4-a716-446655440003",
-        //   name: "Dedi Kurniawan",
-        //   phoneNumber: "081999888777",
-        //   profileImage: "/img/mock-armada/driver.png",
-        //   driverStatus: "NON_ACTIVE",
-        //   verificationStatus: "VERIFIED",
-        //   fleet: {
-        //     id: "660e8400-e29b-41d4-a716-446655440001",
-        //     licensePlate: "B 5678 DEF",
-        //     truckType: {
-        //       id: "770e8400-e29b-41d4-a716-446655440001",
-        //       name: "CDE Box",
-        //       carrierTruck: {
-        //         name: "Box",
-        //       },
-        //     },
-        //   },
-        //   lastActive: "2024-12-20T16:30:00Z",
-        //   inactiveReason: "Resign",
-        //   createdAt: "2024-10-01T10:00:00Z",
-        //   pendingUpdateDriver: true,
-        // },
-        // {
-        //   id: "550e8400-e29b-41d4-a716-446655440004",
-        //   name: "Eko Prasetyo",
-        //   phoneNumber: "081777888999",
-        //   profileImage:
-        //     "/img/mock-armada/96f3e307242fe2a40610399e1d9d7a279944c89c.jpg",
-        //   driverStatus: "NOT_PAIRED",
-        //   verificationStatus: "NOT_VERIFIED",
-        //   fleet: {
-        //     id: "660e8400-e29b-41d4-a716-446655440002",
-        //     licensePlate: "B 9012 GHI",
-        //     truckType: {
-        //       id: "770e8400-e29b-41d4-a716-446655440002",
-        //       name: "Tronton",
-        //       carrierTruck: {
-        //         name: "Flatbed",
-        //       },
-        //     },
-        //   },
-        //   lastActive: "2025-01-01T09:45:00Z",
-        //   inactiveReason: "Izin",
-        //   createdAt: "2024-09-15T11:30:00Z",
-        // },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440000",
+          name: "Jane Smith Driver",
+          phoneNumber: "081987654321",
+          profileImage:
+            "/img/mock-armada/96f3e307242fe2a40610399e1d9d7a279944c89c.jpg",
+          driverStatus: "NOT_PAIRED",
+          verificationStatus: "VERIFIED",
+          fleet: null,
+          lastActive: "2025-01-15T10:30:00Z",
+          inactiveReason: "Cuti",
+          createdAt: "2025-01-15T10:30:00Z",
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440001",
+          name: "Ahmad Rizky",
+          phoneNumber: "081234567890",
+          profileImage:
+            "/img/mock-armada/047379f720d4d796e68d0fd7a289a30bd4d2e0ac.jpg",
+          driverStatus: "NON_ACTIVE",
+          verificationStatus: "NOT_VERIFIED",
+          fleet: {
+            id: "660e8400-e29b-41d4-a716-446655440000",
+            licensePlate: "B 1234 ABC",
+            truckType: {
+              id: "770e8400-e29b-41d4-a716-446655440000",
+              name: "CDD Box",
+              carrierTruck: {
+                name: "Box",
+              },
+            },
+          },
+          lastActive: "2025-01-10T08:20:00Z",
+          inactiveReason: "Sakit",
+          createdAt: "2024-12-01T10:30:00Z",
+          warningDocumentExpired: true,
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440002",
+          name: "Budi Santoso",
+          phoneNumber: "081555666777",
+          profileImage:
+            "/img/mock-armada/d6869c8f3993048b066679deb82fe2198af78db3.jpg",
+          driverStatus: "NOT_PAIRED",
+          verificationStatus: "VERIFIED",
+          fleet: null,
+          lastActive: "2025-01-05T14:15:00Z",
+          inactiveReason: null,
+          createdAt: "2024-11-15T09:00:00Z",
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440003",
+          name: "Dedi Kurniawan",
+          phoneNumber: "081999888777",
+          profileImage: "/img/mock-armada/driver.png",
+          driverStatus: "NON_ACTIVE",
+          verificationStatus: "VERIFIED",
+          fleet: {
+            id: "660e8400-e29b-41d4-a716-446655440001",
+            licensePlate: "B 5678 DEF",
+            truckType: {
+              id: "770e8400-e29b-41d4-a716-446655440001",
+              name: "CDE Box",
+              carrierTruck: {
+                name: "Box",
+              },
+            },
+          },
+          lastActive: "2024-12-20T16:30:00Z",
+          inactiveReason: "Resign",
+          createdAt: "2024-10-01T10:00:00Z",
+          pendingUpdateDriver: true,
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440004",
+          name: "Eko Prasetyo",
+          phoneNumber: "081777888999",
+          profileImage:
+            "/img/mock-armada/96f3e307242fe2a40610399e1d9d7a279944c89c.jpg",
+          driverStatus: "NOT_PAIRED",
+          verificationStatus: "NOT_VERIFIED",
+          fleet: {
+            id: "660e8400-e29b-41d4-a716-446655440002",
+            licensePlate: "B 9012 GHI",
+            truckType: {
+              id: "770e8400-e29b-41d4-a716-446655440002",
+              name: "Tronton",
+              carrierTruck: {
+                name: "Flatbed",
+              },
+            },
+          },
+          lastActive: "2025-01-01T09:45:00Z",
+          inactiveReason: "Izin",
+          createdAt: "2024-09-15T11:30:00Z",
+        },
       ],
       pagination: {
         currentPage: 1,
@@ -118,9 +118,9 @@ const apiResultNonActiveDrivers = {
         hasPreviousPage: false,
       },
       summary: {
-        total: 0,
-        unassigned: 0,
-        inactive: 0,
+        total: 5,
+        unassigned: 3,
+        inactive: 2,
       },
       dataFilter: {
         truckType: [
@@ -158,7 +158,32 @@ export const fetcherNonActiveDrivers = async (cacheKey) => {
 
   if (isMockNonActiveDrivers) {
     const result = apiResultNonActiveDrivers;
-    return result.data.Data;
+
+    // Parse query parameters for filtering
+    const urlParams = new URLSearchParams(queryString);
+    const statusFilter = urlParams.get("status");
+
+    let filteredDrivers = result.data.Data.drivers;
+
+    // Apply status filter if provided
+    if (statusFilter && statusFilter !== "null") {
+      filteredDrivers = result.data.Data.drivers.filter(
+        (driver) => driver.driverStatus === statusFilter
+      );
+    }
+
+    // Keep original summary counts static (don't change based on filter)
+    const originalSummary = result.data.Data.summary;
+
+    return {
+      ...result.data.Data,
+      drivers: filteredDrivers,
+      summary: originalSummary, // Keep original counts
+      pagination: {
+        ...result.data.Data.pagination,
+        totalItems: filteredDrivers.length, // Only this changes based on filter
+      },
+    };
   }
 
   const result = await fetcherMuatrans.get(url);

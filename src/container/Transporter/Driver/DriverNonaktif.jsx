@@ -283,6 +283,7 @@ const DriverNonaktif = ({
   const handleStatusChange = (status) => {
     // Status clicked
     setSelectedStatus(status);
+    setCurrentPage(1); // Reset to first page when changing status
     onStatusChange?.(status);
     // New status set
   };
@@ -310,23 +311,23 @@ const DriverNonaktif = ({
       }
     };
 
+    // Don't add "Semua" here since DisplayOptionsBar will add it
     const statusOptions = data.dataFilter.driverStatus.map((item) => {
       const count = getCountFromSummary(item.id);
       return {
         value: item.id,
         label: item.value,
-        count: count,
+        count: count, // Always use static count from summary
         hasNotification: item.id === "NOT_PAIRED" && count > 0,
       };
     });
 
     // Status options with summary counts
-
     return {
       statusOptions,
       currentStatus: selectedStatus,
       onStatusChange: handleStatusChange,
-      totalCount: count || 0,
+      totalCount: data?.summary?.total || 0, // Always use total from summary
     };
   };
 
@@ -370,7 +371,9 @@ const DriverNonaktif = ({
           totalCountLabel="Driver"
           currentPage={data?.pagination?.page || currentPage}
           totalPages={data?.pagination?.totalPages || 1}
-          totalItems={count || 0}
+          totalItems={
+            data?.pagination?.totalItems || data?.drivers?.length || 0
+          }
           perPage={data?.pagination?.limit || perPage}
           onPageChange={handlePageChange}
           onPerPageChange={handlePerPageChange}
