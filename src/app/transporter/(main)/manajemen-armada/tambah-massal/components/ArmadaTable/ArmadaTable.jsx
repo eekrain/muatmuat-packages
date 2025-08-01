@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import Button from "@/components/Button/Button";
+import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import DatePicker from "@/components/DatePicker/DatePicker";
 import Checkbox from "@/components/Form/Checkbox";
 import { DimensionInput } from "@/components/Form/DimensionInput";
@@ -237,33 +238,10 @@ const ArmadaTable = ({
                   <tr>
                     <td colSpan="12" className="py-8 text-center">
                       <div className="flex flex-col items-center gap-3">
-                        <div className="text-center">
-                          <p className="text-sm text-neutral-600">
-                            Tidak ada armada dengan plat nomor &ldquo;
-                            {searchValue}&rdquo;
-                          </p>
-                          <p className="text-xs text-neutral-500">
-                            Coba cari dengan plat nomor yang berbeda
-                          </p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            type="button"
-                            variant="muatparts-primary-secondary"
-                            size="sm"
-                            onClick={() => onSearchChange?.("")}
-                          >
-                            Hapus Pencarian
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="muatparts-primary"
-                            size="sm"
-                            onClick={onAddRow}
-                          >
-                            Tambah Armada Baru
-                          </Button>
-                        </div>
+                        <DataNotFound
+                          type="search"
+                          title={"Keyword Tidak Ditemukan"}
+                        />
                       </div>
                     </td>
                   </tr>

@@ -261,7 +261,7 @@ export const handleVehicleSubmit = (value) => {
   const payload = normalizePayloadTambahArmadaMassal(value);
   // TODO: Implement API call with the payload
   void payload; // Temporarily silence unused variable warning
-  toast.success("Data armada berhasil disimpan");
+  toast.success(`Berhasil menyimpan ${payload.length} armada`);
 };
 
 // Save as draft handler for vehicle form

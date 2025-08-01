@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 import * as Popover from "@radix-ui/react-popover";
-import { Check, ChevronDown, Search } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { cn } from "@/lib/utils";
@@ -276,7 +276,10 @@ const SelectItem = ({
     >
       <div className="flex min-w-0 flex-1 items-center gap-2">{children}</div>
       {showCheckIcon && isSelected && (
-        <Check className="ml-2 h-4 w-4 flex-shrink-0 text-primary-700" />
+        <IconComponent
+          src="/icons/check-circle16.svg"
+          className="ml-2 h-4 w-4 flex-shrink-0 text-primary-700"
+        />
       )}
     </button>
   );
