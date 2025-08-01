@@ -32,6 +32,7 @@ const ArmadaTable = ({
   onDeleteRows,
   onCellValueChange,
   className = "",
+  errors,
 }) => {
   const [addArmadaImageModal, setAddArmadaImageModal] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(null);
@@ -65,28 +66,79 @@ const ArmadaTable = ({
     setActiveImageIndex(null);
   };
 
+  // Filter data based on search value (license plate)
+  const filteredData = data.filter((item) => {
+    if (!searchValue.trim()) return true; // Show all if no search value
+
+    const licensePlate = item.licensePlate || "";
+    // Case-insensitive search that also removes spaces and special characters for better matching
+    const normalizedSearch = searchValue.toLowerCase().replace(/[\s-]/g, "");
+    const normalizedLicensePlate = licensePlate
+      .toLowerCase()
+      .replace(/[\s-]/g, "");
+
+    return normalizedLicensePlate.includes(normalizedSearch);
+  });
+
   return (
     <>
       <div className={`rounded-lg bg-white shadow-muat ${className}`}>
         {/* Header Table */}
         <div className="flex items-center justify-between px-6 py-5">
           <div className="flex items-center gap-3">
-            <Input
-              icon={{ left: "/icons/search.svg" }}
-              appearance={{ iconClassName: "text-neutral-700" }}
-              className="!w-fit !p-0 font-medium"
-              placeholder="Cari Armada"
-              value={searchValue}
-              onChange={(e) => onSearchChange?.(e.target.value)}
-            />
-            <Button onClick={onAddRow} variant="muatparts-primary-secondary">
+            <div className="relative">
+              <Input
+                icon={{ left: "/icons/search.svg" }}
+                appearance={{ iconClassName: "text-neutral-700" }}
+                className="!w-fit !p-0 pr-8 font-medium"
+                placeholder="Cari Armada"
+                value={searchValue}
+                onChange={(e) => onSearchChange?.(e.target.value)}
+              />
+              {searchValue && (
+                <button
+                  type="button"
+                  onClick={() => onSearchChange?.("")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-700"
+                >
+                  <IconComponent
+                    src="/icons/close20.svg"
+                    width={16}
+                    height={16}
+                  />
+                </button>
+              )}
+            </div>
+            <Button
+              type="button"
+              onClick={onAddRow}
+              variant="muatparts-primary-secondary"
+            >
               Tambah
             </Button>
-            <Button onClick={onDeleteRows} variant="muatparts-error-secondary">
+            <Button
+              type="button"
+              onClick={onDeleteRows}
+              variant="muatparts-error-secondary"
+            >
               Hapus
             </Button>
           </div>
-          <p className="font-semibold">Total : {data.length} Armada</p>
+          <div className="flex flex-col items-end gap-1">
+            <p className="font-semibold">
+              Total : {filteredData.length} Armada
+              {searchValue.trim() && filteredData.length !== data.length && (
+                <span className="text-neutral-600"> dari {data.length}</span>
+              )}
+            </p>
+            {searchValue.trim() && (
+              <p className="text-xs text-neutral-600">
+                {filteredData.length > 0
+                  ? `Menampilkan hasil pencarian untuk &ldquo;${searchValue}&rdquo;`
+                  : `Tidak ada hasil untuk &ldquo;${searchValue}&rdquo;`}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Table */}
@@ -180,17 +232,75 @@ const ArmadaTable = ({
                 </tr>
               </thead>
               <tbody>
-                {data.map((item, index) => (
-                  <ArmadaTableRow
-                    key={`item-${index}`}
-                    index={index}
-                    data={item}
-                    isSelected={selectedRows.includes(index)}
-                    onCheckboxChange={() => handleCheckboxChange(index)}
-                    onCellValueChange={onCellValueChange}
-                    onImageClick={handleImageClick}
-                  />
-                ))}
+                {filteredData.length === 0 && searchValue.trim() ? (
+                  <tr>
+                    <td colSpan="12" className="py-8 text-center">
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="text-center">
+                          <p className="text-sm text-neutral-600">
+                            Tidak ada armada dengan plat nomor &ldquo;
+                            {searchValue}&rdquo;
+                          </p>
+                          <p className="text-xs text-neutral-500">
+                            Coba cari dengan plat nomor yang berbeda
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            type="button"
+                            variant="muatparts-primary-secondary"
+                            size="sm"
+                            onClick={() => onSearchChange?.("")}
+                          >
+                            Hapus Pencarian
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="muatparts-primary"
+                            size="sm"
+                            onClick={onAddRow}
+                          >
+                            Tambah Armada Baru
+                          </Button>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredData.map((item, index) => {
+                    // Find the original index in the full data array for proper error mapping
+                    const originalIndex = data.findIndex(
+                      (dataItem) =>
+                        dataItem === item ||
+                        (dataItem.licensePlate &&
+                          dataItem.licensePlate === item.licensePlate &&
+                          JSON.stringify(dataItem) === JSON.stringify(item))
+                    );
+
+                    return (
+                      <ArmadaTableRow
+                        key={`item-${originalIndex}-${index}`}
+                        index={originalIndex >= 0 ? originalIndex : index}
+                        data={item}
+                        isSelected={selectedRows.includes(
+                          originalIndex >= 0 ? originalIndex : index
+                        )}
+                        onCheckboxChange={() =>
+                          handleCheckboxChange(
+                            originalIndex >= 0 ? originalIndex : index
+                          )
+                        }
+                        onCellValueChange={onCellValueChange}
+                        onImageClick={handleImageClick}
+                        errors={
+                          errors?.[
+                            originalIndex >= 0 ? originalIndex : index
+                          ] || {}
+                        }
+                      />
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
@@ -219,9 +329,48 @@ const ArmadaTableRow = ({
   onCheckboxChange,
   onCellValueChange,
   onImageClick,
+  errors,
 }) => {
   const handleFieldChange = (fieldPath, value) => {
     onCellValueChange?.(index, fieldPath, value);
+  };
+
+  // Helper function to check if a field has an error
+  const hasError = (fieldPath) => {
+    const fieldParts = fieldPath.split(".");
+    let errorObj = errors;
+
+    for (const part of fieldParts) {
+      if (errorObj && errorObj[part]) {
+        errorObj = errorObj[part];
+      } else {
+        return false;
+      }
+    }
+    // Check if errorObj has a message property (actual error) or is just an object container
+    return errorObj && (errorObj.message || typeof errorObj === "string");
+  };
+
+  // Helper function to get the actual error message
+  const getErrorMessage = (fieldPath) => {
+    const fieldParts = fieldPath.split(".");
+    let errorObj = errors;
+
+    for (const part of fieldParts) {
+      if (errorObj && errorObj[part]) {
+        errorObj = errorObj[part];
+      } else {
+        return null;
+      }
+    }
+
+    if (errorObj && errorObj.message) {
+      return errorObj.message;
+    }
+    if (typeof errorObj === "string") {
+      return errorObj;
+    }
+    return null;
   };
 
   return (
@@ -242,15 +391,27 @@ const ArmadaTableRow = ({
               className="w-12 shrink cursor-pointer rounded-lg object-cover"
             />
           ) : (
-            <div className="w-fit cursor-pointer rounded-lg border border-dashed border-neutral-600 p-2 hover:border-primary-700 hover:text-primary-700">
+            <div
+              className={`w-fit cursor-pointer rounded-lg border border-dashed p-2 hover:text-primary-700 ${
+                hasError("informasi_armada.images.image_armada_depan")
+                  ? "border-error-400 hover:border-error-400"
+                  : "border-neutral-600 hover:border-primary-700"
+              }`}
+            >
               <IconComponent src="/icons/add-image20.svg" />
             </div>
           )}
         </label>
         <Input
+          name={`informasiMuatan.${index}.licensePlate`}
           placeholder="Contoh : L 1234 TY"
-          value={data?.nomor_plat || ""}
-          onChange={(e) => handleFieldChange("nomor_plat", e.target.value)}
+          value={data?.licensePlate || ""}
+          onChange={(e) => handleFieldChange("licensePlate", e.target.value)}
+          appearance={{
+            containerClassName: hasError("licensePlate")
+              ? "border-error-400 placeholder:text-error-400"
+              : "",
+          }}
         />
       </td>
 
@@ -264,6 +425,7 @@ const ArmadaTableRow = ({
             handleFieldChange("jenis_carrier", "");
           }}
           placeholder="Pilih Jenis Truk"
+          hasError={hasError("jenis_truk")}
         />
       </td>
 
@@ -278,29 +440,32 @@ const ArmadaTableRow = ({
           value={data?.jenis_carrier || ""}
           onChange={(value) => handleFieldChange("jenis_carrier", value)}
           placeholder="Pilih Jenis Carrier"
+          hasError={hasError("jenis_carrier")}
         />
       </td>
 
       <td>
         <DropdownMerekKendaraan
-          value={data?.merek_kendaraan || ""}
+          value={data?.merek_kendaraan_id || ""}
           url="v1/master/vehicle-brands"
           onChange={(value) => handleFieldChange("merek_kendaraan", value)}
-          placeholder="Pilih Jenis Merek Kendaraan"
+          placeholder="Pilih Merek Kendaraan"
+          hasError={hasError("merek_kendaraan_id")}
         />
       </td>
 
       <td>
         <DropdownTipeKendaraan
-          disabled={!data?.merek_kendaraan}
+          disabled={!data?.merek_kendaraan_id}
           url={
             data?.merek_kendaraan
-              ? `v1/master/vehicle-types?vehicleBrandId=${data?.merek_kendaraan}`
+              ? `v1/master/vehicle-types?vehicleBrandId=${data?.merek_kendaraan_id}`
               : null
           }
-          value={data?.tipe_kendaraan || ""}
+          value={data?.tipe_kendaraan_id || ""}
           onChange={(value) => handleFieldChange("tipe_kendaraan", value)}
           placeholder="Pilih Tipe Kendaraan"
+          hasError={hasError("tipe_kendaraan_id")}
         />
       </td>
 
@@ -311,7 +476,11 @@ const ArmadaTableRow = ({
           }
           value={data?.tahun_registrasi_kendaraan || ""}
         >
-          <Select.Trigger>
+          <Select.Trigger
+            className={
+              hasError("tahun_registrasi_kendaraan") ? "border-error-400" : ""
+            }
+          >
             <Select.Value placeholder="Pilih Tahun" />
           </Select.Trigger>
           <Select.Content>
@@ -381,6 +550,11 @@ const ArmadaTableRow = ({
           placeholder="Maksimal 17 Digit"
           value={data?.nomor_rangka || ""}
           onChange={(e) => handleFieldChange("nomor_rangka", e.target.value)}
+          appearance={{
+            containerClassName: hasError("nomor_rangka")
+              ? "border-error-400 placeholder:text-error-400"
+              : "",
+          }}
         />
       </td>
 
@@ -389,6 +563,8 @@ const ArmadaTableRow = ({
           placeholder="Pilih Tanggal"
           value={data?.masa_berlaku_stnk || ""}
           onChange={(value) => handleFieldChange("masa_berlaku_stnk", value)}
+          errorMessage={getErrorMessage("masa_berlaku_stnk")}
+          showErrorMessage={false}
         />
       </td>
 
@@ -397,6 +573,7 @@ const ArmadaTableRow = ({
           id={`foto-stnk-${index}`}
           value={data?.foto_stnk}
           onChange={(file) => handleFieldChange("foto_stnk", file)}
+          hasError={hasError("foto_stnk")}
         />
       </td>
 
@@ -405,6 +582,7 @@ const ArmadaTableRow = ({
           id={`foto-pajak-kendaraan-${index}`}
           value={data?.foto_pajak_kendaraan}
           onChange={(file) => handleFieldChange("foto_pajak_kendaraan", file)}
+          hasError={hasError("foto_pajak_kendaraan")}
         />
       </td>
 
@@ -413,6 +591,11 @@ const ArmadaTableRow = ({
           placeholder="Contoh: SBY 123456"
           value={data?.nomor_kir || ""}
           onChange={(e) => handleFieldChange("nomor_kir", e.target.value)}
+          appearance={{
+            containerClassName: hasError("nomor_kir")
+              ? "border-error-400 placeholder:text-error-400"
+              : "",
+          }}
         />
       </td>
 
@@ -421,6 +604,8 @@ const ArmadaTableRow = ({
           placeholder="Pilih Tanggal"
           value={data?.masa_berlaku_kir || ""}
           onChange={(value) => handleFieldChange("masa_berlaku_kir", value)}
+          errorMessage={getErrorMessage("masa_berlaku_kir")}
+          showErrorMessage={false}
         />
       </td>
 
@@ -429,6 +614,7 @@ const ArmadaTableRow = ({
           id={`foto-buku-kir-${index}`}
           value={data?.foto_buku_kir}
           onChange={(file) => handleFieldChange("foto_buku_kir", file)}
+          hasError={hasError("foto_buku_kir")}
         />
       </td>
 
@@ -440,6 +626,10 @@ const ArmadaTableRow = ({
             onChange={(value) =>
               handleFieldChange("estimasi_tanggal_pemasangan_gps.mulai", value)
             }
+            errorMessage={getErrorMessage(
+              "estimasi_tanggal_pemasangan_gps.mulai"
+            )}
+            showErrorMessage={false}
           />
           <span className="text-xs font-medium">s/d</span>
           <DatePicker
@@ -451,6 +641,10 @@ const ArmadaTableRow = ({
                 value
               )
             }
+            errorMessage={getErrorMessage(
+              "estimasi_tanggal_pemasangan_gps.selesai"
+            )}
+            showErrorMessage={false}
           />
         </div>
       </td>

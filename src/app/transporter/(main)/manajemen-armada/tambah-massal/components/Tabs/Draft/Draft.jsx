@@ -1,12 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 
 import Button from "@/components/Button/Button";
+import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
-import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
-import { useTabs } from "@/components/Tabs/Tabs";
 import {
   handleVehicleCellValueChange,
   handleVehicleSaveAsDraft,
@@ -20,10 +18,7 @@ import { useTableForm } from "@/hooks/useTableForm";
 import ModalAddArmadaImage from "../../../preview-armada/components/ModalAddImage/ModalAddImage";
 import ArmadaTable from "../../ArmadaTable/ArmadaTable";
 
-const TambahArmadaMassal = ({ isDraftAvailable }) => {
-  const { onValueChange } = useTabs();
-
-  const [isDraft] = useState(isDraftAvailable);
+const Draft = ({ isDraftAvailable }) => {
   const [activeIndex, setActiveIndex] = useState();
   const [addArmadaImageModal, setAddArmadaImageModal] = useState(false);
 
@@ -68,8 +63,16 @@ const TambahArmadaMassal = ({ isDraftAvailable }) => {
     setActiveIndex(index);
     setAddArmadaImageModal(true);
   };
+
+  if (!isDraftAvailable) {
+    return (
+      <div className="flex h-[280px] w-full items-center justify-center rounded-xl bg-white p-8 shadow-md">
+        <DataNotFound type="data" title="Belum ada Draft Armada" />
+      </div>
+    );
+  }
   return (
-    <div className="rounded-lg">
+    <div className="">
       {/* Header Table */}
       <form onSubmit={onSubmit}>
         <ArmadaTable
@@ -106,37 +109,6 @@ const TambahArmadaMassal = ({ isDraftAvailable }) => {
           </div>
         </div>
       </form>
-
-      <Modal
-        open={isDraft}
-        onOpenChange={() => {
-          onValueChange("draft");
-        }}
-      >
-        <ModalContent className="w-modal-small text-center">
-          <ModalHeader size="small" />
-          <div className="flex flex-col items-center gap-4 px-6 py-9 text-black">
-            <h2 className="text-base font-bold">Pemberitahuan</h2>
-            <p className="text-sm font-medium">
-              Harap selesaikan data pada menu Draft terlebih dahulu.
-              <br />
-              <br />
-              Kamu memiliki draft tambah armada yang belum selesai. Silakan
-              simpan data tersebut atau hapus draft sebelum menambahkan armada
-              baru
-            </p>
-            <Link href="#">
-              <Button
-                onClick={() => {
-                  onValueChange("draft");
-                }}
-              >
-                Selesaikan Draft
-              </Button>
-            </Link>
-          </div>
-        </ModalContent>
-      </Modal>
 
       <ConfirmationModal
         isOpen={confirmDeleteModal}
@@ -178,4 +150,4 @@ const TambahArmadaMassal = ({ isDraftAvailable }) => {
   );
 };
 
-export default TambahArmadaMassal;
+export default Draft;

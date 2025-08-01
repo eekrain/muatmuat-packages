@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import IconComponent from "../IconComponent/IconComponent";
 import Select from "../Select";
 
 export default function Dropdown({
@@ -12,17 +13,10 @@ export default function Dropdown({
   placeholder,
   searchPlaceholder,
   options,
+  isAddable,
+  isError = false,
 }) {
   const [searchValue, setSearchValue] = useState("");
-  const data = [
-    { value: "option1", label: "Option 1", image: "/img/mock-armada/one.png" },
-    { value: "option2", label: "Option 2", image: "/img/mock-armada/two.png" },
-    {
-      value: "option3",
-      label: "Option 3",
-      image: "/img/mock-armada/three.png",
-    },
-  ];
   return (
     <Select.Root
       disabled={disabled}
@@ -32,7 +26,7 @@ export default function Dropdown({
       onValueChange={onChange}
       onSearch={setSearchValue}
     >
-      <Select.Trigger placeholder={placeholder}>
+      <Select.Trigger placeholder={placeholder} isError={isError}>
         {/* <Select.Value placeholder={placeholder}/> */}
         <Select.Value placeholder={placeholder}>
           {options?.filter((item) => item.value === value)[0]?.label}
@@ -43,6 +37,26 @@ export default function Dropdown({
         searchPlaceholder={searchPlaceholder}
         className="w-64"
       >
+        {isAddable && (
+          <>
+            <Select.Item
+              value="add"
+              className="!py-1"
+              onClick={() => {
+                // Handle add new item logic here
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <IconComponent
+                  src="/icons/plus16.svg"
+                  className="text-primary-700"
+                />
+                <span className="text-xs font-medium">Tambah Baru</span>
+              </div>
+            </Select.Item>
+            <Select.Separator />
+          </>
+        )}
         {options?.filter((rows) =>
           rows.label.toLowerCase().includes(searchValue.toLowerCase())
         ).length > 0 ? (

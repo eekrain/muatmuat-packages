@@ -12,9 +12,10 @@ export default function DropdownJenisCarrier({
   placeholder = "Pilih Kendaraan",
   searchPlaceholder = "Cari Kendaraan",
   disabled,
+  hasError = false,
 }) {
   const [options, setOptions] = useState([]);
-  const { data: vehicleData, error, mutate } = useGetMasterCarrierTypes(url);
+  const { data: vehicleData } = useGetMasterCarrierTypes(url);
   useEffect(() => {
     if (vehicleData) {
       let options = [];
@@ -37,6 +38,7 @@ export default function DropdownJenisCarrier({
       options={options}
       placeholder={placeholder}
       searchPlaceholder={searchPlaceholder}
+      isError={hasError}
     />
   );
 }

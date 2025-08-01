@@ -11,6 +11,7 @@ export default function DropdownJenisTruk({
   onChange,
   placeholder = "Pilih Kendaraan",
   searchPlaceholder = "Cari Kendaraan",
+  hasError = false,
 }) {
   const [options, setOptions] = useState([]);
   const { data: vehicleData } = useGetMasterTrucks(url);
@@ -37,6 +38,7 @@ export default function DropdownJenisTruk({
       options={options}
       placeholder={placeholder}
       searchPlaceholder={searchPlaceholder}
+      isError={hasError}
     />
   );
 }

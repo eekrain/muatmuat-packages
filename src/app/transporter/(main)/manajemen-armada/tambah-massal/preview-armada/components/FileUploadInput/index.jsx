@@ -13,6 +13,7 @@ const FileUploadInput = ({
   accept = "*",
   className = "",
   disabled = false,
+  hasError = false,
 }) => {
   const { trigger } = useUploadVehicleDocuments();
   const hasFile = value && (value.name || value.documentUrl);
@@ -27,7 +28,6 @@ const FileUploadInput = ({
     trigger(formData)
       .then((response) => {
         if (response) {
-          console.log("File uploaded successfully:", response);
           onChange({
             documentType: "STNK",
             documentUrl: response.Data.documentUrl,
@@ -35,15 +35,13 @@ const FileUploadInput = ({
           });
         }
       })
-      .catch((error) => {
+      .catch(() => {
         toast.error("Gagal mengunggah file");
       });
   };
 
   useEffect(() => {
-    if (value) {
-      console.log("File already uploaded:", value);
-    }
+    // File upload tracking
   }, [value]);
 
   return (
@@ -64,7 +62,11 @@ const FileUploadInput = ({
       ) : (
         <label
           htmlFor={id}
-          className="text-xs font-medium text-primary-700 hover:cursor-pointer hover:text-primary-800 hover:underline"
+          className={`text-xs font-medium hover:cursor-pointer hover:underline ${
+            hasError
+              ? "text-error-400 hover:text-error-500"
+              : "text-primary-700 hover:text-primary-800"
+          }`}
         >
           {uploadText}
         </label>
