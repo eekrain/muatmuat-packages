@@ -1,7 +1,10 @@
 "use client";
 
+import { useState } from "react";
+
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { cn } from "@/lib/utils";
 
 const checklistItemsData = [
@@ -101,54 +104,97 @@ const ChecklistItem = ({ title, status, active, isLast, onClick }) => (
 );
 
 export const TabRegister = ({ activeIdx, setActiveIdx, itemsStatus }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [nextTabIndex, setNextTabIndex] = useState(null);
+
   const isAllFinished =
     itemsStatus[0] === "finished" &&
     itemsStatus[1] === "finished" &&
     itemsStatus[2] === "finished";
+
+  const handleTabClick = (index) => {
+    if (index !== activeIdx) {
+      setNextTabIndex(index);
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleConfirmSwitch = () => {
+    if (nextTabIndex !== null) {
+      setActiveIdx(nextTabIndex);
+    }
+    setIsModalOpen(false);
+    setNextTabIndex(null);
+  };
+
+  const handleCancelSwitch = () => {
+    setIsModalOpen(false);
+    setNextTabIndex(null);
+  };
+
   return (
-    <div className="space-y-0">
-      {checklistItemsData.map((item, idx) => (
-        <ChecklistItem
-          key={item.title}
-          title={item.title}
-          status={itemsStatus[idx]}
-          active={activeIdx === idx}
-          isLast={idx === checklistItemsData.length - 1}
-          onClick={() => setActiveIdx(idx)}
-        />
-      ))}
-      <div className="px-5 pb-5 pt-4">
-        {!isAllFinished ? (
-          <InfoTooltip
-            side="top"
-            trigger={
-              <button
-                className={cn(
-                  "w-full rounded-3xl py-2 text-sm font-semibold disabled:cursor-not-allowed",
-                  "bg-neutral-200 text-neutral-600"
-                )}
-                disabled
-              >
-                Tambahkan Transporter
-              </button>
-            }
-          >
-            <p className="text-sm">
-              Lengkapi dan simpan semua data terlebih dahulu untuk menambahkan
-              Transporter
-            </p>
-          </InfoTooltip>
-        ) : (
-          <button
-            className={cn(
-              "w-full rounded-3xl py-2 text-sm font-semibold",
-              "bg-muat-trans-primary-400 text-muat-trans-secondary-900"
-            )}
-          >
-            Tambahkan Transporter
-          </button>
-        )}
+    <>
+      <div className="space-y-0">
+        {checklistItemsData.map((item, idx) => (
+          <ChecklistItem
+            key={item.title}
+            title={item.title}
+            status={itemsStatus[idx]}
+            active={activeIdx === idx}
+            isLast={idx === checklistItemsData.length - 1}
+            onClick={() => handleTabClick(idx)}
+          />
+        ))}
+        <div className="px-5 pb-5 pt-4">
+          {!isAllFinished ? (
+            <InfoTooltip
+              side="top"
+              trigger={
+                <button
+                  className={cn(
+                    "w-full rounded-3xl py-2 text-sm font-semibold disabled:cursor-not-allowed",
+                    "bg-neutral-200 text-neutral-600"
+                  )}
+                  disabled
+                >
+                  Tambahkan Transporter
+                </button>
+              }
+            >
+              <p className="text-sm">
+                Lengkapi dan simpan semua data terlebih dahulu untuk menambahkan
+                Transporter
+              </p>
+            </InfoTooltip>
+          ) : (
+            <button
+              className={cn(
+                "w-full rounded-3xl py-2 text-sm font-semibold",
+                "bg-muat-trans-primary-400 text-muat-trans-secondary-900"
+              )}
+            >
+              Tambahkan Transporter
+            </button>
+          )}
+        </div>
       </div>
-    </div>
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        setIsOpen={setIsModalOpen}
+        description={{
+          text: "Data Transporter tidak akan tersimpan kalau kamu meninggalkan halaman ini.",
+        }}
+        cancel={{
+          text: "Batal",
+          classname: "w-[112px]",
+          onClick: handleCancelSwitch,
+        }}
+        confirm={{
+          text: "Ya",
+          classname: "w-[112px]",
+          onClick: handleConfirmSwitch,
+        }}
+      />
+    </>
   );
 };
