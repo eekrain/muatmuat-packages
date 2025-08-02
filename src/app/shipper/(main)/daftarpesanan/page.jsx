@@ -8,9 +8,11 @@ import useDevice from "@/hooks/use-device";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook } from "@/hooks/use-swr";
+import { useTranslation } from "@/hooks/use-translation";
 
 const Page = () => {
   const { isMobile, mounted } = useDevice();
+  const { t } = useTranslation();
   const defaultQueryParams = {
     page: 1,
     limit: 10,
@@ -81,7 +83,7 @@ const Page = () => {
     itemsPerPage: 10,
   };
 
-  const tabs = useShallowMemo(
+  const statusTabOptions = useShallowMemo(
     () => [
       { value: "", label: "Semua" },
       {
@@ -99,6 +101,56 @@ const Page = () => {
     ],
     [countByStatus]
   );
+
+  // Updated options with new structure
+  const statusRadioOptions = isMobile
+    ? [
+        {
+          key: "status",
+          label: t("labelStatus"),
+          children: [
+            { value: "PREPARE_FLEET", label: "Mempersiapkan Armada" },
+            { value: "CONFIRMED", label: t("labelPesananTerkonfirmasi") },
+            { value: "SCHEDULED_FLEET", label: t("labelArmadaDijadwalkan") },
+            { value: "WAITING_PAYMENT", label: "Menunggu Pembayaran" },
+            { value: "WAITING_REPAYMENT", label: "Menunggu Pelunasan" },
+            { value: "LOADING", label: t("labelProsesMuat") },
+            { value: "UNLOADING", label: t("labelProsesBongkar") },
+            {
+              value: "PREPARE_DOCUMENT",
+              label: t("labelDokumenSedangDisiapkan"),
+            },
+            {
+              value: "PREPARE_FLEET_CHANGES",
+              label: "Proses Pergantian Armada",
+            },
+            {
+              value: "DOCUMENT_DELIVERY",
+              label: "Proses Pengiriman Dokumen",
+            },
+            { value: "CANCELED", label: t("labelDibatalkan") },
+            { value: "COMPLETED", label: t("labelSelesai") },
+          ],
+        },
+      ]
+    : [
+        {
+          key: "status",
+          label: t("labelStatus"),
+          children: [
+            { value: "CONFIRMED", label: t("labelPesananTerkonfirmasi") },
+            { value: "SCHEDULED_FLEET", label: t("labelArmadaDijadwalkan") },
+            { value: "LOADING", label: t("labelProsesMuat") },
+            { value: "UNLOADING", label: t("labelProsesBongkar") },
+            {
+              value: "PREPARE_DOCUMENT",
+              label: t("labelDokumenSedangDisiapkan"),
+            },
+            { value: "COMPLETED", label: t("labelSelesai") },
+            { value: "CANCELED", label: t("labelDibatalkan") },
+          ],
+        },
+      ];
 
   useShallowCompareEffect(() => {
     if (
@@ -142,9 +194,8 @@ const Page = () => {
         settlementAlertInfo={settlementAlertInfo}
         hasNoOrders={hasNoOrders}
         lastFilterField={lastFilterField}
-        tabs={tabs}
-        currentPeriodValue={currentPeriodValue}
-        setCurrentPeriodValue={setCurrentPeriodValue}
+        statusTabOptions={statusTabOptions}
+        statusRadioOptions={statusRadioOptions}
       />
     );
   }
@@ -158,7 +209,8 @@ const Page = () => {
       settlementAlertInfo={settlementAlertInfo}
       hasNoOrders={hasNoOrders}
       lastFilterField={lastFilterField}
-      tabs={tabs}
+      statusTabOptions={statusTabOptions}
+      statusRadioOptions={statusRadioOptions}
       currentPeriodValue={currentPeriodValue}
       setCurrentPeriodValue={setCurrentPeriodValue}
     />

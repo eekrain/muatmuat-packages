@@ -40,26 +40,11 @@ const PesananTable = ({
   hasNoOrders,
   hasFilteredOrders,
   lastFilterField,
-  tabs,
+  statusTabOptions,
+  statusRadioOptions,
 }) => {
   const { t } = useTranslation();
 
-  // Updated options with new structure
-  const options = [
-    {
-      key: "status",
-      label: t("labelStatus"),
-      children: [
-        { value: "CONFIRMED", label: t("labelPesananTerkonfirmasi") },
-        { value: "SCHEDULED_FLEET", label: t("labelArmadaDijadwalkan") },
-        { value: "LOADING", label: t("labelProsesMuat") },
-        { value: "UNLOADING", label: t("labelProsesBongkar") },
-        { value: "PREPARE_DOCUMENT", label: t("labelDokumenSedangDisiapkan") },
-        { value: "COMPLETED", label: t("labelSelesai") },
-        { value: "CANCELED", label: t("labelDibatalkan") },
-      ],
-    },
-  ];
   const router = useRouter();
 
   const [isDocumentReceivedModalOpen, setIsDocumentReceivedModalOpen] =
@@ -85,10 +70,10 @@ const PesananTable = ({
 
   const selectedFilter = useShallowMemo(
     () =>
-      options
+      statusRadioOptions
         .flatMap((item) => item.children || [])
         .find((item) => item.value === queryParams.status),
-    [options, queryParams]
+    [statusRadioOptions, queryParams]
   );
 
   const handleSearch = (e) => {
@@ -228,11 +213,11 @@ const PesananTable = ({
                     disabled={
                       hasNoOrders ||
                       (!hasFilteredOrders &&
-                        !options
+                        !statusRadioOptions
                           .flatMap((item) => item.children)
                           .some((item) => item.value === queryParams.status))
                     }
-                    options={options}
+                    options={statusRadioOptions}
                     value={queryParams.status}
                     onChange={({ name, value }) =>
                       onChangeQueryParams(name, value)
@@ -245,7 +230,7 @@ const PesananTable = ({
                   <span className="text-xs font-bold leading-[14.4px] text-neutral-900">
                     {t("labelTampilkan")}
                   </span>
-                  {tabs.map((tab, key) => {
+                  {statusTabOptions.map((tab, key) => {
                     // Check if this is the "Semua" tab (empty value) and if the current queryParams.status
                     // isn't one of the specific tab values
                     const isActiveAllTab =
@@ -261,8 +246,8 @@ const PesananTable = ({
                         className={cn(
                           "flex h-7 cursor-pointer items-center rounded-full px-3 py-[6px] font-semibold",
                           queryParams.status === tab.value || isActiveAllTab
-                            ? "border border-primary-700 bg-[#E2F2FF] text-primary-700"
-                            : "bg-[#F1F1F1] text-neutral-900"
+                            ? "border border-primary-700 bg-primary-50 text-primary-700"
+                            : "bg-neutral-200 text-neutral-900"
                         )}
                       >
                         <span className="text-xxs">{tab.label}</span>
@@ -671,7 +656,7 @@ const PesananTable = ({
                                       ? t("messageLakukanPembayaranSebelum")
                                       : t("messageLakukanPelunasanSebelum")}
                                     <span className="font-bold">
-                                      {formatDate(order.paymentDeadline)}
+                                      {` ${formatDate(order.paymentDeadline)}`}
                                     </span>
                                   </span>
                                 </div>

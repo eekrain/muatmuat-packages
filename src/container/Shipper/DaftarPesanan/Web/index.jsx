@@ -17,7 +17,8 @@ const DaftarPesananWeb = ({
   settlementAlertInfo,
   hasNoOrders,
   lastFilterField,
-  tabs,
+  statusTabOptions,
+  statusRadioOptions,
   currentPeriodValue,
   setCurrentPeriodValue,
 }) => {
@@ -220,7 +221,8 @@ const DaftarPesananWeb = ({
             hasNoOrders={hasNoOrders}
             hasFilteredOrders={hasFilteredOrders}
             lastFilterField={lastFilterField}
-            tabs={tabs}
+            statusTabOptions={statusTabOptions}
+            statusRadioOptions={statusRadioOptions}
           />
 
           {/* Pagination */}

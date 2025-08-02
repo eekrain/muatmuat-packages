@@ -24,19 +24,19 @@ const DriverStatusBottomsheet = ({
             <Fragment key={key}>
               <BadgeStatusPesanan
                 variant={
-                  status?.statusLabel === OrderStatusEnum.WAITING_PAYMENT_1 ||
-                  status?.statusLabel === OrderStatusEnum.WAITING_PAYMENT_2 ||
-                  status?.statusLabel === OrderStatusEnum.WAITING_REPAYMENT_1 ||
-                  status?.statusLabel === OrderStatusEnum.WAITING_REPAYMENT_2
+                  status?.statusCode === OrderStatusEnum.WAITING_PAYMENT_1 ||
+                  status?.statusCode === OrderStatusEnum.WAITING_PAYMENT_2 ||
+                  status?.statusCode === OrderStatusEnum.WAITING_REPAYMENT_1 ||
+                  status?.statusCode === OrderStatusEnum.WAITING_REPAYMENT_2
                     ? "warning"
-                    : status?.statusLabel ===
+                    : status?.statusCode ===
                           OrderStatusEnum.CANCELED_BY_SHIPPER ||
-                        status?.statusLabel ===
+                        status?.statusCode ===
                           OrderStatusEnum.CANCELED_BY_SYSTEM ||
-                        status?.statusLabel ===
+                        status?.statusCode ===
                           OrderStatusEnum.CANCELED_BY_TRANSPORTER
                       ? "error"
-                      : status?.statusLabel === OrderStatusEnum.COMPLETED
+                      : status?.statusCode === OrderStatusEnum.COMPLETED
                         ? "success"
                         : "primary"
                 }
