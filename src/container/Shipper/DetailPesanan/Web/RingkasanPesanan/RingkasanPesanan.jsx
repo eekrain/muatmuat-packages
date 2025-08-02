@@ -195,7 +195,8 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
               <div className="flex-1">
                 <div className="flex flex-col gap-2">
                   {dataRingkasanPesanan.cargos
-                    .slice(0, 2)
+                    // 25. 18 - Web - LB - 0085
+                    .slice(0, 3)
                     .map((item, index) => (
                       <div key={index} className="flex items-center gap-2">
                         <IconComponent
@@ -211,7 +212,7 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
                     ))}
                   <Modal closeOnOutsideClick={false}>
                     {/* 25. 18 - Web - LB - 0085 */}
-                    {dataRingkasanPesanan.cargos.length > 3 ? (
+                    {dataRingkasanPesanan.cargos.length > 4 ? (
                       <ModalTrigger>
                         <button className="text-xs font-medium leading-[14.4px] text-primary-700">
                           Lihat Informasi Muatan Lainnya
