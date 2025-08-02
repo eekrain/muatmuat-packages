@@ -9,93 +9,89 @@ import { cn } from "@/lib/utils";
 import IconComponent from "../IconComponent/IconComponent";
 
 /**
+ * The root component that provides context for the bottom sheet, powered by Vaul.
  * @param {import("vaul").DrawerProps} props
  */
-export const BottomSheet = ({ shouldScaleBackground = true, ...props }) => (
-  <BottomSheetPrimitive.Root
-    shouldScaleBackground={shouldScaleBackground}
-    {...props}
-  />
+export const BottomSheet = (props) => <BottomSheetPrimitive.Root {...props} />;
+
+/**
+ * A component that triggers the opening of the bottom sheet.
+ * It should be a direct child of the `BottomSheet` component.
+ * @param {React.ComponentProps<typeof BottomSheetPrimitive.Trigger>} props
+ */
+export const BottomSheetTrigger = (props) => (
+  <BottomSheetPrimitive.Trigger {...props} />
 );
-BottomSheet.displayName = " BottomSheet";
 
-export const BottomSheetTrigger = BottomSheetPrimitive.Trigger;
-
+/**
+ * The main content container for the bottom sheet.
+ * @param {React.ComponentProps<typeof BottomSheetPrimitive.Content>} props
+ */
 export const BottomSheetContent = React.forwardRef(
-  /**
-   * @param {React.ComponentProps<typeof BottomSheetPrimitive.Content>} props
-   */
   ({ className, children, ...props }, ref) => (
     <BottomSheetPrimitive.Portal>
-      <BottomSheetPrimitive.Overlay className="fixed inset-0 z-50 bg-black/20" />
+      <BottomSheetPrimitive.Overlay className="fixed inset-0 z-50 bg-black/30" />
       <BottomSheetPrimitive.Content
         ref={ref}
         className={cn(
-          "fixed inset-x-0 bottom-0 z-50 flex h-auto flex-col rounded-t-[16px] bg-white shadow-[0px_2px_20px_rgba(0,0,0,0.25)]",
+          "fixed bottom-0 left-0 right-0 z-50 mt-24 flex h-auto flex-col rounded-t-[16px] bg-white",
           className
         )}
         {...props}
       >
-        <hr className="mx-auto mt-1 h-1 w-[38px] rounded-full bg-[#DDDDDD]" />
+        <div className="mx-auto mt-4 h-1.5 w-12 flex-shrink-0 rounded-full bg-neutral-300" />
         {children}
       </BottomSheetPrimitive.Content>
     </BottomSheetPrimitive.Portal>
   )
 );
-BottomSheetContent.displayName = BottomSheetPrimitive.Content.displayName;
+BottomSheetContent.displayName = "BottomSheetContent";
 
-export const BottomSheetClose = React.forwardRef(
-  /**
-   * @param {React.HTMLAttributes<HTMLDivElement>} props
-   */
-  (
-    {
-      className,
-      icon = "/icons/close24.svg",
-      appearance = { iconClassname: "" },
-    },
-    ref
-  ) => (
-    <BottomSheetPrimitive.Close asChild>
-      <button
-        type="button"
-        className={cn(
-          "absolute left-4 top-1/2 -translate-y-[calc(50%+5px)]",
-          "rounded-sm opacity-70 ring-offset-white transition-opacity",
-          "hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:ring-offset-2 disabled:pointer-events-none",
-          className
-        )}
-        aria-label="Close"
-      >
-        <IconComponent
-          src={icon}
-          className={cn("h-6 w-6 text-primary-600", appearance.iconClassname)}
-        />
-        <span className="sr-only">Close</span>
-      </button>
-    </BottomSheetPrimitive.Close>
-  )
-);
-BottomSheetClose.displayName = "BottomSheetClose";
-
-export const BottomSheetHeader = React.forwardRef(
-  /**
-   * @param {React.HTMLAttributes<HTMLDivElement>} props
-   */
-  ({ className, children, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn(
-        "relative flex items-center justify-center p-4 pb-6 text-center",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </div>
-  )
+/**
+ * A container for the bottom sheet's header content.
+ * @param {React.HTMLAttributes<HTMLDivElement>} props
+ */
+export const BottomSheetHeader = ({ className, children, ...props }) => (
+  <div className={cn("relative p-4 text-center", className)} {...props}>
+    {children}
+  </div>
 );
 BottomSheetHeader.displayName = "BottomSheetHeader";
+
+/**
+ * A component for the title within the bottom sheet header.
+ * @param {React.ComponentProps<typeof BottomSheetPrimitive.Title>} props
+ */
+export const BottomSheetTitle = React.forwardRef((props, ref) => (
+  <BottomSheetPrimitive.Title
+    ref={ref}
+    className={cn("text-base font-bold text-neutral-900", props.className)}
+    {...props}
+  />
+));
+BottomSheetTitle.displayName = "BottomSheetTitle";
+
+/**
+ * A pre-styled button with a close icon.
+ * Best placed inside the `BottomSheetHeader`.
+ * @param {object} props
+ * @param {string} [props.className] - Additional classes for the button.
+ */
+export const BottomSheetClose = ({ className }) => (
+  <BottomSheetPrimitive.Close asChild>
+    <button
+      type="button"
+      className={cn("absolute left-4 top-1/2 -translate-y-1/2", className)}
+      aria-label="Close"
+    >
+      <IconComponent
+        src="/icons/close24.svg"
+        className="h-6 w-6 text-primary-600"
+      />
+    </button>
+  </BottomSheetPrimitive.Close>
+);
+BottomSheetClose.displayName = "BottomSheetClose";
 
 /**
  * @param {React.HTMLAttributes<HTMLDivElement>} props
@@ -104,20 +100,3 @@ export const BottomSheetFooter = ({ className, ...props }) => (
   <div className={cn("mt-auto w-full p-4 pb-6", className)} {...props} />
 );
 BottomSheetFooter.displayName = "BottomSheetFooter";
-
-export const BottomSheetTitle = React.forwardRef(
-  /**
-   * @param {React.ComponentProps<typeof BottomSheetPrimitive.Title>} props
-   */
-  ({ className, ...props }, ref) => (
-    <BottomSheetPrimitive.Title
-      ref={ref}
-      className={cn(
-        "text-center text-base font-bold leading-tight text-neutral-900",
-        className
-      )}
-      {...props}
-    />
-  )
-);
-BottomSheetTitle.displayName = BottomSheetPrimitive.Title.displayName;

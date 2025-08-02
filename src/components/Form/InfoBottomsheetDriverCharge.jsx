@@ -1,12 +1,11 @@
-import { cn } from "@/lib/utils";
-
 import {
   BottomSheet,
   BottomSheetContent,
   BottomSheetHeader,
   BottomSheetTrigger,
-} from "../Bottomsheet/Bottomsheet";
-import IconComponent from "../IconComponent/IconComponent";
+} from "@/components/Bottomsheet/BottomSheet";
+import IconComponent from "@/components/IconComponent/IconComponent";
+import { cn } from "@/lib/utils";
 
 export const InfoBottomsheetDriverCharge = ({ className, title }) => {
   const drivers = [
