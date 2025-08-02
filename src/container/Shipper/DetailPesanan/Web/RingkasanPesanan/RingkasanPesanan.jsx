@@ -211,7 +211,7 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
                     ))}
                   <Modal closeOnOutsideClick={false}>
                     {/* 25. 18 - Web - LB - 0085 */}
-                    {dataRingkasanPesanan.cargos.length > 2 ? (
+                    {dataRingkasanPesanan.cargos.length > 3 ? (
                       <ModalTrigger>
                         <button className="text-xs font-medium leading-[14.4px] text-primary-700">
                           Lihat Informasi Muatan Lainnya

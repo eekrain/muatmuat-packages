@@ -14,25 +14,31 @@ import {
   SimpleDropdownItem,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
+import IconComponent from "@/components/IconComponent/IconComponent";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { getDriverStatusBadge } from "@/lib/utils/driverStatus";
 import { getPhoneNumberStatus } from "@/lib/utils/phoneNumberStatus";
-import { useGetExpiredDriversData } from "@/services/Transporter/manajemen-driver/getExpiredDrivers";
+import { useGetDriversSimExpiry } from "@/services/Transporter/manajemen-driver/getDriversSimExpiry";
 
 const Page = () => {
   const router = useRouter();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
+  const [sortConfig, setSortConfig] = useState({
+    sort: "simExpiryDate",
+    order: "asc",
+  });
   const [searchValue, setSearchValue] = useState("");
   const [filters, setFilters] = useState({});
 
-  // Fetch expired drivers data with pagination and filters
-  const { data, isLoading, mutate } = useGetExpiredDriversData({
+  // Fetch SIM expiry drivers data with pagination and filters
+  const { data, isLoading, mutate } = useGetDriversSimExpiry({
     page: currentPage,
     limit: perPage,
     search: searchValue,
+    sort: sortConfig.sort,
+    order: sortConfig.order,
     ...filters,
   });
 
@@ -56,8 +62,8 @@ const Page = () => {
     return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
   };
 
-  const getStatusBadge = (driver) => {
-    const statusConfig = getDriverStatusBadge(driver.status);
+  const getStatusBadge = (status) => {
+    const statusConfig = getDriverStatusBadge(status);
     return (
       <BadgeStatus variant={statusConfig.variant}>
         {statusConfig.label}
@@ -84,39 +90,48 @@ const Page = () => {
     {
       key: "name",
       header: "Nama Driver",
-      render: (row) => (
-        <div className="space-y-1">
-          <div className="text-xs font-bold">{row.name}</div>
-          <div className="text-xxs font-medium">{row.phoneNumber || "-"}</div>
-        </div>
-      ),
+      sortable: true,
+      render: (row) => <div className="text-xs font-bold">{row.name}</div>,
+    },
+    {
+      key: "phoneNumber",
+      header: "No. Whatsapp",
+      sortable: true,
+      render: (row) => {
+        const phoneStatus = getPhoneNumberStatus(row.verificationStatus);
+        return (
+          <div className="space-y-1 text-xxs">
+            {phoneStatus && (
+              <div className="flex items-center gap-1">
+                <IconComponent
+                  src={`/icons/${phoneStatus.icon}`}
+                  className={`size-3 ${phoneStatus.color}`}
+                />
+                <span className={`font-semibold ${phoneStatus.color}`}>
+                  {phoneStatus.label}
+                </span>
+              </div>
+            )}
+            <div className="font-semibold">{row.phoneNumber || "-"}</div>
+          </div>
+        );
+      },
     },
     {
       key: "simExpiryDate",
       header: "Masa Berlaku SIM",
+      sortable: true,
       render: (row) => (
-        <div className="text-xs">{formatDate(row.simExpiryDate)}</div>
+        <div className="text-xs font-medium">
+          {formatDate(row.simExpiryDate)}
+        </div>
       ),
-    },
-    {
-      key: "verificationStatus",
-      header: "Status Verifikasi",
-      render: (row) => {
-        const phoneStatus = getPhoneNumberStatus(row.verificationStatus);
-        return phoneStatus ? (
-          <div className="flex items-center gap-1">
-            <span className={`text-xs font-semibold ${phoneStatus.color}`}>
-              {phoneStatus.label}
-            </span>
-          </div>
-        ) : null;
-      },
     },
     {
       key: "status",
       header: "Status",
       sortable: false,
-      render: (row) => getStatusBadge(row),
+      render: (row) => getStatusBadge(row.status),
     },
     {
       key: "action",

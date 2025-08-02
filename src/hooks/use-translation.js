@@ -44,12 +44,40 @@ const createTranslationStore = () =>
         // const url = `${s3url}content-general/locales/muat-trans/${envProd}/${languageUrl}/common.json`;
 
         try {
+          console.log("useMockTranslation", useMockTranslation);
           if (useMockTranslation) {
-            const [common, mock] = await Promise.all([
+            const results = await Promise.allSettled([
               xior.get(url, cacheConfig),
-              xior.get(`/mock-common-${languageUrl}.json`, cacheConfig),
+              xior.get(`/mock-common-${languageUrl}.json`),
             ]);
-            set({ translation: { ...common.data, ...mock.data } });
+
+            // Handle common translation result
+            const commonData =
+              results[0].status === "fulfilled" ? results[0].value.data : {};
+
+            // Handle mock translation result
+            const mockData =
+              results[1].status === "fulfilled" ? results[1].value.data : {};
+
+            console.log("common result:", results[0].status, commonData);
+            console.log("mock result:", results[1].status, mockData);
+
+            // Always set translation data, even if one or both requests failed
+            set({ translation: { ...commonData, ...mockData } });
+
+            // Log any failures for debugging
+            if (results[0].status === "rejected") {
+              console.warn(
+                `Failed to fetch common translations from ${url}:`,
+                results[0].reason.message
+              );
+            }
+            if (results[1].status === "rejected") {
+              console.warn(
+                `Failed to fetch mock translations for ${languageUrl}:`,
+                results[1].reason.message
+              );
+            }
           } else {
             const response = await xior.get(url, cacheConfig);
             set({ translation: response.data });

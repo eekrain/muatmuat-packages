@@ -44,7 +44,13 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
     const orderId = dataStatusPesanan.orderId;
     const qrCodeLink = `${window.location.origin}/orders/${orderId}/qr-code`;
     navigator.clipboard.writeText(qrCodeLink);
-    toast.success("Link QR Code Semua Driver Berhasil Disalin");
+    toast.success(
+      t(
+        "StatusPesananHeader.toastQRCodeBerhasilDisalin",
+        {},
+        "Link QR Code Semua Driver Berhasil Disalin"
+      )
+    );
     setIsModalAllDriverOpen(false);
   };
 
@@ -59,11 +65,11 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
     <div className="flex w-full items-end gap-x-3">
       <div className="grid flex-1 grid-cols-[220px_1fr] items-center gap-x-3 gap-y-2">
         <span className="text-xs font-medium leading-[1.2] text-neutral-600">
-          Kode Pesanan
+          {t("StatusPesananHeader.labelKodePesanan", {}, "Kode Pesanan")}
         </span>
 
         <span className="text-xs font-medium leading-[1.2] text-neutral-600">
-          Status Pesanan
+          {t("StatusPesananHeader.labelStatusPesanan", {}, "Status Pesanan")}
         </span>
 
         <span className="text-sm font-bold leading-[16.8px] text-neutral-900">
@@ -99,7 +105,11 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
               <ModalTrigger>
                 <button className="flex items-center gap-x-1">
                   <span className="text-xs font-medium leading-[14.4px] text-primary-700">
-                    Lihat Bukti Pengiriman
+                    {t(
+                      "StatusPesananHeader.linkLihatBuktiPengiriman",
+                      {},
+                      "Lihat Bukti Pengiriman"
+                    )}
                   </span>
                   <IconComponent
                     src="/icons/chevron-right.svg"
@@ -110,12 +120,16 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
               <ModalContent type="muatmuat">
                 <div className="flex w-[472px] flex-col gap-y-6 px-6 py-8">
                   <h1 className="text-center text-base font-bold leading-[19.2px] text-neutral-900">
-                    Bukti Pengiriman Dokumen
+                    {t(
+                      "StatusPesananHeader.modalTitleBuktiPengiriman",
+                      {},
+                      "Bukti Pengiriman Dokumen"
+                    )}
                   </h1>
                   <div className="flex flex-col gap-y-4">
                     <div className="flex flex-col gap-y-3">
                       <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
-                        Tanggal
+                        {t("StatusPesananHeader.labelTanggal", {}, "Tanggal")}
                       </span>
                       <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
                         04 Okt 2024 18:00 WIB
@@ -123,7 +137,11 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
                     </div>
                     <div className="flex flex-col gap-y-3">
                       <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
-                        Foto Bukti Pengiriman
+                        {t(
+                          "StatusPesananHeader.labelFotoBuktiPengiriman",
+                          {},
+                          "Foto Bukti Pengiriman"
+                        )}
                       </span>
                       <div className="flex items-center gap-x-4">
                         <LightboxProvider
@@ -133,13 +151,21 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
                           images={
                             dummyPhoto.length > 1 ? dummyPhoto : undefined
                           }
-                          title="Foto Bukti Pengiriman"
+                          title={t(
+                            "StatusPesananHeader.labelFotoBuktiPengiriman",
+                            {},
+                            "Foto Bukti Pengiriman"
+                          )}
                         >
                           {dummyPhoto.map((image, index) => (
                             <LightboxPreview
                               key={image}
                               image={image}
-                              alt={`Dokumen ${index + 1}`}
+                              alt={`${t(
+                                "StatusPesananHeader.altDokumen",
+                                { index: index + 1 },
+                                "Dokumen {index}"
+                              )}`}
                               className="size-[56px]"
                             />
                           ))}
@@ -150,16 +176,14 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
                     {true ? (
                       <div className="flex flex-col gap-y-3">
                         <span className="text-xs font-semibold leading-[14.4px] text-neutral-900">
-                          Catatan
+                          {t("StatusPesananHeader.labelCatatan", {}, "Catatan")}
                         </span>
                         <p className="text-xs font-medium leading-[14.4px] text-neutral-600">
-                          Kami informasikan bahwa dokumen telah kami kirim dan
-                          saat ini sudah diterima oleh Bapak Ervin Sudjatmiko.
-                          Mohon konfirmasi apabila ada hal yang perlu
-                          ditindaklanjuti lebih lanjut. Kami siap membantu
-                          apabila dibutuhkan klarifikasi atau kelengkapan
-                          tambahan. Terima kasih atas perhatian dan kerja
-                          samanya.
+                          {t(
+                            "StatusPesananHeader.textCatatanContoh",
+                            {},
+                            "Kami informasikan bahwa dokumen telah kami kirim dan saat ini sudah diterima oleh Bapak Ervin Sudjatmiko. Mohon konfirmasi apabila ada hal yang perlu ditindaklanjuti lebih lanjut. Kami siap membantu apabila dibutuhkan klarifikasi atau kelengkapan tambahan. Terima kasih atas perhatian dan kerja samanya."
+                          )}
                         </p>
                       </div>
                     ) : null}
@@ -184,7 +208,11 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
                 )}
               >
                 <span className="text-nowrap text-xs font-medium leading-tight text-black">
-                  Menu Lainnya
+                  {t(
+                    "StatusPesananHeader.buttonMenuLainnya",
+                    {},
+                    "Menu Lainnya"
+                  )}
                 </span>
                 <ChevronDown
                   className={cn(
@@ -197,11 +225,19 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
 
             <SimpleDropdownContent className="max-w-[198px]">
               <SimpleDropdownItem onClick={() => setIsModalAllDriverOpen(true)}>
-                Lihat Semua Driver
+                {t(
+                  "StatusPesananHeader.menuLihatSemuaDriver",
+                  {},
+                  "Lihat Semua Driver"
+                )}
               </SimpleDropdownItem>
               {!dataStatusPesanan.orderStatus.startsWith("CANCELED") && (
                 <SimpleDropdownItem onClick={copyAllDriverQRCodeLink}>
-                  Bagikan QR Code Semua Driver
+                  {t(
+                    "StatusPesananHeader.menuBagikanQRCode",
+                    {},
+                    "Bagikan QR Code Semua Driver"
+                  )}
                 </SimpleDropdownItem>
               )}
             </SimpleDropdownContent>
@@ -229,6 +265,7 @@ const ModalAllDriver = ({
   orderStatus,
   copyAllDriverQRCodeLink,
 }) => {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
 
   const filteredDriverStatus = useMemo(() => {
@@ -245,12 +282,16 @@ const ModalAllDriver = ({
     <Modal open={open} onOpenChange={onOpenChange} closeOnOutsideClick>
       <ModalContent className="p-6">
         <h2 className="mb-3 text-center text-base font-bold leading-[1.2]">
-          Semua Driver
+          {t("StatusPesananHeader.modalTitleSemuaDriver", {}, "Semua Driver")}
         </h2>
 
         <div className="w-[810px] rounded-xl border border-neutral-600 pl-3 pt-3">
           <Input
-            placeholder="Cari Nama Driver/Plat Nomor"
+            placeholder={t(
+              "StatusPesananHeader.placeholderCariDriver",
+              {},
+              "Cari Nama Driver/Plat Nomor"
+            )}
             icon={{ left: "/icons/search.svg" }}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -275,7 +316,11 @@ const ModalAllDriver = ({
           className="ml-auto mt-3"
           onClick={copyAllDriverQRCodeLink}
         >
-          Bagikan QR Code Semua Driver
+          {t(
+            "StatusPesananHeader.buttonBagikanQRCode",
+            {},
+            "Bagikan QR Code Semua Driver"
+          )}
         </Button>
       </ModalContent>
     </Modal>

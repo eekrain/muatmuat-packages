@@ -11,6 +11,7 @@ import TextArea from "@/components/TextArea/TextArea";
 import { usePrevious } from "@/hooks/use-previous";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useSWRMutateHook } from "@/hooks/use-swr";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 
 const DriverRatingForm = ({
@@ -19,6 +20,8 @@ const DriverRatingForm = ({
   onSaveReview,
   index,
 }) => {
+  const { t } = useTranslation();
+
   const handleChangeFormValues = (field, value) => {
     onDriverRatingFormValuesChange(index, field, value);
   };
@@ -57,7 +60,7 @@ const DriverRatingForm = ({
         {/* Rating Column */}
         <div className="flex min-w-[214px] flex-col gap-2">
           <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
-            Rating Driver
+            {t("DriverRatingModal.labelRatingDriver", {}, "Rating Driver")}
           </span>
           <RatingInput
             disabled={!driver.canReview}
@@ -71,14 +74,22 @@ const DriverRatingForm = ({
           {driver.canReview ? (
             <>
               <span className="text-xs font-medium text-neutral-600">
-                Berikan ulasan untuk driver (Opsional)
+                {t(
+                  "DriverRatingModal.labelBerikanUlasan",
+                  {},
+                  "Berikan ulasan untuk driver (Opsional)"
+                )}
               </span>
               <TextArea
                 value={driver.review || "-"}
                 onChange={(e) =>
                   handleChangeFormValues("review", e.target.value)
                 }
-                placeholder="Tulis ulasan kamu mengenai driver"
+                placeholder={t(
+                  "DriverRatingModal.placeholderTulisUlasan",
+                  {},
+                  "Tulis ulasan kamu mengenai driver"
+                )}
                 maxLength={500}
                 height={80}
                 supportiveText={{
@@ -91,7 +102,7 @@ const DriverRatingForm = ({
           ) : (
             <>
               <span className="text-xs font-medium text-neutral-600">
-                Ulasanmu
+                {t("DriverRatingModal.labelUlasanmu", {}, "Ulasanmu")}
               </span>
               <p className="text-xs font-medium leading-3 text-neutral-900">
                 {driver.review || "-"}
@@ -107,7 +118,7 @@ const DriverRatingForm = ({
             onClick={handleSaveDriverReview}
             className="h-8 w-[112px]"
           >
-            Simpan
+            {t("DriverRatingModal.buttonSimpan", {}, "Simpan")}
           </Button>
         </div>
       )}
@@ -116,6 +127,7 @@ const DriverRatingForm = ({
 };
 
 const DriverRatingModal = ({ isOpen, setIsOpen, drivers }) => {
+  const { t } = useTranslation();
   const [driversFormValues, setDriversFormValues] = useState([]);
   const [loadingIndex, setLoadingIndex] = useState(null);
   const previousIsOpen = usePrevious(isOpen);
@@ -143,7 +155,13 @@ const DriverRatingModal = ({ isOpen, setIsOpen, drivers }) => {
   const handleSaveReview = async (index) => {
     const driver = driversFormValues[index];
     if ((driver.rating || 0) === 0) {
-      return toast.error("Rating driver wajib diisi");
+      return toast.error(
+        t(
+          "DriverRatingModal.toastErrorRatingWajib",
+          {},
+          "Rating driver wajib diisi"
+        )
+      );
     }
     setLoadingIndex(index);
     try {
@@ -155,7 +173,16 @@ const DriverRatingModal = ({ isOpen, setIsOpen, drivers }) => {
       });
 
       setIsOpen(false);
-      toast.success("Ulasan berhasil disimpan");
+      toast.success(
+        t(
+          "DriverRatingModal.toastSuccessBerhasilMenyimpan",
+          {},
+          "Berhasil menyimpan ulasan untuk driver"
+        )
+      );
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (err) {
       console.error(err);
     } finally {
@@ -170,7 +197,7 @@ const DriverRatingModal = ({ isOpen, setIsOpen, drivers }) => {
         {/* Header */}
         <div className="w-full text-center">
           <h2 className="text-base font-bold leading-[19.2px] text-neutral-900">
-            Ulasan
+            {t("DriverRatingModal.titleUlasan", {}, "Ulasan")}
           </h2>
         </div>
 

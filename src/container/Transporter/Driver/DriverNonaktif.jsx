@@ -22,8 +22,8 @@ import { ExpiredDocumentWarningModal } from "@/container/Transporter/Driver/Driv
 import { toast } from "@/lib/toast";
 import { getDriverStatusBadge } from "@/lib/utils/driverStatus";
 import { getPhoneNumberStatus } from "@/lib/utils/phoneNumberStatus";
-import { useGetExpiredDriversSummary } from "@/services/Transporter/manajemen-driver/getExpiredDrivers";
 import { useGetNonActiveDriversData } from "@/services/Transporter/manajemen-driver/getNonActiveDriversData";
+import { useGetSimExpiryNotification } from "@/services/Transporter/manajemen-driver/getSimExpiryNotification";
 
 const DriverNonaktif = ({
   onPageChange,
@@ -54,8 +54,8 @@ const DriverNonaktif = ({
     ...sortConfig,
   });
 
-  // Fetch expired drivers summary
-  const { data: summaryData } = useGetExpiredDriversSummary();
+  // Fetch SIM expiry notification
+  const { data: simExpiryData } = useGetSimExpiryNotification();
 
   const getStatusBadge = (status) => {
     const statusConfig = getDriverStatusBadge(status);
@@ -386,7 +386,7 @@ const DriverNonaktif = ({
     setSelectedDriver(null);
   };
 
-  const hasAlert = summaryData?.totalExpiringDrivers > 0;
+  const hasAlert = simExpiryData?.hasNotification;
 
   return (
     <>
@@ -397,10 +397,8 @@ const DriverNonaktif = ({
           <Alert className="mb-4 bg-secondary-100">
             <div className="font-medium">
               Terdapat{" "}
-              <span className="font-bold">
-                {summaryData?.totalExpiringDrivers} Driver
-              </span>{" "}
-              dengan dokumen yang akan segera/telah berakhir.
+              <span className="font-bold">{simExpiryData.total} Driver</span>{" "}
+              dengan masa berlaku SIM yang akan segera/telah berakhir.
               <Link
                 href="/manajemen-driver/expired"
                 className="ml-2 text-primary-700"

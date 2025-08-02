@@ -35,7 +35,11 @@ const RingkasanStatusPesananScreen = ({ dataStatusPesanan }) => {
   return (
     <FormResponsiveLayout
       title={{
-        label: "Ringkasan Status Pesanan",
+        label: t(
+          "RingkasanStatusPesananScreen.titleRingkasanStatusPesanan",
+          {},
+          "Ringkasan Status Pesanan"
+        ),
       }}
       onClickBackButton={() => navigation.pop()}
     >
@@ -48,11 +52,19 @@ const RingkasanStatusPesananScreen = ({ dataStatusPesanan }) => {
           {remainingDrivers > 0 && (
             <div className="flex flex-col gap-4 bg-neutral-50 px-4 py-6">
               <BadgeStatusPesanan variant="muted" className="w-fit">
-                {remainingDrivers} Driver Belum Berangkat
+                {t(
+                  "RingkasanStatusPesananScreen.badgeDriverBelumBerangkat",
+                  { count: remainingDrivers },
+                  "{count} Driver Belum Berangkat"
+                )}
               </BadgeStatusPesanan>
 
               <span className="text-sm font-semibold">
-                Pesanan Anda berada dalam tahap :
+                {t(
+                  "RingkasanStatusPesananScreen.textPesananAndaBeradaDalamTahap",
+                  {},
+                  "Pesanan Anda berada dalam tahap :"
+                )}
               </span>
 
               <BadgeStatusPesanan
