@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { Search } from "lucide-react";
+import { X } from "lucide-react";
 
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
@@ -88,7 +88,7 @@ const FleetSelectionModal = ({
         await updateDriverFleet(driverId, selectedFleetId);
 
         // Success handling
-        toast.success("Berhasil mengubah armada");
+        toast.success("Berhasil memasangkan armada");
         setShowConfirmation(false);
         resetState();
         onClose();
@@ -140,7 +140,7 @@ const FleetSelectionModal = ({
       >
         <ModalContent
           size="small"
-          type="muattrans"
+          type="muatmuat"
           className="h-[508px] w-[472px]"
         >
           <div className="px-6 py-8">
@@ -161,11 +161,27 @@ const FleetSelectionModal = ({
                 {/* Search Input */}
                 <Input
                   type="text"
-                  placeholder="Cari Armada"
+                  placeholder="Cari No.Polisi/Armada"
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
                   icon={{
-                    left: <Search className="h-4 w-4 text-neutral-500" />,
+                    left: (
+                      <IconComponent
+                        src="/icons/datatable-search.svg"
+                        width={12}
+                      />
+                    ),
+                    right:
+                      searchValue.length > 0 ? (
+                        <button
+                          onClick={() => {
+                            setSearchValue("");
+                          }}
+                          className="flex items-center justify-center rounded-full p-0.5 hover:bg-neutral-200"
+                        >
+                          <X className="h-3 w-3 text-neutral-600" />
+                        </button>
+                      ) : null,
                   }}
                   appearance={{
                     containerClassName: "h-8 w-full",
@@ -188,7 +204,11 @@ const FleetSelectionModal = ({
                   ) : fleets.length === 0 ? (
                     <DataNotFound
                       className="h-[321px] gap-y-5"
-                      title="Keyword Tidak Ditemukan Di Sistem"
+                      title={
+                        <>
+                          Keyword Tidak Ditemukan <br /> Di Sistem
+                        </>
+                      }
                     />
                   ) : (
                     fleets.map((fleet) => (
@@ -292,11 +312,10 @@ const FleetSelectionModal = ({
               Apakah Anda yakin ingin memasangkan
             </div>
             <div className="h-[14px] text-center text-sm">
-              <span className="font-bold">{driverName}</span> ke{" "}
               <span className="font-bold">
                 No. Polisi : {selectedFleet?.licensePlate}
               </span>{" "}
-              ?
+              ke <span className="font-bold">{driverName}</span>?
             </div>
             <div className="mt-6 flex items-center gap-2">
               <Button
@@ -355,11 +374,10 @@ const FleetSelectionModal = ({
                 akan terlepas dari armada tersebut.
                 <br />
                 Apakah Anda yakin ingin memasangkan{" "}
-                <span className="font-bold">{driverName}</span> ke{" "}
                 <span className="font-bold">
                   No. Polisi : {fleetWithDriver?.licensePlate}
                 </span>{" "}
-                ?
+                ke <span className="font-bold">{driverName}</span>?
               </div>
             </div>
 

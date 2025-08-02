@@ -130,7 +130,7 @@ const Pagination = ({
       <div className="flex items-center gap-2">
         <span className="text-xs font-semibold text-neutral-600">
           {/* {t("labelTampilkanJumlahData")} */}
-          Tampilkan Jumlah detail
+          Tampilkan Jumlah Data
         </span>
         <div className="flex gap-2">
           {perPageOptions.map((option) => (

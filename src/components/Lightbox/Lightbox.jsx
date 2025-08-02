@@ -248,7 +248,7 @@ export const LightboxPreview = ({
           src="/icons/zoom12.svg"
           width={12}
           height={12}
-          className="text-neutral-500"
+          className="text-neutral-700"
         />
       </div>
     </div>

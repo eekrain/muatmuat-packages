@@ -248,8 +248,12 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
       categories: [
         { key: "truckType", label: "Jenis Truk" },
         { key: "carrierType", label: "Jenis Carrier" },
-        { key: "verificationStatus", label: "Status Nomor Whatsapp" },
-        { key: "driverStatus", label: "Status Driver" },
+        {
+          key: "verificationStatus",
+          label: "Status Nomor Whatsapp",
+          searchable: false,
+        },
+        { key: "driverStatus", label: "Status Driver", searchable: false },
       ],
       data: {
         truckType:

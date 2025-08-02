@@ -99,7 +99,7 @@ const DriverNonaktif = ({
         text: "Ya",
         onClick: () => {
           // Add delete logic here
-          console.log("Driver deleted:", row.id);
+          toast.success("Berhasil menghapus driver");
           setIsConfirmationModalOpen(false);
         },
         classname: "w-[112px]",

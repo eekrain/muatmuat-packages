@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import * as Popover from "@radix-ui/react-popover";
-import { ChevronRight, Search, SlidersHorizontal } from "lucide-react";
+import { ChevronRight, X } from "lucide-react";
 
 import {
   SimpleDropdown,
@@ -11,6 +11,8 @@ import {
 import Checkbox from "@/components/Form/Checkbox";
 import Input from "@/components/Form/Input";
 import { cn } from "@/lib/utils";
+
+import IconComponent from "../IconComponent/IconComponent";
 
 const FilterDropdown = ({
   trigger,
@@ -84,10 +86,13 @@ const FilterDropdown = ({
     );
   };
 
-  const getFilteredItems = (categoryKey) => {
+  const getFilteredItems = (categoryKey, category) => {
     const items = data[categoryKey] || [];
     const query = searchQueries[categoryKey] || "";
-    if (!query || !searchable) return items;
+    // Check if search is enabled for this category (defaults to global searchable prop)
+    const isCategorySearchable =
+      category.searchable !== undefined ? category.searchable : searchable;
+    if (!query || !isCategorySearchable) return items;
 
     return items.filter((item) =>
       item.label.toLowerCase().includes(query.toLowerCase())
@@ -165,13 +170,15 @@ const FilterDropdown = ({
           >
             Filter
           </span>
-          <SlidersHorizontal
-            className={cn(
-              "h-4 w-4",
+          <IconComponent
+            src="/icons/datatable-filter.svg"
+            height={14.33}
+            width={14.33}
+            className={
               totalSelected > 0 && !disabled
                 ? "text-primary-700"
                 : "text-neutral-700"
-            )}
+            }
           />
         </button>
       );
@@ -250,7 +257,9 @@ const FilterDropdown = ({
                   onOpenAutoFocus={(e) => e.preventDefault()}
                 >
                   {/* Search Input */}
-                  {searchable && (
+                  {(category.searchable !== undefined
+                    ? category.searchable
+                    : searchable) && (
                     <div className="p-2.5">
                       <Input
                         type="text"
@@ -263,7 +272,24 @@ const FilterDropdown = ({
                           category.label || ""
                         )}
                         icon={{
-                          left: <Search className="h-4 w-4 text-neutral-500" />,
+                          left: (
+                            <IconComponent
+                              src="/icons/datatable-search.svg"
+                              width={12}
+                            />
+                          ),
+                          right:
+                            searchQueries[category.key] &&
+                            searchQueries[category.key].length > 2 ? (
+                              <button
+                                onClick={() =>
+                                  handleSearchChange(category.key, "")
+                                }
+                                className="flex items-center justify-center rounded-full p-0.5 hover:bg-neutral-200"
+                              >
+                                <X className="h-3 w-3 text-neutral-600" />
+                              </button>
+                            ) : null,
                         }}
                         appearance={{
                           containerClassName: "h-8",
@@ -275,12 +301,12 @@ const FilterDropdown = ({
 
                   {/* Items List */}
                   <div className="overflow-y-auto" style={{ maxHeight }}>
-                    {getFilteredItems(category.key).length === 0 ? (
+                    {getFilteredItems(category.key, category).length === 0 ? (
                       <div className="py-2 text-center text-xs font-medium">
                         {emptyMessage}
                       </div>
                     ) : (
-                      getFilteredItems(category.key).map((item) => (
+                      getFilteredItems(category.key, category).map((item) => (
                         <div
                           key={item.id}
                           className={cn(
