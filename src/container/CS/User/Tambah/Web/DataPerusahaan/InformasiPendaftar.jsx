@@ -16,6 +16,7 @@ import SelectFilterRadix from "@/components/Form/SelectFilterRadix";
 import { MyTextArea } from "@/components/Form/TextArea";
 import { MapContainer } from "@/components/MapContainer/MapContainer";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
+import { useSWRMutateHook } from "@/hooks/use-swr";
 import { toast } from "@/lib/toast";
 
 import { LocationDropdownInput } from "../../InputLocationDropdown/LocationDropdownInput";
@@ -47,12 +48,8 @@ const informasiPendaftarSchema = v.object({
   ),
 
   companyLogo: v.pipe(
-    v.custom((value) => value instanceof File, "Logo Perusahaan wajib diisi"),
-    v.custom((value) => {
-      const validTypes = ["image/jpeg", "image/png"];
-      const maxSize = 10 * 1024 * 1024;
-      return validTypes.includes(value.type) && value.size <= maxSize;
-    }, "Logo harus berupa file JPG/PNG dengan ukuran maksimal 10MB")
+    v.string(),
+    v.minLength(1, "Logo Perusahaan wajib diisi")
   ),
 
   companyName: v.pipe(
@@ -124,7 +121,7 @@ function InformasiPendaftar() {
       registrantPosition: "",
       registrantWhatsapp: "",
       registrantEmail: "",
-      companyLogo: null,
+      companyLogo: "",
       companyName: "",
       businessEntityType: "",
       companyPhone: "",
@@ -135,8 +132,8 @@ function InformasiPendaftar() {
         longitude: 112.7521,
         location: "",
         district: "",
-        city: "",
-        province: "",
+        city: "Surabaya",
+        province: "Jawa Timur",
         postalCode: "",
         placeId: "",
       },
@@ -227,8 +224,42 @@ function InformasiPendaftar() {
     console.log("Form data:", data);
   };
 
-  const handleLogoUpload = (file) => {
-    setValue("companyLogo", file);
+  console.log("Watched values:", watchedValues);
+
+  const { trigger: uploadLogoTrigger, isMutating: isUploadingLogo } =
+    useSWRMutateHook(
+      "v1/orders/upload", // MODIFIED: Endpoint diubah sesuai referensi
+      "POST",
+      undefined,
+      undefined,
+      {
+        onSuccess: (data) => {
+          // MODIFIED: Struktur response diubah sesuai referensi
+          if (data.Data && data.Data.photoUrl) {
+            const imageUrl = data.Data.photoUrl;
+            setValue("companyLogo", imageUrl, { shouldValidate: true });
+            toast.success("Logo berhasil diunggah.");
+          } else {
+            toast.error("Gagal mendapatkan URL gambar dari server.");
+          }
+        },
+        onError: (error) => {
+          const message =
+            error?.response?.data?.Message?.Text || "Gagal mengunggah foto.";
+          toast.error(message);
+          console.error("Upload Error:", error);
+        },
+      }
+    );
+
+  const handleLogoUpload = async (file) => {
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    // Memanggil trigger dari hook SWR. Callback onSuccess/onError akan menangani sisanya.
+    await uploadLogoTrigger(formData);
   };
 
   const handleMapPositionChange = (newCoordinates) => {
@@ -284,7 +315,10 @@ function InformasiPendaftar() {
             <FormContainer>
               <FormLabel required>Logo Perusahaan</FormLabel>
               <div>
-                <ImageUploudWithModal onUploadSuccess={handleLogoUpload} />
+                <ImageUploudWithModal
+                  onSuccess={handleLogoUpload}
+                  initialImageUrl={watchedValues.companyLogo}
+                />
                 {errors.companyLogo && (
                   <p className="mt-1 text-xs font-medium text-error-400">
                     {errors.companyLogo.message}
@@ -360,10 +394,14 @@ function InformasiPendaftar() {
               </div>
 
               <FormLabel required>Kota</FormLabel>
-              <p className="text-xs font-medium">Surabaya</p>
+              <p className="text-xs font-medium">
+                {watchedValues.locationData?.city || "-"}
+              </p>
 
               <FormLabel required>Provinsi</FormLabel>
-              <p className="text-xs font-medium">Jawa Timur</p>
+              <p className="text-xs font-medium">
+                {watchedValues.locationData?.province || "-"}
+              </p>
 
               <FormLabel required>Kode Pos</FormLabel>
               <div>
@@ -445,14 +483,12 @@ function InformasiPendaftar() {
                         </div>
 
                         <Button
+                          type="submit"
                           variant="muattrans-primary"
-                          onClick={() => {
-                            // Handle save location
-                            setIsLocationModalOpen(false);
-                          }}
-                          className="w-fit self-center"
+                          className="px-8"
+                          disabled={isUploadingLogo}
                         >
-                          Simpan Lokasi
+                          {isUploadingLogo ? "Mengunggah..." : "Simpan"}
                         </Button>
                       </div>
                     </div>

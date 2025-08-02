@@ -219,7 +219,7 @@ export const LocationDropdown = ({
       {showClearButton && searchLocationAutoComplete && (
         <button
           type="button"
-          className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full bg-white p-px"
+          className="absolute right-1 top-[5px] rounded-full bg-white p-px"
           onClick={() => setSearchLocationAutoComplete("")}
         >
           <IconComponent src="/icons/close20.svg" width={20} height={20} />
