@@ -1,14 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Button from "@/components/Button/Button";
-import { InputSearch } from "@/components/InputSearch/InputSearch";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { useLocationSearch } from "@/hooks/use-location/use-location-search";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
-import { useTranslation } from "@/hooks/use-translation";
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 
 import { LocationDropdown } from "./LocationDropdown";
+import { SearchPostal } from "./SearchPostal";
 
 const defaultModalConfig = {
   open: false,
@@ -83,9 +82,10 @@ export const LocationDropdownInput = ({
   placeholder,
   needValidateLocationChange,
   showClearButton = false,
+  value,
+  onSelectLocation,
 }) => {
   const [setIsModalSavedLocationManagementOpen] = useState(false);
-  const { t } = useTranslation();
   const [errorMessagePostalCode, setErrorMessagePostalCode] = useState("");
 
   const {
@@ -107,7 +107,13 @@ export const LocationDropdownInput = ({
 
     userSavedLocationResult,
     handleSelectUserSavedLocation,
-  } = useLocationSearch();
+  } = useLocationSearch({ onSelectLocation });
+
+  useEffect(() => {
+    if (value) {
+      setAutoCompleteSearchPhrase(value);
+    }
+  }, [value, setAutoCompleteSearchPhrase]);
 
   const { handleAddToSavedLocation, handleEditLocation } =
     useModalFormSimpanLokasiWeb({
@@ -154,7 +160,7 @@ export const LocationDropdownInput = ({
             </div>
             <div className="min-h-[1px] w-full border border-solid border-stone-300 bg-stone-300" />
 
-            <InputSearch
+            <SearchPostal
               name="search"
               placeholder="Cari Kelurahan/Kecamatan/Kode Pos"
               searchValue={locationPostalCodeSearchPhrase}

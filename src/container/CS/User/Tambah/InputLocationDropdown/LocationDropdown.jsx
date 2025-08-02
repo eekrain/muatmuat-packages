@@ -107,7 +107,7 @@ export const LocationDropdown = ({
       window.removeEventListener("touchmove", handleScrollOrResize);
       window.removeEventListener("resize", handleScrollOrResize);
     };
-  }, [isDropdownSearchOpen]);
+  }, [isDropdownSearchOpen, setIsDropdownSearchOpen]);
 
   const handleInputInteraction = useCallback(() => {
     setIsDropdownSearchOpen(true);
@@ -130,7 +130,7 @@ export const LocationDropdown = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isDropdownSearchOpen]);
+  }, [isDropdownSearchOpen, setIsDropdownSearchOpen]);
 
   const dropdown = (
     <div
@@ -190,18 +190,6 @@ export const LocationDropdown = ({
                 </p>
               </button>
             ))}
-
-          {/* <div className="flex w-full flex-row items-center gap-2.5 rounded-md border border-[#176CF7] px-3 py-2">
-            <IconComponent
-              src="/icons/info16.svg"
-              height={16}
-              width={16}
-              className="text-[#176CF7]"
-            />
-            <p className="capsize text-xxs font-semibold leading-[14.4px] text-[#176CF7]">
-              Input Lokasi yang terdekat dengan Anda
-            </p>
-          </div> */}
         </div>
       </div>
     </div>

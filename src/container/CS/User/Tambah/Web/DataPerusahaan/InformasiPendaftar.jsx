@@ -340,12 +340,12 @@ function InformasiPendaftar() {
                   markerIcon={""}
                   placeholder="Cari lokasi"
                   className="mb-4 w-full"
+                  value={watchedValues.locationData?.location}
+                  onSelectLocation={(location) =>
+                    setValue("locationData.location", location.Title)
+                  }
+                  errorMessage={errors.locationData?.location?.message}
                 />
-                {errors.locationData?.location && (
-                  <p className="mt-1 text-xs font-medium text-error-400">
-                    {errors.locationData.location.message}
-                  </p>
-                )}
               </div>
 
               <FormLabel required>Kecamatan</FormLabel>
@@ -433,6 +433,13 @@ function InformasiPendaftar() {
                             placeholder="Cari lokasi"
                             markerIcon="/icons/marker-lokasi-muat.svg"
                             className="mb-4 w-full"
+                            value={watchedValues.locationData?.location}
+                            onSelectLocation={(location) =>
+                              setValue("locationData.location", location.Title)
+                            }
+                            errorMessage={
+                              errors.locationData?.location?.message
+                            }
                             showClearButton={true}
                           />
                         </div>
