@@ -16,7 +16,6 @@ import SelectFilterRadix from "@/components/Form/SelectFilterRadix";
 import { MyTextArea } from "@/components/Form/TextArea";
 import { MapContainer } from "@/components/MapContainer/MapContainer";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
-import { LocationProvider } from "@/hooks/use-location/use-location";
 import { toast } from "@/lib/toast";
 
 import { LocationDropdownInput } from "../../InputLocationDropdown/LocationDropdownInput";
@@ -337,18 +336,16 @@ function InformasiPendaftar() {
 
               <FormLabel required>Lokasi</FormLabel>
               <div>
-                <LocationProvider>
-                  <LocationDropdownInput
-                    markerIcon={""}
-                    placeholder="Cari lokasi"
-                    className="mb-4 w-full"
-                  />
-                  {errors.locationData?.location && (
-                    <p className="mt-1 text-xs font-medium text-error-400">
-                      {errors.locationData.location.message}
-                    </p>
-                  )}
-                </LocationProvider>
+                <LocationDropdownInput
+                  markerIcon={""}
+                  placeholder="Cari lokasi"
+                  className="mb-4 w-full"
+                />
+                {errors.locationData?.location && (
+                  <p className="mt-1 text-xs font-medium text-error-400">
+                    {errors.locationData.location.message}
+                  </p>
+                )}
               </div>
 
               <FormLabel required>Kecamatan</FormLabel>
@@ -432,13 +429,12 @@ function InformasiPendaftar() {
                           <h3 className="mb-4 text-lg font-semibold">
                             Atur Pin Lokasi
                           </h3>
-                          <LocationProvider>
-                            <LocationDropdownInput
-                              placeholder="Cari lokasi"
-                              markerIcon="/icons/marker-lokasi-muat.svg"
-                              className="mb-4 w-full"
-                            />
-                          </LocationProvider>
+                          <LocationDropdownInput
+                            placeholder="Cari lokasi"
+                            markerIcon="/icons/marker-lokasi-muat.svg"
+                            className="mb-4 w-full"
+                            showClearButton={true}
+                          />
                         </div>
 
                         <Button

@@ -25,6 +25,7 @@ export const LocationDropdown = ({
   markerIcon = "/icons/marker-lokasi-muat.svg",
   placeholder = "Masukkan Lokasi",
   needValidateLocationChange,
+  showClearButton = false,
 }) => {
   const containerRef = useRef(null);
   const inputRef = useRef(null);
@@ -227,6 +228,15 @@ export const LocationDropdown = ({
         icon={{ left: markerIcon }}
         errorMessage={errorMessage}
       />
+      {showClearButton && searchLocationAutoComplete && (
+        <button
+          type="button"
+          className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full bg-white p-px"
+          onClick={() => setSearchLocationAutoComplete("")}
+        >
+          <IconComponent src="/icons/close20.svg" width={20} height={20} />
+        </button>
+      )}
       {isDropdownSearchOpen && dropdownStyle && (
         <Portal>
           <div>{dropdown}</div>

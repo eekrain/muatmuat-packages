@@ -1,11 +1,14 @@
 import { useState } from "react";
 
-import { useLocationContext } from "@/hooks/use-location/use-location";
+import Button from "@/components/Button/Button";
+import { InputSearch } from "@/components/InputSearch/InputSearch";
+import { Modal, ModalContent } from "@/components/Modal/Modal";
+import { useLocationSearch } from "@/hooks/use-location/use-location-search";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
+import { useTranslation } from "@/hooks/use-translation";
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 
 import { LocationDropdown } from "./LocationDropdown";
-import { ModalPostalCode } from "./ModalPostalCode";
 
 const defaultModalConfig = {
   open: false,
@@ -79,8 +82,11 @@ export const LocationDropdownInput = ({
   markerIcon,
   placeholder,
   needValidateLocationChange,
+  showClearButton = false,
 }) => {
   const [setIsModalSavedLocationManagementOpen] = useState(false);
+  const { t } = useTranslation();
+  const [errorMessagePostalCode, setErrorMessagePostalCode] = useState("");
 
   const {
     autoCompleteSearchPhrase,
@@ -101,7 +107,7 @@ export const LocationDropdownInput = ({
 
     userSavedLocationResult,
     handleSelectUserSavedLocation,
-  } = useLocationContext();
+  } = useLocationSearch();
 
   const { handleAddToSavedLocation, handleEditLocation } =
     useModalFormSimpanLokasiWeb({
@@ -132,17 +138,73 @@ export const LocationDropdownInput = ({
         markerIcon={markerIcon}
         placeholder={placeholder}
         needValidateLocationChange={needValidateLocationChange}
+        showClearButton={showClearButton}
       />
 
-      <ModalPostalCode
+      <Modal
         open={isModalPostalCodeOpen}
-        setOpen={setIsModalPostalCodeOpen} // ✅ dikirim ke modal
-        searchValue={locationPostalCodeSearchPhrase}
-        setSearchValue={setLocationPostalCodeSearchPhrase}
-        options={postalCodeAutoCompleteResult}
-        onSelectPostalCode={handleSelectPostalCode}
-        needValidateLocationChange={needValidateLocationChange}
-      />
+        onOpenChange={setIsModalPostalCodeOpen}
+        closeOnOutsideClick={false}
+        withCloseButton={false}
+      >
+        <ModalContent>
+          <div className="relative w-[472px] space-y-6 p-6">
+            <div className="text-center text-sm font-bold">
+              Cari Kelurahan/Kecamatan/Kode Pos
+            </div>
+            <div className="min-h-[1px] w-full border border-solid border-stone-300 bg-stone-300" />
+
+            <InputSearch
+              name="search"
+              placeholder="Cari Kelurahan/Kecamatan/Kode Pos"
+              searchValue={locationPostalCodeSearchPhrase}
+              setSearchValue={setLocationPostalCodeSearchPhrase}
+              icon={{ left: "/icons/search.svg" }}
+              options={postalCodeAutoCompleteResult}
+              getOptionLabel={(option) => option.Description}
+              onSelectValue={(val) =>
+                handleSelectPostalCode(val, needValidateLocationChange)
+              }
+              errorMessage={errorMessagePostalCode}
+            />
+          </div>
+
+          <div className="flex items-center justify-center gap-2 pb-4">
+            {/* Button Batalkan */}
+            <Button
+              variant="muattrans-primary-secondary"
+              onClick={() => {
+                setLocationPostalCodeSearchPhrase("");
+                setErrorMessagePostalCode("");
+                setIsModalPostalCodeOpen(false); // ✅ tutup modal
+              }}
+            >
+              Batal
+            </Button>
+
+            {/* Button Simpan */}
+            <Button
+              variant="muattrans-primary"
+              onClick={() => {
+                if (!locationPostalCodeSearchPhrase) {
+                  setErrorMessagePostalCode(
+                    "Kelurahan/Kecamatan/Kode Pos wajib diisi"
+                  );
+                } else {
+                  setErrorMessagePostalCode("");
+                  handleSelectPostalCode(
+                    locationPostalCodeSearchPhrase,
+                    needValidateLocationChange
+                  );
+                  setIsModalPostalCodeOpen(false); // ✅ tutup modal setelah simpan juga
+                }
+              }}
+            >
+              Simpan
+            </Button>
+          </div>
+        </ModalContent>
+      </Modal>
     </>
   );
 };
