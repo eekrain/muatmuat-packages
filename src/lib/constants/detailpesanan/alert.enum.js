@@ -21,7 +21,8 @@ export const AlertLabelEnum = {
 };
 
 export const AlertInfoEnum = {
-  WAITING_TIME_CHARGE: "Informasi biaya waktu tunggu",
+  // Ini haruse bukan tooltip, tapi button bro
+  // WAITING_TIME_CHARGE: "Informasi biaya waktu tunggu",
   SHOW_QRCODE_DRIVER: "infoShowQrcodeDriver",
   REFUND_IN_PROCESS: "infoRefundInProcess",
   REFUND_COMPLETED: "infoRefundCompleted",

@@ -63,8 +63,7 @@ export const DropdownSearch = ({
     setSearchTerm(e.target.value);
   };
 
-  const contentRef = useRef(null);
-  const contentHeight = useClientHeight({ ref: contentRef, deps: [open] });
+  const { ref: contentRef, height: contentHeight } = useClientHeight();
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>

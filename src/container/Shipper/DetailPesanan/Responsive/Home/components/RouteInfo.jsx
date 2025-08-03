@@ -7,13 +7,10 @@ import {
   BottomSheetHeader,
   BottomSheetTitle,
 } from "@/components/Bottomsheet/BottomSheet";
+import { ButtonMini } from "@/components/Button/ButtonMini";
 import { HalalLogistik } from "@/components/HalalLogistik/HalalLogistik";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import {
-  TimelineContainer,
-  TimelineContentWithButtonDate,
-  TimelineItem,
-} from "@/components/Timeline";
+import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 
 export const RouteInfo = ({ dataDetailPesanan }) => {
   const [mode, setMode] = useState("");
@@ -41,47 +38,44 @@ export const RouteInfo = ({ dataDetailPesanan }) => {
           </div>
           <TimelineContainer>
             {muat.length > 0 && (
-              <TimelineItem
+              <NewTimelineItem
                 variant="bullet"
-                totalLength={2}
                 index={0}
                 activeIndex={0}
-              >
-                <TimelineContentWithButtonDate
-                  appearance={{ titleClassname: "text-xs" }}
-                  title={muat[0].fullAddress}
-                  withButton={
-                    muat.length > 1
-                      ? {
-                          label: "Lihat Lokasi Muat Lainnya",
-                          onClick: () => handleShowMore("muat", muat),
-                        }
-                      : undefined
-                  }
-                />
-              </TimelineItem>
+                title={muat[0].fullAddress}
+                isLast={false}
+                appearance={{ titleClassname: "text-xs" }}
+                buttonDetail={
+                  muat.length > 1 ? (
+                    <ButtonMini
+                      className="mt-1"
+                      onClick={() => handleShowMore("muat", muat)}
+                    >
+                      Lihat Lokasi Muat Lainnya
+                    </ButtonMini>
+                  ) : null
+                }
+              />
             )}
             {bongkar.length > 0 && (
-              <TimelineItem
+              <NewTimelineItem
                 variant="bullet"
-                totalLength={2}
                 index={1}
                 activeIndex={0}
-              >
-                <TimelineContentWithButtonDate
-                  appearance={{ titleClassname: "text-xs" }}
-                  className="pb-0"
-                  title={bongkar[0].fullAddress}
-                  withButton={
-                    bongkar.length > 1
-                      ? {
-                          label: "Lihat Lokasi Bongkar Lainnya",
-                          onClick: () => handleShowMore("bongkar", bongkar),
-                        }
-                      : undefined
-                  }
-                />
-              </TimelineItem>
+                title={bongkar[0].fullAddress}
+                isLast={true}
+                appearance={{ titleClassname: "text-xs" }}
+                buttonDetail={
+                  bongkar.length > 1 ? (
+                    <ButtonMini
+                      className="mt-1"
+                      onClick={() => handleShowMore("bongkar", bongkar)}
+                    >
+                      Lihat Lokasi Bongkar Lainnya
+                    </ButtonMini>
+                  ) : null
+                }
+              />
             )}
           </TimelineContainer>
         </div>
@@ -123,14 +117,15 @@ export const RouteInfo = ({ dataDetailPesanan }) => {
           <div className="px-4">
             <TimelineContainer>
               {bottomSheetData.map((item, index) => (
-                <TimelineItem
+                <NewTimelineItem
                   key={index}
                   variant={mode === "muat" ? "number-muat" : "number-bongkar"}
                   totalLength={bottomSheetData.length}
                   index={index}
-                >
-                  <TimelineContentWithButtonDate title={item.fullAddress} />
-                </TimelineItem>
+                  title={item.fullAddress}
+                  isLast={index === bottomSheetData.length - 1}
+                  appearance={{ titleClassname: "text-xs" }}
+                />
               ))}
             </TimelineContainer>
           </div>

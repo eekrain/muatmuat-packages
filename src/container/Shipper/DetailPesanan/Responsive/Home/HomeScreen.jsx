@@ -68,10 +68,18 @@ const DetailPesananScreen = ({
           ]
         : []),
       ...(dataStatusPesanan?.alerts || [])
-        .map((item) => getAlertMetadata(item?.type, t))
+        .map((item) =>
+          getAlertMetadata({
+            type: item?.type,
+            t,
+            onLihatDetailWaktuTunggu: () => alert("Not implemented yet"),
+            onLihatPerubahan: () => alert("Not implemented yet"),
+          })
+        )
         .filter((val) => Boolean(val)),
     ];
   }, [dataStatusPesanan?.alerts, isShowWaitFleetAlert, t]);
+  console.log("🚀 ~ orderAlerts ~ orderAlerts:", orderAlerts);
 
   return (
     <FormResponsiveLayout

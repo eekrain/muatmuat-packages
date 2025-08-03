@@ -12,6 +12,7 @@ import {
   BottomSheetTrigger,
 } from "@/components/Bottomsheet/BottomSheet";
 import Button from "@/components/Button/Button";
+import { ButtonMini } from "@/components/Button/ButtonMini";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import Checkbox from "@/components/Form/Checkbox";
 import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
@@ -24,12 +25,7 @@ import {
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
 import TextArea from "@/components/TextArea/TextArea";
-import {
-  TimelineContainer,
-  TimelineContentAddress,
-  TimelineContentWithButtonDate,
-  TimelineItem,
-} from "@/components/Timeline";
+import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import VoucherCard from "@/components/Voucher/VoucherCard";
 import VoucherEmptyState from "@/components/Voucher/VoucherEmptyState";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
@@ -732,50 +728,40 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
                   </span>
                 </div>
                 <TimelineContainer>
-                  <TimelineItem
+                  <NewTimelineItem
                     variant="bullet"
                     totalLength={2}
                     index={0}
                     activeIndex={0}
-                  >
-                    <TimelineContentWithButtonDate
-                      title={lokasiMuat?.[0]?.dataLokasi.location.name || ""}
-                      withButton={
-                        lokasiMuat && lokasiMuat.length > 1
-                          ? {
-                              label: "Lihat Lokasi Muat Lainnya",
-                              onClick: () => {
-                                setLocationType("muat");
-                                setIsLocationBottomsheetOpen(true);
-                              },
-                            }
-                          : undefined
-                      }
-                    />
-                  </TimelineItem>
-
-                  <TimelineItem
+                    title={lokasiMuat?.[0]?.dataLokasi.location.name}
+                    buttonDetail={
+                      <ButtonMini
+                        onClick={() => {
+                          setLocationType("muat");
+                          setIsLocationBottomsheetOpen(true);
+                        }}
+                      >
+                        Lihat Lokasi Muat Lainnya
+                      </ButtonMini>
+                    }
+                  />
+                  <NewTimelineItem
                     variant="bullet"
                     totalLength={2}
                     index={1}
                     activeIndex={0}
-                  >
-                    <TimelineContentWithButtonDate
-                      className="pb-0"
-                      title={lokasiBongkar?.[0]?.dataLokasi.location.name || ""}
-                      withButton={
-                        lokasiBongkar && lokasiBongkar.length > 1
-                          ? {
-                              label: "Lihat Lokasi Bongkar Lainnya",
-                              onClick: () => {
-                                setLocationType("bongkar");
-                                setIsLocationBottomsheetOpen(true);
-                              },
-                            }
-                          : undefined
-                      }
-                    />
-                  </TimelineItem>
+                    title={lokasiBongkar?.[0]?.dataLokasi.location.name}
+                    buttonDetail={
+                      <ButtonMini
+                        onClick={() => {
+                          setLocationType("bongkar");
+                          setIsLocationBottomsheetOpen(true);
+                        }}
+                      >
+                        Lihat Lokasi Bongkar Lainnya
+                      </ButtonMini>
+                    }
+                  />
                 </TimelineContainer>
               </OrderSummarySection>
               <OrderSummarySection className="gap-y-3 text-neutral-900">
@@ -1008,9 +994,11 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
               {(locationType === "muat" ? lokasiMuat : lokasiBongkar).map(
                 (item, key) => (
                   <Fragment key={key}>
-                    <TimelineItem
+                    <NewTimelineItem
                       variant={
-                        locationType === "muat" ? "number-muat" : "number-muat"
+                        locationType === "muat"
+                          ? "number-muat"
+                          : "number-bongkar"
                       }
                       totalLength={
                         (locationType === "muat" ? lokasiMuat : lokasiBongkar)
@@ -1018,11 +1006,8 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
                       }
                       index={key}
                       activeIndex={0}
-                    >
-                      <TimelineContentAddress
-                        title={item?.dataLokasi?.location?.name || ""}
-                      />
-                    </TimelineItem>
+                      title={item?.dataLokasi?.location?.name || ""}
+                    />
                   </Fragment>
                 )
               )}

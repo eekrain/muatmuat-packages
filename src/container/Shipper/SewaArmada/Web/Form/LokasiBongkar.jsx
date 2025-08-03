@@ -27,7 +27,7 @@ export const LokasiBongkar = ({ orderStatus, maxLocation }) => {
   const errorLokasiBongkar = useSewaArmadaStore(
     (state) => state.formErrors?.lokasiBongkar
   );
-  const { addLokasi, removeLokasi } = useSewaArmadaActions();
+  const { addLokasi, removeLokasi, setField } = useSewaArmadaActions();
 
   const hasNotDepartedToPickupStatuses = [
     OrderStatusEnum.PREPARE_FLEET,
@@ -82,13 +82,23 @@ export const LokasiBongkar = ({ orderStatus, maxLocation }) => {
         >
           {lokasiBongkar && lokasiBongkar.length > 0
             ? lokasiBongkar.map((item, index) => (
-                <TimelineField.Item index={index} key={index}>
-                  {!(isEditPage && index === 0) && lokasiBongkar.length > 1 && (
-                    <TimelineField.RemoveButton
-                      onClick={() => removeLokasi("lokasiBongkar", index)}
-                    />
-                  )}
-                </TimelineField.Item>
+                <TimelineField.Item
+                  index={index}
+                  key={index}
+                  buttonRemove={
+                    !isEditPage &&
+                    lokasiBongkar.length > 1 && (
+                      <TimelineField.RemoveButton
+                        onClick={() => {
+                          removeLokasi("lokasiBongkar", index);
+                          if (!isEditPage) {
+                            setField("truckTypeId", null);
+                          }
+                        }}
+                      />
+                    )
+                  }
+                />
               ))
             : null}
           {isEditPage &&

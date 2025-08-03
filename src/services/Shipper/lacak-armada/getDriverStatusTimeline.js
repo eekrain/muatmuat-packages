@@ -22,23 +22,23 @@ const apiResult = {
       statusTitle: "Sedang Muat di Lokasi 2",
       licensePlate: "B 1234 CD",
       statusDefinitions: [
-        {
-          mappedOrderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
-          date: new Date().toISOString(),
-        },
-        {
-          mappedOrderStatus: OrderStatusEnum.DOCUMENT_DELIVERY,
-          date: new Date().toISOString(),
-          shippingEvidence: {
-            date: "",
-            photo: [],
-            noted: "",
-          },
-        },
-        {
-          mappedOrderStatus: OrderStatusEnum.PREPARE_DOCUMENT,
-          date: new Date().toISOString(),
-        },
+        // {
+        //   mappedOrderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
+        //   date: new Date().toISOString(),
+        // },
+        // {
+        //   mappedOrderStatus: OrderStatusEnum.DOCUMENT_DELIVERY,
+        //   date: new Date().toISOString(),
+        //   shippingEvidence: {
+        //     date: "",
+        //     photo: [],
+        //     noted: "",
+        //   },
+        // },
+        // {
+        //   mappedOrderStatus: OrderStatusEnum.PREPARE_DOCUMENT,
+        //   date: new Date().toISOString(),
+        // },
         {
           mappedOrderStatus: OrderStatusEnum.UNLOADING,
           children: [

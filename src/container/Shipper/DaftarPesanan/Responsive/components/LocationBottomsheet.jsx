@@ -1,5 +1,3 @@
-import { Fragment } from "react";
-
 import {
   BottomSheet,
   BottomSheetClose,
@@ -7,11 +5,7 @@ import {
   BottomSheetHeader,
   BottomSheetTitle,
 } from "@/components/Bottomsheet/BottomSheet";
-import {
-  TimelineContainer,
-  TimelineContentAddress,
-  TimelineItem,
-} from "@/components/Timeline";
+import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 
 const LocationBottomsheet = ({
   isOpen,
@@ -24,6 +18,7 @@ const LocationBottomsheet = ({
     bongkar: "Lokasi Bongkar",
   };
   const locationLabel = locationLabels[locationType] || "";
+
   return (
     <BottomSheet open={isOpen} onOpenChange={setOpen}>
       <BottomSheetContent>
@@ -33,25 +28,21 @@ const LocationBottomsheet = ({
         </BottomSheetHeader>
         <div className="w-full px-4 pb-6">
           <TimelineContainer>
-            {selectedLocations?.map((item, key) => (
-              <Fragment key={key}>
-                <TimelineItem
+            {selectedLocations?.map((item, key) => {
+              return (
+                <NewTimelineItem
+                  key={key}
                   variant={
                     locationType === "muat" ? "number-muat" : "number-bongkar"
                   }
                   totalLength={selectedLocations.length}
                   index={key}
                   activeIndex={0}
-                >
-                  <TimelineContentAddress
-                    title={item.fullAddress}
-                    className={`whitespace-normal leading-[1.1] ${
-                      key === selectedLocations?.length - 1 ? "pb-0" : ""
-                    }`}
-                  />
-                </TimelineItem>
-              </Fragment>
-            ))}
+                  title={item.fullAddress}
+                  isLast={key === selectedLocations.length - 1}
+                />
+              );
+            })}
           </TimelineContainer>
         </div>
       </BottomSheetContent>

@@ -4,7 +4,12 @@ import {
   AlertTypeEnum,
 } from "@/lib/constants/detailpesanan/alert.enum";
 
-export const getAlertMetadata = (type, t) => {
+export const getAlertMetadata = ({
+  type,
+  t,
+  onLihatDetailWaktuTunggu = () => alert("Not implemented yet"),
+  onLihatPerubahan = () => alert("Not implemented yet"),
+}) => {
   const info = AlertInfoEnum[type];
   if (type === AlertTypeEnum.CONFIRMATION_WAITING_PREPARE_FLEET) return false;
   if (info) return { label: t(AlertLabelEnum[type]), info };
@@ -13,7 +18,7 @@ export const getAlertMetadata = (type, t) => {
     return {
       label: t(AlertLabelEnum.WAITING_TIME_CHARGE),
       button: {
-        onClick: () => alert("Lihat Detail"),
+        onClick: onLihatDetailWaktuTunggu,
         label: "Lihat Detail",
       },
     };
@@ -23,7 +28,7 @@ export const getAlertMetadata = (type, t) => {
     return {
       label: t(AlertLabelEnum.ORDER_CHANGES_CONFIRMATION),
       button: {
-        onClick: () => alert("Lihat Perubahan"),
+        onClick: onLihatPerubahan,
         label: "Lihat Perubahan",
       },
     };

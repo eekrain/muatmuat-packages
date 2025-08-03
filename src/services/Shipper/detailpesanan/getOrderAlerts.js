@@ -19,12 +19,12 @@ const apiResult = {
         //     "Pesanan Anda memiliki tambahan biaya. Mohon selesaikan pembayaran sebelum tanggal <b>18 Juni 2024</b>.",
         //   info: "",
         // },
-        // {
-        //   type: "WAITING_TIME_CHARGE",
-        //   date: "2025-06-02T10:00:00+07:00",
-        //   label: "Driver kamu akan dikenakan biaya waktu tunggu.",
-        //   info: "",
-        // },
+        {
+          type: "WAITING_TIME_CHARGE",
+          date: "2025-06-02T10:00:00+07:00",
+          label: "Driver kamu akan dikenakan biaya waktu tunggu.",
+          info: "",
+        },
         // {
         //   type: "SHOW_QRCODE_DRIVER",
         //   date: "2025-06-03T10:00:00+07:00",

@@ -1,14 +1,11 @@
 import { useRouter } from "next/navigation";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Button from "@/components/Button/Button";
+import { ButtonMini } from "@/components/Button/ButtonMini";
 import ConfirmationModalResponsive from "@/components/Modal/ConfirmationModalResponsive";
-import {
-  TimelineContainer,
-  TimelineContentWithButtonDate,
-  TimelineItem,
-} from "@/components/Timeline";
+import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import DriverStatusBottomsheet from "@/container/Shipper/DaftarPesanan/Responsive/components/DriverStatusBottomsheet";
 import LocationBottomsheet from "@/container/Shipper/DaftarPesanan/Responsive/components/LocationBottomsheet";
 import { useTranslation } from "@/hooks/use-translation";
@@ -106,42 +103,37 @@ const OrderItem = ({
         <div className="flex flex-col gap-y-3">
           <TimelineContainer>
             {firstPickupDropoff.map((item, key) => (
-              <Fragment key={key}>
-                <TimelineItem
-                  variant="bullet"
-                  totalLength={firstPickupDropoff.length}
-                  index={key}
-                  activeIndex={0}
-                >
-                  <TimelineContentWithButtonDate
-                    className={`whitespace-normal text-xs font-semibold leading-[1.1] ${
-                      key === firstPickupDropoff?.length - 1 ? "pb-0" : ""
-                    }`}
-                    title={item?.fullAddress}
-                    withButton={
-                      key === 0 && locations.pickup.length > 1
-                        ? {
-                            label: "Lihat Lokasi Muat Lainnya",
-                            onClick: () => {
-                              setSelectedLocations(locations.pickup);
-                              setLocationType("muat");
-                              setLocationBottomsheetOpen(true);
-                            },
-                          }
-                        : key === 1 && locations.dropoff.length > 1
-                          ? {
-                              label: "Lihat Lokasi Bongkar Lainnya",
-                              onClick: () => {
-                                setSelectedLocations(locations.dropoff);
-                                setLocationType("bongkar");
-                                setLocationBottomsheetOpen(true);
-                              },
-                            }
-                          : null
-                    }
-                  />
-                </TimelineItem>
-              </Fragment>
+              <NewTimelineItem
+                key={key}
+                variant="bullet"
+                isLast={key === firstPickupDropoff.length - 1}
+                index={key}
+                activeIndex={0}
+                title={item?.fullAddress}
+                buttonDetail={
+                  key === 0 && locations.pickup.length > 1 ? (
+                    <ButtonMini
+                      onClick={() => {
+                        setSelectedLocations(locations.pickup);
+                        setLocationType("muat");
+                        setLocationBottomsheetOpen(true);
+                      }}
+                    >
+                      Lihat Lokasi Muat Lainnya
+                    </ButtonMini>
+                  ) : key === 1 && locations.dropoff.length > 1 ? (
+                    <ButtonMini
+                      onClick={() => {
+                        setSelectedLocations(locations.dropoff);
+                        setLocationType("bongkar");
+                        setLocationBottomsheetOpen(true);
+                      }}
+                    >
+                      Lihat Lokasi Bongkar Lainnya
+                    </ButtonMini>
+                  ) : null
+                }
+              />
             ))}
           </TimelineContainer>
           <div className="pl-7">

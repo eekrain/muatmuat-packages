@@ -15,6 +15,7 @@ import {
 } from "@/components/Bottomsheet/BottomSheet";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
+import { ButtonMini } from "@/components/Button/ButtonMini";
 import Card, {
   CardContent,
   CardFooter,
@@ -71,12 +72,7 @@ import {
   TabsTriggerWithSeparator,
 } from "@/components/Tabs/Tabs";
 import TextArea from "@/components/TextArea/TextArea";
-import {
-  TimelineContainer,
-  TimelineContentAddress,
-  TimelineContentWithButtonDate,
-  TimelineItem,
-} from "@/components/Timeline";
+import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import TimelineField from "@/components/Timeline/timeline-field";
 import Toggle from "@/components/Toggle/Toggle";
 import RequestOtp from "@/container/Shipper/RequestOtp/RequestOtp";
@@ -1058,15 +1054,13 @@ const ExampleTimeline = () => {
           </h1>
           <TimelineContainer>
             {dataMuatBongkar.map((item, index) => (
-              <TimelineItem
+              <NewTimelineItem
                 key={index}
                 variant="number-muat"
-                totalLength={dataMuatBongkar.length}
                 index={index}
                 activeIndex={0}
-              >
-                <TimelineContentAddress title={item.title} />
-              </TimelineItem>
+                title={item.title}
+              />
             ))}
           </TimelineContainer>
         </div>
@@ -1077,15 +1071,13 @@ const ExampleTimeline = () => {
           </h1>
           <TimelineContainer>
             {dataMuatBongkar.map((item, index) => (
-              <TimelineItem
+              <NewTimelineItem
                 key={index}
                 variant="number-bongkar"
-                totalLength={dataMuatBongkar.length}
                 index={index}
                 activeIndex={0}
-              >
-                <TimelineContentAddress title={item.title} />
-              </TimelineItem>
+                title={item.title}
+              />
             ))}
           </TimelineContainer>
         </div>
@@ -1096,15 +1088,13 @@ const ExampleTimeline = () => {
           </h1>
           <TimelineContainer>
             {dataMuatBongkar.map((item, index) => (
-              <TimelineItem
+              <NewTimelineItem
                 key={index}
                 variant="bullet"
-                totalLength={dataMuatBongkar.length}
                 index={index}
                 activeIndex={2}
-              >
-                <TimelineContentAddress title={item.title} />
-              </TimelineItem>
+                title={item.title}
+              />
             ))}
           </TimelineContainer>
         </div>
@@ -1116,21 +1106,20 @@ const ExampleTimeline = () => {
             </h1>
             <TimelineContainer>
               {dataCollapsed.map((item, index) => (
-                <TimelineItem
+                <NewTimelineItem
                   key={index}
                   variant="bullet"
-                  totalLength={dataCollapsed.length}
                   index={index}
                   activeIndex={0}
-                >
-                  <TimelineContentWithButtonDate
-                    title={item.title}
-                    withButton={{
-                      label: "Lihat Bukti Muat Barang & POD",
-                      onClick: () => alert("Lihat Bukti Muat Barang & POD"),
-                    }}
-                  />
-                </TimelineItem>
+                  title={item.title}
+                  buttonDetail={
+                    <ButtonMini
+                      onClick={() => alert("Lihat Bukti Muat Barang & POD")}
+                    >
+                      Lihat Bukti Muat Barang & POD
+                    </ButtonMini>
+                  }
+                />
               ))}
             </TimelineContainer>
           </div>
@@ -1139,22 +1128,20 @@ const ExampleTimeline = () => {
             <h1 className="mb-2 text-xl font-bold">Detail Status Driver</h1>
             <TimelineContainer>
               {dataCollapsedWithDate.map((item, index) => (
-                <TimelineItem
+                <NewTimelineItem
                   key={index}
                   variant="bullet-driver-status"
-                  totalLength={dataCollapsedWithDate.length}
                   index={index}
                   activeIndex={0}
-                >
-                  <TimelineContentWithButtonDate
-                    title={item.title}
-                    withButton={item.withButton}
-                    withDate={item.withDate}
-                    onSubtitleClick={() =>
-                      alert(`Tampilkan modal untuk ${item.subtitle}`)
-                    }
-                  />
-                </TimelineItem>
+                  title={item.title}
+                  buttonDetail={
+                    <ButtonMini
+                      onClick={() => alert("Lihat Bukti Muat Barang & POD")}
+                    >
+                      Lihat Bukti Muat Barang & POD
+                    </ButtonMini>
+                  }
+                />
               ))}
             </TimelineContainer>
           </div>
@@ -1206,11 +1193,15 @@ const ExampleTimelineField = () => {
           }
         >
           {muatValues.map((_, index) => (
-            <TimelineField.Item index={index} key={index}>
-              <TimelineField.RemoveButton
-                onClick={() => handleDeleteMuatLocation(index)}
-              />
-            </TimelineField.Item>
+            <TimelineField.Item
+              index={index}
+              key={index}
+              buttonRemove={
+                <TimelineField.RemoveButton
+                  onClick={() => handleDeleteMuatLocation(index)}
+                />
+              }
+            />
           ))}
           <TimelineField.AddButton />
         </TimelineField.Root>
@@ -1223,11 +1214,15 @@ const ExampleTimelineField = () => {
           onAddLocation={handleAddBongkarLocation}
         >
           {bongkarValues.map((_, index) => (
-            <TimelineField.Item index={index} key={index}>
-              <TimelineField.RemoveButton
-                onClick={() => handleDeleteBongkarLocation(index)}
-              />
-            </TimelineField.Item>
+            <TimelineField.Item
+              index={index}
+              key={index}
+              buttonRemove={
+                <TimelineField.RemoveButton
+                  onClick={() => handleDeleteBongkarLocation(index)}
+                />
+              }
+            />
           ))}
           <TimelineField.AddButton />
         </TimelineField.Root>

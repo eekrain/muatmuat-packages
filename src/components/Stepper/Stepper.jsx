@@ -101,8 +101,7 @@ export const StepperContainer = ({ totalStep, activeIndex, children }) => {
  */
 export const StepperItem = ({ step, index }) => {
   const { t } = useTranslation();
-  const { titleWidth, activeIndex, titleHeights, setTitleHeights } =
-    useContext(Context);
+  const { titleWidth, activeIndex, setTitleHeights } = useContext(Context);
 
   const status = useMemo(() => {
     if (step?.status && step.status.startsWith("CANCELED")) return "canceled";
@@ -111,11 +110,7 @@ export const StepperItem = ({ step, index }) => {
     return "inactive";
   }, [step, activeIndex, index]);
 
-  const titleRef = useRef(null);
-  const currentTitleHeight = useClientHeight({
-    ref: titleRef,
-    deps: [step.status],
-  });
+  const { ref: titleRef, height: currentTitleHeight } = useClientHeight();
 
   useEffect(() => {
     if (currentTitleHeight) {

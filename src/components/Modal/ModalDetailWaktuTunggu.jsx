@@ -8,9 +8,11 @@ import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
 
 import { Alert } from "../Alert/Alert";
-import { Modal, ModalContent, ModalTrigger } from "./Modal";
+import { Modal, ModalContent } from "./Modal";
 
 export const ModalDetailWaktuTunggu = ({
+  open,
+  onOpenChange,
   drivers = [
     {
       name: "Daffa Toldo",
@@ -54,12 +56,7 @@ export const ModalDetailWaktuTunggu = ({
   }, 0);
 
   return (
-    <Modal>
-      <ModalTrigger>
-        <span className="text-xs font-medium leading-[14.4px] text-primary-700">
-          Lihat Detail Waktu Tunggu
-        </span>
-      </ModalTrigger>
+    <Modal open={open} onOpenChange={onOpenChange}>
       <ModalContent
         className="flex w-[578px] flex-col gap-y-4 p-6"
         type="muatmuat"
