@@ -2,9 +2,11 @@ import { Fragment } from "react";
 
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import {
   LightboxPreview,
   LightboxProvider,
@@ -63,7 +65,10 @@ export const BottomsheetDocumentShipping = ({ open, onOpenChange }) => {
     <BottomSheet open={open} onOpenChange={onOpenChange}>
       <BottomSheetContent>
         <BottomSheetHeader>
-          {t("titleDocumentShippingEvidence")}
+          <BottomSheetClose />
+          <BottomSheetTitle>
+            {t("titleDocumentShippingEvidence")}
+          </BottomSheetTitle>
         </BottomSheetHeader>
         <div className="flex flex-col gap-y-4 px-4 py-6">
           {documentShippingDetail.map((item, key) => (

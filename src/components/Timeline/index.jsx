@@ -96,8 +96,8 @@ export const NewTimelineItem = ({
       className={cn(
         "grid grid-cols-[16px_1fr] items-center gap-x-2 pb-5",
         buttonDetail && "items-start pb-4",
-        isLast && "pb-0",
-        className
+        className,
+        isLast && "pb-0"
       )}
     >
       <div className="relative flex justify-center">
@@ -146,8 +146,8 @@ export const NewTimelineItem = ({
           <span
             onClick={onClick}
             className={cn(
-              "line-clamp-2 inline-flex text-sm font-semibold text-neutral-900",
-              buttonDetail && "line-clamp-1 break-all md:mt-0.5",
+              "line-clamp-2 text-sm font-semibold text-neutral-900 md:mt-0.5",
+              buttonDetail && "line-clamp-1 break-all md:mt-0",
               onClick && "cursor-pointer",
               appearance.titleClassname
             )}

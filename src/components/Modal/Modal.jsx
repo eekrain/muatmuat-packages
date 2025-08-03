@@ -5,6 +5,7 @@ import { createContext, useContext, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useStackManager } from "@/hooks/use-stack-manager";
 import { cn } from "@/lib/utils";
 
 const ModalContext = createContext(null);
@@ -68,6 +69,10 @@ export const ModalContent = ({
   } = useModal();
   const dialogRef = useRef(null);
 
+  // 2. Use the stack manager hook
+  const stackRef = useRef(null);
+  useStackManager(stackRef, open);
+
   const iconClassnames = {
     muatmuat: "icon-fill-primary-700",
     muatparts: "icon-fill-muat-parts-non-800",
@@ -78,6 +83,7 @@ export const ModalContent = ({
   return (
     <Dialog.Portal>
       <Dialog.Overlay
+        ref={stackRef}
         data-stack-item="true"
         className={cn(
           "fixed inset-0 z-50 bg-black/25",
@@ -88,6 +94,7 @@ export const ModalContent = ({
       />
       <Dialog.Content
         ref={dialogRef}
+        data-stack-content="true"
         onEscapeKeyDown={(e) => {
           const stackItems = Array.from(
             document.querySelectorAll('[data-stack-item="true"]')

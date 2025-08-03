@@ -227,6 +227,7 @@ const config = {
           to: { height: "0" },
         },
 
+        // For Modal
         "overlay-show": {
           from: { opacity: "0" },
           to: { opacity: "1" },
@@ -234,7 +235,7 @@ const config = {
         "content-show": {
           from: {
             opacity: "0",
-            transform: "translate(-50%, -48%) scale(0.96)",
+            transform: "translate(-50%, -50%) scale(0.96)",
           },
           to: { opacity: "1", transform: "translate(-50%, -50%) scale(1)" },
         },
@@ -243,7 +244,7 @@ const config = {
           to: { opacity: "0", transform: "translate(-50%, -50%) scale(0.96)" },
         },
 
-        // --- POPOVER ENTER KEYFRAMES ---
+        // For Popover
         "slide-up-and-fade": {
           from: { opacity: "0", transform: "translateY(2px)" },
           to: { opacity: "1", transform: "translateY(0)" },
@@ -252,8 +253,6 @@ const config = {
           from: { opacity: "0", transform: "translateY(-2px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
-
-        // --- POPOVER EXIT KEYFRAMES ---
         "slide-up-and-fade-out": {
           from: { opacity: "1", transform: "translateY(0)" },
           to: { opacity: "0", transform: "translateY(2px)" },
@@ -269,10 +268,12 @@ const config = {
         "caret-blink": "caret-blink 1s ease-in-out infinite",
         "collapsible-down": "collapsible-down 200ms ease-out",
         "collapsible-up": "collapsible-up 200ms ease-out",
+
+        // For Modal
         "overlay-show": "overlay-show 150ms cubic-bezier(0.16, 1, 0.3, 1)",
         "content-show": "content-show 150ms cubic-bezier(0.16, 1, 0.3, 1)",
         "content-hide": "content-hide 150ms cubic-bezier(0.16, 1, 0.3, 1)",
-        // --- POPOVER ANIMATION UTILITIES ---
+        // For Popover
         "slide-up-and-fade":
           "slide-up-and-fade 150ms cubic-bezier(0.16, 1, 0.3, 1)",
         "slide-down-and-fade":

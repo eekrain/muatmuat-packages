@@ -5,10 +5,12 @@ import { ChevronRight } from "lucide-react";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
   BottomSheetHeader,
+  BottomSheetTitle,
   BottomSheetTrigger,
-} from "@/components/Bottomsheet/Bottomsheet";
+} from "@/components/Bottomsheet/BottomSheet";
 import { useTranslation } from "@/hooks/use-translation";
 import { getStatusPesananMetadata } from "@/lib/normalizers/detailpesanan/getStatusPesananMetadata";
 
@@ -32,7 +34,10 @@ export const BottomsheetStatusLainnya = ({ dataStatusPesanan }) => {
         </button>
       </BottomSheetTrigger>
       <BottomSheetContent>
-        <BottomSheetHeader>Status Lainnya</BottomSheetHeader>
+        <BottomSheetHeader>
+          <BottomSheetClose />
+          <BottomSheetTitle>Status Lainnya</BottomSheetTitle>
+        </BottomSheetHeader>
 
         <div className="flex flex-col gap-4 px-4 py-6">
           {dataStatusPesanan?.otherStatus?.map((status, index) => {

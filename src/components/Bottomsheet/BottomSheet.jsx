@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 
 import { Drawer as BottomSheetPrimitive } from "vaul";
 
+import { useStackManager } from "@/hooks/use-stack-manager";
 import { cn } from "@/lib/utils";
 
 import IconComponent from "../IconComponent/IconComponent";
@@ -16,7 +17,6 @@ export const BottomSheet = (props) => <BottomSheetPrimitive.Root {...props} />;
 
 /**
  * A component that triggers the opening of the bottom sheet.
- * It should be a direct child of the `BottomSheet` component.
  * @param {React.ComponentProps<typeof BottomSheetPrimitive.Trigger>} props
  */
 export const BottomSheetTrigger = (props) => (
@@ -24,26 +24,39 @@ export const BottomSheetTrigger = (props) => (
 );
 
 /**
- * The main content container for the bottom sheet.
+ * The main content container for the bottom sheet. It integrates with the stacking manager.
  * @param {React.ComponentProps<typeof BottomSheetPrimitive.Content>} props
  */
 export const BottomSheetContent = React.forwardRef(
-  ({ className, children, ...props }, ref) => (
-    <BottomSheetPrimitive.Portal>
-      <BottomSheetPrimitive.Overlay className="fixed inset-0 z-50 bg-black/30" />
-      <BottomSheetPrimitive.Content
-        ref={ref}
-        className={cn(
-          "fixed bottom-0 left-0 right-0 z-50 mt-24 flex h-auto flex-col rounded-t-[16px] bg-white",
-          className
-        )}
-        {...props}
-      >
-        <div className="mx-auto mt-4 h-1.5 w-12 flex-shrink-0 rounded-full bg-neutral-300" />
-        {children}
-      </BottomSheetPrimitive.Content>
-    </BottomSheetPrimitive.Portal>
-  )
+  ({ className, children, ...props }, ref) => {
+    const stackRef = useRef(null);
+    // This hook runs on mount and cleans up on unmount to manage stacking.
+    useStackManager(stackRef, true);
+
+    return (
+      <BottomSheetPrimitive.Portal>
+        <BottomSheetPrimitive.Overlay
+          // --- THIS IS THE FIX ---
+          // The stackRef is now correctly attached to the overlay.
+          ref={stackRef}
+          data-stack-item="true"
+          className="fixed inset-0 z-50 bg-black/30"
+        />
+        <BottomSheetPrimitive.Content
+          ref={ref}
+          data-stack-content="true"
+          className={cn(
+            "fixed bottom-0 left-0 right-0 z-50 mt-24 flex h-auto flex-col rounded-t-[16px] bg-white",
+            className
+          )}
+          {...props}
+        >
+          <div className="mx-auto mt-4 h-1.5 w-12 flex-shrink-0 rounded-full bg-neutral-300" />
+          {children}
+        </BottomSheetPrimitive.Content>
+      </BottomSheetPrimitive.Portal>
+    );
+  }
 );
 BottomSheetContent.displayName = "BottomSheetContent";
 
@@ -72,8 +85,7 @@ export const BottomSheetTitle = React.forwardRef((props, ref) => (
 BottomSheetTitle.displayName = "BottomSheetTitle";
 
 /**
- * A pre-styled button with a close icon.
- * Best placed inside the `BottomSheetHeader`.
+ * A pre-styled button that closes the bottom sheet.
  * @param {object} props
  * @param {string} [props.className] - Additional classes for the button.
  */
@@ -94,6 +106,7 @@ export const BottomSheetClose = ({ className }) => (
 BottomSheetClose.displayName = "BottomSheetClose";
 
 /**
+ * A container for the bottom sheet's footer content.
  * @param {React.HTMLAttributes<HTMLDivElement>} props
  */
 export const BottomSheetFooter = ({ className, ...props }) => (

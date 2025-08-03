@@ -389,6 +389,10 @@ const PesananTable = ({
                                       key === firstPickupDropoff.length - 1
                                     }
                                     title={item.fullAddress}
+                                    className="pb-3"
+                                    appearance={{
+                                      titleClassname: "line-clamp-1 break-all",
+                                    }}
                                   />
                                 ))}
                               </TimelineContainer>
@@ -397,7 +401,7 @@ const PesananTable = ({
                                 order.locations.dropoff.length > 1) && (
                                 <button
                                   onClick={() => openLocationModal(order)}
-                                  className="text-xs font-medium text-primary-700"
+                                  className="text-left text-xs font-medium text-primary-700"
                                 >
                                   {t("buttonLihatLokasiLainnya")}
                                 </button>

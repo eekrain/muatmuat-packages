@@ -2,9 +2,11 @@ import { useState } from "react";
 
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import { useTranslation } from "@/hooks/use-translation";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
@@ -33,7 +35,10 @@ export const BottomsheetMenuList = ({
     <>
       <BottomSheet open={open} onOpenChange={onOpenChange}>
         <BottomSheetContent>
-          <BottomSheetHeader>{t("titleMenu")}</BottomSheetHeader>
+          <BottomSheetHeader>
+            <BottomSheetClose />
+            <BottomSheetTitle>{t("titleMenu")}</BottomSheetTitle>
+          </BottomSheetHeader>
           <ul className="my-6 flex flex-col gap-4 px-4 text-sm font-semibold text-neutral-900">
             <Item
               label={t("labelOrderStatusSummary")}
