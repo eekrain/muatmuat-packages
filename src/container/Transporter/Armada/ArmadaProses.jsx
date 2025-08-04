@@ -13,7 +13,10 @@ import {
   SimpleDropdownItem,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
+import { toast } from "@/lib/toast";
 import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
+import { deleteVehicle } from "@/services/Transporter/manajemen-armada/deleteVehicle";
 import { useGetProcessVehiclesData } from "@/services/Transporter/manajemen-armada/getProcessVehiclesData";
 
 const ArmadaProses = ({
@@ -29,9 +32,12 @@ const ArmadaProses = ({
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [searchValue, setSearchValue] = useState("");
   const [filters, setFilters] = useState({});
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [confirmDeleteVehicle, setConfirmDeleteVehicle] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   // Fetch vehicles data with pagination, filters and status
-  const { data, isLoading } = useGetProcessVehiclesData({
+  const { data, isLoading, mutate } = useGetProcessVehiclesData({
     page: currentPage,
     limit: perPage,
     search: searchValue,
@@ -146,7 +152,10 @@ const ArmadaProses = ({
               <>
                 <SimpleDropdownItem onClick={() => {}}>Ubah</SimpleDropdownItem>
                 <SimpleDropdownItem
-                  onClick={() => {}}
+                  onClick={() => {
+                    setSelectedVehicle(row);
+                    setConfirmDeleteVehicle(true);
+                  }}
                   className="text-error-400"
                 >
                   Hapus
@@ -290,29 +299,70 @@ const ArmadaProses = ({
   };
 
   return (
-    <div className="h-[calc(100vh-300px)]">
-      <DataTable
-        data={data?.vehicles || []}
-        columns={columns}
-        searchPlaceholder="Cari No. Polisi, Jenis Truk atau lainnya"
-        totalCountLabel="Armada"
-        currentPage={data?.pagination?.page || currentPage}
-        totalPages={data?.pagination?.totalPages || 1}
-        totalItems={count || data?.pagination?.totalItems || 0}
-        perPage={data?.pagination?.limit || perPage}
-        onPageChange={handlePageChange}
-        onPerPageChange={handlePerPageChange}
-        onSearch={handleSearch}
-        onFilter={handleFilter}
-        onSort={handleSort}
-        loading={isLoading}
-        showPagination
-        showDisplayView={true}
-        displayOptions={getDisplayOptions()}
-        // rowClassName={rowClassName}
-        filterConfig={getFilterConfig()}
+    <>
+      <div className="h-[calc(100vh-300px)]">
+        <DataTable
+          data={data?.vehicles || []}
+          columns={columns}
+          searchPlaceholder="Cari No. Polisi, Jenis Truk atau lainnya"
+          totalCountLabel="Armada"
+          currentPage={data?.pagination?.page || currentPage}
+          totalPages={data?.pagination?.totalPages || 1}
+          totalItems={count || data?.pagination?.totalItems || 0}
+          perPage={data?.pagination?.limit || perPage}
+          onPageChange={handlePageChange}
+          onPerPageChange={handlePerPageChange}
+          onSearch={handleSearch}
+          onFilter={handleFilter}
+          onSort={handleSort}
+          loading={isLoading}
+          showPagination
+          showDisplayView={true}
+          displayOptions={getDisplayOptions()}
+          // rowClassName={rowClassName}
+          filterConfig={getFilterConfig()}
+        />
+      </div>
+
+      <ConfirmationModal
+        isOpen={confirmDeleteVehicle}
+        setIsOpen={setConfirmDeleteVehicle}
+        description={{
+          text: (
+            <p>
+              Apakah kamu yakin ingin menghapus armada <br />
+              <b>No. Polisi: {selectedVehicle?.licensePlate}</b> ?
+            </p>
+          ),
+        }}
+        confirm={{
+          text: "Ya",
+          onClick: async () => {
+            setIsUpdating(true);
+            try {
+              await deleteVehicle(selectedVehicle?.id);
+              toast.success("Armada berhasil dihapus");
+              mutate();
+              setConfirmDeleteVehicle(false);
+              setSelectedVehicle(null);
+            } catch (error) {
+              toast.error("Gagal menghapus armada");
+            } finally {
+              setIsUpdating(false);
+            }
+          },
+          classname: "w-[112px]",
+        }}
+        cancel={{
+          text: "Tidak",
+          onClick: () => {
+            setConfirmDeleteVehicle(false);
+            setSelectedVehicle(null);
+          },
+          classname: "w-[112px]",
+        }}
       />
-    </div>
+    </>
   );
 };
 

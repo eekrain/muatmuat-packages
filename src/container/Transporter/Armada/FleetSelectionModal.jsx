@@ -179,7 +179,7 @@ const FleetSelectionModal = ({
                           }}
                           className="flex items-center justify-center rounded-full p-0.5 hover:bg-neutral-200"
                         >
-                          <X className="h-3 w-3 text-neutral-600" />
+                          <X className="h-4 w-4 text-neutral-600" />
                         </button>
                       ) : null,
                   }}
