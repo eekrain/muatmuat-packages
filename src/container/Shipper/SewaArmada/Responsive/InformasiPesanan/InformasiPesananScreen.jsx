@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 
 import {
@@ -49,15 +50,19 @@ import {
   useSewaArmadaStore,
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
-const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
+const InformasiPesananScreen = ({
+  carriers,
+  trucks,
+  paymentMethods,
+  calculatedPrice,
+}) => {
   const navigation = useResponsiveNavigation();
   const { t } = useTranslation();
-
-  // Get authentication token
   const authToken = useTokenStore((state) => state.accessToken);
-  const token = authToken ? `Bearer ${authToken}` : null;
+  const router = useRouter();
 
   /* voucher state and logic - from HomeScreen */
+  const token = `Bearer ${authToken}` || null;
   const MOCK_EMPTY = false;
   const useMockData = false; // Flag untuk menggunakan mock data - ubah ke false untuk menggunakan API real
 
@@ -68,12 +73,6 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
     error,
     refetch,
   } = useVouchers(token, useMockData, MOCK_EMPTY);
-
-  // Add missing variables for voucher functionality
-  const baseOrderAmount = 950000; // Same as transactionData.biayaPesanJasaAngkut
-  const adminFee = 10000;
-  const [currentTotal, setCurrentTotal] = useState(baseOrderAmount + adminFee);
-  const [voucherDiscount, setVoucherDiscount] = useState(0);
 
   const [isBottomsheetOpen, setIsBottomsheetOpen] = useState(false); // Bottomsheet Voucher
   const [
@@ -94,6 +93,7 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
   const [validationErrors, setValidationErrors] = useState({});
   const [validatingVoucher, setValidatingVoucher] = useState(null);
   /* end voucher state */
+
   // Get state from Zustand store
   const { formValues, formErrors, orderType } = useSewaArmadaStore();
   const {
@@ -116,9 +116,15 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
   } = formValues;
   const { isBusinessEntity, name, taxId } = businessEntity;
 
-  // Calculate tax amount after isBusinessEntity is available
-  const taxAmount = isBusinessEntity ? 21300 : 0; // Match CreateOrderSummaryPanel calculation
-  const baseTotal = baseOrderAmount + adminFee + taxAmount;
+  // Add missing variables for voucher functionality (after isBusinessEntity is available)
+  const baseOrderAmount = calculatedPrice?.transportFee || 950000; // Same as transactionData.biayaPesanJasaAngkut
+  const adminFee = calculatedPrice?.adminFee || 10000;
+  const taxAmount =
+    calculatedPrice?.taxAmount || (isBusinessEntity ? 21300 : 0); // Will be calculated based on business entity
+  const baseTotal =
+    calculatedPrice?.totalPrice || baseOrderAmount + adminFee + taxAmount;
+  const [currentTotal, setCurrentTotal] = useState(baseTotal);
+  const [voucherDiscount, setVoucherDiscount] = useState(0);
 
   // Get actions from Zustand store
   const { setField, setCargoPhotos, validateSecondForm } =
@@ -126,10 +132,10 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
 
   // Voucher useEffect hooks and calculations
   useEffect(() => {
-    console.log("andyzxc");
-    const newTotal = baseTotal - voucherDiscount;
+    // Calculate final total with voucher discount, ensure it's not negative
+    const newTotal = Math.max(0, baseTotal - voucherDiscount);
     setCurrentTotal(newTotal);
-  }, [baseTotal, voucherDiscount]);
+  }, [baseTotal, voucherDiscount, calculatedPrice]);
 
   useEffect(() => {
     if (selectedVoucher && selectedVoucher.isValid) {
@@ -291,56 +297,47 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
 
   const handleCreateOrder = async () => {
     try {
-      // Close the confirmation bottomsheet
       setIsOrderConfirmationBottomsheetOpen(false);
 
-      // Check if we have a valid token
       if (!token) {
-        alert("Token autentikasi tidak ditemukan. Silakan login ulang.");
+        alert("Token tidak ditemukan");
         return;
       }
 
-      // Create calculatedPrice structure to match CreateOrderSummaryPanel
-      const calculatedPrice = {
-        totalPrice: baseOrderAmount,
-        transportFee: baseOrderAmount,
-        insuranceFee: 10000, // Biaya Asuransi
-        additionalServiceFee: [
-          {
-            name: "Kirim Bukti Fisik Penerimaan Barang",
-            price: 35000,
-            totalCost: 35000,
-          },
-          {
-            name: "Bantuan Tambahan",
-            price: 100000,
-            totalCost: 100000,
-          },
-        ],
-        voucher: voucherDiscount,
-        adminFee: adminFee,
-        taxAmount: isBusinessEntity ? 21300 : 0,
+      // Prepare voucher data for payload
+      const voucherData = {
+        voucher: voucherDiscount, // Include voucher discount amount
+        // Include other calculated price fields
+        totalPrice: currentTotal, // Final total after voucher discount
+        transportFee: calculatedPrice?.transportFee,
+        adminFee: calculatedPrice?.adminFee,
+        taxAmount: calculatedPrice?.taxAmount,
+        insuranceFee: calculatedPrice?.insuranceFee,
+        additionalServiceFee: calculatedPrice?.additionalServiceFee,
       };
 
-      // Normalize order data using the existing normalizer (same as CreateOrderSummaryPanel)
-      const orderFleetData = normalizeFleetOrder(
-        orderType || "INSTANT",
-        formValues,
-        calculatedPrice
-      );
+      // Update formValues with selected voucher ID if voucher is selected
+      const updatedFormValues = {
+        ...formValues,
+        voucherId: selectedVoucher?.id || null, // Include voucher ID in payload
+      };
 
-      // Debug: Log the complete order data being sent to API (same as CreateOrderSummaryPanel)
-      console.log("🚀 API Request Debug:", {
-        orderFleetData,
-        cargoPhotos: orderFleetData.cargoPhotos,
-        photoCount: orderFleetData.cargoPhotos?.length || 0,
-        hasPhotos:
-          orderFleetData.cargoPhotos?.some((photo) => photo !== null) || false,
+      console.log("🚀 Creating order with voucher data:", {
+        voucherId: selectedVoucher?.id,
+        voucherCode: selectedVoucher?.code,
+        voucherDiscount: voucherDiscount,
+        originalTotal: baseTotal,
+        finalTotal: currentTotal,
       });
 
-      console.log("Order data with voucher:", orderFleetData);
+      const orderFleetData = normalizeFleetOrder(
+        orderType || "INSTANT",
+        updatedFormValues,
+        voucherData // Pass voucher-adjusted pricing data
+      );
 
-      // Call the API to create order (same as CreateOrderSummaryPanel)
+      console.log("📦 Order payload:", orderFleetData);
+
       const response = await fetcherMuatrans.post(
         "/v1/orders/create",
         orderFleetData,
@@ -349,26 +346,21 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
         }
       );
 
-      console.log("Order creation result:", response);
-
       if (response.data.Message.Code === 200) {
-        // Handle success - redirect to order detail (same as CreateOrderSummaryPanel)
         const orderData = response.data.Data;
-
-        // Navigate to order detail page
-        navigation.push(`/daftarpesanan/detailpesanan/${orderData.orderId}`);
+        console.log("✅ Order created successfully:", orderData);
+        router.push(`/daftarpesanan/detailpesanan/${orderData.orderId}`);
       } else {
-        alert("Validation error from server");
+        console.error("❌ Order creation failed:", response.data);
+        alert(
+          `Gagal membuat pesanan: ${response.data.Message.Text || "Unknown error"}`
+        );
       }
     } catch (error) {
-      console.error("Error creating order:", error);
-
-      // Enhanced error handling (same as CreateOrderSummaryPanel)
-      if (error.response && error.response.data) {
-        alert(`Error: ${error.response.data.Message?.Text || "Unknown error"}`);
-      } else {
-        alert("Terjadi kesalahan. Silakan coba lagi.");
-      }
+      console.error("❌ Error creating order:", error);
+      alert(
+        `Error: ${error.response?.data?.Message?.Text || error.message || "Unknown error"}`
+      );
     }
   };
 
@@ -638,7 +630,9 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
                   {t("labelNominalPesanJasaAngkut")}
                 </span>
                 <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
-                  Rp950.000
+                  {calculatedPrice?.transportFee
+                    ? `Rp${calculatedPrice.transportFee.toLocaleString("id-ID")}`
+                    : "Rp950.000"}
                 </span>
               </div>
             </div>
@@ -653,38 +647,41 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
                   {t("labelNominalPremiAsuransi")}
                 </span>
                 <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
-                  Rp10.000
+                  {calculatedPrice?.insuranceFee
+                    ? `Rp${calculatedPrice.insuranceFee.toLocaleString("id-ID")}`
+                    : "Rp10.000"}
                 </span>
               </div>
             </div>
 
             {/* Biaya Layanan Tambahan */}
-            <div className="flex flex-col gap-y-4">
-              <h3 className="text-sm font-semibold leading-[16.8px] text-neutral-900">
-                {t("titleBiayaLayananTambahan")}
-              </h3>
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex flex-col gap-2">
-                  <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
-                    {t("labelNominalKirimBuktiFisik")}
-                  </span>
-                  <button className="text-left text-xs font-semibold leading-[13.2px] text-primary-700">
-                    {t("buttonLihatDetailPengirimanDokumen")}
-                  </button>
-                </div>
-                <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
-                  Rp35.000
-                </span>
+            {calculatedPrice?.additionalServiceFee?.length > 0 && (
+              <div className="flex flex-col gap-y-4">
+                <h3 className="text-sm font-semibold leading-[16.8px] text-neutral-900">
+                  {t("titleBiayaLayananTambahan")}
+                </h3>
+                {calculatedPrice.additionalServiceFee.map((service, index) => (
+                  <div
+                    className="flex items-start justify-between gap-3"
+                    key={index}
+                  >
+                    <div className="flex flex-col gap-2">
+                      <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
+                        {service.name}
+                      </span>
+                      {service.name.includes("Kirim Bukti Fisik") && (
+                        <button className="text-left text-xs font-semibold leading-[13.2px] text-primary-700">
+                          {t("buttonLihatDetailPengirimanDokumen")}
+                        </button>
+                      )}
+                    </div>
+                    <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
+                      Rp{service.totalCost.toLocaleString("id-ID")}
+                    </span>
+                  </div>
+                ))}
               </div>
-              <div className="flex items-start justify-between gap-3">
-                <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
-                  {t("labelNominalBantuanTambahan")}
-                </span>
-                <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
-                  Rp100.000
-                </span>
-              </div>
-            </div>
+            )}
 
             {/* Diskon Voucher */}
             <div className="flex flex-col gap-y-4">
@@ -692,13 +689,19 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
                 {t("titleDiskonVoucher")}
               </h3>
               <div className="flex items-start justify-between gap-3">
-                {selectedVoucher && voucherDiscount > 0 ? (
+                {(selectedVoucher && voucherDiscount > 0) ||
+                (calculatedPrice?.voucher && calculatedPrice.voucher > 0) ? (
                   <>
                     <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
-                      {t("labelVoucherCode", { code: selectedVoucher.code })}
+                      {selectedVoucher?.code
+                        ? t("labelVoucherCode", { code: selectedVoucher.code })
+                        : "Voucher Discount"}
                     </span>
                     <span className="text-right text-xs font-medium leading-[14.4px] text-error-400">
-                      -{formatCurrency(voucherDiscount)}
+                      -
+                      {formatCurrency(
+                        voucherDiscount || calculatedPrice?.voucher || 0
+                      )}
                     </span>
                   </>
                 ) : (
@@ -726,7 +729,9 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
                   {t("labelAdminLayanan")}
                 </span>
                 <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
-                  Rp10.000
+                  {calculatedPrice?.adminFee
+                    ? `Rp${calculatedPrice.adminFee.toLocaleString("id-ID")}`
+                    : "Rp10.000"}
                 </span>
               </div>
               <div className="flex items-start justify-between gap-3">
@@ -734,7 +739,11 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
                   {t("labelPajak")}
                 </span>
                 <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
-                  {isBusinessEntity ? formatCurrency(21300) : "-"}
+                  {calculatedPrice?.taxAmount
+                    ? `Rp${calculatedPrice.taxAmount.toLocaleString("id-ID")}`
+                    : isBusinessEntity
+                      ? formatCurrency(21300)
+                      : "-"}
                 </span>
               </div>
             </div>
@@ -746,15 +755,7 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
               {t("titleTotalBiaya")}
             </span>
             <span className="text-right text-sm font-semibold leading-[15.4px] text-neutral-900">
-              {formatCurrency(
-                baseOrderAmount +
-                  10000 + // Biaya Asuransi
-                  35000 + // Biaya Layanan Tambahan 1
-                  100000 + // Biaya Layanan Tambahan 2
-                  10000 + // Admin Layanan
-                  (isBusinessEntity ? 21300 : 0) - // Pajak
-                  voucherDiscount // Diskon Voucher
-              )}
+              {`Rp${currentTotal.toLocaleString("id-ID")}`}
             </span>
           </div>
         </div>

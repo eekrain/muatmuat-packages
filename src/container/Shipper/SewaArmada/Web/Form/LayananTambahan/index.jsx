@@ -113,7 +113,7 @@ const LayananTambahan = ({
                               Number(shippingOption?.originalCost) +
                               Number(
                                 shippingDetails.withInsurance
-                                  ? shippingOption.originalInsurance
+                                  ? shippingOption?.originalInsurance
                                   : 0
                               )
                             ).toLocaleString("id-ID")

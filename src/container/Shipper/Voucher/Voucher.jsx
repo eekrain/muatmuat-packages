@@ -22,7 +22,7 @@ export const VoucherContainer = ({
   selectedVoucherId,
   baseOrderAmount,
   onVoucherSelect,
-  useMockData = false, // Add flag for testing
+  useMockData = true, // Add flag for testing
 }) => {
   // Voucher related state and hooks
   const [voucherList, setVoucherList] = useState([]);
@@ -180,7 +180,7 @@ export const VoucherContainer = ({
               />
             </div>
 
-            <div className="max-h-[400px] space-y-3 overflow-y-auto pb-6">
+            <div className="max-h-[400px] space-y-3 overflow-y-auto pb-6 pr-3">
               {loading ? (
                 <div className="text-center text-sm text-gray-500">
                   Memuat voucher...

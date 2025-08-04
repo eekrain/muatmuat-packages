@@ -182,7 +182,7 @@ const DriverRatingModal = ({ isOpen, setIsOpen, drivers }) => {
         )
       );
       setTimeout(() => {
-        router.refresh();
+        window.location.reload();
       }, 1000);
     } catch (err) {
       console.error(err);

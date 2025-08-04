@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import DropdownRadioBottomsheeet from "@/components/Dropdown/DropdownRadioBottomsheeet";
@@ -21,13 +21,20 @@ import {
   useLayananTambahanStore,
 } from "@/store/Shipper/forms/layananTambahanStore";
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
-import { useSewaArmadaActions } from "@/store/Shipper/forms/sewaArmadaStore";
+import {
+  useSewaArmadaActions,
+  useSewaArmadaStore,
+} from "@/store/Shipper/forms/sewaArmadaStore";
 
 const LayananTambahanScreen = ({ additionalServicesOptions }) => {
   const { t } = useTranslation();
   const navigation = useResponsiveNavigation();
   const isMountedRef = useRef(true);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Local state for handling form errors
+  const [localFormErrors, setLocalFormErrors] = useState({});
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const { setField: sewaArmadaSetField } = useSewaArmadaActions();
 
@@ -47,6 +54,15 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
     validateLayananTambahan,
     setLocationPartial,
   } = useLocationFormStore();
+
+  // SewaArmada store for additionalServices
+  const additionalServices = useSewaArmadaStore(
+    (s) => s.formValues.additionalServices
+  );
+  const shippingDetailsLocation = useSewaArmadaStore(
+    (s) => s.formValues?.shippingDetailsLocation
+  );
+  const { setField: setSewaArmadaField } = useSewaArmadaActions();
 
   const { data: shippingOptionsData, trigger: fetchShippingOptions } =
     useSWRMutateHook(
@@ -69,6 +85,92 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
     );
 
   const shippingOptions = shippingOptionsData?.Data.shippingOptions || [];
+
+  // Clear opsi pengiriman error when user selects an option
+  useEffect(() => {
+    if (tambahanFormValues.opsiPegiriman && localFormErrors.opsiPegiriman) {
+      setLocalFormErrors((prev) => ({
+        ...prev,
+        opsiPegiriman: undefined,
+      }));
+    }
+  }, [tambahanFormValues.opsiPegiriman, localFormErrors.opsiPegiriman]);
+
+  // Initialize form with existing values from store (run once after mount)
+  useEffect(() => {
+    if (isInitialized) return;
+
+    console.log("🔄 LayananTambahan - Initializing form with existing data");
+
+    const existingShippingService = additionalServices.find(
+      (service) => service.withShipping
+    );
+
+    if (existingShippingService && existingShippingService.shippingDetails) {
+      console.log("✅ Found existing shipping service, populating form");
+      const { shippingDetails } = existingShippingService;
+
+      // Set kirimBuktiFisik checkbox to true
+      tambahanSetField("kirimBuktiFisik", true);
+
+      // Set asuransi pengiriman
+      if (shippingDetails.withInsurance) {
+        tambahanSetField("asuransiPengiriman", true);
+      }
+
+      // Try to reconstruct opsi pengiriman from stored data
+      if (existingShippingService.shippingCost) {
+        const shippingCost = existingShippingService.shippingCost;
+        const priceString = `Rp${shippingCost.toLocaleString("id-ID")}`;
+
+        const foundOption = shippingOptions
+          .flatMap((category) => category.expeditions)
+          .find((option) => option.price === priceString);
+
+        if (foundOption) {
+          tambahanSetField("opsiPegiriman", foundOption);
+        }
+      }
+    } else {
+      console.log("ℹ️ No existing shipping service found");
+    }
+
+    setIsInitialized(true);
+  }, [additionalServices, isInitialized, tambahanSetField, shippingOptions]);
+
+  // Populate location form from shippingDetailsLocation (separate from initialization)
+  useEffect(() => {
+    if (!isInitialized || !shippingDetailsLocation) return;
+
+    console.log("🔄 Populating location form from shippingDetailsLocation");
+
+    // Only populate if current form is empty to avoid overriding user changes
+    if (!locationFormValues.namaPIC && shippingDetailsLocation.namaPIC) {
+      locationSetField("namaPIC", shippingDetailsLocation.namaPIC);
+    }
+    if (!locationFormValues.noHPPIC && shippingDetailsLocation.noHPPIC) {
+      locationSetField("noHPPIC", shippingDetailsLocation.noHPPIC);
+    }
+    if (
+      !locationFormValues.detailLokasi &&
+      shippingDetailsLocation.detailLokasi
+    ) {
+      locationSetField("detailLokasi", shippingDetailsLocation.detailLokasi);
+    }
+
+    // Set dataLokasi if exists and current dataLokasi is empty
+    if (shippingDetailsLocation.dataLokasi && !locationFormValues.dataLokasi) {
+      locationSetField("dataLokasi", shippingDetailsLocation.dataLokasi);
+    }
+  }, [
+    isInitialized,
+    shippingDetailsLocation,
+    locationFormValues.namaPIC,
+    locationFormValues.noHPPIC,
+    locationFormValues.detailLokasi,
+    locationFormValues.dataLokasi,
+    locationSetField,
+  ]);
 
   // Cleanup effect to handle component unmount
   useShallowCompareEffect(() => {
@@ -109,94 +211,187 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
     }
   }, [shippingOptions, sewaArmadaSetField]);
 
-  const handleSaveLayananTambahan = () => {
-    // Prevent multiple rapid clicks
-    if (!isMountedRef.current || isSaving) {
-      return;
-    }
+  // NOTE: Removed automatic useEffect clearing to prevent data loss
+  // Data clearing now ONLY happens on manual user action via handleKirimBuktiFisikChange
 
-    setIsSaving(true);
+  // Handle kirimBuktiFisik checkbox change - ONLY clear data on manual uncheck
+  const handleKirimBuktiFisikChange = (checked) => {
+    console.log("👤 User manually changed kirimBuktiFisik to:", checked);
 
-    // Validate location form first
-    const isLocationFormValid = validateLayananTambahan();
+    // Always update the checkbox state
+    tambahanSetField("kirimBuktiFisik", checked);
 
-    // Validate tambahan form if kirimBuktiFisik is enabled
-    let isTambahanFormValid = true;
-    if (tambahanFormValues.kirimBuktiFisik) {
-      const tambahanErrors = {};
+    // When unchecked, ONLY remove from store but KEEP form data for reuse
+    if (!checked) {
+      console.log(
+        "📝 User unchecked - removing service from store but keeping form data"
+      );
 
-      // Validate opsiPegiriman is required when kirimBuktiFisik is true
-      if (!tambahanFormValues.opsiPegiriman) {
-        tambahanErrors.opsiPegiriman = "Opsi pengiriman wajib diisi";
-        isTambahanFormValid = false;
+      // Remove service from store
+      const existingShippingService = additionalServices.find(
+        (service) => service.withShipping
+      );
+      if (existingShippingService) {
+        console.log("🗑️ Removing shipping service from store");
+        const updatedServices = additionalServices.filter(
+          (service) => !service.withShipping
+        );
+        setSewaArmadaField("additionalServices", updatedServices);
+        setSewaArmadaField("shippingDetailsLocation", null);
       }
 
-      // Update tambahan form errors
-      tambahanSetErrors(tambahanErrors);
-    } else {
-      // Clear opsiPegiriman error if kirimBuktiFisik is disabled
-      tambahanSetErrors({ opsiPegiriman: undefined });
+      // Clear any validation errors
+      setLocalFormErrors({});
+
+      // NOTE: Form data (opsiPegiriman, namaPIC, etc.) is preserved
+      // User can recheck and data will still be there
+      console.log("✅ Form data preserved for future use");
     }
+  };
+
+  const handleSaveLayananTambahan = () => {
+    console.log("💾 handleSaveLayananTambahan - Starting save process");
+    console.log("📝 Current form values:", {
+      kirimBuktiFisik: tambahanFormValues.kirimBuktiFisik,
+      opsiPegiriman: tambahanFormValues.opsiPegiriman,
+      asuransiPengiriman: tambahanFormValues.asuransiPengiriman,
+      locationFormValues: locationFormValues,
+    });
+
+    const isLocationFormValid = validateLayananTambahan();
+
+    // Validate tambahan form - opsi pengiriman wajib jika kirim bukti fisik dicentang
+    const tambahanErrors = {};
+    if (
+      tambahanFormValues.kirimBuktiFisik &&
+      !tambahanFormValues.opsiPegiriman
+    ) {
+      tambahanErrors.opsiPegiriman = "Opsi Pengiriman wajib dipilih";
+    }
+
+    // Set errors to local state for UI display
+    setLocalFormErrors(tambahanErrors);
+
+    const isTambahanFormValid = Object.keys(tambahanErrors).length === 0;
+
+    console.log("🔍 Validation results:", {
+      isLocationFormValid,
+      isTambahanFormValid,
+      locationFormErrors,
+      tambahanErrors,
+    });
 
     if (!isLocationFormValid || !isTambahanFormValid) {
       // Count total errors from both form stores
       const locationErrorCount = Object.keys(locationFormErrors || {}).filter(
         (key) => locationFormErrors[key]
       ).length;
-      const tambahanErrorCount = Object.keys(tambahanFormErrors || {}).filter(
-        (key) => tambahanFormErrors[key]
-      ).length;
+      const tambahanErrorCount = Object.keys(tambahanErrors).length;
       const totalErrors = locationErrorCount + tambahanErrorCount;
+
+      console.log("❌ Validation failed. Total errors:", totalErrors);
 
       // Show toast if there are multiple errors
       if (totalErrors > 1) {
         toast.error(t("messageFieldKosong"));
       }
-      setIsSaving(false);
       return;
     }
 
-    // If all validations pass, save to sewaArmadaStore and navigate back
-    if (isMountedRef.current) {
-      try {
-        // Save tambahan form values to sewaArmadaStore
-        Object.entries(tambahanFormValues).forEach(([key, value]) => {
-          sewaArmadaSetField(key, value);
-        });
+    console.log("✅ Validation passed, proceeding to save");
 
-        // Save location form values to sewaArmadaStore
-        Object.entries(locationFormValues).forEach(([key, value]) => {
-          sewaArmadaSetField(key, value);
-        });
+    // Create newAdditionalService if kirimBuktiFisik is checked - similar to DeliveryEvidenceModal
+    if (
+      tambahanFormValues.kirimBuktiFisik &&
+      tambahanFormValues.opsiPegiriman
+    ) {
+      console.log("🚚 Creating shipping service");
 
-        // Navigate back using the same approach as InformasiMuatanScreen
-        navigation.popTo("/");
-      } catch (error) {
-        console.error("Error saving layanan tambahan:", error);
-        // If navigation fails, try fallback methods
-        try {
-          if (
-            typeof window !== "undefined" &&
-            window.history &&
-            window.history.length > 1
-          ) {
-            window.history.back();
-          } else {
-            navigation.pop();
-          }
-        } catch (fallbackError) {
-          console.error("Fallback navigation error:", fallbackError);
-          if (typeof window !== "undefined") {
-            window.location.href = "/";
-          }
+      const sendDeliveryEvidenceService = additionalServicesOptions.find(
+        (item) => item.withShipping
+      );
+
+      if (sendDeliveryEvidenceService) {
+        const shippingPrice = parseInt(
+          tambahanFormValues.opsiPegiriman.price.replace(/[^\d]/g, "")
+        );
+        const insurancePrice = tambahanFormValues.asuransiPengiriman
+          ? 10000
+          : 0;
+
+        const newAdditionalService = {
+          serviceId: sendDeliveryEvidenceService.additionalServiceId,
+          withShipping: sendDeliveryEvidenceService.withShipping,
+          shippingCost: Number(shippingPrice),
+          shippingDetails: {
+            shippingOptionId: tambahanFormValues.opsiPegiriman.id || null,
+            withInsurance: tambahanFormValues.asuransiPengiriman,
+            ...(tambahanFormValues.asuransiPengiriman && {
+              insuranceCost: insurancePrice,
+            }),
+            recipientName: locationFormValues.namaPIC,
+            recipientPhone: locationFormValues.noHPPIC,
+            destinationAddress: locationFormValues.dataLokasi.location.name,
+            detailAddress: locationFormValues.detailLokasi,
+            district: locationFormValues.dataLokasi.district.name,
+            city: locationFormValues.dataLokasi.city.name,
+            province: locationFormValues.dataLokasi.province.name,
+            postalCode: locationFormValues.dataLokasi.postalCode.name,
+            latitude: locationFormValues.dataLokasi.coordinates.latitude,
+            longitude: locationFormValues.dataLokasi.coordinates.longitude,
+          },
+        };
+
+        console.log("📦 New additional service created:", newAdditionalService);
+
+        const existingIndex = additionalServices.findIndex(
+          (service) => service.serviceId === newAdditionalService.serviceId
+        );
+
+        if (existingIndex !== -1) {
+          // Update existing service
+          console.log("🔄 Updating existing service at index:", existingIndex);
+          const updatedServices = [...additionalServices];
+          updatedServices[existingIndex] = newAdditionalService;
+          setSewaArmadaField("additionalServices", updatedServices);
+        } else {
+          // Add new service
+          console.log("➕ Adding new service");
+          setSewaArmadaField("additionalServices", [
+            newAdditionalService,
+            ...additionalServices,
+          ]);
         }
-      } finally {
-        setIsSaving(false);
+
+        // Set shipping details location - same as DeliveryEvidenceModal
+        console.log("📍 Setting shipping details location");
+        setSewaArmadaField("shippingDetailsLocation", locationFormValues);
       }
-    } else {
-      // Reset saving state if component is unmounted
-      setIsSaving(false);
+    } else if (!tambahanFormValues.kirimBuktiFisik) {
+      console.log(
+        "📝 Kirim bukti fisik not checked, saving without shipping service"
+      );
     }
+
+    // Clear errors on successful validation
+    setLocalFormErrors({});
+    console.log("✅ Save process completed successfully");
+
+    // Navigate back and remove LayananTambahan from URL
+    console.log("🔙 Navigating back from LayananTambahan");
+
+    // Use popTo root to ensure clean navigation
+    navigation.popTo("/");
+
+    // // Alternative: Clean URL manually if needed
+    // setTimeout(() => {
+    //   const url = new URL(window.location);
+    //   if (url.searchParams.get("screen")?.includes("LayananTambahan")) {
+    //     url.searchParams.delete("screen");
+    //     window.history.replaceState({}, "", url.toString());
+    //     console.log("🧹 Cleaned LayananTambahan from URL");
+    //   }
+    // }, 50);
   };
 
   const otherAdditionalServices = useShallowMemo(
@@ -233,10 +428,14 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
     "Detail Alamat Tujuan minimal 3 karakter": "errorDetailAlamatTujuanMin3",
     "Kecamatan wajib diisi": "errorKecamatanRequired",
     "Kode Pos wajib diisi": "errorKodePosRequired",
+    "Opsi Pengiriman wajib dipilih": "errorOpsiPengirimanRequired",
   };
 
   return (
     <FormResponsiveLayout
+      onClickBackButton={() => {
+        navigation.popTo("/");
+      }}
       title={{
         label: t("titleLayananTambahanScreen"), // Layanan Tambahan
       }}
@@ -250,7 +449,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
               <Checkbox
                 label={t("checkboxKirimBuktiFisik")} // Kirim Bukti Fisik Penerimaan Barang
                 checked={tambahanFormValues.kirimBuktiFisik}
-                onChange={(e) => tambahanSetField("kirimBuktiFisik", e.checked)}
+                onChange={(e) => handleKirimBuktiFisikChange(e.checked)}
               />
 
               <InfoBottomsheet title={t("checkboxKirimBuktiFisik")}>
@@ -634,9 +833,17 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                   />
                 ) : null}
               </div>
-              {tambahanFormErrors?.opsiPegiriman ? (
+              {tambahanFormErrors?.opsiPegiriman ||
+              localFormErrors?.opsiPegiriman ? (
                 <span className="text-xs font-medium leading-[13.2px] text-error-400">
-                  {tambahanFormErrors?.opsiPegiriman}
+                  {t(
+                    errorMessageMap[
+                      tambahanFormErrors?.opsiPegiriman ||
+                        localFormErrors?.opsiPegiriman
+                    ] ||
+                      tambahanFormErrors?.opsiPegiriman ||
+                      localFormErrors?.opsiPegiriman
+                  )}
                 </span>
               ) : null}
             </div>

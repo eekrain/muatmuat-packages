@@ -20,10 +20,17 @@ export const SewaArmadaForm = ({
   trucks,
   additionalServicesOptions,
   handleCheckLoggedIn,
+  calculatedPrice,
 }) => {
   const navigation = useResponsiveNavigation();
   const formValues = useSewaArmadaStore((state) => state.formValues);
   const { addLokasi, removeLokasi } = useSewaArmadaActions();
+
+  console.log("💼 SewaArmadaForm - calculatedPrice:", calculatedPrice);
+  console.log(
+    "💼 SewaArmadaForm - additionalServices:",
+    formValues.additionalServices
+  );
   const { setField: setInformasiMuatanField } = useInformasiMuatanStore();
   const validateLokasiOnSelect = useLocationFormStore(
     (s) => s.validateLokasiOnSelect
@@ -278,7 +285,31 @@ export const SewaArmadaForm = ({
               const currentService = additionalServicesOptions.find(
                 (item) => item.additionalServiceId === service.serviceId
               );
-              const cost = service.withShipping ? 35000 : currentService?.price;
+
+              // Use calculatedPrice if available (like CreateOrderSummaryPanel.jsx)
+              let cost = 0;
+              let serviceName = currentService?.name || "Unknown Service";
+
+              if (calculatedPrice?.additionalServiceFee?.length > 0) {
+                // Find matching service from calculatedPrice by serviceId
+                const calculatedService =
+                  calculatedPrice.additionalServiceFee.find((item) => {
+                    // Match by service name since API might not return serviceId
+                    return item.name === currentService?.name;
+                  });
+
+                if (calculatedService) {
+                  cost = calculatedService.totalCost;
+                  serviceName = calculatedService.name;
+                } else {
+                  // Fallback to old logic
+                  cost = service.withShipping ? 35000 : currentService?.price;
+                }
+              } else {
+                // Fallback to old logic when calculatedPrice not available
+                cost = service.withShipping ? 35000 : currentService?.price;
+              }
+
               return (
                 <div
                   className="flex items-center justify-between gap-x-2"
@@ -291,7 +322,7 @@ export const SewaArmadaForm = ({
                       </span>
                     </div>
                     <div className="max-w-[176px] flex-1 truncate text-sm font-semibold leading-[1.1] text-neutral-900">
-                      {currentService?.name}
+                      {serviceName}
                     </div>
                   </div>
                   <span className="text-sm font-semibold leading-[1.1] text-neutral-900">

@@ -12,6 +12,7 @@ import {
 import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import { MapWithPath } from "@/components/MapContainer/MapWithPath";
+import { useTranslation } from "@/hooks/use-translation";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import {
   useResponsiveNavigation,
@@ -25,6 +26,7 @@ import { EstimatedArrival } from "./EstimatedArrival";
 import { MarkerLegends } from "./components/MarkerLegends";
 
 const LacakArmadaScreen = ({ dataStatusPesanan }) => {
+  const { t } = useTranslation();
   const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
 
@@ -47,7 +49,7 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
   return (
     <FormResponsiveLayout
       title={{
-        label: "Lacak Armada",
+        label: t("LacakArmadaScreen.titleLacakArmada", {}, "Lacak Armada"),
       }}
       withMenu={{
         onClickInfo: () => setIsOpenBottomsheet(true),
@@ -56,7 +58,11 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
     >
       {isShowEstimatedArrival && (
         <EstimatedArrival
-          label={`Estimasi Tiba di<br/>Lokasi ${"Bongkar"}`}
+          label={t(
+            "LacakArmadaScreen.labelEstimasiTibaLokasi",
+            { lokasi: "Bongkar" },
+            "Estimasi Tiba di<br/>Lokasi {lokasi}"
+          )}
           arrivalTime={formatDate(new Date().toISOString())}
         />
       )}
@@ -114,7 +120,11 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
           }
           type="button"
         >
-          Detail Status Driver
+          {t(
+            "LacakArmadaScreen.buttonDetailStatusDriver",
+            {},
+            "Detail Status Driver"
+          )}
         </Button>
       </ResponsiveFooter>
     </FormResponsiveLayout>

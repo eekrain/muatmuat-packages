@@ -28,6 +28,7 @@ const SewaArmadaHomeScreen = ({
   carriers,
   trucks,
   additionalServicesOptions,
+  calculatedPrice,
 }) => {
   const router = useRouter();
   const { dataUser } = useAuth();
@@ -49,11 +50,12 @@ const SewaArmadaHomeScreen = ({
   // Voucher management
   const voucherManagement = useVoucher({
     token: "Bearer your_token_here",
+    baseOrderAmount: calculatedPrice?.transportFee || 950000,
+    adminFee: calculatedPrice?.adminFee || 10000,
+    taxAmount: calculatedPrice?.taxAmount || 0,
+    calculatedPriceTotal: calculatedPrice?.totalPrice,
     useMockData: false,
     mockEmpty: false,
-    baseOrderAmount: 5000000,
-    adminFee: 10000,
-    taxAmount: 21300,
   });
   const [isShowTransactionSummary, setIsShowTransactionSummary] =
     useState(false);
@@ -131,6 +133,7 @@ const SewaArmadaHomeScreen = ({
           trucks={trucks}
           additionalServicesOptions={additionalServicesOptions}
           handleCheckLoggedIn={handleCheckLoggedIn}
+          calculatedPrice={calculatedPrice}
         />
       </div>
 
@@ -143,6 +146,8 @@ const SewaArmadaHomeScreen = ({
         onRecommendedTruckClick={() => setRecommendedTruckBottomsheetOpen(true)}
         parentRef={parentRef}
         trucks={trucks}
+        calculatedPrice={calculatedPrice}
+        currentTotal={voucherManagement.currentTotal}
       />
 
       {/* Voucher Selection BottomSheet */}

@@ -217,24 +217,30 @@ export const useSewaArmadaStore = create(
             }
 
             if (businessEntity.isBusinessEntity) {
-              newErrors.businessEntity = {};
+              const businessEntityErrors = {};
+
               if (!businessEntity.name.trim()) {
-                newErrors.businessEntity.name =
+                businessEntityErrors.name =
                   "Nama badan usaha/perusahaan wajib diisi";
               } else if (businessEntity.name.trim().length < 3) {
-                newErrors.businessEntity.name =
+                businessEntityErrors.name =
                   "Nama badan usaha/perusahaan minimal 3 karakter";
               } else if (/[^a-zA-Z\s]/.test(businessEntity.name)) {
-                newErrors.businessEntity.name =
+                businessEntityErrors.name =
                   "Nama badan usaha/perusahaan tidak valid";
               }
 
               if (!businessEntity.taxId.trim()) {
-                newErrors.businessEntity.taxId = "Nomor NPWP wajib diisi";
+                businessEntityErrors.taxId = "Nomor NPWP wajib diisi";
               } else if (businessEntity.taxId.trim().length < 15) {
-                newErrors.businessEntity.taxId = "Nomor NPWP minimal 15 digit";
+                businessEntityErrors.taxId = "Nomor NPWP minimal 15 digit";
               } else if (businessEntity.taxId.trim().length > 16) {
-                newErrors.businessEntity.taxId = "Nomor NPWP maksimal 16 digit";
+                businessEntityErrors.taxId = "Nomor NPWP maksimal 16 digit";
+              }
+
+              // Only add businessEntity to newErrors if there are actual errors
+              if (Object.keys(businessEntityErrors).length > 0) {
+                newErrors.businessEntity = businessEntityErrors;
               }
             }
 

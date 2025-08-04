@@ -230,6 +230,7 @@ const Page = () => {
         paymentMethods={paymentMethods}
         carriers={carriers}
         trucks={trucks || tempTrucks}
+        calculatedPrice={calculatedPrice}
         handleFetchTrucks={handleFetchTrucks}
       />
     );

@@ -10,12 +10,15 @@ import {
 } from "@/components/Modal/Modal";
 import { ModalOpsiPembayaran } from "@/components/Modal/ModalOpsiPembayaran";
 import { useSWRHook } from "@/hooks/use-swr";
+import { useTranslation } from "@/hooks/use-translation";
 import { fetcherPayment } from "@/lib/axios";
 import { idrFormat } from "@/lib/utils/formatters";
 
 export const RingkasanPembayaranPerubahanPesanan = ({
   dataRingkasanPembayaran,
 }) => {
+  const { t } = useTranslation();
+
   // Fetch payment methods using SWR
   const { data: paymentMethodsData } = useSWRHook(
     "v1/payment/methods",
@@ -34,35 +37,82 @@ export const RingkasanPembayaranPerubahanPesanan = ({
   return (
     <div className="flex h-[453px] w-full flex-col gap-4">
       <CardPayment.Root className="flex w-full flex-col">
-        <CardPayment.Header>Detail Tambahan Biaya</CardPayment.Header>
+        <CardPayment.Header>
+          {t(
+            "RingkasanPembayaranPerubahanPesanan.headerDetailTambahanBiaya",
+            {},
+            "Detail Tambahan Biaya"
+          )}
+        </CardPayment.Header>
 
         <CardPayment.Body>
-          <CardPayment.Section title="Biaya Perubahan Rute">
+          <CardPayment.Section
+            title={t(
+              "RingkasanPembayaranPerubahanPesanan.sectionBiayaPerubahanRute",
+              {},
+              "Biaya Perubahan Rute"
+            )}
+          >
             <CardPayment.LineItem
-              label="Selisih Jarak Perubahan Lokasi Bongkar"
+              label={t(
+                "RingkasanPembayaranPerubahanPesanan.labelSelisihJarakPerubahanLokasi",
+                {},
+                "Selisih Jarak Perubahan Lokasi Bongkar"
+              )}
               value={idrFormat(additionalCost)}
             />
           </CardPayment.Section>
 
-          <CardPayment.Section title="Biaya Administrasi">
+          <CardPayment.Section
+            title={t(
+              "RingkasanPembayaranPerubahanPesanan.sectionBiayaAdministrasi",
+              {},
+              "Biaya Administrasi"
+            )}
+          >
             <CardPayment.LineItem
-              label="Admin Ubah Pesanan"
+              label={t(
+                "RingkasanPembayaranPerubahanPesanan.labelAdminUbahPesanan",
+                {},
+                "Admin Ubah Pesanan"
+              )}
               value={idrFormat(penaltyFee)}
             />
           </CardPayment.Section>
 
-          <CardPayment.Section title="Biaya Lainnya">
+          <CardPayment.Section
+            title={t(
+              "RingkasanPembayaranPerubahanPesanan.sectionBiayaLainnya",
+              {},
+              "Biaya Lainnya"
+            )}
+          >
             <CardPayment.LineItem
-              label="Admin Layanan"
+              label={t(
+                "RingkasanPembayaranPerubahanPesanan.labelAdminLayanan",
+                {},
+                "Admin Layanan"
+              )}
               value={idrFormat(adminFee)}
             />
-            <CardPayment.LineItem label="Pajak" value={idrFormat(taxAmount)} />
+            <CardPayment.LineItem
+              label={t(
+                "RingkasanPembayaranPerubahanPesanan.labelPajak",
+                {},
+                "Pajak"
+              )}
+              value={idrFormat(taxAmount)}
+            />
           </CardPayment.Section>
         </CardPayment.Body>
 
         <CardPayment.Footer className="mt-auto flex flex-col">
           <CardPayment.Total
-            label="Total Tambahan<br/>Biaya"
+            label={t(
+              "RingkasanPembayaranPerubahanPesanan.labelTotalTambahanBiaya",
+              {},
+              "Total Tambahan<br/>Biaya"
+            )}
             value={idrFormat(totalAdjustment)}
           />
           <ModalOpsiPembayaran
@@ -80,6 +130,8 @@ export const RingkasanPembayaranPerubahanPesanan = ({
 };
 
 const ModalBatalkanPerubahanPesanan = () => {
+  const { t } = useTranslation();
+
   return (
     <Modal>
       <ModalTrigger>
@@ -88,7 +140,11 @@ const ModalBatalkanPerubahanPesanan = () => {
           className="h-8 w-full"
           type="button"
         >
-          Batalkan Perubahan
+          {t(
+            "RingkasanPembayaranPerubahanPesanan.buttonBatalkanPerubahan",
+            {},
+            "Batalkan Perubahan"
+          )}
         </Button>
       </ModalTrigger>
 
@@ -97,19 +153,34 @@ const ModalBatalkanPerubahanPesanan = () => {
 
         <div className="flex flex-col items-center gap-6 px-6 py-9 text-neutral-900">
           <h2 className="text-center text-base font-bold">
-            Batalkan Perubahan
+            {t(
+              "RingkasanPembayaranPerubahanPesanan.modalTitleBatalkanPerubahan",
+              {},
+              "Batalkan Perubahan"
+            )}
           </h2>
 
           <p className="text-center text-sm leading-[1.1]">
-            Apakah kamu yakin ingin membatalkan perubahan?
+            {t(
+              "RingkasanPembayaranPerubahanPesanan.modalDescriptionKonfirmasiBatal",
+              {},
+              "Apakah kamu yakin ingin membatalkan perubahan?"
+            )}
             <br />
             <br />
-            Jika kamu melakukan pembatalan, kamu tidak dapat melakukan perubahan
-            pesanan lagi
+            {t(
+              "RingkasanPembayaranPerubahanPesanan.modalDescriptionKonsekuensiBatal",
+              {},
+              "Jika kamu melakukan pembatalan, kamu tidak dapat melakukan perubahan pesanan lagi"
+            )}
           </p>
 
           <Button variant="muatparts-primary-secondary" className="w-[178px]">
-            Batalkan Perubahan
+            {t(
+              "RingkasanPembayaranPerubahanPesanan.modalButtonBatalkanPerubahan",
+              {},
+              "Batalkan Perubahan"
+            )}
           </Button>
         </div>
       </ModalContent>

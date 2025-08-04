@@ -225,6 +225,9 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
             </SimpleDropdownTrigger>
 
             <SimpleDropdownContent className="max-w-[198px]">
+              <SimpleDropdownItem onClick={() => {}}>
+                Lihat Driver Sebelumnya
+              </SimpleDropdownItem>
               <SimpleDropdownItem onClick={() => setIsModalAllDriverOpen(true)}>
                 {t(
                   "StatusPesananHeader.menuLihatSemuaDriver",

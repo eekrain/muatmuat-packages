@@ -18,11 +18,12 @@ export const SewaArmadaFooter = ({
   onOpenTransactionSummary,
   parentRef,
   trucks,
+  calculatedPrice,
+  currentTotal, // New prop for voucher-adjusted total
 }) => {
   const navigation = useResponsiveNavigation();
   const { t } = useTranslation();
   const formValues = useSewaArmadaStore((s) => s.formValues);
-  console.log("🚀 ~ formValues:", formValues);
   const footerRef = useRef(null);
 
   const isShowCostDetail = false;
@@ -81,10 +82,14 @@ export const SewaArmadaFooter = ({
       {isShowTotalCost && (
         <div className="flex w-full items-center justify-between">
           <p className="font-sans text-sm font-semibold leading-tight text-neutral-900">
-            Total Biaya
+            {t("SewaArmadaFooter.labelTotalBiaya", {}, "Total Biaya")}
           </p>
           <p className="font-sans text-sm font-bold leading-tight text-neutral-900">
-            {idrFormat(1212122)}
+            {currentTotal !== undefined
+              ? idrFormat(currentTotal)
+              : calculatedPrice?.totalPrice
+                ? idrFormat(calculatedPrice.totalPrice)
+                : idrFormat(0)}
           </p>
         </div>
       )}
@@ -103,7 +108,7 @@ export const SewaArmadaFooter = ({
           className="h-10 flex-1 rounded-[20px] text-sm font-semibold"
           onClick={() => navigation.push("/InformasiPesanan")}
         >
-          Lanjut
+          {t("SewaArmadaFooter.buttonLanjut", {}, "Lanjut")}
         </Button>
       </div>
     </ResponsiveFooter>

@@ -88,6 +88,7 @@ const SewaArmadaResponsive = ({
   paymentMethods,
   carriers,
   trucks,
+  calculatedPrice,
   handleFetchTrucks,
 }) => {
   const navigation = useResponsiveNavigation();
@@ -122,6 +123,7 @@ const SewaArmadaResponsive = ({
             carriers={carriers}
             trucks={trucks}
             additionalServicesOptions={additionalServicesOptions}
+            calculatedPrice={calculatedPrice}
           />
         }
       />
@@ -192,6 +194,7 @@ const SewaArmadaResponsive = ({
             carriers={carriers}
             trucks={trucks}
             paymentMethods={paymentMethods}
+            calculatedPrice={calculatedPrice}
           />
         }
       />

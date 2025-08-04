@@ -15,9 +15,12 @@ export const useVoucher = ({
   baseOrderAmount = 5000000,
   adminFee = 10000,
   taxAmount = 21300,
+  calculatedPriceTotal = null, // New parameter for calculatedPrice.totalPrice
 }) => {
   const { t } = useTranslation();
-  const baseTotal = baseOrderAmount + adminFee + taxAmount;
+  // Use calculatedPriceTotal if available, otherwise calculate from components
+  const baseTotal =
+    calculatedPriceTotal || baseOrderAmount + adminFee + taxAmount;
 
   // Voucher data fetching
   const {
