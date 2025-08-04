@@ -135,10 +135,11 @@ const DetailPesananScreen = ({
           <TabContentRingkasan
             dataStatusPesanan={dataStatusPesanan}
             dataRingkasanPesanan={dataRingkasanPesanan}
+            dataRingkasanPembayaran={dataRingkasanPembayaran}
             documentShippingDetail={documentShippingDetail}
           />
 
-          <TabContentInformasiLainnya />
+          <TabContentInformasiLainnya dataRingkasanPesanan={dataRingkasanPesanan} />
           <TabContentDetailPIC dataDetailPIC={dataDetailPIC} />
         </Tabs>
       </div>

@@ -1,3 +1,4 @@
+import { useParams } from "next/navigation";
 import { Fragment, useState } from "react";
 
 import Button from "@/components/Button/Button";
@@ -6,6 +7,7 @@ import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { idrFormat } from "@/lib/utils/formatters";
+import { useGetOrderDriverReviews } from "@/services/Shipper/detailpesanan/getOrderDriverReviews";
 
 import { BottomsheetAlasanPembatalan } from "./Popup/BottomsheetAlasanPembatalan";
 import { ModalBatalkanPesananResponsive } from "./Popup/ModalBatalkanPesananResponsive";
@@ -20,6 +22,7 @@ export const FooterDetailPesanan = ({
   dataStatusPesanan,
   dataRingkasanPembayaran,
 }) => {
+  const params = useParams();
   const navigation = useResponsiveNavigation();
   const [isOpenModalBatalkanPesanan, setIsOpenModalBatalkanPesanan] =
     useState(false);
@@ -27,10 +30,13 @@ export const FooterDetailPesanan = ({
     isOpenBottomsheetAlasanPembatalan,
     setIsOpenBottomsheetAlasanPembatalan,
   ] = useState(false);
-
   const [isReceiveDocumentEvidenceOpen, setReceiveDocumentEvidenceOpen] =
     useState(false);
+  const { data: driverReviewsData } = useGetOrderDriverReviews(params.orderId);
+  const drivers = driverReviewsData?.drivers || [];
 
+  const areAllDriversReviewed =
+    drivers.length > 0 && drivers.every((driver) => driver.canReview === false);
   const renderButtons = useShallowMemo(() => {
     let components = [
       {
@@ -48,11 +54,8 @@ export const FooterDetailPesanan = ({
         ),
       },
     ];
-
-    if (
-      dataStatusPesanan?.orderStatus === OrderStatusEnum.COMPLETED &&
-      dataStatusPesanan?.reviewData?.canReview
-    ) {
+    console.log(dataStatusPesanan?.reviewData, "review");
+    if (dataStatusPesanan?.orderStatus === OrderStatusEnum.COMPLETED) {
       components.push({
         id: "beri-ulasan",
         variant: "muatparts-primary",
@@ -63,7 +66,7 @@ export const FooterDetailPesanan = ({
             onClick={() => navigation.push("/ulasan")}
             type="button"
           >
-            Beri Ulasan
+            {areAllDriversReviewed ? "Lihat Ulasan" : "Beri Ulasan"}
           </Button>
         ),
       });
@@ -235,6 +238,7 @@ export const FooterDetailPesanan = ({
       <BottomsheetAlasanPembatalan
         open={isOpenBottomsheetAlasanPembatalan}
         onOpenChange={setIsOpenBottomsheetAlasanPembatalan}
+        orderId={params.orderId}
         onConfirm={() => {
           setIsOpenBottomsheetAlasanPembatalan(false);
         }}

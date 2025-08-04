@@ -1,10 +1,14 @@
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 // Import separate components
 import { Alert } from "@/components/Alert/Alert";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
+import {
+  useRequestOtpActions,
+} from "@/store/Shipper/forms/requestOtpStore";
 
 import BankAccountFormFields from "./BankAccountFormFields";
 import { SaveBottomSheet } from "./SaveBottomSheet";
@@ -12,6 +16,8 @@ import { SaveBottomSheet } from "./SaveBottomSheet";
 // Main Component
 const FormRekeningBankScreen = () => {
   const navigation = useResponsiveNavigation();
+  const router = useRouter();
+  const { setParams } = useRequestOtpActions();
 
   const [selectedBank, setSelectedBank] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
@@ -21,10 +27,22 @@ const FormRekeningBankScreen = () => {
     useState("");
 
   const handleVerification = () => {
-    if (selectedVerificationMethod) {
-      alert(`Verifying with: ${selectedVerificationMethod}`);
-      // Close bottom sheet logic would go here
-    }
+    // Set parameters for OTP verification
+    const bankAccountData = {
+      selectedBank,
+      accountNumber,
+      accountHolderName,
+      isPrimary,
+    };
+    
+    setParams({
+      mode: "add-rekening",
+      data: bankAccountData,
+      redirectUrl: "/shipper/detail-pesanan", // atau URL yang sesuai
+    });
+    
+    // Navigate to OTP page
+     router.push("/shipper/rekening-pencairan/otp");
   };
 
   return (

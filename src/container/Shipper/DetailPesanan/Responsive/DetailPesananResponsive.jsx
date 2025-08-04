@@ -59,7 +59,7 @@ const DetailPesananResponsive = () => {
   const dataRingkasanPembayaran = data?.dataRingkasanPembayaran;
   const documentShippingDetail =
     data?.dataRingkasanPembayaran.documentShippingDetail;
-
+  console.log(dataRingkasanPembayaran, "dataRingkasanPembayaran");
   useEffect(() => {
     setIsGlobalLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 
 export const InformasiArmadaFragment = ({
   dataStatusPesanan,
+  dataRingkasanPesanan,
   className,
   children,
 }) => {
@@ -20,10 +21,10 @@ export const InformasiArmadaFragment = ({
         </LightboxProvider>
         <div className="flex flex-col gap-2">
           <p className="text-sm font-semibold text-neutral-900">
-            Box - Colt Diesel Engkel
+            {dataRingkasanPesanan?.vehicle?.name || "Box - Colt Diesel Engkel"}
           </p>
           <p className="text-sm font-medium text-neutral-900">
-            Kebutuhan : {dataStatusPesanan?.totalUnit || 0} Unit
+            Kebutuhan : {dataRingkasanPesanan?.vehicle?.truckCount || dataStatusPesanan?.totalUnit || 0} Unit
           </p>
         </div>
       </div>

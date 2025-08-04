@@ -14,7 +14,7 @@ import { ModalAlasanPembatalan } from "@/components/Modal/ModalAlasanPembatalan"
 import { ModalFormRekeningPencairan } from "@/components/RekeningPencairan/ModalFormRekeningPencairan";
 import { ModalFormRequestOtp } from "@/components/RekeningPencairan/ModalFormRequestOtp";
 import { useTranslation } from "@/hooks/use-translation";
-import { fetcherMuatparts, fetcherMuatrans } from "@/lib/axios";
+import { fetcherMuatparts } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 import { useGetAvailableBankOptions } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getAvailableBankOptions";
@@ -73,7 +73,7 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
       reasonId: selectedReason,
       additionalInfo: isOtherReason ? customReason : "",
     };
-
+    console.log(bankAccounts, "bankAccount");
     fetcherMuatrans
       .post(`v1/orders/${params.orderId}/cancel`, body)
       .then((response) => {
@@ -87,7 +87,7 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
   };
 
   const { params: otpParams, formValues: otpValues } = useRequestOtpStore();
-  const { setParams, reset: resetOtp } = useRequestOtpActions();
+  const { setParams, reset: resetOtp, sendRequestOtp } = useRequestOtpActions();
   const handleTempSaveRekening = (data) => {
     setParams({
       mode: "add-rekening",
@@ -97,8 +97,13 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
     setIsModalOtpOpen(true);
   };
 
-  const handleRequestOtp = () => {
-    router.push("/rekening-pencairan/otp");
+  const handleRequestOtp = async () => {
+    try {
+      await sendRequestOtp();
+      router.push("/rekening-pencairan/otp");
+    } catch (error) {
+      toast.error(error.message || "Gagal mengirim OTP");
+    }
   };
 
   const handleAddNewRekeningPencairan = () => {

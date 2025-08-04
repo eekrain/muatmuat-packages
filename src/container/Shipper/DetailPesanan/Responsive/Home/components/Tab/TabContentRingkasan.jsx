@@ -18,11 +18,15 @@ const BLACKLIST_ROUTE_INFO = [
 export const TabContentRingkasan = ({
   dataStatusPesanan,
   dataRingkasanPesanan,
+  dataRingkasanPembayaran,
   documentShippingDetail,
 }) => {
   return (
     <TabsContent value="ringkasan" className="mb-28 space-y-2 bg-neutral-200">
-      <InformasiArmadaFragment dataStatusPesanan={dataStatusPesanan}>
+      <InformasiArmadaFragment 
+        dataStatusPesanan={dataStatusPesanan}
+        dataRingkasanPesanan={dataRingkasanPesanan}
+      >
         <WaktuMuatFragment dataRingkasanPesanan={dataRingkasanPesanan} />
       </InformasiArmadaFragment>
 
@@ -37,11 +41,18 @@ export const TabContentRingkasan = ({
           />
         </div>
       )}
-      {true && <MethodInfo method={"va_bca"} />}
-      {true && (
-        <TransactionSummary documentShippingDetail={documentShippingDetail} />
+      {dataRingkasanPembayaran && (
+        <MethodInfo dataRingkasanPembayaran={dataRingkasanPembayaran} />
       )}
-      {true && <AdditionalFeesDetail />}
+      {dataRingkasanPembayaran && (
+        <TransactionSummary 
+          dataRingkasanPembayaran={dataRingkasanPembayaran}
+          documentShippingDetail={documentShippingDetail} 
+        />
+      )}
+      {dataRingkasanPembayaran?.priceCharge && (
+        <AdditionalFeesDetail priceCharge={dataRingkasanPembayaran.priceCharge} />
+      )}
     </TabsContent>
   );
 };

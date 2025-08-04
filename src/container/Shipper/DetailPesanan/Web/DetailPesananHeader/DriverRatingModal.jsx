@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Fragment, useState } from "react";
 
 import Button from "@/components/Button/Button";
@@ -81,7 +81,7 @@ const DriverRatingForm = ({
                 )}
               </span>
               <TextArea
-                value={driver.review || "-"}
+                value={driver.review || ""}
                 onChange={(e) =>
                   handleChangeFormValues("review", e.target.value)
                 }
@@ -129,6 +129,7 @@ const DriverRatingForm = ({
 const DriverRatingModal = ({ isOpen, setIsOpen, drivers }) => {
   const { t } = useTranslation();
   const [driversFormValues, setDriversFormValues] = useState([]);
+  const router = useRouter();
   const [loadingIndex, setLoadingIndex] = useState(null);
   const previousIsOpen = usePrevious(isOpen);
   const params = useParams();
@@ -171,7 +172,7 @@ const DriverRatingModal = ({ isOpen, setIsOpen, drivers }) => {
         rating: driver.rating,
         review: driver.review || "",
       });
-
+      console.log(response, "driver response");
       setIsOpen(false);
       toast.success(
         t(
@@ -181,7 +182,7 @@ const DriverRatingModal = ({ isOpen, setIsOpen, drivers }) => {
         )
       );
       setTimeout(() => {
-        window.location.reload();
+        router.refresh();
       }, 1000);
     } catch (err) {
       console.error(err);

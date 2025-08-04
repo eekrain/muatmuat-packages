@@ -108,10 +108,10 @@ const DetailPesananHeader = ({
           )
         );
         setIsDocumentReceivedModalOpen(false);
-        await autoComplete({});
+        // await autoComplete({});
 
         // Optionally refresh the page or update the order status
-        // router.refresh();
+        router.refresh();
       } else {
         // toast.error(result?.Message?.Text || "Gagal mengkonfirmasi dokumen");
       }

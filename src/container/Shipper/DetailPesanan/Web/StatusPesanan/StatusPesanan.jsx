@@ -101,9 +101,7 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
         {dataStatusPesanan.orderStatus ===
           OrderStatusEnum.WAITING_PAYMENT_1 && (
           <AlertPendingPayment1
-            paymentDueDateTime={
-              dataStatusPesanan.paymentDueDateTimeFromOrderDetail
-            }
+            paymentDueDateTime={dataStatusPesanan.paymentDueDateTime}
           />
         )}
 

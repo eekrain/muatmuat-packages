@@ -36,4 +36,4 @@ export const createDriverReview = async (url, { arg }) => {
 };
 
 export const useCreateDriverReview = (orderId) =>
-  useSWRMutation(`/api/v1/orders/${orderId}/reviews`, createDriverReview);
+  useSWRMutation(`/v1/orders/${orderId}/reviews`, createDriverReview);

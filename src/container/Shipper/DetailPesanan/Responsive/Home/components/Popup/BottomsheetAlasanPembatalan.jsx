@@ -10,6 +10,7 @@ import {
 import Button from "@/components/Button/Button";
 import { ExpandableTextArea } from "@/components/Form/ExpandableTextArea";
 import RadioButton from "@/components/Radio/RadioButton";
+import { fetcherMuatrans } from "@/lib/axios";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -30,6 +31,7 @@ export const BottomsheetAlasanPembatalan = ({
   open,
   onOpenChange,
   onConfirm = () => alert("onConfirm not implemented"),
+  orderId,
 }) => {
   const { data: cancellationReasons } = useGetCancellationReasons();
   const { data: bankAccounts } = useGetBankAccounts();
@@ -39,7 +41,7 @@ export const BottomsheetAlasanPembatalan = ({
   const [customReasonError, setCustomReasonError] = useState(null);
   const [globalError, setGlobalError] = useState(null);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setCustomReasonError(null);
     setGlobalError(null);
 
@@ -58,17 +60,32 @@ export const BottomsheetAlasanPembatalan = ({
     }
 
     // Check if user has bank accounts
-    if (!bankAccounts || bankAccounts.length === 0) {
-      // User doesn't have bank accounts, navigate to FormRekeningBankScreen
-      onOpenChange(false);
-      navigation.push("/FormRekeningBank");
-      return;
-    }
-
-    // User has bank accounts, proceed with cancellation
-    onConfirm?.();
-    toast.success("Berhasil membatalkan pesanan");
+    // if (!bankAccounts || bankAccounts.length !== 0) {
+    //   // User doesn't have bank accounts, navigate to FormRekeningBankScreen
     onOpenChange(false);
+    navigation.push("/FormRekeningBank");
+    //   return;
+    // }
+    // User has bank accounts, proceed with cancellation
+    const cancelData = {
+      reasonId: selectedReason.value,
+      additionalInfo:
+        selectedReason?.value ===
+        cancellationReasons?.[cancellationReasons.length - 1]?.value
+          ? customReason
+          : "",
+    };
+    try {
+      await fetcherMuatrans.post(`v1/orders/${orderId}/cancel`, cancelData);
+
+      toast.success("Berhasil membatalkan pesanan");
+      onConfirm?.();
+      onOpenChange(false);
+    } catch (error) {
+      toast.error(
+        error.response?.data?.Data?.Message || "Gagal membatalkan pesanan"
+      );
+    }
   };
 
   useEffect(() => {
