@@ -14,7 +14,6 @@ import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enu
 import { getAlertMetadata } from "@/lib/normalizers/detailpesanan/getAlertMetadata";
 import useGetFleetSearchStatus from "@/services/Shipper/detailpesanan/getFleetSearchStatus";
 
-import { BottomsheetMenuList } from "./components/Bottomsheet/BottomsheetMenuList";
 import DriverInfoSlider from "./components/DriverInfoSlider";
 import { FooterDetailPesanan } from "./components/FooterDetailPesanan";
 import { ModalInformasiSlider } from "./components/ModalInformasiSlider";
@@ -22,6 +21,9 @@ import { OrderInfo } from "./components/OrderInfo";
 import { PendingPaymentAlert } from "./components/Pending/PendingPaymentAlert";
 import { PendingPaymentDetail } from "./components/Pending/PendingPaymentDetail";
 import { PendingPrepareFleetAlert } from "./components/Pending/PendingPrepareFleetAlert";
+import { BottomSheetPeriksaPesananKamu } from "./components/Popup/BottomSheetPeriksaPesananKamu";
+import { BottomsheetMenuList } from "./components/Popup/BottomsheetMenuList";
+import { ModalVolumePesananTinggi } from "./components/Popup/ModalVolumePesananTinggi";
 import { TabContentDetailPIC } from "./components/Tab/TabContentDetailPIC";
 import { TabContentInformasiLainnya } from "./components/Tab/TabContentInformasiLainnya";
 import { TabContentRingkasan } from "./components/Tab/TabContentRingkasan";
@@ -45,9 +47,9 @@ const DetailPesananScreen = ({
   const { t } = useTranslation();
   const params = useParams();
   const {
-    isOpen: isWaitFleetModalOpen,
+    isOpen: isVolumePesananTinggiOpen,
     isShow: isShowWaitFleetAlert,
-    setIsOpen: setIsWaitFleetModalOpen,
+    setIsOpen: setIsVolumePesananTinggiOpen,
     setIsShow: setIsShowWaitFleetAlert,
   } = useGetFleetSearchStatus(
     params.orderId,
@@ -55,8 +57,8 @@ const DetailPesananScreen = ({
   );
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   const [isOpenInfo, setIsOpenInfo] = useState(false);
+  const [isPeriksaPesananOpen, setIsPeriksaPesananOpen] = useState(true);
 
   const orderAlerts = useMemo(() => {
     return [
@@ -79,7 +81,6 @@ const DetailPesananScreen = ({
         .filter((val) => Boolean(val)),
     ];
   }, [dataStatusPesanan?.alerts, isShowWaitFleetAlert, t]);
-  console.log("🚀 ~ orderAlerts ~ orderAlerts:", orderAlerts);
 
   return (
     <FormResponsiveLayout
@@ -147,13 +148,24 @@ const DetailPesananScreen = ({
         dataRingkasanPembayaran={dataRingkasanPembayaran}
       />
 
-      {/* <pre>{JSON.stringify(dataStatusPesanan, null, 2)}</pre> */}
-
       <ModalInformasiSlider open={isOpenInfo} onOpenChange={setIsOpenInfo} />
       <BottomsheetMenuList
         open={isMenuOpen}
         onOpenChange={setIsMenuOpen}
         dataStatusPesanan={dataStatusPesanan}
+      />
+      <BottomSheetPeriksaPesananKamu
+        open={isPeriksaPesananOpen}
+        onOpenChange={setIsPeriksaPesananOpen}
+        dataRingkasanPesanan={dataRingkasanPesanan}
+        dataStatusPesanan={dataStatusPesanan}
+      />
+
+      <ModalVolumePesananTinggi
+        open={isVolumePesananTinggiOpen}
+        onOpenChange={setIsVolumePesananTinggiOpen}
+        onConfirm={() => setIsVolumePesananTinggiOpen(false)}
+        onCancel={() => setIsVolumePesananTinggiOpen(false)}
       />
     </FormResponsiveLayout>
   );

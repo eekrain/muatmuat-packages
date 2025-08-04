@@ -149,7 +149,7 @@ const apiResultOrderDetail = {
       // Menentukan bisa nggaknya buat ubah pesanan
       isChangeable: false,
       // Menentukan bisa nggaknya buat batalkan pesanan
-      isCancellable: true,
+      isCancellable: false,
       // Menentukan bisa nggaknya buat ngasih review
       canReview: false,
       cancellationDeadline: "2025-06-24T15:00:00.000Z",
@@ -159,25 +159,25 @@ const apiResultOrderDetail = {
         transporterOrderCode: "MT.25.AA.001",
         invoiceNumber: "INV/12345678",
         // orderStatus: OrderStatusEnum.LOADING,
-        orderStatus: OrderStatusEnum.LOADING,
+        orderStatus: OrderStatusEnum.PREPARE_FLEET,
         orderTitle: "Proses Muat",
         unitFleetStatus: 1,
-        orderType: OrderTypeEnum.INSTANT,
+        orderType: OrderTypeEnum.SCHEDULED,
         createdAt: "2024-01-01T10:00:00Z",
         updatedAt: "2024-01-01T14:30:00Z",
       },
       summary: {
+        truckType: {
+          truckTypeId: "f483709a-de4c-4541-b29e-6f4d9a912331",
+          name: "Cold Diesel Double",
+          image: "https://picsum.photos/300/300",
+          totalUnit: 1,
+        },
         distance: 4.9,
         carrier: {
           carrierId: "f483709a-de4c-4541-b29e-6f4d9a912331",
           name: "Box",
           image: "https://picsum.photos/300/300",
-        },
-        truckType: {
-          truckTypeId: "f483709a-de4c-4541-b29e-6f4d9a912331",
-          name: "Cold Diesel Double",
-          image: "https://picsum.photos/300/300",
-          totalUnit: 3,
         },
         loadTimeStart: "2025-02-08T09:00:00Z",
         loadTimeEnd: "2025-02-08T12:00:00Z",

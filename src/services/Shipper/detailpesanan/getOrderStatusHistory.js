@@ -2,7 +2,6 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
-import { DriverStatusEnum } from "@/lib/constants/detailpesanan/driver-status.enum";
 
 const useMockData = false; // toggle mock data
 
@@ -31,14 +30,14 @@ const stepStatus = [
   //   statusCode: OrderStatusEnum.WAITING_REPAYMENT_2,
   //   statusName: "Proses Pergantian Armada",
   // },
-  {
-    statusCode: OrderStatusEnum.PREPARE_DOCUMENT,
-    statusName: "Dokumen Sedang Disiapkan",
-  },
-  {
-    statusCode: OrderStatusEnum.DOCUMENT_DELIVERY,
-    statusName: "Proses Pengiriman Dokumen",
-  },
+  // {
+  //   statusCode: OrderStatusEnum.PREPARE_DOCUMENT,
+  //   statusName: "Dokumen Sedang Disiapkan",
+  // },
+  // {
+  //   statusCode: OrderStatusEnum.DOCUMENT_DELIVERY,
+  //   statusName: "Proses Pengiriman Dokumen",
+  // },
   {
     statusCode: OrderStatusEnum.COMPLETED,
     statusName: "Selesai",
@@ -58,17 +57,17 @@ const apiResultOrderStatusHistory = {
     },
     Data: {
       driverStatus: [
-        {
-          driverId: "550e8400-e29b-41d4-a716-446655440021",
-          name: "Hendra",
-          driverImage: "https://picsum.photos/50",
-          licensePlate: "B 1234 CD",
-          orderStatus: OrderStatusEnum.UNLOADING,
-          orderStatusTitle: "Sedang Muat",
-          driverStatus: DriverStatusEnum.UNLOADING.MENUJU.code,
-          driverStatusTitle: "Menuju ke Lokasi Muat",
-          stepStatus,
-        },
+        // {
+        //   driverId: "550e8400-e29b-41d4-a716-446655440021",
+        //   name: "Hendra",
+        //   driverImage: "https://picsum.photos/50",
+        //   licensePlate: "B 1234 CD",
+        //   orderStatus: OrderStatusEnum.UNLOADING,
+        //   orderStatusTitle: "Sedang Muat",
+        //   driverStatus: DriverStatusEnum.UNLOADING.ANTRI.code,
+        //   driverStatusTitle: "Menuju ke Lokasi Muat",
+        //   stepStatus,
+        // },
         // {
         //   driverId: "550e8400-e29b-41d4-a716-446655440022",
         //   name: "Ardian Eka",
@@ -76,7 +75,7 @@ const apiResultOrderStatusHistory = {
         //   licensePlate: "B 1234 CD",
         //   orderStatus: OrderStatusEnum.UNLOADING,
         //   orderStatusTitle: "Proses Muat",
-        //   driverStatus: DriverStatusEnum.UNLOADING.BONGKAR.code,
+        //   driverStatus: DriverStatusEnum.UNLOADING.ANTRI.code,
         //   driverStatusTitle: "Menuju ke Lokasi Muat",
         //   stepStatus,
         // },
@@ -87,7 +86,7 @@ const apiResultOrderStatusHistory = {
         //   licensePlate: "B 1234 CD",
         //   orderStatus: OrderStatusEnum.UNLOADING,
         //   orderStatusTitle: "Proses Muat",
-        //   driverStatus: DriverStatusEnum.UNLOADING.BONGKAR.code,
+        //   driverStatus: DriverStatusEnum.UNLOADING.ANTRI.code,
         //   driverStatusTitle: "Menuju ke Lokasi Muat",
         //   stepStatus,
         // },

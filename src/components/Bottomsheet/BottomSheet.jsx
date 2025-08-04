@@ -51,7 +51,7 @@ export const BottomSheetContent = React.forwardRef(
           )}
           {...props}
         >
-          <div className="mx-auto mt-4 h-1.5 w-12 flex-shrink-0 rounded-full bg-neutral-300" />
+          <div className="mx-auto mt-1 h-1 w-12 flex-shrink-0 rounded-full bg-neutral-300" />
           {children}
         </BottomSheetPrimitive.Content>
       </BottomSheetPrimitive.Portal>
@@ -65,7 +65,7 @@ BottomSheetContent.displayName = "BottomSheetContent";
  * @param {React.HTMLAttributes<HTMLDivElement>} props
  */
 export const BottomSheetHeader = ({ className, children, ...props }) => (
-  <div className={cn("relative p-4 text-center", className)} {...props}>
+  <div className={cn("relative p-4 pb-6 text-center", className)} {...props}>
     {children}
   </div>
 );

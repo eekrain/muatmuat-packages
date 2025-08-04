@@ -82,6 +82,7 @@ const Button = ({
   iconLeft = null,
   iconRight = null,
   disabled = false,
+  keepDisabledStyle = false,
   appearance = {
     iconClassName: "",
   },
@@ -96,8 +97,8 @@ const Button = ({
       disabled={disabled}
       className={cn(
         buttonVariants({
-          variant: disabled ? undefined : variant,
-          disabled: disabled ? disabledVariant : false,
+          variant: disabled && !keepDisabledStyle ? undefined : variant,
+          disabled: disabled && !keepDisabledStyle ? disabledVariant : false,
           className,
         })
       )}

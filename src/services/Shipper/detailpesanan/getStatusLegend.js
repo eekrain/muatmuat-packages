@@ -30,10 +30,10 @@ const apiResultStatusLegend = {
         //   statusCode: OrderStatusEnum.FLEET_CHANGE,
         //   statusName: "Proses Pergantian Armada",
         // },
-        // {
-        //   statusCode: OrderStatusEnum.WAITING_REPAYMENT_2,
-        //   statusName: "Proses Pergantian Armada",
-        // },
+        {
+          statusCode: OrderStatusEnum.WAITING_REPAYMENT_2,
+          statusName: "Proses Pergantian Armada",
+        },
         // {
         //   statusCode: OrderStatusEnum.PREPARE_DOCUMENT,
         //   statusName: "Dokumen Sedang Disiapkan",

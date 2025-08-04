@@ -46,6 +46,7 @@ export const BottomsheetStatusLainnya = ({ dataStatusPesanan }) => {
               unitFleetStatus: status.unitFleetStatus,
               totalUnit: dataStatusPesanan.totalUnit,
               t,
+              orderType: dataStatusPesanan.orderType,
             });
 
             return (

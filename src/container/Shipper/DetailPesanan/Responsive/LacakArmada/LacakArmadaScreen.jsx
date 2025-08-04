@@ -42,10 +42,7 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
     (d) => d.driverId === driverId
   );
 
-  const isShowEstimatedArrival =
-    driver?.driverStatus.startsWith("MENUJU_") ||
-    driver?.driverStatus.startsWith("TIBA_") ||
-    driver?.driverStatus.startsWith("ANTRI_");
+  const isShowEstimatedArrival = driver?.driverStatus.startsWith("MENUJU_");
 
   return (
     <FormResponsiveLayout

@@ -4,7 +4,7 @@ import {
 } from "@/components/Bottomsheet/BottomSheet";
 import { idrFormat } from "@/lib/utils/formatters";
 
-import BottomsheetWaitingTimeDetails from "./Bottomsheet/BottomsheetWaitingTimeDetails";
+import BottomsheetWaitingTimeDetails from "./Popup/BottomsheetWaitingTimeDetails";
 
 /**
  * Komponen utama yang menampilkan detail biaya tambahan.

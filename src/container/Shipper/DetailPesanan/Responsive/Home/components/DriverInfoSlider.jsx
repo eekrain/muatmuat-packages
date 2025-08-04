@@ -1,5 +1,5 @@
 import { useParams } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { EllipsisVertical } from "lucide-react";
 
@@ -14,7 +14,7 @@ import {
   BottomSheetTrigger,
 } from "@/components/Bottomsheet/BottomSheet";
 import Button from "@/components/Button/Button";
-import { useSwipe } from "@/hooks/use-swipe";
+import { useDrag } from "@/hooks/use-drag";
 import { useTranslation } from "@/hooks/use-translation";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { getDriverStatusMetadata } from "@/lib/normalizers/detailpesanan/getDriverStatusMetadata";
@@ -38,16 +38,6 @@ const Root = ({ children, className }) => (
   </div>
 );
 
-/**
- * @typedef {Object} HeaderProps
- * @property {string} statusCode
- * @property {boolean} withMenu
- * @property {"driver-status" | "status-scan"} mode
- */
-
-/**
- * @param {HeaderProps} props
- */
 const Header = ({
   statusScan,
   orderStatus,
@@ -67,24 +57,24 @@ const Header = ({
       response.status = getDriverStatusMetadata(driverStatus, orderStatus, t);
     }
     return response;
-  }, [driverStatus, mode]);
+  }, [driverStatus, mode, orderStatus, statusScan, t]);
 
   return (
     <div className="flex w-full items-center justify-between">
       {statusMeta?.scan && (
         <BadgeStatusPesanan
-          variant={statusMeta?.scan?.hasScan ? "success" : "error"}
+          variant={statusMeta.scan.hasScan ? "success" : "error"}
           className="w-fit"
         >
-          {statusMeta?.scan?.statusText}
+          {statusMeta.scan.statusText}
         </BadgeStatusPesanan>
       )}
       {statusMeta?.status && (
         <BadgeStatusPesanan
-          variant={statusMeta?.status?.variant}
+          variant={statusMeta.status.variant}
           className="w-fit"
         >
-          {statusMeta?.status?.label}
+          {statusMeta.status.label}
         </BadgeStatusPesanan>
       )}
       {withMenu && (
@@ -92,7 +82,7 @@ const Header = ({
           <BottomSheetTrigger asChild>
             <button
               aria-label="More options"
-              className="absolute right-4 top-5 z-10 bg-white p-1" // Positioned absolutely
+              className="absolute right-4 top-5 z-10 bg-white p-1"
             >
               <EllipsisVertical className="h-6 w-6 rounded-full text-black" />
             </button>
@@ -104,6 +94,7 @@ const Header = ({
             </BottomSheetHeader>
             <div className="flex flex-col gap-4 px-4 pb-6">
               <button
+                type="button"
                 className="w-full text-left text-sm font-semibold"
                 onClick={() =>
                   navigation.push("/CariSemuaDriver", {
@@ -148,10 +139,14 @@ const Actions = ({ driver, onDriverContactClicked, onLacakArmadaClicked }) => {
     OrderStatusEnum.CANCELED_BY_SHIPPER,
     OrderStatusEnum.COMPLETED,
   ];
+
+  const showDetailStatusButton =
+    driver.orderStatus?.startsWith("CANCELED") ||
+    LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER.includes(driver.orderStatus);
+
   return (
     <div className="flex w-full gap-3">
-      {driver.orderStatus?.startsWith("CANCELED") ||
-      LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER.includes(driver.orderStatus) ? (
+      {showDetailStatusButton ? (
         <Button
           variant="muatparts-primary-secondary"
           onClick={() =>
@@ -205,69 +200,111 @@ const Indicator = ({ count, activeIndex, className }) => {
   );
 };
 
-export const DriverInfo = {
-  Root,
-  Header,
-  Avatar,
-  Actions,
-  Indicator,
-};
-
 /**
  * The main slider component that orchestrates everything.
- * @param {{ drivers: Driver[] }} props
+ * @param {{ driverStatus: Driver[], orderId: string, defaultIndex?: number }} props
  */
 export default function DriverInfoSlider({
   driverStatus = [],
   orderId,
-  orderStatus,
   defaultIndex = 0,
 }) {
   const navigation = useResponsiveNavigation();
-  const [currentIndex, setCurrentIndex] = useState(defaultIndex);
+  const items = driverStatus;
+  const TRANSITION_DURATION_MS = 300;
+
+  // --- Infinite Slider State ---
+  const [currentIndex, setCurrentIndex] = useState(
+    items.length > 1 ? defaultIndex + 1 : defaultIndex
+  );
+  const [isTransitioning, setIsTransitioning] = useState(true);
+  const prevItemsLength = useRef(items.length);
+
+  // Clone first and last items for the infinite loop effect
+  const clonedItems = useMemo(() => {
+    if (items.length <= 1) return items;
+    return [items[items.length - 1], ...items, items[0]];
+  }, [items]);
+
+  // --- Slide Handlers ---
+  const slideTo = (index, transition = true) => {
+    setIsTransitioning(transition);
+    setCurrentIndex(index);
+  };
 
   const nextSlide = useCallback(() => {
-    setCurrentIndex((prev) => Math.min(prev + 1, driverStatus.length - 1));
-  }, [driverStatus.length]);
+    slideTo(currentIndex + 1);
+  }, [currentIndex]);
 
   const prevSlide = useCallback(() => {
-    setCurrentIndex((prev) => Math.max(prev - 1, 0));
-  }, []);
+    slideTo(currentIndex - 1);
+  }, [currentIndex]);
 
-  const { dragOffset, swipeHandlers } = useSwipe({
+  const { dragOffset, dragHandlers } = useDrag({
     onSwipeLeft: nextSlide,
     onSwipeRight: prevSlide,
   });
 
-  if (!driverStatus || driverStatus.length === 0) {
+  // --- Effects for managing transitions and async data ---
+
+  // This effect corrects the starting index if data loads asynchronously
+  useEffect(() => {
+    if (prevItemsLength.current === 0 && items.length > 0) {
+      slideTo(defaultIndex + 1, false);
+    }
+    prevItemsLength.current = items.length;
+  }, [items.length, defaultIndex]);
+
+  // This effect re-enables transitions after a "jump"
+  useEffect(() => {
+    if (!isTransitioning) {
+      const timer = setTimeout(() => setIsTransitioning(true), 50);
+      return () => clearTimeout(timer);
+    }
+  }, [isTransitioning]);
+
+  const handleTransitionEnd = () => {
+    if (currentIndex === 0) {
+      slideTo(items.length, false);
+    } else if (currentIndex === clonedItems.length - 1) {
+      slideTo(1, false);
+    }
+  };
+
+  if (!items || items.length === 0) {
     return null;
   }
 
+  const activeIndicatorIndex =
+    items.length > 1 ? (currentIndex - 1 + items.length) % items.length : 0;
+
   return (
     <Root>
-      <div className="overflow-hidden" {...swipeHandlers}>
+      <div className="overflow-hidden" {...dragHandlers}>
         <div
-          className="flex transition-transform duration-300 ease-in-out"
+          className="flex"
           style={{
-            // Apply both the slide position and the real-time drag offset
             transform: `translateX(calc(-${currentIndex * 100}% + ${dragOffset}px))`,
+            transition:
+              isTransitioning && dragOffset === 0
+                ? `transform ${TRANSITION_DURATION_MS}ms ease-in-out`
+                : "none",
           }}
+          onTransitionEnd={handleTransitionEnd}
         >
-          {driverStatus.map((driver, index) => (
+          {clonedItems.map((driver, index) => (
             <div
-              key={driver?.driverId || index}
-              // className="w-full bg-white p-5"
+              key={`${driver?.driverId}-${index}`}
               className="w-full flex-shrink-0 p-5"
             >
               <div className="flex w-full flex-col items-start gap-4">
-                <DriverInfo.Header
+                <Header
                   orderStatus={driver.orderStatus}
                   driverStatus={driver.driverStatus}
                   mode="driver-status"
-                  onMenuClick={() => alert(`Menu for ${driver.name}`)}
                 />
-                <DriverInfo.Avatar driver={driver} />
-                <DriverInfo.Actions
+                <Avatar driver={driver} />
+                <Actions
                   driver={driver}
                   onDriverContactClicked={() =>
                     alert(`Contacting ${driver.name}`)
@@ -284,11 +321,20 @@ export default function DriverInfoSlider({
           ))}
         </div>
       </div>
-      <DriverInfo.Indicator
-        count={driverStatus.length}
-        activeIndex={currentIndex}
+      <Indicator
+        count={items.length}
+        activeIndex={activeIndicatorIndex}
         className="pb-5"
       />
     </Root>
   );
 }
+
+// Export the sub-components for reuse in other parts of the app
+export const DriverInfo = {
+  Root,
+  Header,
+  Avatar,
+  Actions,
+  Indicator,
+};

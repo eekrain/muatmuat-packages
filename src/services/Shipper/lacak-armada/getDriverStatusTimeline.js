@@ -102,18 +102,18 @@ const apiResult = {
             //   },
             // },
 
-            {
-              statusCode: DriverStatusEnum.UNLOADING.BONGKAR.code,
-              statusName: "Sedang Bongkar di Lokasi 1",
-              date: sub(new Date(), { hours: 7 }).toISOString(),
-              requiresQRScan: false,
-              requiresPhoto: false,
-              triggersWaitingFee: false,
-              photoEvidences: {
-                packages: [],
-                pods: [],
-              },
-            },
+            // {
+            //   statusCode: DriverStatusEnum.UNLOADING.BONGKAR.code,
+            //   statusName: "Sedang Bongkar di Lokasi 1",
+            //   date: sub(new Date(), { hours: 7 }).toISOString(),
+            //   requiresQRScan: false,
+            //   requiresPhoto: false,
+            //   triggersWaitingFee: false,
+            //   photoEvidences: {
+            //     packages: [],
+            //     pods: [],
+            //   },
+            // },
             {
               statusCode: DriverStatusEnum.UNLOADING.ANTRI.code,
               statusName: "Antri di Lokasi Bongkar 1",
