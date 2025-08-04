@@ -180,7 +180,10 @@ const ItemWithLightbox = ({
 }) => {
   const { t } = useTranslation();
   const subtitle = () => {
-    if (driverStatusItem.statusCode.startsWith("MENUJU_")) {
+    if (
+      driverStatusItem.statusCode.startsWith("MENUJU_") ||
+      driverStatusItem.statusCode.startsWith("PENGIRIMAN_")
+    ) {
       return t("labelLihatBuktiMuatBarangPOD");
     }
 

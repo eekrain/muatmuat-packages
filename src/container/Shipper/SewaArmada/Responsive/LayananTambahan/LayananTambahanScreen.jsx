@@ -1,3 +1,5 @@
+import { useCallback, useRef, useState } from "react";
+
 import Button from "@/components/Button/Button";
 import DropdownRadioBottomsheeet from "@/components/Dropdown/DropdownRadioBottomsheeet";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
@@ -14,13 +16,18 @@ import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsi
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { useLayananTambahanStore } from "@/store/Shipper/forms/layananTambahanStore";
+import {
+  useLayananTambahanActions,
+  useLayananTambahanStore,
+} from "@/store/Shipper/forms/layananTambahanStore";
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 import { useSewaArmadaActions } from "@/store/Shipper/forms/sewaArmadaStore";
 
 const LayananTambahanScreen = ({ additionalServicesOptions }) => {
   const { t } = useTranslation();
   const navigation = useResponsiveNavigation();
+  const isMountedRef = useRef(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   const { setField: sewaArmadaSetField } = useSewaArmadaActions();
 
@@ -29,6 +36,8 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
     formErrors: tambahanFormErrors,
     setField: tambahanSetField,
   } = useLayananTambahanStore();
+
+  const { setErrors: tambahanSetErrors } = useLayananTambahanActions();
 
   // Zustand store
   const {
@@ -40,32 +49,96 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
   } = useLocationFormStore();
 
   const { data: shippingOptionsData, trigger: fetchShippingOptions } =
-    useSWRMutateHook("v1/orders/shipping-options");
+    useSWRMutateHook(
+      "v1/orders/shipping-options",
+      "POST",
+      undefined,
+      {},
+      {
+        onError: (error) => {
+          console.error("SWR Error fetching shipping options:", error);
+          // Don't show error to user for this optional API call
+        },
+        onSuccess: () => {
+          // Only update if component is still mounted
+          if (isMountedRef.current) {
+            // This will be handled by the effect
+          }
+        },
+      }
+    );
 
   const shippingOptions = shippingOptionsData?.Data.shippingOptions || [];
 
-  const handleFetchShippingOptions = async ({ lat, long }) =>
-    await fetchShippingOptions({ lat, long });
+  // Cleanup effect to handle component unmount
+  useShallowCompareEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+      setIsSaving(false);
+    };
+  }, []);
+
+  const handleFetchShippingOptions = useCallback(
+    async ({ lat, long }) => {
+      if (!lat || !long) {
+        return; // Don't fetch if coordinates are missing
+      }
+
+      try {
+        await fetchShippingOptions({ lat, long });
+      } catch (error) {
+        console.error("Error fetching shipping options:", error);
+        // Don't show error to user for this optional API call
+      }
+    },
+    [fetchShippingOptions]
+  );
 
   useShallowCompareEffect(() => {
-    if (locationFormValues.dataLokasi?.coordinates) {
+    if (locationFormValues.dataLokasi?.coordinates && isMountedRef.current) {
       handleFetchShippingOptions({
         lat: locationFormValues.dataLokasi.coordinates.latitude,
         long: locationFormValues.dataLokasi.coordinates.longitude,
       });
     }
-  }, [locationFormValues.dataLokasi?.coordinates]);
+  }, [locationFormValues.dataLokasi?.coordinates, handleFetchShippingOptions]);
 
   useShallowCompareEffect(() => {
-    if (shippingOptions.length > 0) {
+    if (shippingOptions.length > 0 && isMountedRef.current) {
       sewaArmadaSetField("tempShippingOptions", shippingOptions);
     }
-  }, [shippingOptions]);
+  }, [shippingOptions, sewaArmadaSetField]);
 
   const handleSaveLayananTambahan = () => {
-    const isFormValid = validateLayananTambahan();
-    console.log("🚀 ~ LayananTambahanScreen ~ formErrors:", locationFormErrors);
-    if (!isFormValid) {
+    // Prevent multiple rapid clicks
+    if (!isMountedRef.current || isSaving) {
+      return;
+    }
+
+    setIsSaving(true);
+
+    // Validate location form first
+    const isLocationFormValid = validateLayananTambahan();
+
+    // Validate tambahan form if kirimBuktiFisik is enabled
+    let isTambahanFormValid = true;
+    if (tambahanFormValues.kirimBuktiFisik) {
+      const tambahanErrors = {};
+
+      // Validate opsiPegiriman is required when kirimBuktiFisik is true
+      if (!tambahanFormValues.opsiPegiriman) {
+        tambahanErrors.opsiPegiriman = "Opsi pengiriman wajib diisi";
+        isTambahanFormValid = false;
+      }
+
+      // Update tambahan form errors
+      tambahanSetErrors(tambahanErrors);
+    } else {
+      // Clear opsiPegiriman error if kirimBuktiFisik is disabled
+      tambahanSetErrors({ opsiPegiriman: undefined });
+    }
+
+    if (!isLocationFormValid || !isTambahanFormValid) {
       // Count total errors from both form stores
       const locationErrorCount = Object.keys(locationFormErrors || {}).filter(
         (key) => locationFormErrors[key]
@@ -79,9 +152,51 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
       if (totalErrors > 1) {
         toast.error(t("messageFieldKosong"));
       }
+      setIsSaving(false);
       return;
     }
-    navigation.pop();
+
+    // If all validations pass, save to sewaArmadaStore and navigate back
+    if (isMountedRef.current) {
+      try {
+        // Save tambahan form values to sewaArmadaStore
+        Object.entries(tambahanFormValues).forEach(([key, value]) => {
+          sewaArmadaSetField(key, value);
+        });
+
+        // Save location form values to sewaArmadaStore
+        Object.entries(locationFormValues).forEach(([key, value]) => {
+          sewaArmadaSetField(key, value);
+        });
+
+        // Navigate back using the same approach as InformasiMuatanScreen
+        navigation.popTo("/");
+      } catch (error) {
+        console.error("Error saving layanan tambahan:", error);
+        // If navigation fails, try fallback methods
+        try {
+          if (
+            typeof window !== "undefined" &&
+            window.history &&
+            window.history.length > 1
+          ) {
+            window.history.back();
+          } else {
+            navigation.pop();
+          }
+        } catch (fallbackError) {
+          console.error("Fallback navigation error:", fallbackError);
+          if (typeof window !== "undefined") {
+            window.location.href = "/";
+          }
+        }
+      } finally {
+        setIsSaving(false);
+      }
+    } else {
+      // Reset saving state if component is unmounted
+      setIsSaving(false);
+    }
   };
 
   const otherAdditionalServices = useShallowMemo(
@@ -146,13 +261,13 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
             </div>
 
             <span className="ml-6 text-sm font-medium leading-[15.4px] text-neutral-600">
-              {tambahanFormValues.opsiPegiriman
+              {tambahanFormValues.opsiPegiriman &&
+              tambahanFormValues.opsiPegiriman.originalCost
                 ? (() => {
                     const shippingPrice = parseInt(
-                      tambahanFormValues.opsiPegiriman.price.replace(
-                        /[^\d]/g,
-                        ""
-                      )
+                      tambahanFormValues.opsiPegiriman.originalCost
+                        .toString()
+                        .replace(/[^\d]/g, "") || "0"
                     );
                     const insurancePrice = tambahanFormValues.asuransiPengiriman
                       ? 10000
@@ -206,11 +321,10 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                               alert(t("messageNoPhoneNumber"));
                             }
                           } catch (ex) {
-                            console.error("Contact Picker failed", ex);
+                            // console.error("Contact Picker failed", ex);
                           }
                         } else {
                           alert(t("messageContactPickerNotSupported"));
-                          console.warn("navigator.contacts is not available.");
                         }
                       }}
                     />
@@ -484,10 +598,12 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                           <span
                             className={`text-sm font-semibold leading-[15.4px] ${isKirimBuktiFisikDisabled || isLocationDisabled ? "text-neutral-600" : "text-neutral-900"}`}
                           >
-                            {tambahanFormValues.opsiPegiriman.courier}
+                            {tambahanFormValues.opsiPegiriman.courierName}
                           </span>
                           <span className="text-xs font-medium leading-[13.2px] text-neutral-900">
-                            {tambahanFormValues.opsiPegiriman.price}
+                            {tambahanFormValues.opsiPegiriman.originalCost
+                              ? `Rp${tambahanFormValues.opsiPegiriman.originalCost.toLocaleString("id-ID")}`
+                              : ""}
                           </span>
                         </>
                       ) : (
@@ -612,8 +728,9 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
           className="flex-1"
           onClick={handleSaveLayananTambahan}
           type="button"
+          disabled={isSaving}
         >
-          {t("buttonSimpan")}
+          {isSaving ? "Menyimpan..." : t("buttonSimpan")}
         </Button>
       </ResponsiveFooter>
     </FormResponsiveLayout>

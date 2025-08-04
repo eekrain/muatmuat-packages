@@ -334,7 +334,7 @@ const DataTable = ({
         </div>
         {totalItems === 0 && !loading ? (
           <DataNotFound
-            className="gap-y-5 pb-10 pt-6"
+            className="h-full gap-y-5 pb-10"
             title="Belum Ada Data"
             type="data"
           />

@@ -10,23 +10,35 @@ import FileUploadMultiple from "@/components/FileUpload/FileUploudMultiple";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import Input from "@/components/Form/Input";
 import { toast } from "@/lib/toast";
+import { useTransporterFormStore } from "@/store/CS/forms/registerTransporter";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "application/pdf"];
 
-// File format and size validation
 const fileValidation = (isRequired = false) =>
   v.custom((value) => {
-    if (!value) return !isRequired; // Allow empty for optional fields
-    if (!(value instanceof File)) return false;
-    if (value.size > MAX_FILE_SIZE) {
-      throw new Error("Ukuran file maksimal 10MB");
+    // Jika tidak ada nilai, valid jika tidak wajib
+    if (!value) return !isRequired;
+
+    // Jika nilainya adalah File (saat baru dipilih, sebelum diunggah)
+    if (value instanceof File) {
+      if (value.size > MAX_FILE_SIZE) {
+        throw new Error("Ukuran file maksimal 10MB");
+      }
+      if (!ACCEPTED_TYPES.includes(value.type)) {
+        throw new Error("Format file harus .jpg/.png/.pdf");
+      }
+      return true;
     }
-    if (!ACCEPTED_TYPES.includes(value.type)) {
-      throw new Error("Format file harus .jpg/.png/.pdf");
+
+    // Jika nilainya adalah objek dengan URL (setelah diunggah)
+    if (typeof value === "object" && value.url) {
+      return true; // Anggap valid jika sudah punya URL
     }
-    return true;
-  }, "Format file harus .jpg/.png/.pdf dan maksimal 10MB");
+
+    // Jika bukan keduanya, berarti tidak valid
+    return false;
+  }, "File tidak valid. Pastikan format .jpg/.png/.pdf dan ukuran maks. 10MB.");
 
 // Array validation for multiple files
 const fileArrayValidation = (isRequired = false) =>
@@ -70,6 +82,12 @@ export const kelengkapanLegalitasSchema = v.object({
 });
 
 function KelengkapanLegalitas() {
+  const FORM_KEY = "newTransporterRegistration";
+  const setForm = useTransporterFormStore((state) => state.setForm);
+  const initialData = useTransporterFormStore((state) =>
+    state.getForm(FORM_KEY)
+  );
+
   const {
     register,
     handleSubmit,
@@ -80,25 +98,29 @@ function KelengkapanLegalitas() {
     watch,
   } = useForm({
     resolver: valibotResolver(kelengkapanLegalitasSchema),
-    defaultValues: {
-      nibNumber: null,
-      npwpNumber: null,
-      ktpNumber: null,
-      documents: {
-        nib: [], // Required
-        npwp: [], // Required
-        ktp: [], // Required
-        aktaPendirian: [], // Required
-        skKemenkumham: [], // Required
-        aktaPerubahan: [], // Optional
-        skKemenkumhamPerubahan: [], // Optional
-        sertifikatStandar: [], // Optional
-      },
-    },
+    defaultValues: initialData.nibNumber
+      ? initialData
+      : {
+          nibNumber: null,
+          npwpNumber: null,
+          ktpNumber: null,
+          documents: {
+            nib: [], // Required
+            npwp: [], // Required
+            ktp: [], // Required
+            aktaPendirian: [], // Required
+            skKemenkumham: [], // Required
+            aktaPerubahan: [], // Optional
+            skKemenkumhamPerubahan: [], // Optional
+            sertifikatStandar: [], // Optional
+          },
+        },
   });
 
   // Watch form values for real-time validation
   const watchedValues = watch();
+
+  console.log("watchedValues", watchedValues);
 
   const isAllRequiredLegalitasFieldsEmpty = (values) => {
     const requiredFields = [
@@ -119,28 +141,26 @@ function KelengkapanLegalitas() {
     });
   };
 
-  const onSubmit = (data) => {
-    console.log("Form data:", data);
-    // Handle form submission here
-  };
-
-  const handleValidateAndSubmit = async (e) => {
-    e.preventDefault(); // cegah reload
-    const isValid = await trigger();
+  const handleValidateAndSubmit = handleSubmit((data) => {
     const values = getValues();
 
-    if (!isValid) {
-      if (isAllRequiredLegalitasFieldsEmpty(values)) {
-        toast.error("Isi semua inputan yang bertanda bintang (*)");
-      }
+    if (isAllRequiredLegalitasFieldsEmpty(values)) {
+      toast.error("Isi semua inputan yang bertanda bintang (*)");
       return;
     }
+    console.log("NOT TRIGGERED");
+    console.log("Form submitted:", data);
 
-    handleSubmit(onSubmit)();
-  };
+    const existingData =
+      useTransporterFormStore.getState().getForm(FORM_KEY) || {};
+    const updatedData = { ...existingData, ...data };
+    setForm(FORM_KEY, updatedData);
+
+    toast.success("Kelengkapan legalitas berhasil disimpan!");
+  });
 
   const handleMultipleFileUpload = (fieldName, files) => {
-    setValue(`documents.${fieldName}`, files);
+    setValue(`documents.${fieldName}`, files, { shouldValidate: true });
   };
 
   const handleFileError = (error) => {

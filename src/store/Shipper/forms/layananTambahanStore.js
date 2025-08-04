@@ -32,6 +32,11 @@ export const useLayananTambahanStore = create(
           formErrors: { ...state.formErrors, [field]: undefined },
         })),
 
+      setErrors: (errors) =>
+        set((state) => ({
+          formErrors: { ...state.formErrors, ...errors },
+        })),
+
       validateForm: () => {
         const { namaPenerima, nomorHandphonePenerima, opsiPegiriman } =
           get().formValues;
@@ -77,12 +82,11 @@ export const useLayananTambahanStore = create(
 );
 
 export const useLayananTambahanActions = () => {
-  const { setField, validateForm } = useLayananTambahanStore(
-    (state) => state.actions
-  );
+  const store = useLayananTambahanStore();
 
   return {
-    setField,
-    validateForm,
+    setField: store.setField,
+    validateForm: store.validateForm,
+    setErrors: store.setErrors,
   };
 };

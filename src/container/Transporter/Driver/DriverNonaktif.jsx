@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 import { Alert } from "@/components/Alert/Alert";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
@@ -43,6 +43,7 @@ const DriverNonaktif = ({
   const [showExpiredWarning, setShowExpiredWarning] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [confirmationModalConfig, setConfirmationModalConfig] = useState({});
+  const [openDropdowns, setOpenDropdowns] = useState({});
 
   // Fetch drivers data with pagination, filters and status
   const { data, isLoading, mutate } = useGetNonActiveDriversData({
@@ -225,13 +226,22 @@ const DriverNonaktif = ({
       width: "120px",
       sortable: false,
       render: (row) => (
-        <SimpleDropdown>
+        <SimpleDropdown
+          open={openDropdowns[row.id] || false}
+          onOpenChange={(isOpen) =>
+            setOpenDropdowns((prev) => ({ ...prev, [row.id]: isOpen }))
+          }
+        >
           <SimpleDropdownTrigger asChild>
             <button className="flex h-8 flex-row items-center justify-between gap-2 rounded-md border border-neutral-600 bg-white px-3 py-2 shadow-sm transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none">
               <span className="text-xs font-medium leading-tight text-black">
                 Aksi
               </span>
-              <ChevronDown className="h-4 w-4 text-neutral-700" />
+              {openDropdowns[row.id] ? (
+                <ChevronUp className="h-4 w-4 text-neutral-700" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-neutral-700" />
+              )}
             </button>
           </SimpleDropdownTrigger>
 
@@ -298,7 +308,11 @@ const DriverNonaktif = ({
       categories: [
         { key: "truckType", label: "Jenis Truk" },
         { key: "carrierType", label: "Jenis Carrier" },
-        { key: "verificationStatus", label: "Status Nomor Whatsapp" },
+        {
+          key: "verificationStatus",
+          label: "Status Nomor Whatsapp",
+          searchable: false,
+        },
       ],
       data: {
         truckType:
