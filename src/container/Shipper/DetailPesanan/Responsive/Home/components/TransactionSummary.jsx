@@ -15,6 +15,8 @@ export const TransactionSummary = ({ dataRingkasanPembayaran }) => {
   const isRingkasanTransaksi = true;
   const { t } = useTranslation();
 
+  const [isDocumentShippingDetailOpen, setDocumentShippingDetailOpen] =
+    useState(false);
   if (!dataRingkasanPembayaran) return null;
   console.log(dataRingkasanPembayaran, "data");
   const {
@@ -30,9 +32,6 @@ export const TransactionSummary = ({ dataRingkasanPembayaran }) => {
   } = dataRingkasanPembayaran;
 
   const documentShippingFee = documentShippingDetail?.totalPrice || 0;
-
-  const [isDocumentShippingDetailOpen, setDocumentShippingDetailOpen] =
-    useState(false);
 
   // Use the data from props
   const shippingData = documentShippingDetail;
