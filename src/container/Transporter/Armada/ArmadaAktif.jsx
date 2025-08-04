@@ -247,7 +247,7 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange, count }) => {
         { key: "carrierType", label: "Jenis Carrier" },
         { key: "vehicleBrand", label: "Merek Kendaraan" },
         { key: "vehicleType", label: "Tipe Kendaraan" },
-        { key: "status", label: "Status" },
+        { key: "status", label: "Status", searchable: false },
       ],
       data: {
         truckType:
