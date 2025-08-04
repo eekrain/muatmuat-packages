@@ -66,9 +66,9 @@ const apiResultProcessDrivers = {
         hasPreviousPage: false,
       },
       summary: {
-        total: 5,
-        underReview: 3,
-        rejected: 2,
+        total: 1,
+        underReview: 1,
+        rejected: 1,
       },
       dataFilter: {
         driverStatus: [
