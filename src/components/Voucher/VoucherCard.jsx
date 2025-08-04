@@ -33,11 +33,14 @@ export default function VoucherCard({
   // the actual calculation happens in SummaryPanel.
   const getDiscountDisplay = () => {
     if (
-      discountType === "percentage" &&
+      discountType.toLowerCase() === "percentage" &&
       typeof discountPercentage === "number"
     ) {
       return `${t("labelDiscount")} ${discountPercentage}%`; // Display as percentage
-    } else if (discountType === "fixed" && typeof discountAmount === "number") {
+    } else if (
+      discountType.toLowerCase() === "fixed" &&
+      typeof discountAmount === "number"
+    ) {
       return `${t("labelDiscount")} Rp ${discountAmount.toLocaleString("id-ID")}`;
     }
     return ""; // No specific discount display if type/value is missing
@@ -52,7 +55,7 @@ export default function VoucherCard({
   // Prepare voucher data for the info popup
   const voucherData = {
     code: title,
-    nominal: discountType === "fixed" ? discountAmount : 0,
+    nominal: discountType.toLowerCase() === "fixed" ? discountAmount : 0,
     validFrom: startDate,
     validTo: endDate,
     usagePercentage: usagePercentage,
