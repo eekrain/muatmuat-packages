@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 //cropper
 import "cropperjs/dist/cropper.css";
 import Cropper from "react-cropper";
+import { createPortal } from "react-dom";
 
 import IconComponent from "../IconComponent/IconComponent";
 import styles from "./CropperWeb.module.scss";
@@ -23,6 +24,13 @@ export default function CropperWeb({
   const cropperRef = useRef(null);
   const modalRef = useRef(null);
   const defaultRatioRef = useRef(null);
+
+  const cancelCrop = useCallback(() => {
+    const cropper = cropperRef.current?.cropper;
+    cropper.reset();
+    setIsOpen(false);
+    onClose(true);
+  }, [setIsOpen, onClose]);
 
   useEffect(() => {
     const handleEscape = (e) => {
@@ -49,7 +57,7 @@ export default function CropperWeb({
       document.removeEventListener("mousedown", handleClickOutside);
       document.body.style.overflow = "unset";
     };
-  }, [isOpen]);
+  }, [isOpen, cancelCrop]);
 
   const getCropData = () => {
     const cropper = cropperRef.current?.cropper;
@@ -73,13 +81,6 @@ export default function CropperWeb({
         0.7
       ); // compress at 70%
     }
-  };
-
-  const cancelCrop = () => {
-    const cropper = cropperRef.current?.cropper;
-    cropper.reset();
-    setIsOpen(false);
-    onClose(true);
   };
 
   const zoomOut = () => {
@@ -112,8 +113,8 @@ export default function CropperWeb({
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-[20] overflow-y-auto bg-gray-500 bg-opacity-75 transition-opacity">
+  const modalContent = (
+    <div className="fixed inset-0 z-[9999] overflow-y-auto bg-gray-500 bg-opacity-75 transition-opacity">
       <div className="flex min-h-full items-center justify-center p-4 text-center max-[600px]:items-center">
         <div
           ref={modalRef}
@@ -193,4 +194,9 @@ export default function CropperWeb({
       </div>
     </div>
   );
+
+  // Use portal to render outside the current DOM tree
+  return typeof window !== "undefined"
+    ? createPortal(modalContent, document.body)
+    : null;
 }

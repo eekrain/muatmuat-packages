@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import { DataTable } from "@/components/DataTable";
@@ -35,6 +35,7 @@ const ArmadaProses = ({
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [confirmDeleteVehicle, setConfirmDeleteVehicle] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [openDropdowns, setOpenDropdowns] = useState({});
 
   // Fetch vehicles data with pagination, filters and status
   const { data, isLoading, mutate } = useGetProcessVehiclesData({
@@ -119,7 +120,12 @@ const ArmadaProses = ({
       width: "120px",
       sortable: false,
       render: (row) => (
-        <SimpleDropdown>
+        <SimpleDropdown
+          open={openDropdowns[row.id] || false}
+          onOpenChange={(isOpen) =>
+            setOpenDropdowns((prev) => ({ ...prev, [row.id]: isOpen }))
+          }
+        >
           <SimpleDropdownTrigger asChild>
             <button className="relative flex h-8 flex-row items-center justify-between gap-2 rounded-md border border-neutral-600 bg-white px-3 py-2 shadow-sm transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none">
               <span className="text-xs font-medium leading-tight text-black">
@@ -128,7 +134,11 @@ const ArmadaProses = ({
               {row.status === "CALIBRATION_PROCESS" && (
                 <span className="absolute -top-1 right-0 h-2 w-2 rounded-full bg-red-500"></span>
               )}
-              <ChevronDown className="h-4 w-4 text-neutral-700" />
+              {openDropdowns[row.id] ? (
+                <ChevronUp className="h-4 w-4 text-neutral-700" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-neutral-700" />
+              )}
             </button>
           </SimpleDropdownTrigger>
 

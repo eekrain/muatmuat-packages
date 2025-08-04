@@ -145,7 +145,7 @@ const ArmadaTable = ({
 
         {/* Table */}
         <div className="p-4">
-          <div className="max-h-[296px] w-full overflow-auto rounded-lg border border-neutral-600">
+          <div className="max-h-[calc(100vh-450px)] w-full overflow-auto rounded-lg border border-neutral-600">
             <table className="table-tambah-armada-massal w-full table-fixed overflow-auto">
               <thead className="sticky top-0 z-50 border-b border-neutral-500 bg-white text-left">
                 <tr>

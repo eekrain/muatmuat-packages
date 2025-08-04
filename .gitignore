@@ -43,10 +43,7 @@ next-env.d.ts
 # Million Lint
 .million
 
-
 notes.md
-notes-*.md
-
-/src/app/api/*
+notes-fix-bug.md
 
 .crush

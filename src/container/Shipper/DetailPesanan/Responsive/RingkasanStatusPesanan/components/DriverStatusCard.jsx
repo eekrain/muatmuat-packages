@@ -35,7 +35,12 @@ export const DriverStatusCard = ({ driver, orderStatus }) => {
         totalStep={driver.stepperData?.length || 0}
       >
         {driver.stepperData?.map((step, index) => (
-          <StepperItemResponsive key={step.status} step={step} index={index} />
+          <StepperItemResponsive
+            key={step.status}
+            status={step?.status}
+            icon={step.icon}
+            index={index}
+          />
         ))}
       </StepperContainer>
 

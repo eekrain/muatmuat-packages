@@ -12,6 +12,7 @@ const FilterableMenu = ({
   filterText,
   onSelectValue,
   getOptionLabel,
+  setSearchValue,
 }) => {
   const filteredOptions = useMemo(
     () =>
@@ -45,8 +46,12 @@ const FilterableMenu = ({
                 className="flex w-full items-start justify-between gap-3 hover:bg-neutral-200"
               >
                 <button
+                  type="button"
                   className="m-2 flex w-full text-start text-xs font-semibold"
-                  onClick={() => onSelectValue(option)}
+                  onClick={() => {
+                    setSearchValue(label);
+                    onSelectValue(option);
+                  }}
                 >
                   <div className="flex-1 shrink gap-2.5 self-stretch">
                     {startIndex !== -1 ? (
@@ -133,6 +138,7 @@ export const SearchPostal = ({
             filterText={searchValue}
             onSelectValue={onSelectValue}
             getOptionLabel={getOptionLabel}
+            setSearchValue={setSearchValue}
           />
         </div>
       ) : null}

@@ -33,6 +33,7 @@ const mockGetDriverDetailResponse = {
       },
     ],
     rejectReason: "tolakkk",
+    canEdit: true,
   },
   Type: "GET_DRIVER_DETAIL",
 };

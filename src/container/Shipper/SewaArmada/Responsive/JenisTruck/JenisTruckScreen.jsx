@@ -8,6 +8,7 @@ import {
   LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
+import { useSWRMutateHook } from "@/hooks/use-swr";
 import SearchBarResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/SearchBarResponsiveLayout";
 import { isDev } from "@/lib/constants/is-dev";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
@@ -227,6 +228,14 @@ const JenisTruckScreen = ({ trucks, handleFetchTrucks }) => {
   const orderType = useSewaArmadaStore((s) => s.orderType);
   const { setField } = useSewaArmadaActions();
 
+  // Get location data from store for distance calculation
+  const { lokasiMuat, lokasiBongkar } = useSewaArmadaStore((s) => s.formValues);
+
+  // Setup SWR mutation hook for distance calculation
+  const { trigger: calculateDistance } = useSWRMutateHook(
+    "v1/orders/calculate-distance"
+  );
+
   useEffect(() => {
     handleFetchTrucks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -251,9 +260,55 @@ const JenisTruckScreen = ({ trucks, handleFetchTrucks }) => {
     );
   }, [searchValue, allTrucks]);
 
-  const handleTruckSelection = (truck) => {
-    setField("truckTypeId", truck.truckTypeId);
-    navigation.popTo("/");
+  const handleTruckSelection = async (truck) => {
+    try {
+      // Set the selected truck
+      setField("truckTypeId", truck.truckTypeId);
+
+      // Calculate distance if we have both pickup and dropoff locations
+      if (lokasiMuat.length > 0 && lokasiBongkar.length > 0) {
+        console.log("🚀 Calculating distance for truck selection:", truck.name);
+
+        const requestPayload = {
+          origin: lokasiMuat.map((item) => ({
+            lat: item?.dataLokasi?.coordinates?.latitude || 0,
+            long: item?.dataLokasi?.coordinates?.longitude || 0,
+          })),
+          destination: lokasiBongkar.map((item) => ({
+            lat: item?.dataLokasi?.coordinates?.latitude || 0,
+            long: item?.dataLokasi?.coordinates?.longitude || 0,
+          })),
+        };
+
+        console.log("📍 Distance calculation payload:", requestPayload);
+
+        const response = await calculateDistance(requestPayload);
+
+        if (response?.Data) {
+          const { estimatedDistance, distanceUnit } = response.Data;
+          console.log("✅ Distance calculated:", {
+            estimatedDistance,
+            distanceUnit,
+          });
+
+          // Update the store with calculated distance
+          setField("distance", estimatedDistance);
+          setField("distanceUnit", distanceUnit);
+        }
+      } else {
+        console.log("⚠️ Cannot calculate distance: missing location data", {
+          lokasiMuatCount: lokasiMuat.length,
+          lokasiBongkarCount: lokasiBongkar.length,
+        });
+      }
+
+      // Navigate back to the main screen
+      navigation.popTo("/");
+    } catch (error) {
+      console.error("❌ Error calculating distance:", error);
+      // Still navigate back even if distance calculation fails
+      navigation.popTo("/");
+    }
   };
 
   const renderContent = () => {

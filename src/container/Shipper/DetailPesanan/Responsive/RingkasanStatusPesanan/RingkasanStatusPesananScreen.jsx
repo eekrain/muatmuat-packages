@@ -80,7 +80,8 @@ const RingkasanStatusPesananScreen = ({ dataStatusPesanan }) => {
                   (step, index) => (
                     <StepperItemResponsive
                       key={step.label}
-                      step={step}
+                      status={step?.status}
+                      icon={step.icon}
                       index={index}
                     />
                   )

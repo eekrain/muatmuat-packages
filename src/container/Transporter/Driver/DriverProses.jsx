@@ -282,6 +282,7 @@ const DriverProses = ({
           text: "Ya",
           onClick: handleDeleteDriver,
           disabled: isDeleting,
+          classname: "w-[112px]",
         }}
         cancel={{
           text: "Tidak",
@@ -289,6 +290,7 @@ const DriverProses = ({
             setConfirmDeleteDriver(false);
             setSelectedDriver(null);
           },
+          classname: "w-[112px]",
         }}
       />
     </>

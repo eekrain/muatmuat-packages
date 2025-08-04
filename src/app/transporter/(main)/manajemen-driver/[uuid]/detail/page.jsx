@@ -116,9 +116,6 @@ const Page = () => {
 
   if (!driverData) return <div>No driver data found.</div>;
 
-  // Create an array of image URLs for lightbox (if driver has profile image)
-  const driverImages = driverData.profileImage ? [driverData.profileImage] : [];
-
   // Build document rows
   const documentRows = [];
 
@@ -168,11 +165,18 @@ const Page = () => {
   if (driverData.profileImage) {
     documentRows.push(
       <DetailRow key="driver-photo" label="Foto Driver">
-        <LightboxPreview
-          image={driverData.profileImage}
-          alt="Foto Driver"
-          index={0}
-        />
+        <LightboxProvider
+          images={[driverData.profileImage]}
+          title="Foto Driver"
+          variant="square"
+        >
+          <LightboxPreview
+            image={driverData.profileImage}
+            alt="Foto Driver"
+            index={0}
+            className="aspect-square object-cover"
+          />
+        </LightboxProvider>
       </DetailRow>
     );
   }
@@ -188,72 +192,70 @@ const Page = () => {
   };
 
   return (
-    <LightboxProvider images={driverImages} title="Foto Driver">
-      <div className="flex flex-col gap-4 pb-11 pt-6">
-        <BreadCrumb data={breadCrumbData} />
-        <PageTitle className="mb-0">Detail Driver</PageTitle>
+    <div className="flex flex-col gap-4 pb-11 pt-6">
+      <BreadCrumb data={breadCrumbData} />
+      <PageTitle className="mb-0">Detail Driver</PageTitle>
 
-        {/* Warning Alert for expiring SIM */}
-        {isSimExpiringSoon() && (
-          <Alert size="big" variant="warning">
-            <div className="flex flex-col gap-1">
-              <p className="text-xs font-medium">
-                Harap segera lakukan perpanjangan SIM untuk menghindari kendala
-                operasional.
-              </p>
-            </div>
-          </Alert>
-        )}
+      {/* Warning Alert for expiring SIM */}
+      {isSimExpiringSoon() && (
+        <Alert size="big" variant="warning">
+          <div className="flex flex-col gap-1">
+            <p className="text-xs font-medium">
+              Harap segera lakukan perpanjangan SIM untuk menghindari kendala
+              operasional.
+            </p>
+          </div>
+        </Alert>
+      )}
 
-        {/* Reject Alert */}
-        {driverData.rejectReason && (
-          <Alert size="big" variant="error">
-            <div className="flex flex-col gap-1">
-              <h1 className="text-xs font-bold">
-                Verifikasi Data Driver Anda Ditolak!
-              </h1>
-              <p className="text-xs font-medium">
-                Alasan verifikasi ditolak: {driverData.rejectReason}
-              </p>
-            </div>
-          </Alert>
-        )}
+      {/* Reject Alert */}
+      {driverData.rejectReason && (
+        <Alert size="big" variant="error">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-xs font-bold">
+              Verifikasi Data Driver Anda Ditolak!
+            </h1>
+            <p className="text-xs font-medium">
+              Alasan verifikasi ditolak: {driverData.rejectReason}
+            </p>
+          </div>
+        </Alert>
+      )}
 
-        <Card className="rounded-2xl border-none shadow-muat">
-          <CardContent className="space-y-5 !p-6">
-            {/* Driver Basic Info */}
-            <div>
-              <DetailRow hasBorderBottom={false} label="Nama Lengkap">
-                {driverData.name || "-"}
-              </DetailRow>
-              <DetailRow hasBorderBottom={false} label="No. Whatsapp">
-                {formatPhoneNumber(driverData.phoneNumber)}
-              </DetailRow>
-            </div>
+      <Card className="rounded-2xl border-none shadow-muat">
+        <CardContent className="space-y-5 !p-6">
+          {/* Driver Basic Info */}
+          <div>
+            <DetailRow hasBorderBottom={false} label="Nama Lengkap">
+              {driverData.name || "-"}
+            </DetailRow>
+            <DetailRow hasBorderBottom={false} label="No. Whatsapp">
+              {formatPhoneNumber(driverData.phoneNumber)}
+            </DetailRow>
+          </div>
 
-            {/* Documents Section */}
-            <Collapsible defaultOpen>
-              <CollapsibleTrigger className="rounded-t-md bg-primary-50 px-6 hover:no-underline">
-                <h3 className="font-semibold">File dan Foto Driver</h3>
-                <IconComponent
-                  src="/icons/chevron-down.svg"
-                  className="h-5 w-5 transition-transform duration-300"
-                />
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <div className="p-4">
-                  {documentRows.map((row, index) =>
-                    React.cloneElement(row, {
-                      hasBorderBottom: index < documentRows.length - 1,
-                    })
-                  )}
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-          </CardContent>
-        </Card>
-      </div>
-    </LightboxProvider>
+          {/* Documents Section */}
+          <Collapsible defaultOpen>
+            <CollapsibleTrigger className="rounded-t-md bg-primary-50 px-6 hover:no-underline">
+              <h3 className="font-semibold">File dan Foto Driver</h3>
+              <IconComponent
+                src="/icons/chevron-down.svg"
+                className="h-5 w-5 transition-transform duration-300"
+              />
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="p-4">
+                {documentRows.map((row, index) =>
+                  React.cloneElement(row, {
+                    hasBorderBottom: index < documentRows.length - 1,
+                  })
+                )}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

@@ -21,8 +21,7 @@ const FileUploadInput = ({
   const [hasFile, setHasFile] = useState(
     value && (value.name || value.documentUrl)
   );
-  const displayText =
-    successText || (hasFile ? value.name || value.name : null);
+  const displayText = successText || value?.name || null;
   const fileExtension =
     hasFile && value?.name ? value.name.split(".").pop() : "";
 
