@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from "react";
 
-import useDevice from "../use-device";
 import { fetcher } from "./fetcher";
+import LocationApiAdapter from "./location-api-adapter";
 import { useAutoComplete } from "./use-auto-complete";
 import { useGetCurrentLocation } from "./use-get-current-location";
 import { usePostalCode } from "./use-postal-code";
@@ -14,29 +14,32 @@ export const DEFAULT_COORDINATES = {
 
 const LocationContext = createContext(null);
 
-export const LocationProvider = ({ children }) => {
-  const { isMobile } = useDevice();
+export const LocationProvider = ({
+  apiAdapter = LocationApiAdapter,
+  historyLocationType = "PICKUP",
+  children,
+}) => {
   const [coordinates, setCoordinates] = useState(DEFAULT_COORDINATES);
   const [autoCompleteSearchPhrase, setAutoCompleteSearchPhrase] = useState("");
   const [isDropdownSearchOpen, setIsDropdownSearchOpen] = useState(false);
   const [locationPostalCodeSearchPhrase, setLocationPostalCodeSearchPhrase] =
     useState();
   const [isModalPostalCodeOpen, setIsModalPostalCodeOpen] = useState(false);
-  console.log(
-    "🚀 ~ LocationProvider ~ isModalPostalCodeOpen:",
-    isModalPostalCodeOpen
-  );
   const [tempLocation, setTempLocation] = useState(null);
   const [dontTriggerPostalCodeModal, setDontTriggerPostalCodeModal] =
     useState(false);
 
   const savedLocation = useSavedLocation({
+    apiAdapter,
+    historyLocationType,
     setCoordinates,
     setAutoCompleteSearchPhrase,
     setIsDropdownSearchOpen,
     setDontTriggerPostalCodeModal,
   });
+
   const autoComplete = useAutoComplete({
+    apiAdapter,
     autoCompleteSearchPhrase,
     setAutoCompleteSearchPhrase,
     setCoordinates,
@@ -47,7 +50,9 @@ export const LocationProvider = ({ children }) => {
     setIsDropdownSearchOpen,
     refetchHistoryResult: savedLocation.refetchHistoryResult,
   });
+
   const getCurrentLocation = useGetCurrentLocation({
+    apiAdapter,
     setCoordinates,
     setAutoCompleteSearchPhrase,
     setIsModalPostalCodeOpen,
@@ -57,7 +62,9 @@ export const LocationProvider = ({ children }) => {
     setIsDropdownSearchOpen,
     setTempLocation,
   });
+
   const postalCode = usePostalCode({
+    apiAdapter,
     setIsModalPostalCodeOpen,
     locationPostalCodeSearchPhrase,
     tempLocation,

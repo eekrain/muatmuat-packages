@@ -1,17 +1,14 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect } from "react";
 
-import { fetcherMuatparts } from "@/lib/axios";
 import { toast } from "@/lib/toast";
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 import { useResponsiveSearchStore } from "@/store/Shipper/zustand/responsiveSearchStore";
 
 import { useDebounceCallback } from "../use-debounce-callback";
 import useDevice from "../use-device";
-import { useShallowCompareEffect } from "../use-shallow-effect";
-import { useSWRMutateHook } from "../use-swr";
-import { fetcher } from "./fetcher";
 
 export const useAutoComplete = ({
+  apiAdapter,
   autoCompleteSearchPhrase,
   setAutoCompleteSearchPhrase,
   setCoordinates,
@@ -32,19 +29,20 @@ export const useAutoComplete = ({
     if (isMobile) {
       setAutoCompleteSearchPhrase(responsiveSearchValue);
     }
-  }, [isMobile, responsiveSearchValue, setAutoCompleteSearchPhrase]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMobile, responsiveSearchValue]);
 
-  const { data, trigger, isMutating, reset } = useSWRMutateHook(
-    "v1/autocompleteStreet",
-    "POST",
-    fetcherMuatparts
-  );
+  const {
+    data: searchResult,
+    trigger,
+    isMutating,
+    reset,
+  } = apiAdapter.useGetAutoCompleteLocation();
 
   const debouncedTrigger = useDebounceCallback(trigger, 500);
-  const searchResult = useMemo(() => data?.slice(0, 3) || [], [data]);
-  const searchResultEmpty = searchResult.length === 0;
+  const searchResultEmpty = !searchResult || searchResult?.length === 0;
 
-  useShallowCompareEffect(() => {
+  useEffect(() => {
     if (autoCompleteSearchPhrase && autoCompleteSearchPhrase?.length >= 3) {
       debouncedTrigger(
         new URLSearchParams({ phrase: autoCompleteSearchPhrase })
@@ -56,13 +54,14 @@ export const useAutoComplete = ({
     ) {
       reset();
     }
-  }, [autoCompleteSearchPhrase, debouncedTrigger, searchResultEmpty]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoCompleteSearchPhrase, searchResultEmpty]);
 
   const setLocationPartial = useLocationFormStore((s) => s.setLocationPartial);
 
   const handleSelectSearchResult = useCallback(
     async (location, needValidateLocationChange) => {
-      const result = await fetcher.getLocationByPlaceId(location);
+      const result = await apiAdapter.getLocationByPlaceId(location);
       if (
         needValidateLocationChange &&
         result?.city &&
@@ -85,13 +84,13 @@ export const useAutoComplete = ({
       } else {
         if (!isMobile) setAutoCompleteSearchPhrase(result.location.name);
         setLastValidLocation(result);
-        fetcher
+        apiAdapter
           .saveRecentSearchedLocation(result)
           .then(() => {
             refetchHistoryResult();
           })
           .catch((err) => {
-            console.log("🚀 ~ Error Save Recent Searched Location:", err);
+            console.warn("🚀 ~ Error Save Recent Searched Location:", err);
           });
       }
       setIsDropdownSearchOpen(false);

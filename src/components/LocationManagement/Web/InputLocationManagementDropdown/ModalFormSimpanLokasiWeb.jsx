@@ -6,9 +6,9 @@ import Input from "@/components/Form/Input";
 import { Select } from "@/components/Form/Select";
 import { MyTextArea } from "@/components/Form/TextArea";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
+import { normalizeUserSavedLocation } from "@/hooks/use-location/normalizer";
 import { useLocationContext } from "@/hooks/use-location/use-location";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
-import { normalizeUserSavedLocation } from "@/lib/normalizers/location";
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 
 const errors = {};

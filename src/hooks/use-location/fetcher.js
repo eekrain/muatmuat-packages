@@ -1,9 +1,9 @@
-import { fetcherMuatparts, fetcherMuatrans } from "@/lib/axios";
 import {
   normalizeAutoCompleteNotFound,
   normalizeDistrictData,
   normalizeLocationByLatLong,
-} from "@/lib/normalizers/location";
+} from "@/hooks/use-location/normalizer";
+import { fetcherMuatparts, fetcherMuatrans } from "@/lib/axios";
 
 const getLocationByLatLong = async (coordinates) => {
   console.log("🚀 ~ getLocationByLatLong ~ coordinates:", coordinates);

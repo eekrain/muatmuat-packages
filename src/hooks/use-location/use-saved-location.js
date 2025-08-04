@@ -1,54 +1,28 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback } from "react";
 
-import { fetcherMuatparts, fetcherMuatrans } from "@/lib/axios";
-import {
-  normalizeLocationDataForSaving,
-  normalizeUserSavedLocation,
-} from "@/lib/normalizers/location";
-import { normalizeRecentHistoryLocation } from "@/lib/normalizers/location/normalizeRecentHistoryLocation";
+import { normalizeUserSavedLocation } from "@/hooks/use-location/normalizer";
+import { normalizeRecentHistoryLocation } from "@/hooks/use-location/normalizer/normalizeRecentHistoryLocation";
 import { toast } from "@/lib/toast";
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 
-import { useSWRHook } from "../use-swr";
-import { fetcher } from "./fetcher";
-
 export const useSavedLocation = ({
+  apiAdapter,
   setCoordinates,
   setAutoCompleteSearchPhrase,
   setIsDropdownSearchOpen,
   setDontTriggerPostalCodeModal,
+  historyLocationType,
 }) => {
-  const [historyLocationType, setHistoryLocationType] = useState("PICKUP");
-
   const setLocationPartial = useLocationFormStore(
     (state) => state.setLocationPartial
   );
   const setField = useLocationFormStore((state) => state.setField);
 
-  const { data: savedResult, mutate: refetchSavedResult } = useSWRHook(
-    "v1/muatparts/profile/location",
-    fetcherMuatparts
-  );
+  const { data: userSavedLocationResult, mutate: refetchSavedResult } =
+    apiAdapter.useGetUserSavedLocation();
 
-  const { data: historyResult, mutate: refetchHistoryResult } = useSWRHook(
-    `v1/orders/history-locations?locationType=${historyLocationType}`,
-    fetcherMuatrans
-  );
-
-  const userSavedLocationResult = useMemo(
-    () => savedResult?.Data || [],
-    [savedResult]
-  );
-
-  const userRecentSearchedLocation = useMemo(
-    () => historyResult?.Data?.TerakhirDicari || [],
-    [historyResult]
-  );
-
-  const userRecentTransactionLocation = useMemo(
-    () => historyResult?.Data?.TransaksiTerakhir || [],
-    [historyResult]
-  );
+  const { data: historyResult, mutate: refetchHistoryResult } =
+    apiAdapter.useGetUserLocationHistory(historyLocationType);
 
   const handleSelectRecentLocation = useCallback(
     async (location) => {
@@ -68,7 +42,7 @@ export const useSavedLocation = ({
 
   const handleSelectUserSavedLocation = useCallback(
     async (location) => {
-      const supportiveData = await fetcher.getLocationByLatLong({
+      const supportiveData = await apiAdapter.getLocationByLatLong({
         latitude: location.Latitude,
         longitude: location.Longitude,
       });
@@ -99,19 +73,14 @@ export const useSavedLocation = ({
 
   const handleSaveLocation = useCallback(async (formValues) => {
     try {
-      const response = await fetcherMuatparts.post(
-        "v1/muatparts/profile/location",
-        {
-          param: normalizeLocationDataForSaving(formValues),
-        }
-      );
+      const response = await apiAdapter.saveUserLocation(formValues);
       refetchSavedResult();
-      setTimeout(() => {
-        toast.success("Lokasi berhasil ditambah");
-      }, 200);
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      toast.success("Lokasi berhasil ditambah");
       return response;
     } catch (error) {
-      console.error("Error when adding location:", error);
+      // eslint-disable-next-line no-console
+      console.warn("Error when adding location:", error);
       toast.error("Gagal menambah lokasi");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -119,33 +88,28 @@ export const useSavedLocation = ({
 
   const handleUpdateLocation = useCallback(async (formValues, IDtoUpdate) => {
     try {
-      const response = await fetcherMuatparts.put(
-        "v1/muatparts/profile/location",
-        {
-          param: {
-            ...normalizeLocationDataForSaving(formValues),
-            ID: IDtoUpdate,
-          },
-        }
+      const response = await apiAdapter.updateUserLocation(
+        formValues,
+        IDtoUpdate
       );
       refetchSavedResult();
-      setTimeout(() => {
-        toast.success("Lokasi berhasil diubah");
-      }, 200);
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      toast.success("Lokasi berhasil diubah");
       return response;
     } catch (error) {
-      console.error("Error when adding location:", error);
+      // eslint-disable-next-line no-console
+      console.warn("Error when adding location:", error);
       toast.error("Gagal mengubah lokasi");
     }
-    //
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
-    userSavedLocationResult,
+    userSavedLocationResult: userSavedLocationResult || [],
     handleSelectUserSavedLocation,
-
-    userRecentSearchedLocation,
-    userRecentTransactionLocation,
+    userRecentSearchedLocation: historyResult?.userRecentSearchedLocation || [],
+    userRecentTransactionLocation:
+      historyResult?.userRecentTransactionLocation || [],
     handleSelectRecentLocation,
     refetchHistoryResult,
 
