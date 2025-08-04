@@ -49,7 +49,7 @@ export const HeaderResponsiveForm = ({
 
   return (
     <div className="flex w-full items-center justify-between">
-      <div className="grid grid-cols-[16px_1fr] items-center gap-x-3">
+      <div className="grid grid-cols-[24px_1fr] items-center gap-x-3">
         <HeaderButtonBack onClick={handleBackButton} variant={variant} />
 
         <h1

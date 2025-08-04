@@ -1,15 +1,17 @@
+import { useParams, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { ChevronRight } from "lucide-react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
+import IconComponent from "@/components/IconComponent/IconComponent";
+import BottomsheetCancellationHistory from "@/container/Shipper/DetailPesanan/Responsive/Home/components/Popup/BottomsheetCancellationHistory";
+import { BottomsheetDocumentShipping } from "@/container/Shipper/DetailPesanan/Responsive/Home/components/Popup/BottomsheetDocumentShipping";
+import { BottomsheetStatusLainnya } from "@/container/Shipper/DetailPesanan/Responsive/Home/components/Popup/BottomsheetStatusLainnya";
 import { useTranslation } from "@/hooks/use-translation";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { getStatusPesananMetadata } from "@/lib/normalizers/detailpesanan/getStatusPesananMetadata";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
-
-import { BottomsheetDocumentShipping } from "./Popup/BottomsheetDocumentShipping";
-import { BottomsheetStatusLainnya } from "./Popup/BottomsheetStatusLainnya";
 
 export const OrderCode = ({ dataStatusPesanan }) => {
   const { t } = useTranslation();
@@ -63,6 +65,8 @@ export const OrderStatus = ({
 
 export const OrderInfo = ({ dataStatusPesanan }) => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const params = useParams();
   const navigation = useResponsiveNavigation();
   // const [isOpenOtherStatus, setIsOpenOtherStatus] = useState(false);
   const [isOpenDocumentShipping, setIsOpenDocumentShipping] = useState(false);
@@ -115,6 +119,30 @@ export const OrderInfo = ({ dataStatusPesanan }) => {
             </button>
           </div>
         )}
+
+        {dataStatusPesanan?.orderStatus.startsWith("CANCELED") &&
+        dataStatusPesanan?.hasFoundFleet ? (
+          <button
+            className="flex w-full items-center justify-between border-b border-b-neutral-400 pb-4"
+            onClick={() =>
+              router.push(
+                `/daftarpesanan/detailpesanan/${params.orderId}/detail-refund`
+              )
+            }
+          >
+            <span className="text-xs font-semibold leading-[1.1] text-primary-700">
+              Lihat Detail Refund
+            </span>
+            <IconComponent src="/icons/chevron-right.svg" />
+          </button>
+        ) : null}
+
+        {dataStatusPesanan?.orderStatus.startsWith("CANCELED") &&
+        dataStatusPesanan?.cancellationHistory ? (
+          <BottomsheetCancellationHistory
+            cancellationHistory={dataStatusPesanan.cancellationHistory}
+          />
+        ) : null}
 
         {/* Order Code */}
         <OrderCode dataStatusPesanan={dataStatusPesanan} />

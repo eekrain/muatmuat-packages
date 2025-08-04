@@ -12,10 +12,8 @@ import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
 import { PaymentMethodIconFromTitle } from "@/lib/constants/detailpesanan/payment.enum";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
-import { useGetRefundDetails } from "@/services/Shipper/detail-refund/getRefundDetails";
-import { useGetWaitingTime } from "@/services/Shipper/detailpesanan/getWaitingTime";
 
-const DetailRefundPesananWeb = () => {
+const DetailRefundPesananWeb = ({ refundData, waitingTimeRaw }) => {
   const params = useParams();
 
   const breadcrumbData = [
@@ -27,13 +25,9 @@ const DetailRefundPesananWeb = () => {
     { name: "Detail Refund" },
   ];
 
-  // Fetch refund details
-  const { data: refundData } = useGetRefundDetails(params.orderId);
   // Extract data from API response
   const bank = refundData?.bankAccount;
   const breakdown = refundData?.refundBreakdown;
-
-  const { data: waitingTimeRaw } = useGetWaitingTime(params.orderId);
 
   return (
     <div className="mx-auto max-w-[1200px] pt-8">

@@ -777,7 +777,12 @@ const BreadcrumbCardStepper = () => {
               icon: "/icons/stepper/stepper-completed.svg",
             },
           ].map((step, index) => (
-            <StepperItemResponsive key={step.label} step={step} index={index} />
+            <StepperItemResponsive
+              key={step.label}
+              status={step?.status}
+              icon={step.icon}
+              index={index}
+            />
           ))}
         </StepperContainer>
       </div>

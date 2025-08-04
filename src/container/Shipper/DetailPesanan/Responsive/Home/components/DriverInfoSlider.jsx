@@ -69,7 +69,7 @@ const Header = ({
           {statusMeta.scan.statusText}
         </BadgeStatusPesanan>
       )}
-      {statusMeta?.status && (
+      {statusMeta?.status && statusMeta?.status.variant !== "error" && (
         <BadgeStatusPesanan
           variant={statusMeta.status.variant}
           className="w-fit"

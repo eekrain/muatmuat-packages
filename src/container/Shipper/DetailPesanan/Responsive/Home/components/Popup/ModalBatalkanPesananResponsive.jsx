@@ -152,7 +152,7 @@ const CancelContentWhenNotPrepareFleet = ({
     </Checkbox>
     <Button
       variant="muatparts-primary-secondary"
-      className="w-[146px]"
+      className="h-7 w-[146px] text-xs font-semibold leading-[1.1]"
       disabled={!isAgreed}
       onClick={() => {
         onConfirm();

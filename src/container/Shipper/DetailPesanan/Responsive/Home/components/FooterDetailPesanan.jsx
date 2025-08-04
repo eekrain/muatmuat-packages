@@ -35,7 +35,7 @@ export const FooterDetailPesanan = ({
     let components = [
       {
         id: "pesan-ulang",
-        variant: "muatparts-primary",
+        variant: "muatparts-primary-secondary",
         el: (variant) => (
           <Button
             variant={variant}
