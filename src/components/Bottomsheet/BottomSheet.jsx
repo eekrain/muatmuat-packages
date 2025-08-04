@@ -46,7 +46,7 @@ export const BottomSheetContent = React.forwardRef(
           ref={ref}
           data-stack-content="true"
           className={cn(
-            "fixed bottom-0 left-0 right-0 z-50 mt-24 flex h-auto flex-col rounded-t-[16px] bg-white",
+            "fixed bottom-0 left-0 right-0 z-50 mt-24 flex h-auto max-h-[75dvh] flex-col rounded-t-[16px] bg-white",
             className
           )}
           {...props}
@@ -65,7 +65,13 @@ BottomSheetContent.displayName = "BottomSheetContent";
  * @param {React.HTMLAttributes<HTMLDivElement>} props
  */
 export const BottomSheetHeader = ({ className, children, ...props }) => (
-  <div className={cn("relative p-4 pb-6 text-center", className)} {...props}>
+  <div
+    className={cn(
+      "relative flex min-h-[72px] w-full items-center p-4 py-6 text-center",
+      className
+    )}
+    {...props}
+  >
     {children}
   </div>
 );
@@ -78,7 +84,10 @@ BottomSheetHeader.displayName = "BottomSheetHeader";
 export const BottomSheetTitle = React.forwardRef((props, ref) => (
   <BottomSheetPrimitive.Title
     ref={ref}
-    className={cn("text-base font-bold text-neutral-900", props.className)}
+    className={cn(
+      "w-full text-sm font-bold leading-[1.1] text-neutral-900",
+      props.className
+    )}
     {...props}
   />
 ));

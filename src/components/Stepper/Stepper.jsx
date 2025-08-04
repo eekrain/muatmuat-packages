@@ -148,7 +148,7 @@ export const StepperItem = ({ step, index }) => {
           style={{ width: titleWidth }}
         >
           <span className="block font-semibold">{t(step.label)}</span>
-          {step.subtitle && <span className="mt-2 block">{step.subtitle}</span>}
+          {step.subtitle && <div className="mt-2">{step.subtitle}</div>}
         </div>
       </div>
     </div>
@@ -164,15 +164,24 @@ export const StepperItem = ({ step, index }) => {
  * }} props
  * @returns
  */
-export const StepperItemResponsive = ({ step, index }) => {
-  const { activeIndex } = useContext(Context);
+export const StepperItemResponsive = ({ status, icon, index, subtitle }) => {
+  const { titleWidth, activeIndex, setTitleHeights } = useContext(Context);
 
-  const status = useMemo(() => {
-    if (step?.status && step.status.startsWith("CANCELED")) return "canceled";
+  const statusCode = useMemo(() => {
+    if (status && status.startsWith("CANCELED")) return "canceled";
     if (index < activeIndex) return "completed";
     if (index === activeIndex) return "active";
     return "inactive";
-  }, [step, activeIndex, index]);
+  }, [status, activeIndex, index]);
+
+  const { ref: titleRef, height: currentTitleHeight } = useClientHeight();
+
+  useEffect(() => {
+    if (currentTitleHeight) {
+      setTitleHeights((prev) => [...prev, currentTitleHeight]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTitleHeight]);
 
   return (
     <div key={index} className="relative flex flex-col gap-2">
@@ -180,21 +189,29 @@ export const StepperItemResponsive = ({ step, index }) => {
       <div
         className={cn(
           "relative flex h-7 w-7 items-center justify-center rounded-full border border-[#C4C4C4] bg-[#F1F1F1] transition-all duration-300",
-          (status === "active" || status === "completed") &&
+          (statusCode === "active" || statusCode === "completed") &&
             "border-[#FFC217] bg-[#FFC217]",
-          status === "canceled" && "border-error-400 bg-error-400"
+          statusCode === "canceled" && "border-error-400 bg-error-400"
         )}
       >
         <IconComponent
-          src={step.icon}
+          src={icon}
           width={20}
           height={20}
           className={cn(
             "text-neutral-600",
-            status !== "inactive" && "text-muat-trans-secondary-900",
-            status === "canceled" && "text-neutral-50"
+            statusCode !== "inactive" && "text-muat-trans-secondary-900",
+            statusCode === "canceled" && "text-neutral-50"
           )}
         />
+        {/* Step Label */}
+        <div
+          ref={titleRef}
+          className="absolute -bottom-1 left-1/2 -translate-x-1/2 translate-y-full text-center text-xs font-medium leading-[1.2] text-[#000000]"
+          style={{ width: titleWidth }}
+        >
+          {subtitle && <div className="mt-2">{subtitle}</div>}
+        </div>
       </div>
     </div>
   );
