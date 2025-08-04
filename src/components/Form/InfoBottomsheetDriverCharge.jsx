@@ -1,12 +1,13 @@
-import { cn } from "@/lib/utils";
-
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
   BottomSheetHeader,
+  BottomSheetTitle,
   BottomSheetTrigger,
-} from "../Bottomsheet/Bottomsheet";
-import IconComponent from "../IconComponent/IconComponent";
+} from "@/components/Bottomsheet/BottomSheet";
+import IconComponent from "@/components/IconComponent/IconComponent";
+import { cn } from "@/lib/utils";
 
 export const InfoBottomsheetDriverCharge = ({ className, title }) => {
   const drivers = [
@@ -35,7 +36,10 @@ export const InfoBottomsheetDriverCharge = ({ className, title }) => {
         <IconComponent src="/icons/info16.svg" width={16} height={16} />
       </BottomSheetTrigger>
       <BottomSheetContent>
-        <BottomSheetHeader>{title}</BottomSheetHeader>
+        <BottomSheetHeader>
+          <BottomSheetClose />
+          <BottomSheetTitle>{title}</BottomSheetTitle>
+        </BottomSheetHeader>
         <div className="info-bottomsheet-content px-4 py-6 text-sm font-medium leading-[1.1]">
           <div>
             {drivers.map((driver, idx) => (

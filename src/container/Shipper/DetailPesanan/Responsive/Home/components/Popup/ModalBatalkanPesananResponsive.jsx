@@ -79,7 +79,8 @@ const CancelContentWhenPrepareFleet = ({
         Apakah kamu yakin ingin membatalkan pesanan?
         <br />
         <br />
-        Pastikan kamu sudah membaca{" "}
+        Pastikan kamu sudah membaca
+        <br />
         <Link
           href="https://faq.muatmuat.com/pusat-bantuan"
           className="text-primary-700 underline"
@@ -87,7 +88,7 @@ const CancelContentWhenPrepareFleet = ({
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
         >
-          Syarat dan Ketentuan Muatrans
+          Syarat dan Ketentuan kami.
         </Link>
       </p>
     </div>
@@ -97,22 +98,14 @@ const CancelContentWhenPrepareFleet = ({
       className="w-full"
     >
       <span className="text-sm font-semibold text-neutral-900">
-        Saya menyetujui{" "}
-        <Link
-          href="https://faq.muatmuat.com/pusat-bantuan"
-          className="text-primary-700 underline"
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
-        >
-          Syarat dan Ketentuan Muatrans
-        </Link>
+        Ya, Saya setuju dengan syarat dan ketentuan tersebut
       </span>
     </Checkbox>
     <Button
       variant="muatparts-primary-secondary"
       className="w-[146px]"
       disabled={!isAgreed}
+      keepDisabledStyle
       onClick={() => {
         onConfirm();
         onOpenChange(false);

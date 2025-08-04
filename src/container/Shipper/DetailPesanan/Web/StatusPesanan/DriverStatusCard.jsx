@@ -155,6 +155,7 @@ export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
     unitFleetStatus: driver.unitFleetStatus,
     totalUnit: driver.totalUnit,
     t,
+    orderType: driver.orderType,
   });
 
   return (

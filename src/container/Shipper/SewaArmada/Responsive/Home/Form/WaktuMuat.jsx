@@ -6,9 +6,12 @@ import { format } from "date-fns";
 
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
+  BottomSheetFooter,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import Button from "@/components/Button/Button";
 import DatetimePicker from "@/components/DatetimePicker/DatetimePicker";
 import Checkbox from "@/components/Form/Checkbox";
@@ -245,8 +248,11 @@ const WaktuMuatBottomsheet = () => {
         ) : null}
       </div>
       <BottomSheetContent>
-        <BottomSheetHeader>Tanggal & Waktu Muat</BottomSheetHeader>
-        <div className="flex h-[380px] w-full flex-col gap-4 overflow-y-auto bg-white px-4 py-6">
+        <BottomSheetHeader>
+          <BottomSheetClose />
+          <BottomSheetTitle>Tanggal & Waktu Muat</BottomSheetTitle>
+        </BottomSheetHeader>
+        <div className="flex w-full flex-col gap-4 overflow-y-auto bg-white px-4">
           {/* Section Tipe Pengiriman */}
           <div className="flex flex-col gap-4">
             {/* Opsi Instan */}
@@ -353,16 +359,16 @@ const WaktuMuatBottomsheet = () => {
               pukul akhir untuk penjemputan muatan.
             </p>
           </div>
-
-          {/* Button Simpan */}
+        </div>
+        <BottomSheetFooter>
           <Button
             variant="muatparts-primary"
-            className="h-10 max-w-full"
+            className="h-10 w-full"
             onClick={handleSubmit}
           >
             Simpan
           </Button>
-        </div>
+        </BottomSheetFooter>
       </BottomSheetContent>
     </BottomSheet>
   );

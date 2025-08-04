@@ -3,9 +3,12 @@ import { Fragment, useState } from "react";
 import { TagBubble } from "@/components/Badge/TagBubble";
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
+  BottomSheetFooter,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import Button from "@/components/Button/Button";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -98,8 +101,11 @@ const NoDeliveryOrder = () => {
         onOpenChange={setIsBottomSheetOpen}
       >
         <BottomSheetContent>
-          <BottomSheetHeader>No. Delivery Order (DO)</BottomSheetHeader>
-          <div className="flex flex-col gap-y-4 px-4 py-6">
+          <BottomSheetHeader>
+            <BottomSheetClose />
+            <BottomSheetTitle>No. Delivery Order (DO)</BottomSheetTitle>
+          </BottomSheetHeader>
+          <div className="flex flex-col gap-y-4 px-4">
             <Input
               placeholder="Masukkan No. Delivery Order (DO)"
               name="noDeliveryOrder"
@@ -107,15 +113,17 @@ const NoDeliveryOrder = () => {
               value={newDo}
               onChange={(e) => setNewDo(e.target.value)}
             />
+          </div>
+          <BottomSheetFooter>
             <Button
               variant="muatparts-primary"
-              className="h-10"
+              className="h-10 w-full"
               onClick={handleAddTempNoDeliveryOrders}
               type="button"
             >
               Simpan
             </Button>
-          </div>
+          </BottomSheetFooter>
         </BottomSheetContent>
       </BottomSheet>
 
@@ -125,8 +133,11 @@ const NoDeliveryOrder = () => {
         onOpenChange={setIsBottomSheetOpen}
       >
         <BottomSheetContent>
-          <BottomSheetHeader>No. Delivery Order (DO)</BottomSheetHeader>
-          <div className="flex flex-col gap-y-7 px-4 py-6">
+          <BottomSheetHeader>
+            <BottomSheetClose />
+            <BottomSheetTitle>No. Delivery Order (DO)</BottomSheetTitle>
+          </BottomSheetHeader>
+          <div className="flex flex-col gap-y-4 px-4">
             <div className="flex flex-col gap-y-4">
               {tempNoDeliveryOrders.map((item, key) => (
                 <div
@@ -168,15 +179,17 @@ const NoDeliveryOrder = () => {
                 </span>
               </button>
             </div>
+          </div>
+          <BottomSheetFooter>
             <Button
               variant="muatparts-primary"
-              className="h-10"
+              className="h-10 w-full"
               onClick={handleChangeNoDeliveryOrders}
               type="button"
             >
               Simpan
             </Button>
-          </div>
+          </BottomSheetFooter>
         </BottomSheetContent>
       </BottomSheet>
     </>

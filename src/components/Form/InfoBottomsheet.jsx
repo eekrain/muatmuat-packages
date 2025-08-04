@@ -2,10 +2,12 @@ import { cn } from "@/lib/utils";
 
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
   BottomSheetHeader,
+  BottomSheetTitle,
   BottomSheetTrigger,
-} from "../Bottomsheet/Bottomsheet";
+} from "../Bottomsheet/BottomSheet";
 import IconComponent from "../IconComponent/IconComponent";
 
 export const InfoBottomsheet = ({ className, title, children, render }) => {
@@ -17,10 +19,13 @@ export const InfoBottomsheet = ({ className, title, children, render }) => {
         <IconComponent src="/icons/info16.svg" width={16} height={16} />
       </BottomSheetTrigger>
       <BottomSheetContent>
-        <BottomSheetHeader>{title}</BottomSheetHeader>
+        <BottomSheetHeader>
+          <BottomSheetClose />
+          <BottomSheetTitle>{title}</BottomSheetTitle>
+        </BottomSheetHeader>
         {render ? (
           <div
-            className="info-bottomsheet-content px-4 py-6 text-sm font-medium leading-[1.1]"
+            className="info-bottomsheet-content px-4 pb-6 text-sm font-medium leading-[1.1]"
             dangerouslySetInnerHTML={{ __html: render }}
           />
         ) : (

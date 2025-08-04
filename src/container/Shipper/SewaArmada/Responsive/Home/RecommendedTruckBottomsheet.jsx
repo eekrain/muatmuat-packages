@@ -2,9 +2,12 @@ import { useMemo } from "react";
 
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
+  BottomSheetFooter,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import {
@@ -59,8 +62,11 @@ export const RecommendedTruckBottomsheet = ({
   return (
     <BottomSheet open={isOpen} onOpenChange={onOpenChange}>
       <BottomSheetContent>
-        <BottomSheetHeader>{t("titleRekomendasiKami")}</BottomSheetHeader>
-        <div className="flex flex-col gap-y-6 px-4 pb-6 pt-7">
+        <BottomSheetHeader>
+          <BottomSheetClose />
+          <BottomSheetTitle>{t("titleRekomendasiKami")}</BottomSheetTitle>
+        </BottomSheetHeader>
+        <div className="flex flex-col gap-y-6 px-4">
           <div className="flex items-center gap-x-2.5 rounded-md bg-warning-100 p-2">
             <div className="size-[20px]">
               <IconComponent
@@ -127,6 +133,8 @@ export const RecommendedTruckBottomsheet = ({
               </div>
             </div>
           </div>
+        </div>
+        <BottomSheetFooter className="pt-6">
           <Button
             variant="muatparts-primary"
             className="w-full"
@@ -134,7 +142,7 @@ export const RecommendedTruckBottomsheet = ({
           >
             {t("buttonTerapkan")}
           </Button>
-        </div>
+        </BottomSheetFooter>
       </BottomSheetContent>
     </BottomSheet>
   );

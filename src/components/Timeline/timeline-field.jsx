@@ -2,7 +2,7 @@ import { createContext, useContext } from "react";
 
 import { cn } from "@/lib/utils";
 
-import { TimelineContainer, TimelineContentAddress, TimelineItem } from ".";
+import { NewTimelineItem, TimelineContainer } from ".";
 import IconComponent from "../IconComponent/IconComponent";
 
 // Context for TimelineField
@@ -26,7 +26,6 @@ const Root = ({
   values,
   maxLocation = 5,
   onAddLocation,
-  onDeleteLocation,
   onEditLocation,
   labelAddLocation = "Tambah Lokasi",
   className,
@@ -40,7 +39,6 @@ const Root = ({
     values,
     maxLocation,
     onAddLocation,
-    onDeleteLocation,
     onEditLocation,
     labelAddLocation,
     className,
@@ -71,15 +69,9 @@ const Root = ({
   );
 };
 
-const Item = ({ index, children }) => {
-  const {
-    variant,
-    values,
-    onDeleteLocation,
-    onEditLocation,
-    disabled,
-    maxLocation,
-  } = useTimelineField();
+const Item = ({ buttonRemove, index }) => {
+  const { variant, values, onEditLocation, disabled, maxLocation } =
+    useTimelineField();
 
   const item = values[index];
 
@@ -98,35 +90,33 @@ const Item = ({ index, children }) => {
   };
 
   return (
-    <TimelineItem
-      variant={getVariant().variant}
-      totalLength={values.length}
-      index={index}
-      activeIndex={getVariant().activeIndex}
-    >
-      <div>
-        <div className="flex min-w-0 items-center">
-          <TimelineContentAddress
-            title={
-              item?.name ||
-              (variant === "muat"
-                ? "Masukkan Lokasi Muat"
-                : "Masukkan Lokasi Bongkar")
-            }
-            className={cn(
-              "min-h-4 cursor-pointer pb-0",
-              !item?.name && "text-neutral-600"
-            )}
-            onClick={() => !disabled && onEditLocation(index)}
-          />
-          {children}
-        </div>
-        {values.length !== 1 &&
-        (index !== values.length - 1 || values.length < maxLocation) ? (
-          <hr className="my-3 block border-[#C4C4C4]" />
-        ) : null}
-      </div>
-    </TimelineItem>
+    <>
+      <NewTimelineItem
+        variant={getVariant().variant}
+        totalLength={values.length}
+        index={index}
+        activeIndex={getVariant().activeIndex}
+        title={
+          item?.name ||
+          (variant === "muat"
+            ? "Masukkan Lokasi Muat"
+            : "Masukkan Lokasi Bongkar")
+        }
+        isLast={index === values.length - 1}
+        buttonRemove={buttonRemove}
+        onClick={() => {
+          if (!disabled && onEditLocation) onEditLocation(index);
+        }}
+        appearance={{
+          contentClassname: "pb-0 md:pb-0",
+          titleClassname: cn("text-xs", !item?.name && "text-neutral-600"),
+        }}
+      />
+
+      {index !== values.length - 1 && index < maxLocation ? (
+        <hr className="my-3 block border-[#C4C4C4]" />
+      ) : null}
+    </>
   );
 };
 
@@ -170,9 +160,8 @@ const AddButton = () => {
 };
 
 const RemoveButton = ({ onClick }) => {
-  const { onDeleteLocation } = useTimelineField();
   return (
-    <button className="size-4" onClick={onClick || onDeleteLocation}>
+    <button className="size-4" onClick={onClick}>
       <IconComponent
         src="/icons/min-square24.svg"
         className="size-4"

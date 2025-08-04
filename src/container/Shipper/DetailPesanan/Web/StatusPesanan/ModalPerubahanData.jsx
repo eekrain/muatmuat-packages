@@ -1,12 +1,6 @@
-import { useState } from "react";
-
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
-import {
-  TimelineContainer,
-  TimelineItem,
-  TimelinePICData,
-} from "@/components/Timeline";
+import { Modal, ModalContent } from "@/components/Modal/Modal";
+import { TimelineContainer, TimelinePICData } from "@/components/Timeline";
 
 const locationData = {
   muat: [
@@ -51,17 +45,9 @@ const locationData = {
   ],
 };
 
-export const ModalPerubahanData = () => {
-  const [heights, setHeights] = useState([]);
-
+export const ModalPerubahanData = ({ open, onOpenChange }) => {
   return (
-    <Modal closeOnOutsideClick>
-      <ModalTrigger>
-        <button className="text-xs font-medium leading-[14.4px] text-primary-700">
-          Lihat Perubahan
-        </button>
-      </ModalTrigger>
-
+    <Modal open={open} onOpenChange={onOpenChange} closeOnOutsideClick>
       <ModalContent className="p-6" type="muatmuat">
         <h1 className="mb-4 text-center text-base font-bold leading-[1.2] text-neutral-900">
           Detail Sebelum Perubahan
@@ -112,68 +98,33 @@ export const ModalPerubahanData = () => {
               </h2>
             </div>
 
-            <div className="flex-1 py-3 pl-[48px]">
+            <div className="flex-1 pb-3 pl-[48px] pt-8">
               <TimelineContainer>
                 {locationData.muat.map((location, index) => (
-                  <TimelineItem
+                  <TimelinePICData
                     key={index}
+                    data={location}
                     variant={"number-muat"}
-                    totalLength={Infinity}
+                    isLast={false}
                     index={index}
-                    appearance={
-                      index === 0
-                        ? {
-                            lineClassname: "top-[18px]",
-                            bulletClassname: "top-[18px]",
-                          }
-                        : {}
+                    title={index === 0 ? "Lokasi Muat" : null}
+                    className={
+                      index === locationData.muat.length - 1 ? "pb-9" : ""
                     }
-                  >
-                    <TimelinePICData
-                      title={index === 0 ? "Lokasi Muat" : null}
-                      address={location.address}
-                      details={location.details}
-                      picName={location.picName}
-                      picPhone={location.picPhone}
-                      setHeight={(height) =>
-                        setHeights((prev) => [...prev, height])
-                      }
-                      className={
-                        index === locationData.muat.length - 1 ? "pb-6" : ""
-                      }
-                    />
-                  </TimelineItem>
+                  />
                 ))}
                 {locationData.bongkar.map((location, index) => (
-                  <TimelineItem
-                    className={index === 0 ? "-mt-3" : ""}
+                  <TimelinePICData
                     key={index}
+                    data={location}
                     variant={"number-bongkar"}
-                    totalLength={locationData.bongkar.length}
+                    isLast={index === locationData.bongkar.length - 1}
                     index={index}
-                    appearance={
-                      index === 0
-                        ? {
-                            lineClassname: "top-[18px]",
-                            bulletClassname: "top-[18px]",
-                          }
-                        : {}
+                    title={index === 0 ? "Lokasi Bongkar" : null}
+                    className={
+                      index === locationData.bongkar.length - 1 ? "pb-0" : ""
                     }
-                  >
-                    <TimelinePICData
-                      title={index === 0 ? "Lokasi Bongkar" : null}
-                      address={location.address}
-                      details={location.details}
-                      picName={location.picName}
-                      picPhone={location.picPhone}
-                      setHeight={(height) =>
-                        setHeights((prev) => [...prev, height])
-                      }
-                      className={
-                        index === locationData.bongkar.length - 1 ? "pb-0" : ""
-                      }
-                    />
-                  </TimelineItem>
+                  />
                 ))}
               </TimelineContainer>
             </div>

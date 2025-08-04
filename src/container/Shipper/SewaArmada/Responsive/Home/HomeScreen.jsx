@@ -53,6 +53,8 @@ const SewaArmadaHomeScreen = ({
     adminFee: 10000,
     taxAmount: 21300,
   });
+  const [isShowTransactionSummary, setIsShowTransactionSummary] =
+    useState(false);
 
   // Recommended truck bottomsheet state
   const [
@@ -125,6 +127,7 @@ const SewaArmadaHomeScreen = ({
         onOpenVoucherSelection={() =>
           voucherManagement.setIsBottomsheetOpen(true)
         }
+        onOpenTransactionSummary={() => setIsShowTransactionSummary(true)}
         onRecommendedTruckClick={() => setRecommendedTruckBottomsheetOpen(true)}
         parentRef={parentRef}
         trucks={trucks}
@@ -152,8 +155,10 @@ const SewaArmadaHomeScreen = ({
 
       {/* Transaction Summary BottomSheet */}
       <DetailBiayaBottomSheet
-        isOpen={voucherManagement.showTransactionSummary}
-        onOpenChange={voucherManagement.setShowTransactionSummary}
+        isOpen={
+          isShowTransactionSummary || voucherManagement.showTransactionSummary
+        }
+        onOpenChange={setIsShowTransactionSummary}
         transactionData={transactionData}
         selectedVoucher={voucherManagement.selectedVoucher}
         voucherDiscount={voucherManagement.voucherDiscount}

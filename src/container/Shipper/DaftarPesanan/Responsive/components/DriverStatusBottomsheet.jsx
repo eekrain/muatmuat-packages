@@ -3,9 +3,11 @@ import { Fragment } from "react";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import { useTranslation } from "@/hooks/use-translation";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
@@ -18,8 +20,11 @@ const DriverStatusBottomsheet = ({
   return (
     <BottomSheet open={isOpen} onOpenChange={setOpen}>
       <BottomSheetContent>
-        <BottomSheetHeader>Status Lainnya</BottomSheetHeader>
-        <div className="w-full px-4 py-6">
+        <BottomSheetHeader>
+          <BottomSheetClose />
+          <BottomSheetTitle>Status Lainnya</BottomSheetTitle>
+        </BottomSheetHeader>
+        <div className="w-full px-4 pb-6">
           {selectedGroupedStatusInfo.map((status, key) => (
             <Fragment key={key}>
               <BadgeStatusPesanan

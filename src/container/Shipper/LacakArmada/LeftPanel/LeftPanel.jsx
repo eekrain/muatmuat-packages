@@ -1,5 +1,4 @@
 import { useParams, useRouter } from "next/navigation";
-import { useRef } from "react";
 
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
@@ -24,11 +23,7 @@ export const LeftPanel = ({ dataDriverStatus }) => {
     { name: t("titleLacakArmada") },
   ];
 
-  const contentRef = useRef(null);
-  const contentHeight = useClientHeight({
-    ref: contentRef,
-    deps: [dataDriverStatus?.dataDriver?.statusDriver],
-  });
+  const { ref: contentRef, height: contentHeight } = useClientHeight();
 
   return (
     <div className="grid grid-cols-1 grid-rows-[16px_24px_1fr] gap-6 bg-white px-6 pb-6 pt-8 shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">

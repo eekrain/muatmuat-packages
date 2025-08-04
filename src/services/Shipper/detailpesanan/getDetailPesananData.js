@@ -127,16 +127,16 @@ const priceChange = {
 };
 
 const otherStatus = [
-  // {
-  //   orderStatus: OrderStatusEnum.WAITING_REPAYMENT_1,
-  //   orderTitle: "Proses Muat",
-  //   unitFleetStatus: 2,
-  // },
-  // {
-  //   orderStatus: OrderStatusEnum.PREPARE_DOCUMENT,
-  //   orderTitle: "Proses Muat",
-  //   unitFleetStatus: 1,
-  // },
+  {
+    orderStatus: OrderStatusEnum.WAITING_REPAYMENT_1,
+    orderTitle: "Proses Muat",
+    unitFleetStatus: 2,
+  },
+  {
+    orderStatus: OrderStatusEnum.PREPARE_DOCUMENT,
+    orderTitle: "Proses Muat",
+    unitFleetStatus: 1,
+  },
 ];
 
 const apiResultOrderDetail = {
@@ -159,25 +159,25 @@ const apiResultOrderDetail = {
         transporterOrderCode: "MT.25.AA.001",
         invoiceNumber: "INV/12345678",
         // orderStatus: OrderStatusEnum.LOADING,
-        orderStatus: OrderStatusEnum.WAITING_CONFIRMATION_CHANGES,
+        orderStatus: OrderStatusEnum.UNLOADING,
         orderTitle: "Proses Muat",
         unitFleetStatus: 1,
-        orderType: OrderTypeEnum.INSTANT,
+        orderType: OrderTypeEnum.SCHEDULED,
         createdAt: "2024-01-01T10:00:00Z",
         updatedAt: "2024-01-01T14:30:00Z",
       },
       summary: {
+        truckType: {
+          totalUnit: 3,
+          truckTypeId: "f483709a-de4c-4541-b29e-6f4d9a912331",
+          name: "Cold Diesel Double",
+          image: "https://picsum.photos/300/300",
+        },
         distance: 4.9,
         carrier: {
           carrierId: "f483709a-de4c-4541-b29e-6f4d9a912331",
           name: "Box",
           image: "https://picsum.photos/300/300",
-        },
-        truckType: {
-          truckTypeId: "f483709a-de4c-4541-b29e-6f4d9a912331",
-          name: "Cold Diesel Double",
-          image: "https://picsum.photos/300/300",
-          totalUnit: 3,
         },
         loadTimeStart: "2025-02-08T09:00:00Z",
         loadTimeEnd: "2025-02-08T12:00:00Z",
