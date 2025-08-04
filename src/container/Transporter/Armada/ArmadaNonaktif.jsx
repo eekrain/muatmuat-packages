@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 import { Alert } from "@/components/Alert/Alert";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
@@ -49,6 +49,7 @@ const ArmadaNonaktif = ({
   const [confirmDeleteVehicle, setConfirmDeleteVehicle] = useState(false);
   const [confirmActivateVehicle, setConfirmActivateVehicle] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [openDropdowns, setOpenDropdowns] = useState({});
 
   // Fetch vehicles data with pagination, filters and status
   const { data, isLoading, mutate } = useGetInactiveVehiclesData({
@@ -188,13 +189,22 @@ const ArmadaNonaktif = ({
       width: "120px",
       sortable: false,
       render: (row) => (
-        <SimpleDropdown>
+        <SimpleDropdown
+          open={openDropdowns[row.id] || false}
+          onOpenChange={(isOpen) =>
+            setOpenDropdowns((prev) => ({ ...prev, [row.id]: isOpen }))
+          }
+        >
           <SimpleDropdownTrigger asChild>
             <button className="flex h-8 flex-row items-center justify-between gap-2 rounded-md border border-neutral-600 bg-white px-3 py-2 shadow-sm transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none">
               <span className="text-xs font-medium leading-tight text-black">
                 Aksi
               </span>
-              <ChevronDown className="h-4 w-4 text-neutral-700" />
+              {openDropdowns[row.id] ? (
+                <ChevronUp className="h-4 w-4 text-neutral-700" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-neutral-700" />
+              )}
             </button>
           </SimpleDropdownTrigger>
 
