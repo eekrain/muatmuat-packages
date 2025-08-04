@@ -25,7 +25,7 @@ import {
   useSewaArmadaStore,
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
-const WaktuMuatBottomsheet = () => {
+const WaktuMuatBottomsheet = ({ handleCheckLoggedIn }) => {
   const dateFormat = "dd MMM yyyy HH:mm";
 
   // Use current date as minDate instead of getNowTimezone
@@ -90,10 +90,10 @@ const WaktuMuatBottomsheet = () => {
       }));
     }
   };
-  console.log(
-    orderSettingsData?.Data?.loadingTime?.minRangeHours,
-    "orderSettingsData"
-  );
+  // console.log(
+  //   orderSettingsData?.Data?.loadingTime?.minRangeHours,
+  //   "orderSettingsData"
+  // );
   const validateForm = () => {
     const newErrors = {};
     // Ambil setting dari API, fallback ke default jika belum ada
@@ -211,7 +211,10 @@ const WaktuMuatBottomsheet = () => {
       <div className="flex flex-col gap-y-3">
         <button
           className="flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 bg-neutral-50 px-3"
-          onClick={() => setIsBottomsheetOpen(true)}
+          onClick={() => {
+            if (!handleCheckLoggedIn()) return;
+            setIsBottomsheetOpen(true);
+          }}
         >
           <IconComponent src="/icons/calendar16.svg" />
           <span className="text-sm font-semibold leading-[15.4px]">
@@ -231,7 +234,10 @@ const WaktuMuatBottomsheet = () => {
             </span>
             <button
               className="flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 bg-neutral-50 px-3"
-              onClick={() => setIsBottomsheetOpen(true)}
+              onClick={() => {
+                if (!handleCheckLoggedIn()) return;
+                setIsBottomsheetOpen(true);
+              }}
             >
               <IconComponent src="/icons/calendar16.svg" />
               <span className="text-sm font-semibold leading-[15.4px]">

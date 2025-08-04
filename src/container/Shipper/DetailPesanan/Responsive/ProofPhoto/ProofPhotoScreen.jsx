@@ -29,18 +29,26 @@ const ProofPhotoScreen = () => {
   const { t } = useTranslation();
   const getFormTitle = () => {
     if (params?.driverStatusItem?.statusCode.startsWith("MENUJU_")) {
-      return t("labelLihatBuktiMuatBarangPOD");
+      return t(
+        "labelLihatBuktiMuatBarangPOD",
+        {},
+        "Bukti Bongkar Barang & POD"
+      );
     }
 
     const { statusCode, index } = getStatusCodeMeta(
       params?.driverStatusItem?.statusCode
     );
 
-    return t("labelBuktiStatus", {
-      statusName: `${DriverStatusLabel[statusCode]}${
-        index > 0 ? ` ${index}` : ""
-      }`,
-    });
+    return t(
+      "labelBuktiStatus",
+      {
+        statusName: `${DriverStatusLabel[statusCode]}${
+          index > 0 ? ` ${index}` : ""
+        }`,
+      },
+      "Bukti Tiba di Lokasi Bongkar 2"
+    );
   };
 
   const getTitle = (mode) => {
@@ -50,10 +58,14 @@ const ProofPhotoScreen = () => {
       const { statusCode, index } = getStatusCodeMeta(
         params?.driverStatusItem?.statusCode
       );
-      return t("labelBuktiStatus", {
-        statusName:
-          DriverStatusLabel[statusCode] + (index > 0 ? ` ${index}` : ""),
-      });
+      return t(
+        "labelBuktiStatus",
+        {
+          statusName:
+            DriverStatusLabel[statusCode] + (index > 0 ? ` ${index}` : ""),
+        },
+        "Bukti Tiba di Lokasi Bongkar 2"
+      );
     }
 
     const { statusCode, index } = getStatusCodeMeta(
@@ -63,22 +75,34 @@ const ProofPhotoScreen = () => {
     if (mode === "packages") {
       if (statusCode.includes("MUAT")) {
         return index > 0
-          ? t("labelBuktiMuatBarangMulti", { index })
-          : t("labelBuktiMuatBarang");
+          ? t(
+              "labelBuktiMuatBarangMulti",
+              { index },
+              "Bukti Muat Barang di Lokasi 1"
+            )
+          : t("labelBuktiMuatBarang", {}, "Bukti Muat Barang");
       } else {
         return index > 0
-          ? t("labelBuktiBongkarBarangMulti", { index })
-          : t("labelBuktiBongkarBarang");
+          ? t(
+              "labelBuktiBongkarBarangMulti",
+              { index },
+              "Bukti Bongkar Barang di Lokasi 1"
+            )
+          : t("labelBuktiBongkarBarang", {}, "Bukti Bongkar Barang");
       }
     } else if (mode === "pods") {
       if (statusCode.includes("MUAT")) {
         return index > 0
-          ? t("labelPODMuatMulti", { index })
-          : t("labelPODMuat");
+          ? t("labelPODMuatMulti", { index }, "Bukti POD Muat di Lokasi 1")
+          : t("labelPODMuat", {}, "Bukti POD Muat");
       } else {
         return index > 0
-          ? t("labelPODBongkarMulti", { index })
-          : t("labelPODBongkar");
+          ? t(
+              "labelPODBongkarMulti",
+              { index },
+              "Bukti POD Bongkar di Lokasi 1"
+            )
+          : t("labelPODBongkar", {}, "Bukti POD Bongkar");
       }
     }
 

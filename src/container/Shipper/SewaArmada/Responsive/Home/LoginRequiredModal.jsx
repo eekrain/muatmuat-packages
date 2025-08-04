@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import Button from "@/components/Button/Button";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
 
@@ -12,12 +14,14 @@ const LoginRequiredModal = ({ open, onOpenChange }) => {
           Untuk melanjutkan pemesanan jasa angkut, Anda perlu login terlebih
           dahulu. Silakan login untuk melanjutkan.
         </p>
-        <Button
-          variant="muatparts-primary"
-          className="mx-auto mt-5 h-9 w-[148px] rounded-full"
-        >
-          Login Sekarang
-        </Button>
+        <Link href={`${process.env.NEXT_PUBLIC_INTERNAL_WEB}login`}>
+          <Button
+            variant="muatparts-primary"
+            className="mx-auto mt-5 h-9 w-[148px] rounded-full"
+          >
+            Login Sekarang
+          </Button>
+        </Link>
       </ModalContent>
     </Modal>
   );

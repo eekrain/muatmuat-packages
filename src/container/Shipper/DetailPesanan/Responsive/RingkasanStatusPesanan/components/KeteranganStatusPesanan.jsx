@@ -23,7 +23,7 @@ export const KeteranganStatusPesanan = ({ legendStatus }) => {
         aria-controls="collapsible-legends"
       >
         <h3 className="font-bold text-neutral-900">
-          {t("titleOrderStatusInfo")}
+          {t("titleOrderStatusInfo", {}, "Keterangan Status Pesanan")}
         </h3>
         <div className="flex-shrink-0">
           <ChevronUp

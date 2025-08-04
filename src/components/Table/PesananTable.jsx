@@ -67,7 +67,7 @@ const PesananTable = ({
   const selectedFilter = useShallowMemo(
     () =>
       statusRadioOptions
-        .flatMap((item) => item.children || [])
+        ?.flatMap((item) => item.children || [])
         .find((item) => item.value === queryParams.status),
     [statusRadioOptions, queryParams]
   );

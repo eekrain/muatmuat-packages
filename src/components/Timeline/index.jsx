@@ -84,6 +84,7 @@ export const NewTimelineItem = ({
   },
   buttonDetail = null,
   buttonRemove = null,
+  withDivider = false,
 }) => {
   const variantStyles = getVariant({ variant, index, activeIndex });
 
@@ -147,7 +148,7 @@ export const NewTimelineItem = ({
             onClick={onClick}
             className={cn(
               "line-clamp-2 text-sm font-semibold text-neutral-900 md:mt-0.5",
-              buttonDetail && "mt-[1px] line-clamp-1 break-all md:mt-0",
+              buttonDetail && "-mt-[1px] line-clamp-1 break-all md:mt-0",
               onClick && "cursor-pointer",
               appearance.titleClassname
             )}
@@ -170,6 +171,13 @@ export const NewTimelineItem = ({
           </span>
         ) : null}
       </div>
+
+      {withDivider && (
+        <>
+          <div />
+          <hr className="my-3 block border-[#C4C4C4]" />
+        </>
+      )}
     </div>
   );
 };

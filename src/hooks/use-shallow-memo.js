@@ -9,6 +9,7 @@ const useCustomCompareMemo = (factory, deps, depsEqual) => {
     ref.current = deps;
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   return useMemo(factory, ref.current);
 };
 

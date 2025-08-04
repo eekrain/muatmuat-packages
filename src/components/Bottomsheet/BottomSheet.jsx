@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useRef } from "react";
+import React from "react";
 
 import { Drawer as BottomSheetPrimitive } from "vaul";
 
-import { useStackManager } from "@/hooks/use-stack-manager";
 import { cn } from "@/lib/utils";
 
 import IconComponent from "../IconComponent/IconComponent";
@@ -29,16 +28,9 @@ export const BottomSheetTrigger = (props) => (
  */
 export const BottomSheetContent = React.forwardRef(
   ({ className, children, ...props }, ref) => {
-    const stackRef = useRef(null);
-    // This hook runs on mount and cleans up on unmount to manage stacking.
-    useStackManager(stackRef, true);
-
     return (
       <BottomSheetPrimitive.Portal>
         <BottomSheetPrimitive.Overlay
-          // --- THIS IS THE FIX ---
-          // The stackRef is now correctly attached to the overlay.
-          ref={stackRef}
           data-stack-item="true"
           className="fixed inset-0 z-50 bg-black/30"
         />

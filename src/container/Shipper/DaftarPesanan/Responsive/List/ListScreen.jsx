@@ -1,16 +1,19 @@
 import { useRouter } from "next/navigation";
 import { Fragment, useState } from "react";
 
+import { AlertMultilineResponsive } from "@/components/Alert/AlertMultilineResponsive";
 import BottomNavigationBar from "@/components/BottomNavigationBar/BottomNavigationBar";
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import OrderItem from "@/container/Shipper/DaftarPesanan/Responsive/components/OrderItem";
 import PeriodDropdown from "@/container/Shipper/DaftarPesanan/Responsive/components/PeriodDropdown";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useTranslation } from "@/hooks/use-translation";
 import SearchBarResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/SearchBarResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
+import { useWaitingSettlementModalAction } from "@/store/Shipper/forms/waitingSettlementModalStore";
 
 const ListScreen = ({
   queryParams,
@@ -30,6 +33,41 @@ const ListScreen = ({
   const navigation = useResponsiveNavigation();
   const [isPeriodBottomsheetOpen, setPeriodBottomsheetOpen] = useState(false);
   const { t } = useTranslation();
+  const { setIsOpen } = useWaitingSettlementModalAction();
+
+  const alertItems = useShallowMemo(() => {
+    if (!settlementAlertInfo) return [];
+
+    const listPesananUrl = [
+      "/daftarpesanan/pesananmenunggupembayaran",
+      "/daftarpesanan/pesananmenunggupelunasan",
+      "/daftarpesanan/butuhkonfirmasianda",
+    ];
+
+    return settlementAlertInfo
+      .map((item, key) => {
+        if (!item.orderId || item.orderId.length === 0) {
+          return null;
+        }
+        if (key === 1) {
+          return {
+            label: item.alertText,
+            onClick: () => setIsOpen(true),
+          };
+        }
+        return {
+          label: item.alertText,
+          onClick: () =>
+            router.push(
+              item.orderId.length === 1
+                ? `/daftarpesanan/detailpesanan/${item.orderId[0]}`
+                : listPesananUrl[key]
+            ),
+        };
+      })
+      .filter(Boolean);
+  }, [settlementAlertInfo, router, setIsOpen]);
+
   const periodOptions = [
     {
       name: `${t("EksekusiTenderIndexSemuaPeriode")} (Default)`,
@@ -178,6 +216,12 @@ const ListScreen = ({
             })}
           </div>
         </div>
+
+        <AlertMultilineResponsive
+          items={alertItems}
+          className="w-full rounded-none"
+        />
+
         {/* List Pesanan */}
         {isOrdersLoading ? null : !hasNoOrders ? (
           !hasFilteredOrders ? (

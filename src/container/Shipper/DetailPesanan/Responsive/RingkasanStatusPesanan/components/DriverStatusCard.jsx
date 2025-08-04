@@ -54,7 +54,7 @@ export const DriverStatusCard = ({ driver, orderStatus }) => {
           })
         }
       >
-        {t("buttonDriverDetails")}
+        {t("buttonDriverDetails", {}, "Detail Status Driver")}
       </Button>
     </DriverInfo.Root>
   );
