@@ -26,7 +26,12 @@ const LightboxContext = createContext(null);
 export const lightboxModalVariants = cva(
   "flex w-screen flex-col items-center md:w-[592px] md:bg-white md:px-6 md:pb-3 md:pt-8",
   {
-    variants: { variant: { shipper: "" } },
+    variants: {
+      variant: {
+        shipper: "",
+        square: "md:w-fit",
+      },
+    },
     defaultVariants: { variant: "shipper" },
   }
 );
@@ -42,7 +47,12 @@ export const lightboxTitleVariants = cva(
 export const lightboxImageVariants = cva(
   "w-full object-contain md:h-[306px] md:w-[544px] md:rounded-[9px]",
   {
-    variants: { variant: { shipper: "" } },
+    variants: {
+      variant: {
+        shipper: "",
+        square: "md:h-[364px] md:w-[364px] md:object-cover",
+      },
+    },
     defaultVariants: { variant: "shipper" },
   }
 );

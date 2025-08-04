@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { useGetOrderDriverReviews } from "@/services/Shipper/detailpesanan/getOrderDriverReviews";
@@ -78,13 +80,19 @@ const UlasanScreen = () => {
 
       <BottomSheet open={isOpenBottomsheet} onOpenChange={setIsOpenBottomsheet}>
         <BottomSheetContent>
-          <BottomSheetHeader>Menu</BottomSheetHeader>
+          <BottomSheetHeader>
+            <BottomSheetClose />
+            <BottomSheetTitle>Menu</BottomSheetTitle>
+          </BottomSheetHeader>
         </BottomSheetContent>
       </BottomSheet>
 
       <BottomSheet open={isOpenInfo} onOpenChange={setIsOpenInfo}>
         <BottomSheetContent>
-          <BottomSheetHeader>Informasi</BottomSheetHeader>
+          <BottomSheetHeader>
+            <BottomSheetClose />
+            <BottomSheetTitle>Informasi</BottomSheetTitle>
+          </BottomSheetHeader>
         </BottomSheetContent>
       </BottomSheet>
     </FormResponsiveLayout>

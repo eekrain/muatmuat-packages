@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-import { X } from "lucide-react";
-
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
@@ -88,7 +86,7 @@ const FleetSelectionModal = ({
         await updateDriverFleet(driverId, selectedFleetId);
 
         // Success handling
-        toast.success("Berhasil memasangkan armada");
+        toast.success("Berhasil memilih armada");
         setShowConfirmation(false);
         resetState();
         onClose();
@@ -179,7 +177,10 @@ const FleetSelectionModal = ({
                           }}
                           className="flex items-center justify-center rounded-full p-0.5 hover:bg-neutral-200"
                         >
-                          <X className="h-3 w-3 text-neutral-600" />
+                          <IconComponent
+                            className="size-5 text-neutral-700"
+                            src="/icons/close20.svg"
+                          />
                         </button>
                       ) : null,
                   }}
@@ -373,7 +374,8 @@ const FleetSelectionModal = ({
                 </span>{" "}
                 akan terlepas dari armada tersebut.
                 <br />
-                Apakah Anda yakin ingin memasangkan{" "}
+                Apakah Anda yakin ingin memasangkan
+                <br />
                 <span className="font-bold">
                   No. Polisi : {fleetWithDriver?.licensePlate}
                 </span>{" "}

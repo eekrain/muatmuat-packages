@@ -43,12 +43,12 @@ const apiResult = {
         //   label: "Pengembalian dana berhasil diproses.",
         //   info: "Proses pengembalian dana telah berhasil dicairkan ke rekening kamu. Info lebih lanjut hubungi Customer Service.",
         // },
-        {
-          type: "ORDER_CHANGES_CONFIRMATION",
-          date: "2025-06-06T10:00:00+07:00",
-          label: "Perubahan pesanan telah kamu lakukan.",
-          info: "",
-        },
+        // {
+        //   type: "ORDER_CHANGES_CONFIRMATION",
+        //   date: "2025-06-06T10:00:00+07:00",
+        //   label: "Perubahan pesanan telah kamu lakukan.",
+        //   info: "",
+        // },
         // {
         //   type: "CONFIRMATION_WAITING_PREPARE_FLEET",
         //   date: "2025-06-07T10:00:00+07:00",

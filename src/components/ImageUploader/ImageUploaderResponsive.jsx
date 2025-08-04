@@ -4,8 +4,11 @@ import { useRef, useState } from "react";
 
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetHeader,
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
@@ -215,7 +218,11 @@ export default function ImageUploaderResponsive({
     <>
       <BottomSheet open={isBottomSheetOpen} onOpenChange={setIsBottomSheetOpen}>
         <BottomSheetContent>
-          <div className="flex justify-around py-4">
+          <BottomSheetHeader>
+            <BottomSheetClose />
+            <BottomSheetTitle>Pilih Metode Upload</BottomSheetTitle>
+          </BottomSheetHeader>
+          <div className="flex justify-around px-4 pb-6">
             {uploadOptions.map((option, key) => (
               <div className="flex flex-col items-center gap-y-4" key={key}>
                 <div

@@ -3,9 +3,11 @@ import React, { useMemo, useState } from "react";
 import { Alert } from "@/components/Alert/Alert";
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Input from "@/components/Input/Input";
@@ -197,10 +199,13 @@ export const JenisTrukBottomSheet = ({
 
   return (
     <BottomSheet open={open} onOpenChange={onOpenChange}>
-      <BottomSheetContent className="h-[600px]">
-        <BottomSheetHeader>Pilih Jenis Truk</BottomSheetHeader>
+      <BottomSheetContent>
+        <BottomSheetHeader>
+          <BottomSheetClose />
+          <BottomSheetTitle>Pilih Jenis Truk</BottomSheetTitle>
+        </BottomSheetHeader>
 
-        <div className="flex flex-col gap-y-6 px-4 pb-6 pt-7">
+        <div className="flex flex-col gap-y-6 px-4 pb-6">
           <div className="flex flex-col gap-y-3">
             {showTopAlert && (
               <Alert className="h-[50px] py-0 leading-[1.1]" variant="warning">
@@ -224,7 +229,7 @@ export const JenisTrukBottomSheet = ({
             />
           </div>
 
-          <div className="flex h-[234px] flex-col gap-y-4 overflow-y-auto">
+          <div className="flex max-h-[339px] flex-col gap-y-4 overflow-y-auto">
             {renderContent()}
           </div>
         </div>

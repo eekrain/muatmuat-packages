@@ -4,6 +4,7 @@ import { ChevronUp } from "lucide-react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
+import { OrderStatusTitle } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { cn } from "@/lib/utils";
 
 export const KeteranganStatusPesanan = ({ legendStatus }) => {
@@ -53,7 +54,7 @@ export const KeteranganStatusPesanan = ({ legendStatus }) => {
               />
             </div>
             <span className="text-xs font-semibold text-neutral-900">
-              {item.label}
+              {t(OrderStatusTitle[item.status])}
             </span>
           </div>
         ))}

@@ -37,7 +37,7 @@ export default function MultiDriverQRCodeScreen({ dataStatusPesanan }) {
       onClickBackButton={() => navigation.pop()}
       className="flex flex-col"
     >
-      <div className="mb-2 w-full border-b border-neutral-400 bg-white p-4">
+      <div className="w-full border-b border-neutral-400 bg-white p-4">
         <Input
           icon={{ left: "/icons/search.svg" }}
           placeholder="Cari Nama Driver/Plat Nomor"

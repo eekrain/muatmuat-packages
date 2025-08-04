@@ -126,7 +126,13 @@ const DriverProses = ({
             </SimpleDropdownItem>
             {row.driverStatus === "REJECTED" && (
               <>
-                <SimpleDropdownItem onClick={() => {}}>Ubah</SimpleDropdownItem>
+                <SimpleDropdownItem
+                  onClick={() =>
+                    router.push(`/manajemen-driver/${row.id}/ubah?from=process`)
+                  }
+                >
+                  Ubah
+                </SimpleDropdownItem>
                 <SimpleDropdownItem
                   className="text-error-400"
                   onClick={() => {
@@ -276,6 +282,7 @@ const DriverProses = ({
           text: "Ya",
           onClick: handleDeleteDriver,
           disabled: isDeleting,
+          classname: "w-[112px]",
         }}
         cancel={{
           text: "Tidak",
@@ -283,6 +290,7 @@ const DriverProses = ({
             setConfirmDeleteDriver(false);
             setSelectedDriver(null);
           },
+          classname: "w-[112px]",
         }}
       />
     </>

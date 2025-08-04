@@ -43,7 +43,6 @@ const eslintConfig = [
       "prefer-arrow-callback": "error",
       "prefer-template": "error",
       semi: "error",
-      quotes: ["warn", "double"],
 
       // -- Your Other Overrides --
       "@next/next/no-img-element": "off",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
@@ -90,7 +90,9 @@ const exampleImages = [
 export default function UbahDriverPage() {
   const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
   const driverId = params.uuid;
+  const from = searchParams.get("from");
 
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [formData, setFormData] = useState(null);
@@ -130,13 +132,13 @@ export default function UbahDriverPage() {
   // Effect to populate the form with fetched driver data
   useEffect(() => {
     if (driverDetail) {
-      const ktpDocument = driverDetail.documents.find(
+      const ktpDocument = driverDetail.documents?.find(
         (doc) => doc.documentType === "KTP"
       );
-      const simDocument = driverDetail.documents.find(
+      const simDocument = driverDetail.documents?.find(
         (doc) => doc.documentType === "SIM_B2_UMUM"
       );
-      const profilePhoto = driverDetail.photos.find(
+      const profilePhoto = driverDetail.photos?.find(
         (photo) => photo.photoType === "PROFILE"
       );
 
@@ -184,13 +186,13 @@ export default function UbahDriverPage() {
           uploadIfNeeded(formData.fotoDriver),
         ]);
 
-      const originalKtp = driverDetail.documents.find(
+      const originalKtp = driverDetail.documents?.find(
         (doc) => doc.documentType === "KTP"
       );
-      const originalSim = driverDetail.documents.find(
+      const originalSim = driverDetail.documents?.find(
         (doc) => doc.documentType === "SIM_B2_UMUM"
       );
-      const originalPhoto = driverDetail.photos.find(
+      const originalPhoto = driverDetail.photos?.find(
         (p) => p.photoType === "PROFILE"
       );
 
@@ -272,10 +274,45 @@ export default function UbahDriverPage() {
     router.push(nextPath);
   };
 
-  const breadcrumbItems = [
-    { name: "Manajemen Driver", href: "/manajemen-driver" },
-    { name: "Ubah Driver" },
-  ];
+  // Dynamic breadcrumb based on "from" parameter
+  const getBreadcrumbData = () => {
+    const base = [{ name: "Manajemen Driver", href: "/manajemen-driver" }];
+
+    // Add intermediate breadcrumb based on where user came from
+    if (from === "active") {
+      base.push({
+        name: "Driver Aktif",
+        href: "/manajemen-driver?tab=active",
+      });
+    } else if (from === "inactive") {
+      base.push({
+        name: "Driver Nonaktif",
+        href: "/manajemen-driver?tab=inactive",
+      });
+    } else if (from === "process") {
+      base.push({
+        name: "Proses Pendaftaran",
+        href: "/manajemen-driver?tab=process",
+      });
+    } else if (from === "archive") {
+      base.push({
+        name: "Arsip",
+        href: "/manajemen-driver?tab=archive",
+      });
+    } else if (from === "expired") {
+      base.push({
+        name: "Perlu Pembaruan SIM",
+        href: "/manajemen-driver/expired",
+      });
+    }
+
+    // Add current page
+    base.push({ name: "Ubah Driver" });
+
+    return base;
+  };
+
+  const breadcrumbItems = getBreadcrumbData();
 
   if (isLoadingDriver) {
     return <LoadingStatic />;

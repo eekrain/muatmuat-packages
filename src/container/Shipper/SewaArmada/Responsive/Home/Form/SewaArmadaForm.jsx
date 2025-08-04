@@ -130,13 +130,25 @@ export const SewaArmadaForm = ({
           }
         >
           {(formValues.lokasiMuat || []).map((item, index) => (
-            <TimelineField.Item index={index} key={index}>
-              {showRemoveButton.muat && (
-                <TimelineField.RemoveButton
-                  onClick={() => removeLokasi("lokasiMuat", index)}
-                />
-              )}
-            </TimelineField.Item>
+            // <TimelineField.Item index={index} key={index}>
+            //   {showRemoveButton.muat && (
+            //     <TimelineField.RemoveButton
+            //       onClick={() => removeLokasi("lokasiMuat", index)}
+            //     />
+            //   )}
+            // </TimelineField.Item>
+
+            <TimelineField.Item
+              index={index}
+              key={index}
+              buttonRemove={
+                showRemoveButton.muat && (
+                  <TimelineField.RemoveButton
+                    onClick={() => removeLokasi("lokasiMuat", index)}
+                  />
+                )
+              }
+            />
           ))}
           <TimelineField.AddButton />
         </TimelineField.Root>
@@ -160,13 +172,17 @@ export const SewaArmadaForm = ({
           }
         >
           {(formValues.lokasiBongkar || []).map((item, index) => (
-            <TimelineField.Item index={index} key={index}>
-              {showRemoveButton.bongkar && (
-                <TimelineField.RemoveButton
-                  onClick={() => removeLokasi("lokasiBongkar", index)}
-                />
-              )}
-            </TimelineField.Item>
+            <TimelineField.Item
+              index={index}
+              key={index}
+              buttonRemove={
+                showRemoveButton.bongkar && (
+                  <TimelineField.RemoveButton
+                    onClick={() => removeLokasi("lokasiBongkar", index)}
+                  />
+                )
+              }
+            />
           ))}
           <TimelineField.AddButton />
         </TimelineField.Root>

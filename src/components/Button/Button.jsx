@@ -11,7 +11,7 @@ import IconComponent from "../IconComponent/IconComponent";
 
 const buttonVariants = cva(
   // Base styles
-  "flex h-8 items-center justify-center gap-1 rounded-[24px] py-3 text-sm font-semibold leading-[16.8px] transition-colors md:px-6",
+  "flex h-10 items-center justify-center gap-1 rounded-[24px] py-3 text-sm font-semibold leading-[16.8px] transition-colors md:h-8 md:px-6",
   {
     variants: {
       variant: {
@@ -82,6 +82,7 @@ const Button = ({
   iconLeft = null,
   iconRight = null,
   disabled = false,
+  keepDisabledStyle = false,
   appearance = {
     iconClassName: "",
   },
@@ -96,8 +97,8 @@ const Button = ({
       disabled={disabled}
       className={cn(
         buttonVariants({
-          variant: disabled ? undefined : variant,
-          disabled: disabled ? disabledVariant : false,
+          variant: disabled && !keepDisabledStyle ? undefined : variant,
+          disabled: disabled && !keepDisabledStyle ? disabledVariant : false,
           className,
         })
       )}

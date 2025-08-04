@@ -226,6 +226,41 @@ const config = {
           from: { height: "var(--radix-collapsible-content-height)" },
           to: { height: "0" },
         },
+
+        // For Modal
+        "overlay-show": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
+        "content-show": {
+          from: {
+            opacity: "0",
+            transform: "translate(-50%, -50%) scale(0.96)",
+          },
+          to: { opacity: "1", transform: "translate(-50%, -50%) scale(1)" },
+        },
+        "content-hide": {
+          from: { opacity: "1", transform: "translate(-50%, -50%) scale(1)" },
+          to: { opacity: "0", transform: "translate(-50%, -50%) scale(0.96)" },
+        },
+
+        // For Popover
+        "slide-up-and-fade": {
+          from: { opacity: "0", transform: "translateY(2px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        "slide-down-and-fade": {
+          from: { opacity: "0", transform: "translateY(-2px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        "slide-up-and-fade-out": {
+          from: { opacity: "1", transform: "translateY(0)" },
+          to: { opacity: "0", transform: "translateY(2px)" },
+        },
+        "slide-down-and-fade-out": {
+          from: { opacity: "1", transform: "translateY(0)" },
+          to: { opacity: "0", transform: "translateY(-2px)" },
+        },
       },
       animation: {
         enter: "enter 200ms ease-out",
@@ -233,6 +268,18 @@ const config = {
         "caret-blink": "caret-blink 1s ease-in-out infinite",
         "collapsible-down": "collapsible-down 200ms ease-out",
         "collapsible-up": "collapsible-up 200ms ease-out",
+
+        // For Modal
+        "overlay-show": "overlay-show 150ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "content-show": "content-show 150ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "content-hide": "content-hide 150ms cubic-bezier(0.16, 1, 0.3, 1)",
+        // For Popover
+        "slide-up-and-fade":
+          "slide-up-and-fade 150ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "slide-down-and-fade":
+          "slide-down-and-fade 150ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "slide-up-and-fade-out": "slide-up-and-fade-out 150ms ease-in",
+        "slide-down-and-fade-out": "slide-down-and-fade-out 150ms ease-in",
       },
     },
   },

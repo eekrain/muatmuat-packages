@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import useDevice from "../use-device";
 import { fetcher } from "./fetcher";
 import { useAutoComplete } from "./use-auto-complete";
-import { useGetCurrentLocation } from "./use-get-current-location";
 import { usePostalCode } from "./use-postal-code";
 import { useSavedLocation } from "./use-saved-location";
 
@@ -43,16 +42,43 @@ export const useLocationSearch = () => {
     refetchHistoryResult: savedLocation.refetchHistoryResult,
   });
 
-  const getCurrentLocation = useGetCurrentLocation({
-    setCoordinates,
-    setAutoCompleteSearchPhrase,
-    setIsModalPostalCodeOpen,
-    setLocationPostalCodeSearchPhrase,
-    dontTriggerPostalCodeModal,
-    setDontTriggerPostalCodeModal,
-    setIsDropdownSearchOpen,
-    setTempLocation,
-  });
+  const handleGetCurrentLocation = useCallback(() => {
+    return new Promise((resolve, reject) => {
+      if (!window.navigator.geolocation) {
+        reject(new Error("Geolocation is not supported by this browser."));
+        return;
+      }
+
+      window.navigator.geolocation.getCurrentPosition(
+        async ({ coords }) => {
+          try {
+            console.log("Step 1: Got coordinates from browser:", coords);
+
+            // Step 2: Mengubah koordinat mentah menjadi objek lokasi LENGKAP.
+            // Ini adalah langkah kunci yang hilang sebelumnya.
+            console.log(
+              "Step 2: Calling getLocationByLatLong with coordinates..."
+            );
+            const result = await fetcher.getLocationByLatLong(coords);
+            console.log("Step 3: Received full location object:", result);
+
+            // Step 3: Kembalikan objek lengkap tersebut.
+            resolve(result);
+          } catch (error) {
+            console.error(
+              "Error in handleGetCurrentLocation's promise:",
+              error
+            );
+            reject(error);
+          }
+        },
+        (error) => {
+          console.error("Error getting current position from browser:", error);
+          reject(error);
+        }
+      );
+    });
+  }, []); // Dependensi kosong, fungsi ini stabil.
 
   const postalCode = usePostalCode({
     setIsModalPostalCodeOpen,
@@ -73,11 +99,11 @@ export const useLocationSearch = () => {
 
   return {
     ...autoComplete,
-    ...getCurrentLocation,
     ...postalCode,
     ...savedLocation,
     ...fetcher,
-
+    handleGetCurrentLocation,
+    isMobile,
     coordinates,
     setCoordinates,
     autoCompleteSearchPhrase,

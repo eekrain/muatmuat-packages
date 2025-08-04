@@ -22,23 +22,23 @@ const apiResult = {
       statusTitle: "Sedang Muat di Lokasi 2",
       licensePlate: "B 1234 CD",
       statusDefinitions: [
-        {
-          mappedOrderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
-          date: new Date().toISOString(),
-        },
-        {
-          mappedOrderStatus: OrderStatusEnum.DOCUMENT_DELIVERY,
-          date: new Date().toISOString(),
-          shippingEvidence: {
-            date: "",
-            photo: [],
-            noted: "",
-          },
-        },
-        {
-          mappedOrderStatus: OrderStatusEnum.PREPARE_DOCUMENT,
-          date: new Date().toISOString(),
-        },
+        // {
+        //   mappedOrderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
+        //   date: new Date().toISOString(),
+        // },
+        // {
+        //   mappedOrderStatus: OrderStatusEnum.DOCUMENT_DELIVERY,
+        //   date: new Date().toISOString(),
+        //   shippingEvidence: {
+        //     date: "",
+        //     photo: [],
+        //     noted: "",
+        //   },
+        // },
+        // {
+        //   mappedOrderStatus: OrderStatusEnum.PREPARE_DOCUMENT,
+        //   date: new Date().toISOString(),
+        // },
         {
           mappedOrderStatus: OrderStatusEnum.UNLOADING,
           children: [
@@ -102,18 +102,18 @@ const apiResult = {
             //   },
             // },
 
-            {
-              statusCode: DriverStatusEnum.UNLOADING.BONGKAR.code,
-              statusName: "Sedang Bongkar di Lokasi 1",
-              date: sub(new Date(), { hours: 7 }).toISOString(),
-              requiresQRScan: false,
-              requiresPhoto: false,
-              triggersWaitingFee: false,
-              photoEvidences: {
-                packages: [],
-                pods: [],
-              },
-            },
+            // {
+            //   statusCode: DriverStatusEnum.UNLOADING.BONGKAR.code,
+            //   statusName: "Sedang Bongkar di Lokasi 1",
+            //   date: sub(new Date(), { hours: 7 }).toISOString(),
+            //   requiresQRScan: false,
+            //   requiresPhoto: false,
+            //   triggersWaitingFee: false,
+            //   photoEvidences: {
+            //     packages: [],
+            //     pods: [],
+            //   },
+            // },
             {
               statusCode: DriverStatusEnum.UNLOADING.ANTRI.code,
               statusName: "Antri di Lokasi Bongkar 1",

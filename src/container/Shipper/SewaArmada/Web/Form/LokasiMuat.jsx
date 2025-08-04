@@ -77,18 +77,23 @@ export const LokasiMuat = ({ orderStatus, maxLocation }) => {
         >
           {lokasiMuat && lokasiMuat.length > 0
             ? lokasiMuat.map((item, index) => (
-                <TimelineField.Item index={index} key={index}>
-                  {!isEditPage && lokasiMuat.length > 1 && (
-                    <TimelineField.RemoveButton
-                      onClick={() => {
-                        removeLokasi("lokasiMuat", index);
-                        if (!isEditPage) {
-                          setField("truckTypeId", null);
-                        }
-                      }}
-                    />
-                  )}
-                </TimelineField.Item>
+                <TimelineField.Item
+                  index={index}
+                  key={index}
+                  buttonRemove={
+                    !isEditPage &&
+                    lokasiMuat.length > 1 && (
+                      <TimelineField.RemoveButton
+                        onClick={() => {
+                          removeLokasi("lokasiMuat", index);
+                          if (!isEditPage) {
+                            setField("truckTypeId", null);
+                          }
+                        }}
+                      />
+                    )
+                  }
+                />
               ))
             : null}
           {isEditPage ? null : <TimelineField.AddButton />}

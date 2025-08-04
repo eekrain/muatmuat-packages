@@ -27,7 +27,7 @@ export const getStatusPesananMetadata = ({
       !orderStatus.startsWith("WAITING_PAYMENT") &&
       unitFleetStatus &&
       totalUnit > 1
-        ? `${t(OrderStatusTitle[orderStatus])}: ${unitFleetStatus} Unit`
+        ? `${t(OrderStatusTitle[orderStatus])} : ${unitFleetStatus} Unit`
         : t(OrderStatusTitle[orderStatus]),
   };
 };

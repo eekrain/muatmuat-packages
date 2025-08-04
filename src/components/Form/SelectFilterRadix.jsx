@@ -234,7 +234,7 @@ const SelectFilterRadix = ({
           )}
 
           {/* Options List */}
-          <div className="flex flex-col overflow-y-auto rounded-b-md">
+          <div className="overflow-y-auto rounded-b-md">
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option, index) => (
                 <button
