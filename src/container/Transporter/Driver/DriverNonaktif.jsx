@@ -255,7 +255,15 @@ const DriverNonaktif = ({
             )}
             {row.driverStatus === "NOT_PAIRED" && (
               <>
-                <SimpleDropdownItem onClick={() => {}}>Ubah</SimpleDropdownItem>
+                <SimpleDropdownItem
+                  onClick={() =>
+                    router.push(
+                      `/manajemen-driver/${row.id}/ubah?from=inactive`
+                    )
+                  }
+                >
+                  Ubah
+                </SimpleDropdownItem>
                 <SimpleDropdownItem
                   className="text-error-400"
                   onClick={() => handleDeleteClick(row)}
