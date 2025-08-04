@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
@@ -12,6 +12,8 @@ import { searchFilter } from "@/lib/utils/filter";
 import { useGetCargoNames } from "@/services/Shipper/sewaarmada/getCargoNames";
 import { useInformasiMuatanStore } from "@/store/Shipper/forms/informasiMuatanStore";
 import { useResponsiveSearchStore } from "@/store/Shipper/zustand/responsiveSearchStore";
+
+import TambahNamaMuatanBottomSheet from "./TambahNamaMuatanBottomSheet";
 
 const namaMuatanOptions = [
   { value: "71b8881a-66ff-454d-a0c6-66b26b84628d", label: "Furniture Kayu" },
@@ -38,6 +40,7 @@ const CariNamaMuatanScreen = () => {
   const params = useResponsiveRouteParams();
   const { searchValue, setSearchValue } = useResponsiveSearchStore();
   const { updateInformasiMuatan, formValues } = useInformasiMuatanStore();
+  const [openTambahNamaMuatan, setOpenTambahNamaMuatan] = useState(false);
 
   const { cargoTypeId, cargoCategoryId, index } = params;
 
@@ -61,7 +64,12 @@ const CariNamaMuatanScreen = () => {
   };
 
   const handleTambahNamaMuatan = () => {
-    alert("not implemented");
+    setOpenTambahNamaMuatan(true);
+  };
+
+  const handleSubmitTambahNamaMuatan = (newCargoName) => {
+    updateInformasiMuatan(index, "namaMuatan", newCargoName);
+    navigation.pop();
   };
 
   const filteredNamaMuatanOptions = useMemo(
@@ -119,6 +127,14 @@ const CariNamaMuatanScreen = () => {
           Tambah Nama Muatan
         </Button>
       </ResponsiveFooter>
+
+      <TambahNamaMuatanBottomSheet
+        open={openTambahNamaMuatan}
+        onOpenChange={setOpenTambahNamaMuatan}
+        onSubmit={handleSubmitTambahNamaMuatan}
+        cargoTypeId={cargoTypeId}
+        cargoCategoryId={cargoCategoryId}
+      />
     </SearchBarResponsiveLayout>
   );
 };
