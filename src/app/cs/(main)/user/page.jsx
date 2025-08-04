@@ -26,7 +26,7 @@ const Page = () => {
       shipper: "shipper",
       transporter: "transporter",
     };
-    return tabMap[queryValue] || "shipper";
+    return tabMap[queryValue] || "transporter";
   };
 
   // Map tab values to query param values
@@ -62,26 +62,8 @@ const Page = () => {
 
   return (
     <div className="my-6 max-h-screen w-full space-y-4">
-      <div className="flex items-center justify-between">
-        <PageTitle withBack={false}>User Management</PageTitle>
-        <div className="flex gap-3">
-          <Button
-            variant="muattrans-primary-secondary"
-            iconLeft={<Plus size={16} />}
-            onClick={() => {}}
-          >
-            <span className="pt-0.5">Add Users (Bulk)</span>
-          </Button>
-          <Button
-            iconLeft={<Plus size={16} />}
-            onClick={() => router.push("/user/add")}
-          >
-            <span className="pt-0.5">Add User</span>
-          </Button>
-          <Button iconLeft={<Download size={16} />} onClick={() => {}}>
-            <span className="pt-0.5">Export</span>
-          </Button>
-        </div>
+      <div className="-mb-4 flex items-center justify-between">
+        <PageTitle withBack={false}>Daftar User</PageTitle>
       </div>
 
       <Tabs
@@ -89,18 +71,40 @@ const Page = () => {
         value={selectedTab}
         onValueChange={handleTabChange}
       >
-        <TabsList className="w-4/12">
-          <TabsTriggerWithSeparator value="shipper" activeColor="primary-700">
-            Shipper {shipperCount ? `(${shipperCount})` : ""}
-          </TabsTriggerWithSeparator>
-          <TabsTriggerWithSeparator
-            value="transporter"
-            showSeparator={false}
-            activeColor="primary-700"
-          >
-            Transporter {transporterCount ? `(${transporterCount})` : ""}
-          </TabsTriggerWithSeparator>
-        </TabsList>
+        <div className="flex items-center justify-between">
+          <TabsList className="w-4/12">
+            <TabsTriggerWithSeparator
+              value="transporter"
+              activeColor="primary-700"
+              className={"!text-base"}
+            >
+              Transporter {transporterCount ? `(${transporterCount})` : ""}
+            </TabsTriggerWithSeparator>
+            <TabsTriggerWithSeparator
+              value="shipper"
+              activeColor="primary-700"
+              showSeparator={false}
+              className={"!text-base"}
+            >
+              Shipper {shipperCount ? `(${shipperCount})` : ""}
+            </TabsTriggerWithSeparator>
+          </TabsList>
+          <div className="flex gap-3">
+            <Button
+              variant="muattrans-primary-secondary"
+              iconLeft={<Download size={16} />}
+              onClick={() => {}}
+            >
+              <span className="pt-0.5">Unduh</span>
+            </Button>
+            <Button
+              iconLeft={<Plus size={16} />}
+              onClick={() => router.push("/user/add")}
+            >
+              <span className="pt-0.5">Tambah Transporter</span>
+            </Button>
+          </div>
+        </div>
 
         <TabsContent value="shipper" className="pt-4">
           <ShipperContainer count={shipperCount} />
