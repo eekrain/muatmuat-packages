@@ -17,6 +17,11 @@ export const BottomsheetDetailPengirimanDokumen = ({
 
   const shippingData = documentShippingDetail;
 
+  // Return null if no shipping data is provided
+  if (!shippingData) {
+    return null;
+  }
+
   return (
     <BottomSheet open={open} onOpenChange={onOpenChange}>
       <BottomSheetContent>

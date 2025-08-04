@@ -139,7 +139,9 @@ const DetailPesananScreen = ({
             documentShippingDetail={documentShippingDetail}
           />
 
-          <TabContentInformasiLainnya dataRingkasanPesanan={dataRingkasanPesanan} />
+          <TabContentInformasiLainnya
+            dataRingkasanPesanan={dataRingkasanPesanan}
+          />
           <TabContentDetailPIC dataDetailPIC={dataDetailPIC} />
         </Tabs>
       </div>
@@ -154,6 +156,7 @@ const DetailPesananScreen = ({
         open={isMenuOpen}
         onOpenChange={setIsMenuOpen}
         dataStatusPesanan={dataStatusPesanan}
+        documentShippingDetail={documentShippingDetail}
       />
       <BottomSheetPeriksaPesananKamu
         open={isPeriksaPesananOpen}

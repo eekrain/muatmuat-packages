@@ -19,6 +19,7 @@ export const BottomsheetMenuList = ({
   open,
   onOpenChange,
   dataStatusPesanan,
+  documentShippingDetail,
 }) => {
   const [isOpenDetailPengirimanDokumen, setIsOpenDetailPengirimanDokumen] =
     useState(false);
@@ -88,20 +89,7 @@ export const BottomsheetMenuList = ({
       <BottomsheetDetailPengirimanDokumen
         open={isOpenDetailPengirimanDokumen}
         onOpenChange={setIsOpenDetailPengirimanDokumen}
-        documentShippingDetail={{
-          recipientName: "Cakra",
-          recipientPhone: "081249088083",
-          fullAddress: "Jl. Sudirman No. 123, Jakarta Pusat",
-          detailAddress: "Gedung ABC Lantai 5",
-          district: "Tanah Abang",
-          city: "Jakarta Pusat",
-          province: "DKI Jakarta",
-          postalCode: "10270",
-          courier: "JNE",
-          courierPrice: 200000,
-          insurancePrice: 10000,
-          totalPrice: 210000,
-        }}
+        documentShippingDetail={documentShippingDetail}
       />
 
       <ModalBatalkanPesananResponsive
