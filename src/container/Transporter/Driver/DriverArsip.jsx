@@ -107,6 +107,11 @@ const DriverArsip = ({
               ) : (
                 <ChevronDown className="h-4 w-4 text-neutral-700" />
               )}
+              {openDropdowns[row.id] ? (
+                <ChevronUp className="h-4 w-4 text-neutral-700" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-neutral-700" />
+              )}
             </button>
           </SimpleDropdownTrigger>
 

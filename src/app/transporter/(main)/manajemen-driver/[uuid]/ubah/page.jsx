@@ -90,9 +90,7 @@ const exampleImages = [
 export default function UbahDriverPage() {
   const router = useRouter();
   const params = useParams();
-  const searchParams = useSearchParams();
   const driverId = params.uuid;
-  const from = searchParams.get("from");
 
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [formData, setFormData] = useState(null);
@@ -129,7 +127,6 @@ export default function UbahDriverPage() {
     mode: "onBlur",
   });
 
-  // Effect to populate the form with fetched driver data
   useEffect(() => {
     if (driverDetail) {
       const ktpDocument = driverDetail.documents?.find(
@@ -146,7 +143,6 @@ export default function UbahDriverPage() {
         namaLengkap: driverDetail.name,
         noWhatsapp: driverDetail.phoneNumber,
         masaBerlakuSIM: new Date(driverDetail.simExpiryDate),
-        // Set URLs for initial display, which is now valid with the new schema
         fotoKTP: ktpDocument?.documentUrl || null,
         fotoSIM: simDocument?.documentUrl || null,
         fotoDriver: profilePhoto?.photoUrl || null,
@@ -240,7 +236,7 @@ export default function UbahDriverPage() {
 
       await updateDriver(apiPayload);
       toast.success("Berhasil memperbarui driver");
-      router.push("/manajemen-driver");
+      router.push("/manajemen-driver?tabs=process");
     } catch (error) {
       const validationErrors = error?.response?.data?.Data?.validationErrors;
       if (
@@ -274,45 +270,11 @@ export default function UbahDriverPage() {
     router.push(nextPath);
   };
 
-  // Dynamic breadcrumb based on "from" parameter
-  const getBreadcrumbData = () => {
-    const base = [{ name: "Manajemen Driver", href: "/manajemen-driver" }];
-
-    // Add intermediate breadcrumb based on where user came from
-    if (from === "active") {
-      base.push({
-        name: "Driver Aktif",
-        href: "/manajemen-driver?tab=active",
-      });
-    } else if (from === "inactive") {
-      base.push({
-        name: "Driver Nonaktif",
-        href: "/manajemen-driver?tab=inactive",
-      });
-    } else if (from === "process") {
-      base.push({
-        name: "Proses Pendaftaran",
-        href: "/manajemen-driver?tab=process",
-      });
-    } else if (from === "archive") {
-      base.push({
-        name: "Arsip",
-        href: "/manajemen-driver?tab=archive",
-      });
-    } else if (from === "expired") {
-      base.push({
-        name: "Perlu Pembaruan SIM",
-        href: "/manajemen-driver/expired",
-      });
-    }
-
-    // Add current page
-    base.push({ name: "Ubah Driver" });
-
-    return base;
-  };
-
-  const breadcrumbItems = getBreadcrumbData();
+  const breadcrumbItems = [
+    { name: "Manajemen Driver", href: "/manajemen-driver" },
+    { name: "Proses Pendaftaran", href: "/manajemen-driver?from=inactive" },
+    { name: "Ubah Driver" },
+  ];
 
   if (isLoadingDriver) {
     return <LoadingStatic />;
