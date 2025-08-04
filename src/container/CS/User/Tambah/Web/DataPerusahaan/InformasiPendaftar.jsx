@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useForm } from "react-hook-form";
@@ -21,6 +21,7 @@ import { useLocationSearch } from "@/hooks/use-location/use-location-search";
 import { useSWRMutateHook } from "@/hooks/use-swr";
 import { normalizePostalCodeData } from "@/lib/normalizers/location";
 import { toast } from "@/lib/toast";
+import { useTransporterFormStore } from "@/store/CS/forms/registerTransporter";
 
 import { LocationDropdownInput } from "../../InputLocationDropdown/LocationDropdownInput";
 import { SearchPostal } from "../../InputLocationDropdown/SearchPostal";
@@ -89,6 +90,8 @@ const informasiPendaftarSchema = v.object({
       v.string(),
       v.minLength(1, "Lokasi harus dipilih dari Google Maps")
     ),
+    kecamatanList: v.optional(v.array(v.any())), // Tambahkan ini
+    postalCodeList: v.optional(v.array(v.any())), // Tambahkan ini
   }),
 
   bankId: v.pipe(v.string(), v.minLength(1, "Bank wajib diisi")),
@@ -115,6 +118,12 @@ function InformasiPendaftar() {
   const [tempLocation, setTempLocation] = useState(null);
   const debounceTimeoutRef = useRef(null);
 
+  const FORM_KEY = "newTransporterRegistration";
+  const setForm = useTransporterFormStore((state) => state.setForm);
+  const initialData = useTransporterFormStore((state) =>
+    state.getForm(FORM_KEY)
+  );
+
   const {
     setValue,
     handleSubmit,
@@ -125,7 +134,7 @@ function InformasiPendaftar() {
     watch,
   } = useForm({
     resolver: valibotResolver(informasiPendaftarSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       transporterId: "uuid-transporter",
       registrantName: "",
       registrantPosition: "",
@@ -136,7 +145,6 @@ function InformasiPendaftar() {
       businessEntityType: "",
       companyPhone: "",
       companyAddress: "",
-      addressType: "",
       locationData: {
         latitude: 7.2575,
         longitude: 112.7521,
@@ -146,6 +154,8 @@ function InformasiPendaftar() {
         province: "",
         postalCode: "",
         placeId: "",
+        kecamatanList: [], // Tambahkan ini
+        postalCodeList: [], // Tambahkan ini
       },
       bankId: "",
       accountNumber: "",
@@ -153,7 +163,6 @@ function InformasiPendaftar() {
     },
   });
 
-  // Watch form values for real-time validation
   const watchedValues = watch();
 
   const locationSearch = useLocationSearch();
@@ -211,6 +220,8 @@ function InformasiPendaftar() {
     setValue("locationData.placeId", locationData.location?.value || "", {
       shouldValidate: true,
     });
+    setValue("locationData.kecamatanList", locationData.kecamatanList || []);
+    setValue("locationData.postalCodeList", locationData.postalCodeList || []);
 
     locationSearch.setAutoCompleteSearchPhrase(
       locationData.location?.name || ""
@@ -241,7 +252,41 @@ function InformasiPendaftar() {
     }
   };
 
-  // === LANGKAH 3: Modifikasi handleSelectLocation untuk menangani data tidak lengkap ===
+  useEffect(() => {
+    // Jalankan hanya jika ada data awal yang dipulihkan
+    if (initialData) {
+      console.log("Rehydrating UI options from initialData...");
+
+      // Rehidrasi opsi kecamatan
+      const savedKecamatanList = initialData.locationData?.kecamatanList;
+      if (
+        savedKecamatanList &&
+        Array.isArray(savedKecamatanList) &&
+        savedKecamatanList.length > 0
+      ) {
+        const formattedKecamatan = savedKecamatanList.map((kec) => ({
+          label: kec.name,
+          value: kec.value,
+        }));
+        setDynamicKecamatanOptions(formattedKecamatan);
+      }
+
+      // Rehidrasi opsi kode pos
+      const savedPostalCodeList = initialData.locationData?.postalCodeList;
+      if (
+        savedPostalCodeList &&
+        Array.isArray(savedPostalCodeList) &&
+        savedPostalCodeList.length > 0
+      ) {
+        const formattedPostalCode = savedPostalCodeList.map((pc) => ({
+          label: pc.name,
+          value: pc.value,
+        }));
+        setDynamicKodePosOptions(formattedPostalCode);
+      }
+    }
+  }, [initialData]);
+
   const handleSelectLocation = (result) => {
     if (!result) return;
 
@@ -355,10 +400,11 @@ function InformasiPendaftar() {
   };
 
   const onSubmit = (data) => {
-    console.log("Form data:", data);
+    console.log("Form submitted. Data in react-hook-form:", data);
+    console.log("Final data is already in Zustand store.");
+    setForm(FORM_KEY, data);
+    toast.success("Informasi pendaftar berhasil disimpan!");
   };
-
-  console.log("Watched values:", watchedValues);
 
   const { trigger: uploadLogoTrigger, isMutating: isUploadingLogo } =
     useSWRMutateHook("v1/orders/upload", "POST", undefined, undefined, {

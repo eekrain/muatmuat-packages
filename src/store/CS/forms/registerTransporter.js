@@ -15,77 +15,50 @@ export const useTransporterFormStore = create(
         }));
       },
 
-      updateFormField: (key, field, value) => {
+      updateNestedFormField: (key, path, value) => {
         const currentForm = get().forms[key] || {};
+        const newForm = { ...currentForm };
+        set(newForm, path, value);
+
         set((state) => ({
           forms: {
             ...state.forms,
-            [key]: {
-              ...currentForm,
-              [field]: value,
-            },
+            [key]: newForm,
           },
         }));
       },
 
       removeForm: (key) => {
-        const { [key]: _, ...rest } = get().forms;
-        set({ forms: rest });
-      },
-
-      resetForm: (key) => {
-        set((state) => ({
-          forms: {
-            ...state.forms,
-            [key]: undefined,
-          },
-        }));
+        set((state) => {
+          const newForms = { ...state.forms };
+          delete newForms[key];
+          return { forms: newForms };
+        });
       },
 
       getForm: (key) => {
-        return get().forms[key] || {};
+        return get().forms[key];
       },
 
-      isFormComplete: (key) => {
+      isFormComplete: (key, requiredFields) => {
         const form = get().forms[key];
         if (!form) return false;
-        const requiredFields = [
-          "transporterId",
-          "registrantName",
-          "registrantEmail",
-        ];
-        return requiredFields.every(
-          (field) => form[field] && form[field].trim() !== ""
-        );
+        return requiredFields.every((field) => !!form[field]);
       },
     }),
     {
-      name: "transporter-forms",
+      name: "transporter-forms-storage",
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({
-        forms: state.forms,
-      }),
+      partialize: (state) => ({ forms: state.forms }),
     }
   )
 );
 
-export const transporterFormStore = useTransporterFormStore.getState();
-
-export const getTransporterForm = (key) => transporterFormStore.getForm(key);
-
-export const isTransporterFormComplete = (key) =>
-  transporterFormStore.isFormComplete(key);
-
-export const getAllTransporterForms = () => transporterFormStore.forms;
-
+export const getTransporterForm = (key) =>
+  useTransporterFormStore.getState().getForm(key);
 export const setTransporterForm = (key, data) =>
-  transporterFormStore.setForm(key, data);
-
-export const updateTransporterFormField = (key, field, value) =>
-  transporterFormStore.updateFormField(key, field, value);
-
+  useTransporterFormStore.getState().setForm(key, data);
+export const updateNestedTransporterFormField = (key, path, value) =>
+  useTransporterFormStore.getState().updateNestedFormField(key, path, value);
 export const removeTransporterForm = (key) =>
-  transporterFormStore.removeForm(key);
-
-export const resetTransporterForm = (key) =>
-  transporterFormStore.resetForm(key);
+  useTransporterFormStore.getState().removeForm(key);
