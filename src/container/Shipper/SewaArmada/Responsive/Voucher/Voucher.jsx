@@ -2,9 +2,12 @@ import { useEffect, useRef, useState } from "react";
 
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
+  BottomSheetFooter,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import {
@@ -112,8 +115,11 @@ const VoucherBottomSheet = ({
       </div>
 
       <BottomSheetContent>
-        <BottomSheetHeader>Pilih Voucher</BottomSheetHeader>
-        <div className="flex h-[380px] w-full flex-col gap-4 overflow-y-auto bg-white px-4 py-6">
+        <BottomSheetHeader>
+          <BottomSheetClose />
+          <BottomSheetTitle>Pilih Voucher</BottomSheetTitle>
+        </BottomSheetHeader>
+        <div className="flex h-[380px] w-full flex-col gap-4 overflow-y-auto bg-white px-4">
           {/* Search field */}
           <div className="relative flex items-center rounded-md border border-neutral-400">
             <div className="absolute left-3">
@@ -202,16 +208,16 @@ const VoucherBottomSheet = ({
               </div>
             )}
           </div>
-
-          {/* Apply button */}
+        </div>
+        <BottomSheetFooter>
           <Button
             variant="muatparts-primary"
-            className="h-10 max-w-full"
+            className="h-10 w-full"
             onClick={handleApplyVoucher}
           >
             Terapkan
           </Button>
-        </div>
+        </BottomSheetFooter>
       </BottomSheetContent>
     </BottomSheet>
   );

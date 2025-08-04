@@ -1,9 +1,12 @@
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
+  BottomSheetFooter,
   BottomSheetHeader,
+  BottomSheetTitle,
   BottomSheetTrigger,
-} from "@/components/Bottomsheet/Bottomsheet";
+} from "@/components/Bottomsheet/BottomSheet";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
@@ -75,8 +78,11 @@ export const SaveBottomSheet = ({
         </Button>
       </BottomSheetTrigger>
       <BottomSheetContent>
-        <BottomSheetHeader>Informasi</BottomSheetHeader>
-        <div className="flex flex-col gap-4 p-4 pb-6">
+        <BottomSheetHeader>
+          <BottomSheetClose />
+          <BottomSheetTitle>Informasi</BottomSheetTitle>
+        </BottomSheetHeader>
+        <div className="flex flex-col gap-4 px-4">
           <p className="text-center text-sm font-medium leading-tight text-neutral-900">
             Pilih salah satu metode dibawah ini untuk mendapatkan kode
             verifikasi
@@ -92,8 +98,8 @@ export const SaveBottomSheet = ({
               />
             ))}
           </div>
-
-          {/* Action Button */}
+        </div>
+        <BottomSheetFooter className="pt-6">
           <Button
             variant="muatparts-primary"
             onClick={onVerification}
@@ -102,7 +108,7 @@ export const SaveBottomSheet = ({
           >
             Verifikasi
           </Button>
-        </div>
+        </BottomSheetFooter>
       </BottomSheetContent>
     </BottomSheet>
   );

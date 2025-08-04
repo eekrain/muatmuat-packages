@@ -35,6 +35,7 @@ const DetailStatusDriverScreen = ({ dataStatusPesanan }) => {
             driverStatus={dataStatusPesanan?.driverStatus}
             orderId={orderId}
             defaultIndex={defaultIndex}
+            withActions={false}
           />
         )}
         <div className="bg-white px-4 py-5">

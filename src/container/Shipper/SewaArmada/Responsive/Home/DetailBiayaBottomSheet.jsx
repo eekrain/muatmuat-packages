@@ -2,9 +2,12 @@
 
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
+  BottomSheetFooter,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import Button from "@/components/Button/Button";
 import CardPayment from "@/components/Card/CardPayment";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -51,10 +54,13 @@ const DetailBiayaBottomSheet = ({
     <BottomSheet open={isOpen} onOpenChange={onOpenChange}>
       <BottomSheetContent className="flex max-h-[90vh] w-full flex-col p-0">
         {/* Header Section */}
-        <BottomSheetHeader>Detail Biaya</BottomSheetHeader>
+        <BottomSheetHeader>
+          <BottomSheetClose />
+          <BottomSheetTitle>Detail Biaya</BottomSheetTitle>
+        </BottomSheetHeader>
 
         {/* Scrollable Body Section */}
-        <div className="mt-6 flex-1 overflow-y-auto px-4">
+        <div className="flex-1 overflow-y-auto px-4">
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-6 border-b border-neutral-400 pb-6">
               <CardPayment.Section
@@ -134,9 +140,7 @@ const DetailBiayaBottomSheet = ({
             )}
           </div>
         </div>
-
-        {/* Footer Section (Not scrollable) */}
-        <div className="w-full flex-shrink-0 flex-col bg-white px-4 pb-3 pt-6 shadow-[0_-4px_11px_rgba(65,65,65,0.08)]">
+        <BottomSheetFooter>
           <CardPayment.Total
             label="Total Biaya"
             value={idrFormat(finalTotal)}
@@ -154,7 +158,7 @@ const DetailBiayaBottomSheet = ({
           >
             Lanjut
           </Button>
-        </div>
+        </BottomSheetFooter>
       </BottomSheetContent>
     </BottomSheet>
   );

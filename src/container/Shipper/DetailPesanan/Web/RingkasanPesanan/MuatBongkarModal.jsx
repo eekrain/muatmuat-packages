@@ -1,9 +1,5 @@
 import { Modal, ModalContent } from "@/components/Modal/Modal";
-import {
-  TimelineContainer,
-  TimelineContentAddress,
-  TimelineItem,
-} from "@/components/Timeline";
+import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 
 const MuatBongkarModal = ({ isOpen, setIsOpen, data, title }) => (
   <Modal closeOnOutsideClick={false} open={isOpen} onOpenChange={setIsOpen}>
@@ -17,7 +13,7 @@ const MuatBongkarModal = ({ isOpen, setIsOpen, data, title }) => (
           <div className="flex w-[600px] flex-col items-start gap-2 rounded-xl border border-neutral-400 px-4 py-5">
             <TimelineContainer>
               {data?.map((item, index) => (
-                <TimelineItem
+                <NewTimelineItem
                   key={index}
                   variant={
                     item.isBullet
@@ -28,15 +24,15 @@ const MuatBongkarModal = ({ isOpen, setIsOpen, data, title }) => (
                   }
                   totalLength={data?.length}
                   index={item.index}
+                  isLast={index === data?.length - 1}
                   activeIndex={10}
-                >
-                  <TimelineContentAddress
-                    title={item.fullAddress}
-                    className={`text-xs font-medium leading-[14.4px] ${
-                      index === data?.length - 1 ? "pb-0" : ""
-                    }`}
-                  />
-                </TimelineItem>
+                  title={item.fullAddress}
+                  className="gap-3"
+                  appearance={{
+                    titleClassname:
+                      "text-xs font-medium leading-[14.4px] mt-[1px]",
+                  }}
+                />
               ))}
             </TimelineContainer>
           </div>

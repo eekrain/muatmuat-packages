@@ -15,6 +15,7 @@ export const SewaArmadaFooter = ({
   selectedVoucher,
   onOpenVoucherSelection,
   onRecommendedTruckClick,
+  onOpenTransactionSummary,
   parentRef,
   trucks,
 }) => {
@@ -90,12 +91,13 @@ export const SewaArmadaFooter = ({
 
       {/* Buttons Row */}
       <div className="flex w-full items-start gap-2 self-stretch">
-        <Button
+        {/* <Button
           variant="muatparts-primary-secondary"
           className="h-10 flex-1 rounded-[20px] text-sm font-semibold"
+          onClick={onOpenTransactionSummary}
         >
           Lihat Detail Biaya
-        </Button>
+        </Button> */}
         <Button
           variant="muatparts-primary"
           className="h-10 flex-1 rounded-[20px] text-sm font-semibold"

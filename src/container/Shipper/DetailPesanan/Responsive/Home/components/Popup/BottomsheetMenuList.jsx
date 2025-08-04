@@ -2,16 +2,18 @@ import { useState } from "react";
 
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import { useTranslation } from "@/hooks/use-translation";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
 
-import { ModalBatalkanPesananResponsive } from "../ModalBatalkanPesananResponsive";
 import { BottomsheetAlasanPembatalan } from "./BottomsheetAlasanPembatalan";
 import { BottomsheetDocumentShipping } from "./BottomsheetDocumentShipping";
+import { ModalBatalkanPesananResponsive } from "./ModalBatalkanPesananResponsive";
 
 export const BottomsheetMenuList = ({
   open,
@@ -33,8 +35,11 @@ export const BottomsheetMenuList = ({
     <>
       <BottomSheet open={open} onOpenChange={onOpenChange}>
         <BottomSheetContent>
-          <BottomSheetHeader>{t("titleMenu")}</BottomSheetHeader>
-          <ul className="my-6 flex flex-col gap-4 px-4 text-sm font-semibold text-neutral-900">
+          <BottomSheetHeader>
+            <BottomSheetClose />
+            <BottomSheetTitle>{t("titleMenu")}</BottomSheetTitle>
+          </BottomSheetHeader>
+          <ul className="flex flex-col gap-4 px-4 pb-6 text-sm font-semibold text-neutral-900">
             <Item
               label={t("labelOrderStatusSummary")}
               onClick={() => navigation.push("/order-summary")}

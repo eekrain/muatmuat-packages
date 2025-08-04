@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AlertMultiline } from "@/components/Alert/AlertMultiline";
 import Card, { CardContent } from "@/components/Card/Card";
 import { ConditionalDiv } from "@/components/Card/ConditionalDiv";
+import { ModalDetailWaktuTunggu } from "@/components/Modal/ModalDetailWaktuTunggu";
 import { StepperContainer, StepperItem } from "@/components/Stepper/Stepper";
 import { AlertPendingPayment1 } from "@/container/Shipper/DetailPesanan/Web/StatusPesanan/AlertPendingPayment1";
 import { AlertPendingPrepareFleet } from "@/container/Shipper/DetailPesanan/Web/StatusPesanan/AlertPendingPrepareFleet";
@@ -19,8 +20,14 @@ import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enu
 import { getAlertMetadata } from "@/lib/normalizers/detailpesanan/getAlertMetadata";
 import { toast } from "@/lib/toast";
 
+import { ModalPerubahanData } from "./ModalPerubahanData";
+
 const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
   const { t } = useTranslation();
+  const [isModalPerubahanDataOpen, setIsModalPerubahanDataOpen] =
+    useState(false);
+  const [isModalDetailWaktuTungguOpen, setIsModalDetailWaktuTungguOpen] =
+    useState(false);
 
   // State simulasi status order dan driverStatus
   const [orderStatusSimulasi, setOrderStatusSimulasi] = useState(null);
@@ -68,11 +75,18 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
           ]
         : []),
       ...(dataStatusPesanan?.alerts || [])
-        .map((item) => getAlertMetadata(item?.type, t))
+        .map((item) =>
+          getAlertMetadata({
+            type: item?.type,
+            t,
+            onLihatDetailWaktuTunggu: () =>
+              setIsModalDetailWaktuTungguOpen(true),
+            onLihatPerubahan: () => setIsModalPerubahanDataOpen(true),
+          })
+        )
         .filter((val) => Boolean(val)),
     ];
   }, [dataStatusPesanan?.alerts, isShowWaitFleetAlert, t]);
-  console.log("🚀 ~ orderAlerts ~ orderAlerts:", orderAlerts);
 
   return (
     <>
@@ -151,6 +165,15 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
           </div>
         </CardContent>
       </Card>
+
+      <ModalPerubahanData
+        open={isModalPerubahanDataOpen}
+        onOpenChange={setIsModalPerubahanDataOpen}
+      />
+      <ModalDetailWaktuTunggu
+        open={isModalDetailWaktuTungguOpen}
+        onOpenChange={setIsModalDetailWaktuTungguOpen}
+      />
     </>
   );
 };

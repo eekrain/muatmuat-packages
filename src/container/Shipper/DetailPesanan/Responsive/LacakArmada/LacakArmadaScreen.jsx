@@ -4,9 +4,11 @@ import { useState } from "react";
 
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import { MapWithPath } from "@/components/MapContainer/MapWithPath";
@@ -40,10 +42,7 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
     (d) => d.driverId === driverId
   );
 
-  const isShowEstimatedArrival =
-    driver?.driverStatus.startsWith("MENUJU_") ||
-    driver?.driverStatus.startsWith("TIBA_") ||
-    driver?.driverStatus.startsWith("ANTRI_");
+  const isShowEstimatedArrival = driver?.driverStatus.startsWith("MENUJU_");
 
   return (
     <FormResponsiveLayout
@@ -94,7 +93,10 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
 
       <BottomSheet open={isOpenBottomsheet} onOpenChange={setIsOpenBottomsheet}>
         <BottomSheetContent>
-          <BottomSheetHeader>Keterangan</BottomSheetHeader>
+          <BottomSheetHeader>
+            <BottomSheetClose />
+            <BottomSheetTitle>Keterangan</BottomSheetTitle>
+          </BottomSheetHeader>
 
           {data && <MarkerLegends legends={data.locationMarkers} />}
         </BottomSheetContent>

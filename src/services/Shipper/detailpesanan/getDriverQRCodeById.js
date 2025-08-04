@@ -54,12 +54,12 @@ export const useGetDriverQRCodeById = ({ orderId, driverId } = exampleBody) => {
         });
       }
       setQRData(
-        driverId === "550e8400-e29b-41d4-a716-446655440021"
+        useMockData && driverId === "550e8400-e29b-41d4-a716-446655440021"
           ? {
               ...result.data.Data,
               driverInfo: {
                 ...result.data.Data.driverInfo,
-                statusScan: DriverStatusScanEnum.SUDAH_SCAN_MUAT,
+                statusScan: DriverStatusScanEnum.BELUM_SCAN_BONGKAR,
               },
             }
           : result.data.Data

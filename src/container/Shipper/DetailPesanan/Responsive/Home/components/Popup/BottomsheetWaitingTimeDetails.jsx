@@ -5,7 +5,8 @@ import {
   BottomSheetClose,
   BottomSheetContent,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import IconComponent from "@/components/IconComponent/IconComponent";
 
 /**
@@ -88,9 +89,9 @@ const BottomsheetWaitingTimeDetails = () => {
               />
             </button>
           </BottomSheetClose>
-          <h2 className="mx-auto text-base font-bold text-neutral-900">
+          <BottomSheetTitle className="mx-auto text-base font-bold text-neutral-900">
             Detail Waktu Tunggu
-          </h2>
+          </BottomSheetTitle>
         </div>
       </BottomSheetHeader>
 

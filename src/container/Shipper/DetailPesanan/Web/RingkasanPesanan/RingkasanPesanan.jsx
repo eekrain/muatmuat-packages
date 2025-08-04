@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { TagBubble } from "@/components/Badge/TagBubble";
+import { ButtonMini } from "@/components/Button/ButtonMini";
 import Card, { CardContent } from "@/components/Card/Card";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
@@ -11,11 +12,7 @@ import {
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
-import {
-  TimelineContainer,
-  TimelineContentWithButtonDate,
-  TimelineItem,
-} from "@/components/Timeline";
+import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import { useTranslation } from "@/hooks/use-translation";
 import { formatDate } from "@/lib/utils/dateFormat";
 
@@ -113,76 +110,71 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
 
                 {/* Timeline */}
                 <TimelineContainer>
-                  <TimelineItem
+                  <NewTimelineItem
                     variant="bullet"
-                    totalLength={2}
                     index={0}
                     activeIndex={0}
-                  >
-                    <TimelineContentWithButtonDate
-                      title={
-                        dataRingkasanPesanan?.route?.muat?.[0]?.fullAddress ||
-                        ""
-                      }
-                      withButton={
-                        dataRingkasanPesanan?.route?.muat &&
-                        dataRingkasanPesanan?.route?.muat.length > 1
-                          ? {
-                              label: "Lihat Lokasi Muat Lainnya",
-                              onClick: () => {
-                                setModalData(
-                                  dataRingkasanPesanan?.route?.muat.map(
-                                    (item, index) => ({
-                                      ...item,
-                                      index,
-                                      isPickup: true,
-                                    })
-                                  )
-                                );
-                                setIsPickup(true);
-                                setIsLokasiMuatBongkarModalOpen(true);
-                              },
-                            }
-                          : undefined
-                      }
-                    />
-                  </TimelineItem>
+                    title={dataRingkasanPesanan?.route?.muat?.[0]?.fullAddress}
+                    isLast={false}
+                    appearance={{ titleClassname: "text-xs" }}
+                    buttonDetail={
+                      dataRingkasanPesanan?.route?.muat &&
+                      dataRingkasanPesanan?.route?.muat.length > 1 ? (
+                        <ButtonMini
+                          className="mt-1"
+                          onClick={() => {
+                            setModalData(
+                              dataRingkasanPesanan?.route?.muat.map(
+                                (item, index) => ({
+                                  ...item,
+                                  index,
+                                  isPickup: true,
+                                })
+                              )
+                            );
+                            setIsPickup(true);
+                            setIsLokasiMuatBongkarModalOpen(true);
+                          }}
+                        >
+                          Lihat Lokasi Muat Lainnya
+                        </ButtonMini>
+                      ) : null
+                    }
+                  />
 
-                  <TimelineItem
+                  <NewTimelineItem
                     variant="bullet"
-                    totalLength={2}
                     index={1}
                     activeIndex={0}
-                  >
-                    <TimelineContentWithButtonDate
-                      className="pb-0"
-                      title={
-                        dataRingkasanPesanan?.route?.bongkar?.[0]
-                          ?.fullAddress || ""
-                      }
-                      withButton={
-                        dataRingkasanPesanan?.route?.bongkar &&
-                        dataRingkasanPesanan?.route?.bongkar.length > 1
-                          ? {
-                              label: "Lihat Lokasi Bongkar Lainnya",
-                              onClick: () => {
-                                setModalData(
-                                  dataRingkasanPesanan?.route?.bongkar.map(
-                                    (item, index) => ({
-                                      ...item,
-                                      index,
-                                      isPickup: false,
-                                    })
-                                  )
-                                );
-                                setIsPickup(false);
-                                setIsLokasiMuatBongkarModalOpen(true);
-                              },
-                            }
-                          : undefined
-                      }
-                    />
-                  </TimelineItem>
+                    title={
+                      dataRingkasanPesanan?.route?.bongkar?.[0]?.fullAddress
+                    }
+                    isLast={true}
+                    appearance={{ titleClassname: "text-xs" }}
+                    buttonDetail={
+                      dataRingkasanPesanan?.route?.bongkar &&
+                      dataRingkasanPesanan?.route?.bongkar.length > 1 ? (
+                        <ButtonMini
+                          className="mt-1"
+                          onClick={() => {
+                            setModalData(
+                              dataRingkasanPesanan?.route?.bongkar.map(
+                                (item, index) => ({
+                                  ...item,
+                                  index,
+                                  isPickup: false,
+                                })
+                              )
+                            );
+                            setIsPickup(false);
+                            setIsLokasiMuatBongkarModalOpen(true);
+                          }}
+                        >
+                          Lihat Lokasi Bongkar Lainnya
+                        </ButtonMini>
+                      ) : null
+                    }
+                  />
                 </TimelineContainer>
               </div>
             </div>

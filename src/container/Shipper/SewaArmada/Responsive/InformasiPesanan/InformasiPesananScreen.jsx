@@ -5,11 +5,14 @@ import { Fragment, useEffect, useState } from "react";
 
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
   BottomSheetHeader,
+  BottomSheetTitle,
   BottomSheetTrigger,
-} from "@/components/Bottomsheet/Bottomsheet";
+} from "@/components/Bottomsheet/BottomSheet";
 import Button from "@/components/Button/Button";
+import { ButtonMini } from "@/components/Button/ButtonMini";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import Checkbox from "@/components/Form/Checkbox";
 import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
@@ -17,13 +20,12 @@ import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import ImageUploaderResponsive from "@/components/ImageUploader/ImageUploaderResponsive";
-import TextArea from "@/components/TextArea/TextArea";
 import {
-  TimelineContainer,
-  TimelineContentAddress,
-  TimelineContentWithButtonDate,
-  TimelineItem,
-} from "@/components/Timeline";
+  LightboxPreview,
+  LightboxProvider,
+} from "@/components/Lightbox/Lightbox";
+import TextArea from "@/components/TextArea/TextArea";
+import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import VoucherCard from "@/components/Voucher/VoucherCard";
 import VoucherEmptyState from "@/components/Voucher/VoucherEmptyState";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
@@ -336,29 +338,18 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
         {/* Info Jasa Angkut */}
         <div className="flex items-center gap-3 bg-neutral-50 px-4 py-5">
           {/* Image Container */}
-          <div className="relative size-[68px] overflow-hidden rounded-xl border border-neutral-400">
-            <ImageComponent
-              className="w-full"
-              src="/img/recommended1.png"
-              width={68}
-              height={68}
+          <LightboxProvider image={"/img/recommended1.png"}>
+            <LightboxPreview
+              image={"/img/recommended1.png"}
+              alt={"recommended1"}
+              className="object-contain"
             />
-            <button
-              className="absolute right-2 top-2 flex size-[20px] items-center justify-center rounded-3xl bg-neutral-50"
-              onClick={() => {}}
-            >
-              <IconComponent
-                src="/icons/fullscreen12.svg"
-                width={12}
-                height={12}
-              />
-            </button>
-          </div>
+          </LightboxProvider>
 
           {/* Info Text */}
           <div className="flex flex-1 flex-col gap-3">
             <h3 className="text-sm font-semibold leading-[15.4px] text-neutral-900">
-              {`${selectedCarrier.name} - ${selectedTruck.name}`}
+              {`${selectedCarrier?.name} - ${selectedTruck?.name}`}
             </h3>
             <p className="text-sm font-medium leading-[15.4px] text-neutral-900">
               {t("labelKebutuhanUnit", { unit: truckCount })}
@@ -719,7 +710,7 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
             <BottomSheetHeader>
               {t("titlePeriksaPesananAnda")}
             </BottomSheetHeader>
-            <div className="flex max-h-[calc(75vh_-_54px)] w-full flex-col gap-y-4 overflow-y-auto bg-white px-4 py-6">
+            <div className="flex max-h-[calc(75vh_-_54px)] w-full flex-col gap-y-4 overflow-y-auto bg-white px-4">
               {/* Waktu Muat */}
               <OrderSummarySection className="gap-y-4 font-semibold text-neutral-900">
                 <h4 className="text-sm leading-[15.4px]">
@@ -737,50 +728,40 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
                   </span>
                 </div>
                 <TimelineContainer>
-                  <TimelineItem
+                  <NewTimelineItem
                     variant="bullet"
                     totalLength={2}
                     index={0}
                     activeIndex={0}
-                  >
-                    <TimelineContentWithButtonDate
-                      title={lokasiMuat?.[0]?.dataLokasi.location.name || ""}
-                      withButton={
-                        lokasiMuat && lokasiMuat.length > 1
-                          ? {
-                              label: "Lihat Lokasi Muat Lainnya",
-                              onClick: () => {
-                                setLocationType("muat");
-                                setIsLocationBottomsheetOpen(true);
-                              },
-                            }
-                          : undefined
-                      }
-                    />
-                  </TimelineItem>
-
-                  <TimelineItem
+                    title={lokasiMuat?.[0]?.dataLokasi.location.name}
+                    buttonDetail={
+                      <ButtonMini
+                        onClick={() => {
+                          setLocationType("muat");
+                          setIsLocationBottomsheetOpen(true);
+                        }}
+                      >
+                        Lihat Lokasi Muat Lainnya
+                      </ButtonMini>
+                    }
+                  />
+                  <NewTimelineItem
                     variant="bullet"
                     totalLength={2}
                     index={1}
                     activeIndex={0}
-                  >
-                    <TimelineContentWithButtonDate
-                      className="pb-0"
-                      title={lokasiBongkar?.[0]?.dataLokasi.location.name || ""}
-                      withButton={
-                        lokasiBongkar && lokasiBongkar.length > 1
-                          ? {
-                              label: "Lihat Lokasi Bongkar Lainnya",
-                              onClick: () => {
-                                setLocationType("bongkar");
-                                setIsLocationBottomsheetOpen(true);
-                              },
-                            }
-                          : undefined
-                      }
-                    />
-                  </TimelineItem>
+                    title={lokasiBongkar?.[0]?.dataLokasi.location.name}
+                    buttonDetail={
+                      <ButtonMini
+                        onClick={() => {
+                          setLocationType("bongkar");
+                          setIsLocationBottomsheetOpen(true);
+                        }}
+                      >
+                        Lihat Lokasi Bongkar Lainnya
+                      </ButtonMini>
+                    }
+                  />
                 </TimelineContainer>
               </OrderSummarySection>
               <OrderSummarySection className="gap-y-3 text-neutral-900">
@@ -881,13 +862,12 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
 
       {/* Voucher BottomSheet */}
       <BottomSheet open={isBottomsheetOpen} onOpenChange={setIsBottomsheetOpen}>
-        <BottomSheetContent
-          className={
-            "animate-slideUp fixed bottom-0 left-0 right-0 z-50 mx-auto max-h-[90vh] w-full overflow-y-auto rounded-t-2xl bg-neutral-50 shadow-2xl"
-          }
-        >
-          <BottomSheetHeader>{t("titlePilihVoucher")}</BottomSheetHeader>
-          <div className="flex h-[577px] w-full flex-col gap-4 overflow-y-auto bg-neutral-50 px-4 py-6">
+        <BottomSheetContent>
+          <BottomSheetHeader>
+            <BottomSheetClose />
+            <BottomSheetTitle>{t("titlePilihVoucher")}</BottomSheetTitle>
+          </BottomSheetHeader>
+          <div className="flex h-[577px] w-full flex-col gap-4 overflow-y-auto bg-neutral-50 px-4">
             {/* Search bar */}
             <div className="relative flex items-center rounded-md border border-neutral-400">
               <div className="absolute left-3">
@@ -983,17 +963,17 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
                 </div>
               )}
             </div>
+          </div>
 
-            {/* Apply button */}
-            <div className="sticky bottom-0 flex items-center bg-neutral-50 pt-4">
-              <Button
-                variant="muatparts-primary"
-                className="flex-1"
-                onClick={handleApplyVoucher}
-              >
-                {tempSelectedVoucher ? t("buttonTerapkan") : t("buttonLewati")}
-              </Button>
-            </div>
+          {/* Apply button */}
+          <div className="sticky bottom-0 flex items-center rounded-t-[10px] bg-neutral-50 px-4 py-3 shadow-responsive-footer">
+            <Button
+              variant="muatparts-primary"
+              className="flex-1"
+              onClick={handleApplyVoucher}
+            >
+              {tempSelectedVoucher ? t("buttonTerapkan") : t("buttonLewati")}
+            </Button>
           </div>
         </BottomSheetContent>
       </BottomSheet>
@@ -1014,9 +994,11 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
               {(locationType === "muat" ? lokasiMuat : lokasiBongkar).map(
                 (item, key) => (
                   <Fragment key={key}>
-                    <TimelineItem
+                    <NewTimelineItem
                       variant={
-                        locationType === "muat" ? "number-muat" : "number-muat"
+                        locationType === "muat"
+                          ? "number-muat"
+                          : "number-bongkar"
                       }
                       totalLength={
                         (locationType === "muat" ? lokasiMuat : lokasiBongkar)
@@ -1024,11 +1006,8 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
                       }
                       index={key}
                       activeIndex={0}
-                    >
-                      <TimelineContentAddress
-                        title={item?.dataLokasi?.location?.name || ""}
-                      />
-                    </TimelineItem>
+                      title={item?.dataLokasi?.location?.name || ""}
+                    />
                   </Fragment>
                 )
               )}
