@@ -20,6 +20,7 @@ export const BottomsheetMenuList = ({
   onOpenChange,
   dataStatusPesanan,
   documentShippingDetail,
+  orderId,
 }) => {
   const [isOpenDetailPengirimanDokumen, setIsOpenDetailPengirimanDokumen] =
     useState(false);
@@ -102,6 +103,7 @@ export const BottomsheetMenuList = ({
       <BottomsheetAlasanPembatalan
         open={isOpenBottomsheetAlasanPembatalan}
         onOpenChange={setIsOpenBottomsheetAlasanPembatalan}
+        orderId={orderId}
         onConfirm={() => {
           setIsOpenBottomsheetAlasanPembatalan(false);
         }}

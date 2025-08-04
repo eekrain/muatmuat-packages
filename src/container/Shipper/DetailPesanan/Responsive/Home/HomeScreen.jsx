@@ -157,6 +157,7 @@ const DetailPesananScreen = ({
         onOpenChange={setIsMenuOpen}
         dataStatusPesanan={dataStatusPesanan}
         documentShippingDetail={documentShippingDetail}
+        orderId={params.orderId}
       />
       <BottomSheetPeriksaPesananKamu
         open={isPeriksaPesananOpen}
