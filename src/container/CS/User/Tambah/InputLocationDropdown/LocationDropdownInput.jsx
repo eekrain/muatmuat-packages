@@ -84,30 +84,21 @@ export const LocationDropdownInput = ({
   showClearButton = false,
   value,
   onSelectLocation,
+  autoCompleteSearchPhrase,
+  setAutoCompleteSearchPhrase,
+  autoCompleteSearchResult,
+  isDropdownSearchOpen,
+  setIsDropdownSearchOpen,
+  handleSelectSearchResult,
+  handleGetCurrentLocation,
+  userSavedLocationResult,
+  handleSelectUserSavedLocation,
+  portalContainer,
+  onInputClick,
+  onResolvedLocation,
+  onInputChange,
 }) => {
   const [setIsModalSavedLocationManagementOpen] = useState(false);
-  const [errorMessagePostalCode, setErrorMessagePostalCode] = useState("");
-
-  const {
-    autoCompleteSearchPhrase,
-    autoCompleteSearchResult,
-    isDropdownSearchOpen,
-    setIsDropdownSearchOpen,
-    handleSelectSearchResult,
-    setAutoCompleteSearchPhrase,
-
-    handleGetCurrentLocation,
-
-    isModalPostalCodeOpen,
-    setIsModalPostalCodeOpen, // ✅ tambahkan
-    locationPostalCodeSearchPhrase,
-    setLocationPostalCodeSearchPhrase,
-    postalCodeAutoCompleteResult,
-    handleSelectPostalCode,
-
-    userSavedLocationResult,
-    handleSelectUserSavedLocation,
-  } = useLocationSearch({ onSelectLocation });
 
   useEffect(() => {
     if (value) {
@@ -128,7 +119,19 @@ export const LocationDropdownInput = ({
         isDropdownSearchOpen={isDropdownSearchOpen}
         setIsDropdownSearchOpen={setIsDropdownSearchOpen}
         locationAutoCompleteResult={autoCompleteSearchResult}
-        onSelectSearchResult={handleSelectSearchResult}
+        onInputClick={onInputClick} // <-- Teruskan prop
+        onInputChange={onInputChange} // <-- Teruskan prop
+        onSelectSearchResult={(location) => {
+          // Panggil handler dari props
+          handleSelectSearchResult(location, needValidateLocationChange).then(
+            (result) => {
+              // Panggil onSelectLocation untuk memberitahu form
+              if (result && onSelectLocation) {
+                onSelectLocation(result);
+              }
+            }
+          );
+        }}
         userSavedLocations={userSavedLocationResult}
         searchLocationAutoComplete={autoCompleteSearchPhrase}
         setSearchLocationAutoComplete={setAutoCompleteSearchPhrase}
@@ -145,72 +148,9 @@ export const LocationDropdownInput = ({
         placeholder={placeholder}
         needValidateLocationChange={needValidateLocationChange}
         showClearButton={showClearButton}
+        portalContainer={portalContainer}
+        onResolvedLocation={onResolvedLocation}
       />
-
-      <Modal
-        open={isModalPostalCodeOpen}
-        onOpenChange={setIsModalPostalCodeOpen}
-        closeOnOutsideClick={false}
-        withCloseButton={false}
-      >
-        <ModalContent>
-          <div className="relative w-[472px] space-y-6 p-6">
-            <div className="text-center text-sm font-bold">
-              Cari Kelurahan/Kecamatan/Kode Pos
-            </div>
-            <div className="min-h-[1px] w-full border border-solid border-stone-300 bg-stone-300" />
-
-            <SearchPostal
-              name="search"
-              placeholder="Cari Kelurahan/Kecamatan/Kode Pos"
-              searchValue={locationPostalCodeSearchPhrase}
-              setSearchValue={setLocationPostalCodeSearchPhrase}
-              icon={{ left: "/icons/search.svg" }}
-              options={postalCodeAutoCompleteResult}
-              getOptionLabel={(option) => option.Description}
-              onSelectValue={(val) =>
-                handleSelectPostalCode(val, needValidateLocationChange)
-              }
-              errorMessage={errorMessagePostalCode}
-            />
-          </div>
-
-          <div className="flex items-center justify-center gap-2 pb-4">
-            {/* Button Batalkan */}
-            <Button
-              variant="muattrans-primary-secondary"
-              onClick={() => {
-                setLocationPostalCodeSearchPhrase("");
-                setErrorMessagePostalCode("");
-                setIsModalPostalCodeOpen(false); // ✅ tutup modal
-              }}
-            >
-              Batal
-            </Button>
-
-            {/* Button Simpan */}
-            <Button
-              variant="muattrans-primary"
-              onClick={() => {
-                if (!locationPostalCodeSearchPhrase) {
-                  setErrorMessagePostalCode(
-                    "Kelurahan/Kecamatan/Kode Pos wajib diisi"
-                  );
-                } else {
-                  setErrorMessagePostalCode("");
-                  handleSelectPostalCode(
-                    locationPostalCodeSearchPhrase,
-                    needValidateLocationChange
-                  );
-                  setIsModalPostalCodeOpen(false); // ✅ tutup modal setelah simpan juga
-                }
-              }}
-            >
-              Simpan
-            </Button>
-          </div>
-        </ModalContent>
-      </Modal>
     </>
   );
 };
