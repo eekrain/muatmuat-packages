@@ -48,3 +48,5 @@ notes.md
 notes-*.md
 
 /src/app/api/*
+
+.crush

@@ -1279,12 +1279,6 @@ const ExampleLightbox = () => {
 // Demo Component
 const ExampleDropdownJasaPengiriman = () => {
   const [selectedExpedition, setSelectedExpedition] = useState(null);
-  alert("selectedExpedition", selectedExpedition);
-  alert(
-    "🚀 ~ ExampleDropdownJasaPengiriman ~ selectedExpedition:",
-    selectedExpedition
-  );
-
   const jasaPengirimanOptions = [
     {
       groupName: "Reguler",

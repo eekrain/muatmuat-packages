@@ -127,9 +127,9 @@ export const TranslationProvider = ({ children }) => {
    *
    */
   const t = useCallback(
-    (label, params) => {
+    (label, params, fallback) => {
       const template = translation[label];
-      if (!template) return label;
+      if (!template) return fallback || label;
 
       if (params) {
         return template.replace(/{(\w+)}/g, (_, key) => params[key]);
