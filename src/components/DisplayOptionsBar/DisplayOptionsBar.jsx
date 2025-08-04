@@ -1,3 +1,4 @@
+import { NotificationDot } from "@/components/NotificationDot/NotificationDot";
 import { cn } from "@/lib/utils";
 
 const DisplayOptionsBar = ({
@@ -36,7 +37,13 @@ const DisplayOptionsBar = ({
                 {" "}
                 ({status.count})
                 {status.hasNotification && (
-                  <span className="absolute -right-2.5 top-0 h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                  <NotificationDot
+                    position="absolute"
+                    positionClasses="-right-2.5 top-0"
+                    animated={false}
+                    size="sm"
+                    color="red"
+                  />
                 )}
               </span>
             )}

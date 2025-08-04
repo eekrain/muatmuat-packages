@@ -353,14 +353,18 @@ const InformasiMuatanScreen = ({
                       type="text"
                       placeholder="0"
                       className="flex-1"
+                      maxLength={6}
                       value={muatan.beratMuatan.berat}
                       onChange={(e) => {
                         const val = e.target.value.replace(/\D/g, "");
-                        updateBeratMuatan(
-                          index,
-                          "berat",
-                          val ? Number(val) : ""
-                        );
+                        // Limit to 6 digits
+                        if (val.length <= 6) {
+                          updateBeratMuatan(
+                            index,
+                            "berat",
+                            val ? Number(val) : ""
+                          );
+                        }
                       }}
                       errorMessage={
                         formErrors[`informasiMuatan.${index}.beratMuatan.berat`]

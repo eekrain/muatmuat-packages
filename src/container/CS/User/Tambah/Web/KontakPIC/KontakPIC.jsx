@@ -12,36 +12,28 @@ import { toast } from "@/lib/toast";
 
 const phoneRegex = /^08[0-9]{8,11}$/;
 
+// Schema PIC wajib (PIC 1)
+const requiredPICSchema = v.object({
+  name: v.pipe(v.string(), v.minLength(1, "Nama wajib diisi")),
+  position: v.pipe(v.string(), v.minLength(1, "Jabatan wajib diisi")),
+  phone: v.pipe(
+    v.string(),
+    v.minLength(1, "Nomor HP wajib diisi"),
+    v.regex(phoneRegex, "Format nomor HP tidak valid")
+  ),
+});
+
+// Schema PIC opsional (PIC 2 & 3)
+const optionalPICSchema = v.object({
+  name: v.optional(v.string()),
+  position: v.optional(v.string()),
+  phone: v.optional(
+    v.string([v.regex(phoneRegex, "Format nomor HP tidak valid")])
+  ),
+});
+
 const kontakPICSchema = v.object({
-  contacts: v.tuple([
-    v.object({
-      name: v.pipe(v.string(), v.minLength(1, "Nama wajib diisi")),
-      position: v.pipe(v.string(), v.minLength(1, "Jabatan wajib diisi")),
-      phone: v.pipe(
-        v.string(),
-        v.minLength(1, "Nomor HP wajib diisi"),
-        v.regex(phoneRegex, "Format nomor HP tidak valid")
-      ),
-    }),
-    v.optional(
-      v.object({
-        name: v.optional(v.string()),
-        position: v.optional(v.string()),
-        phone: v.optional(
-          v.string([v.regex(phoneRegex, "Format nomor HP tidak valid")])
-        ),
-      })
-    ),
-    v.optional(
-      v.object({
-        name: v.optional(v.string()),
-        position: v.optional(v.string()),
-        phone: v.optional(
-          v.string([v.regex(phoneRegex, "Format nomor HP tidak valid")])
-        ),
-      })
-    ),
-  ]),
+  contacts: v.tuple([requiredPICSchema, optionalPICSchema, optionalPICSchema]),
 });
 
 function KontakPIC() {
@@ -50,6 +42,8 @@ function KontakPIC() {
     handleSubmit,
     formState: { errors },
     watch,
+    setError,
+    trigger,
   } = useForm({
     resolver: valibotResolver(kontakPICSchema),
     defaultValues: {
@@ -63,23 +57,72 @@ function KontakPIC() {
 
   const watched = watch();
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
+    let hasError = false;
+    let toastShown = false;
+
+    // Cek PIC 1
+    const validPIC1 = await trigger([
+      "contacts.0.name",
+      "contacts.0.position",
+      "contacts.0.phone",
+    ]);
+    if (!validPIC1) {
+      if (!toastShown) {
+        toast.error("Isi semua inputan yang bertanda bintang (*)");
+        toastShown = true;
+      }
+      hasError = true;
+    }
+
+    const pic2 = data.contacts[1];
+    const pic3 = data.contacts[2];
+    const pic2Filled = Object.values(pic2).some((v) => v?.trim());
+    const pic3Filled = Object.values(pic3).some((v) => v?.trim());
+
+    // PIC 2: wajib jika ada isi di PIC 2 atau PIC 3
+    if (pic2Filled || pic3Filled) {
+      ["name", "position", "phone"].forEach((field) => {
+        if (!pic2[field]?.trim()) {
+          setError(`contacts.1.${field}`, {
+            type: "manual",
+            message:
+              field === "name"
+                ? "Nama wajib diisi"
+                : field === "position"
+                  ? "Jabatan wajib diisi"
+                  : "Nomor HP wajib diisi",
+          });
+          hasError = true;
+        }
+      });
+    }
+
+    // PIC 3: wajib jika ada isi di PIC 3
+    if (pic3Filled) {
+      ["name", "position", "phone"].forEach((field) => {
+        if (!pic3[field]?.trim()) {
+          setError(`contacts.2.${field}`, {
+            type: "manual",
+            message:
+              field === "name"
+                ? "Nama wajib diisi"
+                : field === "position"
+                  ? "Jabatan wajib diisi"
+                  : "Nomor HP wajib diisi",
+          });
+          hasError = true;
+        }
+      });
+    }
+
+    if (hasError) return;
+
     console.log("Form submitted:", data);
   };
 
-  const onInvalid = () => {
-    const pic1 = watched.contacts?.[0];
-
-    const isAllEmpty =
-      !pic1?.name?.trim() && !pic1?.position?.trim() && !pic1?.phone?.trim();
-
-    if (isAllEmpty) {
-      toast.error("Wajib diisi semua");
-    }
-  };
-
   return (
-    <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="w-full">
+    <form onSubmit={handleSubmit(onSubmit)} className="w-full">
       <Card className="rounded-xl border-none p-6">
         <div className="max-w-[75%]">
           <div>
