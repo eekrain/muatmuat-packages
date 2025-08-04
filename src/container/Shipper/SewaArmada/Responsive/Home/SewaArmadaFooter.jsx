@@ -25,8 +25,8 @@ export const SewaArmadaFooter = ({
   console.log("🚀 ~ formValues:", formValues);
   const footerRef = useRef(null);
 
-  const isShowCostDetail = true;
-  const isShowTotalCost = true;
+  const isShowCostDetail = false;
+  const isShowTotalCost = false;
 
   // Check if selected truck is non-recommended
   const isShowRecommendedTruckButton = useMemo(() => {

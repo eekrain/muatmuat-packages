@@ -12,7 +12,7 @@ import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
 
 import { BottomsheetAlasanPembatalan } from "./BottomsheetAlasanPembatalan";
-import { BottomsheetDocumentShipping } from "./BottomsheetDocumentShipping";
+import { BottomsheetDetailPengirimanDokumen } from "./BottomsheetDetailPengirimanDokumen";
 import { ModalBatalkanPesananResponsive } from "./ModalBatalkanPesananResponsive";
 
 export const BottomsheetMenuList = ({
@@ -20,7 +20,8 @@ export const BottomsheetMenuList = ({
   onOpenChange,
   dataStatusPesanan,
 }) => {
-  const [isOpenDocumentShipping, setIsOpenDocumentShipping] = useState(false);
+  const [isOpenDetailPengirimanDokumen, setIsOpenDetailPengirimanDokumen] =
+    useState(false);
   const [isOpenModalBatalkanPesanan, setIsOpenModalBatalkanPesanan] =
     useState(false);
   const [
@@ -49,7 +50,7 @@ export const BottomsheetMenuList = ({
               <Item
                 label={t("labelDocumentShippingDetail")}
                 t={t}
-                onClick={() => setIsOpenDocumentShipping(true)}
+                onClick={() => setIsOpenDetailPengirimanDokumen(true)}
               />
             )}
             <Item
@@ -84,10 +85,25 @@ export const BottomsheetMenuList = ({
         </BottomSheetContent>
       </BottomSheet>
 
-      <BottomsheetDocumentShipping
-        open={isOpenDocumentShipping}
-        onOpenChange={setIsOpenDocumentShipping}
+      <BottomsheetDetailPengirimanDokumen
+        open={isOpenDetailPengirimanDokumen}
+        onOpenChange={setIsOpenDetailPengirimanDokumen}
+        documentShippingDetail={{
+          recipientName: "Cakra",
+          recipientPhone: "081249088083",
+          fullAddress: "Jl. Sudirman No. 123, Jakarta Pusat",
+          detailAddress: "Gedung ABC Lantai 5",
+          district: "Tanah Abang",
+          city: "Jakarta Pusat",
+          province: "DKI Jakarta",
+          postalCode: "10270",
+          courier: "JNE",
+          courierPrice: 200000,
+          insurancePrice: 10000,
+          totalPrice: 210000,
+        }}
       />
+
       <ModalBatalkanPesananResponsive
         open={isOpenModalBatalkanPesanan}
         onOpenChange={setIsOpenModalBatalkanPesanan}

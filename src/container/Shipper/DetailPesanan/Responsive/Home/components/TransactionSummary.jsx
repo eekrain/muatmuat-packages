@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 import {
-  BottomSheet,
   BottomSheetClose,
   BottomSheetContent,
   BottomSheetHeader,
@@ -10,6 +9,8 @@ import {
 import CardPayment from "@/components/Card/CardPayment";
 import { useTranslation } from "@/hooks/use-translation";
 import { idrFormat } from "@/lib/utils/formatters";
+
+import { BottomsheetDetailPengirimanDokumen } from "./Popup/BottomsheetDetailPengirimanDokumen";
 
 export const TransactionSummary = ({ dataRingkasanPembayaran }) => {
   const isRingkasanTransaksi = true;
@@ -137,7 +138,7 @@ export const TransactionSummary = ({ dataRingkasanPembayaran }) => {
       </div>
 
       {/* Bottomsheet Detail Pengiriman Dokumen */}
-      <BottomSheet
+      <BottomsheetDetailPengirimanDokumen
         open={isDocumentShippingDetailOpen}
         onOpenChange={setDocumentShippingDetailOpen}
       >
@@ -237,7 +238,7 @@ export const TransactionSummary = ({ dataRingkasanPembayaran }) => {
             )}
           </div>
         </BottomSheetContent>
-      </BottomSheet>
+      </BottomsheetDetailPengirimanDokumen>
     </>
   );
 };

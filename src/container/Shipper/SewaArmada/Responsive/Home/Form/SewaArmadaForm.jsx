@@ -19,6 +19,7 @@ export const SewaArmadaForm = ({
   carriers,
   trucks,
   additionalServicesOptions,
+  handleCheckLoggedIn,
 }) => {
   const navigation = useResponsiveNavigation();
   const formValues = useSewaArmadaStore((state) => state.formValues);
@@ -109,7 +110,7 @@ export const SewaArmadaForm = ({
       {/* Waktu Muat Field */}
       <FormContainer>
         <FormLabel required>Waktu Muat</FormLabel>
-        <WaktuMuatBottomsheet />
+        <WaktuMuatBottomsheet handleCheckLoggedIn={handleCheckLoggedIn} />
       </FormContainer>
 
       {/* Lokasi Muat Field */}
@@ -124,10 +125,14 @@ export const SewaArmadaForm = ({
               (item) => item?.dataLokasi?.location || null
             ) || []
           }
-          onAddLocation={() => addLokasi("lokasiMuat", null)}
-          onEditLocation={(index) =>
-            handleEditLokasi({ formMode: "muat", index })
-          }
+          onAddLocation={() => {
+            if (!handleCheckLoggedIn()) return;
+            addLokasi("lokasiMuat", null);
+          }}
+          onEditLocation={(index) => {
+            if (!handleCheckLoggedIn()) return;
+            handleEditLokasi({ formMode: "muat", index });
+          }}
         >
           {(formValues.lokasiMuat || []).map((item, index) => (
             // <TimelineField.Item index={index} key={index}>
@@ -166,10 +171,14 @@ export const SewaArmadaForm = ({
               (item) => item?.dataLokasi?.location || null
             ) || []
           }
-          onAddLocation={() => addLokasi("lokasiBongkar", null)}
-          onEditLocation={(index) =>
-            handleEditLokasi({ formMode: "bongkar", index })
-          }
+          onAddLocation={() => {
+            if (!handleCheckLoggedIn()) return;
+            addLokasi("lokasiBongkar", null);
+          }}
+          onEditLocation={(index) => {
+            if (!handleCheckLoggedIn()) return;
+            handleEditLokasi({ formMode: "bongkar", index });
+          }}
         >
           {(formValues.lokasiBongkar || []).map((item, index) => (
             <TimelineField.Item
@@ -195,7 +204,10 @@ export const SewaArmadaForm = ({
           className={
             "flex h-8 w-full items-center justify-between gap-x-2 rounded-md border border-neutral-600 bg-neutral-50 px-3"
           }
-          onClick={handleEditInformasiMuatan}
+          onClick={() => {
+            if (!handleCheckLoggedIn()) return;
+            handleEditInformasiMuatan();
+          }}
         >
           <div className="flex items-center gap-x-2">
             <IconComponent src="/icons/muatan16.svg" />
@@ -230,7 +242,10 @@ export const SewaArmadaForm = ({
             formValues.additionalServices.length === 0 ? null : (
               <button
                 className="text-xs font-semibold leading-[1.1] text-primary-700"
-                onClick={handleEditLayananTambahan}
+                onClick={() => {
+                  if (!handleCheckLoggedIn()) return;
+                  handleEditLayananTambahan();
+                }}
               >
                 Ubah Layanan
               </button>
@@ -244,7 +259,10 @@ export const SewaArmadaForm = ({
             className={
               "flex h-8 items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-3"
             }
-            onClick={handleEditLayananTambahan}
+            onClick={() => {
+              if (!handleCheckLoggedIn()) return;
+              handleEditLayananTambahan();
+            }}
           >
             <div className="flex items-center gap-x-2">
               <IconComponent src="/icons/layanan-tambahan.svg" />

@@ -72,6 +72,7 @@ const Page = () => {
   const { data: countByStatusData } = useSWRHook("v1/orders/count-by-status");
 
   const settlementAlertInfo = settlementAlertInfoData?.Data || [];
+  console.log("🚀 ~ Page ~ settlementAlertInfo:", settlementAlertInfo);
   const orders = ordersData?.Data?.orders || [];
   const countByStatus = countByStatusData?.Data?.statusCounts || {};
 

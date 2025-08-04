@@ -49,12 +49,12 @@ export const HeaderResponsiveForm = ({
 
   return (
     <div className="flex w-full items-center justify-between">
-      <div className="grid grid-cols-[24px_1fr] items-center gap-x-3">
+      <div className="grid grid-cols-[24px_1fr] items-center gap-x-2">
         <HeaderButtonBack onClick={handleBackButton} variant={variant} />
 
         <h1
           className={cn(
-            "mt-1 text-base font-bold leading-[1] text-neutral-900",
+            "mt-0 text-base font-bold leading-[1] text-neutral-900",
             variant === "muatmuat" && "text-white",
             title?.className
           )}

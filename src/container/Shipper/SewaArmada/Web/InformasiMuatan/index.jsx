@@ -245,22 +245,24 @@ export const InformasiMuatanModal = ({
                           control={control}
                           name={`informasiMuatan.${index}.namaMuatan`}
                           render={({ field }) => (
-                            <DropdownSearch
-                              placeholder={"Pilih Muatan"}
-                              options={cargoNames || []}
-                              value={field.value}
-                              onChange={field.onChange}
-                              onAddNew={() => setOpenModalNamaMuatan(true)}
-                              addNewText="Tambah Nama Muatan"
-                              className="w-52"
-                              disabled={
-                                isLoading || !cargoTypeId || !cargoCategoryId
-                              }
-                              errorMessage={
-                                errors?.informasiMuatan?.[index]?.namaMuatan
-                                  ?.label.message
-                              }
-                            />
+                            <div>
+                              <DropdownSearch
+                                placeholder={"Pilih Muatan"}
+                                options={cargoNames || []}
+                                value={field.value}
+                                onChange={field.onChange}
+                                onAddNew={() => setOpenModalNamaMuatan(true)}
+                                addNewText="Tambah Nama Muatan"
+                                className="w-52"
+                                disabled={
+                                  isLoading || !cargoTypeId || !cargoCategoryId
+                                }
+                                errorMessage={
+                                  errors?.informasiMuatan?.[index]?.namaMuatan
+                                    ?.label.message
+                                }
+                              />
+                            </div>
                           )}
                         />
 

@@ -5,7 +5,6 @@ import { createContext, useContext, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { useStackManager } from "@/hooks/use-stack-manager";
 import { cn } from "@/lib/utils";
 
 const ModalContext = createContext(null);
@@ -44,6 +43,8 @@ export const Modal = ({
   );
 };
 
+export const ModalTitle = Dialog.Title;
+
 export const ModalTrigger = ({ className, children, asChild = true }) => {
   return (
     <Dialog.Trigger asChild={asChild} className={className}>
@@ -69,10 +70,6 @@ export const ModalContent = ({
   } = useModal();
   const dialogRef = useRef(null);
 
-  // 2. Use the stack manager hook
-  const stackRef = useRef(null);
-  useStackManager(stackRef, open);
-
   const iconClassnames = {
     muatmuat: "icon-fill-primary-700",
     muatparts: "icon-fill-muat-parts-non-800",
@@ -83,7 +80,6 @@ export const ModalContent = ({
   return (
     <Dialog.Portal>
       <Dialog.Overlay
-        ref={stackRef}
         data-stack-item="true"
         className={cn(
           "fixed inset-0 z-50 bg-black/25",
@@ -91,7 +87,19 @@ export const ModalContent = ({
           "data-[state=closed]:animate-out data-[state=closed]:fade-out-0",
           appearance.backgroudClassname
         )}
-      />
+      >
+        {type === "lightbox" && (
+          <Dialog.Close className="absolute left-4 top-[55px] z-[9999] block text-white md:hidden">
+            <IconComponent
+              className="text-white"
+              src="/icons/close20.svg"
+              width={24}
+              height={24}
+            />
+          </Dialog.Close>
+        )}
+      </Dialog.Overlay>
+
       <Dialog.Content
         ref={dialogRef}
         data-stack-content="true"

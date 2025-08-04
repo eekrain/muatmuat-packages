@@ -14,6 +14,7 @@ import { SewaArmadaFooter } from "@/container/Shipper/SewaArmada/Responsive/Home
 import { VoucherSelectionBottomsheet } from "@/container/Shipper/SewaArmada/Responsive/Home/Voucher/VoucherSelectionBottomsheet";
 import { useVoucher } from "@/container/Shipper/SewaArmada/Responsive/Home/Voucher/useVoucher";
 import WaitingSettlementModal from "@/container/Shipper/SewaArmada/Responsive/Home/WaitingSettemenetModal";
+import { useAuth } from "@/hooks/use-auth";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useSWRHook } from "@/hooks/use-swr";
 import DefaultResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/DefaultResponsiveLayout";
@@ -29,6 +30,7 @@ const SewaArmadaHomeScreen = ({
   additionalServicesOptions,
 }) => {
   const router = useRouter();
+  const { dataUser } = useAuth();
   const { setIsOpen } = useWaitingSettlementModalAction();
   // Banner data
   const parentRef = useRef(null);
@@ -105,6 +107,15 @@ const SewaArmadaHomeScreen = ({
       .filter(Boolean);
   }, [settlementAlertInfo]);
 
+  const [loginRequiredModalOpen, setLoginRequiredModalOpen] = useState(false);
+  const handleCheckLoggedIn = () => {
+    if (!dataUser?.name) {
+      setLoginRequiredModalOpen(true);
+      return false;
+    }
+    return true;
+  };
+
   return (
     <DefaultResponsiveLayout mode="default">
       <div ref={parentRef} className="w-full bg-neutral-100">
@@ -119,6 +130,7 @@ const SewaArmadaHomeScreen = ({
           carriers={carriers}
           trucks={trucks}
           additionalServicesOptions={additionalServicesOptions}
+          handleCheckLoggedIn={handleCheckLoggedIn}
         />
       </div>
 
@@ -173,7 +185,10 @@ const SewaArmadaHomeScreen = ({
 
       <ModalFirstTimer />
       <WaitingSettlementModal />
-      <LoginRequiredModal open={false} onOpenChange={() => {}} />
+      <LoginRequiredModal
+        open={loginRequiredModalOpen}
+        onOpenChange={setLoginRequiredModalOpen}
+      />
     </DefaultResponsiveLayout>
   );
 };

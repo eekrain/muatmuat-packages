@@ -107,15 +107,12 @@ const Item = ({ buttonRemove, index }) => {
         onClick={() => {
           if (!disabled && onEditLocation) onEditLocation(index);
         }}
+        className="pb-0 md:pb-0"
         appearance={{
-          contentClassname: "pb-0 md:pb-0",
           titleClassname: cn("text-xs", !item?.name && "text-neutral-600"),
         }}
+        withDivider={index !== values.length - 1}
       />
-
-      {index !== values.length - 1 && index < maxLocation ? (
-        <hr className="my-3 block border-[#C4C4C4]" />
-      ) : null}
     </>
   );
 };

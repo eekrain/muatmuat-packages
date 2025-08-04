@@ -45,5 +45,6 @@
   "DriverRatingModal.buttonSimpan": "Simpan",
   "DriverRatingModal.toastErrorRatingWajib": "Rating driver wajib diisi",
   "DriverRatingModal.toastSuccessBerhasilMenyimpan": "Berhasil menyimpan ulasan untuk driver",
-  "DriverRatingModal.titleUlasan": "Ulasan"
+  "DriverRatingModal.titleUlasan": "Ulasan",
+  "labelAlertInfoMenungguKonfirmasi": "Terdapat pesanan yang membutuhkan konfirmasi"
 }

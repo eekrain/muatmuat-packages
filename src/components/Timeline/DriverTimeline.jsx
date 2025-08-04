@@ -78,22 +78,34 @@ export const DriverTimeline = ({
     if (lightboxActiveIndex > images.packages.length - 1) {
       if (statusCode.includes("MUAT")) {
         return index > 1
-          ? t("labelPODMuatMulti", { index })
-          : t("labelPODMuat");
+          ? t("labelPODMuatMulti", { index }, "Bukti POD Muat di Lokasi 1")
+          : t("labelPODMuat", {}, "Bukti POD Muat");
       } else {
         return index > 1
-          ? t("labelPODBongkarMulti", { index })
-          : t("labelPODBongkar");
+          ? t(
+              "labelPODBongkarMulti",
+              { index },
+              "Bukti POD Bongkar di Lokasi 1"
+            )
+          : t("labelPODBongkar", {}, "Bukti POD Bongkar");
       }
     } else {
       if (statusCode.includes("MUAT")) {
         return index > 1
-          ? t("labelBuktiMuatBarangMulti", { index })
-          : t("labelBuktiMuatBarang");
+          ? t(
+              "labelBuktiMuatBarangMulti",
+              { index },
+              "Bukti Bongkar Barang di Lokasi 1"
+            )
+          : t("labelBuktiMuatBarang", {}, "Bukti Muat Barang");
       } else {
         return index > 1
-          ? t("labelBuktiBongkarBarangMulti", { index })
-          : t("labelBuktiBongkarBarang");
+          ? t(
+              "labelBuktiBongkarBarangMulti",
+              { index },
+              "Bukti Bongkar Barang di Lokasi 1"
+            )
+          : t("labelBuktiBongkarBarang", {}, "Bukti Bongkar Barang");
       }
     }
   };

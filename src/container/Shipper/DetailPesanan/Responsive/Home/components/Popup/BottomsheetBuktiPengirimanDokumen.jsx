@@ -6,6 +6,7 @@ import {
   BottomSheetContent,
   BottomSheetHeader,
   BottomSheetTitle,
+  BottomSheetTrigger,
 } from "@/components/Bottomsheet/BottomSheet";
 import {
   LightboxPreview,
@@ -13,8 +14,9 @@ import {
 } from "@/components/Lightbox/Lightbox";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
+import { formatDate } from "@/lib/utils/dateFormat";
 
-export const BottomsheetDocumentShipping = ({ open, onOpenChange }) => {
+export const BottomsheetBuktiPengirimanDokumen = ({ children }) => {
   const { t } = useTranslation();
 
   const dummyDocumentShippingEvidencePhotos = [
@@ -26,15 +28,15 @@ export const BottomsheetDocumentShipping = ({ open, onOpenChange }) => {
 
   const documentShippingDetail = [
     {
-      title: t("labelDate"),
+      title: t("labelDate", {}, "Tanggal"),
       content: (
         <span className="text-xs font-medium leading-[1.1] text-neutral-900">
-          04 Okt 2024 18:00 WIB
+          {formatDate(new Date().toISOString(), true)}
         </span>
       ),
     },
     {
-      title: t("labelShippingEvidencePhoto"),
+      title: t("labelShippingEvidencePhoto", {}, "Foto Bukti Pengiriman"),
       content: (
         <div className="flex items-center gap-x-3">
           {dummyDocumentShippingEvidencePhotos.map((photo, index) => (
@@ -48,7 +50,7 @@ export const BottomsheetDocumentShipping = ({ open, onOpenChange }) => {
       ),
     },
     {
-      title: t("labelNote"),
+      title: t("labelNote", {}, "Catatan"),
       content: (
         <span className="text-xs font-medium leading-[1.1] text-neutral-900">
           Kami informasikan bahwa dokumen telah kami kirim dan saat ini sudah
@@ -62,15 +64,16 @@ export const BottomsheetDocumentShipping = ({ open, onOpenChange }) => {
   ];
 
   return (
-    <BottomSheet open={open} onOpenChange={onOpenChange}>
+    <BottomSheet>
+      <BottomSheetTrigger asChild>{children}</BottomSheetTrigger>
       <BottomSheetContent>
         <BottomSheetHeader>
           <BottomSheetClose />
           <BottomSheetTitle>
-            {t("titleDocumentShippingEvidence")}
+            {t("titleDocumentShippingEvidence", {}, "Bukti Pengiriman Dokumen")}
           </BottomSheetTitle>
         </BottomSheetHeader>
-        <div className="flex flex-col gap-y-4 px-4 py-6">
+        <div className="flex flex-col gap-y-4 px-4 pb-6">
           {documentShippingDetail.map((item, key) => (
             <div
               className={cn(
