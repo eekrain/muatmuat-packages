@@ -24,6 +24,7 @@ export const HeaderResponsiveSearchBar = ({
   placeholder = "Search...",
   withMenu = null,
   onEnterPress,
+  shouldResetSearchValue = true,
 }) => {
   const navigation = useResponsiveNavigation();
   const handleBackButton = () => {
@@ -35,9 +36,11 @@ export const HeaderResponsiveSearchBar = ({
 
   // Reset search value when component mounts
   useEffect(() => {
-    setSearchValue("");
+    if (shouldResetSearchValue) {
+      setSearchValue("");
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [shouldResetSearchValue]);
 
   return (
     <div className="flex w-full items-center justify-between gap-x-4">

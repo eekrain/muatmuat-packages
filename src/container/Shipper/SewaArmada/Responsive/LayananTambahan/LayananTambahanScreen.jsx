@@ -6,7 +6,9 @@ import { FormContainer, FormLabel } from "@/components/Form/Form";
 import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useSWRMutateHook } from "@/hooks/use-swr";
 import { useTranslation } from "@/hooks/use-translation";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
@@ -14,59 +16,13 @@ import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useLayananTambahanStore } from "@/store/Shipper/forms/layananTambahanStore";
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
+import { useSewaArmadaActions } from "@/store/Shipper/forms/sewaArmadaStore";
 
 const LayananTambahanScreen = ({ additionalServicesOptions }) => {
   const { t } = useTranslation();
   const navigation = useResponsiveNavigation();
-  const shippingData = [
-    {
-      category: "Pengiriman Instant",
-      options: [
-        {
-          courier: "Gojek",
-          price: "Rp30.000",
-          estimation:
-            "Estimasi Tiba : Hari ini (3 jam setelah dikirim Penjual)",
-        },
-        {
-          courier: "Grab Express",
-          price: "Rp25.000",
-          estimation:
-            "Estimasi Tiba : Hari ini (3 jam setelah dikirim Penjual)",
-        },
-      ],
-    },
-    {
-      category: "Regular",
-      options: [
-        {
-          courier: "JNT",
-          price: "Rp30.000",
-          estimation: "Estimasi Tiba : 20 - 25 Okt",
-        },
-        {
-          courier: "JNE",
-          price: "Rp25.000",
-          estimation: "Estimasi Tiba : 20 - 25 Okt",
-        },
-      ],
-    },
-    {
-      category: "Kargo",
-      options: [
-        {
-          courier: "JNT Cargo",
-          price: "Rp30.000",
-          estimation: "Estimasi Tiba : 20 - 25 Okt",
-        },
-        {
-          courier: "JNE Trucking",
-          price: "Rp25.000",
-          estimation: "Estimasi Tiba : 20 - 25 Okt",
-        },
-      ],
-    },
-  ];
+
+  const { setField: sewaArmadaSetField } = useSewaArmadaActions();
 
   const {
     formValues: tambahanFormValues,
@@ -82,6 +38,29 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
     validateLayananTambahan,
     setLocationPartial,
   } = useLocationFormStore();
+
+  const { data: shippingOptionsData, trigger: fetchShippingOptions } =
+    useSWRMutateHook("v1/orders/shipping-options");
+
+  const shippingOptions = shippingOptionsData?.Data.shippingOptions || [];
+
+  const handleFetchShippingOptions = async ({ lat, long }) =>
+    await fetchShippingOptions({ lat, long });
+
+  useShallowCompareEffect(() => {
+    if (locationFormValues.dataLokasi?.coordinates) {
+      handleFetchShippingOptions({
+        lat: locationFormValues.dataLokasi.coordinates.latitude,
+        long: locationFormValues.dataLokasi.coordinates.longitude,
+      });
+    }
+  }, [locationFormValues.dataLokasi?.coordinates]);
+
+  useShallowCompareEffect(() => {
+    if (shippingOptions.length > 0) {
+      sewaArmadaSetField("tempShippingOptions", shippingOptions);
+    }
+  }, [shippingOptions]);
 
   const handleSaveLayananTambahan = () => {
     const isFormValid = validateLayananTambahan();
@@ -483,7 +462,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                   className={`flex w-full items-center justify-between ${locationFormValues.opsiPegiriman ? "border-b border-b-neutral-400 pb-3" : ""}`}
                   onClick={() => {
                     if (!isKirimBuktiFisikDisabled || isLocationDisabled) {
-                      navigation.push("/OpsiPengiriman", { shippingData });
+                      navigation.push("/OpsiPengiriman", { shippingOptions });
                     }
                   }}
                   disabled={isKirimBuktiFisikDisabled || isLocationDisabled}

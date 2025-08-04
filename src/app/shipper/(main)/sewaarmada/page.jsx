@@ -226,6 +226,7 @@ const Page = () => {
         cargoTypes={cargoTypes}
         cargoCategories={cargoCategories}
         additionalServicesOptions={additionalServicesOptions}
+        shippingOption={shippingOption}
         paymentMethods={paymentMethods}
         carriers={carriers}
         trucks={trucks || tempTrucks}

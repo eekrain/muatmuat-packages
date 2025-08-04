@@ -17,7 +17,7 @@ import {
   OrderStatusTitle,
 } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
-import { formatDate } from "@/lib/utils/dateFormat";
+import { formatDate, formatShortDate } from "@/lib/utils/dateFormat";
 
 const OrderItem = ({
   orderId,
@@ -27,6 +27,9 @@ const OrderItem = ({
   vehicle,
   locations,
   statusInfo = [],
+  paymentDeadline,
+  requiresConfirmation,
+  isRefundProcessing,
 }) => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -187,24 +190,23 @@ const OrderItem = ({
               >
                 <BadgeStatusPesanan
                   variant={
-                    latestStatus?.statusLabel ===
+                    latestStatus?.statusCode ===
                       OrderStatusEnum.WAITING_PAYMENT_1 ||
-                    latestStatus?.statusLabel ===
+                    latestStatus?.statusCode ===
                       OrderStatusEnum.WAITING_PAYMENT_2 ||
-                    latestStatus?.statusLabel ===
+                    latestStatus?.statusCode ===
                       OrderStatusEnum.WAITING_REPAYMENT_1 ||
-                    latestStatus?.statusLabel ===
+                    latestStatus?.statusCode ===
                       OrderStatusEnum.WAITING_REPAYMENT_2
                       ? "warning"
-                      : latestStatus?.statusLabel ===
+                      : latestStatus?.statusCode ===
                             OrderStatusEnum.CANCELED_BY_SHIPPER ||
-                          latestStatus?.statusLabel ===
+                          latestStatus?.statusCode ===
                             OrderStatusEnum.CANCELED_BY_SYSTEM ||
-                          latestStatus?.statusLabel ===
+                          latestStatus?.statusCode ===
                             OrderStatusEnum.CANCELED_BY_TRANSPORTER
                         ? "error"
-                        : latestStatus?.statusLabel ===
-                            OrderStatusEnum.COMPLETED
+                        : latestStatus?.statusCode === OrderStatusEnum.COMPLETED
                           ? "success"
                           : "primary"
                   }
@@ -216,33 +218,73 @@ const OrderItem = ({
             ) : (
               <BadgeStatusPesanan
                 variant={
-                  latestStatus?.statusLabel ===
+                  latestStatus?.statusCode ===
                     OrderStatusEnum.WAITING_PAYMENT_1 ||
-                  latestStatus?.statusLabel ===
+                  latestStatus?.statusCode ===
                     OrderStatusEnum.WAITING_PAYMENT_2 ||
-                  latestStatus?.statusLabel ===
+                  latestStatus?.statusCode ===
                     OrderStatusEnum.WAITING_REPAYMENT_1 ||
-                  latestStatus?.statusLabel ===
+                  latestStatus?.statusCode ===
                     OrderStatusEnum.WAITING_REPAYMENT_2
                     ? "warning"
-                    : latestStatus?.statusLabel ===
+                    : latestStatus?.statusCode ===
                           OrderStatusEnum.CANCELED_BY_SHIPPER ||
-                        latestStatus?.statusLabel ===
+                        latestStatus?.statusCode ===
                           OrderStatusEnum.CANCELED_BY_SYSTEM ||
-                        latestStatus?.statusLabel ===
+                        latestStatus?.statusCode ===
                           OrderStatusEnum.CANCELED_BY_TRANSPORTER
                       ? "error"
-                      : latestStatus?.statusLabel === OrderStatusEnum.COMPLETED
+                      : latestStatus?.statusCode === OrderStatusEnum.COMPLETED
                         ? "success"
                         : "primary"
                 }
                 className="w-full"
               >
-                {latestStatus?.statusLabel}
+                {/* {latestStatus?.statusLabel} */}
+                Proses Pengiriman Dokumen
               </BadgeStatusPesanan>
             )}
           </div>
         </div>
+        {paymentDeadline || requiresConfirmation || isRefundProcessing ? (
+          <div className="flex h-[52px] items-center rounded-md bg-warning-100 px-3">
+            {paymentDeadline ? (
+              latestStatus?.statusCode === OrderStatusEnum.WAITING_PAYMENT_1 ||
+              latestStatus?.statusCode === OrderStatusEnum.WAITING_PAYMENT_2 ||
+              latestStatus?.statusCode === OrderStatusEnum.WAITING_PAYMENT_3 ||
+              latestStatus?.statusCode === OrderStatusEnum.WAITING_PAYMENT_4 ? (
+                <div className="flex flex-col gap-y-3 text-xs leading-[1.1]">
+                  <span className="font-medium text-neutral-900">
+                    {t("messageLakukanPembayaranSebelum")}
+                  </span>
+                  <span className="font-semibold text-warning-900">
+                    {formatDate(paymentDeadline)}
+                  </span>
+                </div>
+              ) : latestStatus?.statusCode ===
+                  OrderStatusEnum.WAITING_REPAYMENT_1 ||
+                latestStatus?.statusCode ===
+                  OrderStatusEnum.WAITING_REPAYMENT_2 ? (
+                <div className="flex flex-col gap-y-3 text-xs leading-[1.1]">
+                  <span className="font-medium text-neutral-900">
+                    {t("messageLakukanPelunasanSebelum")}
+                  </span>
+                  <span className="font-semibold text-warning-900">
+                    {formatShortDate(paymentDeadline)}
+                  </span>
+                </div>
+              ) : null
+            ) : requiresConfirmation ? (
+              <span className="text-xs font-semibold leading-[1.1] text-neutral-900">
+                {t("messagePesananMembutuhkanKonfirmasi")}
+              </span>
+            ) : isRefundProcessing ? (
+              <span className="text-xs font-semibold leading-[1.1] text-neutral-900">
+                {t("messagePengembalianDanaDalamProses")}
+              </span>
+            ) : null}
+          </div>
+        ) : null}
         <div className="flex gap-x-4">
           {armadaData.map((item, key) => (
             <div
@@ -256,7 +298,7 @@ const OrderItem = ({
         </div>
         <div className="flex items-center gap-x-3">
           <Button
-            className="w-full text-xs leading-[1.1]"
+            className="h-7 w-full text-xs leading-[1.1]"
             variant="muatparts-primary-secondary"
             onClick={() =>
               router.push(`/daftarpesanan/detailpesanan/${orderId}`)
@@ -268,14 +310,14 @@ const OrderItem = ({
             <Button
               onClick={() => setIsDocumentReceivedModalOpen(true)}
               variant="muatparts-primary"
-              className="w-full text-xs leading-[1.1]"
+              className="h-7 w-full text-xs leading-[1.1]"
             >
               {t("buttonSelesaikanPesanan")}
             </Button>
           ) : latestStatus?.statusCode === OrderStatusEnum.COMPLETED ? (
             <Button
               variant="muatparts-primary"
-              className="w-full text-xs leading-[1.1]"
+              className="h-7 w-full text-xs leading-[1.1]"
             >
               {t("buttonBeriUlasan")}
             </Button>
@@ -290,7 +332,7 @@ const OrderItem = ({
             ) ? (
             <Button
               variant="muatparts-primary"
-              className="w-full text-xs leading-[1.1]"
+              className="h-7 w-full text-xs leading-[1.1]"
               onClick={() => {
                 setSelectedOrderId(orderId);
                 setIsReorderFleetModalOpen(true);

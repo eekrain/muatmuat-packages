@@ -112,11 +112,10 @@ const InformasiMuatanScreen = ({
         setSewaArmadaField("truckTypeId", null);
       }
     }
-
     Object.entries(formValues).forEach(([key, value]) => {
       setSewaArmadaField(key, value);
     });
-    navigation.pop();
+    navigation.popTo("/");
     // Handle form submission, save to sewaArmadaStore here
   };
 
