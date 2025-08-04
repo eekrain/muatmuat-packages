@@ -187,11 +187,11 @@ export const StepperItemResponsive = ({ step, index }) => {
       >
         <IconComponent
           src={step.icon}
-          width={16}
-          height={16}
+          width={20}
+          height={20}
           className={cn(
             "text-neutral-600",
-            status !== "inactive" && "text-muat-trans-primary-900",
+            status !== "inactive" && "text-muat-trans-secondary-900",
             status === "canceled" && "text-neutral-50"
           )}
         />

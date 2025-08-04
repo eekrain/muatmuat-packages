@@ -28,6 +28,7 @@ const CariSemuaDriverScreen = ({ dataStatusPesanan }) => {
       title={{
         label: "Detail Status Driver",
       }}
+      placeholder="Cari Nama Driver/Plat Nomor"
       onClickBackButton={() => navigation.pop()}
     >
       <div className="mb-16 flex h-full flex-col gap-2">
@@ -51,7 +52,7 @@ const CariSemuaDriverScreen = ({ dataStatusPesanan }) => {
           filteredDriver?.map((driver, index) => (
             <div
               key={index}
-              className="relative w-full flex-shrink-0 bg-neutral-50 p-5"
+              className="relative w-full flex-shrink-0 bg-neutral-50 px-4 py-5"
             >
               <div className="flex w-full flex-col items-start gap-4">
                 <DriverInfo.Header
@@ -60,17 +61,6 @@ const CariSemuaDriverScreen = ({ dataStatusPesanan }) => {
                   withMenu={false}
                 />
                 <DriverInfo.Avatar driver={driver} />
-                <DriverInfo.Actions
-                  onDriverContactClicked={() =>
-                    alert(`Contacting ${driver.name}`)
-                  }
-                  onLacakArmadaClicked={() =>
-                    navigation.push("/LacakArmada", {
-                      orderId: params.orderId,
-                      driverId: driver.driverId,
-                    })
-                  }
-                />
               </div>
             </div>
           ))

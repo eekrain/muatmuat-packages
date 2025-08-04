@@ -58,7 +58,7 @@ const DetailPesananScreen = ({
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isOpenInfo, setIsOpenInfo] = useState(false);
-  const [isPeriksaPesananOpen, setIsPeriksaPesananOpen] = useState(true);
+  const [isPeriksaPesananOpen, setIsPeriksaPesananOpen] = useState(false);
 
   const orderAlerts = useMemo(() => {
     return [

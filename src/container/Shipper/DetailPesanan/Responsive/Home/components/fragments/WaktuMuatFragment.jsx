@@ -6,9 +6,9 @@ export const WaktuMuatFragment = ({ dataRingkasanPesanan, className }) => {
     <div className={cn("mt-6 flex flex-col gap-3", className)}>
       <h3 className="text-sm font-semibold text-neutral-900">Waktu Muat</h3>
       <p className="text-xs font-semibold text-neutral-900">
-        {formatDate(dataRingkasanPesanan?.loadTimeStart)}
+        {formatDate(dataRingkasanPesanan?.loadTimeStart, true)}
         {dataRingkasanPesanan?.loadTimeEnd
-          ? ` s/d ${formatDate(dataRingkasanPesanan?.loadTimeEnd)}`
+          ? ` s/d ${formatDate(dataRingkasanPesanan?.loadTimeEnd, true)}`
           : ""}
       </p>
     </div>

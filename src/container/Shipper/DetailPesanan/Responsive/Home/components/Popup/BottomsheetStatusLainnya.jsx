@@ -39,7 +39,7 @@ export const BottomsheetStatusLainnya = ({ dataStatusPesanan }) => {
           <BottomSheetTitle>Status Lainnya</BottomSheetTitle>
         </BottomSheetHeader>
 
-        <div className="flex flex-col gap-4 px-4 py-6">
+        <div className="flex flex-col gap-4 px-4 pb-6">
           {dataStatusPesanan?.otherStatus?.map((status, index) => {
             const statusMeta = getStatusPesananMetadata({
               orderStatus: status.orderStatus,

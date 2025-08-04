@@ -147,7 +147,7 @@ export const NewTimelineItem = ({
             onClick={onClick}
             className={cn(
               "line-clamp-2 text-sm font-semibold text-neutral-900 md:mt-0.5",
-              buttonDetail && "line-clamp-1 break-all md:mt-0",
+              buttonDetail && "mt-[1px] line-clamp-1 break-all md:mt-0",
               onClick && "cursor-pointer",
               appearance.titleClassname
             )}

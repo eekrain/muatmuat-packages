@@ -30,18 +30,14 @@ const DetailStatusDriverScreen = ({ dataStatusPesanan }) => {
       onClickBackButton={() => navigation.pop()}
     >
       <div className="mb-16 w-full space-y-2 bg-neutral-200">
-        <DriverInfoSlider
-          driverStatus={dataStatusPesanan?.driverStatus}
-          orderId={orderId}
-          defaultIndex={defaultIndex}
-        />
-        {/* {defaultIndex !== -1 && dataStatusPesanan?.driverStatus.length > 1 && (
+        {defaultIndex !== -1 && dataStatusPesanan?.driverStatus.length > 1 && (
           <DriverInfoSlider
             driverStatus={dataStatusPesanan?.driverStatus}
             orderId={orderId}
             defaultIndex={defaultIndex}
+            withActions={false}
           />
-        )} */}
+        )}
         <div className="bg-white px-4 py-5">
           <DriverTimeline
             dataDriverStatus={driverStatusTimeline}

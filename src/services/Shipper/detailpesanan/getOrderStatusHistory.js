@@ -2,6 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { DriverStatusEnum } from "@/lib/constants/detailpesanan/driver-status.enum";
 
 const useMockData = false; // toggle mock data
 
@@ -57,28 +58,28 @@ const apiResultOrderStatusHistory = {
     },
     Data: {
       driverStatus: [
-        // {
-        //   driverId: "550e8400-e29b-41d4-a716-446655440021",
-        //   name: "Hendra",
-        //   driverImage: "https://picsum.photos/50",
-        //   licensePlate: "B 1234 CD",
-        //   orderStatus: OrderStatusEnum.UNLOADING,
-        //   orderStatusTitle: "Sedang Muat",
-        //   driverStatus: DriverStatusEnum.UNLOADING.ANTRI.code,
-        //   driverStatusTitle: "Menuju ke Lokasi Muat",
-        //   stepStatus,
-        // },
-        // {
-        //   driverId: "550e8400-e29b-41d4-a716-446655440022",
-        //   name: "Ardian Eka",
-        //   driverImage: "https://picsum.photos/50",
-        //   licensePlate: "B 1234 CD",
-        //   orderStatus: OrderStatusEnum.UNLOADING,
-        //   orderStatusTitle: "Proses Muat",
-        //   driverStatus: DriverStatusEnum.UNLOADING.ANTRI.code,
-        //   driverStatusTitle: "Menuju ke Lokasi Muat",
-        //   stepStatus,
-        // },
+        {
+          driverId: "550e8400-e29b-41d4-a716-446655440021",
+          name: "Hendra",
+          driverImage: "https://picsum.photos/50",
+          licensePlate: "B 1234 CD",
+          orderStatus: OrderStatusEnum.UNLOADING,
+          orderStatusTitle: "Sedang Muat",
+          driverStatus: DriverStatusEnum.UNLOADING.ANTRI.code,
+          driverStatusTitle: "Menuju ke Lokasi Muat",
+          stepStatus,
+        },
+        {
+          driverId: "550e8400-e29b-41d4-a716-446655440022",
+          name: "Ardian Eka",
+          driverImage: "https://picsum.photos/50",
+          licensePlate: "B 1234 CD",
+          orderStatus: OrderStatusEnum.UNLOADING,
+          orderStatusTitle: "Proses Muat",
+          driverStatus: DriverStatusEnum.UNLOADING.ANTRI.code,
+          driverStatusTitle: "Menuju ke Lokasi Muat",
+          stepStatus,
+        },
         // {
         //   driverId: "550e8400-e29b-41d4-a716-446655440023",
         //   name: "Cakra",

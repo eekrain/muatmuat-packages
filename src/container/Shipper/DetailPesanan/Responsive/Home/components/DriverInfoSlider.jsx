@@ -80,10 +80,7 @@ const Header = ({
       {withMenu && (
         <BottomSheet>
           <BottomSheetTrigger asChild>
-            <button
-              aria-label="More options"
-              className="absolute right-4 top-5 z-10 bg-white p-1"
-            >
+            <button aria-label="More options">
               <EllipsisVertical className="h-6 w-6 rounded-full text-black" />
             </button>
           </BottomSheetTrigger>
@@ -141,8 +138,8 @@ const Actions = ({ driver, onDriverContactClicked, onLacakArmadaClicked }) => {
   ];
 
   const showDetailStatusButton =
-    driver.orderStatus?.startsWith("CANCELED") ||
-    LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER.includes(driver.orderStatus);
+    driver?.orderStatus?.startsWith("CANCELED") ||
+    LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER.includes(driver?.orderStatus);
 
   return (
     <div className="flex w-full gap-3">
@@ -208,54 +205,51 @@ export default function DriverInfoSlider({
   driverStatus = [],
   orderId,
   defaultIndex = 0,
+  withActions = true,
 }) {
-  const navigation = useResponsiveNavigation();
   const items = driverStatus;
   const TRANSITION_DURATION_MS = 300;
 
-  // --- Infinite Slider State ---
+  // --- ALL HOOKS ARE CALLED AT THE TOP LEVEL ---
+  const navigation = useResponsiveNavigation();
   const [currentIndex, setCurrentIndex] = useState(
     items.length > 1 ? defaultIndex + 1 : defaultIndex
   );
   const [isTransitioning, setIsTransitioning] = useState(true);
   const prevItemsLength = useRef(items.length);
 
-  // Clone first and last items for the infinite loop effect
   const clonedItems = useMemo(() => {
     if (items.length <= 1) return items;
     return [items[items.length - 1], ...items, items[0]];
   }, [items]);
 
-  // --- Slide Handlers ---
-  const slideTo = (index, transition = true) => {
+  const slideTo = useCallback((index, transition = true) => {
     setIsTransitioning(transition);
     setCurrentIndex(index);
-  };
+  }, []);
 
-  const nextSlide = useCallback(() => {
-    slideTo(currentIndex + 1);
-  }, [currentIndex]);
+  const nextSlide = useCallback(
+    () => slideTo(currentIndex + 1),
+    [currentIndex, slideTo]
+  );
 
-  const prevSlide = useCallback(() => {
-    slideTo(currentIndex - 1);
-  }, [currentIndex]);
+  const prevSlide = useCallback(
+    () => slideTo(currentIndex - 1),
+    [currentIndex, slideTo]
+  );
 
   const { dragOffset, dragHandlers } = useDrag({
     onSwipeLeft: nextSlide,
     onSwipeRight: prevSlide,
   });
 
-  // --- Effects for managing transitions and async data ---
-
-  // This effect corrects the starting index if data loads asynchronously
   useEffect(() => {
-    if (prevItemsLength.current === 0 && items.length > 0) {
+    if (prevItemsLength.current === 0 && items.length > 1) {
       slideTo(defaultIndex + 1, false);
     }
     prevItemsLength.current = items.length;
-  }, [items.length, defaultIndex]);
+  }, [items.length, defaultIndex, slideTo]);
 
-  // This effect re-enables transitions after a "jump"
   useEffect(() => {
     if (!isTransitioning) {
       const timer = setTimeout(() => setIsTransitioning(true), 50);
@@ -264,19 +258,50 @@ export default function DriverInfoSlider({
   }, [isTransitioning]);
 
   const handleTransitionEnd = () => {
-    if (currentIndex === 0) {
-      slideTo(items.length, false);
-    } else if (currentIndex === clonedItems.length - 1) {
-      slideTo(1, false);
-    }
+    if (currentIndex === 0) slideTo(items.length, false);
+    else if (currentIndex === clonedItems.length - 1) slideTo(1, false);
   };
 
+  // --- CONDITIONAL RETURNS HAPPEN AFTER HOOKS ---
   if (!items || items.length === 0) {
     return null;
   }
 
-  const activeIndicatorIndex =
-    items.length > 1 ? (currentIndex - 1 + items.length) % items.length : 0;
+  if (items.length === 1) {
+    const driver = items[0];
+    return (
+      <Root>
+        <div className="p-5">
+          <div className="flex w-full flex-col items-start gap-4">
+            <Header
+              orderStatus={driver.orderStatus}
+              driverStatus={driver.driverStatus}
+              mode="driver-status"
+              withMenu={false}
+            />
+            <Avatar driver={driver} />
+            {withActions && (
+              <Actions
+                driver={driver}
+                onDriverContactClicked={() =>
+                  alert(`Contacting ${driver.name}`)
+                }
+                onLacakArmadaClicked={() =>
+                  navigation.push("/LacakArmada", {
+                    orderId,
+                    driverId: driver.driverId,
+                  })
+                }
+              />
+            )}
+          </div>
+        </div>
+      </Root>
+    );
+  }
+
+  // --- RENDER LOGIC FOR MULTIPLE ITEMS ---
+  const activeIndicatorIndex = (currentIndex - 1 + items.length) % items.length;
 
   return (
     <Root>
@@ -295,27 +320,30 @@ export default function DriverInfoSlider({
           {clonedItems.map((driver, index) => (
             <div
               key={`${driver?.driverId}-${index}`}
-              className="w-full flex-shrink-0 p-5"
+              className={cn("w-full flex-shrink-0 p-5", !withActions && "pb-0")}
             >
               <div className="flex w-full flex-col items-start gap-4">
                 <Header
                   orderStatus={driver.orderStatus}
                   driverStatus={driver.driverStatus}
                   mode="driver-status"
+                  withMenu
                 />
                 <Avatar driver={driver} />
-                <Actions
-                  driver={driver}
-                  onDriverContactClicked={() =>
-                    alert(`Contacting ${driver.name}`)
-                  }
-                  onLacakArmadaClicked={() =>
-                    navigation.push("/LacakArmada", {
-                      orderId,
-                      driverId: driver.driverId,
-                    })
-                  }
-                />
+                {withActions && (
+                  <Actions
+                    driver={driver}
+                    onDriverContactClicked={() =>
+                      alert(`Contacting ${driver.name}`)
+                    }
+                    onLacakArmadaClicked={() =>
+                      navigation.push("/LacakArmada", {
+                        orderId,
+                        driverId: driver.driverId,
+                      })
+                    }
+                  />
+                )}
               </div>
             </div>
           ))}

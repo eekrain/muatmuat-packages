@@ -26,10 +26,10 @@ const apiResultStatusLegend = {
           statusCode: OrderStatusEnum.UNLOADING,
           statusName: "Proses Bongkar",
         },
-        // {
-        //   statusCode: OrderStatusEnum.FLEET_CHANGE,
-        //   statusName: "Proses Pergantian Armada",
-        // },
+        {
+          statusCode: OrderStatusEnum.FLEET_CHANGE,
+          statusName: "Proses Pergantian Armada",
+        },
         {
           statusCode: OrderStatusEnum.WAITING_REPAYMENT_2,
           statusName: "Proses Pergantian Armada",
