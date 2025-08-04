@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 
 import {
   BottomSheet,
+  BottomSheetClose,
   BottomSheetContent,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+  BottomSheetTitle,
+} from "@/components/Bottomsheet/BottomSheet";
 import Button from "@/components/Button/Button";
 import { ExpandableTextArea } from "@/components/Form/ExpandableTextArea";
 import RadioButton from "@/components/Radio/RadioButton";
@@ -13,16 +15,6 @@ import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useGetBankAccounts } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getBankAccounts";
 import { useGetCancellationReasons } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getCancellationReasons";
-
-const cancellationReasons = [
-  "Keadaan Darurat / Perubahan Rencana",
-  "Ingin Mengganti Armada / Carrier",
-  "Perubahan Kebutuhan Pengiriman",
-  "Pencarian Armada Terlalu Lama",
-  "Alasan Pribadi atau Tidak Dijelaskan",
-  "Perubahan Rencana Mendadak",
-  "Ketidakpastian atau Perubahan Kondisi",
-];
 
 /**
  * A bottom sheet component for selecting a reason for cancellation.
@@ -94,10 +86,13 @@ export const BottomsheetAlasanPembatalan = ({
     <BottomSheet open={open} onOpenChange={onOpenChange}>
       <BottomSheetContent>
         {/* Header */}
-        <BottomSheetHeader>Alasan Pembatalan</BottomSheetHeader>
+        <BottomSheetHeader>
+          <BottomSheetClose />
+          <BottomSheetTitle>Alasan Pembatalan</BottomSheetTitle>
+        </BottomSheetHeader>
 
         {/* Reasons List */}
-        <div className="mt-6 flex-1 px-4">
+        <div className="flex-1 px-4">
           <div className="flex flex-col gap-4">
             {cancellationReasons?.map((reason, index) => (
               <div

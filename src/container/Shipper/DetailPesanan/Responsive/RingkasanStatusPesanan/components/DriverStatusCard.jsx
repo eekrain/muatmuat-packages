@@ -15,7 +15,7 @@ export const DriverStatusCard = ({ driver, orderStatus }) => {
   const { t } = useTranslation();
   const statusMeta = getDriverStatusMetadata(
     driver.driverStatus,
-    orderStatus,
+    driver.orderStatus,
     t
   );
 

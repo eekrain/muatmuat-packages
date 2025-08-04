@@ -1,23 +1,10 @@
 import {
   BottomSheet,
   BottomSheetTrigger,
-} from "@/components/Bottomsheet/Bottomsheet";
+} from "@/components/Bottomsheet/BottomSheet";
+import { idrFormat } from "@/lib/utils/formatters";
 
-import BottomsheetWaitingTimeDetails from "./Bottomsheet/BottomsheetWaitingTimeDetails";
-
-/**
- * Fungsi pembantu untuk memformat angka menjadi format mata uang Rupiah (IDR).
- * @param {number} amount - Jumlah uang yang akan diformat.
- * @returns {string} String yang telah diformat sebagai mata uang.
- */
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
-};
+import BottomsheetWaitingTimeDetails from "./Popup/BottomsheetWaitingTimeDetails";
 
 /**
  * Komponen utama yang menampilkan detail biaya tambahan.
@@ -52,7 +39,7 @@ const AdditionalCostDetails = () => {
             </BottomSheet>
           </div>
           <span className="text-sm font-semibold text-neutral-900">
-            {formatCurrency(300000)}
+            {idrFormat(300000)}
           </span>
         </div>
       </div>
@@ -65,7 +52,7 @@ const AdditionalCostDetails = () => {
         <div className="flex items-center justify-between">
           <span className="text-sm text-neutral-800">Admin Layanan</span>
           <span className="text-sm font-semibold text-neutral-900">
-            {formatCurrency(10000)}
+            {idrFormat(10000)}
           </span>
         </div>
       </div>

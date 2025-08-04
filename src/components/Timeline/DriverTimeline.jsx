@@ -2,11 +2,7 @@ import { Fragment, useEffect, useState } from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { LightboxProvider, useLightbox } from "@/components/Lightbox/Lightbox";
-import {
-  TimelineContainer,
-  TimelineContentWithButtonDate,
-  TimelineItem,
-} from "@/components/Timeline";
+import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import useDevice from "@/hooks/use-device";
 import { useTranslation } from "@/hooks/use-translation";
 import {
@@ -17,6 +13,8 @@ import {
 import { DriverStatusLabel } from "@/lib/constants/detailpesanan/driver-status.enum";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";
+
+import { ButtonMini } from "../Button/ButtonMini";
 
 const getStatusCodeMeta = (statusCode) => {
   const splitted = statusCode.split("_");
@@ -208,12 +206,11 @@ const ItemWithLightbox = ({
     }
   };
 
-  const buttonConfig = driverStatusItem.requiresPhoto
-    ? {
-        label: subtitle(),
-        onClick: handleClickProof,
-      }
-    : undefined;
+  const buttonConfig = driverStatusItem.requiresPhoto ? (
+    <ButtonMini className="mt-1" onClick={handleClickProof}>
+      {subtitle()}
+    </ButtonMini>
+  ) : null;
 
   // Sync active index from Lightbox Provider
   useEffect(() => {
@@ -222,36 +219,27 @@ const ItemWithLightbox = ({
   }, [current]);
 
   return (
-    <TimelineItem
-      key={driverStatusItem.statusCode}
+    <NewTimelineItem
       variant="bullet-driver-status"
       totalLength={parent.children.length}
       index={index}
       activeIndex={parentIndex === 0 ? 0 : -1}
-      className="grid-cols-[32px_1fr] gap-3"
-    >
-      <TimelineContentWithButtonDate
-        title={driverStatusItem.statusName}
-        withButton={buttonConfig}
-        withDate={new Date(driverStatusItem.date)}
-        className={index === totalLength - 1 ? "pb-0" : ""}
-        appearance={{
-          dateClassname:
-            parentIndex === 0 && index === 0
-              ? "text-neutral-900"
-              : "text-neutral-600",
-          titleClassname:
-            parentIndex === 0 && index === 0
-              ? "text-neutral-900 font-semibold"
-              : "text-neutral-600",
-        }}
-        onSubtitleClick={() =>
-          alert(
-            t("messageTampilkanModal", { subtitle: driverStatusItem.subtitle })
-          )
-        }
-      />
-    </TimelineItem>
+      title={driverStatusItem.statusName}
+      isLast={index === parent.children.length - 1}
+      timestamp={driverStatusItem.date}
+      className="grid-cols-[32px_1fr] gap-x-3"
+      appearance={{
+        titleClassname:
+          parentIndex === 0 && index === 0
+            ? "text-neutral-900 font-semibold"
+            : "text-neutral-600",
+        timestampClassname:
+          parentIndex === 0 && index === 0
+            ? "text-neutral-900"
+            : "text-neutral-600",
+      }}
+      buttonDetail={buttonConfig}
+    />
   );
 };
 

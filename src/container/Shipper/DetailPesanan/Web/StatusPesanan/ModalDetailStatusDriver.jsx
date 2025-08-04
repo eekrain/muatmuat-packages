@@ -1,5 +1,5 @@
 import { useParams } from "next/navigation";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import Button from "@/components/Button/Button";
@@ -26,8 +26,9 @@ const ModalDetailStatusDriver = () => {
     params.orderId,
     driverId
   );
-  const contentRef = useRef(null);
-  const contentHeight = useClientHeight({ ref: contentRef, deps: [isOpen] });
+
+  const { ref: contentRef, height: contentHeight } = useClientHeight();
+
   return (
     <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick>
       <ModalTrigger>

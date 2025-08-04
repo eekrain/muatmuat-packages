@@ -59,6 +59,7 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
     unitFleetStatus: dataStatusPesanan.unitFleetStatus,
     totalUnit: dataStatusPesanan.totalUnit,
     t,
+    orderType: dataStatusPesanan.orderType,
   });
 
   return (

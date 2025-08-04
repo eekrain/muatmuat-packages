@@ -2,17 +2,31 @@ import { Fragment, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
-import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { idrFormat } from "@/lib/utils/formatters";
+
+import { BottomsheetAlasanPembatalan } from "./Popup/BottomsheetAlasanPembatalan";
+import { ModalBatalkanPesananResponsive } from "./Popup/ModalBatalkanPesananResponsive";
+import { ModalKonfimasiBuktiDokumenDiterima } from "./Popup/ModalKonfimasiBuktiDokumenDiterima";
+
+const LIST_SHOW_TOTAL_PRICE = [
+  OrderStatusEnum.WAITING_PAYMENT_1,
+  OrderStatusEnum.PREPARE_FLEET,
+];
 
 export const FooterDetailPesanan = ({
   dataStatusPesanan,
   dataRingkasanPembayaran,
 }) => {
   const navigation = useResponsiveNavigation();
+  const [isOpenModalBatalkanPesanan, setIsOpenModalBatalkanPesanan] =
+    useState(false);
+  const [
+    isOpenBottomsheetAlasanPembatalan,
+    setIsOpenBottomsheetAlasanPembatalan,
+  ] = useState(false);
 
   const [isReceiveDocumentEvidenceOpen, setReceiveDocumentEvidenceOpen] =
     useState(false);
@@ -82,7 +96,7 @@ export const FooterDetailPesanan = ({
             <Button
               variant={variant}
               className="h-10 w-full p-0"
-              onClick={() => alert("Simpan")}
+              onClick={() => setIsOpenModalBatalkanPesanan(true)}
               type="button"
             >
               Batalkan Pesanan
@@ -113,12 +127,12 @@ export const FooterDetailPesanan = ({
     ) {
       components.unshift({
         id: "batalkan-pesanan",
-        variant: "muatparts-error",
+        variant: "muatparts-error-secondary",
         el: (variant) => (
           <Button
             variant={variant}
             className="h-10 w-full p-0"
-            onClick={() => alert("Simpan")}
+            onClick={() => setIsOpenModalBatalkanPesanan(true)}
             type="button"
           >
             Batalkan Pesanan
@@ -145,6 +159,25 @@ export const FooterDetailPesanan = ({
         },
       ];
     }
+    // Ga gitu yakin sih kalo kondisinya ini doang
+    else if (dataStatusPesanan?.orderStatus === OrderStatusEnum.PREPARE_FLEET) {
+      components = [
+        {
+          id: "batalkan-pesanan",
+          variant: "muatparts-error-secondary",
+          el: (variant) => (
+            <Button
+              variant={variant}
+              className="h-10 w-full p-0"
+              onClick={() => setIsOpenModalBatalkanPesanan(true)}
+              type="button"
+            >
+              Batalkan Pesanan
+            </Button>
+          ),
+        },
+      ];
+    }
 
     if (components.length > 1 && components[0].id === "pesan-ulang") {
       components[0].variant = "muatparts-primary-secondary";
@@ -157,8 +190,7 @@ export const FooterDetailPesanan = ({
     <>
       {renderButtons.length > 0 ? (
         <ResponsiveFooter className="flex flex-col gap-4">
-          {dataStatusPesanan?.orderStatus ===
-            OrderStatusEnum.WAITING_PAYMENT_1 &&
+          {LIST_SHOW_TOTAL_PRICE.includes(dataStatusPesanan?.orderStatus) &&
             dataRingkasanPembayaran?.totalPrice && (
               <div className="flex items-center justify-between">
                 <div className="text-sm font-semibold">Total Biaya</div>
@@ -185,43 +217,28 @@ export const FooterDetailPesanan = ({
         </ResponsiveFooter>
       ) : null}
 
-      <Modal
+      <ModalKonfimasiBuktiDokumenDiterima
         open={isReceiveDocumentEvidenceOpen}
         onOpenChange={setReceiveDocumentEvidenceOpen}
-        closeOnOutsideClick
-      >
-        <ModalContent type="muatmuat">
-          <div className="flex w-[296px] flex-col items-center px-4 py-6">
-            <h3 className="text-base font-bold leading-[1.1] text-neutral-900">
-              Informasi
-            </h3>
+        onConfirm={() => setReceiveDocumentEvidenceOpen(false)}
+      />
 
-            <div className="mt-4 text-center text-sm font-medium leading-[1.1] text-neutral-900">
-              {`Klik "Sudah", jika kamu sudah menerima bukti dokumen untuk
-              menyelesaikan pesanan.`}
-            </div>
-
-            <div className="mt-5 flex items-center gap-x-2">
-              <Button
-                variant="muatparts-primary-secondary"
-                className="min-w-[112px]"
-                onClick={() => setReceiveDocumentEvidenceOpen(false)}
-                type="button"
-              >
-                Belum
-              </Button>
-              <Button
-                variant="muatparts-primary"
-                className="min-w-[112px]"
-                onClick={() => setReceiveDocumentEvidenceOpen(false)}
-                type="button"
-              >
-                Sudah
-              </Button>
-            </div>
-          </div>
-        </ModalContent>
-      </Modal>
+      <ModalBatalkanPesananResponsive
+        open={isOpenModalBatalkanPesanan}
+        onOpenChange={setIsOpenModalBatalkanPesanan}
+        onConfirm={() => {
+          setIsOpenBottomsheetAlasanPembatalan(true);
+          setIsOpenModalBatalkanPesanan(false);
+        }}
+        orderStatus={dataStatusPesanan?.orderStatus}
+      />
+      <BottomsheetAlasanPembatalan
+        open={isOpenBottomsheetAlasanPembatalan}
+        onOpenChange={setIsOpenBottomsheetAlasanPembatalan}
+        onConfirm={() => {
+          setIsOpenBottomsheetAlasanPembatalan(false);
+        }}
+      />
     </>
   );
 };

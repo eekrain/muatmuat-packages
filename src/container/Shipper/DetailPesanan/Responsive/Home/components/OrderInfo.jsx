@@ -8,8 +8,8 @@ import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enu
 import { getStatusPesananMetadata } from "@/lib/normalizers/detailpesanan/getStatusPesananMetadata";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
-import { BottomsheetDocumentShipping } from "./Bottomsheet/BottomsheetDocumentShipping";
-import { BottomsheetStatusLainnya } from "./Bottomsheet/BottomsheetStatusLainnya";
+import { BottomsheetDocumentShipping } from "./Popup/BottomsheetDocumentShipping";
+import { BottomsheetStatusLainnya } from "./Popup/BottomsheetStatusLainnya";
 
 export const OrderCode = ({ dataStatusPesanan }) => {
   const { t } = useTranslation();
@@ -36,6 +36,7 @@ export const OrderStatus = ({
         unitFleetStatus: dataStatusPesanan.unitFleetStatus,
         totalUnit: dataStatusPesanan.totalUnit,
         t,
+        orderType: dataStatusPesanan.orderType,
       })
     : null;
   return (
