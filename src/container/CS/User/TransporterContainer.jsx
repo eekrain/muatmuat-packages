@@ -23,114 +23,178 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, count }) => {
   const [searchValue, setSearchValue] = useState("");
   const [filters, setFilters] = useState({});
 
-  // Mock data - replace with actual API call
+  // Mock data to match the provided screenshots
   const mockData = [
     {
       id: "1",
-      companyName: "PT Trans Nusantara",
-      email: "contact@transnusantara.com",
-      phone: "+62 815-3456-7890",
-      pic: "Ahmad Yani",
-      totalFleet: 25,
-      activeFleet: 20,
-      totalDrivers: 30,
-      status: "Active",
-      registeredDate: "2024-01-08",
+      companyName: "PT Kalimantan Timur Jaya Sentosa M...",
+      email: "contact.shipper@mail.com",
+      picName: "Ahmad Maulana",
+      picPhone: "No. HP : 0822-3100-1231",
+      address:
+        "Jl. Anggrek No. 123, RT 05 RW 09, Kel. Mekarsari, Kec. Cimanggis, Kota Depok, Provinsi Jawa Barat, Kode P...",
+      fleetCount: 10,
+      status: "Aktif",
     },
     {
       id: "2",
-      companyName: "CV Logistik Sejahtera",
-      email: "info@logistiksejahtera.co.id",
-      phone: "+62 816-2345-6789",
-      pic: "Budi Santoso",
-      totalFleet: 15,
-      activeFleet: 12,
-      totalDrivers: 18,
-      status: "Active",
-      registeredDate: "2024-01-03",
+      companyName: "CV Moga Jaya Abadi",
+      email: "contact.shipper@mail.com",
+      picName: "Ahmad Maulana",
+      picPhone: "No. HP : 0822-3100-1231",
+      address: "Jalan Kedungdoro 101A, Tegalsari, Surabaya",
+      fleetCount: 0,
+      status: "Non Aktif",
     },
     {
-      id: "3",
-      companyName: "UD Express Mandiri",
-      email: "express@mandiri.com",
-      phone: "+62 817-3456-7890",
-      pic: "Charlie Tan",
-      totalFleet: 8,
-      activeFleet: 5,
-      totalDrivers: 10,
-      status: "Suspended",
-      registeredDate: "2023-12-15",
+      id: "5",
+      companyName: "CV Moga Jaya Abadi",
+      email: "contact.shipper@mail.com",
+      picName: "Ahmad Maulana",
+      picPhone: "No. HP : 0822-3100-1231",
+      address: "Jalan Kedungdoro 101A, Tegalsari, Surabaya",
+      fleetCount: 0,
+      status: "Dalam Verifikasi",
     },
     {
-      id: "4",
-      companyName: "PT Cargo Prima",
-      email: "cargo@prima.id",
-      phone: "+62 818-4567-8901",
-      pic: "Diana Putri",
-      totalFleet: 0,
-      activeFleet: 0,
-      totalDrivers: 0,
-      status: "Inactive",
-      registeredDate: "2023-11-20",
+      id: "6",
+      companyName: "CV Moga Jaya Abadi",
+      email: "contact.shipper@mail.com",
+      picName: "Ahmad Maulana",
+      picPhone: "No. HP : 0822-3100-1231",
+      address: "Jalan Kedungdoro 101A, Tegalsari, Surabaya",
+      fleetCount: 0,
+      status: "Verifikasi Ditolak",
     },
   ];
 
   const getStatusBadge = (status) => {
     let variant = "success";
-    if (status === "Suspended") variant = "warning";
-    if (status === "Inactive") variant = "danger";
+    if (status === "Non Aktif" || status === "Verifikasi Ditolak") {
+      variant = "error";
+    } else if (status === "Dalam Verifikasi") {
+      variant = "warning";
+    }
     return <BadgeStatus variant={variant}>{status}</BadgeStatus>;
+  };
+
+  const renderActionItems = (row) => {
+    switch (row.status) {
+      case "Aktif":
+        return (
+          <>
+            <SimpleDropdownItem
+              onClick={() => router.push(`/user/transporter/${row.id}/detail`)}
+            >
+              Detail
+            </SimpleDropdownItem>
+            <SimpleDropdownItem onClick={() => {}}>Hubungi</SimpleDropdownItem>
+            <SimpleDropdownItem className={"text-red-500"} onClick={() => {}}>
+              Non Aktifkan
+            </SimpleDropdownItem>
+          </>
+        );
+      case "Non Aktif":
+        return (
+          <>
+            <SimpleDropdownItem
+              onClick={() => router.push(`/user/transporter/${row.id}/detail`)}
+            >
+              Detail
+            </SimpleDropdownItem>
+            <SimpleDropdownItem onClick={() => {}}>Hubungi</SimpleDropdownItem>
+          </>
+        );
+      case "Dalam Verifikasi":
+        return (
+          <>
+            <SimpleDropdownItem
+              onClick={() => router.push(`/user/transporter/${row.id}/detail`)}
+            >
+              Detail
+            </SimpleDropdownItem>
+            <SimpleDropdownItem onClick={() => {}}>Hubungi</SimpleDropdownItem>
+          </>
+        );
+      case "Verifikasi Ditolak":
+        return (
+          <>
+            <SimpleDropdownItem onClick={() => {}}>
+              Kirim Verifikasi Ulang
+            </SimpleDropdownItem>
+            <SimpleDropdownItem
+              onClick={() => router.push(`/user/transporter/${row.id}/detail`)}
+            >
+              Detail
+            </SimpleDropdownItem>
+            <SimpleDropdownItem onClick={() => {}}>Hubungi</SimpleDropdownItem>
+            <SimpleDropdownItem className={"text-red-500"} onClick={() => {}}>
+              Hapus
+            </SimpleDropdownItem>
+          </>
+        );
+      default:
+        return null;
+    }
   };
 
   const columns = [
     {
       key: "companyName",
-      header: "Company Name",
+      header: "Nama Perusahaan",
       render: (row) => (
-        <div className="space-y-1">
-          <div className="text-xs font-bold">{row.companyName}</div>
-          <div className="text-xxs font-medium text-neutral-600">
-            PIC: {row.pic}
+        <div className="flex items-center space-x-5">
+          <div className="relative flex aspect-square h-14 w-14 items-center justify-center rounded-md border border-neutral-400 bg-white object-contain p-px">
+            <img
+              src="/img/jnt.png"
+              alt="logo"
+              className="rounded-md object-contain"
+            />
+          </div>
+          <div className="space-y-1">
+            <div className="line-clamp-1 text-xs font-bold">
+              {row.companyName}
+            </div>
+            <div className="text-xxs font-medium">{row.email}</div>
           </div>
         </div>
       ),
     },
     {
-      key: "contact",
-      header: "Contact",
-      width: "280px",
+      key: "pic",
+      header: "PIC Perusahaan",
+      sortable: false,
+      width: "170px",
       render: (row) => (
         <div className="space-y-1">
-          <div className="text-xxs font-semibold">{row.email}</div>
-          <div className="text-xxs font-medium text-neutral-600">
-            {row.phone}
-          </div>
+          <div className="text-xxs font-semibold">{row.picName}</div>
+          <div className="text-xxsfont-medium">{row.picPhone}</div>
         </div>
       ),
     },
     {
-      key: "fleet",
-      header: "Fleet Info",
+      key: "address",
+      header: "Alamat Perusahaan",
+      sortable: false,
       render: (row) => (
-        <div className="space-y-1">
-          <div className="text-xs font-medium">
-            {row.activeFleet}/{row.totalFleet} Active
-          </div>
-          <div className="text-xxs text-neutral-600">
-            {row.totalDrivers} Drivers
-          </div>
-        </div>
+        <div className="text-xxs font-medium">{row.address}</div>
       ),
     },
     {
-      key: "registeredDate",
-      header: "Registered Date",
-      render: (row) => row.registeredDate,
+      key: "fleetCount",
+      header: "Jumlah Armada",
+      width: "170px",
+      render: (row) => (
+        <div className="text-xxs font-medium">
+          {row.fleetCount > 0 ? `${row.fleetCount} Armada` : "Belum Ada"}
+        </div>
+      ),
     },
     {
       key: "status",
       header: "Status",
-      sortable: false,
+      width: "190px",
+      sortable: true,
       render: (row) => getStatusBadge(row.status),
     },
     {
@@ -141,36 +205,15 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, count }) => {
       render: (row) => (
         <SimpleDropdown>
           <SimpleDropdownTrigger asChild>
-            <button className="flex h-8 flex-row items-center justify-between gap-2 rounded-md border border-neutral-600 bg-white px-3 py-2 shadow-sm transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none">
+            <button className="flex h-8 flex-row items-center justify-between gap-2 rounded-md border border-neutral-400 bg-white px-3 py-2 shadow-sm transition-colors duration-150 hover:border-primary-700 hover:bg-gray-50 focus:outline-none">
               <span className="text-xs font-medium leading-tight text-black">
-                Action
+                Aksi
               </span>
-              <ChevronDown className="h-4 w-4 text-neutral-700" />
+              <ChevronDown className="h-3 w-3 text-neutral-700" />
             </button>
           </SimpleDropdownTrigger>
-
-          <SimpleDropdownContent className="w-[133px]" align="end">
-            <SimpleDropdownItem onClick={() => {}}>
-              View Fleet
-            </SimpleDropdownItem>
-            <SimpleDropdownItem onClick={() => {}}>
-              View Drivers
-            </SimpleDropdownItem>
-            {row.status === "Active" && (
-              <SimpleDropdownItem onClick={() => {}}>
-                Suspend
-              </SimpleDropdownItem>
-            )}
-            {row.status === "Suspended" && (
-              <SimpleDropdownItem onClick={() => {}}>
-                Activate
-              </SimpleDropdownItem>
-            )}
-            <SimpleDropdownItem
-              onClick={() => router.push(`/user/transporter/${row.id}/detail`)}
-            >
-              Detail
-            </SimpleDropdownItem>
+          <SimpleDropdownContent className="w-[180px]" align="end">
+            {renderActionItems(row)}
           </SimpleDropdownContent>
         </SimpleDropdown>
       ),
@@ -220,24 +263,15 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, count }) => {
     }
   };
 
-  // Filter config for DataTable
   const getFilterConfig = () => {
     return {
-      categories: [
-        { key: "status", label: "Status" },
-        { key: "fleetSize", label: "Fleet Size" },
-      ],
+      categories: [{ key: "status", label: "Status" }],
       data: {
         status: [
-          { id: "active", label: "Active" },
-          { id: "suspended", label: "Suspended" },
-          { id: "inactive", label: "Inactive" },
-        ],
-        fleetSize: [
-          { id: "0", label: "No Fleet" },
-          { id: "1-10", label: "1-10 Vehicles" },
-          { id: "11-25", label: "11-25 Vehicles" },
-          { id: "25+", label: "25+ Vehicles" },
+          { id: "Aktif", label: "Aktif" },
+          { id: "Non Aktif", label: "Non Aktif" },
+          { id: "Dalam Verifikasi", label: "Dalam Verifikasi" },
+          { id: "Verifikasi Ditolak", label: "Verifikasi Ditolak" },
         ],
       },
     };
@@ -248,7 +282,7 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, count }) => {
       <DataTable
         data={mockData}
         columns={columns}
-        searchPlaceholder="Search company name, email, or PIC..."
+        searchPlaceholder="Cari nama perusahaan, PIC, alamat..."
         totalCountLabel="Transporters"
         currentPage={currentPage}
         totalPages={Math.ceil(mockData.length / perPage)}
