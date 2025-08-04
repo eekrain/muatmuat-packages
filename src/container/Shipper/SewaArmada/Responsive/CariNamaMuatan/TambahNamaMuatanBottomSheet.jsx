@@ -6,7 +6,7 @@ import {
   BottomSheet,
   BottomSheetContent,
   BottomSheetHeader,
-} from "@/components/Bottomsheet/Bottomsheet";
+} from "@/components/Bottomsheet/BottomSheet";
 import Button from "@/components/Button/Button";
 import TextArea from "@/components/TextArea/TextArea";
 import { useTranslation } from "@/hooks/use-translation";
