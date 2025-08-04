@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const isMockActiveVehicles = false;
+const isMockActiveVehicles = true;
 
 const apiResultActiveVehicles = {
   data: {
@@ -15,7 +15,7 @@ const apiResultActiveVehicles = {
         {
           id: "vhc-001",
           photoUrl: "/img/mock-armada/one.png",
-          licensePlate: "B 1234 ABC",
+          licensePlate: "B 1111 ABC",
           truckType: {
             id: "tt-001",
             name: "Truk Besar",

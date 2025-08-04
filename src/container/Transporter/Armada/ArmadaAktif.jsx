@@ -13,10 +13,15 @@ import {
   SimpleDropdownItem,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
+import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { DriverSelectionModal } from "@/container/Transporter/Driver/DriverSelectionModal";
+import { toast } from "@/lib/toast";
 import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
+import { deactivateVehicle } from "@/services/Transporter/manajemen-armada/deactivateVehicle";
 import { useGetActiveVehiclesData } from "@/services/Transporter/manajemen-armada/getActiveVehiclesData";
+import { unlinkDriver } from "@/services/Transporter/manajemen-armada/unlinkDriver";
 
 const ArmadaAktif = ({ onPageChange, onPerPageChange, count }) => {
   const router = useRouter();
@@ -26,6 +31,9 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange, count }) => {
   const [sortConfig, setSortConfig] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [confirmUnlinkDriver, setConfirmUnlinkDriver] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [nonaktifkanArmada, setNonaktifkanArmada] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [filters, setFilters] = useState({});
 
@@ -37,15 +45,6 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange, count }) => {
     ...filters,
     ...sortConfig,
   });
-
-  const getStatusBadge = (status) => {
-    const statusConfig = getArmadaStatusBadge(status);
-    return (
-      <BadgeStatus variant={statusConfig.variant}>
-        {statusConfig.label}
-      </BadgeStatus>
-    );
-  };
 
   const columns = [
     {
@@ -97,7 +96,13 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange, count }) => {
                 >
                   <IconComponent size={12} src={"/icons/pencil-outline.svg"} />
                 </button>
-                <button className="text-neutral-700 hover:text-primary-700">
+                <button
+                  className="text-neutral-700 hover:text-primary-700"
+                  onClick={() => {
+                    setSelectedVehicle(row);
+                    setConfirmUnlinkDriver(true);
+                  }}
+                >
                   <IconComponent size={12} src={"/icons/unlink.svg"} />
                 </button>
               </div>
@@ -127,8 +132,25 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange, count }) => {
       sortable: false,
       width: "200px",
       render: (row) => {
-        // Use the status directly from the data
-        return getStatusBadge(row.status);
+        const statusConfig = getArmadaStatusBadge(row.status);
+        return (
+          <BadgeStatus variant={statusConfig.variant}>
+            {row.status === "ON_DUTY" && row.pendingUpdateDriver && (
+              <InfoTooltip
+                side="left"
+                appearance={{
+                  iconClassName: "text-primary-700 mr-1 size-3.5",
+                }}
+              >
+                <p>
+                  Armada sedang bertugas. Status akan diperbarui setelah pesanan
+                  diselesaikan
+                </p>
+              </InfoTooltip>
+            )}
+            {statusConfig.label}
+          </BadgeStatus>
+        );
       },
     },
     {
@@ -152,7 +174,12 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange, count }) => {
               Lihat Agenda Driver
             </SimpleDropdownItem>
             {row.status === "READY_FOR_ORDER" && (
-              <SimpleDropdownItem onClick={() => {}}>
+              <SimpleDropdownItem
+                onClick={() => {
+                  setSelectedVehicle(row);
+                  setNonaktifkanArmada(true);
+                }}
+              >
                 Nonaktifkan
               </SimpleDropdownItem>
             )}
@@ -305,6 +332,85 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange, count }) => {
           }
         />
       )}
+
+      <ConfirmationModal
+        isOpen={confirmUnlinkDriver}
+        setIsOpen={setConfirmUnlinkDriver}
+        description={{
+          text: (
+            <p>
+              Apakah kamu ingin melepas <br />
+              <b>No. Polisi: {selectedVehicle?.licensePlate}</b> dari{" "}
+              <b>{selectedVehicle?.assignedDriver?.fullName}</b> ?
+            </p>
+          ),
+        }}
+        confirm={{
+          text: "Ya",
+          onClick: async () => {
+            setIsUpdating(true);
+            try {
+              await unlinkDriver(selectedVehicle?.assignedDriver?.id);
+              toast.success("Berhasil melepaskan driver");
+              mutate();
+              setConfirmUnlinkDriver(false);
+              setSelectedVehicle(null);
+            } catch (error) {
+              toast.error("Gagal melepas driver dari armada");
+            } finally {
+              setIsUpdating(false);
+            }
+          },
+          classname: "w-[112px]",
+        }}
+        cancel={{
+          text: "Tidak",
+          onClick: () => {
+            setConfirmUnlinkDriver(false);
+            setSelectedVehicle(null);
+          },
+          classname: "w-[112px]",
+        }}
+      />
+
+      <ConfirmationModal
+        isOpen={nonaktifkanArmada}
+        setIsOpen={setNonaktifkanArmada}
+        description={{
+          text: (
+            <p>
+              Apakah kamu yakin ingin menonaktifkan armada <br />
+              <b>No. Polisi: {selectedVehicle?.licensePlate}</b> ?
+            </p>
+          ),
+        }}
+        confirm={{
+          text: "Ya",
+          onClick: async () => {
+            setIsUpdating(true);
+            try {
+              await deactivateVehicle(selectedVehicle?.id);
+              toast.success("Armada berhasil dinonaktifkan");
+              mutate();
+              setNonaktifkanArmada(false);
+              setSelectedVehicle(null);
+            } catch (error) {
+              toast.error("Gagal menonaktifkan armada");
+            } finally {
+              setIsUpdating(false);
+            }
+          },
+          classname: "w-[112px]",
+        }}
+        cancel={{
+          text: "Tidak",
+          onClick: () => {
+            setNonaktifkanArmada(false);
+            setSelectedVehicle(null);
+          },
+          classname: "w-[112px]",
+        }}
+      />
     </>
   );
 };
