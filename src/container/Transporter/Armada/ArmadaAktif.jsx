@@ -121,11 +121,13 @@ const ArmadaAktif = ({ onPageChange, onPerPageChange, count }) => {
       key: "brand",
       header: "Merek Kendaraan",
       render: (row) => row.vehicleBrand?.name || "-",
+      width: "180px",
     },
     {
       key: "type",
       header: "Tipe Kendaraan",
       render: (row) => row.vehicleType?.name || "-",
+      width: "170px",
     },
     {
       key: "status",

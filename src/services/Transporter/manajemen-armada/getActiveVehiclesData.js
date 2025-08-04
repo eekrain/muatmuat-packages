@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const isMockActiveVehicles = true;
+const isMockActiveVehicles = false;
 
 const apiResultActiveVehicles = {
   data: {
