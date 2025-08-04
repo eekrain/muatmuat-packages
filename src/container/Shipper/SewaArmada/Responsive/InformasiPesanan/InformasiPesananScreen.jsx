@@ -36,11 +36,14 @@ import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useTranslation } from "@/hooks/use-translation";
 import { useVouchers } from "@/hooks/useVoucher";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
+import { fetcherMuatrans } from "@/lib/axios";
+import { normalizeFleetOrder } from "@/lib/normalizers/sewaarmada";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { formatDate, formatShortDate } from "@/lib/utils/dateFormat";
 import { validateVoucherClientSide } from "@/lib/utils/voucherValidation";
 import { mockValidateVoucher } from "@/services/Shipper/voucher/mockVoucherService";
 import { muatTransValidateVoucher } from "@/services/Shipper/voucher/muatTransVoucherService";
+import { useTokenStore } from "@/store/AuthStore/tokenStore";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -50,8 +53,11 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
   const navigation = useResponsiveNavigation();
   const { t } = useTranslation();
 
+  // Get authentication token
+  const authToken = useTokenStore((state) => state.accessToken);
+  const token = authToken ? `Bearer ${authToken}` : null;
+
   /* voucher state and logic - from HomeScreen */
-  const token = "Bearer your_token_here";
   const MOCK_EMPTY = false;
   const useMockData = false; // Flag untuk menggunakan mock data - ubah ke false untuk menggunakan API real
 
@@ -66,9 +72,7 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
   // Add missing variables for voucher functionality
   const baseOrderAmount = 950000; // Same as transactionData.biayaPesanJasaAngkut
   const adminFee = 10000;
-  const taxAmount = 0; // Will be calculated based on business entity
-  const baseTotal = baseOrderAmount + adminFee + taxAmount;
-  const [currentTotal, setCurrentTotal] = useState(baseTotal);
+  const [currentTotal, setCurrentTotal] = useState(baseOrderAmount + adminFee);
   const [voucherDiscount, setVoucherDiscount] = useState(0);
 
   const [isBottomsheetOpen, setIsBottomsheetOpen] = useState(false); // Bottomsheet Voucher
@@ -91,7 +95,7 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
   const [validatingVoucher, setValidatingVoucher] = useState(null);
   /* end voucher state */
   // Get state from Zustand store
-  const { formValues, formErrors } = useSewaArmadaStore();
+  const { formValues, formErrors, orderType } = useSewaArmadaStore();
   const {
     loadTimeStart,
     loadTimeEnd,
@@ -111,6 +115,10 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
     // deliveryOrder,
   } = formValues;
   const { isBusinessEntity, name, taxId } = businessEntity;
+
+  // Calculate tax amount after isBusinessEntity is available
+  const taxAmount = isBusinessEntity ? 21300 : 0; // Match CreateOrderSummaryPanel calculation
+  const baseTotal = baseOrderAmount + adminFee + taxAmount;
 
   // Get actions from Zustand store
   const { setField, setCargoPhotos, validateSecondForm } =
@@ -281,8 +289,87 @@ const InformasiPesananScreen = ({ carriers, trucks, paymentMethods }) => {
     }
   };
 
-  const handleCreateOrder = () => {
-    alert("buat logic buat pesan armada");
+  const handleCreateOrder = async () => {
+    try {
+      // Close the confirmation bottomsheet
+      setIsOrderConfirmationBottomsheetOpen(false);
+
+      // Check if we have a valid token
+      if (!token) {
+        alert("Token autentikasi tidak ditemukan. Silakan login ulang.");
+        return;
+      }
+
+      // Create calculatedPrice structure to match CreateOrderSummaryPanel
+      const calculatedPrice = {
+        totalPrice: baseOrderAmount,
+        transportFee: baseOrderAmount,
+        insuranceFee: 10000, // Biaya Asuransi
+        additionalServiceFee: [
+          {
+            name: "Kirim Bukti Fisik Penerimaan Barang",
+            price: 35000,
+            totalCost: 35000,
+          },
+          {
+            name: "Bantuan Tambahan",
+            price: 100000,
+            totalCost: 100000,
+          },
+        ],
+        voucher: voucherDiscount,
+        adminFee: adminFee,
+        taxAmount: isBusinessEntity ? 21300 : 0,
+      };
+
+      // Normalize order data using the existing normalizer (same as CreateOrderSummaryPanel)
+      const orderFleetData = normalizeFleetOrder(
+        orderType || "INSTANT",
+        formValues,
+        calculatedPrice
+      );
+
+      // Debug: Log the complete order data being sent to API (same as CreateOrderSummaryPanel)
+      console.log("🚀 API Request Debug:", {
+        orderFleetData,
+        cargoPhotos: orderFleetData.cargoPhotos,
+        photoCount: orderFleetData.cargoPhotos?.length || 0,
+        hasPhotos:
+          orderFleetData.cargoPhotos?.some((photo) => photo !== null) || false,
+      });
+
+      console.log("Order data with voucher:", orderFleetData);
+
+      // Call the API to create order (same as CreateOrderSummaryPanel)
+      const response = await fetcherMuatrans.post(
+        "/v1/orders/create",
+        orderFleetData,
+        {
+          headers: { Authorization: token },
+        }
+      );
+
+      console.log("Order creation result:", response);
+
+      if (response.data.Message.Code === 200) {
+        // Handle success - redirect to order detail (same as CreateOrderSummaryPanel)
+        const orderData = response.data.Data;
+
+        // Navigate to order detail page
+        navigation.push(`/daftarpesanan/detailpesanan/${orderData.orderId}`);
+      } else {
+        alert("Validation error from server");
+      }
+    } catch (error) {
+      console.error("Error creating order:", error);
+
+      // Enhanced error handling (same as CreateOrderSummaryPanel)
+      if (error.response && error.response.data) {
+        alert(`Error: ${error.response.data.Message?.Text || "Unknown error"}`);
+      } else {
+        alert("Terjadi kesalahan. Silakan coba lagi.");
+      }
+    }
   };
 
   const selectedCarrier = useShallowMemo(() => {
