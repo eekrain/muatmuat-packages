@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import Button from "@/components/Button/Button";
@@ -8,14 +9,15 @@ import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import {
   defaultInformasiArmada,
   handleVehicleCellValueChange,
-  handleVehicleSaveAsDraft,
-  handleVehicleSubmit,
   validateVehicleForm,
   vehicleDefaultValues,
   vehicleFormSchema,
 } from "@/config/forms/vehicleFormConfig";
 import { useTableForm } from "@/hooks/useTableForm";
+import { normalizePayloadTambahArmadaMassal } from "@/lib/normalizers/transporter/tambah-armada-massal/normalizePayloadTambahArmadaMassal";
+import { toast } from "@/lib/toast";
 import { useGetFleetsDrafts } from "@/services/Transporter/manajemen-armada/getFleetsDrafts";
+import { usePostFleetBulkCreate } from "@/services/Transporter/manajemen-armada/postFleetBulkCreate";
 
 import ModalAddArmadaImage from "../../../preview-armada/components/ModalAddImage/ModalAddImage";
 import ArmadaTable from "../../ArmadaTable/ArmadaTable";
@@ -76,9 +78,13 @@ const mapDraftsToFormData = (drafts) => {
     },
     nomor_kir: draft.kirNumber || "",
     masa_berlaku_kir: draft.kirExpiryDate ? new Date(draft.kirExpiryDate) : "",
-    foto_buku_kir:
-      draft.documents?.find((d) => d.documentType === "KIR")?.documentUrl ||
-      null,
+    foto_buku_kir: {
+      documentUrl:
+        draft.documents?.find((d) => d.documentType === "KIR")?.documentUrl ||
+        null,
+      name: draft.documents?.find((d) => d.documentType === "KIR")
+        ?.documentName,
+    },
     estimasi_tanggal_pemasangan_gps: {
       mulai: draft.gpsInstallationEstimateStartDate
         ? new Date(draft.gpsInstallationEstimateStartDate)
@@ -93,6 +99,7 @@ const mapDraftsToFormData = (drafts) => {
 };
 
 const Draft = ({ isDraftAvailable }) => {
+  const router = useRouter();
   const isFirstMount = useRef(true);
   const { data, isLoading, error } = useGetFleetsDrafts(
     isDraftAvailable ? "/v1/fleet/drafts" : null
@@ -100,13 +107,41 @@ const Draft = ({ isDraftAvailable }) => {
   const [activeIndex, setActiveIndex] = useState();
   const [addArmadaImageModal, setAddArmadaImageModal] = useState(false);
 
-  // Custom handlers for this vehicle form
+  const { trigger: handlePostFleetBulkCreate, isMutating } =
+    usePostFleetBulkCreate();
+
+  // Custom submit handler for this page
   const handleSubmit = (value) => {
-    handleVehicleSubmit(value);
+    const payload = normalizePayloadTambahArmadaMassal(value);
+    handlePostFleetBulkCreate(payload)
+      .then((res) => {
+        // Show success message
+        toast.success(`Berhasil menambahkan ${res.Data.savedFleets} armada.`);
+        router.push(`/manajemen-armada?tab=process`);
+      })
+      .catch((_error) => {
+        // Show error message
+        toast.error(
+          "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
+        );
+      });
   };
 
+  // Custom save as draft handler for this page
   const handleSaveAsDraft = (value) => {
-    handleVehicleSaveAsDraft(value);
+    const payload = normalizePayloadTambahArmadaMassal(value);
+    handlePostFleetBulkCreate(payload)
+      .then(() => {
+        // Show success message
+        toast.success("Draft armada berhasil disimpan.");
+      })
+      .catch((_error) => {
+        // Show error message
+        toast.error(
+          "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
+        );
+      });
+    router.push(`/manajemen-armada?tab=process`);
   };
 
   // Use the reusable table form hook for vehicle data
@@ -192,6 +227,7 @@ const Draft = ({ isDraftAvailable }) => {
       </div>
     );
   }
+
   return (
     <div className="">
       {/* Header Table */}

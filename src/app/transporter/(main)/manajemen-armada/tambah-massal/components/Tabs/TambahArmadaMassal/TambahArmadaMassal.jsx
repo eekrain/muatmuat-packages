@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import Button from "@/components/Button/Button";
@@ -9,31 +10,61 @@ import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import { useTabs } from "@/components/Tabs/Tabs";
 import {
   handleVehicleCellValueChange,
-  handleVehicleSaveAsDraft,
-  handleVehicleSubmit,
   validateVehicleForm,
   vehicleDefaultValues,
   vehicleFormSchema,
 } from "@/config/forms/vehicleFormConfig";
 import { useTableForm } from "@/hooks/useTableForm";
+import { normalizePayloadTambahArmadaMassal } from "@/lib/normalizers/transporter/tambah-armada-massal/normalizePayloadTambahArmadaMassal";
+import { toast } from "@/lib/toast";
+import { usePostFleetBulkCreate } from "@/services/Transporter/manajemen-armada/postFleetBulkCreate";
 
 import ModalAddArmadaImage from "../../../preview-armada/components/ModalAddImage/ModalAddImage";
 import ArmadaTable from "../../ArmadaTable/ArmadaTable";
 
 const TambahArmadaMassal = ({ isDraftAvailable }) => {
+  const router = useRouter();
   const { onValueChange } = useTabs();
 
   const [isDraft] = useState(isDraftAvailable);
   const [activeIndex, setActiveIndex] = useState();
   const [addArmadaImageModal, setAddArmadaImageModal] = useState(false);
 
-  // Custom handlers for this vehicle form
+  const { trigger: handlePostFleetBulkCreate, isMutating } =
+    usePostFleetBulkCreate();
+
+  // Custom submit handler for this page
   const handleSubmit = (value) => {
-    handleVehicleSubmit(value);
+    const payload = normalizePayloadTambahArmadaMassal(value);
+    handlePostFleetBulkCreate(payload)
+      .then((res) => {
+        // Show success message
+        toast.success(`Berhasil menambahkan ${res.Data.savedFleets} armada.`);
+        router.push(`/manajemen-armada?tab=process`);
+      })
+      .catch((_error) => {
+        // Show error message
+        toast.error(
+          "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
+        );
+      });
   };
 
+  // Custom save as draft handler for this page
   const handleSaveAsDraft = (value) => {
-    handleVehicleSaveAsDraft(value);
+    const payload = normalizePayloadTambahArmadaMassal(value);
+    handlePostFleetBulkCreate(payload)
+      .then(() => {
+        // Show success message
+        toast.success("Draft armada berhasil disimpan.");
+      })
+      .catch((_error) => {
+        // Show error message
+        toast.error(
+          "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
+        );
+      });
+    router.push(`/manajemen-armada?tab=process`);
   };
 
   // Use the reusable table form hook for vehicle data
@@ -89,6 +120,7 @@ const TambahArmadaMassal = ({ isDraftAvailable }) => {
         <div className="flex items-center justify-end">
           <div className="mt-4 flex w-full items-end justify-end gap-3">
             <Button
+              disabled={isMutating}
               onClick={handleSaveAsDraft}
               variant="muattrans-primary-secondary"
               type="button"
@@ -96,6 +128,7 @@ const TambahArmadaMassal = ({ isDraftAvailable }) => {
               Simpan Sebagai Draft
             </Button>
             <Button
+              disabled={isMutating}
               type="submit"
               onClick={() => {
                 handleSubmit();

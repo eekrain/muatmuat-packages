@@ -46,7 +46,6 @@ const FileUploadInput = ({
   useEffect(() => {
     // File upload tracking
     if (value && (value.name || value.documentUrl)) {
-      console.log("File uploaded:", value);
       setHasFile(true);
     }
   }, [value]);
