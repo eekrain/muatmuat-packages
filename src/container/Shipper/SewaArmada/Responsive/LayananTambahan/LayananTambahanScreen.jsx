@@ -26,7 +26,10 @@ import {
   useSewaArmadaStore,
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
-const LayananTambahanScreen = ({ additionalServicesOptions }) => {
+const LayananTambahanScreen = ({
+  additionalServicesOptions,
+  shippingOption,
+}) => {
   const { t } = useTranslation();
   const navigation = useResponsiveNavigation();
   const isMountedRef = useRef(true);
@@ -96,18 +99,39 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
     }
   }, [tambahanFormValues.opsiPegiriman, localFormErrors.opsiPegiriman]);
 
-  // Initialize form with existing values from store (run once after mount)
+  // Initialize shipping option from direct prop if provided
   useEffect(() => {
-    if (isInitialized) return;
+    // Skip if form is already initialized or if no shipping option provided
+    if (isInitialized || !shippingOption?.id) return;
 
-    console.log("🔄 LayananTambahan - Initializing form with existing data");
+    // Format and set shipping option to match DeliveryEvidenceModal's structure
+    tambahanSetField("opsiPegiriman", {
+      id: shippingOption.id,
+      courierName: shippingOption.courierName,
+      originalCost: shippingOption.originalCost,
+      originalInsurance: shippingOption.originalInsurance || 0,
+    });
+
+    // Enable the shipping service checkbox
+    tambahanSetField("kirimBuktiFisik", true);
+
+    // Default insurance to false (user can enable if needed)
+    tambahanSetField("asuransiPengiriman", false);
+
+    // Set initialized flag to true to prevent re-initialization
+    setIsInitialized(true);
+  }, [shippingOption, isInitialized, tambahanSetField]);
+
+  // Initialize form with existing values from store (run once after mount if not initialized from prop)
+  useEffect(() => {
+    // Skip if already initialized (e.g., from shippingOption prop)
+    if (isInitialized) return;
 
     const existingShippingService = additionalServices.find(
       (service) => service.withShipping
     );
 
     if (existingShippingService && existingShippingService.shippingDetails) {
-      console.log("✅ Found existing shipping service, populating form");
       const { shippingDetails } = existingShippingService;
 
       // Set kirimBuktiFisik checkbox to true
@@ -132,7 +156,7 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
         }
       }
     } else {
-      console.log("ℹ️ No existing shipping service found");
+      // No existing shipping service found
     }
 
     setIsInitialized(true);
@@ -250,14 +274,6 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
   };
 
   const handleSaveLayananTambahan = () => {
-    console.log("💾 handleSaveLayananTambahan - Starting save process");
-    console.log("📝 Current form values:", {
-      kirimBuktiFisik: tambahanFormValues.kirimBuktiFisik,
-      opsiPegiriman: tambahanFormValues.opsiPegiriman,
-      asuransiPengiriman: tambahanFormValues.asuransiPengiriman,
-      locationFormValues: locationFormValues,
-    });
-
     const isLocationFormValid = validateLayananTambahan();
 
     // Validate tambahan form - opsi pengiriman wajib jika kirim bukti fisik dicentang
@@ -312,21 +328,22 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
       );
 
       if (sendDeliveryEvidenceService) {
-        const shippingPrice =
-          tambahanFormValues.opsiPegiriman?.originalCost || 0;
-        const insurancePrice = tambahanFormValues.asuransiPengiriman
-          ? 10000
-          : 0;
+        // Shipping and insurance costs are taken directly from the shipping option
 
         const newAdditionalService = {
           serviceId: sendDeliveryEvidenceService.additionalServiceId,
           withShipping: sendDeliveryEvidenceService.withShipping,
-          shippingCost: Number(shippingPrice),
+          shippingCost: Number(
+            tambahanFormValues.opsiPegiriman.originalCost || 0
+          ),
           shippingDetails: {
             shippingOptionId: tambahanFormValues.opsiPegiriman.id || null,
+            courierName: tambahanFormValues.opsiPegiriman.courierName || "",
             withInsurance: tambahanFormValues.asuransiPengiriman,
             ...(tambahanFormValues.asuransiPengiriman && {
-              insuranceCost: insurancePrice,
+              insuranceCost: Number(
+                tambahanFormValues.opsiPegiriman.originalInsurance || 0
+              ),
             }),
             recipientName: locationFormValues.namaPIC,
             recipientPhone: locationFormValues.noHPPIC,
@@ -791,16 +808,16 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                       />
                     </div>
                     <div className="flex flex-col items-start gap-y-2">
-                      {tambahanFormValues.opsiPegiriman ? (
+                      {shippingOption?.id ? (
                         <>
                           <span
                             className={`text-sm font-semibold leading-[15.4px] ${isKirimBuktiFisikDisabled || isLocationDisabled ? "text-neutral-600" : "text-neutral-900"}`}
                           >
-                            {tambahanFormValues.opsiPegiriman.courierName}
+                            {shippingOption.courierName}
                           </span>
                           <span className="text-xs font-medium leading-[13.2px] text-neutral-900">
-                            {tambahanFormValues.opsiPegiriman.originalCost
-                              ? `Rp${tambahanFormValues.opsiPegiriman.originalCost.toLocaleString("id-ID")}`
+                            {shippingOption.originalCost
+                              ? `Rp${shippingOption.originalCost.toLocaleString("id-ID")}`
                               : ""}
                           </span>
                         </>
@@ -821,13 +838,13 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                     }
                   />
                 </button>
-                {tambahanFormValues.opsiPegiriman ? (
+                {shippingOption?.id ? (
                   <Checkbox
                     checked={tambahanFormValues.asuransiPengiriman}
                     onChange={(e) =>
                       tambahanSetField("asuransiPengiriman", e.checked)
                     }
-                    label={t("checkboxAsuransiPengiriman")}
+                    label={`Pakai Asuransi Pengiriman (Rp${shippingOption.originalInsurance.toLocaleString("id-ID")})`}
                     className="!text-xs !font-medium !leading-[15.6px]"
                   />
                 ) : null}
