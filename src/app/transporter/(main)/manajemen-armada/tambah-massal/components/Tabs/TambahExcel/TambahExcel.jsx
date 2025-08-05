@@ -13,12 +13,19 @@ import Toggle from "@/components/Toggle/Toggle";
 import { isDev } from "@/lib/constants/is-dev";
 import { toast } from "@/lib/toast";
 import { formatDate } from "@/lib/utils/dateFormat";
-import { useGetFleetsUploadHistory } from "@/services/Transporter/manajemen-armada/getFleetsUploadHistory";
+import { useGetFleetsUploadHistoryWithParams } from "@/services/Transporter/manajemen-armada/getFleetsUploadHistory";
 import { usePostFleetBulkUpload } from "@/services/Transporter/manajemen-armada/postFleetBulkUpload";
 
 const TambahExcel = () => {
   const [list, setList] = useState([]);
   const [stateUpload, setStateUpload] = useState(true);
+  const [searchParams, setSearchParams] = useState({
+    page: 1,
+    limit: 10,
+    search: "",
+    sort: "",
+    order: "",
+  });
   const router = useRouter();
   const columns = [
     {
@@ -67,7 +74,6 @@ const TambahExcel = () => {
       width: "80px",
       sortable: false,
       render: (row) => {
-        console.log("row", row);
         if (row.status === "FAILED") {
           return (
             <Link href={row.action} target="_blank">
@@ -91,7 +97,7 @@ const TambahExcel = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
 
-  const { data } = useGetFleetsUploadHistory("/v1/fleet/upload-history");
+  const { data, isLoading } = useGetFleetsUploadHistoryWithParams(searchParams);
   const { trigger, isMutating } = usePostFleetBulkUpload();
 
   const handleUpload = (file) => {
@@ -146,17 +152,34 @@ const TambahExcel = () => {
   };
 
   const handleSort = (column, sortBy) => {
-    const temp_list = [...list];
-    if (sortBy === "asc") {
-      temp_list.sort((a, b) => (a[column] > b[column] ? 1 : -1));
-    } else if (sortBy === "desc") {
-      temp_list.sort((a, b) => (a[column] < b[column] ? 1 : -1));
-    } else {
-      temp_list.sort((a, b) => (a[column] > b[column] ? 1 : -1)); // Default sort order
-    }
-    setList(temp_list);
-    // Log the sorting action
-    console.log(`Sorted by ${column} in ${sortBy} order`);
+    setSearchParams((prev) => ({
+      ...prev,
+      sort: column,
+      order: sortBy,
+    }));
+  };
+
+  const handleSearch = (searchTerm) => {
+    setSearchParams((prev) => ({
+      ...prev,
+      search: searchTerm,
+      page: 1, // Reset to first page when searching
+    }));
+  };
+
+  const handlePageChange = (page) => {
+    setSearchParams((prev) => ({
+      ...prev,
+      page,
+    }));
+  };
+
+  const handlePerPageChange = (limit) => {
+    setSearchParams((prev) => ({
+      ...prev,
+      limit,
+      page: 1, // Reset to first page when changing page size
+    }));
   };
 
   useEffect(() => {
@@ -260,28 +283,25 @@ const TambahExcel = () => {
           <DataTable
             data={list}
             columns={columns}
-            searchPlaceholder="Cari Nama Dokumen"
-            currentPage={1}
-            totalPages={1}
-            totalItems={10}
-            perPage={10}
-            showDisplayView={false}
+            searchPlaceholder="Cari Nama Dokumen (min. 4 karakter)"
+            currentPage={searchParams.page}
+            totalPages={data?.Data?.pagination?.totalPages || 1}
+            totalItems={data?.Data?.pagination?.totalItems || 0}
+            perPage={searchParams.limit}
+            // showDisplayView={false}
             showPagination={false}
-            showTotalCount={false}
+            // showTotalCount={true}
             tableTitle={
               <h2 className="mr-3 text-xl font-bold text-neutral-900">
                 Riwayat Unggahan 90 Hari Terakhir
               </h2>
             }
             fixedHeight={true}
-            // onPageChange={handlePageChange}
-            // onPerPageChange={handlePerPageChange}
-            // onSearch={handleSearch}
-            // onFilter={handleFilter}
+            onPageChange={handlePageChange}
+            onPerPageChange={handlePerPageChange}
+            onSearch={handleSearch}
             onSort={handleSort}
-            // loading={isLoading}
-            // rowClassName={rowClassName}
-            // filterConfig={getFilterConfig()}
+            loading={isLoading}
           />
         ) : (
           <DataNotFound
