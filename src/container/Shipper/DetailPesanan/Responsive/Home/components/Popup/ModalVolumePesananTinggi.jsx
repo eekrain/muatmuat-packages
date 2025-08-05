@@ -18,7 +18,7 @@ export const ModalVolumePesananTinggi = ({
   onCancel,
 }) => {
   return (
-    <Modal open={open} onOpenChange={onOpenChange}>
+    <Modal open={true} onOpenChange={onOpenChange}>
       <ModalContent className="w-[296px] rounded-[10px] p-0" type="muatmuat">
         <div className="flex flex-col items-center gap-5 px-4 pb-6 pt-6">
           <div className="flex flex-col items-center gap-4">

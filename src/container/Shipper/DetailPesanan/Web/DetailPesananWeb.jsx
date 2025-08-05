@@ -1,4 +1,4 @@
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
@@ -23,6 +23,7 @@ import StatusPesanan from "./StatusPesanan/StatusPesanan";
 import { WaitFleetSearchModal } from "./StatusPesanan/WaitFleetSearch";
 
 const DetailPesananWeb = () => {
+  const navigation = useRouter();
   const params = useParams();
   const isUpdateOrderSuccess = useSewaArmadaStore(
     (state) => state.isUpdateOrderSuccess
@@ -34,8 +35,12 @@ const DetailPesananWeb = () => {
     { name: "Detail Pesanan" },
   ];
 
-  const { data: dataDetailPesanan, isLoading: isLoadingDetailPesanan } =
-    useGetDetailPesananData(params.orderId);
+  const {
+    data: dataDetailPesanan,
+    isLoading: isLoadingDetailPesanan,
+    error,
+  } = useGetDetailPesananData(params.orderId);
+
   const {
     isOpen: isWaitFleetModalOpen,
     isShow: isShowWaitFleetAlert,
@@ -49,18 +54,36 @@ const DetailPesananWeb = () => {
 
   const [isPesananGagalModalOpen, setIsPesananGagalModalOpen] = useState(false);
 
-  const { setIsGlobalLoading } = useLoadingAction();
   useEffect(() => {
     if (isUpdateOrderSuccess) {
       toast.success("Berhasil Ubah Pesanan");
       setUpdateOrderSuccess(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isUpdateOrderSuccess]);
 
+  const { setIsGlobalLoading } = useLoadingAction();
   useEffect(() => {
     setIsGlobalLoading(isLoadingDetailPesanan);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoadingDetailPesanan]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(
+        error.response.status === 404
+          ? "Pesanan tidak ditemukan"
+          : "Gagal mengambil data pesanan"
+      );
+      navigation.replace("/daftarpesanan");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error]);
+
+  if (isLoadingDetailPesanan) {
+    return null;
+  }
+
   return (
     <>
       <div className="mx-auto max-w-[1200px] py-8">

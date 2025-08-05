@@ -11,7 +11,7 @@ const buildEslintCommand = (filenames) =>
 module.exports = {
   // Run on all JS/TS/JSX/TSX files
   "*.{js,jsx,ts,tsx}": [
-    "npm run convert-fonts",
+    // "npm run convert-fonts",
     buildEslintCommand, // Use the Next.js-recommended lint command
     "prettier --write", // Run Prettier to format
   ],

@@ -350,11 +350,13 @@ const completeFetcher = async (cacheKey) => {
 
     return data;
   } catch (error) {
+    // Log the error for debugging purposes
     // eslint-disable-next-line no-console
-    console.error(
-      "🚀 ~ file: getDetailPesananData.js:280 ~ fetcher ~ error:",
-      error
-    );
+    console.error("Error fetching detail pesanan data:", error);
+
+    // IMPORTANT: Re-throw the error so SWR can catch it
+    // and populate its `error` state.
+    throw error;
   }
 };
 
