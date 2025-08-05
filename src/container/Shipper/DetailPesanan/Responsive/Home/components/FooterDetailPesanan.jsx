@@ -249,7 +249,7 @@ export const FooterDetailPesanan = ({
           setIsOpenBottomsheetAlasanPembatalan(true);
           setIsOpenModalBatalkanPesanan(false);
         }}
-        orderStatus={dataStatusPesanan?.orderStatus}
+        hasPriceCharge={dataRingkasanPembayaran?.priceCharge}
       />
       <BottomsheetAlasanPembatalan
         open={isOpenBottomsheetAlasanPembatalan}

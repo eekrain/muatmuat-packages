@@ -9,7 +9,7 @@ export const InformasiMuatanFragment = ({ dataRingkasanPesanan }) => {
       {dataRingkasanPesanan?.isHalalLogistics && <HalalLogistik />}
 
       <div className="flex flex-col gap-3">
-        {dataRingkasanPesanan?.cargos?.slice(0, 2)?.map((cargo) => (
+        {dataRingkasanPesanan?.cargos?.slice(0, 3)?.map((cargo) => (
           <div key={cargo.cargoId} className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
               <IconComponent src="/icons/box16.svg" />

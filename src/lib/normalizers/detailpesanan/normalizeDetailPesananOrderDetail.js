@@ -79,7 +79,7 @@ export const normalizeDetailPesananOrderDetail = ({
       hasFoundFleet:
         dataOrderStatusHistory?.driverStatus &&
         dataOrderStatusHistory?.driverStatus?.length > 0,
-      hasPriceCharge: newPriceCharge && newPriceCharge?.isPaid === false,
+      hasPriceCharge: !!newPriceCharge && newPriceCharge?.isPaid === false,
       hasPriceChange: Boolean(newPriceChange),
       totalUnit: dataOrderDetail.summary?.truckType?.totalUnit || 1,
       reviewData,

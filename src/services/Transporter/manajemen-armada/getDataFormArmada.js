@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = false; // toggle mock data
+const useMockData = true; // toggle mock data
 
 // Endpoint constants
 export const URL_JENIS_TRUK = "/v1/master/truck-types";
