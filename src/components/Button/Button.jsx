@@ -11,7 +11,7 @@ import IconComponent from "../IconComponent/IconComponent";
 
 const buttonVariants = cva(
   // Base styles
-  "flex h-10 items-center justify-center gap-1 rounded-[24px] py-3 text-sm font-semibold leading-[16.8px] transition-colors md:h-8",
+  "flex h-10 items-center justify-center gap-1 rounded-[24px] py-3 text-sm font-semibold leading-[16.8px] transition-colors md:h-8 md:px-6",
   {
     variants: {
       variant: {
