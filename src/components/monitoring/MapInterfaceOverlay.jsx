@@ -6,7 +6,12 @@ import Button from "@/components/Button/Button";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 
-export const MapInterfaceOverlay = ({ onZoomIn, onZoomOut }) => {
+export const MapInterfaceOverlay = ({
+  onZoomIn,
+  onZoomOut,
+  onClickDaftarArmada,
+  hideTopNavigation = false,
+}) => {
   const [searchValue, setSearchValue] = useState("");
   const [showLicensePlate, setShowLicensePlate] = useState(true);
   const [sosCount] = useState(2);
@@ -14,56 +19,62 @@ export const MapInterfaceOverlay = ({ onZoomIn, onZoomOut }) => {
   return (
     <>
       {/* Top Navigation Bar Overlay */}
-      <div className="absolute left-0 right-0 top-0 z-20 flex items-center gap-3 p-4">
-        {/* Daftar Armada Button */}
-        <Button
-          variant="muattrans-primary"
-          iconRight={<ChevronRight size={16} />}
-        >
-          Daftar Armada
-        </Button>
+      {!hideTopNavigation && (
+        <div className="absolute left-0 right-0 top-0 z-20 flex items-center gap-3 p-4">
+          {/* Daftar Armada Button */}
+          <Button
+            variant="muattrans-primary"
+            iconRight={<ChevronRight size={16} />}
+            onClick={onClickDaftarArmada}
+          >
+            Daftar Armada
+          </Button>
 
-        {/* Search Input */}
-        <div className="max-w-[300px] flex-1">
-          <Input
-            type="text"
-            placeholder="Cari No. Polisi / Nama Driver"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            icon={{
-              left: (
-                <IconComponent
-                  src="/icons/monitoring/search.svg"
-                  className="size-4"
-                />
-              ),
-            }}
-          />
-        </div>
-
-        {/* Filter Button */}
-        <Button
-          variant="muattrans-primary-secondary"
-          iconLeft={
-            <IconComponent
-              src="/icons/monitoring/filter.svg"
-              className="size-4"
+          {/* Search Input */}
+          <div className="max-w-[300px] flex-1">
+            <Input
+              type="text"
+              placeholder="Cari No. Polisi / Nama Driver"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              icon={{
+                left: (
+                  <IconComponent
+                    src="/icons/monitoring/search.svg"
+                    className="size-4"
+                  />
+                ),
+              }}
             />
-          }
-        >
-          Filter
-        </Button>
+          </div>
 
-        {/* SOS Button */}
-        <Button
-          variant="muattrans-error-secondary"
-          iconLeft={
-            <IconComponent src="/icons/monitoring/sos.svg" className="size-4" />
-          }
-        >
-          SOS ({sosCount})
-        </Button>
-      </div>
+          {/* Filter Button */}
+          <Button
+            variant="muattrans-primary-secondary"
+            iconLeft={
+              <IconComponent
+                src="/icons/monitoring/filter.svg"
+                className="size-4"
+              />
+            }
+          >
+            Filter
+          </Button>
+
+          {/* SOS Button */}
+          <Button
+            variant="muattrans-error-secondary"
+            iconLeft={
+              <IconComponent
+                src="/icons/monitoring/sos.svg"
+                className="size-4"
+              />
+            }
+          >
+            SOS ({sosCount})
+          </Button>
+        </div>
+      )}
 
       {/* Right Side Map Controls */}
       <div className="absolute right-4 top-[104px] z-20 -translate-y-1/2 transform">

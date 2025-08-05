@@ -7,6 +7,7 @@ import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import { MapWithPath } from "@/components/MapContainer/MapWithPath";
 import { MapInterfaceOverlay } from "@/components/monitoring/MapInterfaceOverlay";
 import { NoFleetOverlay } from "@/components/monitoring/NoFleetOverlay";
+import DaftarArmada from "@/container/Transporter/Monitoring/DaftarArmada/DaftarArmada";
 import PermintaanAngkut from "@/container/Transporter/Monitoring/PermintaanAngkut/PermintaanAngkut";
 import { cn } from "@/lib/utils";
 import { useGetFleetCount } from "@/services/Transporter/monitoring/getFleetCount";
@@ -15,10 +16,10 @@ import { useGetFleetLocations } from "@/services/Transporter/monitoring/getFleet
 const Page = () => {
   const { data: fleetData, isLoading } = useGetFleetCount();
   const { data: fleetLocationsData } = useGetFleetLocations();
-  const [activeTab, setActiveTab] = useState("tersedia");
   const [isBottomExpanded, setIsBottomExpanded] = useState(true);
   const [activeRightTab, setActiveRightTab] = useState("permintaan");
   const [mapZoom, setMapZoom] = useState(12);
+  const [showLeftPanel, setShowLeftPanel] = useState(false);
 
   const hasFleet = fleetData?.hasFleet || false;
 
@@ -29,6 +30,23 @@ const Page = () => {
 
   const handleZoomOut = () => {
     setMapZoom((prevZoom) => Math.max(prevZoom - 1, 1)); // Min zoom level 1
+  };
+
+  // Panel handlers
+  const handleOpenLeftPanel = () => {
+    setShowLeftPanel(true);
+    setIsBottomExpanded(false);
+  };
+
+  const handleCloseLeftPanel = () => {
+    setShowLeftPanel(false);
+  };
+
+  const handleToggleBottomPanel = () => {
+    setIsBottomExpanded(!isBottomExpanded);
+    if (!isBottomExpanded) {
+      setShowLeftPanel(false);
+    }
   };
 
   // Convert fleet locations to map markers
@@ -71,9 +89,11 @@ const Page = () => {
             mapContainerStyle={{
               height: isBottomExpanded
                 ? `calc((100vh - 92px - 16px - 16px) / 2)`
-                : `calc(100vh - 92px - 16px - 16px - 48px)`,
-              width: "100%",
-              transition: "height 300ms ease-in-out",
+                : `calc(100vh - 92px - 16px - 16px - 64px)`,
+              width: showLeftPanel ? "calc(100% - 332px)" : "100%",
+              marginLeft: showLeftPanel ? "332px" : "0",
+              transition:
+                "height 300ms ease-in-out, width 300ms ease-in-out, margin-left 300ms ease-in-out",
             }}
           />
           {!isLoading && !hasFleet && <NoFleetOverlay />}
@@ -81,8 +101,24 @@ const Page = () => {
             <MapInterfaceOverlay
               onZoomIn={handleZoomIn}
               onZoomOut={handleZoomOut}
+              onClickDaftarArmada={handleOpenLeftPanel}
+              hideTopNavigation={showLeftPanel}
             />
           )}
+
+          {/* Left Panel - Daftar Armada */}
+          <div
+            className={cn(
+              "absolute left-0 top-0 z-20 h-full w-[350px] rounded-r-xl bg-white shadow-xl transition-transform duration-300",
+              showLeftPanel ? "translate-x-0" : "-translate-x-full"
+            )}
+          >
+            <div className="flex h-full flex-col">
+              <>
+                <DaftarArmada onClose={handleCloseLeftPanel} />
+              </>
+            </div>
+          </div>
         </div>
 
         {/* Bottom Panel - Daftar Pesanan Aktif */}
@@ -97,7 +133,7 @@ const Page = () => {
           }}
         >
           <div className="flex h-full flex-col">
-            <div className="flex items-center justify-between border-b px-4 py-2">
+            <div className="flex h-16 items-center justify-between border-b px-4">
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-semibold text-gray-800">
                   Daftar Pesanan Aktif
@@ -110,7 +146,7 @@ const Page = () => {
                 </svg>
               </div>
               <button
-                onClick={() => setIsBottomExpanded(!isBottomExpanded)}
+                onClick={handleToggleBottomPanel}
                 className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100"
               >
                 <svg
