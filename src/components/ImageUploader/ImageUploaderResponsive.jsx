@@ -8,7 +8,7 @@ import {
   BottomSheetContent,
   BottomSheetHeader,
   BottomSheetTitle,
-} from "@/components/Bottomsheet/BottomSheet";
+} from "@/components/BottomSheet/BottomSheetUp";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";

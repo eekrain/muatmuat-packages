@@ -3,9 +3,9 @@ import { useCallback } from "react";
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 
 import useDevice from "../use-device";
-import { fetcher } from "./fetcher";
 
 export const useGetCurrentLocation = ({
+  apiAdapter,
   setCoordinates,
   setAutoCompleteSearchPhrase,
   setIsModalPostalCodeOpen,
@@ -32,7 +32,7 @@ export const useGetCurrentLocation = ({
               latitude: coords.latitude,
               longitude: coords.longitude,
             });
-            const result = await fetcher.getLocationByLatLong(coords);
+            const result = await apiAdapter.getLocationByLatLong(coords);
 
             setLocationPartial(result);
             setCoordinates(result.coordinates);
@@ -60,7 +60,7 @@ export const useGetCurrentLocation = ({
   }, [isMobile]);
 
   const handleChangeMarkerCoordinates = async (coordinates) => {
-    const result = await fetcher.getLocationByLatLong(coordinates);
+    const result = await apiAdapter.getLocationByLatLong(coordinates);
     setLocationPartial(result);
     setCoordinates(result.coordinates);
     setTempLocation(result);

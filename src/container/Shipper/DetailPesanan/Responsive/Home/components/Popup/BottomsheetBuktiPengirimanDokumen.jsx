@@ -7,7 +7,7 @@ import {
   BottomSheetHeader,
   BottomSheetTitle,
   BottomSheetTrigger,
-} from "@/components/Bottomsheet/BottomSheet";
+} from "@/components/BottomSheet/BottomSheetUp";
 import {
   LightboxPreview,
   LightboxProvider,

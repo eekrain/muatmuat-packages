@@ -1,7 +1,7 @@
 import {
   BottomSheet,
   BottomSheetTrigger,
-} from "@/components/Bottomsheet/BottomSheet";
+} from "@/components/BottomSheet/BottomSheetUp";
 import { idrFormat } from "@/lib/utils/formatters";
 
 import BottomsheetWaitingTimeDetails from "./Popup/BottomsheetWaitingTimeDetails";
@@ -14,7 +14,9 @@ const AdditionalFeesDetail = ({ priceCharge }) => {
   // Jika tidak ada biaya tambahan, jangan tampilkan komponen
   if (
     !priceCharge ||
-    (!priceCharge.waitingFee?.totalAmount && !priceCharge.adminFee && !priceCharge.overloadFee?.totalAmount)
+    (!priceCharge.waitingFee?.totalAmount &&
+      !priceCharge.adminFee &&
+      !priceCharge.overloadFee?.totalAmount)
   ) {
     return null;
   }
@@ -65,7 +67,7 @@ const AdditionalFeesDetail = ({ priceCharge }) => {
 
       {/* Bagian Biaya Kelebihan Muatan */}
       {hasOverloadFee && (
-        <div className={`flex flex-col gap-2 ${hasWaitingFee ? 'mt-4' : ''}`}>
+        <div className={`flex flex-col gap-2 ${hasWaitingFee ? "mt-4" : ""}`}>
           <p className="text-sm font-bold text-neutral-900">
             Biaya Kelebihan Muatan
           </p>

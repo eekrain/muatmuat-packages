@@ -17,9 +17,9 @@ import { MyTextArea } from "@/components/Form/TextArea";
 import { MapContainer } from "@/components/MapContainer/MapContainer";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
+import { normalizePostalCodeData } from "@/hooks/use-location/normalizer";
 import { useLocationSearch } from "@/hooks/use-location/use-location-search";
 import { useSWRMutateHook } from "@/hooks/use-swr";
-import { normalizePostalCodeData } from "@/lib/normalizers/location";
 import { toast } from "@/lib/toast";
 import { useTransporterFormStore } from "@/store/CS/forms/registerTransporter";
 

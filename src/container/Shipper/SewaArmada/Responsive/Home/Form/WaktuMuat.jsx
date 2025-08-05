@@ -11,7 +11,7 @@ import {
   BottomSheetFooter,
   BottomSheetHeader,
   BottomSheetTitle,
-} from "@/components/Bottomsheet/BottomSheet";
+} from "@/components/BottomSheet/BottomSheetUp";
 import Button from "@/components/Button/Button";
 import DatetimePicker from "@/components/DatetimePicker/DatetimePicker";
 import Checkbox from "@/components/Form/Checkbox";

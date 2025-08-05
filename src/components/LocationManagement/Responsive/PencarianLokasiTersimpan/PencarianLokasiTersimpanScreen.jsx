@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef } from "react";
 
+import { normalizeUserSavedLocation } from "@/hooks/use-location/normalizer";
 import { useLocationContext } from "@/hooks/use-location/use-location";
 import { useTranslation } from "@/hooks/use-translation";
 import SearchBarResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/SearchBarResponsiveLayout";
-import { normalizeUserSavedLocation } from "@/lib/normalizers/location";
 import {
   useResponsiveNavigation,
   useResponsiveRouteParams,

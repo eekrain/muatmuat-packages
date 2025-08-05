@@ -1,16 +1,14 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect } from "react";
 
-import { fetcherMuatparts } from "@/lib/axios";
-import { normalizePostalCodeData } from "@/lib/normalizers/location";
+import { normalizePostalCodeData } from "@/hooks/use-location/normalizer";
 import { toast } from "@/lib/toast";
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 
 import { useDebounceCallback } from "../use-debounce-callback";
 import useDevice from "../use-device";
-import { useSWRMutateHook } from "../use-swr";
-import { fetcher } from "./fetcher";
 
 export const usePostalCode = ({
+  apiAdapter,
   setIsModalPostalCodeOpen,
   locationPostalCodeSearchPhrase,
   tempLocation,
@@ -22,16 +20,9 @@ export const usePostalCode = ({
   );
   const { lastValidLocation, setLastValidLocation } = useLocationFormStore();
 
-  const { data, trigger } = useSWRMutateHook(
-    "v1/autocompleteStreetLocal",
-    "POST",
-    fetcherMuatparts
-  );
+  const { data: postalCodeAutoCompleteResult, trigger } =
+    apiAdapter.useGetAutoCompleteByPostalCode();
   const debouncedTrigger = useDebounceCallback(trigger, 500);
-  const postalCodeAutoCompleteResult = useMemo(
-    () => data?.Data?.data?.Data || [],
-    [data]
-  );
 
   useEffect(() => {
     if (locationPostalCodeSearchPhrase) {
@@ -66,14 +57,14 @@ export const usePostalCode = ({
         setAutoCompleteSearchPhrase(tempLocation.location.name);
       setIsModalPostalCodeOpen(false);
 
-      fetcher.saveRecentSearchedLocation(result);
+      apiAdapter.saveRecentSearchedLocation(result);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [tempLocation, lastValidLocation]
   );
 
   return {
-    postalCodeAutoCompleteResult,
+    postalCodeAutoCompleteResult: postalCodeAutoCompleteResult || [],
     handleSelectPostalCode,
   };
 };

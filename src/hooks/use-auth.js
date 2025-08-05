@@ -1,13 +1,15 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 
 import { useShallow } from "zustand/react/shallow";
 
 import { fetcherMuatparts } from "@/lib/axios";
 import { useTokenActions, useTokenStore } from "@/store/AuthStore/tokenStore";
 import { useUserActions, useUserStore } from "@/store/AuthStore/userStore";
+
+/* eslint-disable no-console */
 
 const cacheConfig = {
   headers: {
@@ -58,7 +60,7 @@ export const AuthenticationProvider = ({ children }) => {
       try {
         await Promise.allSettled([
           fetcherMuatparts
-            .get("v1/muatparts/auth/credential-check", cacheConfig)
+            .get("v1/muatparts/auth/credential-check")
             .then((res) => {
               const credential = res.data?.Data || {};
               delete credential.accessToken;
@@ -75,7 +77,7 @@ export const AuthenticationProvider = ({ children }) => {
             .then((res) => setDataMatrix(res.data?.Data)),
         ]);
       } catch (err) {
-        console.error("Error initializing authentication", err);
+        console.warn("Error initializing authentication", err);
       } finally {
         setHasInitAuth(true);
         setIsLoggedIn(true);
@@ -93,7 +95,7 @@ export const AuthenticationProvider = ({ children }) => {
   ]);
 
   // Render children only after auth initialization
-  return <>{isLoggedIn && children}</>;
+  return <Fragment>{isLoggedIn ? children : null}</Fragment>;
 };
 
 /**
@@ -111,37 +113,35 @@ export const AuthenticationProvider = ({ children }) => {
  */
 export const useAuth = () => {
   const dataMatrix = useUserStore(useShallow((state) => state.dataMatrix));
-  const dataUser = useUserStore(useShallow((state) => ({ ...state.dataUser })));
+  const dataUser = useUserStore(useShallow((state) => state.dataUser));
   const isLoggedIn = useMemo(() => Boolean(dataUser?.name), [dataUser?.name]);
 
-  // Stable logout function
   const logout = useCallback(async () => {
     const authStore = useTokenStore.getState();
     const userStore = useUserStore.getState();
 
-    try {
-      await fetcherMuatparts.post("v1/muatparts/auth/revoke-refresh-token", {
+    await fetcherMuatparts
+      .post("v1/muatparts/auth/revoke-refresh-token", {
         refreshToken: authStore?.refreshToken,
+      })
+      .catch((err) => console.warn("Error revoking refresh token", err))
+      .finally(() => {
+        authStore.actions.clearToken();
+        userStore.actions.clearUser();
+
+        // Determine redirect URL based on app mode and environment
+        let redirectUrl;
+
+        if (process.env.NEXT_PUBLIC_APP_MODE === "transporter") {
+          // Transporter mode: redirect to appropriate login page
+          redirectUrl = "/login";
+        } else {
+          // Other modes: redirect to external signout
+          redirectUrl = `${process.env.NEXT_PUBLIC_INTERNAL_WEB}login/signout`;
+        }
+
+        window.location.replace(redirectUrl);
       });
-    } catch (err) {
-      console.warn("Error revoking refresh token", err);
-    } finally {
-      // authStore.actions.clearToken();
-      // userStore.actions.clearUser();
-
-      // Determine redirect URL based on app mode and environment
-      let redirectUrl;
-
-      if (process.env.NEXT_PUBLIC_APP_MODE === "transporter") {
-        // Transporter mode: redirect to appropriate login page
-        redirectUrl = "/login";
-      } else {
-        // Other modes: redirect to external signout
-        redirectUrl = `${process.env.NEXT_PUBLIC_INTERNAL_WEB}login/signout`;
-      }
-
-      window.location.replace(redirectUrl);
-    }
   }, []);
 
   return { dataMatrix, dataUser, logout, isLoggedIn };

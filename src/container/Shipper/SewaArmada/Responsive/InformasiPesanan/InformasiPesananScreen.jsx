@@ -11,7 +11,7 @@ import {
   BottomSheetHeader,
   BottomSheetTitle,
   BottomSheetTrigger,
-} from "@/components/Bottomsheet/BottomSheet";
+} from "@/components/BottomSheet/BottomSheetUp";
 import Button from "@/components/Button/Button";
 import { ButtonMini } from "@/components/Button/ButtonMini";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";

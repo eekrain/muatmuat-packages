@@ -109,7 +109,10 @@ const Item = ({ buttonRemove, index }) => {
         }}
         className="pb-0 md:pb-0"
         appearance={{
-          titleClassname: cn("text-xs", !item?.name && "text-neutral-600"),
+          titleClassname: cn(
+            "line-clamp-1 text-xs",
+            !item?.name && "text-neutral-600"
+          ),
         }}
         withDivider={index !== values.length - 1}
       />

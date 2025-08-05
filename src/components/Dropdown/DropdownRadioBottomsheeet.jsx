@@ -13,7 +13,7 @@ import {
   BottomSheetFooter,
   BottomSheetHeader,
   BottomSheetTitle,
-} from "../Bottomsheet/BottomSheet";
+} from "../BottomSheet/BottomSheetUp";
 
 const DropdownRadioBottomsheeet = ({
   className,
