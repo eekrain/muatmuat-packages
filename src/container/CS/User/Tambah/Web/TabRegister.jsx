@@ -102,7 +102,12 @@ const ChecklistItem = ({ title, status, active, isLast, onClick }) => (
   </div>
 );
 
-export const TabRegister = ({ activeIdx, setActiveIdx, itemsStatus }) => {
+export const TabRegister = ({
+  activeIdx,
+  setActiveIdx,
+  itemsStatus,
+  onAddTransporter,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [nextTabIndex, setNextTabIndex] = useState(null);
 
@@ -111,26 +116,15 @@ export const TabRegister = ({ activeIdx, setActiveIdx, itemsStatus }) => {
     itemsStatus?.[0] === "finished" &&
     itemsStatus?.[1] === "finished" &&
     itemsStatus?.[2] === "finished";
-
-  // =================================================================
-  // === PERUBAHAN UTAMA DI SINI ===
-  // =================================================================
   const handleTabClick = (index) => {
-    // Jangan lakukan apa-apa jika mengklik tab yang sudah aktif
     if (index === activeIdx) {
       return;
     }
-
-    // Cek status dari section yang SEDANG AKTIF (yang akan kita tinggalkan)
     const isCurrentSectionFinished = itemsStatus?.[activeIdx] === "finished";
 
-    // Jika section saat ini sudah "finished", tidak ada perubahan yang belum disimpan.
-    // Langsung pindah tab tanpa konfirmasi.
     if (isCurrentSectionFinished) {
       setActiveIdx(index);
     } else {
-      // Jika section saat ini "incomplete", berarti ada perubahan yang belum disimpan.
-      // Tampilkan modal konfirmasi.
       setNextTabIndex(index);
       setIsModalOpen(true);
     }
@@ -156,7 +150,6 @@ export const TabRegister = ({ activeIdx, setActiveIdx, itemsStatus }) => {
           <ChecklistItem
             key={item.title}
             title={item.title}
-            // Gunakan optional chaining untuk keamanan
             status={itemsStatus?.[idx] ?? "incomplete"}
             active={activeIdx === idx}
             isLast={idx === checklistItemsData.length - 1}
@@ -186,6 +179,7 @@ export const TabRegister = ({ activeIdx, setActiveIdx, itemsStatus }) => {
             </InfoTooltip>
           ) : (
             <button
+              onClick={onAddTransporter}
               className={cn(
                 "w-full rounded-3xl py-2 text-sm font-semibold",
                 "bg-muat-trans-primary-400 text-muat-trans-secondary-900"

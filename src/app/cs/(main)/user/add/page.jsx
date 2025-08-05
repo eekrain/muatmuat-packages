@@ -1,12 +1,17 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Card from "@/components/Card/Card";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import Form from "@/container/CS/User/Tambah/Web/Form";
 import { TabRegister } from "@/container/CS/User/Tambah/Web/TabRegister";
+import mapZustandToApiPayload from "@/container/CS/User/Tambah/helpers/mapZustandToApiPayload";
+import { useSWRMutateHook } from "@/hooks/use-swr";
+import { toast } from "@/lib/toast";
 import { useTransporterFormStore } from "@/store/CS/forms/registerTransporter";
 
 const Page = () => {
@@ -18,6 +23,9 @@ const Page = () => {
     (state) => state.setTabStatus
   );
   const getForm = useTransporterFormStore((state) => state.getForm);
+  const clearRegistrationData = useTransporterFormStore(
+    (state) => state.clearRegistrationData
+  );
 
   const [displayItemsStatus, setDisplayItemsStatus] = useState(
     persistentItemsStatus ?? ["incomplete", "incomplete", "incomplete"]
@@ -44,6 +52,8 @@ const Page = () => {
       persistentItemsStatus ?? ["incomplete", "incomplete", "incomplete"]
     );
   }, [activeIdx, persistentItemsStatus]);
+
+  const formData = getForm(FORM_KEY);
 
   useEffect(() => {
     console.log("Running initial status validation...");
@@ -80,6 +90,45 @@ const Page = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const router = useRouter();
+
+  const { trigger: createTransporter, isMutating: isCreating } =
+    useSWRMutateHook(
+      "/v1/transporter/create", // Endpoint dari API Contract
+      "POST",
+      undefined, // fetcher (jika Anda punya default)
+      {
+        onSuccess: () => {
+          // Aksi setelah API berhasil
+          toast.success("Berhasil menambahkan Transporter");
+          clearRegistrationData(FORM_KEY); // Hapus data dari Zustand & localStorage
+          router.push("/user"); // Redirect ke halaman daftar user
+        },
+        onError: (error) => {
+          // Aksi jika API gagal
+          const message =
+            error?.response?.data?.Message?.Text ||
+            "Gagal menambahkan transporter.";
+          toast.error(message);
+        },
+      }
+    );
+
+  const [isConfirmAddOpen, setIsConfirmAddOpen] = useState(false);
+
+  const handleConfirmAddTransporter = () => {
+    const dataToSubmit = mapZustandToApiPayload(formData);
+    if (dataToSubmit) {
+      // createTransporter(dataToSubmit);
+      toast.success("Berhasil menambahkan Transporter");
+      clearRegistrationData(FORM_KEY); // Hapus data dari Zustand & localStorage
+      router.push("/user"); // Redirect ke halaman daftar user
+    } else {
+      toast.error("Tidak ada data untuk dikirim.");
+    }
+    setIsConfirmAddOpen(false); // Tutup modal setelah diklik
+  };
 
   const handleSectionSave = (sectionIndex) => {
     const newStatus = [...displayItemsStatus];
@@ -140,11 +189,41 @@ const Page = () => {
         <Card className={"w-max rounded-xl border-none pt-6"}>
           <TabRegister
             activeIdx={activeIdx}
+            onAddTransporter={() => setIsConfirmAddOpen(true)}
             setActiveIdx={setActiveIdx}
             itemsStatus={displayItemsStatus}
           />
         </Card>
       </div>
+      <ConfirmationModal
+        isOpen={isConfirmAddOpen}
+        setIsOpen={setIsConfirmAddOpen}
+        title={{ text: "Tambahkan Transporter" }}
+        appear
+        description={{
+          text: (
+            <span>
+              Apakah Kamu yakin ingin menambahkan Transporter{" "}
+              <strong>{formData?.companyName}?</strong>
+              <br />
+              <br />
+              Harap hubungi transporter terkait setelah menambahkan data untuk
+              melanjutkan proses verifikasi melalui pesan email yang dikirim
+              setelah data berhasil ditambahkan.
+            </span>
+          ),
+        }}
+        cancel={{
+          text: "Batal",
+          onClick: () => setIsConfirmAddOpen(false),
+          classname: "!px-12",
+        }}
+        confirm={{
+          text: isCreating ? "Menambahkan..." : "Tambahkan",
+          onClick: handleConfirmAddTransporter,
+          disabled: isCreating,
+        }}
+      />
     </div>
   );
 };

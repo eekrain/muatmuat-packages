@@ -85,6 +85,8 @@ const informasiPendaftarSchema = v.object({
     district: v.pipe(v.string(), v.minLength(1, "Kecamatan wajib diisi")),
     city: v.optional(v.string()),
     province: v.optional(v.string()),
+    provinceId: v.optional(v.number()),
+    cityId: v.optional(v.number()),
     postalCode: v.pipe(v.string(), v.minLength(1, "Kode pos wajib diisi")),
     placeId: v.pipe(
       v.string(),
@@ -152,7 +154,9 @@ function InformasiPendaftar({ onSave, onFormChange }) {
         location: "",
         district: "",
         city: "",
+        cityId: "",
         province: "",
+        provinceId: "",
         postalCode: "",
         placeId: "",
         kecamatanList: [], // Tambahkan ini
@@ -164,6 +168,7 @@ function InformasiPendaftar({ onSave, onFormChange }) {
     },
   });
 
+  console.log(errors);
   useEffect(() => {
     if (isDirty) {
       onFormChange();
@@ -185,7 +190,9 @@ function InformasiPendaftar({ onSave, onFormChange }) {
       "locationData.longitude",
       "locationData.district",
       "locationData.city",
+      "locationData.cityId",
       "locationData.province",
+      "locationData.provinceId",
       "locationData.postalCode",
       "locationData.placeId",
     ];
@@ -202,6 +209,7 @@ function InformasiPendaftar({ onSave, onFormChange }) {
     setValue("locationData.location", locationData.location?.name || "", {
       shouldValidate: true,
     });
+    console.log("INI DATA LOKASI", locationData);
     setValue(
       "locationData.latitude",
       locationData.coordinates?.latitude.toString() || "",
@@ -218,7 +226,14 @@ function InformasiPendaftar({ onSave, onFormChange }) {
     setValue("locationData.city", locationData.city?.name || " ", {
       shouldValidate: true,
     });
+    console.log("HALO INI", locationData.city?.value);
+    setValue("locationData.cityId", locationData.city?.value || "", {
+      shouldValidate: true,
+    });
     setValue("locationData.province", locationData.province?.name || " ", {
+      shouldValidate: true,
+    });
+    setValue("locationData.provinceId", locationData.province?.value || "", {
       shouldValidate: true,
     });
     setValue("locationData.postalCode", locationData.postalCode?.value || "", {
