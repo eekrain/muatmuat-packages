@@ -12,7 +12,7 @@ import {
   BottomSheetContent,
   BottomSheetHeader,
   BottomSheetTitle,
-} from "@/components/Bottomsheet/BottomSheetUp";
+} from "@/components/BottomSheet/BottomSheetUp";
 import { useTranslation } from "@/context/TranslationProvider";
 import { toast } from "@/lib/toast";
 import SWRHandler from "@/services/useSWRHook";

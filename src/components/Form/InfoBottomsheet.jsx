@@ -7,7 +7,7 @@ import {
   BottomSheetHeader,
   BottomSheetTitle,
   BottomSheetTrigger,
-} from "../Bottomsheet/BottomSheetUp";
+} from "../BottomSheet/BottomSheetUp";
 import IconComponent from "../IconComponent/IconComponent";
 
 export const InfoBottomsheet = ({ className, title, children, render }) => {

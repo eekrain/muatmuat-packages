@@ -4,7 +4,7 @@ import {
   BottomSheetContent,
   BottomSheetHeader,
   BottomSheetTitle,
-} from "@/components/Bottomsheet/BottomSheetUp";
+} from "@/components/BottomSheet/BottomSheetUp";
 import { useTranslation } from "@/hooks/use-translation";
 import { idrFormat } from "@/lib/utils/formatters";
 

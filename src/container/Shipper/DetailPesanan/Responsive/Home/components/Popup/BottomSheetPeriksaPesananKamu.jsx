@@ -4,7 +4,7 @@ import {
   BottomSheetContent,
   BottomSheetHeader,
   BottomSheetTitle,
-} from "@/components/Bottomsheet/BottomSheetUp";
+} from "@/components/BottomSheet/BottomSheetUp";
 import Button from "@/components/Button/Button";
 
 import { InformasiArmadaFragment } from "../fragments/InformasiArmadaFragment";

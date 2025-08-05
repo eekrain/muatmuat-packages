@@ -8,7 +8,7 @@ import {
   BottomSheetHeader,
   BottomSheetTitle,
   BottomSheetTrigger,
-} from "@/components/Bottomsheet/BottomSheetUp";
+} from "@/components/BottomSheet/BottomSheetUp";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";

@@ -6,7 +6,7 @@ import {
   BottomSheetContent,
   BottomSheetHeader,
   BottomSheetTitle,
-} from "@/components/Bottomsheet/BottomSheetUp";
+} from "@/components/BottomSheet/BottomSheetUp";
 import { ButtonMini } from "@/components/Button/ButtonMini";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 

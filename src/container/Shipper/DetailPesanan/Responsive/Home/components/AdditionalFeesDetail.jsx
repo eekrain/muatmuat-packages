@@ -1,7 +1,7 @@
 import {
   BottomSheet,
   BottomSheetTrigger,
-} from "@/components/Bottomsheet/BottomSheetUp";
+} from "@/components/BottomSheet/BottomSheetUp";
 import { idrFormat } from "@/lib/utils/formatters";
 
 import BottomsheetWaitingTimeDetails from "./Popup/BottomsheetWaitingTimeDetails";

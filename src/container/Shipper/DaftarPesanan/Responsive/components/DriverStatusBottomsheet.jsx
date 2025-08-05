@@ -7,7 +7,7 @@ import {
   BottomSheetContent,
   BottomSheetHeader,
   BottomSheetTitle,
-} from "@/components/Bottomsheet/BottomSheetUp";
+} from "@/components/BottomSheet/BottomSheetUp";
 import { useTranslation } from "@/hooks/use-translation";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
