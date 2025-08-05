@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const isMockFleetCount = false;
+const isMockFleetCount = true;
 
 const apiResultFleetCount = {
   data: {
@@ -12,7 +12,7 @@ const apiResultFleetCount = {
     },
     Data: {
       totalFleet: 0,
-      hasFleet: false,
+      hasFleet: true,
     },
     Type: "GET_FLEET_COUNT",
   },

@@ -43,7 +43,7 @@ const TransportRequestCard = ({ request }) => {
   };
 
   return (
-    <div className="w-[397px] rounded-[8px] border border-[#C4C4C4] bg-white p-4 shadow-sm">
+    <div className="rounded-[8px] border border-[#C4C4C4] bg-white p-4 shadow-sm">
       {/* Status Tags and Save Button Row */}
       <div className="mb-3 flex items-start justify-between">
         <div className="flex flex-wrap items-center gap-1">

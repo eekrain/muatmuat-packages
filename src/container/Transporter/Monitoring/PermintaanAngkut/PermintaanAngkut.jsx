@@ -31,7 +31,7 @@ const PermintaanAngkut = () => {
   };
 
   return (
-    <div className="flex h-screen flex-col bg-background">
+    <div className="flex h-[calc(100vh-92px-48px)] flex-col bg-background">
       {/* Fixed Header - Search Input and Tabs */}
       <div className="flex-shrink-0 bg-white px-4 py-4">
         <h1 className="mb-4 text-base font-bold text-neutral-900">
@@ -95,7 +95,7 @@ const PermintaanAngkut = () => {
       </div>
 
       {/* Scrollable Content Area */}
-      <div className="flex-1 overflow-y-auto bg-background px-4">
+      <div className="flex-1 overflow-y-auto bg-white px-4">
         {activeTab === "tersedia" && (
           <RequestList requests={data?.requests || []} isLoading={isLoading} />
         )}
@@ -140,7 +140,7 @@ const RequestList = ({ requests, isLoading }) => {
   }
 
   return (
-    <div className="space-y-4 py-4">
+    <div className="space-y-4 pb-4">
       {requests.map((request) => (
         <TransportRequestCard key={request.id} request={request} />
       ))}
