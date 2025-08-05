@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
@@ -35,12 +36,13 @@ const ForgotPasswordPage = () => {
       whatsapp: "",
     },
   });
+  const router = useRouter();
 
-  // Fungsi ini hanya akan dipanggil jika validasi berhasil
   const onSubmit = (data) => {
     console.log("Mencari akun dengan No. Whatsapp:", data.whatsapp);
     alert(`Mencari akun untuk nomor ${data.whatsapp}...`);
-    // TODO: Implementasi logika API untuk mencari akun
+
+    router.push(`/otp?whatsapp=${data.whatsapp}&type=forgot-password`);
   };
 
   return (

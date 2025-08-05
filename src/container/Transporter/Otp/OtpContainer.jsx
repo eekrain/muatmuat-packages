@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { addMinutes, isAfter } from "date-fns";
@@ -53,6 +54,10 @@ const OtpContainer = ({
   });
 
   const { setIsGlobalLoading } = useLoadingAction();
+  const searchParams = useSearchParams();
+  const type = searchParams.get("type");
+  const number = searchParams.get("whatsapp");
+
   useEffect(() => {
     if (isTranslationsReady) setIsGlobalLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -207,8 +212,10 @@ const OtpContainer = ({
               <div className="flex w-full flex-col items-center">
                 {/* Email verification message */}
                 <div className="max-w-[452px] text-center text-base font-medium leading-[19.2px] text-neutral-50">
-                  Email dan password kamu berhasil dibuat. Mohon cek pesan
-                  Whatsapp di perangkat kamu untuk melanjutkan pendaftaran
+                  {type !== "forgot-password" &&
+                    "Email dan password kamu berhasil dibuat."}
+                  Mohon cek pesan Whatsapp di perangkat kamu untuk melanjutkan
+                  pendaftaran
                 </div>
 
                 {/* OTP input section */}
@@ -219,17 +226,19 @@ const OtpContainer = ({
                         No. Whatsapp Kamu
                       </div>
                       <div className="max-w-[176px] truncate text-sm font-semibold leading-[16.8px] text-[#EBEBEB]">
-                        0893435352125
+                        {number || "0893435352125"}
                       </div>
-                      <Button
-                        name="change"
-                        onClick={() => setIsChangeNumberModalOpen(true)}
-                        className={cn(
-                          "flex w-[50px] items-center !bg-[#EBEBEB] py-0 text-xxs !text-[#868686] md:h-5"
-                        )}
-                      >
-                        Ganti
-                      </Button>
+                      {type !== "forgot-password" && (
+                        <Button
+                          name="change"
+                          onClick={() => setIsChangeNumberModalOpen(true)}
+                          className={cn(
+                            "flex w-[50px] items-center !bg-[#EBEBEB] py-0 text-xxs !text-[#868686] md:h-5"
+                          )}
+                        >
+                          Ganti
+                        </Button>
+                      )}
                     </div>
                   </div>
 
