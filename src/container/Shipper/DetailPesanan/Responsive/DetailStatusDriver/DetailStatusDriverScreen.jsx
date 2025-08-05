@@ -13,10 +13,10 @@ const DetailStatusDriverScreen = ({ dataStatusPesanan }) => {
   const params = useResponsiveRouteParams();
   const { orderId, driverId } = params;
 
-  const { data: driverStatusTimeline } = useGetDriverStatusTimeline({
+  const { data: driverStatusTimeline } = useGetDriverStatusTimeline(
     orderId,
-    driverId,
-  });
+    driverId
+  );
 
   const defaultIndex = dataStatusPesanan?.driverStatus.findIndex(
     (d) => d.driverId === driverId

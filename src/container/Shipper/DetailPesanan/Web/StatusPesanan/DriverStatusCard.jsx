@@ -157,7 +157,7 @@ export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
     t,
     orderType: driver.orderType,
   });
-
+  console.log(driver, "driverstatuscard");
   return (
     <>
       <div className="w-full flex-shrink-0">
@@ -205,7 +205,7 @@ export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
               <div className="flex items-center gap-x-3">
                 {driver.orderStatus?.startsWith("CANCELED") ||
                 LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER.includes(orderStatus) ? (
-                  <ModalDetailStatusDriver />
+                  <ModalDetailStatusDriver driver={driver} />
                 ) : (
                   <>
                     <Button

@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 // Import separate components
 import { Alert } from "@/components/Alert/Alert";
@@ -8,6 +8,7 @@ import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsi
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import {
   useRequestOtpActions,
+  useRequestOtpStore,
 } from "@/store/Shipper/forms/requestOtpStore";
 
 import BankAccountFormFields from "./BankAccountFormFields";
@@ -18,6 +19,7 @@ const FormRekeningBankScreen = () => {
   const navigation = useResponsiveNavigation();
   const router = useRouter();
   const { setParams } = useRequestOtpActions();
+  const otpParams = useRequestOtpStore((state) => state.params);
 
   const [selectedBank, setSelectedBank] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
@@ -34,15 +36,26 @@ const FormRekeningBankScreen = () => {
       accountHolderName,
       isPrimary,
     };
-    
+
+    // Check if this is for cancel flow and preserve cancelData
+    const isForCancel = otpParams?.mode === "add-rekening-for-cancel";
+    const existingCancelData = otpParams?.data?.cancelData;
+
     setParams({
-      mode: "add-rekening",
-      data: bankAccountData,
-      redirectUrl: "/shipper/detail-pesanan", // atau URL yang sesuai
+      mode: isForCancel ? "add-rekening-for-cancel" : "add-rekening",
+      data: isForCancel
+        ? {
+            bankAccountData,
+            cancelData: existingCancelData,
+          }
+        : bankAccountData,
+      redirectUrl: isForCancel
+        ? otpParams?.redirectUrl
+        : "/shipper/detail-pesanan",
     });
-    
+
     // Navigate to OTP page
-     router.push("/shipper/rekening-pencairan/otp");
+    router.push("/shipper/rekening-pencairan/otp");
   };
 
   return (

@@ -1,3 +1,5 @@
+import { useParams } from "next/navigation";
+
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Button from "@/components/Button/Button";
 import {
@@ -18,7 +20,9 @@ export const DriverStatusCard = ({ driver, orderStatus }) => {
     driver.orderStatus,
     t
   );
+  const params = useParams();
 
+  console.log(driver, "driver");
   return (
     <DriverInfo.Root
       key={driver.driverId}
@@ -50,7 +54,7 @@ export const DriverStatusCard = ({ driver, orderStatus }) => {
         onClick={() =>
           navigation.push("/DetailStatusDriverScreen", {
             driverId: driver.driverId,
-            orderId: driver.orderId,
+            orderId: params.orderId,
           })
         }
       >

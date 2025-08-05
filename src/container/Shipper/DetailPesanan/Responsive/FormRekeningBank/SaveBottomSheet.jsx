@@ -1,4 +1,5 @@
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import {
   BottomSheet,
@@ -67,7 +68,7 @@ export const SaveBottomSheet = ({
   const { dataUser } = useAuth();
   const formValues = useRequestOtpStore((state) => state.formValues);
   const { setField, sendRequestOtp } = useRequestOtpActions();
-
+  const [isLoading, setIsLoading] = useState(false);
   const verificationOptions = [
     {
       id: "whatsapp",
@@ -91,11 +92,13 @@ export const SaveBottomSheet = ({
 
   const handleSendOtp = async () => {
     try {
+      setIsLoading(true);
       await sendRequestOtp();
-      // toast.success("Kode verifikasi telah dikirim!");
       router.push("/rekening-pencairan/otp");
     } catch (error) {
-      toast.error(error.message || "Gagal mengirim kode verifikasi");
+      toast.error(error?.message || "Gagal mengirim kode verifikasi");
+    } finally {
+      setIsLoading(false);
     }
   };
 

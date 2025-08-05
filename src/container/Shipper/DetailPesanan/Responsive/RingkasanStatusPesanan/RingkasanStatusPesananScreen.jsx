@@ -25,7 +25,9 @@ const RingkasanStatusPesananScreen = ({ dataStatusPesanan }) => {
     const totalDriver = dataStatusPesanan?.driverStatus.length;
     return val - totalDriver;
   }, [dataStatusPesanan]);
-
+  {
+    console.log(dataStatusPesanan, "dataStatusPesanan");
+  }
   const statusMeta = getStatusPesananMetadata({
     orderStatus: dataStatusPesanan.orderStatus,
     unitFleetStatus: dataStatusPesanan.unitFleetStatus,
