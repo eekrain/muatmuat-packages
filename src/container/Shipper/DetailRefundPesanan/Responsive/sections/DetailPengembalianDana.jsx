@@ -5,7 +5,7 @@ import {
   BottomSheetHeader,
   BottomSheetTitle,
   BottomSheetTrigger,
-} from "@/components/Bottomsheet/BottomSheetUp";
+} from "@/components/BottomSheet/BottomSheetUp";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Section from "@/container/Shipper/DetailRefundPesanan/Responsive/sections/Section";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
