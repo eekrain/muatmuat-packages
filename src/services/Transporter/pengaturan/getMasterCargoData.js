@@ -16,13 +16,13 @@ const apiResultMasterCargo = {
           cargoTypeId: "550e8400-e29b-41d4-a716-446655440010",
           cargoTypeName: "Bahan Mentah",
           cargoTypeDescription: "Bahan baku untuk produksi",
-          totalCargoInType: 25,
+          totalCargoInType: 5,
           categories: [
             {
               cargoCategoryId: "550e8400-e29b-41d4-a716-446655440020",
               cargoCategoryName: "Padat",
               cargoCategoryDescription: "Muatan berbentuk padat",
-              totalCargoInCategory: 15,
+              totalCargoInCategory: 3,
               cargoNames: [
                 {
                   cargoNameId: "550e8400-e29b-41d4-a716-446655440030",
@@ -48,7 +48,7 @@ const apiResultMasterCargo = {
               cargoCategoryId: "550e8400-e29b-41d4-a716-446655440021",
               cargoCategoryName: "Cair",
               cargoCategoryDescription: "Muatan berbentuk cair",
-              totalCargoInCategory: 10,
+              totalCargoInCategory: 2,
               cargoNames: [
                 {
                   cargoNameId: "550e8400-e29b-41d4-a716-446655440040",
@@ -66,14 +66,62 @@ const apiResultMasterCargo = {
             },
           ],
         },
+        {
+          cargoTypeId: "550e8400-e29b-41d4-a716-446655440050",
+          cargoTypeName: "Barang Jadi",
+          cargoTypeDescription: "Produk siap untuk didistribusikan",
+          totalCargoInType: 4,
+          categories: [
+            {
+              cargoCategoryId: "550e8400-e29b-41d4-a716-446655440060",
+              cargoCategoryName: "Elektronik",
+              cargoCategoryDescription: "Barang-barang elektronik",
+              totalCargoInCategory: 2,
+              cargoNames: [
+                {
+                  cargoNameId: "550e8400-e29b-41d4-a716-446655440070",
+                  name: "Televisi",
+                  usageCount: 180,
+                  isActive: true,
+                },
+                {
+                  cargoNameId: "550e8400-e29b-41d4-a716-446655440071",
+                  name: "Kulkas",
+                  usageCount: 130,
+                  isActive: true,
+                },
+              ],
+            },
+            {
+              cargoCategoryId: "550e8400-e29b-41d4-a716-446655440061",
+              cargoCategoryName: "Furnitur",
+              cargoCategoryDescription: "Perabotan rumah tangga",
+              totalCargoInCategory: 2,
+              cargoNames: [
+                {
+                  cargoNameId: "550e8400-e29b-41d4-a716-446655440080",
+                  name: "Meja",
+                  usageCount: 220,
+                  isActive: true,
+                },
+                {
+                  cargoNameId: "550e8400-e29b-41d4-a716-446655440081",
+                  name: "Kursi",
+                  usageCount: 300,
+                  isActive: true,
+                },
+              ],
+            },
+          ],
+        },
       ],
-      totalTypes: 1,
-      totalCategories: 2,
-      totalCargoNames: 5,
+      totalTypes: 2,
+      totalCategories: 4,
+      totalCargoNames: 9,
       pagination: {
         currentPage: 1,
         totalPages: 1,
-        totalItems: 5,
+        totalItems: 9,
         hasNextPage: false,
       },
     },

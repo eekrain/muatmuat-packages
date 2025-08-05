@@ -9,12 +9,13 @@ export const CargoGroup = ({
   selectedItems,
   onCategoryChange,
   onItemChange,
+  isLast = false,
 }) => {
-  // Determine the state of the category checkbox based on its children
   const allItemIds = useMemo(
     () => category.items.map((item) => item.id),
     [category.items]
   );
+
   const selectedItemCount = useMemo(
     () => allItemIds.filter((id) => selectedItems[id]).length,
     [allItemIds, selectedItems]
@@ -25,40 +26,43 @@ export const CargoGroup = ({
   const isIndeterminate = selectedItemCount > 0 && !isAllSelected;
 
   const handleCategoryClick = () => {
-    // When the category checkbox is clicked, toggle all its children
     const shouldSelectAll = !isAllSelected;
     onCategoryChange(allItemIds, shouldSelectAll);
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-hidden">
       <div className="flex flex-col">
-        <div className="flex items-center justify-between border-b-[1px] border-neutral-200 py-4">
+        <div className="flex items-center justify-between border-b border-neutral-400 py-3">
           <Checkbox
             id={category.id}
             checked={isAllSelected}
             indeterminate={isIndeterminate}
-            onCheckedChange={handleCategoryClick}
+            onChange={handleCategoryClick}
           >
-            <span className="text-sm font-medium text-neutral-900">
+            <span className="text-xs font-medium text-neutral-900">
               {category.name}
             </span>
           </Checkbox>
         </div>
-        <div className="grid grid-cols-1 gap-x-8 gap-y-4 pb-4 pl-8 md:grid-cols-2 lg:grid-cols-3">
+
+        <div className="grid grid-cols-1 gap-x-[10px] pl-[25px] pt-3 md:grid-cols-2 lg:grid-cols-4">
           {category.items.map((item) => (
             <Checkbox
               key={item.id}
               id={item.id}
               checked={!!selectedItems[item.id]}
-              onCheckedChange={() => onItemChange(item.id)}
+              onChange={() => onItemChange(item.id)}
             >
-              <span className="text-sm font-normal text-neutral-900">
+              <span className="text-xs font-medium text-neutral-900">
                 {item.name}
               </span>
             </Checkbox>
           ))}
         </div>
+        {!isLast && (
+          <hr className="mx-[25px] mt-3 w-full border-t border-neutral-400" />
+        )}
       </div>
     </div>
   );

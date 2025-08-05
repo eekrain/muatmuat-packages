@@ -1,68 +1,34 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import React, { useMemo, useState } from "react";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import Card, { CardContent } from "@/components/Card/Card";
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
+import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import Checkbox from "@/components/Form/Checkbox";
+import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import { InputSearch } from "@/components/InputSearch/InputSearch";
 import LoadingStatic from "@/components/Loading/LoadingStatic";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
-import { CargoSelection } from "@/container/Transporter/Driver/Pengaturan/CargoSelection";
+import { CargoSelection } from "@/container/Transporter/Pengaturan/CargoSelection";
+import LayoutOverlayButton from "@/container/Transporter/Pengaturan/LayoutOverlayButton";
+import { toast } from "@/lib/toast";
 import { useGetMasterCargo } from "@/services/Transporter/pengaturan/getMasterCargoData";
+import { useSaveTransporterCargoConfig } from "@/services/Transporter/pengaturan/saveCargoConfigData";
 
 export default function AturMuatanDilayaniPage() {
+  const router = useRouter();
   const { data: apiData, isLoading, error } = useGetMasterCargo();
+  const { trigger: saveCargo, isMutating } = useSaveTransporterCargoConfig();
+
   const [selectedItems, setSelectedItems] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [showSelectedOnly, setShowSelectedOnly] = useState(false);
-
-  const { cargoCategories, cargoTypeName } = useMemo(() => {
-    if (!apiData?.cargoHierarchy || apiData.cargoHierarchy.length === 0) {
-      return { cargoCategories: [], cargoTypeName: "Muatan" };
-    }
-    const firstType = apiData.cargoHierarchy[0];
-    const categories = firstType.categories.map((cat) => ({
-      id: cat.cargoCategoryId,
-      name: cat.cargoCategoryName,
-      items: cat.cargoNames.map((cn) => ({
-        id: cn.cargoNameId,
-        name: cn.name,
-      })),
-    }));
-    return {
-      cargoCategories: categories,
-      cargoTypeName: firstType.cargoTypeName,
-    };
-  }, [apiData]);
-
-  const allCargoIds = useMemo(
-    () => cargoCategories.flatMap((cat) => cat.items.map((item) => item.id)),
-    [cargoCategories]
-  );
-
-  const filteredCategories = useMemo(() => {
-    if (!searchTerm && !showSelectedOnly) return cargoCategories;
-    return cargoCategories
-      .map((category) => ({
-        ...category,
-        items: category.items.filter(
-          (item) =>
-            item.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-            (!showSelectedOnly || selectedItems[item.id])
-        ),
-      }))
-      .filter((category) => category.items.length > 0);
-  }, [cargoCategories, searchTerm, showSelectedOnly, selectedItems]);
-
-  const selectedCount = Object.keys(selectedItems).filter(
-    (k) => selectedItems[k]
-  ).length;
-  const isAllSelected =
-    allCargoIds.length > 0 && selectedCount === allCargoIds.length;
-  const isIndeterminate = selectedCount > 0 && !isAllSelected;
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   const handleItemChange = (id) => {
     setSelectedItems((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -78,15 +44,97 @@ export default function AturMuatanDilayaniPage() {
     });
   };
 
-  const handleSelectAll = () => {
-    if (isAllSelected) {
-      setSelectedItems({});
-    } else {
-      const newSelectedItems = {};
-      allCargoIds.forEach((id) => {
-        newSelectedItems[id] = true;
+  const handleSelectAllForHierarchy = (itemIdsToToggle) => {
+    const isEverythingSelected = itemIdsToToggle.every(
+      (id) => selectedItems[id]
+    );
+    setSelectedItems((prev) => {
+      const newSelected = { ...prev };
+      itemIdsToToggle.forEach((id) => {
+        newSelected[id] = !isEverythingSelected;
       });
-      setSelectedItems(newSelectedItems);
+      return newSelected;
+    });
+  };
+
+  const processedHierarchies = useMemo(() => {
+    if (!apiData?.cargoHierarchy) return [];
+
+    return apiData.cargoHierarchy.map((hierarchy) => {
+      const allCargoIdsInHierarchy = hierarchy.categories.flatMap((cat) =>
+        cat.cargoNames.map((cn) => cn.cargoNameId)
+      );
+
+      const selectedCount = allCargoIdsInHierarchy.filter(
+        (id) => selectedItems[id]
+      ).length;
+
+      const isAllSelected =
+        allCargoIdsInHierarchy.length > 0 &&
+        selectedCount === allCargoIdsInHierarchy.length;
+
+      const isIndeterminate = selectedCount > 0 && !isAllSelected;
+
+      const filteredCategories = hierarchy.categories
+        .map((category) => ({
+          id: category.cargoCategoryId,
+          name: category.cargoCategoryName,
+          items: category.cargoNames
+            .map((cn) => ({ id: cn.cargoNameId, name: cn.name }))
+            .filter(
+              (item) =>
+                item.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+                (!showSelectedOnly || selectedItems[item.id])
+            ),
+        }))
+        .filter((category) => category.items.length > 0);
+
+      return {
+        id: hierarchy.cargoTypeId,
+        cargoTypeName: hierarchy.cargoTypeName,
+        filteredCategories,
+        selectedCount,
+        isAllSelected,
+        isIndeterminate,
+        onSelectAll: () => handleSelectAllForHierarchy(allCargoIdsInHierarchy),
+      };
+    });
+  }, [apiData, searchTerm, showSelectedOnly, selectedItems]);
+
+  const totalSelectedCount = Object.keys(selectedItems).filter(
+    (k) => selectedItems[k]
+  ).length;
+
+  const isCheckboxDisabled = totalSelectedCount === 0;
+
+  const handleSave = () => {
+    if (totalSelectedCount === 0) {
+      toast.error("Pilih minimal 1 Muatan untuk menyimpan");
+      return;
+    }
+    setIsConfirmModalOpen(true);
+  };
+
+  const confirmSave = async () => {
+    const cargoTypeIds = Object.keys(selectedItems).filter(
+      (id) => selectedItems[id]
+    );
+
+    const payload = {
+      cargoTypeIds,
+      notes: "Konfigurasi muatan untuk layanan reguler",
+      effectiveDate: new Date().toISOString(),
+    };
+
+    try {
+      await saveCargo(payload);
+      setIsConfirmModalOpen(false);
+      toast.success("Berhasil menyimpan muatan yang dilayani!");
+      router.push("/pengaturan");
+    } catch (err) {
+      console.error("Failed to save cargo configuration:", err);
+      setIsConfirmModalOpen(false);
+      toast.error("Ada ganguan server coba lagi nanti");
     }
   };
 
@@ -114,54 +162,105 @@ export default function AturMuatanDilayaniPage() {
     );
   }
 
+  const showNotFound =
+    processedHierarchies.every((h) => h.filteredCategories.length === 0) &&
+    searchTerm;
+
+  const simpanButton = (
+    <Button
+      size="lg"
+      className="w-full md:w-auto"
+      onClick={handleSave}
+      isLoading={isMutating}
+    >
+      Simpan
+    </Button>
+  );
+
   return (
-    <div className="min-h-screen w-full bg-background p-4 lg:p-8">
-      <div className="mb-6">
-        <BreadCrumb data={breadcrumbItems} />
-      </div>
-      <PageTitle>Atur Muatan Dilayani</PageTitle>
+    <>
+      <LayoutOverlayButton button={simpanButton}>
+        <div className="mb-6">
+          <BreadCrumb data={breadcrumbItems} />
+        </div>
+        <div className="flex flex-row gap-2">
+          <PageTitle>Atur Muatan Dilayani</PageTitle>
+          <InfoTooltip>
+            Atur muatan yang kamu layani sekarang untuk mendapatkan muatan yang
+            sesuai
+          </InfoTooltip>
+        </div>
 
-      <Card className="mt-6 !border-none !p-0">
-        <CardContent className="p-6">
-          <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <InputSearch
-              placeholder="Cari Muatan"
-              className="w-full sm:w-80"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <Checkbox
-              id="show-selected"
-              checked={showSelectedOnly}
-              onCheckedChange={setShowSelectedOnly}
-            >
-              <span className="text-sm font-normal text-neutral-900">
-                Tampilkan yang terpilih saja
-              </span>
-            </Checkbox>
-          </div>
-        </CardContent>
+        <Card className="mt-6 !border-none !p-0">
+          <CardContent className="space-y-6 p-6">
+            <div className="flex flex-row items-center gap-4">
+              <InputSearch
+                options={[]}
+                placeholder="Cari Muatan"
+                className="w-[262px]"
+                searchValue={searchTerm}
+                setSearchValue={setSearchTerm}
+                hideDropdown={true}
+              />
+              <Checkbox
+                id="show-selected"
+                checked={showSelectedOnly}
+                onChange={({ checked }) => setShowSelectedOnly(checked)}
+                disabled={isCheckboxDisabled}
+              >
+                <span
+                  className={`text-sm font-normal ${
+                    isCheckboxDisabled ? "text-neutral-500" : "text-neutral-900"
+                  }`}
+                >
+                  Tampilkan yang terpilih saja
+                </span>
+              </Checkbox>
+            </div>
 
-        <CardContent className="p-6">
-          <CargoSelection
-            cargoTypeName={cargoTypeName}
-            selectedCount={selectedCount}
-            isAllSelected={isAllSelected}
-            isIndeterminate={isIndeterminate}
-            onSelectAll={handleSelectAll}
-            filteredCategories={filteredCategories}
-            selectedItems={selectedItems}
-            onItemChange={handleItemChange}
-            onCategoryChange={handleCategoryChange}
-          />
-        </CardContent>
-      </Card>
+            {showNotFound ? (
+              <div className="flex justify-center pt-4">
+                <DataNotFound type="search" title={"Keyword Tidak Ditemukan"} />
+              </div>
+            ) : (
+              processedHierarchies.map((hierarchy) =>
+                hierarchy.filteredCategories.length > 0 ? (
+                  <CargoSelection
+                    key={hierarchy.id}
+                    cargoTypeName={hierarchy.cargoTypeName}
+                    selectedCount={hierarchy.selectedCount}
+                    isAllSelected={hierarchy.isAllSelected}
+                    isIndeterminate={hierarchy.isIndeterminate}
+                    onSelectAll={hierarchy.onSelectAll}
+                    filteredCategories={hierarchy.filteredCategories}
+                    selectedItems={selectedItems}
+                    onItemChange={handleItemChange}
+                    onCategoryChange={handleCategoryChange}
+                  />
+                ) : null
+              )
+            )}
+          </CardContent>
+        </Card>
+      </LayoutOverlayButton>
 
-      <div className="mt-8 flex justify-end">
-        <Button size="lg" className="w-full sm:w-auto">
-          Simpan
-        </Button>
-      </div>
-    </div>
+      <ConfirmationModal
+        isOpen={isConfirmModalOpen}
+        setIsOpen={setIsConfirmModalOpen}
+        title={{
+          text: "Apakah kamu yakin menyimpan data ini?",
+          className: "text-sm font-medium text-center",
+        }}
+        confirm={{
+          text: "Simpan",
+          onClick: confirmSave,
+          isLoading: isMutating,
+        }}
+        cancel={{
+          text: "Batal",
+          onClick: () => setIsConfirmModalOpen(false),
+        }}
+      />
+    </>
   );
 }

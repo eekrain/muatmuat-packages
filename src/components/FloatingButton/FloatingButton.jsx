@@ -34,7 +34,7 @@ const FloatingButton = () => {
 
   return (
     <div
-      className={`fixed z-[51] lg:right-[40px] ${isShow ? "max-[600px]:right-[15px]" : "max-[600px]:right-[-38px]"} bottom-[29px] max-[600px]:bottom-[99px] ${styles.floating_button_container}`}
+      className={`fixed z-[51] lg:right-[40px] ${isShow ? "max-[600px]:right-[15px]" : "max-[600px]:right-[-38px]"} bottom-[29px] top-[690px] max-[600px]:bottom-[99px] ${styles.floating_button_container}`}
     >
       {!isOpen && (
         <Fragment>

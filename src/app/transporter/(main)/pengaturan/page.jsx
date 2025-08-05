@@ -294,7 +294,9 @@ export default function Page() {
   return (
     <>
       <div className="mx-auto py-6">
-        <PageTitle className="mb-6">Pengaturan</PageTitle>
+        <PageTitle withBack={false} className="mb-6">
+          Pengaturan
+        </PageTitle>
 
         <Card className="!border-none">
           <CardContent className="p-0">
