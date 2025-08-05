@@ -149,7 +149,7 @@ const ArmadaTable = ({
             <table className="table-tambah-armada-massal w-full table-fixed overflow-auto">
               <thead className="sticky top-0 z-50 border-b border-neutral-500 bg-white text-left">
                 <tr>
-                  <th className="sticky left-0 w-[16px] bg-white px-4 py-5">
+                  <th className="sticky top-0 w-[16px] bg-white px-4 py-5">
                     <Checkbox
                       label=""
                       checked={selectAll}
@@ -354,7 +354,7 @@ const ArmadaTableRow = ({
 
   return (
     <tr className="px-4">
-      <td className="sticky left-0 z-50 bg-white py-5 pr-4">
+      <td className="z-50 bg-white py-5 pr-4">
         <Checkbox label="" checked={isSelected} onChange={onCheckboxChange} />
       </td>
 
