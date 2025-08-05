@@ -11,6 +11,14 @@ export const ARMADA_STATUS = {
   DELETED: "DELETED",
 };
 
+export const ARMADA_TRUCK_IMAGE_STATUS = {
+  READY_FOR_ORDER: "truck-green.png",
+  ON_DELIVERY: "truck-blue.png",
+  MAINTENANCE: "truck-yellow.png",
+  OFFLINE: "truck-grey.png",
+  EMERGENCY: "truck-red.png",
+};
+
 export const ARMADA_STATUS_CONFIG = {
   [ARMADA_STATUS.IN_REVIEW]: {
     label: "Dalam Tinjauan",
@@ -63,4 +71,8 @@ export const getArmadaStatusBadge = (status) => {
     };
   }
   return config;
+};
+
+export const getTruckIcon = (status) => {
+  return ARMADA_TRUCK_IMAGE_STATUS[status] || "truck-grey.png";
 };
