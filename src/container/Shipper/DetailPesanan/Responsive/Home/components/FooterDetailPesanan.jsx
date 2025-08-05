@@ -44,7 +44,7 @@ export const FooterDetailPesanan = ({
     let components = [
       {
         id: "pesan-ulang",
-        variant: "muatparts-primary-secondary",
+        variant: "muatparts-primary",
         el: (variant) => (
           <Button
             variant={variant}
@@ -258,9 +258,25 @@ export const FooterDetailPesanan = ({
             </div>
           )}
 
+          {/* Saya tidak tahu logic nya apa buat ngeshow, sementara toggle aja */}
+          {false ? (
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-semibold leading-[1.1]">Rute</div>
+              <div className="text-xs font-medium leading-[1.1]">
+                Estimasi 178 km
+              </div>
+            </div>
+          ) : null}
+
           <div className="flex gap-2">
             {renderButtons.map((button) => (
-              <Fragment key={button.id}>{button.el(button.variant)}</Fragment>
+              <Fragment key={button.id}>
+                {button.el(
+                  button.id === "pesan-ulang" && renderButtons.length > 2
+                    ? "muatparts-primary-secondary"
+                    : button.variant
+                )}
+              </Fragment>
             ))}
           </div>
         </ResponsiveFooter>

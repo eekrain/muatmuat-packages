@@ -59,6 +59,15 @@ const Header = ({
     return response;
   }, [driverStatus, mode, orderStatus, statusScan, t]);
 
+  const showStatusMetaStatus =
+    ![
+      OrderStatusEnum.WAITING_REPAYMENT_1,
+      OrderStatusEnum.WAITING_REPAYMENT_2,
+      OrderStatusEnum.CANCELED_BY_SHIPPER,
+      OrderStatusEnum.CANCELED_BY_SHIPPER,
+      OrderStatusEnum.CANCELED_BY_TRANSPORTER,
+    ].includes(driverStatus) || withMenu;
+
   return (
     <div className="flex w-full items-center justify-between">
       {statusMeta?.scan && (
@@ -69,7 +78,7 @@ const Header = ({
           {statusMeta.scan.statusText}
         </BadgeStatusPesanan>
       )}
-      {statusMeta?.status && statusMeta?.status.variant !== "error" && (
+      {statusMeta?.status && showStatusMetaStatus && (
         <BadgeStatusPesanan
           variant={statusMeta.status.variant}
           className="w-fit"
@@ -133,7 +142,6 @@ const Actions = ({ driver, onDriverContactClicked, onLacakArmadaClicked }) => {
     OrderStatusEnum.DOCUMENT_DELIVERY,
     OrderStatusEnum.WAITING_REPAYMENT_1,
     OrderStatusEnum.WAITING_REPAYMENT_2,
-    OrderStatusEnum.CANCELED_BY_SHIPPER,
     OrderStatusEnum.COMPLETED,
   ];
 

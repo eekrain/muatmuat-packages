@@ -6,14 +6,16 @@ const { format } = require("date-fns");
 const now = new Date();
 // Use cross-platform safe timestamp
 const formattedDate = format(now, "dd-MM-yyyy_HH-mm-ss");
-const outputFileName = `zipped-muatrans-${formattedDate}.zip`;
+const outputFileName = `muatrans-${formattedDate}.zip`;
 
 const output = fs.createWriteStream(outputFileName);
-const archive = archiver("zip", { zlib: { level: 9 } });
+const archive = archiver("zip", { zlib: { level: 1 } });
 
+console.time("Zipping process");
 output.on("close", () => {
   console.log(`${archive.pointer()} total bytes`);
   console.log("Archive finalized and output file closed.");
+  console.timeEnd("Zipping process"); // End the timer here
 });
 
 output.on("end", () => {
@@ -45,20 +47,22 @@ const safeAdd = (itemPath, addFunc) => {
 
 const pathsToInclude = [
   ".cursor",
+  ".github",
+  ".husky",
+  ".vscode",
   ".example.env",
   ".gitignore",
-  ".husky",
-  ".next",
+  ".lintstagedrc.js",
   ".prettierrc",
-  ".vscode",
   "eslint.config.mjs",
   "jsconfig.json",
   "next.config.mjs",
   "package-lock.json",
   "package.json",
   "postcss.config.js",
-  "postcss.config.mjs",
   "tailwind.config.mjs",
+  "public",
+  "src",
 ];
 
 // Add individual files and folders
@@ -71,14 +75,6 @@ pathsToInclude.forEach((item) => {
     } else {
       archive.file(fullPath, { name: item });
     }
-  });
-});
-
-// Optionally add these known directories too
-["public", "src"].forEach((dir) => {
-  const fullDirPath = path.resolve(dir);
-  safeAdd(fullDirPath, () => {
-    archive.directory(fullDirPath, dir);
   });
 });
 

@@ -95,7 +95,7 @@ export const PendingPaymentDetail = ({ dataRingkasanPembayaran }) => {
       ))}
       <Button
         variant="muatparts-primary"
-        className="w-full"
+        className="h-7 w-full text-xs leading-[1.1]"
         onClick={() => navigation.push("/cara-pembayaran")}
         type="button"
       >

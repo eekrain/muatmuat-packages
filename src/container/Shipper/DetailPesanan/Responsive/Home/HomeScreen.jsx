@@ -47,6 +47,7 @@ const DetailPesananScreen = ({
   dataDetailPIC,
   dataRingkasanPembayaran,
   documentShippingDetail,
+  waitingTimeRaw,
 }) => {
   const { t } = useTranslation();
   const params = useParams();
@@ -164,11 +165,13 @@ const DetailPesananScreen = ({
 
         <OrderInfo dataStatusPesanan={dataStatusPesanan} />
 
-        <DriverInfoSlider
-          driverStatus={dataStatusPesanan?.driverStatus}
-          orderId={dataStatusPesanan?.orderId}
-          orderStatus={dataStatusPesanan?.orderStatus}
-        />
+        {!WHITELIST_PENDING_PAYMENT.includes(dataStatusPesanan?.orderStatus) ? (
+          <DriverInfoSlider
+            driverStatus={dataStatusPesanan?.driverStatus}
+            orderId={dataStatusPesanan?.orderId}
+            orderStatus={dataStatusPesanan?.orderStatus}
+          />
+        ) : null}
 
         <Tabs className="w-full bg-white" defaultValue={"ringkasan"}>
           <TabsList className="w-full">
@@ -187,6 +190,7 @@ const DetailPesananScreen = ({
             dataRingkasanPesanan={dataRingkasanPesanan}
             dataRingkasanPembayaran={dataRingkasanPembayaran}
             documentShippingDetail={documentShippingDetail}
+            waitingTimeRaw={waitingTimeRaw}
           />
 
           <TabContentInformasiLainnya
@@ -196,12 +200,14 @@ const DetailPesananScreen = ({
         </Tabs>
       </div>
 
-      <FooterDetailPesanan
-        dataStatusPesanan={dataStatusPesanan}
-        dataRingkasanPembayaran={dataRingkasanPembayaran}
-        isConfirmWaiting={isConfirmWaiting}
-        onConfirmWaitingChange={setIsConfirmWaiting}
-      />
+      {!WHITELIST_PENDING_PAYMENT.includes(dataStatusPesanan?.orderStatus) ? (
+        <FooterDetailPesanan
+          dataStatusPesanan={dataStatusPesanan}
+          dataRingkasanPembayaran={dataRingkasanPembayaran}
+          isConfirmWaiting={isConfirmWaiting}
+          onConfirmWaitingChange={setIsConfirmWaiting}
+        />
+      ) : null}
 
       <ModalInformasiSlider open={isOpenInfo} onOpenChange={setIsOpenInfo} />
       <BottomsheetMenuList
