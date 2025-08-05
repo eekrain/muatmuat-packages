@@ -8,6 +8,7 @@ import { DimensionInput } from "@/components/Form/DimensionInput";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Select from "@/components/Select";
+import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
 import FileUploadInput from "../../preview-armada/components/FileUploadInput";
@@ -16,11 +17,98 @@ import DropdownJenisCarrier from "./DropdownJenisCarrier";
 import DropdownJenisTruk from "./DropdownJenisTruk";
 import DropdownMerekKendaraan from "./DropdownMerekKendaraan";
 import DropdownTipeKendaraan from "./DropdownTipeKendaraan";
+import InputNomorKIR from "./InputNomorKIR";
+import InputNomorPolisi from "./InputNomorPolisi";
+import InputNomorRangka from "./InputNomorRangka";
 
 const dimensionUnits = [
   { value: "m", label: "m" },
   { value: "cm", label: "cm" },
 ];
+
+/**
+ * Utility functions for date calculations
+ */
+const getMaxDateSTNK = () => {
+  const today = new Date();
+  const maxDate = new Date(today);
+  maxDate.setFullYear(today.getFullYear() + 5);
+  return maxDate;
+};
+
+const getMaxDateKIR = () => {
+  const today = new Date();
+  const maxDate = new Date(today);
+  maxDate.setMonth(today.getMonth() + 6);
+  return maxDate;
+};
+
+const getMaxDateGPSStart = () => {
+  const today = new Date();
+  const maxDate = new Date(today);
+  maxDate.setMonth(today.getMonth() + 3);
+  return maxDate;
+};
+
+const getMaxDateGPSEnd = (startDate) => {
+  if (!startDate) return null;
+  const gpsStartDate = new Date(startDate);
+  const maxDate = new Date(gpsStartDate);
+  maxDate.setDate(gpsStartDate.getDate() + 14); // 2 weeks from start date
+  return maxDate;
+};
+
+/**
+ * Utility function to validate all license plates for duplicates
+ * Can be called externally (e.g., on form submit)
+ * @param {Array} data - Array of armada data
+ * @param {Function} setError - React Hook Form setError function (optional)
+ * @param {string} fieldArrayName - Name of the field array (optional)
+ * @returns {boolean} - True if no duplicates found, false if duplicates exist
+ */
+export const validateAllLicensePlates = (
+  data,
+  setError = null,
+  fieldArrayName = "informasiMuatan"
+) => {
+  const licensePlates = data
+    .map((item, index) => ({
+      plate: (item.licensePlate || "").toLowerCase().replace(/\s/g, ""),
+      index,
+    }))
+    .filter((item) => item.plate.length > 0);
+
+  const plateGroups = {};
+  licensePlates.forEach(({ plate, index }) => {
+    if (!plateGroups[plate]) {
+      plateGroups[plate] = [];
+    }
+    plateGroups[plate].push(index);
+  });
+
+  const duplicateIndexes = [];
+  Object.values(plateGroups).forEach((indexes) => {
+    if (indexes.length > 1) {
+      duplicateIndexes.push(...indexes);
+    }
+  });
+
+  if (duplicateIndexes.length > 0) {
+    // Set errors for duplicate license plates
+    if (setError) {
+      duplicateIndexes.forEach((index) => {
+        setError(`${fieldArrayName}.${index}.licensePlate`, {
+          type: "manual",
+          message: "No. Polisi kendaraan sudah terdaftar",
+        });
+      });
+    }
+    toast.error("No. Polisi kendaraan sudah terdaftar");
+    return false;
+  }
+
+  return true;
+};
 
 const ArmadaTable = ({
   data = [],
@@ -38,6 +126,7 @@ const ArmadaTable = ({
 }) => {
   const [addArmadaImageModal, setAddArmadaImageModal] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(null);
+
   const handleCheckboxChange = (index) => {
     if (selectedRows.includes(index)) {
       onSelectRow(selectedRows.filter((i) => i !== index));
@@ -314,6 +403,27 @@ const ArmadaTableRow = ({
     onCellValueChange?.(index, fieldPath, value);
   };
 
+  /**
+   * Handle GPS Start Date change and reset GPS End Date
+   * @param {string} value - New GPS start date value
+   */
+  const handleGPSStartDateChange = (value) => {
+    handleFieldChange("estimasi_tanggal_pemasangan_gps.mulai", value);
+    // Reset GPS End Date when GPS Start Date changes
+    handleFieldChange("estimasi_tanggal_pemasangan_gps.selesai", "");
+  };
+
+  /**
+   * Handle license plate change (no real-time validation)
+   * @param {Event} e - Input change event
+   */
+  const handleLicensePlateChange = (e) => {
+    const newValue = e.target.value;
+
+    // Update the field value only
+    handleFieldChange("licensePlate", newValue);
+  };
+
   // Helper function to check if a field has an error
   const hasError = (fieldPath) => {
     const fieldParts = fieldPath.split(".");
@@ -387,11 +497,11 @@ const ArmadaTableRow = ({
             </div>
           )}
         </label>
-        <Input
+        <InputNomorPolisi
           name={`informasiMuatan.${index}.licensePlate`}
-          placeholder="Contoh : L 1234 TY"
           value={data?.licensePlate || ""}
-          onChange={(e) => handleFieldChange("licensePlate", e.target.value)}
+          onChange={handleLicensePlateChange}
+          errorMessage={getErrorMessage("licensePlate")}
           appearance={{
             containerClassName: hasError("licensePlate")
               ? "border-error-400 placeholder:text-error-400"
@@ -531,8 +641,7 @@ const ArmadaTableRow = ({
       </td>
 
       <td>
-        <Input
-          placeholder="Maksimal 17 Digit"
+        <InputNomorRangka
           value={data?.nomor_rangka || ""}
           onChange={(e) => handleFieldChange("nomor_rangka", e.target.value)}
           appearance={{
@@ -550,6 +659,8 @@ const ArmadaTableRow = ({
           onChange={(value) => handleFieldChange("masa_berlaku_stnk", value)}
           errorMessage={getErrorMessage("masa_berlaku_stnk")}
           showErrorMessage={false}
+          minDate={new Date()}
+          maxDate={getMaxDateSTNK()}
         />
       </td>
 
@@ -572,7 +683,7 @@ const ArmadaTableRow = ({
       </td>
 
       <td>
-        <Input
+        <InputNomorKIR
           placeholder="Contoh: SBY 123456"
           value={data?.nomor_kir || ""}
           onChange={(e) => handleFieldChange("nomor_kir", e.target.value)}
@@ -591,6 +702,8 @@ const ArmadaTableRow = ({
           onChange={(value) => handleFieldChange("masa_berlaku_kir", value)}
           errorMessage={getErrorMessage("masa_berlaku_kir")}
           showErrorMessage={false}
+          minDate={new Date()}
+          maxDate={getMaxDateKIR()}
         />
       </td>
 
@@ -608,13 +721,13 @@ const ArmadaTableRow = ({
           <DatePicker
             placeholder="Pilih Tanggal"
             value={data?.estimasi_tanggal_pemasangan_gps?.mulai || ""}
-            onChange={(value) =>
-              handleFieldChange("estimasi_tanggal_pemasangan_gps.mulai", value)
-            }
+            onChange={handleGPSStartDateChange}
             errorMessage={getErrorMessage(
               "estimasi_tanggal_pemasangan_gps.mulai"
             )}
             showErrorMessage={false}
+            minDate={new Date()}
+            maxDate={getMaxDateGPSStart()}
           />
           <span className="text-xs font-medium">s/d</span>
           <DatePicker
@@ -630,6 +743,14 @@ const ArmadaTableRow = ({
               "estimasi_tanggal_pemasangan_gps.selesai"
             )}
             showErrorMessage={false}
+            minDate={
+              data?.estimasi_tanggal_pemasangan_gps?.mulai
+                ? new Date(data.estimasi_tanggal_pemasangan_gps.mulai)
+                : new Date()
+            }
+            maxDate={getMaxDateGPSEnd(
+              data?.estimasi_tanggal_pemasangan_gps?.mulai
+            )}
           />
         </div>
       </td>

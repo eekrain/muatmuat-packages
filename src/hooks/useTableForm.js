@@ -45,6 +45,7 @@ export const useTableForm = (config) => {
     setValue,
     watch,
     trigger,
+    setError,
     formState: { errors },
     handleSubmit,
   } = formMethods;
@@ -128,7 +129,7 @@ export const useTableForm = (config) => {
   // Submit handlers
   const onSubmitHandler = (value) => {
     if (validateAndShowErrors) {
-      const isValid = validateAndShowErrors(value);
+      const isValid = validateAndShowErrors(value, setError, fieldArrayName);
       if (isValid && onSubmit) {
         onSubmit(value);
       }
@@ -140,14 +141,22 @@ export const useTableForm = (config) => {
   const onSubmitError = (_errors) => {
     const formData = watch(fieldArrayName);
     if (validateAndShowErrors) {
-      validateAndShowErrors({ [fieldArrayName]: formData });
+      validateAndShowErrors(
+        { [fieldArrayName]: formData },
+        setError,
+        fieldArrayName
+      );
     }
   };
 
   const handleSaveAsDraft = () => {
     const formData = watch(fieldArrayName);
     if (validateAndShowErrors) {
-      const isValid = validateAndShowErrors({ [fieldArrayName]: formData });
+      const isValid = validateAndShowErrors(
+        { [fieldArrayName]: formData },
+        setError,
+        fieldArrayName
+      );
       if (isValid && onSaveAsDraft) {
         onSaveAsDraft({ [fieldArrayName]: formData });
       }
