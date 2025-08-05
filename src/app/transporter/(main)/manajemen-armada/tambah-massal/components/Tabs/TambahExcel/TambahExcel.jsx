@@ -12,8 +12,8 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import Toggle from "@/components/Toggle/Toggle";
 import { isDev } from "@/lib/constants/is-dev";
 import { toast } from "@/lib/toast";
-import { isExcelFile } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";
+import { usePostFleetBulkUpload } from "@/services/Transporter/manajemen-armada/postFleetBulkUpload";
 
 const TambahExcel = () => {
   const [list, setList] = useState([]);
@@ -86,38 +86,57 @@ const TambahExcel = () => {
   ];
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
+  const { trigger, isMutating } = usePostFleetBulkUpload();
 
   const handleUpload = (file) => {
-    setIsUploading(true);
-    // Simulate upload process
-    setTimeout(() => {
-      setIsUploading(false);
-      setList([
-        ...list,
-        {
-          tanggal: new Date().toISOString(),
-          document: file.name,
-          name: "John Doe",
-          status: stateUpload && isExcelFile(file) ? "Sukses" : "Gagal",
-        },
-      ]);
-      // setUploadedFile(file);
-      if (stateUpload) {
-        // Show success message
-        if (isExcelFile(file)) {
-          toast.success(`Berhasil menambah ${20} armada`);
-          router.push("/manajemen-armada/tambah-massal/preview-armada");
-        } else {
-          toast.error(
-            "Gagal menambah armada.\n Periksa laporan untuk mengetahu armada yang gagal ditambahkan."
+    // setIsUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    trigger(formData)
+      .then((response) => {
+        setIsUploading(false);
+        setUploadedFile(file);
+        if (response?.Data?.bulkImportId) {
+          toast.success(`Berhasil menambah ${response.Data.totalRows} armada`);
+          router.push(
+            `/manajemen-armada/tambah-massal/preview-armada/${response.Data.bulkImportId}`
           );
         }
-      } else {
+      })
+      .catch((_error) => {
         toast.error(
-          "Harap selesaikan data pada menu Draft terlebih dahulu sebelum menambah armada baru."
+          "Gagal menambah armada.\n Periksa laporan untuk mengetahu armada yang gagal ditambahkan."
         );
-      }
-    }, 3000);
+      });
+    // Simulate upload process
+    // setTimeout(() => {
+    //   setIsUploading(false);
+    //   setList([
+    //     ...list,
+    //     {
+    //       tanggal: new Date().toISOString(),
+    //       document: file.name,
+    //       name: "John Doe",
+    //       status: stateUpload && isExcelFile(file) ? "Sukses" : "Gagal",
+    //     },
+    //   ]);
+    //   // setUploadedFile(file);
+    //   if (stateUpload) {
+    //     // Show success message
+    //     if (isExcelFile(file)) {
+    //       toast.success(`Berhasil menambah ${20} armada`);
+    //       router.push("/manajemen-armada/tambah-massal/preview-armada");
+    //     } else {
+    //       toast.error(
+    //         "Gagal menambah armada.\n Periksa laporan untuk mengetahu armada yang gagal ditambahkan."
+    //       );
+    //     }
+    //   } else {
+    //     toast.error(
+    //       "Harap selesaikan data pada menu Draft terlebih dahulu sebelum menambah armada baru."
+    //     );
+    //   }
+    // }, 3000);
   };
 
   const handleSort = (column, sortBy) => {
@@ -208,7 +227,7 @@ const TambahExcel = () => {
           <DropzoneComponent
             onUpload={handleUpload}
             file={uploadedFile}
-            loading={isUploading}
+            loading={isMutating}
             placeholder="Seret dan lepas file di sini atau klik untuk memilih file"
             className={"w-full"}
           />
