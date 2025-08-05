@@ -17,6 +17,7 @@ export const getDriverStatusMetadata = (
   orderStatus = null,
   t
 ) => {
+  console.log("🚀 ~ driverStatus:", driverStatus);
   let variant = "primary";
   let label = "";
   const splitStatus = driverStatus?.split?.("_");
@@ -39,6 +40,9 @@ export const getDriverStatusMetadata = (
 
   const newStatus = splitStatus.slice(0, -1).join("_");
   label = `${t(DriverStatusLabel[newStatus])} ${locationIndex}`;
-
+  console.log(
+    "🚀 ~ DriverStatusLabel[newStatus]:",
+    DriverStatusLabel[newStatus]
+  );
   return { variant, label };
 };

@@ -122,7 +122,7 @@ const priceChange = {
   penaltyFee: 50000,
   adminFee: 10000,
   taxAmount: -6000,
-  totalAdjustment: 666000,
+  totalAdjustment: 0,
   requiresPayment: true,
 };
 
@@ -147,9 +147,9 @@ const apiResultOrderDetail = {
     },
     Data: {
       // Menentukan bisa nggaknya buat ubah pesanan
-      isChangeable: false,
+      isChangeable: true,
       // Menentukan bisa nggaknya buat batalkan pesanan
-      isCancellable: false,
+      isCancellable: true,
       // Menentukan bisa nggaknya buat ngasih review
       canReview: false,
       cancellationDeadline: "2025-06-24T15:00:00.000Z",
@@ -159,10 +159,10 @@ const apiResultOrderDetail = {
         transporterOrderCode: "MT.25.AA.001",
         invoiceNumber: "INV/12345678",
         // orderStatus: OrderStatusEnum.LOADING,
-        orderStatus: OrderStatusEnum.COMPLETED,
+        orderStatus: OrderStatusEnum.CONFIRMED,
         orderTitle: "Proses Muat",
         unitFleetStatus: 1,
-        orderType: OrderTypeEnum.SCHEDULED,
+        orderType: OrderTypeEnum.INSTANT,
         createdAt: "2024-01-01T10:00:00Z",
         updatedAt: "2024-01-01T14:30:00Z",
       },

@@ -53,17 +53,7 @@ export const useGetDriverQRCodeById = ({ orderId, driverId } = exampleBody) => {
           driverId,
         });
       }
-      setQRData(
-        useMockData && driverId === "550e8400-e29b-41d4-a716-446655440021"
-          ? {
-              ...result.data.Data,
-              driverInfo: {
-                ...result.data.Data.driverInfo,
-                statusScan: DriverStatusScanEnum.BELUM_SCAN_BONGKAR,
-              },
-            }
-          : result.data.Data
-      );
+      setQRData(result.data.Data);
     } catch (error) {
       console.log("Error generate QR Code", error);
     } finally {

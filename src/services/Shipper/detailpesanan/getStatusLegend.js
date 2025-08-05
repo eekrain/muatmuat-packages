@@ -34,14 +34,14 @@ const apiResultStatusLegend = {
         //   statusCode: OrderStatusEnum.WAITING_REPAYMENT_2,
         //   statusName: "Proses Pergantian Armada",
         // },
-        {
-          statusCode: OrderStatusEnum.PREPARE_DOCUMENT,
-          statusName: "Dokumen Sedang Disiapkan",
-        },
-        {
-          statusCode: OrderStatusEnum.DOCUMENT_DELIVERY,
-          statusName: "Proses Pengiriman Dokumen",
-        },
+        // {
+        //   statusCode: OrderStatusEnum.PREPARE_DOCUMENT,
+        //   statusName: "Dokumen Sedang Disiapkan",
+        // },
+        // {
+        //   statusCode: OrderStatusEnum.DOCUMENT_DELIVERY,
+        //   statusName: "Proses Pengiriman Dokumen",
+        // },
         {
           statusCode: OrderStatusEnum.COMPLETED,
           statusName: "Selesai",

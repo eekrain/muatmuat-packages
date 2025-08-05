@@ -4,14 +4,13 @@ import { useEffect, useState } from "react";
 import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Form/Checkbox";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
 /**
  * @typedef {object} BatalkanPesananModalProps
  * @property {boolean} open - Controls the visibility of the modal.
  * @property {(isOpen: boolean) => void} onOpenChange - Function to call when the modal's open state changes.
  * @property {() => void} onConfirm - Function to call when the confirmation button is clicked.
- * @property {string} orderStatus - The order status to determine modal content.
+ * @property {boolean} hasPriceCharge - The order status to determine modal content.
  */
 
 /**
@@ -24,7 +23,7 @@ export const ModalBatalkanPesananResponsive = ({
   onOpenChange,
   children,
   onConfirm = () => alert("Not implemented"),
-  orderStatus,
+  hasPriceCharge,
 }) => {
   const [isAgreed, setIsAgreed] = useState(false);
 
@@ -43,30 +42,31 @@ export const ModalBatalkanPesananResponsive = ({
     }
   }, [open]);
 
-  // Content based on orderStatus
-  let ContentComponent;
-  if (orderStatus === OrderStatusEnum.PREPARE_FLEET) {
-    ContentComponent = CancelContentWhenPrepareFleet;
-  } else {
-    ContentComponent = CancelContentWhenNotPrepareFleet;
-  }
-
   return (
     <Modal open={open} onOpenChange={handleOpenChange}>
       <ModalTrigger asChild>{children}</ModalTrigger>
       <ModalContent className="w-[296px] rounded-[10px] bg-white px-4 py-6 shadow-[0px_2px_20px_rgba(0,0,0,0.25)]">
-        <ContentComponent
-          isAgreed={isAgreed}
-          setIsAgreed={setIsAgreed}
-          onConfirm={onConfirm}
-          onOpenChange={onOpenChange}
-        />
+        {hasPriceCharge ? (
+          <ContentCancelWithPenalty
+            isAgreed={isAgreed}
+            setIsAgreed={setIsAgreed}
+            onConfirm={onConfirm}
+            onOpenChange={onOpenChange}
+          />
+        ) : (
+          <ContentCancelWithoutPenalty
+            isAgreed={isAgreed}
+            setIsAgreed={setIsAgreed}
+            onConfirm={onConfirm}
+            onOpenChange={onOpenChange}
+          />
+        )}
       </ModalContent>
     </Modal>
   );
 };
 
-const CancelContentWhenPrepareFleet = ({
+const ContentCancelWithoutPenalty = ({
   isAgreed,
   setIsAgreed,
   onConfirm,
@@ -116,7 +116,7 @@ const CancelContentWhenPrepareFleet = ({
   </div>
 );
 
-const CancelContentWhenNotPrepareFleet = ({
+const ContentCancelWithPenalty = ({
   isAgreed,
   setIsAgreed,
   onConfirm,
