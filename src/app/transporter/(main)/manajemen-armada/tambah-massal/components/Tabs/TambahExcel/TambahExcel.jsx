@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
@@ -13,6 +13,7 @@ import Toggle from "@/components/Toggle/Toggle";
 import { isDev } from "@/lib/constants/is-dev";
 import { toast } from "@/lib/toast";
 import { formatDate } from "@/lib/utils/dateFormat";
+import { useGetFleetsUploadHistory } from "@/services/Transporter/manajemen-armada/getFleetsUploadHistory";
 import { usePostFleetBulkUpload } from "@/services/Transporter/manajemen-armada/postFleetBulkUpload";
 
 const TambahExcel = () => {
@@ -54,7 +55,7 @@ const TambahExcel = () => {
       sortable: false,
       render: (row) => (
         <>
-          {row.status === "Sukses"
+          {row.status === "COMPLETED"
             ? "Berhasil menambah armada"
             : "Gagal menambah armada"}
         </>
@@ -66,17 +67,20 @@ const TambahExcel = () => {
       width: "80px",
       sortable: false,
       render: (row) => {
-        if (row.status === "Gagal") {
+        console.log("row", row);
+        if (row.status === "FAILED") {
           return (
-            <button className="flex items-center gap-1 font-medium text-primary-700">
-              Unduh Report
-              <IconComponent
-                src="/icons/download16.svg"
-                alt="download"
-                width={16}
-                height={16}
-              />
-            </button>
+            <Link href={row.action} target="_blank">
+              <button className="flex items-center gap-1 font-medium text-primary-700">
+                Unduh Report
+                <IconComponent
+                  src="/icons/download16.svg"
+                  alt="download"
+                  width={16}
+                  height={16}
+                />
+              </button>
+            </Link>
           );
         } else {
           return <>-</>;
@@ -86,6 +90,8 @@ const TambahExcel = () => {
   ];
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
+
+  const { data } = useGetFleetsUploadHistory("/v1/fleet/upload-history");
   const { trigger, isMutating } = usePostFleetBulkUpload();
 
   const handleUpload = (file) => {
@@ -152,6 +158,20 @@ const TambahExcel = () => {
     // Log the sorting action
     console.log(`Sorted by ${column} in ${sortBy} order`);
   };
+
+  useEffect(() => {
+    if (data && data.Data && data.Data.history.length > 0) {
+      setList(
+        data.Data.history.map((item) => ({
+          tanggal: item.uploadedAt,
+          document: item.originalFileName,
+          name: item.uploadBy,
+          status: item.status,
+          action: item.fileReport ? item.fileReport : "-",
+        }))
+      );
+    }
+  }, [data]);
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
