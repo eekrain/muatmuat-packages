@@ -78,9 +78,13 @@ const mapDraftsToFormData = (drafts) => {
     },
     nomor_kir: draft.kirNumber || "",
     masa_berlaku_kir: draft.kirExpiryDate ? new Date(draft.kirExpiryDate) : "",
-    foto_buku_kir:
-      draft.documents?.find((d) => d.documentType === "KIR")?.documentUrl ||
-      null,
+    foto_buku_kir: {
+      documentUrl:
+        draft.documents?.find((d) => d.documentType === "KIR")?.documentUrl ||
+        null,
+      name: draft.documents?.find((d) => d.documentType === "KIR")
+        ?.documentName,
+    },
     estimasi_tanggal_pemasangan_gps: {
       mulai: draft.gpsInstallationEstimateStartDate
         ? new Date(draft.gpsInstallationEstimateStartDate)
@@ -192,6 +196,10 @@ const Draft = ({ isDraftAvailable }) => {
     setAddArmadaImageModal(true);
   };
 
+  useEffect(() => {
+    console.log("Errors in Draft component:", errors);
+  }, [errors]);
+
   if (!isDraftAvailable) {
     return (
       <div className="flex h-[280px] w-full items-center justify-center rounded-xl bg-white p-8 shadow-md">
@@ -223,6 +231,7 @@ const Draft = ({ isDraftAvailable }) => {
       </div>
     );
   }
+
   return (
     <div className="">
       {/* Header Table */}
