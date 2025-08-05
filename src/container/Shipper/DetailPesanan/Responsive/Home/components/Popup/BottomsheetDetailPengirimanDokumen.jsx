@@ -31,7 +31,7 @@ export const BottomsheetDetailPengirimanDokumen = ({
             <div className="py-4 first:pt-0">
               <h3 className="mb-2 font-semibold">{t("Nama Penerima")}</h3>
               <p className="font-medium text-neutral-600">
-                {shippingData.recipientName}
+                {shippingData?.recipientName}
               </p>
             </div>
 
@@ -40,7 +40,7 @@ export const BottomsheetDetailPengirimanDokumen = ({
                 {t("Nomor Handphone Penerima")}
               </h3>
               <p className="font-medium text-neutral-600">
-                {shippingData.recipientPhone}
+                {shippingData?.recipientPhone}
               </p>
             </div>
 
@@ -48,7 +48,7 @@ export const BottomsheetDetailPengirimanDokumen = ({
             <div className="py-4">
               <h3 className="mb-2 font-semibold">{t("Alamat Tujuan")}</h3>
               <p className="font-medium text-neutral-600">
-                {shippingData.fullAddress}
+                {shippingData?.fullAddress}
               </p>
             </div>
 
@@ -57,35 +57,35 @@ export const BottomsheetDetailPengirimanDokumen = ({
                 {t("Detail Alamat Tujuan")}
               </h3>
               <p className="font-medium text-neutral-600">
-                {shippingData.detailAddress}
+                {shippingData?.detailAddress}
               </p>
             </div>
 
             <div className="py-4">
               <h3 className="mb-2 font-semibold">{t("Kecamatan")}</h3>
               <p className="font-medium text-neutral-600">
-                {shippingData.district}
+                {shippingData?.district}
               </p>
             </div>
 
             <div className="py-4">
               <h3 className="mb-2 font-semibold">{t("Kabupaten/Kota")}</h3>
               <p className="font-medium text-neutral-600">
-                {shippingData.city}
+                {shippingData?.city}
               </p>
             </div>
 
             <div className="py-4">
               <h3 className="mb-2 font-semibold">{t("Provinsi")}</h3>
               <p className="font-medium text-neutral-600">
-                {shippingData.province}
+                {shippingData?.province}
               </p>
             </div>
 
             <div className="py-4">
               <h3 className="mb-2 font-semibold">{t("Kode Pos")}</h3>
               <p className="font-medium text-neutral-600">
-                {shippingData.postalCode}
+                {shippingData?.postalCode}
               </p>
             </div>
 
@@ -93,13 +93,13 @@ export const BottomsheetDetailPengirimanDokumen = ({
             <div className="py-4">
               <h3 className="mb-2 font-semibold">{t("Nama Ekspedisi")}</h3>
               <p className="font-medium text-neutral-600">
-                {shippingData.courier}
+                {shippingData?.courier}
               </p>
             </div>
             <div className="py-4 last:pb-0">
               <h3 className="mb-2 font-semibold">{t("Asuransi Pengiriman")}</h3>
               <p className="font-medium text-neutral-600">
-                {idrFormat(shippingData.insurancePrice)}
+                {idrFormat(shippingData?.insurancePrice)}
               </p>
             </div>
           </div>
