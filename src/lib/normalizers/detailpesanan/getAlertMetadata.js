@@ -1,6 +1,7 @@
 import {
   AlertInfoEnum,
   AlertLabelEnum,
+  AlertNeedConfirmEnum,
   AlertTypeEnum,
 } from "@/lib/constants/detailpesanan/alert.enum";
 
@@ -11,7 +12,11 @@ export const getAlertMetadata = ({
   onLihatPerubahan = () => alert("Not implemented yet"),
 }) => {
   const info = AlertInfoEnum[type];
-  if (type === AlertTypeEnum.CONFIRMATION_WAITING_PREPARE_FLEET) return false;
+  if (
+    type === AlertTypeEnum.CONFIRMATION_WAITING_PREPARE_FLEET &&
+    !AlertNeedConfirmEnum.CONFIRMATION_WAITING_PREPARE_FLEET
+  )
+    return false;
   if (info) return { label: t(AlertLabelEnum[type]), info };
 
   if (type === AlertTypeEnum.WAITING_TIME_CHARGE) {

@@ -9,7 +9,11 @@ import {
 } from "@/components/Tabs/Tabs";
 import { useTranslation } from "@/hooks/use-translation";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
-import { AlertLabelEnum } from "@/lib/constants/detailpesanan/alert.enum";
+import {
+  AlertLabelEnum,
+  AlertNeedConfirmEnum,
+  AlertTypeEnum,
+} from "@/lib/constants/detailpesanan/alert.enum";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { getAlertMetadata } from "@/lib/normalizers/detailpesanan/getAlertMetadata";
 import useGetFleetSearchStatus from "@/services/Shipper/detailpesanan/getFleetSearchStatus";
@@ -59,10 +63,25 @@ const DetailPesananScreen = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isOpenInfo, setIsOpenInfo] = useState(false);
   const [isPeriksaPesananOpen, setIsPeriksaPesananOpen] = useState(false);
+  const [isConfirmWaiting, setIsConfirmWaiting] = useState(false);
+
+  const hasConfirmationWaitingAlert = useMemo(() => {
+    const hasConfirmAlert =
+      isShowWaitFleetAlert ||
+      (dataStatusPesanan?.alerts || []).some(
+        (alert) =>
+          alert?.type === AlertTypeEnum.CONFIRMATION_WAITING_PREPARE_FLEET
+      );
+
+    const needsConfirm =
+      AlertNeedConfirmEnum.CONFIRMATION_WAITING_PREPARE_FLEET;
+
+    return hasConfirmAlert && needsConfirm;
+  }, [dataStatusPesanan?.alerts, isShowWaitFleetAlert]);
 
   const orderAlerts = useMemo(() => {
     return [
-      ...(isShowWaitFleetAlert
+      ...(isShowWaitFleetAlert && isConfirmWaiting
         ? [
             {
               label: AlertLabelEnum.CONFIRMATION_WAITING_PREPARE_FLEET,
@@ -70,6 +89,12 @@ const DetailPesananScreen = ({
           ]
         : []),
       ...(dataStatusPesanan?.alerts || [])
+        .filter((item) => {
+          if (item?.type === AlertTypeEnum.CONFIRMATION_WAITING_PREPARE_FLEET) {
+            return isConfirmWaiting;
+          }
+          return true;
+        })
         .map((item) =>
           getAlertMetadata({
             type: item?.type,
@@ -80,7 +105,26 @@ const DetailPesananScreen = ({
         )
         .filter((val) => Boolean(val)),
     ];
-  }, [dataStatusPesanan?.alerts, isShowWaitFleetAlert, t]);
+  }, [dataStatusPesanan?.alerts, isShowWaitFleetAlert, isConfirmWaiting, t]);
+
+  const shouldShowPendingPrepareFleetAlert = useMemo(() => {
+    const isInWhitelist = WHITELIST_PREPARE_FLEET.includes(
+      dataStatusPesanan?.orderStatus
+    );
+
+    if (hasConfirmationWaitingAlert && isConfirmWaiting) {
+      console.log(
+        "🍌 PendingPrepareFleetAlert hidden due to CONFIRMATION_WAITING_PREPARE_FLEET alert and user confirmed waiting"
+      );
+      return false;
+    }
+
+    return isInWhitelist;
+  }, [
+    dataStatusPesanan?.orderStatus,
+    hasConfirmationWaitingAlert,
+    isConfirmWaiting,
+  ]);
 
   return (
     <FormResponsiveLayout
@@ -94,10 +138,16 @@ const DetailPesananScreen = ({
       onClickBackButton={() => alert("onClickBackButton")}
     >
       <div className="mb-16 space-y-2 bg-neutral-200">
-        {WHITELIST_PREPARE_FLEET.includes(dataStatusPesanan?.orderStatus) ? (
-          <PendingPrepareFleetAlert
-            paymentDueDateTime={dataStatusPesanan?.paymentDueDateTime}
-          />
+        {shouldShowPendingPrepareFleetAlert ? (
+          <>
+            {console.log(
+              "🍌 Showing PendingPrepareFleetAlert for orderStatus:",
+              dataStatusPesanan?.orderStatus
+            )}
+            <PendingPrepareFleetAlert
+              paymentDueDateTime={dataStatusPesanan?.paymentDueDateTime}
+            />
+          </>
         ) : WHITELIST_FLEET_FOUND.includes(dataStatusPesanan?.orderStatus) ? (
           <PendingPaymentAlert
             paymentDueDateTime={dataRingkasanPembayaran?.expiredAt}
@@ -149,6 +199,8 @@ const DetailPesananScreen = ({
       <FooterDetailPesanan
         dataStatusPesanan={dataStatusPesanan}
         dataRingkasanPembayaran={dataRingkasanPembayaran}
+        isConfirmWaiting={isConfirmWaiting}
+        onConfirmWaitingChange={setIsConfirmWaiting}
       />
 
       <ModalInformasiSlider open={isOpenInfo} onOpenChange={setIsOpenInfo} />
@@ -169,7 +221,10 @@ const DetailPesananScreen = ({
       <ModalVolumePesananTinggi
         open={isVolumePesananTinggiOpen}
         onOpenChange={setIsVolumePesananTinggiOpen}
-        onConfirm={() => setIsVolumePesananTinggiOpen(false)}
+        onConfirm={() => {
+          setIsVolumePesananTinggiOpen(false);
+          setIsConfirmWaiting(true);
+        }}
         onCancel={() => setIsVolumePesananTinggiOpen(false)}
       />
     </FormResponsiveLayout>
