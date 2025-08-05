@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 
 import { ChevronDown, Info } from "lucide-react";
 
-import { TagBubble } from "@/components/Badge/TagBubble";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import Card, { CardContent } from "@/components/Card/Card";
@@ -13,6 +12,7 @@ import Checkbox from "@/components/Form/Checkbox";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import Input from "@/components/Form/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import { SelectedProvinces } from "@/components/SelectedProvinces";
 import { useGetAreaMuatManage } from "@/services/Transporter/pengaturan/getDataAreaMuat";
 
 export default function Page() {
@@ -160,36 +160,14 @@ export default function Page() {
         <Card className="mt-6 !border-none">
           <CardContent className="p-6">
             {/* Selected Provinces Pills */}
-            <div className="mb-6 flex">
-              <div className="mb-3 me-5 mt-3 flex items-center gap-2">
-                <span className="text-sm font-medium leading-[16.8px] text-neutral-900">
-                  Provinsi*
-                </span>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                {displayProvinces
-                  .filter((province) =>
-                    province.cities.some((city) => city.isSelected)
-                  )
-                  .map((province) => (
-                    <TagBubble
-                      key={province.id}
-                      withRemove={{
-                        onRemove: () => handleRemoveProvince(province.id),
-                      }}
-                    >
-                      {province.province}
-                    </TagBubble>
-                  ))}
-                <Button
-                  variant="muattrans-primary"
-                  className="h-7 rounded-full px-4 text-xs"
-                  onClick={() => console.log("Add province")}
-                >
-                  Tambah
-                </Button>
-              </div>
-            </div>
+            <SelectedProvinces
+              className="mb-6"
+              provinces={displayProvinces.filter((province) =>
+                province.cities.some((city) => city.isSelected)
+              )}
+              onRemove={handleRemoveProvince}
+              onAdd={() => console.log("Add province")}
+            />
 
             {/* Search and Filter */}
             <div className="mb-6 flex items-center">
