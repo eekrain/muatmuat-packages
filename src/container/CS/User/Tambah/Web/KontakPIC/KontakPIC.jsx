@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useForm } from "react-hook-form";
 import * as v from "valibot";
@@ -9,6 +11,7 @@ import Card from "@/components/Card/Card";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import Input from "@/components/Form/Input";
 import { toast } from "@/lib/toast";
+import { useTransporterFormStore } from "@/store/CS/forms/registerTransporter";
 
 const phoneRegex = /^08[0-9]{8,11}$/;
 
@@ -36,32 +39,49 @@ const kontakPICSchema = v.object({
   contacts: v.tuple([requiredPICSchema, optionalPICSchema, optionalPICSchema]),
 });
 
-function KontakPIC() {
+function KontakPIC({ onSave, onFormChange, setActiveIdx }) {
+  const FORM_KEY = "newTransporterRegistration";
+  const setForm = useTransporterFormStore((state) => state.setForm);
+  const initialData = useTransporterFormStore((state) =>
+    state.getForm(FORM_KEY)
+  );
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty, isSubmitSuccessful },
     watch,
+    reset,
     setError,
     trigger,
   } = useForm({
     resolver: valibotResolver(kontakPICSchema),
-    defaultValues: {
-      contacts: [
-        { name: "", position: "", phone: "", level: 1 },
-        { name: "", position: "", phone: "", level: 2 },
-        { name: "", position: "", phone: "", level: 3 },
-      ],
-    },
+    defaultValues: initialData?.contacts
+      ? initialData
+      : {
+          contacts: [
+            { name: "", position: "", phone: "", level: 1 },
+            { name: "", position: "", phone: "", level: 2 },
+            { name: "", position: "", phone: "", level: 3 },
+          ],
+        },
   });
 
   const watched = watch();
 
+  useEffect(() => {
+    // Hanya panggil onFormChange jika form MENJADI dirty (berubah dari bersih ke kotor).
+    // Jangan lakukan apa-apa jika form berubah dari kotor kembali ke bersih (setelah save).
+    if (isDirty) {
+      onFormChange();
+    }
+  }, [isDirty, onFormChange]);
+
   const onSubmit = async (data) => {
+    // --- Logika validasi kustom Anda dimulai di sini (TIDAK PERLU DIUBAH) ---
     let hasError = false;
     let toastShown = false;
 
-    // Cek PIC 1
     const validPIC1 = await trigger([
       "contacts.0.name",
       "contacts.0.position",
@@ -80,46 +100,68 @@ function KontakPIC() {
     const pic2Filled = Object.values(pic2).some((v) => v?.trim());
     const pic3Filled = Object.values(pic3).some((v) => v?.trim());
 
-    // PIC 2: wajib jika ada isi di PIC 2 atau PIC 3
     if (pic2Filled || pic3Filled) {
       ["name", "position", "phone"].forEach((field) => {
         if (!pic2[field]?.trim()) {
           setError(`contacts.1.${field}`, {
             type: "manual",
-            message:
-              field === "name"
-                ? "Nama wajib diisi"
-                : field === "position"
-                  ? "Jabatan wajib diisi"
-                  : "Nomor HP wajib diisi",
+            message: "Wajib diisi",
           });
           hasError = true;
         }
       });
     }
 
-    // PIC 3: wajib jika ada isi di PIC 3
     if (pic3Filled) {
       ["name", "position", "phone"].forEach((field) => {
         if (!pic3[field]?.trim()) {
           setError(`contacts.2.${field}`, {
             type: "manual",
-            message:
-              field === "name"
-                ? "Nama wajib diisi"
-                : field === "position"
-                  ? "Jabatan wajib diisi"
-                  : "Nomor HP wajib diisi",
+            message: "Wajib diisi",
           });
           hasError = true;
         }
       });
     }
+    // --- Logika validasi kustom Anda berakhir di sini ---
 
+    // Jika ada error dari validasi kustom, hentikan proses.
     if (hasError) return;
 
-    console.log("Form submitted:", data);
+    // --- Jika semua validasi lolos, lanjutkan untuk menyimpan ---
+    console.log("All validations passed. Form data for this section:", data);
+
+    // 1. Ambil data lengkap yang ada saat ini dari store
+    const existingData =
+      useTransporterFormStore.getState().getForm(FORM_KEY) || {};
+
+    // 2. Gabungkan data lama dengan data baru dari section ini
+    const updatedData = {
+      ...existingData,
+      ...data,
+    };
+
+    // 3. Simpan data yang sudah lengkap kembali ke store
+    console.log("Saving final merged data to Zustand:", updatedData);
+    setForm(FORM_KEY, updatedData);
+    if (onSave) {
+      onSave();
+    }
+
+    reset(data);
+
+    toast.success("Pendaftaran berhasil disimpan!");
+
+    // Di sini Anda bisa memicu pengiriman data ke backend atau navigasi ke halaman sukses
+    // Contoh: sendDataToApi(updatedData);
   };
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      const latestData = useTransporterFormStore.getState().getForm(FORM_KEY);
+      reset(latestData);
+    }
+  }, [isSubmitSuccessful, reset]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-full">
@@ -207,7 +249,12 @@ function KontakPIC() {
         </div>
       </Card>
       <div className="mt-6 flex items-end justify-end gap-3">
-        <Button variant="muattrans-primary-secondary">Sebelumnya</Button>
+        <Button
+          variant="muattrans-primary-secondary"
+          onClick={() => setActiveIdx(1)}
+        >
+          Sebelumnya
+        </Button>
         <Button type="submit" variant="muattrans-primary">
           Simpan
         </Button>

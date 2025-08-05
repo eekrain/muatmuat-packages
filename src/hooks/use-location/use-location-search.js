@@ -1,8 +1,9 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 import useDevice from "../use-device";
 import LocationApiAdapter from "./location-api-adapter";
 import { useAutoComplete } from "./use-auto-complete";
+import { useGetCurrentLocation } from "./use-get-current-location";
 import { usePostalCode } from "./use-postal-code";
 import { useSavedLocation } from "./use-saved-location";
 
@@ -24,6 +25,8 @@ export const useLocationSearch = () => {
     useState(false);
 
   const savedLocation = useSavedLocation({
+    apiAdapter: LocationApiAdapter,
+    historyLocationType: "PICKUP",
     setCoordinates,
     setAutoCompleteSearchPhrase,
     setIsDropdownSearchOpen,
@@ -31,6 +34,7 @@ export const useLocationSearch = () => {
   });
 
   const autoComplete = useAutoComplete({
+    apiAdapter: LocationApiAdapter,
     autoCompleteSearchPhrase,
     setAutoCompleteSearchPhrase,
     setCoordinates,
@@ -42,46 +46,20 @@ export const useLocationSearch = () => {
     refetchHistoryResult: savedLocation.refetchHistoryResult,
   });
 
-  const handleGetCurrentLocation = useCallback(() => {
-    return new Promise((resolve, reject) => {
-      if (!window.navigator.geolocation) {
-        reject(new Error("Geolocation is not supported by this browser."));
-        return;
-      }
-
-      window.navigator.geolocation.getCurrentPosition(
-        async ({ coords }) => {
-          try {
-            console.log("Step 1: Got coordinates from browser:", coords);
-
-            // Step 2: Mengubah koordinat mentah menjadi objek lokasi LENGKAP.
-            // Ini adalah langkah kunci yang hilang sebelumnya.
-            console.log(
-              "Step 2: Calling getLocationByLatLong with coordinates..."
-            );
-            const result =
-              await LocationApiAdapter.getLocationByLatLong(coords);
-            console.log("Step 3: Received full location object:", result);
-
-            // Step 3: Kembalikan objek lengkap tersebut.
-            resolve(result);
-          } catch (error) {
-            console.error(
-              "Error in handleGetCurrentLocation's promise:",
-              error
-            );
-            reject(error);
-          }
-        },
-        (error) => {
-          console.error("Error getting current position from browser:", error);
-          reject(error);
-        }
-      );
-    });
-  }, []); // Dependensi kosong, fungsi ini stabil.
+  const getCurrentLocation = useGetCurrentLocation({
+    apiAdapter: LocationApiAdapter,
+    setCoordinates,
+    setAutoCompleteSearchPhrase,
+    setIsModalPostalCodeOpen,
+    setLocationPostalCodeSearchPhrase,
+    dontTriggerPostalCodeModal,
+    setDontTriggerPostalCodeModal,
+    setIsDropdownSearchOpen,
+    setTempLocation,
+  });
 
   const postalCode = usePostalCode({
+    apiAdapter: LocationApiAdapter,
     setIsModalPostalCodeOpen,
     locationPostalCodeSearchPhrase,
     tempLocation,
@@ -100,10 +78,10 @@ export const useLocationSearch = () => {
 
   return {
     ...autoComplete,
+    ...getCurrentLocation,
     ...postalCode,
     ...savedLocation,
     ...LocationApiAdapter,
-    handleGetCurrentLocation,
     isMobile,
     coordinates,
     setCoordinates,

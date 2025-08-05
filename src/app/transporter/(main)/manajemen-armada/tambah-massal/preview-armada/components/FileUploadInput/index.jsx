@@ -56,7 +56,9 @@ const FileUploadInput = ({
       {hasFile ? (
         <div className="flex flex-col gap-1 text-xs font-medium">
           <div className="flex text-success-700">
-            <p className="line-clamp-1 w-full">{displayText}</p>
+            <p className="line-clamp-1 w-fit truncate">
+              {displayText.split(".")[0]}
+            </p>
             <span>.{fileExtension}</span>
           </div>
           <label

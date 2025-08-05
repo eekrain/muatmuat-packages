@@ -22,6 +22,14 @@ const LIST_PUBLIC_ROUTES = [
     method: "exact",
   },
   {
+    path: "/ubah-password",
+    method: "exact",
+  },
+  {
+    path: "/lupa-password",
+    method: "exact",
+  },
+  {
     path: "/dev-login",
     method: "exact",
   },

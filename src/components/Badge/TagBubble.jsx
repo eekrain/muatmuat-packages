@@ -12,12 +12,12 @@ export const TagBubble = ({
     <div
       className={cn(
         // 25. 18 - Web - LB - 0316
-        "group box-border flex h-[30px] max-w-[204px] flex-row items-center gap-1 rounded-2xl border border-primary-700 bg-white px-3 py-1.5 transition-colors duration-150 hover:bg-blue-50 md:h-7",
+        "group box-border flex h-[30px] max-w-[204px] flex-row items-center gap-1 rounded-2xl border border-primary-700 bg-white px-3 py-1.5 text-primary-700 transition-colors duration-150 hover:bg-blue-50 md:h-7",
         className
       )}
     >
       {/* 25. 18 - Web - LB - 0316 */}
-      <span className="leading-[1.1 ] flex-1 truncate text-sm font-medium text-primary-700 md:text-xxs md:font-semibold md:leading-[13px]">
+      <span className="leading-[1.1 ] flex-1 truncate text-sm font-medium md:text-xxs md:font-semibold md:leading-[13px]">
         {children}
       </span>
       {withRemove && (

@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useForm } from "react-hook-form";
 import * as v from "valibot";
@@ -81,7 +83,7 @@ export const kelengkapanLegalitasSchema = v.object({
   }),
 });
 
-function KelengkapanLegalitas() {
+function KelengkapanLegalitas({ onSave, onFormChange, setActiveIdx }) {
   const FORM_KEY = "newTransporterRegistration";
   const setForm = useTransporterFormStore((state) => state.setForm);
   const initialData = useTransporterFormStore((state) =>
@@ -91,14 +93,15 @@ function KelengkapanLegalitas() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty, isSubmitSuccessful },
+    reset,
     setValue,
     trigger,
     getValues,
     watch,
   } = useForm({
     resolver: valibotResolver(kelengkapanLegalitasSchema),
-    defaultValues: initialData.nibNumber
+    defaultValues: initialData?.nibNumber
       ? initialData
       : {
           nibNumber: null,
@@ -119,6 +122,12 @@ function KelengkapanLegalitas() {
 
   // Watch form values for real-time validation
   const watchedValues = watch();
+
+  useEffect(() => {
+    if (isDirty) {
+      onFormChange();
+    }
+  }, [isDirty, onFormChange]);
 
   console.log("watchedValues", watchedValues);
 
@@ -155,9 +164,23 @@ function KelengkapanLegalitas() {
       useTransporterFormStore.getState().getForm(FORM_KEY) || {};
     const updatedData = { ...existingData, ...data };
     setForm(FORM_KEY, updatedData);
+    if (onSave) {
+      onSave();
+    }
+
+    reset(data);
 
     toast.success("Kelengkapan legalitas berhasil disimpan!");
   });
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      // Ambil data terbaru dari store setelah save
+      const latestData = useTransporterFormStore.getState().getForm(FORM_KEY);
+      // Reset form dengan data lengkap, ini akan set isDirty ke false
+      reset(latestData);
+    }
+  }, [isSubmitSuccessful, reset]);
 
   const handleMultipleFileUpload = (fieldName, files) => {
     setValue(`documents.${fieldName}`, files, { shouldValidate: true });
@@ -318,7 +341,12 @@ function KelengkapanLegalitas() {
         </div>
       </Card>
       <div className="mt-6 flex items-end justify-end gap-3">
-        <Button variant="muattrans-primary-secondary">Sebelumnya</Button>
+        <Button
+          variant="muattrans-primary-secondary"
+          onClick={() => setActiveIdx(0)}
+        >
+          Sebelumnya
+        </Button>
         <Button type="submit" variant="muattrans-primary">
           Simpan
         </Button>

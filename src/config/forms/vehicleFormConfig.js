@@ -1,5 +1,6 @@
 import * as v from "valibot";
 
+import { validateAllLicensePlates } from "@/app/transporter/(main)/manajemen-armada/tambah-massal/components/ArmadaTable/ArmadaTable";
 import { normalizePayloadTambahArmadaMassal } from "@/lib/normalizers/transporter/tambah-armada-massal/normalizePayloadTambahArmadaMassal";
 import { toast } from "@/lib/toast";
 
@@ -153,8 +154,14 @@ export const handleVehicleCellValueChange = (
 };
 
 // Validation function for vehicle form
-export const validateVehicleForm = (data) => {
+export const validateVehicleForm = (
+  data,
+  setError,
+  fieldArrayName = "informasiMuatan"
+) => {
   const emptyFields = [];
+  let hasInvalidLicensePlate = false;
+  const invalidLicensePlateIndexes = [];
 
   data.informasiMuatan.forEach((item, index) => {
     const fieldLabels = {
@@ -177,6 +184,12 @@ export const validateVehicleForm = (data) => {
       "estimasi_tanggal_pemasangan_gps.selesai":
         "Estimasi tanggal selesai pemasangan GPS",
     };
+
+    // Check license plate format first (special characters validation)
+    if (item.licensePlate && /[^a-zA-Z0-9\s]/g.test(item.licensePlate)) {
+      hasInvalidLicensePlate = true;
+      invalidLicensePlateIndexes.push(index);
+    }
 
     // Check required fields
     if (!item.informasi_armada?.images?.image_armada_depan) {
@@ -247,13 +260,40 @@ export const validateVehicleForm = (data) => {
     }
   });
 
+  // Check for invalid license plate format first (highest priority)
+  if (hasInvalidLicensePlate) {
+    // Set errors for invalid license plates
+    invalidLicensePlateIndexes.forEach((index) => {
+      if (setError) {
+        setError(`${fieldArrayName}.${index}.licensePlate`, {
+          type: "manual",
+          message: "No. Polisi tidak valid",
+        });
+      }
+    });
+    toast.error("No. Polisi tidak valid");
+    return false;
+  }
+
   if (emptyFields.length === 1) {
     toast.error(`${emptyFields[0]} wajib diisi`);
   } else if (emptyFields.length > 1) {
     toast.error("Field Belum Diisi");
   }
 
-  return emptyFields.length === 0;
+  // If there are empty required fields, return false immediately
+  if (emptyFields.length > 0) {
+    return false;
+  }
+
+  // Check for license plate duplicates only if all required fields are filled
+  const licensePlateValid = validateAllLicensePlates(
+    data.informasiMuatan,
+    setError,
+    fieldArrayName
+  );
+
+  return licensePlateValid;
 };
 
 // Submit handler for vehicle form

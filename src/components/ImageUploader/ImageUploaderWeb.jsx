@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from "react";
 
 import { Loader2 } from "lucide-react";
 
-import CropperWeb from "@/components/Cropper/CropperWeb";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { toast } from "@/lib/toast";
 
+import CropperWebNew from "../Cropper/CropperWebNew";
 import styles from "./ImageUploader.module.scss";
 
 export default function ImageUploaderWeb({
@@ -203,7 +203,7 @@ export default function ImageUploaderWeb({
         </>
       </div>
       {isCropperOpen && (
-        <CropperWeb
+        <CropperWebNew
           imageSource={imageSrc}
           isOpen={isCropperOpen}
           setIsOpen={setIsCropperOpen}

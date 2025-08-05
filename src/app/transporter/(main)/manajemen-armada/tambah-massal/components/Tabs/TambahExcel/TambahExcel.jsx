@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
@@ -12,8 +12,9 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import Toggle from "@/components/Toggle/Toggle";
 import { isDev } from "@/lib/constants/is-dev";
 import { toast } from "@/lib/toast";
-import { isExcelFile } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";
+import { useGetFleetsUploadHistory } from "@/services/Transporter/manajemen-armada/getFleetsUploadHistory";
+import { usePostFleetBulkUpload } from "@/services/Transporter/manajemen-armada/postFleetBulkUpload";
 
 const TambahExcel = () => {
   const [list, setList] = useState([]);
@@ -54,7 +55,7 @@ const TambahExcel = () => {
       sortable: false,
       render: (row) => (
         <>
-          {row.status === "Sukses"
+          {row.status === "COMPLETED"
             ? "Berhasil menambah armada"
             : "Gagal menambah armada"}
         </>
@@ -66,17 +67,20 @@ const TambahExcel = () => {
       width: "80px",
       sortable: false,
       render: (row) => {
-        if (row.status === "Gagal") {
+        console.log("row", row);
+        if (row.status === "FAILED") {
           return (
-            <button className="flex items-center gap-1 font-medium text-primary-700">
-              Unduh Report
-              <IconComponent
-                src="/icons/download16.svg"
-                alt="download"
-                width={16}
-                height={16}
-              />
-            </button>
+            <Link href={row.action} target="_blank">
+              <button className="flex items-center gap-1 font-medium text-primary-700">
+                Unduh Report
+                <IconComponent
+                  src="/icons/download16.svg"
+                  alt="download"
+                  width={16}
+                  height={16}
+                />
+              </button>
+            </Link>
           );
         } else {
           return <>-</>;
@@ -87,37 +91,58 @@ const TambahExcel = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
 
+  const { data } = useGetFleetsUploadHistory("/v1/fleet/upload-history");
+  const { trigger, isMutating } = usePostFleetBulkUpload();
+
   const handleUpload = (file) => {
-    setIsUploading(true);
-    // Simulate upload process
-    setTimeout(() => {
-      setIsUploading(false);
-      setList([
-        ...list,
-        {
-          tanggal: new Date().toISOString(),
-          document: file.name,
-          name: "John Doe",
-          status: stateUpload && isExcelFile(file) ? "Sukses" : "Gagal",
-        },
-      ]);
-      // setUploadedFile(file);
-      if (stateUpload) {
-        // Show success message
-        if (isExcelFile(file)) {
-          toast.success(`Berhasil menambah ${20} armada`);
-          router.push("/manajemen-armada/tambah-massal/preview-armada");
-        } else {
-          toast.error(
-            "Gagal menambah armada.\n Periksa laporan untuk mengetahu armada yang gagal ditambahkan."
+    // setIsUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    trigger(formData)
+      .then((response) => {
+        setIsUploading(false);
+        setUploadedFile(file);
+        if (response?.Data?.bulkImportId) {
+          toast.success(`Berhasil menambah ${response.Data.totalRows} armada`);
+          router.push(
+            `/manajemen-armada/tambah-massal/preview-armada/${response.Data.bulkImportId}`
           );
         }
-      } else {
+      })
+      .catch((_error) => {
         toast.error(
-          "Harap selesaikan data pada menu Draft terlebih dahulu sebelum menambah armada baru."
+          "Gagal menambah armada.\n Periksa laporan untuk mengetahu armada yang gagal ditambahkan."
         );
-      }
-    }, 3000);
+      });
+    // Simulate upload process
+    // setTimeout(() => {
+    //   setIsUploading(false);
+    //   setList([
+    //     ...list,
+    //     {
+    //       tanggal: new Date().toISOString(),
+    //       document: file.name,
+    //       name: "John Doe",
+    //       status: stateUpload && isExcelFile(file) ? "Sukses" : "Gagal",
+    //     },
+    //   ]);
+    //   // setUploadedFile(file);
+    //   if (stateUpload) {
+    //     // Show success message
+    //     if (isExcelFile(file)) {
+    //       toast.success(`Berhasil menambah ${20} armada`);
+    //       router.push("/manajemen-armada/tambah-massal/preview-armada");
+    //     } else {
+    //       toast.error(
+    //         "Gagal menambah armada.\n Periksa laporan untuk mengetahu armada yang gagal ditambahkan."
+    //       );
+    //     }
+    //   } else {
+    //     toast.error(
+    //       "Harap selesaikan data pada menu Draft terlebih dahulu sebelum menambah armada baru."
+    //     );
+    //   }
+    // }, 3000);
   };
 
   const handleSort = (column, sortBy) => {
@@ -133,6 +158,20 @@ const TambahExcel = () => {
     // Log the sorting action
     console.log(`Sorted by ${column} in ${sortBy} order`);
   };
+
+  useEffect(() => {
+    if (data && data.Data && data.Data.history.length > 0) {
+      setList(
+        data.Data.history.map((item) => ({
+          tanggal: item.uploadedAt,
+          document: item.originalFileName,
+          name: item.uploadBy,
+          status: item.status,
+          action: item.fileReport ? item.fileReport : "-",
+        }))
+      );
+    }
+  }, [data]);
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -208,7 +247,7 @@ const TambahExcel = () => {
           <DropzoneComponent
             onUpload={handleUpload}
             file={uploadedFile}
-            loading={isUploading}
+            loading={isMutating}
             placeholder="Seret dan lepas file di sini atau klik untuk memilih file"
             className={"w-full"}
           />
