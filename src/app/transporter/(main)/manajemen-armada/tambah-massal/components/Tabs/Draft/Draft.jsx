@@ -196,10 +196,6 @@ const Draft = ({ isDraftAvailable }) => {
     setAddArmadaImageModal(true);
   };
 
-  useEffect(() => {
-    console.log("Errors in Draft component:", errors);
-  }, [errors]);
-
   if (!isDraftAvailable) {
     return (
       <div className="flex h-[280px] w-full items-center justify-center rounded-xl bg-white p-8 shadow-md">
