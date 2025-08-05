@@ -41,6 +41,31 @@ const apiResultFleetList = {
           isActive: true,
         },
         {
+          fleetId: "fleet-uuid-3",
+          licensePlate: "B1234ABC",
+          driver: {
+            driverId: "driver-uuid-1",
+            name: "John Doe",
+            phoneNumber: "+628123456789",
+          },
+          lastLocation: {
+            latitude: -6.2088,
+            longitude: 106.8456,
+            address: "Jakarta Selatan",
+            lastUpdate: "2025-07-25T10:30:00Z",
+          },
+          truckType: {
+            truckTypeId: "truck-type-uuid-1",
+            name: "Pickup",
+          },
+          carrierType: {
+            carrierId: "carrier-uuid-1",
+            name: "Bak Terbuka",
+          },
+          status: "OFFLINE",
+          isActive: true,
+        },
+        {
           fleetId: "fleet-uuid-1",
           licensePlate: "B1234ABC",
           driver: {
@@ -88,31 +113,6 @@ const apiResultFleetList = {
             name: "Bak Tertutup",
           },
           status: "ON_DELIVERY",
-          isActive: true,
-        },
-        {
-          fleetId: "fleet-uuid-3",
-          licensePlate: "B1234ABC",
-          driver: {
-            driverId: "driver-uuid-1",
-            name: "John Doe",
-            phoneNumber: "+628123456789",
-          },
-          lastLocation: {
-            latitude: -6.2088,
-            longitude: 106.8456,
-            address: "Jakarta Selatan",
-            lastUpdate: "2025-07-25T10:30:00Z",
-          },
-          truckType: {
-            truckTypeId: "truck-type-uuid-1",
-            name: "Pickup",
-          },
-          carrierType: {
-            carrierId: "carrier-uuid-1",
-            name: "Bak Terbuka",
-          },
-          status: "OFFLINE",
           isActive: true,
         },
       ],

@@ -72,15 +72,7 @@ const DaftarArmada = ({ onClose }) => {
   );
 
   return (
-    <div
-      className="flex flex-col rounded-r-xl bg-white pt-4"
-      style={{
-        width: "350px",
-        height: "532px",
-        borderTopRightRadius: "12px",
-        borderBottomRightRadius: "12px",
-      }}
-    >
+    <div className="flex flex-col bg-white pt-4">
       {/* Header */}
       <div className="mb-4 px-4">
         <div className="flex items-center justify-between pb-3">
