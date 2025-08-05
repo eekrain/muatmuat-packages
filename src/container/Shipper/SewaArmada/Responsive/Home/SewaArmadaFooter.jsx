@@ -26,8 +26,8 @@ export const SewaArmadaFooter = ({
   const formValues = useSewaArmadaStore((s) => s.formValues);
   const footerRef = useRef(null);
 
-  const isShowCostDetail = false;
-  const isShowTotalCost = false;
+  const isShowCostDetail = calculatedPrice;
+  //   const isShowTotalCost = true;
 
   // Check if selected truck is non-recommended
   const isShowRecommendedTruckButton = useMemo(() => {
@@ -47,7 +47,7 @@ export const SewaArmadaFooter = ({
       parentRef.current.style.paddingBottom = `${height}px`;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isShowRecommendedTruckButton, isShowCostDetail, isShowTotalCost]);
+  }, [isShowRecommendedTruckButton, isShowCostDetail]);
 
   return (
     <ResponsiveFooter
@@ -79,20 +79,20 @@ export const SewaArmadaFooter = ({
       />
 
       {/* Total Cost Row */}
-      {isShowTotalCost && (
-        <div className="flex w-full items-center justify-between">
-          <p className="font-sans text-sm font-semibold leading-tight text-neutral-900">
-            {t("SewaArmadaFooter.labelTotalBiaya", {}, "Total Biaya")}
-          </p>
-          <p className="font-sans text-sm font-bold leading-tight text-neutral-900">
-            {currentTotal !== undefined
-              ? idrFormat(currentTotal)
-              : calculatedPrice?.totalPrice
-                ? idrFormat(calculatedPrice.totalPrice)
-                : idrFormat(0)}
-          </p>
-        </div>
-      )}
+      {/* {isShowTotalCost && ( */}
+      <div className="flex w-full items-center justify-between">
+        <p className="font-sans text-sm font-semibold leading-tight text-neutral-900">
+          {t("SewaArmadaFooter.labelTotalBiaya", {}, "Total Biaya")}
+        </p>
+        <p className="font-sans text-sm font-bold leading-tight text-neutral-900">
+          {currentTotal !== undefined
+            ? idrFormat(currentTotal)
+            : calculatedPrice?.totalPrice
+              ? idrFormat(calculatedPrice?.totalPrice)
+              : idrFormat(0)}
+        </p>
+      </div>
+      {/* )} */}
 
       {/* Buttons Row */}
       <div className="flex w-full items-start gap-2 self-stretch">
