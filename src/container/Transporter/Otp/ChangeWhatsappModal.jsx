@@ -43,6 +43,27 @@ const ChangeWhatsappModal = ({
     // Reset error message
     setErrorMessage("");
 
+    // Check if number is too short (less than 8 digits)
+    if (value.length < 8) {
+      setErrorMessage("No. Whatsapp PIC minimal 8 digit");
+      return false;
+    }
+
+    // Check for invalid formats (repeated digits or nonsensical patterns)
+    const repeatedDigitPattern = /^(\d)\1+$/; // Checks if all digits are the same
+    const repeatedDigit5TimesPattern = /(\d)\1{4,}/; // Checks if any digit repeats 5 or more times
+    const sequentialPattern =
+      /^(?:0123456789|1234567890|9876543210|0987654321)$/; // Common sequential patterns
+
+    if (
+      repeatedDigitPattern.test(value) ||
+      sequentialPattern.test(value) ||
+      repeatedDigit5TimesPattern.test(value)
+    ) {
+      setErrorMessage("Format No. Whatsapp salah");
+      return false;
+    }
+
     // Check if number is same as previous
     if (value === originalWhatsapp) {
       setErrorMessage("No. Whatsapp tidak boleh sama dengan sebelumnya");
@@ -66,7 +87,7 @@ const ChangeWhatsappModal = ({
   const modalClassname = modalClassnames[size] || modalClassnames.small;
   return (
     <Modal closeOnOutsideClick={false} open={isOpen} onOpenChange={setIsOpen}>
-      <ModalContent className={modalClassname} type="muattrans">
+      <ModalContent className="w-[496px]" type="muattrans">
         <ModalHeader size={size} />
         <div className="flex flex-col items-center gap-y-6 px-6 py-9">
           {titleText ? (
@@ -97,7 +118,9 @@ const ChangeWhatsappModal = ({
             placeholder={t("No. Whatsapp")}
             value={whatsappNumber}
             onChange={(e) => {
-              setWhatsappNumber(e.target.value);
+              // Only allow numeric input
+              const numericValue = e.target.value.replace(/\D/g, "");
+              setWhatsappNumber(numericValue);
               // Clear error when typing
               if (errorMessage) setErrorMessage("");
             }}
@@ -112,7 +135,7 @@ const ChangeWhatsappModal = ({
           />
           <div className="flex items-center gap-x-2">
             <Button
-              variant="muattrans-primary"
+              variant="muatparts-primary"
               // 25. 18 - Web - LB - 0275
               className={cn("h-8 w-28", confirmClassname)}
               onClick={() => {

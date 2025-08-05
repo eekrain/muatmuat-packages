@@ -90,6 +90,7 @@ const SewaArmadaResponsive = ({
   trucks,
   calculatedPrice,
   handleFetchTrucks,
+  shippingOption,
 }) => {
   const navigation = useResponsiveNavigation();
   const { reset } = useImageUploaderActions();
@@ -156,6 +157,7 @@ const SewaArmadaResponsive = ({
         component={
           <LayananTambahanScreen
             additionalServicesOptions={additionalServicesOptions}
+            shippingOption={shippingOption}
           />
         }
       />

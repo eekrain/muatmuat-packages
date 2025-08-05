@@ -65,6 +65,18 @@ export const useTransporterFormStore = create(
           ]
         );
       },
+      clearRegistrationData: (formKey) => {
+        set((state) => {
+          const newForms = { ...state.forms };
+          const newTabsStatus = { ...state.tabsStatus };
+          delete newForms[formKey];
+          delete newTabsStatus[formKey];
+          return {
+            forms: newForms,
+            tabsStatus: newTabsStatus,
+          };
+        });
+      },
     }),
     {
       name: "transporter-forms-storage",

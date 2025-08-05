@@ -303,11 +303,21 @@ export const SewaArmadaForm = ({
                   serviceName = calculatedService.name;
                 } else {
                   // Fallback to old logic
-                  cost = service.withShipping ? 35000 : currentService?.price;
+                  cost = service.withShipping
+                    ? (service.shippingCost || 0) +
+                      (service.shippingDetails?.withInsurance
+                        ? service.shippingDetails?.insuranceCost || 0
+                        : 0)
+                    : currentService?.price;
                 }
               } else {
                 // Fallback to old logic when calculatedPrice not available
-                cost = service.withShipping ? 35000 : currentService?.price;
+                cost = service.withShipping
+                  ? (service.shippingCost || 0) +
+                    (service.shippingDetails?.withInsurance
+                      ? service.shippingDetails?.insuranceCost || 0
+                      : 0)
+                  : currentService?.price;
               }
 
               return (
