@@ -14,6 +14,10 @@ const LIST_PUBLIC_ROUTES = [
     method: "startsWith",
   },
   {
+    path: "/otp",
+    method: "exact",
+  },
+  {
     path: "/login",
     method: "exact",
   },
