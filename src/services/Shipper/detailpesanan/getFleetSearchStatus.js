@@ -3,6 +3,21 @@ import { useEffect, useRef, useState } from "react";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useSWRHook } from "@/hooks/use-swr";
 
+const useMockData = false;
+const mockData = {
+  Message: {
+    Code: 200,
+    Text: "OK",
+  },
+  Data: {
+    orderId: "2f8d1b39-ae1c-45c0-a1be-326431d64255",
+    reminderMinutes: 15,
+    lastShowPopup: "2025-07-29T09:43:59.982Z",
+    shouldShowPopup: false,
+  },
+  Type: "/v1/orders/2f8d1b39-ae1c-45c0-a1be-326431d64255/fleet-search-status",
+};
+
 const useGetFleetSearchStatus = (orderId, shouldRefetch = false) => {
   const intervalRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -12,7 +27,9 @@ const useGetFleetSearchStatus = (orderId, shouldRefetch = false) => {
   const { data: fleetSearchStatusData, mutate: refetchFleetSearchStatus } =
     useSWRHook(`v1/orders/${orderId}/fleet-search-status`);
 
-  const fleetSearchStatus = fleetSearchStatusData?.Data || null;
+  const fleetSearchStatus = useMockData
+    ? mockData.Data
+    : fleetSearchStatusData?.Data || null;
   const shouldShowPopup =
     (fleetSearchStatus?.shouldShowPopup || false) && !isShow;
 
