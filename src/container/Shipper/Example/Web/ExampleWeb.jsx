@@ -12,7 +12,7 @@ import {
   BottomSheetHeader,
   BottomSheetTitle,
   BottomSheetTrigger,
-} from "@/components/Bottomsheet/BottomSheet";
+} from "@/components/Bottomsheet/BottomSheetUp";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import { ButtonMini } from "@/components/Button/ButtonMini";

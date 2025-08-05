@@ -10,7 +10,7 @@ import {
   BottomSheetHeader,
   BottomSheetTitle,
   BottomSheetTrigger,
-} from "@/components/Bottomsheet/BottomSheet";
+} from "@/components/Bottomsheet/BottomSheetUp";
 import { useTranslation } from "@/hooks/use-translation";
 import { getStatusPesananMetadata } from "@/lib/normalizers/detailpesanan/getStatusPesananMetadata";
 

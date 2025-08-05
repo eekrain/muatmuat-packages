@@ -12,7 +12,7 @@ import {
   BottomSheetHeader,
   BottomSheetTitle,
   BottomSheetTrigger,
-} from "@/components/Bottomsheet/BottomSheet";
+} from "@/components/Bottomsheet/BottomSheetUp";
 import Button from "@/components/Button/Button";
 import { useDrag } from "@/hooks/use-drag";
 import { useTranslation } from "@/hooks/use-translation";

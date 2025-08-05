@@ -4,7 +4,7 @@ import {
   BottomSheetContent,
   BottomSheetHeader,
   BottomSheetTitle,
-} from "@/components/Bottomsheet/BottomSheet";
+} from "@/components/Bottomsheet/BottomSheetUp";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 
 const LocationBottomsheet = ({

@@ -43,7 +43,18 @@ export const Modal = ({
   );
 };
 
-export const ModalTitle = Dialog.Title;
+export const ModalTitle = ({ className, children }) => {
+  return (
+    <Dialog.Title
+      className={cn(
+        "text-center text-base font-bold text-neutral-900",
+        className
+      )}
+    >
+      {children}
+    </Dialog.Title>
+  );
+};
 
 export const ModalTrigger = ({ className, children, asChild = true }) => {
   return (

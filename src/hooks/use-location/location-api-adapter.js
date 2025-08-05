@@ -12,21 +12,16 @@ import {
 
 const LocationApiAdapter = {
   useGetAutoCompleteLocation: () =>
-    useSWRMutation("v1/autocompleteStreet", "POST", async (url, { arg }) => {
+    useSWRMutation("v1/autocompleteStreet", async (url, { arg }) => {
       const res = await fetcherMuatparts.post(url, arg);
-
       return res.data?.slice(0, 3) || [];
     }),
 
   useGetAutoCompleteByPostalCode: () =>
-    useSWRMutation(
-      "v1/autocompleteStreetLocal",
-      "POST",
-      async (url, { arg }) => {
-        const res = await fetcherMuatparts.post(url, arg);
-        return res.data?.Data?.data?.Data || [];
-      }
-    ),
+    useSWRMutation("v1/autocompleteStreetLocal", async (url, { arg }) => {
+      const res = await fetcherMuatparts.post(url, arg);
+      return res.data?.Data?.data?.Data || [];
+    }),
 
   getLocationByLatLong: async (coordinates) => {
     const res1 = await fetcherMuatparts.post("/v1/location_by_lat_long", {
@@ -81,7 +76,7 @@ const LocationApiAdapter = {
         location: { name: location.Title, value: location.ID },
       };
     } else if (dataNotFound?.coordinates) {
-      const getDetailedLocation = await this.getLocationByLatLong(
+      const getDetailedLocation = await LocationApiAdapter.getLocationByLatLong(
         dataNotFound.coordinates
       );
       result = {

@@ -1,6 +1,5 @@
 import { createContext, useContext, useState } from "react";
 
-import { fetcher } from "./fetcher";
 import LocationApiAdapter from "./location-api-adapter";
 import { useAutoComplete } from "./use-auto-complete";
 import { useGetCurrentLocation } from "./use-get-current-location";
@@ -88,7 +87,7 @@ export const LocationProvider = ({
         ...getCurrentLocation,
         ...postalCode,
         ...savedLocation,
-        ...fetcher,
+        ...apiAdapter,
 
         coordinates,
         setCoordinates,

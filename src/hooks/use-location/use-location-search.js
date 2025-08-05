@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 
 import useDevice from "../use-device";
-import { fetcher } from "./fetcher";
+import LocationApiAdapter from "./location-api-adapter";
 import { useAutoComplete } from "./use-auto-complete";
 import { usePostalCode } from "./use-postal-code";
 import { useSavedLocation } from "./use-saved-location";
@@ -59,7 +59,8 @@ export const useLocationSearch = () => {
             console.log(
               "Step 2: Calling getLocationByLatLong with coordinates..."
             );
-            const result = await fetcher.getLocationByLatLong(coords);
+            const result =
+              await LocationApiAdapter.getLocationByLatLong(coords);
             console.log("Step 3: Received full location object:", result);
 
             // Step 3: Kembalikan objek lengkap tersebut.
@@ -101,7 +102,7 @@ export const useLocationSearch = () => {
     ...autoComplete,
     ...postalCode,
     ...savedLocation,
-    ...fetcher,
+    ...LocationApiAdapter,
     handleGetCurrentLocation,
     isMobile,
     coordinates,

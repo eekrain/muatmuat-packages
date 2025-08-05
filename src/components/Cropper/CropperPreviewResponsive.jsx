@@ -7,7 +7,7 @@ import {
   BottomSheetContent,
   BottomSheetHeader,
   BottomSheetTitle,
-} from "@/components/Bottomsheet/BottomSheet";
+} from "@/components/Bottomsheet/BottomSheetUp";
 import HeaderMobile from "@/container/HeaderMobile/HeaderMobile";
 
 import Button from "../Button/Button";

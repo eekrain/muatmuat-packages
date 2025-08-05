@@ -1,3 +1,5 @@
+"use client";
+
 import {
   createContext,
   useCallback,
@@ -17,6 +19,10 @@ import {
   useSelectedLanguageStore,
 } from "@/store/Shipper/selectedLanguageStore";
 
+/* eslint-disable no-console */
+
+const useMockTranslation = true;
+
 const cacheConfig = {
   headers: {
     "Content-Type": "application/json",
@@ -24,7 +30,7 @@ const cacheConfig = {
     "Cache-Control": "public, max-age=604800, stale-while-revalidate=3600",
   },
 };
-const useMockTranslation = true;
+
 const createTranslationStore = () =>
   createStore((set) => ({
     // State
@@ -44,46 +50,25 @@ const createTranslationStore = () =>
         // const url = `${s3url}content-general/locales/muat-trans/${envProd}/${languageUrl}/common.json`;
 
         try {
-          console.log("useMockTranslation", useMockTranslation);
           if (useMockTranslation) {
-            const results = await Promise.allSettled([
+            const [commonResult, mockResult] = await Promise.allSettled([
               xior.get(url, cacheConfig),
               xior.get(`/mock-common-${languageUrl}.json`),
             ]);
 
-            // Handle common translation result
-            const commonData =
-              results[0].status === "fulfilled" ? results[0].value.data : {};
-
-            // Handle mock translation result
-            const mockData =
-              results[1].status === "fulfilled" ? results[1].value.data : {};
-
-            console.log("common result:", results[0].status, commonData);
-            console.log("mock result:", results[1].status, mockData);
-
             // Always set translation data, even if one or both requests failed
-            set({ translation: { ...commonData, ...mockData } });
-
-            // Log any failures for debugging
-            if (results[0].status === "rejected") {
-              console.warn(
-                `Failed to fetch common translations from ${url}:`,
-                results[0].reason.message
-              );
-            }
-            if (results[1].status === "rejected") {
-              console.warn(
-                `Failed to fetch mock translations for ${languageUrl}:`,
-                results[1].reason.message
-              );
-            }
+            set({
+              translation: {
+                ...(commonResult?.value?.data || {}),
+                ...(mockResult?.value?.data || {}),
+              },
+            });
           } else {
             const response = await xior.get(url, cacheConfig);
             set({ translation: response.data });
           }
         } catch (error) {
-          console.error(
+          console.warn(
             `Error fetching ${languageUrl} translations: ${error.message}`
           );
           set({ translation: {} });
@@ -105,26 +90,41 @@ export const TranslationProvider = ({ children }) => {
   );
 
   /**
-   * Translation function that replaces placeholders in translation keys with provided parameters
-   * @param {string} label - The translation key to look up
-   * @param {Record<string, string | number>} [params] - Optional parameters object to replace placeholders
-   * @returns {string} The translated string with replaced placeholders, or the original label if translation not found
+   * Translates a given key, replacing placeholders with provided parameters.
+   * If the key is not found, it returns an optional fallback string or the key itself.
+   *
+   * @typedef {Record<string, string | number>} TranslationParams
+   *
+   * @type {(label: string, params?: TranslationParams, fallback?: string) => string}
+   *
+   * @param {string} label - The translation key (e.g., 'welcome_message').
+   * @param {TranslationParams} [params] - An object whose keys match placeholders in the translation string (e.g., `{name: 'John'}` for a placeholder like `{name}`).
+   * @param {string} [fallback] - An optional string to return if the `label` is not found in the translations.
+   * @returns {string} The translated and formatted string, the fallback string, or the original `label` if no translation or fallback is available.
    *
    * @example
-   * // Basic usage
-   * t(welcome_message') // Returns: "Welcome to our app"
+   * // Basic usage - returns translation or original key
+   * t('welcome_message') // Returns: "Welcome to our app" (if translation exists) or "welcome_message"
    *
-   * // With parameters
-   * t('hello_user', {name: "John" })// Returns: "Hello John" (if translation is "Hello {name}")
+   * @example
+   * // With parameters for placeholder replacement
+   * t('hello_user', {name: "John"}) // Returns: "Hello John" (if translation is "Hello {name}")
    *
+   * @example
    * // Multiple parameters
-   * t('items_count,  {count: 5, }) // Returns: "Showing 5 of 10 items" (if translation is "Showing {count} of {total} items")
+   * t('order_summary', {count: 5, total: 100}) // Returns: "You have 5 items totaling $100" (if translation is "You have {count} items totaling ${total}")
    *
-   * // Fallback to original label if translation not found
-   * t('unknown_key') // Returns: "unknown_key"
-   * "label.eka": "Halo {name}, {index}!",
-   * t("label.eka", { index: "tes ", name: "eka" })
+   * @example
+   * // With custom fallback text
+   * t('missing_key', {name: "John"}, "Hello John!") // Returns: "Hello John!" (uses fallback when key not found)
    *
+   * @example
+   * // Complex example with all parameters
+   * t('user_greeting', {name: "Alice", time: "morning"}, "Good morning, Alice!") // Returns translation with params or fallback
+   *
+   * @example
+   * // Fallback without parameters
+   * t('unknown_key', null, "Default message") // Returns: "Default message" (when key not found)
    */
   const t = useCallback(
     (label, params, fallback) => {
@@ -132,7 +132,7 @@ export const TranslationProvider = ({ children }) => {
       if (!template) return fallback || label;
 
       if (params) {
-        return template.replace(/{(\w+)}/g, (_, key) => params[key]);
+        return template.replace(/{(\w+)}/g, (_, key) => String(params[key]));
       }
 
       return template;
@@ -252,7 +252,7 @@ const useInitTranslation = (store) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedLanguageUrl, hasSetupSelectedLanguage]);
 
-  // This effect will run when the selectedLanguageUrl or hasSetupSelectedLanguage state is changed
+  // This effect will run when the selectedLanguageUrl or hasSetupSelectedLanguage state is true
   useEffect(() => {
     if (selectedLanguageUrl && hasSetupSelectedLanguage) {
       updateTranslations(selectedLanguageUrl);
