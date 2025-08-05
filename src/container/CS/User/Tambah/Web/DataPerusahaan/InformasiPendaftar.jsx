@@ -105,7 +105,7 @@ const informasiPendaftarSchema = v.object({
   ),
 });
 
-function InformasiPendaftar() {
+function InformasiPendaftar({ onSave, onFormChange }) {
   const [coordinates, setCoordinates] = useState({
     latitude: -7.254235,
     longitude: 112.736583,
@@ -128,7 +128,8 @@ function InformasiPendaftar() {
     setValue,
     handleSubmit,
     register,
-    formState: { errors },
+    formState: { errors, isDirty, isSubmitSuccessful },
+    reset,
     trigger,
     getValues,
     watch,
@@ -162,6 +163,12 @@ function InformasiPendaftar() {
       accountName: "",
     },
   });
+
+  useEffect(() => {
+    if (isDirty) {
+      onFormChange();
+    }
+  }, [isDirty, onFormChange]);
 
   const watchedValues = watch();
 
@@ -402,9 +409,29 @@ function InformasiPendaftar() {
   const onSubmit = (data) => {
     console.log("Form submitted. Data in react-hook-form:", data);
     console.log("Final data is already in Zustand store.");
-    setForm(FORM_KEY, data);
+    const existingData =
+      useTransporterFormStore.getState().getForm(FORM_KEY) || {};
+    const updatedData = {
+      ...existingData,
+      ...data,
+    };
+    console.log("Saving merged data from Section 1 to Zustand:", updatedData);
+    setForm(FORM_KEY, updatedData);
+    if (onSave) {
+      onSave();
+    }
+    reset(data);
     toast.success("Informasi pendaftar berhasil disimpan!");
   };
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      // Ambil data terbaru dari store setelah save
+      const latestData = useTransporterFormStore.getState().getForm(FORM_KEY);
+      // Reset form dengan data lengkap, ini akan set isDirty ke false
+      reset(latestData);
+    }
+  }, [isSubmitSuccessful, reset]);
 
   const { trigger: uploadLogoTrigger, isMutating: isUploadingLogo } =
     useSWRMutateHook("v1/orders/upload", "POST", undefined, undefined, {

@@ -201,7 +201,7 @@ const FileUploadMultiple = ({
           {!(single && value.length > 0) && (
             <Button
               type="button"
-              className="self-start"
+              className="mr-4 self-start"
               name="upload"
               color="primary"
               onClick={handleTriggerUpload}
@@ -209,9 +209,9 @@ const FileUploadMultiple = ({
               {label}
             </Button>
           )}
-          <div className="ml-2 flex flex-col items-start gap-y-1">
+          <div className="flex w-full flex-col items-start gap-y-1">
             {Array.isArray(value) && value.length > 0 && (
-              <div className="ml-4 flex flex-col gap-y-3">
+              <div className="flex flex-col gap-y-3">
                 {value.map((file, index) => (
                   <div
                     key={index}

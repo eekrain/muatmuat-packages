@@ -86,7 +86,6 @@ const ChecklistItem = ({ title, status, active, isLast, onClick }) => (
             {status === "finished" ? "Data lengkap" : "Data belum lengkap"}
           </div>
         </div>
-        {/* Icon pencil jika finished */}
         {status === "finished" && (
           <span className="ml-2">
             <IconComponent
@@ -107,13 +106,31 @@ export const TabRegister = ({ activeIdx, setActiveIdx, itemsStatus }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [nextTabIndex, setNextTabIndex] = useState(null);
 
+  // Gunakan optional chaining (?.) untuk keamanan jika itemsStatus belum dimuat
   const isAllFinished =
-    itemsStatus[0] === "finished" &&
-    itemsStatus[1] === "finished" &&
-    itemsStatus[2] === "finished";
+    itemsStatus?.[0] === "finished" &&
+    itemsStatus?.[1] === "finished" &&
+    itemsStatus?.[2] === "finished";
 
+  // =================================================================
+  // === PERUBAHAN UTAMA DI SINI ===
+  // =================================================================
   const handleTabClick = (index) => {
-    if (index !== activeIdx) {
+    // Jangan lakukan apa-apa jika mengklik tab yang sudah aktif
+    if (index === activeIdx) {
+      return;
+    }
+
+    // Cek status dari section yang SEDANG AKTIF (yang akan kita tinggalkan)
+    const isCurrentSectionFinished = itemsStatus?.[activeIdx] === "finished";
+
+    // Jika section saat ini sudah "finished", tidak ada perubahan yang belum disimpan.
+    // Langsung pindah tab tanpa konfirmasi.
+    if (isCurrentSectionFinished) {
+      setActiveIdx(index);
+    } else {
+      // Jika section saat ini "incomplete", berarti ada perubahan yang belum disimpan.
+      // Tampilkan modal konfirmasi.
       setNextTabIndex(index);
       setIsModalOpen(true);
     }
@@ -139,7 +156,8 @@ export const TabRegister = ({ activeIdx, setActiveIdx, itemsStatus }) => {
           <ChecklistItem
             key={item.title}
             title={item.title}
-            status={itemsStatus[idx]}
+            // Gunakan optional chaining untuk keamanan
+            status={itemsStatus?.[idx] ?? "incomplete"}
             active={activeIdx === idx}
             isLast={idx === checklistItemsData.length - 1}
             onClick={() => handleTabClick(idx)}

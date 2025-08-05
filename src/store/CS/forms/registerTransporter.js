@@ -5,6 +5,7 @@ export const useTransporterFormStore = create(
   persist(
     (set, get) => ({
       forms: {},
+      tabsStatus: {},
 
       setForm: (key, data) => {
         set((state) => ({
@@ -45,11 +46,33 @@ export const useTransporterFormStore = create(
         if (!form) return false;
         return requiredFields.every((field) => !!form[field]);
       },
+
+      setTabStatus: (formKey, newStatusArray) => {
+        set((state) => ({
+          tabsStatus: {
+            ...state.tabsStatus,
+            [formKey]: newStatusArray,
+          },
+        }));
+      },
+
+      getTabStatus: (formKey) => {
+        return (
+          get().tabsStatus[formKey] || [
+            "incomplete",
+            "incomplete",
+            "incomplete",
+          ]
+        );
+      },
     }),
     {
       name: "transporter-forms-storage",
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ forms: state.forms }),
+      partialize: (state) => ({
+        forms: state.forms,
+        tabsStatus: state.tabsStatus,
+      }),
     }
   )
 );
