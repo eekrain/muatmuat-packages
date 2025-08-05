@@ -73,7 +73,7 @@ export const normalizePayloadTambahArmadaMassal = (array) =>
           documentUrl:
             typeof item.foto_stnk === "string"
               ? item.foto_stnk
-              : item.foto_stnk.url || "",
+              : item.foto_stnk.documentUrl || "",
           documentName:
             typeof item.foto_stnk === "string"
               ? "STNK.pdf"
@@ -87,7 +87,7 @@ export const normalizePayloadTambahArmadaMassal = (array) =>
           documentUrl:
             typeof item.foto_pajak_kendaraan === "string"
               ? item.foto_pajak_kendaraan
-              : item.foto_pajak_kendaraan.url || "",
+              : item.foto_pajak_kendaraan.documentUrl || "",
           documentName:
             typeof item.foto_pajak_kendaraan === "string"
               ? "TAX.pdf"
@@ -101,7 +101,7 @@ export const normalizePayloadTambahArmadaMassal = (array) =>
           documentUrl:
             typeof item.foto_buku_kir === "string"
               ? item.foto_buku_kir
-              : item.foto_buku_kir.url || "",
+              : item.foto_buku_kir.documentUrl || "",
           documentName:
             typeof item.foto_buku_kir === "string"
               ? "KIR.pdf"

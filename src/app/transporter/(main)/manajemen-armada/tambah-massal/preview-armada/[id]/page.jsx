@@ -1,7 +1,7 @@
 "use client";
 
-import { redirect } from "next/navigation";
-import { use, useEffect, useRef } from "react";
+import { redirect, useRouter } from "next/navigation";
+import { use, useEffect, useRef, useState } from "react";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
@@ -9,14 +9,15 @@ import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import {
   handleVehicleCellValueChange,
-  handleVehicleSaveAsDraft,
-  handleVehicleSubmit,
   validateVehicleForm,
   vehicleDefaultValues,
   vehicleFormSchema,
 } from "@/config/forms/vehicleFormConfig";
 import { useTableForm } from "@/hooks/useTableForm";
+import { normalizePayloadTambahArmadaMassal } from "@/lib/normalizers/transporter/tambah-armada-massal/normalizePayloadTambahArmadaMassal";
+import { toast } from "@/lib/toast";
 import { useGetFleetsPreviewArmada } from "@/services/Transporter/manajemen-armada/getFleetsPreviewArmada";
+import { usePostFleetBulkCreate } from "@/services/Transporter/manajemen-armada/postFleetBulkCreate";
 
 import ArmadaTable from "../../components/ArmadaTable/ArmadaTable";
 
@@ -81,21 +82,77 @@ const breadcrumbData = [
 ];
 
 export default function PreviewArmada({ params }) {
+  const router = useRouter();
   const { id } = use(params);
   const isFirstMount = useRef(true);
+  const [showBackConfirmation, setShowBackConfirmation] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState(null);
+
   const { data } = useGetFleetsPreviewArmada(
     id ? `/v1/fleet/preview/${id}` : null
   );
+  const { trigger: handlePostFleetBulkCreate, isMutating } =
+    usePostFleetBulkCreate();
 
   // Custom submit handler for this page
   const handleSubmit = (value) => {
-    handleVehicleSubmit(value);
+    const payload = normalizePayloadTambahArmadaMassal(value);
+    handlePostFleetBulkCreate(payload)
+      .then((res) => {
+        // Show success message
+        toast.success(`Berhasil menambahkan ${res.Data.savedFleets} armada.`);
+        router.push(`/manajemen-armada?tab=process`);
+      })
+      .catch((_error) => {
+        // Show error message
+        toast.error(
+          "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
+        );
+      });
   };
 
   // Custom save as draft handler for this page
   const handleSaveAsDraft = (value) => {
-    handleVehicleSaveAsDraft(value);
+    const payload = normalizePayloadTambahArmadaMassal(value);
+    handlePostFleetBulkCreate(payload)
+      .then(() => {
+        // Show success message
+        toast.success("Draft armada berhasil disimpan.");
+      })
+      .catch((_error) => {
+        // Show error message
+        toast.error(
+          "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
+        );
+      });
     redirect("/manajemen-armada/tambah-massal");
+  };
+
+  // Handle back navigation with confirmation
+  const handleBackNavigation = () => {
+    setShowBackConfirmation(true);
+    setPendingNavigation(() => () => router.back());
+  };
+
+  // Handle breadcrumb navigation with confirmation
+  const handleBreadcrumbNavigation = (href) => {
+    setShowBackConfirmation(true);
+    setPendingNavigation(() => () => router.push(href));
+  };
+
+  // Confirm navigation
+  const confirmNavigation = () => {
+    if (pendingNavigation) {
+      pendingNavigation();
+    }
+    setShowBackConfirmation(false);
+    setPendingNavigation(null);
+  };
+
+  // Cancel navigation
+  const cancelNavigation = () => {
+    setShowBackConfirmation(false);
+    setPendingNavigation(null);
   };
 
   // Use the reusable table form hook
@@ -139,11 +196,40 @@ export default function PreviewArmada({ params }) {
       isFirstMount.current = false;
     }
   }, [data, reset]);
+
+  // Handle browser back/refresh confirmation
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = "";
+      return "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
+  // Enhanced breadcrumb data with navigation handling
+  const enhancedBreadcrumbData = breadcrumbData.map((item, index) => {
+    if (item.href && index < breadcrumbData.length - 1) {
+      return {
+        ...item,
+        onClick: (e) => {
+          e.preventDefault();
+          handleBreadcrumbNavigation(item.href);
+        },
+      };
+    }
+    return item;
+  });
   return (
     <div className="my-6 px-6">
       <div className="flex flex-col gap-4 p-3">
-        <BreadCrumb data={breadcrumbData} />
-        <PageTitle>Preview Armada</PageTitle>
+        <BreadCrumb data={enhancedBreadcrumbData} />
+        <PageTitle onClick={handleBackNavigation}>Preview Armada</PageTitle>
       </div>
       <form onSubmit={onSubmit}>
         <div className="rounded-lg bg-white shadow-muat">
@@ -165,12 +251,15 @@ export default function PreviewArmada({ params }) {
         <div className="mt-4 flex w-full items-end justify-end gap-3">
           <Button
             onClick={onSaveAsDraft}
+            disabled={isMutating}
             variant="muattrans-primary-secondary"
             type="button"
           >
             Simpan Sebagai Draft
           </Button>
-          <Button type="submit">Simpan</Button>
+          <Button disabled={isMutating} type="submit">
+            Simpan
+          </Button>
         </div>
       </form>
       <ConfirmationModal
@@ -193,6 +282,26 @@ export default function PreviewArmada({ params }) {
       >
         Apakah kamu yakin ingin menghapus armada yang telah dipilih? Tindakan
         ini tidak dapat dibatalkan.
+      </ConfirmationModal>
+
+      {/* Back Navigation Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showBackConfirmation}
+        setIsOpen={setShowBackConfirmation}
+        description={{
+          text: "Apakah kamu yakin ingin berpindah halaman? Data yang telah diisi tidak akan disimpan",
+        }}
+        confirm={{
+          text: "Batal",
+          onClick: cancelNavigation,
+        }}
+        cancel={{
+          text: "Ya",
+          onClick: confirmNavigation,
+        }}
+      >
+        Data yang telah diisi tidak akan disimpan. Apakah kamu yakin ingin
+        meninggalkan halaman ini?
       </ConfirmationModal>
     </div>
   );
