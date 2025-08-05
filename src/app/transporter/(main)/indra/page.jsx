@@ -1,4 +1,4 @@
-import PermintaanAngkut from "@/container/Transporter/PermintaanAngkut/PermintaanAngkut";
+import PermintaanAngkut from "@/container/Transporter/Monitoring/PermintaanAngkut/PermintaanAngkut";
 
 const Page = () => {
   return <PermintaanAngkut />;
