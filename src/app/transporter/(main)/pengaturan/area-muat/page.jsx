@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ChevronDown, Info } from "lucide-react";
 
@@ -21,12 +21,31 @@ export default function Page() {
   const [showSelectedOnly, setShowSelectedOnly] = useState(false);
   const [expandedProvinces, setExpandedProvinces] = useState({});
 
+  // Local state to manage checkbox selections
+  const [localProvinces, setLocalProvinces] = useState([]);
+
   // Fetch area muat management data
   const { provinces, isLoading, totalProvinces, totalSelectedCities } =
     useGetAreaMuatManage({
       search: searchCity,
       showSelected: showSelectedOnly,
     });
+
+  // Initialize local state when provinces data changes
+  useEffect(() => {
+    if (provinces && provinces.length > 0) {
+      // Keep original selections from the API data
+      const resetProvinces = provinces.map((province) => ({
+        ...province,
+        allSelected: province.allSelected || false,
+        cities: province.cities.map((city) => ({
+          ...city,
+          isSelected: city.isSelected || false,
+        })),
+      }));
+      setLocalProvinces(resetProvinces);
+    }
+  }, [provinces]);
 
   const BREADCRUMB = [
     { name: "Pengaturan", href: "/pengaturan" },
@@ -40,14 +59,47 @@ export default function Page() {
 
   // Handle select all for a province
   const handleSelectAllProvince = (provinceId, checked) => {
-    console.log(`Select all ${provinceId}:`, checked);
-    // TODO: Implement API call to select/deselect all cities in province
+    setLocalProvinces((prevProvinces) =>
+      prevProvinces.map((province) => {
+        if (province.id === provinceId) {
+          // Update all cities in the province
+          const updatedCities = province.cities.map((city) => ({
+            ...city,
+            isSelected: checked,
+          }));
+
+          return {
+            ...province,
+            allSelected: checked,
+            cities: updatedCities,
+          };
+        }
+        return province;
+      })
+    );
   };
 
   // Handle individual city selection
   const handleCitySelect = (provinceId, cityId, checked) => {
-    console.log(`City ${cityId} in province ${provinceId}:`, checked);
-    // TODO: Implement API call to select/deselect individual city
+    setLocalProvinces((prevProvinces) =>
+      prevProvinces.map((province) => {
+        if (province.id === provinceId) {
+          const updatedCities = province.cities.map((city) =>
+            city.cityId === cityId ? { ...city, isSelected: checked } : city
+          );
+
+          // Check if all cities are selected
+          const allSelected = updatedCities.every((city) => city.isSelected);
+
+          return {
+            ...province,
+            allSelected,
+            cities: updatedCities,
+          };
+        }
+        return province;
+      })
+    );
   };
 
   // Handle expand/collapse province
@@ -57,6 +109,30 @@ export default function Page() {
       [provinceId]: !prev[provinceId],
     }));
   };
+
+  // Use localProvinces instead of provinces for rendering
+  const displayProvinces =
+    localProvinces.length > 0 ? localProvinces : provinces;
+
+  // Filter provinces based on showSelectedOnly
+  const filteredProvinces = showSelectedOnly
+    ? displayProvinces
+        .filter((province) => {
+          // Only show provinces that have at least one selected city
+          return province.cities.some((city) => city.isSelected);
+        })
+        .map((province) => {
+          // For provinces with selected cities, only show the selected cities
+          const selectedCities = province.cities.filter(
+            (city) => city.isSelected
+          );
+          return {
+            ...province,
+            cities: selectedCities,
+            selectedCityCount: selectedCities.length,
+          };
+        })
+    : displayProvinces;
 
   return (
     <>
@@ -91,16 +167,20 @@ export default function Page() {
                 </span>
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                {provinces.map((province) => (
-                  <TagBubble
-                    key={province.id}
-                    withRemove={{
-                      onRemove: () => handleRemoveProvince(province.id),
-                    }}
-                  >
-                    {province.province}
-                  </TagBubble>
-                ))}
+                {displayProvinces
+                  .filter((province) =>
+                    province.cities.some((city) => city.isSelected)
+                  )
+                  .map((province) => (
+                    <TagBubble
+                      key={province.id}
+                      withRemove={{
+                        onRemove: () => handleRemoveProvince(province.id),
+                      }}
+                    >
+                      {province.province}
+                    </TagBubble>
+                  ))}
                 <Button
                   variant="muattrans-primary"
                   className="h-7 rounded-full px-4 text-xs"
@@ -145,9 +225,11 @@ export default function Page() {
             ) : (
               /* Province Sections */
               <div className="flex flex-col gap-y-[18px]">
-                {provinces.map((province) => {
+                {filteredProvinces.map((province) => {
                   const isExpanded =
-                    expandedProvinces[province.id] || province.expanded;
+                    showSelectedOnly ||
+                    expandedProvinces[province.id] ||
+                    province.expanded;
                   const visibleCities = isExpanded
                     ? province.cities
                     : province.cities.slice(
@@ -156,9 +238,9 @@ export default function Page() {
                       );
 
                   // Calculate actual selected count from visible cities
-                  const actualSelectedCount = visibleCities.filter(
-                    (city) => city.isSelected
-                  ).length;
+                  const actualSelectedCount = showSelectedOnly
+                    ? visibleCities.length
+                    : visibleCities.filter((city) => city.isSelected).length;
 
                   return (
                     <div
@@ -177,7 +259,10 @@ export default function Page() {
                       {/* Select All Checkbox */}
                       <div className="mb-4 flex items-center gap-3">
                         <Checkbox
-                          checked={province.allSelected}
+                          checked={
+                            visibleCities.length > 0 &&
+                            visibleCities.every((city) => city.isSelected)
+                          }
                           onChange={(e) =>
                             handleSelectAllProvince(province.id, e.checked)
                           }
@@ -190,7 +275,7 @@ export default function Page() {
                       </div>
 
                       {/* Cities Grid */}
-                      <div className="space-y-4">
+                      <div className="ms-5 space-y-4">
                         {Array.from(
                           { length: Math.ceil(visibleCities.length / 4) },
                           (_, rowIndex) => {
@@ -238,7 +323,7 @@ export default function Page() {
                       </div>
 
                       {/* Show More Link */}
-                      {province.pagination?.hasMore && (
+                      {!showSelectedOnly && province.pagination?.hasMore && (
                         <div className="mt-4 text-center">
                           <button
                             onClick={() => handleToggleExpand(province.id)}
