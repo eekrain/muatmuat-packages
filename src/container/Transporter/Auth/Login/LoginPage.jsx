@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import { useState } from "react";
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
 // Import Controller
@@ -48,9 +48,49 @@ const LoginPage = () => {
   };
 
   const router = useRouter();
+  const [formErrors, setFormErrors] = useState({
+    emailOrPhone: "",
+    password: "",
+  });
 
   const onSubmit = (data) => {
-    console.log("Form submitted successfully:", data);
+    // Reset previous errors
+    setFormErrors({
+      emailOrPhone: "",
+      password: "",
+    });
+
+    // Mock authentication logic
+    // In a real application, this would be replaced with an API call
+    const mockCredentials = {
+      email: "user@example.com",
+      phone: "08123456789",
+      password: "password123",
+    };
+
+    // Check if email/phone exists
+    const isEmailOrPhoneValid =
+      data.emailOrPhone === mockCredentials.email ||
+      data.emailOrPhone === mockCredentials.phone;
+
+    if (!isEmailOrPhoneValid) {
+      setFormErrors((prev) => ({
+        ...prev,
+        emailOrPhone: "No. Whatsapp / Email yang kamu masukkan salah",
+      }));
+      return;
+    }
+
+    // Check if password is correct
+    if (data.password !== mockCredentials.password) {
+      setFormErrors((prev) => ({
+        ...prev,
+        password: "Password yang kamu masukkan salah",
+      }));
+      return;
+    }
+
+    // If we get here, authentication was successful
     router.push("/dashboard");
     alert("Login Berhasil!");
   };
@@ -88,8 +128,14 @@ const LoginPage = () => {
                 icon={{
                   left: "/icons/user-login.svg",
                 }}
-                status={errors.emailOrPhone ? "error" : "default"}
-                errorMessage={errors.emailOrPhone?.message}
+                status={
+                  errors.emailOrPhone || formErrors.emailOrPhone
+                    ? "error"
+                    : "default"
+                }
+                errorMessage={
+                  formErrors.emailOrPhone || errors.emailOrPhone?.message
+                }
                 appearance={{
                   containerClassName: "!h-[40px]",
                   iconClassName: "size-5",
@@ -127,8 +173,10 @@ const LoginPage = () => {
                     </button>
                   ),
                 }}
-                status={errors.password ? "error" : "default"}
-                errorMessage={errors.password?.message}
+                status={
+                  errors.password || formErrors.password ? "error" : "default"
+                }
+                errorMessage={formErrors.password || errors.password?.message}
               />
             </div>
 

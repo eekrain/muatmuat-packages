@@ -1,7 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { addMinutes, isAfter } from "date-fns";
@@ -17,7 +16,6 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { useCountdown } from "@/hooks/use-countdown";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useTranslation } from "@/hooks/use-translation";
-import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useLoadingAction } from "@/store/Shared/loadingStore";
 import {
@@ -44,7 +42,7 @@ const OtpContainer = ({
   const defaultExpiryDate = useMemo(() => {
     return formValues?.expiresIn
       ? formValues.expiresIn
-      : addMinutes(new Date(), 2);
+      : addMinutes(new Date(), 0.1);
   }, [formValues?.expiresIn]);
 
   const { countdown, isCountdownFinished } = useCountdown({
@@ -82,8 +80,9 @@ const OtpContainer = ({
 
   const handleRequestOtp = (formValues) => {
     if (!formValues?.expiresIn || isAfter(Date.now(), formValues?.expiresIn)) {
-      sendRequestOtp().catch((_error) => {
-        toast.error("Gagal meminta request OTP");
+      setNotification({
+        status: "success",
+        message: "Berhasil mengirim ulang OTP",
       });
     }
   };
@@ -110,10 +109,21 @@ const OtpContainer = ({
           // Don't redirect immediately - show success UI instead
         })
         .catch((error) => {
-          setNotification({
-            status: "error",
-            message: error?.message,
-          });
+          // Check specific error types and set appropriate messages
+          if (
+            error?.code === "EXPIRED_OTP" ||
+            error?.message?.includes("expired")
+          ) {
+            setNotification({
+              status: "error",
+              message: "OTP yang kamu masukan telah expired",
+            });
+          } else {
+            setNotification({
+              status: "error",
+              message: "OTP yang kamu masukan salah",
+            });
+          }
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -230,11 +240,15 @@ const OtpContainer = ({
                       </div>
                       {type !== "forgot-password" && (
                         <Button
+                          variant="muatparts-primary"
                           name="change"
                           onClick={() => setIsChangeNumberModalOpen(true)}
                           className={cn(
-                            "flex w-[50px] items-center !bg-[#EBEBEB] py-0 text-xxs !text-[#868686] md:h-5"
+                            "ml-3 flex w-[50px] items-center !bg-[#EBEBEB] py-0 text-xxs !text-[#868686] md:h-5",
+                            isCountdownFinished &&
+                              "!bg-[#EBEBEB] !text-primary-700"
                           )}
+                          disabled={!isCountdownFinished}
                         >
                           Ganti
                         </Button>
@@ -291,7 +305,9 @@ const OtpContainer = ({
                     : "muatparts-primary-secondary"
                 }
                 name="resend"
-                onClick={() => handleRequestOtp(formValues)}
+                onClick={() => {
+                  handleRequestOtp(formValues);
+                }}
                 disabled={!isCountdownFinished}
                 className={cn(
                   "mt-[10px] flex h-10 w-52 max-w-[319px] items-center !bg-[#EBEBEB] !text-[#868686] md:h-10",
@@ -321,7 +337,7 @@ const OtpContainer = ({
                   <Button
                     variant="muattrans-primary"
                     onClick={() => router.push("/login")}
-                    className="mt-10 flex w-[200px] items-center justify-center rounded-3xl bg-[#FFC217] text-primary-700 md:h-10"
+                    className="mt-16 flex w-[200px] items-center justify-center rounded-3xl bg-[#FFC217] text-primary-700 md:h-10"
                   >
                     <span className="font-semibold text-primary-700">
                       Masuk ke Muatrans
@@ -352,8 +368,13 @@ const OtpContainer = ({
         }}
         confirm={{
           text: "Ubah",
-          onClick: () => {
+          onClick: (_newWhatsappNumber) => {
             setIsChangeNumberModalOpen(false);
+            // Set success notification when WhatsApp number is changed
+            setNotification({
+              status: "success",
+              message: "Berhasil mengubah No. Whatsapp kamu",
+            });
             handleRequestOtp(formValues);
           },
         }}
