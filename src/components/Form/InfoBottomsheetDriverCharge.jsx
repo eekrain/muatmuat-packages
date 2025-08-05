@@ -40,33 +40,36 @@ export const InfoBottomsheetDriverCharge = ({ className, title }) => {
           <BottomSheetClose />
           <BottomSheetTitle>{title}</BottomSheetTitle>
         </BottomSheetHeader>
-        <div className="info-bottomsheet-content px-4 py-6 text-sm font-medium leading-[1.1]">
-          <div>
-            {drivers.map((driver, idx) => (
+        <div className="info-bottomsheet-content px-4 pb-6 text-neutral-900">
+          <div className="flex flex-col gap-y-4">
+            {drivers.map((driver, key) => (
               <div
-                key={driver.licensePlate + driver.name + idx}
-                className="mb-4 last:mb-0"
-              >
-                <div className="mb-1 font-bold text-black">
-                  Driver : {driver.name}
-                </div>
-                <div className="mb-1 flex items-center gap-1">
-                  <IconComponent
-                    src="/icons/transporter12.svg"
-                    width={16}
-                    height={16}
-                  />
-                  <span className="text-sm text-black">
-                    {driver.licensePlate}
-                  </span>
-                </div>
-                <div className="mb-1 text-sm text-black">
-                  Biaya Waktu Tunggu di Lokasi Muat Berlaku Mulai
-                </div>
-                <div className="text-sm text-black">{driver.startCharge}</div>
-                {idx !== drivers.length - 1 && (
-                  <hr className="my-4 border-gray-200" />
+                className={cn(
+                  "flex flex-col gap-y-3",
+                  drivers.length - 1 === key
+                    ? ""
+                    : "border-b border-b-neutral-400 pb-4"
                 )}
+                key={key}
+              >
+                <div className="flex flex-col gap-y-2">
+                  <div className="text-sm font-semibold leading-[1.1]">
+                    Driver : {driver.name}
+                  </div>
+                  <div className="flex items-center gap-x-1">
+                    <IconComponent
+                      src="/icons/transporter12.svg"
+                      width={12}
+                      height={12}
+                    />
+                    <span className="text-xs font-medium leading-[1.1]">
+                      {driver.licensePlate}
+                    </span>
+                  </div>
+                </div>
+                <div className="text-xs font-medium leading-[1.1]">
+                  {`Biaya Waktu Tunggu di Lokasi Muat 1 Berlaku Mulai ${driver.startCharge}`}
+                </div>
               </div>
             ))}
           </div>

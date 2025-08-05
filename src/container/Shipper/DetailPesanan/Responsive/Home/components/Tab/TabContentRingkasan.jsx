@@ -3,6 +3,7 @@ import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enu
 
 import AdditionalFeesDetail from "../AdditionalFeesDetail";
 import { MethodInfo } from "../MethodInfo";
+import RepaymentPaymentMethod from "../RepaymentPaymentMethod";
 import { TransactionSummary } from "../TransactionSummary";
 import { InformasiArmadaFragment } from "../fragments/InformasiArmadaFragment";
 import { InformasiMuatanFragment } from "../fragments/InformasiMuatanFragment";
@@ -20,10 +21,11 @@ export const TabContentRingkasan = ({
   dataRingkasanPesanan,
   dataRingkasanPembayaran,
   documentShippingDetail,
+  waitingTimeRaw,
 }) => {
   return (
     <TabsContent value="ringkasan" className="mb-28 space-y-2 bg-neutral-200">
-      <InformasiArmadaFragment 
+      <InformasiArmadaFragment
         dataStatusPesanan={dataStatusPesanan}
         dataRingkasanPesanan={dataRingkasanPesanan}
       >
@@ -41,17 +43,21 @@ export const TabContentRingkasan = ({
           />
         </div>
       )}
+      {/* Ganti sendiri pakek logic menunggu pelunasan, ditoggle dulu sementara */}
+      {false ? <RepaymentPaymentMethod /> : null}
       {dataRingkasanPembayaran && (
         <MethodInfo dataRingkasanPembayaran={dataRingkasanPembayaran} />
       )}
-      {dataRingkasanPembayaran && (
-        <TransactionSummary 
-          dataRingkasanPembayaran={dataRingkasanPembayaran}
-          documentShippingDetail={documentShippingDetail} 
+      {dataRingkasanPembayaran && dataRingkasanPembayaran?.priceCharge ? (
+        <AdditionalFeesDetail
+          priceCharge={dataRingkasanPembayaran.priceCharge}
+          waitingTimeRaw={waitingTimeRaw}
         />
-      )}
-      {dataRingkasanPembayaran?.priceCharge && (
-        <AdditionalFeesDetail priceCharge={dataRingkasanPembayaran.priceCharge} />
+      ) : (
+        <TransactionSummary
+          dataRingkasanPembayaran={dataRingkasanPembayaran}
+          documentShippingDetail={documentShippingDetail}
+        />
       )}
     </TabsContent>
   );

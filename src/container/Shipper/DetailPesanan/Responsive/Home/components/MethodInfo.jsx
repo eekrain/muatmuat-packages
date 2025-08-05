@@ -1,10 +1,11 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { PaymentMethodTitle } from "@/lib/constants/detailpesanan/payment.enum";
 
 export const MethodInfo = ({ dataRingkasanPembayaran }) => {
   if (!dataRingkasanPembayaran?.paymentMethod) return null;
-  
-  const paymentMethod = dataRingkasanPembayaran.paymentMethod.toLowerCase().replace(/ /g, '_');
+
+  const paymentMethod = dataRingkasanPembayaran.paymentMethod
+    .toLowerCase()
+    .replace(/ /g, "_");
   const paymentLogo = dataRingkasanPembayaran.paymentLogo;
   const paymentMethodName = dataRingkasanPembayaran.paymentMethod;
 
@@ -18,7 +19,13 @@ export const MethodInfo = ({ dataRingkasanPembayaran }) => {
         <div className="w-full">
           <div className="flex items-center gap-2">
             {paymentLogo ? (
-              <img src={paymentLogo} alt={paymentMethodName} width={24} height={24} className="bg-white" />
+              <img
+                src={paymentLogo}
+                alt={paymentMethodName}
+                width={24}
+                height={24}
+                className="bg-white"
+              />
             ) : (
               <IconComponent
                 src={`/icons/payment/${paymentMethod}.svg`}

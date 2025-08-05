@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import {
   ResponsiveProvider,
   ResponsiveRoute,
@@ -10,6 +11,7 @@ import {
 // Import the default screen without dynamic import
 import { dynamicScreen } from "@/lib/utils/dynamic-screen";
 import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
+import { useGetWaitingTime } from "@/services/Shipper/detailpesanan/getWaitingTime";
 import { useLoadingAction } from "@/store/Shared/loadingStore";
 
 import CaraPembayaranScreen from "./CaraPembayaran/CaraPembayaranScreen";
@@ -52,6 +54,12 @@ const DetailPesananResponsive = () => {
   const { setIsGlobalLoading } = useLoadingAction();
 
   const { data } = useGetDetailPesananData(params.orderId);
+  const { data: waitingTimeRawData } = useGetWaitingTime(params.orderId);
+
+  const waitingTimeRaw = useShallowMemo(
+    () => waitingTimeRawData || [],
+    [waitingTimeRawData]
+  );
 
   const dataStatusPesanan = data?.dataStatusPesanan;
   const dataRingkasanPesanan = data?.dataRingkasanPesanan;
@@ -76,6 +84,7 @@ const DetailPesananResponsive = () => {
             dataDetailPIC={dataDetailPIC}
             dataRingkasanPembayaran={dataRingkasanPembayaran}
             documentShippingDetail={documentShippingDetail}
+            waitingTimeRaw={waitingTimeRaw}
           />
         }
       />

@@ -80,7 +80,8 @@ export const OrderInfo = ({ dataStatusPesanan }) => {
       (driver) =>
         driver.driverStatus.startsWith("MENUJU_") ||
         driver.driverStatus.startsWith("TIBA_") ||
-        driver.driverStatus.startsWith("ANTRI_")
+        driver.driverStatus.startsWith("ANTRI_") ||
+        driver.driverStatus.startsWith("SEDANG_")
     );
     return (
       LIST_SHOW_QR_CODE_BUTTON.includes(dataStatusPesanan?.orderStatus) &&
@@ -101,7 +102,7 @@ export const OrderInfo = ({ dataStatusPesanan }) => {
               <div className="flex items-center gap-3 text-xs font-semibold text-[#176CF7]">
                 {t("buttonShowQRCode", {}, "Tampilkan QR Code")}
               </div>
-              <ChevronRight className="h-4 w-4 text-[#176CF7]" />
+              <ChevronRight className="h-4 w-4 text-neutral-700" />
             </button>
           </div>
         ) : dataStatusPesanan?.orderStatus ===
