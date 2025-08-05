@@ -121,11 +121,11 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
       // Try to reconstruct opsi pengiriman from stored data
       if (existingShippingService.shippingCost) {
         const shippingCost = existingShippingService.shippingCost;
-        const priceString = `Rp${shippingCost.toLocaleString("id-ID")}`;
 
+        // Search in shipping options by comparing originalCost instead of formatted price
         const foundOption = shippingOptions
-          .flatMap((category) => category.expeditions)
-          .find((option) => option.price === priceString);
+          .flatMap((category) => category.expeditions || [])
+          .find((option) => option.originalCost === shippingCost);
 
         if (foundOption) {
           tambahanSetField("opsiPegiriman", foundOption);
@@ -312,9 +312,8 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
       );
 
       if (sendDeliveryEvidenceService) {
-        const shippingPrice = parseInt(
-          tambahanFormValues.opsiPegiriman.price.replace(/[^\d]/g, "")
-        );
+        const shippingPrice =
+          tambahanFormValues.opsiPegiriman?.originalCost || 0;
         const insurancePrice = tambahanFormValues.asuransiPengiriman
           ? 10000
           : 0;
@@ -464,9 +463,9 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
               tambahanFormValues.opsiPegiriman.originalCost
                 ? (() => {
                     const shippingPrice = parseInt(
-                      tambahanFormValues.opsiPegiriman.originalCost
-                        .toString()
-                        .replace(/[^\d]/g, "") || "0"
+                      (
+                        tambahanFormValues.opsiPegiriman.originalCost || 0
+                      ).toString()
                     );
                     const insurancePrice = tambahanFormValues.asuransiPengiriman
                       ? 10000
@@ -519,8 +518,8 @@ const LayananTambahanScreen = ({ additionalServicesOptions }) => {
                             } else {
                               alert(t("messageNoPhoneNumber"));
                             }
-                          } catch (ex) {
-                            // console.error("Contact Picker failed", ex);
+                          } catch {
+                            // Silently handle contact picker errors
                           }
                         } else {
                           alert(t("messageContactPickerNotSupported"));
