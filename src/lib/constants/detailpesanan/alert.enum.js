@@ -29,3 +29,7 @@ export const AlertInfoEnum = {
   REFUND_COMPLETED: "infoRefundCompleted",
   CANCELED_BY_SYSTEM: "infoCanceledBySystem",
 };
+
+export const AlertNeedConfirmEnum = {
+  CONFIRMATION_WAITING_PREPARE_FLEET: true,
+};

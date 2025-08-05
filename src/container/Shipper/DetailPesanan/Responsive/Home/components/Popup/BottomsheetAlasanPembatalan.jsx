@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   BottomSheet,
@@ -17,6 +17,10 @@ import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useGetBankAccounts } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getBankAccounts";
 import { useGetCancellationReasons } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getCancellationReasons";
+import {
+  useRequestOtpActions,
+  useRequestOtpStore,
+} from "@/store/Shipper/forms/requestOtpStore";
 
 /**
  * A bottom sheet component for selecting a reason for cancellation.
@@ -37,6 +41,8 @@ export const BottomsheetAlasanPembatalan = ({
   const { data: cancellationReasons } = useGetCancellationReasons();
   const { data: bankAccounts } = useGetBankAccounts();
   const navigation = useResponsiveNavigation();
+  const { params: otpParams, formValues: otpValues } = useRequestOtpStore();
+  const { setParams, reset: resetOtp } = useRequestOtpActions();
   const [selectedReason, setSelectedReason] = useState(null);
   const [customReason, setCustomReason] = useState("");
   const [customReasonError, setCustomReasonError] = useState(null);
@@ -60,15 +66,8 @@ export const BottomsheetAlasanPembatalan = ({
       return;
     }
 
-    // Check if user has bank accounts
-    // if (!bankAccounts || bankAccounts.length !== 0) {
-    //   // User doesn't have bank accounts, navigate to FormRekeningBankScreen
-    onOpenChange(false);
-    navigation.push("/FormRekeningBank");
-    //   return;
-    // }
-    // User has bank accounts, proceed with cancellation
     const cancelData = {
+      orderId: orderId,
       reasonId: selectedReason.value,
       additionalInfo:
         selectedReason?.value ===
@@ -76,18 +75,105 @@ export const BottomsheetAlasanPembatalan = ({
           ? customReason
           : "",
     };
+    console.log(cancelData, "cancelDat");
+    // Check if user has bank accounts
+    if (!bankAccounts || bankAccounts.length === 0) {
+      // Set OTP parameters for bank account creation during cancel flow
+      setParams({
+        mode: "add-rekening-for-cancel",
+        data: {
+          cancelData: cancelData,
+        },
+        redirectUrl: window.location.pathname,
+      });
+
+      // Navigate to bank account form
+      navigation.push("/FormRekeningBank");
+    } else {
+      try {
+        await fetcherMuatrans.post(`v1/orders/${orderId}/cancel`, cancelData);
+
+        toast.success("Berhasil membatalkan pesanan");
+        onConfirm?.();
+        onOpenChange(false);
+      } catch (error) {
+        toast.error(
+          error.response?.data?.Data?.Message || "Gagal membatalkan pesanan"
+        );
+      }
+    }
+  };
+
+  // Handle saving bank account data after OTP verification
+  const handleSaveBankAccountAfterOtp = async () => {
     try {
-      await fetcherMuatrans.post(`v1/orders/${orderId}/cancel`, cancelData);
+      const { bankAccountData } = otpParams.data;
+      await fetcherMuatrans.post("v1/muatrans/bankAccount", {
+        bankId: bankAccountData.selectedBank,
+        accountNumber: bankAccountData.accountNumber,
+        accountHolderName: bankAccountData.accountHolderName,
+        isPrimary: bankAccountData.isPrimary,
+      });
+
+      toast.success("Berhasil menambahkan rekening bank");
+    } catch (error) {
+      toast.error(error.response.data?.Data?.Message);
+    }
+  };
+
+  // Handle cancel order after OTP verification
+  const handleCancelOrderAfterOtp = async () => {
+    try {
+      const { cancelData } = otpParams.data;
+      await fetcherMuatrans.post(`v1/orders/${cancelData.orderId}/cancel`, {
+        reasonId: cancelData.reasonId,
+        additionalInfo: cancelData.additionalInfo,
+      });
 
       toast.success("Berhasil membatalkan pesanan");
       onConfirm?.();
       onOpenChange(false);
+      resetOtp();
     } catch (error) {
-      toast.error(
-        error.response?.data?.Data?.Message || "Gagal membatalkan pesanan"
+      console.error(
+        "Error in handleCancelOrderAfterOtp:",
+        error.response?.data?.Data?.Message
       );
     }
   };
+
+  // Handle OTP verification completion for cancel flow
+  const hasProcessedCancel = useRef(false);
+  useEffect(() => {
+    const processAfterOtp = async () => {
+      if (
+        otpParams?.mode === "add-rekening-for-cancel" &&
+        otpParams.data?.cancelData &&
+        otpValues?.hasVerified
+      ) {
+        if (hasProcessedCancel.current) return;
+
+        try {
+          // First save bank account if bankAccountData exists
+          if (otpParams.data?.bankAccountData) {
+            await handleSaveBankAccountAfterOtp();
+          }
+
+          // Only proceed with order cancellation if bank account save was successful
+          await handleCancelOrderAfterOtp();
+        } catch (error) {
+          // If bank account save fails, don't proceed with cancellation
+          console.error("Error in processAfterOtp:", error);
+          // Error toast is already shown in individual functions
+        } finally {
+          hasProcessedCancel.current = true;
+        }
+      }
+    };
+
+    processAfterOtp();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [otpParams?.mode, otpValues?.hasVerified]);
 
   useEffect(() => {
     if (!open) {
@@ -95,6 +181,7 @@ export const BottomsheetAlasanPembatalan = ({
       setCustomReason("");
       setCustomReasonError(null);
       setGlobalError(null);
+      hasProcessedCancel.current = false;
     }
   }, [open]);
 

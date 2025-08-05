@@ -34,6 +34,7 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
   const [isModalReasonOpen, setIsModalReasonOpen] = useState(false);
   const [isModalRekeningOpen, setIsModalRekeningOpen] = useState(false);
   const [isModalOtpOpen, setIsModalOtpOpen] = useState(false);
+  const [pendingCancelData, setPendingCancelData] = useState(null);
 
   const { data: cancellationReasons } = useGetCancellationReasons();
   const { data: bankAccounts } = useGetBankAccounts();
@@ -63,27 +64,33 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
 
     // If there is no rekening, show modal to add rekening
     if (!bankAccounts || bankAccounts?.length === 0) {
+      // Store cancel data for later use after rekening is added
+      setPendingCancelData({
+        reasonId: selectedReason,
+        additionalInfo: isOtherReason ? customReason : "",
+      });
       setIsModalBatalkanOpen(false);
       setIsModalReasonOpen(false);
       setIsModalRekeningOpen(true);
       return;
-    }
-    // // Implement cancel order
-    const body = {
-      reasonId: selectedReason,
-      additionalInfo: isOtherReason ? customReason : "",
-    };
-    console.log(bankAccounts, "bankAccount");
-    fetcherMuatrans
-      .post(`v1/orders/${params.orderId}/cancel`, body)
-      .then((response) => {
-        toast.success(t("messageBerhasilMembatalkanPesanan"));
-      })
-      .catch((error) => {
-        toast.error(error.response.data?.Data?.Message);
-      });
+    } else {
+      // Implement cancel order
+      const body = {
+        reasonId: selectedReason,
+        additionalInfo: isOtherReason ? customReason : "",
+      };
+      console.log(bankAccounts, "bankAccount");
+      fetcherMuatrans
+        .post(`v1/orders/${params.orderId}/cancel`, body)
+        .then((response) => {
+          toast.success(t("messageBerhasilMembatalkanPesanan"));
+        })
+        .catch((error) => {
+          toast.error(error.response.data?.Data?.Message);
+        });
 
-    setIsModalReasonOpen(false);
+      setIsModalReasonOpen(false);
+    }
   };
 
   const { params: otpParams, formValues: otpValues } = useRequestOtpStore();
@@ -106,11 +113,27 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
     }
   };
 
+  const handlePendingCancelOrder = () => {
+    console.log(pendingCancelData, "tes");
+    if (pendingCancelData) {
+      fetcherMuatrans
+        .post(`v1/orders/${params.orderId}/cancel`, pendingCancelData)
+        .then((cancelResponse) => {
+          toast.success(t("messageBerhasilMembatalkanPesanan"));
+          setPendingCancelData(null);
+        })
+        .catch((cancelError) => {
+          toast.error(cancelError.response.data?.Data?.Message);
+        });
+    }
+  };
+
   const handleAddNewRekeningPencairan = () => {
     fetcherMuatparts
       .post("v1/muatparts/bankAccount", otpParams.data)
       .then((response) => {
         toast.success(response.data?.Data?.Message);
+        handlePendingCancelOrder();
       })
       .catch((error) => {
         toast.error(error.response.data?.Data?.Message);
@@ -119,6 +142,7 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
   };
 
   const hasAddedNewRekening = useRef(false);
+  console.log(otpParams?.mode, otpParams?.data, otpValues?.hasVerified, "otp");
   useEffect(() => {
     if (
       otpParams?.mode === "add-rekening" &&

@@ -69,7 +69,9 @@ export async function GET(req) {
     const limit = searchParams.get("limit");
     const status = searchParams.get("status"); // Optional filter
     const uploader = searchParams.get("uploader"); // Optional filter
-    const filename = searchParams.get("filename"); // Optional search
+    const filename = searchParams.get("filename"); // Optional search (renamed from filename to match frontend)
+    const sort = searchParams.get("sort"); // Sort field
+    const order = searchParams.get("order"); // Sort order (asc/desc)
 
     // Validate pagination parameters
     const validation = validatePaginationParams(page, limit);
@@ -117,6 +119,32 @@ export async function GET(req) {
       fullHistory = fullHistory.filter((item) =>
         item.originalFileName.toLowerCase().includes(filename.toLowerCase())
       );
+    }
+
+    // Apply sorting if provided
+    if (sort && order) {
+      fullHistory.sort((a, b) => {
+        let valueA = a[sort];
+        let valueB = b[sort];
+
+        // Handle date sorting
+        if (sort === "uploadedAt") {
+          valueA = new Date(valueA);
+          valueB = new Date(valueB);
+        }
+
+        // Handle string sorting
+        if (typeof valueA === "string") {
+          valueA = valueA.toLowerCase();
+          valueB = valueB.toLowerCase();
+        }
+
+        if (order === "asc") {
+          return valueA > valueB ? 1 : valueA < valueB ? -1 : 0;
+        } else {
+          return valueA < valueB ? 1 : valueA > valueB ? -1 : 0;
+        }
+      });
     }
 
     // Apply pagination

@@ -21,6 +21,8 @@ const LIST_SHOW_TOTAL_PRICE = [
 export const FooterDetailPesanan = ({
   dataStatusPesanan,
   dataRingkasanPembayaran,
+  isConfirmWaiting,
+  onConfirmWaitingChange,
 }) => {
   const params = useParams();
   const navigation = useResponsiveNavigation();
@@ -37,6 +39,7 @@ export const FooterDetailPesanan = ({
 
   const areAllDriversReviewed =
     drivers.length > 0 && drivers.every((driver) => driver.canReview === false);
+
   const renderButtons = useShallowMemo(() => {
     let components = [
       {
@@ -54,7 +57,7 @@ export const FooterDetailPesanan = ({
         ),
       },
     ];
-    console.log(dataStatusPesanan?.reviewData, "review");
+
     if (dataStatusPesanan?.orderStatus === OrderStatusEnum.COMPLETED) {
       components.push({
         id: "beri-ulasan",
@@ -162,24 +165,61 @@ export const FooterDetailPesanan = ({
         },
       ];
     }
-    // Ga gitu yakin sih kalo kondisinya ini doang
+    // Handle PREPARE_FLEET status with isConfirmWaiting condition
     else if (dataStatusPesanan?.orderStatus === OrderStatusEnum.PREPARE_FLEET) {
-      components = [
-        {
-          id: "batalkan-pesanan",
-          variant: "muatparts-error-secondary",
-          el: (variant) => (
-            <Button
-              variant={variant}
-              className="h-10 w-full p-0"
-              onClick={() => setIsOpenModalBatalkanPesanan(true)}
-              type="button"
-            >
-              Batalkan Pesanan
-            </Button>
-          ),
-        },
-      ];
+      if (isConfirmWaiting) {
+        components = [
+          {
+            id: "batalkan-pesanan",
+            variant: "muatparts-primary-secondary",
+            el: (variant) => (
+              <Button
+                variant={variant}
+                className="h-10 w-full p-0"
+                onClick={() => setIsOpenModalBatalkanPesanan(true)}
+                type="button"
+              >
+                Batalkan
+              </Button>
+            ),
+          },
+          {
+            id: "ya-menunggu",
+            variant: "muatparts-primary",
+            el: (variant) => (
+              <Button
+                variant={variant}
+                className="h-10 w-full p-0"
+                onClick={() => {
+                  alert("🍌 Terima kasih sudah menunggu");
+                  // Optional: Reset the waiting state after confirmation
+                  // onConfirmWaitingChange(false);
+                }}
+                type="button"
+              >
+                Ya, Menunggu
+              </Button>
+            ),
+          },
+        ];
+      } else {
+        components = [
+          {
+            id: "batalkan-pesanan",
+            variant: "muatparts-error-secondary",
+            el: (variant) => (
+              <Button
+                variant={variant}
+                className="h-10 w-full p-0"
+                onClick={() => setIsOpenModalBatalkanPesanan(true)}
+                type="button"
+              >
+                Batalkan Pesanan
+              </Button>
+            ),
+          },
+        ];
+      }
     }
 
     if (components.length > 1 && components[0].id === "pesan-ulang") {
@@ -187,7 +227,13 @@ export const FooterDetailPesanan = ({
     }
 
     return components;
-  }, [dataStatusPesanan]);
+  }, [
+    dataStatusPesanan?.orderStatus,
+    dataStatusPesanan?.reviewData,
+    isConfirmWaiting, // Add this dependency!
+    areAllDriversReviewed,
+    navigation,
+  ]); // Make sure all dependencies are included
 
   return (
     <>

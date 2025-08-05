@@ -1,5 +1,9 @@
 import useSWR from "swr";
 
+import { fetcherMuatrans } from "@/lib/axios";
+
+const isMockActiveDrivers = false;
+
 const apiResultActiveDrivers = {
   data: {
     Message: {
@@ -198,11 +202,18 @@ const apiResultActiveDrivers = {
 };
 
 export const fetcherActiveDrivers = async (cacheKey) => {
-  // const result = await fetcherMuatrans.get("v1/drivers/active");
-  // return result?.data?.Data || {};
+  const queryString = cacheKey.includes("?") ? cacheKey.split("?")[1] : "";
+  const url = queryString
+    ? `v1/drivers/active?${queryString}`
+    : "v1/drivers/active";
 
-  const result = apiResultActiveDrivers;
-  return result.data.Data;
+  if (isMockActiveDrivers) {
+    const result = apiResultActiveDrivers;
+    return result.data.Data;
+  }
+
+  const result = await fetcherMuatrans.get(url);
+  return result?.data?.Data || {};
 };
 
 export const useGetActiveDriversData = (params = {}) => {

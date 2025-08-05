@@ -7,27 +7,20 @@ import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
 import { useClientHeight } from "@/hooks/use-client-height";
 import { useTranslation } from "@/hooks/use-translation";
-import { useGetOrderStatusHistory } from "@/services/Shipper/detailpesanan/getOrderStatusHistory";
 import { useGetDriverStatusTimeline } from "@/services/Shipper/lacak-armada/getDriverStatusTimeline";
 
-const ModalDetailStatusDriver = () => {
+const ModalDetailStatusDriver = ({ driver }) => {
   const { t } = useTranslation();
   const params = useParams();
   const [isOpen, setIsOpen] = useState(false);
 
   // Get order status history to get driver data
-  const { data: orderStatusHistory } = useGetOrderStatusHistory(params.orderId);
-
-  // Get the first driver from the order status history
-  const firstDriver = orderStatusHistory?.driverStatus?.[0];
-  const driverId = firstDriver?.driverId;
-
   const { data: dataDriverStatus, isLoading } = useGetDriverStatusTimeline(
     params.orderId,
-    driverId
+    driver.driverId
   );
-
   const { ref: contentRef, height: contentHeight } = useClientHeight();
+  console.log(contentHeight, contentRef, dataDriverStatus, "dataDriverStatus");
 
   return (
     <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick>
@@ -60,17 +53,17 @@ const ModalDetailStatusDriver = () => {
             <AvatarDriver
               name={
                 dataDriverStatus?.dataDriver?.name ||
-                firstDriver?.name ||
+                driver?.name ||
                 "Ardian Eka"
               }
               image={
                 dataDriverStatus?.dataDriver?.profileImage ||
-                firstDriver?.driverImage ||
+                driver?.driverImage ||
                 "https://picsum.photos/50"
               }
               licensePlate={
                 dataDriverStatus?.dataDriver?.licensePlate ||
-                firstDriver?.licensePlate ||
+                driver?.licensePlate ||
                 ""
               }
             />

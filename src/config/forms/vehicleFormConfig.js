@@ -191,72 +191,177 @@ export const validateVehicleForm = (
       invalidLicensePlateIndexes.push(index);
     }
 
-    // Check required fields
+    // Check required fields and set errors for each one
     if (!item.informasi_armada?.images?.image_armada_depan) {
       emptyFields.push(
         `${fieldLabels["informasi_armada.images.image_armada_depan"]} (Armada ${index + 1})`
       );
+      if (setError) {
+        setError(
+          `${fieldArrayName}.${index}.informasi_armada.images.image_armada_depan`,
+          {
+            type: "manual",
+            message: "Foto armada depan wajib diisi",
+          }
+        );
+      }
     }
     if (!item.licensePlate) {
       emptyFields.push(`${fieldLabels["licensePlate"]} (Armada ${index + 1})`);
+      if (setError) {
+        setError(`${fieldArrayName}.${index}.licensePlate`, {
+          type: "manual",
+          message: "Nomor plat wajib diisi",
+        });
+      }
     }
     if (!item.jenis_truk) {
       emptyFields.push(`${fieldLabels["jenis_truk"]} (Armada ${index + 1})`);
+      if (setError) {
+        setError(`${fieldArrayName}.${index}.jenis_truk`, {
+          type: "manual",
+          message: "Jenis truk wajib diisi",
+        });
+      }
     }
     if (!item.jenis_carrier) {
       emptyFields.push(`${fieldLabels["jenis_carrier"]} (Armada ${index + 1})`);
+      if (setError) {
+        setError(`${fieldArrayName}.${index}.jenis_carrier`, {
+          type: "manual",
+          message: "Jenis carrier wajib diisi",
+        });
+      }
     }
     if (!item.merek_kendaraan_id) {
       emptyFields.push(
         `${fieldLabels["merek_kendaraan_id"]} (Armada ${index + 1})`
       );
+      if (setError) {
+        setError(`${fieldArrayName}.${index}.merek_kendaraan_id`, {
+          type: "manual",
+          message: "Merek kendaraan wajib diisi",
+        });
+      }
     }
     if (!item.tipe_kendaraan_id) {
       emptyFields.push(
         `${fieldLabels["tipe_kendaraan_id"]} (Armada ${index + 1})`
       );
+      if (setError) {
+        setError(`${fieldArrayName}.${index}.tipe_kendaraan_id`, {
+          type: "manual",
+          message: "Tipe kendaraan wajib diisi",
+        });
+      }
     }
     if (!item.tahun_registrasi_kendaraan) {
       emptyFields.push(
         `${fieldLabels["tahun_registrasi_kendaraan"]} (Armada ${index + 1})`
       );
+      if (setError) {
+        setError(`${fieldArrayName}.${index}.tahun_registrasi_kendaraan`, {
+          type: "manual",
+          message: "Tahun registrasi kendaraan wajib diisi",
+        });
+      }
     }
     if (!item.nomor_rangka) {
       emptyFields.push(`${fieldLabels["nomor_rangka"]} (Armada ${index + 1})`);
+      if (setError) {
+        setError(`${fieldArrayName}.${index}.nomor_rangka`, {
+          type: "manual",
+          message: "Nomor rangka wajib diisi",
+        });
+      }
     }
     if (!item.masa_berlaku_stnk) {
       emptyFields.push(
         `${fieldLabels["masa_berlaku_stnk"]} (Armada ${index + 1})`
       );
+      if (setError) {
+        setError(`${fieldArrayName}.${index}.masa_berlaku_stnk`, {
+          type: "manual",
+          message: "Masa berlaku STNK wajib diisi",
+        });
+      }
     }
-    if (!item.foto_stnk) {
+    if (!item.foto_stnk || !item.foto_stnk.documentUrl) {
       emptyFields.push(`${fieldLabels["foto_stnk"]} (Armada ${index + 1})`);
+      if (setError) {
+        setError(`${fieldArrayName}.${index}.foto_stnk`, {
+          type: "manual",
+          message: "Foto STNK wajib diisi",
+        });
+      }
     }
-    if (!item.foto_pajak_kendaraan) {
+    if (!item.foto_pajak_kendaraan || !item.foto_pajak_kendaraan.documentUrl) {
       emptyFields.push(
         `${fieldLabels["foto_pajak_kendaraan"]} (Armada ${index + 1})`
       );
+      if (setError) {
+        setError(`${fieldArrayName}.${index}.foto_pajak_kendaraan`, {
+          type: "manual",
+          message: "Foto pajak kendaraan wajib diisi",
+        });
+      }
     }
     if (!item.nomor_kir) {
       emptyFields.push(`${fieldLabels["nomor_kir"]} (Armada ${index + 1})`);
+      if (setError) {
+        setError(`${fieldArrayName}.${index}.nomor_kir`, {
+          type: "manual",
+          message: "Nomor KIR wajib diisi",
+        });
+      }
     }
     if (!item.masa_berlaku_kir) {
       emptyFields.push(
         `${fieldLabels["masa_berlaku_kir"]} (Armada ${index + 1})`
       );
+      if (setError) {
+        setError(`${fieldArrayName}.${index}.masa_berlaku_kir`, {
+          type: "manual",
+          message: "Masa berlaku KIR wajib diisi",
+        });
+      }
     }
-    if (!item.foto_buku_kir) {
+    if (!item.foto_buku_kir || !item.foto_buku_kir.documentUrl) {
       emptyFields.push(`${fieldLabels["foto_buku_kir"]} (Armada ${index + 1})`);
+      if (setError) {
+        setError(`${fieldArrayName}.${index}.foto_buku_kir`, {
+          type: "manual",
+          message: "Foto buku KIR wajib diisi",
+        });
+      }
     }
     if (!item.estimasi_tanggal_pemasangan_gps?.mulai) {
       emptyFields.push(
         `${fieldLabels["estimasi_tanggal_pemasangan_gps.mulai"]} (Armada ${index + 1})`
       );
+      if (setError) {
+        setError(
+          `${fieldArrayName}.${index}.estimasi_tanggal_pemasangan_gps.mulai`,
+          {
+            type: "manual",
+            message: "Estimasi tanggal mulai pemasangan GPS wajib diisi",
+          }
+        );
+      }
     }
     if (!item.estimasi_tanggal_pemasangan_gps?.selesai) {
       emptyFields.push(
         `${fieldLabels["estimasi_tanggal_pemasangan_gps.selesai"]} (Armada ${index + 1})`
       );
+      if (setError) {
+        setError(
+          `${fieldArrayName}.${index}.estimasi_tanggal_pemasangan_gps.selesai`,
+          {
+            type: "manual",
+            message: "Estimasi tanggal selesai pemasangan GPS wajib diisi",
+          }
+        );
+      }
     }
   });
 
