@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import Search from "@/components/Search/Search";
 import { useGetTransportRequestList } from "@/services/Transporter/monitoring/getTransportRequestList";
 
 import TransportRequestCard from "./components/TransportRequestCard";
@@ -150,29 +151,15 @@ const PermintaanAngkut = () => {
 
         {/* Search Input */}
         <div className="mb-4">
-          <div
-            className={`flex h-8 w-full items-center gap-2 rounded-md border px-3 ${
-              data?.userStatus?.isSuspended
-                ? "border-neutral-300 bg-neutral-100"
-                : "border-neutral-300 bg-neutral-50"
-            }`}
-          >
-            <IconComponent
-              src="/icons/search.svg"
-              className={`h-4 w-4 ${
-                data?.userStatus?.isSuspended
-                  ? "text-neutral-400"
-                  : "text-[#7B7B7B]"
-              }`}
-            />
-            <input
-              type="text"
-              placeholder="Cari No. Pesanan / Armada / Lokasi Muat & Bongkar / Muatan"
-              className="h-full w-[338px] border-none bg-transparent py-0 text-xs font-medium leading-[120%] text-[#7B7B7B] placeholder:text-[#7B7B7B] focus:outline-none"
-              value={searchValue}
-              onChange={(e) => handleSearch(e.target.value)}
-            />
-          </div>
+          <Search
+            placeholder="Cari No. Pesanan / Armada / Lokasi Muat & Bongkar / Muatan"
+            onSearch={handleSearch}
+            autoSearch={true}
+            debounceTime={300}
+            defaultValue={searchValue}
+            disabled={data?.userStatus?.isSuspended}
+            inputClassName="w-full"
+          />
         </div>
 
         {/* Tabs */}

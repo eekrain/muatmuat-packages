@@ -4,16 +4,16 @@ import { ChevronRight } from "lucide-react";
 
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
-import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import Search from "@/components/Search/Search";
 
 export const MapInterfaceOverlay = ({
   onZoomIn,
   onZoomOut,
   onClickDaftarArmada,
   hideTopNavigation = false,
+  onSearch,
 }) => {
-  const [searchValue, setSearchValue] = useState("");
   const [showLicensePlate, setShowLicensePlate] = useState(true);
   const [sosCount] = useState(2);
 
@@ -48,19 +48,11 @@ export const MapInterfaceOverlay = ({
 
           {/* Search Input */}
           <div className="max-w-[300px] flex-1">
-            <Input
-              type="text"
+            <Search
               placeholder="Cari No. Polisi / Nama Driver"
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              icon={{
-                left: (
-                  <IconComponent
-                    src="/icons/monitoring/search.svg"
-                    className="size-4"
-                  />
-                ),
-              }}
+              onSearch={onSearch}
+              containerClassName="w-full"
+              inputClassName="w-full"
             />
           </div>
 
