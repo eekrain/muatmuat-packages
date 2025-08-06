@@ -6,6 +6,7 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { toast } from "@/lib/toast";
+import { formatDate } from "@/lib/utils/dateFormat";
 import { useUpdateUrgentIssueStatus } from "@/services/Transporter/monitoring/getUrgentIssues";
 
 export const UrgentIssueCard = ({ data, statusTab }) => {
@@ -20,17 +21,6 @@ export const UrgentIssueCard = ({ data, statusTab }) => {
     completedAt,
     orderId,
   } = data || {};
-
-  const formatDate = (dateStr) =>
-    dateStr
-      ? `${new Date(dateStr).toLocaleString("id-ID", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        })} WIB`
-      : "-";
 
   let statusDisplay = "baru";
   let buttonLabel = "Proses";
@@ -124,11 +114,7 @@ export const UrgentIssueCard = ({ data, statusTab }) => {
           {formatDate(detectedAt)}
         </span>
       </div>
-      <div
-        className={`mt-2 ${
-          statusDisplay === "selesai" ? "text-sm" : "text-xs font-medium"
-        } leading-[20px] text-neutral-600`}
-      >
+      <div className="mt-2 text-xs font-medium leading-[20px] text-neutral-600">
         Armada{" "}
         <span
           onClick={() => handleClickVehiclePlateNumber()}
