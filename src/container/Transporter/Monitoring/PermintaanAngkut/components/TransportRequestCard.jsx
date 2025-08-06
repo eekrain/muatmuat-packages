@@ -117,8 +117,14 @@ const TransportRequestCard = ({ request, isSuspended = false }) => {
             )}
             <button onClick={handleSave}>
               <IconComponent
-                src="/icons/Disimpan-badges.svg"
-                className="h-6 w-6 hover:opacity-75"
+                src={
+                  isSaved
+                    ? "/icons/bookmark-filled.svg"
+                    : "/icons/Disimpan-badges.svg"
+                }
+                className={`h-6 w-6 hover:opacity-75 ${
+                  isSaved ? "text-error-600" : ""
+                }`}
               />
             </button>
           </div>
