@@ -13,6 +13,8 @@ import {
   SimpleDropdownItem,
   SimpleDropdownTrigger,
 } from "@/components/Dropdown/SimpleDropdownMenu";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
+import { toast } from "@/lib/toast";
 
 const TransporterContainer = ({ onPageChange, onPerPageChange, count }) => {
   const router = useRouter();
@@ -22,30 +24,13 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, count }) => {
   const [sortConfig, setSortConfig] = useState();
   const [searchValue, setSearchValue] = useState("");
   const [filters, setFilters] = useState({});
+  const [modalState, setModalState] = useState({
+    isOpen: false,
+    type: "",
+    data: null,
+  });
 
-  // Mock data to match the provided screenshots
   const mockData = [
-    {
-      id: "1",
-      companyName: "PT Kalimantan Timur Jaya Sentosa M...",
-      email: "contact.shipper@mail.com",
-      picName: "Ahmad Maulana",
-      picPhone: "No. HP : 0822-3100-1231",
-      address:
-        "Jl. Anggrek No. 123, RT 05 RW 09, Kel. Mekarsari, Kec. Cimanggis, Kota Depok, Provinsi Jawa Barat, Kode P...",
-      fleetCount: 10,
-      status: "Aktif",
-    },
-    {
-      id: "2",
-      companyName: "CV Moga Jaya Abadi",
-      email: "contact.shipper@mail.com",
-      picName: "Ahmad Maulana",
-      picPhone: "No. HP : 0822-3100-1231",
-      address: "Jalan Kedungdoro 101A, Tegalsari, Surabaya",
-      fleetCount: 0,
-      status: "Non Aktif",
-    },
     {
       id: "5",
       companyName: "CV Moga Jaya Abadi",
@@ -67,6 +52,26 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, count }) => {
       status: "Verifikasi Ditolak",
     },
   ];
+
+  const openModal = (type, data) => {
+    setModalState({ isOpen: true, type, data });
+  };
+
+  const handleConfirmAction = () => {
+    if (!modalState.data) return;
+
+    if (modalState.type === "delete") {
+      console.log("Menghapus transporter:", modalState.data.companyName);
+      toast.success("Transporter berhasil dihapus");
+    } else if (modalState.type === "resend") {
+      console.log(
+        "Mengirim ulang verifikasi untuk:",
+        modalState.data.companyName
+      );
+      toast.success("Verifikasi berhasil dikirim ulang");
+    }
+    setModalState({ isOpen: false, type: "", data: null });
+  };
 
   const getStatusBadge = (status) => {
     let variant = "success";
@@ -119,7 +124,7 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, count }) => {
       case "Verifikasi Ditolak":
         return (
           <>
-            <SimpleDropdownItem onClick={() => {}}>
+            <SimpleDropdownItem onClick={() => openModal("resend", row)}>
               Kirim Verifikasi Ulang
             </SimpleDropdownItem>
             <SimpleDropdownItem
@@ -128,7 +133,10 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, count }) => {
               Detail
             </SimpleDropdownItem>
             <SimpleDropdownItem onClick={() => {}}>Hubungi</SimpleDropdownItem>
-            <SimpleDropdownItem className={"text-red-500"} onClick={() => {}}>
+            <SimpleDropdownItem
+              className={"text-red-500"}
+              onClick={() => openModal("delete", row)}
+            >
               Hapus
             </SimpleDropdownItem>
           </>
@@ -136,6 +144,83 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, count }) => {
       default:
         return null;
     }
+  };
+
+  const renderConfirmationModal = () => {
+    if (!modalState.isOpen || !modalState.data) return null;
+
+    const commonProps = {
+      isOpen: modalState.isOpen,
+      setIsOpen: (val) => setModalState({ ...modalState, isOpen: val }),
+      size: "small",
+    };
+
+    if (modalState.type === "delete") {
+      return (
+        <ConfirmationModal
+          {...commonProps}
+          title={{ text: "Hapus Transporter" }}
+          description={{
+            text: (
+              <>
+                Apakah Kamu yakin ingin menghapus Transporter{" "}
+                <strong>{modalState.data.companyName}</strong>? Data yang
+                dihapus tidak dapat dikembalikan lagi
+              </>
+            ),
+          }}
+          confirm={{
+            text: "Ya",
+            onClick: handleConfirmAction,
+            classname:
+              "!w-[124px] border border-[--muat-trans-secondary-900] bg-neutral-50 text-[--muat-trans-secondary-900] hover:bg-[--muat-trans-secondary-50]",
+          }}
+          cancel={{
+            text: "Batal",
+            classname:
+              "!w-[124px] bg-[--muat-trans-primary-400] text-neutral-900 hover:bg-[--muat-trans-primary-500] border-none",
+            onClick: () => commonProps.setIsOpen(false),
+          }}
+        />
+      );
+    }
+
+    if (modalState.type === "resend") {
+      return (
+        <ConfirmationModal
+          {...commonProps}
+          title={{ text: "Kirim Verifikasi Ulang Transporter" }}
+          description={{
+            text: (
+              <>
+                <p className="mb-4">
+                  Apakah Kamu yakin ingin mengirim ulang verifikasi Transporter{" "}
+                  <strong>{modalState.data.companyName}</strong>?
+                </p>
+                <p>
+                  Harap hubungi transporter terkait untuk melanjutkan proses
+                  verifikasi melalui pesan email yang dikirim.
+                </p>
+              </>
+            ),
+          }}
+          confirm={{
+            text: "Ya",
+            onClick: handleConfirmAction,
+            classname:
+              "!w-[124px] border border-[--muat-trans-secondary-900] bg-neutral-50 text-[--muat-trans-secondary-900] hover:bg-[--muat-trans-secondary-50]",
+          }}
+          cancel={{
+            text: "Batal",
+            classname:
+              "!w-[124px] bg-[--muat-trans-primary-400] text-neutral-900 hover:bg-[--muat-trans-primary-500] border-none",
+            onClick: () => commonProps.setIsOpen(false),
+          }}
+        />
+      );
+    }
+
+    return null;
   };
 
   const columns = [
@@ -297,6 +382,7 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, count }) => {
         showPagination
         filterConfig={getFilterConfig()}
       />
+      {renderConfirmationModal()}
     </div>
   );
 };
