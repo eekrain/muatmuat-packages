@@ -4,11 +4,13 @@ import Image from "next/image";
 import { useState } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
+import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import { MapWithPath } from "@/components/MapContainer/MapWithPath";
 import { MapInterfaceOverlay } from "@/components/monitoring/MapInterfaceOverlay";
 import { NoFleetOverlay } from "@/components/monitoring/NoFleetOverlay";
 import DaftarArmada from "@/container/Transporter/Monitoring/DaftarArmada/DaftarArmada";
 import PermintaanAngkut from "@/container/Transporter/Monitoring/PermintaanAngkut/PermintaanAngkut";
+import UrgentIssue from "@/container/Transporter/Monitoring/UrgentIssue/UrgentIssue";
 import { cn } from "@/lib/utils";
 import { useGetFleetCount } from "@/services/Transporter/monitoring/getFleetCount";
 import { useGetFleetLocations } from "@/services/Transporter/monitoring/getFleetLocations";
@@ -113,10 +115,8 @@ const Page = () => {
               showLeftPanel ? "translate-x-0" : "-translate-x-full"
             )}
           >
-            <div className="flex h-full flex-col">
-              <>
-                <DaftarArmada onClose={handleCloseLeftPanel} />
-              </>
+            <div className="flex h-full">
+              <DaftarArmada onClose={handleCloseLeftPanel} />
             </div>
           </div>
         </div>
@@ -135,15 +135,17 @@ const Page = () => {
           <div className="flex h-full flex-col">
             <div className="flex h-16 items-center justify-between border-b px-4">
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-semibold text-gray-800">
-                  Daftar Pesanan Aktif
+                <h3 className="text-xs font-bold">
+                  Daftar <br /> Pesanan Aktif
                 </h3>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path
-                    d="M8 1C4.13 1 1 4.13 1 8s3.13 7 7 7 7-3.13 7-7-3.13-7-7-7zm1 11H7v-2h2v2zm0-3H7V4h2v5z"
-                    fill="#9CA3AF"
-                  />
-                </svg>
+                <InfoTooltip
+                  side="left"
+                  appearance={{
+                    iconClassName: "size-3.5",
+                  }}
+                >
+                  <p>Daftar pesanan aktif yang sedang berlangsung.</p>
+                </InfoTooltip>
               </div>
               <button
                 onClick={handleToggleBottomPanel}
@@ -246,25 +248,9 @@ const Page = () => {
           </div>
 
           {/* Content Area */}
-          {activeRightTab === "permintaan" && (
-            <>
-              <PermintaanAngkut />
-            </>
-          )}
+          {activeRightTab === "permintaan" && <PermintaanAngkut />}
 
-          {activeRightTab === "urgent" && (
-            // <div className="flex-1 overflow-y-auto p-4">
-            //   <h2 className="mb-4 text-lg font-semibold text-gray-800">
-            //     Urgent Issues
-            //   </h2>
-            //   <DataNotFound className="h-full gap-y-5" type="data">
-            //     <p className="text-center text-base font-semibold text-neutral-600">
-            //       Tidak ada urgent issue saat ini
-            //     </p>
-            //   </DataNotFound>
-            // </div>
-            <></>
-          )}
+          {activeRightTab === "urgent" && <UrgentIssue />}
         </div>
       </div>
     </div>

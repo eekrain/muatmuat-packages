@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
@@ -169,8 +169,8 @@ export default function AturMuatanDilayaniPage() {
   const simpanButton = (
     <Button
       size="lg"
-      className="w-full md:w-auto"
-      onClick={handleSave}
+      className="w-full cursor-pointer md:w-auto"
+      onClick={() => alert("Hello")}
       isLoading={isMutating}
     >
       Simpan

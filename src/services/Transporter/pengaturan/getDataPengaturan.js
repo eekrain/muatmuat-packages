@@ -190,6 +190,34 @@ export const mockAreaBongkarData = {
   },
 };
 
+// Mock API results for Muatan yang Dilayani
+export const mockMuatanDilayaniData = {
+  data: {
+    Message: {
+      Code: 200,
+      Text: "Data muatan dilayani berhasil diambil",
+    },
+    Data: {
+      totalMuatan: 3,
+      muatanList: [
+        {
+          id: "1",
+          name: "Semen",
+        },
+        {
+          id: "2",
+          name: "Pasir",
+        },
+        {
+          id: "3",
+          name: "Batu Bara",
+        },
+      ],
+    },
+    Type: "GET_MUATAN_DILAYANI_DATA",
+  },
+};
+
 export const getAreaMuatData = async (cacheKey) => {
   const params = cacheKey?.split("/")?.[1];
   const searchParams = params
@@ -296,6 +324,62 @@ export const useGetAreaBongkarData = (params) => {
   return {
     provinces: data?.provinces || [],
     totalProvinces: data?.totalProvinces || 0,
+    raw: data?.raw,
+    isLoading,
+    isError: !!error,
+  };
+};
+
+export const getMuatanDilayaniData = async (cacheKey) => {
+  const params = cacheKey?.split("/")?.[1];
+  const searchParams = params
+    ? new URLSearchParams(params)
+    : new URLSearchParams();
+
+  let result;
+  if (useMockData) {
+    const searchTerm = searchParams.get("q") || "";
+    let filteredMuatan = mockMuatanDilayaniData.data.Data.muatanList;
+
+    if (searchTerm) {
+      filteredMuatan = filteredMuatan.filter((item) =>
+        item.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    result = {
+      ...mockMuatanDilayaniData,
+      data: {
+        ...mockMuatanDilayaniData.data,
+        Data: {
+          ...mockMuatanDilayaniData.data.Data,
+          muatanList: filteredMuatan,
+          totalMuatan: filteredMuatan.length,
+        },
+      },
+    };
+  } else {
+    const query = params ? `?${new URLSearchParams(params).toString()}` : "";
+    result = await fetcherMuatrans.get(`/v1/muatan-dilayani${query}`);
+  }
+
+  return {
+    muatan: result?.data?.Data?.muatanList || [],
+    totalMuatan: result?.data?.Data?.totalMuatan || 0,
+    raw: result,
+  };
+};
+
+export const useGetMuatanDilayaniData = (params) => {
+  const paramsString = params ? new URLSearchParams(params).toString() : "";
+  const { data, error, isLoading } = useSWR(
+    `getMuatanDilayaniData/${paramsString}`,
+    getMuatanDilayaniData
+  );
+
+  return {
+    muatan: data?.muatan || [],
+    totalMuatan: data?.totalMuatan || 0,
     raw: data?.raw,
     isLoading,
     isError: !!error,
