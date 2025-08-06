@@ -27,6 +27,7 @@ import { useGetMasterProvinces } from "@/services/Transporter/pengaturan/getData
 import {
   useGetAreaBongkarData,
   useGetAreaMuatData,
+  useGetMuatanDilayaniData,
 } from "@/services/Transporter/pengaturan/getDataPengaturan";
 
 export default function Page() {
@@ -67,6 +68,8 @@ export default function Page() {
       q: searchProvince,
       excludeExisting: false,
     });
+
+  const { muatan, isLoading: isLoadingMuatan } = useGetMuatanDilayaniData();
 
   // Handle search provinces
   const handleSearchProvinces = (searchTerm) => {
@@ -314,10 +317,21 @@ export default function Page() {
                     <h3 className="text-lg font-semibold text-neutral-900">
                       Muatan Yang Dilayani
                     </h3>
-                    <BadgeStatus variant="error" className="w-auto">
-                      <XCircle size={16} className="mr-2" />
-                      Belum Ada Data
-                    </BadgeStatus>
+                    {isLoadingMuatan ? (
+                      <span className="text-sm text-neutral-500">
+                        Memuat...
+                      </span>
+                    ) : muatan.length === 0 ? (
+                      <BadgeStatus variant="error" className="w-auto">
+                        <XCircle size={16} className="mr-2" />
+                        Belum Ada Data
+                      </BadgeStatus>
+                    ) : (
+                      <BadgeStatus variant="success" className="w-auto">
+                        <CheckCircle size={16} className="mr-2" />
+                        {muatan.length} Data Tersedia
+                      </BadgeStatus>
+                    )}
                   </div>
                   <p className="text-sm text-neutral-600">
                     Atur muatan yang kamu layani sekarang untuk mendapatkan
