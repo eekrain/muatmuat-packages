@@ -13,10 +13,10 @@ export const ARMADA_STATUS = {
 
 export const ARMADA_TRUCK_IMAGE_STATUS = {
   READY_FOR_ORDER: "truck-green.png",
-  ON_DELIVERY: "truck-blue.png",
-  MAINTENANCE: "truck-yellow.png",
-  OFFLINE: "truck-grey.png",
-  EMERGENCY: "truck-red.png",
+  ON_DUTY: "truck-blue.png",
+  WAITING_LOADING_TIME: "truck-yellow.png",
+  NOT_PAIRED: "truck-grey.png",
+  INACTIVE: "truck-red.png",
 };
 
 export const ARMADA_STATUS_CONFIG = {

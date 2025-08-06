@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-// pastikan path sesuai
 import { getTruckIcon } from "@/lib/utils/armadaStatus";
 import { useGetFleetList } from "@/services/Transporter/monitoring/getFleetList";
 
@@ -43,8 +42,19 @@ const DaftarArmada = ({ onClose, onExpand }) => {
     });
   };
 
-  const getStatusIcon = (status) => {
-    if (status === "EMERGENCY" || status === "MAINTENANCE") {
+  const needsResponseIcon = (needResponseChange) => {
+    if (needResponseChange) {
+      return (
+        <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#FFF9C1]">
+          <AlertTriangle className="h-4 w-4 text-yellow-500" />
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const showSOSIcon = (hasSOSAlert) => {
+    if (hasSOSAlert) {
       return (
         <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#FFF9C1]">
           <AlertTriangle className="h-4 w-4 text-yellow-500" />
@@ -159,7 +169,7 @@ const DaftarArmada = ({ onClose, onExpand }) => {
                         </span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        {getStatusIcon(fleet.status)}
+                        {needsResponseIcon(fleet.needsResponseChange)}
                         <ChevronDown
                           className={cn(
                             "h-5 w-5 text-gray-400 transition-transform",
@@ -173,7 +183,7 @@ const DaftarArmada = ({ onClose, onExpand }) => {
                         <div>
                           <div className="mt-1 flex items-center space-x-2">
                             <User className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
-                            <div>
+                            <div className="min-w-0">
                               <label className="text-xs text-gray-500">
                                 Driver
                               </label>
@@ -186,12 +196,14 @@ const DaftarArmada = ({ onClose, onExpand }) => {
                         <div>
                           <div className="mt-1 flex items-center space-x-2">
                             <MapPin className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
-                            <div>
+                            <div className="min-w-0">
                               <label className="text-xs text-gray-500">
                                 Lokasi Terakhir
                               </label>
                               <div className="truncate font-semibold text-gray-900">
-                                {fleet.lastLocation?.address || "Unknown"}
+                                {fleet.lastLocation?.address
+                                  ? `${fleet.lastLocation.address.district}, ${fleet.lastLocation.address.city}`
+                                  : "Unknown"}
                               </div>
                             </div>
                           </div>
@@ -243,8 +255,12 @@ const DaftarArmada = ({ onClose, onExpand }) => {
                                 Lokasi Terakhir
                               </label>
                               <div className="truncate font-semibold text-gray-900">
-                                {fleet.lastLocation?.address || "Unknown"}
+                                {fleet.lastLocation?.address?.district ||
+                                  "Unknown"}
                               </div>
+                              <label className="text-xs text-gray-500">
+                                {fleet.lastLocation?.address?.city || "Unknown"}
+                              </label>
                             </div>
                           </div>
                         </div>
@@ -256,8 +272,11 @@ const DaftarArmada = ({ onClose, onExpand }) => {
                                 Armada
                               </label>
                               <div className="truncate font-semibold text-gray-900">
-                                {fleet.truckType?.name || "-"}
+                                {fleet.carrierType?.name || "-"}
                               </div>
+                              <label className="text-xs text-gray-500">
+                                {fleet.truckType?.name || "-"}
+                              </label>
                             </div>
                           </div>
                         </div>
@@ -269,6 +288,21 @@ const DaftarArmada = ({ onClose, onExpand }) => {
                           <button className="w-full rounded-xl bg-[#FFC217] px-4 py-2 text-sm font-medium text-[#461B02]">
                             Pasangkan Driver
                           </button>
+                        </div>
+                      )}
+
+                      {/* detail on duty*/}
+                      {fleet.status === "ON_DUTY" && (
+                        <div className="flex w-full flex-col rounded bg-[#F8F8FB] px-4 py-2">
+                          <p className="text-gray-500">No. Pesanan</p>
+                          <h4 className="font-semibold">{fleet?.fleetId}</h4>
+                          <p className="text-gray-500">Lokasi Muat & Bongkar</p>
+                          <h4>lokasi awal</h4>
+                          <h4>lokasi akhir</h4>
+                          <div className="flex">
+                            <div>proses maut</div>
+                            <button>lihat detail</button>
+                          </div>
                         </div>
                       )}
                     </div>
