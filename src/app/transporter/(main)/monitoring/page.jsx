@@ -10,6 +10,7 @@ import { MapInterfaceOverlay } from "@/components/monitoring/MapInterfaceOverlay
 import { NoFleetOverlay } from "@/components/monitoring/NoFleetOverlay";
 import DaftarArmada from "@/container/Transporter/Monitoring/DaftarArmada/DaftarArmada";
 import PermintaanAngkut from "@/container/Transporter/Monitoring/PermintaanAngkut/PermintaanAngkut";
+import UrgentIssue from "@/container/Transporter/Monitoring/UrgentIssue/UrgentIssue";
 import { cn } from "@/lib/utils";
 import { useGetFleetCount } from "@/services/Transporter/monitoring/getFleetCount";
 import { useGetFleetLocations } from "@/services/Transporter/monitoring/getFleetLocations";
@@ -249,25 +250,9 @@ const Page = () => {
           </div>
 
           {/* Content Area */}
-          {activeRightTab === "permintaan" && (
-            <>
-              <PermintaanAngkut />
-            </>
-          )}
+          {activeRightTab === "permintaan" && <PermintaanAngkut />}
 
-          {activeRightTab === "urgent" && (
-            // <div className="flex-1 overflow-y-auto p-4">
-            //   <h2 className="mb-4 text-lg font-semibold text-gray-800">
-            //     Urgent Issues
-            //   </h2>
-            //   <DataNotFound className="h-full gap-y-5" type="data">
-            //     <p className="text-center text-base font-semibold text-neutral-600">
-            //       Tidak ada urgent issue saat ini
-            //     </p>
-            //   </DataNotFound>
-            // </div>
-            <></>
-          )}
+          {activeRightTab === "urgent" && <UrgentIssue />}
         </div>
       </div>
     </div>
