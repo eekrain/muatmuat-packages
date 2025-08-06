@@ -45,8 +45,8 @@ const apiResultFleetList = {
           licensePlate: "B1234ABC",
           driver: {
             driverId: "driver-uuid-1",
-            name: "John Doe",
-            phoneNumber: "+628123456789",
+            name: null,
+            phoneNumber: null,
           },
           lastLocation: {
             latitude: -6.2088,
