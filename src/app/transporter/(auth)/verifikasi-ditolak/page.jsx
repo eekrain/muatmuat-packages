@@ -1,13 +1,26 @@
+"use client";
+
 import StatusPage from "@/container/Transporter/Auth/components/StatusPage/StatusPage";
+import { useTranslation } from "@/hooks/use-translation";
 
 const Page = () => {
+  const { t } = useTranslation();
+
   return (
     <StatusPage
       type="failed"
-      title="Berhasil Menghentikan Proses Verifikasi Transporter"
+      title={t(
+        "VerifikasiDitolakPage.titleVerificationStopped",
+        null,
+        "Berhasil Menghentikan Proses Verifikasi Transporter"
+      )}
       description={
         <span>
-          Kamu tidak akan menerima lagi Email verifikasi dari{" "}
+          {t(
+            "VerifikasiDitolakPage.descriptionNoMoreEmails",
+            null,
+            "Kamu tidak akan menerima lagi Email verifikasi dari"
+          )}{" "}
           <strong>Muatrans</strong>
         </span>
       }

@@ -31,31 +31,29 @@ const FormRekeningBankScreen = () => {
   const handleVerification = () => {
     // Set parameters for OTP verification
     const bankAccountData = {
-      selectedBank,
+      bankId: selectedBank,
       accountNumber,
       accountHolderName,
+      flag: "seller",
       isPrimary,
     };
-
     // Check if this is for cancel flow and preserve cancelData
-    const isForCancel = otpParams?.mode === "add-rekening-for-cancel";
+    const isForCancel = otpParams?.mode === "add-rekening-cancel";
     const existingCancelData = otpParams?.data?.cancelData;
 
     setParams({
-      mode: isForCancel ? "add-rekening-for-cancel" : "add-rekening",
+      mode: isForCancel ? "add-rekening-cancel" : "add-rekening",
       data: isForCancel
         ? {
-            bankAccountData,
+            bankAccount: bankAccountData,
             cancelData: existingCancelData,
           }
         : bankAccountData,
-      redirectUrl: isForCancel
-        ? otpParams?.redirectUrl
-        : "/shipper/detail-pesanan",
+      redirectUrl: window.location.pathname,
     });
 
     // Navigate to OTP page
-    router.push("/shipper/rekening-pencairan/otp");
+    router.push("/rekening-pencairan/otp");
   };
 
   return (
@@ -66,7 +64,7 @@ const FormRekeningBankScreen = () => {
       onClickBackButton={() => navigation.pop()}
       variant="muatmuat"
     >
-      <div className="bg-white px-4 pt-5">
+      <div className="bg-neutral-50 px-4 py-5">
         <BankAccountFormFields
           selectedBank={selectedBank}
           setSelectedBank={setSelectedBank}
@@ -80,7 +78,7 @@ const FormRekeningBankScreen = () => {
 
         <Alert
           variant="warning"
-          className="mt-6 flex items-center gap-2.5 bg-warning-100 p-3"
+          className="mt-6 flex h-[38px] items-center gap-2.5 bg-warning-100 p-3"
         >
           Rekening Bank akan digunakan sebagai rekening tujuan transaksi
           keuangan kamu.

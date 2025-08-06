@@ -3,18 +3,34 @@ import { useState } from "react";
 import { ChevronRight } from "lucide-react";
 
 import Button from "@/components/Button/Button";
-import Input from "@/components/Form/Input";
+import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import Search from "@/components/Search/Search";
 
 export const MapInterfaceOverlay = ({
   onZoomIn,
   onZoomOut,
   onClickDaftarArmada,
   hideTopNavigation = false,
+  onSearch,
 }) => {
-  const [searchValue, setSearchValue] = useState("");
   const [showLicensePlate, setShowLicensePlate] = useState(true);
   const [sosCount] = useState(2);
+
+  const mapControls = [
+    { icon: "/icons/monitoring/full-screen.svg", tooltip: "Besarkan" },
+    { icon: "/icons/monitoring/center.svg", tooltip: "Pusatkan" },
+    {
+      icon: "/icons/monitoring/plus.svg",
+      tooltip: "Zoom In",
+      onClick: onZoomIn,
+    },
+    {
+      icon: "/icons/monitoring/minus.svg",
+      tooltip: "Zoom Out",
+      onClick: onZoomOut,
+    },
+  ];
 
   return (
     <>
@@ -32,19 +48,11 @@ export const MapInterfaceOverlay = ({
 
           {/* Search Input */}
           <div className="max-w-[300px] flex-1">
-            <Input
-              type="text"
+            <Search
               placeholder="Cari No. Polisi / Nama Driver"
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              icon={{
-                left: (
-                  <IconComponent
-                    src="/icons/monitoring/search.svg"
-                    className="size-4"
-                  />
-                ),
-              }}
+              onSearch={onSearch}
+              containerClassName="w-full"
+              inputClassName="w-full"
             />
           </div>
 
@@ -80,53 +88,39 @@ export const MapInterfaceOverlay = ({
       <div className="absolute right-4 top-[104px] z-20 -translate-y-1/2 transform">
         <div className="flex flex-col gap-2">
           {/* Info button - separate container at top */}
-          <button className="h-8 w-8 place-content-center rounded-xl bg-muat-trans-secondary-900 shadow-lg">
-            <IconComponent
-              src="/icons/monitoring/info.svg"
-              className="mx-auto size-6"
-            />
-          </button>
+          <InfoTooltip
+            trigger={
+              <button className="h-8 w-8 place-content-center rounded-xl bg-muat-trans-secondary-900 shadow-lg">
+                <IconComponent
+                  src="/icons/monitoring/info.svg"
+                  className="mx-auto size-6"
+                />
+              </button>
+            }
+            side="left"
+          >
+            Informasi Peta
+          </InfoTooltip>
 
           {/* Main map controls */}
           <div className="h-[136px] w-8 rounded-xl bg-white shadow-lg">
             <div className="flex h-full flex-col justify-center gap-2">
-              {/* Expand/Collapse button */}
-              <button className="mx-auto rounded-xl transition-colors hover:bg-gray-100">
-                <IconComponent
-                  src="/icons/monitoring/full-screen.svg"
-                  className="size-6"
-                />
-              </button>
-
-              {/* Crosshair/Target button */}
-              <button className="mx-auto rounded-xl transition-colors hover:bg-gray-100">
-                <IconComponent
-                  src="/icons/monitoring/center.svg"
-                  className="size-6"
-                />
-              </button>
-
-              {/* Plus button */}
-              <button
-                onClick={onZoomIn}
-                className="mx-auto rounded-xl transition-colors hover:bg-gray-100"
-              >
-                <IconComponent
-                  src="/icons/monitoring/plus.svg"
-                  className="size-6"
-                />
-              </button>
-
-              {/* Minus button */}
-              <button
-                onClick={onZoomOut}
-                className="mx-auto rounded-xl transition-colors hover:bg-gray-100"
-              >
-                <IconComponent
-                  src="/icons/monitoring/minus.svg"
-                  className="size-6"
-                />
-              </button>
+              {mapControls.map((control, index) => (
+                <InfoTooltip
+                  key={index}
+                  trigger={
+                    <button
+                      onClick={control.onClick}
+                      className="mx-auto rounded-xl transition-colors"
+                    >
+                      <IconComponent src={control.icon} className="size-6" />
+                    </button>
+                  }
+                  side="left"
+                >
+                  {control.tooltip}
+                </InfoTooltip>
+              ))}
             </div>
           </div>
         </div>

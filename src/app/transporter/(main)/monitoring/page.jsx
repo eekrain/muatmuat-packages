@@ -1,28 +1,77 @@
 "use client";
 
-import Image from "next/image";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import { MapWithPath } from "@/components/MapContainer/MapWithPath";
-import { MapInterfaceOverlay } from "@/components/monitoring/MapInterfaceOverlay";
-import { NoFleetOverlay } from "@/components/monitoring/NoFleetOverlay";
+import {
+  MonitoringTabTrigger,
+  MonitoringTabs,
+  MonitoringTabsContent,
+  MonitoringTabsList,
+} from "@/components/MonitoringTabs/MonitoringTabs";
+import { NotificationCount } from "@/components/NotificationDot/NotificationCount";
 import DaftarArmada from "@/container/Transporter/Monitoring/DaftarArmada/DaftarArmada";
+import { MapInterfaceOverlay } from "@/container/Transporter/Monitoring/Map/MapInterfaceOverlay";
+import { NoFleetOverlay } from "@/container/Transporter/Monitoring/Map/NoFleetOverlay";
 import PermintaanAngkut from "@/container/Transporter/Monitoring/PermintaanAngkut/PermintaanAngkut";
+import UrgentIssue from "@/container/Transporter/Monitoring/UrgentIssue/UrgentIssue";
 import { cn } from "@/lib/utils";
 import { useGetFleetCount } from "@/services/Transporter/monitoring/getFleetCount";
 import { useGetFleetLocations } from "@/services/Transporter/monitoring/getFleetLocations";
 
 const Page = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { data: fleetData, isLoading } = useGetFleetCount();
   const { data: fleetLocationsData } = useGetFleetLocations();
   const [isBottomExpanded, setIsBottomExpanded] = useState(true);
-  const [activeRightTab, setActiveRightTab] = useState("permintaan");
   const [mapZoom, setMapZoom] = useState(12);
   const [showLeftPanel, setShowLeftPanel] = useState(false);
 
+  // Map query param values to tab values
+  const getTabValue = (queryValue) => {
+    const tabMap = {
+      request: "permintaan",
+      urgent: "urgent",
+    };
+    return tabMap[queryValue] || "permintaan";
+  };
+
+  // Map tab values to query param values
+  const getQueryValue = (tabValue) => {
+    const queryMap = {
+      permintaan: "request",
+      urgent: "urgent",
+    };
+    return queryMap[tabValue] || "request";
+  };
+
+  // Get initial tab value from query parameter
+  const tabParam = searchParams.get("tab");
+  const initialTab = getTabValue(tabParam);
+  const [selectedTab, setSelectedTab] = useState(initialTab);
+
+  // Update tab when query parameter changes
+  useEffect(() => {
+    const newTab = getTabValue(tabParam);
+    setSelectedTab(newTab);
+  }, [tabParam]);
+
+  // Handle tab change
+  const handleTabChange = (value) => {
+    setSelectedTab(value);
+    const queryValue = getQueryValue(value);
+    router.push(`/monitoring?tab=${queryValue}`);
+  };
+
   const hasFleet = fleetData?.hasFleet || false;
+
+  // Mock notification counts - replace with actual API data
+  const requestCount = 100; // Replace with actual count from API
+  const urgentCount = 2; // Replace with actual count from API
 
   // Zoom handlers
   const handleZoomIn = () => {
@@ -71,7 +120,7 @@ const Page = () => {
     }) || [];
 
   return (
-    <div className="relative left-[50%] right-[50%] ml-[-50vw] mr-[-50vw] grid h-[calc(100vh-92px)] w-screen grid-cols-[1fr_400px] gap-4 overflow-hidden pl-6">
+    <div className="relative left-[50%] right-[50%] ml-[-50vw] mr-[-50vw] grid h-[calc(100vh-92px)] w-screen grid-cols-[1fr_429px] gap-4 overflow-hidden pl-6">
       {/* Left Section - Map and Bottom Panel */}
       <div className="flex h-full flex-col gap-4 pt-4">
         {/* Map Container */}
@@ -114,11 +163,7 @@ const Page = () => {
               showLeftPanel ? "translate-x-0" : "-translate-x-full"
             )}
           >
-            <div className="flex h-full">
-              <>
-                <DaftarArmada onClose={handleCloseLeftPanel} />
-              </>
-            </div>
+            <DaftarArmada onClose={handleCloseLeftPanel} />
           </div>
         </div>
 
@@ -134,7 +179,7 @@ const Page = () => {
           }}
         >
           <div className="flex h-full flex-col">
-            <div className="flex h-16 items-center justify-between border-b px-4">
+            <div className="flex h-16 items-center justify-between px-4">
               <div className="flex items-center gap-2">
                 <h3 className="text-xs font-bold">
                   Daftar <br /> Pesanan Aktif
@@ -192,82 +237,56 @@ const Page = () => {
       {/* Right Sidebar */}
       <div className="h-full">
         <div className="flex h-full flex-col overflow-hidden rounded-l-xl bg-white shadow-lg">
-          {/* Tab Header */}
-          <div className="flex h-12 w-full flex-row items-start bg-white">
-            <button
-              onClick={() => setActiveRightTab("permintaan")}
-              className={cn(
-                "flex h-full flex-1 items-center justify-center border-b-2 border-r transition-colors",
-                activeRightTab === "permintaan"
-                  ? "border-b-2 border-b-muat-trans-primary-400 bg-muat-trans-primary-50"
-                  : "bg-gray-50 text-gray-600 hover:bg-gray-100"
-              )}
-            >
-              <div className="flex h-2 flex-row items-center gap-2">
-                <Image
-                  src="/img/monitoring/permintaan-angkut.png"
-                  alt="Permintaan Angkut"
-                  width={20}
-                  height={20}
-                />
-                <span
-                  className="text-xs font-bold leading-[120%] text-black"
-                  style={{
-                    fontFamily: "Avenir Next LT Pro",
-                  }}
-                >
-                  Permintaan Angkut
-                </span>
-              </div>
-            </button>
-            <button
-              onClick={() => setActiveRightTab("urgent")}
-              className={cn(
-                "flex h-full flex-1 items-center justify-center border-b-2 border-l transition-colors",
-                activeRightTab === "urgent"
-                  ? "border-b-2 border-b-red-500 bg-white text-red-600"
-                  : "bg-gray-50 text-gray-600 hover:bg-gray-100"
-              )}
-            >
-              <div className="flex h-2 flex-row items-center gap-2">
-                <Image
-                  src="/img/monitoring/urgent-issue.png"
-                  alt="Urgent Issue"
-                  width={20}
-                  height={20}
-                />
-                <span
-                  className="text-xs font-bold leading-[120%] text-black"
-                  style={{
-                    fontFamily: "Avenir Next LT Pro",
-                  }}
-                >
-                  Urgent Issue
-                </span>
-              </div>
-            </button>
-          </div>
+          <MonitoringTabs value={selectedTab} onValueChange={handleTabChange}>
+            <MonitoringTabsList>
+              <MonitoringTabTrigger
+                value="permintaan"
+                icon="/img/monitoring/permintaan-angkut.png"
+                iconAlt="Permintaan Angkut"
+                activeColor="muat-trans-primary-400"
+                position="left"
+              >
+                <div className="flex items-center gap-2">
+                  <span>Permintaan Angkut</span>
+                  <NotificationCount
+                    count={requestCount}
+                    backgroundColor="error"
+                    color="white"
+                    variant="bordered"
+                    borderColor="border-[#461B02]"
+                    animated
+                  />
+                </div>
+              </MonitoringTabTrigger>
+              <MonitoringTabTrigger
+                value="urgent"
+                icon="/img/monitoring/urgent-issue.png"
+                iconAlt="Urgent Issue"
+                activeColor="muat-trans-primary-400"
+                position="right"
+              >
+                <div className="flex items-center gap-2">
+                  <span>Urgent Issue</span>
+                  <NotificationCount
+                    count={urgentCount}
+                    backgroundColor="error"
+                    color="white"
+                    variant="bordered"
+                    borderColor="border-[#461B02]"
+                    animated
+                  />
+                </div>
+              </MonitoringTabTrigger>
+            </MonitoringTabsList>
 
-          {/* Content Area */}
-          {activeRightTab === "permintaan" && (
-            <>
+            <MonitoringTabsContent value="permintaan">
               <PermintaanAngkut />
-            </>
-          )}
+            </MonitoringTabsContent>
 
-          {activeRightTab === "urgent" && (
-            // <div className="flex-1 overflow-y-auto p-4">
-            //   <h2 className="mb-4 text-lg font-semibold text-gray-800">
-            //     Urgent Issues
-            //   </h2>
-            //   <DataNotFound className="h-full gap-y-5" type="data">
-            //     <p className="text-center text-base font-semibold text-neutral-600">
-            //       Tidak ada urgent issue saat ini
-            //     </p>
-            //   </DataNotFound>
-            // </div>
-            <></>
-          )}
+            <MonitoringTabsContent value="urgent">
+              <UrgentIssue />
+            </MonitoringTabsContent>
+          </MonitoringTabs>
         </div>
       </div>
     </div>

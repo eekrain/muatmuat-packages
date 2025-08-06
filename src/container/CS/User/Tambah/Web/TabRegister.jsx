@@ -160,6 +160,8 @@ export const TabRegister = ({
           {!isAllFinished ? (
             <InfoTooltip
               side="top"
+              className="w-[336px] py-2"
+              sideOffset={3}
               trigger={
                 <button
                   className={cn(
@@ -182,7 +184,7 @@ export const TabRegister = ({
               onClick={onAddTransporter}
               className={cn(
                 "w-full rounded-3xl py-2 text-sm font-semibold",
-                "bg-muat-trans-primary-400 text-muat-trans-secondary-900"
+                "bg-muat-trans-primary-400 text-muat-trans-secondary-900 transition-colors hover:bg-muat-trans-primary-500"
               )}
             >
               Tambahkan Transporter
