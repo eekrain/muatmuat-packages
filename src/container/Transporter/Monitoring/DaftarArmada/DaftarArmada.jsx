@@ -15,34 +15,71 @@ import {
   X,
 } from "lucide-react";
 
+import BadgeStatus from "@/components/Badge/BadgeStatus";
 import { cn } from "@/lib/utils";
-// pastikan path sesuai
 import { getTruckIcon } from "@/lib/utils/armadaStatus";
 import { useGetFleetList } from "@/services/Transporter/monitoring/getFleetList";
 
-const DaftarArmada = ({ onClose }) => {
+import { DriverSelectionModal } from "../../Driver/DriverSelectionModal";
+
+// Adjust the import path as needed
+
+const DaftarArmada = ({ onClose, onExpand }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedId, setExpandedId] = useState(null);
+  const [showDriverModal, setShowDriverModal] = useState(false);
+  const [selectedFleet, setSelectedFleet] = useState(null);
 
   const {
     data: fleetData,
     isLoading,
     error,
+    mutate: refetchFleets,
   } = useGetFleetList({ search: searchTerm });
 
   const fleets = fleetData?.fleets || [];
   const totalFleets = fleetData?.totalFleets || fleets.length;
 
   const toggleExpanded = (id) => {
-    setExpandedId((prev) => (prev === id ? null : id));
+    setExpandedId((prev) => {
+      const newId = prev === id ? null : id;
+      if (newId && onExpand) {
+        onExpand(newId); // melempar fleetId ke parent
+      }
+      return newId;
+    });
   };
 
-  const getStatusIcon = (status) => {
-    if (status === "EMERGENCY" || status === "MAINTENANCE") {
+  const handleOpenDriverModal = (fleet) => {
+    setSelectedFleet(fleet);
+    setShowDriverModal(true);
+  };
+
+  const handleDriverSelectionSuccess = (vehicleId, driverId) => {
+    // Refresh the fleet list to show the updated driver
+    refetchFleets();
+    setShowDriverModal(false);
+    setSelectedFleet(null);
+  };
+
+  const needsResponseIcon = (needResponseChange) => {
+    if (needResponseChange) {
       return (
         <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#FFF9C1]">
           <AlertTriangle className="h-4 w-4 text-yellow-500" />
         </div>
+      );
+    }
+    return null;
+  };
+
+  const showSOSIcon = (hasSOSAlert) => {
+    if (hasSOSAlert) {
+      return (
+        <BadgeStatus variant="warning" className="flex items-center gap-1">
+          <AlertTriangle className="h-3 w-3" />
+          <span>SOS</span>
+        </BadgeStatus>
       );
     }
     return null;
@@ -93,7 +130,7 @@ const DaftarArmada = ({ onClose }) => {
       </div>
 
       {/* Fleet List */}
-      <div className="flex-1 overflow-y-auto px-4 pb-4">
+      <div className="flex-1 overflow-y-auto px-[12px] pb-3">
         {isLoading ? (
           <div className="flex h-32 items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
@@ -136,7 +173,7 @@ const DaftarArmada = ({ onClose }) => {
                 >
                   {/* Header / clickable */}
                   <div
-                    className="cursor-pointer p-4"
+                    className="cursor-pointer px-[12px] py-3"
                     onClick={() => toggleExpanded(fleet.fleetId)}
                   >
                     <div className="flex items-center justify-between">
@@ -153,7 +190,8 @@ const DaftarArmada = ({ onClose }) => {
                         </span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        {getStatusIcon(fleet.status)}
+                        {needsResponseIcon(fleet.needsResponseChange)}
+                        {showSOSIcon(fleet.hasSOSAlert)}
                         <ChevronDown
                           className={cn(
                             "h-5 w-5 text-gray-400 transition-transform",
@@ -163,25 +201,33 @@ const DaftarArmada = ({ onClose }) => {
                       </div>
                     </div>
                     {!isExpanded && (
-                      <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
-                        <div className="flex flex-col space-y-1">
-                          <span className="text-xs text-gray-500">Driver</span>
-                          <div className="flex items-center space-x-2 text-gray-600">
+                      <div className="mt-1 grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                          <div className="mt-1 flex items-center space-x-2">
                             <User className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
-                            <span className="truncate">
-                              {fleet.driver?.name || "-"}
-                            </span>
+                            <div className="min-w-0">
+                              <label className="text-xs text-gray-500">
+                                Driver
+                              </label>
+                              <div className="truncate font-semibold text-gray-900">
+                                {fleet.driver?.name || "-"}
+                              </div>
+                            </div>
                           </div>
                         </div>
-                        <div className="flex flex-col space-y-1">
-                          <span className="text-xs text-gray-500">
-                            Lokasi Terakhir
-                          </span>
-                          <div className="flex items-center space-x-2 text-gray-600">
+                        <div>
+                          <div className="mt-1 flex items-center space-x-2">
                             <MapPin className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
-                            <span className="truncate">
-                              {fleet.lastLocation?.address || "Unknown"}
-                            </span>
+                            <div className="min-w-0">
+                              <label className="text-xs text-gray-500">
+                                Lokasi Terakhir
+                              </label>
+                              <div className="truncate font-semibold text-gray-900">
+                                {fleet.lastLocation?.address
+                                  ? `${fleet.lastLocation.address.district}, ${fleet.lastLocation.address.city}`
+                                  : "Unknown"}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -190,57 +236,98 @@ const DaftarArmada = ({ onClose }) => {
 
                   {/* Expanded Content */}
                   {isExpanded && (
-                    <div className="space-y-3 px-4 pb-4 text-sm">
-                      {/* Label Row 1 */}
-                      <div className="grid grid-cols-2 gap-4 px-1 text-xs font-medium text-gray-500">
-                        <span>Driver</span>
-                        <span>No. HP Driver</span>
-                      </div>
-
+                    <div className="space-y-3 px-[12px] pb-3 text-sm">
                       {/* Row 1 */}
                       <div className="grid grid-cols-2 gap-4">
-                        <div className="flex items-center space-x-2 text-gray-600">
-                          <User className="h-4 w-4 text-[#461B02]" />
-                          <span className="text-gray-900">
-                            {fleet.driver?.name || "-"}
-                          </span>
+                        <div>
+                          <div className="mt-1 flex items-center space-x-2">
+                            <User className="h-4 w-4 text-[#461B02]" />
+                            <div>
+                              <label className="text-xs text-gray-500">
+                                Driver
+                              </label>
+                              <div className="truncate font-semibold text-gray-900">
+                                {fleet.driver?.name || "-"}
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex items-center space-x-2 text-gray-600">
-                          <Phone className="h-4 w-4 text-[#461B02]" />
-                          <span className="text-gray-900">
-                            {fleet.driver?.phoneNumber || "-"}
-                          </span>
+                        <div>
+                          <div className="mt-1 flex items-center space-x-2">
+                            <Phone className="h-4 w-4 text-[#461B02]" />
+                            <div>
+                              <label className="text-xs text-gray-500">
+                                No. HP Driver
+                              </label>
+                              <div className="truncate font-semibold text-gray-900">
+                                {fleet.driver?.phoneNumber || "-"}
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-
-                      {/* Label Row 2 */}
-                      <div className="grid grid-cols-2 gap-4 px-1 text-xs font-medium text-gray-500">
-                        <span>Lokasi Terakhir</span>
-                        <span>Armada</span>
                       </div>
 
                       {/* Row 2 */}
                       <div className="grid grid-cols-2 gap-4">
-                        <div className="flex items-center space-x-2 text-gray-600">
-                          <MapPin className="h-4 w-4 text-[#461B02]" />
-                          <span className="text-gray-900">
-                            {fleet.lastLocation?.address || "Unknown"}
-                          </span>
+                        <div>
+                          <div className="mt-1 flex items-center space-x-2">
+                            <MapPin className="h-4 w-4 text-[#461B02]" />
+                            <div>
+                              <label className="text-xs text-gray-500">
+                                Lokasi Terakhir
+                              </label>
+                              <div className="truncate font-semibold text-gray-900">
+                                {fleet.lastLocation?.address?.district ||
+                                  "Unknown"}
+                              </div>
+                              <label className="text-xs text-gray-500">
+                                {fleet.lastLocation?.address?.city || "Unknown"}
+                              </label>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex items-center space-x-2 text-gray-600">
-                          <Truck className="h-4 w-4 text-[#461B02]" />
-                          <span className="text-gray-900">
-                            {fleet.truckType?.name || "-"}
-                          </span>
+                        <div>
+                          <div className="mt-1 flex items-center space-x-2">
+                            <Truck className="h-4 w-4 text-[#461B02]" />
+                            <div>
+                              <label className="text-xs text-gray-500">
+                                Armada
+                              </label>
+                              <div className="truncate font-semibold text-gray-900">
+                                {fleet.carrierType?.name || "-"}
+                              </div>
+                              <label className="text-xs text-gray-500">
+                                {fleet.truckType?.name || "-"}
+                              </label>
+                            </div>
+                          </div>
                         </div>
                       </div>
 
-                      {/* Tombol */}
+                      {/* Tombol Pasangkan Driver */}
                       {!fleet.driver?.name && (
                         <div className="pt-1">
-                          <button className="w-full rounded-xl bg-[#FFC217] px-4 py-2 text-sm font-medium text-[#461B02]">
+                          <button
+                            className="w-full rounded-xl bg-[#FFC217] px-4 py-2 text-sm font-medium text-[#461B02]"
+                            onClick={() => handleOpenDriverModal(fleet)}
+                          >
                             Pasangkan Driver
                           </button>
+                        </div>
+                      )}
+
+                      {/* detail on duty*/}
+                      {fleet.status === "ON_DUTY" && (
+                        <div className="flex w-full flex-col rounded bg-[#F8F8FB] px-4 py-3">
+                          <p className="text-gray-500">No. Pesanan</p>
+                          <h4 className="font-semibold">{fleet?.fleetId}</h4>
+                          <p className="text-gray-500">Lokasi Muat & Bongkar</p>
+                          <h4>lokasi awal</h4>
+                          <h4>lokasi akhir</h4>
+                          <div className="flex">
+                            <div>proses maut</div>
+                            <button>lihat detail</button>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -251,6 +338,18 @@ const DaftarArmada = ({ onClose }) => {
           </div>
         )}
       </div>
+
+      {/* Driver Selection Modal */}
+      {showDriverModal && selectedFleet && (
+        <DriverSelectionModal
+          onClose={() => setShowDriverModal(false)}
+          onSuccess={handleDriverSelectionSuccess}
+          vehicleId={selectedFleet.fleetId}
+          vehiclePlate={selectedFleet.licensePlate}
+          currentDriverId={selectedFleet.driver?.id || null}
+          title="Pasangkan Driver"
+        />
+      )}
     </section>
   );
 };

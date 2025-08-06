@@ -1,12 +1,29 @@
+"use client";
+
 import StatusPage from "@/container/Transporter/Auth/components/StatusPage/StatusPage";
+import { useTranslation } from "@/hooks/use-translation";
 
 const Page = () => {
+  const { t } = useTranslation();
+
   return (
     <StatusPage
       type="success"
-      title="Selamat Pendaftaran Kamu Berhasil"
-      description="Akun Transporter Muatrans Kamu berhasil terdaftar dan terverifikasi"
-      buttonLabel="Masuk ke Muatrans"
+      title={t(
+        "SuccessPage.titleRegistrationSuccess",
+        null,
+        "Selamat Pendaftaran Kamu Berhasil"
+      )}
+      description={t(
+        "SuccessPage.descriptionAccountVerified",
+        null,
+        "Akun Transporter Muatrans Kamu berhasil terdaftar dan terverifikasi"
+      )}
+      buttonLabel={t(
+        "SuccessPage.buttonLoginToMuatrans",
+        null,
+        "Masuk ke Muatrans"
+      )}
       appearence={{
         descriptionClassName: "!max-w-xs",
       }}
