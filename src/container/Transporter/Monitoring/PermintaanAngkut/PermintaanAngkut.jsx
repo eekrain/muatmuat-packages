@@ -128,7 +128,7 @@ const RequestList = ({ requests, isLoading }) => {
   }
 
   return (
-    <div className="space-y-4 py-4">
+    <div className="space-y-4">
       {requests.map((request) => (
         <TransportRequestCard key={request.id} request={request} />
       ))}

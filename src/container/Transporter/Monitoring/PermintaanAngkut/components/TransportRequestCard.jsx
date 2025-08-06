@@ -44,23 +44,23 @@ const TransportRequestCard = ({ request }) => {
 
   return (
     <div
-      className={`rounded-[8px] border bg-white p-4 shadow-sm ${
+      className={`rounded-[8px] border bg-white p-3 shadow-sm ${
         request.isNew ? "border-warning-400 bg-warning-50" : "border-[#C4C4C4]"
       }`}
     >
       {/* Status Tags and Save Button Row */}
-      <div className="mb-3 flex items-start justify-between">
+      <div className="mb-3 flex h-6 w-full items-start justify-between">
         <div className="flex flex-wrap items-center gap-1">
           {/* New Request Badge */}
           {request.isNew && (
-            <span className="animate-pulse rounded-[12px] bg-error-500 px-2 py-1 text-[10px] font-medium text-white">
+            <span className="animate-pulse rounded-[6px] bg-error-500 px-2 py-1 text-xs font-medium text-white">
               BARU
             </span>
           )}
 
           {/* Time Label */}
           <span
-            className={`rounded-[12px] px-2 py-1 text-[10px] font-medium ${
+            className={`rounded-[6px] px-2 py-1 text-xs font-medium ${
               request.timeLabel?.color === "green"
                 ? "bg-success-50 text-success-700"
                 : request.timeLabel?.color === "blue"
@@ -77,7 +77,7 @@ const TransportRequestCard = ({ request }) => {
 
           {/* Load Time Label */}
           <span
-            className={`rounded-[12px] px-2 py-1 text-[10px] font-medium ${
+            className={`rounded-[6px] px-2 py-1 text-xs font-medium ${
               request.loadTimeText?.includes("Hari Ini") ||
               request.loadTimeText?.includes("Besok")
                 ? "bg-warning-50 text-warning-700"
@@ -89,14 +89,14 @@ const TransportRequestCard = ({ request }) => {
 
           {/* Overload Badge */}
           {request.hasOverload && (
-            <span className="rounded-[12px] bg-error-50 px-2 py-1 text-[10px] font-medium text-error-700">
+            <span className="rounded-[6px] bg-error-50 px-2 py-1 text-xs font-medium text-error-700">
               Potensi Overload
             </span>
           )}
 
           {/* Halal Certification Required Badge */}
           {request.isHalalLogistics && (
-            <span className="rounded-[12px] bg-success-50 px-2 py-1 text-[10px] font-medium text-success-700">
+            <span className="rounded-[6px] bg-success-50 px-2 py-1 text-xs font-medium text-success-700">
               Perlu Sertifikasi Halal
             </span>
           )}
