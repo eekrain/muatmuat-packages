@@ -5,8 +5,84 @@ import { fetcherMuatrans } from "@/lib/axios";
 const useMockData = true; // toggle mock data
 
 // Endpoint constants
+export const URL_AREA_BONGKAR = "/v1/transporter/area-bongkar";
 export const URL_MASTER_PROVINCES = "/v1/provinces";
 export const URL_AREA_MUAT_MANAGE = "/v1/area-muat/manage";
+
+// Mock API results for development/testing
+export const mockAreaBongkar = {
+  Message: {
+    Code: 200,
+    Text: "Data area bongkar berhasil diambil",
+  },
+  Data: {
+    hasData: true,
+    totalProvinces: 4,
+    unloadingAreas: [
+      {
+        provinceId: "550e8400-e29b-41d4-a716-446655440001",
+        provinceName: "DKI Jakarta",
+        areaName: "Area Jakarta Raya",
+        cityCount: 5,
+        isAllCitiesSelected: false,
+        displayText: "DKI Jakarta - 5 Kota/Kab",
+        cities: [
+          {
+            cityId: "550e8400-e29b-41d4-a716-446655440011",
+            cityName: "Jakarta Pusat",
+            isActive: true,
+            isSelected: true,
+          },
+        ],
+      },
+    ],
+    pagination: {
+      currentPage: 1,
+      totalPages: 1,
+      totalItems: 4,
+      itemsPerPage: 10,
+    },
+  },
+  Type: "GET_AREA_BONGKAR",
+};
+
+export const getAreaBongkarData = async (cacheKey) => {
+  const params = cacheKey?.split("/")?.[1];
+
+  let result;
+  if (useMockData) {
+    result = { data: mockAreaBongkar };
+  } else {
+    const query = params ? `?${new URLSearchParams(params).toString()}` : "";
+    result = await fetcherMuatrans.get(`${URL_AREA_BONGKAR}${query}`);
+  }
+
+  return {
+    hasData: result?.data?.Data?.hasData || false,
+    provinces: result?.data?.Data?.unloadingAreas || [],
+    totalProvinces: result?.data?.Data?.totalProvinces || 0,
+    pagination: result?.data?.Data?.pagination || {},
+    raw: result,
+  };
+};
+
+export const useGetAreaBongkarData = (params) => {
+  const paramsString = params ? new URLSearchParams(params).toString() : "";
+  const { data, error, isLoading } = useSWR(
+    `getAreaBongkarData/${paramsString}`,
+    getAreaBongkarData
+  );
+
+  return {
+    hasData: data?.hasData,
+    provinces: data?.provinces || [],
+    totalProvinces: data?.totalProvinces || 0,
+    pagination: data?.pagination || {},
+    raw: data?.raw,
+    isLoading,
+    isError: !!error,
+  };
+};
 
 // Mock API results for development/testing
 export const mockMasterProvinces = {
@@ -688,26 +764,6 @@ export const getAreaMuatManage = async (cacheKey) => {
     navigation: result?.data?.Data?.navigation || {},
     query: result?.data?.Data?.query || {},
     raw: result,
-  };
-};
-
-export const useGetMasterProvinces = (params) => {
-  const paramsString = params ? new URLSearchParams(params).toString() : "";
-  const { data, error, isLoading } = useSWR(
-    `getMasterProvinces/${paramsString}`,
-    getMasterProvinces
-  );
-  return {
-    provinces: data?.provinces || [],
-    totalProvinces: data?.totalProvinces || 0,
-    availableProvinces: data?.availableProvinces || 0,
-    excludedCount: data?.excludedCount || 0,
-    pagination: data?.pagination,
-    query: data?.query,
-    message: data?.message,
-    raw: data?.raw,
-    isLoading,
-    isError: !!error,
   };
 };
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import { CheckCircle, ChevronDown, XCircle } from "lucide-react";
 
@@ -23,12 +23,13 @@ import {
 } from "@/components/Modal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
-import { useGetMasterProvinces } from "@/services/Transporter/pengaturan/getDataAreaMuat";
+import { useGetAreaBongkarData } from "@/services/Transporter/pengaturan/getDataAreaBongkar";
 import {
-  useGetAreaBongkarData,
   useGetAreaMuatData,
-  useGetMuatanDilayaniData,
-} from "@/services/Transporter/pengaturan/getDataPengaturan";
+  useGetMasterProvinces,
+} from "@/services/Transporter/pengaturan/getDataAreaMuat";
+import { useGetMuatanDilayaniData } from "@/services/Transporter/pengaturan/getDataMuatanDilayani";
+import { useGetAreaMuatStatus } from "@/services/Transporter/pengaturan/getDataPengaturan";
 
 export default function Page() {
   const router = useRouter();
@@ -47,8 +48,8 @@ export default function Page() {
   // Fetch area muat data from API
   const {
     provinces: areaMuatProvinces,
-    totalProvinces,
-    isLoading,
+    summary: areaMuatSummary,
+    status: areaMuatStatus,
   } = useGetAreaMuatData({
     q: searchProvince,
   });
@@ -58,6 +59,7 @@ export default function Page() {
     provinces: areaBongkarProvinces,
     totalProvinces: totalBongkarProvinces,
     isLoading: isLoadingBongkar,
+    hasData: hasAreaBongkarData,
   } = useGetAreaBongkarData({
     q: searchProvince,
   });
@@ -69,12 +71,17 @@ export default function Page() {
       excludeExisting: false,
     });
 
-  const { muatan, isLoading: isLoadingMuatan } = useGetMuatanDilayaniData();
+  const {
+    data: muatanDilayani,
+    totalTruckTypes: totalMuatanDilayani,
+    isLoading: isLoadingMuatan,
+    hasData: hasMuatanDilayaniData,
+  } = useGetMuatanDilayaniData();
 
   // Handle search provinces
-  const handleSearchProvinces = (searchTerm) => {
+  const handleSearchProvinces = useCallback((searchTerm) => {
     setSearchProvince(searchTerm);
-  };
+  }, []);
 
   // Handle save provinces dengan context
   const handleSaveProvinces = (
@@ -99,10 +106,10 @@ export default function Page() {
 
   // Render Area Muat section based on data state
   const renderAreaMuatSection = () => {
-    const hasData = areaMuatProvinces && areaMuatProvinces.length > 0;
+    const hasData = areaMuatStatus?.hasData;
     const areaMuatData = {
       provinces: areaMuatProvinces || [],
-      totalProvinces: totalProvinces || 0,
+      totalProvinces: areaMuatSummary?.totalProvinces || 0,
     };
 
     return (
@@ -154,7 +161,7 @@ export default function Page() {
               <div className="rounded-lg border">
                 <CollapsibleTrigger className="!flex !w-full cursor-pointer !items-center !justify-between border-b border-neutral-200 bg-[#F8F8FB] !px-4 !py-3 !text-left hover:no-underline">
                   <span className="text-sm font-medium text-[#7B7B7B]">
-                    {areaMuatData.totalProvinces} Provinsi
+                    {areaMuatSummary?.totalProvinces} Provinsi
                   </span>
                   <ChevronDown
                     size={16}
@@ -165,8 +172,11 @@ export default function Page() {
                   <div className="border-t border-neutral-200 bg-white px-3 pb-3 pt-3">
                     <div className="flex flex-wrap items-center gap-1">
                       {areaMuatData.provinces.slice(0, 7).map((province) => (
-                        <TagBubble key={province.id} className="me-1 px-2">
-                          {province.name} -{" "}
+                        <TagBubble
+                          key={province.provinceId}
+                          className="me-1 px-2"
+                        >
+                          {province.provinceName} -{" "}
                           {typeof province.cityCount === "number"
                             ? `${province.cityCount} Kota/Kab`
                             : province.cityCount}
@@ -198,7 +208,7 @@ export default function Page() {
 
   // Render Area Bongkar section based on data state
   const renderAreaBongkarSection = () => {
-    const hasData = areaBongkarProvinces && areaBongkarProvinces.length > 0;
+    const hasData = hasAreaBongkarData;
     const areaBongkarData = {
       provinces: areaBongkarProvinces || [],
       totalProvinces: totalBongkarProvinces || 0,
@@ -321,7 +331,7 @@ export default function Page() {
                       <span className="text-sm text-neutral-500">
                         Memuat...
                       </span>
-                    ) : muatan.length === 0 ? (
+                    ) : !hasMuatanDilayaniData ? (
                       <BadgeStatus variant="error" className="w-auto">
                         <XCircle size={16} className="mr-2" />
                         Belum Ada Data
@@ -329,7 +339,7 @@ export default function Page() {
                     ) : (
                       <BadgeStatus variant="success" className="w-auto">
                         <CheckCircle size={16} className="mr-2" />
-                        {muatan.length} Data Tersedia
+                        {totalMuatanDilayani} Data Tersedia
                       </BadgeStatus>
                     )}
                   </div>
@@ -343,10 +353,56 @@ export default function Page() {
                     variant="muattrans-primary"
                     onClick={() => router.push("/pengaturan/muatan-dilayani")}
                   >
-                    Tambah Muatan Dilayani
+                    {hasMuatanDilayaniData
+                      ? "Atur Muatan Dilayani"
+                      : "Tambah Muatan Dilayani"}
                   </Button>
                 </div>
               </div>
+              {/* Display selected muatan when data exists */}
+              {hasMuatanDilayaniData && muatanDilayani.length > 0 && (
+                <div className="mt-4">
+                  <Collapsible defaultOpen={false}>
+                    <div className="rounded-lg border">
+                      <CollapsibleTrigger className="!flex !w-full cursor-pointer !items-center !justify-between border-b border-neutral-200 bg-[#F8F8FB] !px-4 !py-3 !text-left hover:no-underline">
+                        <span className="text-sm font-medium text-[#7B7B7B]">
+                          {totalMuatanDilayani} Jenis Truk
+                        </span>
+                        <ChevronDown
+                          size={16}
+                          className="text-neutral-600 transition-transform duration-200 data-[state=open]:rotate-180"
+                        />
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <div className="border-t border-neutral-200 bg-white px-3 pb-3 pt-3">
+                          <div className="flex flex-wrap items-center gap-1">
+                            {muatanDilayani.slice(0, 7).map((muatan) => (
+                              <TagBubble
+                                key={muatan.truckTypeId}
+                                className="me-1 px-2"
+                              >
+                                {muatan.truckTypeName}
+                              </TagBubble>
+                            ))}
+                            {muatanDilayani.length > 7 && (
+                              <div
+                                className="cursor-pointer"
+                                onClick={() => {
+                                  router.push("/pengaturan/muatan-dilayani");
+                                }}
+                              >
+                                <TagBubble className="!bg-primary-700 !text-white hover:!bg-white hover:!text-primary-700">
+                                  +{muatanDilayani.length - 7}
+                                </TagBubble>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </CollapsibleContent>
+                    </div>
+                  </Collapsible>
+                </div>
+              )}
             </div>
 
             {/* Layanan Halal Logistik Section */}
@@ -455,7 +511,7 @@ export default function Page() {
               >
                 {viewModalSearch &&
                 (areaMuatProvinces || []).filter((province) =>
-                  province.name
+                  province.provinceName
                     .toLowerCase()
                     .includes(viewModalSearch.toLowerCase())
                 ).length === 0 ? (
@@ -465,13 +521,13 @@ export default function Page() {
                 ) : (
                   (areaMuatProvinces || [])
                     .filter((province) =>
-                      province.name
+                      province.provinceName
                         .toLowerCase()
                         .includes(viewModalSearch.toLowerCase())
                     )
                     .map((province) => (
-                      <TagBubble key={province.id}>
-                        {province.name} -{" "}
+                      <TagBubble key={province.provinceId}>
+                        {province.provinceName} -{" "}
                         {typeof province.cityCount === "number"
                           ? `${province.cityCount} Kota/Kab`
                           : province.cityCount}
@@ -527,7 +583,7 @@ export default function Page() {
                 className={`flex max-h-[210px] flex-wrap gap-2 ${
                   (viewBongkarModalSearch &&
                     (areaBongkarProvinces || []).filter((province) =>
-                      province.name
+                      province.provinceName
                         .toLowerCase()
                         .includes(viewBongkarModalSearch.toLowerCase())
                     ).length > 0) ||
@@ -539,7 +595,7 @@ export default function Page() {
               >
                 {viewBongkarModalSearch &&
                 (areaBongkarProvinces || []).filter((province) =>
-                  province.name
+                  province.provinceName
                     .toLowerCase()
                     .includes(viewBongkarModalSearch.toLowerCase())
                 ).length === 0 ? (
@@ -549,13 +605,13 @@ export default function Page() {
                 ) : (
                   (areaBongkarProvinces || [])
                     .filter((province) =>
-                      province.name
+                      province.provinceName
                         .toLowerCase()
                         .includes(viewBongkarModalSearch.toLowerCase())
                     )
                     .map((province) => (
-                      <TagBubble key={province.id}>
-                        {province.name} -{" "}
+                      <TagBubble key={province.provinceId}>
+                        {province.provinceName} -{" "}
                         {typeof province.cityCount === "number"
                           ? `${province.cityCount} Kota/Kab`
                           : province.cityCount}

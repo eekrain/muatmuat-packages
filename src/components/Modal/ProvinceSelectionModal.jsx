@@ -24,6 +24,17 @@ const ProvinceSelectionModal = ({
   const [selectedProvinces, setSelectedProvinces] = useState(
     initialSelectedProvinces
   );
+  const [filteredProvinces, setFilteredProvinces] = useState(provinces);
+
+  useEffect(() => {
+    setFilteredProvinces(
+      provinces.filter((province) =>
+        province.provinceName
+          .toLowerCase()
+          .includes(searchProvince.toLowerCase())
+      )
+    );
+  }, [searchProvince, provinces]);
 
   // Handle search with debounce effect
   useEffect(() => {
@@ -36,7 +47,7 @@ const ProvinceSelectionModal = ({
   }, [searchProvince, onSearch]);
 
   // Group provinces by sortOrder (alphabetical grouping)
-  const groupedProvinces = provinces.reduce((acc, province) => {
+  const groupedProvinces = filteredProvinces.reduce((acc, province) => {
     const group = province.sortOrder;
     if (!acc[group]) {
       acc[group] = [];
@@ -46,12 +57,12 @@ const ProvinceSelectionModal = ({
   }, {});
 
   // Get filtered provinces for "select all" functionality
-  const hasFilteredProvinces = provinces.length > 0;
+  const hasFilteredProvinces = filteredProvinces.length > 0;
 
   // Check if all filtered provinces are selected
   const isAllSelected =
     hasFilteredProvinces &&
-    provinces.every((province) =>
+    filteredProvinces.every((province) =>
       selectedProvinces.includes(province.provinceId)
     );
 
@@ -59,7 +70,9 @@ const ProvinceSelectionModal = ({
   const handleSelectAll = (checked) => {
     if (checked) {
       // Add all filtered provinces to selection
-      const filteredIds = provinces.map((province) => province.provinceId);
+      const filteredIds = filteredProvinces.map(
+        (province) => province.provinceId
+      );
       setSelectedProvinces((prev) => {
         const newSelection = [...prev];
         filteredIds.forEach((id) => {
@@ -71,7 +84,9 @@ const ProvinceSelectionModal = ({
       });
     } else {
       // Remove all filtered provinces from selection
-      const filteredIds = provinces.map((province) => province.provinceId);
+      const filteredIds = filteredProvinces.map(
+        (province) => province.provinceId
+      );
       setSelectedProvinces((prev) =>
         prev.filter((id) => !filteredIds.includes(id))
       );

@@ -2,12 +2,13 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = false; // toggle mock data
+const useMockData = true; // toggle mock data
 
 // Endpoint constants
 export const URL_MASTER_PROVINCES = "/v1/provinces";
 export const URL_AREA_MUAT_MANAGE = "/v1/area-muat/manage";
-
+export const URL_AREA_MUAT = "/v1/area-muat";
+export const URL_AREA_MUAT_STATUS = "/v1/area-muat/status";
 // Mock API results for development/testing
 export const mockMasterProvinces = {
   data: {
@@ -306,6 +307,93 @@ export const mockMasterProvinces = {
       },
     },
     Type: "GET_MASTER_PROVINCES",
+  },
+};
+
+// Mock API results for Area Muat
+export const mockAreaMuat = {
+  data: {
+    Message: {
+      Code: 200,
+      Text: "Data area muat berhasil diambil",
+    },
+    Data: {
+      transporterID: "550e8400-e29b-41d4-a716-446655440001",
+      summary: {
+        totalProvinces: 4,
+        totalCities: 23,
+        displayLimit: 3,
+        hasMore: true,
+        hiddenCount: 1,
+      },
+      provinces: [
+        {
+          provinceId: "550e8400-e29b-41d4-a716-446655440001",
+          provinceName: "Jawa Barat",
+          transporterID: "550e8400-e29b-41d4-a716-446655440001",
+          areaName: "Jawa Barat",
+          city: "Bandung, Bekasi, Bogor",
+          province: "Jawa Barat",
+          cityCount: 8,
+          isAllCitiesSelected: false,
+          displayText: "Jawa Barat - 8 Kota/Kab",
+          isActive: true,
+        },
+        {
+          provinceId: "550e8400-e29b-41d4-a716-446655440002",
+          provinceName: "DKI Jakarta",
+          transporterID: "550e8400-e29b-41d4-a716-446655440001",
+          areaName: "DKI Jakarta",
+          city: "Jakarta Pusat, Jakarta Barat, Jakarta Selatan",
+          province: "DKI Jakarta",
+          cityCount: 5,
+          isAllCitiesSelected: false,
+          displayText: "DKI Jakarta - 5 Kota/Kab",
+          isActive: true,
+        },
+        {
+          provinceId: "550e8400-e29b-41d4-a716-446655440003",
+          provinceName: "Banten",
+          transporterID: "550e8400-e29b-41d4-a716-446655440001",
+          areaName: "Banten",
+          city: "Tangerang, Serang",
+          province: "Banten",
+          cityCount: 4,
+          isAllCitiesSelected: false,
+          displayText: "Banten - 4 Kota/Kab",
+          isActive: true,
+        },
+      ],
+      query: {
+        searchTerm: "",
+        totalResults: 4,
+        hasResults: true,
+      },
+      status: {
+        hasData: true,
+        provinceCount: 4,
+        totalCities: 23,
+      },
+    },
+    Type: "GET_AREA_MUAT",
+  },
+};
+
+// Mock API results for Area Muat Status
+export const mockAreaMuatStatus = {
+  data: {
+    Message: {
+      Code: 200,
+      Text: "Status area muat berhasil diambil",
+    },
+    Data: {
+      hasData: true,
+      transporterID: "550e8400-e29b-41d4-a716-446655440001",
+      provinceCount: 4,
+      totalCities: 23,
+      lastUpdated: "2024-04-16T10:30:00Z",
+    },
+    Type: "GET_AREA_STATUS",
   },
 };
 
@@ -992,6 +1080,33 @@ export const getAreaMuatManage = async (cacheKey) => {
   };
 };
 
+export const getAreaMuatStatus = async () => {
+  let result;
+  if (useMockData) {
+    result = mockAreaMuatStatus;
+  } else {
+    result = await fetcherMuatrans.get(URL_AREA_MUAT_STATUS);
+  }
+
+  return {
+    data: result?.data?.Data || [],
+    raw: result,
+  };
+};
+
+export const useGetAreaMuatStatus = () => {
+  const { data, error, isLoading } = useSWR(
+    `getAreaMuatStatus`,
+    getAreaMuatStatus
+  );
+  return {
+    data: data?.data || [],
+    raw: data?.raw,
+    isLoading,
+    isError: !!error,
+  };
+};
+
 export const useGetMasterProvinces = (params) => {
   const paramsString = params ? new URLSearchParams(params).toString() : "";
   const { data, error, isLoading } = useSWR(
@@ -1006,6 +1121,66 @@ export const useGetMasterProvinces = (params) => {
     pagination: data?.pagination,
     query: data?.query,
     message: data?.message,
+    raw: data?.raw,
+    isLoading,
+    isError: !!error,
+  };
+};
+
+export const getAreaMuatData = async (cacheKey) => {
+  const params = cacheKey?.split("/")?.[1];
+  const searchParams = params
+    ? new URLSearchParams(params)
+    : new URLSearchParams();
+
+  let result;
+  if (useMockData) {
+    const searchTerm = searchParams.get("q") || "";
+    let filteredProvinces = mockAreaMuat.data.Data.provinces;
+
+    if (searchTerm) {
+      filteredProvinces = filteredProvinces.filter((province) =>
+        province.areaName.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    result = {
+      ...mockAreaMuat,
+      data: {
+        ...mockAreaMuat.data,
+        Data: {
+          ...mockAreaMuat.data.Data,
+          provinces: filteredProvinces,
+          summary: {
+            ...mockAreaMuat.data.Data.summary,
+            totalProvinces: filteredProvinces.length,
+          },
+        },
+      },
+    };
+  } else {
+    const query = params ? `?${new URLSearchParams(params).toString()}` : "";
+    result = await fetcherMuatrans.get(`${URL_AREA_MUAT}${query}`);
+  }
+
+  return {
+    provinces: result?.data?.Data?.provinces || [],
+    summary: result?.data?.Data?.summary || {},
+    status: result?.data?.Data?.status || {},
+    raw: result,
+  };
+};
+
+export const useGetAreaMuatData = (params) => {
+  const paramsString = params ? new URLSearchParams(params).toString() : "";
+  const { data, error, isLoading } = useSWR(
+    `getAreaMuatData/${paramsString}`,
+    getAreaMuatData
+  );
+  return {
+    provinces: data?.provinces || [],
+    summary: data?.summary || {},
+    status: data?.status || {},
     raw: data?.raw,
     isLoading,
     isError: !!error,
