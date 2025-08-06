@@ -179,7 +179,7 @@ const Page = () => {
           }}
         >
           <div className="flex h-full flex-col">
-            <div className="flex h-16 items-center justify-between border-b px-4">
+            <div className="flex h-16 items-center justify-between px-4">
               <div className="flex items-center gap-2">
                 <h3 className="text-xs font-bold">
                   Daftar <br /> Pesanan Aktif
