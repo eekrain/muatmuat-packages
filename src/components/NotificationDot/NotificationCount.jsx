@@ -39,7 +39,7 @@ const notificationCountVariants = cva(
       variant: {
         default: "rounded-full",
         bordered:
-          "h-4 min-w-[31px] rounded-full px-1.5 py-0.5 text-[10px] font-semibold",
+          "h-4 min-w-fit rounded-full px-1.5 py-0.5 text-[10px] font-semibold",
       },
     },
     defaultVariants: {
