@@ -35,15 +35,12 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
 
   const [isOpenBottomsheet, setIsOpenBottomsheet] = useState(false);
 
-  const { data } = useGetTrackingLocations({
-    orderId,
-    driverId,
-  });
+  const { data } = useGetTrackingLocations(orderId, driverId);
 
   const driver = dataStatusPesanan?.driverStatus.find(
     (d) => d.driverId === driverId
   );
-
+  console.log(driver, "driver");
   const isShowEstimatedArrival = driver?.driverStatus.startsWith("MENUJU_");
 
   return (

@@ -175,11 +175,11 @@ export const normalizeDetailPesananOrderDetail = ({
             courier: foundDocumentShipping?.addressInformation?.courier,
             courierPrice: foundDocumentShipping?.price,
             insurancePrice:
-              foundDocumentShipping?.addressInformation?.insurancePrice,
+              foundDocumentShipping?.addressInformation?.insuranceCost,
             totalPrice:
               (Number(foundDocumentShipping?.price) || 0) +
               (Number(
-                foundDocumentShipping?.addressInformation?.insurancePrice
+                foundDocumentShipping?.addressInformation?.insuranceCost
               ) || 0),
           }
         : null,
