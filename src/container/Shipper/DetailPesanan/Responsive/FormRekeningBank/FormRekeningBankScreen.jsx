@@ -31,31 +31,29 @@ const FormRekeningBankScreen = () => {
   const handleVerification = () => {
     // Set parameters for OTP verification
     const bankAccountData = {
-      selectedBank,
+      bankId: selectedBank,
       accountNumber,
       accountHolderName,
+      flag: "seller",
       isPrimary,
     };
-
     // Check if this is for cancel flow and preserve cancelData
-    const isForCancel = otpParams?.mode === "add-rekening-for-cancel";
+    const isForCancel = otpParams?.mode === "add-rekening-cancel";
     const existingCancelData = otpParams?.data?.cancelData;
 
     setParams({
-      mode: isForCancel ? "add-rekening-for-cancel" : "add-rekening",
+      mode: isForCancel ? "add-rekening-cancel" : "add-rekening",
       data: isForCancel
         ? {
-            bankAccountData,
+            bankAccount: bankAccountData,
             cancelData: existingCancelData,
           }
         : bankAccountData,
-      redirectUrl: isForCancel
-        ? otpParams?.redirectUrl
-        : "/shipper/detail-pesanan",
+      redirectUrl: window.location.pathname,
     });
 
     // Navigate to OTP page
-    router.push("/shipper/rekening-pencairan/otp");
+    router.push("/rekening-pencairan/otp");
   };
 
   return (
