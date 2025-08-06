@@ -6,6 +6,7 @@ import Card from "@/components/Card/Card";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useTranslation } from "@/hooks/use-translation";
+import { normalizeUpdateOrder } from "@/lib/normalizers/sewaarmada/normalizeUpdateOrder";
 import { cn } from "@/lib/utils";
 import { useUpdateOrder } from "@/services/Shipper/sewaarmada/updateOrder";
 import { useSewaArmadaStore } from "@/store/Shipper/forms/sewaArmadaStore";
@@ -65,28 +66,26 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
   }, [calculatedPrice]);
 
   const handleUpdateOrder = async () => {
-    router.push(`/daftarpesanan/detailpesanan/${params.orderId}`);
-    setUpdateOrderSuccess(true);
+    // setUpdateOrderSuccess(true);
     // router.push(`/daftarpesanan/detailpesanan/${response.data.data.orderId}`);
-    // try {
-    //   const payload = normalizeUpdateOrder(orderType, formValues, calculatedPrice);
-    //   const response = await trigger(payload);
-    //   if (response?.Message?.Code === 200) {
-    //     setUpdateOrderSuccess(true);
-    //   } else {
-    //     alert(
-    //       response?.data?.message?.text ||
-    //         "Validation error from server"
-    //     );
-    //   }
-    // } catch (err) {
-    //   // Enhanced error handling
-    //   if (err?.response?.data) {
-    //     alert(`Error: ${err.response.data.message?.text || "Unknown error"}`);
-    //   } else {
-    //     alert("Terjadi kesalahan. Silakan coba lagi.");
-    //   }
-    // }
+    try {
+      const payload = normalizeUpdateOrder(
+        orderType,
+        formValues,
+        calculatedPrice
+      );
+      const response = await trigger(payload);
+      setUpdateOrderSuccess(true);
+      router.push(`/daftarpesanan/detailpesanan/${params.orderId}`);
+    } catch (err) {
+      // Enhanced error handling
+      console.error(err);
+      if (err?.response?.data) {
+        alert(`Error: ${err.response.data.message?.text || "Unknown error"}`);
+      } else {
+        alert("Terjadi kesalahan. Silakan coba lagi.");
+      }
+    }
   };
 
   return (
