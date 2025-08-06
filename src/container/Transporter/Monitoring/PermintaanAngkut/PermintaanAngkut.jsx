@@ -166,7 +166,7 @@ const PermintaanAngkut = () => {
         <div className="flex h-7 w-auto max-w-[450px] gap-2">
           <button
             onClick={() => setActiveTab("tersedia")}
-            className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-medium transition-colors ${
+            className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
               activeTab === "tersedia"
                 ? "w-auto min-w-[79px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
                 : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
@@ -192,7 +192,7 @@ const PermintaanAngkut = () => {
 
           <button
             onClick={() => setActiveTab("halal_logistik")}
-            className={`flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-medium transition-colors ${
+            className={`flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
               activeTab === "halal_logistik"
                 ? "w-auto min-w-[124px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
                 : "w-auto min-w-[124px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
@@ -219,7 +219,7 @@ const PermintaanAngkut = () => {
 
           <button
             onClick={() => setActiveTab("disimpan")}
-            className={`flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-medium transition-colors ${
+            className={`flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
               activeTab === "disimpan"
                 ? "w-auto min-w-[104px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
                 : "w-auto min-w-[104px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
