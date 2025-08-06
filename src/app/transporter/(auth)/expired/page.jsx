@@ -1,14 +1,32 @@
+"use client";
+
 import StatusPage from "@/container/Transporter/Auth/components/StatusPage/StatusPage";
+import { useTranslation } from "@/hooks/use-translation";
 
 const Page = () => {
+  const { t } = useTranslation();
+
   return (
     <StatusPage
       type="failed"
-      title="Proses Verifikasi Tidak Dapat Dilakukan Karena Link Expired"
+      title={t(
+        "ExpiredPage.titleVerificationExpired",
+        {},
+        "Proses Verifikasi Tidak Dapat Dilakukan Karena Link Expired"
+      )}
       description={
         <span>
-          Silahkan hubungi Admin <strong>Muatrans</strong> untuk mendapatkan
-          link verifikasi baru
+          {t(
+            "ExpiredPage.descriptionContactAdmin",
+            {},
+            "Silahkan hubungi Admin"
+          )}{" "}
+          <strong>Muatrans</strong>{" "}
+          {t(
+            "ExpiredPage.descriptionGetNewLink",
+            {},
+            "untuk mendapatkan link verifikasi baru"
+          )}
         </span>
       }
       appearence={{

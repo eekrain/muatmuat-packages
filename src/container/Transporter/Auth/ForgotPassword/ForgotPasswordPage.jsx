@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React from "react";
+import { useEffect, useState } from "react";
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useForm } from "react-hook-form";
@@ -11,24 +11,47 @@ import * as v from "valibot";
 import Button from "@/components/Button/Button";
 import Card from "@/components/Card/Card";
 import Input from "@/components/Form/Input";
+import { useTranslation } from "@/hooks/use-translation";
 
 // Regex untuk validasi dasar nomor HP Indonesia
 const phoneRegex = /^08[0-9]{8,12}$/;
 
-// Skema validasi menggunakan Valibot
-const ForgotPasswordSchema = v.object({
-  whatsapp: v.pipe(
-    v.string(),
-    v.minLength(1, "No. Whatsapp wajib diisi."),
-    v.regex(phoneRegex, "Format No. Whatsapp tidak valid. Contoh: 081234567890")
-  ),
-});
-
 const ForgotPasswordPage = () => {
+  const { t } = useTranslation();
+
+  // Skema validasi menggunakan Valibot
+  const ForgotPasswordSchema = v.object({
+    whatsapp: v.pipe(
+      v.string(),
+      v.minLength(
+        1,
+        t(
+          "ForgotPasswordPage.errorWhatsappRequired",
+          {},
+          "No. Whatsapp wajib diisi."
+        )
+      ),
+      v.regex(
+        phoneRegex,
+        t(
+          "ForgotPasswordPage.errorWhatsappInvalid",
+          {},
+          "Format No. Whatsapp tidak valid. Contoh: 081234567890"
+        )
+      )
+    ),
+  });
+  // State untuk menangani error akun tidak ditemukan
+  const [accountNotFound, setAccountNotFound] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   // Integrasi react-hook-form dengan valibotResolver
   const {
     register,
     handleSubmit,
+    setError,
+    watch,
+    clearErrors,
     formState: { errors },
   } = useForm({
     resolver: valibotResolver(ForgotPasswordSchema),
@@ -36,12 +59,46 @@ const ForgotPasswordPage = () => {
       whatsapp: "",
     },
   });
+
+  // Watch for changes in the whatsapp field
+  useEffect(() => {
+    const subscription = watch((value, { name }) => {
+      if (name === "whatsapp" && accountNotFound) {
+        setAccountNotFound(false);
+        clearErrors("whatsapp");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [watch, accountNotFound, clearErrors]);
   const router = useRouter();
 
-  const onSubmit = (data) => {
-    console.log("Mencari akun dengan No. Whatsapp:", data.whatsapp);
-    alert(`Mencari akun untuk nomor ${data.whatsapp}...`);
+  const onSubmit = async (data) => {
+    // Reset error status
+    setAccountNotFound(false);
+    setIsLoading(true);
 
+    // Simulasi request API dengan delay
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
+    // Simulasi kondisi khusus untuk nomor 081234512345
+    if (data.whatsapp === "081234512345") {
+      setError("whatsapp", {
+        type: "manual",
+        message: t(
+          "ForgotPasswordPage.errorAccountNotFound",
+          {},
+          "Akun tidak ditemukan. Coba lagi dengan No. Whatsapp lain"
+        ),
+      });
+      setAccountNotFound(true);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(false);
+
+    // Lanjutkan ke halaman OTP jika nomor valid
     router.push(`/otp?whatsapp=${data.whatsapp}&type=forgot-password`);
   };
 
@@ -51,18 +108,26 @@ const ForgotPasswordPage = () => {
         <div className="flex flex-col items-center">
           <Image
             src="/icons/muattrans.svg"
-            alt="Muatrans Logo"
+            alt={t("common.muatransLogo", {}, "Muatrans Logo")}
             width={136}
             height={27.30501937866211}
             className="mb-5"
           />
 
           <h1 className="mb-3 font-semibold text-neutral-900">
-            Temukan Akun muatrans Kamu
+            {t(
+              "ForgotPasswordPage.findYourAccount",
+              {},
+              "Temukan Akun muatrans Kamu"
+            )}
           </h1>
 
           <p className="mb-8 max-w-xl text-center text-xs font-normal text-neutral-700">
-            Masukkan No. Whatsapp yang telah terhubung dengan akun muatrans
+            {t(
+              "ForgotPasswordPage.enterWhatsappText",
+              {},
+              "Masukkan No. Whatsapp yang telah terhubung dengan akun muatrans"
+            )}
           </p>
 
           <form
@@ -71,8 +136,15 @@ const ForgotPasswordPage = () => {
           >
             <div className="flex flex-col">
               <Input
-                {...register("whatsapp")}
-                placeholder="No. Whatsapp"
+                {...register("whatsapp", {
+                  onChange: () => {
+                    if (accountNotFound) {
+                      setAccountNotFound(false);
+                      clearErrors("whatsapp");
+                    }
+                  },
+                })}
+                placeholder={t("common.whatsappNumber", {}, "No. Whatsapp")}
                 type="tel"
                 icon={{
                   left: "/icons/whatsapp.svg",
@@ -83,6 +155,7 @@ const ForgotPasswordPage = () => {
                   containerClassName: "!h-[40px]",
                   iconClassName: "size-5",
                 }}
+                disabled={isLoading}
               />
             </div>
 
@@ -91,7 +164,7 @@ const ForgotPasswordPage = () => {
               variant="muattrans-primary"
               className="mt-6 w-full py-5 text-muat-trans-secondary-900"
             >
-              Cari Akun
+              {t("ForgotPasswordPage.searchAccount", {}, "Cari Akun")}
             </Button>
           </form>
         </div>
