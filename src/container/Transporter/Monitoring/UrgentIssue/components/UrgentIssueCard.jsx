@@ -5,6 +5,7 @@ import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
+import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import { toast } from "@/lib/toast";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { useUpdateUrgentIssueStatus } from "@/services/Transporter/monitoring/getUrgentIssues";
@@ -111,7 +112,10 @@ export const UrgentIssueCard = ({
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-2">
           {statusDisplay !== "selesai" && (
-            <span className="inline-block size-3 flex-shrink-0 animate-pulse rounded-full bg-error-500" />
+            <NotificationDot
+              size="md"
+              color={status === "PROCESSING" ? "orange" : "red"}
+            />
           )}
           <span className="text-xs font-bold text-neutral-900">{typeName}</span>
         </div>
