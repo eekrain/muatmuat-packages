@@ -75,7 +75,7 @@ import TextArea from "@/components/TextArea/TextArea";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import TimelineField from "@/components/Timeline/timeline-field";
 import Toggle from "@/components/Toggle/Toggle";
-import RequestOtp from "@/container/Shipper/RequestOtp/RequestOtp";
+import RequestOtp from "@/container/Shipper/RequestOtp/Web/RequestOtpWeb";
 import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 
