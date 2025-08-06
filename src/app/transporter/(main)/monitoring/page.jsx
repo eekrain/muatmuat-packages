@@ -72,7 +72,7 @@ const Page = () => {
     }) || [];
 
   return (
-    <div className="relative left-[50%] right-[50%] ml-[-50vw] mr-[-50vw] grid h-[calc(100vh-92px)] w-screen grid-cols-[1fr_400px] gap-4 overflow-hidden pl-6">
+    <div className="relative left-[50%] right-[50%] ml-[-50vw] mr-[-50vw] grid h-[calc(100vh-92px)] w-screen grid-cols-[1fr_429px] gap-4 overflow-hidden pl-6">
       {/* Left Section - Map and Bottom Panel */}
       <div className="flex h-full flex-col gap-4 pt-4">
         {/* Map Container */}
