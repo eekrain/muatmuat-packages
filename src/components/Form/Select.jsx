@@ -3,7 +3,6 @@
 import { forwardRef } from "react";
 
 import * as SelectPrimitive from "@radix-ui/react-select";
-import { ChevronDownIcon } from "lucide-react";
 
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
@@ -70,7 +69,7 @@ export const Select = forwardRef(
             data-slot="select-trigger"
             data-size={"sm"}
             className={cn(
-              "flex h-8 items-center justify-between gap-2 rounded-md border px-3 text-xs font-medium leading-[14.4px] transition-colors duration-200",
+              "flex h-8 items-center justify-between gap-2 rounded-md border px-3 text-sm font-semibold leading-[14.4px] transition-colors duration-200 md:text-xs md:font-medium",
               "bg-white text-black focus:outline-none focus:ring-1 focus:ring-primary-700/20",
               "border-neutral-600 hover:border-primary-700 data-[state=open]:border-primary-700",
               errorMessage && "border-red-500 focus:border-red-500",
@@ -85,7 +84,7 @@ export const Select = forwardRef(
               className="flex-1 truncate text-left placeholder:text-neutral-600"
             />
             <SelectPrimitive.Icon asChild>
-              <ChevronDownIcon className="size-4 opacity-50 transition-transform duration-200 data-[state=open]:rotate-180" />
+              <IconComponent src="/icons/chevron-down.svg" />
             </SelectPrimitive.Icon>
           </SelectPrimitive.Trigger>
 

@@ -160,6 +160,8 @@ export const TabRegister = ({
           {!isAllFinished ? (
             <InfoTooltip
               side="top"
+              className="w-[336px] py-2"
+              sideOffset={3}
               trigger={
                 <button
                   className={cn(

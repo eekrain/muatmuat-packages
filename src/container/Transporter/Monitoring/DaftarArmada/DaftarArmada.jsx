@@ -8,14 +8,13 @@ import {
   Loader2,
   MapPin,
   Phone,
-  Search,
   SlidersHorizontal,
   Truck,
   User,
   X,
 } from "lucide-react";
 
-import BadgeStatus from "@/components/Badge/BadgeStatus";
+import Search from "@/components/Search/Search";
 import { cn } from "@/lib/utils";
 import { getTruckIcon } from "@/lib/utils/armadaStatus";
 import { useGetFleetList } from "@/services/Transporter/monitoring/getFleetList";
@@ -76,10 +75,9 @@ const DaftarArmada = ({ onClose, onExpand }) => {
   const showSOSIcon = (hasSOSAlert) => {
     if (hasSOSAlert) {
       return (
-        <BadgeStatus variant="warning" className="flex items-center gap-1">
-          <AlertTriangle className="h-3 w-3" />
-          <span>SOS</span>
-        </BadgeStatus>
+        <p className="rounded-md bg-[#EE4343] px-2 py-[2px] text-xs font-semibold text-white">
+          SOS
+        </p>
       );
     }
     return null;
@@ -92,7 +90,7 @@ const DaftarArmada = ({ onClose, onExpand }) => {
   );
 
   return (
-    <section className="flex flex-col rounded-xl bg-white pt-4">
+    <div className="flex h-[calc(100vh-92px-96px)] flex-col rounded-xl bg-white pt-4">
       {/* Header */}
       <div className="px-4">
         <div className="flex items-center justify-between pb-3">
@@ -108,21 +106,16 @@ const DaftarArmada = ({ onClose, onExpand }) => {
 
       {/* Search */}
       <div className="mb-4 px-4">
-        <div className="flex h-[32px] w-[318px] gap-[12px]">
-          <div className="relative h-full flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
-            <input
-              type="text"
-              placeholder="Cari No. Polisi / Nama Driver"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="h-full w-full rounded-lg border border-gray-300 pl-10 pr-4 text-sm placeholder:text-[12px] hover:border-blue-500 focus:border-transparent focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
-          <button
-            className="flex items-center space-x-2 rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-600"
-            style={{ height: "100%" }}
-          >
+        <div className="flex gap-[12px]">
+          <Search
+            placeholder="Cari No. Polisi / Nama Driver"
+            onSearch={setSearchTerm}
+            autoSearch={true}
+            debounceTime={300}
+            defaultValue={searchTerm}
+            inputClassName="w-[229px]"
+          />
+          <button className="flex h-8 items-center space-x-2 rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-600">
             <span className="text-gray-600">Filter</span>
             <SlidersHorizontal className="h-4 w-4 text-gray-600" />
           </button>
@@ -318,15 +311,36 @@ const DaftarArmada = ({ onClose, onExpand }) => {
 
                       {/* detail on duty*/}
                       {fleet.status === "ON_DUTY" && (
-                        <div className="flex w-full flex-col rounded bg-[#F8F8FB] px-4 py-3">
-                          <p className="text-gray-500">No. Pesanan</p>
-                          <h4 className="font-semibold">{fleet?.fleetId}</h4>
-                          <p className="text-gray-500">Lokasi Muat & Bongkar</p>
-                          <h4>lokasi awal</h4>
-                          <h4>lokasi akhir</h4>
-                          <div className="flex">
-                            <div>proses maut</div>
-                            <button>lihat detail</button>
+                        <div className="flex w-full flex-col gap-3 rounded-lg bg-[#F8F8FB] px-4 py-3">
+                          {/* Nomor Pesanan */}
+                          <div>
+                            <p className="text-sm text-gray-500">No. Pesanan</p>
+                            <h4 className="text-base font-semibold text-black">
+                              {fleet?.fleetId}
+                            </h4>
+                          </div>
+
+                          {/* Lokasi Muat & Bongkar */}
+                          <div>
+                            <p className="text-sm text-gray-500">
+                              Lokasi Muat & Bongkar
+                            </p>
+                            <h4 className="text-base text-black">
+                              Lokasi Awal
+                            </h4>
+                            <h4 className="text-base text-black">
+                              Lokasi Akhir
+                            </h4>
+                          </div>
+
+                          {/* Proses Muat & Lihat Detail */}
+                          <div className="flex items-center justify-between">
+                            <div className="rounded-lg bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700">
+                              Proses Muat
+                            </div>
+                            <button className="text-sm text-blue-700 hover:underline">
+                              Lihat Detail
+                            </button>
                           </div>
                         </div>
                       )}
@@ -350,7 +364,7 @@ const DaftarArmada = ({ onClose, onExpand }) => {
           title="Pasangkan Driver"
         />
       )}
-    </section>
+    </div>
   );
 };
 

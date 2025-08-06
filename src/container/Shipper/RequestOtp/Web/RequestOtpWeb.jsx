@@ -24,7 +24,10 @@ import {
   useRequestOtpStore,
 } from "@/store/Shipper/forms/requestOtpStore";
 
-const RequestOtp = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
+const RequestOtpWeb = ({
+  dontRedirect = false,
+  onVerifySuccess = () => {},
+}) => {
   const router = useRouter();
   const { t, isTranslationsReady } = useTranslation();
   const [otp, setOtp] = useState("");
@@ -278,4 +281,4 @@ const RequestOtp = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
   );
 };
 
-export default RequestOtp;
+export default RequestOtpWeb;

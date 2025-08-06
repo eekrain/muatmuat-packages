@@ -64,7 +64,7 @@ const FormRekeningBankScreen = () => {
       onClickBackButton={() => navigation.pop()}
       variant="muatmuat"
     >
-      <div className="bg-white px-4 pt-5">
+      <div className="bg-neutral-50 px-4 py-5">
         <BankAccountFormFields
           selectedBank={selectedBank}
           setSelectedBank={setSelectedBank}
@@ -78,7 +78,7 @@ const FormRekeningBankScreen = () => {
 
         <Alert
           variant="warning"
-          className="mt-6 flex items-center gap-2.5 bg-warning-100 p-3"
+          className="mt-6 flex h-[38px] items-center gap-2.5 bg-warning-100 p-3"
         >
           Rekening Bank akan digunakan sebagai rekening tujuan transaksi
           keuangan kamu.

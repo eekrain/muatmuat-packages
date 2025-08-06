@@ -11,7 +11,7 @@ const MOCK_CONFIG = {
   showEmptyState: false, // true = empty state, false = show requests
   isSuspended: false, // true = suspended account, false = normal account
   driverDelegationEnabled: false, // true = show delegation warning, false = normal account
-  isHalalCertified: false, // false = show halal certification warning, true = certified
+  isHalalCertified: true, // false = show halal certification warning, true = certified
 
   // Quick toggle functions for easy testing:
   // 1. Empty state: showEmptyState=true, isSuspended=false, driverDelegationEnabled=false, isHalalCertified=true

@@ -1,7 +1,14 @@
 "use client";
 
-import RequestOtp from "@/container/Shipper/RequestOtp/RequestOtp";
+import RequestOtpResponsive from "@/container/Shipper/RequestOtp/Responsive/RequestOtpResponsive";
+import RequestOtpWeb from "@/container/Shipper/RequestOtp/Web/RequestOtpWeb";
+import useDevice from "@/hooks/use-device";
 
 export default function Page() {
-  return <RequestOtp />;
+  const { isMobile, mounted } = useDevice();
+  if (!mounted) return null;
+  if (isMobile) {
+    return <RequestOtpResponsive />;
+  }
+  return <RequestOtpWeb />;
 }

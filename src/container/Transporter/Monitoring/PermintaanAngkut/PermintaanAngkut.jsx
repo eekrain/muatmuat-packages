@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import Search from "@/components/Search/Search";
 import { useGetTransportRequestList } from "@/services/Transporter/monitoring/getTransportRequestList";
 
 import TransportRequestCard from "./components/TransportRequestCard";
@@ -150,36 +151,22 @@ const PermintaanAngkut = () => {
 
         {/* Search Input */}
         <div className="mb-4">
-          <div
-            className={`flex h-8 w-full items-center gap-2 rounded-md border px-3 ${
-              data?.userStatus?.isSuspended
-                ? "border-neutral-300 bg-neutral-100"
-                : "border-neutral-300 bg-neutral-50"
-            }`}
-          >
-            <IconComponent
-              src="/icons/search.svg"
-              className={`h-4 w-4 ${
-                data?.userStatus?.isSuspended
-                  ? "text-neutral-400"
-                  : "text-[#7B7B7B]"
-              }`}
-            />
-            <input
-              type="text"
-              placeholder="Cari No. Pesanan / Armada / Lokasi Muat & Bongkar / Muatan"
-              className="h-full w-[338px] border-none bg-transparent py-0 text-xs font-medium leading-[120%] text-[#7B7B7B] placeholder:text-[#7B7B7B] focus:outline-none"
-              value={searchValue}
-              onChange={(e) => handleSearch(e.target.value)}
-            />
-          </div>
+          <Search
+            placeholder="Cari No. Pesanan / Armada / Lokasi Muat & Bongkar / Muatan"
+            onSearch={handleSearch}
+            autoSearch={true}
+            debounceTime={300}
+            defaultValue={searchValue}
+            disabled={data?.userStatus?.isSuspended}
+            inputClassName="w-full"
+          />
         </div>
 
         {/* Tabs */}
         <div className="flex h-7 w-auto max-w-[450px] gap-2">
           <button
             onClick={() => setActiveTab("tersedia")}
-            className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-medium transition-colors ${
+            className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
               activeTab === "tersedia"
                 ? "w-auto min-w-[79px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
                 : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
@@ -205,7 +192,7 @@ const PermintaanAngkut = () => {
 
           <button
             onClick={() => setActiveTab("halal_logistik")}
-            className={`flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-medium transition-colors ${
+            className={`flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
               activeTab === "halal_logistik"
                 ? "w-auto min-w-[124px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
                 : "w-auto min-w-[124px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
@@ -232,7 +219,7 @@ const PermintaanAngkut = () => {
 
           <button
             onClick={() => setActiveTab("disimpan")}
-            className={`flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-medium transition-colors ${
+            className={`flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
               activeTab === "disimpan"
                 ? "w-auto min-w-[104px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
                 : "w-auto min-w-[104px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"

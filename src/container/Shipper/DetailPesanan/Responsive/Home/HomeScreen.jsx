@@ -26,7 +26,9 @@ import { PendingPaymentAlert } from "./components/Pending/PendingPaymentAlert";
 import { PendingPaymentDetail } from "./components/Pending/PendingPaymentDetail";
 import { PendingPrepareFleetAlert } from "./components/Pending/PendingPrepareFleetAlert";
 import { BottomSheetPeriksaPesananKamu } from "./components/Popup/BottomSheetPeriksaPesananKamu";
+import { BottomsheetAlasanPembatalan } from "./components/Popup/BottomsheetAlasanPembatalan";
 import { BottomsheetMenuList } from "./components/Popup/BottomsheetMenuList";
+import { ModalBatalkanPesananResponsive } from "./components/Popup/ModalBatalkanPesananResponsive";
 import { ModalVolumePesananTinggi } from "./components/Popup/ModalVolumePesananTinggi";
 import { TabContentDetailPIC } from "./components/Tab/TabContentDetailPIC";
 import { TabContentInformasiLainnya } from "./components/Tab/TabContentInformasiLainnya";
@@ -65,6 +67,12 @@ const DetailPesananScreen = ({
   const [isOpenInfo, setIsOpenInfo] = useState(false);
   const [isPeriksaPesananOpen, setIsPeriksaPesananOpen] = useState(false);
   const [isConfirmWaiting, setIsConfirmWaiting] = useState(false);
+  const [isOpenModalBatalkanPesanan, setIsOpenModalBatalkanPesanan] =
+    useState(false);
+  const [
+    isOpenBottomsheetAlasanPembatalan,
+    setIsOpenBottomsheetAlasanPembatalan,
+  ] = useState(false);
 
   const hasConfirmationWaitingAlert = useMemo(() => {
     const hasConfirmAlert =
@@ -140,15 +148,9 @@ const DetailPesananScreen = ({
     >
       <div className="mb-16 space-y-2 bg-neutral-200">
         {shouldShowPendingPrepareFleetAlert ? (
-          <>
-            {console.log(
-              "🍌 Showing PendingPrepareFleetAlert for orderStatus:",
-              dataStatusPesanan?.orderStatus
-            )}
-            <PendingPrepareFleetAlert
-              paymentDueDateTime={dataStatusPesanan?.paymentDueDateTime}
-            />
-          </>
+          <PendingPrepareFleetAlert
+            paymentDueDateTime={dataStatusPesanan?.paymentDueDateTime}
+          />
         ) : WHITELIST_FLEET_FOUND.includes(dataStatusPesanan?.orderStatus) ? (
           <PendingPaymentAlert
             paymentDueDateTime={dataRingkasanPembayaran?.expiredAt}
@@ -231,7 +233,27 @@ const DetailPesananScreen = ({
           setIsVolumePesananTinggiOpen(false);
           setIsConfirmWaiting(true);
         }}
-        onCancel={() => setIsVolumePesananTinggiOpen(false)}
+        onCancel={() => {
+          setIsVolumePesananTinggiOpen(false);
+          setIsOpenModalBatalkanPesanan(true);
+        }}
+      />
+
+      <ModalBatalkanPesananResponsive
+        open={isOpenModalBatalkanPesanan}
+        onOpenChange={setIsOpenModalBatalkanPesanan}
+        onConfirm={() => {
+          setIsOpenBottomsheetAlasanPembatalan(true);
+        }}
+      />
+
+      <BottomsheetAlasanPembatalan
+        open={isOpenBottomsheetAlasanPembatalan}
+        onOpenChange={setIsOpenBottomsheetAlasanPembatalan}
+        orderId={dataStatusPesanan?.orderid}
+        onConfirm={() => {
+          setIsOpenBottomsheetAlasanPembatalan(false);
+        }}
       />
     </FormResponsiveLayout>
   );
