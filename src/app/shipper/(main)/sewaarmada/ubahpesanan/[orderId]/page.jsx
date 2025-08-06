@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation";
 
+import SewaArmadaResponsive from "@/container/Shipper/SewaArmada/Responsive/SewaArmadaResponsive";
 import SewaArmadaWeb from "@/container/Shipper/SewaArmada/Web/SewaArmadaWeb";
 import useDevice from "@/hooks/use-device";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
@@ -215,7 +216,23 @@ const Page = () => {
     }
   };
 
-  if (isMobile) return <div>{"Ubah pesanan responsive :)"}</div>;
+  if (isMobile)
+    return (
+      <SewaArmadaResponsive
+        settingsTime={settingsTime}
+        cargoTypes={cargoTypes}
+        cargoCategories={cargoCategories}
+        carriers={carriers}
+        trucks={tempTrucks}
+        additionalServicesOptions={additionalServicesOptions}
+        shippingDetails={shippingDetails}
+        shippingOption={shippingOption}
+        calculatedPrice={calculatedPrice}
+        orderStatus={orderDetailData?.orderStatus}
+        onSaveChanges={handleSaveChanges}
+        isUpdateFlow={true}
+      />
+    );
 
   return (
     <SewaArmadaWeb

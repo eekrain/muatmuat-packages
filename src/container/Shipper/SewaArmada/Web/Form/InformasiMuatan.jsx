@@ -69,8 +69,7 @@ export const InformasiMuatan = ({ onFetchTrucks }) => {
         onSaveInformasiMuatan={async (data) => {
           if (
             truckTypeId &&
-            JSON.stringify(informasiMuatan) !== JSON.stringify(data) &&
-            !isEditPage
+            JSON.stringify(informasiMuatan) !== JSON.stringify(data)
           ) {
             if (compareArraysByNameOnly(informasiMuatan, data)) {
               await onFetchTrucks({

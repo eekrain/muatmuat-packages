@@ -1,8 +1,18 @@
+import { usePathname } from "next/navigation";
+
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import TimelineField from "@/components/Timeline/timeline-field";
+import { JenisArmadaField } from "@/container/Shipper/SewaArmada/Responsive/Home/Form/JenisArmadaField";
+import { JumlahArmada } from "@/container/Shipper/SewaArmada/Responsive/Home/Form/JumlahArmada";
+import WaktuMuatBottomsheet from "@/container/Shipper/SewaArmada/Responsive/Home/Form/WaktuMuat";
+import {
+  OrderStatusEnum,
+  OrderTypeEnum,
+} from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { useInformasiMuatanStore } from "@/store/Shipper/forms/informasiMuatanStore";
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 import {
@@ -10,11 +20,8 @@ import {
   useSewaArmadaStore,
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
-import { JenisArmadaField } from "./JenisArmadaField";
-import { JumlahArmada } from "./JumlahArmada";
-import WaktuMuatBottomsheet from "./WaktuMuat";
-
 export const SewaArmadaForm = ({
+  orderStatus,
   settingsTime,
   carriers,
   trucks,
@@ -22,7 +29,10 @@ export const SewaArmadaForm = ({
   handleCheckLoggedIn,
   calculatedPrice,
 }) => {
+  const pathname = usePathname();
+  const isEditPage = pathname.includes("/ubahpesanan");
   const navigation = useResponsiveNavigation();
+  const orderType = useSewaArmadaStore((state) => state.orderType);
   const formValues = useSewaArmadaStore((state) => state.formValues);
   const { addLokasi, removeLokasi } = useSewaArmadaActions();
 
@@ -35,6 +45,18 @@ export const SewaArmadaForm = ({
   const validateLokasiOnSelect = useLocationFormStore(
     (s) => s.validateLokasiOnSelect
   );
+
+  const hasNotDepartedToPickupStatuses = [
+    OrderStatusEnum.PREPARE_FLEET,
+    OrderStatusEnum.WAITING_PAYMENT_1,
+    OrderStatusEnum.WAITING_PAYMENT_2,
+    OrderStatusEnum.SCHEDULED_FLEET,
+    OrderStatusEnum.CONFIRMED,
+  ];
+  const hasNotDepartedToPickup =
+    hasNotDepartedToPickupStatuses.includes(orderStatus);
+  const needValidateLocationChange =
+    isEditPage && orderType === "SCHEDULED" && hasNotDepartedToPickup;
 
   const handleEditInformasiMuatan = () => {
     setInformasiMuatanField("cargoTypeId", formValues.cargoTypeId);
@@ -60,6 +82,7 @@ export const SewaArmadaForm = ({
       formMode,
       allSelectedLocations: formValues[field[formMode]],
       index,
+      needValidateLocationChange,
     };
 
     const navigateToForm = async (defaultValues) => {
@@ -117,13 +140,19 @@ export const SewaArmadaForm = ({
       {/* Waktu Muat Field */}
       <FormContainer>
         <FormLabel required>Waktu Muat</FormLabel>
-        <WaktuMuatBottomsheet handleCheckLoggedIn={handleCheckLoggedIn} />
+        <WaktuMuatBottomsheet
+          handleCheckLoggedIn={handleCheckLoggedIn}
+          hasNotDepartedToPickup={hasNotDepartedToPickup}
+        />
       </FormContainer>
 
       {/* Lokasi Muat Field */}
       <FormContainer>
         <FormLabel required>Lokasi Muat</FormLabel>
         <TimelineField.Root
+          disabled={
+            isEditPage && !(orderType === "SCHEDULED" && hasNotDepartedToPickup)
+          }
           maxLocation={settingsTime?.location.maxPickup}
           variant="muat"
           className="flex-1"
@@ -138,7 +167,15 @@ export const SewaArmadaForm = ({
           }}
           onEditLocation={(index) => {
             if (!handleCheckLoggedIn()) return;
-            handleEditLokasi({ formMode: "muat", index });
+            if (
+              !(
+                isEditPage &&
+                orderType === "SCHEDULED" &&
+                !hasNotDepartedToPickup
+              )
+            ) {
+              handleEditLokasi({ formMode: "muat", index });
+            }
           }}
         >
           {(formValues.lokasiMuat || []).map((item, index) => (
@@ -151,9 +188,11 @@ export const SewaArmadaForm = ({
             // </TimelineField.Item>
 
             <TimelineField.Item
+              className="text-sm leading-[1.1]"
               index={index}
               key={index}
               buttonRemove={
+                !isEditPage &&
                 showRemoveButton.muat && (
                   <TimelineField.RemoveButton
                     onClick={() => removeLokasi("lokasiMuat", index)}
@@ -162,7 +201,7 @@ export const SewaArmadaForm = ({
               }
             />
           ))}
-          <TimelineField.AddButton />
+          {isEditPage ? null : <TimelineField.AddButton />}
         </TimelineField.Root>
       </FormContainer>
 
@@ -189,9 +228,11 @@ export const SewaArmadaForm = ({
         >
           {(formValues.lokasiBongkar || []).map((item, index) => (
             <TimelineField.Item
+              className="text-sm leading-[1.1]"
               index={index}
               key={index}
               buttonRemove={
+                !isEditPage &&
                 showRemoveButton.bongkar && (
                   <TimelineField.RemoveButton
                     onClick={() => removeLokasi("lokasiBongkar", index)}
@@ -200,7 +241,13 @@ export const SewaArmadaForm = ({
               }
             />
           ))}
-          <TimelineField.AddButton />
+          {isEditPage &&
+          !(
+            orderType === OrderTypeEnum.INSTANT &&
+            formValues.lokasiBongkar?.length < settingsTime?.location.maxDropoff
+          ) ? null : (
+            <TimelineField.AddButton />
+          )}
         </TimelineField.Root>
       </FormContainer>
 
@@ -208,9 +255,13 @@ export const SewaArmadaForm = ({
       <FormContainer>
         <FormLabel required>Informasi Muatan</FormLabel>
         <button
-          className={
-            "flex h-8 w-full items-center justify-between gap-x-2 rounded-md border border-neutral-600 bg-neutral-50 px-3"
-          }
+          className={cn(
+            "flex h-8 w-full items-center justify-between gap-x-2 rounded-md border border-neutral-600 px-3",
+            isEditPage
+              ? "cursor-not-allowed bg-neutral-200"
+              : "cursor-pointer bg-neutral-50"
+          )}
+          disabled={isEditPage}
           onClick={() => {
             if (!handleCheckLoggedIn()) return;
             handleEditInformasiMuatan();
@@ -246,7 +297,7 @@ export const SewaArmadaForm = ({
           className="justify-between"
           optional
           tooltip={
-            formValues.additionalServices.length === 0 ? null : (
+            formValues.additionalServices.length === 0 || isEditPage ? null : (
               <button
                 className="text-xs font-semibold leading-[1.1] text-primary-700"
                 onClick={() => {
@@ -263,9 +314,13 @@ export const SewaArmadaForm = ({
         </FormLabel>
         {formValues.additionalServices.length === 0 ? (
           <button
-            className={
-              "flex h-8 items-center justify-between rounded-md border border-neutral-600 bg-neutral-50 px-3"
-            }
+            className={cn(
+              "flex h-8 items-center justify-between rounded-md border border-neutral-600 px-3",
+              isEditPage
+                ? "cursor-not-allowed bg-neutral-200"
+                : "cursor-pointer bg-neutral-50"
+            )}
+            disabled={isEditPage}
             onClick={() => {
               if (!handleCheckLoggedIn()) return;
               handleEditLayananTambahan();
@@ -280,7 +335,12 @@ export const SewaArmadaForm = ({
             <IconComponent src="/icons/chevron-right.svg" />
           </button>
         ) : (
-          <div className="flex flex-col gap-y-3 rounded-md border border-neutral-600 px-3 py-2">
+          <div
+            className={cn(
+              "flex flex-col gap-y-3 rounded-md border border-neutral-600 px-3 py-2",
+              isEditPage ? "bg-neutral-200" : "bg-neutral-50"
+            )}
+          >
             {formValues.additionalServices.map((service, key) => {
               const currentService = additionalServicesOptions.find(
                 (item) => item.additionalServiceId === service.serviceId

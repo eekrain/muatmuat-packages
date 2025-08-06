@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { format } from "date-fns";
@@ -19,13 +20,19 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
 import { usePrevious } from "@/hooks/use-previous";
 import { OrderTypeEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { cn } from "@/lib/utils";
 import { useGetOrderSettingsTime } from "@/services/Shipper/sewaarmada/getOrderSettingsTime";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
-const WaktuMuatBottomsheet = ({ handleCheckLoggedIn }) => {
+const WaktuMuatBottomsheet = ({
+  handleCheckLoggedIn,
+  hasNotDepartedToPickup,
+}) => {
+  const pathname = usePathname();
+  const isEditPage = pathname.includes("/ubahpesanan");
   const dateFormat = "dd MMM yyyy HH:mm";
 
   // Use current date as minDate instead of getNowTimezone
@@ -55,6 +62,9 @@ const WaktuMuatBottomsheet = ({ handleCheckLoggedIn }) => {
   // Ambil data setting waktu order dari API
   const { data: orderSettingsData, isLoading: isOrderSettingsLoading } =
     useGetOrderSettingsTime();
+
+  const isDisabledWaktuMuat =
+    isEditPage && !(orderType === "SCHEDULED" && hasNotDepartedToPickup);
 
   useEffect(() => {
     if (isBottomsheetOpen && !previousIsBottomsheetOpen) {
@@ -190,6 +200,7 @@ const WaktuMuatBottomsheet = ({ handleCheckLoggedIn }) => {
       }
     );
     setOrderType(bottomsheetFormValues.orderType);
+    setField("hasUpdatedForm", true);
     setIsBottomsheetOpen(false);
   };
 
@@ -210,7 +221,13 @@ const WaktuMuatBottomsheet = ({ handleCheckLoggedIn }) => {
     <BottomSheet open={isBottomsheetOpen} onOpenChange={setIsBottomsheetOpen}>
       <div className="flex flex-col gap-y-3">
         <button
-          className="flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 bg-neutral-50 px-3"
+          disabled={isDisabledWaktuMuat}
+          className={cn(
+            "flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 bg-neutral-50 px-3",
+            isDisabledWaktuMuat
+              ? "cursor-not-allowed bg-neutral-200"
+              : "cursor-pointer bg-neutral-50"
+          )}
           onClick={() => {
             if (!handleCheckLoggedIn()) return;
             setIsBottomsheetOpen(true);
@@ -233,7 +250,13 @@ const WaktuMuatBottomsheet = ({ handleCheckLoggedIn }) => {
               Sampai dengan
             </span>
             <button
-              className="flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 bg-neutral-50 px-3"
+              disabled={isDisabledWaktuMuat}
+              className={cn(
+                "flex h-8 w-full items-center gap-x-2 rounded-md border border-neutral-600 bg-neutral-50 px-3",
+                isDisabledWaktuMuat
+                  ? "cursor-not-allowed bg-neutral-200"
+                  : "cursor-pointer bg-neutral-50"
+              )}
               onClick={() => {
                 if (!handleCheckLoggedIn()) return;
                 setIsBottomsheetOpen(true);
@@ -264,6 +287,7 @@ const WaktuMuatBottomsheet = ({ handleCheckLoggedIn }) => {
             {/* Opsi Instan */}
             <div className="flex flex-col gap-y-3">
               <RadioButton
+                disabled={isEditPage}
                 name="orderType"
                 value={OrderTypeEnum.INSTANT}
                 checked={
@@ -283,6 +307,7 @@ const WaktuMuatBottomsheet = ({ handleCheckLoggedIn }) => {
             {/* Opsi Terjadwal */}
             <div className="flex flex-col gap-y-3">
               <RadioButton
+                disabled={isEditPage}
                 name="orderType"
                 value={OrderTypeEnum.SCHEDULED}
                 checked={
@@ -353,6 +378,7 @@ const WaktuMuatBottomsheet = ({ handleCheckLoggedIn }) => {
           {/* Section Rentang Waktu */}
           <div className="flex flex-col gap-y-3">
             <Checkbox
+              disabled={isEditPage}
               label="Dengan Rentang Waktu"
               value="showRangeOption"
               checked={bottomsheetFormValues.showRangeOption}

@@ -15,6 +15,7 @@ import { useGetWaitingTime } from "@/services/Shipper/detailpesanan/getWaitingTi
 import { useLoadingAction } from "@/store/Shared/loadingStore";
 
 import CaraPembayaranScreen from "./CaraPembayaran/CaraPembayaranScreen";
+import DetailSebelumPerubahanScreen from "./DetailSebelumPerubahan/DetailSebelumPerubahanScreen";
 import DetailPesananScreen from "./Home/HomeScreen";
 import UlasanScreen from "./Ulasan/UlasanScreen";
 
@@ -134,6 +135,10 @@ const DetailPesananResponsive = () => {
         component={
           <CariSemuaDriverScreen dataStatusPesanan={dataStatusPesanan} />
         }
+      />
+      <ResponsiveRoute
+        path="/DetailSebelumPerubahan"
+        component={<DetailSebelumPerubahanScreen />}
       />
     </ResponsiveProvider>
   );

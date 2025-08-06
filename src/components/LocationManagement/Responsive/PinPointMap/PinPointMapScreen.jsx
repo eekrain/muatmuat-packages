@@ -29,7 +29,12 @@ const PinPointMapScreen = () => {
       <MapContainer
         viewOnly={false}
         coordinates={coordinates}
-        onPositionChange={handleChangeMarkerCoordinates}
+        onPositionChange={(value) =>
+          handleChangeMarkerCoordinates(
+            value,
+            params.config?.needValidateLocationChange
+          )
+        }
         className="h-[calc(100vh-62px)] w-full"
       />
 

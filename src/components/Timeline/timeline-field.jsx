@@ -51,7 +51,7 @@ const Root = ({
       <div className="flex flex-col gap-2">
         <div
           className={cn(
-            "rounded-[6px] border border-[#7B7B7B] p-3 md:rounded-md",
+            "rounded-[6px] border border-[#7B7B7B] px-3 py-2 md:rounded-md md:py-3",
             errorMessage && "border-error-400",
             className,
             disabled && "cursor-not-allowed bg-neutral-200"
@@ -69,7 +69,7 @@ const Root = ({
   );
 };
 
-const Item = ({ buttonRemove, index }) => {
+const Item = ({ buttonRemove, index, className }) => {
   const { variant, values, onEditLocation, disabled, maxLocation } =
     useTimelineField();
 
@@ -111,7 +111,8 @@ const Item = ({ buttonRemove, index }) => {
         appearance={{
           titleClassname: cn(
             "line-clamp-1 text-xs",
-            !item?.name && "text-neutral-600"
+            !item?.name && "text-neutral-600",
+            className
           ),
         }}
         withDivider={index !== values.length - 1}

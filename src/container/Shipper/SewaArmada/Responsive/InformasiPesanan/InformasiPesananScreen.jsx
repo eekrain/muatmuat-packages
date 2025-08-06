@@ -10,28 +10,23 @@ import {
   BottomSheetContent,
   BottomSheetHeader,
   BottomSheetTitle,
-  BottomSheetTrigger,
 } from "@/components/BottomSheet/BottomSheetUp";
 import Button from "@/components/Button/Button";
-import { ButtonMini } from "@/components/Button/ButtonMini";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import Checkbox from "@/components/Form/Checkbox";
 import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import ImageUploaderResponsive from "@/components/ImageUploader/ImageUploaderResponsive";
 import {
   LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
 import TextArea from "@/components/TextArea/TextArea";
-import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import VoucherCard from "@/components/Voucher/VoucherCard";
 import VoucherEmptyState from "@/components/Voucher/VoucherEmptyState";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
 import NoDeliveryOrder from "@/container/Shipper/SewaArmada/Responsive/InformasiPesanan/NoDeliveryOrder";
-import OrderSummarySection from "@/container/Shipper/SewaArmada/Responsive/InformasiPesanan/OrderSummarySection";
 import { usePrevious } from "@/hooks/use-previous";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useTranslation } from "@/hooks/use-translation";
@@ -49,6 +44,8 @@ import {
   useSewaArmadaActions,
   useSewaArmadaStore,
 } from "@/store/Shipper/forms/sewaArmadaStore";
+
+import OrderConfirmationBottomSheet from "./OrderConfirmationBottomSheet";
 
 const InformasiPesananScreen = ({
   carriers,
@@ -75,17 +72,12 @@ const InformasiPesananScreen = ({
   } = useVouchers(token, useMockData, MOCK_EMPTY);
 
   const [isBottomsheetOpen, setIsBottomsheetOpen] = useState(false); // Bottomsheet Voucher
-  const [
-    isInformasiMuatanBottomsheetOpen,
-    setIsInformasiMuatanBottomsheetOpen,
-  ] = useState(false); // Bottomsheet informasi muatan periksa pesanan kamu
+
   const [
     isOrderConfirmationBottomsheetOpen,
-    setIsOrderConfirmationBottomsheetOpen,
+    setOrderConfirmationBottomsheetOpen,
   ] = useState(false); // Bottomsheet periksa pesanan kamu
-  const [isLocationBottomsheetOpen, setIsLocationBottomsheetOpen] =
-    useState(false);
-  const [locationType, setLocationType] = useState("");
+
   const [searchQuery, setSearchQuery] = useState("");
   const [tempSelectedVoucher, setTempSelectedVoucher] = useState(null);
   const [selectedVoucher, setSelectedVoucher] = useState(null);
@@ -291,13 +283,13 @@ const InformasiPesananScreen = ({
 
   const handleValidateInformasiPesanan = () => {
     if (validateSecondForm()) {
-      setIsOrderConfirmationBottomsheetOpen(true);
+      setOrderConfirmationBottomsheetOpen(true);
     }
   };
 
   const handleCreateOrder = async () => {
     try {
-      setIsOrderConfirmationBottomsheetOpen(false);
+      setOrderConfirmationBottomsheetOpen(false);
 
       if (!token) {
         alert("Token tidak ditemukan");
@@ -782,170 +774,12 @@ const InformasiPesananScreen = ({
           </div>
           <IconComponent src="/icons/chevron-right24.svg" size="medium" />
         </button>
-        <BottomSheet
-          open={isOrderConfirmationBottomsheetOpen}
-          onOpenChange={setIsOrderConfirmationBottomsheetOpen}
-        >
-          <Button
-            variant="muatparts-primary"
-            className="h-10"
-            onClick={handleValidateInformasiPesanan}
-            type="button"
-          >
-            {t("buttonLanjut")}
-          </Button>
-          <BottomSheetContent>
-            <BottomSheetHeader>
-              {t("titlePeriksaPesananAnda")}
-            </BottomSheetHeader>
-            <div className="flex max-h-[calc(75vh_-_54px)] w-full flex-col gap-y-4 overflow-y-auto bg-white px-4">
-              {/* Waktu Muat */}
-              <OrderSummarySection className="gap-y-4 font-semibold text-neutral-900">
-                <h4 className="text-sm leading-[15.4px]">
-                  {t("labelWaktuMuat")}
-                </h4>
-                <span className="text-xs leading-[13.2px]">{`${formatDate(loadTimeStart)}${showRangeOption ? ` s/d ${formatDate(loadTimeEnd)}` : ""}`}</span>
-              </OrderSummarySection>
-              <OrderSummarySection className="gap-y-4 text-neutral-900">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-semibold leading-[15.4px]">
-                    {t("labelRute")}
-                  </h4>
-                  <span className="text-xs font-medium leading-[13.2px]">
-                    {"Estimasi 178 km"}
-                  </span>
-                </div>
-                <TimelineContainer>
-                  <NewTimelineItem
-                    variant="bullet"
-                    totalLength={2}
-                    index={0}
-                    activeIndex={0}
-                    title={lokasiMuat?.[0]?.dataLokasi.location.name}
-                    buttonDetail={
-                      <ButtonMini
-                        onClick={() => {
-                          setLocationType("muat");
-                          setIsLocationBottomsheetOpen(true);
-                        }}
-                      >
-                        Lihat Lokasi Muat Lainnya
-                      </ButtonMini>
-                    }
-                  />
-                  <NewTimelineItem
-                    variant="bullet"
-                    totalLength={2}
-                    index={1}
-                    activeIndex={0}
-                    title={lokasiBongkar?.[0]?.dataLokasi.location.name}
-                    buttonDetail={
-                      <ButtonMini
-                        onClick={() => {
-                          setLocationType("bongkar");
-                          setIsLocationBottomsheetOpen(true);
-                        }}
-                      >
-                        Lihat Lokasi Bongkar Lainnya
-                      </ButtonMini>
-                    }
-                  />
-                </TimelineContainer>
-              </OrderSummarySection>
-              <OrderSummarySection className="gap-y-3 text-neutral-900">
-                <h4 className="text-sm font-semibold leading-[15.4px]">
-                  {t("titleInformasiArmada")}
-                </h4>
-                <div className="flex items-center gap-x-3">
-                  <div className="size-[68px] overflow-hidden rounded-xl border border-neutral-400">
-                    <ImageComponent
-                      className="w-full"
-                      src="/img/recommended1.png"
-                      width={68}
-                      height={68}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-y-3">
-                    <span className="text-sm font-semibold leading-[15.4px]">
-                      Box - Colt Diesel Engkel
-                    </span>
-                    <span className="text-sm font-medium leading-[15.4px]">
-                      {`Kebutuhan : ${truckCount} Unit`}
-                    </span>
-                  </div>
-                </div>
-              </OrderSummarySection>
-              <OrderSummarySection className="gap-y-4 text-neutral-900">
-                <h4 className="text-sm font-semibold leading-[15.4px]">
-                  {t("titleInformasiMuatan")}
-                </h4>
-                <div className="flex flex-col gap-y-3">
-                  {informasiMuatan.slice(0, 2).map((item, key) => (
-                    <div className="flex items-center gap-x-2" key={key}>
-                      <IconComponent src="/icons/muatan16.svg" />
-                      <span className="text-xs font-medium leading-[13.2px] text-neutral-900">
-                        {`${item.namaMuatan.label} `}
-                        <span className="text-neutral-600">{`(${item.beratMuatan.berat.toLocaleString("id-ID")} ${item.beratMuatan.unit})`}</span>
-                      </span>
-                    </div>
-                  ))}
-                  {informasiMuatan.length > 2 ? (
-                    <div className="ml-6 flex items-center">
-                      <BottomSheet
-                        open={isInformasiMuatanBottomsheetOpen}
-                        onOpenChange={setIsInformasiMuatanBottomsheetOpen}
-                      >
-                        <BottomSheetTrigger asChild>
-                          <button
-                            className="text-xs font-semibold leading-[13.2px] text-primary-700"
-                            onClick={() =>
-                              setIsInformasiMuatanBottomsheetOpen(true)
-                            }
-                          >
-                            {t("buttonLihatMuatanLainnya")}
-                          </button>
-                        </BottomSheetTrigger>
-                        <BottomSheetContent>
-                          <BottomSheetHeader>
-                            {t("titleInformasiMuatan")}
-                          </BottomSheetHeader>
-                          <div className="flex flex-col gap-y-4 px-4 py-6">
-                            {informasiMuatan.map((item, key) => (
-                              <div
-                                className="flex items-center gap-x-2"
-                                key={key}
-                              >
-                                <IconComponent src="/icons/muatan16.svg" />
-                                <span className="text-xs font-medium leading-[13.2px] text-neutral-900">
-                                  {`${item.namaMuatan.label} `}
-                                  <span className="text-neutral-600">{`(${item.beratMuatan.berat.toLocaleString("id-ID")} ${item.beratMuatan.unit})`}</span>
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </BottomSheetContent>
-                      </BottomSheet>
-                    </div>
-                  ) : null}
-                </div>
-              </OrderSummarySection>
-              <div className="text-xs font-medium leading-[13.2px] text-neutral-900">
-                {t("messageSyaratKetentuan")}
-                <span className="font-semibold text-primary-700">
-                  {t("labelSyaratKetentuan")}
-                </span>
-              </div>
-              <Button
-                variant="muatparts-primary"
-                className="h-10"
-                onClick={handleCreateOrder}
-                type="button"
-              >
-                {t("buttonPesanSekarang")}
-              </Button>
-            </div>
-          </BottomSheetContent>
-        </BottomSheet>
+        <OrderConfirmationBottomSheet
+          isOpen={isOrderConfirmationBottomsheetOpen}
+          setOpen={setOrderConfirmationBottomsheetOpen}
+          onValidateInformasiPesanan={handleValidateInformasiPesanan}
+          onCreateOrder={handleCreateOrder}
+        />
       </ResponsiveFooter>
 
       {/* Voucher BottomSheet */}
@@ -1062,44 +896,6 @@ const InformasiPesananScreen = ({
             >
               {tempSelectedVoucher ? t("buttonTerapkan") : t("buttonLewati")}
             </Button>
-          </div>
-        </BottomSheetContent>
-      </BottomSheet>
-
-      {/* Bottomsheet Lokasi Muat dan Lokasi Bongkar */}
-      <BottomSheet
-        open={isLocationBottomsheetOpen}
-        onOpenChange={setIsLocationBottomsheetOpen}
-      >
-        <BottomSheetContent>
-          <BottomSheetHeader>
-            {locationType === "muat"
-              ? t("titleLokasiMuat")
-              : t("titleLokasiBongkar")}
-          </BottomSheetHeader>
-          <div className="flex flex-col gap-y-4 px-4 py-6">
-            <TimelineContainer>
-              {(locationType === "muat" ? lokasiMuat : lokasiBongkar).map(
-                (item, key) => (
-                  <Fragment key={key}>
-                    <NewTimelineItem
-                      variant={
-                        locationType === "muat"
-                          ? "number-muat"
-                          : "number-bongkar"
-                      }
-                      totalLength={
-                        (locationType === "muat" ? lokasiMuat : lokasiBongkar)
-                          .length
-                      }
-                      index={key}
-                      activeIndex={0}
-                      title={item?.dataLokasi?.location?.name || ""}
-                    />
-                  </Fragment>
-                )
-              )}
-            </TimelineContainer>
           </div>
         </BottomSheetContent>
       </BottomSheet>
