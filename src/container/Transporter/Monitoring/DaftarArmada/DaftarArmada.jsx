@@ -15,18 +15,26 @@ import {
   X,
 } from "lucide-react";
 
+import BadgeStatus from "@/components/Badge/BadgeStatus";
 import { cn } from "@/lib/utils";
 import { getTruckIcon } from "@/lib/utils/armadaStatus";
 import { useGetFleetList } from "@/services/Transporter/monitoring/getFleetList";
 
+import { DriverSelectionModal } from "../../Driver/DriverSelectionModal";
+
+// Adjust the import path as needed
+
 const DaftarArmada = ({ onClose, onExpand }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedId, setExpandedId] = useState(null);
+  const [showDriverModal, setShowDriverModal] = useState(false);
+  const [selectedFleet, setSelectedFleet] = useState(null);
 
   const {
     data: fleetData,
     isLoading,
     error,
+    mutate: refetchFleets,
   } = useGetFleetList({ search: searchTerm });
 
   const fleets = fleetData?.fleets || [];
@@ -40,6 +48,18 @@ const DaftarArmada = ({ onClose, onExpand }) => {
       }
       return newId;
     });
+  };
+
+  const handleOpenDriverModal = (fleet) => {
+    setSelectedFleet(fleet);
+    setShowDriverModal(true);
+  };
+
+  const handleDriverSelectionSuccess = (vehicleId, driverId) => {
+    // Refresh the fleet list to show the updated driver
+    refetchFleets();
+    setShowDriverModal(false);
+    setSelectedFleet(null);
   };
 
   const needsResponseIcon = (needResponseChange) => {
@@ -56,9 +76,10 @@ const DaftarArmada = ({ onClose, onExpand }) => {
   const showSOSIcon = (hasSOSAlert) => {
     if (hasSOSAlert) {
       return (
-        <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#FFF9C1]">
-          <AlertTriangle className="h-4 w-4 text-yellow-500" />
-        </div>
+        <BadgeStatus variant="warning" className="flex items-center gap-1">
+          <AlertTriangle className="h-3 w-3" />
+          <span>SOS</span>
+        </BadgeStatus>
       );
     }
     return null;
@@ -170,6 +191,7 @@ const DaftarArmada = ({ onClose, onExpand }) => {
                       </div>
                       <div className="flex items-center space-x-2">
                         {needsResponseIcon(fleet.needsResponseChange)}
+                        {showSOSIcon(fleet.hasSOSAlert)}
                         <ChevronDown
                           className={cn(
                             "h-5 w-5 text-gray-400 transition-transform",
@@ -282,10 +304,13 @@ const DaftarArmada = ({ onClose, onExpand }) => {
                         </div>
                       </div>
 
-                      {/* Tombol */}
+                      {/* Tombol Pasangkan Driver */}
                       {!fleet.driver?.name && (
                         <div className="pt-1">
-                          <button className="w-full rounded-xl bg-[#FFC217] px-4 py-2 text-sm font-medium text-[#461B02]">
+                          <button
+                            className="w-full rounded-xl bg-[#FFC217] px-4 py-2 text-sm font-medium text-[#461B02]"
+                            onClick={() => handleOpenDriverModal(fleet)}
+                          >
                             Pasangkan Driver
                           </button>
                         </div>
@@ -293,7 +318,7 @@ const DaftarArmada = ({ onClose, onExpand }) => {
 
                       {/* detail on duty*/}
                       {fleet.status === "ON_DUTY" && (
-                        <div className="flex w-full flex-col rounded bg-[#F8F8FB] px-4 py-2">
+                        <div className="flex w-full flex-col rounded bg-[#F8F8FB] px-4 py-3">
                           <p className="text-gray-500">No. Pesanan</p>
                           <h4 className="font-semibold">{fleet?.fleetId}</h4>
                           <p className="text-gray-500">Lokasi Muat & Bongkar</p>
@@ -313,6 +338,18 @@ const DaftarArmada = ({ onClose, onExpand }) => {
           </div>
         )}
       </div>
+
+      {/* Driver Selection Modal */}
+      {showDriverModal && selectedFleet && (
+        <DriverSelectionModal
+          onClose={() => setShowDriverModal(false)}
+          onSuccess={handleDriverSelectionSuccess}
+          vehicleId={selectedFleet.fleetId}
+          vehiclePlate={selectedFleet.licensePlate}
+          currentDriverId={selectedFleet.driver?.id || null}
+          title="Pasangkan Driver"
+        />
+      )}
     </section>
   );
 };
