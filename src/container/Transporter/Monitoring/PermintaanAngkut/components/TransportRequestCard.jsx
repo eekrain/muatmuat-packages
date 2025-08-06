@@ -43,31 +43,61 @@ const TransportRequestCard = ({ request }) => {
   };
 
   return (
-    <div className="rounded-[8px] border border-[#C4C4C4] bg-white p-4 shadow-sm">
+    <div
+      className={`rounded-[8px] border bg-white p-4 shadow-sm ${
+        request.isNew ? "border-warning-400 bg-warning-50" : "border-[#C4C4C4]"
+      }`}
+    >
       {/* Status Tags and Save Button Row */}
       <div className="mb-3 flex items-start justify-between">
         <div className="flex flex-wrap items-center gap-1">
+          {/* New Request Badge */}
+          {request.isNew && (
+            <span className="animate-pulse rounded-[12px] bg-error-500 px-2 py-1 text-[10px] font-medium text-white">
+              BARU
+            </span>
+          )}
+
+          {/* Time Label */}
           <span
             className={`rounded-[12px] px-2 py-1 text-[10px] font-medium ${
-              request.timeLabel?.color === "blue"
-                ? "bg-primary-50 text-primary-700"
-                : "bg-success-50 text-success-700"
+              request.timeLabel?.color === "green"
+                ? "bg-success-50 text-success-700"
+                : request.timeLabel?.color === "blue"
+                  ? "bg-primary-50 text-primary-700"
+                  : request.orderType === "INSTANT"
+                    ? "bg-success-50 text-success-700"
+                    : "bg-primary-50 text-primary-700"
             }`}
           >
-            {request.timeLabel?.text || "Terjadwal"}
+            {request.orderType === "INSTANT"
+              ? "Instan"
+              : request.timeLabel?.text || "Terjadwal"}
           </span>
+
+          {/* Load Time Label */}
           <span
             className={`rounded-[12px] px-2 py-1 text-[10px] font-medium ${
-              request.timeLabel?.color === "blue"
-                ? "bg-primary-50 text-primary-700"
-                : "bg-success-50 text-success-700"
+              request.loadTimeText?.includes("Hari Ini") ||
+              request.loadTimeText?.includes("Besok")
+                ? "bg-warning-50 text-warning-700"
+                : "bg-primary-50 text-primary-700"
             }`}
           >
             {request.loadTimeText || "Muat 7 Hari Lagi"}
           </span>
+
+          {/* Overload Badge */}
           {request.hasOverload && (
             <span className="rounded-[12px] bg-error-50 px-2 py-1 text-[10px] font-medium text-error-700">
               Potensi Overload
+            </span>
+          )}
+
+          {/* Halal Certification Required Badge */}
+          {request.isHalalLogistics && (
+            <span className="rounded-[12px] bg-success-50 px-2 py-1 text-[10px] font-medium text-success-700">
+              Perlu Sertifikasi Halal
             </span>
           )}
         </div>
