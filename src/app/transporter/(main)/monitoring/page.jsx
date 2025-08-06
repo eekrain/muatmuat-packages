@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
+import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import { MapWithPath } from "@/components/MapContainer/MapWithPath";
 import { MapInterfaceOverlay } from "@/components/monitoring/MapInterfaceOverlay";
 import { NoFleetOverlay } from "@/components/monitoring/NoFleetOverlay";
@@ -113,7 +114,7 @@ const Page = () => {
               showLeftPanel ? "translate-x-0" : "-translate-x-full"
             )}
           >
-            <div className="flex h-full flex-col">
+            <div className="flex h-full">
               <>
                 <DaftarArmada onClose={handleCloseLeftPanel} />
               </>
@@ -135,15 +136,17 @@ const Page = () => {
           <div className="flex h-full flex-col">
             <div className="flex h-16 items-center justify-between border-b px-4">
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-semibold text-gray-800">
-                  Daftar Pesanan Aktif
+                <h3 className="text-xs font-bold">
+                  Daftar <br /> Pesanan Aktif
                 </h3>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path
-                    d="M8 1C4.13 1 1 4.13 1 8s3.13 7 7 7 7-3.13 7-7-3.13-7-7-7zm1 11H7v-2h2v2zm0-3H7V4h2v5z"
-                    fill="#9CA3AF"
-                  />
-                </svg>
+                <InfoTooltip
+                  side="left"
+                  appearance={{
+                    iconClassName: "size-3.5",
+                  }}
+                >
+                  <p>Daftar pesanan aktif yang sedang berlangsung.</p>
+                </InfoTooltip>
               </div>
               <button
                 onClick={handleToggleBottomPanel}
