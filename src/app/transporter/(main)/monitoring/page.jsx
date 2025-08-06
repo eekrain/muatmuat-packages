@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
-import { MapWithPath } from "@/components/MapContainer/MapWithPath";
 import {
   MonitoringTabTrigger,
   MonitoringTabs,
@@ -15,6 +14,7 @@ import {
 import { NotificationCount } from "@/components/NotificationDot/NotificationCount";
 import DaftarArmada from "@/container/Transporter/Monitoring/DaftarArmada/DaftarArmada";
 import { MapInterfaceOverlay } from "@/container/Transporter/Monitoring/Map/MapInterfaceOverlay";
+import { MonitoringMap } from "@/container/Transporter/Monitoring/Map/MonitoringMap";
 import { NoFleetOverlay } from "@/container/Transporter/Monitoring/Map/NoFleetOverlay";
 import PermintaanAngkut from "@/container/Transporter/Monitoring/PermintaanAngkut/PermintaanAngkut";
 import UrgentIssue from "@/container/Transporter/Monitoring/UrgentIssue/UrgentIssue";
@@ -30,6 +30,8 @@ const Page = () => {
   const [isBottomExpanded, setIsBottomExpanded] = useState(true);
   const [mapZoom, setMapZoom] = useState(12);
   const [showLeftPanel, setShowLeftPanel] = useState(false);
+  const [selectedFleetId, setSelectedFleetId] = useState(null);
+  const [selectedRouteId, setSelectedRouteId] = useState(null);
 
   // Map query param values to tab values
   const getTabValue = (queryValue) => {
@@ -101,23 +103,27 @@ const Page = () => {
 
   // Convert fleet locations to map markers
   const fleetMarkers =
-    fleetLocationsData?.fleets?.map((fleet) => {
-      let icon = "/icons/marker-truck.svg";
+    fleetLocationsData?.fleets?.map((fleet) => ({
+      id: fleet.id,
+      position: { lat: fleet.latitude, lng: fleet.longitude },
+      licensePlate: fleet.licensePlate,
+      driverName: fleet.driverName,
+      status: fleet.operationalStatus,
+      hasSOSAlert: fleet.hasSOSAlert,
+      heading: fleet.heading || 0,
+      previousPosition: fleet.previousPosition,
+    })) || [];
 
-      // You can customize icons based on status
-      if (fleet.hasSOSAlert) {
-        icon = "/icons/marker-truck.svg"; // TODO: Add SOS truck icon when available
-      } else if (fleet.operationalStatus === "BUSY") {
-        icon = "/icons/marker-truck.svg"; // TODO: Add busy truck icon when available
-      }
+  // Handle fleet marker click
+  const handleFleetClick = (fleet) => {
+    setSelectedFleetId(fleet.id);
+    setShowLeftPanel(true);
+  };
 
-      return {
-        position: { lat: fleet.latitude, lng: fleet.longitude },
-        title: fleet.licensePlate,
-        icon: icon,
-        fleet: fleet, // Keep fleet data for additional info
-      };
-    }) || [];
+  // Handle map click
+  const handleMapClick = () => {
+    setSelectedFleetId(null);
+  };
 
   return (
     <div className="relative left-[50%] right-[50%] ml-[-50vw] mr-[-50vw] grid h-[calc(100vh-92px)] w-screen grid-cols-[1fr_429px] gap-4 overflow-hidden pl-6">
@@ -125,8 +131,8 @@ const Page = () => {
       <div className="flex h-full flex-col gap-4 pt-4">
         {/* Map Container */}
         <div className="relative flex-1 overflow-hidden rounded-[20px] bg-white shadow-lg">
-          <MapWithPath
-            locationMarkers={fleetMarkers}
+          <MonitoringMap
+            fleetMarkers={fleetMarkers}
             center={
               fleetMarkers.length > 0
                 ? fleetMarkers[0].position
@@ -136,6 +142,13 @@ const Page = () => {
                   }
             }
             zoom={mapZoom}
+            selectedFleetId={selectedFleetId}
+            selectedRouteId={selectedRouteId}
+            onFleetClick={handleFleetClick}
+            onMapClick={handleMapClick}
+            routes={[]}
+            showFleetLabels={true}
+            showSOSAlerts={true}
             mapContainerStyle={{
               height: isBottomExpanded
                 ? `calc((100vh - 92px - 16px - 16px) / 2)`

@@ -75,7 +75,7 @@ const UrgentIssue = () => {
   console.log(items);
 
   return (
-    <div className="flex h-[calc(100vh-80px)] min-h-0 flex-col py-4">
+    <div className="flex h-[calc(100vh-92px-48px)] min-h-0 flex-col py-4">
       <div className="flex-shrink-0 bg-white px-6 py-4">
         <h1 className="mb-4 text-base font-bold text-neutral-900">
           Laporan Urgent Issue
