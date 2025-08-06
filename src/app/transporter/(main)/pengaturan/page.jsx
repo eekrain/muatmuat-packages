@@ -23,10 +23,8 @@ import {
 } from "@/components/Modal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
-import {
-  useGetAreaBongkarData,
-  useGetMasterProvinces,
-} from "@/services/Transporter/pengaturan/getDataAreaMuat";
+import { useGetAreaBongkarData } from "@/services/Transporter/pengaturan/getDataAreaBongkar";
+import { useGetMasterProvinces } from "@/services/Transporter/pengaturan/getDataAreaMuat";
 import {
   useGetAreaMuatData,
   useGetTransporterCargoConfig,
@@ -501,9 +499,9 @@ export default function Page() {
                 className={`flex max-h-[210px] flex-wrap gap-2 ${
                   (viewModalSearch &&
                     (areaMuatProvinces || []).filter((province) =>
-                      province.name
-                        .toLowerCase()
-                        .includes(viewModalSearch.toLowerCase())
+                      province?.provinceName
+                        ?.toLowerCase()
+                        ?.includes(viewModalSearch?.toLowerCase() || "")
                     ).length > 0) ||
                   (!viewModalSearch && (areaMuatProvinces || []).length > 0)
                     ? "overflow-y-auto"
@@ -512,19 +510,21 @@ export default function Page() {
               >
                 {viewModalSearch &&
                 (areaMuatProvinces || []).filter((province) =>
-                  province.provinceName
-                    .toLowerCase()
-                    .includes(viewModalSearch.toLowerCase())
+                  province?.provinceName
+                    ?.toLowerCase()
+                    ?.includes(viewModalSearch?.toLowerCase() || "")
                 ).length === 0 ? (
                   <div className="flex w-full items-center justify-center">
                     <VoucherSearchEmpty />
                   </div>
                 ) : (
                   (areaMuatProvinces || [])
-                    .filter((province) =>
-                      province.provinceName
-                        .toLowerCase()
-                        .includes(viewModalSearch.toLowerCase())
+                    .filter(
+                      (province) =>
+                        !viewModalSearch ||
+                        province?.provinceName
+                          ?.toLowerCase()
+                          ?.includes(viewModalSearch?.toLowerCase() || "")
                     )
                     .map((province) => (
                       <TagBubble key={province.provinceId}>
@@ -579,9 +579,9 @@ export default function Page() {
                 className={`flex max-h-[210px] flex-wrap gap-2 ${
                   (viewBongkarModalSearch &&
                     (areaBongkarProvinces || []).filter((province) =>
-                      province.provinceName
-                        .toLowerCase()
-                        .includes(viewBongkarModalSearch.toLowerCase())
+                      province?.provinceName
+                        ?.toLowerCase()
+                        ?.includes(viewBongkarModalSearch?.toLowerCase() || "")
                     ).length > 0) ||
                   (!viewBongkarModalSearch &&
                     (areaBongkarProvinces || []).length > 0)
@@ -591,19 +591,23 @@ export default function Page() {
               >
                 {viewBongkarModalSearch &&
                 (areaBongkarProvinces || []).filter((province) =>
-                  province.provinceName
-                    .toLowerCase()
-                    .includes(viewBongkarModalSearch.toLowerCase())
+                  province?.provinceName
+                    ?.toLowerCase()
+                    ?.includes(viewBongkarModalSearch?.toLowerCase() || "")
                 ).length === 0 ? (
                   <div className="flex w-full items-center justify-center">
                     <VoucherSearchEmpty />
                   </div>
                 ) : (
                   (areaBongkarProvinces || [])
-                    .filter((province) =>
-                      province.provinceName
-                        .toLowerCase()
-                        .includes(viewBongkarModalSearch.toLowerCase())
+                    .filter(
+                      (province) =>
+                        !viewBongkarModalSearch ||
+                        province?.provinceName
+                          ?.toLowerCase()
+                          ?.includes(
+                            viewBongkarModalSearch?.toLowerCase() || ""
+                          )
                     )
                     .map((province) => (
                       <TagBubble key={province.provinceId}>
@@ -659,19 +663,21 @@ export default function Page() {
                 }`}
               >
                 {muatan.filter((item) =>
-                  item.name
-                    .toLowerCase()
-                    .includes(viewMuatanModalSearch.toLowerCase())
+                  item?.name
+                    ?.toLowerCase()
+                    ?.includes(viewMuatanModalSearch?.toLowerCase() || "")
                 ).length === 0 ? (
                   <div className="flex w-full items-center justify-center">
                     <VoucherSearchEmpty />
                   </div>
                 ) : (
                   muatan
-                    .filter((item) =>
-                      item.name
-                        .toLowerCase()
-                        .includes(viewMuatanModalSearch.toLowerCase())
+                    .filter(
+                      (item) =>
+                        !viewMuatanModalSearch ||
+                        item?.name
+                          ?.toLowerCase()
+                          ?.includes(viewMuatanModalSearch?.toLowerCase() || "")
                     )
                     .map((item) => (
                       <TagBubble key={item.id}>{item.name}</TagBubble>
