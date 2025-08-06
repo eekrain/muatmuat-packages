@@ -226,7 +226,7 @@ const apiResultFleetList = {
           lastLocation: {
             latitude: -6.1241,
             longitude: 106.7786,
-            address: "Jakarta Utara",
+            address: "Jakarta Utara, alksdjfalsdkfjasldkfjasldks",
             lastUpdate: "2025-07-25T09:30:00Z",
           },
           truckType: {
