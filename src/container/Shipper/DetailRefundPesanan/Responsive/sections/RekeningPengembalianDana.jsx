@@ -1,5 +1,5 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
-import Section from "@/container/Shipper/DetailRefundPesanan/Responsive/sections/Section";
+import ResponsiveSection from "@/components/Section/ResponsiveSection";
 
 const RekeningPengembalianDana = ({ bank }) => {
   const refundAccountData = [
@@ -22,7 +22,7 @@ const RekeningPengembalianDana = ({ bank }) => {
     },
   ];
   return (
-    <Section title="Rekening Pengembalian Dana">
+    <ResponsiveSection title="Rekening Pengembalian Dana">
       {refundAccountData.map((item, key) => (
         <div className="flex flex-col gap-y-4" key={key}>
           <h4 className="text-sm font-semibold text-neutral-900">
@@ -33,7 +33,7 @@ const RekeningPengembalianDana = ({ bank }) => {
           </div>
         </div>
       ))}
-    </Section>
+    </ResponsiveSection>
   );
 };
 

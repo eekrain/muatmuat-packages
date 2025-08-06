@@ -40,7 +40,10 @@ const PencarianLokasiTersimpanScreen = () => {
   }, []);
 
   const onSelected = (location) => {
-    handleSelectUserSavedLocation(location);
+    handleSelectUserSavedLocation(
+      location,
+      params.config?.needValidateLocationChange
+    );
     navigation.push("/FormLokasiBongkarMuat", { ...params });
   };
 

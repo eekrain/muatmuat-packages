@@ -29,6 +29,7 @@ const SewaArmadaHomeScreen = ({
   trucks,
   additionalServicesOptions,
   calculatedPrice,
+  orderStatus,
 }) => {
   const router = useRouter();
   const { dataUser } = useAuth();
@@ -134,6 +135,7 @@ const SewaArmadaHomeScreen = ({
           additionalServicesOptions={additionalServicesOptions}
           handleCheckLoggedIn={handleCheckLoggedIn}
           calculatedPrice={calculatedPrice}
+          orderStatus={orderStatus}
         />
       </div>
 

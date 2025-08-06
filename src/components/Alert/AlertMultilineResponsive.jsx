@@ -6,6 +6,7 @@ import { InfoBottomsheet } from "@/components/Form/InfoBottomsheet";
 import { InfoBottomsheetDriverCharge } from "@/components/Form/InfoBottomsheetDriverCharge";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
 
 /**
@@ -81,6 +82,7 @@ export const AlertMultilineResponsive = ({ className, items = [] }) => {
 
 const Item = ({ item }) => {
   const { t } = useTranslation();
+  const navigation = useResponsiveNavigation();
 
   if (item?.onClick) {
     return (
@@ -113,6 +115,11 @@ const Item = ({ item }) => {
         </Link>
       ) : item.label === "messageWaitingTimeCharge" ? (
         <InfoBottomsheetDriverCharge title="Informasi" />
+      ) : item.label === "messageOrderChangesConfirmation" ? (
+        <IconComponent
+          src="/icons/info16.svg"
+          onClick={() => navigation.push("/DetailSebelumPerubahan")}
+        />
       ) : item.info ? (
         <InfoBottomsheet title="Informasi" render={item.info} />
       ) : null}

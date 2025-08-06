@@ -1,4 +1,5 @@
 // 1. Import the requested icon
+import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 
 import { ChevronRight } from "lucide-react";
@@ -43,6 +44,8 @@ const SelectionField = ({ iconSrc, value, placeholder, onClick, disabled }) => (
 );
 
 export const JenisArmadaField = ({ carriers, trucks }) => {
+  const pathname = usePathname();
+  const isEditPage = pathname.includes("/ubahpesanan");
   const navigation = useResponsiveNavigation();
 
   const {
@@ -55,6 +58,7 @@ export const JenisArmadaField = ({ carriers, trucks }) => {
     informasiMuatan,
     carrierId,
     truckTypeId,
+    truckType,
   } = useSewaArmadaStore((state) => state.formValues);
 
   const selectedCarrier = useMemo(() => {
@@ -89,16 +93,16 @@ export const JenisArmadaField = ({ carriers, trucks }) => {
       <FormLabel required>Jenis Armada</FormLabel>
       <div className="space-y-2">
         <SelectionField
-          disabled={informasiMuatan?.length === 0}
+          disabled={isEditPage || informasiMuatan?.length === 0}
           iconSrc="/icons/truck-carrier.svg"
           value={selectedCarrier?.name}
           placeholder="Pilih Jenis Carrier"
           onClick={() => navigation.push("/JenisCarrier")}
         />
         <SelectionField
-          disabled={isTruckTypeIdDisabled}
+          disabled={isEditPage || isTruckTypeIdDisabled}
           iconSrc="/icons/truck-jenis.svg"
-          value={selectedTruck?.name}
+          value={isEditPage ? truckType?.name : selectedTruck?.name}
           placeholder="Pilih Jenis Truk"
           onClick={() => navigation.push("/JenisTruck")}
         />

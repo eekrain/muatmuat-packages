@@ -7,7 +7,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 import { cn } from "@/lib/utils";
 
-import ImageComponent from "../ImageComponent/ImageComponent";
+import IconComponent from "../IconComponent/IconComponent";
 import style from "./DatetimePicker.module.scss";
 
 // Helper function to ensure we're working with a proper Date object
@@ -448,9 +448,12 @@ const DatetimePicker = ({
               : "cursor-pointer"
           )}
         >
-          <ImageComponent src="/icons/calendar16.svg" width={16} height={16} />
+          <IconComponent src="/icons/calendar16.svg" />
           <span
-            className={`text-xs font-medium leading-[14.4px] ${datetimeValue ? "text-neutral-900" : "text-neutral-600"}`}
+            className={cn(
+              "text-sm font-semibold leading-[1.1] sm:text-xs sm:font-medium sm:leading-[1.2]",
+              datetimeValue ? "text-neutral-900" : "text-neutral-600"
+            )}
           >
             {datetimeValue ? `${appliedDateStr} WIB` : placeholder}
           </span>

@@ -58,7 +58,10 @@ const PencarianLokasiScreen = () => {
     try {
       params?.config?.validateLokasiOnSelect?.(location.Title);
 
-      const result = await handleSelectSearchResult(location);
+      const result = await handleSelectSearchResult(
+        location,
+        params.config?.needValidateLocationChange
+      );
 
       // If districtData is automatically filled, then immediately navigate to FormLokasiBongkarMuat
       if (result?.district?.value) {

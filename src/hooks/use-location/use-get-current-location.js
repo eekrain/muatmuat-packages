@@ -59,7 +59,13 @@ export const useGetCurrentLocation = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMobile]);
 
-  const handleChangeMarkerCoordinates = async (coordinates) => {
+  const handleChangeMarkerCoordinates = async (
+    coordinates,
+    needValidateLocationChange
+  ) => {
+    // return toast.error(
+    //   "Perubahan lokasi muat hanya bisa diganti jika masih di kota yang sama."
+    // );
     const result = await apiAdapter.getLocationByLatLong(coordinates);
     setLocationPartial(result);
     setCoordinates(result.coordinates);

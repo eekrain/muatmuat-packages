@@ -1,3 +1,4 @@
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
 import {
@@ -31,6 +32,8 @@ export const BottomsheetMenuList = ({
     setIsOpenBottomsheetAlasanPembatalan,
   ] = useState(false);
 
+  const params = useParams();
+  const router = useRouter();
   const navigation = useResponsiveNavigation();
   const { t } = useTranslation();
 
@@ -63,7 +66,9 @@ export const BottomsheetMenuList = ({
             {dataStatusPesanan?.isChangeable && (
               <Item
                 label={t("labelEditOrder")}
-                onClick={() => alert("Ubah Pesanan clicked")}
+                onClick={() =>
+                  router.push(`/sewaarmada/ubahpesanan/${params.orderId}`)
+                }
                 t={t}
               />
             )}

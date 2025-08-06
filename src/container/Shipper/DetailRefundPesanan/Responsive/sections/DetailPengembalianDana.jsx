@@ -1,5 +1,5 @@
 import WaitingTimeBottomsheet from "@/components/BottomSheet/WaitingTimeBottomsheet";
-import Section from "@/container/Shipper/DetailRefundPesanan/Responsive/sections/Section";
+import ResponsiveSection from "@/components/Section/ResponsiveSection";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { cn } from "@/lib/utils";
 import { idrFormat } from "@/lib/utils/formatters";
@@ -63,7 +63,7 @@ const DetailPengembalianDana = ({ breakdown, waitingTimeRaw }) => {
   }, [breakdown]);
 
   return (
-    <Section title="Detail Pengembalian Dana">
+    <ResponsiveSection title="Detail Pengembalian Dana">
       {refundSummary.map((item, key) => (
         <div
           className={cn(
@@ -123,7 +123,7 @@ const DetailPengembalianDana = ({ breakdown, waitingTimeRaw }) => {
           {breakdown ? idrFormat(breakdown.totalRefundAmount) : "-"}
         </span>
       </div>
-    </Section>
+    </ResponsiveSection>
   );
 };
 
