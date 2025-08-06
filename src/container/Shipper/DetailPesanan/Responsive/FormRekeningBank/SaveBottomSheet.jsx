@@ -94,7 +94,7 @@ export const SaveBottomSheet = ({
     try {
       setIsLoading(true);
       await sendRequestOtp();
-      router.push("/rekening-pencairan/otp");
+      onVerification();
     } catch (error) {
       toast.error(error?.message || "Gagal mengirim kode verifikasi");
     } finally {

@@ -97,8 +97,13 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
   const { setParams, reset: resetOtp, sendRequestOtp } = useRequestOtpActions();
   const handleTempSaveRekening = (data) => {
     setParams({
-      mode: "add-rekening",
-      data,
+      mode: "add-rekening-cancel",
+      data: {
+        // Data bank
+        bankAccount: data,
+        // Data cancel
+        cancelData: pendingCancelData,
+      },
       redirectUrl: pathname,
     });
     setIsModalOtpOpen(true);
@@ -115,37 +120,45 @@ export const ModalBatalkanPesanan = ({ dataRingkasanPembayaran, children }) => {
 
   const handlePendingCancelOrder = () => {
     console.log(pendingCancelData, "tes");
-    if (pendingCancelData) {
+    if (otpParams.data.cancelData) {
       fetcherMuatrans
-        .post(`v1/orders/${params.orderId}/cancel`, pendingCancelData)
+        .post(`v1/orders/${params.orderId}/cancel`, otpParams.data.cancelData)
         .then((cancelResponse) => {
           toast.success(t("messageBerhasilMembatalkanPesanan"));
           setPendingCancelData(null);
+          resetOtp();
         })
         .catch((cancelError) => {
           toast.error(cancelError.response.data?.Data?.Message);
+          resetOtp();
         });
     }
   };
 
   const handleAddNewRekeningPencairan = () => {
+    // Extract bankAccount data from otpParams.data
+    const bankAccountData = otpParams.data?.bankAccount || otpParams.data;
+
     fetcherMuatparts
-      .post("v1/muatparts/bankAccount", otpParams.data)
+      .post("v1/muatparts/bankAccount", bankAccountData)
       .then((response) => {
         toast.success(response.data?.Data?.Message);
         handlePendingCancelOrder();
       })
       .catch((error) => {
         toast.error(error.response.data?.Data?.Message);
+        resetOtp();
       });
-    resetOtp();
   };
 
   const hasAddedNewRekening = useRef(false);
+  console.log(hasAddedNewRekening, "hasAddedNewRekening");
+
   console.log(otpParams?.mode, otpParams?.data, otpValues?.hasVerified, "otp");
   useEffect(() => {
     if (
-      otpParams?.mode === "add-rekening" &&
+      (otpParams?.mode === "add-rekening" ||
+        otpParams?.mode === "add-rekening-cancel") &&
       otpParams.data &&
       otpValues?.hasVerified
     ) {

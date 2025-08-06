@@ -11,7 +11,7 @@ import {
 import Button from "@/components/Button/Button";
 import { ExpandableTextArea } from "@/components/Form/ExpandableTextArea";
 import RadioButton from "@/components/Radio/RadioButton";
-import { fetcherMuatrans } from "@/lib/axios";
+import { fetcherMuatparts, fetcherMuatrans } from "@/lib/axios";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -80,12 +80,16 @@ export const BottomsheetAlasanPembatalan = ({
     if (!bankAccounts || bankAccounts.length === 0) {
       // Set OTP parameters for bank account creation during cancel flow
       setParams({
-        mode: "add-rekening-for-cancel",
+        mode: "add-rekening-cancel",
         data: {
+          // Data bank (will be filled when user submits bank form)
+          bankAccount: null,
+          // Data cancel
           cancelData: cancelData,
         },
         redirectUrl: window.location.pathname,
       });
+      console.log(window.location.href, "location");
 
       // Navigate to bank account form
       navigation.push("/FormRekeningBank");
@@ -103,24 +107,6 @@ export const BottomsheetAlasanPembatalan = ({
       }
     }
   };
-
-  // Handle saving bank account data after OTP verification
-  const handleSaveBankAccountAfterOtp = async () => {
-    try {
-      const { bankAccountData } = otpParams.data;
-      await fetcherMuatrans.post("v1/muatrans/bankAccount", {
-        bankId: bankAccountData.selectedBank,
-        accountNumber: bankAccountData.accountNumber,
-        accountHolderName: bankAccountData.accountHolderName,
-        isPrimary: bankAccountData.isPrimary,
-      });
-
-      toast.success("Berhasil menambahkan rekening bank");
-    } catch (error) {
-      toast.error(error.response.data?.Data?.Message);
-    }
-  };
-
   // Handle cancel order after OTP verification
   const handleCancelOrderAfterOtp = async () => {
     try {
@@ -139,39 +125,38 @@ export const BottomsheetAlasanPembatalan = ({
         "Error in handleCancelOrderAfterOtp:",
         error.response?.data?.Data?.Message
       );
+      resetOtp();
     }
   };
+  const handleAddNewRekeningPencairan = async () => {
+    // Extract bankAccount data from otpParams.data
+    const bankAccountData = otpParams.data?.bankAccount;
 
+    await fetcherMuatparts
+      .post("v1/muatparts/bankAccount", bankAccountData)
+      .then((response) => {
+        toast.success(response.data?.Data?.Message);
+        handleCancelOrderAfterOtp();
+      })
+      .catch((error) => {
+        toast.error(error.response.data?.Data?.Message);
+        resetOtp(); // Reset even on error
+      });
+  };
   // Handle OTP verification completion for cancel flow
   const hasProcessedCancel = useRef(false);
+  console.log(hasProcessedCancel, "hasProcessedCancel");
   useEffect(() => {
-    const processAfterOtp = async () => {
-      if (
-        otpParams?.mode === "add-rekening-for-cancel" &&
-        otpParams.data?.cancelData &&
-        otpValues?.hasVerified
-      ) {
-        if (hasProcessedCancel.current) return;
-
-        try {
-          // First save bank account if bankAccountData exists
-          if (otpParams.data?.bankAccountData) {
-            await handleSaveBankAccountAfterOtp();
-          }
-
-          // Only proceed with order cancellation if bank account save was successful
-          await handleCancelOrderAfterOtp();
-        } catch (error) {
-          // If bank account save fails, don't proceed with cancellation
-          console.error("Error in processAfterOtp:", error);
-          // Error toast is already shown in individual functions
-        } finally {
-          hasProcessedCancel.current = true;
-        }
-      }
-    };
-
-    processAfterOtp();
+    if (
+      otpParams?.mode === "add-rekening-cancel" &&
+      otpParams?.data &&
+      otpValues?.hasVerified
+    ) {
+      if (hasProcessedCancel.current) return;
+      console.log("otpmdakd");
+      handleAddNewRekeningPencairan();
+      hasProcessedCancel.current = true;
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [otpParams?.mode, otpValues?.hasVerified]);
 
