@@ -114,33 +114,51 @@ const UrgentIssue = () => {
         <div className="flex gap-2">
           <button
             onClick={() => setActiveTab("baru")}
-            className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+            className={`flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-semibold transition-colors ${
               activeTab === "baru"
-                ? "bg-primary-700 text-white"
-                : "border border-neutral-300 bg-white text-neutral-600"
+                ? "border border-primary-700 bg-primary-50 text-primary-700"
+                : "border border-neutral-200 bg-neutral-200 text-neutral-900"
             }`}
           >
-            Baru ({isCountLoading ? "-" : (count?.new ?? 0)})
+            Baru (
+            {isCountLoading
+              ? "-"
+              : (count?.new ?? 0) > 99
+                ? "99+"
+                : (count?.new ?? 0)}
+            )
           </button>
           <button
             onClick={() => setActiveTab("proses")}
-            className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+            className={`flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-semibold transition-colors ${
               activeTab === "proses"
-                ? "bg-primary-700 text-white"
-                : "border border-neutral-300 bg-white text-neutral-600"
+                ? "border border-primary-700 bg-primary-50 text-primary-700"
+                : "border border-neutral-200 bg-neutral-200 text-neutral-900"
             }`}
           >
-            Proses ({isCountLoading ? "-" : (count?.processing ?? 0)})
+            Proses (
+            {isCountLoading
+              ? "-"
+              : (count?.processing ?? 0) > 99
+                ? "99+"
+                : (count?.processing ?? 0)}
+            )
           </button>
           <button
             onClick={() => setActiveTab("selesai")}
-            className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+            className={`flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-semibold transition-colors ${
               activeTab === "selesai"
-                ? "bg-primary-700 text-white"
-                : "border border-neutral-300 bg-white text-neutral-600"
+                ? "border border-primary-700 bg-primary-50 text-primary-700"
+                : "border border-neutral-200 bg-neutral-200 text-neutral-900"
             }`}
           >
-            Selesai ({isCountLoading ? "-" : (count?.completed ?? 0)})
+            Selesai (
+            {isCountLoading
+              ? "-"
+              : (count?.completed ?? 0) > 99
+                ? "99+"
+                : (count?.completed ?? 0)}
+            )
           </button>
         </div>
       </div>
