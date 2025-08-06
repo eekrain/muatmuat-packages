@@ -15,7 +15,6 @@ import {
   X,
 } from "lucide-react";
 
-import BadgeStatus from "@/components/Badge/BadgeStatus";
 import { cn } from "@/lib/utils";
 import { getTruckIcon } from "@/lib/utils/armadaStatus";
 import { useGetFleetList } from "@/services/Transporter/monitoring/getFleetList";
@@ -76,10 +75,9 @@ const DaftarArmada = ({ onClose, onExpand }) => {
   const showSOSIcon = (hasSOSAlert) => {
     if (hasSOSAlert) {
       return (
-        <BadgeStatus variant="warning" className="flex items-center gap-1">
-          <AlertTriangle className="h-3 w-3" />
-          <span>SOS</span>
-        </BadgeStatus>
+        <p className="rounded-md bg-[#EE4343] px-2 py-[2px] text-xs font-semibold text-white">
+          SOS
+        </p>
       );
     }
     return null;
@@ -318,15 +316,36 @@ const DaftarArmada = ({ onClose, onExpand }) => {
 
                       {/* detail on duty*/}
                       {fleet.status === "ON_DUTY" && (
-                        <div className="flex w-full flex-col rounded bg-[#F8F8FB] px-4 py-3">
-                          <p className="text-gray-500">No. Pesanan</p>
-                          <h4 className="font-semibold">{fleet?.fleetId}</h4>
-                          <p className="text-gray-500">Lokasi Muat & Bongkar</p>
-                          <h4>lokasi awal</h4>
-                          <h4>lokasi akhir</h4>
-                          <div className="flex">
-                            <div>proses maut</div>
-                            <button>lihat detail</button>
+                        <div className="flex w-full flex-col gap-3 rounded-lg bg-[#F8F8FB] px-4 py-3">
+                          {/* Nomor Pesanan */}
+                          <div>
+                            <p className="text-sm text-gray-500">No. Pesanan</p>
+                            <h4 className="text-base font-semibold text-black">
+                              {fleet?.fleetId}
+                            </h4>
+                          </div>
+
+                          {/* Lokasi Muat & Bongkar */}
+                          <div>
+                            <p className="text-sm text-gray-500">
+                              Lokasi Muat & Bongkar
+                            </p>
+                            <h4 className="text-base text-black">
+                              Lokasi Awal
+                            </h4>
+                            <h4 className="text-base text-black">
+                              Lokasi Akhir
+                            </h4>
+                          </div>
+
+                          {/* Proses Muat & Lihat Detail */}
+                          <div className="flex items-center justify-between">
+                            <div className="rounded-lg bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700">
+                              Proses Muat
+                            </div>
+                            <button className="text-sm text-blue-700 hover:underline">
+                              Lihat Detail
+                            </button>
                           </div>
                         </div>
                       )}
