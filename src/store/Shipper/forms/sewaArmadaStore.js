@@ -39,6 +39,8 @@ export const defaultValues = {
   },
   voucherId: null,
   paymentMethodId: null,
+  // To detect whether the user has updated the order or not
+  hasUpdatedForm: false,
 };
 
 export const useSewaArmadaStore = create(

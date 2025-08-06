@@ -1,5 +1,5 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
-import Section from "@/container/Shipper/DetailRefundPesanan/Responsive/sections/Section";
+import ResponsiveSection from "@/components/Section/ResponsiveSection";
 
 const Legend = () => {
   const legends = [
@@ -13,7 +13,10 @@ const Legend = () => {
     },
   ];
   return (
-    <Section title="Proses Pengembalian Dana">
+    <ResponsiveSection
+      appearance={{ titleClassname: "text-base font-bold" }}
+      title="Proses Pengembalian Dana"
+    >
       <div className="flex flex-col gap-y-3">
         {legends.map((item, key) => (
           <div className="flex items-center gap-x-2" key={key}>
@@ -26,7 +29,7 @@ const Legend = () => {
           </div>
         ))}
       </div>
-    </Section>
+    </ResponsiveSection>
   );
 };
 

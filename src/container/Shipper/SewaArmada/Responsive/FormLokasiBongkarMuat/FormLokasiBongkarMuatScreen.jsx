@@ -24,13 +24,68 @@ const FormLokasiBongkarMuatScreen = () => {
   const params = useResponsiveRouteParams();
   const navigation = useResponsiveNavigation();
   const { t } = useTranslation();
-  const { updateLokasi } = useSewaArmadaActions();
+  const { updateLokasi, setField: setSewaArmadaField } = useSewaArmadaActions();
   const { formValues, formErrors, setField, validateLokasiBongkarMuat, reset } =
     useLocationFormStore();
+  const validateLokasiOnSelect = useLocationFormStore(
+    (s) => s.validateLokasiOnSelect
+  );
 
   const handleUbahLokasi = () => {
     // Handle location change
-    console.log("Change location");
+    const field = {
+      muat: "lokasiMuat",
+      bongkar: "lokasiBongkar",
+    };
+    const newParams = {
+      formMode: params.config.formMode,
+      allSelectedLocations: formValues[field[params.config.formMode]],
+      index: params.config.index,
+      needValidateLocationChange: params.config.needValidateLocationChange,
+    };
+    const navigateToForm = async (defaultValues) => {
+      navigation.push("/FormLokasiBongkarMuat", {
+        config: {
+          ...newParams,
+          defaultValues,
+        },
+        layout: {
+          title:
+            params.config.formMode === "bongkar"
+              ? "Lokasi Bongkar"
+              : "Lokasi Muat",
+        },
+      });
+    };
+    navigation.push("/PencarianLokasi", {
+      config: {
+        ...newParams,
+        afterLocationSelected: async () => {
+          // delay 500ms untuk menunggu data lokasi terisi
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          const defaultValues = useLocationFormStore.getState().formValues;
+          navigateToForm(defaultValues);
+        },
+        validateLokasiOnSelect: (selectedAddress) => {
+          const error = validateLokasiOnSelect(
+            params.config.formMode,
+            params.config.index,
+            selectedAddress
+          );
+
+          if (error) {
+            toast.error(error);
+            throw new Error(error);
+          }
+        },
+      },
+      layout: {
+        title:
+          params.config.formMode === "bongkar"
+            ? "Cari Lokasi Bongkar"
+            : "Cari Lokasi Muat",
+      },
+    });
   };
 
   const handleSave = () => {
@@ -55,6 +110,7 @@ const FormLokasiBongkarMuatScreen = () => {
       params.config.index,
       formValues
     );
+    setSewaArmadaField("hasUpdatedForm", true);
     navigation.popTo("/");
 
     // Reset form values in useLocationFormStore

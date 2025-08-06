@@ -1,11 +1,11 @@
 import { Fragment } from "react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
+import ResponsiveSection from "@/components/Section/ResponsiveSection";
 import {
   StepperContainer,
   StepperItemResponsive,
 } from "@/components/Stepper/Stepper";
-import Section from "@/container/Shipper/DetailRefundPesanan/Responsive/sections/Section";
 import { formatShortDate } from "@/lib/utils/dateFormat";
 
 const RefundStatusTimeline = ({ refundData }) => {
@@ -15,7 +15,7 @@ const RefundStatusTimeline = ({ refundData }) => {
   };
   const refundStatusLabel = refundStatusLabels[refundData?.refundStatus] || "";
   return (
-    <Section className="h-[142px]">
+    <ResponsiveSection appearance={{ containerClassname: "h-[142px]" }}>
       <div className="flex flex-col gap-y-4">
         <BadgeStatusPesanan
           variant={
@@ -95,7 +95,7 @@ const RefundStatusTimeline = ({ refundData }) => {
           </StepperContainer>
         </div>
       </div>
-    </Section>
+    </ResponsiveSection>
   );
 };
 

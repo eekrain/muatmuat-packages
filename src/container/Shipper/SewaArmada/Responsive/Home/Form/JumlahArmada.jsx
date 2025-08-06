@@ -1,3 +1,4 @@
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 import { NumberInput } from "@/components/Form/NumberInput";
@@ -7,6 +8,8 @@ import {
 } from "@/store/Shipper/forms/sewaArmadaStore";
 
 export const JumlahArmada = () => {
+  const pathname = usePathname();
+  const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
   // Get truckCount from the store
   const { truckCount, minTruckCount, truckTypeId, lokasiMuat, lokasiBongkar } =
@@ -39,7 +42,7 @@ export const JumlahArmada = () => {
       </label>
       <NumberInput
         id="jumlah-armada"
-        disabled={!truckTypeId || lokasiMuatTerbanyak > 1}
+        disabled={!truckTypeId || lokasiMuatTerbanyak > 1 || isEditPage}
         value={truckCount}
         stepper={1}
         min={minTruckCount || 1}

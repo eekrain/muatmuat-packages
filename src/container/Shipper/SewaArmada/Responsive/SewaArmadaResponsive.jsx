@@ -86,6 +86,7 @@ const SewaArmadaResponsive = ({
   cargoCategories,
   additionalServicesOptions,
   paymentMethods,
+  orderStatus,
   carriers,
   trucks,
   calculatedPrice,
@@ -125,6 +126,7 @@ const SewaArmadaResponsive = ({
             trucks={trucks}
             additionalServicesOptions={additionalServicesOptions}
             calculatedPrice={calculatedPrice}
+            orderStatus={orderStatus}
           />
         }
       />
