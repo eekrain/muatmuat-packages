@@ -116,9 +116,7 @@ const Page = () => {
             )}
           >
             <div className="flex h-full">
-              <>
-                <DaftarArmada onClose={handleCloseLeftPanel} />
-              </>
+              <DaftarArmada onClose={handleCloseLeftPanel} />
             </div>
           </div>
         </div>
