@@ -14,7 +14,13 @@ const statusMap = {
   selesai: "completed",
 };
 
-const RequestList = ({ requests, isLoading, status }) => {
+const RequestList = ({
+  requests,
+  isLoading,
+  status,
+  openDetails,
+  toggleDetail,
+}) => {
   if (isLoading) {
     return (
       <div className="py-8">
@@ -53,7 +59,13 @@ const RequestList = ({ requests, isLoading, status }) => {
   return (
     <div className="space-y-4 pb-12">
       {filtered.map((item) => (
-        <UrgentIssueCard key={item.id} data={item} statusTab={status} />
+        <UrgentIssueCard
+          key={item.id}
+          data={item}
+          statusTab={status}
+          isDetailOpen={openDetails.includes(item.id)}
+          onToggleDetail={() => toggleDetail(item.id)}
+        />
       ))}
     </div>
   );
@@ -61,6 +73,7 @@ const RequestList = ({ requests, isLoading, status }) => {
 
 const UrgentIssue = () => {
   const [activeTab, setActiveTab] = useState("baru");
+  const [openDetails, setOpenDetails] = useState([]);
 
   const { count, isLoading: isCountLoading } = useGetUrgentIssueCount();
 
@@ -72,7 +85,21 @@ const UrgentIssue = () => {
     sortDirection: "desc",
   });
 
-  console.log(items);
+  const toggleDetail = (id) => {
+    setOpenDetails((prev) => {
+      // Jika card sudah terbuka → tutup
+      if (prev.includes(id)) {
+        return prev.filter((item) => item !== id);
+      }
+      // Jika belum terbuka → tambahkan
+      const newOpen = [...prev, id];
+      // Batasi maksimal 5 card
+      if (newOpen.length > 5) {
+        newOpen.shift(); // hapus card yang pertama dibuka
+      }
+      return newOpen;
+    });
+  };
 
   return (
     <div className="flex h-[calc(100vh-80px)] min-h-0 flex-col py-4">
@@ -118,6 +145,8 @@ const UrgentIssue = () => {
           requests={items}
           isLoading={isLoading}
           status={activeTab}
+          openDetails={openDetails}
+          toggleDetail={toggleDetail}
         />
       </div>
     </div>
