@@ -31,7 +31,7 @@ const PermintaanAngkut = () => {
   };
 
   return (
-    <div className="flex h-screen flex-col bg-background">
+    <div className="flex h-[calc(100vh-92px-48px)] flex-col bg-background">
       {/* Fixed Header - Search Input and Tabs */}
       <div className="flex-shrink-0 bg-white px-4 py-6">
         <h1 className="mb-4 text-base font-bold text-neutral-900">
