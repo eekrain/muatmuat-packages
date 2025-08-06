@@ -139,7 +139,13 @@ const OtpContainer = ({
       {/* Main content */}
       <div className="flex flex-1 items-center justify-center">
         <div
-          className={`flex w-full ${isVerified ? "max-w-[441px]" : "max-w-[452px]"} flex-col items-center gap-y-5`}
+          className={`flex w-full ${
+            isVerified
+              ? "max-w-[441px]"
+              : type !== "forgot-password"
+                ? "max-w-[452px]"
+                : ""
+          } flex-col items-center gap-y-5`}
         >
           {/* Section 1: Logo and Tagline */}
           <div className="mb-6 flex w-full flex-col items-center text-center text-neutral-50">
@@ -221,9 +227,11 @@ const OtpContainer = ({
               {/* Section 3: OTP Form Content */}
               <div className="flex w-full flex-col items-center">
                 {/* Email verification message */}
-                <div className="max-w-[452px] text-center text-base font-medium leading-[19.2px] text-neutral-50">
+                <div
+                  className={`${type === "forgot-password" ? "" : "max-w-[452px]"} text-center text-base font-medium leading-[19.2px] text-neutral-50`}
+                >
                   {type !== "forgot-password" &&
-                    "Email dan password kamu berhasil dibuat."}
+                    "Email dan password kamu berhasil dibuat."}{" "}
                   Mohon cek pesan Whatsapp di perangkat kamu untuk melanjutkan
                   pendaftaran
                 </div>
@@ -326,7 +334,7 @@ const OtpContainer = ({
                   <h1 className="text-center text-2xl font-bold leading-[29px] text-white">
                     Selamat Pendaftaran Kamu Berhasil
                   </h1>
-                  <p className="text-center text-base font-medium leading-[19px] text-white">
+                  <p className="max-w-[370px] text-center text-base font-medium leading-[19px] text-white">
                     Akun Transporter Muatrans Kamu berhasil terdaftar dan
                     terverifikasi
                   </p>

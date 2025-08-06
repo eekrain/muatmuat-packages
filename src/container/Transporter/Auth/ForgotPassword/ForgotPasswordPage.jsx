@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React from "react";
+import { useEffect, useState } from "react";
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useForm } from "react-hook-form";
@@ -25,10 +25,17 @@ const ForgotPasswordSchema = v.object({
 });
 
 const ForgotPasswordPage = () => {
+  // State untuk menangani error akun tidak ditemukan
+  const [accountNotFound, setAccountNotFound] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   // Integrasi react-hook-form dengan valibotResolver
   const {
     register,
     handleSubmit,
+    setError,
+    watch,
+    clearErrors,
     formState: { errors },
   } = useForm({
     resolver: valibotResolver(ForgotPasswordSchema),
@@ -36,12 +43,42 @@ const ForgotPasswordPage = () => {
       whatsapp: "",
     },
   });
+
+  // Watch for changes in the whatsapp field
+  useEffect(() => {
+    const subscription = watch((value, { name }) => {
+      if (name === "whatsapp" && accountNotFound) {
+        setAccountNotFound(false);
+        clearErrors("whatsapp");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [watch, accountNotFound, clearErrors]);
   const router = useRouter();
 
-  const onSubmit = (data) => {
-    console.log("Mencari akun dengan No. Whatsapp:", data.whatsapp);
-    alert(`Mencari akun untuk nomor ${data.whatsapp}...`);
+  const onSubmit = async (data) => {
+    // Reset error status
+    setAccountNotFound(false);
+    setIsLoading(true);
 
+    // Simulasi request API dengan delay
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
+    // Simulasi kondisi khusus untuk nomor 081234512345
+    if (data.whatsapp === "081234512345") {
+      setError("whatsapp", {
+        type: "manual",
+        message: "Akun tidak ditemukan. Coba lagi dengan No. Whatsapp lain",
+      });
+      setAccountNotFound(true);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(false);
+
+    // Lanjutkan ke halaman OTP jika nomor valid
     router.push(`/otp?whatsapp=${data.whatsapp}&type=forgot-password`);
   };
 
@@ -71,7 +108,14 @@ const ForgotPasswordPage = () => {
           >
             <div className="flex flex-col">
               <Input
-                {...register("whatsapp")}
+                {...register("whatsapp", {
+                  onChange: () => {
+                    if (accountNotFound) {
+                      setAccountNotFound(false);
+                      clearErrors("whatsapp");
+                    }
+                  },
+                })}
                 placeholder="No. Whatsapp"
                 type="tel"
                 icon={{
@@ -83,6 +127,7 @@ const ForgotPasswordPage = () => {
                   containerClassName: "!h-[40px]",
                   iconClassName: "size-5",
                 }}
+                disabled={isLoading}
               />
             </div>
 

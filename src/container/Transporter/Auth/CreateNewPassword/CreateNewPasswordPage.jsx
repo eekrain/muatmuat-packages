@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 // HAPUS import valibot
 // import { valibotResolver } from "@hookform/resolvers/valibot";
@@ -14,14 +15,18 @@ import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 
 const CreateNewPasswordPage = () => {
+  const route = useRouter();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
     handleSubmit,
     watch,
+    setError,
+    clearErrors,
     formState: { errors, isValid },
   } = useForm({
     // HAPUS resolver dari sini
@@ -36,6 +41,14 @@ const CreateNewPasswordPage = () => {
   // 'watch' tetap digunakan untuk mendapatkan nilai password secara real-time
   const passwordValue = watch("password");
 
+  // Only clear manual error when password changes, don't set it during typing
+  useEffect(() => {
+    // Only clear errors when the user changes the password after a manual error was set
+    if (errors.password?.type === "manual" && passwordValue !== "Password123") {
+      clearErrors("password");
+    }
+  }, [passwordValue, clearErrors, errors.password?.type]);
+
   const togglePasswordVisibility = () => {
     setIsPasswordVisible((prev) => !prev);
   };
@@ -45,8 +58,27 @@ const CreateNewPasswordPage = () => {
   };
 
   const onSubmit = (data) => {
-    console.log("Password berhasil diubah:", { password: data.password });
-    alert("Password berhasil diubah!");
+    setIsSubmitting(true);
+
+    // Simulate checking if password is the same as previous one
+    // This check is ONLY performed when the form is submitted
+    if (data.password === "Password123") {
+      setError("password", {
+        type: "manual",
+        message: "Password tidak boleh sama dengan sebelumnya",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Simulate API call with delay
+    setTimeout(() => {
+      setIsSubmitting(false);
+      //   alert("Password berhasil diubah!");
+      console.log("halo");
+
+      route.push("/password-success");
+    }, 1000);
   };
 
   return (
@@ -78,6 +110,7 @@ const CreateNewPasswordPage = () => {
                     message:
                       "Password harus terdapat huruf besar, kecil dan angka. Minimal 8 karakter.",
                   },
+                  // No real-time validation for password reuse
                 })}
                 type={isPasswordVisible ? "text" : "password"}
                 placeholder="Password"
@@ -154,7 +187,7 @@ const CreateNewPasswordPage = () => {
 
             <Button
               type="submit"
-              disabled={!isValid}
+              disabled={!isValid || isSubmitting}
               className="mt-6 w-full py-5 text-muat-trans-secondary-900 disabled:border-none disabled:bg-neutral-200 disabled:text-neutral-500"
               variant={
                 isValid ? "muattrans-primary" : "muattrans-primary-secondary"

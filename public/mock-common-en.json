@@ -1,4 +1,7 @@
 {
+  "PasswordSuccessPage.titlePasswordChanged": "Password Successfully Changed",
+  "PasswordSuccessPage.descriptionLoginWithNewPassword": "Please login to your Muatrans account using your new password",
+  "PasswordSuccessPage.buttonLoginToMuatrans": "Login to Muatrans",
   "RingkasanStatusPesananScreen.titleRingkasanStatusPesanan": "Order Status Summary",
   "RingkasanStatusPesananScreen.badgeDriverBelumBerangkat": "{count} Driver Not Departed",
   "RingkasanStatusPesananScreen.textPesananAndaBeradaDalamTahap": "Your order is in the stage:",

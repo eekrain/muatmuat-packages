@@ -1,4 +1,7 @@
 {
+  "PasswordSuccessPage.titlePasswordChanged": "密码修改成功",
+  "PasswordSuccessPage.descriptionLoginWithNewPassword": "请使用新密码登录您的Muatrans账户",
+  "PasswordSuccessPage.buttonLoginToMuatrans": "登录Muatrans",
   "RingkasanStatusPesananScreen.titleRingkasanStatusPesanan": "订单状态摘要",
   "RingkasanStatusPesananScreen.badgeDriverBelumBerangkat": "{count} 司机尚未出发",
   "RingkasanStatusPesananScreen.textPesananAndaBeradaDalamTahap": "您的订单处于阶段：",
