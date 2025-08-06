@@ -42,7 +42,7 @@ const OtpContainer = ({
   const defaultExpiryDate = useMemo(() => {
     return formValues?.expiresIn
       ? formValues.expiresIn
-      : addMinutes(new Date(), 0.1);
+      : addMinutes(new Date(), 2);
   }, [formValues?.expiresIn]);
 
   const { countdown, isCountdownFinished } = useCountdown({
@@ -82,7 +82,11 @@ const OtpContainer = ({
     if (!formValues?.expiresIn || isAfter(Date.now(), formValues?.expiresIn)) {
       setNotification({
         status: "success",
-        message: "Berhasil mengirim ulang OTP",
+        message: t(
+          "OtpContainer.messageResendSuccess",
+          {},
+          "Berhasil mengirim ulang OTP"
+        ),
       });
     }
   };
@@ -116,12 +120,20 @@ const OtpContainer = ({
           ) {
             setNotification({
               status: "error",
-              message: "OTP yang kamu masukan telah expired",
+              message: t(
+                "OtpContainer.messageOtpExpired",
+                {},
+                "OTP yang kamu masukan telah expired"
+              ),
             });
           } else {
             setNotification({
               status: "error",
-              message: "OTP yang kamu masukan salah",
+              message: t(
+                "OtpContainer.messageOtpIncorrect",
+                {},
+                "OTP yang kamu masukan salah"
+              ),
             });
           }
         });
@@ -231,9 +243,16 @@ const OtpContainer = ({
                   className={`${type === "forgot-password" ? "" : "max-w-[452px]"} text-center text-base font-medium leading-[19.2px] text-neutral-50`}
                 >
                   {type !== "forgot-password" &&
-                    "Email dan password kamu berhasil dibuat."}{" "}
-                  Mohon cek pesan Whatsapp di perangkat kamu untuk melanjutkan
-                  pendaftaran
+                    t(
+                      "OtpContainer.textEmailPasswordCreated",
+                      {},
+                      "Email dan password kamu berhasil dibuat."
+                    )}{" "}
+                  {t(
+                    "OtpContainer.textCheckWhatsapp",
+                    {},
+                    "Mohon cek pesan Whatsapp di perangkat kamu untuk melanjutkan pendaftaran"
+                  )}
                 </div>
 
                 {/* OTP input section */}
@@ -241,7 +260,11 @@ const OtpContainer = ({
                   <div className="flex w-full flex-wrap items-center justify-center gap-6">
                     <div className="flex items-center gap-3">
                       <div className="text-sm font-bold leading-[16.8px] text-neutral-50">
-                        No. Whatsapp Kamu
+                        {t(
+                          "OtpContainer.labelWhatsappNumber",
+                          {},
+                          "No. Whatsapp Kamu"
+                        )}
                       </div>
                       <div className="max-w-[176px] truncate text-sm font-semibold leading-[16.8px] text-[#EBEBEB]">
                         {number || "0893435352125"}
@@ -258,7 +281,7 @@ const OtpContainer = ({
                           )}
                           disabled={!isCountdownFinished}
                         >
-                          Ganti
+                          {t("OtpContainer.buttonChange", {}, "Ganti")}
                         </Button>
                       )}
                     </div>
@@ -322,7 +345,7 @@ const OtpContainer = ({
                   isCountdownFinished && "!bg-[#FFC217] !text-primary-700"
                 )}
               >
-                {/* {t("btnResend")} */} Kirim Ulang OTP
+                {t("OtpContainer.buttonResendOtp", {}, "Kirim Ulang OTP")}
               </Button>
             </>
           ) : (
@@ -332,11 +355,18 @@ const OtpContainer = ({
                 {/* Success Title and Message */}
                 <div className="flex w-full max-w-[414px] flex-col items-center gap-3">
                   <h1 className="text-center text-2xl font-bold leading-[29px] text-white">
-                    Selamat Pendaftaran Kamu Berhasil
+                    {t(
+                      "OtpContainer.titleRegistrationSuccess",
+                      {},
+                      "Selamat Pendaftaran Kamu Berhasil"
+                    )}
                   </h1>
                   <p className="max-w-[370px] text-center text-base font-medium leading-[19px] text-white">
-                    Akun Transporter Muatrans Kamu berhasil terdaftar dan
-                    terverifikasi
+                    {t(
+                      "OtpContainer.textAccountVerified",
+                      {},
+                      "Akun Transporter Muatrans Kamu berhasil terdaftar dan terverifikasi"
+                    )}
                   </p>
                 </div>
 
@@ -348,7 +378,11 @@ const OtpContainer = ({
                     className="mt-16 flex w-[200px] items-center justify-center rounded-3xl bg-[#FFC217] text-primary-700 md:h-10"
                   >
                     <span className="font-semibold text-primary-700">
-                      Masuk ke Muatrans
+                      {t(
+                        "OtpContainer.buttonLoginToMuatrans",
+                        {},
+                        "Masuk ke Muatrans"
+                      )}
                     </span>
                   </Button>
                 </div>
@@ -371,17 +405,21 @@ const OtpContainer = ({
         size="big"
         setIsOpen={setIsChangeNumberModalOpen}
         title={{
-          text: "Ubah No. Whatsapp",
+          text: t("OtpContainer.titleChangeWhatsapp", {}, "Ubah No. Whatsapp"),
           className: "text-center",
         }}
         confirm={{
-          text: "Ubah",
+          text: t("OtpContainer.buttonChange", {}, "Ubah"),
           onClick: (_newWhatsappNumber) => {
             setIsChangeNumberModalOpen(false);
             // Set success notification when WhatsApp number is changed
             setNotification({
               status: "success",
-              message: "Berhasil mengubah No. Whatsapp kamu",
+              message: t(
+                "OtpContainer.messageChangeWhatsappSuccess",
+                {},
+                "Berhasil mengubah No. Whatsapp kamu"
+              ),
             });
             handleRequestOtp(formValues);
           },

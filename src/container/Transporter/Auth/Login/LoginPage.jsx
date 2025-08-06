@@ -15,19 +15,34 @@ import Card from "@/components/Card/Card";
 import Checkbox from "@/components/Form/Checkbox";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
-
-const LoginSchema = v.object({
-  emailOrPhone: v.pipe(
-    v.string(),
-    v.minLength(1, "No. Whatsapp / Email wajib diisi."),
-    v.email("Format email tidak valid.")
-  ),
-  password: v.pipe(v.string(), v.minLength(1, "Password wajib diisi.")),
-  keepLoggedIn: v.optional(v.boolean()),
-});
+import { useTranslation } from "@/hooks/use-translation";
 
 const LoginPage = () => {
+  const { t } = useTranslation();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+  const LoginSchema = v.object({
+    emailOrPhone: v.pipe(
+      v.string(),
+      v.minLength(
+        1,
+        t(
+          "LoginPage.errorEmailRequired",
+          {},
+          "No. Whatsapp / Email wajib diisi."
+        )
+      ),
+      v.email(t("LoginPage.errorEmailInvalid", {}, "Format email tidak valid."))
+    ),
+    password: v.pipe(
+      v.string(),
+      v.minLength(
+        1,
+        t("LoginPage.errorPasswordRequired", {}, "Password wajib diisi.")
+      )
+    ),
+    keepLoggedIn: v.optional(v.boolean()),
+  });
 
   const {
     register,
@@ -76,7 +91,11 @@ const LoginPage = () => {
     if (!isEmailOrPhoneValid) {
       setFormErrors((prev) => ({
         ...prev,
-        emailOrPhone: "No. Whatsapp / Email yang kamu masukkan salah",
+        emailOrPhone: t(
+          "LoginPage.errorEmailIncorrect",
+          {},
+          "No. Whatsapp / Email yang kamu masukkan salah"
+        ),
       }));
       return;
     }
@@ -85,14 +104,18 @@ const LoginPage = () => {
     if (data.password !== mockCredentials.password) {
       setFormErrors((prev) => ({
         ...prev,
-        password: "Password yang kamu masukkan salah",
+        password: t(
+          "LoginPage.errorPasswordIncorrect",
+          {},
+          "Password yang kamu masukkan salah"
+        ),
       }));
       return;
     }
 
     // If we get here, authentication was successful
     router.push("/dashboard");
-    alert("Login Berhasil!");
+    alert(t("LoginPage.alertLoginSuccess", {}, "Login Berhasil!"));
   };
 
   return (
@@ -101,20 +124,22 @@ const LoginPage = () => {
         <div className="flex flex-col items-center">
           <Image
             src="/icons/muattrans.svg"
-            alt="Muatrans Logo"
+            alt={t("LoginPage.altMuatransLogo", {}, "Muatrans Logo")}
             width={136}
             height={27.30501937866211}
             className="mb-5"
           />
 
           <h1 className="mb-3 font-semibold text-neutral-900">
-            Selamat Datang di muatrans
+            {t("LoginPage.titleWelcome", {}, "Selamat Datang di muatrans")}
           </h1>
 
           <p className="mb-8 max-w-xl text-center text-xs font-normal text-neutral-700">
-            Dapatkan muatan kapan saja, di mana saja. Temukan pengiriman muatan
-            yang sesuai dengan armada kamu secara instan di muatrans. Kelola
-            perjalanan lebih efisien dan maksimalkan pendapatan
+            {t(
+              "LoginPage.descriptionIntro",
+              {},
+              "Dapatkan muatan kapan saja, di mana saja. Temukan pengiriman muatan yang sesuai dengan armada kamu secara instan di muatrans. Kelola perjalanan lebih efisien dan maksimalkan pendapatan"
+            )}
           </p>
 
           <form
@@ -124,7 +149,11 @@ const LoginPage = () => {
             <div className="flex flex-col gap-4">
               <Input
                 {...register("emailOrPhone")}
-                placeholder="No. Whatsapp / Email"
+                placeholder={t(
+                  "LoginPage.placeholderEmailOrPhone",
+                  {},
+                  "No. Whatsapp / Email"
+                )}
                 icon={{
                   left: "/icons/user-login.svg",
                 }}
@@ -145,7 +174,7 @@ const LoginPage = () => {
               <Input
                 {...register("password")}
                 type={isPasswordVisible ? "text" : "password"}
-                placeholder="Password"
+                placeholder={t("LoginPage.placeholderPassword", {}, "Password")}
                 appearance={{
                   containerClassName: "!h-[40px]",
                   iconClassName: "size-5",
@@ -156,7 +185,11 @@ const LoginPage = () => {
                     <button
                       type="button"
                       onClick={togglePasswordVisibility}
-                      aria-label="Toggle password visibility"
+                      aria-label={t(
+                        "LoginPage.ariaLabelTogglePassword",
+                        {},
+                        "Toggle password visibility"
+                      )}
                       className="focus:outline-none"
                     >
                       <IconComponent
@@ -167,7 +200,11 @@ const LoginPage = () => {
                         }
                         height={20}
                         width={20}
-                        alt="Toggle visibility"
+                        alt={t(
+                          "LoginPage.altToggleVisibility",
+                          {},
+                          "Toggle visibility"
+                        )}
                         className="text-neutral-500"
                       />
                     </button>
@@ -186,7 +223,7 @@ const LoginPage = () => {
                 control={control}
                 render={({ field }) => (
                   <Checkbox
-                    label="Tetap Masuk"
+                    label={t("LoginPage.labelStayLoggedIn", {}, "Tetap Masuk")}
                     checked={field.value}
                     onChange={(event) => field.onChange(event.checked)}
                   />
@@ -196,7 +233,7 @@ const LoginPage = () => {
                 href="/lupa-password"
                 className="text-xs font-medium text-primary-700 hover:text-primary-800"
               >
-                Lupa Password?
+                {t("LoginPage.linkForgotPassword", {}, "Lupa Password?")}
               </Link>
             </div>
 
@@ -205,7 +242,7 @@ const LoginPage = () => {
               variant="muattrans-primary"
               className="mt-6 w-full py-5 text-muat-trans-secondary-900"
             >
-              Masuk
+              {t("LoginPage.buttonLogin", {}, "Masuk")}
             </Button>
           </form>
         </div>

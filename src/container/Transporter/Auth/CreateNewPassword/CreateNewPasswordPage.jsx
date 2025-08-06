@@ -13,8 +13,10 @@ import Button from "@/components/Button/Button";
 import Card from "@/components/Card/Card";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 
 const CreateNewPasswordPage = () => {
+  const { t } = useTranslation();
   const route = useRouter();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
@@ -65,7 +67,11 @@ const CreateNewPasswordPage = () => {
     if (data.password === "Password123") {
       setError("password", {
         type: "manual",
-        message: "Password tidak boleh sama dengan sebelumnya",
+        message: t(
+          "CreateNewPasswordPage.messageErrorPasswordSameAsBefore",
+          {},
+          "Password tidak boleh sama dengan sebelumnya"
+        ),
       });
       setIsSubmitting(false);
       return;
@@ -87,14 +93,22 @@ const CreateNewPasswordPage = () => {
         <div className="flex flex-col items-center">
           <Image
             src="/icons/muattrans.svg"
-            alt="Muatrans Logo"
+            alt={t(
+              "CreateNewPasswordPage.altMuatransLogo",
+              {},
+              "Muatrans Logo"
+            )}
             width={136}
             height={27.30501937866211}
             className="mb-3"
           />
 
           <h1 className="mb-6 font-semibold text-neutral-900">
-            Buat Password Baru
+            {t(
+              "CreateNewPasswordPage.titleCreateNewPassword",
+              {},
+              "Buat Password Baru"
+            )}
           </h1>
 
           <form
@@ -104,16 +118,27 @@ const CreateNewPasswordPage = () => {
             <div className="flex flex-col gap-4">
               <Input
                 {...register("password", {
-                  required: "Password wajib diisi.",
+                  required: t(
+                    "CreateNewPasswordPage.messageErrorPasswordRequired",
+                    {},
+                    "Password wajib diisi."
+                  ),
                   pattern: {
                     value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
-                    message:
-                      "Password harus terdapat huruf besar, kecil dan angka. Minimal 8 karakter.",
+                    message: t(
+                      "CreateNewPasswordPage.messageErrorPasswordFormat",
+                      {},
+                      "Password harus terdapat huruf besar, kecil dan angka. Minimal 8 karakter."
+                    ),
                   },
                   // No real-time validation for password reuse
                 })}
                 type={isPasswordVisible ? "text" : "password"}
-                placeholder="Password"
+                placeholder={t(
+                  "CreateNewPasswordPage.placeholderPassword",
+                  {},
+                  "Password"
+                )}
                 appearance={{
                   containerClassName: "!h-[40px]",
                   iconClassName: "size-5",
@@ -124,7 +149,11 @@ const CreateNewPasswordPage = () => {
                     <button
                       type="button"
                       onClick={togglePasswordVisibility}
-                      aria-label="Toggle password visibility"
+                      aria-label={t(
+                        "CreateNewPasswordPage.ariaLabelTogglePasswordVisibility",
+                        {},
+                        "Toggle password visibility"
+                      )}
                       className="focus:outline-none"
                     >
                       <IconComponent
@@ -133,7 +162,11 @@ const CreateNewPasswordPage = () => {
                             ? "/icons/eye.svg"
                             : "/icons/eye-off.svg"
                         }
-                        alt="Toggle visibility"
+                        alt={t(
+                          "CreateNewPasswordPage.altToggleVisibility",
+                          {},
+                          "Toggle visibility"
+                        )}
                         width={20}
                         height={20}
                         className="text-neutral-500"
@@ -147,12 +180,25 @@ const CreateNewPasswordPage = () => {
 
               <Input
                 {...register("confirmPassword", {
-                  required: "Konfirmasi Password wajib diisi.",
+                  required: t(
+                    "CreateNewPasswordPage.messageErrorConfirmPasswordRequired",
+                    {},
+                    "Konfirmasi Password wajib diisi."
+                  ),
                   validate: (value) =>
-                    value === passwordValue || "Password tidak sama.",
+                    value === passwordValue ||
+                    t(
+                      "CreateNewPasswordPage.messageErrorPasswordNotMatch",
+                      {},
+                      "Password tidak sama."
+                    ),
                 })}
                 type={isConfirmPasswordVisible ? "text" : "password"}
-                placeholder="Konfirmasi Password"
+                placeholder={t(
+                  "CreateNewPasswordPage.placeholderConfirmPassword",
+                  {},
+                  "Konfirmasi Password"
+                )}
                 appearance={{
                   containerClassName: "!h-[40px]",
                   iconClassName: "size-5",
@@ -163,7 +209,11 @@ const CreateNewPasswordPage = () => {
                     <button
                       type="button"
                       onClick={toggleConfirmPasswordVisibility}
-                      aria-label="Toggle confirm password visibility"
+                      aria-label={t(
+                        "CreateNewPasswordPage.ariaLabelToggleConfirmPasswordVisibility",
+                        {},
+                        "Toggle confirm password visibility"
+                      )}
                       className="focus:outline-none"
                     >
                       <IconComponent
@@ -172,7 +222,11 @@ const CreateNewPasswordPage = () => {
                             ? "/icons/eye.svg"
                             : "/icons/eye-off.svg"
                         }
-                        alt="Toggle visibility"
+                        alt={t(
+                          "CreateNewPasswordPage.altToggleVisibility",
+                          {},
+                          "Toggle visibility"
+                        )}
                         className="text-neutral-500"
                         width={20}
                         height={20}
@@ -193,7 +247,11 @@ const CreateNewPasswordPage = () => {
                 isValid ? "muattrans-primary" : "muattrans-primary-secondary"
               }
             >
-              Ubah Password
+              {t(
+                "CreateNewPasswordPage.buttonChangePassword",
+                {},
+                "Ubah Password"
+              )}
             </Button>
           </form>
         </div>

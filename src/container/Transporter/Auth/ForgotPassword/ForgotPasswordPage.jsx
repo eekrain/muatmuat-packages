@@ -11,20 +11,36 @@ import * as v from "valibot";
 import Button from "@/components/Button/Button";
 import Card from "@/components/Card/Card";
 import Input from "@/components/Form/Input";
+import { useTranslation } from "@/hooks/use-translation";
 
 // Regex untuk validasi dasar nomor HP Indonesia
 const phoneRegex = /^08[0-9]{8,12}$/;
 
-// Skema validasi menggunakan Valibot
-const ForgotPasswordSchema = v.object({
-  whatsapp: v.pipe(
-    v.string(),
-    v.minLength(1, "No. Whatsapp wajib diisi."),
-    v.regex(phoneRegex, "Format No. Whatsapp tidak valid. Contoh: 081234567890")
-  ),
-});
-
 const ForgotPasswordPage = () => {
+  const { t } = useTranslation();
+
+  // Skema validasi menggunakan Valibot
+  const ForgotPasswordSchema = v.object({
+    whatsapp: v.pipe(
+      v.string(),
+      v.minLength(
+        1,
+        t(
+          "ForgotPasswordPage.errorWhatsappRequired",
+          {},
+          "No. Whatsapp wajib diisi."
+        )
+      ),
+      v.regex(
+        phoneRegex,
+        t(
+          "ForgotPasswordPage.errorWhatsappInvalid",
+          {},
+          "Format No. Whatsapp tidak valid. Contoh: 081234567890"
+        )
+      )
+    ),
+  });
   // State untuk menangani error akun tidak ditemukan
   const [accountNotFound, setAccountNotFound] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -69,7 +85,11 @@ const ForgotPasswordPage = () => {
     if (data.whatsapp === "081234512345") {
       setError("whatsapp", {
         type: "manual",
-        message: "Akun tidak ditemukan. Coba lagi dengan No. Whatsapp lain",
+        message: t(
+          "ForgotPasswordPage.errorAccountNotFound",
+          {},
+          "Akun tidak ditemukan. Coba lagi dengan No. Whatsapp lain"
+        ),
       });
       setAccountNotFound(true);
       setIsLoading(false);
@@ -88,18 +108,26 @@ const ForgotPasswordPage = () => {
         <div className="flex flex-col items-center">
           <Image
             src="/icons/muattrans.svg"
-            alt="Muatrans Logo"
+            alt={t("common.muatransLogo", {}, "Muatrans Logo")}
             width={136}
             height={27.30501937866211}
             className="mb-5"
           />
 
           <h1 className="mb-3 font-semibold text-neutral-900">
-            Temukan Akun muatrans Kamu
+            {t(
+              "ForgotPasswordPage.findYourAccount",
+              {},
+              "Temukan Akun muatrans Kamu"
+            )}
           </h1>
 
           <p className="mb-8 max-w-xl text-center text-xs font-normal text-neutral-700">
-            Masukkan No. Whatsapp yang telah terhubung dengan akun muatrans
+            {t(
+              "ForgotPasswordPage.enterWhatsappText",
+              {},
+              "Masukkan No. Whatsapp yang telah terhubung dengan akun muatrans"
+            )}
           </p>
 
           <form
@@ -116,7 +144,7 @@ const ForgotPasswordPage = () => {
                     }
                   },
                 })}
-                placeholder="No. Whatsapp"
+                placeholder={t("common.whatsappNumber", {}, "No. Whatsapp")}
                 type="tel"
                 icon={{
                   left: "/icons/whatsapp.svg",
@@ -136,7 +164,7 @@ const ForgotPasswordPage = () => {
               variant="muattrans-primary"
               className="mt-6 w-full py-5 text-muat-trans-secondary-900"
             >
-              Cari Akun
+              {t("ForgotPasswordPage.searchAccount", {}, "Cari Akun")}
             </Button>
           </form>
         </div>
