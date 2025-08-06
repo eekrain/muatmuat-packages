@@ -8,13 +8,13 @@ import {
   Loader2,
   MapPin,
   Phone,
-  Search,
   SlidersHorizontal,
   Truck,
   User,
   X,
 } from "lucide-react";
 
+import Search from "@/components/Search/Search";
 import { cn } from "@/lib/utils";
 import { getTruckIcon } from "@/lib/utils/armadaStatus";
 import { useGetFleetList } from "@/services/Transporter/monitoring/getFleetList";
@@ -90,7 +90,7 @@ const DaftarArmada = ({ onClose, onExpand }) => {
   );
 
   return (
-    <section className="flex flex-col rounded-xl bg-white pt-4">
+    <div className="flex h-[calc(100vh-92px-96px)] flex-col rounded-xl bg-white pt-4">
       {/* Header */}
       <div className="px-4">
         <div className="flex items-center justify-between pb-3">
@@ -106,21 +106,16 @@ const DaftarArmada = ({ onClose, onExpand }) => {
 
       {/* Search */}
       <div className="mb-4 px-4">
-        <div className="flex h-[32px] w-[318px] gap-[12px]">
-          <div className="relative h-full flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
-            <input
-              type="text"
-              placeholder="Cari No. Polisi / Nama Driver"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="h-full w-full rounded-lg border border-gray-300 pl-10 pr-4 text-sm placeholder:text-[12px] hover:border-blue-500 focus:border-transparent focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
-          <button
-            className="flex items-center space-x-2 rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-600"
-            style={{ height: "100%" }}
-          >
+        <div className="flex gap-[12px]">
+          <Search
+            placeholder="Cari No. Polisi / Nama Driver"
+            onSearch={setSearchTerm}
+            autoSearch={true}
+            debounceTime={300}
+            defaultValue={searchTerm}
+            inputClassName="w-[229px]"
+          />
+          <button className="flex h-8 items-center space-x-2 rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-600">
             <span className="text-gray-600">Filter</span>
             <SlidersHorizontal className="h-4 w-4 text-gray-600" />
           </button>
@@ -369,7 +364,7 @@ const DaftarArmada = ({ onClose, onExpand }) => {
           title="Pasangkan Driver"
         />
       )}
-    </section>
+    </div>
   );
 };
 

@@ -32,6 +32,7 @@ const Page = () => {
   const [showLeftPanel, setShowLeftPanel] = useState(false);
   const [selectedFleetId, setSelectedFleetId] = useState(null);
   const [selectedRouteId, setSelectedRouteId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Map query param values to tab values
   const getTabValue = (queryValue) => {
@@ -101,8 +102,23 @@ const Page = () => {
     }
   };
 
+  // Handle search
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    // If there's a match, select the first matching fleet
+    if (query && filteredFleetMarkers.length > 0) {
+      const firstMatch = filteredFleetMarkers[0];
+      setSelectedFleetId(firstMatch.id);
+      // Zoom in on the selected fleet
+      setMapZoom(16);
+    } else if (!query) {
+      setSelectedFleetId(null);
+      setMapZoom(12);
+    }
+  };
+
   // Convert fleet locations to map markers
-  const fleetMarkers =
+  const allFleetMarkers =
     fleetLocationsData?.fleets?.map((fleet) => ({
       id: fleet.id,
       position: { lat: fleet.latitude, lng: fleet.longitude },
@@ -113,6 +129,20 @@ const Page = () => {
       heading: fleet.heading || 0,
       previousPosition: fleet.previousPosition,
     })) || [];
+
+  // Filter fleet markers based on search query
+  const filteredFleetMarkers = searchQuery
+    ? allFleetMarkers.filter(
+        (fleet) =>
+          fleet.licensePlate
+            ?.toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          fleet.driverName?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : allFleetMarkers;
+
+  // Use filtered markers for display
+  const fleetMarkers = filteredFleetMarkers;
 
   // Handle fleet marker click
   const handleFleetClick = (fleet) => {
@@ -134,12 +164,15 @@ const Page = () => {
           <MonitoringMap
             fleetMarkers={fleetMarkers}
             center={
-              fleetMarkers.length > 0
-                ? fleetMarkers[0].position
-                : {
-                    lat: -6.2,
-                    lng: 106.816666,
-                  }
+              selectedFleetId &&
+              fleetMarkers.find((f) => f.id === selectedFleetId)
+                ? fleetMarkers.find((f) => f.id === selectedFleetId).position
+                : fleetMarkers.length > 0
+                  ? fleetMarkers[0].position
+                  : {
+                      lat: -6.2,
+                      lng: 106.816666,
+                    }
             }
             zoom={mapZoom}
             selectedFleetId={selectedFleetId}
@@ -166,6 +199,7 @@ const Page = () => {
               onZoomOut={handleZoomOut}
               onClickDaftarArmada={handleOpenLeftPanel}
               hideTopNavigation={showLeftPanel}
+              onSearch={handleSearch}
             />
           )}
 
@@ -176,9 +210,7 @@ const Page = () => {
               showLeftPanel ? "translate-x-0" : "-translate-x-full"
             )}
           >
-            <div className="flex h-full">
-              <DaftarArmada onClose={handleCloseLeftPanel} />
-            </div>
+            <DaftarArmada onClose={handleCloseLeftPanel} />
           </div>
         </div>
 
