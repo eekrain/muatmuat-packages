@@ -31,24 +31,24 @@ const PermintaanAngkut = () => {
   };
 
   return (
-    <div className="flex h-[calc(100vh-92px-48px)] flex-col bg-background">
+    <div className="flex h-[calc(100vh-92px-48px)] flex-col bg-white">
       {/* Fixed Header - Search Input and Tabs */}
-      <div className="flex-shrink-0 bg-white px-4 py-4">
+      <div className="flex-shrink-0 bg-white px-4 py-6">
         <h1 className="mb-4 text-base font-bold text-neutral-900">
           Permintaan Jasa Angkut
         </h1>
 
         {/* Search Input */}
         <div className="mb-4">
-          <div className="relative">
+          <div className="flex h-8 w-full items-center gap-2 rounded-md border border-neutral-300 bg-neutral-50 px-3">
             <IconComponent
               src="/icons/search.svg"
-              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500"
+              className="h-4 w-4 text-[#7B7B7B]"
             />
             <input
               type="text"
               placeholder="Cari No. Pesanan / Armada / Lokasi Muat & Bongkar / Muatan"
-              className="w-full rounded-lg border border-neutral-300 bg-neutral-50 px-2 py-2 pl-10 text-sm text-neutral-700 placeholder:text-neutral-500 focus:border-primary-500 focus:outline-none"
+              className="h-full w-[338px] border-none bg-transparent py-0 text-xs font-medium leading-[120%] text-[#7B7B7B] placeholder:text-[#7B7B7B] focus:outline-none"
               value={searchValue}
               onChange={(e) => handleSearch(e.target.value)}
             />
@@ -56,25 +56,17 @@ const PermintaanAngkut = () => {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2">
+        <div className="flex h-7 w-[323px] gap-2">
           <button
             onClick={() => setActiveTab("tersedia")}
-            className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-              activeTab === "tersedia"
-                ? "bg-primary-700 text-white"
-                : "border border-neutral-300 bg-white text-neutral-600"
-            }`}
+            className="relative flex h-full w-[79px] items-center justify-center gap-1 rounded-full border border-[#176CF7] bg-[#E2F2FF] px-3 py-1 text-[10px] font-medium text-[#176CF7] transition-colors"
           >
             Tersedia ({data?.tabCounts?.tersedia ?? 4})
           </button>
 
           <button
             onClick={() => setActiveTab("halal_logistik")}
-            className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-              activeTab === "halal_logistik"
-                ? "bg-primary-700 text-white"
-                : "border border-neutral-300 bg-white text-neutral-600"
-            }`}
+            className="flex h-full w-[124px] items-center justify-center gap-1 rounded-full border border-[#F1F1F1] bg-[#F1F1F1] px-3 py-1 text-[10px] font-medium text-[#000000] transition-colors"
           >
             <IconComponent src="/icons/halal.svg" className="h-4 w-4" />
             Halal Logistik ({data?.tabCounts?.halal_logistik ?? 1})
@@ -82,11 +74,7 @@ const PermintaanAngkut = () => {
 
           <button
             onClick={() => setActiveTab("disimpan")}
-            className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-              activeTab === "disimpan"
-                ? "bg-primary-700 text-white"
-                : "border border-neutral-300 bg-white text-neutral-600"
-            }`}
+            className="flex h-full w-[104px] items-center justify-center gap-1 rounded-full border border-[#F1F1F1] bg-[#F1F1F1] px-3 py-1 text-[10px] font-medium text-[#000000] transition-colors"
           >
             <IconComponent src="/icons/bookmark.svg" className="h-4 w-4" />
             Disimpan ({data?.tabCounts?.disimpan ?? 0})
