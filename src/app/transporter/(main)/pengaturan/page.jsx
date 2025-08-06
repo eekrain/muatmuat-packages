@@ -24,9 +24,11 @@ import {
 import PageTitle from "@/components/PageTitle/PageTitle";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
 import { useGetAreaBongkarData } from "@/services/Transporter/pengaturan/getDataAreaBongkar";
-import { useGetMasterProvinces } from "@/services/Transporter/pengaturan/getDataAreaMuat";
 import {
   useGetAreaMuatData,
+  useGetMasterProvinces,
+} from "@/services/Transporter/pengaturan/getDataAreaMuat";
+import {
   useGetTransporterCargoConfig,
   useGetTransporterCargoStatus,
 } from "@/services/Transporter/pengaturan/getDataPengaturan";
