@@ -87,23 +87,27 @@ const UrgentIssue = () => {
 
   const toggleDetail = (id) => {
     setOpenDetails((prev) => {
-      // Jika card sudah terbuka → tutup
+      let newOpen;
+
+      // Jika id sudah ada → tutup
       if (prev.includes(id)) {
-        return prev.filter((item) => item !== id);
+        newOpen = prev.filter((item) => item !== id);
+      } else {
+        newOpen = [...prev, id];
       }
-      // Jika belum terbuka → tambahkan
-      const newOpen = [...prev, id];
-      // Batasi maksimal 5 card
+
+      // Jika lebih dari 5, sisakan 5 terakhir (yang terbaru)
       if (newOpen.length > 5) {
-        newOpen.shift(); // hapus card yang pertama dibuka
+        newOpen = newOpen.slice(newOpen.length - 5);
       }
+
       return newOpen;
     });
   };
 
   return (
-    <div className="flex h-[calc(100vh-92px-48px)] min-h-0 flex-col py-4">
-      <div className="flex-shrink-0 bg-white px-6 py-4">
+    <div className="flex h-[calc(100vh-92px-48px)] min-h-0 flex-col">
+      <div className="flex-shrink-0 bg-white px-4 py-6">
         <h1 className="mb-4 text-base font-bold text-neutral-900">
           Laporan Urgent Issue
         </h1>
@@ -140,7 +144,7 @@ const UrgentIssue = () => {
           </button>
         </div>
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto bg-white px-6">
+      <div className="min-h-0 flex-1 overflow-y-auto bg-white px-4">
         <RequestList
           requests={items}
           isLoading={isLoading}

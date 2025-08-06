@@ -9,7 +9,12 @@ import { toast } from "@/lib/toast";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { useUpdateUrgentIssueStatus } from "@/services/Transporter/monitoring/getUrgentIssues";
 
-export const UrgentIssueCard = ({ data, statusTab }) => {
+export const UrgentIssueCard = ({
+  data,
+  statusTab,
+  isDetailOpen,
+  onToggleDetail,
+}) => {
   const {
     id,
     typeName,
@@ -127,12 +132,12 @@ export const UrgentIssueCard = ({ data, statusTab }) => {
       </div>
       <div className="my-3 h-px w-full bg-neutral-400" />
       {/* Selesai - Lihat Detail */}
-      {statusDisplay === "selesai" && !showDetail && (
+      {statusDisplay === "selesai" && !isDetailOpen && (
         <div className="flex items-center justify-between">
           <button
             type="button"
             className="flex items-center gap-1 text-xs font-medium text-primary-700 hover:cursor-pointer"
-            onClick={() => setShowDetail(true)}
+            onClick={onToggleDetail}
           >
             Lihat Detail
             <IconComponent
@@ -149,7 +154,7 @@ export const UrgentIssueCard = ({ data, statusTab }) => {
         </div>
       )}
       {/* Selesai - Detail */}
-      {statusDisplay === "selesai" && showDetail && (
+      {statusDisplay === "selesai" && isDetailOpen && (
         <div>
           <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
             <div className="flex min-w-[140px] items-center gap-2">
@@ -212,7 +217,7 @@ export const UrgentIssueCard = ({ data, statusTab }) => {
             <button
               type="button"
               className="flex items-center gap-1 text-xs font-medium text-primary-700 hover:cursor-pointer"
-              onClick={() => setShowDetail(false)}
+              onClick={onToggleDetail}
             >
               Sembunyikan
               <IconComponent
