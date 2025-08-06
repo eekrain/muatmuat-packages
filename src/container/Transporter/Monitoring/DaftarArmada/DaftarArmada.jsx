@@ -15,25 +15,27 @@ import {
   X,
 } from "lucide-react";
 
+import { cn } from "@/lib/utils";
+// pastikan path sesuai
 import { getTruckIcon } from "@/lib/utils/armadaStatus";
 import { useGetFleetList } from "@/services/Transporter/monitoring/getFleetList";
 
 const DaftarArmada = ({ onClose }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [expandedItems, setExpandedItems] = useState({});
+  const [expandedId, setExpandedId] = useState(null);
 
-  // Fetch fleet data using SWR
   const {
     data: fleetData,
     isLoading,
     error,
-  } = useGetFleetList({
-    search: searchTerm,
-  });
+  } = useGetFleetList({ search: searchTerm });
 
-  // Process API data
   const fleets = fleetData?.fleets || [];
   const totalFleets = fleetData?.totalFleets || fleets.length;
+
+  const toggleExpanded = (id) => {
+    setExpandedId((prev) => (prev === id ? null : id));
+  };
 
   const getStatusIcon = (status) => {
     if (status === "EMERGENCY" || status === "MAINTENANCE") {
@@ -46,25 +48,6 @@ const DaftarArmada = ({ onClose }) => {
     return null;
   };
 
-  const formatLastUpdate = (dateString) => {
-    if (!dateString) return "Unknown";
-    const date = new Date(dateString);
-    return date.toLocaleString("id-ID", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const toggleExpanded = (id) => {
-    setExpandedItems((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
-
   const filteredData = fleets.filter(
     (fleet) =>
       fleet.licensePlate?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -72,32 +55,23 @@ const DaftarArmada = ({ onClose }) => {
   );
 
   return (
-    <div className="flex flex-col bg-white pt-4">
+    <section className="flex flex-col rounded-xl bg-white pt-4">
       {/* Header */}
-      <div className="mb-4 px-4">
+      <div className="px-4">
         <div className="flex items-center justify-between pb-3">
-          <div className="flex items-center space-x-2">
-            <h1 className="text-[14px] font-bold text-gray-900">
-              Daftar Armada{" "}
-              <span className="font-semibold">({totalFleets} Armada)</span>
-            </h1>
-          </div>
+          <h2 className="text-[14px] font-bold text-gray-900">
+            Daftar Armada{" "}
+            <span className="font-semibold">({totalFleets} Armada)</span>
+          </h2>
           <button className="text-blue-500" onClick={onClose}>
             <X className="h-5 w-5" />
           </button>
         </div>
       </div>
 
-      {/* Search and Filter */}
+      {/* Search */}
       <div className="mb-4 px-4">
-        <div
-          className="flex"
-          style={{
-            width: "318px",
-            height: "32px",
-            gap: "12px",
-          }}
-        >
+        <div className="flex h-[32px] w-[318px] gap-[12px]">
           <div className="relative h-full flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
             <input
@@ -105,7 +79,7 @@ const DaftarArmada = ({ onClose }) => {
               placeholder="Cari No. Polisi / Nama Driver"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="h-full w-full rounded-lg border border-gray-300 pl-10 pr-4 text-sm placeholder:text-[12px] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="h-full w-full rounded-lg border border-gray-300 pl-10 pr-4 text-sm placeholder:text-[12px] hover:border-blue-500 focus:border-transparent focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
           <button
@@ -146,104 +120,139 @@ const DaftarArmada = ({ onClose }) => {
             </div>
           </div>
         ) : (
-          <div className="space-y-4">
-            {filteredData.map((fleet) => (
-              <div
-                key={fleet.fleetId}
-                className={`overflow-hidden rounded-lg border bg-white transition-all duration-200 ${
-                  expandedItems[fleet.fleetId]
-                    ? "border-[#FFC217] bg-[#FFFBEB]"
-                    : "border-gray-200 hover:border-[#FFC217] hover:bg-[#FFFBEB]"
-                }`}
-              >
+          <div className="space-y-3">
+            {filteredData.map((fleet) => {
+              const isExpanded = expandedId === fleet.fleetId;
+
+              return (
                 <div
-                  className="cursor-pointer p-4"
-                  onClick={() => toggleExpanded(fleet.fleetId)}
+                  key={fleet.fleetId}
+                  className={cn(
+                    "overflow-hidden rounded-lg border transition-all duration-200",
+                    isExpanded
+                      ? "border-[#FFC217] bg-[#FFFBEB]"
+                      : "border-gray-200 bg-white hover:border-[#FFC217] hover:bg-[#FFFBEB]"
+                  )}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="flex h-6 w-6 items-center justify-center">
-                        <img
-                          src={`/icons/armada-truck/${getTruckIcon(fleet.status)}`}
-                          alt="Truck icon"
-                          className="h-full w-full object-contain"
+                  {/* Header / clickable */}
+                  <div
+                    className="cursor-pointer p-4"
+                    onClick={() => toggleExpanded(fleet.fleetId)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex h-8 w-8 items-center justify-center">
+                          <img
+                            src={`/icons/armada-truck/${getTruckIcon(fleet.status)}`}
+                            alt="Truck icon"
+                            className="h-full w-full object-contain"
+                          />
+                        </div>
+                        <span className="text-[14px] font-bold text-gray-900">
+                          {fleet.licensePlate}
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {getStatusIcon(fleet.status)}
+                        <ChevronDown
+                          className={cn(
+                            "h-5 w-5 text-gray-400 transition-transform",
+                            isExpanded && "rotate-180"
+                          )}
                         />
                       </div>
-                      <span className="text-[14px] font-bold text-gray-900">
-                        {fleet.licensePlate}
-                      </span>
                     </div>
-
-                    <div className="flex items-center space-x-2">
-                      {getStatusIcon(fleet.status)}
-                      <ChevronDown
-                        className={`h-5 w-5 text-gray-400 transition-transform ${
-                          expandedItems[fleet.fleetId] ? "rotate-180" : ""
-                        }`}
-                      />
-                    </div>
+                    {!isExpanded && (
+                      <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
+                        <div className="flex flex-col space-y-1">
+                          <span className="text-xs text-gray-500">Driver</span>
+                          <div className="flex items-center space-x-2 text-gray-600">
+                            <User className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
+                            <span className="truncate">
+                              {fleet.driver?.name || "-"}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col space-y-1">
+                          <span className="text-xs text-gray-500">
+                            Lokasi Terakhir
+                          </span>
+                          <div className="flex items-center space-x-2 text-gray-600">
+                            <MapPin className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
+                            <span className="truncate">
+                              {fleet.lastLocation?.address || "Unknown"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
-                  {/* Driver and location info - now side by side */}
-                  <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
-                    <div className="flex items-center space-x-2 text-gray-600">
-                      <User className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
-                      <span className="truncate">
-                        {fleet.driver?.name || "-"}
-                      </span>
+                  {/* Expanded Content */}
+                  {isExpanded && (
+                    <div className="space-y-3 px-4 pb-4 text-sm">
+                      {/* Label Row 1 */}
+                      <div className="grid grid-cols-2 gap-4 px-1 text-xs font-medium text-gray-500">
+                        <span>Driver</span>
+                        <span>No. HP Driver</span>
+                      </div>
+
+                      {/* Row 1 */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="flex items-center space-x-2 text-gray-600">
+                          <User className="h-4 w-4 text-[#461B02]" />
+                          <span className="text-gray-900">
+                            {fleet.driver?.name || "-"}
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-2 text-gray-600">
+                          <Phone className="h-4 w-4 text-[#461B02]" />
+                          <span className="text-gray-900">
+                            {fleet.driver?.phoneNumber || "-"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Label Row 2 */}
+                      <div className="grid grid-cols-2 gap-4 px-1 text-xs font-medium text-gray-500">
+                        <span>Lokasi Terakhir</span>
+                        <span>Armada</span>
+                      </div>
+
+                      {/* Row 2 */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="flex items-center space-x-2 text-gray-600">
+                          <MapPin className="h-4 w-4 text-[#461B02]" />
+                          <span className="text-gray-900">
+                            {fleet.lastLocation?.address || "Unknown"}
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-2 text-gray-600">
+                          <Truck className="h-4 w-4 text-[#461B02]" />
+                          <span className="text-gray-900">
+                            {fleet.truckType?.name || "-"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Tombol */}
+                      {!fleet.driver?.name && (
+                        <div className="pt-1">
+                          <button className="w-full rounded-xl bg-[#FFC217] px-4 py-2 text-sm font-medium text-[#461B02]">
+                            Pasangkan Driver
+                          </button>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex items-center space-x-2 text-gray-600">
-                      <MapPin className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
-                      <span className="truncate">
-                        {fleet.lastLocation?.address || "Unknown"}
-                      </span>
-                    </div>
-                  </div>
+                  )}
                 </div>
-
-                {/* Expanded content */}
-                {expandedItems[fleet.fleetId] && (
-                  <div className="border-t border-gray-100 bg-gray-50 p-4">
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div className="flex items-center space-x-2">
-                        <Phone className="h-4 w-4 text-[#461B02]" />
-                        <span className="text-gray-900">
-                          {fleet.driver?.phoneNumber || "-"}
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Truck className="h-4 w-4 text-[#461B02]" />
-                        <span className="text-gray-900">
-                          {fleet.truckType?.name || "-"}
-                        </span>
-                      </div>
-                      <div className="col-span-2 flex justify-between">
-                        <span className="text-gray-600">Status:</span>
-                        <span className="font-medium text-gray-900">
-                          {fleet.status?.replace("_", " ")}
-                        </span>
-                      </div>
-                      <div className="col-span-2 flex justify-between">
-                        <span className="text-gray-600">Carrier:</span>
-                        <span className="text-gray-900">
-                          {fleet.carrierType?.name || "-"}
-                        </span>
-                      </div>
-                      <div className="col-span-2 flex justify-between">
-                        <span className="text-gray-600">Last Update:</span>
-                        <span className="text-gray-900">
-                          {formatLastUpdate(fleet.lastLocation?.lastUpdate)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 };
+
 export default DaftarArmada;
