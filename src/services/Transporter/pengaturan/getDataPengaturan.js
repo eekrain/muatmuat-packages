@@ -7,6 +7,9 @@ const useMockData = true; // toggle mock data
 // Endpoint constants
 export const URL_AREA_MUAT_DATA = "/v1/area-muat/data";
 export const URL_AREA_BONGKAR_DATA = "/v1/area-bongkar/data";
+export const URL_TRANSPORTER_CARGO_CONFIG_STATUS =
+  "/v1/transporter-cargo-config-status";
+export const URL_TRANSPORTER_CARGO_CONFIG = "/v1/transporter-cargo-config";
 
 // Mock API results for Area Muat Data (for pengaturan page)
 export const mockAreaMuatData = {
@@ -190,31 +193,87 @@ export const mockAreaBongkarData = {
   },
 };
 
-// Mock API results for Muatan yang Dilayani
-export const mockMuatanDilayaniData = {
+// Mock API result for Transporter Cargo Config Status
+export const mockCargoStatusResult = {
   data: {
     Message: {
       Code: 200,
-      Text: "Data muatan dilayani berhasil diambil",
+      Text: "Configuration status retrieved successfully",
     },
     Data: {
-      totalMuatan: 3,
-      muatanList: [
+      hasConfiguration: true,
+      totalCargoTypes: 12,
+      lastUpdated: "2024-12-10T14:30:00Z",
+      status: "DATA_EXISTS",
+    },
+    Type: "CARGO_CONFIG_STATUS",
+  },
+};
+
+// Mock API result for Transporter Cargo Config Data
+export const mockCargoConfigResult = {
+  data: {
+    Message: {
+      Code: 200,
+      Text: "Cargo configuration retrieved successfully",
+    },
+    Data: {
+      totalCount: 12,
+      cargoTypes: [
         {
-          id: "1",
-          name: "Semen",
+          id: "550e8400-e29b-41d4-a716-446655440001",
+          name: "Semen (Barang Setengah Jadi, Padat)",
+          cargoTypeId: "550e8400-e29b-41d4-a716-446655440002",
+          cargoTypeName: "Barang Setengah Jadi",
+          cargoCategoryId: "550e8400-e29b-41d4-a716-446655440003",
+          cargoCategoryName: "Padat",
+          cargoNameId: "550e8400-e29b-41d4-a716-446655440004",
+          cargoName: "Semen",
+          isActive: true,
+          createdAt: "2024-12-10T14:30:00Z",
         },
         {
-          id: "2",
-          name: "Pasir",
+          id: "550e8400-e29b-41d4-a716-446655440002",
+          name: "Minyak (Barang Mentah, Cair)",
+          cargoTypeId: "550e8400-e29b-41d4-a716-446655440002",
+          cargoTypeName: "Barang Setengah Jadi",
+          cargoCategoryId: "550e8400-e29b-41d4-a716-446655440003",
+          cargoCategoryName: "Cair",
+          cargoNameId: "550e8400-e29b-41d4-a716-446655440004",
+          cargoName: "Semen",
+          isActive: true,
+          createdAt: "2024-12-10T14:30:00Z",
         },
         {
-          id: "3",
-          name: "Batu Bara",
+          id: "550e8400-e29b-41d4-a716-446655440003",
+          name: "Semen (Barang Setengah Jadi, Padat)",
+          cargoTypeId: "550e8400-e29b-41d4-a716-446655440002",
+          cargoTypeName: "Barang Setengah Jadi",
+          cargoCategoryId: "550e8400-e29b-41d4-a716-446655440003",
+          cargoCategoryName: "Padat",
+          cargoNameId: "550e8400-e29b-41d4-a716-446655440004",
+          cargoName: "Semen",
+          isActive: true,
+          createdAt: "2024-12-10T14:30:00Z",
+        },
+        {
+          id: "550e8400-e29b-41d4-a716-446655440004",
+          name: "Semen (Barang Setengah Jadi, Padat)",
+          cargoTypeId: "550e8400-e29b-41d4-a716-446655440002",
+          cargoTypeName: "Barang Setengah Jadi",
+          cargoCategoryId: "550e8400-e29b-41d4-a716-446655440003",
+          cargoCategoryName: "Padat",
+          cargoNameId: "550e8400-e29b-41d4-a716-446655440004",
+          cargoName: "Semen",
+          isActive: true,
+          createdAt: "2024-12-10T14:30:00Z",
         },
       ],
+      displayedCount: 8,
+      overflowCount: 4,
+      hasOverflow: true,
     },
-    Type: "GET_MUATAN_DILAYANI_DATA",
+    Type: "CARGO_CONFIG_DATA",
   },
 };
 
@@ -226,7 +285,6 @@ export const getAreaMuatData = async (cacheKey) => {
 
   let result;
   if (useMockData) {
-    // Filter mock data based on search term
     const searchTerm = searchParams.get("q") || "";
     let filteredProvinces = mockAreaMuatData.data.Data.provinces;
 
@@ -267,7 +325,6 @@ export const getAreaBongkarData = async (cacheKey) => {
 
   let result;
   if (useMockData) {
-    // Filter mock data based on search term
     const searchTerm = searchParams.get("q") || "";
     let filteredProvinces = mockAreaBongkarData.data.Data.provinces;
 
@@ -300,6 +357,38 @@ export const getAreaBongkarData = async (cacheKey) => {
   };
 };
 
+export const getTransporterCargoStatus = async (cacheKey) => {
+  const id = cacheKey?.split("/")?.[1];
+  let result;
+
+  if (useMockData) {
+    result = mockCargoStatusResult;
+  } else {
+    result = await fetcherMuatrans.get(
+      `${URL_TRANSPORTER_CARGO_CONFIG_STATUS}/${id}`
+    );
+  }
+
+  return result?.data?.Data || {};
+};
+
+export const getTransporterCargoConfig = async (cacheKey) => {
+  const parts = cacheKey.split("?");
+  const id = parts[0].split("/")[1];
+  const query = parts[1] ? `?${parts[1]}` : "";
+
+  let result;
+  if (useMockData) {
+    result = mockCargoConfigResult;
+  } else {
+    result = await fetcherMuatrans.get(
+      `${URL_TRANSPORTER_CARGO_CONFIG}/${id}${query}`
+    );
+  }
+
+  return result?.data?.Data || {};
+};
+
 export const useGetAreaMuatData = (params) => {
   const paramsString = params ? new URLSearchParams(params).toString() : "";
   const { data, error, isLoading } = useSWR(
@@ -313,4 +402,38 @@ export const useGetAreaMuatData = (params) => {
     isLoading,
     isError: !!error,
   };
+};
+
+export const useGetAreaBongkarData = (params) => {
+  const paramsString = params ? new URLSearchParams(params).toString() : "";
+  const { data, error, isLoading } = useSWR(
+    `getAreaBongkarData/${paramsString}`,
+    getAreaBongkarData
+  );
+  return {
+    provinces: data?.provinces || [],
+    totalProvinces: data?.totalProvinces || 0,
+    raw: data?.raw,
+    isLoading,
+    isError: !!error,
+  };
+};
+
+export const useGetTransporterCargoStatus = (id, options = {}) => {
+  const cacheKey = id ? `getTransporterCargoStatus/${id}` : null;
+  return useSWR(cacheKey, getTransporterCargoStatus, options);
+};
+
+export const useGetTransporterCargoConfig = (id, params = {}, options = {}) => {
+  // Construct the query parameters string.
+  const queryParams = new URLSearchParams(params).toString();
+
+  // Conditionally create the cache key. If 'id' is falsy, the key will be null.
+  // SWR will not start a request if the key is null.
+  const cacheKey = id
+    ? `getTransporterCargoConfig/${id}${queryParams ? `?${queryParams}` : ""}`
+    : null;
+
+  // Call useSWR unconditionally, respecting the Rules of Hooks.
+  return useSWR(cacheKey, getTransporterCargoConfig, options);
 };

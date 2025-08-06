@@ -23,16 +23,22 @@ import {
 } from "@/components/Modal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
-import { useGetAreaBongkarData } from "@/services/Transporter/pengaturan/getDataAreaBongkar";
 import {
-  useGetAreaMuatData,
+  useGetAreaBongkarData,
   useGetMasterProvinces,
 } from "@/services/Transporter/pengaturan/getDataAreaMuat";
-import { useGetMuatanDilayaniData } from "@/services/Transporter/pengaturan/getDataMuatanDilayani";
-import { useGetAreaMuatStatus } from "@/services/Transporter/pengaturan/getDataPengaturan";
+import {
+  useGetAreaMuatData,
+  useGetTransporterCargoConfig,
+  useGetTransporterCargoStatus,
+} from "@/services/Transporter/pengaturan/getDataPengaturan";
 
 export default function Page() {
   const router = useRouter();
+
+  // A placeholder transporter ID is used here. In a real application,
+  // this would likely come from user authentication state or a route parameter.
+  const transporterId = "transporter-123";
 
   // Modal state
   const [isBackModalOpen, setIsBackModalOpen] = useState(false);
@@ -41,9 +47,11 @@ export default function Page() {
   const [isViewAreaMuatModalOpen, setIsViewAreaMuatModalOpen] = useState(false);
   const [isViewAreaBongkarModalOpen, setIsViewAreaBongkarModalOpen] =
     useState(false);
+  const [isViewMuatanModalOpen, setIsViewMuatanModalOpen] = useState(false);
   const [searchProvince, setSearchProvince] = useState("");
   const [viewModalSearch, setViewModalSearch] = useState("");
   const [viewBongkarModalSearch, setViewBongkarModalSearch] = useState("");
+  const [viewMuatanModalSearch, setViewMuatanModalSearch] = useState("");
 
   // Fetch area muat data from API
   const {
@@ -71,36 +79,35 @@ export default function Page() {
       excludeExisting: false,
     });
 
-  const {
-    data: muatanDilayani,
-    totalTruckTypes: totalMuatanDilayani,
-    isLoading: isLoadingMuatan,
-    hasData: hasMuatanDilayaniData,
-  } = useGetMuatanDilayaniData();
+  // Fetch cargo configuration data and status
+  const { data: cargoStatus, isLoading: isLoadingCargoStatus } =
+    useGetTransporterCargoStatus(transporterId);
+  const { data: cargoConfig, isLoading: isLoadingCargoConfig } =
+    useGetTransporterCargoConfig(transporterId);
+
+  // Deriving state for "Muatan yang Dilayani"
+  const muatan = cargoConfig?.cargoTypes || [];
+  const isLoadingMuatan = isLoadingCargoStatus || isLoadingCargoConfig;
+  const hasMuatanData =
+    cargoStatus?.status === "DATA_EXISTS" && muatan.length > 0;
 
   // Handle search provinces
   const handleSearchProvinces = useCallback((searchTerm) => {
     setSearchProvince(searchTerm);
   }, []);
 
-  // Handle save provinces dengan context
+  // Handle save provinces
   const handleSaveProvinces = (
     selectedProvincesData,
     selectedProvinceIds,
     context
   ) => {
     if (context === "area-muat") {
-      // Save logic untuk Area Muat
       console.log("Saving Area Muat provinces:", selectedProvincesData);
       console.log("Area Muat province IDs:", selectedProvinceIds);
-      // TODO: Call API untuk save area muat
-      // await saveAreaMuat(selectedProvinceIds);
     } else if (context === "area-bongkar") {
-      // Save logic untuk Area Bongkar
       console.log("Saving Area Bongkar provinces:", selectedProvincesData);
       console.log("Area Bongkar province IDs:", selectedProvinceIds);
-      // TODO: Call API untuk save area bongkar
-      // await saveAreaBongkar(selectedProvinceIds);
     }
   };
 
@@ -138,7 +145,6 @@ export default function Page() {
               dengan lokasi pick up didalam area kerjamu
             </p>
           </div>
-
           <div className="ml-4 flex-shrink-0">
             <Button
               variant="muattrans-primary"
@@ -154,7 +160,6 @@ export default function Page() {
             </Button>
           </div>
         </div>
-        {/* Display selected provinces when data exists */}
         {hasData && areaMuatData.provinces.length > 0 && (
           <div className="mt-4">
             <Collapsible defaultOpen={false}>
@@ -255,7 +260,6 @@ export default function Page() {
             </Button>
           </div>
         </div>
-        {/* Display selected provinces when data exists */}
         {hasData && areaBongkarData.provinces.length > 0 && (
           <div className="mt-4">
             <Collapsible defaultOpen={false}>
@@ -304,6 +308,91 @@ export default function Page() {
     );
   };
 
+  // Render Muatan Dilayani section based on data state
+  const renderMuatanDilayaniSection = () => {
+    return (
+      <div className="border-b border-neutral-200 p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <div className="mb-2 flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-neutral-900">
+                Muatan Yang Dilayani
+              </h3>
+              {isLoadingMuatan ? (
+                <span className="text-sm text-neutral-500">Memuat...</span>
+              ) : hasMuatanData ? (
+                <BadgeStatus variant="success" className="w-auto">
+                  <CheckCircle size={16} className="mr-2" />
+                  Data Tersimpan
+                </BadgeStatus>
+              ) : (
+                <BadgeStatus variant="error" className="w-auto">
+                  <XCircle size={16} className="mr-2" />
+                  Belum Ada Data
+                </BadgeStatus>
+              )}
+            </div>
+            <p className="text-sm text-neutral-600">
+              Atur muatan yang kamu layani sekarang untuk mendapatkan muatan
+              yang sesuai dengan kapasitas armada kamu
+            </p>
+          </div>
+          <div className="ml-4 flex-shrink-0">
+            <Button
+              variant="muattrans-primary"
+              onClick={() => router.push("/pengaturan/muatan-dilayani")}
+            >
+              {hasMuatanData ? "Atur Muatan" : "Tambah Muatan Dilayani"}
+            </Button>
+          </div>
+        </div>
+        {hasMuatanData && (
+          <div className="mt-4">
+            <Collapsible defaultOpen={false}>
+              <div className="rounded-lg border">
+                <CollapsibleTrigger className="!flex !w-full cursor-pointer !items-center !justify-between border-b border-neutral-200 bg-[#F8F8FB] !px-4 !py-3 !text-left hover:no-underline">
+                  <span className="text-sm font-medium text-[#7B7B7B]">
+                    {cargoConfig?.totalCount || 0} Jenis Muatan
+                  </span>
+                  <ChevronDown
+                    size={16}
+                    className="text-neutral-600 transition-transform duration-200 data-[state=open]:rotate-180"
+                  />
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="border-t border-neutral-200 bg-white px-3 pb-3 pt-3">
+                    <div className="flex flex-wrap items-center gap-1">
+                      {muatan
+                        .slice(0, cargoConfig?.displayedCount || 7)
+                        .map((item) => (
+                          <TagBubble key={item.id} className="me-1 px-2">
+                            {item.name}
+                          </TagBubble>
+                        ))}
+                      {cargoConfig?.hasOverflow && (
+                        <div
+                          className="cursor-pointer"
+                          onClick={() => {
+                            setViewMuatanModalSearch("");
+                            setIsViewMuatanModalOpen(true);
+                          }}
+                        >
+                          <TagBubble className="!bg-primary-700 !text-white hover:!bg-white hover:!text-primary-700">
+                            +{cargoConfig.overflowCount}
+                          </TagBubble>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </div>
+            </Collapsible>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <>
       <div className="mx-auto py-6">
@@ -320,90 +409,7 @@ export default function Page() {
             {renderAreaBongkarSection()}
 
             {/* Muatan Yang Dilayani Section */}
-            <div className="border-b border-neutral-200 p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="mb-2 flex items-center gap-2">
-                    <h3 className="text-lg font-semibold text-neutral-900">
-                      Muatan Yang Dilayani
-                    </h3>
-                    {isLoadingMuatan ? (
-                      <span className="text-sm text-neutral-500">
-                        Memuat...
-                      </span>
-                    ) : !hasMuatanDilayaniData ? (
-                      <BadgeStatus variant="error" className="w-auto">
-                        <XCircle size={16} className="mr-2" />
-                        Belum Ada Data
-                      </BadgeStatus>
-                    ) : (
-                      <BadgeStatus variant="success" className="w-auto">
-                        <CheckCircle size={16} className="mr-2" />
-                        {totalMuatanDilayani} Data Tersedia
-                      </BadgeStatus>
-                    )}
-                  </div>
-                  <p className="text-sm text-neutral-600">
-                    Atur muatan yang kamu layani sekarang untuk mendapatkan
-                    muatan yang sesuai dengan kapasitas armada kamu
-                  </p>
-                </div>
-                <div className="ml-4 flex-shrink-0">
-                  <Button
-                    variant="muattrans-primary"
-                    onClick={() => router.push("/pengaturan/muatan-dilayani")}
-                  >
-                    {hasMuatanDilayaniData
-                      ? "Atur Muatan Dilayani"
-                      : "Tambah Muatan Dilayani"}
-                  </Button>
-                </div>
-              </div>
-              {/* Display selected muatan when data exists */}
-              {hasMuatanDilayaniData && muatanDilayani.length > 0 && (
-                <div className="mt-4">
-                  <Collapsible defaultOpen={false}>
-                    <div className="rounded-lg border">
-                      <CollapsibleTrigger className="!flex !w-full cursor-pointer !items-center !justify-between border-b border-neutral-200 bg-[#F8F8FB] !px-4 !py-3 !text-left hover:no-underline">
-                        <span className="text-sm font-medium text-[#7B7B7B]">
-                          {totalMuatanDilayani} Jenis Truk
-                        </span>
-                        <ChevronDown
-                          size={16}
-                          className="text-neutral-600 transition-transform duration-200 data-[state=open]:rotate-180"
-                        />
-                      </CollapsibleTrigger>
-                      <CollapsibleContent>
-                        <div className="border-t border-neutral-200 bg-white px-3 pb-3 pt-3">
-                          <div className="flex flex-wrap items-center gap-1">
-                            {muatanDilayani.slice(0, 7).map((muatan) => (
-                              <TagBubble
-                                key={muatan.truckTypeId}
-                                className="me-1 px-2"
-                              >
-                                {muatan.truckTypeName}
-                              </TagBubble>
-                            ))}
-                            {muatanDilayani.length > 7 && (
-                              <div
-                                className="cursor-pointer"
-                                onClick={() => {
-                                  router.push("/pengaturan/muatan-dilayani");
-                                }}
-                              >
-                                <TagBubble className="!bg-primary-700 !text-white hover:!bg-white hover:!text-primary-700">
-                                  +{muatanDilayani.length - 7}
-                                </TagBubble>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </CollapsibleContent>
-                    </div>
-                  </Collapsible>
-                </div>
-              )}
-            </div>
+            {renderMuatanDilayaniSection()}
 
             {/* Layanan Halal Logistik Section */}
             <div className="p-6">
@@ -474,7 +480,6 @@ export default function Page() {
               Lihat Area Muat
             </h2>
             <div className="h-[320px] rounded-xl border border-neutral-400 p-4">
-              {/* Search Bar */}
               <div className="mb-4">
                 <InputSearch
                   placeholder="Cari Area Muat"
@@ -485,8 +490,6 @@ export default function Page() {
                   hideDropdown={true}
                 />
               </div>
-
-              {/* Province Count - Only show when no search */}
               {!viewModalSearch && (
                 <div className="mb-2">
                   <span className="text-sm font-medium text-neutral-900">
@@ -494,8 +497,6 @@ export default function Page() {
                   </span>
                 </div>
               )}
-
-              {/* Province Tags */}
               <div
                 className={`flex max-h-[210px] flex-wrap gap-2 ${
                   (viewModalSearch &&
@@ -556,7 +557,6 @@ export default function Page() {
               Lihat Area Bongkar
             </h2>
             <div className="h-[320px] rounded-xl border border-neutral-400 p-4">
-              {/* Search Bar */}
               <div className="mb-4">
                 <InputSearch
                   placeholder="Cari Area Bongkar"
@@ -567,8 +567,6 @@ export default function Page() {
                   hideDropdown={true}
                 />
               </div>
-
-              {/* Province Count - Only show when no search */}
               {!viewBongkarModalSearch && (
                 <div className="mb-2">
                   <span className="text-sm font-medium text-neutral-900">
@@ -577,8 +575,6 @@ export default function Page() {
                   </span>
                 </div>
               )}
-
-              {/* Province Tags */}
               <div
                 className={`flex max-h-[210px] flex-wrap gap-2 ${
                   (viewBongkarModalSearch &&
@@ -616,6 +612,69 @@ export default function Page() {
                           ? `${province.cityCount} Kota/Kab`
                           : province.cityCount}
                       </TagBubble>
+                    ))
+                )}
+              </div>
+            </div>
+          </div>
+        </ModalContent>
+      </Modal>
+
+      {/* View Muatan Modal */}
+      <Modal
+        open={isViewMuatanModalOpen}
+        onOpenChange={(open) => {
+          setIsViewMuatanModalOpen(open);
+          if (!open) {
+            setViewMuatanModalSearch("");
+          }
+        }}
+      >
+        <ModalContent type="muatmuat" className="h-[397px] w-[544px]">
+          <div className="flex flex-col px-5 py-4">
+            <h2 className="mb-4 text-center text-lg font-bold leading-[21.6px]">
+              Lihat Muatan Yang Dilayani
+            </h2>
+            <div className="h-[320px] rounded-xl border border-neutral-400 p-4">
+              <div className="mb-4">
+                <InputSearch
+                  placeholder="Cari Muatan"
+                  searchValue={viewMuatanModalSearch}
+                  setSearchValue={setViewMuatanModalSearch}
+                  options={[]}
+                  onSelectValue={() => {}}
+                  hideDropdown={true}
+                />
+              </div>
+              {!viewMuatanModalSearch && (
+                <div className="mb-2">
+                  <span className="text-sm font-medium text-neutral-900">
+                    {cargoConfig?.totalCount || 0} Jenis Muatan
+                  </span>
+                </div>
+              )}
+              <div
+                className={`flex max-h-[210px] flex-wrap gap-2 ${
+                  muatan.length > 0 ? "overflow-y-auto" : ""
+                }`}
+              >
+                {muatan.filter((item) =>
+                  item.name
+                    .toLowerCase()
+                    .includes(viewMuatanModalSearch.toLowerCase())
+                ).length === 0 ? (
+                  <div className="flex w-full items-center justify-center">
+                    <VoucherSearchEmpty />
+                  </div>
+                ) : (
+                  muatan
+                    .filter((item) =>
+                      item.name
+                        .toLowerCase()
+                        .includes(viewMuatanModalSearch.toLowerCase())
+                    )
+                    .map((item) => (
+                      <TagBubble key={item.id}>{item.name}</TagBubble>
                     ))
                 )}
               </div>

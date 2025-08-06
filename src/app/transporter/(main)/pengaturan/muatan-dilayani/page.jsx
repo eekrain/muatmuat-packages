@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
@@ -166,11 +166,12 @@ export default function AturMuatanDilayaniPage() {
     processedHierarchies.every((h) => h.filteredCategories.length === 0) &&
     searchTerm;
 
+  // Define the Simpan button to pass to the layout
   const simpanButton = (
     <Button
       size="lg"
-      className="w-full cursor-pointer md:w-auto"
-      onClick={() => alert("Hello")}
+      className="w-full md:w-auto"
+      onClick={handleSave}
       isLoading={isMutating}
     >
       Simpan
@@ -183,11 +184,11 @@ export default function AturMuatanDilayaniPage() {
         <div className="mb-6">
           <BreadCrumb data={breadcrumbItems} />
         </div>
-        <div className="flex flex-row gap-2">
-          <PageTitle>Atur Muatan Dilayani</PageTitle>
+        <div className="flex flex-row items-center gap-2">
+          <PageTitle className="w-fit">Atur Muatan Dilayani</PageTitle>
           <InfoTooltip>
-            Atur muatan yang kamu layani sekarang untuk mendapatkan muatan yang
-            sesuai
+            Pilih muatan yang dapat Anda layani. Perubahan akan berlaku untuk
+            semua layanan Anda.
           </InfoTooltip>
         </div>
 
