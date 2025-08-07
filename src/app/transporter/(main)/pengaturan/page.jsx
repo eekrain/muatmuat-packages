@@ -9,6 +9,7 @@ import BadgeStatus from "@/components/Badge/BadgeStatus";
 import { TagBubble } from "@/components/Badge/TagBubble";
 import Button from "@/components/Button/Button";
 import Card, { CardContent } from "@/components/Card/Card";
+import CardCollapsibleBubble from "@/components/Card/CardCollapsibleBubble";
 import {
   Collapsible,
   CollapsibleContent,
@@ -28,16 +29,11 @@ import {
   useGetAreaMuatData,
   useGetMasterProvinces,
 } from "@/services/Transporter/pengaturan/getDataAreaMuat";
-import {
-  useGetTransporterCargoConfig,
-  useGetTransporterCargoStatus,
-} from "@/services/Transporter/pengaturan/getDataPengaturan";
+import { useGetTransporterCargoData } from "@/services/Transporter/pengaturan/getDataCargoConfig";
+import { useGetTransporterCargoStatus } from "@/services/Transporter/pengaturan/getDataCargoStatus";
 
 export default function Page() {
   const router = useRouter();
-
-  // A placeholder transporter ID is used here. In a real application,
-  // this would likely come from user authentication state or a route parameter.
   const transporterId = "transporter-123";
 
   // Modal state
@@ -83,13 +79,12 @@ export default function Page() {
   const { data: cargoStatus, isLoading: isLoadingCargoStatus } =
     useGetTransporterCargoStatus(transporterId);
   const { data: cargoConfig, isLoading: isLoadingCargoConfig } =
-    useGetTransporterCargoConfig(transporterId);
+    useGetTransporterCargoData(transporterId);
 
   // Deriving state for "Muatan yang Dilayani"
   const muatan = cargoConfig?.cargoTypes || [];
   const isLoadingMuatan = isLoadingCargoStatus || isLoadingCargoConfig;
-  const hasMuatanData =
-    cargoStatus?.status === "DATA_EXISTS" && muatan.length > 0;
+  const hasMuatanData = !!cargoStatus?.hasConfiguration && muatan.length > 0;
 
   // Handle search provinces
   const handleSearchProvinces = useCallback((searchTerm) => {
@@ -308,91 +303,6 @@ export default function Page() {
     );
   };
 
-  // Render Muatan Dilayani section based on data state
-  const renderMuatanDilayaniSection = () => {
-    return (
-      <div className="border-b border-neutral-200 p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex-1">
-            <div className="mb-2 flex items-center gap-2">
-              <h3 className="text-lg font-semibold text-neutral-900">
-                Muatan Yang Dilayani
-              </h3>
-              {isLoadingMuatan ? (
-                <span className="text-sm text-neutral-500">Memuat...</span>
-              ) : hasMuatanData ? (
-                <BadgeStatus variant="success" className="w-auto">
-                  <CheckCircle size={16} className="mr-2" />
-                  Data Tersimpan
-                </BadgeStatus>
-              ) : (
-                <BadgeStatus variant="error" className="w-auto">
-                  <XCircle size={16} className="mr-2" />
-                  Belum Ada Data
-                </BadgeStatus>
-              )}
-            </div>
-            <p className="text-sm text-neutral-600">
-              Atur muatan yang kamu layani sekarang untuk mendapatkan muatan
-              yang sesuai dengan kapasitas armada kamu
-            </p>
-          </div>
-          <div className="ml-4 flex-shrink-0">
-            <Button
-              variant="muattrans-primary"
-              onClick={() => router.push("/pengaturan/muatan-dilayani")}
-            >
-              {hasMuatanData ? "Atur Muatan" : "Tambah Muatan Dilayani"}
-            </Button>
-          </div>
-        </div>
-        {hasMuatanData && (
-          <div className="mt-4">
-            <Collapsible defaultOpen={false}>
-              <div className="rounded-lg border">
-                <CollapsibleTrigger className="!flex !w-full cursor-pointer !items-center !justify-between border-b border-neutral-200 bg-[#F8F8FB] !px-4 !py-3 !text-left hover:no-underline">
-                  <span className="text-sm font-medium text-[#7B7B7B]">
-                    {cargoConfig?.totalCount || 0} Jenis Muatan
-                  </span>
-                  <ChevronDown
-                    size={16}
-                    className="text-neutral-600 transition-transform duration-200 data-[state=open]:rotate-180"
-                  />
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <div className="border-t border-neutral-200 bg-white px-3 pb-3 pt-3">
-                    <div className="flex flex-wrap items-center gap-1">
-                      {muatan
-                        .slice(0, cargoConfig?.displayedCount || 7)
-                        .map((item) => (
-                          <TagBubble key={item.id} className="me-1 px-2">
-                            {item.name}
-                          </TagBubble>
-                        ))}
-                      {cargoConfig?.hasOverflow && (
-                        <div
-                          className="cursor-pointer"
-                          onClick={() => {
-                            setViewMuatanModalSearch("");
-                            setIsViewMuatanModalOpen(true);
-                          }}
-                        >
-                          <TagBubble className="!bg-primary-700 !text-white hover:!bg-white hover:!text-primary-700">
-                            +{cargoConfig.overflowCount}
-                          </TagBubble>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </CollapsibleContent>
-              </div>
-            </Collapsible>
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <>
       <div className="mx-auto py-6">
@@ -408,8 +318,24 @@ export default function Page() {
             {/* Area Bongkar Section */}
             {renderAreaBongkarSection()}
 
-            {/* Muatan Yang Dilayani Section */}
-            {renderMuatanDilayaniSection()}
+            {/* Muatan Yang Dilayani Section - Using the corrected component */}
+            <CardCollapsibleBubble
+              title="Muatan Yang Dilayani"
+              description="Atur muatan yang kamu layani sekarang untuk mendapatkan muatan yang sesuai dengan kapasitas armada kamu"
+              isLoading={isLoadingMuatan}
+              hasData={hasMuatanData}
+              buttonText={
+                hasMuatanData ? "Atur Muatan" : "Tambah Muatan Dilayani"
+              }
+              onButtonClick={() => router.push("/pengaturan/muatan-dilayani")}
+              collapsibleTitle={`${cargoConfig?.totalCount || 0} Jenis Muatan`}
+              items={muatan}
+              displayedItemCount={5}
+              onOverflowClick={() => {
+                setViewMuatanModalSearch("");
+                setIsViewMuatanModalOpen(true);
+              }}
+            />
 
             {/* Layanan Halal Logistik Section */}
             <div className="p-6">
