@@ -72,16 +72,14 @@ const SOSContainer = ({ onClose, onExpand }) => {
 
       {/* Search */}
       <div className="mb-4 px-4">
-        <div className="flex gap-[12px]">
-          <Search
-            placeholder="Cari No. Polisi / Nama Driver"
-            onSearch={setSearchTerm}
-            autoSearch={true}
-            debounceTime={300}
-            defaultValue={searchTerm}
-            inputClassName="w-[229px]"
-          />
-        </div>
+        <Search
+          placeholder="Cari No. Polisi / Nama Driver"
+          onSearch={setSearchTerm}
+          autoSearch={true}
+          debounceTime={300}
+          defaultValue={searchTerm}
+          inputClassName="min-w-full"
+        />
       </div>
 
       {/* Fleet List */}

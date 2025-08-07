@@ -14,6 +14,7 @@ export const MapInterfaceOverlay = ({
   onZoomIn,
   onZoomOut,
   onClickDaftarArmada,
+  onClickSOS,
   hideTopNavigation = false,
   onSearch,
   onToggleFullscreen,
@@ -121,6 +122,7 @@ export const MapInterfaceOverlay = ({
                 className="size-4"
               />
             }
+            onClick={onClickSOS}
           >
             SOS ({sosCount})
           </Button>
