@@ -93,13 +93,13 @@ export default function CardFleet({
       <div className="space-y-1 pt-2 text-sm">
         <DriverAndPhoneSection fleet={fleet} />
         <LocationAndFleetSection fleet={fleet} />
+        {fleet.status === "ON_DUTY" && <OnDutyDetails fleet={fleet} />}
         {(!fleet.driver?.name || !fleet.driver?.phoneNumber) && (
           <AssignDriverButton onClick={() => onOpenDriverModal(fleet)} />
         )}
-        {(!fleet.driver?.name || !fleet.driver?.phoneNumber) && (
+        {fleet.needsResponseChange && (
           <NeedResponseButton onClick={() => onOpenDriverModal(fleet)} />
         )}
-        {fleet.status === "ON_DUTY" && <OnDutyDetails fleet={fleet} />}
       </div>
     );
   };
@@ -154,7 +154,7 @@ function DriverAndPhoneSection({ fleet }) {
         <User className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#461B02]" />
         <div>
           <label className="text-xs text-gray-500">Driver</label>
-          <p className="font-semibold text-gray-900">
+          <p className="text-xs font-semibold text-gray-900">
             {fleet.driver?.name || "-"}
           </p>
         </div>
@@ -164,7 +164,7 @@ function DriverAndPhoneSection({ fleet }) {
         <Phone className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#461B02]" />
         <div>
           <label className="text-xs text-gray-500">No. HP Driver</label>
-          <p className="font-semibold text-gray-900">
+          <p className="text-xs font-semibold text-gray-900">
             {fleet.driver?.phoneNumber || "-"}
           </p>
         </div>
@@ -321,7 +321,7 @@ function LocationInfo({ fleet, showLabel = false }) {
           <label className="text-xs text-gray-500">Lokasi Terakhir</label>
         )}
         {showLabel ? (
-          <div className="truncate font-semibold text-gray-900">
+          <div className="truncate text-xs font-semibold text-gray-900">
             {locationText}
           </div>
         ) : (
@@ -346,10 +346,10 @@ function LocationInfoExpanded({ fleet }) {
       <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#461B02]" />
       <div>
         <label className="text-xs text-gray-500">Lokasi Terakhir</label>
-        <p className="font-semibold text-gray-900">
+        <p className="text-xs font-semibold text-gray-900">
           {fleet.lastLocation?.address?.district || "Unknown"}
         </p>
-        <p className="text-xs text-gray-500">
+        <p className="text-xxs text-neutral-600">
           {fleet.lastLocation?.address?.city || "Unknown"}
         </p>
       </div>
@@ -366,7 +366,9 @@ function FleetInfo({ fleet }) {
         <p className="font-semibold text-gray-900">
           {fleet.carrierType?.name || "-"}
         </p>
-        <p className="text-xs text-gray-500">{fleet.truckType?.name || "-"}</p>
+        <p className="text-xxs text-neutral-600">
+          {fleet.truckType?.name || "-"}
+        </p>
       </div>
     </div>
   );
