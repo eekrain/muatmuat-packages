@@ -1,16 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 
-const TransportRequestCard = ({ request, isSuspended = false }) => {
-  const [isSaved, setIsSaved] = useState(request.isSaved);
+const TransportRequestCard = ({
+  request,
+  isSuspended = false,
+  onBookmarkToggle,
+  isBookmarked,
+}) => {
+  // Use the prop if provided, otherwise fall back to request.isSaved
+  const [isSaved, setIsSaved] = useState(
+    isBookmarked !== undefined ? isBookmarked : request.isSaved
+  );
+
+  // Update local state when prop changes
+  useEffect(() => {
+    if (isBookmarked !== undefined) {
+      setIsSaved(isBookmarked);
+    }
+  }, [isBookmarked]);
 
   const handleSave = () => {
-    setIsSaved(!isSaved);
+    const newSavedState = !isSaved;
+    setIsSaved(newSavedState);
+
+    // Call the parent callback if provided
+    if (onBookmarkToggle) {
+      onBookmarkToggle(request.id, newSavedState);
+    }
+
     // TODO: Implement save/unsave functionality
   };
 

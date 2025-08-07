@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -12,9 +12,10 @@ import TransportRequestCard from "./components/TransportRequestCard";
 const PermintaanAngkut = () => {
   const [activeTab, setActiveTab] = useState("tersedia");
   const [searchValue, setSearchValue] = useState("");
+  const [bookmarkedItems, setBookmarkedItems] = useState(new Set());
 
   // Get data based on active tab
-  const getParams = () => {
+  const params = useMemo(() => {
     switch (activeTab) {
       case "halal_logistik":
         return { isHalalLogistics: true };
@@ -23,14 +24,83 @@ const PermintaanAngkut = () => {
       default:
         return {};
     }
-  };
+  }, [activeTab]);
 
-  const { data, error, isLoading } = useGetTransportRequestList(getParams());
+  const { data, error, isLoading } = useGetTransportRequestList(params);
 
   const handleSearch = (value) => {
     setSearchValue(value);
     // TODO: Implement search functionality
   };
+
+  const handleBookmarkToggle = (requestId, newSavedState) => {
+    const newBookmarkedItems = new Set(bookmarkedItems);
+
+    // Find the original request to check its original saved state
+    const originalRequest = data?.requests?.find((req) => req.id === requestId);
+    const originalSavedState = originalRequest?.isSaved || false;
+
+    console.log("🔖 Bookmark toggle:", {
+      requestId: requestId.slice(-4),
+      originalSavedState,
+      newSavedState,
+      isChangingFromOriginal: newSavedState !== originalSavedState,
+    });
+
+    if (newSavedState === originalSavedState) {
+      // If new state matches original state, remove from tracking set
+      newBookmarkedItems.delete(requestId);
+      console.log("🔖 Removed from tracking (back to original)");
+    } else {
+      // If new state differs from original, track the change
+      newBookmarkedItems.add(requestId);
+      console.log("🔖 Added to tracking (changed from original)");
+    }
+
+    setBookmarkedItems(newBookmarkedItems);
+    console.log("🔖 Current bookmarked items count:", newBookmarkedItems.size);
+  };
+
+  // Calculate dynamic tab counts based on data and local state
+  const getDynamicTabCounts = () => {
+    if (!data?.requests) {
+      return {
+        tersedia: data?.tabCounts?.tersedia ?? 0,
+        halal_logistik: data?.tabCounts?.halal_logistik ?? 0,
+        disimpan: data?.tabCounts?.disimpan ?? 0,
+      };
+    }
+
+    const allRequests = data.requests;
+
+    // Calculate saved count based on current bookmark state
+    let savedCount = 0;
+    allRequests.forEach((request) => {
+      const isOriginallyBookmarked = request.isSaved;
+      const hasStateChanged = bookmarkedItems.has(request.id);
+
+      // Determine current bookmark state:
+      // If state has changed, use opposite of original
+      // If state hasn't changed, use original
+      const isCurrentlyBookmarked = hasStateChanged
+        ? !isOriginallyBookmarked
+        : isOriginallyBookmarked;
+
+      if (isCurrentlyBookmarked) {
+        savedCount++;
+      }
+    });
+
+    return {
+      tersedia: data?.tabCounts?.tersedia ?? allRequests.length,
+      halal_logistik:
+        data?.tabCounts?.halal_logistik ??
+        allRequests.filter((req) => req.isHalalLogistics).length,
+      disimpan: savedCount,
+    };
+  };
+
+  const dynamicTabCounts = getDynamicTabCounts();
 
   // Format counter display with animation for new requests
   // Range behavior:
@@ -177,14 +247,14 @@ const PermintaanAngkut = () => {
               <span
                 className={`${
                   shouldAnimate(
-                    data?.tabCounts?.tersedia ?? 35,
+                    dynamicTabCounts.tersedia,
                     data?.newRequestsCount?.hasAnimation
                   )
                     ? "font-base animate-semibold"
                     : ""
                 }`}
               >
-                {formatCounter(data?.tabCounts?.tersedia ?? 35)}
+                {formatCounter(dynamicTabCounts.tersedia)}
               </span>
               )
             </span>
@@ -204,14 +274,14 @@ const PermintaanAngkut = () => {
               <span
                 className={`${
                   shouldAnimate(
-                    data?.tabCounts?.halal_logistik ?? 22,
+                    dynamicTabCounts.halal_logistik,
                     data?.newRequestsCount?.hasAnimation
                   )
                     ? "animate-pulse font-bold text-warning-600"
                     : ""
                 }`}
               >
-                {formatCounter(data?.tabCounts?.halal_logistik ?? 22)}
+                {formatCounter(dynamicTabCounts.halal_logistik)}
               </span>
               )
             </span>
@@ -230,17 +300,17 @@ const PermintaanAngkut = () => {
               Disimpan (
               <span
                 className={`${
-                  data?.tabCounts?.disimpan >= 100
+                  dynamicTabCounts.disimpan >= 100
                     ? "font-bold text-error-600" // Special styling for 99+
                     : shouldAnimate(
-                          data?.tabCounts?.disimpan ?? 8,
+                          dynamicTabCounts.disimpan,
                           data?.newRequestsCount?.hasAnimation
                         )
                       ? "animate-pulse font-bold text-warning-600"
                       : ""
                 }`}
               >
-                {formatCounter(data?.tabCounts?.disimpan ?? 8)}
+                {formatCounter(dynamicTabCounts.disimpan)}
               </span>
               )
             </span>
@@ -251,34 +321,14 @@ const PermintaanAngkut = () => {
       {/* Scrollable Content Area */}
       <div className="flex-1 overflow-y-auto bg-white px-4">
         {/* Always show content regardless of suspension status */}
-        {activeTab === "tersedia" && (
-          <RequestList
-            requests={data?.requests || []}
-            isLoading={isLoading}
-            activeTab={activeTab}
-            isSuspended={data?.userStatus?.isSuspended}
-          />
-        )}
-
-        {activeTab === "halal_logistik" && (
-          <RequestList
-            requests={
-              data?.requests?.filter((req) => req.isHalalLogistics) || []
-            }
-            isLoading={isLoading}
-            activeTab={activeTab}
-            isSuspended={data?.userStatus?.isSuspended}
-          />
-        )}
-
-        {activeTab === "disimpan" && (
-          <RequestList
-            requests={data?.requests?.filter((req) => req.isSaved) || []}
-            isLoading={isLoading}
-            activeTab={activeTab}
-            isSuspended={data?.userStatus?.isSuspended}
-          />
-        )}
+        <RequestList
+          requests={data?.requests || []}
+          isLoading={isLoading}
+          activeTab={activeTab}
+          isSuspended={data?.userStatus?.isSuspended}
+          onBookmarkToggle={handleBookmarkToggle}
+          bookmarkedItems={bookmarkedItems}
+        />
       </div>
     </div>
   );
@@ -289,6 +339,8 @@ const RequestList = ({
   isLoading,
   activeTab,
   isSuspended = false,
+  onBookmarkToggle,
+  bookmarkedItems,
 }) => {
   if (isLoading) {
     return (
@@ -350,13 +402,23 @@ const RequestList = ({
 
   return (
     <div className="space-y-4 pb-4">
-      {requests.map((request) => (
-        <TransportRequestCard
-          key={request.id}
-          request={request}
-          isSuspended={isSuspended}
-        />
-      ))}
+      {requests.map((request) => {
+        // Determine current bookmark state
+        const hasStateChanged = bookmarkedItems?.has(request.id);
+        const currentBookmarkState = hasStateChanged
+          ? !request.isSaved
+          : request.isSaved;
+
+        return (
+          <TransportRequestCard
+            key={request.id}
+            request={request}
+            isSuspended={isSuspended}
+            onBookmarkToggle={onBookmarkToggle}
+            isBookmarked={currentBookmarkState}
+          />
+        );
+      })}
     </div>
   );
 };
