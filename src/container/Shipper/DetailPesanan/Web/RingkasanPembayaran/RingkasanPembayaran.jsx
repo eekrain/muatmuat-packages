@@ -16,6 +16,7 @@ const LIST_SHOW_PENDING = [
 
 export const RingkasanPembayaran = ({
   dataRingkasanPembayaran,
+  dataStatusPesanan,
   isShowWaitFleetAlert,
 }) => {
   const prevStatusRef = useRef(dataRingkasanPembayaran?.orderStatus);
@@ -61,6 +62,7 @@ export const RingkasanPembayaran = ({
       ) : (
         <RingkasanPembayaranDefault
           dataRingkasanPembayaran={dataRingkasanPembayaran}
+          dataStatusPesanan={dataStatusPesanan}
           isShowWaitFleetAlert={isShowWaitFleetAlert}
         />
       )}

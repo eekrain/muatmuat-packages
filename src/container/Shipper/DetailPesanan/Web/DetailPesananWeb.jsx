@@ -139,6 +139,7 @@ const DetailPesananWeb = () => {
               dataRingkasanPembayaran={
                 dataDetailPesanan.dataRingkasanPembayaran
               }
+              dataStatusPesanan={dataDetailPesanan.dataStatusPesanan}
               isShowWaitFleetAlert={isShowWaitFleetAlert}
             />
           )}

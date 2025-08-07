@@ -2,6 +2,7 @@ import { useParams, useRouter } from "next/navigation";
 
 import Button from "@/components/Button/Button";
 import CardPayment from "@/components/Card/CardPayment";
+import { ConditionalDiv } from "@/components/Card/ConditionalDiv";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { ModalDetailOverloadMuatan } from "@/components/Modal/ModalDetailOverloadMuatan";
 import { ModalDetailWaktuTunggu } from "@/components/Modal/ModalDetailWaktuTunggu";
@@ -23,53 +24,21 @@ import { ModalDetailPengirimanDokumen } from "./ModalDetailPengirimanDokumen";
 
 export const RingkasanPembayaranDefault = ({
   dataRingkasanPembayaran,
+  dataStatusPesanan,
   isShowWaitFleetAlert,
 }) => {
   const params = useParams();
-  const router = useRouter();
   const { t } = useTranslation();
-
-  const showButtons =
-    !dataRingkasanPembayaran?.orderStatus.startsWith("CANCELED") &&
-    dataRingkasanPembayaran?.orderStatus !==
-      OrderStatusEnum.WAITING_PAYMENT_2 &&
-    dataRingkasanPembayaran?.orderStatus !== OrderStatusEnum.COMPLETED &&
-    !dataRingkasanPembayaran?.orderStatus?.includes("DOCUMENT");
 
   const isRingkasanTransaksi =
     dataRingkasanPembayaran?.orderStatus === OrderStatusEnum.COMPLETED ||
     dataRingkasanPembayaran?.orderStatus ===
       OrderStatusEnum.WAITING_PAYMENT_1 ||
-    dataRingkasanPembayaran?.orderStatus?.startsWith("CANCELED") ||
-    true;
+    dataRingkasanPembayaran?.orderStatus?.startsWith("CANCELED");
 
-  const orderId = params?.orderId;
-  console.log(orderId, "order");
-  const { trigger: paymentProcess, isMutating: isLoading } = useSWRMutateHook(
-    orderId ? `v1/orders/${orderId}/payment-process` : null,
-    "POST"
-  );
   const { data: waitingTimeData } = useGetWaitingTime(params.orderId);
   const { data: overloadData } = useGetOverloadData(params.orderId);
 
-  const handleLanjutPembayaran = async () => {
-    if (!paymentProcess) return;
-
-    try {
-      const result = await paymentProcess({
-        paymentMethodId: dataRingkasanPembayaran.paymentMethodId,
-      });
-      console.log("Pembayaran berhasil:", result);
-
-      // Contoh tambahan jika ingin redirect atau toast
-      // router.push(`/sewaarmada/pembayaran/${orderId}`);
-      // toast.success("Pembayaran berhasil!");
-      router.refresh();
-    } catch (err) {
-      console.error("Gagal lanjut pembayaran:", err);
-      // toast.error("Terjadi kesalahan saat memproses pembayaran");
-    }
-  };
   return (
     <div className="flex max-h-[453px] w-full flex-col gap-4">
       <CardPayment.Root className="flex-1">
@@ -261,63 +230,107 @@ export const RingkasanPembayaranDefault = ({
       </CardPayment.Root>
 
       {/* Buttons Section */}
-      {showButtons && (
-        <div className="flex w-full flex-col gap-4">
-          {dataRingkasanPembayaran?.orderStatus ===
-          OrderStatusEnum.WAITING_PAYMENT_1 ? (
-            <Button
-              variant="muatparts-primary"
-              className="h-8 w-full"
-              onClick={handleLanjutPembayaran}
-              disabled={isLoading}
-              type="button"
-            >
-              {t("buttonLanjutPembayaran")}
-            </Button>
-          ) : dataRingkasanPembayaran?.orderStatus !==
-            OrderStatusEnum.PREPARE_FLEET ? (
-            <Button
-              variant="muatparts-primary-secondary"
-              className="h-8 w-full"
-              onClick={() =>
-                router.push(`/sewaarmada/ubahpesanan/${params.orderId}`)
-              }
-              type="button"
-            >
-              {t("buttonUbahPesanan")}
-            </Button>
-          ) : null}
-
-          {/* Sorry banget bro aku gatau kapan ini harus muncul anjir, ingetin aku aja ya nanti */}
-          {/* Ini haruse muncul pas Shipper--Sewa-Armada-Terjadwal LD-J5** */}
-          {false && (
-            <Button
-              variant="muatparts-primary"
-              className="h-8 w-full"
-              onClick={() => alert("Implement konfirmasi pesanan gagal")}
-              type="button"
-            >
-              Ya, Mengerti
-            </Button>
-          )}
-
-          {isShowWaitFleetAlert && <WaitFleetSearchButton />}
-
-          {true && (
-            <ModalBatalkanPesanan
-              dataRingkasanPembayaran={dataRingkasanPembayaran}
-            >
-              <Button
-                variant="muattrans-error-secondary"
-                className="h-8 w-full"
-                type="button"
-              >
-                {t("buttonBatalkanPesanan")}
-              </Button>
-            </ModalBatalkanPesanan>
-          )}
-        </div>
-      )}
+      <ButtonSection
+        dataStatusPesanan={dataStatusPesanan}
+        dataRingkasanPembayaran={dataRingkasanPembayaran}
+        isShowWaitFleetAlert={isShowWaitFleetAlert}
+        t={t}
+      />
     </div>
+  );
+};
+
+export const ButtonSection = ({
+  dataStatusPesanan,
+  dataRingkasanPembayaran,
+  isShowWaitFleetAlert,
+  t,
+  onLanjutPembayaran,
+}) => {
+  const params = useParams();
+  const router = useRouter();
+
+  const orderId = params?.orderId;
+  const { trigger: paymentProcess, isMutating: isLoading } = useSWRMutateHook(
+    orderId ? `v1/orders/${orderId}/payment-process` : null,
+    "POST"
+  );
+
+  const handleLanjutPembayaran = async () => {
+    if (!paymentProcess) return;
+
+    try {
+      const result = await paymentProcess({
+        paymentMethodId: dataRingkasanPembayaran.paymentMethodId,
+      });
+      console.log("Pembayaran berhasil:", result);
+
+      // Contoh tambahan jika ingin redirect atau toast
+      // router.push(`/sewaarmada/pembayaran/${orderId}`);
+      // toast.success("Pembayaran berhasil!");
+      router.refresh();
+    } catch (err) {
+      console.error("Gagal lanjut pembayaran:", err);
+      // toast.error("Terjadi kesalahan saat memproses pembayaran");
+    }
+  };
+
+  return (
+    <ConditionalDiv className="flex w-full flex-col gap-4">
+      {dataRingkasanPembayaran?.orderStatus ===
+      OrderStatusEnum.WAITING_PAYMENT_1 ? (
+        <Button
+          variant="muatparts-primary"
+          className="h-8 w-full"
+          onClick={handleLanjutPembayaran}
+          disabled={isLoading}
+          type="button"
+        >
+          {t("buttonLanjutPembayaran")}
+        </Button>
+      ) : dataStatusPesanan?.isChangeable ? (
+        // Tombol "Ubah Pesanan" hanya muncul jika status pesanan memenuhi syarat untuk melakukan perubahan (H-1, Hari H, Perjalanan Muat, Tiba di Lokasi Muat 1, Antri Muat 1)
+        // Ini sudah di handle sama BE, via getDetailPesananData prop isChangeable
+        <Button
+          variant="muatparts-primary-secondary"
+          className="h-8 w-full"
+          onClick={() =>
+            router.push(`/sewaarmada/ubahpesanan/${params.orderId}`)
+          }
+          type="button"
+        >
+          {t("buttonUbahPesanan")}
+        </Button>
+      ) : null}
+
+      {/* Sorry banget bro aku gatau kapan ini harus muncul anjir, ingetin aku aja ya nanti */}
+      {/* Ini haruse muncul pas Shipper--Sewa-Armada-Terjadwal LD-J5** */}
+      {false && (
+        <Button
+          variant="muatparts-primary"
+          className="h-8 w-full"
+          onClick={() => alert("Implement konfirmasi pesanan gagal")}
+          type="button"
+        >
+          Ya, Mengerti
+        </Button>
+      )}
+
+      {isShowWaitFleetAlert && <WaitFleetSearchButton />}
+
+      {/* Tombol "Batalkan Pesanan" ditampilkan hanya pada pesanan dengan status: Mempersiapkan Armada, Menunggu Pembayaran, Pesanan Terkonfirmasi, Menuju Lokasi Muat, Tiba di Lokasi Muat, dan Antri di Lokasi Muat. */}
+      {/* Ini sudah di handle sama BE, via getDetailPesananData prop isCancellable */}
+      {dataStatusPesanan?.isCancellable && (
+        <ModalBatalkanPesanan dataRingkasanPembayaran={dataRingkasanPembayaran}>
+          <Button
+            variant="muattrans-error-secondary"
+            className="h-8 w-full"
+            type="button"
+          >
+            {t("buttonBatalkanPesanan")}
+          </Button>
+        </ModalBatalkanPesanan>
+      )}
+    </ConditionalDiv>
   );
 };
