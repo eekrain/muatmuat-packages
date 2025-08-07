@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 
 const TransportRequestCard = ({ request, isSuspended = false }) => {
   const [isSaved, setIsSaved] = useState(request.isSaved);
@@ -69,7 +70,7 @@ const TransportRequestCard = ({ request, isSuspended = false }) => {
           <div className="flex flex-wrap items-center gap-2">
             {/* Time Label */}
             <span
-              className={`rounded-[6px] px-2 py-1 text-xs font-semibold ${
+              className={`flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold ${
                 request.timeLabel?.color === "green"
                   ? "bg-success-50 text-success-700"
                   : request.timeLabel?.color === "blue"
@@ -79,18 +80,20 @@ const TransportRequestCard = ({ request, isSuspended = false }) => {
                       : "bg-primary-50 text-primary-700"
               }`}
             >
-              {request.orderType === "INSTANT"
-                ? "Instan"
-                : request.timeLabel?.text || "Terjadwal"}
+              {request.orderType === "INSTANT" ? "Instan" : "Terjadwal"}
             </span>
 
             {/* Load Time Label */}
             <span
-              className={`rounded-[6px] px-2 py-1 text-xs font-medium ${
-                request.loadTimeText?.includes("Hari Ini") ||
-                request.loadTimeText?.includes("Besok")
-                  ? "bg-warning-50 text-warning-700"
-                  : "bg-primary-50 text-primary-700"
+              className={`flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold ${
+                request.timeLabel?.color === "green"
+                  ? "bg-success-50 text-success-700"
+                  : request.timeLabel?.color === "blue"
+                    ? "bg-primary-50 text-primary-700"
+                    : request.loadTimeText?.includes("Hari Ini") ||
+                        request.loadTimeText?.includes("Besok")
+                      ? "bg-warning-50 text-warning-700"
+                      : "bg-primary-50 text-primary-700"
               }`}
             >
               {request.loadTimeText || "Muat 7 Hari Lagi"}
@@ -98,33 +101,30 @@ const TransportRequestCard = ({ request, isSuspended = false }) => {
 
             {/* Overload Badge */}
             {request.hasOverload && (
-              <span className="rounded-[6px] bg-error-50 px-2 py-1 text-xs font-medium text-error-700">
+              <span className="flex h-6 items-center rounded-[6px] bg-error-50 px-2 text-xs font-semibold text-error-700">
                 Potensi Overload
               </span>
             )}
 
             {/* Halal Certification Required Badge */}
             {request.isHalalLogistics && (
-              <IconComponent
-                src="/icons/Halal-badges.svg"
-                className="h-6 w-6"
-              />
+              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#F7EAFD] px-1 py-2">
+                <IconComponent src="/icons/halal.svg" className="h-4 w-3" />
+              </div>
             )}
           </div>
           <div className="flex items-center gap-2">
-            {request.isHalalLogistics && (
-              <IconComponent src="/icons/Halal-badge.svg" className="h-6 w-6" />
-            )}
-            <button onClick={handleSave}>
+            <button
+              onClick={handleSave}
+              className={`flex h-6 w-6 items-center justify-center rounded-full hover:opacity-75 ${
+                isSaved ? "bg-[#FFE9ED]" : "border border-[#C4C4C4] bg-white"
+              }`}
+            >
               <IconComponent
                 src={
-                  isSaved
-                    ? "/icons/bookmark-filled.svg"
-                    : "/icons/Disimpan-badges.svg"
+                  isSaved ? "/icons/bookmark-filled.svg" : "/icons/bookmark.svg"
                 }
-                className={`h-6 w-6 hover:opacity-75 ${
-                  isSaved ? "text-error-600" : ""
-                }`}
+                className={`h-5 w-5 ${isSaved ? "text-error-600" : ""}`}
               />
             </button>
           </div>
@@ -136,28 +136,39 @@ const TransportRequestCard = ({ request, isSuspended = false }) => {
         {/* Location Info */}
         <div className="mb-3 flex w-full justify-between">
           <div className="w-[279px]">
-            <div className="mb-1 flex items-center gap-2">
-              <div className="relative flex h-4 w-4 flex-shrink-0 items-center justify-center">
-                <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#FFC217]">
-                  <div className="h-1.5 w-1.5 rounded-full bg-[#461B02]"></div>
-                </div>
-              </div>
-              <span className="text-xs font-bold text-neutral-900">
-                {request.pickupLocations?.[0]?.fullAddress?.length > 38
-                  ? `${request.pickupLocations[0].fullAddress.substring(0, 38)}...`
-                  : request.pickupLocations?.[0]?.fullAddress}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-[#461B02]">
-                <div className="h-1.5 w-1.5 rounded-full bg-white"></div>
-              </div>
-              <span className="text-xs font-bold text-neutral-900">
-                {request.dropoffLocations?.[0]?.fullAddress?.length > 38
-                  ? `${request.dropoffLocations[0].fullAddress.substring(0, 38)}...`
-                  : request.dropoffLocations?.[0]?.fullAddress}
-              </span>
-            </div>
+            <TimelineContainer>
+              {[
+                {
+                  fullAddress:
+                    request.pickupLocations?.[0]?.fullAddress || "Lokasi Muat",
+                  type: "pickup",
+                },
+                {
+                  fullAddress:
+                    request.dropoffLocations?.[0]?.fullAddress ||
+                    "Lokasi Bongkar",
+                  type: "dropoff",
+                },
+              ].map((location, index) => (
+                <NewTimelineItem
+                  key={index}
+                  variant="bullet"
+                  index={index}
+                  activeIndex={0}
+                  isLast={index === 1}
+                  title={
+                    location.fullAddress?.length > 38
+                      ? `${location.fullAddress.substring(0, 38)}...`
+                      : location.fullAddress
+                  }
+                  className="pb-2"
+                  appearance={{
+                    titleClassname:
+                      "text-xs font-bold text-neutral-900 line-clamp-1 break-all",
+                  }}
+                />
+              ))}
+            </TimelineContainer>
           </div>
           <div className="text-right">
             <div className="text-[12px] font-medium text-neutral-600">
@@ -174,13 +185,13 @@ const TransportRequestCard = ({ request, isSuspended = false }) => {
 
         {/* Cargo Info and Order Code Row */}
         <div className="mb-4 flex w-full items-start justify-between">
-          <div className="flex flex-1 items-start gap-2">
+          <div className="flex flex-1 items-start gap-3">
             <IconComponent
               src="/icons/box16.svg"
               className="mt-0.5 h-6 w-6 flex-shrink-0 text-neutral-600"
             />
             <div className="flex-1">
-              <div className="text-xs font-normal text-neutral-600">
+              <div className="text-xs font-medium text-neutral-600">
                 Informasi Muatan (Total :{" "}
                 {formatWeight(
                   request.cargos?.[0]?.weight || 0,
@@ -189,25 +200,34 @@ const TransportRequestCard = ({ request, isSuspended = false }) => {
                 )
               </div>
               <div className="text-xs font-semibold text-neutral-900">
-                {request.cargos?.[0]?.name || "Besi Baja"}
+                {request.cargos.length > 1 ? (
+                  <>
+                    {request.cargos[0].name},{" "}
+                    <span style={{ color: "#176CF7" }}>
+                      +{request.cargos.length - 1} lainnya
+                    </span>
+                  </>
+                ) : (
+                  request.cargos[0].name
+                )}
               </div>
             </div>
           </div>
           <div className="ml-4">
-            <span className="rounded-[6px] border border-[#7A360D] bg-white px-3 py-1 text-xs font-medium text-[#7A360D]">
+            <span className="rounded-[6px] border border-[#7A360D] bg-white px-3 py-1 text-xs font-semibold text-[#7A360D]">
               {request.orderCode}
             </span>
           </div>
         </div>
 
         {/* Vehicle Info */}
-        <div className="mb-4 flex items-start gap-2">
+        <div className="mb-4 flex items-start gap-3">
           <IconComponent
             src="/icons/truk16.svg"
             className="mt-0.5 h-6 w-6 flex-shrink-0 text-neutral-600"
           />
           <div className="flex-1">
-            <div className="text-xs font-normal text-neutral-600">
+            <div className="text-xs font-medium text-neutral-600">
               Kebutuhan Armada
             </div>
             <div className="text-xs font-semibold text-neutral-900">
@@ -218,13 +238,13 @@ const TransportRequestCard = ({ request, isSuspended = false }) => {
         </div>
 
         {/* Schedule Info */}
-        <div className="mb-4 flex items-start gap-2">
+        <div className="mb-4 flex items-start gap-3">
           <IconComponent
             src="/icons/calendar16.svg"
             className="mt-0.5 h-6 w-6 flex-shrink-0 text-neutral-600"
           />
           <div className="flex-1">
-            <div className="text-xs font-normal text-neutral-600">
+            <div className="text-xs font-medium text-neutral-600">
               Waktu Muat
             </div>
             <div className="text-xs font-semibold text-neutral-900">
