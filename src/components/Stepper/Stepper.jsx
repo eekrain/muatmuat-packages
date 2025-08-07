@@ -176,7 +176,7 @@ export const StepperItemResponsive = ({ step, index }) => {
     if (index < activeIndex) return "completed";
     if (index === activeIndex) return "active";
     return "inactive";
-  }, [step.status, activeIndex, index]);
+  }, [step?.status, activeIndex, index]);
 
   const { ref: titleRef, height: currentTitleHeight } = useClientHeight();
 

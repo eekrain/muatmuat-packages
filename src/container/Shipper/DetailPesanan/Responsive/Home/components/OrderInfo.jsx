@@ -89,6 +89,9 @@ export const OrderInfo = ({ dataStatusPesanan }) => {
     );
   }, [dataStatusPesanan?.driverStatus, dataStatusPesanan?.orderStatus]);
 
+  // if dataStatusPesanan.otherStatus is more than 1 (mean there is more than 1 status), then show other status clickable label
+  const isShowOtherStatus = dataStatusPesanan?.otherStatus?.length > 1;
+
   return (
     <div className="flex w-full flex-col items-start bg-white p-5">
       <div className="flex w-full flex-col items-start gap-4">
@@ -151,7 +154,10 @@ export const OrderInfo = ({ dataStatusPesanan }) => {
         <OrderCode dataStatusPesanan={dataStatusPesanan} />
 
         {/* Order Status */}
-        <OrderStatus dataStatusPesanan={dataStatusPesanan} />
+        <OrderStatus
+          dataStatusPesanan={dataStatusPesanan}
+          withStatusLainnya={isShowOtherStatus}
+        />
       </div>
 
       {/* Document Shipping Bottomsheet */}

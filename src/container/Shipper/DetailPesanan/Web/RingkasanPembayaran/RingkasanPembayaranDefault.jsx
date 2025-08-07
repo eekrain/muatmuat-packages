@@ -49,7 +49,7 @@ export const RingkasanPembayaranDefault = ({
     orderId ? `v1/orders/${orderId}/payment-process` : null,
     "POST"
   );
-  const { data: waitingTimeRaw } = useGetWaitingTime(params.orderId);
+  const { data: waitingTimeData } = useGetWaitingTime(params.orderId);
   const { data: overloadData } = useGetOverloadData(params.orderId);
 
   const handleLanjutPembayaran = async () => {
@@ -219,7 +219,7 @@ export const RingkasanPembayaranDefault = ({
                         ?.totalAmount
                     )}
                   />
-                  <ModalDetailWaktuTunggu drivers={waitingTimeRaw} />
+                  <ModalDetailWaktuTunggu drivers={waitingTimeData} />
                 </div>
               </CardPayment.Section>
 

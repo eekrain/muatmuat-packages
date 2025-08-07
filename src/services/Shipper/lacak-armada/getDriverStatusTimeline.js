@@ -5,7 +5,7 @@ import { fetcherMuatrans } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { DriverStatusEnum } from "@/lib/constants/detailpesanan/driver-status.enum";
 
-const useMockData = false; // toggle mock data
+const useMockData = false; // mock detailpesanan
 
 const apiResult = {
   data: {

@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = false; // toggle mock data
+const useMockData = false; // mock detailpesanan
 
 // Pengembalian Dana Diproses
 // 25 Jul 2025 10:07 WIB // requestedAt
@@ -19,9 +19,9 @@ export const mockAPIResult = {
     Data: {
       orderId: "550e8400-e29b-41d4-a716-446655440000",
       orderCode: "MT25AA001",
-      refundStatus: "REFUND_PROCESSING", // REFUND_PROCESSING || REFUND_COMPLETED
+      refundStatus: "REFUND_COMPLETED", // REFUND_PROCESSING || REFUND_COMPLETED
       requestedAt: "2025-02-10T10:00:00Z",
-      processedAt: null,
+      processedAt: "2025-02-12T10:00:00Z",
       completedAt: null,
       bankAccount: {
         bankName: "Bank Central Asia",
