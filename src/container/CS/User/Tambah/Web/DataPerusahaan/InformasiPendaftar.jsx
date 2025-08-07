@@ -30,16 +30,20 @@ const informasiPendaftarSchema = v.object({
   transporterId: v.optional(v.string()),
 
   registrantName: v.pipe(
-    v.string("Nama pendaftar wajib diisi"),
-    v.minLength(3, "Nama pendaftar minimal 3 karakter"),
-    v.regex(/^[a-zA-Z0-9 ]+$/, "Nama tidak boleh mengandung simbol")
+    v.string(),
+    v.nonEmpty("Nama pendaftar wajib diisi"),
+    v.minLength(3, "Nama Lengkap minimal 3 karakter"),
+    v.regex(/^[a-zA-Z0-9 ]+$/, "Nama Lengkap tidak valid")
   ),
 
-  registrantPosition: v.pipe(v.string(), v.minLength(1, "Jabatan wajib diisi")),
+  registrantPosition: v.pipe(
+    v.string(),
+    v.minLength(1, "Jabatan Pendaftar wajib diisi")
+  ),
   registrantWhatsapp: v.pipe(
     v.custom(
       (value) => value && typeof value === "string" && value.trim() !== "",
-      "Nomor Whatsapp wajib diisi"
+      "No. Whatsapp Pendaftar wajib diisi"
     ),
     v.string(),
     v.minLength(8, "Nomor Whatsapp minimal 8 digit"),
@@ -48,7 +52,7 @@ const informasiPendaftarSchema = v.object({
 
   registrantEmail: v.pipe(
     v.string(),
-    v.minLength(1, "Email wajib diisi"),
+    v.minLength(1, "Email Pendaftar wajib diisi"),
     v.email("Penulisan email salah")
   ),
 
@@ -59,11 +63,15 @@ const informasiPendaftarSchema = v.object({
 
   companyName: v.pipe(
     v.string(),
-    v.minLength(1, "Nama perusahaan wajib diisi")
+    v.minLength(1, "Nama Perusahaan wajib diisi")
   ),
-  businessEntityType: v.enum(
-    ["PT", "CV", "UD", "Koperasi", "Lainnya"],
-    "Bentuk usaha tidak valid"
+  businessEntityType: v.pipe(
+    v.string(),
+    v.nonEmpty("Badan Usaha wajib diisi"),
+    v.enum(
+      ["PT", "CV", "UD", "Koperasi", "Lainnya"],
+      "Bentuk usaha tidak valid"
+    )
   ),
   companyPhone: v.pipe(
     v.string(),
@@ -74,10 +82,7 @@ const informasiPendaftarSchema = v.object({
     )
   ),
 
-  companyAddress: v.pipe(
-    v.string(),
-    v.minLength(1, "Alamat perusahaan wajib diisi")
-  ),
+  companyAddress: v.pipe(v.string(), v.minLength(1, "Alamat wajib diisi")),
   locationData: v.object({
     location: v.pipe(v.string(), v.minLength(1, "Lokasi wajib diisi")),
     latitude: v.pipe(v.string(), v.minLength(1, "Latitude wajib diisi")),
@@ -96,14 +101,14 @@ const informasiPendaftarSchema = v.object({
     postalCodeList: v.optional(v.array(v.any())), // Tambahkan ini
   }),
 
-  bankId: v.pipe(v.string(), v.minLength(1, "Bank wajib diisi")),
+  bankId: v.pipe(v.string(), v.minLength(1, "Nama Bank wajib diisi")),
   accountNumber: v.pipe(
     v.string(),
-    v.minLength(1, "Nomor rekening wajib diisi")
+    v.minLength(1, "Nomor Rekening wajib diisi")
   ),
   accountName: v.pipe(
     v.string(),
-    v.minLength(1, "Nama pemilik rekening wajib diisi")
+    v.minLength(1, "Nama Pemilik Rekening wajib diisi")
   ),
 });
 
@@ -406,9 +411,7 @@ function InformasiPendaftar({ onSave, onFormChange }) {
     });
   };
 
-  const handleValidateAndSubmit = async (e) => {
-    e.preventDefault();
-
+  const onInvalidSubmit = async () => {
     const isValid = await trigger();
 
     if (!isValid) {
@@ -417,20 +420,15 @@ function InformasiPendaftar({ onSave, onFormChange }) {
       }
       return;
     }
-
-    handleSubmit(onSubmit)();
   };
 
   const onSubmit = (data) => {
-    console.log("Form submitted. Data in react-hook-form:", data);
-    console.log("Final data is already in Zustand store.");
     const existingData =
       useTransporterFormStore.getState().getForm(FORM_KEY) || {};
     const updatedData = {
       ...existingData,
       ...data,
     };
-    console.log("Saving merged data from Section 1 to Zustand:", updatedData);
     setForm(FORM_KEY, updatedData);
     if (onSave) {
       onSave();
@@ -441,9 +439,7 @@ function InformasiPendaftar({ onSave, onFormChange }) {
 
   useEffect(() => {
     if (isSubmitSuccessful) {
-      // Ambil data terbaru dari store setelah save
       const latestData = useTransporterFormStore.getState().getForm(FORM_KEY);
-      // Reset form dengan data lengkap, ini akan set isDirty ke false
       reset(latestData);
     }
   }, [isSubmitSuccessful, reset]);
@@ -499,13 +495,17 @@ function InformasiPendaftar({ onSave, onFormChange }) {
   };
 
   return (
-    <form onSubmit={handleValidateAndSubmit} className="w-full">
-      <Card className={"rounded-xl border-none p-6"}>
+    <form
+      onSubmit={handleSubmit(onSubmit, onInvalidSubmit)}
+      className="w-full"
+      noValidate
+    >
+      <Card className={"rounded-xl border-none p-8"}>
         <div className="max-w-[75%]">
           <h3 className="mb-4 text-lg font-semibold">Data Perusahaan</h3>
           <div>
             <h3 className="mb-6 text-sm font-semibold">Informasi Pendaftar</h3>
-            <FormContainer>
+            <FormContainer className={"!gap-6"}>
               <FormLabel required>Nama Lengkap Pendaftar</FormLabel>
               <Input
                 type="text"
@@ -547,6 +547,7 @@ function InformasiPendaftar({ onSave, onFormChange }) {
               <div>
                 <ImageUploudWithModal
                   onSuccess={handleLogoUpload}
+                  title="Unggah Logo Perusahaan"
                   initialImageUrl={watchedValues.companyLogo}
                 />
                 {errors.companyLogo && (
@@ -588,10 +589,13 @@ function InformasiPendaftar({ onSave, onFormChange }) {
             <FormContainer>
               <FormLabel required>Alamat</FormLabel>
               <MyTextArea
-                placeholder="Contoh : Nama Jalan (bila tidak diemukan), Gedung, No. Rumah/Patokan, Blok/Unit"
+                placeholder={
+                  "Masukkan alamat lengkap dengan detail.\nContoh: Nama Jalan (bila tidak ditemukan), Gedung, No. Rumah/Patokan, Blok/Unit"
+                }
                 maxLength={225}
                 value={watch("companyAddress")}
                 onChange={(e) => setValue("companyAddress", e.target.value)}
+                {...register("companyAddress")}
                 errorMessage={errors.companyAddress?.message}
                 appearance={{
                   inputClassName: "h-[80px]",
@@ -602,7 +606,7 @@ function InformasiPendaftar({ onSave, onFormChange }) {
               <div>
                 <LocationDropdownInput
                   markerIcon={""}
-                  placeholder="Cari lokasi"
+                  placeholder="Masukkan Lokasi Perusahaan"
                   className="mb-4 w-full"
                   value={watchedValues.locationData?.location}
                   onInputClick={() => handleLocationInteraction()}
@@ -672,7 +676,7 @@ function InformasiPendaftar({ onSave, onFormChange }) {
                     textLabel={`${coordinates.latitude}, ${coordinates.longitude}`}
                   />
                   <div className="hover absolute bottom-0 right-0 w-full rounded-b-lg bg-muat-trans-primary-400 px-4 py-1 text-center text-white transition-colors hover:bg-muat-trans-primary-500">
-                    <span className="text-sm font-semibold text-muat-trans-primary-900">
+                    <span className="text-sm font-semibold text-[#461B02]">
                       Atur Pin Lokasi
                     </span>
                   </div>
@@ -883,7 +887,11 @@ function InformasiPendaftar({ onSave, onFormChange }) {
         </ModalContent>
       </Modal>
       <div className="mt-6 flex items-end justify-end">
-        <Button type="submit" variant="muattrans-primary" className="px-8">
+        <Button
+          type="submit"
+          variant="muattrans-primary"
+          className="!w-[112px]"
+        >
           Simpan
         </Button>
       </div>

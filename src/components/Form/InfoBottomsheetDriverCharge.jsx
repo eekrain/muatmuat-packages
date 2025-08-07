@@ -1,3 +1,8 @@
+import { useParams } from "next/navigation";
+
+import { format } from "date-fns";
+import { id } from "date-fns/locale/id";
+
 import {
   BottomSheet,
   BottomSheetClose,
@@ -8,25 +13,31 @@ import {
 } from "@/components/BottomSheet/BottomSheetUp";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { cn } from "@/lib/utils";
+import { useGetWaitingTime } from "@/services/Shipper/detailpesanan/getWaitingTime";
 
 export const InfoBottomsheetDriverCharge = ({ className, title }) => {
-  const drivers = [
-    {
-      name: "HENDRA",
-      licensePlate: "B 1234 CD",
-      startCharge: "06 Jun 2024 17:01 WIB",
-    },
-    {
-      name: "Bagus Dharmawan",
-      licensePlate: "AE 1232 CB",
-      startCharge: "06 Jun 2024 17:05 WIB",
-    },
-    {
-      name: "Ragil Poetra",
-      licensePlate: "AE 1966 HG",
-      startCharge: "06 Jun 2024 17:08 WIB",
-    },
-  ];
+  const params = useParams();
+  const { data: waitingTimeData } = useGetWaitingTime(params.orderId);
+
+  // Format date for display
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    try {
+      const date = new Date(dateString);
+      return format(date, "dd MMM yyyy HH:mm 'WIB'", { locale: id });
+    } catch (e) {
+      console.error("Error formatting date:", e);
+      return "";
+    }
+  };
+
+  // Transform API data to match the component structure
+  const drivers =
+    waitingTimeData?.map((item) => ({
+      name: item.name,
+      licensePlate: item.licensePlate || "N/A",
+      startCharge: formatDate(item.data?.[0]?.startDate),
+    })) || [];
 
   return (
     <BottomSheet>

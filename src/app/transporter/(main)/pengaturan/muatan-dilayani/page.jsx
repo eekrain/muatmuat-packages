@@ -1,7 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+
+import { isEqual } from "lodash";
+import { Info } from "lucide-react";
 
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
@@ -29,6 +32,37 @@ export default function AturMuatanDilayaniPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showSelectedOnly, setShowSelectedOnly] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+
+  // --- NEW: State for leave confirmation ---
+  const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [initialSelectedItems, setInitialSelectedItems] = useState({});
+
+  // --- NEW: Effect to initialize selections and track initial state ---
+  useEffect(() => {
+    if (apiData?.cargoHierarchy) {
+      const initialSelections = {};
+      apiData.cargoHierarchy.forEach((hierarchy) => {
+        hierarchy.categories.forEach((category) => {
+          category.cargoNames.forEach((cargo) => {
+            // Assuming the API provides an `isServing` flag for pre-selected items
+            if (cargo.isServing) {
+              initialSelections[cargo.cargoNameId] = true;
+            }
+          });
+        });
+      });
+      setSelectedItems(initialSelections);
+      setInitialSelectedItems(initialSelections);
+    }
+  }, [apiData]);
+
+  // --- NEW: Effect to compare current selections with the initial state ---
+  useEffect(() => {
+    // Use lodash's isEqual for a reliable deep comparison
+    const areStatesEqual = isEqual(initialSelectedItems, selectedItems);
+    setHasUnsavedChanges(!areStatesEqual);
+  }, [selectedItems, initialSelectedItems]);
 
   const handleItemChange = (id) => {
     setSelectedItems((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -115,6 +149,15 @@ export default function AturMuatanDilayaniPage() {
     setIsConfirmModalOpen(true);
   };
 
+  // --- NEW: Handler for navigating away from the page ---
+  const handleLeavePage = () => {
+    if (hasUnsavedChanges) {
+      setIsLeaveModalOpen(true);
+    } else {
+      router.back();
+    }
+  };
+
   const confirmSave = async () => {
     const cargoTypeIds = Object.keys(selectedItems).filter(
       (id) => selectedItems[id]
@@ -130,6 +173,11 @@ export default function AturMuatanDilayaniPage() {
       await saveCargo(payload);
       setIsConfirmModalOpen(false);
       toast.success("Berhasil menyimpan muatan yang dilayani!");
+
+      // --- NEW: Update the initial state after a successful save ---
+      setInitialSelectedItems(selectedItems);
+      setHasUnsavedChanges(false);
+
       router.push("/pengaturan");
     } catch (err) {
       console.error("Failed to save cargo configuration:", err);
@@ -156,7 +204,7 @@ export default function AturMuatanDilayaniPage() {
       <div className="flex h-screen w-full items-center justify-center p-4">
         <DataEmpty
           title="Gagal Memuat Data"
-          message="Terjadi kesalahan saat mengambil data muatan."
+          subtitle="Terjadi kesalahan saat mengambil data muatan."
         />
       </div>
     );
@@ -184,11 +232,22 @@ export default function AturMuatanDilayaniPage() {
         <div className="mb-6">
           <BreadCrumb data={breadcrumbItems} />
         </div>
-        <div className="flex flex-row items-center gap-2">
-          <PageTitle className="w-fit">Atur Muatan Dilayani</PageTitle>
-          <InfoTooltip>
-            Pilih muatan yang dapat Anda layani. Perubahan akan berlaku untuk
-            semua layanan Anda.
+        <div className="mt-4 flex items-center gap-2">
+          {/* --- UPDATED: PageTitle now uses the leave handler --- */}
+          <PageTitle withBack={true} onClick={handleLeavePage}>
+            Atur Muatan Dilayani
+          </PageTitle>
+          <InfoTooltip
+            className="w-80"
+            side="right"
+            trigger={
+              <button className="-mt-4 flex text-neutral-600 hover:text-neutral-800">
+                <Info size={18} />
+              </button>
+            }
+          >
+            Atur muatan yang kamu layani sekarang untuk mendapatkan muatan yang
+            sesuai
           </InfoTooltip>
         </div>
 
@@ -260,6 +319,24 @@ export default function AturMuatanDilayaniPage() {
         cancel={{
           text: "Batal",
           onClick: () => setIsConfirmModalOpen(false),
+        }}
+      />
+      {/* --- NEW: Leave Confirmation Modal --- */}
+      <ConfirmationModal
+        isOpen={isLeaveModalOpen}
+        setIsOpen={setIsLeaveModalOpen}
+        title={{
+          text: "Muatan yang dilayani tidak akan tersimpan kalau kamu meninggalkan halaman ini",
+          className: "text-sm font-medium text-center",
+        }}
+        cancel={{
+          text: "Ya",
+          variant: "destructive", // Use a destructive variant for a better UX
+          onClick: () => router.back(), // Proceed to leave the page
+        }}
+        confirm={{
+          text: "Batal",
+          onClick: () => setIsLeaveModalOpen(false), // Stay on the page
         }}
       />
     </>

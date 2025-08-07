@@ -42,6 +42,7 @@ const normalizeWaitingTime = (waitingTimeRaw) => {
 
     return {
       name: item.name,
+      licensePlate: item.licensePlate,
       durasiTotal: formattedWaitingTime,
       data: [
         {

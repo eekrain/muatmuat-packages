@@ -42,44 +42,49 @@ const fileValidation = (isRequired = false) =>
     return false;
   }, "File tidak valid. Pastikan format .jpg/.png/.pdf dan ukuran maks. 10MB.");
 
-// Array validation for multiple files
-const fileArrayValidation = (isRequired = false) =>
+const fileArrayValidation = (
+  isRequired = false,
+  message = "File wajib diunggah"
+) =>
   v.pipe(
     v.array(fileValidation(true)),
-    v.minLength(isRequired ? 1 : 0, "File wajib diunggah")
+    v.minLength(isRequired ? 1 : 0, message)
   );
 
 export const kelengkapanLegalitasSchema = v.object({
-  // Document number validations
   nibNumber: v.pipe(
-    v.string("Nomor NIB wajib diisi"),
+    v.string("No. NIB wajib diisi"),
+    v.minLength(1, "No. NIB wajib diisi"),
     v.regex(/^\d+$/, "Nomor NIB hanya boleh berisi angka"),
-    v.length(13, "Nomor NIB harus 13 digit")
+    v.length(13, "No. NIB harus 13 digit")
   ),
   npwpNumber: v.pipe(
-    v.string("Nomor NPWP wajib diisi"),
+    v.string("No. NPWP Perusahaan wajib diisi"),
+    v.minLength(1, "No. NPWP Perusahaan wajib diisi"),
     v.regex(/^\d+$/, "Nomor NPWP hanya boleh berisi angka"),
-    v.length(15, "Nomor NPWP harus 15 digit")
+    v.minLength(15, "No. NPWP Perusahaan harus terdiri dari 15-16 digit"),
+    v.maxLength(16, "No. NPWP Perusahaan harus terdiri dari 15-16 digit")
   ),
   ktpNumber: v.pipe(
-    v.string("Nomor KTP wajib diisi"),
+    v.string("No. KTP Pendaftar wajib diisi"),
+    v.minLength(1, "No. KTP Pendaftar wajib diisi"),
     v.regex(/^\d+$/, "Nomor KTP hanya boleh berisi angka"),
-    v.length(16, "Nomor KTP harus 16 digit")
+    v.length(16, "No. KTP Pendaftar harus 16 digit")
   ),
 
-  // Document file validations
   documents: v.object({
-    // Mandatory files
-    nib: fileArrayValidation(true), // Required
-    npwp: fileArrayValidation(true), // Required
-    ktp: fileArrayValidation(true), // Required
-    aktaPendirian: fileArrayValidation(true), // Required
-    skKemenkumham: fileArrayValidation(true), // Required
+    nib: fileArrayValidation(true, "NIB wajib diisi"),
+    npwp: fileArrayValidation(true, "NPWP Perusahaan wajib diisi"),
+    ktp: fileArrayValidation(true, "KTP Pendaftar wajib diisi"),
+    aktaPendirian: fileArrayValidation(
+      true,
+      "Cover Akta Pendirian wajib diisi"
+    ),
+    skKemenkumham: fileArrayValidation(true, "SK Kemenkumham wajib diisi"), // Optional files
 
-    // Optional files
-    aktaPerubahan: fileArrayValidation(false), // Optional
-    skKemenkumhamPerubahan: fileArrayValidation(false), // Optional
-    sertifikatStandar: fileArrayValidation(false), // Optional
+    aktaPerubahan: fileArrayValidation(false),
+    skKemenkumhamPerubahan: fileArrayValidation(false),
+    sertifikatStandar: fileArrayValidation(false),
   }),
 });
 
@@ -150,14 +155,19 @@ function KelengkapanLegalitas({ onSave, onFormChange, setActiveIdx }) {
     });
   };
 
-  const handleValidateAndSubmit = handleSubmit((data) => {
+  const onInvalidSubmit = async () => {
+    const isValid = await trigger();
     const values = getValues();
 
-    if (isAllRequiredLegalitasFieldsEmpty(values)) {
-      toast.error("Isi semua inputan yang bertanda bintang (*)");
+    if (!isValid) {
+      if (isAllRequiredLegalitasFieldsEmpty(values)) {
+        toast.error("Isi semua inputan yang bertanda bintang (*)");
+      }
       return;
     }
-    console.log("NOT TRIGGERED");
+  };
+
+  const onSubmit = (data) => {
     console.log("Form submitted:", data);
 
     const existingData =
@@ -167,17 +177,36 @@ function KelengkapanLegalitas({ onSave, onFormChange, setActiveIdx }) {
     if (onSave) {
       onSave();
     }
-
     reset(data);
-
     toast.success("Kelengkapan legalitas berhasil disimpan!");
-  });
+  };
+
+  // const handleValidateAndSubmit = handleSubmit((data) => {
+  //   const values = getValues();
+
+  //   if (isAllRequiredLegalitasFieldsEmpty(values)) {
+  //     toast.error("Isi semua inputan yang bertanda bintang (*)");
+  //     return;
+  //   }
+  //   console.log("NOT TRIGGERED");
+  //   console.log("Form submitted:", data);
+
+  //   const existingData =
+  //     useTransporterFormStore.getState().getForm(FORM_KEY) || {};
+  //   const updatedData = { ...existingData, ...data };
+  //   setForm(FORM_KEY, updatedData);
+  //   if (onSave) {
+  //     onSave();
+  //   }
+
+  //   reset(data);
+
+  //   toast.success("Kelengkapan legalitas berhasil disimpan!");
+  // });
 
   useEffect(() => {
     if (isSubmitSuccessful) {
-      // Ambil data terbaru dari store setelah save
       const latestData = useTransporterFormStore.getState().getForm(FORM_KEY);
-      // Reset form dengan data lengkap, ini akan set isDirty ke false
       reset(latestData);
     }
   }, [isSubmitSuccessful, reset]);
@@ -188,18 +217,17 @@ function KelengkapanLegalitas({ onSave, onFormChange, setActiveIdx }) {
 
   const handleFileError = (error) => {
     console.error("File upload error:", error);
-    // Handle file upload errors
   };
 
   return (
-    <form onSubmit={handleValidateAndSubmit} className="w-full">
-      <Card className={"rounded-xl border-none p-6"}>
+    <form onSubmit={handleSubmit(onSubmit, onInvalidSubmit)} className="w-full">
+      <Card className={"rounded-xl border-none p-8"}>
         <div className="w-full max-w-[75%]">
           <div>
             <h3 className="mb-6 text-lg font-semibold">
               Kelengkapan Legalitas
             </h3>
-            <FormContainer>
+            <FormContainer className={"!gap-6"}>
               {/* NIB */}
               <FormLabel required>NIB</FormLabel>
               <FileUploadMultiple
@@ -219,6 +247,7 @@ function KelengkapanLegalitas({ onSave, onFormChange, setActiveIdx }) {
                 placeholder="13 Digit No. NIB"
                 {...register("nibNumber")}
                 errorMessage={errors.nibNumber?.message}
+                className="!w-[328px]"
               />
 
               {/* NPWP */}
@@ -230,7 +259,7 @@ function KelengkapanLegalitas({ onSave, onFormChange, setActiveIdx }) {
                 onError={handleFileError}
                 value={watchedValues.documents?.npwp || []}
                 label="Upload"
-                className="mb-2"
+                className="self-center"
                 errorMessage={errors.documents?.npwp?.message}
                 single
               />
@@ -241,6 +270,7 @@ function KelengkapanLegalitas({ onSave, onFormChange, setActiveIdx }) {
                 placeholder="Min. 15 Digit No. NPWP"
                 {...register("npwpNumber")}
                 errorMessage={errors.npwpNumber?.message}
+                className="!w-[328px]"
               />
 
               {/* KTP */}
@@ -252,7 +282,7 @@ function KelengkapanLegalitas({ onSave, onFormChange, setActiveIdx }) {
                 onError={handleFileError}
                 value={watchedValues.documents?.ktp || []}
                 label="Upload"
-                className="mb-2"
+                className="self-center"
                 errorMessage={errors.documents?.ktp?.message}
                 single
               />
@@ -263,6 +293,7 @@ function KelengkapanLegalitas({ onSave, onFormChange, setActiveIdx }) {
                 placeholder="16 Digit No. KTP Pendaftar"
                 {...register("ktpNumber")}
                 errorMessage={errors.ktpNumber?.message}
+                className="!w-[328px]"
               />
 
               {/* Cover Akta Pendirian */}
@@ -347,7 +378,11 @@ function KelengkapanLegalitas({ onSave, onFormChange, setActiveIdx }) {
         >
           Sebelumnya
         </Button>
-        <Button type="submit" variant="muattrans-primary">
+        <Button
+          type="submit"
+          variant="muattrans-primary"
+          className="!w-[112px]"
+        >
           Simpan
         </Button>
       </div>
