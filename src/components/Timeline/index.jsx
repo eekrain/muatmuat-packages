@@ -122,9 +122,7 @@ export const NewTimelineItem = ({
           )}
         >
           {!variant.startsWith("bullet") ? (
-            <div className="mt-[1.5px] text-xxs md:-ml-[0.5px] md:-mt-[0.5px]">
-              {index + 1}
-            </div>
+            <div className="mt-[1.5px] text-xxs md:mt-[0.5px]">{index + 1}</div>
           ) : (
             <div
               className={cn(
