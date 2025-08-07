@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 
 import Button from "@/components/Button/Button";
+import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
+import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
 const TransportRequestCard = ({
@@ -12,6 +14,7 @@ const TransportRequestCard = ({
   isSuspended = false,
   onBookmarkToggle,
   isBookmarked,
+  onUnderstand,
 }) => {
   // Use the prop if provided, otherwise fall back to request.isSaved
   const [isSaved, setIsSaved] = useState(
@@ -53,7 +56,15 @@ const TransportRequestCard = ({
   };
 
   const handleUnderstand = () => {
-    // TODO: Implement understand functionality
+    // Show success toast with order code
+    toast.success(`Permintaan ${request.orderCode} berhasil ditutup`);
+
+    // Call parent callback to remove the card from list
+    if (onUnderstand) {
+      onUnderstand(request.id);
+    }
+
+    // TODO: Implement additional understand functionality if needed
     console.log("Understand clicked for:", request.orderCode);
   };
 
@@ -123,14 +134,15 @@ const TransportRequestCard = ({
                   "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
                   request.isTaken
                     ? "text-neutral-700"
-                    : request.timeLabel?.color === "green"
+                    : request.loadTimeText?.includes("Hari Ini") ||
+                        request.loadTimeText?.includes("Besok")
                       ? "bg-success-50 text-success-700"
-                      : request.timeLabel?.color === "blue"
-                        ? "bg-primary-50 text-primary-700"
-                        : request.loadTimeText?.includes("Hari Ini") ||
-                            request.loadTimeText?.includes("Besok")
-                          ? "bg-warning-50 text-warning-700"
-                          : "bg-primary-50 text-primary-700"
+                      : request.loadTimeText?.includes("2 Hari") ||
+                          request.loadTimeText?.includes("3 Hari") ||
+                          request.loadTimeText?.includes("4 Hari") ||
+                          request.loadTimeText?.includes("5 Hari")
+                        ? "bg-warning-50 text-warning-700"
+                        : "bg-primary-50 text-primary-700"
                 )}
               >
                 {request.loadTimeText || "Muat 7 Hari Lagi"}
@@ -152,20 +164,31 @@ const TransportRequestCard = ({
 
               {/* Halal Certification Required Badge */}
               {request.isHalalLogistics && (
-                <div
-                  className={cn(
-                    "flex h-6 w-6 items-center justify-center rounded-md px-1 py-2",
-                    request.isTaken ? "" : "bg-[#F7EAFD]"
-                  )}
+                <InfoTooltip
+                  side="left"
+                  align="center"
+                  sideOffset={8}
+                  trigger={
+                    <div
+                      className={cn(
+                        "flex h-6 w-6 cursor-pointer items-center justify-center rounded-md px-1 py-2",
+                        request.isTaken ? "" : "bg-[#F7EAFD]"
+                      )}
+                    >
+                      <IconComponent
+                        src="/icons/halal.svg"
+                        className={cn(
+                          "h-4 w-3",
+                          request.isTaken ? "text-neutral-700" : ""
+                        )}
+                      />
+                    </div>
+                  }
                 >
-                  <IconComponent
-                    src="/icons/halal.svg"
-                    className={cn(
-                      "h-4 w-3",
-                      request.isTaken ? "text-neutral-700" : ""
-                    )}
-                  />
-                </div>
+                  Memerlukan pengiriman
+                  <br />
+                  dengan sertifikasi halal logistik
+                </InfoTooltip>
               )}
             </div>
             <div className="flex items-center gap-2">
@@ -276,13 +299,34 @@ const TransportRequestCard = ({
                   {request.cargos.length > 1 ? (
                     <>
                       {request.cargos[0].name},{" "}
-                      <span
-                        style={{
-                          color: request.isTaken ? "#7B7B7B" : "#176CF7",
-                        }}
+                      <InfoTooltip
+                        side="bottom"
+                        align="start"
+                        sideOffset={8}
+                        trigger={
+                          <span
+                            style={{
+                              color: request.isTaken ? "#7B7B7B" : "#176CF7",
+                              cursor: "pointer",
+                            }}
+                          >
+                            +{request.cargos.length - 1} lainnya
+                          </span>
+                        }
                       >
-                        +{request.cargos.length - 1} lainnya
-                      </span>
+                        <div className="text-sm">
+                          <div className="mb-2 font-medium">
+                            Informasi Muatan
+                          </div>
+                          <div className="space-y-1">
+                            {request.cargos.slice(1).map((cargo, index) => (
+                              <div key={index} className="text-sm">
+                                {index + 1}. {cargo.name}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </InfoTooltip>
                     </>
                   ) : (
                     request.cargos[0].name

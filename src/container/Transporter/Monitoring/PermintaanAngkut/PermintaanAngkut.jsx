@@ -13,6 +13,7 @@ const PermintaanAngkut = () => {
   const [activeTab, setActiveTab] = useState("tersedia");
   const [searchValue, setSearchValue] = useState("");
   const [bookmarkedItems, setBookmarkedItems] = useState(new Set());
+  const [removedItems, setRemovedItems] = useState(new Set());
 
   // Get data based on active tab
   const params = useMemo(() => {
@@ -59,6 +60,15 @@ const PermintaanAngkut = () => {
 
     setBookmarkedItems(newBookmarkedItems);
     console.log("🔖 Current bookmarked items count:", newBookmarkedItems.size);
+  };
+
+  const handleUnderstand = (requestId) => {
+    const newRemovedItems = new Set(removedItems);
+    newRemovedItems.add(requestId);
+    setRemovedItems(newRemovedItems);
+
+    console.log("🤝 Request understood and removed:", requestId.slice(-4));
+    console.log("🤝 Total removed items:", newRemovedItems.size);
   };
 
   // Calculate dynamic tab counts based on data and local state
@@ -328,6 +338,8 @@ const PermintaanAngkut = () => {
           isSuspended={data?.userStatus?.isSuspended}
           onBookmarkToggle={handleBookmarkToggle}
           bookmarkedItems={bookmarkedItems}
+          removedItems={removedItems}
+          onUnderstand={handleUnderstand}
         />
       </div>
     </div>
@@ -341,6 +353,8 @@ const RequestList = ({
   isSuspended = false,
   onBookmarkToggle,
   bookmarkedItems,
+  removedItems,
+  onUnderstand,
 }) => {
   if (isLoading) {
     return (
@@ -402,23 +416,26 @@ const RequestList = ({
 
   return (
     <div className="space-y-4 pb-4">
-      {requests.map((request) => {
-        // Determine current bookmark state
-        const hasStateChanged = bookmarkedItems?.has(request.id);
-        const currentBookmarkState = hasStateChanged
-          ? !request.isSaved
-          : request.isSaved;
+      {requests
+        .filter((request) => !removedItems.has(request.id)) // Filter removed items
+        .map((request) => {
+          // Determine current bookmark state
+          const hasStateChanged = bookmarkedItems?.has(request.id);
+          const currentBookmarkState = hasStateChanged
+            ? !request.isSaved
+            : request.isSaved;
 
-        return (
-          <TransportRequestCard
-            key={request.id}
-            request={request}
-            isSuspended={isSuspended}
-            onBookmarkToggle={onBookmarkToggle}
-            isBookmarked={currentBookmarkState}
-          />
-        );
-      })}
+          return (
+            <TransportRequestCard
+              key={request.id}
+              request={request}
+              isSuspended={isSuspended}
+              onBookmarkToggle={onBookmarkToggle}
+              isBookmarked={currentBookmarkState}
+              onUnderstand={onUnderstand}
+            />
+          );
+        })}
     </div>
   );
 };
