@@ -312,7 +312,7 @@ export const RingkasanPembayaranDefault = ({
                             ?.totalAmount
                         )}
                       />
-                      <ModalDetailWaktuTunggu drivers={waitingTimeRaw} />
+                      <ModalDetailWaktuTunggu drivers={waitingTimeData} />
                     </div>
                   </CardPayment.Section>
 
