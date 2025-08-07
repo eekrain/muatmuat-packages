@@ -135,6 +135,14 @@ const DetailPesananScreen = ({
     hasConfirmationWaitingAlert,
     isConfirmWaiting,
   ]);
+  const handleModalClose = () => {
+    setIsVolumePesananTinggiOpen(false);
+    setIsConfirmWaiting(true);
+  };
+
+  const handleConfirmWaiting = () => {
+    setIsVolumePesananTinggiOpen(false);
+  };
 
   return (
     <FormResponsiveLayout
@@ -233,11 +241,8 @@ const DetailPesananScreen = ({
 
       <ModalVolumePesananTinggi
         open={isVolumePesananTinggiOpen}
-        onOpenChange={setIsVolumePesananTinggiOpen}
-        onConfirm={() => {
-          setIsVolumePesananTinggiOpen(false);
-          setIsConfirmWaiting(true);
-        }}
+        onOpenChange={handleModalClose}
+        onConfirm={handleConfirmWaiting}
         onCancel={() => {
           setIsVolumePesananTinggiOpen(false);
           setIsOpenModalBatalkanPesanan(true);

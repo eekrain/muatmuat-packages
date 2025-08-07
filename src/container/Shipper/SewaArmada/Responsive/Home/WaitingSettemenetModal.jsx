@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import Button from "@/components/Button/Button";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
+import { useTranslation } from "@/hooks/use-translation";
 import {
   useWaitingSettlementModalAction,
   useWaitingSettlementModalStore,
@@ -13,6 +14,7 @@ const WaitingSettlementModal = () => {
     (state) => state.waitingSettlementOrderId
   );
   const { setIsOpen } = useWaitingSettlementModalAction();
+  const { t } = useTranslation();
   return (
     <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick>
       <ModalContent>
@@ -20,12 +22,19 @@ const WaitingSettlementModal = () => {
           <div className="flex flex-col items-center justify-center gap-y-6">
             {/* Judul Modal */}
             <h2 className="text-center text-base font-bold leading-[1.1] text-neutral-900">
-              Oops! Masih Ada Tagihan Yang Belum Dilunasi
+              {t(
+                "WaitingSettlementModal.titleUnpaidBills",
+                {},
+                "Oops! Masih Ada Tagihan Yang Belum Dilunasi"
+              )}
             </h2>
 
             <p className="text-center text-sm font-medium leading-[1.1] text-neutral-900">
-              Ada tagihan yang belum dilunasi. Harap selesaikan pembayaran untuk
-              dapat melanjutkan aksimu.
+              {t(
+                "WaitingSettlementModal.textUnpaidBills",
+                {},
+                "Ada tagihan yang belum dilunasi. Harap selesaikan pembayaran untuk dapat melanjutkan aksimu."
+              )}
             </p>
 
             <Link
@@ -39,7 +48,7 @@ const WaitingSettlementModal = () => {
                 className="h-7 px-6 text-xs leading-[1.1]"
                 variant="muatparts-primary"
               >
-                Bayar Tagihan
+                {t("WaitingSettlementModal.buttonPayBill", {}, "Bayar Tagihan")}
               </Button>
             </Link>
           </div>

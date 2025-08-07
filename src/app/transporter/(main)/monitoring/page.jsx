@@ -37,6 +37,8 @@ const Page = () => {
   const [autoFitBounds, setAutoFitBounds] = useState(true);
   const [mapCenter, setMapCenter] = useState(null); // Track current map center
   const [hasMapInteraction, setHasMapInteraction] = useState(false); // Track if user has interacted with map
+  const [selectedTruckFilters, setSelectedTruckFilters] = useState([]);
+  const [selectedOrderFilters, setSelectedOrderFilters] = useState([]);
 
   // Map query param values to tab values
   const getTabValue = (queryValue) => {
@@ -99,6 +101,11 @@ const Page = () => {
 
   const handleCloseLeftPanel = () => {
     setShowLeftPanel(false);
+  };
+
+  const handleApplyFilter = (truckStatuses, orderStatuses) => {
+    setSelectedTruckFilters(truckStatuses);
+    setSelectedOrderFilters(orderStatuses);
   };
 
   const handleToggleBottomPanel = () => {
@@ -193,8 +200,8 @@ const Page = () => {
     return { center, zoom };
   };
 
-  // Convert fleet locations to map markers
-  const fleetMarkers =
+  // Convert fleet locations to map markers and apply filters
+  const allFleetMarkers =
     fleetLocationsData?.fleets?.map((fleet) => {
       let icon = "/img/monitoring/truck/gray.png"; // Default
 
@@ -227,6 +234,43 @@ const Page = () => {
         fleet: fleet, // Keep fleet data for additional info
       };
     }) || [];
+
+  // Apply filters to fleet markers
+  const fleetMarkers = allFleetMarkers.filter((marker) => {
+    // If no filters selected, show all
+    if (
+      selectedTruckFilters.length === 0 &&
+      selectedOrderFilters.length === 0
+    ) {
+      return true;
+    }
+
+    // Check truck status filter
+    if (selectedTruckFilters.length > 0) {
+      if (!selectedTruckFilters.includes(marker.fleet.operationalStatus)) {
+        return false;
+      }
+    }
+
+    // Check order status filter (if needed)
+    if (selectedOrderFilters.length > 0) {
+      // Add logic for order status filtering if applicable
+      // For now, we'll just check if the fleet has any order that needs response
+      if (selectedOrderFilters.includes("NEEDS_RESPONSE")) {
+        // This would need to be implemented based on your actual data structure
+        // return marker.fleet.hasOrderNeedsResponse || false;
+      }
+    }
+
+    return true;
+  });
+
+  // Calculate fleet counts for filter popover
+  const fleetCounts = allFleetMarkers.reduce((acc, marker) => {
+    const status = marker.fleet.operationalStatus;
+    acc[status] = (acc[status] || 0) + 1;
+    return acc;
+  }, {});
 
   // Always calculate the bounds to get the proper center
   const calculatedBounds = calculateMapBounds(fleetMarkers);
@@ -323,6 +367,8 @@ const Page = () => {
                 onZoomOut={handleZoomOut}
                 onClickDaftarArmada={handleOpenLeftPanel}
                 onClickSOS={handleOpenSOSPanel}
+                onApplyFilter={handleApplyFilter}
+                fleetCounts={fleetCounts}
                 hideTopNavigation={showLeftPanel}
                 onToggleFullscreen={handleToggleFullscreen}
                 isFullscreen={isFullscreen}

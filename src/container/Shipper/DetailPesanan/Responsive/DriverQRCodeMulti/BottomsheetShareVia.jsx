@@ -17,22 +17,74 @@ const shareOptions = [
   { name: "Email", icon: "/img/share-icons/gmail.png" },
 ];
 
-const ShareOption = ({ name, icon }) => (
-  <button
-    type="button"
-    className="flex flex-col items-center gap-2"
-    onClick={() => console.log(`Sharing via ${name}`)}
-  >
-    <div className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-400 bg-white">
-      <img src={icon} alt="icon" className="size-6" />
-    </div>
-    <p className="w-[60px] text-center text-xs font-medium text-neutral-900">
-      {name}
-    </p>
-  </button>
-);
+const ShareOption = ({ name, icon, shareUrl }) => {
+  const handleShare = () => {
+    const message = encodeURIComponent(
+      `Silakan scan QR Code ini untuk melanjutkan proses muat: ${shareUrl}`
+    );
 
-export const BottomsheetShareVia = ({ open, onOpenChange }) => {
+    switch (name) {
+      case "Whatsapp":
+        window.open(`https://wa.me/?text=${message}`, "_blank");
+        break;
+      case "Telegram":
+        window.open(
+          `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent("Silakan scan QR Code ini untuk melanjutkan proses muat")}`,
+          "_blank"
+        );
+        break;
+      case "Facebook":
+        window.open(
+          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+          "_blank"
+        );
+        break;
+      case "Instagram":
+        // Instagram tidak mendukung sharing via URL, copy ke clipboard
+        navigator.clipboard.writeText(
+          `Silakan scan QR Code ini untuk melanjutkan proses muat: ${shareUrl}`
+        );
+        alert(
+          "Link telah disalin ke clipboard. Anda dapat membagikannya di Instagram."
+        );
+        break;
+      case "X":
+        window.open(
+          `https://twitter.com/intent/tweet?text=${message}`,
+          "_blank"
+        );
+        break;
+      case "Email":
+        window.open(
+          `mailto:?subject=${encodeURIComponent("QR Code Lokasi Muat")}&body=${message}`,
+          "_blank"
+        );
+        break;
+      case "Salin Tautan":
+        navigator.clipboard.writeText(shareUrl);
+        break;
+      default:
+        console.log(`Sharing via ${name}`);
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      className="flex flex-col items-center gap-2"
+      onClick={handleShare}
+    >
+      <div className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-400 bg-white">
+        <img src={icon} alt="icon" className="size-6" />
+      </div>
+      <p className="w-[60px] text-center text-xs font-medium text-neutral-900">
+        {name}
+      </p>
+    </button>
+  );
+};
+
+export const BottomsheetShareVia = ({ open, onOpenChange, shareUrl = "" }) => {
   return (
     <BottomSheet open={open} onOpenChange={onOpenChange}>
       <BottomSheetContent>
@@ -49,6 +101,7 @@ export const BottomsheetShareVia = ({ open, onOpenChange }) => {
                 key={option.name}
                 name={option.name}
                 icon={option.icon}
+                shareUrl={shareUrl}
               />
             ))}
           </div>

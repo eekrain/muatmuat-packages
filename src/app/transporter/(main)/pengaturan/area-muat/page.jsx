@@ -3,41 +3,53 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { isEqual } from "lodash";
 import { ChevronDown, Info } from "lucide-react";
 
 import { Alert } from "@/components/Alert/Alert";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
+import Button from "@/components/Button/Button";
 import Card, { CardContent } from "@/components/Card/Card";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import Checkbox from "@/components/Form/Checkbox";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import ProvinceSelectionModal from "@/components/Modal/ProvinceSelectionModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { SelectedProvinces } from "@/components/SelectedProvinces";
 import LayoutOverlayButton from "@/container/Transporter/Pengaturan/LayoutOverlayButton";
+import { toast } from "@/lib/toast";
 import {
   useGetAreaMuatManage,
   useGetMasterProvinces,
 } from "@/services/Transporter/pengaturan/getDataAreaMuat";
+import { useSaveAreaMuat } from "@/services/Transporter/pengaturan/saveAreaMuatData";
 
 export default function Page() {
   const router = useRouter();
+  const transporterId = "transporter-123"; // Using a placeholder ID
   const [searchCity, setSearchCity] = useState("");
   const [showSelectedOnly, setShowSelectedOnly] = useState(false);
   const [expandedProvinces, setExpandedProvinces] = useState({});
   const [isProvinceModalOpen, setIsProvinceModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+
+  // --- NEW: State for the leave confirmation modal ---
+  const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [initialProvinces, setInitialProvinces] = useState([]);
+
   const [alert, setAlert] = useState({
     show: false,
     message: "",
     type: "success",
   });
 
-  // Local state to manage checkbox selections
+  const { trigger: saveAreaMuat, isMutating } = useSaveAreaMuat();
   const [localProvinces, setLocalProvinces] = useState([]);
 
-  // Fetch area muat management data
   const { provinces, isLoading } = useGetAreaMuatManage({
     search: searchCity,
     showSelected: showSelectedOnly,
@@ -49,10 +61,8 @@ export default function Page() {
     searchProvinces,
   } = useGetMasterProvinces();
 
-  // Initialize local state when provinces data changes
   useEffect(() => {
     if (provinces && provinces.length > 0) {
-      // Keep original selections from the API data
       const resetProvinces = provinces.map((province) => ({
         ...province,
         allSelected: province.allSelected || false,
@@ -62,8 +72,19 @@ export default function Page() {
         })),
       }));
       setLocalProvinces(resetProvinces);
+      // --- NEW: Store the initial state for later comparison ---
+      setInitialProvinces(JSON.parse(JSON.stringify(resetProvinces)));
     }
   }, [provinces]);
+
+  // --- NEW: Effect to check for unsaved changes ---
+  useEffect(() => {
+    // Use lodash's isEqual for a reliable deep comparison
+    if (initialProvinces.length > 0) {
+      const areStatesEqual = isEqual(initialProvinces, localProvinces);
+      setHasUnsavedChanges(!areStatesEqual);
+    }
+  }, [localProvinces, initialProvinces]);
 
   useEffect(() => {
     if (alert.show) {
@@ -74,12 +95,20 @@ export default function Page() {
     }
   }, [alert.show]);
 
+  // --- NEW: Handler for navigating away from the page ---
+  const handleLeavePage = () => {
+    if (hasUnsavedChanges) {
+      setIsLeaveModalOpen(true);
+    } else {
+      router.back();
+    }
+  };
+
   const BREADCRUMB = [
     { name: "Pengaturan", href: "/pengaturan" },
     { name: "Atur Area Muat" },
   ];
 
-  // Handle remove province
   const handleRemoveProvince = (province) => {
     const selectedProvinces = localProvinces.filter((p) =>
       p.cities.some((c) => c.isSelected)
@@ -120,34 +149,24 @@ export default function Page() {
   };
 
   const handleSaveProvinces = (_selectedProvinces) => {
-    // Logic to handle saved provinces from modal
-    // console.log("Saved provinces:", selectedProvinces);
     setIsProvinceModalOpen(false);
   };
 
-  // Handle select all for a province
   const handleSelectAllProvince = (provinceId, checked) => {
     setLocalProvinces((prevProvinces) =>
       prevProvinces.map((province) => {
         if (province.id === provinceId) {
-          // Update all cities in the province
           const updatedCities = province.cities.map((city) => ({
             ...city,
             isSelected: checked,
           }));
-
-          return {
-            ...province,
-            allSelected: checked,
-            cities: updatedCities,
-          };
+          return { ...province, allSelected: checked, cities: updatedCities };
         }
         return province;
       })
     );
   };
 
-  // Handle individual city selection
   const handleCitySelect = (provinceId, cityId, checked) => {
     setLocalProvinces((prevProvinces) =>
       prevProvinces.map((province) => {
@@ -155,22 +174,14 @@ export default function Page() {
           const updatedCities = province.cities.map((city) =>
             city.cityId === cityId ? { ...city, isSelected: checked } : city
           );
-
-          // Check if all cities are selected
           const allSelected = updatedCities.every((city) => city.isSelected);
-
-          return {
-            ...province,
-            allSelected,
-            cities: updatedCities,
-          };
+          return { ...province, allSelected, cities: updatedCities };
         }
         return province;
       })
     );
   };
 
-  // Handle expand/collapse province
   const handleToggleExpand = (provinceId) => {
     setExpandedProvinces((prev) => ({
       ...prev,
@@ -178,25 +189,72 @@ export default function Page() {
     }));
   };
 
-  // Use localProvinces instead of provinces for rendering
+  const handleSave = () => {
+    const isAnyCitySelected = localProvinces.some((p) =>
+      p.cities.some((c) => c.isSelected)
+    );
+
+    if (!isAnyCitySelected) {
+      toast.error("Pilih minimal 1 Area Muat untuk menyimpan");
+      return;
+    }
+
+    setIsConfirmModalOpen(true);
+  };
+
+  const confirmSave = async () => {
+    const payload = {
+      transporterID: transporterId,
+      confirmation: true,
+      replaceExisting: true,
+      areas: localProvinces
+        .filter((province) => province.cities.some((city) => city.isSelected))
+        .map((province) => ({
+          areaName: province.province,
+          city: province.cities
+            .filter((city) => city.isSelected)
+            .map((city) => city.cityName)
+            .join(", "),
+          province: province.province,
+          isActive: true,
+        })),
+    };
+
+    console.log("Saving Area Muat with payload:", payload);
+
+    try {
+      const result = await saveAreaMuat(payload);
+      setIsConfirmModalOpen(false);
+      // --- NEW: Reset unsaved changes tracking on successful save ---
+      setHasUnsavedChanges(false);
+      toast.success("Berhasil menyimpan Area Muat!");
+      if (result?.redirectTo) {
+        router.push(result.redirectTo);
+      }
+    } catch (error) {
+      setIsConfirmModalOpen(false);
+      const apiErrors = error?.response?.data?.Data?.errors;
+      if (apiErrors && apiErrors.length > 0) {
+        apiErrors.forEach((err) => toast.error(err.message));
+      } else {
+        toast.error("Gagal menyimpan data. Silakan coba lagi.");
+      }
+      console.error("Save failed:", error);
+    }
+  };
+
   const displayProvinces =
     localProvinces.length > 0 ? localProvinces : provinces;
 
-  // Filter provinces based on searchCity first, then apply showSelectedOnly filter
   const searchFilteredProvinces = displayProvinces
-    .map((province) => {
-      const cities = province.cities.filter((city) =>
+    .map((province) => ({
+      ...province,
+      cities: province.cities.filter((city) =>
         city.cityName.toLowerCase().includes(searchCity.toLowerCase())
-      );
-
-      return {
-        ...province,
-        cities,
-      };
-    })
+      ),
+    }))
     .filter((province) => province.cities.length > 0);
 
-  // Only apply showSelectedOnly filter when there's no search term
   const finalProvinces = searchCity
     ? searchFilteredProvinces
     : showSelectedOnly
@@ -214,15 +272,28 @@ export default function Page() {
     error: "/icons/danger-circle.svg",
   };
 
+  const simpanButton = (
+    <Button
+      size="lg"
+      className="w-full md:w-auto"
+      onClick={handleSave}
+      isLoading={isMutating}
+    >
+      Simpan
+    </Button>
+  );
+
   return (
     <>
-      <LayoutOverlayButton>
+      <LayoutOverlayButton button={simpanButton}>
         <div className="mx-auto py-6">
           <BreadCrumb data={BREADCRUMB} />
           <div className="mt-4 flex items-center gap-2">
-            <PageTitle withBack={true} onClick={() => router.back()}>
+            {/* --- UPDATED: PageTitle now uses the leave handler --- */}
+            <PageTitle withBack={true} onClick={handleLeavePage}>
               Atur Area Muat
             </PageTitle>
+
             <InfoTooltip
               className="w-80"
               side="right"
@@ -240,7 +311,6 @@ export default function Page() {
 
           <Card className="mt-6 !border-none">
             <CardContent className="p-6">
-              {/* Selected Provinces Pills */}
               <SelectedProvinces
                 className="mb-6"
                 provinces={localProvinces.filter((province) =>
@@ -250,7 +320,6 @@ export default function Page() {
                 onAdd={handleAddProvince}
               />
 
-              {/* Search and Filter */}
               <div className="mb-6 flex items-center">
                 <div className="me-4">
                   <Input
@@ -286,7 +355,6 @@ export default function Page() {
                 </div>
               </div>
 
-              {/* Loading State */}
               {isLoading ? (
                 <div className="flex h-[200px] items-center justify-center">
                   <span className="text-sm font-normal leading-[16.8px] text-neutral-600">
@@ -307,21 +375,16 @@ export default function Page() {
                   }
                 />
               ) : (
-                /* Province Sections */
                 <div className="flex flex-col gap-y-[18px]">
                   {finalProvinces.map((province) => {
-                    const isExpanded =
-                      showSelectedOnly ||
-                      expandedProvinces[province.id] ||
-                      province.expanded;
-                    const visibleCities = isExpanded
-                      ? province.cities
-                      : province.cities.slice(
-                          0,
-                          province.pagination?.defaultShow || 12
-                        );
+                    const isCollapsible =
+                      province.cities.length > 16 && !showSelectedOnly;
+                    const isExpanded = !!expandedProvinces[province.id];
+                    const visibleCities =
+                      isCollapsible && !isExpanded
+                        ? province.cities.slice(0, 16)
+                        : province.cities;
 
-                    // Calculate actual selected count from visible cities
                     const actualSelectedCount = showSelectedOnly
                       ? visibleCities.length
                       : visibleCities.filter((city) => city.isSelected).length;
@@ -340,7 +403,6 @@ export default function Page() {
                           </h3>
                         </div>
 
-                        {/* Select All Checkbox */}
                         <div className="mb-4 flex items-center gap-3">
                           <Checkbox
                             checked={
@@ -358,7 +420,6 @@ export default function Page() {
                           </span>
                         </div>
 
-                        {/* Cities Grid */}
                         <div className="ms-5 space-y-4">
                           {Array.from(
                             { length: Math.ceil(visibleCities.length / 4) },
@@ -395,7 +456,6 @@ export default function Page() {
                                       </div>
                                     ))}
                                   </div>
-                                  {/* Add border line after every row except the last one */}
                                   {rowIndex <
                                     Math.ceil(visibleCities.length / 4) - 1 && (
                                     <div className="mt-4 border-b border-neutral-200"></div>
@@ -406,27 +466,24 @@ export default function Page() {
                           )}
                         </div>
 
-                        {/* Show More Link */}
-                        {!showSelectedOnly &&
-                          province.pagination?.hasMore &&
-                          province.cities.length > 16 && (
-                            <div className="mt-4 text-center">
-                              <button
-                                onClick={() => handleToggleExpand(province.id)}
-                                className="inline-flex items-center gap-1 text-sm font-medium leading-[16.8px] text-blue-600 hover:text-blue-800"
-                              >
-                                {isExpanded
-                                  ? "Lihat Lebih Sedikit"
-                                  : "Lihat Selengkapnya"}
-                                <ChevronDown
-                                  size={16}
-                                  className={`transition-transform ${
-                                    isExpanded ? "rotate-180" : ""
-                                  }`}
-                                />
-                              </button>
-                            </div>
-                          )}
+                        {isCollapsible && (
+                          <div className="mt-4 text-center">
+                            <button
+                              onClick={() => handleToggleExpand(province.id)}
+                              className="inline-flex items-center gap-1 text-sm font-medium leading-[16.8px] text-blue-600 hover:text-blue-800"
+                            >
+                              {isExpanded
+                                ? "Lihat Lebih Sedikit"
+                                : "Lihat Selengkapnya"}
+                              <ChevronDown
+                                size={16}
+                                className={`transform transition-transform duration-200 ${
+                                  isExpanded ? "rotate-180" : ""
+                                }`}
+                              />
+                            </button>
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -454,6 +511,43 @@ export default function Page() {
           </div>
         </Alert>
       )}
+
+      <ConfirmationModal
+        isOpen={isConfirmModalOpen}
+        setIsOpen={setIsConfirmModalOpen}
+        title={{
+          text: "Apakah kamu yakin menyimpan data ini?",
+          className: "text-sm font-medium text-center",
+        }}
+        confirm={{
+          text: "Simpan",
+          onClick: confirmSave,
+          isLoading: isMutating,
+        }}
+        cancel={{
+          text: "Batal",
+          onClick: () => setIsConfirmModalOpen(false),
+        }}
+      />
+
+      {/* --- NEW: Leave Confirmation Modal --- */}
+      <ConfirmationModal
+        isOpen={isLeaveModalOpen}
+        setIsOpen={setIsLeaveModalOpen}
+        title={{
+          text: "Area muat tidak akan tersimpan kalau kamu meninggalkan halaman ini",
+          className: "text-sm font-medium text-center",
+        }}
+        cancel={{
+          text: "Ya",
+          variant: "destructive", // Use a destructive variant for a better UX
+          onClick: () => router.back(), // Proceed to leave the page
+        }}
+        confirm={{
+          text: "Batal",
+          onClick: () => setIsLeaveModalOpen(false), // Stay on the page
+        }}
+      />
 
       <ProvinceSelectionModal
         isOpen={isProvinceModalOpen}

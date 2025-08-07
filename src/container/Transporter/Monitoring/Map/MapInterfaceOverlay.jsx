@@ -8,6 +8,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import Search from "@/components/Search/Search";
 import { cn } from "@/lib/utils";
 
+import { FilterPopover } from "./components/FilterPopover";
 import { LegendButton } from "./components/LegendButton";
 
 export const MapInterfaceOverlay = ({
@@ -15,6 +16,8 @@ export const MapInterfaceOverlay = ({
   onZoomOut,
   onClickDaftarArmada,
   onClickSOS,
+  onApplyFilter,
+  fleetCounts,
   hideTopNavigation = false,
   onSearch,
   onToggleFullscreen,
@@ -101,17 +104,10 @@ export const MapInterfaceOverlay = ({
           </div>
 
           {/* Filter Button */}
-          <Button
-            variant="muattrans-primary-secondary"
-            iconLeft={
-              <IconComponent
-                src="/icons/monitoring/filter.svg"
-                className="size-4"
-              />
-            }
-          >
-            Filter
-          </Button>
+          <FilterPopover
+            onApplyFilter={onApplyFilter}
+            fleetCounts={fleetCounts}
+          />
 
           {/* SOS Button */}
           <Button

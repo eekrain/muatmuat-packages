@@ -147,9 +147,9 @@ const apiResultOrderDetail = {
     },
     Data: {
       // Menentukan bisa nggaknya buat ubah pesanan
-      isChangeable: true,
+      isChangeable: false,
       // Menentukan bisa nggaknya buat batalkan pesanan
-      isCancellable: true,
+      isCancellable: false,
       // Menentukan bisa nggaknya buat ngasih review
       canReview: false,
       cancellationDeadline: "2025-06-24T15:00:00.000Z",
@@ -158,11 +158,11 @@ const apiResultOrderDetail = {
         orderId: "550e8400-e29b-41d4-a716-446655440000",
         transporterOrderCode: "MT.25.AA.001",
         invoiceNumber: "INV/12345678",
-        orderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
+        orderStatus: OrderStatusEnum.UNLOADING,
         // orderStatus: OrderStatusEnum.SCHEDULED_FLEET,
         orderTitle: "Proses Muat",
-        unitFleetStatus: 1,
-        orderType: OrderTypeEnum.INSTANT,
+        unitFleetStatus: 3,
+        orderType: OrderTypeEnum.SCHEDULED,
         createdAt: "2024-01-01T10:00:00Z",
         updatedAt: "2024-01-01T14:30:00Z",
       },
@@ -296,7 +296,7 @@ const apiResultOrderDetail = {
   },
 };
 
-export const fetcherOrderDetail = async (cacheKey) => {
+export const getOrderDetail = async (cacheKey) => {
   const orderId = cacheKey.split("/")[1];
 
   let result;
@@ -311,9 +311,9 @@ export const fetcherOrderDetail = async (cacheKey) => {
 };
 
 export const useGetOrderDetail = (orderId) =>
-  useSWR(`order-detail/${orderId}`, fetcherOrderDetail);
+  useSWR(`order-detail/${orderId}`, getOrderDetail);
 
-const completeFetcher = async (cacheKey) => {
+const getDetailPesananData = async (cacheKey) => {
   // const orderId = cacheKey.split("/")[1];
 
   try {
@@ -327,7 +327,7 @@ const completeFetcher = async (cacheKey) => {
       dataLegendStatus,
       dataReview,
     ] = await Promise.all([
-      fetcherOrderDetail(cacheKey),
+      getOrderDetail(cacheKey),
       getOrderStatusHistory(cacheKey),
       getOrderPaymentData(cacheKey),
       getAdditionalServices(cacheKey),
@@ -361,4 +361,4 @@ const completeFetcher = async (cacheKey) => {
 };
 
 export const useGetDetailPesananData = (orderId) =>
-  useSWR(`detailPesanan/${orderId}`, completeFetcher);
+  useSWR(`detailPesanan/${orderId}`, getDetailPesananData);

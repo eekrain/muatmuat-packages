@@ -4,12 +4,22 @@ import {
   StepperContainer,
   StepperItemResponsive,
 } from "@/components/Stepper/Stepper";
+import { useTranslation } from "@/hooks/use-translation";
 import { formatDate } from "@/lib/utils/dateFormat";
 
 const RefundStatusTimeline = ({ refundData }) => {
+  const { t } = useTranslation();
   const refundStatusLabels = {
-    REFUND_PROCESSING: "Pengembalian Dana Diproses",
-    REFUND_COMPLETED: "Dana Terkirim",
+    REFUND_PROCESSING: t(
+      "RefundStatusTimeline.labelRefundProcessing",
+      {},
+      "Pengembalian Dana Diproses"
+    ),
+    REFUND_COMPLETED: t(
+      "RefundStatusTimeline.labelRefundCompleted",
+      {},
+      "Dana Terkirim"
+    ),
   };
   const refundStatusLabel = refundStatusLabels[refundData?.refundStatus] || "";
   return (

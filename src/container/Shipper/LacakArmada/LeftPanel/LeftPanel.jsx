@@ -6,8 +6,9 @@ import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
 import { useTranslation } from "@/hooks/use-translation";
+import { getDriverStatusMetadata } from "@/lib/normalizers/detailpesanan/getDriverStatusMetadata";
 
-export const LeftPanel = ({ dataTimeline }) => {
+export const LeftPanel = ({ dataDriverTimeline }) => {
   const { t } = useTranslation();
   const params = useParams();
   const breadcrumbItems = [
@@ -19,23 +20,31 @@ export const LeftPanel = ({ dataTimeline }) => {
     { name: t("titleLacakArmada") },
   ];
 
+  const statusMeta = getDriverStatusMetadata({
+    driverStatus: dataDriverTimeline?.dataDriver?.driverStatus,
+    orderStatus: dataDriverTimeline?.dataDriver?.orderStatus,
+    t,
+  });
+
   return (
     <div className="grid max-h-[calc(100vh-92px)] grid-cols-1 grid-rows-[auto_auto_1fr] gap-6 bg-white px-6 pb-6 pt-8 shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
       <BreadCrumb data={breadcrumbItems} />
       <PageTitle className="mb-0">{t("titleLacakArmada")}</PageTitle>
 
-      {/* FIX: Added h-full and overflow-hidden to ensure this container properly fills the grid area and constrains its children. */}
-      <div className="flex h-full flex-col gap-4 overflow-hidden rounded-xl border border-[#C4C4C4] pt-5">
+      <div className="flex h-fit max-h-full flex-col gap-4 overflow-hidden rounded-xl border border-[#C4C4C4] pt-5">
         <div className="px-4">
           <div className="flex flex-col gap-3 border-b border-neutral-400 pb-4">
-            <BadgeStatusPesanan className="h-6 w-fit" variant="primary">
-              {dataTimeline?.dataDriver?.statusTitle}
+            <BadgeStatusPesanan
+              className="h-6 w-fit"
+              variant={statusMeta.variant}
+            >
+              {statusMeta.label}
             </BadgeStatusPesanan>
 
             <AvatarDriver
-              name={dataTimeline?.dataDriver?.name}
-              image={dataTimeline?.dataDriver?.profileImage}
-              licensePlate={dataTimeline?.dataDriver?.licensePlate}
+              name={dataDriverTimeline?.dataDriver?.name}
+              image={dataDriverTimeline?.dataDriver?.profileImage}
+              licensePlate={dataDriverTimeline?.dataDriver?.licensePlate}
             />
           </div>
         </div>
@@ -46,9 +55,12 @@ export const LeftPanel = ({ dataTimeline }) => {
 
         {/* This div will now scroll correctly only when its content overflows the parent's available space. */}
         <div className="mr-2 flex-1 overflow-y-auto pb-5 pl-4 pr-1.5">
-          <DriverTimeline dataTimeline={dataTimeline} />
+          <DriverTimeline dataTimeline={dataDriverTimeline} />
         </div>
       </div>
+      {/* 
+      <pre>{JSON.stringify(statusMeta, null, 2)}</pre>
+      <pre>{JSON.stringify(dataDriverTimeline, null, 2)}</pre> */}
     </div>
   );
 };

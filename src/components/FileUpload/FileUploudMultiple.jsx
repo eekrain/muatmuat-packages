@@ -67,24 +67,16 @@ const FileUploadMultiple = ({
       if (!file) continue;
 
       if (file.size > maxSize * 1024 * 1024) {
-        onError(
-          `Ukuran file "${file.name}" melebihi batas maksimal ${maxSize}MB`
-        );
-        toast.error(
-          `Ukuran file "${file.name}" melebihi batas maksimal ${maxSize}MB`
-        );
+        onError(`Ukuran file maksimal ${maxSize}MB`);
+        toast.error(`Ukuran file maksimal ${maxSize}MB`);
 
         continue;
       }
 
       const fileExtension = `.${file.name.split(".").pop().toLowerCase()}`;
       if (!acceptedFormats.includes(fileExtension)) {
-        onError(
-          `Format file "${file.name}" tidak didukung. Format yang diterima: ${acceptedFormats.join(", ")}`
-        );
-        toast.error(
-          `Format file "${file.name}" tidak didukung. Format yang diterima: ${acceptedFormats.join(", ")}`
-        );
+        onError("Format file tidak sesuai ketentuan");
+        toast.error("Format file tidak sesuai ketentuan");
         continue;
       }
 
@@ -215,9 +207,9 @@ const FileUploadMultiple = ({
                 {value.map((file, index) => (
                   <div
                     key={index}
-                    className="flex w-[300px] items-center justify-between"
+                    className={`flex ${single ? "w-[414px]" : "w-[300px]"} items-center justify-between`}
                   >
-                    <div className="flex min-w-0 items-center gap-3">
+                    <div className="mr-2 flex min-w-0 items-center gap-3">
                       <div className="truncate text-xs font-medium leading-[14.4px] text-success-400">
                         {file.name}
                       </div>
@@ -245,7 +237,9 @@ const FileUploadMultiple = ({
             {(!Array.isArray(value) || value.length === 0) && !isUploading && (
               <div className="ml-4">
                 <div className="text-xs leading-[16.8px] text-neutral-600">
-                  Format file {acceptedFormats.join("/")} maks {maxSize}MB
+                  Format file{" "}
+                  {acceptedFormats.map((ext) => ext.replace(".", "")).join("/")}{" "}
+                  maks {maxSize}MB
                 </div>
               </div>
             )}

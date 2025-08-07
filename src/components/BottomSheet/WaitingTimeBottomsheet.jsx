@@ -10,11 +10,13 @@ import {
 } from "@/components/BottomSheet/BottomSheetUp";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
 
 const WaitingTimeBottomsheet = ({ waitingTimeData }) => {
+  const { t } = useTranslation();
   const isSectionExpandable = waitingTimeData.length > 1;
   const [expandedDrivers, setExpandedDrivers] = useState({});
   // Calculate total from all drivers' data
@@ -37,13 +39,23 @@ const WaitingTimeBottomsheet = ({ waitingTimeData }) => {
     <BottomSheet>
       <BottomSheetTrigger asChild>
         <button className="w-fit text-xs font-semibold leading-[1.1] text-primary-700">
-          Lihat Detail Waktu Tunggu
+          {t(
+            "WaitingTimeBottomsheet.triggerViewDetails",
+            {},
+            "Lihat Detail Waktu Tunggu"
+          )}{" "}
         </button>
       </BottomSheetTrigger>
       <BottomSheetContent>
         <BottomSheetHeader>
           <BottomSheetClose />
-          <BottomSheetTitle>Detail Waktu Tunggu</BottomSheetTitle>
+          <BottomSheetTitle>
+            {t(
+              "WaitingTimeBottomsheet.titleDetails",
+              {},
+              "Detail Waktu Tunggu"
+            )}
+          </BottomSheetTitle>
         </BottomSheetHeader>
         <div className="flex flex-col gap-y-6 px-4 pb-6">
           <div className="flex h-[38px] items-center gap-x-2.5 rounded-md bg-warning-100 px-3">
@@ -56,8 +68,11 @@ const WaitingTimeBottomsheet = ({ waitingTimeData }) => {
               />
             </div>
             <span className="text-xs font-medium text-neutral-900">
-              FREE untuk 12 jam awal dan dikenakan biaya waktu tunggu lebih dari
-              12 jam
+              {t(
+                "WaitingTimeBottomsheet.textFreeFirst12Hours",
+                {},
+                "FREE untuk 12 jam awal dan dikenakan biaya waktu tunggu lebih dari 12 jam"
+              )}
             </span>
           </div>
           <div className="flex flex-col gap-y-6">
@@ -74,9 +89,9 @@ const WaitingTimeBottomsheet = ({ waitingTimeData }) => {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col gap-y-2">
-                    <span className="text-sm font-semibold leading-[1.1] text-neutral-900">{`Driver : ${item.name}`}</span>
+                    <span className="text-sm font-semibold leading-[1.1] text-neutral-900">{`${t("WaitingTimeBottomsheet.labelDriver", {}, "Driver :")} ${item.name}`}</span>
                     {!expandedDrivers[key] && isSectionExpandable ? (
-                      <span className="text-xs font-medium leading-[1.1] text-neutral-600">{`Durasi Total: ${item.durasiTotal}`}</span>
+                      <span className="text-xs font-medium leading-[1.1] text-neutral-600">{`${t("WaitingTimeBottomsheet.labelTotalDuration", {}, "Durasi Total:")} ${item.durasiTotal}`}</span>
                     ) : null}
                   </div>
                   {isSectionExpandable ? (
@@ -114,7 +129,7 @@ const WaitingTimeBottomsheet = ({ waitingTimeData }) => {
               </div>
             ))}
             <div className="flex items-center justify-between text-sm font-semibold leading-[1.1] text-neutral-900">
-              <h4>Total</h4>
+              <h4>{t("WaitingTimeBottomsheet.labelTotal", {}, "Total")}</h4>
               <span>{idrFormat(totalAmount)}</span>
             </div>
           </div>
