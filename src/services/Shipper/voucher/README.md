@@ -440,7 +440,7 @@ muatTransValidateVoucher({ voucherId, totalAmount, token });
 **Development/Testing:**
 
 ```javascript
-const useMockData = true; // Gunakan mock data
+const useMockData = false; // Gunakan mock data
 const mockEmpty = false; // Voucher list dengan data
 ```
 
@@ -461,7 +461,7 @@ const mockEmpty = true; // Simulate empty voucher list tanpa API call
 **Testing Race Condition:**
 
 ```javascript
-const useMockData = true; // Gunakan mock data
+const useMockData = false; // Gunakan mock data
 // Try menggunakan voucher: FLASH25K, VIRAL30, atau HOKI88
 ```
 

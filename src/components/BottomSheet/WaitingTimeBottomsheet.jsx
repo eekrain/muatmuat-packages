@@ -14,16 +14,16 @@ import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
 
-const WaitingTimeBottomsheet = ({ waitingTimeRaw }) => {
-  const isSectionExpandable = waitingTimeRaw.length > 1;
+const WaitingTimeBottomsheet = ({ waitingTimeData }) => {
+  const isSectionExpandable = waitingTimeData.length > 1;
   const [expandedDrivers, setExpandedDrivers] = useState({});
   // Calculate total from all drivers' data
   const totalAmount = useShallowMemo(
     () =>
-      waitingTimeRaw
+      waitingTimeData
         .flatMap((item) => item.data)
         .reduce((sum, item) => sum + item.totalPrice, 0),
-    [waitingTimeRaw]
+    [waitingTimeData]
   );
 
   // Fungsi untuk toggle expanded state
@@ -33,11 +33,12 @@ const WaitingTimeBottomsheet = ({ waitingTimeRaw }) => {
       [driverId]: !prev[driverId],
     }));
   };
-  console.log("waitingTimeRaw", waitingTimeRaw);
   return (
     <BottomSheet>
-      <BottomSheetTrigger className="w-fit text-xs font-semibold leading-[1.1] text-primary-700">
-        Lihat Detail Waktu Tunggu
+      <BottomSheetTrigger asChild>
+        <button className="w-fit text-xs font-semibold leading-[1.1] text-primary-700">
+          Lihat Detail Waktu Tunggu
+        </button>
       </BottomSheetTrigger>
       <BottomSheetContent>
         <BottomSheetHeader>
@@ -60,11 +61,11 @@ const WaitingTimeBottomsheet = ({ waitingTimeRaw }) => {
             </span>
           </div>
           <div className="flex flex-col gap-y-6">
-            {waitingTimeRaw.map((item, key) => (
+            {waitingTimeData.map((item, key) => (
               <div
                 className={cn(
                   "flex flex-col border-b border-b-neutral-400",
-                  waitingTimeRaw.length - 1 === key ? "pb-6" : "pb-4",
+                  waitingTimeData.length - 1 === key ? "pb-6" : "pb-4",
                   expandedDrivers[key] || !isSectionExpandable
                     ? "gap-y-3"
                     : "gap-y-0"

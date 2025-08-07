@@ -4,7 +4,10 @@ import RefundStatusTimeline from "@/container/Shipper/DetailRefundPesanan/Respon
 import RekeningPengembalianDana from "@/container/Shipper/DetailRefundPesanan/Responsive/sections/RekeningPengembalianDana";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 
-const DetailRefundPesananResponsive = ({ refundData, waitingTimeRaw }) => {
+const DetailRefundPesananResponsive = ({
+  refundData,
+  waitingTimeData = [],
+}) => {
   // Extract data from API response
   const bank = refundData?.bankAccount;
   const breakdown = refundData?.refundBreakdown;
@@ -21,7 +24,7 @@ const DetailRefundPesananResponsive = ({ refundData, waitingTimeRaw }) => {
         <RekeningPengembalianDana bank={bank} />
         <DetailPengembalianDana
           breakdown={breakdown}
-          waitingTimeRaw={waitingTimeRaw}
+          waitingTimeData={waitingTimeData}
         />
       </div>
     </FormResponsiveLayout>

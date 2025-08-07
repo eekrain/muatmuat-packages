@@ -59,7 +59,11 @@ export const StepperContainer = ({ totalStep, activeIndex, children }) => {
                 paddingRight: `calc(${titleWidth}px / 2 - 16px)`,
                 height: `${32 + 8 + maxTitleHeight - 6}px`,
               }
-            : { width: "100%", height: "auto" }
+            : {
+                paddingLeft: `calc(${titleWidth}px / 2 - 14px)`,
+                paddingRight: `calc(${titleWidth}px / 2 - 14px)`,
+                height: `${28 + 8 + maxTitleHeight - 6}px`,
+              }
         }
       >
         <div className="relative flex items-start justify-between gap-4">
@@ -164,15 +168,15 @@ export const StepperItem = ({ step, index }) => {
  * }} props
  * @returns
  */
-export const StepperItemResponsive = ({ status, icon, index, subtitle }) => {
+export const StepperItemResponsive = ({ step, index }) => {
   const { titleWidth, activeIndex, setTitleHeights } = useContext(Context);
 
   const statusCode = useMemo(() => {
-    if (status && status.startsWith("CANCELED")) return "canceled";
+    if (step?.status && step.status.startsWith("CANCELED")) return "canceled";
     if (index < activeIndex) return "completed";
     if (index === activeIndex) return "active";
     return "inactive";
-  }, [status, activeIndex, index]);
+  }, [step.status, activeIndex, index]);
 
   const { ref: titleRef, height: currentTitleHeight } = useClientHeight();
 
@@ -195,7 +199,7 @@ export const StepperItemResponsive = ({ status, icon, index, subtitle }) => {
         )}
       >
         <IconComponent
-          src={icon}
+          src={step.icon}
           width={20}
           height={20}
           className={cn(
@@ -207,10 +211,10 @@ export const StepperItemResponsive = ({ status, icon, index, subtitle }) => {
         {/* Step Label */}
         <div
           ref={titleRef}
-          className="absolute -bottom-1 left-1/2 -translate-x-1/2 translate-y-full text-center text-xs font-medium leading-[1.2] text-[#000000]"
+          className="absolute -bottom-1 left-1/2 -translate-x-1/2 translate-y-full text-center text-xxs font-medium leading-[1.2] text-[#000000]"
           style={{ width: titleWidth }}
         >
-          {subtitle && <div className="mt-2">{subtitle}</div>}
+          {step.subtitle && <div className="mt-2">{step.subtitle}</div>}
         </div>
       </div>
     </div>

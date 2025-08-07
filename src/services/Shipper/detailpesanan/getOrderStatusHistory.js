@@ -19,10 +19,10 @@ const stepStatus = [
     statusCode: OrderStatusEnum.LOADING,
     statusName: "Proses Muat",
   },
-  {
-    statusCode: OrderStatusEnum.UNLOADING,
-    statusName: "Proses Bongkar",
-  },
+  // {
+  //   statusCode: OrderStatusEnum.UNLOADING,
+  //   statusName: "Proses Bongkar",
+  // },
   // {
   //   statusCode: OrderStatusEnum.FLEET_CHANGE,
   //   statusName: "Proses Pergantian Armada",
@@ -39,14 +39,14 @@ const stepStatus = [
   //   statusCode: OrderStatusEnum.DOCUMENT_DELIVERY,
   //   statusName: "Proses Pengiriman Dokumen",
   // },
-  {
-    statusCode: OrderStatusEnum.COMPLETED,
-    statusName: "Selesai",
-  },
   // {
-  //   statusCode: OrderStatusEnum.CANCELED_BY_SHIPPER,
-  //   statusName: "Dibatalkan",
+  //   statusCode: OrderStatusEnum.COMPLETED,
+  //   statusName: "Selesai",
   // },
+  {
+    statusCode: OrderStatusEnum.CANCELED_BY_SHIPPER,
+    statusName: "Dibatalkan",
+  },
 ];
 
 // GET /base_url/v1/orders/{orderId}/status-history
@@ -63,7 +63,7 @@ const apiResultOrderStatusHistory = {
           name: "Hendra",
           driverImage: "https://picsum.photos/50",
           licensePlate: "B 1234 CD",
-          orderStatus: OrderStatusEnum.LOADING,
+          orderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
           orderStatusTitle: "Sedang Muat",
           driverStatus: DriverStatusEnum.LOADING.TIBA.code,
           driverStatusTitle: "Menuju ke Lokasi Muat",
@@ -74,7 +74,7 @@ const apiResultOrderStatusHistory = {
           name: "Ardian Eka",
           driverImage: "https://picsum.photos/50",
           licensePlate: "B 1234 CD",
-          orderStatus: OrderStatusEnum.UNLOADING,
+          orderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
           orderStatusTitle: "Proses Muat",
           driverStatus: DriverStatusEnum.UNLOADING.ANTRI.code,
           driverStatusTitle: "Menuju ke Lokasi Muat",
@@ -85,7 +85,7 @@ const apiResultOrderStatusHistory = {
           name: "Cakra",
           driverImage: "https://picsum.photos/50",
           licensePlate: "B 1234 CD",
-          orderStatus: OrderStatusEnum.UNLOADING,
+          orderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
           orderStatusTitle: "Proses Muat",
           driverStatus: DriverStatusEnum.UNLOADING.ANTRI.code,
           driverStatusTitle: "Menuju ke Lokasi Muat",
