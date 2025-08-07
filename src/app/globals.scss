@@ -448,7 +448,7 @@ body {
 }
 
 .scrollbar-custombadanusaha::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: var(--neutral-500);
   border-radius: 2px;
 }
 @layer utilities {
