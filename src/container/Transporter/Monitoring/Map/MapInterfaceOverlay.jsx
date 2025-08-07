@@ -8,6 +8,8 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import Search from "@/components/Search/Search";
 import { cn } from "@/lib/utils";
 
+import { LegendButton } from "./components/LegendButton";
+
 export const MapInterfaceOverlay = ({
   onZoomIn,
   onZoomOut,
@@ -58,7 +60,7 @@ export const MapInterfaceOverlay = ({
     },
     {
       icon: "/icons/monitoring/center.svg",
-      tooltip: "Pusatkan Semua Armada",
+      tooltip: "Pusatkan",
       onClick: handleCenterClick,
     },
     {
@@ -133,20 +135,8 @@ export const MapInterfaceOverlay = ({
         )}
       >
         <div className="flex flex-col gap-2">
-          {/* Info button - separate container at top */}
-          <InfoTooltip
-            trigger={
-              <button className="h-8 w-8 place-content-center rounded-xl bg-muat-trans-secondary-900 shadow-lg">
-                <IconComponent
-                  src="/icons/monitoring/info.svg"
-                  className="mx-auto size-6"
-                />
-              </button>
-            }
-            side="left"
-          >
-            Legenda
-          </InfoTooltip>
+          {/* Legend button with tooltip and popover */}
+          <LegendButton />
 
           {/* Main map controls */}
           <div className="h-[136px] w-8 rounded-xl bg-white shadow-lg">
