@@ -62,7 +62,7 @@ export default function CardFleet({
       <>
         <div className="mt-2 flex flex-col border-b border-neutral-400 pb-3">
           <p className="text-xs font-semibold text-error-400">
-            Truk/muatan dicuri
+            {fleet.detailSOS.description || "-"}
           </p>
           <div>
             <p className="text-xs text-neutral-600">
@@ -210,7 +210,7 @@ function NeedResponseButton({ onClick }) {
 
 function OnDutyDetails({ fleet }) {
   return (
-    <div className="mt-4 flex w-full flex-col gap-3 rounded-lg border-t border-x-muat-trans-400 bg-[#F8F8FB] px-3 py-3">
+    <div className="mt-4 flex w-full flex-col gap-3 rounded-lg border-t border-x-muat-trans-400 bg-[#F8F8FB] px-3 py-3 pt-4">
       <div>
         <p className="mb-3 text-xs text-gray-600">No. Pesanan</p>
         <p className="text-xs font-semibold text-black">

@@ -61,8 +61,7 @@ const SOSContainer = ({ onClose, onExpand }) => {
       <div className="px-4">
         <div className="flex items-center justify-between pb-3">
           <h2 className="text-[14px] font-bold text-gray-900">
-            Daftar Armada{" "}
-            <span className="font-semibold">({totalFleets} Armada)</span>
+            SOS <span className="font-semibold">({totalFleets} Armada)</span>
           </h2>
           <button className="text-blue-500" onClick={onClose}>
             <X className="h-5 w-5" />
