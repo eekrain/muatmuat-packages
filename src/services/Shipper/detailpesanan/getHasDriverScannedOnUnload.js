@@ -4,7 +4,7 @@ import { addMinutes } from "@/lib/utils/dateTime";
 
 import { getOrderAlerts } from "./getOrderAlerts";
 
-const useMockData = false;
+const useMockData = true; // mock detailpesanan
 
 const apiResult = {
   data: {

@@ -15,11 +15,11 @@ const SHOULD_RETURNS_ORDER_STATUS = [
   OrderStatusEnum.CANCELED_BY_TRANSPORTER,
 ];
 
-export const getDriverStatusMetadata = (
+export const getDriverStatusMetadata = ({
   driverStatus = null,
   orderStatus = null,
-  t
-) => {
+  t,
+}) => {
   let variant = "primary";
   let label = "";
   const splitStatus = driverStatus?.split?.("_");

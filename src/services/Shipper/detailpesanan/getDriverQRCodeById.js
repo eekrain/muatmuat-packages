@@ -6,7 +6,7 @@ import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { fetcherMuatrans } from "@/lib/axios";
 import { DriverStatusScanEnum } from "@/lib/constants/detailpesanan/driver-status.enum";
 
-const useMockData = false; // toggle mock data
+const useMockData = true; // mock detailpesanan
 
 const apiResultQRCode = {
   data: {

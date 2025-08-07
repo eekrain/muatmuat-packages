@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useSWRHook } from "@/hooks/use-swr";
 
-const useMockData = false;
+const useMockData = true; // mock detailpesanan
+
 const mockData = {
   Message: {
     Code: 200,

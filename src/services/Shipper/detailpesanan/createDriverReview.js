@@ -2,7 +2,7 @@ import useSWRMutation from "swr/mutation";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = false; // toggle mock data
+const useMockData = true; // mock detailpesanan
 
 // Mock API result for development/testing
 export const mockAPIResult = {
