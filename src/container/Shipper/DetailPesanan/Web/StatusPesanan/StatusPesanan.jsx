@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
+import { sub } from "date-fns";
+
 import { AlertMultiline } from "@/components/Alert/AlertMultiline";
 import Card, { CardContent } from "@/components/Card/Card";
 import { ConditionalDiv } from "@/components/Card/ConditionalDiv";
@@ -22,6 +24,12 @@ import { toast } from "@/lib/toast";
 
 import { ModalPerubahanData } from "./ModalPerubahanData";
 
+/**
+ * StatusPesanan component, displays the status of an order in a card.
+ * Contains header section, timeline section and alert section.
+ * @param {Object} dataStatusPesanan - data for the order status
+ * @param {Boolean} isShowWaitFleetAlert - flag to show the alert for waiting fleet
+ */
 const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
   const { t } = useTranslation();
   const [isModalPerubahanDataOpen, setIsModalPerubahanDataOpen] =
@@ -171,6 +179,26 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
       <ModalDetailWaktuTunggu
         open={isModalDetailWaktuTungguOpen}
         onOpenChange={setIsModalDetailWaktuTungguOpen}
+        drivers={[
+          {
+            name: "Daffa Toldo",
+            durasiTotal: "1 Jam 14 Menit",
+            data: [
+              {
+                detail: "Lokasi Muat 1 : 1 Jam 59 Menit",
+                startDate: sub(new Date(), { hours: 2 }).toISOString(),
+                endDate: sub(new Date(), { hours: 1 }).toISOString(),
+                totalPrice: 100000,
+              },
+              {
+                detail: "Lokasi Bongkar 1 : 1 Jam 59 Menit",
+                startDate: sub(new Date(), { hours: 2 }).toISOString(),
+                endDate: sub(new Date(), { hours: 1 }).toISOString(),
+                totalPrice: 200000,
+              },
+            ],
+          },
+        ]}
       />
     </>
   );

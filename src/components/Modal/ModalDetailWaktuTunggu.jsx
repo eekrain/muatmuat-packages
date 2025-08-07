@@ -1,6 +1,5 @@
 import { useState } from "react";
 
-import { sub } from "date-fns";
 import { ChevronDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -8,31 +7,12 @@ import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
 
 import { Alert } from "../Alert/Alert";
-import { Modal, ModalContent } from "./Modal";
+import { Modal, ModalContent, ModalTrigger } from "./Modal";
 
 export const ModalDetailWaktuTunggu = ({
   open,
   onOpenChange,
-  drivers = [
-    {
-      name: "Daffa Toldo",
-      durasiTotal: "1 Jam 14 Menit",
-      data: [
-        {
-          detail: "Lokasi Muat 1 : 1 Jam 59 Menit",
-          startDate: sub(new Date(), { hours: 2 }).toISOString(),
-          endDate: sub(new Date(), { hours: 1 }).toISOString(),
-          totalPrice: 100000,
-        },
-        {
-          detail: "Lokasi Bongkar 1 : 1 Jam 59 Menit",
-          startDate: sub(new Date(), { hours: 2 }).toISOString(),
-          endDate: sub(new Date(), { hours: 1 }).toISOString(),
-          totalPrice: 200000,
-        },
-      ],
-    },
-  ],
+  drivers = [],
 }) => {
   // Use an array of booleans to track expanded state for each driver
   const [expandedDrivers, setExpandedDrivers] = useState(
@@ -56,7 +36,19 @@ export const ModalDetailWaktuTunggu = ({
   }, 0);
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange}>
+    // Conditionally render the modal as controlled or uncontrolled component
+    <Modal {...(open && onOpenChange ? { open, onOpenChange } : {})}>
+      {!open && !onOpenChange ? (
+        <ModalTrigger asChild>
+          <button
+            type="button"
+            className="w-fit text-xs font-medium leading-[14.4px] text-primary-700"
+          >
+            Lihat Detail Waktu Tunggu
+          </button>
+        </ModalTrigger>
+      ) : null}
+
       <ModalContent
         className="flex w-[578px] flex-col gap-y-4 p-6"
         type="muatmuat"

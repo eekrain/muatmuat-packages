@@ -21,38 +21,9 @@ export const RingkasanPembayaranTambahanBiaya = ({
     "v1/payment/methods",
     fetcherPayment
   );
-  const { data: waitingTimeRaw } = useGetWaitingTime(params.orderId);
+  const { data: waitingTimeData } = useGetWaitingTime(params.orderId);
   const { data: overloadData } = useGetOverloadData(params.orderId);
-  console.log(waitingTimeRaw, "tes");
   const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState(null);
-
-  // Transform waiting time data to match the expected structure
-  // const transformedWaitingTime = waitingTimeRaw?.map((item) => {
-  //   const waitingTimeHours = parseFloat(item.waitingTime);
-  //   const formattedWaitingTime = waitingTimeHours >= 1
-  //     ? `${waitingTimeHours} Jam`
-  //     : `${Math.round(waitingTimeHours * 60)} Menit`;
-
-  //   return {
-  //     name: item.name,
-  //     durasiTotal: formattedWaitingTime,
-  //     data: [
-  //       {
-  //         detail: `${item.locationType === 'PICKUP' ? 'Lokasi Muat' : 'Lokasi Bongkar'} ${item.locationSequence} : ${formattedWaitingTime}`,
-  //         startDate: item.startWaitingTime,
-  //         endDate: item.endWaitingTime,
-  //         totalPrice: item.waitingFee,
-  //       },
-  //     ],
-  //   };
-  // }) || [];
-
-  // Transform overload data to match the expected structure
-  // const transformedOverloadData = overloadData?.map((item) => ({
-  //   driverName: item.name,
-  //   amount: item.overloadFee,
-  //   overloadWeight: `${item.weight.toLocaleString("id-ID")} ${item.weightUnit}`,
-  // })) || [];
 
   const waitingFee = dataRingkasanPembayaran?.priceCharge?.waitingFee;
   const overloadFee = dataRingkasanPembayaran?.priceCharge?.overloadFee;
@@ -71,7 +42,7 @@ export const RingkasanPembayaranTambahanBiaya = ({
                 label={`Nominal Waktu Tunggu (${waitingFee.totalDriver} Driver)`}
                 value={idrFormat(waitingFee.totalAmount)}
               />
-              <ModalDetailWaktuTunggu drivers={waitingTimeRaw} />
+              <ModalDetailWaktuTunggu drivers={waitingTimeData} />
             </CardPayment.Section>
           )}
 

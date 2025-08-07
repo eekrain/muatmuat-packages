@@ -25,7 +25,7 @@ export const ModalDetailPembayaran = ({
     dataRingkasanPembayaran?.orderStatus?.startsWith("CANCELED");
   const params = useParams();
 
-  const { data: waitingTimeRaw } = useGetWaitingTime(params.orderId);
+  const { data: waitingTimeData } = useGetWaitingTime(params.orderId);
   const { data: overloadData } = useGetOverloadData(params.orderId);
 
   // Transform waiting time data to match the expected structure
@@ -178,7 +178,7 @@ export const ModalDetailPembayaran = ({
                       label={`Nominal Waktu Tunggu (${waitingFee.totalDriver} Driver)`}
                       value={idrFormat(waitingFee.totalAmount)}
                     />
-                    <ModalDetailWaktuTunggu drivers={waitingTimeRaw} />
+                    <ModalDetailWaktuTunggu drivers={waitingTimeData} />
                   </div>
                 </CardPayment.Section>
                 <CardPayment.Section title="Biaya Overload Muatan">

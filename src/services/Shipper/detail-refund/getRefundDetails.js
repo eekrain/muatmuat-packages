@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = false; // toggle mock data
+const useMockData = false; // mock detailpesanan
 
 // Pengembalian Dana Diproses
 // 25 Jul 2025 10:07 WIB // requestedAt
