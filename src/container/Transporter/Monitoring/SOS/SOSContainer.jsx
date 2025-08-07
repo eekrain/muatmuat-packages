@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { AlertTriangle, Loader2, SlidersHorizontal, X } from "lucide-react";
+import { AlertTriangle, Loader2, X } from "lucide-react";
 
 import CardFleet from "@/components/Card/CardFleet";
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
@@ -11,7 +11,7 @@ import { useGetFleetList } from "@/services/Transporter/monitoring/getFleetList"
 
 import { DriverSelectionModal } from "../../Driver/DriverSelectionModal";
 
-const DaftarArmada = ({ onClose, onExpand }) => {
+const SOSContainer = ({ onClose, onExpand }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedId, setExpandedId] = useState(null);
   const [showDriverModal, setShowDriverModal] = useState(false);
@@ -31,7 +31,7 @@ const DaftarArmada = ({ onClose, onExpand }) => {
     setExpandedId((prev) => {
       const newId = prev === id ? null : id;
       if (newId && onExpand) {
-        onExpand(newId);
+        onExpand(newId); // melempar fleetId ke parent
       }
       return newId;
     });
@@ -81,10 +81,6 @@ const DaftarArmada = ({ onClose, onExpand }) => {
             defaultValue={searchTerm}
             inputClassName="w-[229px]"
           />
-          <button className="flex h-8 items-center space-x-2 rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-600">
-            <span className="text-gray-600">Filter</span>
-            <SlidersHorizontal className="h-4 w-4 text-gray-600" />
-          </button>
         </div>
       </div>
 
@@ -138,4 +134,4 @@ const DaftarArmada = ({ onClose, onExpand }) => {
   );
 };
 
-export default DaftarArmada;
+export default SOSContainer;

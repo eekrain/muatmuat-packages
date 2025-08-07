@@ -41,7 +41,19 @@ const apiResultFleetList = {
         hasSOSAlert: false,
         detailSOS: null,
         needsResponseChange: true,
-        activeOrder: null,
+        activeOrder: {
+          orderId: "order-uuid-1",
+          orderCode: "ORD-2025-001",
+          orderStatus: "ON_THE_WAY",
+          pickupLocation: {
+            district: "Jl. Sudirman No. 1",
+            city: "Jakarta Pusat",
+          },
+          dropoffLocation: {
+            district: "Jl. Thamrin No. 5",
+            city: "Jakarta Pusat",
+          },
+        },
       },
       {
         fleetId: "fleet-uuid-2",
@@ -70,7 +82,7 @@ const apiResultFleetList = {
         },
         status: "ON_DELIVERY",
         isActive: true,
-        hasSOSAlert: true,
+        hasSOSAlert: false,
         detailSOS: {
           sosId: "sos-uuid-1",
           sosCategory: "ACCIDENT",
@@ -79,19 +91,6 @@ const apiResultFleetList = {
           photos: ["https://example.com/photo1.jpg"],
         },
         needsResponseChange: true,
-        activeOrder: {
-          orderId: "order-uuid-1",
-          orderCode: "ORD-2025-001",
-          orderStatus: "ON_THE_WAY",
-          pickupLocation: {
-            district: "Jl. Sudirman No. 1",
-            city: "Jakarta Pusat",
-          },
-          dropoffLocation: {
-            district: "Jl. Thamrin No. 5",
-            city: "Jakarta Pusat",
-          },
-        },
       },
       {
         fleetId: "fleet-uuid-3",
@@ -194,7 +193,7 @@ const apiResultFleetList = {
           longitude: 106.8249,
           address: {
             district: "Sawangan",
-            city: "Depok",
+            city: "Depokasdfasdfs",
           },
           lastUpdate: "2025-07-25T11:30:00Z",
         },
@@ -207,7 +206,7 @@ const apiResultFleetList = {
           name: "Bak Tertutup",
         },
         status: "READY_FOR_ORDER",
-        isActive: true,
+        isActive: false,
         hasSOSAlert: true,
         detailSOS: {
           sosId: "sos-uuid-2",
@@ -219,7 +218,7 @@ const apiResultFleetList = {
             "https://example.com/photo3.jpg",
           ],
         },
-        needsResponseChange: true,
+        needsResponseChange: false,
         activeOrder: null,
       },
       {
@@ -323,9 +322,9 @@ const apiResultFleetList = {
           carrierId: "carrier-uuid-3",
           name: "Container",
         },
-        status: "EMERGENCY",
+        status: "INACTIVE",
         isActive: true,
-        hasSOSAlert: true,
+        hasSOSAlert: false,
         detailSOS: {
           sosId: "sos-uuid-3",
           sosCategory: "MEDICAL",
@@ -337,7 +336,7 @@ const apiResultFleetList = {
         activeOrder: {
           orderId: "order-uuid-5",
           orderCode: "ORD-2025-005",
-          orderStatus: "ON_THE_WAY",
+          orderStatus: "INACTIVE",
           pickupLocation: {
             district: "Jl. Merdeka No. 10",
             city: "Tangerang",
