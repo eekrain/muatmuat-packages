@@ -55,7 +55,7 @@ const AdditionalFeesDetail = ({ priceCharge, waitingTimeRaw }) => {
                   {/* {`Nominal Waktu Tunggu (1x24 Jam) - ${priceCharge.waitingFee.totalDriver || 0} Driver`} */}
                 </span>
                 {/* BottomSheet untuk detail waktu tunggu */}
-                <WaitingTimeBottomsheet waitingTimeRaw={waitingTimeRaw} />
+                <WaitingTimeBottomsheet waitingTimeData={waitingTimeRaw} />
               </div>
               <span className="text-xs font-medium text-neutral-900">
                 {idrFormat(priceCharge.waitingFee.totalAmount)}

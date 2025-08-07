@@ -17,6 +17,7 @@ import { MapInterfaceOverlay } from "@/container/Transporter/Monitoring/Map/MapI
 import { MapMonitoring } from "@/container/Transporter/Monitoring/Map/MapMonitoring";
 import { NoFleetOverlay } from "@/container/Transporter/Monitoring/Map/NoFleetOverlay";
 import PermintaanAngkut from "@/container/Transporter/Monitoring/PermintaanAngkut/PermintaanAngkut";
+import SOSContainer from "@/container/Transporter/Monitoring/SOS/SOSContainer";
 import UrgentIssue from "@/container/Transporter/Monitoring/UrgentIssue/UrgentIssue";
 import { cn } from "@/lib/utils";
 import { useGetFleetCount } from "@/services/Transporter/monitoring/getFleetCount";
@@ -30,11 +31,14 @@ const Page = () => {
   const [isBottomExpanded, setIsBottomExpanded] = useState(true);
   const [mapZoom, setMapZoom] = useState(null); // Initialize as null, will be set from calculated bounds
   const [showLeftPanel, setShowLeftPanel] = useState(false);
+  const [leftPanelMode, setLeftPanelMode] = useState("armada"); // "armada" or "sos"
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showLicensePlate, setShowLicensePlate] = useState(true);
   const [autoFitBounds, setAutoFitBounds] = useState(true);
   const [mapCenter, setMapCenter] = useState(null); // Track current map center
   const [hasMapInteraction, setHasMapInteraction] = useState(false); // Track if user has interacted with map
+  const [selectedTruckFilters, setSelectedTruckFilters] = useState([]);
+  const [selectedOrderFilters, setSelectedOrderFilters] = useState([]);
 
   // Map query param values to tab values
   const getTabValue = (queryValue) => {
@@ -84,12 +88,24 @@ const Page = () => {
 
   // Panel handlers
   const handleOpenLeftPanel = () => {
+    setLeftPanelMode("armada");
+    setShowLeftPanel(true);
+    setIsBottomExpanded(false);
+  };
+
+  const handleOpenSOSPanel = () => {
+    setLeftPanelMode("sos");
     setShowLeftPanel(true);
     setIsBottomExpanded(false);
   };
 
   const handleCloseLeftPanel = () => {
     setShowLeftPanel(false);
+  };
+
+  const handleApplyFilter = (truckStatuses, orderStatuses) => {
+    setSelectedTruckFilters(truckStatuses);
+    setSelectedOrderFilters(orderStatuses);
   };
 
   const handleToggleBottomPanel = () => {
@@ -184,8 +200,8 @@ const Page = () => {
     return { center, zoom };
   };
 
-  // Convert fleet locations to map markers
-  const fleetMarkers =
+  // Convert fleet locations to map markers and apply filters
+  const allFleetMarkers =
     fleetLocationsData?.fleets?.map((fleet) => {
       let icon = "/img/monitoring/truck/gray.png"; // Default
 
@@ -218,6 +234,43 @@ const Page = () => {
         fleet: fleet, // Keep fleet data for additional info
       };
     }) || [];
+
+  // Apply filters to fleet markers
+  const fleetMarkers = allFleetMarkers.filter((marker) => {
+    // If no filters selected, show all
+    if (
+      selectedTruckFilters.length === 0 &&
+      selectedOrderFilters.length === 0
+    ) {
+      return true;
+    }
+
+    // Check truck status filter
+    if (selectedTruckFilters.length > 0) {
+      if (!selectedTruckFilters.includes(marker.fleet.operationalStatus)) {
+        return false;
+      }
+    }
+
+    // Check order status filter (if needed)
+    if (selectedOrderFilters.length > 0) {
+      // Add logic for order status filtering if applicable
+      // For now, we'll just check if the fleet has any order that needs response
+      if (selectedOrderFilters.includes("NEEDS_RESPONSE")) {
+        // This would need to be implemented based on your actual data structure
+        // return marker.fleet.hasOrderNeedsResponse || false;
+      }
+    }
+
+    return true;
+  });
+
+  // Calculate fleet counts for filter popover
+  const fleetCounts = allFleetMarkers.reduce((acc, marker) => {
+    const status = marker.fleet.operationalStatus;
+    acc[status] = (acc[status] || 0) + 1;
+    return acc;
+  }, {});
 
   // Always calculate the bounds to get the proper center
   const calculatedBounds = calculateMapBounds(fleetMarkers);
@@ -313,6 +366,9 @@ const Page = () => {
                 onZoomIn={handleZoomIn}
                 onZoomOut={handleZoomOut}
                 onClickDaftarArmada={handleOpenLeftPanel}
+                onClickSOS={handleOpenSOSPanel}
+                onApplyFilter={handleApplyFilter}
+                fleetCounts={fleetCounts}
                 hideTopNavigation={showLeftPanel}
                 onToggleFullscreen={handleToggleFullscreen}
                 isFullscreen={isFullscreen}
@@ -323,14 +379,18 @@ const Page = () => {
               />
             )}
 
-            {/* Left Panel - Daftar Armada */}
+            {/* Left Panel - Daftar Armada or SOS */}
             <div
               className={cn(
                 "absolute left-0 top-0 z-20 h-full w-[350px] rounded-r-xl bg-white shadow-xl transition-transform duration-300 ease-in-out",
                 showLeftPanel ? "translate-x-0" : "-translate-x-full"
               )}
             >
-              <DaftarArmada onClose={handleCloseLeftPanel} />
+              {leftPanelMode === "sos" ? (
+                <SOSContainer onClose={handleCloseLeftPanel} />
+              ) : (
+                <DaftarArmada onClose={handleCloseLeftPanel} />
+              )}
             </div>
           </div>
 

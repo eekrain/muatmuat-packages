@@ -20,7 +20,6 @@ const DriverQRCodeSingleScreen = () => {
     driverId: params.driverId,
     orderId: params.orderId,
   });
-
   return (
     <FormResponsiveLayout
       title={{
@@ -33,12 +32,13 @@ const DriverQRCodeSingleScreen = () => {
     >
       <div className="space-y-2 bg-neutral-200">
         <DriverCard qrData={qrData} />
-        <QRCode />
+        <QRCode qrData={qrData} />
       </div>
 
       <BottomsheetShareVia
         open={isOpenShareVia}
         onOpenChange={setIsOpenShareVia}
+        shareUrl={qrData?.shareLink}
       />
     </FormResponsiveLayout>
   );

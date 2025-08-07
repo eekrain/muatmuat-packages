@@ -7,8 +7,8 @@ import { ChevronDown, Info } from "lucide-react";
 
 import { Alert } from "@/components/Alert/Alert";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
-import Button from "@/components/Button/Button";
 import Card, { CardContent } from "@/components/Card/Card";
+import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import Checkbox from "@/components/Form/Checkbox";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import Input from "@/components/Form/Input";
@@ -119,7 +119,7 @@ export default function Page() {
     setIsProvinceModalOpen(true);
   };
 
-  const handleSaveProvinces = (selectedProvinces) => {
+  const handleSaveProvinces = (_selectedProvinces) => {
     // Logic to handle saved provinces from modal
     // console.log("Saved provinces:", selectedProvinces);
     setIsProvinceModalOpen(false);
@@ -182,35 +182,32 @@ export default function Page() {
   const displayProvinces =
     localProvinces.length > 0 ? localProvinces : provinces;
 
-  // Filter provinces based on showSelectedOnly
-  const filteredProvinces = showSelectedOnly
-    ? displayProvinces
-        .filter((province) => {
-          // Only show provinces that have at least one selected city
-          return province.cities.some((city) => city.isSelected);
-        })
-        .map((province) => {
-          // For provinces with selected cities, only show the selected cities
-          const selectedCities = province.cities.filter(
-            (city) => city.isSelected
-          );
-          return {
-            ...province,
-            cities: selectedCities,
-            selectedCityCount: selectedCities.length,
-          };
-        })
-    : displayProvinces;
+  // Filter provinces based on searchCity first, then apply showSelectedOnly filter
+  const searchFilteredProvinces = displayProvinces
+    .map((province) => {
+      const cities = province.cities.filter((city) =>
+        city.cityName.toLowerCase().includes(searchCity.toLowerCase())
+      );
 
-  const simpanButton = (
-    <Button
-      size="lg"
-      className="w-full cursor-pointer md:w-auto"
-      onClick={() => alert("Hello")}
-    >
-      Simpan
-    </Button>
-  );
+      return {
+        ...province,
+        cities,
+      };
+    })
+    .filter((province) => province.cities.length > 0);
+
+  // Only apply showSelectedOnly filter when there's no search term
+  const finalProvinces = searchCity
+    ? searchFilteredProvinces
+    : showSelectedOnly
+      ? searchFilteredProvinces.filter((province) =>
+          province.cities.some((city) => city.isSelected)
+        )
+      : searchFilteredProvinces;
+
+  const hasSelectedCities = displayProvinces
+    .flatMap((p) => p.cities)
+    .some((c) => c.isSelected);
 
   const alertIcons = {
     success: "/icons/success-circle.svg",
@@ -219,7 +216,7 @@ export default function Page() {
 
   return (
     <>
-      <LayoutOverlayButton button={simpanButton}>
+      <LayoutOverlayButton>
         <div className="mx-auto py-6">
           <BreadCrumb data={BREADCRUMB} />
           <div className="mt-4 flex items-center gap-2">
@@ -246,7 +243,7 @@ export default function Page() {
               {/* Selected Provinces Pills */}
               <SelectedProvinces
                 className="mb-6"
-                provinces={displayProvinces.filter((province) =>
+                provinces={localProvinces.filter((province) =>
                   province.cities.some((city) => city.isSelected)
                 )}
                 onRemove={handleRemoveProvince}
@@ -262,6 +259,7 @@ export default function Page() {
                     value={searchCity}
                     onChange={(e) => setSearchCity(e.target.value)}
                     className="w-[262px] text-sm"
+                    clear={() => setSearchCity("")}
                   />
                 </div>
                 <div className="flex items-center gap-3">
@@ -270,10 +268,21 @@ export default function Page() {
                     onChange={(e) => setShowSelectedOnly(e.checked)}
                     label=""
                     className="!gap-0"
-                  />
-                  <span className="text-sm font-normal leading-[16.8px] text-neutral-900">
-                    Tampilkan yang terpilih saja
-                  </span>
+                    disabled={
+                      !hasSelectedCities || searchFilteredProvinces.length === 0
+                    }
+                  >
+                    <span
+                      className={`ms-2 text-sm font-normal leading-[16.8px] ${
+                        !hasSelectedCities ||
+                        searchFilteredProvinces.length === 0
+                          ? "text-neutral-500"
+                          : "text-neutral-900"
+                      }`}
+                    >
+                      Tampilkan yang terpilih saja
+                    </span>
+                  </Checkbox>
                 </div>
               </div>
 
@@ -284,10 +293,23 @@ export default function Page() {
                     Loading...
                   </span>
                 </div>
+              ) : finalProvinces.length === 0 ? (
+                <DataNotFound
+                  title={
+                    searchCity
+                      ? "Keyword tidak ditemukan"
+                      : "Belum ada area muat terpilih"
+                  }
+                  image={
+                    searchCity
+                      ? "/icons/data-not-found.svg"
+                      : "/img/empty-state/area-muat.png"
+                  }
+                />
               ) : (
                 /* Province Sections */
                 <div className="flex flex-col gap-y-[18px]">
-                  {filteredProvinces.map((province) => {
+                  {finalProvinces.map((province) => {
                     const isExpanded =
                       showSelectedOnly ||
                       expandedProvinces[province.id] ||
@@ -398,7 +420,9 @@ export default function Page() {
                                   : "Lihat Selengkapnya"}
                                 <ChevronDown
                                   size={16}
-                                  className={`transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                                  className={`transition-transform ${
+                                    isExpanded ? "rotate-180" : ""
+                                  }`}
                                 />
                               </button>
                             </div>
@@ -410,19 +434,6 @@ export default function Page() {
               )}
             </CardContent>
           </Card>
-
-          {/* Save Button */}
-          <div className="fixed bottom-6 right-6">
-            <Button
-              variant="muattrans-primary"
-              className="h-12 rounded-full px-8 shadow-lg"
-              onClick={() => {
-                // console.log("Save area muat")
-              }}
-            >
-              Simpan
-            </Button>
-          </div>
         </div>
       </LayoutOverlayButton>
 

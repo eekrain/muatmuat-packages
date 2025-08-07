@@ -8,10 +8,16 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import Search from "@/components/Search/Search";
 import { cn } from "@/lib/utils";
 
+import { FilterPopover } from "./components/FilterPopover";
+import { LegendButton } from "./components/LegendButton";
+
 export const MapInterfaceOverlay = ({
   onZoomIn,
   onZoomOut,
   onClickDaftarArmada,
+  onClickSOS,
+  onApplyFilter,
+  fleetCounts,
   hideTopNavigation = false,
   onSearch,
   onToggleFullscreen,
@@ -58,7 +64,7 @@ export const MapInterfaceOverlay = ({
     },
     {
       icon: "/icons/monitoring/center.svg",
-      tooltip: "Pusatkan Semua Armada",
+      tooltip: "Pusatkan",
       onClick: handleCenterClick,
     },
     {
@@ -98,17 +104,10 @@ export const MapInterfaceOverlay = ({
           </div>
 
           {/* Filter Button */}
-          <Button
-            variant="muattrans-primary-secondary"
-            iconLeft={
-              <IconComponent
-                src="/icons/monitoring/filter.svg"
-                className="size-4"
-              />
-            }
-          >
-            Filter
-          </Button>
+          <FilterPopover
+            onApplyFilter={onApplyFilter}
+            fleetCounts={fleetCounts}
+          />
 
           {/* SOS Button */}
           <Button
@@ -119,6 +118,7 @@ export const MapInterfaceOverlay = ({
                 className="size-4"
               />
             }
+            onClick={onClickSOS}
           >
             SOS ({sosCount})
           </Button>
@@ -133,20 +133,8 @@ export const MapInterfaceOverlay = ({
         )}
       >
         <div className="flex flex-col gap-2">
-          {/* Info button - separate container at top */}
-          <InfoTooltip
-            trigger={
-              <button className="h-8 w-8 place-content-center rounded-xl bg-muat-trans-secondary-900 shadow-lg">
-                <IconComponent
-                  src="/icons/monitoring/info.svg"
-                  className="mx-auto size-6"
-                />
-              </button>
-            }
-            side="left"
-          >
-            Legenda
-          </InfoTooltip>
+          {/* Legend button with tooltip and popover */}
+          <LegendButton />
 
           {/* Main map controls */}
           <div className="h-[136px] w-8 rounded-xl bg-white shadow-lg">
