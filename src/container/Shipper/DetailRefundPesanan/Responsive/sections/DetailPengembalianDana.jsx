@@ -25,7 +25,7 @@ const DetailPengembalianDana = ({ breakdown, waitingTimeData }) => {
           {waitingTimeData?.length > 0 && (
             <CardPayment.Section className="gap-4" title="Biaya Waktu Tunggu">
               <CardPayment.LineItem
-                label="Nominal Waktu Tunggu (1 Driver)"
+                label="Nominal Waktu Tunggu<br/>(1 Driver)"
                 value={
                   breakdown ? `-${idrFormat(breakdown.waitingTimeFee)}` : "-"
                 }
