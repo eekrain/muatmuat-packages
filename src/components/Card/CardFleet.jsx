@@ -93,7 +93,10 @@ export default function CardFleet({
       <div className="space-y-1 pt-2 text-sm">
         <DriverAndPhoneSection fleet={fleet} />
         <LocationAndFleetSection fleet={fleet} />
-        {fleet.status === "ON_DUTY" && <OnDutyDetails fleet={fleet} />}
+        {(fleet.status === "ON_DUTY" ||
+          fleet.status === "WAITING_LOADING_TIME") && (
+          <OnDutyDetails fleet={fleet} />
+        )}
         {(!fleet.driver?.name || !fleet.driver?.phoneNumber) && (
           <AssignDriverButton onClick={() => onOpenDriverModal(fleet)} />
         )}
@@ -242,9 +245,17 @@ function OnDutyDetails({ fleet }) {
       </div>
 
       <div className="flex items-center justify-between">
-        {/* <div className="rounded-lg bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
-          Proses Muat
-        </div> */}
+        {fleet.status === "ON_DUTY" && fleet.needsResponseChange === false && (
+          <div className="rounded-lg bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
+            Proses Muat
+          </div>
+        )}
+        {fleet.status === "WAITING_LOADING_TIME" &&
+          fleet.needsResponseChange === false && (
+            <div className="rounded-lg bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
+              Armada Dijadwalkan
+            </div>
+          )}
         {fleet.needsResponseChange && (
           <div className="flex rounded-lg bg-warning-100 px-3 py-1 text-xs font-medium text-warning-900">
             <AlertTriangle className="mr-2 h-3 w-3" />

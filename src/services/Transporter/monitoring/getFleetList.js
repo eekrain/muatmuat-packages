@@ -80,7 +80,7 @@ const apiResultFleetList = {
           carrierId: "carrier-uuid-2",
           name: "Bak Tertutup",
         },
-        status: "ON_DELIVERY",
+        status: "ON_DUTY",
         isActive: true,
         hasSOSAlert: false,
         detailSOS: {
@@ -90,7 +90,20 @@ const apiResultFleetList = {
           reportAt: "2025-07-25T10:45:00Z",
           photos: ["https://example.com/photo1.jpg"],
         },
-        needsResponseChange: true,
+        needsResponseChange: false,
+        activeOrder: {
+          orderId: "order-uuid-1",
+          orderCode: "ORD-2025-001",
+          orderStatus: "ON_THE_WAY",
+          pickupLocation: {
+            district: "Jl. Sudirman No. 1",
+            city: "Jakarta Pusat",
+          },
+          dropoffLocation: {
+            district: "Jl. Thamrin No. 5",
+            city: "Jakarta Pusat",
+          },
+        },
       },
       {
         fleetId: "fleet-uuid-3",
@@ -117,7 +130,7 @@ const apiResultFleetList = {
           carrierId: "carrier-uuid-3",
           name: "Container",
         },
-        status: "WAITING_LOADING_TIME",
+        status: "NOT_PAIRED",
         isActive: true,
         hasSOSAlert: false,
         detailSOS: null,
@@ -161,7 +174,7 @@ const apiResultFleetList = {
           carrierId: "carrier-uuid-1",
           name: "Bak Terbuka",
         },
-        status: "ON_DELIVERY",
+        status: "WAITING_LOADING_TIME",
         isActive: true,
         hasSOSAlert: false,
         detailSOS: null,
@@ -373,7 +386,7 @@ const apiResultFleetList = {
           reportAt: "2025-07-25T11:40:00Z",
           photos: [],
         },
-        needsResponseChange: true,
+        needsResponseChange: false,
         activeOrder: {
           orderId: "order-uuid-5",
           orderCode: "ORD-2025-005",
