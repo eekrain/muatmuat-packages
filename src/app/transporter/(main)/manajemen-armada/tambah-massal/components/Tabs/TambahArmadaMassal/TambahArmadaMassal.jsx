@@ -19,7 +19,6 @@ import { normalizePayloadTambahArmadaMassal } from "@/lib/normalizers/transporte
 import { toast } from "@/lib/toast";
 import { usePostFleetBulkCreate } from "@/services/Transporter/manajemen-armada/postFleetBulkCreate";
 
-import ModalAddArmadaImage from "../../../preview-armada/components/ModalAddImage/ModalAddImage";
 import ArmadaTable from "../../ArmadaTable/ArmadaTable";
 
 const TambahArmadaMassal = ({ isDraftAvailable }) => {
@@ -27,8 +26,6 @@ const TambahArmadaMassal = ({ isDraftAvailable }) => {
   const { onValueChange } = useTabs();
 
   const [isDraft] = useState(isDraftAvailable);
-  const [activeIndex, setActiveIndex] = useState();
-  const [addArmadaImageModal, setAddArmadaImageModal] = useState(false);
 
   const { trigger: handlePostFleetBulkCreate, isMutating } =
     usePostFleetBulkCreate();
@@ -95,10 +92,6 @@ const TambahArmadaMassal = ({ isDraftAvailable }) => {
     fieldArrayName: "informasiMuatan",
   });
 
-  const handleImageClick = (index) => {
-    setActiveIndex(index);
-    setAddArmadaImageModal(true);
-  };
   return (
     <div className="rounded-lg">
       {/* Header Table */}
@@ -114,7 +107,6 @@ const TambahArmadaMassal = ({ isDraftAvailable }) => {
           onAddRow={handleAddRow}
           onDeleteRows={handleDeleteRows}
           onCellValueChange={handleCellValueChange}
-          onImageClick={handleImageClick}
           errors={errors.informasiMuatan}
         />
         <div className="flex items-center justify-end">
@@ -192,21 +184,6 @@ const TambahArmadaMassal = ({ isDraftAvailable }) => {
         Apakah kamu yakin ingin menghapus armada yang telah dipilih? Tindakan
         ini tidak dapat dibatalkan.
       </ConfirmationModal>
-
-      <ModalAddArmadaImage
-        isOpen={addArmadaImageModal}
-        onClose={() => {
-          setAddArmadaImageModal(false);
-        }}
-        value={watch(`informasiMuatan.${activeIndex}.informasi_armada.images`)}
-        onSave={(images) => {
-          setValue(
-            `informasiMuatan.${activeIndex}.informasi_armada.images`,
-            images
-          );
-          setAddArmadaImageModal(false);
-        }}
-      />
     </div>
   );
 };

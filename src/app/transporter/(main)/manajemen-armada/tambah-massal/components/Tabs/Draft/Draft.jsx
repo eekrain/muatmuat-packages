@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
@@ -19,7 +19,6 @@ import { toast } from "@/lib/toast";
 import { useGetFleetsDrafts } from "@/services/Transporter/manajemen-armada/getFleetsDrafts";
 import { usePostFleetBulkCreate } from "@/services/Transporter/manajemen-armada/postFleetBulkCreate";
 
-import ModalAddArmadaImage from "../../../preview-armada/components/ModalAddImage/ModalAddImage";
 import ArmadaTable from "../../ArmadaTable/ArmadaTable";
 
 // Function to map API draft data to form structure
@@ -104,8 +103,6 @@ const Draft = ({ isDraftAvailable }) => {
   const { data, isLoading, error } = useGetFleetsDrafts(
     isDraftAvailable ? "/v1/fleet/drafts" : null
   );
-  const [activeIndex, setActiveIndex] = useState();
-  const [addArmadaImageModal, setAddArmadaImageModal] = useState(false);
 
   const { trigger: handlePostFleetBulkCreate, isMutating } =
     usePostFleetBulkCreate();
@@ -191,11 +188,6 @@ const Draft = ({ isDraftAvailable }) => {
     }
   }, [data, reset]);
 
-  const handleImageClick = (index) => {
-    setActiveIndex(index);
-    setAddArmadaImageModal(true);
-  };
-
   if (!isDraftAvailable) {
     return (
       <div className="flex h-[280px] w-full items-center justify-center rounded-xl bg-white p-8 shadow-md">
@@ -243,7 +235,6 @@ const Draft = ({ isDraftAvailable }) => {
           onAddRow={handleAddRow}
           onDeleteRows={handleDeleteRows}
           onCellValueChange={handleCellValueChange}
-          onImageClick={handleImageClick}
           errors={errors.informasiMuatan}
         />
         <div className="flex items-center justify-end">
@@ -288,21 +279,6 @@ const Draft = ({ isDraftAvailable }) => {
         Apakah kamu yakin ingin menghapus armada yang telah dipilih? Tindakan
         ini tidak dapat dibatalkan.
       </ConfirmationModal>
-
-      <ModalAddArmadaImage
-        isOpen={addArmadaImageModal}
-        onClose={() => {
-          setAddArmadaImageModal(false);
-        }}
-        value={watch(`informasiMuatan.${activeIndex}.informasi_armada.images`)}
-        onSave={(images) => {
-          setValue(
-            `informasiMuatan.${activeIndex}.informasi_armada.images`,
-            images
-          );
-          setAddArmadaImageModal(false);
-        }}
-      />
     </div>
   );
 };
