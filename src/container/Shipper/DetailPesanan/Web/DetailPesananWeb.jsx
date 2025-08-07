@@ -122,8 +122,9 @@ const DetailPesananWeb = () => {
                 dataRingkasanPesanan={dataDetailPesanan.dataRingkasanPesanan}
                 useHalalLogistik={true}
                 vehicleInfo={{
-                  type: "Box - Colt Diesel Engkel",
-                  quantity: "1 Unit",
+                  type: dataDetailPesanan?.dataRingkasanPesanan.vehicle.name,
+                  quantity:
+                    dataDetailPesanan?.dataRingkasanPesanan.vehicle.truckCount,
                 }}
               />
             )}
