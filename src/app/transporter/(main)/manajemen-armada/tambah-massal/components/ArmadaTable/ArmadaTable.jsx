@@ -11,8 +11,8 @@ import Select from "@/components/Select";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
+import ModalAddImage from "../../../../manajemen-driver/tambah-massal/components/ModalAddImage/ModalAddImage";
 import FileUploadInput from "../FileUploadInput";
-import ModalAddImage from "../ModalAddImage/ModalAddImage";
 import DropdownJenisCarrier from "./DropdownJenisCarrier";
 import DropdownJenisTruk from "./DropdownJenisTruk";
 import DropdownMerekKendaraan from "./DropdownMerekKendaraan";

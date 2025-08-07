@@ -7,7 +7,7 @@ import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import { toast } from "@/lib/toast";
 import { useUploadVehiclePhotos } from "@/services/Transporter/manajemen-armada/postUploadVehiclePhotos";
 
-import UploadVehiclePhotos from "../../../../manajemen-armada/tambah-massal/components/UploadVehiclePhotos/UploadVehiclePhotos";
+import UploadVehiclePhotos from "../UploadVehiclePhotos/UploadVehiclePhotos";
 
 /**
  * @typedef {Object} ModalAddArmadaImageProps

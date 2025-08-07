@@ -8,7 +8,6 @@ export default function UploadVehiclePhotos({
   onUpload,
   isError,
   placeholder,
-  className,
 }) {
   const { trigger, isMutating, data, error } = useUploadVehiclePhotos();
 
@@ -34,11 +33,7 @@ export default function UploadVehiclePhotos({
       value={value}
       onUpload={(image) => handleImageChange(image)}
       uploadText={placeholder}
-      className={cn(
-        "aspect-square size-full",
-        isError && "!border-error-500",
-        className
-      )}
+      className={cn("aspect-square size-full", isError && "!border-error-500")}
       onError={(errorMessage) => toast.error(errorMessage)}
       isLoading={isMutating}
       isError={error}

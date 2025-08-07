@@ -47,8 +47,6 @@ const FileUploadInput = ({
     // File upload tracking
     if (value && (value.name || value.documentUrl)) {
       setHasFile(true);
-    } else {
-      setHasFile(false);
     }
   }, [value]);
 

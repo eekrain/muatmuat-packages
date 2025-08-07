@@ -545,6 +545,15 @@ body {
   }
 }
 
+.table-tambah-driver-massal {
+  th {
+    @apply px-3;
+  }
+  td {
+    @apply px-3;
+  }
+}
+
 /* For the popover animation glitch fix */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
