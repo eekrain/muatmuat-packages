@@ -160,7 +160,7 @@ const HeaderLayout = ({
               <div className="flex items-center gap-x-3 pr-3">
                 {menuNotifications.map((menu, key) => (
                   <Link href="#" className="relative" key={key}>
-                    <div className="absolute bottom-3 left-3 flex h-3.5 items-center rounded-[30px] border-[1.5px] border-neutral-50 bg-buyer-seller-900 px-1.5">
+                    <div className="absolute bottom-3 left-3 z-50 flex h-4 items-center rounded-[30px] border-[1.5px] border-neutral-50 bg-buyer-seller-900 px-1">
                       <span className="text-xxs font-medium leading-[8px] text-neutral-50">
                         {menu.count}
                       </span>
