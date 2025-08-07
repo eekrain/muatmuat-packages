@@ -10,7 +10,7 @@ const MOCK_CONFIG = {
   // UI States to test:
   showEmptyState: false, // true = empty state, false = show requests
   isSuspended: false, // true = suspended account, false = normal account
-  driverDelegationEnabled: true, // true = show delegation warning, false = normal account
+  driverDelegationEnabled: false, // true = show delegation warning, false = normal account
   isHalalCertified: true, // false = show halal certification warning, true = certified
 
   // Quick toggle functions for easy testing:
@@ -36,6 +36,7 @@ const apiResultTransportRequestList = {
           isNew: true,
           isHalalLogistics: true,
           isSaved: false,
+          isTaken: false,
           loadTimeStart: "2025-08-07T09:00:00+07:00",
           loadTimeEnd: "2025-08-07T11:00:00+07:00",
           estimatedDistance: 121,
@@ -112,6 +113,7 @@ const apiResultTransportRequestList = {
           isNew: true,
           isHalalLogistics: false,
           isSaved: true,
+          isTaken: true,
           loadTimeStart: "2025-08-22T10:00:00+07:00",
           loadTimeEnd: "2025-08-22T12:00:00+07:00",
           estimatedDistance: 85,
@@ -174,6 +176,7 @@ const apiResultTransportRequestList = {
           isNew: false,
           isHalalLogistics: false,
           isSaved: true,
+          isTaken: false,
           loadTimeStart: "2025-08-07T16:30:00+07:00",
           loadTimeEnd: "2025-08-07T18:30:00+07:00",
           estimatedDistance: 32,
