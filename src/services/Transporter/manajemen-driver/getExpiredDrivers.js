@@ -1,5 +1,9 @@
 import useSWR from "swr";
 
+import { fetcherMuatrans } from "@/lib/axios";
+
+const isUseMock = false; // Set to true to use mock data
+
 const apiResultExpiredDrivers = {
   data: {
     Message: {
@@ -33,9 +37,12 @@ const apiResultExpiredDrivers = {
   },
 };
 
-const fetcher = async (url) => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  return apiResultExpiredDrivers.data.Data;
+const fetcher = async () => {
+  if (isUseMock) {
+    return apiResultExpiredDrivers.data.Data;
+  }
+  const result = await fetcherMuatrans.get("/v1/drivers/sim-expiry");
+  return result?.data?.Data || {};
 };
 
 export const useGetExpiredDriversData = ({

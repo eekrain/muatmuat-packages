@@ -353,6 +353,8 @@ const DriverNonaktif = ({
     // Status clicked
     setSelectedStatus(status);
     onStatusChange?.(status);
+    mutate(); // Fetch data ulang setelah status diganti
+    console.log("Status changed to:", data);
     // New status set
   };
 
@@ -383,7 +385,7 @@ const DriverNonaktif = ({
       const count = getCountFromSummary(item.id);
       return {
         value: item.id,
-        label: item.value,
+        label: item.value === "NOT_PAIRED" ? "Belum Dipasangkan" : item.value,
         count: count,
         hasNotification: item.id === "NOT_PAIRED" && count > 0,
       };
@@ -433,6 +435,7 @@ const DriverNonaktif = ({
         <DataTable
           data={data?.drivers || []}
           columns={columns}
+          loading={isLoading} // Pastikan isLoading false setelah data di-fetch
           searchPlaceholder="Cari Nama Driver, No. HP atau lainnya"
           totalCountLabel="Driver"
           currentPage={data?.pagination?.page || currentPage}
@@ -444,7 +447,6 @@ const DriverNonaktif = ({
           onSearch={handleSearch}
           onFilter={handleFilter}
           onSort={handleSort}
-          loading={isLoading}
           showPagination
           showDisplayView={true}
           displayOptions={getDisplayOptions()}

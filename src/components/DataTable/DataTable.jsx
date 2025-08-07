@@ -46,6 +46,7 @@ const DataTable = ({
   const [searchValue, setSearchValue] = useState("");
   const [selectedFilters, setSelectedFilters] = useState({});
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
+  console.log("DataTable rendered with data:", data);
 
   const handleSearch = (value) => {
     setSearchValue(value);
@@ -265,18 +266,7 @@ const DataTable = ({
                   </div>
                 </td>
               </tr>
-            ) : data.length === 0 ? (
-              <tr>
-                <td colSpan={columns.length} className="px-6 py-8 text-center">
-                  {emptyState || (
-                    <DataNotFound
-                      className="gap-y-5"
-                      title="Keyword Tidak Ditemukan"
-                    />
-                  )}
-                </td>
-              </tr>
-            ) : (
+            ) : data.length > 0 ? (
               data.map((row, rowIndex) => (
                 <tr
                   key={rowIndex}
@@ -297,6 +287,17 @@ const DataTable = ({
                   ))}
                 </tr>
               ))
+            ) : (
+              <tr>
+                <td colSpan={columns.length} className="px-6 py-8 text-center">
+                  {emptyState || (
+                    <DataNotFound
+                      className="gap-y-5"
+                      title="Keyword Tidak Ditemukan"
+                    />
+                  )}
+                </td>
+              </tr>
             )}
           </tbody>
         </table>
