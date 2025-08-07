@@ -17,6 +17,7 @@ import { MapInterfaceOverlay } from "@/container/Transporter/Monitoring/Map/MapI
 import { MapMonitoring } from "@/container/Transporter/Monitoring/Map/MapMonitoring";
 import { NoFleetOverlay } from "@/container/Transporter/Monitoring/Map/NoFleetOverlay";
 import PermintaanAngkut from "@/container/Transporter/Monitoring/PermintaanAngkut/PermintaanAngkut";
+import SOSContainer from "@/container/Transporter/Monitoring/SOS/SOSContainer";
 import UrgentIssue from "@/container/Transporter/Monitoring/UrgentIssue/UrgentIssue";
 import { cn } from "@/lib/utils";
 import { useGetFleetCount } from "@/services/Transporter/monitoring/getFleetCount";
@@ -30,6 +31,7 @@ const Page = () => {
   const [isBottomExpanded, setIsBottomExpanded] = useState(true);
   const [mapZoom, setMapZoom] = useState(null); // Initialize as null, will be set from calculated bounds
   const [showLeftPanel, setShowLeftPanel] = useState(false);
+  const [leftPanelMode, setLeftPanelMode] = useState("armada"); // "armada" or "sos"
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showLicensePlate, setShowLicensePlate] = useState(true);
   const [autoFitBounds, setAutoFitBounds] = useState(true);
@@ -84,6 +86,13 @@ const Page = () => {
 
   // Panel handlers
   const handleOpenLeftPanel = () => {
+    setLeftPanelMode("armada");
+    setShowLeftPanel(true);
+    setIsBottomExpanded(false);
+  };
+
+  const handleOpenSOSPanel = () => {
+    setLeftPanelMode("sos");
     setShowLeftPanel(true);
     setIsBottomExpanded(false);
   };
@@ -313,6 +322,7 @@ const Page = () => {
                 onZoomIn={handleZoomIn}
                 onZoomOut={handleZoomOut}
                 onClickDaftarArmada={handleOpenLeftPanel}
+                onClickSOS={handleOpenSOSPanel}
                 hideTopNavigation={showLeftPanel}
                 onToggleFullscreen={handleToggleFullscreen}
                 isFullscreen={isFullscreen}
@@ -323,14 +333,18 @@ const Page = () => {
               />
             )}
 
-            {/* Left Panel - Daftar Armada */}
+            {/* Left Panel - Daftar Armada or SOS */}
             <div
               className={cn(
                 "absolute left-0 top-0 z-20 h-full w-[350px] rounded-r-xl bg-white shadow-xl transition-transform duration-300 ease-in-out",
                 showLeftPanel ? "translate-x-0" : "-translate-x-full"
               )}
             >
-              <DaftarArmada onClose={handleCloseLeftPanel} />
+              {leftPanelMode === "sos" ? (
+                <SOSContainer onClose={handleCloseLeftPanel} />
+              ) : (
+                <DaftarArmada onClose={handleCloseLeftPanel} />
+              )}
             </div>
           </div>
 

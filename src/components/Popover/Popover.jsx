@@ -16,7 +16,7 @@ export const PopoverContent = React.forwardRef(
         ref={ref}
         sideOffset={5}
         className={cn(
-          "z-50 rounded-md border bg-white p-4 shadow-md outline-none",
+          "z-[9999] rounded-md border bg-white p-4 shadow-md outline-none",
 
           // --- FULLY CUSTOM ANIMATIONS ---
           // Removed `animate-in` and `animate-out`. We now only use our custom keyframes.
