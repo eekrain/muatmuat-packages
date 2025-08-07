@@ -70,17 +70,20 @@ function KontakPIC({ onSave, onFormChange, setActiveIdx }) {
   const watched = watch();
 
   useEffect(() => {
-    // Hanya panggil onFormChange jika form MENJADI dirty (berubah dari bersih ke kotor).
-    // Jangan lakukan apa-apa jika form berubah dari kotor kembali ke bersih (setelah save).
     if (isDirty) {
       onFormChange();
     }
   }, [isDirty, onFormChange]);
 
+  const onInvalid = (errors) => {
+    console.error("Validation Errors:", errors);
+    if (errors.contacts?.[0]) {
+      toast.error("Isi semua inputan yang bertanda bintang (*)");
+    }
+  };
+
   const onSubmit = async (data) => {
-    // --- Logika validasi kustom Anda dimulai di sini (TIDAK PERLU DIUBAH) ---
     let hasError = false;
-    let toastShown = false;
 
     const validPIC1 = await trigger([
       "contacts.0.name",
@@ -88,10 +91,7 @@ function KontakPIC({ onSave, onFormChange, setActiveIdx }) {
       "contacts.0.phone",
     ]);
     if (!validPIC1) {
-      if (!toastShown) {
-        toast.error("Isi semua inputan yang bertanda bintang (*)");
-        toastShown = true;
-      }
+      toast.error("Isi semua inputan yang bertanda bintang (*)");
       hasError = true;
     }
 
@@ -123,37 +123,21 @@ function KontakPIC({ onSave, onFormChange, setActiveIdx }) {
         }
       });
     }
-    // --- Logika validasi kustom Anda berakhir di sini ---
-
-    // Jika ada error dari validasi kustom, hentikan proses.
     if (hasError) return;
-
-    // --- Jika semua validasi lolos, lanjutkan untuk menyimpan ---
     console.log("All validations passed. Form data for this section:", data);
-
-    // 1. Ambil data lengkap yang ada saat ini dari store
     const existingData =
       useTransporterFormStore.getState().getForm(FORM_KEY) || {};
-
-    // 2. Gabungkan data lama dengan data baru dari section ini
     const updatedData = {
       ...existingData,
       ...data,
     };
-
-    // 3. Simpan data yang sudah lengkap kembali ke store
     console.log("Saving final merged data to Zustand:", updatedData);
     setForm(FORM_KEY, updatedData);
     if (onSave) {
       onSave();
     }
-
     reset(data);
-
     toast.success("Pendaftaran berhasil disimpan!");
-
-    // Di sini Anda bisa memicu pengiriman data ke backend atau navigasi ke halaman sukses
-    // Contoh: sendDataToApi(updatedData);
   };
 
   useEffect(() => {
@@ -164,13 +148,12 @@ function KontakPIC({ onSave, onFormChange, setActiveIdx }) {
   }, [isSubmitSuccessful, reset]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-full">
-      <Card className="rounded-xl border-none p-6">
+    <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="w-full">
+      <Card className="rounded-xl border-none p-8">
         <div className="max-w-[75%]">
           <div>
             <h3 className="mb-6 text-lg font-semibold">Kontak PIC</h3>
-            <FormContainer>
-              {/* PIC 1 */}
+            <FormContainer className={"!gap-6"}>
               <FormLabel required>Nama PIC 1</FormLabel>
               <Input
                 type="text"
@@ -194,8 +177,6 @@ function KontakPIC({ onSave, onFormChange, setActiveIdx }) {
                 {...register("contacts.0.phone")}
                 errorMessage={errors.contacts?.[0]?.phone?.message}
               />
-
-              {/* PIC 2 */}
               <FormLabel>Nama PIC 2</FormLabel>
               <Input
                 type="text"
@@ -219,8 +200,6 @@ function KontakPIC({ onSave, onFormChange, setActiveIdx }) {
                 {...register("contacts.1.phone")}
                 errorMessage={errors.contacts?.[1]?.phone?.message}
               />
-
-              {/* PIC 3 */}
               <FormLabel>Nama PIC 3</FormLabel>
               <Input
                 type="text"
@@ -228,7 +207,6 @@ function KontakPIC({ onSave, onFormChange, setActiveIdx }) {
                 {...register("contacts.2.name")}
                 errorMessage={errors.contacts?.[2]?.name?.message}
               />
-
               <FormLabel>Jabatan PIC 3</FormLabel>
               <Input
                 type="text"
@@ -236,7 +214,6 @@ function KontakPIC({ onSave, onFormChange, setActiveIdx }) {
                 {...register("contacts.2.position")}
                 errorMessage={errors.contacts?.[2]?.position?.message}
               />
-
               <FormLabel>No. HP PIC 3</FormLabel>
               <Input
                 type="number"
@@ -255,7 +232,11 @@ function KontakPIC({ onSave, onFormChange, setActiveIdx }) {
         >
           Sebelumnya
         </Button>
-        <Button type="submit" variant="muattrans-primary">
+        <Button
+          type="submit"
+          variant="muattrans-primary"
+          className="!w-[112px]"
+        >
           Simpan
         </Button>
       </div>
