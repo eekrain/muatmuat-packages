@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Form/Checkbox";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
+import { useTranslation } from "@/hooks/use-translation";
 
 /**
  * @typedef {object} BatalkanPesananModalProps
@@ -26,6 +27,7 @@ export const ModalBatalkanPesananResponsive = ({
   hasPriceCharge,
 }) => {
   const [isAgreed, setIsAgreed] = useState(false);
+  const { t } = useTranslation();
 
   const handleOpenChange = (isOpen) => {
     if (onOpenChange) {
@@ -52,6 +54,7 @@ export const ModalBatalkanPesananResponsive = ({
             setIsAgreed={setIsAgreed}
             onConfirm={onConfirm}
             onOpenChange={onOpenChange}
+            t={t}
           />
         ) : (
           <ContentCancelWithoutPenalty
@@ -59,6 +62,7 @@ export const ModalBatalkanPesananResponsive = ({
             setIsAgreed={setIsAgreed}
             onConfirm={onConfirm}
             onOpenChange={onOpenChange}
+            t={t}
           />
         )}
       </ModalContent>
@@ -71,15 +75,30 @@ const ContentCancelWithoutPenalty = ({
   setIsAgreed,
   onConfirm,
   onOpenChange,
+  t,
 }) => (
   <div className="relative flex flex-col items-center gap-5">
     <div className="flex flex-col items-center gap-4 text-center">
-      <h2 className="text-base font-bold text-neutral-900">Batalkan Pesanan</h2>
+      <h2 className="text-base font-bold text-neutral-900">
+        {t(
+          "ModalBatalkanPesananResponsive.titleCancelOrder",
+          {},
+          "Batalkan Pesanan"
+        )}
+      </h2>
       <p className="text-sm font-medium text-neutral-900">
-        Apakah kamu yakin ingin membatalkan pesanan?
+        {t(
+          "ModalBatalkanPesananResponsive.textAreYouSureCancelOrder",
+          {},
+          "Apakah kamu yakin ingin membatalkan pesanan?"
+        )}
         <br />
         <br />
-        Pastikan kamu sudah membaca
+        {t(
+          "ModalBatalkanPesananResponsive.textMakeSureRead",
+          {},
+          "Pastikan kamu sudah membaca"
+        )}
         <br />
         <Link
           href="https://faq.muatmuat.com/pusat-bantuan"
@@ -88,7 +107,11 @@ const ContentCancelWithoutPenalty = ({
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
         >
-          Syarat dan Ketentuan kami.
+          {t(
+            "ModalBatalkanPesananResponsive.linkOurTerms",
+            {},
+            "Syarat dan Ketentuan kami."
+          )}
         </Link>
       </p>
     </div>
@@ -98,7 +121,11 @@ const ContentCancelWithoutPenalty = ({
       className="w-full"
     >
       <span className="text-sm font-semibold text-neutral-900">
-        Ya, Saya setuju dengan syarat dan ketentuan tersebut
+        {t(
+          "ModalBatalkanPesananResponsive.checkboxAgreeTerms",
+          {},
+          "Ya, Saya setuju dengan syarat dan ketentuan tersebut"
+        )}
       </span>
     </Checkbox>
     <Button
@@ -111,7 +138,11 @@ const ContentCancelWithoutPenalty = ({
         onOpenChange(false);
       }}
     >
-      Batalkan Pesanan
+      {t(
+        "ModalBatalkanPesananResponsive.titleCancelOrder",
+        {},
+        "Batalkan Pesanan"
+      )}
     </Button>
   </div>
 );
@@ -121,15 +152,30 @@ const ContentCancelWithPenalty = ({
   setIsAgreed,
   onConfirm,
   onOpenChange,
+  t,
 }) => (
   <div className="relative flex flex-col items-center gap-5">
     <div className="flex flex-col items-center gap-4 text-center">
-      <h2 className="text-base font-bold text-neutral-900">Batalkan Pesanan</h2>
+      <h2 className="text-base font-bold text-neutral-900">
+        {t(
+          "ModalBatalkanPesananResponsive.titleCancelOrder",
+          {},
+          "Batalkan Pesanan"
+        )}
+      </h2>
       <p className="text-sm font-medium text-neutral-900">
-        Pembatalan pesanan akan dikenakan biaya admin sebesar Rp100.000/unit.
+        {t(
+          "ModalBatalkanPesananResponsive.textCancelWithPenalty",
+          {},
+          "Pembatalan pesanan akan dikenakan biaya admin sebesar Rp100.000/unit."
+        )}
         <br />
         <br />
-        Apakah kamu yakin ingin membatalkan pesanan?
+        {t(
+          "ModalBatalkanPesananResponsive.textAreYouSureCancelOrder",
+          {},
+          "Apakah kamu yakin ingin membatalkan pesanan?"
+        )}
       </p>
     </div>
     <Checkbox
@@ -138,7 +184,11 @@ const ContentCancelWithPenalty = ({
       className="w-full"
     >
       <span className="text-sm font-semibold text-neutral-900">
-        Saya menyetujui{" "}
+        {t(
+          "ModalBatalkanPesananResponsive.textIAgreeTo",
+          {},
+          "Saya menyetujui"
+        )}{" "}
         <Link
           href="https://faq.muatmuat.com/pusat-bantuan"
           className="text-primary-700 underline"
@@ -146,7 +196,11 @@ const ContentCancelWithPenalty = ({
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
         >
-          Syarat dan Ketentuan Muatrans
+          {t(
+            "ModalBatalkanPesananResponsive.linkMuatransTerms",
+            {},
+            "Syarat dan Ketentuan Muatrans"
+          )}
         </Link>
       </span>
     </Checkbox>
@@ -159,7 +213,11 @@ const ContentCancelWithPenalty = ({
         onOpenChange(false);
       }}
     >
-      Batalkan Pesanan
+      {t(
+        "ModalBatalkanPesananResponsive.titleCancelOrder",
+        {},
+        "Batalkan Pesanan"
+      )}
     </Button>
   </div>
 );

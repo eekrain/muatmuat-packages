@@ -8,22 +8,36 @@ import {
 } from "@/components/BottomSheet/BottomSheetUp";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";
 
 const BottomsheetCancellationHistory = ({ cancellationHistory }) => {
+  const { t } = useTranslation();
   const cancellationHistoryMapped = useShallowMemo(
     () => [
       {
-        title: "Dibatalkan Oleh",
+        title: t(
+          "BottomsheetCancellationHistory.labelCancelledBy",
+          {},
+          "Dibatalkan Oleh"
+        ),
         value: cancellationHistory.cancelledBy,
       },
       {
-        title: "Tanggal Pembatalan",
+        title: t(
+          "BottomsheetCancellationHistory.labelCancellationDate",
+          {},
+          "Tanggal Pembatalan"
+        ),
         value: formatDate(cancellationHistory.cancelledAt),
       },
       {
-        title: "Alasan Pembatalan",
+        title: t(
+          "BottomsheetCancellationHistory.labelCancellationReason",
+          {},
+          "Alasan Pembatalan"
+        ),
         value:
           cancellationHistory.reason.additionalInfo ||
           cancellationHistory.reason.reasonName,
@@ -35,7 +49,11 @@ const BottomsheetCancellationHistory = ({ cancellationHistory }) => {
     <BottomSheet>
       <BottomSheetTrigger className="flex w-full items-center justify-between border-b border-b-neutral-400 pb-4">
         <span className="text-xs font-semibold leading-[1.1] text-primary-700">
-          Lihat Alasan Pembatalan
+          {t(
+            "BottomsheetCancellationHistory.buttonViewCancellationReason",
+            {},
+            "Lihat Alasan Pembatalan"
+          )}
         </span>
         <IconComponent src="/icons/chevron-right.svg" />
       </BottomSheetTrigger>
@@ -43,7 +61,13 @@ const BottomsheetCancellationHistory = ({ cancellationHistory }) => {
         {/* Header */}
         <BottomSheetHeader>
           <BottomSheetClose />
-          <BottomSheetTitle>Alasan Pembatalan</BottomSheetTitle>
+          <BottomSheetTitle>
+            {t(
+              "BottomsheetCancellationHistory.labelCancellationReason",
+              {},
+              "Alasan Pembatalan"
+            )}
+          </BottomSheetTitle>
         </BottomSheetHeader>
         <div className="flex flex-col gap-y-5 px-4 pb-6">
           {cancellationHistoryMapped.map((item, key) => (

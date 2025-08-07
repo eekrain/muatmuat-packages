@@ -2,12 +2,14 @@ import DetailPengembalianDana from "@/container/Shipper/DetailRefundPesanan/Resp
 import Legend from "@/container/Shipper/DetailRefundPesanan/Responsive/sections/Legend";
 import RefundStatusTimeline from "@/container/Shipper/DetailRefundPesanan/Responsive/sections/RefundStatusTimeline";
 import RekeningPengembalianDana from "@/container/Shipper/DetailRefundPesanan/Responsive/sections/RekeningPengembalianDana";
+import { useTranslation } from "@/hooks/use-translation";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 
 const DetailRefundPesananResponsive = ({
   refundData,
   waitingTimeData = [],
 }) => {
+  const { t } = useTranslation();
   // Extract data from API response
   const bank = refundData?.bankAccount;
   const breakdown = refundData?.refundBreakdown;
@@ -15,7 +17,11 @@ const DetailRefundPesananResponsive = ({
   return (
     <FormResponsiveLayout
       title={{
-        label: "Detail Refund",
+        label: t(
+          "DetailRefundPesananResponsive.titleRefundDetail",
+          {},
+          "Detail Refund"
+        ),
       }}
     >
       <div className="flex flex-col gap-y-2 bg-neutral-200">
