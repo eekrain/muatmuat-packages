@@ -10,7 +10,7 @@ const MOCK_CONFIG = {
   // UI States to test:
   showEmptyState: false, // true = empty state, false = show requests
   isSuspended: false, // true = suspended account, false = normal account
-  driverDelegationEnabled: false, // true = show delegation warning, false = normal account
+  driverDelegationEnabled: true, // true = show delegation warning, false = normal account
   isHalalCertified: true, // false = show halal certification warning, true = certified
 
   // Quick toggle functions for easy testing:
@@ -246,7 +246,7 @@ const apiResultTransportRequestList = {
         suspensionMessage: "Hubungi dukungan pelanggan untuk aktivasi kembali",
         supportContactUrl: "tel:+62-811-1234-5678",
         delegationWarningMessage:
-          "Pengaturan delegasi driver sedang aktif. Driver yang didelegasikan dapat menerima pesanan atas nama Anda.",
+          "Tidak dapat menerima atau menolak pesanan secara langsung",
         delegationResetUrl: "/settings/driver-delegation",
         halalCertificationMessage:
           "Tambahkan sertifikasi halal dengan menghubungi kami",

@@ -167,14 +167,14 @@ const PermintaanAngkut = () => {
         {/* Driver Delegation Warning */}
         {data?.userStatus?.driverDelegationEnabled &&
           !data?.userStatus?.isSuspended && (
-            <div className="mb-4 flex items-center gap-1 rounded-xl bg-[#FFFBEB] px-3 py-2">
+            <div className="mb-4 flex items-center gap-1 rounded-xl bg-[#FFECB4] px-3 py-2">
               <IconComponent
                 src="/icons/warning24.svg"
-                className="h-4 w-4 flex-shrink-0 text-[#F9A307]"
+                className="h-4 w-4 flex-shrink-0 text-[#FF7A00]"
               />
-              <div className="flex flex-col gap-1">
-                <span className="text-[12px] font-semibold text-[#F9A307]">
-                  Delegasi Driver Aktif
+              <div className="flex flex-col">
+                <span className="text-[12px] font-semibold text-[#FF7A00]">
+                  Pengaturan Delegasi Driver Sedang Aktif
                 </span>
                 <span className="text-[10px] font-medium text-[#000000]">
                   {data?.userStatus?.delegationWarningMessage}{" "}
