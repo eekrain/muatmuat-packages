@@ -10,7 +10,7 @@ import { muatTransValidateVoucher } from "@/services/Shipper/voucher/muatTransVo
 
 export const useVoucher = ({
   token = "Bearer your_token_here",
-  useMockData = false,
+  useMockData = true,
   mockEmpty = false,
   baseOrderAmount = 5000000,
   adminFee = 10000,

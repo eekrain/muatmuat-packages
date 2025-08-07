@@ -15,12 +15,11 @@ const ModalDetailStatusDriver = ({ driver }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   // Get order status history to get driver data
-  const { data: dataDriverStatus, isLoading } = useGetDriverStatusTimeline(
+  const { data: dataTimeline, isLoading } = useGetDriverStatusTimeline(
     params.orderId,
     driver.driverId
   );
   const { ref: contentRef, height: contentHeight } = useClientHeight();
-  console.log(contentHeight, contentRef, dataDriverStatus, "dataDriverStatus");
 
   return (
     <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick>
@@ -52,17 +51,15 @@ const ModalDetailStatusDriver = ({ driver }) => {
           <div className="relative pl-4 pr-[7px]">
             <AvatarDriver
               name={
-                dataDriverStatus?.dataDriver?.name ||
-                driver?.name ||
-                "Ardian Eka"
+                dataTimeline?.dataDriver?.name || driver?.name || "Ardian Eka"
               }
               image={
-                dataDriverStatus?.dataDriver?.profileImage ||
+                dataTimeline?.dataDriver?.profileImage ||
                 driver?.driverImage ||
                 "https://picsum.photos/50"
               }
               licensePlate={
-                dataDriverStatus?.dataDriver?.licensePlate ||
+                dataTimeline?.dataDriver?.licensePlate ||
                 driver?.licensePlate ||
                 ""
               }
@@ -81,14 +78,14 @@ const ModalDetailStatusDriver = ({ driver }) => {
               ...(contentHeight && { maxHeight: contentHeight }),
             }}
           >
-            {contentHeight && dataDriverStatus ? (
+            {contentHeight && dataTimeline ? (
               <div
                 className="overflow-y-auto pl-4 pr-[7px]"
                 style={{
                   ...(contentHeight ? { maxHeight: contentHeight } : {}),
                 }}
               >
-                <DriverTimeline dataDriverStatus={dataDriverStatus} />
+                <DriverTimeline dataTimeline={dataTimeline} />
               </div>
             ) : null}
           </div>

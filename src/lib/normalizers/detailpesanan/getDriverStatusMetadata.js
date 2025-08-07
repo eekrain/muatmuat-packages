@@ -10,6 +10,9 @@ const SHOULD_RETURNS_ORDER_STATUS = [
   OrderStatusEnum.PREPARE_DOCUMENT,
   OrderStatusEnum.DOCUMENT_DELIVERY,
   OrderStatusEnum.COMPLETED,
+  OrderStatusEnum.CANCELED_BY_SHIPPER,
+  OrderStatusEnum.CANCELED_BY_SYSTEM,
+  OrderStatusEnum.CANCELED_BY_TRANSPORTER,
 ];
 
 export const getDriverStatusMetadata = (
@@ -17,7 +20,6 @@ export const getDriverStatusMetadata = (
   orderStatus = null,
   t
 ) => {
-  console.log("🚀 ~ driverStatus:", driverStatus);
   let variant = "primary";
   let label = "";
   const splitStatus = driverStatus?.split?.("_");
@@ -40,9 +42,5 @@ export const getDriverStatusMetadata = (
 
   const newStatus = splitStatus.slice(0, -1).join("_");
   label = `${t(DriverStatusLabel[newStatus])} ${locationIndex}`;
-  console.log(
-    "🚀 ~ DriverStatusLabel[newStatus]:",
-    DriverStatusLabel[newStatus]
-  );
   return { variant, label };
 };

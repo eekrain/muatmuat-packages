@@ -62,7 +62,9 @@ export const getWaitingTime = async (cacheKey) => {
   } else {
     result = await fetcherMuatrans.get(`v1/orders/${orderId}/waiting-time`);
   }
+  console.log("🚀 ~ getWaitingTime ~ result:", result);
   const data = normalizeWaitingTime(result?.data?.Data?.waitingTime);
+  console.log("🚀 ~ getWaitingTime ~ data:", data);
   return data;
 };
 

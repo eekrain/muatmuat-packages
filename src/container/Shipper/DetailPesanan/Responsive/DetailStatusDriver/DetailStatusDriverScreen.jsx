@@ -1,5 +1,6 @@
 import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
+import { isDev } from "@/lib/constants/is-dev";
 import {
   useResponsiveNavigation,
   useResponsiveRouteParams,
@@ -13,10 +14,7 @@ const DetailStatusDriverScreen = ({ dataStatusPesanan }) => {
   const params = useResponsiveRouteParams();
   const { orderId, driverId } = params;
 
-  const { data: driverStatusTimeline } = useGetDriverStatusTimeline(
-    orderId,
-    driverId
-  );
+  const { data: dataTimeline } = useGetDriverStatusTimeline(orderId, driverId);
 
   const defaultIndex = dataStatusPesanan?.driverStatus.findIndex(
     (d) => d.driverId === driverId
@@ -40,13 +38,15 @@ const DetailStatusDriverScreen = ({ dataStatusPesanan }) => {
         )}
         <div className="bg-white px-4 py-5">
           <DriverTimeline
-            dataDriverStatus={driverStatusTimeline}
+            dataTimeline={dataTimeline}
             onClickProof={(driverStatusItem) =>
               navigation.push("/proof-photo", { driverStatusItem })
             }
             withMenu={false}
           />
         </div>
+
+        {isDev && <pre>{JSON.stringify(dataTimeline, null, 2)}</pre>}
       </div>
     </FormResponsiveLayout>
   );

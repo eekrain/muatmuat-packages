@@ -31,12 +31,12 @@ const apiResult = {
         //   label: "Harap tunjukkan QR Code ke pihak driver",
         //   info: "QR Code diperlukan agar driver dapat melanjutkan proses muat atau bongkar barang.",
         // },
-        // {
-        //   type: "REFUND_IN_PROCESS",
-        //   date: "2025-06-04T10:00:00+07:00",
-        //   label: "Pengembalian dana sedang dalam proses.",
-        //   info: "Pengembalian dana sedang dalam proses, jumlah dana akan disesuakan setelah dikurangi <b>Admin Pembatalan</b> dan <b>Tambahan Biaya</b>. Info lebih lanjut hubungi Customer Service.",
-        // },
+        {
+          type: "REFUND_IN_PROCESS",
+          date: "2025-06-04T10:00:00+07:00",
+          label: "Pengembalian dana sedang dalam proses.",
+          info: "Pengembalian dana sedang dalam proses, jumlah dana akan disesuakan setelah dikurangi <b>Admin Pembatalan</b> dan <b>Tambahan Biaya</b>. Info lebih lanjut hubungi Customer Service.",
+        },
         // {
         //   type: "REFUND_COMPLETED",
         //   date: "2025-06-05T10:00:00+07:00",
