@@ -103,13 +103,15 @@ const TransportRequestCard = ({
               <span
                 className={cn(
                   "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
-                  request.timeLabel?.color === "green"
-                    ? "bg-success-50 text-success-700"
-                    : request.timeLabel?.color === "blue"
-                      ? "bg-primary-50 text-primary-700"
-                      : request.orderType === "INSTANT"
-                        ? "bg-success-50 text-success-700"
-                        : "bg-primary-50 text-primary-700"
+                  request.isTaken
+                    ? "text-neutral-700"
+                    : request.timeLabel?.color === "green"
+                      ? "bg-success-50 text-success-700"
+                      : request.timeLabel?.color === "blue"
+                        ? "bg-primary-50 text-primary-700"
+                        : request.orderType === "INSTANT"
+                          ? "bg-success-50 text-success-700"
+                          : "bg-primary-50 text-primary-700"
                 )}
               >
                 {request.orderType === "INSTANT" ? "Instan" : "Terjadwal"}
@@ -119,14 +121,16 @@ const TransportRequestCard = ({
               <span
                 className={cn(
                   "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
-                  request.timeLabel?.color === "green"
-                    ? "bg-success-50 text-success-700"
-                    : request.timeLabel?.color === "blue"
-                      ? "bg-primary-50 text-primary-700"
-                      : request.loadTimeText?.includes("Hari Ini") ||
-                          request.loadTimeText?.includes("Besok")
-                        ? "bg-warning-50 text-warning-700"
-                        : "bg-primary-50 text-primary-700"
+                  request.isTaken
+                    ? "text-neutral-700"
+                    : request.timeLabel?.color === "green"
+                      ? "bg-success-50 text-success-700"
+                      : request.timeLabel?.color === "blue"
+                        ? "bg-primary-50 text-primary-700"
+                        : request.loadTimeText?.includes("Hari Ini") ||
+                            request.loadTimeText?.includes("Besok")
+                          ? "bg-warning-50 text-warning-700"
+                          : "bg-primary-50 text-primary-700"
                 )}
               >
                 {request.loadTimeText || "Muat 7 Hari Lagi"}
@@ -134,15 +138,33 @@ const TransportRequestCard = ({
 
               {/* Overload Badge */}
               {request.hasOverload && (
-                <span className="flex h-6 items-center rounded-[6px] bg-error-50 px-2 text-xs font-semibold text-error-700">
+                <span
+                  className={cn(
+                    "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
+                    request.isTaken
+                      ? "text-neutral-700"
+                      : "bg-error-50 text-error-700"
+                  )}
+                >
                   Potensi Overload
                 </span>
               )}
 
               {/* Halal Certification Required Badge */}
               {request.isHalalLogistics && (
-                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#F7EAFD] px-1 py-2">
-                  <IconComponent src="/icons/halal.svg" className="h-4 w-3" />
+                <div
+                  className={cn(
+                    "flex h-6 w-6 items-center justify-center rounded-md px-1 py-2",
+                    request.isTaken ? "" : "bg-[#F7EAFD]"
+                  )}
+                >
+                  <IconComponent
+                    src="/icons/halal.svg"
+                    className={cn(
+                      "h-4 w-3",
+                      request.isTaken ? "text-neutral-700" : ""
+                    )}
+                  />
                 </div>
               )}
             </div>
@@ -200,8 +222,10 @@ const TransportRequestCard = ({
                     }
                     className="pb-2"
                     appearance={{
-                      titleClassname:
-                        "text-xs font-bold text-neutral-900 line-clamp-1 break-all",
+                      titleClassname: cn(
+                        "line-clamp-1 break-all text-xs font-bold",
+                        request.isTaken ? "text-[#7B7B7B]" : "text-neutral-900"
+                      ),
                     }}
                   />
                 ))}
@@ -211,7 +235,14 @@ const TransportRequestCard = ({
               <div className="text-[12px] font-medium text-neutral-600">
                 Estimasi Jarak
               </div>
-              <div className="text-[12px] font-semibold text-neutral-900">
+              <div
+                className={cn(
+                  "text-[12px]",
+                  request.isTaken
+                    ? "font-medium text-neutral-600"
+                    : "font-semibold text-neutral-900"
+                )}
+              >
                 {request.estimatedDistance} km
               </div>
             </div>
@@ -236,11 +267,20 @@ const TransportRequestCard = ({
                   )}
                   )
                 </div>
-                <div className="text-xs font-semibold text-neutral-900">
+                <div
+                  className={cn(
+                    "text-xs font-semibold",
+                    request.isTaken ? "text-[#7B7B7B]" : "text-neutral-900"
+                  )}
+                >
                   {request.cargos.length > 1 ? (
                     <>
                       {request.cargos[0].name},{" "}
-                      <span style={{ color: "#176CF7" }}>
+                      <span
+                        style={{
+                          color: request.isTaken ? "#7B7B7B" : "#176CF7",
+                        }}
+                      >
                         +{request.cargos.length - 1} lainnya
                       </span>
                     </>
@@ -267,7 +307,12 @@ const TransportRequestCard = ({
               <div className="text-xs font-medium text-neutral-600">
                 Kebutuhan Armada
               </div>
-              <div className="text-xs font-semibold text-neutral-900">
+              <div
+                className={cn(
+                  "text-xs font-semibold",
+                  request.isTaken ? "text-[#7B7B7B]" : "text-neutral-900"
+                )}
+              >
                 {request.truckCount} Unit ({request.truckTypeName} -{" "}
                 {request.carrierName})
               </div>
@@ -284,7 +329,12 @@ const TransportRequestCard = ({
               <div className="text-xs font-medium text-neutral-600">
                 Waktu Muat
               </div>
-              <div className="text-xs font-semibold text-neutral-900">
+              <div
+                className={cn(
+                  "text-xs font-semibold",
+                  request.isTaken ? "text-[#7B7B7B]" : "text-neutral-900"
+                )}
+              >
                 {request.loadDateTime || "03 Jan 2025 09:00 WIB s/d 11:00 WIB"}
               </div>
             </div>
@@ -394,9 +444,8 @@ const TransportRequestCard = ({
 
           {/* Button positioned with 12px from message */}
           <div
-            className="absolute bottom-6 left-3 z-10 flex h-8 w-[270px] cursor-pointer items-center justify-center rounded-[24px] px-4 text-[14px] font-semibold"
+            className="absolute bottom-6 left-3 z-10 flex h-8 w-[270px] cursor-pointer items-center justify-center rounded-[24px] bg-[#FFC217] px-4 text-[14px] font-semibold hover:bg-[#F9A307]"
             style={{
-              backgroundColor: "#FFC117",
               color: "#461B02",
               boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
             }}
