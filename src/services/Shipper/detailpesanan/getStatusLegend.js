@@ -3,7 +3,7 @@ import useSWR from "swr";
 import { fetcherMuatrans } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
-const useMockData = true; // mock detailpesanan
+const useMockData = false; // mock detailpesanan
 
 // GET /base_url/v1/orders/{orderId}/status-legend
 const apiResultStatusLegend = {

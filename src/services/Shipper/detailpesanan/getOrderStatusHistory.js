@@ -4,7 +4,7 @@ import { fetcherMuatrans } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { DriverStatusEnum } from "@/lib/constants/detailpesanan/driver-status.enum";
 
-const useMockData = true; // mock detailpesanan
+const useMockData = false; // mock detailpesanan
 
 const stepStatus = [
   // {
