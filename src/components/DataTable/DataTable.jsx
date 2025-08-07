@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import FilterDropdown from "@/components/FilterDropdown";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import Table from "@/components/Table/Table";
 import { cn } from "@/lib/utils";
 
 import ActiveFiltersBar from "../ActiveFiltersBar/ActiveFiltersBar";
@@ -210,97 +211,15 @@ const DataTable = ({
     );
   };
 
-  const renderTable = () => {
+  const renderEmptyState = () => {
     return (
-      <div className="h-full overflow-y-auto border-t border-neutral-400">
-        <table className="w-full table-auto">
-          <thead className="sticky top-0 z-10 bg-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[1px] after:bg-neutral-300">
-            <tr>
-              {columns.map((column, index) => {
-                const isSortable =
-                  column.sortable !== false && column.key && onSort;
-                const isSorted = sortConfig.sort === column.key;
-
-                return (
-                  <th
-                    key={index}
-                    className={cn(
-                      "bg-white px-6 py-4 text-left text-xs font-bold text-neutral-600",
-                      isSortable &&
-                        "cursor-pointer select-none hover:bg-neutral-50",
-                      column.headerClassName
-                    )}
-                    style={column.width ? { width: column.width } : {}}
-                    onClick={() => isSortable && handleSort(column.key)}
-                  >
-                    <div className="flex items-center gap-3">
-                      <span>{column.header}</span>
-                      {isSortable && (
-                        <IconComponent
-                          src={
-                            !isSorted
-                              ? "/icons/default-sort.svg"
-                              : sortConfig.order === "asc"
-                                ? "/icons/asc-sort.svg"
-                                : "/icons/desc-sort.svg"
-                          }
-                          height={13}
-                          className={
-                            !isSorted ? "text-neutral-400" : "text-primary-700"
-                          }
-                        />
-                      )}
-                    </div>
-                  </th>
-                );
-              })}
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={columns.length} className="px-6 py-8 text-center">
-                  <div className="flex items-center justify-center">
-                    <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-700 border-t-transparent"></div>
-                  </div>
-                </td>
-              </tr>
-            ) : data.length === 0 ? (
-              <tr>
-                <td colSpan={columns.length} className="px-6 py-8 text-center">
-                  {emptyState || (
-                    <DataNotFound
-                      className="gap-y-5"
-                      title="Keyword Tidak Ditemukan"
-                    />
-                  )}
-                </td>
-              </tr>
-            ) : (
-              data.map((row, rowIndex) => (
-                <tr
-                  key={rowIndex}
-                  className={cn(
-                    "border-b border-neutral-200 hover:bg-neutral-50",
-                    onRowClick && "cursor-pointer",
-                    rowClassName?.(row, rowIndex)
-                  )}
-                  onClick={() => onRowClick?.(row, rowIndex)}
-                >
-                  {columns.map((column, colIndex) => (
-                    <td
-                      key={colIndex}
-                      className={cn("px-6 py-4 text-xxs", column.className)}
-                    >
-                      {column.render ? column.render(row) : row[column.key]}
-                    </td>
-                  ))}
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      <tr>
+        <td colSpan={columns.length} className="px-6 py-8 text-center">
+          {emptyState || (
+            <DataNotFound className="gap-y-5" title="Keyword Tidak Ditemukan" />
+          )}
+        </td>
+      </tr>
     );
   };
 
@@ -339,7 +258,18 @@ const DataTable = ({
             type="data"
           />
         ) : (
-          <div className="flex-1 overflow-hidden">{renderTable()}</div>
+          <div className="flex-1 overflow-hidden">
+            <Table
+              columns={columns}
+              data={data}
+              loading={loading}
+              onRowClick={onRowClick}
+              rowClassName={rowClassName}
+              onSort={handleSort}
+              sortConfig={sortConfig}
+              emptyComponent={renderEmptyState()}
+            />
+          </div>
         )}
       </div>
       {showPagination && !loading && data.length > 0 && (
