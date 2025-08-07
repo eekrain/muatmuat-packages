@@ -41,7 +41,7 @@ const RequestList = ({
 
   if (!filtered || filtered.length === 0) {
     return (
-      <div className="py-8">
+      <div className="h-full py-8">
         <DataNotFound className="h-full gap-y-5 pb-10" type="data">
           <p className="text-center text-base font-semibold text-neutral-600">
             Belum ada laporan urgent issue{" "}

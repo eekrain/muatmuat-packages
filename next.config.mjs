@@ -12,6 +12,9 @@ const nextConfig = {
       {
         hostname: "fastly.picsum.photos",
       },
+      {
+        hostname: "picsum.photos",
+      },
     ],
   },
   reactStrictMode: false,

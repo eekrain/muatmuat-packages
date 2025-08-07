@@ -107,9 +107,8 @@ const LineItem = ({
       <div className="flex items-start justify-between gap-3 md:gap-6">
         <span
           className={cn("text-xs font-medium text-neutral-600", labelClassName)}
-        >
-          {label}
-        </span>
+          dangerouslySetInnerHTML={{ __html: label }}
+        />
         <span
           className={cn(
             "whitespace-nowrap text-right text-xs font-medium",

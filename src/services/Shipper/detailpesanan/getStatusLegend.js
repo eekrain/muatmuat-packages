@@ -3,7 +3,7 @@ import useSWR from "swr";
 import { fetcherMuatrans } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
-const useMockData = false; // toggle mock data
+const useMockData = false; // mock detailpesanan
 
 // GET /base_url/v1/orders/{orderId}/status-legend
 const apiResultStatusLegend = {
@@ -22,10 +22,10 @@ const apiResultStatusLegend = {
           statusCode: OrderStatusEnum.LOADING,
           statusName: "Proses Muat",
         },
-        {
-          statusCode: OrderStatusEnum.UNLOADING,
-          statusName: "Proses Bongkar",
-        },
+        // {
+        //   statusCode: OrderStatusEnum.UNLOADING,
+        //   statusName: "Proses Bongkar",
+        // },
         // {
         //   statusCode: OrderStatusEnum.FLEET_CHANGE,
         //   statusName: "Proses Pergantian Armada",
@@ -42,14 +42,14 @@ const apiResultStatusLegend = {
         //   statusCode: OrderStatusEnum.DOCUMENT_DELIVERY,
         //   statusName: "Proses Pengiriman Dokumen",
         // },
-        {
-          statusCode: OrderStatusEnum.COMPLETED,
-          statusName: "Selesai",
-        },
         // {
-        //   statusCode: OrderStatusEnum.CANCELED_BY_SHIPPER,
-        //   statusName: "Dibatalkan",
+        //   statusCode: OrderStatusEnum.COMPLETED,
+        //   statusName: "Selesai",
         // },
+        {
+          statusCode: OrderStatusEnum.CANCELED_BY_SHIPPER,
+          statusName: "Dibatalkan",
+        },
       ],
     },
     Type: "STATUS_LEGEND",

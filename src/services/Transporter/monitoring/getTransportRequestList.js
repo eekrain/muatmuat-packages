@@ -36,8 +36,9 @@ const apiResultTransportRequestList = {
           isNew: true,
           isHalalLogistics: true,
           isSaved: false,
-          loadTimeStart: "2025-08-06T09:00:00+07:00",
-          loadTimeEnd: "2025-08-06T11:00:00+07:00",
+          isTaken: false,
+          loadTimeStart: "2025-08-07T09:00:00+07:00",
+          loadTimeEnd: "2025-08-07T11:00:00+07:00",
           estimatedDistance: 121,
           totalPrice: 1500000.0,
           truckCount: 1,
@@ -71,6 +72,13 @@ const apiResultTransportRequestList = {
               weightUnit: "kg",
               sequence: 1,
             },
+            {
+              id: "550e8400-e29b-41d4-a716-44665544123",
+              name: "Peralatan kocag",
+              weight: 2500,
+              weightUnit: "kg",
+              sequence: 1,
+            },
           ],
           additionalServices: [
             {
@@ -86,13 +94,13 @@ const apiResultTransportRequestList = {
             },
           ],
           timeLabel: {
-            text: "Instan",
+            text: "Muat Hari Ini",
             color: "green",
             daysFromNow: 0,
           },
           loadTimeText: "Muat Hari Ini",
-          loadDateTime: "03 Jan 2025 09:00 WIB s/d 11:00 WIB",
-          potentialEarnings: "Rp1.500.000",
+          loadDateTime: "07 Agu 2025 09:00 WIB s/d 11:00 WIB",
+          potentialEarnings: "Rp999.999.999",
           overloadPotential: "Potensi Overload",
           createdAt: "2025-08-06T08:00:00+07:00",
           newRequestDuration: "2 menit yang lalu",
@@ -105,8 +113,9 @@ const apiResultTransportRequestList = {
           isNew: true,
           isHalalLogistics: false,
           isSaved: false,
-          loadTimeStart: "2025-08-07T10:00:00+07:00",
-          loadTimeEnd: "2025-08-07T12:00:00+07:00",
+          isTaken: true,
+          loadTimeStart: "2025-08-22T10:00:00+07:00",
+          loadTimeEnd: "2025-08-22T12:00:00+07:00",
           estimatedDistance: 85,
           totalPrice: 650000.0,
           truckCount: 2,
@@ -149,299 +158,57 @@ const apiResultTransportRequestList = {
           ],
           photos: [],
           timeLabel: {
-            text: "Terjadwal",
+            text: "Muat 15 Hari Lagi",
             color: "blue",
-            daysFromNow: 1,
+            daysFromNow: 15,
           },
-          loadTimeText: "Muat Besok",
-          loadDateTime: "07 Agu 2025 10:00 WIB s/d 12:00 WIB",
+          loadTimeText: "Muat 15 Hari Lagi",
+          loadDateTime: "22 Agu 2025 10:00 WIB s/d 12:00 WIB",
           potentialEarnings: "Rp650.000",
           createdAt: "2025-08-06T05:30:00+07:00",
           newRequestDuration: "3 jam yang lalu",
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440003",
-          orderCode: "MT25A003C",
-          orderType: "SCHEDULED",
-          orderStatus: "PREPARE_FLEET",
-          isNew: true,
-          isHalalLogistics: true,
-          isSaved: false,
-          loadTimeStart: "2025-08-08T14:00:00+07:00",
-          loadTimeEnd: "2025-08-08T16:00:00+07:00",
-          estimatedDistance: 75,
-          totalPrice: 550000.0,
-          truckCount: 1,
-          truckTypeName: "Pick Up",
-          carrierName: "Terbuka",
-          hasOverload: false,
-          hasAdditionalService: true,
-          pickupLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440031",
-              sequence: 1,
-              fullAddress: "Kota Surabaya, Kec. Gubeng",
-              city: "Surabaya",
-              province: "Jawa Timur",
-            },
-          ],
-          dropoffLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440032",
-              sequence: 1,
-              fullAddress: "Kota Malang, Kec. Klojen",
-              city: "Malang",
-              province: "Jawa Timur",
-            },
-          ],
-          cargos: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440033",
-              name: "Produk Halal",
-              weight: 800,
-              weightUnit: "kg",
-              sequence: 1,
-            },
-          ],
-          additionalServices: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440034",
-              serviceName: "Asuransi Barang",
-            },
-          ],
-          photos: [],
-          timeLabel: {
-            text: "Terjadwal",
-            color: "blue",
-            daysFromNow: 3,
-          },
-          loadTimeText: "Muat 3 Hari Lagi",
-          loadDateTime: "08 Agu 2025 14:00 WIB s/d 16:00 WIB",
-          potentialEarnings: "Rp550.000",
-          createdAt: "2025-08-05T06:15:00+07:00",
-          newRequestDuration: "1 jam yang lalu",
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440004",
-          orderCode: "MT25A004D",
-          orderType: "INSTANT",
-          orderStatus: "PREPARE_FLEET",
-          isNew: true,
-          isHalalLogistics: false,
-          isSaved: true,
-          loadTimeStart: "2025-08-06T14:00:00+07:00",
-          loadTimeEnd: "2025-08-06T16:00:00+07:00",
-          estimatedDistance: 45,
-          totalPrice: 400000.0,
-          truckCount: 1,
-          truckTypeName: "Pick Up",
-          carrierName: "Terbuka",
-          hasOverload: false,
-          hasAdditionalService: false,
-          pickupLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440041",
-              sequence: 1,
-              fullAddress: "Kota Jakarta, Kec. Menteng",
-              city: "Jakarta",
-              province: "DKI Jakarta",
-            },
-          ],
-          dropoffLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440042",
-              sequence: 1,
-              fullAddress: "Kota Depok, Kec. Pancoran Mas",
-              city: "Depok",
-              province: "Jawa Barat",
-            },
-          ],
-          cargos: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440043",
-              name: "Furniture",
-              weight: 500,
-              weightUnit: "kg",
-              sequence: 1,
-            },
-          ],
-          additionalServices: [],
-          photos: [],
-          timeLabel: {
-            text: "Instan",
-            color: "green",
-            daysFromNow: 0,
-          },
-          loadTimeText: "Muat Hari Ini",
-          loadDateTime: "06 Agu 2025 14:00 WIB s/d 16:00 WIB",
-          potentialEarnings: "Rp400.000",
-          createdAt: "2025-08-06T07:45:00+07:00",
-          newRequestDuration: "15 menit yang lalu",
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440005",
-          orderCode: "MT25A005E",
-          orderType: "SCHEDULED",
-          orderStatus: "PREPARE_FLEET",
-          isNew: true,
-          isHalalLogistics: true,
-          isSaved: false,
-          loadTimeStart: "2025-08-09T08:00:00+07:00",
-          loadTimeEnd: "2025-08-09T10:00:00+07:00",
-          estimatedDistance: 95,
-          totalPrice: 750000.0,
-          truckCount: 1,
-          truckTypeName: "Fuso 6 Roda",
-          carrierName: "Box",
-          hasOverload: true,
-          hasAdditionalService: true,
-          pickupLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440051",
-              sequence: 1,
-              fullAddress: "Kota Bandung, Kec. Cicendo",
-              city: "Bandung",
-              province: "Jawa Barat",
-            },
-          ],
-          dropoffLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440052",
-              sequence: 1,
-              fullAddress: "Kota Yogyakarta, Kec. Gondokusuman",
-              city: "Yogyakarta",
-              province: "DI Yogyakarta",
-            },
-          ],
-          cargos: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440053",
-              name: "Produk Makanan Halal",
-              weight: 1800,
-              weightUnit: "kg",
-              sequence: 1,
-            },
-          ],
-          additionalServices: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440054",
-              serviceName: "Refrigerated Transport",
-            },
-          ],
-          photos: [],
-          timeLabel: {
-            text: "Terjadwal",
-            color: "blue",
-            daysFromNow: 3,
-          },
-          loadTimeText: "Muat 3 Hari Lagi",
-          loadDateTime: "09 Agu 2025 08:00 WIB s/d 10:00 WIB",
-          potentialEarnings: "Rp750.000",
-          createdAt: "2025-08-06T03:00:00+07:00",
-          newRequestDuration: "5 jam yang lalu",
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440006",
-          orderCode: "MT25A006F",
-          orderType: "SCHEDULED",
-          orderStatus: "PREPARE_FLEET",
-          isNew: true,
-          isHalalLogistics: false,
-          isSaved: false,
-          loadTimeStart: "2025-08-10T06:00:00+07:00",
-          loadTimeEnd: "2025-08-10T18:00:00+07:00",
-          estimatedDistance: 850,
-          totalPrice: 125000000.0,
-          truckCount: 15,
-          truckTypeName: "Trailer 40 Feet",
-          carrierName: "Container",
-          hasOverload: false,
-          hasAdditionalService: true,
-          pickupLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440061",
-              sequence: 1,
-              fullAddress: "Pelabuhan Tanjung Priok, Jakarta Utara",
-              city: "Jakarta",
-              province: "DKI Jakarta",
-            },
-          ],
-          dropoffLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440062",
-              sequence: 1,
-              fullAddress: "Kawasan Industri Surabaya, Jawa Timur",
-              city: "Surabaya",
-              province: "Jawa Timur",
-            },
-          ],
-          cargos: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440063",
-              name: "Kontainer Elektronik Import",
-              weight: 25000,
-              weightUnit: "kg",
-              sequence: 1,
-            },
-          ],
-          additionalServices: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440064",
-              serviceName: "Escort & Security, Asuransi Khusus",
-            },
-          ],
-          photos: [],
-          timeLabel: {
-            text: "Terjadwal",
-            color: "blue",
-            daysFromNow: 4,
-          },
-          loadTimeText: "Muat 4 Hari Lagi",
-          loadDateTime: "10 Agu 2025 06:00 WIB s/d 18:00 WIB",
-          potentialEarnings: "Rp125.000.000",
-          createdAt: "2025-08-06T01:30:00+07:00",
-          newRequestDuration: "6 jam yang lalu",
         },
         {
           id: "550e8400-e29b-41d4-a716-446655440007",
           orderCode: "MT25A007G",
           orderType: "INSTANT",
           orderStatus: "PREPARE_FLEET",
-          isNew: true,
+          isNew: false,
           isHalalLogistics: false,
-          isSaved: false,
-          loadTimeStart: "2025-08-06T16:00:00+07:00",
-          loadTimeEnd: "2025-08-06T20:00:00+07:00",
-          estimatedDistance: 1200,
-          totalPrice: 250000000.0,
-          truckCount: 8,
-          truckTypeName: "Heavy Duty Trailer",
-          carrierName: "Lowbed",
-          hasOverload: true,
+          isSaved: true,
+          isTaken: false,
+          loadTimeStart: "2025-08-07T16:30:00+07:00",
+          loadTimeEnd: "2025-08-07T18:30:00+07:00",
+          estimatedDistance: 32,
+          totalPrice: 350000.0,
+          truckCount: 1,
+          truckTypeName: "Pick Up",
+          carrierName: "Terbuka",
+          hasOverload: false,
           hasAdditionalService: true,
           pickupLocations: [
             {
               id: "550e8400-e29b-41d4-a716-446655440071",
               sequence: 1,
-              fullAddress: "Pabrik Heavy Equipment, Bekasi",
-              city: "Bekasi",
-              province: "Jawa Barat",
+              fullAddress: "Kota Tangerang, Kec. Karawaci",
+              city: "Tangerang",
+              province: "Banten",
             },
           ],
           dropoffLocations: [
             {
               id: "550e8400-e29b-41d4-a716-446655440072",
               sequence: 1,
-              fullAddress: "Site Pertambangan, Kalimantan Timur",
-              city: "Balikpapan",
-              province: "Kalimantan Timur",
+              fullAddress: "Kota Jakarta Barat, Kec. Kebon Jeruk",
+              city: "Jakarta Barat",
+              province: "DKI Jakarta",
             },
           ],
           cargos: [
             {
               id: "550e8400-e29b-41d4-a716-446655440073",
-              name: "Excavator & Heavy Machinery",
-              weight: 45000,
+              name: "Dokumen Penting",
+              weight: 15,
               weightUnit: "kg",
               sequence: 1,
             },
@@ -449,7 +216,7 @@ const apiResultTransportRequestList = {
           additionalServices: [
             {
               id: "550e8400-e29b-41d4-a716-446655440074",
-              serviceName: "Special Permit, Police Escort, Crane Service",
+              serviceName: "Pengiriman Ekspres",
             },
           ],
           photos: [],
@@ -459,554 +226,21 @@ const apiResultTransportRequestList = {
             daysFromNow: 0,
           },
           loadTimeText: "Muat Hari Ini",
-          loadDateTime: "06 Agu 2025 16:00 WIB s/d 20:00 WIB",
-          potentialEarnings: "Rp250.000.000",
-          createdAt: "2025-08-06T07:15:00+07:00",
-          newRequestDuration: "45 menit yang lalu",
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440008",
-          orderCode: "MT25A008H",
-          orderType: "SCHEDULED",
-          orderStatus: "PREPARE_FLEET",
-          isNew: true,
-          isHalalLogistics: true,
-          isSaved: true,
-          loadTimeStart: "2025-08-15T05:00:00+07:00",
-          loadTimeEnd: "2025-08-17T17:00:00+07:00",
-          estimatedDistance: 2100,
-          totalPrice: 485000000.0,
-          truckCount: 25,
-          truckTypeName: "Multi Axle Trailer",
-          carrierName: "Specialized",
-          hasOverload: false,
-          hasAdditionalService: true,
-          pickupLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440081",
-              sequence: 1,
-              fullAddress: "Pabrik Kimia Halal, Cilegon, Banten",
-              city: "Cilegon",
-              province: "Banten",
-            },
-          ],
-          dropoffLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440082",
-              sequence: 1,
-              fullAddress: "Kawasan Industri Makassar, Sulawesi Selatan",
-              city: "Makassar",
-              province: "Sulawesi Selatan",
-            },
-          ],
-          cargos: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440083",
-              name: "Chemical Products Halal Certified",
-              weight: 180000,
-              weightUnit: "kg",
-              sequence: 1,
-            },
-          ],
-          additionalServices: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440084",
-              serviceName:
-                "Hazmat Transport, Temperature Control, Multi-Point Delivery",
-            },
-          ],
-          photos: [],
-          timeLabel: {
-            text: "Terjadwal",
-            color: "blue",
-            daysFromNow: 9,
-          },
-          loadTimeText: "Muat 9 Hari Lagi",
-          loadDateTime: "15 Agu 2025 05:00 WIB s/d 17 Agu 2025 17:00 WIB",
-          potentialEarnings: "Rp485.000.000",
-          createdAt: "2025-08-05T22:00:00+07:00",
-          newRequestDuration: "10 jam yang lalu",
-        },
-        // Non-new requests (existing/older requests)
-        {
-          id: "550e8400-e29b-41d4-a716-446655440009",
-          orderCode: "MT25A009I",
-          orderType: "SCHEDULED",
-          orderStatus: "PREPARE_FLEET",
-          isNew: false,
-          isHalalLogistics: false,
-          isSaved: false,
-          loadTimeStart: "2025-08-12T09:00:00+07:00",
-          loadTimeEnd: "2025-08-12T11:00:00+07:00",
-          estimatedDistance: 65,
-          totalPrice: 580000.0,
-          truckCount: 1,
-          truckTypeName: "Colt Diesel Engkel",
-          carrierName: "Box",
-          hasOverload: false,
-          hasAdditionalService: false,
-          pickupLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440091",
-              sequence: 1,
-              fullAddress: "Kota Semarang, Kec. Tembalang",
-              city: "Semarang",
-              province: "Jawa Tengah",
-            },
-          ],
-          dropoffLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440092",
-              sequence: 1,
-              fullAddress: "Kota Solo, Kec. Laweyan",
-              city: "Solo",
-              province: "Jawa Tengah",
-            },
-          ],
-          cargos: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440093",
-              name: "Produk Tekstil",
-              weight: 1200,
-              weightUnit: "kg",
-              sequence: 1,
-            },
-          ],
-          additionalServices: [],
-          photos: [],
-          timeLabel: {
-            text: "Terjadwal",
-            color: "blue",
-            daysFromNow: 6,
-          },
-          loadTimeText: "Muat 6 Hari Lagi",
-          loadDateTime: "12 Agu 2025 09:00 WIB s/d 11:00 WIB",
-          potentialEarnings: "Rp580.000",
-          createdAt: "2025-08-03T10:30:00+07:00",
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440010",
-          orderCode: "MT25A010J",
-          orderType: "INSTANT",
-          orderStatus: "PREPARE_FLEET",
-          isNew: false,
-          isHalalLogistics: true,
-          isSaved: true,
-          loadTimeStart: "2025-08-06T20:00:00+07:00",
-          loadTimeEnd: "2025-08-06T22:00:00+07:00",
-          estimatedDistance: 35,
-          totalPrice: 320000.0,
-          truckCount: 1,
-          truckTypeName: "Pick Up",
-          carrierName: "Terbuka",
-          hasOverload: false,
-          hasAdditionalService: true,
-          pickupLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440101",
-              sequence: 1,
-              fullAddress: "Kota Jakarta, Kec. Kemayoran",
-              city: "Jakarta",
-              province: "DKI Jakarta",
-            },
-          ],
-          dropoffLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440102",
-              sequence: 1,
-              fullAddress: "Kota Tangerang, Kec. Karawaci",
-              city: "Tangerang",
-              province: "Banten",
-            },
-          ],
-          cargos: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440103",
-              name: "Makanan Halal Siap Saji",
-              weight: 150,
-              weightUnit: "kg",
-              sequence: 1,
-            },
-          ],
-          additionalServices: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440104",
-              serviceName: "Refrigerated Transport",
-            },
-          ],
-          photos: [],
-          timeLabel: {
-            text: "Instan",
-            color: "green",
-            daysFromNow: 0,
-          },
-          loadTimeText: "Muat Malam Ini",
-          loadDateTime: "06 Agu 2025 20:00 WIB s/d 22:00 WIB",
-          potentialEarnings: "Rp320.000",
-          createdAt: "2025-08-04T15:20:00+07:00",
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440011",
-          orderCode: "MT25A011K",
-          orderType: "SCHEDULED",
-          orderStatus: "PREPARE_FLEET",
-          isNew: false,
-          isHalalLogistics: false,
-          isSaved: false,
-          loadTimeStart: "2025-08-11T07:00:00+07:00",
-          loadTimeEnd: "2025-08-11T09:00:00+07:00",
-          estimatedDistance: 140,
-          totalPrice: 950000.0,
-          truckCount: 2,
-          truckTypeName: "Fuso 6 Roda",
-          carrierName: "Box",
-          hasOverload: false,
-          hasAdditionalService: true,
-          pickupLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440111",
-              sequence: 1,
-              fullAddress: "Kota Medan, Kec. Medan Barat",
-              city: "Medan",
-              province: "Sumatera Utara",
-            },
-          ],
-          dropoffLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440112",
-              sequence: 1,
-              fullAddress: "Kota Pekanbaru, Kec. Sukajadi",
-              city: "Pekanbaru",
-              province: "Riau",
-            },
-          ],
-          cargos: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440113",
-              name: "Spare Part Otomotif",
-              weight: 2800,
-              weightUnit: "kg",
-              sequence: 1,
-            },
-          ],
-          additionalServices: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440114",
-              serviceName: "Asuransi Barang, Bantuan Muat",
-            },
-          ],
-          photos: [],
-          timeLabel: {
-            text: "Terjadwal",
-            color: "blue",
-            daysFromNow: 5,
-          },
-          loadTimeText: "Muat 5 Hari Lagi",
-          loadDateTime: "11 Agu 2025 07:00 WIB s/d 09:00 WIB",
-          potentialEarnings: "Rp950.000",
-          createdAt: "2025-08-02T14:45:00+07:00",
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440012",
-          orderCode: "MT25A012L",
-          orderType: "INSTANT",
-          orderStatus: "PREPARE_FLEET",
-          isNew: false,
-          isHalalLogistics: true,
-          isSaved: false,
-          loadTimeStart: "2025-08-07T13:00:00+07:00",
-          loadTimeEnd: "2025-08-07T15:00:00+07:00",
-          estimatedDistance: 28,
-          totalPrice: 280000.0,
-          truckCount: 1,
-          truckTypeName: "Pick Up",
-          carrierName: "Terbuka",
-          hasOverload: false,
-          hasAdditionalService: false,
-          pickupLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440121",
-              sequence: 1,
-              fullAddress: "Kota Surabaya, Kec. Wonokromo",
-              city: "Surabaya",
-              province: "Jawa Timur",
-            },
-          ],
-          dropoffLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440122",
-              sequence: 1,
-              fullAddress: "Kota Surabaya, Kec. Rungkut",
-              city: "Surabaya",
-              province: "Jawa Timur",
-            },
-          ],
-          cargos: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440123",
-              name: "Produk Kosmetik Halal",
-              weight: 85,
-              weightUnit: "kg",
-              sequence: 1,
-            },
-          ],
-          additionalServices: [],
-          photos: [],
-          timeLabel: {
-            text: "Terjadwal",
-            color: "blue",
-            daysFromNow: 1,
-          },
-          loadTimeText: "Muat Besok",
-          loadDateTime: "07 Agu 2025 13:00 WIB s/d 15:00 WIB",
-          potentialEarnings: "Rp280.000",
-          createdAt: "2025-08-01T09:15:00+07:00",
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440013",
-          orderCode: "MT25A013M",
-          orderType: "SCHEDULED",
-          orderStatus: "PREPARE_FLEET",
-          isNew: false,
-          isHalalLogistics: false,
-          isSaved: true,
-          loadTimeStart: "2025-08-14T10:00:00+07:00",
-          loadTimeEnd: "2025-08-14T16:00:00+07:00",
-          estimatedDistance: 425,
-          totalPrice: 2850000.0,
-          truckCount: 3,
-          truckTypeName: "Trailer 20 Feet",
-          carrierName: "Container",
-          hasOverload: false,
-          hasAdditionalService: true,
-          pickupLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440131",
-              sequence: 1,
-              fullAddress: "Pelabuhan Tanjung Perak, Surabaya",
-              city: "Surabaya",
-              province: "Jawa Timur",
-            },
-          ],
-          dropoffLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440132",
-              sequence: 1,
-              fullAddress: "Kawasan Industri Cikarang, Bekasi",
-              city: "Bekasi",
-              province: "Jawa Barat",
-            },
-          ],
-          cargos: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440133",
-              name: "Raw Material Import",
-              weight: 18500,
-              weightUnit: "kg",
-              sequence: 1,
-            },
-          ],
-          additionalServices: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440134",
-              serviceName: "Customs Clearance, Escort Service",
-            },
-          ],
-          photos: [],
-          timeLabel: {
-            text: "Terjadwal",
-            color: "blue",
-            daysFromNow: 8,
-          },
-          loadTimeText: "Muat 8 Hari Lagi",
-          loadDateTime: "14 Agu 2025 10:00 WIB s/d 16:00 WIB",
-          potentialEarnings: "Rp2.850.000",
-          createdAt: "2025-07-30T11:30:00+07:00",
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440014",
-          orderCode: "MT25A014N",
-          orderType: "INSTANT",
-          orderStatus: "PREPARE_FLEET",
-          isNew: false,
-          isHalalLogistics: false,
-          isSaved: false,
-          loadTimeStart: "2025-08-07T16:00:00+07:00",
-          loadTimeEnd: "2025-08-07T18:00:00+07:00",
-          estimatedDistance: 92,
-          totalPrice: 680000.0,
-          truckCount: 1,
-          truckTypeName: "Colt Diesel Double",
-          carrierName: "Box",
-          hasOverload: true,
-          hasAdditionalService: false,
-          pickupLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440141",
-              sequence: 1,
-              fullAddress: "Kota Bandung, Kec. Bandung Wetan",
-              city: "Bandung",
-              province: "Jawa Barat",
-            },
-          ],
-          dropoffLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440142",
-              sequence: 1,
-              fullAddress: "Kota Cirebon, Kec. Kejaksan",
-              city: "Cirebon",
-              province: "Jawa Barat",
-            },
-          ],
-          cargos: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440143",
-              name: "Peralatan Elektronik",
-              weight: 3200,
-              weightUnit: "kg",
-              sequence: 1,
-            },
-          ],
-          additionalServices: [],
-          photos: [],
-          timeLabel: {
-            text: "Terjadwal",
-            color: "blue",
-            daysFromNow: 1,
-          },
-          loadTimeText: "Muat Besok",
-          loadDateTime: "07 Agu 2025 16:00 WIB s/d 18:00 WIB",
-          potentialEarnings: "Rp680.000",
-          createdAt: "2025-07-28T16:00:00+07:00",
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440015",
-          orderCode: "MT25A015O",
-          orderType: "SCHEDULED",
-          orderStatus: "PREPARE_FLEET",
-          isNew: false,
-          isHalalLogistics: true,
-          isSaved: false,
-          loadTimeStart: "2025-08-13T08:00:00+07:00",
-          loadTimeEnd: "2025-08-13T12:00:00+07:00",
-          estimatedDistance: 180,
-          totalPrice: 1250000.0,
-          truckCount: 2,
-          truckTypeName: "Fuso 6 Roda",
-          carrierName: "Box",
-          hasOverload: false,
-          hasAdditionalService: true,
-          pickupLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440151",
-              sequence: 1,
-              fullAddress: "Kota Palembang, Kec. Ilir Barat I",
-              city: "Palembang",
-              province: "Sumatera Selatan",
-            },
-          ],
-          dropoffLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440152",
-              sequence: 1,
-              fullAddress: "Kota Lampung, Kec. Tanjung Karang",
-              city: "Lampung",
-              province: "Lampung",
-            },
-          ],
-          cargos: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440153",
-              name: "Produk Farmasi Halal",
-              weight: 1800,
-              weightUnit: "kg",
-              sequence: 1,
-            },
-          ],
-          additionalServices: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440154",
-              serviceName: "Temperature Control, Medical Transport License",
-            },
-          ],
-          photos: [],
-          timeLabel: {
-            text: "Terjadwal",
-            color: "blue",
-            daysFromNow: 7,
-          },
-          loadTimeText: "Muat 7 Hari Lagi",
-          loadDateTime: "13 Agu 2025 08:00 WIB s/d 12:00 WIB",
-          potentialEarnings: "Rp1.250.000",
-          createdAt: "2025-07-29T13:20:00+07:00",
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440016",
-          orderCode: "MT25A016P",
-          orderType: "INSTANT",
-          orderStatus: "PREPARE_FLEET",
-          isNew: false,
-          isHalalLogistics: false,
-          isSaved: true,
-          loadTimeStart: "2025-08-07T09:00:00+07:00",
-          loadTimeEnd: "2025-08-07T11:00:00+07:00",
-          estimatedDistance: 55,
-          totalPrice: 480000.0,
-          truckCount: 1,
-          truckTypeName: "Colt Diesel Engkel",
-          carrierName: "Box",
-          hasOverload: false,
-          hasAdditionalService: false,
-          pickupLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440161",
-              sequence: 1,
-              fullAddress: "Kota Yogyakarta, Kec. Pakualaman",
-              city: "Yogyakarta",
-              province: "DI Yogyakarta",
-            },
-          ],
-          dropoffLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440162",
-              sequence: 1,
-              fullAddress: "Kab. Klaten, Kec. Klaten Utara",
-              city: "Klaten",
-              province: "Jawa Tengah",
-            },
-          ],
-          cargos: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440163",
-              name: "Kerajinan Tangan",
-              weight: 950,
-              weightUnit: "kg",
-              sequence: 1,
-            },
-          ],
-          additionalServices: [],
-          photos: [],
-          timeLabel: {
-            text: "Terjadwal",
-            color: "blue",
-            daysFromNow: 1,
-          },
-          loadTimeText: "Muat Besok",
-          loadDateTime: "07 Agu 2025 09:00 WIB s/d 11:00 WIB",
-          potentialEarnings: "Rp480.000",
-          createdAt: "2025-07-27T08:45:00+07:00",
+          loadDateTime: "07 Agu 2025 16:30 WIB s/d 18:30 WIB",
+          potentialEarnings: "Rp350.000",
+          createdAt: "2025-08-06T10:15:00+07:00",
         },
       ],
-      newRequestsCount: {
-        total: 18, // 2-digit counter to test blinking animation (10-99 range)
-        display: "18",
-        hasAnimation: true,
-      },
-      tabCounts: {
-        tersedia: 35, // 2-digit total to test counter display and animation
-        halal_logistik: 22, // 2-digit halal requests to test animation
-        disimpan: 8, // Single digit saved requests
-      },
+      // newRequestsCount: {
+      //   total: 18, // 2-digit counter to test blinking animation (10-99 range)
+      //   display: "18",
+      //   hasAnimation: true,
+      // },
+      // tabCounts: {
+      //   tersedia: 35, // 2-digit total to test counter display and animation
+      //   halal_logistik: 22, // 2-digit halal requests to test animation
+      //   disimpan: 8, // Single digit saved requests
+      // },
       userStatus: {
         isSuspended: MOCK_CONFIG.isSuspended,
         driverDelegationEnabled: MOCK_CONFIG.driverDelegationEnabled,
@@ -1015,7 +249,7 @@ const apiResultTransportRequestList = {
         suspensionMessage: "Hubungi dukungan pelanggan untuk aktivasi kembali",
         supportContactUrl: "tel:+62-811-1234-5678",
         delegationWarningMessage:
-          "Pengaturan delegasi driver sedang aktif. Driver yang didelegasikan dapat menerima pesanan atas nama Anda.",
+          "Tidak dapat menerima atau menolak pesanan secara langsung",
         delegationResetUrl: "/settings/driver-delegation",
         halalCertificationMessage:
           "Tambahkan sertifikasi halal dengan menghubungi kami",
@@ -1028,9 +262,17 @@ const apiResultTransportRequestList = {
 };
 
 export const fetcherTransportRequestList = async (params = {}) => {
+  console.log("🚀 fetcherTransportRequestList called with params:", params);
+
   if (isMockTransportRequestList) {
     // Simulate filtering, searching, and sorting
-    const result = { ...apiResultTransportRequestList };
+    // IMPORTANT: Use deep copy to avoid mutations between different filter calls
+    const result = JSON.parse(JSON.stringify(apiResultTransportRequestList));
+
+    console.log(
+      "📋 Initial mock data requests count:",
+      result.data.Data.requests.length
+    );
 
     // Check if we should show empty state for testing
     if (result.data.Data.showEmptyState) {
@@ -1049,6 +291,31 @@ export const fetcherTransportRequestList = async (params = {}) => {
         },
       };
     }
+
+    // Calculate tab counts FIRST based on original data (before any filtering)
+    const originalRequests = [...result.data.Data.requests];
+    console.log(
+      "📊 Calculating tabCounts from originalRequests:",
+      originalRequests.length
+    );
+    console.log(
+      "📊 Original requests data:",
+      originalRequests.map((req) => ({
+        id: req.id,
+        orderCode: req.orderCode,
+        isHalalLogistics: req.isHalalLogistics,
+        isSaved: req.isSaved,
+      }))
+    );
+
+    result.data.Data.tabCounts = {
+      tersedia: originalRequests.length,
+      halal_logistik: originalRequests.filter((req) => req.isHalalLogistics)
+        .length,
+      disimpan: originalRequests.filter((req) => req.isSaved).length,
+    };
+
+    console.log("📊 Calculated tabCounts:", result.data.Data.tabCounts);
 
     // Apply filters if provided
     if (params.orderStatus) {
@@ -1070,8 +337,25 @@ export const fetcherTransportRequestList = async (params = {}) => {
     }
 
     if (params.isSaved !== undefined) {
+      console.log("🔍 Filtering by isSaved:", params.isSaved);
+      console.log(
+        "📋 Before filter - requests count:",
+        result.data.Data.requests.length
+      );
       result.data.Data.requests = result.data.Data.requests.filter(
         (req) => req.isSaved === params.isSaved
+      );
+      console.log(
+        "📋 After filter - requests count:",
+        result.data.Data.requests.length
+      );
+      console.log(
+        "📋 Filtered requests:",
+        result.data.Data.requests.map((req) => ({
+          id: req.id,
+          orderCode: req.orderCode,
+          isSaved: req.isSaved,
+        }))
       );
     }
 
@@ -1147,16 +431,8 @@ export const fetcherTransportRequestList = async (params = {}) => {
       });
     }
 
-    // Update tab counts based on filtered results
+    // Update new requests count based on filtered results
     const filteredRequests = result.data.Data.requests;
-    result.data.Data.tabCounts = {
-      tersedia: filteredRequests.length,
-      halal_logistik: filteredRequests.filter((req) => req.isHalalLogistics)
-        .length,
-      disimpan: filteredRequests.filter((req) => req.isSaved).length,
-    };
-
-    // Update new requests count
     const newRequests = filteredRequests.filter((req) => req.isNew);
     result.data.Data.newRequestsCount = {
       total: newRequests.length,
@@ -1202,6 +478,9 @@ export const useGetTransportRequestList = (params = {}) => {
   const cacheKey = params
     ? `transport-request-list-${JSON.stringify(params)}`
     : "transport-request-list";
+
+  console.log("🔑 SWR Cache Key:", cacheKey);
+  console.log("🔑 Params for cache:", params);
 
   return useSWR(cacheKey, () => fetcherTransportRequestList(params));
 };

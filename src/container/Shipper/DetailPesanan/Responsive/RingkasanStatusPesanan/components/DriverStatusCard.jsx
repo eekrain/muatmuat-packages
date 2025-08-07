@@ -12,17 +12,17 @@ import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
 import { DriverInfo } from "../../Home/components/DriverInfoSlider";
 
-export const DriverStatusCard = ({ driver, orderStatus }) => {
+export const DriverStatusCard = ({ driver }) => {
   const navigation = useResponsiveNavigation();
   const { t } = useTranslation();
-  const statusMeta = getDriverStatusMetadata(
-    driver.driverStatus,
-    driver.orderStatus,
-    t
-  );
   const params = useParams();
 
-  console.log(driver, "driver");
+  const statusMeta = getDriverStatusMetadata({
+    driverStatus: driver.driverStatus,
+    orderStatus: driver.orderStatus,
+    t,
+  });
+
   return (
     <DriverInfo.Root
       key={driver.driverId}

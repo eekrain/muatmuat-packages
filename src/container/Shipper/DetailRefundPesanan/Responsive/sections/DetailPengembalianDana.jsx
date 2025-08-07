@@ -1,129 +1,72 @@
 import WaitingTimeBottomsheet from "@/components/BottomSheet/WaitingTimeBottomsheet";
-import ResponsiveSection from "@/components/Section/ResponsiveSection";
-import { useShallowMemo } from "@/hooks/use-shallow-memo";
-import { cn } from "@/lib/utils";
+import CardPayment from "@/components/Card/CardPayment";
 import { idrFormat } from "@/lib/utils/formatters";
 
-const DetailPengembalianDana = ({ breakdown, waitingTimeRaw }) => {
-  const refundSummary = useShallowMemo(() => {
-    if (!breakdown) return [];
-    return [
-      {
-        content: [
-          {
-            title: "Biaya Pesan Jasa Angkut",
-            children: [
-              {
-                label: "Nominal Pesan Jasa Angkut",
-                price: breakdown ? idrFormat(breakdown.originalAmount) : "-",
-              },
-            ],
-          },
-          ...(waitingTimeRaw.length > 0
-            ? [
-                {
-                  title: "Biaya Waktu Tunggu",
-                  children: [
-                    {
-                      isWaitingTime: true,
-                      label: "Nominal Waktu Tunggu (1 Driver)",
-                      fee: breakdown
-                        ? idrFormat(breakdown.waitingTimeFee)
-                        : "-",
-                    },
-                  ],
-                },
-              ]
-            : []),
-          {
-            title: "Biaya Administrasi",
-            children: [
-              {
-                label: "Admin Pembatalan",
-                fee: breakdown ? `-${idrFormat(breakdown.penaltyAmount)}` : "-",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        content: [
-          {
-            title: "Biaya Lainnya",
-            children: [
-              {
-                label: "Admin Refund",
-                fee: breakdown ? `-${idrFormat(breakdown.adminFee)}` : "-",
-              },
-            ],
-          },
-        ],
-      },
-    ];
-  }, [breakdown]);
-
+const DetailPengembalianDana = ({ breakdown, waitingTimeData }) => {
   return (
-    <ResponsiveSection title="Detail Pengembalian Dana">
-      {refundSummary.map((item, key) => (
-        <div
-          className={cn(
-            "flex flex-col gap-y-6",
-            refundSummary.length - 1 === key
-              ? ""
-              : "border-b-[1.5px] border-b-neutral-200 pb-6"
-          )}
-          key={key}
-        >
-          {item.content.map((item, key) => (
-            <div className="flex flex-col gap-y-4" key={key}>
-              <h4 className="text-sm font-semibold text-neutral-900">
-                {item.title}
-              </h4>
-              {item.children.map((child, key) => {
-                if (child?.isWaitingTime) {
-                  return (
-                    <div className="flex flex-col gap-y-2" key={key}>
-                      <div className="flex justify-between gap-x-7 text-sm font-medium text-neutral-900">
-                        <div className="max-w-[160px]">{child.label}</div>
-                        <span
-                          className={cn(
-                            child?.fee ? "text-error-400" : "text-neutral-900"
-                          )}
-                        >
-                          {child?.price || child?.fee}
-                        </span>
-                      </div>
-                      <WaitingTimeBottomsheet waitingTimeRaw={waitingTimeRaw} />
-                    </div>
-                  );
+    <CardPayment.Root className="h-auto w-full rounded-none p-0 shadow-none">
+      <div className="flex flex-col gap-6 px-4 py-5">
+        <h1 className="text-sm font-semibold text-neutral-900">
+          Detail Pengembalian Dana
+        </h1>
+
+        <div className="flex flex-col gap-6">
+          <CardPayment.Section
+            className="gap-4"
+            title="Biaya Pesan Jasa Angkut"
+          >
+            <CardPayment.LineItem
+              label="Nominal Pesan Jasa Angkut"
+              value={breakdown ? idrFormat(breakdown.originalAmount) : "-"}
+              labelClassName="font-medium"
+              valueClassName="font-medium"
+            />
+          </CardPayment.Section>
+          {waitingTimeData?.length > 0 && (
+            <CardPayment.Section className="gap-4" title="Biaya Waktu Tunggu">
+              <CardPayment.LineItem
+                label="Nominal Waktu Tunggu<br/>(1 Driver)"
+                value={
+                  breakdown ? `-${idrFormat(breakdown.waitingTimeFee)}` : "-"
                 }
-                return (
-                  <div
-                    className="flex items-center justify-between gap-x-7 text-sm font-medium text-neutral-900"
-                    key={key}
-                  >
-                    <span>{child.label}</span>
-                    <span
-                      className={cn(
-                        child?.fee ? "text-error-400" : "text-neutral-900"
-                      )}
-                    >
-                      {child?.price || child?.fee}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          ))}
+                variant="danger"
+                labelClassName="font-medium !text-neutral-900"
+                valueClassName="font-medium"
+              >
+                <WaitingTimeBottomsheet waitingTimeData={waitingTimeData} />
+              </CardPayment.LineItem>
+            </CardPayment.Section>
+          )}
+          <CardPayment.Section className="gap-4" title="Biaya Administrasi">
+            <CardPayment.LineItem
+              label="Admin Pembatalan"
+              value={breakdown ? `-${idrFormat(breakdown.penaltyAmount)}` : "-"}
+              valueClassName="font-medium !text-[#F71717]"
+              labelClassName="font-medium"
+            />
+          </CardPayment.Section>
         </div>
-      ))}
-      <div className="flex items-center justify-between gap-x-7 text-sm font-semibold leading-[1.1] text-neutral-900">
-        <span>Total Pengembalian Dana</span>
-        <span className="">
-          {breakdown ? idrFormat(breakdown.totalRefundAmount) : "-"}
-        </span>
+
+        <hr className="border-t-[1.5px] border-[#F1F1F1]" />
+
+        <div className="flex flex-col gap-6">
+          <CardPayment.Section className="gap-4" title="Biaya Lainnya">
+            <CardPayment.LineItem
+              label="Admin Refund"
+              value={breakdown ? `-${idrFormat(breakdown.adminFee)}` : "-"}
+              valueClassName="font-medium !text-[#F71717]"
+              labelClassName="font-medium"
+            />
+          </CardPayment.Section>
+
+          <CardPayment.Total
+            label="Total Pengembalian Dana"
+            value={breakdown ? idrFormat(breakdown.totalRefundAmount) : "-"}
+            className="!text-sm !font-semibold"
+          />
+        </div>
       </div>
-    </ResponsiveSection>
+    </CardPayment.Root>
   );
 };
 

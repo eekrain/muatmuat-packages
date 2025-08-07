@@ -16,7 +16,7 @@ import { getOrderPaymentData } from "./getOrderPaymentData";
 import { getOrderStatusHistory } from "./getOrderStatusHistory";
 import { getStatusLegend } from "./getStatusLegend";
 
-const useMockData = false; // toggle mock data
+const useMockData = false; // mock detailpesanan
 
 /**
  * Notes dari mas friday
@@ -158,8 +158,8 @@ const apiResultOrderDetail = {
         orderId: "550e8400-e29b-41d4-a716-446655440000",
         transporterOrderCode: "MT.25.AA.001",
         invoiceNumber: "INV/12345678",
-        // orderStatus: OrderStatusEnum.LOADING,
-        orderStatus: OrderStatusEnum.CONFIRMED,
+        orderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
+        // orderStatus: OrderStatusEnum.SCHEDULED_FLEET,
         orderTitle: "Proses Muat",
         unitFleetStatus: 1,
         orderType: OrderTypeEnum.INSTANT,
@@ -168,7 +168,7 @@ const apiResultOrderDetail = {
       },
       summary: {
         truckType: {
-          totalUnit: 1,
+          totalUnit: 3,
           truckTypeId: "f483709a-de4c-4541-b29e-6f4d9a912331",
           name: "Cold Diesel Double",
           image: "https://picsum.photos/300/300",

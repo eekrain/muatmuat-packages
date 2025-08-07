@@ -59,7 +59,7 @@ BottomSheetContent.displayName = "BottomSheetContent";
 export const BottomSheetHeader = ({ className, children, ...props }) => (
   <div
     className={cn(
-      "relative flex min-h-[72px] w-full items-center p-4 py-6 text-center",
+      "relative flex min-h-[72px] w-full items-center p-4 pb-6 text-center",
       className
     )}
     {...props}

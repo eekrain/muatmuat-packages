@@ -1,12 +1,10 @@
-import { Fragment } from "react";
-
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import ResponsiveSection from "@/components/Section/ResponsiveSection";
 import {
   StepperContainer,
   StepperItemResponsive,
 } from "@/components/Stepper/Stepper";
-import { formatShortDate } from "@/lib/utils/dateFormat";
+import { formatDate } from "@/lib/utils/dateFormat";
 
 const RefundStatusTimeline = ({ refundData }) => {
   const refundStatusLabels = {
@@ -27,7 +25,7 @@ const RefundStatusTimeline = ({ refundData }) => {
         >
           {refundStatusLabel}
         </BadgeStatusPesanan>
-        <div className="px-20">
+        <div className="mx-auto w-[170px]">
           <StepperContainer
             activeIndex={
               refundData?.refundStatus === "REFUND_COMPLETED" ? 1 : 0
@@ -38,59 +36,23 @@ const RefundStatusTimeline = ({ refundData }) => {
               {
                 icon: "/icons/money16.svg",
                 status: "PROCESS_REFUND",
-                subtitle: refundData?.requestedAt ? (
-                  <div className="flex flex-col gap-y-2 text-xxs font-medium leading-none text-neutral-900">
-                    <span>
-                      {formatShortDate(new Date(refundData.requestedAt))}
-                    </span>
-                    <span>
-                      {`${new Date(refundData.requestedAt).toLocaleTimeString(
-                        "en-US",
-                        {
-                          hour12: false,
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        }
-                      )} WIB`}
-                    </span>
-                  </div>
-                ) : (
-                  ""
-                ),
+                subtitle: refundData?.requestedAt
+                  ? formatDate(new Date(refundData.requestedAt))
+                  : "-",
               },
               {
                 icon: "/icons/stepper/stepper-check-circle.svg",
                 status: "DONE_REFUND",
-                subtitle: refundData?.processedAt ? (
-                  <div className="flex flex-col gap-y-2 text-xxs font-medium leading-none text-neutral-900">
-                    <span>
-                      {formatShortDate(new Date(refundData.processedAt))}
-                    </span>
-                    <span>
-                      {`${new Date(refundData.processedAt).toLocaleTimeString(
-                        "en-US",
-                        {
-                          hour12: false,
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        }
-                      )} WIB`}
-                    </span>
-                  </div>
-                ) : (
-                  ""
-                ),
+                subtitle: refundData?.processedAt
+                  ? formatDate(new Date(refundData.processedAt))
+                  : "-",
               },
-            ].map((step, key) => (
-              <Fragment key={key}>
-                <StepperItemResponsive
-                  key={step.status}
-                  status={step?.status}
-                  icon={step.icon}
-                  subtitle={step.subtitle}
-                  index={key}
-                />
-              </Fragment>
+            ].map((step, index) => (
+              <StepperItemResponsive
+                key={step.status}
+                step={step}
+                index={index}
+              />
             ))}
           </StepperContainer>
         </div>

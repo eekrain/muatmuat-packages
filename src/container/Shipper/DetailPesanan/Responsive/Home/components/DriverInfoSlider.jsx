@@ -54,7 +54,11 @@ const Header = ({
     if (mode === "status-scan" && statusScan) {
       response.scan = getStatusScanMetadata(statusScan);
     } else if (mode === "driver-status" && driverStatus && orderStatus) {
-      response.status = getDriverStatusMetadata(driverStatus, orderStatus, t);
+      response.status = getDriverStatusMetadata({
+        driverStatus,
+        orderStatus,
+        t,
+      });
     }
     return response;
   }, [driverStatus, mode, orderStatus, statusScan, t]);

@@ -19,7 +19,7 @@ export const TransactionSummary = ({ dataRingkasanPembayaran }) => {
     insuranceFee = 0,
     documentShippingDetail = null,
     otherAdditionalService = { totalPrice: 0 },
-    voucherDiscount = 0,
+    voucher = null,
     adminFee = 0,
     taxAmount = 0,
     totalPrice = 0,
@@ -85,12 +85,12 @@ export const TransactionSummary = ({ dataRingkasanPembayaran }) => {
                 </CardPayment.Section>
               )}
 
-              {voucherDiscount > 0 && (
+              {(voucher?.discount ?? 0) > 0 && (
                 <CardPayment.Section title="Diskon Voucher">
                   <CardPayment.LineItem
-                    label="Voucher (DISKONPENGGUNABARU)"
+                    label={`Voucher (${voucher?.code ?? ""})`}
                     variant="danger"
-                    value={`-${idrFormat(voucherDiscount)}`}
+                    value={`-${idrFormat(voucher?.discount ?? 0)}`}
                   />
                 </CardPayment.Section>
               )}

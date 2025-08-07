@@ -777,12 +777,7 @@ const BreadcrumbCardStepper = () => {
               icon: "/icons/stepper/stepper-completed.svg",
             },
           ].map((step, index) => (
-            <StepperItemResponsive
-              key={step.label}
-              status={step?.status}
-              icon={step.icon}
-              index={index}
-            />
+            <StepperItemResponsive key={step.label} step={step} index={index} />
           ))}
         </StepperContainer>
       </div>
@@ -974,7 +969,7 @@ const ButtonBottomsheetTooltipForm = () => {
           <h1 className="mb-2 text-xl font-bold">Bottomsheet</h1>
 
           <BottomSheet>
-            <BottomSheetTrigger>
+            <BottomSheetTrigger asChild>
               <Button variant="muatparts-primary">Bottomsheet</Button>
             </BottomSheetTrigger>
             <BottomSheetContent>

@@ -49,15 +49,15 @@ const getStatusCodeMeta = (statusCode) => {
  * @returns {React.ReactNode}
  */
 export const DriverTimeline = ({
-  dataDriverStatus,
+  dataTimeline,
   onClickProof,
   withMenu = true,
 }) => {
-  console.log("🚀 ~ dataDriverStatus:", dataDriverStatus);
   const { t } = useTranslation();
   const [images, setImages] = useState({ packages: [], pods: [] });
   const [currentStatus, setCurrentStatus] = useState(null);
   const [lightboxActiveIndex, setLightboxActiveIndex] = useState(0);
+  const { isMobile } = useDevice();
 
   const getTitle = () => {
     if (!currentStatus) return "";
@@ -116,7 +116,7 @@ export const DriverTimeline = ({
         images={[...images.packages, ...images.pods]}
         title={getTitle()}
       >
-        {dataDriverStatus?.statusDefinitions.map((parent, parentIndex) => (
+        {dataTimeline?.statusDefinitions.map((parent, parentIndex) => (
           <Fragment key={parent.mappedOrderStatus}>
             {parent?.children && parent.children.length > 0 ? (
               <TimelineContainer className="mb-5">
@@ -139,14 +139,15 @@ export const DriverTimeline = ({
 
             <ParentItem
               icon={
-                parent.mappedOrderStatus?.startsWith("CANCELED")
+                parent.mappedOrderStatus?.startsWith("CANCELED") && !isMobile
                   ? "/icons/close-circle.svg"
-                  : OrderStatusIcon[parent.mappedOrderStatus]
+                  : parent.mappedOrderStatus?.startsWith("CANCELED") && isMobile
+                    ? "/icons/close24.svg"
+                    : OrderStatusIcon[parent.mappedOrderStatus]
               }
               title={t(OrderStatusTitle[parent.mappedOrderStatus])}
               withDivider={
-                parentIndex !==
-                  dataDriverStatus?.statusDefinitions.length - 1 &&
+                parentIndex !== dataTimeline?.statusDefinitions.length - 1 &&
                 parent.mappedOrderStatus !== OrderStatusEnum.DOCUMENT_DELIVERY
               }
               withLine={

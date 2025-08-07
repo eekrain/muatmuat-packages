@@ -2,32 +2,34 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = false; // toggle mock data
+const useMockData = false; // mock detailpesanan
 
 // GET /api/v1/orders/${orderId}/waiting-time
 const apiResult = {
-  Message: {
-    Code: 200,
-    Text: "Order detail retrieved successfully",
+  data: {
+    Message: {
+      Code: 200,
+      Text: "Order detail retrieved successfully",
+    },
+    Data: {
+      waitingTime: [
+        {
+          id: "9cf101e8-3645-4f72-a707-7e6576117efd",
+          driverId: "51e64187-d4cb-4065-9776-7e1224fc6b35",
+          name: "Test Driver",
+          licensePlate: "B 1234 ABC",
+          startWaitingTime: "2025-07-29T13:00:00.000Z",
+          endWaitingTime: "2025-07-29T16:00:00.000Z",
+          waitingTime: "3.00",
+          waitingFee: 300000,
+          locationSequence: 1,
+          locationType: "PICKUP",
+          isMultiLocation: false,
+        },
+      ],
+    },
+    Type: "WAITING_TIME_ORDER_DETAIL",
   },
-  Data: {
-    waitingTime: [
-      {
-        id: "9cf101e8-3645-4f72-a707-7e6576117efd",
-        driverId: "51e64187-d4cb-4065-9776-7e1224fc6b35",
-        name: "Test Driver",
-        licensePlate: "B 1234 ABC",
-        startWaitingTime: "2025-07-29T13:00:00.000Z",
-        endWaitingTime: "2025-07-29T16:00:00.000Z",
-        waitingTime: "3.00",
-        waitingFee: 300000,
-        locationSequence: 1,
-        locationType: "PICKUP",
-        isMultiLocation: false,
-      },
-    ],
-  },
-  Type: "WAITING_TIME_ORDER_DETAIL",
 };
 
 const normalizeWaitingTime = (waitingTimeRaw) => {
