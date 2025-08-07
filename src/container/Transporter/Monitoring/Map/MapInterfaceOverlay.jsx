@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ChevronRight } from "lucide-react";
 
@@ -6,6 +6,7 @@ import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Search from "@/components/Search/Search";
+import { cn } from "@/lib/utils";
 
 export const MapInterfaceOverlay = ({
   onZoomIn,
@@ -13,22 +14,62 @@ export const MapInterfaceOverlay = ({
   onClickDaftarArmada,
   hideTopNavigation = false,
   onSearch,
+  onToggleFullscreen,
+  isFullscreen = false,
+  showLicensePlate = true,
+  onToggleLicensePlate,
+  onCenter,
+  hasMapInteraction = false,
 }) => {
-  const [showLicensePlate, setShowLicensePlate] = useState(true);
   const [sosCount] = useState(2);
+  const [centerButtonClicked, setCenterButtonClicked] =
+    useState(!hasMapInteraction);
+
+  useEffect(() => {
+    // Reset center button state when map interaction changes
+    if (hasMapInteraction) {
+      setCenterButtonClicked(false);
+    }
+  }, [hasMapInteraction]);
+
+  const handleCenterClick = () => {
+    // Immediately set center button as clicked
+    setCenterButtonClicked(true);
+    onCenter();
+  };
+
+  const handleZoomIn = () => {
+    setCenterButtonClicked(false);
+    onZoomIn();
+  };
+
+  const handleZoomOut = () => {
+    setCenterButtonClicked(false);
+    onZoomOut();
+  };
 
   const mapControls = [
-    { icon: "/icons/monitoring/full-screen.svg", tooltip: "Besarkan" },
-    { icon: "/icons/monitoring/center.svg", tooltip: "Pusatkan" },
+    {
+      icon: isFullscreen
+        ? "/icons/monitoring/min-screen.svg"
+        : "/icons/monitoring/full-screen.svg",
+      tooltip: isFullscreen ? "Kecilkan" : "Besarkan",
+      onClick: onToggleFullscreen,
+    },
+    {
+      icon: "/icons/monitoring/center.svg",
+      tooltip: "Pusatkan Semua Armada",
+      onClick: handleCenterClick,
+    },
     {
       icon: "/icons/monitoring/plus.svg",
       tooltip: "Zoom In",
-      onClick: onZoomIn,
+      onClick: handleZoomIn,
     },
     {
       icon: "/icons/monitoring/minus.svg",
       tooltip: "Zoom Out",
-      onClick: onZoomOut,
+      onClick: handleZoomOut,
     },
   ];
 
@@ -85,7 +126,12 @@ export const MapInterfaceOverlay = ({
       )}
 
       {/* Right Side Map Controls */}
-      <div className="absolute right-4 top-[104px] z-20 -translate-y-1/2 transform">
+      <div
+        className={cn(
+          "absolute right-4 z-20 -translate-y-1/2 transform",
+          isFullscreen ? "top-[210px]" : "top-[104px]"
+        )}
+      >
         <div className="flex flex-col gap-2">
           {/* Info button - separate container at top */}
           <InfoTooltip
@@ -99,7 +145,7 @@ export const MapInterfaceOverlay = ({
             }
             side="left"
           >
-            Informasi Peta
+            Legenda
           </InfoTooltip>
 
           {/* Main map controls */}
@@ -107,13 +153,23 @@ export const MapInterfaceOverlay = ({
             <div className="flex h-full flex-col justify-center gap-2">
               {mapControls.map((control, index) => (
                 <InfoTooltip
-                  key={index}
+                  key={`${index}-${isFullscreen}`}
                   trigger={
                     <button
                       onClick={control.onClick}
                       className="mx-auto rounded-xl transition-colors"
                     >
-                      <IconComponent src={control.icon} className="size-6" />
+                      <IconComponent
+                        src={control.icon}
+                        className={cn(
+                          "size-6",
+                          control.icon === "/icons/monitoring/center.svg"
+                            ? centerButtonClicked
+                              ? "text-primary-700"
+                              : "text-muat-trans-secondary-900"
+                            : ""
+                        )}
+                      />
                     </button>
                   }
                   side="left"
@@ -133,10 +189,10 @@ export const MapInterfaceOverlay = ({
             <input
               type="checkbox"
               checked={showLicensePlate}
-              onChange={(e) => setShowLicensePlate(e.target.checked)}
+              onChange={(e) => onToggleLicensePlate?.(e.target.checked)}
               className="peer sr-only"
             />
-            <div className="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-gray-800 peer-checked:after:translate-x-full peer-checked:after:border-white"></div>
+            <div className="peer h-6 w-11 rounded-full bg-neutral-800 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-primary-700 peer-checked:after:translate-x-full peer-checked:after:border-white"></div>
           </label>
           <span className="text-xs font-medium">No. Polisi</span>
         </div>
