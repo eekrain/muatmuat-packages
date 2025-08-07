@@ -47,6 +47,7 @@ const DataTable = ({
   const [searchValue, setSearchValue] = useState("");
   const [selectedFilters, setSelectedFilters] = useState({});
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
+  console.log("DataTable rendered with data:", data);
 
   const handleSearch = (value) => {
     setSearchValue(value);

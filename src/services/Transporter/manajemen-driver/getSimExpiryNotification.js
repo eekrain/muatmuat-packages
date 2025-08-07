@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const isMockGetSimExpiryNotification = true; // Enable mock for testing
+const isMockGetSimExpiryNotification = false; // Enable mock for testing
 
 const mockGetSimExpiryNotificationResponse = {
   Message: {
