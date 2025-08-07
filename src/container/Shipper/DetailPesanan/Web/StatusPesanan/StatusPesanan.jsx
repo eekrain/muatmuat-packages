@@ -30,7 +30,11 @@ import { ModalPerubahanData } from "./ModalPerubahanData";
  * @param {Object} dataStatusPesanan - data for the order status
  * @param {Boolean} isShowWaitFleetAlert - flag to show the alert for waiting fleet
  */
-const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
+const StatusPesanan = ({
+  dataStatusPesanan,
+  isShowWaitFleetAlert,
+  oldDriverData,
+}) => {
   const { t } = useTranslation();
   const [isModalPerubahanDataOpen, setIsModalPerubahanDataOpen] =
     useState(false);
@@ -137,6 +141,7 @@ const StatusPesanan = ({ dataStatusPesanan, isShowWaitFleetAlert }) => {
                   ...dataStatusPesanan,
                   orderStatus: statusOrder,
                 }}
+                oldDriverData={oldDriverData}
               />
               {/* Tombol konfirmasi hanya muncul jika status WAITING_CONFIRMATION_CHANGES */}
               {/* {isDev &&

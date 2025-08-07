@@ -18,7 +18,10 @@ import {
 } from "@/components/Lightbox/Lightbox";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import { useTranslation } from "@/hooks/use-translation";
-import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import {
+  OrderStatusEnum,
+  OrderStatusIcon,
+} from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { getStatusPesananMetadata } from "@/lib/normalizers/detailpesanan/getStatusPesananMetadata";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -34,10 +37,11 @@ const dummyPhoto = [
   "/img/muatan4.png",
 ];
 
-export const StatusPesananHeader = ({ dataStatusPesanan }) => {
+export const StatusPesananHeader = ({ dataStatusPesanan, oldDriverData }) => {
   const { t } = useTranslation();
 
   const [isModalAllDriverOpen, setIsModalAllDriverOpen] = useState(false);
+  const [isModalOldDriverOpen, setIsModalOldDriverOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const copyAllDriverQRCodeLink = () => {
@@ -196,7 +200,7 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
         </div>
       </div>
 
-      {dataStatusPesanan.driverStatus.length > 1 && (
+      {(dataStatusPesanan.driverStatus.length > 1 || oldDriverData) && (
         <div className="w-[127px]">
           <SimpleDropdown onOpenChange={setIsDropdownOpen}>
             <SimpleDropdownTrigger asChild>
@@ -225,25 +229,34 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
             </SimpleDropdownTrigger>
 
             <SimpleDropdownContent className="max-w-[198px]">
-              <SimpleDropdownItem onClick={() => {}}>
-                Lihat Driver Sebelumnya
-              </SimpleDropdownItem>
-              <SimpleDropdownItem onClick={() => setIsModalAllDriverOpen(true)}>
-                {t(
-                  "StatusPesananHeader.menuLihatSemuaDriver",
-                  {},
-                  "Lihat Semua Driver"
-                )}
-              </SimpleDropdownItem>
-              {!dataStatusPesanan.orderStatus.startsWith("CANCELED") && (
-                <SimpleDropdownItem onClick={copyAllDriverQRCodeLink}>
+              {oldDriverData && (
+                <SimpleDropdownItem
+                  onClick={() => setIsModalOldDriverOpen(true)}
+                >
+                  Lihat Driver Sebelumnya
+                </SimpleDropdownItem>
+              )}
+              {dataStatusPesanan.driverStatus.length > 1 && (
+                <SimpleDropdownItem
+                  onClick={() => setIsModalAllDriverOpen(true)}
+                >
                   {t(
-                    "StatusPesananHeader.menuBagikanQRCode",
+                    "StatusPesananHeader.menuLihatSemuaDriver",
                     {},
-                    "Bagikan QR Code Semua Driver"
+                    "Lihat Semua Driver"
                   )}
                 </SimpleDropdownItem>
               )}
+              {dataStatusPesanan.driverStatus.length > 1 &&
+                !dataStatusPesanan.orderStatus.startsWith("CANCELED") && (
+                  <SimpleDropdownItem onClick={copyAllDriverQRCodeLink}>
+                    {t(
+                      "StatusPesananHeader.menuBagikanQRCode",
+                      {},
+                      "Bagikan QR Code Semua Driver"
+                    )}
+                  </SimpleDropdownItem>
+                )}
             </SimpleDropdownContent>
           </SimpleDropdown>
         </div>
@@ -256,6 +269,14 @@ export const StatusPesananHeader = ({ dataStatusPesanan }) => {
         orderId={dataStatusPesanan.orderId}
         orderStatus={dataStatusPesanan.orderStatus}
         copyAllDriverQRCodeLink={copyAllDriverQRCodeLink}
+      />
+
+      <ModalOldDriver
+        open={isModalOldDriverOpen}
+        onOpenChange={setIsModalOldDriverOpen}
+        oldDriverData={oldDriverData}
+        orderId={dataStatusPesanan.orderId}
+        orderStatus={dataStatusPesanan.orderStatus}
       />
     </div>
   );
@@ -326,6 +347,45 @@ const ModalAllDriver = ({
             "Bagikan QR Code Semua Driver"
           )}
         </Button>
+      </ModalContent>
+    </Modal>
+  );
+};
+
+const ModalOldDriver = ({ open, onOpenChange, oldDriverData, orderId }) => {
+  if (!oldDriverData?.driver) return null;
+
+  return (
+    <Modal open={open} onOpenChange={onOpenChange} closeOnOutsideClick>
+      <ModalContent className="p-6">
+        <h2 className="mb-3 text-center text-base font-bold leading-[1.2]">
+          Driver Sebelumnya
+        </h2>
+
+        <div className="w-[810px] rounded-xl border border-neutral-600 pl-3 pt-3">
+          <div className="pr-[4px]">
+            <div className="flex max-h-[398px] flex-col gap-3 overflow-y-auto pb-3 pr-[7px]">
+              <DriverStatusCardItem
+                key={oldDriverData.driver.driverId}
+                driver={{
+                  ...oldDriverData.driver,
+                  stepperData: oldDriverData.stepStatus?.map((step) => ({
+                    label: step.statusName,
+                    status: step.statusCode,
+                    icon: OrderStatusIcon[step.statusCode],
+                  })),
+                  activeIndex:
+                    oldDriverData.stepStatus?.findIndex(
+                      (step) =>
+                        step.statusCode === oldDriverData.driver.orderStatus
+                    ) || 0,
+                }}
+                orderId={orderId}
+                orderStatus={oldDriverData.driver.orderStatus}
+              />
+            </div>
+          </div>
+        </div>
       </ModalContent>
     </Modal>
   );
