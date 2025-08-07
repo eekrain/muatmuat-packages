@@ -112,7 +112,7 @@ const apiResultTransportRequestList = {
           orderStatus: "PREPARE_FLEET",
           isNew: true,
           isHalalLogistics: false,
-          isSaved: true,
+          isSaved: false,
           isTaken: true,
           loadTimeStart: "2025-08-22T10:00:00+07:00",
           loadTimeEnd: "2025-08-22T12:00:00+07:00",

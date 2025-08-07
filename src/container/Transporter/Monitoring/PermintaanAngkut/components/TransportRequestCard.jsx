@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
+import { cn } from "@/lib/utils";
 
 const TransportRequestCard = ({
   request,
@@ -67,14 +68,16 @@ const TransportRequestCard = ({
 
   return (
     <div
-      className={`rounded-[8px] border bg-white shadow-sm ${
-        request.isNew ? "border-warning-400 bg-warning-50" : "border-[#C4C4C4]"
-      }`}
+      className={cn(
+        "overflow-hidden rounded-[8px] border border-[#C4C4C4] bg-white shadow-sm",
+        request.isNew && "border-warning-400 bg-warning-50",
+        request.isTaken && "pointer-events-none brightness-95 grayscale"
+      )}
     >
       {/* New Request Header */}
       {request.isNew && (
         <>
-          <div className="flex h-[42px] items-center justify-between px-3 py-2">
+          <div className="flex h-[42px] items-center justify-between bg-muat-trans-primary-50 px-3 py-2">
             <span className="text-sm font-semibold text-neutral-900">
               Permintaan Baru
             </span>
@@ -92,7 +95,8 @@ const TransportRequestCard = ({
           <div className="flex flex-wrap items-center gap-2">
             {/* Time Label */}
             <span
-              className={`flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold ${
+              className={cn(
+                "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
                 request.timeLabel?.color === "green"
                   ? "bg-success-50 text-success-700"
                   : request.timeLabel?.color === "blue"
@@ -100,14 +104,15 @@ const TransportRequestCard = ({
                     : request.orderType === "INSTANT"
                       ? "bg-success-50 text-success-700"
                       : "bg-primary-50 text-primary-700"
-              }`}
+              )}
             >
               {request.orderType === "INSTANT" ? "Instan" : "Terjadwal"}
             </span>
 
             {/* Load Time Label */}
             <span
-              className={`flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold ${
+              className={cn(
+                "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
                 request.timeLabel?.color === "green"
                   ? "bg-success-50 text-success-700"
                   : request.timeLabel?.color === "blue"
@@ -116,7 +121,7 @@ const TransportRequestCard = ({
                         request.loadTimeText?.includes("Besok")
                       ? "bg-warning-50 text-warning-700"
                       : "bg-primary-50 text-primary-700"
-              }`}
+              )}
             >
               {request.loadTimeText || "Muat 7 Hari Lagi"}
             </span>
@@ -138,15 +143,16 @@ const TransportRequestCard = ({
           <div className="flex items-center gap-2">
             <button
               onClick={handleSave}
-              className={`flex h-6 w-6 items-center justify-center rounded-full hover:opacity-75 ${
+              className={cn(
+                "flex h-6 w-6 items-center justify-center rounded-full hover:opacity-75",
                 isSaved ? "bg-[#FFE9ED]" : "border border-[#C4C4C4] bg-white"
-              }`}
+              )}
             >
               <IconComponent
                 src={
                   isSaved ? "/icons/bookmark-filled.svg" : "/icons/bookmark.svg"
                 }
-                className={`h-5 w-5 ${isSaved ? "text-error-600" : ""}`}
+                className={cn("h-5 w-5", isSaved && "text-error-600")}
               />
             </button>
           </div>
