@@ -109,7 +109,7 @@ const LineItem = ({
           className={cn("text-xs font-medium text-neutral-600", labelClassName)}
           dangerouslySetInnerHTML={{ __html: label }}
         />
-        <span
+        <div
           className={cn(
             "whitespace-nowrap text-right text-xs font-medium",
             valueColorClass,
@@ -117,7 +117,7 @@ const LineItem = ({
           )}
         >
           {value}
-        </span>
+        </div>
       </div>
       {children}
     </div>

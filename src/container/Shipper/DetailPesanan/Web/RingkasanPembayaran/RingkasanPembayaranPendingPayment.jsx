@@ -86,7 +86,14 @@ export const RingkasanPembayaranPendingPayment = ({
 
             {/* Payment Details */}
             <div className="flex flex-col gap-6">
-              <CardPayment.Section title="Opsi Pembayaran" className="gap-2">
+              <CardPayment.Section
+                title={
+                  <span className="text-xs font-medium text-neutral-600">
+                    Opsi Pembayaran
+                  </span>
+                }
+                className="md:gap-2"
+              >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-neutral-900">
                     Bank{" "}
@@ -95,6 +102,11 @@ export const RingkasanPembayaranPendingPayment = ({
                     ] ?? "BCA"}{" "} */}
                     {dataRingkasanPembayaran.paymentMethod || "BCA"}
                   </span>
+                  <IconComponent
+                    src={`/icons/bca24.svg`}
+                    width={24}
+                    height={24}
+                  />
                   <IconComponent
                     src={`/icons/payment/${dataRingkasanPembayaran?.paymentMethod ?? "bca"}.svg`}
                     width={24}
@@ -105,8 +117,12 @@ export const RingkasanPembayaranPendingPayment = ({
               </CardPayment.Section>
 
               <CardPayment.Section
-                title="Nomor Virtual Account"
-                className="gap-2"
+                title={
+                  <span className="text-xs font-medium text-neutral-600">
+                    Nomor Virtual Account
+                  </span>
+                }
+                className="md:gap-2"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-neutral-900">
@@ -128,7 +144,14 @@ export const RingkasanPembayaranPendingPayment = ({
                 </div>
               </CardPayment.Section>
 
-              <CardPayment.Section title="Total Tagihan" className="gap-2">
+              <CardPayment.Section
+                title={
+                  <span className="text-xs font-medium text-neutral-600">
+                    Total Tagihan
+                  </span>
+                }
+                className="md:gap-2"
+              >
                 <span className="text-xs font-bold text-neutral-900">
                   {idrFormat(dataRingkasanPembayaran?.totalPrice)}
                 </span>
