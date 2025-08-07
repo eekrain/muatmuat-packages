@@ -159,7 +159,7 @@ const apiResultOrderDetail = {
         transporterOrderCode: "MT.25.AA.001",
         invoiceNumber: "INV/12345678",
         // orderStatus: OrderStatusEnum.LOADING,
-        orderStatus: OrderStatusEnum.CONFIRMED,
+        orderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
         orderTitle: "Proses Muat",
         unitFleetStatus: 1,
         orderType: OrderTypeEnum.INSTANT,

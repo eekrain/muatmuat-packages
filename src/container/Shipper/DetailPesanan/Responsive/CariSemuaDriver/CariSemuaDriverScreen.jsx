@@ -61,6 +61,7 @@ const CariSemuaDriverScreen = ({ dataStatusPesanan }) => {
                   withMenu={false}
                 />
                 <DriverInfo.Avatar driver={driver} />
+                <DriverInfo.Actions driver={driver} />
               </div>
             </div>
           ))

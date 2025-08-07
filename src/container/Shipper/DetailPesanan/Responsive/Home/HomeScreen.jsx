@@ -16,6 +16,7 @@ import {
 } from "@/lib/constants/detailpesanan/alert.enum";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { getAlertMetadata } from "@/lib/normalizers/detailpesanan/getAlertMetadata";
+import { toast } from "@/lib/toast";
 import useGetFleetSearchStatus from "@/services/Shipper/detailpesanan/getFleetSearchStatus";
 
 import DriverInfoSlider from "./components/DriverInfoSlider";
@@ -200,6 +201,10 @@ const DetailPesananScreen = ({
           />
           <TabContentDetailPIC dataDetailPIC={dataDetailPIC} />
         </Tabs>
+
+        <button onClick={() => toast.success("Berhasil membatalkan pesanan")}>
+          tes
+        </button>
       </div>
 
       {!WHITELIST_PENDING_PAYMENT.includes(dataStatusPesanan?.orderStatus) ? (

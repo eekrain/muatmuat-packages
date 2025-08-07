@@ -13,7 +13,7 @@ import { PaymentMethodIconFromTitle } from "@/lib/constants/detailpesanan/paymen
 import { formatDate } from "@/lib/utils/dateFormat";
 import { idrFormat } from "@/lib/utils/formatters";
 
-const DetailRefundPesananWeb = ({ refundData, waitingTimeRaw }) => {
+const DetailRefundPesananWeb = ({ refundData, waitingTimeData = [] }) => {
   const params = useParams();
 
   const breadcrumbData = [
@@ -131,7 +131,7 @@ const DetailRefundPesananWeb = ({ refundData, waitingTimeRaw }) => {
                       breakdown ? idrFormat(breakdown.waitingTimeFee) : "-"
                     }
                   />
-                  <ModalDetailWaktuTunggu drivers={waitingTimeRaw} />
+                  <ModalDetailWaktuTunggu drivers={waitingTimeData} />
                 </div>
               </CardPayment.Section>
 

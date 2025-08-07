@@ -1,18 +1,14 @@
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 
 import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
-import { useClientHeight } from "@/hooks/use-client-height";
 import { useTranslation } from "@/hooks/use-translation";
 
-const IS_SHOW_ESTIMATE_ARRIVAL = false;
-
-export const LeftPanel = ({ dataDriverStatus }) => {
+export const LeftPanel = ({ dataTimeline }) => {
   const { t } = useTranslation();
-  const router = useRouter();
   const params = useParams();
   const breadcrumbItems = [
     { name: t("labelDaftarPesanan"), href: "/daftarpesanan" },
@@ -23,67 +19,36 @@ export const LeftPanel = ({ dataDriverStatus }) => {
     { name: t("titleLacakArmada") },
   ];
 
-  const { ref: contentRef, height: contentHeight } = useClientHeight();
-
   return (
-    <div className="grid grid-cols-1 grid-rows-[16px_24px_1fr] gap-6 bg-white px-6 pb-6 pt-8 shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
+    <div className="grid max-h-[calc(100vh-92px)] grid-cols-1 grid-rows-[auto_auto_1fr] gap-6 bg-white px-6 pb-6 pt-8 shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
       <BreadCrumb data={breadcrumbItems} />
       <PageTitle className="mb-0">{t("titleLacakArmada")}</PageTitle>
 
-      {dataDriverStatus && (
-        <div className="flex flex-col gap-4 rounded-xl border border-[#C4C4C4] pt-5">
-          <div className="px-4">
-            <div className="flex flex-col gap-3 border-b border-neutral-400 pb-4">
-              {/* Status Badge */}
-              <BadgeStatusPesanan className="h-6 w-fit" variant="primary">
-                {dataDriverStatus?.dataDriver?.statusTitle}
-              </BadgeStatusPesanan>
+      {/* FIX: Added h-full and overflow-hidden to ensure this container properly fills the grid area and constrains its children. */}
+      <div className="flex h-full flex-col gap-4 overflow-hidden rounded-xl border border-[#C4C4C4] pt-5">
+        <div className="px-4">
+          <div className="flex flex-col gap-3 border-b border-neutral-400 pb-4">
+            <BadgeStatusPesanan className="h-6 w-fit" variant="primary">
+              {dataTimeline?.dataDriver?.statusTitle}
+            </BadgeStatusPesanan>
 
-              {/* Driver Profile */}
-              <AvatarDriver
-                name={dataDriverStatus?.dataDriver?.name}
-                image={dataDriverStatus?.dataDriver?.profileImage}
-                licensePlate={dataDriverStatus?.dataDriver?.licensePlate}
-              />
-            </div>
-          </div>
-          {/* {dataDriverStatus?.dataDriver?.statusDriver?.startsWith("MENUJU") && (
-            <div className="px-4">
-              <div className="flex h-[45px] items-center justify-between bg-[#F1F1F1] px-3 text-xs leading-[1.1]">
-                <span className="max-w-[120px] font-medium text-[#7B7B7B]">
-                  {t("labelEstimasiTibaLokasiBongkar2")}
-                </span>
-                <span className="font-semibold text-black">
-                  4 Okt 2024 05:30 WIB
-                </span>
-              </div>
-            </div>
-          )} */}
-
-          <h2 className="px-4 text-xs font-semibold leading-[14.4px] text-black">
-            {t("titleDetailStatusDriver")}
-          </h2>
-
-          <div
-            ref={contentRef}
-            className="pl-4 pr-[6px]"
-            style={{
-              ...(!contentHeight && { flex: 1 }),
-            }}
-          >
-            {contentHeight && (
-              <div
-                className="overflow-y-auto pb-5 pr-[8px]"
-                style={{
-                  ...(contentHeight && { maxHeight: contentHeight }),
-                }}
-              >
-                <DriverTimeline dataDriverStatus={dataDriverStatus} />
-              </div>
-            )}
+            <AvatarDriver
+              name={dataTimeline?.dataDriver?.name}
+              image={dataTimeline?.dataDriver?.profileImage}
+              licensePlate={dataTimeline?.dataDriver?.licensePlate}
+            />
           </div>
         </div>
-      )}
+
+        <h2 className="px-4 text-xs font-semibold leading-[14.4px] text-black">
+          {t("titleDetailStatusDriver")}
+        </h2>
+
+        {/* This div will now scroll correctly only when its content overflows the parent's available space. */}
+        <div className="mr-2 flex-1 overflow-y-auto pb-5 pl-4 pr-1.5">
+          <DriverTimeline dataTimeline={dataTimeline} />
+        </div>
+      </div>
     </div>
   );
 };

@@ -31,7 +31,6 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
   const params = useResponsiveRouteParams();
 
   const { driverId, orderId } = params;
-  console.log("🚀 ~ LacakArmadaScreen ~ params:", params);
 
   const [isOpenBottomsheet, setIsOpenBottomsheet] = useState(false);
 
@@ -40,7 +39,6 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
   const driver = dataStatusPesanan?.driverStatus.find(
     (d) => d.driverId === driverId
   );
-  console.log(driver, "driver");
   const isShowEstimatedArrival = driver?.driverStatus.startsWith("MENUJU_");
 
   return (

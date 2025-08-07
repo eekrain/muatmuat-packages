@@ -4,7 +4,7 @@ import { mockGetAvailableVouchers } from "@/services/Shipper/voucher/mockVoucher
 import { muatTransGetAvailableVouchers } from "@/services/Shipper/voucher/muatTransVoucherService";
 import { useTokenStore } from "@/store/AuthStore/tokenStore";
 
-export const useVouchers = (token, useMockData = false, mockEmpty = false) => {
+export const useVouchers = (token, useMockData = true, mockEmpty = false) => {
   const [vouchers, setVouchers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

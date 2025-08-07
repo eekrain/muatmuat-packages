@@ -13,10 +13,11 @@ import { MapPanel } from "./MapPanel/MapPanel";
 const LacakArmadaWeb = () => {
   const params = useParams();
   const { setIsGlobalLoading } = useLoadingAction();
-  const { data: dataDriverStatus, isLoading } = useGetDriverStatusTimeline(
+  const { data: dataTimeline, isLoading } = useGetDriverStatusTimeline(
     params.orderId,
     params.driverId
   );
+
   useEffect(() => {
     setIsGlobalLoading(isLoading);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -25,11 +26,11 @@ const LacakArmadaWeb = () => {
   return (
     <>
       <div className="grid h-[calc(100dvh-92px)] grid-cols-[480px_1fr]">
-        <LeftPanel dataDriverStatus={dataDriverStatus} />
+        <LeftPanel dataTimeline={dataTimeline} />
         <MapPanel />
       </div>
 
-      {isDev && <pre>{JSON.stringify(dataDriverStatus, null, 2)}</pre>}
+      {isDev && <pre>{JSON.stringify(dataTimeline, null, 2)}</pre>}
     </>
   );
 };

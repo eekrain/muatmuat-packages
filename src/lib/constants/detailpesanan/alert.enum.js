@@ -13,7 +13,7 @@ export const AlertLabelEnum = {
   REMINDER_REPAYMENT_ORDER: "messageReminderRepaymentOrder",
   WAITING_TIME_CHARGE: "messageWaitingTimeCharge",
   SHOW_QRCODE_DRIVER: "messageShowQrcodeDriver",
-  REFUND_IN_PROCESS: "messageRefundInProcess",
+  REFUND_IN_PROCESS: "Pengembalian dana sedang dalam proses.",
   REFUND_COMPLETED: "messageRefundCompleted",
   ORDER_CHANGES_CONFIRMATION: "messageOrderChangesConfirmation",
   CONFIRMATION_WAITING_PREPARE_FLEET: "messageConfirmationWaitingPrepareFleet",
@@ -25,7 +25,8 @@ export const AlertInfoEnum = {
   // WAITING_TIME_CHARGE: "Informasi biaya waktu tunggu",
   SHOW_QRCODE_DRIVER:
     "QR Code diperlukan agar driver dapat melanjutkan proses muat atau bongkar barang.",
-  REFUND_IN_PROCESS: "infoRefundInProcess",
+  REFUND_IN_PROCESS:
+    "Pengembalian dana sedang dalam proses, jumlah dana akan disesuakan setelah dikurangi <b>Admin Pembatalan</b> dan <b>Tambahan Biaya</b>. Info lebih lanjut hubungi Customer Service.",
   REFUND_COMPLETED: "infoRefundCompleted",
   CANCELED_BY_SYSTEM: "infoCanceledBySystem",
 };
