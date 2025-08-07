@@ -25,14 +25,33 @@ export function SelectedProvinces({
   const [isLeftArrowDisabled, setIsLeftArrowDisabled] = useState(true);
   const [isRightArrowDisabled, setIsRightArrowDisabled] = useState(false);
 
-  const checkArrows = () => {
-    if (scrollContainerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } =
-        scrollContainerRef.current;
-      setIsLeftArrowDisabled(scrollLeft === 0);
-      setIsRightArrowDisabled(scrollLeft >= scrollWidth - clientWidth - 1);
-    }
-  };
+  useEffect(() => {
+    const checkScroll = () => {
+      if (scrollContainerRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } =
+          scrollContainerRef.current;
+
+        const isOverflowing = scrollWidth > clientWidth;
+        setShowLeftArrow(isOverflowing);
+        setShowRightArrow(isOverflowing);
+
+        setIsLeftArrowDisabled(scrollLeft === 0);
+        setIsRightArrowDisabled(scrollLeft >= scrollWidth - clientWidth - 1);
+      }
+    };
+
+    // Timeout to allow DOM to update before checking scroll
+    const timer = setTimeout(checkScroll, 0);
+    window.addEventListener("resize", checkScroll);
+    const currentRef = scrollContainerRef.current;
+    currentRef?.addEventListener("scroll", checkScroll);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", checkScroll);
+      currentRef?.removeEventListener("scroll", checkScroll);
+    };
+  }, [provinces]);
 
   const handleScroll = (scrollOffset) => {
     if (scrollContainerRef.current) {
@@ -56,30 +75,6 @@ export function SelectedProvinces({
     }
   };
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (provinces.length > 8) {
-        setShowLeftArrow(true);
-        setShowRightArrow(true);
-      } else {
-        setShowLeftArrow(false);
-        setShowRightArrow(false);
-      }
-      checkArrows();
-    };
-
-    handleResize(); // Initial check
-
-    const currentRef = scrollContainerRef.current;
-    currentRef.addEventListener("scroll", checkArrows);
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      currentRef.removeEventListener("scroll", checkArrows);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [provinces]);
-
   return (
     <>
       <div className={`flex items-center gap-2 ${className}`}>
@@ -98,7 +93,9 @@ export function SelectedProvinces({
         )}
         <div
           ref={scrollContainerRef}
-          className="no-scrollbar flex flex-grow items-center gap-2 overflow-x-auto"
+          className={`no-scrollbar flex items-center gap-2 overflow-x-auto ${
+            showRightArrow ? "flex-grow" : ""
+          }`}
         >
           {provinces.map((province) => (
             <TagBubble
@@ -125,7 +122,9 @@ export function SelectedProvinces({
         {showAddButton && (
           <Button
             variant="muattrans-primary"
-            className="ml-auto h-7 rounded-full px-4 text-xs"
+            className={`h-7 rounded-full px-4 text-xs ${
+              showRightArrow ? "ml-auto" : "ml-2"
+            }`}
             onClick={onAdd}
           >
             {addButtonText}
