@@ -8,7 +8,6 @@ import { id } from "date-fns/locale";
 import BadgeOrderType from "@/components/Badge/BadgeOrderType";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
-import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import Search from "@/components/Search/Search";
@@ -18,6 +17,8 @@ import { cn } from "@/lib/utils";
 import { ORDER_STATUS, getOrderStatusBadge } from "@/lib/utils/orderStatus";
 import { useGetActiveOrders } from "@/services/Transporter/monitoring/daftar-pesanan-active/getActiveOrders";
 import { useGetActiveOrdersCount } from "@/services/Transporter/monitoring/daftar-pesanan-active/getActiveOrdersCount";
+
+import Onboarding from "../Onboarding/Onboarding";
 
 const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
   const { data: activeOrdersCount } = useGetActiveOrdersCount();
@@ -89,7 +90,7 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
         order.loadTimeEnd &&
         format(startDate, "HH:mm") !== format(endDate, "HH:mm")
       ) {
-        timeRange = `${format(startDate, "dd MMM yyyy HH:mm")} WIB - ${format(endDate, "HH:mm")} WIB`;
+        timeRange = `${format(startDate, "dd MMM yyyy HH:mm")} WIB s/d ${format(endDate, "HH:mm")} WIB`;
       } else {
         timeRange = `${format(startDate, "dd MMM yyyy HH:mm")} WIB`;
       }
@@ -102,10 +103,10 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
 
         if (startDateStr === endDateStr) {
           // Same day: show date once with time range
-          timeRange = `${format(startDate, "dd MMM yyyy HH:mm")} WIB - ${format(endDate, "HH:mm")} WIB`;
+          timeRange = `${format(startDate, "dd MMM yyyy HH:mm")} WIB s/d ${format(endDate, "HH:mm")} WIB`;
         } else {
           // Different days: show full date and time for both
-          timeRange = `${format(startDate, "dd MMM yyyy HH:mm")} WIB - ${format(endDate, "dd MMM yyyy HH:mm")} WIB`;
+          timeRange = `${format(startDate, "dd MMM yyyy HH:mm")} WIB s/d ${format(endDate, "dd MMM yyyy HH:mm")} WIB`;
         }
       } else {
         timeRange = `${format(startDate, "dd MMM yyyy HH:mm")} WIB`;
@@ -316,14 +317,7 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
           <h3 className="text-xs font-bold">
             Daftar <br /> Pesanan Aktif
           </h3>
-          <InfoTooltip
-            side="left"
-            appearance={{
-              iconClassName: "size-3.5",
-            }}
-          >
-            <p>Daftar pesanan aktif yang sedang berlangsung.</p>
-          </InfoTooltip>
+          <Onboarding />
         </div>
         <div className="flex items-center gap-3">
           {/* Status Filter Pills */}
