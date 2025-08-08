@@ -14,6 +14,7 @@ import { isDev } from "@/lib/constants/is-dev";
 import { toast } from "@/lib/toast";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { useGetFleetsUploadHistoryWithParams } from "@/services/Transporter/manajemen-armada/getFleetsUploadHistory";
+import { fetcherExcelDriversMassalTemplate } from "@/services/Transporter/manajemen-driver/getDriversExcelTemplate";
 import { usePostDriverExcelUpload } from "@/services/Transporter/manajemen-driver/postDriverExcelUpload";
 
 const TambahExcel = () => {
@@ -96,6 +97,7 @@ const TambahExcel = () => {
   ];
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
+  const [isDownloadingTemplate, setIsDownloadingTemplate] = useState(false);
 
   const { data, isLoading } = useGetFleetsUploadHistoryWithParams(searchParams);
   const { trigger, isMutating } = usePostDriverExcelUpload();
@@ -122,35 +124,39 @@ const TambahExcel = () => {
           "Gagal menambah driver. \n Periksa laporan untuk mengetahui driver yang gagal ditambahkan"
         );
       });
-    // Simulate upload process
-    // setTimeout(() => {
-    //   setIsUploading(false);
-    //   setList([
-    //     ...list,
-    //     {
-    //       tanggal: new Date().toISOString(),
-    //       document: file.name,
-    //       name: "John Doe",
-    //       status: stateUpload && isExcelFile(file) ? "Sukses" : "Gagal",
-    //     },
-    //   ]);
-    //   // setUploadedFile(file);
-    //   if (stateUpload) {
-    //     // Show success message
-    //     if (isExcelFile(file)) {
-    //       toast.success(`Berhasil menambah ${20} armada`);
-    //       router.push("/manajemen-armada/tambah-massal/preview-armada");
-    //     } else {
-    //       toast.error(
-    //         "Gagal menambah armada.\n Periksa laporan untuk mengetahu armada yang gagal ditambahkan."
-    //       );
-    //     }
-    //   } else {
-    //     toast.error(
-    //       "Harap selesaikan data pada menu Draft terlebih dahulu sebelum menambah armada baru."
-    //     );
-    //   }
-    // }, 3000);
+  };
+
+  const handleDownloadTemplate = async () => {
+    try {
+      setIsDownloadingTemplate(true);
+
+      // Fetch template data when user clicks download
+      const templateData = await fetcherExcelDriversMassalTemplate(
+        "v1/fleet/excel-template",
+        { arg: null }
+      );
+
+      if (templateData?.Data?.templateUrl) {
+        // Create a temporary anchor element to download the file
+        const link = document.createElement("a");
+        link.href = templateData.Data.templateUrl;
+        link.download = "Template_Armada.xlsx"; // Set the filename
+        link.target = "_blank"; // Open in new tab if direct download fails
+
+        // Append to body, click, and remove
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        toast.success("Template berhasil diunduh");
+      } else {
+        toast.error("Template tidak tersedia");
+      }
+    } catch {
+      toast.error("Gagal mengunduh template");
+    } finally {
+      setIsDownloadingTemplate(false);
+    }
   };
 
   const handleSort = (column, sortBy) => {
@@ -244,6 +250,9 @@ const TambahExcel = () => {
                 height={16}
               />
             }
+            onClick={handleDownloadTemplate}
+            disabled={isDownloadingTemplate}
+            loading={isDownloadingTemplate}
           >
             Unduh Template
           </Button>
