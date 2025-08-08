@@ -7,13 +7,14 @@ import { idrFormat } from "@/lib/utils/formatters";
 import { BottomsheetDetailPengirimanDokumen } from "./Popup/BottomsheetDetailPengirimanDokumen";
 
 export const TransactionSummary = ({ dataRingkasanPembayaran }) => {
-  const isRingkasanTransaksi = true;
   const { t } = useTranslation();
+  const isRingkasanTransaksi = true;
 
   const [isDocumentShippingDetailOpen, setDocumentShippingDetailOpen] =
     useState(false);
+
   if (!dataRingkasanPembayaran) return null;
-  console.log(dataRingkasanPembayaran, "data");
+
   const {
     transportFee = 0,
     insuranceFee = 0,
@@ -45,7 +46,7 @@ export const TransactionSummary = ({ dataRingkasanPembayaran }) => {
             <div className="flex flex-col gap-6 border-neutral-400">
               <CardPayment.Section title="Biaya Pesan Jasa Angkut">
                 <CardPayment.LineItem
-                  label={`Nominal Pesan Jasa Angkut (${totalTruckUnit} Unit)`}
+                  label={`Nominal Pesan Jasa Angkut<br/>(${totalTruckUnit} Unit)`}
                   value={idrFormat(transportFee)}
                 />
               </CardPayment.Section>

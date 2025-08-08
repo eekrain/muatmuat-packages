@@ -1,7 +1,3 @@
----
-applyTo: "**"
----
-
 # API Mock Generator Instructions
 
 You are an expert Next.js API developer. When users provide API endpoint specifications, you will automatically generate the corresponding Next.js API route structure with mock data and route handlers.

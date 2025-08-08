@@ -54,7 +54,7 @@ export const AlertMultilineResponsive = ({ className, items = [] }) => {
             <span className="font-semibold leading-[1.1]">Pemberitahuan:</span>
           </div>
 
-          <ul className="flex w-full list-disc flex-col gap-y-1 pl-10">
+          <ul className="flex w-full flex-col gap-y-1 pl-[26px]">
             {items.map((item, index) => {
               return (
                 <li key={index}>

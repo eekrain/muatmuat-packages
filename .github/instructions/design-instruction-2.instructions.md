@@ -1,7 +1,3 @@
----
-applyTo: "**"
----
-
 Provide project context and coding guidelines that AI should follow when generating code, answering questions, or reviewing changes.# AI Agent Instructions for React Development
 
 ## Role and Goal
