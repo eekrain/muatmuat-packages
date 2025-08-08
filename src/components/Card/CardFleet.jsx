@@ -96,37 +96,39 @@ export default function CardFleet({
 
     return (
       <div className="space-y-1 pt-2 text-sm">
-        <div className="mt-2 flex flex-col border-b border-neutral-400 pb-3">
-          <p className="text-xs font-semibold text-error-400">
-            {fleet.detailSOS.sosCategory || "-"}
-          </p>
-          <p className="text-xs font-semibold text-neutral-900">
-            {fleet.detailSOS.description}
-          </p>
-          {fleet.hasSOSAlert && fleet.detailSOS.photos.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {fleet.detailSOS.photos.map((image, index) => (
-                <LightboxProvider key={index} images={fleet.detailSOS.photos}>
-                  <LightboxPreview
-                    image={image}
-                    index={index}
-                    alt={`SOS Image ${index + 1}`}
-                    className="h-14 w-14 rounded-md object-cover"
-                  />
-                </LightboxProvider>
-              ))}
-            </div>
-          )}
-
-          <div>
-            <p className="text-xs text-neutral-600">
-              Laporan Masuk :{" "}
-              <span className="text-xs font-semibold text-neutral-900">
-                10 Jan 2025 12:23 WIB
-              </span>
+        {isSOS && (
+          <div className="mt-2 flex flex-col border-b border-neutral-400 pb-3">
+            <p className="text-xs font-semibold text-error-400">
+              {fleet?.detailSOS?.sosCategory || "-"}
             </p>
+            <p className="text-xs font-semibold text-neutral-900">
+              {fleet?.detailSOS?.description}
+            </p>
+            {fleet.hasSOSAlert && fleet.detailSOS.photos.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {fleet.detailSOS.photos.map((image, index) => (
+                  <LightboxProvider key={index} images={fleet.detailSOS.photos}>
+                    <LightboxPreview
+                      image={image}
+                      index={index}
+                      alt={`SOS Image ${index + 1}`}
+                      className="h-14 w-14 rounded-md object-cover"
+                    />
+                  </LightboxProvider>
+                ))}
+              </div>
+            )}
+
+            <div>
+              <p className="text-xs text-neutral-600">
+                Laporan Masuk :{" "}
+                <span className="text-xs font-semibold text-neutral-900">
+                  10 Jan 2025 12:23 WIB
+                </span>
+              </p>
+            </div>
           </div>
-        </div>
+        )}
         <DriverAndPhoneSection fleet={fleet} />
         <LocationAndFleetSection fleet={fleet} />
         {(fleet.status === "ON_DUTY" ||
