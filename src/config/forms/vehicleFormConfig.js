@@ -52,9 +52,27 @@ export const informasiArmadaSchema = v.object({
           "Foto armada depan wajib diisi"
         )
       ),
-      image_armada_kiri: v.optional(v.any()),
-      image_armada_kanan: v.optional(v.any()),
-      image_armada_belakang: v.optional(v.any()),
+      image_armada_kiri: v.pipe(
+        v.any(),
+        v.check(
+          (val) => val !== null && val !== "",
+          "Foto armada kiri wajib diisi"
+        )
+      ),
+      image_armada_kanan: v.pipe(
+        v.any(),
+        v.check(
+          (val) => val !== null && val !== "",
+          "Foto armada kanan wajib diisi"
+        )
+      ),
+      image_armada_belakang: v.pipe(
+        v.any(),
+        v.check(
+          (val) => val !== null && val !== "",
+          "Foto armada belakang wajib diisi"
+        )
+      ),
     }),
   }),
   licensePlate: v.pipe(v.string(), v.minLength(1, "Nomor plat wajib diisi")),
@@ -166,6 +184,9 @@ export const validateVehicleForm = (
   data.informasiMuatan.forEach((item, index) => {
     const fieldLabels = {
       "informasi_armada.images.image_armada_depan": "Foto armada depan",
+      "informasi_armada.images.image_armada_kiri": "Foto armada kiri",
+      "informasi_armada.images.image_armada_belakang": "Foto armada belakang",
+      "informasi_armada.images.image_armada_kanan": "Foto armada kanan",
       licensePlate: "Nomor plat",
       jenis_truk: "Jenis truk",
       jenis_carrier: "Jenis carrier",
@@ -201,7 +222,52 @@ export const validateVehicleForm = (
           `${fieldArrayName}.${index}.informasi_armada.images.image_armada_depan`,
           {
             type: "manual",
-            message: "Foto armada depan wajib diisi",
+            message: "Foto armada wajib diisi",
+          }
+        );
+      }
+    }
+    // Check required fields and set errors for each one
+    if (!item.informasi_armada?.images?.image_armada_kiri) {
+      emptyFields.push(
+        `${fieldLabels["informasi_armada.images.image_armada_kiri"]} (Armada ${index + 1})`
+      );
+      if (setError) {
+        setError(
+          `${fieldArrayName}.${index}.informasi_armada.images.image_armada_kiri`,
+          {
+            type: "manual",
+            message: "Foto armada kiri wajib diisi",
+          }
+        );
+      }
+    }
+    // Check required fields and set errors for each one
+    if (!item.informasi_armada?.images?.image_armada_kanan) {
+      emptyFields.push(
+        `${fieldLabels["informasi_armada.images.image_armada_kanan"]} (Armada ${index + 1})`
+      );
+      if (setError) {
+        setError(
+          `${fieldArrayName}.${index}.informasi_armada.images.image_armada_kanan`,
+          {
+            type: "manual",
+            message: "Foto armada kanan wajib diisi",
+          }
+        );
+      }
+    }
+    // Check required fields and set errors for each one
+    if (!item.informasi_armada?.images?.image_armada_belakang) {
+      emptyFields.push(
+        `${fieldLabels["informasi_armada.images.image_armada_belakang"]} (Armada ${index + 1})`
+      );
+      if (setError) {
+        setError(
+          `${fieldArrayName}.${index}.informasi_armada.images.image_armada_belakang`,
+          {
+            type: "manual",
+            message: "Foto armada belakang wajib diisi",
           }
         );
       }

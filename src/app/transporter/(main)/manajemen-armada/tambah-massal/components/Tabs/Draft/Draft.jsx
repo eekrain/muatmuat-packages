@@ -18,6 +18,7 @@ import { normalizePayloadTambahArmadaMassal } from "@/lib/normalizers/transporte
 import { toast } from "@/lib/toast";
 import { useGetFleetsDrafts } from "@/services/Transporter/manajemen-armada/getFleetsDrafts";
 import { usePostFleetBulkCreate } from "@/services/Transporter/manajemen-armada/postFleetBulkCreate";
+import { usePostFleetBulkDrafts } from "@/services/Transporter/manajemen-armada/postFleetsBulkDrafts";
 
 import ArmadaTable from "../../ArmadaTable/ArmadaTable";
 
@@ -100,12 +101,15 @@ const mapDraftsToFormData = (drafts) => {
 const Draft = ({ isDraftAvailable }) => {
   const router = useRouter();
   const isFirstMount = useRef(true);
-  const { data, isLoading, error } = useGetFleetsDrafts(
+  const { data, isLoading, error, mutate } = useGetFleetsDrafts(
     isDraftAvailable ? "/v1/fleet/drafts" : null
   );
 
   const { trigger: handlePostFleetBulkCreate, isMutating } =
     usePostFleetBulkCreate();
+
+  const { trigger: handlePostFleetBulkDraft, isMutating: isDraftMutating } =
+    usePostFleetBulkDrafts();
 
   // Custom submit handler for this page
   const handleSubmit = (value) => {
@@ -127,10 +131,11 @@ const Draft = ({ isDraftAvailable }) => {
   // Custom save as draft handler for this page
   const handleSaveAsDraft = (value) => {
     const payload = normalizePayloadTambahArmadaMassal(value);
-    handlePostFleetBulkCreate(payload)
+    handlePostFleetBulkDraft(payload)
       .then(() => {
         // Show success message
         toast.success("Draft armada berhasil disimpan.");
+        mutate();
       })
       .catch((_error) => {
         // Show error message
@@ -138,7 +143,6 @@ const Draft = ({ isDraftAvailable }) => {
           "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
         );
       });
-    router.push(`/manajemen-armada?tab=process`);
   };
 
   // Use the reusable table form hook for vehicle data
@@ -160,6 +164,7 @@ const Draft = ({ isDraftAvailable }) => {
     setValue,
     reset,
     append,
+    handleSaveAsDraft: saveAsDraft,
   } = useTableForm({
     defaultValues: vehicleDefaultValues, // Always start with default values
     schema: vehicleFormSchema,
@@ -240,7 +245,7 @@ const Draft = ({ isDraftAvailable }) => {
         <div className="flex items-center justify-end">
           <div className="mt-4 flex w-full items-end justify-end gap-3">
             <Button
-              onClick={handleSaveAsDraft}
+              onClick={saveAsDraft}
               variant="muattrans-primary-secondary"
               type="button"
             >

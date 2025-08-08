@@ -11,8 +11,8 @@ import Select from "@/components/Select";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
-import ModalAddImage from "../../../../manajemen-driver/tambah-massal/components/ModalAddImage/ModalAddImage";
 import FileUploadInput from "../FileUploadInput";
+import ModalAddImage from "../ModalAddImage/ModalAddImage";
 import DropdownJenisCarrier from "./DropdownJenisCarrier";
 import DropdownJenisTruk from "./DropdownJenisTruk";
 import DropdownMerekKendaraan from "./DropdownMerekKendaraan";
@@ -478,11 +478,12 @@ const ArmadaTableRow = ({
               src={data.informasi_armada.images.image_armada_depan}
               alt="Foto Armada Depan"
               className={cn(
-                "w-12 shrink cursor-pointer rounded-lg object-cover",
-                hasError("informasi_armada.images.image_armada_belakang") ||
+                "r aspect-square w-12 shrink cursor-pointer rounded-lg object-cover",
+                (hasError("informasi_armada.images.image_armada_belakang") ||
                   hasError("informasi_armada.images.image_armada_kiri") ||
-                  (hasError("informasi_armada.images.image_armada_depan") &&
-                    "border-error-400 hover:border-error-400")
+                  hasError("informasi_armada.images.image_armada_kanan") ||
+                  hasError("informasi_armada.images.image_armada_depan")) &&
+                  "border-2 border-error-400 hover:border-error-400"
               )}
             />
           ) : (

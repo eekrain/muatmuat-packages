@@ -125,7 +125,7 @@ export default function PreviewArmada({ params }) {
           "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
         );
       });
-    redirect("/manajemen-armada/tambah-massal");
+    redirect("/manajemen-armada/tambah-massal?tab=draft");
   };
 
   // Handle back navigation with confirmation
