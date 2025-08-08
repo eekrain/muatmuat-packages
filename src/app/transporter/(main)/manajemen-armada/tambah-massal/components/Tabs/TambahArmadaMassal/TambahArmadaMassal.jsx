@@ -58,7 +58,7 @@ const TambahArmadaMassal = ({ isDraftAvailable }) => {
       .then(() => {
         // Show success message
         toast.success("Draft armada berhasil disimpan.");
-        router.push(`/manajemen-armada?tab=process`);
+        onValueChange("draft");
       })
       .catch((_error) => {
         // Show error message
