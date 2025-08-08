@@ -11,8 +11,8 @@ import Select from "@/components/Select";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
-import FileUploadInput from "../../preview-armada/components/FileUploadInput";
-import ModalAddImage from "../../preview-armada/components/ModalAddImage/ModalAddImage";
+import ModalAddImage from "../../../../manajemen-driver/tambah-massal/components/ModalAddImage/ModalAddImage";
+import FileUploadInput from "../FileUploadInput";
 import DropdownJenisCarrier from "./DropdownJenisCarrier";
 import DropdownJenisTruk from "./DropdownJenisTruk";
 import DropdownMerekKendaraan from "./DropdownMerekKendaraan";

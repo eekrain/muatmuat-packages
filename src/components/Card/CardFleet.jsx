@@ -62,7 +62,7 @@ export default function CardFleet({
       <>
         <div className="mt-2 flex flex-col border-b border-neutral-400 pb-3">
           <p className="text-xs font-semibold text-error-400">
-            Truk/muatan dicuri
+            {fleet.detailSOS.description || "-"}
           </p>
           <div>
             <p className="text-xs text-neutral-600">
@@ -210,7 +210,7 @@ function NeedResponseButton({ onClick }) {
 
 function OnDutyDetails({ fleet }) {
   return (
-    <div className="mt-4 flex w-full flex-col gap-3 rounded-lg border-t border-x-muat-trans-400 bg-[#F8F8FB] px-3 py-3">
+    <div className="mt-4 flex w-full flex-col gap-3 rounded-lg border-t border-x-muat-trans-400 bg-[#F8F8FB] px-3 py-3 pt-4">
       <div>
         <p className="mb-3 text-xs text-gray-600">No. Pesanan</p>
         <p className="text-xs font-semibold text-black">
@@ -287,22 +287,24 @@ function DriverInfo({ fleet, showLabel = false }) {
       <User className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
       <div className="min-w-0">
         {showLabel && <label className="text-xs text-gray-500">Driver</label>}
-        <InfoTooltip
-          trigger={
-            <p
-              className={cn(
-                "truncate",
-                showLabel
-                  ? "text-xs font-semibold text-gray-900"
-                  : "text-xs font-semibold text-neutral-900"
-              )}
-            >
-              {fleet.driver?.name || "-"}
-            </p>
-          }
-        >
-          {fleet.driver?.name || "-"}
-        </InfoTooltip>
+        <div className="flex items-center">
+          <InfoTooltip
+            trigger={
+              <p
+                className={cn(
+                  "truncate",
+                  showLabel
+                    ? "text-xs font-semibold text-gray-900"
+                    : "text-xs font-semibold text-neutral-900"
+                )}
+              >
+                {fleet.driver?.name || "-"}
+              </p>
+            }
+          >
+            {fleet.driver?.name || "-"}
+          </InfoTooltip>
+        </div>
       </div>
     </div>
   );
@@ -349,7 +351,7 @@ function LocationInfoExpanded({ fleet }) {
         <p className="text-xs font-semibold text-gray-900">
           {fleet.lastLocation?.address?.district || "Unknown"}
         </p>
-        <p className="text-xxs text-neutral-600">
+        <p className="text-xxs text-neutral-900">
           {fleet.lastLocation?.address?.city || "Unknown"}
         </p>
       </div>
@@ -366,7 +368,7 @@ function FleetInfo({ fleet }) {
         <p className="font-semibold text-gray-900">
           {fleet.carrierType?.name || "-"}
         </p>
-        <p className="text-xxs text-neutral-600">
+        <p className="text-xxs text-neutral-900">
           {fleet.truckType?.name || "-"}
         </p>
       </div>

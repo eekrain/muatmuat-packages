@@ -13,7 +13,7 @@ import { MapPanel } from "./MapPanel/MapPanel";
 const LacakArmadaWeb = () => {
   const params = useParams();
   const { setIsGlobalLoading } = useLoadingAction();
-  const { data: dataTimeline, isLoading } = useGetDriverStatusTimeline(
+  const { data: dataDriverTimeline, isLoading } = useGetDriverStatusTimeline(
     params.orderId,
     params.driverId
   );
@@ -26,11 +26,11 @@ const LacakArmadaWeb = () => {
   return (
     <>
       <div className="grid h-[calc(100dvh-92px)] grid-cols-[480px_1fr]">
-        <LeftPanel dataTimeline={dataTimeline} />
+        <LeftPanel dataDriverTimeline={dataDriverTimeline} />
         <MapPanel />
       </div>
 
-      {isDev && <pre>{JSON.stringify(dataTimeline, null, 2)}</pre>}
+      {isDev && <pre>{JSON.stringify(dataDriverTimeline, null, 2)}</pre>}
     </>
   );
 };

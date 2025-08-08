@@ -19,12 +19,12 @@ const Dropzone = ({ onFileAccepted, inputRef, maxSize, acceptedFormats }) => {
 
       const fileExtension = `.${file.name.split(".").pop().toLowerCase()}`;
       if (!acceptedFormats.includes(fileExtension)) {
-        toast.error("Format file tidak sesuai ketentuan (jpg/png)");
+        toast.error("Format file tidak sesuai ketentuan");
         return null;
       }
 
       if (file.size > maxSize * 1024 * 1024) {
-        toast.error(`Ukuran file melebihi ${maxSize}MB`);
+        toast.error(`Ukuran file maksimal ${maxSize}MB`);
         return null;
       }
       return file;
@@ -163,7 +163,7 @@ const ImageUploudWithModal = ({
           )}
         </div>
         <div className="flex items-center">
-          <Button type="button" onClick={openUploadModal}>
+          <Button type="button" onClick={openUploadModal} className="!px-8">
             {croppedImage ? changeLabel : label}
           </Button>
           <div className="ml-2 text-xs leading-tight text-neutral-600">

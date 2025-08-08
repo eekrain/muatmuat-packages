@@ -8,6 +8,7 @@ import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useTranslation } from "@/hooks/use-translation";
 import { normalizeUpdateOrder } from "@/lib/normalizers/sewaarmada/normalizeUpdateOrder";
 import { cn } from "@/lib/utils";
+import { idrFormat } from "@/lib/utils/formatters";
 import { useUpdateOrder } from "@/services/Shipper/sewaarmada/updateOrder";
 import { useSewaArmadaStore } from "@/store/Shipper/forms/sewaArmadaStore";
 
@@ -114,33 +115,25 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
                     >
                       {title}
                     </span>
-                    {items.map(({ label, price }, itemKey) => {
-                      const isTaxSection = label
-                        .toLowerCase()
-                        .includes("pajak");
-                      return (
+                    {items.map(({ label, price }, itemKey) => (
+                      <div
+                        className={
+                          "flex items-center justify-between text-neutral-900"
+                        }
+                        key={itemKey}
+                      >
                         <div
                           className={
-                            "flex items-center justify-between text-neutral-900"
+                            "max-w-[180px] text-xs font-medium leading-[14.4px] text-neutral-600"
                           }
-                          key={itemKey}
                         >
-                          <div
-                            className={
-                              "max-w-[180px] text-xs font-medium leading-[14.4px] text-neutral-600"
-                            }
-                          >
-                            {label}
-                          </div>
-                          <span
-                            className={`text-xs font-medium leading-[14.4px] ${isTaxSection ? "text-[#EE4343]" : "text-neutral-900"}`}
-                          >
-                            {isTaxSection ? "-" : ""}Rp
-                            {price.toLocaleString("id-ID")}
-                          </span>
+                          {label}
                         </div>
-                      );
-                    })}
+                        <span className="text-xs font-medium leading-[14.4px] text-neutral-900">
+                          {idrFormat(price)}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 ))}
               </>

@@ -205,13 +205,54 @@ const apiResultFleetList = {
           carrierId: "carrier-uuid-2",
           name: "Bak Tertutup",
         },
-        status: "READY_FOR_ORDER",
+        status: "ON_DUTY",
         isActive: false,
         hasSOSAlert: true,
         detailSOS: {
           sosId: "sos-uuid-2",
           sosCategory: "MECHANICAL_ISSUE",
           description: "Mesin overheating",
+          reportAt: "2025-07-25T11:20:00Z",
+          photos: [
+            "https://example.com/photo2.jpg",
+            "https://example.com/photo3.jpg",
+          ],
+        },
+        needsResponseChange: false,
+        activeOrder: null,
+      },
+      {
+        fleetId: "fleet-uuid-90",
+        licensePlate: "B7890JKL",
+        driver: {
+          driverId: "driver-uuid-5",
+          name: "Robert Brown",
+          phoneNumber: "+628333444555",
+        },
+        lastLocation: {
+          latitude: -6.3972,
+          longitude: 106.8249,
+          address: {
+            district: "Sawangan",
+            city: "Depokasdfasdfs",
+          },
+          lastUpdate: "2025-07-25T11:30:00Z",
+        },
+        truckType: {
+          truckTypeId: "truck-type-uuid-2",
+          name: "Box",
+        },
+        carrierType: {
+          carrierId: "carrier-uuid-2",
+          name: "Bak Tertutup",
+        },
+        status: "ON_DUTY",
+        isActive: false,
+        hasSOSAlert: true,
+        detailSOS: {
+          sosId: "sos-uuid-2",
+          sosCategory: "MECHANICAL_ISSUE",
+          description: null,
           reportAt: "2025-07-25T11:20:00Z",
           photos: [
             "https://example.com/photo2.jpg",

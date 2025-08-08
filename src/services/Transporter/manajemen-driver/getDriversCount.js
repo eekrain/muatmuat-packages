@@ -1,5 +1,9 @@
 import useSWR from "swr";
 
+import { fetcherMuatrans } from "@/lib/axios";
+
+const isUseMock = false; // Set to true to use mock data
+
 const apiResultDriversCount = {
   data: {
     Message: {
@@ -17,11 +21,12 @@ const apiResultDriversCount = {
 };
 
 export const fetcherDriversCount = async () => {
-  // const result = await fetcherMuatrans.get("v1/drivers/count");
-  // return result?.data?.Data || {};
+  if (isUseMock) {
+    return apiResultDriversCount.data.Data;
+  }
 
-  const result = apiResultDriversCount;
-  return result.data.Data;
+  const result = await fetcherMuatrans.get("v1/drivers/count");
+  return result?.data?.Data || {};
 };
 
 export const useGetDriversCount = () => {

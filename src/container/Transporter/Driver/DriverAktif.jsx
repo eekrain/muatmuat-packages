@@ -33,7 +33,10 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
+  const [sortConfig, setSortConfig] = useState({
+    sort: "createdAt",
+    order: "asc",
+  });
   const [searchValue, setSearchValue] = useState("");
   const [filters, setFilters] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);

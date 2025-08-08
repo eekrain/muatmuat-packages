@@ -122,9 +122,7 @@ export const NewTimelineItem = ({
           )}
         >
           {!variant.startsWith("bullet") ? (
-            <div className="mt-[1.5px] text-xxs md:-ml-[0.5px] md:-mt-[0.5px]">
-              {index + 1}
-            </div>
+            <div className="mt-[1.5px] text-xxs md:mt-[0.5px]">{index + 1}</div>
           ) : (
             <div
               className={cn(
@@ -254,9 +252,7 @@ export const TimelinePICData = ({
           <div className="flex items-center gap-2">
             <IconComponent
               src="/icons/topik-amandemen16.svg"
-              width={16}
-              height={16}
-              classname="text-[#461B02]"
+              className="text-muat-trans-secondary-900"
             />
             <span className="text-xs font-medium text-neutral-600">
               Detail Lokasi:
@@ -269,9 +265,7 @@ export const TimelinePICData = ({
           <div className="flex items-center gap-2">
             <IconComponent
               src="/icons/profile16.svg"
-              width={16}
-              height={16}
-              classname="text-[#461B02]"
+              className="text-muat-trans-secondary-900"
             />
             <span className="text-xs font-medium text-neutral-600">
               Nama PIC Lokasi Muat:
@@ -286,7 +280,7 @@ export const TimelinePICData = ({
               src="/icons/call16.svg"
               width={16}
               height={16}
-              classname="text-[#461B02]"
+              className="text-muat-trans-secondary-900"
             />
             <span className="text-xs font-medium text-neutral-600">
               No. HP PIC Lokasi Muat:

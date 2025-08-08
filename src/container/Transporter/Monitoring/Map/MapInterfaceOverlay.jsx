@@ -5,11 +5,11 @@ import { ChevronRight } from "lucide-react";
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import Search from "@/components/Search/Search";
 import { cn } from "@/lib/utils";
 
 import { FilterPopover } from "./components/FilterPopover";
 import { LegendButton } from "./components/LegendButton";
+import { SearchWithSuggestions } from "./components/SearchWithSuggestions";
 
 export const MapInterfaceOverlay = ({
   onZoomIn,
@@ -93,15 +93,13 @@ export const MapInterfaceOverlay = ({
             Daftar Armada
           </Button>
 
-          {/* Search Input */}
-          <div className="max-w-[300px] flex-1">
-            <Search
-              placeholder="Cari No. Polisi / Nama Driver"
-              onSearch={onSearch}
-              containerClassName="w-full"
-              inputClassName="w-full"
-            />
-          </div>
+          {/* Search Input with Suggestions */}
+          <SearchWithSuggestions
+            placeholder="Cari No. Polisi / Nama Driver"
+            onSearch={onSearch}
+            containerClassName="max-w-[300px] flex-1"
+            inputClassName="w-full"
+          />
 
           {/* Filter Button */}
           <FilterPopover

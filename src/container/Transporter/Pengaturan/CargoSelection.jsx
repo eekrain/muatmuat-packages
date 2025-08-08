@@ -16,6 +16,7 @@ export const CargoSelection = ({
   selectedItems,
   onItemChange,
   onCategoryChange,
+  titleCheckboxAll = "Pilih Semua Muatan",
 }) => {
   return (
     <div className="rounded-lg border border-neutral-400 p-5">
@@ -33,7 +34,7 @@ export const CargoSelection = ({
           onChange={onSelectAll}
         >
           <span className="text-xs font-medium text-neutral-900">
-            Pilih Semua Muatan
+            {titleCheckboxAll}
           </span>
         </Checkbox>
       </div>

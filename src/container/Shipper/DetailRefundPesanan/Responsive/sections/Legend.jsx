@@ -1,21 +1,27 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ResponsiveSection from "@/components/Section/ResponsiveSection";
+import { useTranslation } from "@/hooks/use-translation";
 
 const Legend = () => {
+  const { t } = useTranslation();
   const legends = [
     {
       icon: "/icons/money16.svg",
-      label: "Pengembalian Dana Diproses",
+      label: t(
+        "Legend.labelRefundProcessing",
+        {},
+        "Pengembalian Dana Diproses"
+      ),
     },
     {
       icon: "/icons/stepper/stepper-check-circle.svg",
-      label: "Dana Terkirim",
+      label: t("Legend.labelRefundCompleted", {}, "Dana Terkirim"),
     },
   ];
   return (
     <ResponsiveSection
       appearance={{ titleClassname: "text-base font-bold" }}
-      title="Proses Pengembalian Dana"
+      title={t("Legend.titleRefundProcess", {}, "Proses Pengembalian Dana")}
     >
       <div className="flex flex-col gap-y-3">
         {legends.map((item, key) => (

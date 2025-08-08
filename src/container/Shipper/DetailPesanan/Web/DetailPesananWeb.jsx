@@ -8,6 +8,7 @@ import { isDev } from "@/lib/constants/is-dev";
 import { toast } from "@/lib/toast";
 import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
 import useGetFleetSearchStatus from "@/services/Shipper/detailpesanan/getFleetSearchStatus";
+import { useGetOldDriver } from "@/services/Shipper/detailpesanan/getOldDriver";
 import { useLoadingAction } from "@/store/Shared/loadingStore";
 import {
   useSewaArmadaActions,
@@ -80,6 +81,11 @@ const DetailPesananWeb = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error]);
 
+  const { data: oldDriverData } = useGetOldDriver(
+    params.orderId,
+    params.driverId
+  );
+
   if (isLoadingDetailPesanan) {
     return null;
   }
@@ -114,6 +120,7 @@ const DetailPesananWeb = () => {
               <StatusPesanan
                 dataStatusPesanan={dataDetailPesanan.dataStatusPesanan}
                 isShowWaitFleetAlert={isShowWaitFleetAlert}
+                oldDriverData={oldDriverData}
               />
             )}
 
@@ -139,6 +146,7 @@ const DetailPesananWeb = () => {
               dataRingkasanPembayaran={
                 dataDetailPesanan.dataRingkasanPembayaran
               }
+              dataStatusPesanan={dataDetailPesanan.dataStatusPesanan}
               isShowWaitFleetAlert={isShowWaitFleetAlert}
             />
           )}
