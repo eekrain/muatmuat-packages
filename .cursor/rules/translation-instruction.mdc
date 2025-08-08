@@ -308,13 +308,13 @@ Replace the InfoTooltip content with the `render` prop:
 **Before:**
 
 ```jsx
-<InfoTooltip className="w-[336px]" side="right">
+<TooltipInfo className="w-[336px]" side="right">
   <p>
     Centang opsi ini jika pengiriman memerlukan pengelolaan rantai pasok yang
     memastikan produk tetap sesuai prinsip halal, mulai dari transportasi hingga
     penyimpanan
   </p>
-</InfoTooltip>
+</TooltipInfo>
 ```
 
 **After:**

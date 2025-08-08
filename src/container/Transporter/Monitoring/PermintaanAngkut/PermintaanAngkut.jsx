@@ -13,6 +13,7 @@ const PermintaanAngkut = () => {
   const [activeTab, setActiveTab] = useState("tersedia");
   const [searchValue, setSearchValue] = useState("");
   const [bookmarkedItems, setBookmarkedItems] = useState(new Set());
+  const [removedItems, setRemovedItems] = useState(new Set());
 
   // Get data based on active tab
   const params = useMemo(() => {
@@ -30,7 +31,7 @@ const PermintaanAngkut = () => {
 
   const handleSearch = (value) => {
     setSearchValue(value);
-    // TODO: Implement search functionality
+    console.log("🔍 Search value:", value);
   };
 
   const handleBookmarkToggle = (requestId, newSavedState) => {
@@ -61,6 +62,15 @@ const PermintaanAngkut = () => {
     console.log("🔖 Current bookmarked items count:", newBookmarkedItems.size);
   };
 
+  const handleUnderstand = (requestId) => {
+    const newRemovedItems = new Set(removedItems);
+    newRemovedItems.add(requestId);
+    setRemovedItems(newRemovedItems);
+
+    console.log("🤝 Request understood and removed:", requestId.slice(-4));
+    console.log("🤝 Total removed items:", newRemovedItems.size);
+  };
+
   // Calculate dynamic tab counts based on data and local state
   const getDynamicTabCounts = () => {
     if (!data?.requests) {
@@ -73,9 +83,21 @@ const PermintaanAngkut = () => {
 
     const allRequests = data.requests;
 
-    // Calculate saved count based on current bookmark state
+    // Filter out removed items and apply search filter
+    let visibleRequests = allRequests.filter(
+      (request) => !removedItems.has(request.id)
+    );
+
+    // Apply search filter if search value exists
+    if (searchValue && searchValue.trim() !== "") {
+      visibleRequests = visibleRequests.filter((request) =>
+        request.orderCode.toLowerCase().includes(searchValue.toLowerCase())
+      );
+    }
+
+    // Calculate saved count based on current bookmark state (only for visible requests)
     let savedCount = 0;
-    allRequests.forEach((request) => {
+    visibleRequests.forEach((request) => {
       const isOriginallyBookmarked = request.isSaved;
       const hasStateChanged = bookmarkedItems.has(request.id);
 
@@ -92,10 +114,9 @@ const PermintaanAngkut = () => {
     });
 
     return {
-      tersedia: data?.tabCounts?.tersedia ?? allRequests.length,
-      halal_logistik:
-        data?.tabCounts?.halal_logistik ??
-        allRequests.filter((req) => req.isHalalLogistics).length,
+      tersedia: visibleRequests.length, // Use visible requests count instead of original tab count
+      halal_logistik: visibleRequests.filter((req) => req.isHalalLogistics)
+        .length,
       disimpan: savedCount,
     };
   };
@@ -328,6 +349,9 @@ const PermintaanAngkut = () => {
           isSuspended={data?.userStatus?.isSuspended}
           onBookmarkToggle={handleBookmarkToggle}
           bookmarkedItems={bookmarkedItems}
+          removedItems={removedItems}
+          onUnderstand={handleUnderstand}
+          searchValue={searchValue}
         />
       </div>
     </div>
@@ -341,6 +365,9 @@ const RequestList = ({
   isSuspended = false,
   onBookmarkToggle,
   bookmarkedItems,
+  removedItems,
+  onUnderstand,
+  searchValue,
 }) => {
   if (isLoading) {
     return (
@@ -400,9 +427,46 @@ const RequestList = ({
     );
   }
 
+  // Apply search filter and removed items filter
+  const filteredRequests = requests
+    .filter((request) => !removedItems.has(request.id)) // Filter removed items
+    .filter((request) => {
+      // If no search value, show all
+      if (!searchValue || searchValue.trim() === "") {
+        return true;
+      }
+      // Filter by orderCode (case insensitive)
+      return request.orderCode
+        .toLowerCase()
+        .includes(searchValue.toLowerCase());
+    });
+
+  // Check if search returned no results
+  const hasSearchResults =
+    searchValue && searchValue.trim() !== "" && filteredRequests.length === 0;
+
+  // If search yielded no results, show "Keyword Tidak Ditemukan"
+  if (hasSearchResults) {
+    return (
+      <div className="flex h-full items-center justify-center py-16">
+        <div className="flex flex-col items-center gap-4">
+          <IconComponent
+            src="/icons/keyword-not-found.svg"
+            className="h-[142px] w-[142px] flex-shrink-0"
+          />
+          <div className="text-center">
+            <h3 className="text-lg font-semibold text-[#868686]">
+              Keyword Tidak Ditemukan
+            </h3>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4 pb-4">
-      {requests.map((request) => {
+      {filteredRequests.map((request) => {
         // Determine current bookmark state
         const hasStateChanged = bookmarkedItems?.has(request.id);
         const currentBookmarkState = hasStateChanged
@@ -416,6 +480,7 @@ const RequestList = ({
             isSuspended={isSuspended}
             onBookmarkToggle={onBookmarkToggle}
             isBookmarked={currentBookmarkState}
+            onUnderstand={onUnderstand}
           />
         );
       })}
