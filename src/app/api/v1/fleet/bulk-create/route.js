@@ -96,7 +96,7 @@ export async function POST(req) {
         );
       }
 
-      if (!fleet.carrierTruckId) {
+      if (!fleet.carrierTypeId) {
         return NextResponse.json(
           {
             Message: {
@@ -106,9 +106,9 @@ export async function POST(req) {
             Data: {
               validationErrors: [
                 {
-                  field: `[${i}].carrierTruckId`,
-                  value: fleet.carrierTruckId,
-                  message: "Carrier truck ID is required",
+                  field: `[${i}].carrierTypeId`,
+                  value: fleet.carrierTypeId,
+                  message: "Carrier type ID is required",
                 },
               ],
             },

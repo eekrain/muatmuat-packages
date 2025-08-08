@@ -18,6 +18,7 @@ import { useTableForm } from "@/hooks/useTableForm";
 import { normalizePayloadTambahArmadaMassal } from "@/lib/normalizers/transporter/tambah-armada-massal/normalizePayloadTambahArmadaMassal";
 import { toast } from "@/lib/toast";
 import { usePostFleetBulkCreate } from "@/services/Transporter/manajemen-armada/postFleetBulkCreate";
+import { usePostFleetBulkDrafts } from "@/services/Transporter/manajemen-armada/postFleetsBulkDrafts";
 
 import ArmadaTable from "../../ArmadaTable/ArmadaTable";
 
@@ -29,6 +30,9 @@ const TambahArmadaMassal = ({ isDraftAvailable }) => {
 
   const { trigger: handlePostFleetBulkCreate, isMutating } =
     usePostFleetBulkCreate();
+
+  const { trigger: handlePostFleetBulkDraft, isMutating: isDraftMutating } =
+    usePostFleetBulkDrafts();
 
   // Custom submit handler for this page
   const handleSubmit = (value) => {
@@ -50,10 +54,11 @@ const TambahArmadaMassal = ({ isDraftAvailable }) => {
   // Custom save as draft handler for this page
   const handleSaveAsDraft = (value) => {
     const payload = normalizePayloadTambahArmadaMassal(value);
-    handlePostFleetBulkCreate(payload)
+    handlePostFleetBulkDraft(payload)
       .then(() => {
         // Show success message
         toast.success("Draft armada berhasil disimpan.");
+        onValueChange("draft");
       })
       .catch((_error) => {
         // Show error message
@@ -61,7 +66,6 @@ const TambahArmadaMassal = ({ isDraftAvailable }) => {
           "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
         );
       });
-    router.push(`/manajemen-armada?tab=process`);
   };
 
   // Use the reusable table form hook for vehicle data
@@ -81,7 +85,7 @@ const TambahArmadaMassal = ({ isDraftAvailable }) => {
     handleSearchChange,
     handleRemove,
     handleSubmit: onSubmit,
-    setValue,
+    handleSaveAsDraft: saveAsDraft,
   } = useTableForm({
     defaultValues: vehicleDefaultValues,
     schema: vehicleFormSchema,
@@ -112,20 +116,14 @@ const TambahArmadaMassal = ({ isDraftAvailable }) => {
         <div className="flex items-center justify-end">
           <div className="mt-4 flex w-full items-end justify-end gap-3">
             <Button
-              disabled={isMutating}
-              onClick={handleSaveAsDraft}
+              disabled={isMutating || isDraftMutating}
+              onClick={saveAsDraft}
               variant="muattrans-primary-secondary"
               type="button"
             >
               Simpan Sebagai Draft
             </Button>
-            <Button
-              disabled={isMutating}
-              type="submit"
-              onClick={() => {
-                handleSubmit();
-              }}
-            >
+            <Button disabled={isMutating || isDraftMutating} type="submit">
               Simpan
             </Button>
           </div>

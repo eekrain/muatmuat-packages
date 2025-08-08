@@ -12,6 +12,110 @@ const apiResultFleetList = {
   Data: {
     fleets: [
       {
+        fleetId: "fleet-uuid-5",
+        licensePlate: "B7890JKL",
+        driver: {
+          driverId: "driver-uuid-5",
+          name: "Robert Brown",
+          phoneNumber: "+628333444555",
+        },
+        lastLocation: {
+          latitude: -6.3972,
+          longitude: 106.8249,
+          address: {
+            district: "Sawangan",
+            city: "Depokasdfasdfs",
+          },
+          lastUpdate: "2025-07-25T11:30:00Z",
+        },
+        truckType: {
+          truckTypeId: "truck-type-uuid-2",
+          name: "Box",
+        },
+        carrierType: {
+          carrierId: "carrier-uuid-2",
+          name: "Bak Tertutup",
+        },
+        status: "ON_DUTY",
+        isActive: false,
+        hasSOSAlert: true,
+        detailSOS: {
+          sosId: "sos-uuid-2",
+          sosCategory: "MECHANICAL_ISSUE",
+          description: "Mesin overheating",
+          reportAt: "2025-07-25T11:20:00Z",
+          photos: ["public/img/kanan.png", "public/img/kiri.png"],
+        },
+        needsResponseChange: false,
+        activeOrder: {
+          orderId: "order-uuid-5",
+          orderCode: "ORD-2025-005",
+          orderStatus: "INACTIVE",
+          pickupLocation: {
+            district: "Jl. Merdeka No. 10",
+            city: "Tangerang",
+          },
+          dropoffLocation: {
+            district: "Jl. Sudirman No. 15",
+            city: "Tangerang",
+          },
+        },
+      },
+
+      {
+        fleetId: "fleet-uuid-90",
+        licensePlate: "B7890JKL",
+        driver: {
+          driverId: "driver-uuid-5",
+          name: "Robert Brown",
+          phoneNumber: "+628333444555",
+        },
+        lastLocation: {
+          latitude: -6.3972,
+          longitude: 106.8249,
+          address: {
+            district: "Sawangan",
+            city: "Depokasdfasdfs",
+          },
+          lastUpdate: "2025-07-25T11:30:00Z",
+        },
+        truckType: {
+          truckTypeId: "truck-type-uuid-2",
+          name: "Box",
+        },
+        carrierType: {
+          carrierId: "carrier-uuid-2",
+          name: "Bak Tertutup",
+        },
+        status: "ON_DUTY",
+        isActive: false,
+        hasSOSAlert: true,
+        detailSOS: {
+          sosId: "sos-uuid-2",
+          sosCategory: "MECHANICAL_ISSUE",
+          description: null,
+          reportAt: "2025-07-25T11:20:00Z",
+          photos: [
+            "https://example.com/photo2.jpg",
+            "https://example.com/photo3.jpg",
+          ],
+        },
+        needsResponseChange: false,
+        activeOrder: {
+          orderId: "order-uuid-5",
+          orderCode: "ORD-2025-005",
+          orderStatus: "INACTIVE",
+          pickupLocation: {
+            district: "Jl. Merdeka No. 10",
+            city: "Tangerang",
+          },
+          dropoffLocation: {
+            district: "Jl. Sudirman No. 15",
+            city: "Tangerang",
+          },
+        },
+      },
+      {
         fleetId: "fleet-uuid-1",
         licensePlate: "B1234ABC",
         driver: {
@@ -80,7 +184,7 @@ const apiResultFleetList = {
           carrierId: "carrier-uuid-2",
           name: "Bak Tertutup",
         },
-        status: "ON_DELIVERY",
+        status: "ON_DUTY",
         isActive: true,
         hasSOSAlert: false,
         detailSOS: {
@@ -90,7 +194,20 @@ const apiResultFleetList = {
           reportAt: "2025-07-25T10:45:00Z",
           photos: ["https://example.com/photo1.jpg"],
         },
-        needsResponseChange: true,
+        needsResponseChange: false,
+        activeOrder: {
+          orderId: "order-uuid-1",
+          orderCode: "ORD-2025-001",
+          orderStatus: "ON_THE_WAY",
+          pickupLocation: {
+            district: "Jl. Sudirman No. 1",
+            city: "Jakarta Pusat",
+          },
+          dropoffLocation: {
+            district: "Jl. Thamrin No. 5",
+            city: "Jakarta Pusat",
+          },
+        },
       },
       {
         fleetId: "fleet-uuid-3",
@@ -117,7 +234,7 @@ const apiResultFleetList = {
           carrierId: "carrier-uuid-3",
           name: "Container",
         },
-        status: "WAITING_LOADING_TIME",
+        status: "NOT_PAIRED",
         isActive: true,
         hasSOSAlert: false,
         detailSOS: null,
@@ -161,7 +278,7 @@ const apiResultFleetList = {
           carrierId: "carrier-uuid-1",
           name: "Bak Terbuka",
         },
-        status: "ON_DELIVERY",
+        status: "WAITING_LOADING_TIME",
         isActive: true,
         hasSOSAlert: false,
         detailSOS: null,
@@ -179,88 +296,6 @@ const apiResultFleetList = {
             city: "Jakarta Selatan",
           },
         },
-      },
-      {
-        fleetId: "fleet-uuid-5",
-        licensePlate: "B7890JKL",
-        driver: {
-          driverId: "driver-uuid-5",
-          name: "Robert Brown",
-          phoneNumber: "+628333444555",
-        },
-        lastLocation: {
-          latitude: -6.3972,
-          longitude: 106.8249,
-          address: {
-            district: "Sawangan",
-            city: "Depokasdfasdfs",
-          },
-          lastUpdate: "2025-07-25T11:30:00Z",
-        },
-        truckType: {
-          truckTypeId: "truck-type-uuid-2",
-          name: "Box",
-        },
-        carrierType: {
-          carrierId: "carrier-uuid-2",
-          name: "Bak Tertutup",
-        },
-        status: "ON_DUTY",
-        isActive: false,
-        hasSOSAlert: true,
-        detailSOS: {
-          sosId: "sos-uuid-2",
-          sosCategory: "MECHANICAL_ISSUE",
-          description: "Mesin overheating",
-          reportAt: "2025-07-25T11:20:00Z",
-          photos: [
-            "https://example.com/photo2.jpg",
-            "https://example.com/photo3.jpg",
-          ],
-        },
-        needsResponseChange: false,
-        activeOrder: null,
-      },
-      {
-        fleetId: "fleet-uuid-90",
-        licensePlate: "B7890JKL",
-        driver: {
-          driverId: "driver-uuid-5",
-          name: "Robert Brown",
-          phoneNumber: "+628333444555",
-        },
-        lastLocation: {
-          latitude: -6.3972,
-          longitude: 106.8249,
-          address: {
-            district: "Sawangan",
-            city: "Depokasdfasdfs",
-          },
-          lastUpdate: "2025-07-25T11:30:00Z",
-        },
-        truckType: {
-          truckTypeId: "truck-type-uuid-2",
-          name: "Box",
-        },
-        carrierType: {
-          carrierId: "carrier-uuid-2",
-          name: "Bak Tertutup",
-        },
-        status: "ON_DUTY",
-        isActive: false,
-        hasSOSAlert: true,
-        detailSOS: {
-          sosId: "sos-uuid-2",
-          sosCategory: "MECHANICAL_ISSUE",
-          description: null,
-          reportAt: "2025-07-25T11:20:00Z",
-          photos: [
-            "https://example.com/photo2.jpg",
-            "https://example.com/photo3.jpg",
-          ],
-        },
-        needsResponseChange: false,
-        activeOrder: null,
       },
       {
         fleetId: "fleet-uuid-6",
@@ -287,7 +322,7 @@ const apiResultFleetList = {
           carrierId: "carrier-uuid-1",
           name: "Bak Terbuka",
         },
-        status: "OFFLINE",
+        status: "READY_FOR_ORDER",
         isActive: false,
         hasSOSAlert: false,
         detailSOS: null,
@@ -373,7 +408,7 @@ const apiResultFleetList = {
           reportAt: "2025-07-25T11:40:00Z",
           photos: [],
         },
-        needsResponseChange: true,
+        needsResponseChange: false,
         activeOrder: {
           orderId: "order-uuid-5",
           orderCode: "ORD-2025-005",
@@ -390,7 +425,7 @@ const apiResultFleetList = {
       },
     ],
     pagination: {
-      totalFleets: 25,
+      totalFleets: 9,
       currentPage: 1,
       totalPages: 3,
     },
@@ -400,7 +435,7 @@ const apiResultFleetList = {
       WaitingLoadingTime: 2,
       notPaired: 3,
       inactive: 1,
-      sos: 2,
+      sos: 0,
       needResponse: 3,
     },
   },

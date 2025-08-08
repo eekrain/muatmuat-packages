@@ -1,7 +1,3 @@
----
-applyTo: "**"
----
-
 # AI Agent Instructions for React Development
 
 ## Role and Goal

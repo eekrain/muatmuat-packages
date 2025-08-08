@@ -41,7 +41,7 @@ export const LocationRouteFragment = ({ dataRingkasanPesanan }) => {
               activeIndex={0}
               title={muat[0].fullAddress}
               isLast={false}
-              appearance={{ titleClassname: "text-xs" }}
+              appearance={{ titleClassname: "text-xs mt-0.5" }}
               buttonDetail={
                 muat.length > 1 ? (
                   <ButtonMini
@@ -61,7 +61,7 @@ export const LocationRouteFragment = ({ dataRingkasanPesanan }) => {
               activeIndex={0}
               title={bongkar[0].fullAddress}
               isLast={true}
-              appearance={{ titleClassname: "text-xs" }}
+              appearance={{ titleClassname: "text-xs mt-0.5" }}
               buttonDetail={
                 bongkar.length > 1 ? (
                   <ButtonMini

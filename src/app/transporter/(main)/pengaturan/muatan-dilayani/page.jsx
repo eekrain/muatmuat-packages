@@ -229,11 +229,10 @@ export default function AturMuatanDilayaniPage() {
   return (
     <>
       <LayoutOverlayButton button={simpanButton}>
-        <div className="mb-6">
+        <div className="mt-6">
           <BreadCrumb data={breadcrumbItems} />
         </div>
-        <div className="mt-4 flex items-center gap-2">
-          {/* --- UPDATED: PageTitle now uses the leave handler --- */}
+        <div className="mt-6 flex items-center gap-2">
           <PageTitle withBack={true} onClick={handleLeavePage}>
             Atur Muatan Dilayani
           </PageTitle>
@@ -251,7 +250,7 @@ export default function AturMuatanDilayaniPage() {
           </InfoTooltip>
         </div>
 
-        <Card className="mt-6 !border-none !p-0">
+        <Card className="mb-6 !border-none !p-0">
           <CardContent className="space-y-6 p-6">
             <div className="flex flex-row items-center gap-4">
               <InputSearch

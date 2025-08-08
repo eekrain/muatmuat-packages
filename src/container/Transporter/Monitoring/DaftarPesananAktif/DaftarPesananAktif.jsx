@@ -312,16 +312,16 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="flex h-16 items-center justify-between px-4">
+      <div className="flex h-16 items-center gap-3 px-4">
         <div className="flex items-center gap-2">
-          <h3 className="text-xs font-bold">
+          <h3 className="whitespace-nowrap text-xs font-bold">
             Daftar <br /> Pesanan Aktif
           </h3>
           <Onboarding />
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex w-full items-center gap-3">
           {/* Status Filter Pills */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-1 items-center gap-2">
             {filterConfig.map(
               (filter) =>
                 filter.hasFilter && (

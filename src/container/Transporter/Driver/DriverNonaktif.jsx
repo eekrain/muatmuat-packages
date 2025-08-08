@@ -418,7 +418,7 @@ const DriverNonaktif = ({
         className={hasAlert ? "h-[calc(100vh-352px)]" : "h-[calc(100vh-300px)]"}
       >
         {hasAlert && (
-          <Alert className="mb-4 bg-secondary-100">
+          <Alert className="mb-4 h-12 bg-secondary-100">
             <div className="font-medium">
               Terdapat{" "}
               <span className="font-bold">{simExpiryData.total} Driver</span>{" "}

@@ -1,14 +1,3 @@
----
-applyTo: "**"
----
-
----
-
-description: This rule provides guidelines for using Zustand, a simple and unopinionated state management library, in React applications. It covers best practices for code organization, performance optimization, testing, and common pitfalls to avoid.
-globs: _.js,_.jsx,_.ts,_.tsx
-
----
-
 # Zustand Best Practices
 
 This document outlines best practices for using Zustand in your React applications. Zustand is a simple and unopinionated state management library. Following these guidelines will help you write maintainable, performant, and scalable applications.

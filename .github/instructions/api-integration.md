@@ -1,7 +1,3 @@
----
-applyTo: "**"
----
-
 # API Integration Cursor Rule
 
 This rule defines the standard for generating new API service files and SWR hooks in the codebase, and for integrating them into UI components.  

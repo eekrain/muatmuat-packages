@@ -1,5 +1,8 @@
 "use client";
 
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+
 import PageTitle from "@/components/PageTitle/PageTitle";
 import {
   Tabs,
@@ -15,7 +18,31 @@ import TambahArmadaMassal from "./components/Tabs/TambahArmadaMassal/TambahArmad
 import TambahExcel from "./components/Tabs/TambahExcel/TambahExcel";
 
 export default function TambahMassal() {
+  const router = useRouter();
   const { data } = useGetFleetsDraftCheck("/v1/fleet/drafts/check");
+  const searchParams = useSearchParams();
+  const tab = searchParams.get("tab") || "tambah_armada_excel";
+
+  const [activeTab, setActiveTab] = useState(tab);
+
+  // Function to clear tab parameter from URL
+  const clearTabParam = () => {
+    const currentParams = new URLSearchParams(searchParams.toString());
+    currentParams.delete("tab");
+
+    const newUrl = currentParams.toString()
+      ? `${window.location.pathname}?${currentParams.toString()}`
+      : window.location.pathname;
+
+    router.replace(newUrl);
+  };
+
+  useEffect(() => {
+    if (tab) {
+      clearTabParam();
+    }
+  }, [tab]);
+
   return (
     <div className="my-6 max-h-screen w-full space-y-4 px-6 pb-20">
       {/* Header  */}
@@ -29,7 +56,14 @@ export default function TambahMassal() {
       </div>
 
       {/* Tabs */}
-      <Tabs className="w-full" defaultValue="tambah_armada_excel">
+      <Tabs
+        value={activeTab}
+        onValueChange={(value) => {
+          setActiveTab(value);
+        }}
+        className="w-full"
+        defaultValue="tambah_armada_excel"
+      >
         <TabsList className="w-8/12">
           <TabsTriggerWithSeparator
             value="tambah_armada_excel"

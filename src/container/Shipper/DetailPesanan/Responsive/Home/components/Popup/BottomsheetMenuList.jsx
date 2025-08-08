@@ -83,7 +83,7 @@ export const BottomsheetMenuList = ({
               />
             )}
             <Item
-              className="border-transparent pb-0"
+              isLast
               label={t("labelDownloadDeliveryOrder")}
               onClick={() => alert("Unduh Dokumen Delivery Order (DO) clicked")}
               t={t}
@@ -117,12 +117,13 @@ export const BottomsheetMenuList = ({
   );
 };
 
-const Item = ({ className, label, onClick, t }) => {
+const Item = ({ className, label, onClick, t, isLast = false }) => {
   return (
     <li
       onClick={onClick}
       className={cn(
         "cursor-pointer border-b border-neutral-400 pb-4 text-sm",
+        isLast ? "border-transparent pb-0" : "",
         className
       )}
     >

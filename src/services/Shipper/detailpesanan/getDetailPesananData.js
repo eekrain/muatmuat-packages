@@ -18,18 +18,54 @@ import { getStatusLegend } from "./getStatusLegend";
 
 const useMockData = false; // mock detailpesanan
 
-/**
- * Notes dari mas friday
- * /orders/{orderId}
- * data status paling atas
- * /orders/{orderId}/status-history
- * buat stepper
- * statusHistoryObject
- *
- * status driver
- * driverStatus object
- *
- */
+const orderType = OrderTypeEnum.SCHEDULED;
+const orderStatus = OrderStatusEnum.CANCELED_BY_SHIPPER;
+const totalUnit = 3;
+const unitFleetStatus = 3;
+
+// Menentukan bisa nggaknya buat ubah pesanan
+const isChangeable = true;
+// Menentukan bisa nggaknya buat batalkan pesanan
+const isCancellable = true;
+// Menentukan bisa nggaknya buat ngasih review
+const canReview = false;
+
+const priceCharge = {
+  waitingFee: {
+    totalAmount: 100000,
+    totalDriver: 3,
+  },
+  overloadFee: {
+    totalAmount: 0,
+    totalWeight: 0,
+    weightUnit: "kg",
+  },
+  adminFee: 10000,
+  totalCharge: 0,
+  isPaid: false,
+};
+
+const priceChange = {
+  additionalCost: 550000,
+  penaltyFee: 50000,
+  adminFee: 10000,
+  taxAmount: -6000,
+  totalAdjustment: 0,
+  requiresPayment: true,
+};
+
+const otherStatus = [
+  // {
+  //   orderStatus: OrderStatusEnum.WAITING_REPAYMENT_1,
+  //   orderTitle: "Proses Muat",
+  //   unitFleetStatus: 2,
+  // },
+  // {
+  //   orderStatus: OrderStatusEnum.PREPARE_DOCUMENT,
+  //   orderTitle: "Proses Muat",
+  //   unitFleetStatus: 1,
+  // },
+];
 
 const locations = [
   {
@@ -102,43 +138,6 @@ const locations = [
   },
 ];
 
-const priceCharge = {
-  waitingFee: {
-    totalAmount: 100000,
-    totalDriver: 3,
-  },
-  overloadFee: {
-    totalAmount: 0,
-    totalWeight: 0,
-    weightUnit: "kg",
-  },
-  adminFee: 10000,
-  totalCharge: 0,
-  isPaid: false,
-};
-
-const priceChange = {
-  additionalCost: 550000,
-  penaltyFee: 50000,
-  adminFee: 10000,
-  taxAmount: -6000,
-  totalAdjustment: 0,
-  requiresPayment: true,
-};
-
-const otherStatus = [
-  // {
-  //   orderStatus: OrderStatusEnum.WAITING_REPAYMENT_1,
-  //   orderTitle: "Proses Muat",
-  //   unitFleetStatus: 2,
-  // },
-  // {
-  //   orderStatus: OrderStatusEnum.PREPARE_DOCUMENT,
-  //   orderTitle: "Proses Muat",
-  //   unitFleetStatus: 1,
-  // },
-];
-
 const apiResultOrderDetail = {
   data: {
     Message: {
@@ -146,29 +145,25 @@ const apiResultOrderDetail = {
       Text: "Order detail retrieved successfully",
     },
     Data: {
-      // Menentukan bisa nggaknya buat ubah pesanan
-      isChangeable: false,
-      // Menentukan bisa nggaknya buat batalkan pesanan
-      isCancellable: false,
-      // Menentukan bisa nggaknya buat ngasih review
-      canReview: false,
+      isChangeable,
+      isCancellable,
+      canReview,
       cancellationDeadline: "2025-06-24T15:00:00.000Z",
       hasCancellationPenalty: false,
       general: {
+        orderType,
+        orderStatus,
+        unitFleetStatus,
         orderId: "550e8400-e29b-41d4-a716-446655440000",
         transporterOrderCode: "MT.25.AA.001",
         invoiceNumber: "INV/12345678",
-        orderStatus: OrderStatusEnum.UNLOADING,
-        // orderStatus: OrderStatusEnum.SCHEDULED_FLEET,
         orderTitle: "Proses Muat",
-        unitFleetStatus: 3,
-        orderType: OrderTypeEnum.SCHEDULED,
         createdAt: "2024-01-01T10:00:00Z",
         updatedAt: "2024-01-01T14:30:00Z",
       },
       summary: {
         truckType: {
-          totalUnit: 3,
+          totalUnit,
           truckTypeId: "f483709a-de4c-4541-b29e-6f4d9a912331",
           name: "Cold Diesel Double",
           image: "https://picsum.photos/300/300",

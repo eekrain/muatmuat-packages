@@ -147,7 +147,7 @@ export const normalizePayloadTambahArmadaMassal = (array) =>
     return {
       licensePlate: item.licensePlate || "",
       truckTypeId: item.jenis_truk || "",
-      carrierTruckId: item.jenis_carrier || "",
+      carrierTypeId: item.jenis_carrier || "",
       vehicleBrandId: item.merek_kendaraan_id || null,
       vehicleBrandName: item.merek_kendaraan_name || "", // You might need to store this separately
       vehicleTypeId: item.tipe_kendaraan_id || null,

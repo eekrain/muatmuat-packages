@@ -29,7 +29,7 @@ export const lightboxModalVariants = cva(
     variants: {
       variant: {
         shipper: "",
-        square: "md:w-fit",
+        square: "md:w-fit md:pb-[23px]",
       },
     },
     defaultVariants: { variant: "shipper" },
@@ -45,7 +45,7 @@ export const lightboxTitleVariants = cva(
 );
 
 export const lightboxImageVariants = cva(
-  "w-full object-contain md:h-[306px] md:w-[544px] md:rounded-[9px]",
+  "kntl w-full object-contain md:h-[306px] md:w-[544px] md:rounded-[9px]",
   {
     variants: {
       variant: {
@@ -164,7 +164,7 @@ export const LightboxProvider = ({
           <div className="relative w-full bg-white">
             <img
               src={memoizedImages[current]}
-              className={lightboxImageVariants({ variant })}
+              className={cn(lightboxImageVariants({ variant }))}
               alt=""
             />
             {memoizedImages.length > 1 && (

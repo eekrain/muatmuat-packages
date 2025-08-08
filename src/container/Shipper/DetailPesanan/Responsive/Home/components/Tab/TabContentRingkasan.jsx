@@ -10,10 +10,10 @@ import { InformasiMuatanFragment } from "../fragments/InformasiMuatanFragment";
 import { LocationRouteFragment } from "../fragments/LocationRouteFragment";
 import { WaktuMuatFragment } from "../fragments/WaktuMuatFragment";
 
-const BLACKLIST_ROUTE_INFO = [
-  OrderStatusEnum.PREPARE_FLEET,
-  OrderStatusEnum.WAITING_PAYMENT_1,
+const LIST_HIDE_METHOD_INFO = [
   OrderStatusEnum.WAITING_PAYMENT_2,
+  OrderStatusEnum.WAITING_PAYMENT_4,
+  OrderStatusEnum.WAITING_REPAYMENT_2,
 ];
 
 export const TabContentRingkasan = ({
@@ -32,22 +32,21 @@ export const TabContentRingkasan = ({
         <WaktuMuatFragment dataRingkasanPesanan={dataRingkasanPesanan} />
       </InformasiArmadaFragment>
 
-      {!BLACKLIST_ROUTE_INFO.includes(dataStatusPesanan?.orderStatus) && (
-        <div className="bg-white px-4 py-5 shadow-sm">
-          <LocationRouteFragment dataRingkasanPesanan={dataRingkasanPesanan} />
+      <div className="bg-white px-4 py-5 shadow-sm">
+        <LocationRouteFragment dataRingkasanPesanan={dataRingkasanPesanan} />
 
-          <hr className="my-6" />
+        <hr className="my-6" />
 
-          <InformasiMuatanFragment
-            dataRingkasanPesanan={dataRingkasanPesanan}
-          />
-        </div>
-      )}
+        <InformasiMuatanFragment dataRingkasanPesanan={dataRingkasanPesanan} />
+      </div>
+
       {/* Ganti sendiri pakek logic menunggu pelunasan, ditoggle dulu sementara */}
       {false ? <RepaymentPaymentMethod /> : null}
-      {dataRingkasanPembayaran && (
+
+      {dataRingkasanPembayaran && !LIST_HIDE_METHOD_INFO && (
         <MethodInfo dataRingkasanPembayaran={dataRingkasanPembayaran} />
       )}
+
       {dataRingkasanPembayaran && dataRingkasanPembayaran?.priceCharge ? (
         <AdditionalFeesDetail
           priceCharge={dataRingkasanPembayaran.priceCharge}
