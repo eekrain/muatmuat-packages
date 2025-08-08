@@ -230,7 +230,7 @@ const Page = () => {
         <DataTable
           data={data?.drivers || []}
           columns={columns}
-          searchPlaceholder="Cari Nama Driver, No. HP atau lainnya"
+          searchPlaceholder="Cari Nama Driver"
           totalCountLabel="Driver"
           currentPage={data?.pagination?.currentPage || currentPage}
           totalPages={data?.pagination?.totalPages || 1}
