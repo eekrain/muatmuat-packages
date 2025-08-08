@@ -5,8 +5,9 @@ import DetailPesananWeb from "@/container/Shipper/DetailPesanan/Web/DetailPesana
 import useDevice from "@/hooks/use-device";
 
 const Page = () => {
-  const { isMobile } = useDevice();
+  const { isMobile, mounted } = useDevice();
 
+  if (!mounted) return null;
   if (isMobile) {
     return <DetailPesananResponsive />;
   }
