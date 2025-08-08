@@ -1,10 +1,11 @@
-import { useMemo } from "react";
+import { Fragment } from "react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import {
   StepperContainer,
   StepperItemResponsive,
 } from "@/components/Stepper/Stepper";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useTranslation } from "@/hooks/use-translation";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import { getStatusPesananMetadata } from "@/lib/normalizers/detailpesanan/getStatusPesananMetadata";
@@ -18,16 +19,16 @@ const RingkasanStatusPesananScreen = ({ dataStatusPesanan }) => {
 
   const { t } = useTranslation();
 
-  const remainingDrivers = useMemo(() => {
+  const remainingDrivers = useShallowMemo(() => {
     const val = dataStatusPesanan?.totalUnit;
     if (!val) return 0;
 
     const totalDriver = dataStatusPesanan?.driverStatus.length;
     return val - totalDriver;
   }, [dataStatusPesanan]);
-  {
-    console.log(dataStatusPesanan, "dataStatusPesanan");
-  }
+
+  console.log(dataStatusPesanan, "dataStatusPesanan");
+
   const statusMeta = getStatusPesananMetadata({
     orderStatus: dataStatusPesanan.orderStatus,
     unitFleetStatus: dataStatusPesanan.unitFleetStatus,
@@ -35,6 +36,7 @@ const RingkasanStatusPesananScreen = ({ dataStatusPesanan }) => {
     t,
     orderType: dataStatusPesanan.orderType,
   });
+
   return (
     <FormResponsiveLayout
       title={{
@@ -80,23 +82,22 @@ const RingkasanStatusPesananScreen = ({ dataStatusPesanan }) => {
               <StepperContainer activeIndex={0} totalStep={6}>
                 {dataStatusPesanan?.legendStatus?.stepperData.map(
                   (step, index) => (
-                    <StepperItemResponsive
-                      key={step.status}
-                      step={step}
-                      index={index}
-                    />
+                    <Fragment key={index}>
+                      <StepperItemResponsive step={step} index={index} />
+                    </Fragment>
                   )
                 )}
               </StepperContainer>
             </div>
           )}
 
-          {dataStatusPesanan?.driverStatus.map((driver) => (
-            <DriverStatusCard
-              key={driver.driverId}
-              driver={driver}
-              orderStatus={dataStatusPesanan.orderStatus}
-            />
+          {dataStatusPesanan?.driverStatus.map((driver, key) => (
+            <Fragment key={key}>
+              <DriverStatusCard
+                driver={driver}
+                orderStatus={dataStatusPesanan.orderStatus}
+              />
+            </Fragment>
           ))}
         </div>
       </div>

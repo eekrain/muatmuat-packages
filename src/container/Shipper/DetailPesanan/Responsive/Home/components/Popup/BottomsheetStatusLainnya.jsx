@@ -22,7 +22,7 @@ export const BottomsheetStatusLainnya = ({ dataStatusPesanan }) => {
 
   return (
     <BottomSheet open={isOpenOtherStatus} onOpenChange={setIsOpenOtherStatus}>
-      <BottomSheetTrigger asChild>
+      <BottomSheetTrigger asChild className="w-full">
         <button
           className="flex w-full flex-row items-center justify-between text-xs font-semibold text-primary-700"
           onClick={() => setIsOpenOtherStatus(true)}

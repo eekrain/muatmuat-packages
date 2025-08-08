@@ -1,4 +1,5 @@
 import { useParams } from "next/navigation";
+import { Fragment } from "react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Button from "@/components/Button/Button";
@@ -39,7 +40,9 @@ export const DriverStatusCard = ({ driver }) => {
         totalStep={driver.stepperData?.length || 0}
       >
         {driver.stepperData?.map((step, index) => (
-          <StepperItemResponsive key={step.status} step={step} index={index} />
+          <Fragment key={index}>
+            <StepperItemResponsive step={step} index={index} />
+          </Fragment>
         ))}
       </StepperContainer>
 

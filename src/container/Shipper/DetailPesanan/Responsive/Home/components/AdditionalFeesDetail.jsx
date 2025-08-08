@@ -1,8 +1,7 @@
 import WaitingTimeBottomsheet from "@/components/BottomSheet/WaitingTimeBottomsheet";
+import BottomsheetCargoOverload from "@/container/Shipper/DetailPesanan/Responsive/Home/components/Popup/BottomsheetCargoOverload";
 import { cn } from "@/lib/utils";
 import { idrFormat } from "@/lib/utils/formatters";
-
-import BottomsheetCargoOverload from "./Popup/BottomsheetCargoOverload";
 
 /**
  * Komponen utama yang menampilkan detail biaya tambahan.

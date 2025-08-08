@@ -26,6 +26,7 @@ import { OrderInfo } from "./components/OrderInfo";
 import { PendingPaymentAlert } from "./components/Pending/PendingPaymentAlert";
 import { PendingPaymentDetail } from "./components/Pending/PendingPaymentDetail";
 import { PendingPrepareFleetAlert } from "./components/Pending/PendingPrepareFleetAlert";
+import PendingUpdateConfirmation from "./components/Pending/PendingUpdateConfirmation";
 import { BottomSheetPeriksaPesananKamu } from "./components/Popup/BottomSheetPeriksaPesananKamu";
 import { BottomsheetAlasanPembatalan } from "./components/Popup/BottomsheetAlasanPembatalan";
 import { BottomsheetMenuList } from "./components/Popup/BottomsheetMenuList";
@@ -156,6 +157,8 @@ const DetailPesananScreen = ({
       onClickBackButton={() => alert("onClickBackButton")}
     >
       <div className="mb-16 space-y-2 bg-neutral-200">
+        <AlertMultilineResponsive items={orderAlerts} />
+
         {shouldShowPendingPrepareFleetAlert ? (
           <PendingPrepareFleetAlert
             paymentDueDateTime={dataStatusPesanan?.paymentDueDateTime}
@@ -170,9 +173,10 @@ const DetailPesananScreen = ({
           <PendingPaymentDetail
             dataRingkasanPembayaran={dataRingkasanPembayaran}
           />
+        ) : dataStatusPesanan?.orderStatus ===
+          OrderStatusEnum.WAITING_CONFIRMATION_CHANGES ? (
+          <PendingUpdateConfirmation />
         ) : null}
-
-        <AlertMultilineResponsive items={orderAlerts} />
 
         <OrderInfo dataStatusPesanan={dataStatusPesanan} />
 
@@ -181,6 +185,7 @@ const DetailPesananScreen = ({
             driverStatus={dataStatusPesanan?.driverStatus}
             orderId={dataStatusPesanan?.orderId}
             orderStatus={dataStatusPesanan?.orderStatus}
+            withMenu={dataStatusPesanan?.totalTruckUnit > 1}
           />
         ) : null}
 
