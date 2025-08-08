@@ -1,6 +1,24 @@
 import useSWR from "swr";
 
 // Mock configuration for testing different states
+const MOCK_CONFIG = {
+  // UI States to test:
+  isHalalLogistics: true, // true = show halal notice, false = hide halal notice
+  isHalalCertified: false, // false = show "Tambahkan sertifikasi" text, true = hide additional text
+  hasOverload: true, // true = show overload badge (red), false = hide overload badge
+  isSaved: false, // true = bookmarked state, false = not bookmarked
+  isSuspended: true, // true = show suspended account notice, false = hide suspended notice
+  orderType: "SCHEDULED", // "INSTANT" (green) | "SCHEDULED" (blue)
+  timeLabel: "Muat 3 Hari Lagi", // Test options and colors:
+  // Green: "Muat Hari Ini", "Muat Besok"
+  // Yellow: "Muat 2 Hari Lagi", "Muat 3 Hari Lagi", "Muat 4 Hari Lagi", "Muat 5 Hari Lagi"
+  // Blue: "Muat 7 Hari Lagi", "Muat 10 Hari Lagi"
+
+  // Content configuration:
+  photoCount: 1, // 1 = single photo, 4 = multiple photos, 0 = no photos
+  hasAdditionalServices: true, // true = show additional services, false = hide additional services
+  isTaken: false, // true = greyscale entire view (taken by someone else), false = normal view
+};
 const isMockTransportRequestDetail = true;
 
 const apiResultTransportRequestDetail = {
@@ -14,14 +32,16 @@ const apiResultTransportRequestDetail = {
       orderCode: "MT25A001A",
       invoiceNumber: "INV-2025-001",
       encryptedCode: "ENC123",
-      orderType: "INSTANT",
+      orderType: MOCK_CONFIG.orderType,
       orderStatus: "PREPARE_FLEET",
-      isHalalLogistics: true,
-      isSaved: false, // Add isSaved field for bookmark status
+      isHalalLogistics: MOCK_CONFIG.isHalalLogistics,
+      isSuspended: MOCK_CONFIG.isSuspended,
+      isSaved: MOCK_CONFIG.isSaved,
+      isTaken: MOCK_CONFIG.isTaken,
       loadTimeStart: "2025-08-07T09:00:00+07:00",
       loadTimeEnd: "2025-08-07T11:00:00+07:00",
       estimatedDistance: 25.5,
-      totalPrice: 1500000.0,
+      totalPrice: 280000000.0,
       transportFee: 1200000.0,
       insuranceFee: 100000.0,
       additionalServiceFee: 50000.0,
@@ -29,7 +49,8 @@ const apiResultTransportRequestDetail = {
       taxAmount: 125000.0,
       truckCount: 1,
       truckTypeID: "550e8400-e29b-41d4-a716-446655440099",
-      truckTypeName: "Colt Diesel Engkel",
+      truckTypeName:
+        "Tractor head 6 x 4 dan Semi Trailer - Skeletal Container Jumbo 45 ft  (3 As)",
       headTruckID: "550e8400-e29b-41d4-a716-446655440098",
       carrierTruckID: "550e8400-e29b-41d4-a716-446655440097",
       carrierName: "Box",
@@ -130,10 +151,10 @@ const apiResultTransportRequestDetail = {
           isCustomName: false,
           weight: 1000.0,
           weightUnit: "kg",
-          length: null,
-          width: null,
-          height: null,
-          dimensionUnit: null,
+          length: 3.0,
+          width: 1.5,
+          height: 0.8,
+          dimensionUnit: "m",
           sequence: 2,
           displayText: "Batu Bata (1.000 kg)",
         },
@@ -148,66 +169,80 @@ const apiResultTransportRequestDetail = {
           isCustomName: false,
           weight: 500.0,
           weightUnit: "kg",
-          length: null,
-          width: null,
-          height: null,
-          dimensionUnit: null,
+          length: 2.5,
+          width: 1.2,
+          height: 0.6,
+          dimensionUnit: "m",
           sequence: 3,
           displayText: "Karet Mentah (500 kg)",
         },
       ],
-      photos: [
-        {
-          id: "550e8400-e29b-41d4-a716-446655440015",
-          photoUrl: "https://picsum.photos/400/300?random=1",
-          photoType: "cargo",
-          description: "Foto muatan tangga",
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440016",
-          photoUrl: "https://picsum.photos/400/300?random=2",
-          photoType: "cargo",
-          description: "Foto muatan batu bata",
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440017",
-          photoUrl: "https://picsum.photos/400/300?random=3",
-          photoType: "cargo",
-          description: "Foto muatan keseluruhan",
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440018",
-          photoUrl: "https://picsum.photos/400/300?random=4",
-          photoType: "cargo",
-          description: "Foto detail muatan",
-        },
-      ],
-      additionalServices: [
-        {
-          id: "550e8400-e29b-41d4-a716-446655440014",
-          additionalServiceID: "550e8400-e29b-41d4-a716-446655440060",
-          serviceName: "Kirim Berkas",
-          recipientName: "Recipient Name",
-          recipientPhone: "081234567892",
-          destinationAddress: "Alamat tujuan layanan",
-          shippingOption: "Regular",
-          price: 50000.0,
-          insuranceCost: 5000.0,
-        },
-        {
-          id: "550e8400-e29b-41d4-a716-446655440015",
-          additionalServiceID: "550e8400-e29b-41d4-a716-446655440061",
-          serviceName: "Bantuan Tambahan",
-          recipientName: null,
-          recipientPhone: null,
-          destinationAddress: null,
-          shippingOption: null,
-          price: 75000.0,
-          insuranceCost: 0.0,
-        },
-      ],
+      photos:
+        MOCK_CONFIG.photoCount === 0
+          ? []
+          : MOCK_CONFIG.photoCount === 1
+            ? [
+                {
+                  id: "550e8400-e29b-41d4-a716-446655440015",
+                  photoUrl: "https://picsum.photos/400/300?random=1",
+                  photoType: "cargo",
+                  description: "Foto muatan besi baja",
+                },
+              ]
+            : [
+                {
+                  id: "550e8400-e29b-41d4-a716-446655440015",
+                  photoUrl: "https://picsum.photos/400/300?random=1",
+                  photoType: "cargo",
+                  description: "Foto muatan tangga",
+                },
+                {
+                  id: "550e8400-e29b-41d4-a716-446655440016",
+                  photoUrl: "https://picsum.photos/400/300?random=2",
+                  photoType: "cargo",
+                  description: "Foto muatan batu bata",
+                },
+                {
+                  id: "550e8400-e29b-41d4-a716-446655440017",
+                  photoUrl: "https://picsum.photos/400/300?random=3",
+                  photoType: "cargo",
+                  description: "Foto muatan keseluruhan",
+                },
+                {
+                  id: "550e8400-e29b-41d4-a716-446655440018",
+                  photoUrl: "https://picsum.photos/400/300?random=4",
+                  photoType: "cargo",
+                  description: "Foto detail muatan",
+                },
+              ],
+      additionalServices: MOCK_CONFIG.hasAdditionalServices
+        ? [
+            {
+              id: "550e8400-e29b-41d4-a716-446655440014",
+              additionalServiceID: "550e8400-e29b-41d4-a716-446655440060",
+              serviceName: "Kirim Berkas",
+              recipientName: "Recipient Name",
+              recipientPhone: "081234567892",
+              destinationAddress: "Alamat tujuan layanan",
+              shippingOption: "Regular",
+              price: 50000.0,
+              insuranceCost: 5000.0,
+            },
+            {
+              id: "550e8400-e29b-41d4-a716-446655440015",
+              additionalServiceID: "550e8400-e29b-41d4-a716-446655440061",
+              serviceName: "Bantuan Tambahan",
+              recipientName: null,
+              recipientPhone: null,
+              destinationAddress: null,
+              shippingOption: null,
+              price: 75000.0,
+              insuranceCost: 0.0,
+            },
+          ]
+        : [],
       overloadInfo: {
-        hasOverload: true,
+        hasOverload: MOCK_CONFIG.hasOverload,
         overloadWeight: 200.0,
         overloadFee: 100000.0,
         notes: "Muatan melebihi kapasitas standar",
@@ -218,13 +253,13 @@ const apiResultTransportRequestDetail = {
         cargoValue: 5000000.0,
       },
       timeLabel: {
-        text: "Muat Hari Ini",
+        text: MOCK_CONFIG.timeLabel,
         color: "green",
         daysFromNow: 0,
         hasTimeRange: true,
       },
       userHalalCertification: {
-        isHalalCertified: true,
+        isHalalCertified: MOCK_CONFIG.isHalalCertified,
         halalCertificateNo: "CERT-001",
         halalExpiryDate: "2025-12-31",
       },

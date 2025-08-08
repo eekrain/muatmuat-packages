@@ -1,17 +1,17 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import Button from "@/components/Button/Button";
-import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import {
   LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
+import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useGetTransportRequestDetail } from "@/services/Transporter/monitoring/getTransportRequestListDetail";
 
-const PermintaanAngkutDetail = ({ request, onBack }) => {
+const PermintaanAngkutDetail = ({ request, onBack, onUnderstand }) => {
   // Get detailed data using the request ID
   const { data: detailData, isLoading } = useGetTransportRequestDetail(
     request?.id
@@ -20,10 +20,70 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
   // Use detailed data if available, fallback to basic request data
   const displayData = detailData || request;
 
+  // Local state for bookmark toggle
+  const [isSaved, setIsSaved] = useState(displayData?.isSaved || false);
+
   // Handle bookmark toggle
   const handleSave = () => {
-    console.log("Bookmark toggled for:", displayData?.orderCode);
-    // TODO: Implement bookmark toggle functionality
+    setIsSaved((prev) => !prev);
+    console.log(
+      "Bookmark toggled for:",
+      displayData?.orderCode,
+      "New state:",
+      !isSaved
+    );
+    // TODO: Implement API call to save/unsave bookmark
+  };
+
+  // Handle understand button click
+  const handleUnderstand = () => {
+    // Show success toast with order code
+    toast.success(`Permintaan ${request.orderCode} berhasil ditutup`);
+
+    // Call parent callback to remove the card from list
+    if (onUnderstand) {
+      onUnderstand(request.id);
+    }
+
+    // Close the detail view
+    onBack();
+
+    // TODO: Implement additional understand functionality if needed
+    console.log("Understand clicked for:", request.orderCode);
+  };
+
+  // Helper functions for status tag colors
+  const getOrderTypeStyle = (orderType) => {
+    if (orderType === "INSTANT") {
+      return "bg-green-50 text-green-700";
+    } else if (orderType === "SCHEDULED") {
+      return "bg-blue-50 text-blue-700";
+    }
+    return "bg-primary-50 text-primary-700"; // fallback
+  };
+
+  const getTimeLabelStyle = (timeLabelText) => {
+    if (!timeLabelText) return "bg-primary-50 text-primary-700";
+
+    const lowerText = timeLabelText.toLowerCase();
+
+    // Green: Muat Hari Ini, Muat Besok
+    if (lowerText.includes("hari ini") || lowerText.includes("besok")) {
+      return "bg-green-50 text-green-700";
+    }
+
+    // Yellow: Muat 2-5 Hari
+    const dayMatch = lowerText.match(/muat (\d+) hari/);
+    if (dayMatch) {
+      const days = parseInt(dayMatch[1]);
+      if (days >= 2 && days <= 5) {
+        return "bg-yellow-50 text-yellow-700";
+      } else if (days > 5) {
+        return "bg-blue-50 text-blue-700";
+      }
+    }
+
+    return "bg-primary-50 text-primary-700"; // fallback
   };
 
   const formatCurrency = (amount) => {
@@ -110,10 +170,27 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
   }
 
   return (
-    <div className="flex h-[calc(100vh-92px-48px)] flex-col bg-white">
+    <div
+      className={cn(
+        "flex h-[calc(100vh-92px-48px)] flex-col bg-white",
+        displayData?.isTaken
+      )}
+    >
       {/* Header */}
-      <div className="flex flex-shrink-0 justify-between bg-white px-4">
-        <h1 className="py-6 text-base font-bold text-neutral-900">
+      <div
+        className={cn(
+          "flex flex-shrink-0 justify-between bg-white px-4",
+          displayData?.isTaken && "grayscale"
+        )}
+      >
+        <h1
+          className={cn(
+            "py-6 text-base font-bold",
+            displayData?.isTaken && "grayscale"
+              ? "text-neutral-600"
+              : "text-neutral-900"
+          )}
+        >
           Detail Permintaan Jasa Angkut
         </h1>
 
@@ -124,19 +201,124 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
         >
           <IconComponent
             src="/icons/close24.svg"
-            className="h-5 w-5 text-neutral-700"
+            className={cn(
+              "h-5 w-5",
+              displayData?.isTaken ? "text-neutral-600" : "text-neutral-700"
+            )}
           />
         </button>
       </div>
 
       {/* Scrollable Content - Starting from Status Tags */}
-      <div className="flex-1 overflow-y-auto">
+      <div
+        className={cn(
+          "flex-1 overflow-y-auto",
+          displayData?.isTaken && "grayscale"
+        )}
+      >
+        {/* Suspended Account Notice */}
+        {displayData?.isSuspended && (
+          <div className="flex-shrink-0 px-4 pb-4">
+            <div
+              className={cn(
+                "flex items-center gap-1 rounded-xl px-4 py-2",
+                displayData?.isTaken ? "" : "bg-error-50"
+              )}
+            >
+              <IconComponent src="/icons/warning-red.svg" className="h-4 w-4" />
+              <div className="flex flex-col">
+                <span
+                  className={cn(
+                    "text-xs font-semibold",
+                    displayData?.isTaken ? "text-neutral-600" : "text-error-400"
+                  )}
+                >
+                  Akun Kamu Ditangguhkan
+                </span>
+                <span
+                  className={cn(
+                    "text-[10px] font-medium",
+                    displayData?.isTaken
+                      ? "text-neutral-600"
+                      : "text-neutral-900"
+                  )}
+                >
+                  Hubungi dukungan pelanggan untuk aktivasi kembali
+                  <span
+                    className={cn(
+                      displayData?.isTaken
+                        ? "text-neutral-600"
+                        : "text-primary-700"
+                    )}
+                  >
+                    {" "}
+                    disini
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Halal Certification Notice - Above Status Tags */}
+        {displayData?.isHalalLogistics && (
+          <div className="flex-shrink-0 px-4 pb-4">
+            <div
+              className={cn(
+                "flex items-center gap-3 rounded-xl px-4 py-2",
+                displayData?.isTaken ? "" : "bg-[#F7EAFD]"
+              )}
+            >
+              <IconComponent src="/icons/halal.svg" className="h-6 w-[18px]" />
+              <div className="flex flex-col">
+                <span
+                  className={cn(
+                    "text-xs font-semibold",
+                    displayData?.isTaken ? "text-neutral-600" : "text-[#652672]"
+                  )}
+                >
+                  Memerlukan pengiriman dengan sertifikasi halal logistik
+                </span>
+                {!displayData?.userHalalCertification?.isHalalCertified && (
+                  <span
+                    className={cn(
+                      "text-[10px] font-medium",
+                      displayData?.isTaken
+                        ? "text-neutral-600"
+                        : "text-neutral-600"
+                    )}
+                  >
+                    Tambahkan sertifikasi halal dengan menghubungi kami
+                    <span
+                      className={cn(
+                        displayData?.isTaken
+                          ? "text-neutral-600"
+                          : "text-primary-700"
+                      )}
+                    >
+                      {" "}
+                      disini
+                    </span>
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Status Tags Row */}
         <div className="flex-shrink-0 bg-white px-4">
           <div className="flex flex-wrap items-center gap-2">
             {/* Order Type Tag */}
             {displayData?.orderType && (
-              <span className="flex h-6 items-center rounded-[6px] bg-primary-50 px-2 py-2 text-xs font-semibold text-primary-700">
+              <span
+                className={cn(
+                  "flex h-6 items-center rounded-[6px] px-2 py-2 text-xs font-semibold",
+                  displayData?.isTaken
+                    ? "text-neutral-600"
+                    : getOrderTypeStyle(displayData.orderType)
+                )}
+              >
                 {displayData.orderType === "INSTANT"
                   ? "Instan"
                   : displayData.orderType === "SCHEDULED"
@@ -147,45 +329,30 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
 
             {/* Load Time Text Tag */}
             {displayData?.timeLabel?.text && (
-              <span className="flex h-6 items-center rounded-[6px] bg-primary-50 px-2 py-2 text-xs font-semibold text-primary-700">
+              <span
+                className={cn(
+                  "flex h-6 items-center rounded-[6px] px-2 py-2 text-xs font-semibold",
+                  displayData?.isTaken
+                    ? "text-neutral-600"
+                    : getTimeLabelStyle(displayData.timeLabel.text)
+                )}
+              >
                 {displayData.timeLabel.text}
               </span>
             )}
 
             {/* Overload Badge if applicable */}
             {displayData?.overloadInfo?.hasOverload && (
-              <span className="flex h-6 items-center rounded-[6px] bg-error-50 px-2 py-2 text-xs font-semibold text-error-700">
+              <span
+                className={cn(
+                  "flex h-6 items-center rounded-[6px] px-2 py-2 text-xs font-semibold",
+                  displayData?.isTaken
+                    ? "text-neutral-600"
+                    : "bg-error-50 text-error-700"
+                )}
+              >
                 Potensi Overload
               </span>
-            )}
-
-            {/* Halal Badge if applicable */}
-            {displayData?.isHalalLogistics && (
-              <InfoTooltip
-                side="left"
-                align="center"
-                sideOffset={8}
-                trigger={
-                  <div
-                    className={cn(
-                      "flex h-6 w-6 cursor-pointer items-center justify-center rounded-md px-[6px] py-1",
-                      request.isTaken ? "" : "bg-[#F7EAFD]"
-                    )}
-                  >
-                    <IconComponent
-                      src="/icons/halal.svg"
-                      className={cn(
-                        "h-4 w-3",
-                        request.isTaken ? "text-neutral-700" : ""
-                      )}
-                    />
-                  </div>
-                }
-              >
-                Memerlukan pengiriman
-                <br />
-                dengan sertifikasi halal logistik
-              </InfoTooltip>
             )}
 
             {/* Bookmark icon */}
@@ -194,21 +361,20 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
                 onClick={handleSave}
                 className={cn(
                   "flex h-6 w-6 items-center justify-center rounded-full",
-                  displayData?.isSaved
-                    ? "bg-[#FFE9ED]"
-                    : "border border-[#C4C4C4] bg-white"
+                  displayData?.isTaken
+                    ? "border border-[#C4C4C4]"
+                    : isSaved
+                      ? "bg-[#FFE9ED]"
+                      : "border border-[#C4C4C4] bg-white"
                 )}
               >
                 <IconComponent
                   src={
-                    displayData?.isSaved
+                    isSaved
                       ? "/icons/bookmark-filled.svg"
                       : "/icons/bookmark.svg"
                   }
-                  className={cn(
-                    "h-5 w-5",
-                    displayData?.isSaved && "text-error-600"
-                  )}
+                  className={cn("h-5 w-5", isSaved && "text-error-600")}
                 />
               </button>
             </div>
@@ -222,35 +388,73 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
           {/* Informasi Armada */}
           <div>
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-[12px] font-semibold text-neutral-600">
+              <h3
+                className={cn(
+                  "text-[12px] font-semibold",
+                  displayData?.isTaken ? "text-neutral-600" : "text-neutral-600"
+                )}
+              >
                 Informasi Armada
               </h3>
-              <h3 className="text-[12px] font-semibold text-neutral-500">
+              <h3
+                className={cn(
+                  "text-[12px] font-semibold",
+                  displayData?.isTaken ? "text-neutral-600" : "text-neutral-500"
+                )}
+              >
                 Potensi Pendapatan
               </h3>
             </div>
 
-            <div className="mb-3 flex items-center justify-between">
-              <p className="text-sm font-bold text-neutral-900">
+            <div className="mb-3 flex justify-between">
+              <p
+                className={cn(
+                  "w-[251px] text-sm font-bold",
+                  displayData?.isTaken ? "text-neutral-600" : "text-neutral-900"
+                )}
+              >
                 {displayData?.carrierName} - {displayData?.truckTypeName}
               </p>
-              <p className="text-sm font-bold text-primary-700">
+              <p
+                className={cn(
+                  "text-sm font-bold",
+                  displayData?.isTaken ? "text-neutral-600" : "text-primary-700"
+                )}
+              >
                 {formatCurrency(displayData?.totalPrice)}
               </p>
             </div>
 
             <div className="flex items-center justify-between">
-              <p className="flex items-center text-[12px] font-medium text-[#7B7B7B]">
+              <p
+                className={cn(
+                  "flex items-center text-[12px] font-medium",
+                  displayData?.isTaken ? "text-neutral-600" : "text-[#7B7B7B]"
+                )}
+              >
                 <IconComponent
                   src="/icons/truk16.svg"
                   className="mr-2 h-4 w-4 text-neutral-600"
                 />
                 Kebutuhan :{" "}
-                <span className="text-neutral-900">
+                <span
+                  className={cn(
+                    displayData?.isTaken
+                      ? "text-neutral-600"
+                      : "text-neutral-900"
+                  )}
+                >
                   {displayData?.truckCount || 1} Unit
                 </span>
               </p>
-              <div className="rounded-[6px] border border-[#7A360D] bg-white px-2 py-2 text-xs font-semibold text-[#7A360D]">
+              <div
+                className={cn(
+                  "rounded-[6px] border px-2 py-2 text-xs font-semibold",
+                  displayData?.isTaken
+                    ? "border-neutral-400 bg-white text-neutral-600"
+                    : "border-[#7A360D] bg-white text-[#7A360D]"
+                )}
+              >
                 {request.orderCode}
               </div>
             </div>
@@ -260,18 +464,37 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
           {/* Waktu Muat */}
           <div>
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-[12px] font-semibold text-neutral-600">
+              <h3
+                className={cn(
+                  "text-[12px] font-semibold",
+                  displayData?.isTaken ? "text-neutral-600" : "text-neutral-600"
+                )}
+              >
                 Waktu Muat
               </h3>
             </div>
 
             <div className="flex items-center justify-between">
-              <p className="flex items-center text-[12px] font-semibold text-neutral-900">
+              <p
+                className={cn(
+                  "flex items-center text-[12px] font-semibold",
+                  displayData?.isTaken ? "text-neutral-600" : "text-neutral-900"
+                )}
+              >
                 <IconComponent
                   src="/icons/calendar16.svg"
-                  className="mr-2 h-4 w-4 text-[#461B02]"
+                  className={cn(
+                    "mr-2 h-4 w-4",
+                    displayData?.isTaken ? "text-neutral-600" : "text-[#461B02]"
+                  )}
                 />
-                <span className="text-neutral-900">
+                <span
+                  className={cn(
+                    displayData?.isTaken
+                      ? "text-neutral-600"
+                      : "text-neutral-900"
+                  )}
+                >
                   {displayData?.loadDateTime ||
                     "03 Jan 2025 09:00 WIB s/d 04 Jan 2025 11:00 WIB"}
                 </span>
@@ -283,10 +506,22 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
           {/* Rute Muat & Bongkar */}
           <div>
             <div className="mb-3 flex items-center">
-              <h3 className="text-[12px] font-semibold text-neutral-600">
+              <h3
+                className={cn(
+                  "text-[12px] font-semibold",
+                  displayData?.isTaken ? "text-neutral-600" : "text-neutral-600"
+                )}
+              >
                 Rute Muat & Bongkar
               </h3>
-              <span className="ml-2 inline-flex items-center rounded-[100px] border border-neutral-400 bg-neutral-200 px-3 py-2 text-xs font-semibold text-neutral-900">
+              <span
+                className={cn(
+                  "ml-2 inline-flex items-center rounded-[100px] border border-neutral-400 px-3 py-2 text-[10px] font-semibold",
+                  displayData?.isTaken
+                    ? "text-neutral-600"
+                    : "bg-neutral-200 text-neutral-900"
+                )}
+              >
                 Estimasi Jarak: {displayData?.estimatedDistance || 0} km
               </span>
             </div>
@@ -354,7 +589,14 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
                                     )}
                                 </div>
                                 <div className="">
-                                  <h4 className="text-[12px] font-medium text-neutral-600">
+                                  <h4
+                                    className={cn(
+                                      "text-[12px] font-medium",
+                                      displayData?.isTaken
+                                        ? "text-neutral-600"
+                                        : "text-neutral-600"
+                                    )}
+                                  >
                                     {item.text}
                                   </h4>
                                 </div>
@@ -373,7 +615,10 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
                               className="pb-2"
                               appearance={{
                                 titleClassname: cn(
-                                  "break-all text-[12px] font-medium text-neutral-900"
+                                  "break-all text-[12px] font-medium",
+                                  displayData?.isTaken
+                                    ? "text-neutral-600"
+                                    : "text-neutral-900"
                                 ),
                               }}
                             />
@@ -391,7 +636,12 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
           {/* Informasi Muatan */}
           <div>
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-[12px] font-semibold text-neutral-600">
+              <h3
+                className={cn(
+                  "text-[12px] font-semibold",
+                  displayData?.isTaken ? "text-neutral-600" : "text-neutral-600"
+                )}
+              >
                 Informasi Muatan (Total:{" "}
                 {displayData?.cargos?.reduce(
                   (sum, cargo) => sum + (cargo.weight || 0),
@@ -406,12 +656,38 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
                 <div key={cargo.id} className="flex items-center">
                   <IconComponent
                     src="/icons/box16.svg"
-                    className="mr-2 h-4 w-4 text-[#461B02]"
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      displayData?.isTaken
+                        ? "text-neutral-600"
+                        : "text-[#461B02]"
+                    )}
                   />
-                  <span className="text-[12px] font-semibold text-neutral-900">
+                  <span
+                    className={cn(
+                      "text-[12px] font-semibold",
+                      displayData?.isTaken
+                        ? "text-neutral-600"
+                        : "text-neutral-900"
+                    )}
+                  >
                     {cargo.name}{" "}
-                    <span className="text-[12px] font-semibold text-neutral-600">
+                    <span
+                      className={cn(
+                        "text-[12px] font-semibold",
+                        displayData?.isTaken
+                          ? "text-neutral-600"
+                          : "text-neutral-600"
+                      )}
+                    >
                       ({cargo.weight?.toLocaleString("id-ID") || "0"} kg)
+                      {cargo.length && cargo.width && cargo.height && (
+                        <span>
+                          {" "}
+                          ({cargo.length}x{cargo.width}x{cargo.height}{" "}
+                          {cargo.dimensionUnit || "m"})
+                        </span>
+                      )}
                     </span>
                   </span>
                 </div>
@@ -420,11 +696,30 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
                   <div className="flex items-center">
                     <IconComponent
                       src="/icons/box16.svg"
-                      className="mr-2 h-4 w-4 text-[#461B02]"
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        displayData?.isTaken
+                          ? "text-neutral-600"
+                          : "text-[#461B02]"
+                      )}
                     />
-                    <span className="text-[12px] font-semibold text-neutral-900">
+                    <span
+                      className={cn(
+                        "text-[12px] font-semibold",
+                        displayData?.isTaken
+                          ? "text-neutral-600"
+                          : "text-neutral-900"
+                      )}
+                    >
                       Besi Baja{" "}
-                      <span className="text-[12px] font-semibold text-neutral-600">
+                      <span
+                        className={cn(
+                          "text-[12px] font-semibold",
+                          displayData?.isTaken
+                            ? "text-neutral-600"
+                            : "text-neutral-600"
+                        )}
+                      >
                         (1.000 kg)
                       </span>
                     </span>
@@ -432,11 +727,30 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
                   <div className="flex items-center">
                     <IconComponent
                       src="/icons/box16.svg"
-                      className="mr-2 h-4 w-4 text-[#461B02]"
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        displayData?.isTaken
+                          ? "text-neutral-600"
+                          : "text-[#461B02]"
+                      )}
                     />
-                    <span className="text-[12px] font-semibold text-neutral-900">
+                    <span
+                      className={cn(
+                        "text-[12px] font-semibold",
+                        displayData?.isTaken
+                          ? "text-neutral-600"
+                          : "text-neutral-900"
+                      )}
+                    >
                       Batu Bata{" "}
-                      <span className="text-[12px] font-semibold text-neutral-600">
+                      <span
+                        className={cn(
+                          "text-[12px] font-semibold",
+                          displayData?.isTaken
+                            ? "text-neutral-600"
+                            : "text-neutral-600"
+                        )}
+                      >
                         (1.000 kg)
                       </span>
                     </span>
@@ -444,11 +758,30 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
                   <div className="flex items-center">
                     <IconComponent
                       src="/icons/box16.svg"
-                      className="mr-2 h-4 w-4 text-[#461B02]"
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        displayData?.isTaken
+                          ? "text-neutral-600"
+                          : "text-[#461B02]"
+                      )}
                     />
-                    <span className="text-[12px] font-semibold text-neutral-900">
+                    <span
+                      className={cn(
+                        "text-[12px] font-semibold",
+                        displayData?.isTaken
+                          ? "text-neutral-600"
+                          : "text-neutral-900"
+                      )}
+                    >
                       Karet Mentah{" "}
-                      <span className="text-[12px] font-semibold text-neutral-600">
+                      <span
+                        className={cn(
+                          "text-[12px] font-semibold",
+                          displayData?.isTaken
+                            ? "text-neutral-600"
+                            : "text-neutral-600"
+                        )}
+                      >
                         (500 kg)
                       </span>
                     </span>
@@ -462,13 +795,23 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
           {/* Deskripsi Muatan */}
           <div>
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-[12px] font-semibold text-neutral-600">
+              <h3
+                className={cn(
+                  "text-[12px] font-semibold",
+                  displayData?.isTaken ? "text-neutral-600" : "text-neutral-600"
+                )}
+              >
                 Deskripsi Muatan
               </h3>
             </div>
 
             <div className="flex items-center justify-between">
-              <p className="text-[12px] font-medium text-neutral-900">
+              <p
+                className={cn(
+                  "text-[12px] font-medium",
+                  displayData?.isTaken ? "text-neutral-600" : "text-neutral-900"
+                )}
+              >
                 {displayData?.cargoDescription ||
                   "tolong kirim muatan dengan hati hati, jangan sampai rusak dan hancur, terimakasih"}
               </p>
@@ -479,7 +822,12 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
           {/* Foto Muatan */}
           <div>
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-[12px] font-semibold text-neutral-600">
+              <h3
+                className={cn(
+                  "text-[12px] font-semibold",
+                  displayData?.isTaken ? "text-neutral-600" : "text-neutral-600"
+                )}
+              >
                 Foto Muatan
               </h3>
             </div>
@@ -531,77 +879,100 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
               </div>
             </LightboxProvider>
           </div>
-          <div className="my-4 border-b border-[#C4C4C4]"></div>
 
-          {/* Layanan Tambahan */}
-          <div className="">
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-[12px] font-semibold text-neutral-600">
-                Layanan Tambahan
-              </h3>
-            </div>
+          {/* Layanan Tambahan - Only show if there are additional services */}
+          {displayData?.additionalServices?.length > 0 && (
+            <>
+              <div className="my-4 border-b border-[#C4C4C4]"></div>
 
-            <div className="space-y-2">
-              {displayData?.additionalServices?.map((service, index) => (
-                <div key={service.id} className="flex items-center">
-                  <IconComponent
-                    src={
-                      service.serviceName === "Kirim Berkas"
-                        ? "/icons/service-plus.svg"
-                        : "/icons/service-plus.svg"
-                    }
-                    className="mr-2 h-4 w-4 text-[#461B02]"
-                  />
-                  <span className="text-[12px] font-medium text-neutral-900">
-                    {service.serviceName}
-                  </span>
+              <div className="">
+                <div className="mb-3 flex items-center justify-between">
+                  <h3
+                    className={cn(
+                      "text-[12px] font-semibold",
+                      displayData?.isTaken
+                        ? "text-neutral-600"
+                        : "text-neutral-600"
+                    )}
+                  >
+                    Layanan Tambahan
+                  </h3>
                 </div>
-              )) || (
+
                 <div className="space-y-2">
-                  <div className="flex items-center">
-                    <IconComponent
-                      src="/icons/service-plus.svg"
-                      className="mr-2 h-4 w-4 text-[#461B02]"
-                    />
-                    <span className="text-[12px] font-medium text-neutral-900">
-                      Kirim Berkas
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <IconComponent
-                      src="/icons/service-plus.svg"
-                      className="mr-2 h-4 w-4 text-[#461B02]"
-                    />
-                    <span className="text-[12px] font-medium text-neutral-900">
-                      Bantuan Tambahan
-                    </span>
-                  </div>
+                  {displayData.additionalServices.map((service, index) => (
+                    <div key={service.id} className="flex items-center">
+                      <IconComponent
+                        src={
+                          service.serviceName === "Kirim Berkas"
+                            ? "/icons/service-plus.svg"
+                            : "/icons/service-plus.svg"
+                        }
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          displayData?.isTaken
+                            ? "text-neutral-600"
+                            : "text-[#461B02]"
+                        )}
+                      />
+                      <span
+                        className={cn(
+                          "text-[12px] font-medium",
+                          displayData?.isTaken
+                            ? "text-neutral-600"
+                            : "text-neutral-900"
+                        )}
+                      >
+                        {service.serviceName}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              )}
-            </div>
-          </div>
+              </div>
+              <div className="my-4 border-b border-[#C4C4C4]"></div>
+            </>
+          )}
         </div>
       </div>
 
       {/* Action Buttons */}
       <div className="flex-shrink-0 border-t border-neutral-200 bg-white p-4">
         <div className="flex gap-2">
-          <Button
-            variant="muattrans-error-secondary"
-            className="flex-1 py-2 text-[14px] font-semibold"
-            onClick={onBack}
-          >
-            Tolak
-          </Button>
-          <Button
-            variant="muattrans-primary"
-            className="flex-1 py-2 text-[14px] font-semibold"
-            onClick={() =>
-              console.log("Terima clicked for:", displayData?.orderCode)
-            }
-          >
-            Terima
-          </Button>
+          {displayData?.isTaken ? (
+            <div className="flex w-full flex-col gap-3">
+              <div className="flex w-full rounded-xl bg-error-50 p-2">
+                <span className="text-xs font-semibold text-error-400">
+                  Permintaan sudah diambil transporter lain
+                </span>
+              </div>
+              <Button
+                variant="muattrans-primary"
+                className="w-full py-3 text-[14px] font-semibold"
+                onClick={handleUnderstand}
+              >
+                Mengerti
+              </Button>
+            </div>
+          ) : (
+            <>
+              <Button
+                variant="muattrans-error-secondary"
+                className="flex-1 py-2 text-[14px] font-semibold"
+                onClick={onBack}
+              >
+                Tolak
+              </Button>
+              <Button
+                variant="muattrans-primary"
+                className="flex-1 py-2 text-[14px] font-semibold"
+                onClick={() =>
+                  console.log("Terima clicked for:", displayData?.orderCode)
+                }
+              >
+                Terima
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </div>
