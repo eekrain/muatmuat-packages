@@ -15,6 +15,7 @@ const TransportRequestCard = ({
   onBookmarkToggle,
   isBookmarked,
   onUnderstand,
+  onShowDetail,
 }) => {
   // Use the prop if provided, otherwise fall back to request.isSaved
   const [isSaved, setIsSaved] = useState(
@@ -41,8 +42,12 @@ const TransportRequestCard = ({
   };
 
   const handleDetail = () => {
-    // TODO: Navigate to detail page
-    console.log("Detail clicked for:", request.orderCode);
+    if (onShowDetail) {
+      onShowDetail(request);
+    } else {
+      // TODO: Navigate to detail page
+      console.log("Detail clicked for:", request.orderCode);
+    }
   };
 
   const handleReject = () => {
@@ -335,7 +340,7 @@ const TransportRequestCard = ({
               </div>
             </div>
             <div className="ml-4">
-              <span className="rounded-[6px] border border-[#7A360D] bg-white px-3 py-1 text-xs font-semibold text-[#7A360D]">
+              <span className="rounded-[6px] border border-[#7A360D] bg-white px-2 py-2 text-xs font-semibold text-[#7A360D]">
                 {request.orderCode}
               </span>
             </div>
