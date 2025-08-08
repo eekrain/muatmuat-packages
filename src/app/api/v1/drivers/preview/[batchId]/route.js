@@ -105,7 +105,7 @@ function generateMockDrivers(batchId, count = 25) {
 // Mock database of batch IDs for demonstration
 const mockBatches = {
   "batch-123e4567-e89b-12d3-a456-426614174000": { totalDrivers: 25 },
-  "batch-987fcdeb-51d3-47a8-b456-123456789abc": { totalDrivers: 1 },
+  "batch-987fcdeb-51d3-47a8-b456-123456789abc": { totalDrivers: 3 },
   "batch-456789ab-cdef-1234-5678-90abcdef1234": { totalDrivers: 40 },
 };
 

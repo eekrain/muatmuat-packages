@@ -14,7 +14,8 @@ function delay(ms) {
 
 // Generate a unique batch ID for mock response
 function generateBatchId() {
-  return `batch-${crypto.randomUUID()}`;
+  // return `batch-${crypto.randomUUID()}`;
+  return `batch-456789ab-cdef-1234-5678-90abcdef1234`;
 }
 
 // Mock function to simulate Excel file processing
