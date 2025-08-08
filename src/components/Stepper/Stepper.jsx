@@ -199,7 +199,7 @@ export const StepperItemResponsive = ({ step, index }) => {
         )}
       >
         <IconComponent
-          src={step.icon}
+          src={step?.icon}
           width={20}
           height={20}
           className={cn(
@@ -214,7 +214,7 @@ export const StepperItemResponsive = ({ step, index }) => {
           className="absolute -bottom-1 left-1/2 -translate-x-1/2 translate-y-full text-center text-xxs font-medium leading-[1.2] text-[#000000]"
           style={{ width: titleWidth }}
         >
-          {step.subtitle && <div className="mt-2">{step.subtitle}</div>}
+          {step?.subtitle && <div className="mt-2">{step?.subtitle}</div>}
         </div>
       </div>
     </div>

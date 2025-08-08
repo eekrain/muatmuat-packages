@@ -22,15 +22,13 @@ export const BottomsheetStatusLainnya = ({ dataStatusPesanan }) => {
 
   return (
     <BottomSheet open={isOpenOtherStatus} onOpenChange={setIsOpenOtherStatus}>
-      <BottomSheetTrigger>
+      <BottomSheetTrigger asChild>
         <button
-          className="flex w-full flex-row items-center justify-between"
+          className="flex w-full flex-row items-center justify-between text-xs font-semibold text-primary-700"
           onClick={() => setIsOpenOtherStatus(true)}
         >
-          <div className="flex items-center gap-3 text-xs font-semibold text-[#176CF7]">
-            Lihat Status Lainnya
-          </div>
-          <ChevronRight className="h-4 w-4 text-[#176CF7]" />
+          <span>Lihat Status Lainnya</span>
+          <ChevronRight className="h-4 w-4" />
         </button>
       </BottomSheetTrigger>
       <BottomSheetContent>

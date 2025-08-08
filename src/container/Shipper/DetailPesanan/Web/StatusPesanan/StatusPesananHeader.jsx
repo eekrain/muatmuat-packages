@@ -377,17 +377,15 @@ const ModalAllDriver = ({
             onChange={(e) => setSearch(e.target.value)}
             className="mb-3 w-[262px]"
           />
-          <div className="pr-[4px]">
-            <div className="flex max-h-[332px] flex-col gap-3 overflow-y-auto pb-3 pr-[7px]">
-              {filteredDriverStatus.map((driver) => (
-                <DriverStatusCardItem
-                  key={driver.driverId}
-                  driver={driver}
-                  orderId={orderId}
-                  orderStatus={orderStatus}
-                />
-              ))}
-            </div>
+          <div className="mr-[5px] flex max-h-[332px] flex-col gap-3 overflow-y-auto pb-3 pr-[5px]">
+            {filteredDriverStatus.map((driver) => (
+              <DriverStatusCardItem
+                key={driver.driverId}
+                driver={driver}
+                orderId={orderId}
+                orderStatus={orderStatus}
+              />
+            ))}
           </div>
         </div>
 

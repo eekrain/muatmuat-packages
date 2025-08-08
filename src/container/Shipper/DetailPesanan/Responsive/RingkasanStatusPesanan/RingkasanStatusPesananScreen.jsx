@@ -81,9 +81,8 @@ const RingkasanStatusPesananScreen = ({ dataStatusPesanan }) => {
                 {dataStatusPesanan?.legendStatus?.stepperData.map(
                   (step, index) => (
                     <StepperItemResponsive
-                      key={step.label}
-                      status={step?.status}
-                      icon={step.icon}
+                      key={step.status}
+                      step={step}
                       index={index}
                     />
                   )
