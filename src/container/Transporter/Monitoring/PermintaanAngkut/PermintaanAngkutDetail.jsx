@@ -929,14 +929,13 @@ const PermintaanAngkutDetail = ({ request, onBack, onUnderstand }) => {
                   ))}
                 </div>
               </div>
-              <div className="my-4 border-b border-[#C4C4C4]"></div>
             </>
           )}
         </div>
       </div>
 
       {/* Action Buttons */}
-      <div className="flex-shrink-0 border-t border-neutral-200 bg-white p-4">
+      <div className="flex-shrink-0 border-t border-neutral-400 bg-white px-5 py-3">
         <div className="flex gap-2">
           {displayData?.isTaken ? (
             <div className="flex w-full flex-col gap-3">

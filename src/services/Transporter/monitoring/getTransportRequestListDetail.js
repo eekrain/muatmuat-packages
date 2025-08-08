@@ -15,7 +15,7 @@ const MOCK_CONFIG = {
   // Blue: "Muat 7 Hari Lagi", "Muat 10 Hari Lagi"
 
   // Content configuration:
-  photoCount: 1, // 1 = single photo, 4 = multiple photos, 0 = no photos
+  photoCount: 4, // 1 = single photo, 4 = multiple photos, 0 = no photos
   hasAdditionalServices: true, // true = show additional services, false = hide additional services
   isTaken: false, // true = greyscale entire view (taken by someone else), false = normal view
 };
