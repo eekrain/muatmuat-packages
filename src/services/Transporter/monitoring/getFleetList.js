@@ -12,6 +12,88 @@ const apiResultFleetList = {
   Data: {
     fleets: [
       {
+        fleetId: "fleet-uuid-5",
+        licensePlate: "B7890JKL",
+        driver: {
+          driverId: "driver-uuid-5",
+          name: "Robert Brown",
+          phoneNumber: "+628333444555",
+        },
+        lastLocation: {
+          latitude: -6.3972,
+          longitude: 106.8249,
+          address: {
+            district: "Sawangan",
+            city: "Depokasdfasdfs",
+          },
+          lastUpdate: "2025-07-25T11:30:00Z",
+        },
+        truckType: {
+          truckTypeId: "truck-type-uuid-2",
+          name: "Box",
+        },
+        carrierType: {
+          carrierId: "carrier-uuid-2",
+          name: "Bak Tertutup",
+        },
+        status: "ON_DUTY",
+        isActive: false,
+        hasSOSAlert: true,
+        detailSOS: {
+          sosId: "sos-uuid-2",
+          sosCategory: "MECHANICAL_ISSUE",
+          description: "Mesin overheating",
+          reportAt: "2025-07-25T11:20:00Z",
+          photos: [
+            "https://example.com/photo2.jpg",
+            "https://example.com/photo3.jpg",
+          ],
+        },
+        needsResponseChange: false,
+        activeOrder: null,
+      },
+      {
+        fleetId: "fleet-uuid-90",
+        licensePlate: "B7890JKL",
+        driver: {
+          driverId: "driver-uuid-5",
+          name: "Robert Brown",
+          phoneNumber: "+628333444555",
+        },
+        lastLocation: {
+          latitude: -6.3972,
+          longitude: 106.8249,
+          address: {
+            district: "Sawangan",
+            city: "Depokasdfasdfs",
+          },
+          lastUpdate: "2025-07-25T11:30:00Z",
+        },
+        truckType: {
+          truckTypeId: "truck-type-uuid-2",
+          name: "Box",
+        },
+        carrierType: {
+          carrierId: "carrier-uuid-2",
+          name: "Bak Tertutup",
+        },
+        status: "ON_DUTY",
+        isActive: false,
+        hasSOSAlert: true,
+        detailSOS: {
+          sosId: "sos-uuid-2",
+          sosCategory: "MECHANICAL_ISSUE",
+          description: null,
+          reportAt: "2025-07-25T11:20:00Z",
+          photos: [
+            "https://example.com/photo2.jpg",
+            "https://example.com/photo3.jpg",
+          ],
+        },
+        needsResponseChange: false,
+        activeOrder: null,
+      },
+      {
         fleetId: "fleet-uuid-1",
         licensePlate: "B1234ABC",
         driver: {
@@ -194,88 +276,6 @@ const apiResultFleetList = {
         },
       },
       {
-        fleetId: "fleet-uuid-5",
-        licensePlate: "B7890JKL",
-        driver: {
-          driverId: "driver-uuid-5",
-          name: "Robert Brown",
-          phoneNumber: "+628333444555",
-        },
-        lastLocation: {
-          latitude: -6.3972,
-          longitude: 106.8249,
-          address: {
-            district: "Sawangan",
-            city: "Depokasdfasdfs",
-          },
-          lastUpdate: "2025-07-25T11:30:00Z",
-        },
-        truckType: {
-          truckTypeId: "truck-type-uuid-2",
-          name: "Box",
-        },
-        carrierType: {
-          carrierId: "carrier-uuid-2",
-          name: "Bak Tertutup",
-        },
-        status: "ON_DUTY",
-        isActive: false,
-        hasSOSAlert: true,
-        detailSOS: {
-          sosId: "sos-uuid-2",
-          sosCategory: "MECHANICAL_ISSUE",
-          description: "Mesin overheating",
-          reportAt: "2025-07-25T11:20:00Z",
-          photos: [
-            "https://example.com/photo2.jpg",
-            "https://example.com/photo3.jpg",
-          ],
-        },
-        needsResponseChange: false,
-        activeOrder: null,
-      },
-      {
-        fleetId: "fleet-uuid-90",
-        licensePlate: "B7890JKL",
-        driver: {
-          driverId: "driver-uuid-5",
-          name: "Robert Brown",
-          phoneNumber: "+628333444555",
-        },
-        lastLocation: {
-          latitude: -6.3972,
-          longitude: 106.8249,
-          address: {
-            district: "Sawangan",
-            city: "Depokasdfasdfs",
-          },
-          lastUpdate: "2025-07-25T11:30:00Z",
-        },
-        truckType: {
-          truckTypeId: "truck-type-uuid-2",
-          name: "Box",
-        },
-        carrierType: {
-          carrierId: "carrier-uuid-2",
-          name: "Bak Tertutup",
-        },
-        status: "ON_DUTY",
-        isActive: false,
-        hasSOSAlert: true,
-        detailSOS: {
-          sosId: "sos-uuid-2",
-          sosCategory: "MECHANICAL_ISSUE",
-          description: null,
-          reportAt: "2025-07-25T11:20:00Z",
-          photos: [
-            "https://example.com/photo2.jpg",
-            "https://example.com/photo3.jpg",
-          ],
-        },
-        needsResponseChange: false,
-        activeOrder: null,
-      },
-      {
         fleetId: "fleet-uuid-6",
         licensePlate: "B2468MNO",
         driver: {
@@ -300,7 +300,7 @@ const apiResultFleetList = {
           carrierId: "carrier-uuid-1",
           name: "Bak Terbuka",
         },
-        status: "OFFLINE",
+        status: "READY_FOR_ORDER",
         isActive: false,
         hasSOSAlert: false,
         detailSOS: null,
@@ -403,7 +403,7 @@ const apiResultFleetList = {
       },
     ],
     pagination: {
-      totalFleets: 25,
+      totalFleets: 9,
       currentPage: 1,
       totalPages: 3,
     },

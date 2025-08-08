@@ -9,6 +9,7 @@ import {
   User,
 } from "lucide-react";
 
+import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import { cn } from "@/lib/utils";
@@ -103,6 +104,9 @@ export default function CardFleet({
         {fleet.needsResponseChange && (
           <NeedResponseButton onClick={() => onOpenDriverModal(fleet)} />
         )}
+        {fleet.hasSOSAlert === true && (
+          <SOSResponseButton onClick={() => onOpenDriverModal(fleet)} />
+        )}
       </div>
     );
   };
@@ -194,6 +198,23 @@ function AssignDriverButton({ onClick }) {
       >
         Pasangkan Driver
       </button>
+    </div>
+  );
+}
+
+function SOSResponseButton({ onClick }) {
+  return (
+    <div className="flex justify-between gap-2 pt-2">
+      <Button
+        variant="muattrans-primary-secondary"
+        className="w-full"
+        onClick={onClick}
+      >
+        Riwayat SOS
+      </Button>
+      <Button className="w-full" onClick={onClick}>
+        Mengerti
+      </Button>
     </div>
   );
 }

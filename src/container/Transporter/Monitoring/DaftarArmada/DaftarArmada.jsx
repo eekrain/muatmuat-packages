@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { AlertTriangle, Loader2, SlidersHorizontal, X } from "lucide-react";
+import { AlertTriangle, Loader2, X } from "lucide-react";
 
 import CardFleet from "@/components/Card/CardFleet";
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
@@ -10,22 +10,33 @@ import Search from "@/components/Search/Search";
 import { useGetFleetList } from "@/services/Transporter/monitoring/getFleetList";
 
 import { DriverSelectionModal } from "../../Driver/DriverSelectionModal";
+import FilterPopoverArmada from "./components/FilterPopoverArmada";
 
 const DaftarArmada = ({ onClose, onExpand }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedId, setExpandedId] = useState(null);
   const [showDriverModal, setShowDriverModal] = useState(false);
   const [selectedFleet, setSelectedFleet] = useState(null);
+  const [activeTab, setActiveTab] = useState("all"); // 'all' | 'sos'
+  const [truckStatusFilter, setTruckStatusFilter] = useState([]);
+  const [orderStatusFilter, setOrderStatusFilter] = useState([]);
 
   const {
     data: fleetData,
     isLoading,
     error,
     mutate: refetchFleets,
-  } = useGetFleetList({ search: searchTerm });
+  } = useGetFleetList({
+    search: searchTerm,
+    sosOnly: activeTab === "sos",
+    truckStatus: truckStatusFilter,
+    orderStatus: orderStatusFilter,
+  });
 
   const fleets = fleetData?.fleets || [];
   const totalFleets = fleetData?.totalFleets || fleets.length;
+  const sosCount = fleetData?.filter?.sos || 0;
+  const hasFilterData = fleetData?.filter;
 
   const toggleExpanded = (id) => {
     setExpandedId((prev) => {
@@ -43,10 +54,14 @@ const DaftarArmada = ({ onClose, onExpand }) => {
   };
 
   const handleDriverSelectionSuccess = (vehicleId, driverId) => {
-    // Refresh the fleet list to show the updated driver
     refetchFleets();
     setShowDriverModal(false);
     setSelectedFleet(null);
+  };
+
+  const handleApplyFilter = (truckStatuses, orderStatuses) => {
+    setTruckStatusFilter(truckStatuses);
+    setOrderStatusFilter(orderStatuses);
   };
 
   const filteredData = fleets.filter(
@@ -70,9 +85,9 @@ const DaftarArmada = ({ onClose, onExpand }) => {
         </div>
       </div>
 
-      {/* Search */}
+      {/* Search & filter */}
       <div className="mb-4 px-4">
-        <div className="flex gap-[12px]">
+        <div className="flex gap-3">
           <Search
             placeholder="Cari No. Polisi / Nama Driver"
             onSearch={setSearchTerm}
@@ -81,15 +96,39 @@ const DaftarArmada = ({ onClose, onExpand }) => {
             defaultValue={searchTerm}
             inputClassName="w-[229px]"
           />
-          <button className="flex h-8 items-center space-x-2 rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-600">
-            <span className="text-gray-600">Filter</span>
-            <SlidersHorizontal className="h-4 w-4 text-gray-600" />
-          </button>
+          <FilterPopoverArmada onApplyFilter={handleApplyFilter} />
         </div>
       </div>
 
+      {/* filter tabs */}
+      {hasFilterData && sosCount !== 0 && (
+        <div className="flex gap-2 px-4 pb-3">
+          <button
+            className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
+              activeTab === "all"
+                ? "w-auto min-w-[79px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
+                : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
+            }`}
+            onClick={() => setActiveTab("all")}
+          >
+            Semua ({totalFleets})
+          </button>
+          <button
+            className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
+              activeTab === "sos"
+                ? "w-auto min-w-[79px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
+                : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
+            }`}
+            onClick={() => setActiveTab("sos")}
+          >
+            SOS ({sosCount})
+          </button>
+          <div className="mb-3 flex gap-2 px-4"></div>
+        </div>
+      )}
+
       {/* Fleet List */}
-      <div className="flex-1 overflow-y-auto px-[12px] pb-3">
+      <div className="flex-1 overflow-y-auto px-3 pb-3">
         {isLoading ? (
           <div className="flex h-32 items-center justify-center">
             <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
