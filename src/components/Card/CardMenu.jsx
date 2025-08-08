@@ -5,14 +5,14 @@ import IconComponent from "../IconComponent/IconComponent";
 
 const CardMenu = ({ icon, title, description, buttonText, onClick }) => {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="flex h-[60px] w-[1184px] flex-wrap items-center justify-between gap-4 px-6">
       <div className="flex items-center gap-x-4">
         <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center">
           <IconComponent src={icon} width={40} height={40} />
         </div>
         <div className="flex flex-col">
-          <h3 className="text-lg font-bold text-neutral-900">{title}</h3>
-          <p className="text-sm text-neutral-700">{description}</p>
+          <h3 className="text-base font-bold text-neutral-900">{title}</h3>
+          <p className="text-xs text-neutral-800">{description}</p>
         </div>
       </div>
       {/* Action Button */}
