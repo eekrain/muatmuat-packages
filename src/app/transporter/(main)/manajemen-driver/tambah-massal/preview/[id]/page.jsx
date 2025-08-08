@@ -14,8 +14,10 @@ import {
   validateDriverForm,
 } from "@/config/forms/driverFormConfig";
 import { useDriverTableForm } from "@/hooks/useDriverTableForm";
+import { normalizePayloadTambahDriverMassal } from "@/lib/normalizers/transporter/tambah-driver-massal/normalizePayloadTambahDriverMassal";
 import { toast } from "@/lib/toast";
 import { useGetDriversPreview } from "@/services/Transporter/manajemen-driver/getDriverPreview";
+import { usePostDriverBulkCreate } from "@/services/Transporter/manajemen-driver/postDriverBulkCreate";
 
 import DriverTable from "../../components/DriverTable/DriverTable";
 
@@ -57,25 +59,26 @@ export default function PreviewDriver({ params }) {
   );
 
   // TODO: Replace with actual driver bulk create service
-  // const { trigger: handlePostDriverBulkCreate, isMutating } = usePostDriverBulkCreate();
-  const isMutating = false; // Temporary until service is implemented
+  const { trigger: handlePostDriverBulkCreate, isMutating } =
+    usePostDriverBulkCreate();
+  // const isMutating = false; // Temporary until service is implemented
 
   // Custom submit handler for this page
   const handleSubmit = (value) => {
     // TODO: Implement driver bulk create payload normalization
-    // const payload = normalizePayloadTambahDriverMassal(value);
-    // handlePostDriverBulkCreate(payload)
-    //   .then((res) => {
-    //     // Show success message
-    //     toast.success(`Berhasil menambahkan ${res.Data.savedDrivers} driver.`);
-    //     router.push(`/manajemen-driver?tab=process`);
-    //   })
-    //   .catch((_error) => {
-    //     // Show error message
-    //     toast.error(
-    //       "Gagal menyimpan draft driver. Periksa kembali data yang dimasukkan."
-    //     );
-    //   });
+    const payload = normalizePayloadTambahDriverMassal(value);
+    handlePostDriverBulkCreate(payload)
+      .then((res) => {
+        // Show success message
+        toast.success(`Berhasil menambahkan ${res.Data.savedDrivers} driver.`);
+        router.push(`/manajemen-driver?tab=process`);
+      })
+      .catch((_error) => {
+        // Show error message
+        toast.error(
+          "Gagal menyimpan draft driver. Periksa kembali data yang dimasukkan."
+        );
+      });
 
     // Temporary implementation
     toast.success(`Berhasil menambahkan ${value.driverList.length} driver.`);

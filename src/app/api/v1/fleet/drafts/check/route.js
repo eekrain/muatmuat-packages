@@ -46,7 +46,7 @@ export async function GET(req) {
 
     const randomScenario =
       // scenarios[Math.floor(Math.random() * scenarios.length)];
-      scenarios[2];
+      scenarios[0];
 
     // Return success response with random scenario data
     return NextResponse.json(

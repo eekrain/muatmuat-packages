@@ -7,7 +7,7 @@ import {
   TabsList,
   TabsTriggerWithSeparator,
 } from "@/components/Tabs/Tabs";
-import { useGetFleetsDraftCheck } from "@/services/Transporter/manajemen-armada/getFleetsDraftCheck";
+import { useGetDriversDraftStatus } from "@/services/Transporter/manajemen-driver/getDriversDraftStatus";
 
 import PopUpInformasi from "./components/PopUpInformasi";
 import Draft from "./components/Tabs/Draft/Draft";
@@ -15,7 +15,7 @@ import TambahDriverMassal from "./components/Tabs/TambahDriverMassal/TambahDrive
 import TambahExcel from "./components/Tabs/TambahExcel/TambahExcel";
 
 export default function TambahMassal() {
-  const { data } = useGetFleetsDraftCheck("/v1/fleet/drafts/check");
+  const { data } = useGetDriversDraftStatus("/v1/drivers/draft/status");
   return (
     <div className="my-6 max-h-screen w-full space-y-4 px-6 pb-20">
       {/* Header  */}
@@ -56,12 +56,10 @@ export default function TambahMassal() {
           <TambahExcel />
         </TabsContent>
         <TabsContent value="tambah_driver_massal" className="pt-4">
-          <TambahDriverMassal
-            isDraftAvailable={data?.Data?.hasExistingDrafts}
-          />
+          <TambahDriverMassal isDraftAvailable={data?.Data?.hasDraft} />
         </TabsContent>
         <TabsContent value="draft" className="pt-4">
-          <Draft isDraftAvailable={data?.Data?.hasExistingDrafts} />
+          <Draft isDraftAvailable={data?.Data?.hasDraft} />
         </TabsContent>
       </Tabs>
     </div>

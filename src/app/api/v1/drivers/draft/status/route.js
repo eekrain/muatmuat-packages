@@ -28,8 +28,9 @@ export async function GET(req) {
 
     // Simulate different draft scenarios for testing
     // 80% chance of having drafts, 20% chance of no drafts
-    const hasDrafts = Math.random() > 0.2;
+    // const hasDrafts = Math.random() > 0.2;
 
+    const hasDrafts = true;
     let draftData;
     if (hasDrafts) {
       // Select a random draft scenario with drafts

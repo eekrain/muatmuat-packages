@@ -7,122 +7,66 @@ import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import {
-  defaultInformasiArmada,
-  handleVehicleCellValueChange,
-  validateVehicleForm,
-  vehicleDefaultValues,
-  vehicleFormSchema,
-} from "@/config/forms/vehicleFormConfig";
-import { useTableForm } from "@/hooks/useTableForm";
+  driverDefaultValues,
+  driverFormSchema,
+  handleDriverCellValueChange,
+  validateDriverForm,
+} from "@/config/forms/driverFormConfig";
+import { useDriverTableForm } from "@/hooks/useDriverTableForm";
 import { normalizePayloadTambahArmadaMassal } from "@/lib/normalizers/transporter/tambah-armada-massal/normalizePayloadTambahArmadaMassal";
+import { normalizePayloadTambahDriverMassal } from "@/lib/normalizers/transporter/tambah-driver-massal/normalizePayloadTambahDriverMassal";
 import { toast } from "@/lib/toast";
-import { useGetFleetsDrafts } from "@/services/Transporter/manajemen-armada/getFleetsDrafts";
-import { usePostFleetBulkCreate } from "@/services/Transporter/manajemen-armada/postFleetBulkCreate";
+import { useGetDriversDrafts } from "@/services/Transporter/manajemen-driver/getDriversDraft";
+import { usePostDriverBulkCreate } from "@/services/Transporter/manajemen-driver/postDriverBulkCreate";
 
 import ModalAddArmadaImage from "../../../preview/components/ModalAddImage/ModalAddImage";
-import ArmadaTable from "../../DriverTable/DriverTable";
+import DriverTable from "../../DriverTable/DriverTable";
 
 // Function to map API draft data to form structure
-const mapDraftsToFormData = (drafts) => {
-  if (!drafts || !Array.isArray(drafts) || drafts.length === 0) {
-    return vehicleDefaultValues;
+const mapDriversToFormData = (drivers) => {
+  if (!drivers || !Array.isArray(drivers) || drivers.length === 0) {
+    return driverDefaultValues;
   }
 
-  const informasiMuatan = drafts.map((draft) => ({
-    id: draft.id, // Keep draft ID for reference
-    informasi_armada: {
-      images: {
-        // Map photos to form image structure
-        image_armada_depan:
-          draft.photos?.find((p) => p.photoType === "FRONT")?.photoUrl || null,
-        image_armada_kiri:
-          draft.photos?.find((p) => p.photoType === "LEFT")?.photoUrl || null,
-        image_armada_kanan:
-          draft.photos?.find((p) => p.photoType === "RIGHT")?.photoUrl || null,
-        image_armada_belakang:
-          draft.photos?.find((p) => p.photoType === "BACK")?.photoUrl || null,
-      },
-    },
-    licensePlate: draft.licensePlate || "",
-    jenis_truk: draft.truckTypeId || "",
-    jenis_carrier: draft.carrierTypeId || "",
-    merek_kendaraan_name: draft.vehicleBrand || "",
-    merek_kendaraan_id: draft.vehicleBrandId || "",
-    tipe_kendaraan_name: draft.vehicleType || "",
-    tipe_kendaraan_id: draft.vehicleTypeId || "",
-    tahun_registrasi_kendaraan: draft.registrationYear?.toString() || "",
-    dimensi_carrier: {
-      panjang: draft.carrierLength?.toString() || "",
-      lebar: draft.carrierWidth?.toString() || "",
-      tinggi: draft.carrierHeight?.toString() || "",
-      unit: draft.carrierDimensionUnit || "m",
-    },
-    nomor_rangka: draft.chassisNumber || "",
-    masa_berlaku_stnk: draft.stnkExpiryDate
-      ? new Date(draft.stnkExpiryDate)
-      : "",
-    foto_stnk: {
-      documentUrl:
-        draft.documents?.find((d) => d.documentType === "STNK")?.documentUrl ||
-        null,
-      name:
-        draft.documents?.find((d) => d.documentType === "STNK")?.documentName ||
-        null,
-    },
-    foto_pajak_kendaraan: {
-      documentUrl:
-        draft.documents?.find((d) => d.documentType === "PAJAK")?.documentUrl ||
-        null,
-      name: draft.documents?.find((d) => d.documentType === "PAJAK")
-        ?.documentName,
-    },
-    nomor_kir: draft.kirNumber || "",
-    masa_berlaku_kir: draft.kirExpiryDate ? new Date(draft.kirExpiryDate) : "",
-    foto_buku_kir: {
-      documentUrl:
-        draft.documents?.find((d) => d.documentType === "KIR")?.documentUrl ||
-        null,
-      name: draft.documents?.find((d) => d.documentType === "KIR")
-        ?.documentName,
-    },
-    estimasi_tanggal_pemasangan_gps: {
-      mulai: draft.gpsInstallationEstimateStartDate
-        ? new Date(draft.gpsInstallationEstimateStartDate)
-        : "",
-      selesai: draft.gpsInstallationEstimateEndDate
-        ? new Date(draft.gpsInstallationEstimateEndDate)
-        : "",
-    },
+  const driverList = drivers.map((driver) => ({
+    tempId: driver.tempId, // Keep temp ID for reference
+    driverImage: driver.profileImage || null, // Will be populated by user during editing
+    fullName: driver.name || "",
+    whatsappNumber: driver.phoneNumber || "",
+    ktpPhoto: driver.ktpDocument || "", // Will be populated by user during editing
+    simB2Photo: driver.simDocument || "", // Will be populated by user during editing
+    simB2ExpiryDate: driver.simExpiryDate || "",
   }));
 
-  return { informasiMuatan };
+  return { driverList };
 };
 
 const Draft = ({ isDraftAvailable }) => {
   const router = useRouter();
   const isFirstMount = useRef(true);
-  const { data, isLoading, error } = useGetFleetsDrafts(
-    isDraftAvailable ? "/v1/fleet/drafts" : null
+  const { data, isLoading, error } = useGetDriversDrafts(
+    isDraftAvailable ? "/v1/drivers/draft" : null
   );
   const [activeIndex, setActiveIndex] = useState();
   const [addArmadaImageModal, setAddArmadaImageModal] = useState(false);
 
-  const { trigger: handlePostFleetBulkCreate, isMutating } =
-    usePostFleetBulkCreate();
+  const { trigger: handlePostDriverBulkCreate, isMutating } =
+    usePostDriverBulkCreate();
 
   // Custom submit handler for this page
   const handleSubmit = (value) => {
-    const payload = normalizePayloadTambahArmadaMassal(value);
-    handlePostFleetBulkCreate(payload)
+    console.log("value", value);
+    const payload = normalizePayloadTambahDriverMassal(value);
+    handlePostDriverBulkCreate(payload)
       .then((res) => {
         // Show success message
-        toast.success(`Berhasil menambahkan ${res.Data.savedFleets} armada.`);
-        router.push(`/manajemen-armada?tab=process`);
+        toast.success(`Berhasil menambahkan ${res.Data.totalSaved} Driver.`);
+        router.push(`/manajemen-driver?tab=process`);
       })
       .catch((_error) => {
         // Show error message
         toast.error(
-          "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
+          "Gagal menyimpan draft driver. Periksa kembali data yang dimasukkan."
         );
       });
   };
@@ -130,7 +74,7 @@ const Draft = ({ isDraftAvailable }) => {
   // Custom save as draft handler for this page
   const handleSaveAsDraft = (value) => {
     const payload = normalizePayloadTambahArmadaMassal(value);
-    handlePostFleetBulkCreate(payload)
+    handlePostDriverBulkCreate(payload)
       .then(() => {
         // Show success message
         toast.success("Draft armada berhasil disimpan.");
@@ -163,29 +107,29 @@ const Draft = ({ isDraftAvailable }) => {
     setValue,
     reset,
     append,
-  } = useTableForm({
-    defaultValues: vehicleDefaultValues, // Always start with default values
-    schema: vehicleFormSchema,
+  } = useDriverTableForm({
+    defaultValues: driverDefaultValues, // Always start with default values
+    schema: driverFormSchema,
     onSubmit: handleSubmit,
     onSaveAsDraft: handleSaveAsDraft,
-    validateAndShowErrors: validateVehicleForm,
-    handleCellValueChange: handleVehicleCellValueChange,
-    fieldArrayName: "informasiMuatan",
+    validateAndShowErrors: validateDriverForm,
+    handleCellValueChange: handleDriverCellValueChange,
+    fieldArrayName: "driverList",
   });
 
   // Custom handleAddRow to ensure we always add empty rows
   const handleAddRow = () => {
-    append(defaultInformasiArmada);
+    append(driverDefaultValues);
   };
 
   // Update form data when API data loads
   useEffect(() => {
     if (
-      data?.Data?.drafts &&
-      data.Data.drafts.length > 0 &&
+      data?.Data?.drivers &&
+      data.Data.drivers.length > 0 &&
       isFirstMount.current
     ) {
-      const formData = mapDraftsToFormData(data.Data.drafts);
+      const formData = mapDriversToFormData(data.Data.drivers);
       reset(formData);
       isFirstMount.current = false;
     }
@@ -220,7 +164,7 @@ const Draft = ({ isDraftAvailable }) => {
     );
   }
 
-  if (!data?.Data?.drafts || data.Data.drafts.length === 0) {
+  if (!data?.Data?.drivers || data.Data.drivers.length === 0) {
     return (
       <div className="flex h-[280px] w-full items-center justify-center rounded-xl bg-white p-8 shadow-md">
         <DataNotFound type="data" title="Belum ada Draft Armada" />
@@ -232,8 +176,8 @@ const Draft = ({ isDraftAvailable }) => {
     <div className="">
       {/* Header Table */}
       <form onSubmit={onSubmit}>
-        <ArmadaTable
-          data={watch("informasiMuatan")}
+        <DriverTable
+          data={watch("driverList")}
           selectedRows={selectedRowIndex}
           selectAll={selectAll}
           searchValue={searchValue}
@@ -243,8 +187,7 @@ const Draft = ({ isDraftAvailable }) => {
           onAddRow={handleAddRow}
           onDeleteRows={handleDeleteRows}
           onCellValueChange={handleCellValueChange}
-          onImageClick={handleImageClick}
-          errors={errors.informasiMuatan}
+          errors={errors.driverList}
         />
         <div className="flex items-center justify-end">
           <div className="mt-4 flex w-full items-end justify-end gap-3">
@@ -271,7 +214,7 @@ const Draft = ({ isDraftAvailable }) => {
         isOpen={confirmDeleteModal}
         setIsOpen={setConfirmDeleteModal}
         title={{
-          text: "Apakah kamu yakin untuk menghapus armada ?",
+          text: "Apakah kamu yakin untuk menghapus driver?",
           className: "text-sm font-medium text-center",
         }}
         confirm={{
