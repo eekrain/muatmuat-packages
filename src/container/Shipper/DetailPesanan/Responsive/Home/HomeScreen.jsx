@@ -255,6 +255,7 @@ const DetailPesananScreen = ({
         onConfirm={() => {
           setIsOpenBottomsheetAlasanPembatalan(true);
         }}
+        hasPriceCharge={dataRingkasanPembayaran?.hasPriceCharge}
       />
 
       <BottomsheetAlasanPembatalan
