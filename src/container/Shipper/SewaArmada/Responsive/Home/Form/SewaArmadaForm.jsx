@@ -6,6 +6,7 @@ import TimelineField from "@/components/Timeline/timeline-field";
 import { JenisArmadaField } from "@/container/Shipper/SewaArmada/Responsive/Home/Form/JenisArmadaField";
 import { JumlahArmada } from "@/container/Shipper/SewaArmada/Responsive/Home/Form/JumlahArmada";
 import WaktuMuatBottomsheet from "@/container/Shipper/SewaArmada/Responsive/Home/Form/WaktuMuat";
+import { useTranslation } from "@/hooks/use-translation";
 import {
   OrderStatusEnum,
   OrderTypeEnum,
@@ -29,6 +30,7 @@ export const SewaArmadaForm = ({
   handleCheckLoggedIn,
   calculatedPrice,
 }) => {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const navigation = useResponsiveNavigation();
@@ -117,7 +119,9 @@ export const SewaArmadaForm = ({
             );
 
             if (error) {
-              toast.error(error);
+              toast.error(
+                t("SewaArmadaForm.messageErrorValidasiLokasi", {}, error)
+              );
               throw new Error(error);
             }
           },
@@ -139,7 +143,9 @@ export const SewaArmadaForm = ({
     <div className="flex flex-col gap-y-6 bg-white px-4 py-5">
       {/* Waktu Muat Field */}
       <FormContainer>
-        <FormLabel required>Waktu Muat</FormLabel>
+        <FormLabel required>
+          {t("SewaArmadaForm.labelWaktuMuat", {}, "Waktu Muat")}
+        </FormLabel>
         <WaktuMuatBottomsheet
           handleCheckLoggedIn={handleCheckLoggedIn}
           hasNotDepartedToPickup={hasNotDepartedToPickup}
@@ -148,7 +154,9 @@ export const SewaArmadaForm = ({
 
       {/* Lokasi Muat Field */}
       <FormContainer>
-        <FormLabel required>Lokasi Muat</FormLabel>
+        <FormLabel required>
+          {t("SewaArmadaForm.labelLokasiMuat", {}, "Lokasi Muat")}
+        </FormLabel>
         <TimelineField.Root
           disabled={
             isEditPage && !(orderType === "SCHEDULED" && hasNotDepartedToPickup)
@@ -207,7 +215,9 @@ export const SewaArmadaForm = ({
 
       {/* Lokasi Bongkar Field */}
       <FormContainer>
-        <FormLabel required>Lokasi Bongkar</FormLabel>
+        <FormLabel required>
+          {t("SewaArmadaForm.labelLokasiBongkar", {}, "Lokasi Bongkar")}
+        </FormLabel>
         <TimelineField.Root
           maxLocation={settingsTime?.location.maxDropoff}
           variant="bongkar"
@@ -253,7 +263,9 @@ export const SewaArmadaForm = ({
 
       {/* Informasi Muatan Field */}
       <FormContainer>
-        <FormLabel required>Informasi Muatan</FormLabel>
+        <FormLabel required>
+          {t("SewaArmadaForm.labelInformasiMuatan", {}, "Informasi Muatan")}
+        </FormLabel>
         <button
           className={cn(
             "flex h-8 w-full items-center justify-between gap-x-2 rounded-md border border-neutral-600 px-3",
@@ -271,7 +283,13 @@ export const SewaArmadaForm = ({
             <IconComponent src="/icons/muatan16.svg" />
             <span className="max-w-[256px] truncate text-sm font-semibold leading-[15.4px]">
               {formValues.informasiMuatan.length === 0 ? (
-                <span className="text-neutral-600">Masukkan Muatan</span>
+                <span className="text-neutral-600">
+                  {t(
+                    "SewaArmadaForm.placeholderMasukkanMuatan",
+                    {},
+                    "Masukkan Muatan"
+                  )}
+                </span>
               ) : (
                 <span className="text-neutral-900">
                   {formValues.informasiMuatan
@@ -305,12 +323,12 @@ export const SewaArmadaForm = ({
                   handleEditLayananTambahan();
                 }}
               >
-                Ubah Layanan
+                {t("SewaArmadaForm.buttonUbahLayanan", {}, "Ubah Layanan")}
               </button>
             )
           }
         >
-          Layanan Tambahan
+          {t("SewaArmadaForm.labelLayananTambahan", {}, "Layanan Tambahan")}
         </FormLabel>
         {formValues.additionalServices.length === 0 ? (
           <button
@@ -329,7 +347,11 @@ export const SewaArmadaForm = ({
             <div className="flex items-center gap-x-2">
               <IconComponent src="/icons/layanan-tambahan.svg" />
               <span className="text-sm font-semibold leading-[15.4px] text-neutral-600">
-                Pilih Layanan Tambahan
+                {t(
+                  "SewaArmadaForm.buttonPilihLayananTambahan",
+                  {},
+                  "Pilih Layanan Tambahan"
+                )}
               </span>
             </div>
             <IconComponent src="/icons/chevron-right.svg" />
