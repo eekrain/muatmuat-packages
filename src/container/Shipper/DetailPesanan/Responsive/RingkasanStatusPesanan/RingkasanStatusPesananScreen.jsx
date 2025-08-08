@@ -27,8 +27,6 @@ const RingkasanStatusPesananScreen = ({ dataStatusPesanan }) => {
     return val - totalDriver;
   }, [dataStatusPesanan]);
 
-  console.log(dataStatusPesanan, "dataStatusPesanan");
-
   const statusMeta = getStatusPesananMetadata({
     orderStatus: dataStatusPesanan.orderStatus,
     unitFleetStatus: dataStatusPesanan.unitFleetStatus,
@@ -91,13 +89,12 @@ const RingkasanStatusPesananScreen = ({ dataStatusPesanan }) => {
             </div>
           )}
 
-          {dataStatusPesanan?.driverStatus.map((driver, key) => (
-            <Fragment key={key}>
-              <DriverStatusCard
-                driver={driver}
-                orderStatus={dataStatusPesanan.orderStatus}
-              />
-            </Fragment>
+          {dataStatusPesanan?.driverStatus.map((driver) => (
+            <DriverStatusCard
+              key={driver.driverId}
+              driver={driver}
+              dataStatusPesanan={dataStatusPesanan}
+            />
           ))}
         </div>
       </div>
