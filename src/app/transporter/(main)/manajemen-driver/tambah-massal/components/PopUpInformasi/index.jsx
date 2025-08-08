@@ -10,8 +10,8 @@ import {
   ModalTrigger,
 } from "@/components/Modal/Modal";
 import { Slider } from "@/components/Slider/Slider";
-import { useGetUserPopupPreference } from "@/services/Transporter/manajemen-armada/getUserPopupPreference";
-import { updateUserPopupPreference } from "@/services/Transporter/manajemen-armada/updateUserPopupPreference";
+import { useGetUserPreferencesImportDriver } from "@/services/Transporter/manajemen-driver/getUserPreferencesImportDriver";
+import { usePostUserPopupPreferences } from "@/services/Transporter/manajemen-driver/postUserPopupPreferences";
 
 const onboardingSlides = [
   {
@@ -45,29 +45,32 @@ export default function PopUpInformasi() {
   const [isUpdating, setIsUpdating] = useState(false);
   const hasShownInSession = useRef(false);
 
+  const { data: popupPreference } = useGetUserPreferencesImportDriver(
+    "/v1/user/popup-preferences/import-driver"
+  );
+
   const {
-    data: popupPreference,
-    isLoading,
+    trigger: updateUserPopupPreference,
+    isMutating: isLoading,
     error,
-    mutate,
-  } = useGetUserPopupPreference();
+  } = usePostUserPopupPreferences();
 
   // useEffect hanya untuk membuka modal secara otomatis
   useEffect(() => {
     if (
       popupPreference &&
-      popupPreference.showPopup &&
-      !hasShownInSession.current
+      popupPreference.Data.showPopup
+      // !hasShownInSession.current
     ) {
       setIsModalOpen(true);
-      hasShownInSession.current = true;
+      // hasShownInSession.current = true;
     }
   }, [popupPreference]);
 
   // useEffect untuk menyinkronkan checkbox saat modal dibuka secara manual
   useEffect(() => {
     if (isModalOpen && popupPreference) {
-      setDontShowAgain(!popupPreference.showPopup);
+      setDontShowAgain(!popupPreference.Data.showPopup);
     }
   }, [isModalOpen, popupPreference]);
 
@@ -75,31 +78,9 @@ export default function PopUpInformasi() {
     setIsModalOpen(openState);
 
     // Logic untuk menyimpan preferensi hanya dijalankan saat modal ditutup
-    if (!openState) {
-      const preferenceFromApi = !popupPreference?.showPopup;
-      if (dontShowAgain !== preferenceFromApi) {
-        setIsUpdating(true);
-        const newShowPopupStatus = !dontShowAgain;
-        try {
-          const response = await updateUserPopupPreference(newShowPopupStatus);
-          if (response?.Message?.Code === 200) {
-            mutate({
-              ...popupPreference,
-              showPopup: response.Data?.showPopup,
-              lastUpdated: response.Data?.updatedAt,
-            });
-          } else {
-            throw new Error(
-              response?.Message?.Text || "Gagal memperbarui preferensi"
-            );
-          }
-        } catch (err) {
-          console.error("Gagal memperbarui preferensi popup:", err);
-        } finally {
-          setIsUpdating(false);
-        }
-      }
-    }
+    updateUserPopupPreference({
+      showPopup: dontShowAgain,
+    });
   };
 
   return (
