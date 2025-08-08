@@ -136,7 +136,7 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
           <div className="flex flex-wrap items-center gap-2">
             {/* Order Type Tag */}
             {displayData?.orderType && (
-              <span className="flex h-6 items-center rounded-[6px] bg-primary-50 px-2 text-xs font-semibold text-primary-700">
+              <span className="flex h-6 items-center rounded-[6px] bg-primary-50 px-2 py-2 text-xs font-semibold text-primary-700">
                 {displayData.orderType === "INSTANT"
                   ? "Instan"
                   : displayData.orderType === "SCHEDULED"
@@ -147,14 +147,14 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
 
             {/* Load Time Text Tag */}
             {displayData?.timeLabel?.text && (
-              <span className="flex h-6 items-center rounded-[6px] bg-primary-50 px-2 text-xs font-semibold text-primary-700">
+              <span className="flex h-6 items-center rounded-[6px] bg-primary-50 px-2 py-2 text-xs font-semibold text-primary-700">
                 {displayData.timeLabel.text}
               </span>
             )}
 
             {/* Overload Badge if applicable */}
             {displayData?.overloadInfo?.hasOverload && (
-              <span className="flex h-6 items-center rounded-[6px] bg-error-50 px-2 text-xs font-semibold text-error-700">
+              <span className="flex h-6 items-center rounded-[6px] bg-error-50 px-2 py-2 text-xs font-semibold text-error-700">
                 Potensi Overload
               </span>
             )}
@@ -168,7 +168,7 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
                 trigger={
                   <div
                     className={cn(
-                      "flex h-6 w-6 cursor-pointer items-center justify-center rounded-md px-1 py-2",
+                      "flex h-6 w-6 cursor-pointer items-center justify-center rounded-md px-[6px] py-1",
                       request.isTaken ? "" : "bg-[#F7EAFD]"
                     )}
                   >
@@ -293,48 +293,94 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
 
             <div className="mb-4 flex w-full justify-between">
               <div className="w-full">
-                {/* Create combined locations array without headers in timeline */}
+                {/* Combined Timeline Section */}
                 {(() => {
                   const pickupLocations = displayData?.pickupLocations || [];
                   const dropoffLocations = displayData?.dropoffLocations || [];
-                  const allLocations = [
-                    ...pickupLocations.map((location, index) => ({
-                      type: "pickup",
-                      address: location.fullAddress,
-                      index: index,
-                    })),
-                    ...dropoffLocations.map((location, index) => ({
-                      type: "dropoff",
-                      address: location.fullAddress,
-                      index: index,
-                    })),
-                  ];
+
+                  // Create items array with headers and locations
+                  const timelineItems = [];
+
+                  // Add Lokasi Muat header as timeline item
+                  timelineItems.push({
+                    type: "header",
+                    text: "Lokasi Muat",
+                  });
+
+                  // Add pickup locations
+                  pickupLocations.forEach((location, index) => {
+                    timelineItems.push({
+                      type: "location",
+                      variant: "number-muat",
+                      location: location,
+                      originalIndex: index,
+                    });
+                  });
+
+                  // Add Lokasi Bongkar header as timeline item
+                  timelineItems.push({
+                    type: "header",
+                    text: "Lokasi Bongkar",
+                  });
+
+                  // Add dropoff locations
+                  dropoffLocations.forEach((location, index) => {
+                    timelineItems.push({
+                      type: "location",
+                      variant: "number-bongkar",
+                      location: location,
+                      originalIndex: index,
+                    });
+                  });
 
                   return (
-                    <TimelineContainer>
-                      {allLocations.map((location, globalIndex) => {
-                        return (
-                          <NewTimelineItem
-                            key={`location-${globalIndex}`}
-                            variant={
-                              location.type === "pickup"
-                                ? "number-muat"
-                                : "number-bongkar"
-                            }
-                            index={location.index}
-                            activeIndex={0}
-                            isLast={globalIndex === allLocations.length - 1}
-                            title={location.address}
-                            className="pb-2"
-                            appearance={{
-                              titleClassname: cn(
-                                "break-all text-[12px] font-medium text-neutral-900"
-                              ),
-                            }}
-                          />
-                        );
-                      })}
-                    </TimelineContainer>
+                    <div>
+                      <TimelineContainer>
+                        {timelineItems.map((item, globalIndex) => {
+                          const isLastItem =
+                            globalIndex === timelineItems.length - 1;
+
+                          if (item.type === "header") {
+                            return (
+                              <div
+                                key={`header-${globalIndex}`}
+                                className="grid grid-cols-[16px_1fr] items-center gap-x-2 pb-2"
+                              >
+                                <div className="relative flex justify-center">
+                                  {/* Garis penghubung untuk header - hanya untuk "Lokasi Bongkar" */}
+                                  {!isLastItem &&
+                                    item.text === "Lokasi Bongkar" && (
+                                      <div className="absolute left-1/2 top-0 h-[32px] w-px -translate-x-1/2 border-l-2 border-dashed border-neutral-400" />
+                                    )}
+                                </div>
+                                <div className="">
+                                  <h4 className="text-[12px] font-medium text-neutral-600">
+                                    {item.text}
+                                  </h4>
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          return (
+                            <NewTimelineItem
+                              key={`${item.variant}-${item.originalIndex}`}
+                              variant={item.variant}
+                              index={item.originalIndex}
+                              activeIndex={0}
+                              isLast={isLastItem}
+                              title={item.location.fullAddress}
+                              className="pb-2"
+                              appearance={{
+                                titleClassname: cn(
+                                  "break-all text-[12px] font-medium text-neutral-900"
+                                ),
+                              }}
+                            />
+                          );
+                        })}
+                      </TimelineContainer>
+                    </div>
                   );
                 })()}
               </div>
