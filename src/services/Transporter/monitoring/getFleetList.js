@@ -44,7 +44,7 @@ const apiResultFleetList = {
           sosCategory: "MECHANICAL_ISSUE",
           description: "Mesin overheating",
           reportAt: "2025-07-25T11:20:00Z",
-          photos: ["public/img/kanan.png", "public/img/kiri.png"],
+          photos: ["/img/kanan.png", "/img/kiri.png"],
         },
         needsResponseChange: false,
         activeOrder: {
@@ -92,13 +92,10 @@ const apiResultFleetList = {
         hasSOSAlert: true,
         detailSOS: {
           sosId: "sos-uuid-2",
-          sosCategory: "MECHANICAL_ISSUE",
+          sosCategory: null,
           description: null,
           reportAt: "2025-07-25T11:20:00Z",
-          photos: [
-            "https://example.com/photo2.jpg",
-            "https://example.com/photo3.jpg",
-          ],
+          photos: ["/img/kanan.png"],
         },
         needsResponseChange: false,
         activeOrder: {

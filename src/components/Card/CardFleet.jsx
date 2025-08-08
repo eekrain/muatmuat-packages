@@ -11,6 +11,10 @@ import {
 
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
+import {
+  LightboxPreview,
+  LightboxProvider,
+} from "@/components/Lightbox/Lightbox";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import { cn } from "@/lib/utils";
 import { getTruckIcon } from "@/lib/utils/armadaStatus";
@@ -63,7 +67,7 @@ export default function CardFleet({
       <>
         <div className="mt-2 flex flex-col border-b border-neutral-400 pb-3">
           <p className="text-xs font-semibold text-error-400">
-            {fleet.detailSOS.description || "-"}
+            {fleet.detailSOS.sosCategory || "-"}
           </p>
           <div>
             <p className="text-xs text-neutral-600">
@@ -92,12 +96,43 @@ export default function CardFleet({
 
     return (
       <div className="space-y-1 pt-2 text-sm">
+        <div className="mt-2 flex flex-col border-b border-neutral-400 pb-3">
+          <p className="text-xs font-semibold text-error-400">
+            {fleet.detailSOS.sosCategory || "-"}
+          </p>
+          <p className="text-xs font-semibold text-neutral-900">
+            {fleet.detailSOS.description}
+          </p>
+          {fleet.hasSOSAlert && fleet.detailSOS.photos.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {fleet.detailSOS.photos.map((image, index) => (
+                <LightboxProvider key={index} images={fleet.detailSOS.photos}>
+                  <LightboxPreview
+                    image={image}
+                    index={index}
+                    alt={`SOS Image ${index + 1}`}
+                    className="h-14 w-14 rounded-md object-cover"
+                  />
+                </LightboxProvider>
+              ))}
+            </div>
+          )}
+
+          <div>
+            <p className="text-xs text-neutral-600">
+              Laporan Masuk :{" "}
+              <span className="text-xs font-semibold text-neutral-900">
+                10 Jan 2025 12:23 WIB
+              </span>
+            </p>
+          </div>
+        </div>
         <DriverAndPhoneSection fleet={fleet} />
         <LocationAndFleetSection fleet={fleet} />
         {(fleet.status === "ON_DUTY" ||
           fleet.status === "WAITING_LOADING_TIME") && (
           <>
-            <div className="border-t border-neutral-300 py-4" />
+            <div className="border-t border-neutral-300 py-1" />
             <OnDutyDetails fleet={fleet} />
           </>
         )}
