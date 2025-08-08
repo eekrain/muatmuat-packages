@@ -80,7 +80,7 @@ const Page = () => {
       <div className="flex items-center justify-between">
         <PageTitle withBack={false}>Manajemen Driver</PageTitle>
         <div className="flex gap-3">
-          <Link href="/manajemen-driver/tambah">
+          <Link href="/manajemen-driver/tambah-massal">
             <Button
               variant="muattrans-primary-secondary"
               iconLeft={<Plus size={16} />}
