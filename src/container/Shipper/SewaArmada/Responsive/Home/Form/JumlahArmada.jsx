@@ -2,6 +2,7 @@ import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 import { NumberInput } from "@/components/Form/NumberInput";
+import { useTranslation } from "@/hooks/use-translation";
 import {
   useSewaArmadaActions,
   useSewaArmadaStore,
@@ -11,6 +12,7 @@ export const JumlahArmada = () => {
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const orderType = useSewaArmadaStore((state) => state.orderType);
+  const { t } = useTranslation();
   // Get truckCount from the store
   const { truckCount, minTruckCount, truckTypeId, lokasiMuat, lokasiBongkar } =
     useSewaArmadaStore((state) => state.formValues);
@@ -38,7 +40,7 @@ export const JumlahArmada = () => {
         htmlFor="jumlah-armada"
         className="block text-sm font-semibold leading-[1.1] text-neutral-900"
       >
-        Jumlah Armada*
+        {t("SewaArmadaForm.labelJumlahArmada", {}, "Jumlah Armada")}*
       </label>
       <NumberInput
         id="jumlah-armada"

@@ -6,6 +6,7 @@ import { ChevronRight } from "lucide-react";
 
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
 import { useSewaArmadaStore } from "@/store/Shipper/forms/sewaArmadaStore";
@@ -47,6 +48,7 @@ export const JenisArmadaField = ({ carriers, trucks }) => {
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const navigation = useResponsiveNavigation();
+  const { t } = useTranslation();
 
   const {
     loadTimeStart,
@@ -90,20 +92,30 @@ export const JenisArmadaField = ({ carriers, trucks }) => {
 
   return (
     <FormContainer>
-      <FormLabel required>Jenis Armada</FormLabel>
+      <FormLabel required>
+        {t("SewaArmadaForm.labelJenisArmada", {}, "Jenis Armada")}
+      </FormLabel>
       <div className="space-y-2">
         <SelectionField
           disabled={isEditPage || informasiMuatan?.length === 0}
           iconSrc="/icons/truck-carrier.svg"
           value={selectedCarrier?.name}
-          placeholder="Pilih Jenis Carrier"
+          placeholder={t(
+            "SewaArmadaForm.placeholderPilihJenisCarrier",
+            {},
+            "Pilih Jenis Carrier"
+          )}
           onClick={() => navigation.push("/JenisCarrier")}
         />
         <SelectionField
           disabled={isEditPage || isTruckTypeIdDisabled}
           iconSrc="/icons/truck-jenis.svg"
           value={isEditPage ? truckType?.name : selectedTruck?.name}
-          placeholder="Pilih Jenis Truk"
+          placeholder={t(
+            "SewaArmadaForm.placeholderPilihJenisTruk",
+            {},
+            "Pilih Jenis Truk"
+          )}
           onClick={() => navigation.push("/JenisTruck")}
         />
       </div>
