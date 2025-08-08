@@ -320,7 +320,7 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
         <div className="flex gap-1">
           <div className="text-xs font-semibold">Driver Delegasi</div>
           <InfoTooltip side="left">
-            <p>
+            <p className="w-[312px]">
               Fitur yang memungkinkan driver mengambil pesanan instan secara
               langsung, sementara pesanan terjadwal tetap dikelola transporter.
             </p>
@@ -429,12 +429,14 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
           onClick: () => {
             handleUnlinkDriver();
           },
+          classname: "w-[112px]",
         }}
         cancel={{
           text: "Tidak",
           onClick: () => {
             setConfirmUnlinkDriver(false);
           },
+          classname: "w-[112px]",
         }}
       />
 
