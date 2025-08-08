@@ -5,7 +5,8 @@ import { useState } from "react";
 import { AlertTriangle, Loader2, X } from "lucide-react";
 
 import CardFleet from "@/components/Card/CardFleet";
-import DataEmpty from "@/components/DataEmpty/DataEmpty";
+import DataNotFound from "@/components/DataNotFound/DataNotFound";
+import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import Search from "@/components/Search/Search";
 import { useGetFleetList } from "@/services/Transporter/monitoring/getFleetList";
 
@@ -94,15 +95,34 @@ const DaftarArmada = ({ onClose, onExpand }) => {
             autoSearch={true}
             debounceTime={300}
             defaultValue={searchTerm}
-            inputClassName="w-[229px]"
+            inputClassName={sosCount !== 0 ? "w-[315px]" : "w-[229px]"}
           />
-          <FilterPopoverArmada onApplyFilter={handleApplyFilter} />
+          {!hasFilterData ||
+            (sosCount === 0 && (
+              <FilterPopoverArmada onApplyFilter={handleApplyFilter} />
+            ))}
         </div>
       </div>
 
       {/* filter tabs */}
       {hasFilterData && sosCount !== 0 && (
         <div className="flex gap-2 px-4 pb-3">
+          <button
+            className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
+              activeTab === "sos"
+                ? "w-auto min-w-[79px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
+                : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
+            }`}
+            onClick={() => setActiveTab("sos")}
+          >
+            SOS ({sosCount})
+            <NotificationDot
+              size="sm"
+              color="red"
+              position="absolute"
+              positionClasses="top-0 right-0"
+            />
+          </button>
           <button
             className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
               activeTab === "all"
@@ -113,17 +133,6 @@ const DaftarArmada = ({ onClose, onExpand }) => {
           >
             Semua ({totalFleets})
           </button>
-          <button
-            className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
-              activeTab === "sos"
-                ? "w-auto min-w-[79px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
-                : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
-            }`}
-            onClick={() => setActiveTab("sos")}
-          >
-            SOS ({sosCount})
-          </button>
-          <div className="mb-3 flex gap-2 px-4"></div>
         </div>
       )}
 
@@ -145,7 +154,9 @@ const DaftarArmada = ({ onClose, onExpand }) => {
             </div>
           </div>
         ) : filteredData.length === 0 ? (
-          <DataEmpty />
+          <div className="flex h-full items-center justify-center">
+            <DataNotFound type="search" title={"Keyword Tidak Ditemukan"} />
+          </div>
         ) : (
           <div className="space-y-3">
             {filteredData.map((fleet) => (

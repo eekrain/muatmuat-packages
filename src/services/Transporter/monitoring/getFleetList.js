@@ -44,14 +44,24 @@ const apiResultFleetList = {
           sosCategory: "MECHANICAL_ISSUE",
           description: "Mesin overheating",
           reportAt: "2025-07-25T11:20:00Z",
-          photos: [
-            "https://example.com/photo2.jpg",
-            "https://example.com/photo3.jpg",
-          ],
+          photos: ["public/img/kanan.png", "public/img/kiri.png"],
         },
         needsResponseChange: false,
-        activeOrder: null,
+        activeOrder: {
+          orderId: "order-uuid-5",
+          orderCode: "ORD-2025-005",
+          orderStatus: "INACTIVE",
+          pickupLocation: {
+            district: "Jl. Merdeka No. 10",
+            city: "Tangerang",
+          },
+          dropoffLocation: {
+            district: "Jl. Sudirman No. 15",
+            city: "Tangerang",
+          },
+        },
       },
+
       {
         fleetId: "fleet-uuid-90",
         licensePlate: "B7890JKL",
@@ -91,7 +101,19 @@ const apiResultFleetList = {
           ],
         },
         needsResponseChange: false,
-        activeOrder: null,
+        activeOrder: {
+          orderId: "order-uuid-5",
+          orderCode: "ORD-2025-005",
+          orderStatus: "INACTIVE",
+          pickupLocation: {
+            district: "Jl. Merdeka No. 10",
+            city: "Tangerang",
+          },
+          dropoffLocation: {
+            district: "Jl. Sudirman No. 15",
+            city: "Tangerang",
+          },
+        },
       },
       {
         fleetId: "fleet-uuid-1",
@@ -413,7 +435,7 @@ const apiResultFleetList = {
       WaitingLoadingTime: 2,
       notPaired: 3,
       inactive: 1,
-      sos: 2,
+      sos: 0,
       needResponse: 3,
     },
   },

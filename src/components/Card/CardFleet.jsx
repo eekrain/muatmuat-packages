@@ -96,7 +96,10 @@ export default function CardFleet({
         <LocationAndFleetSection fleet={fleet} />
         {(fleet.status === "ON_DUTY" ||
           fleet.status === "WAITING_LOADING_TIME") && (
-          <OnDutyDetails fleet={fleet} />
+          <>
+            <div className="border-t border-neutral-300 py-4" />
+            <OnDutyDetails fleet={fleet} />
+          </>
         )}
         {(!fleet.driver?.name || !fleet.driver?.phoneNumber) && (
           <AssignDriverButton onClick={() => onOpenDriverModal(fleet)} />
@@ -157,8 +160,8 @@ function SOSIndicator() {
 function DriverAndPhoneSection({ fleet }) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      <div className="flex items-start space-x-3">
-        <User className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#461B02]" />
+      <div className="flex items-center space-x-3">
+        <User className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
         <div>
           <label className="text-xs text-gray-500">Driver</label>
           <p className="text-xs font-semibold text-gray-900">
@@ -167,8 +170,8 @@ function DriverAndPhoneSection({ fleet }) {
         </div>
       </div>
 
-      <div className="flex items-start space-x-3">
-        <Phone className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#461B02]" />
+      <div className="flex items-center space-x-3">
+        <Phone className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
         <div>
           <label className="text-xs text-gray-500">No. HP Driver</label>
           <p className="text-xs font-semibold text-gray-900">
@@ -234,7 +237,7 @@ function NeedResponseButton({ onClick }) {
 
 function OnDutyDetails({ fleet }) {
   return (
-    <div className="mt-4 flex w-full flex-col gap-3 rounded-lg border-t border-x-muat-trans-400 bg-[#F8F8FB] px-3 py-3 pt-4">
+    <div className="mt-4 flex w-full flex-col gap-3 rounded-lg bg-[#F8F8FB] px-3 py-3 pt-4">
       <div>
         <p className="mb-3 text-xs text-gray-600">No. Pesanan</p>
         <p className="text-xs font-semibold text-black">
@@ -376,8 +379,12 @@ function LocationInfo({ fleet, showLabel = false }) {
 
 function LocationInfoExpanded({ fleet }) {
   return (
-    <div className="flex items-start space-x-3">
-      <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#461B02]" />
+    <div className="flex items-center space-x-3">
+      <InfoTooltip
+        trigger={<MapPin className="h-4 w-4 flex-shrink-0 text-[#461B02]" />}
+      >
+        Lokasi terakhir armada
+      </InfoTooltip>
       <div>
         <label className="text-xs text-gray-500">Lokasi Terakhir</label>
         <p className="text-xs font-semibold text-gray-900">
@@ -393,8 +400,14 @@ function LocationInfoExpanded({ fleet }) {
 
 function FleetInfo({ fleet }) {
   return (
-    <div className="flex items-start space-x-3">
-      <Truck className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#461B02]" />
+    <div className="flex items-center space-x-3">
+      <InfoTooltip
+        trigger={
+          <Truck className="h-4 w-4 flex-shrink-0 cursor-help text-[#461B02]" />
+        }
+      >
+        Info Armada
+      </InfoTooltip>
       <div>
         <label className="text-xs text-gray-500">Armada</label>
         <p className="font-semibold text-gray-900">
