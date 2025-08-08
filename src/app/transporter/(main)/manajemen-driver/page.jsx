@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -79,13 +80,14 @@ const Page = () => {
       <div className="flex items-center justify-between">
         <PageTitle withBack={false}>Manajemen Driver</PageTitle>
         <div className="flex gap-3">
-          <Button
-            variant="muattrans-primary-secondary"
-            iconLeft={<Plus size={16} />}
-            onClick={() => {}}
-          >
-            <span className="pt-0.5">{"Tambah Driver Massal"}</span>
-          </Button>
+          <Link href="/manajemen-driver/tambah">
+            <Button
+              variant="muattrans-primary-secondary"
+              iconLeft={<Plus size={16} />}
+            >
+              <span className="pt-0.5">{"Tambah Driver Massal"}</span>
+            </Button>
+          </Link>
           <Button
             iconLeft={<Plus size={16} />}
             onClick={() => router.push("/manajemen-driver/tambah")}
