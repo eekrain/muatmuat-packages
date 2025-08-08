@@ -32,45 +32,24 @@ const TransportRequestCard = ({
   const handleSave = () => {
     const newSavedState = !isSaved;
     setIsSaved(newSavedState);
-
-    // Call the parent callback if provided
-    if (onBookmarkToggle) {
-      onBookmarkToggle(request.id, newSavedState);
-    }
-
-    // TODO: Implement save/unsave functionality
+    if (onBookmarkToggle) onBookmarkToggle(request.id, newSavedState);
   };
 
   const handleDetail = () => {
-    if (onShowDetail) {
-      onShowDetail(request);
-    } else {
-      // TODO: Navigate to detail page
-      console.log("Detail clicked for:", request.orderCode);
-    }
+    if (onShowDetail) onShowDetail(request);
   };
 
   const handleReject = () => {
     // TODO: Implement reject functionality
-    console.log("Reject clicked for:", request.orderCode);
   };
 
   const handleAccept = () => {
     // TODO: Implement accept functionality
-    console.log("Accept clicked for:", request.orderCode);
   };
 
   const handleUnderstand = () => {
-    // Show success toast with order code
     toast.success(`Permintaan ${request.orderCode} berhasil ditutup`);
-
-    // Call parent callback to remove the card from list
-    if (onUnderstand) {
-      onUnderstand(request.id);
-    }
-
-    // TODO: Implement additional understand functionality if needed
-    console.log("Understand clicked for:", request.orderCode);
+    if (onUnderstand) onUnderstand(request.id);
   };
 
   const formatCurrency = (amount) => {

@@ -1,27 +1,22 @@
 import useSWR from "swr";
 
-// Mock configuration for testing different states
+// Mock config for UI state testing
 const MOCK_CONFIG = {
-  // UI States to test:
-  isHalalLogistics: true, // true = show halal notice, false = hide halal notice
-  isHalalCertified: false, // false = show "Tambahkan sertifikasi" text, true = hide additional text
-  hasOverload: true, // true = show overload badge (red), false = hide overload badge
-  isSaved: false, // true = bookmarked state, false = not bookmarked
-  isSuspended: true, // true = show suspended account notice, false = hide suspended notice
-  orderType: "SCHEDULED", // "INSTANT" (green) | "SCHEDULED" (blue)
-  timeLabel: "Muat 3 Hari Lagi", // Test options and colors:
-  // Green: "Muat Hari Ini", "Muat Besok"
-  // Yellow: "Muat 2 Hari Lagi", "Muat 3 Hari Lagi", "Muat 4 Hari Lagi", "Muat 5 Hari Lagi"
-  // Blue: "Muat 7 Hari Lagi", "Muat 10 Hari Lagi"
-
-  // Content configuration:
-  photoCount: 4, // 1 = single photo, 4 = multiple photos, 0 = no photos
-  hasAdditionalServices: true, // true = show additional services, false = hide additional services
-  isTaken: false, // true = greyscale entire view (taken by someone else), false = normal view
+  isHalalLogistics: true,
+  isHalalCertified: false,
+  hasOverload: true,
+  isSaved: false,
+  isSuspended: true,
+  orderType: "SCHEDULED",
+  timeLabel: "Muat 3 Hari Lagi",
+  photoCount: 4,
+  hasAdditionalServices: true,
+  isTaken: false,
 };
-const isMockTransportRequestDetail = true;
 
-const apiResultTransportRequestDetail = {
+const IS_MOCK = true;
+
+const mockDetailData = {
   data: {
     Message: {
       Code: 200,
@@ -272,18 +267,11 @@ const apiResultTransportRequestDetail = {
 };
 
 export const fetcherTransportRequestDetail = async (id) => {
-  if (isMockTransportRequestDetail) {
-    // Simulate network delay for testing
+  if (IS_MOCK) {
     await new Promise((resolve) => setTimeout(resolve, 500));
-
-    if (!id) {
-      throw new Error("Request ID is required");
-    }
-
-    // Return the mock data, but you could filter by id if needed
-    return apiResultTransportRequestDetail;
+    if (!id) throw new Error("Request ID is required");
+    return mockDetailData;
   }
-
   try {
     const response = await fetch(`/api/v1/transport-requests/${id}/detail`, {
       method: "GET",
@@ -292,14 +280,12 @@ export const fetcherTransportRequestDetail = async (id) => {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
     });
-
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(
         errorData.Message?.Text || "Failed to fetch transport request detail"
       );
     }
-
     return await response.json();
   } catch (error) {
     console.error("Error fetching transport request detail:", error);
@@ -318,7 +304,6 @@ export const useGetTransportRequestDetail = (id) => {
       errorRetryCount: 3,
     }
   );
-
   return {
     data: data?.data?.Data || null,
     error,

@@ -64,7 +64,7 @@ const DetailContent = ({
         </div>
       )}
 
-      {/* Halal Certification Notice - Above Status Tags */}
+      {/* Halal Certification Notice */}
       {displayData?.isHalalLogistics && (
         <div className="flex-shrink-0 px-4 pb-4">
           <div
@@ -130,7 +130,6 @@ const DetailContent = ({
                   : displayData.orderType}
             </span>
           )}
-
           {/* Load Time Text Tag */}
           {displayData?.timeLabel?.text && (
             <span
@@ -144,8 +143,7 @@ const DetailContent = ({
               {displayData.timeLabel.text}
             </span>
           )}
-
-          {/* Overload Badge if applicable */}
+          {/* Overload Badge */}
           {displayData?.overloadInfo?.hasOverload && (
             <span
               className={cn(
@@ -158,7 +156,6 @@ const DetailContent = ({
               Potensi Overload
             </span>
           )}
-
           {/* Bookmark icon */}
           <div className="ml-auto">
             <button
@@ -181,7 +178,6 @@ const DetailContent = ({
             </button>
           </div>
         </div>
-        {/* Divider after status tags */}
         <div className="mt-4 border-b border-[#C4C4C4]"></div>
       </div>
 

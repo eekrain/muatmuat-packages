@@ -5,7 +5,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { toast } from "@/lib/toast";
 
 const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
-  const [selectedOption, setSelectedOption] = useState("all"); // "all" or "partial"
+  const [selectedOption, setSelectedOption] = useState("all");
   const [partialCount, setPartialCount] = useState(1);
   const [acceptTerms, setAcceptTerms] = useState(false);
 
@@ -16,24 +16,21 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
       toast.error("Jumlah armada minimal 1 unit");
       return;
     }
-
     if (!acceptTerms) {
       toast.error("Harap setujui Syarat dan Ketentuan Muatrans");
       return;
     }
-
-    const acceptData = {
+    onAccept({
       requestId: request.id,
       type: selectedOption,
       truckCount: selectedOption === "all" ? request.truckCount : partialCount,
-    };
-
-    onAccept(acceptData);
+    });
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4">
       <div className="flex h-[460px] w-full max-w-[600px] flex-col rounded-xl bg-white p-4">
+        {/* Header */}
         <div className="mb-3 flex flex-shrink-0 items-center justify-between">
           <h3 className="text-base font-bold text-gray-900">
             Terima Permintaan Jasa Angkut
@@ -46,7 +43,9 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
           </button>
         </div>
 
+        {/* Content */}
         <div className="flex-1 overflow-y-auto">
+          {/* Armada Selection */}
           <div className="mb-3">
             <div className="mb-3 rounded-lg bg-gray-50 p-3">
               <span className="text-sm font-medium text-gray-600">
@@ -56,7 +55,6 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                 {request.truckCount || 2} Unit
               </span>
             </div>
-
             <div className="space-y-3">
               <label className="flex cursor-pointer items-center">
                 <input
@@ -71,7 +69,6 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                   Terima semua kebutuhan armada
                 </span>
               </label>
-
               <label className="flex cursor-pointer items-start">
                 <input
                   type="radio"
@@ -111,6 +108,7 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
             </div>
           </div>
 
+          {/* Informasi Pesanan */}
           <div className="mb-4 rounded-lg bg-blue-50 p-3">
             <div className="mb-2 text-sm font-semibold text-gray-900">
               Informasi Pesanan
@@ -138,6 +136,7 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
             </div>
           </div>
 
+          {/* Lokasi & Muatan */}
           <div className="mb-3 space-y-2 text-sm text-gray-600">
             <div className="flex items-center gap-3">
               <IconComponent
@@ -154,16 +153,15 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
               <span>Kab. Pasuruan, Kec. Klojen</span>
             </div>
           </div>
-
           <div className="mb-3 text-sm text-gray-600">
             <span className="font-medium">Estimasi Jarak:</span>
             <span className="ml-2">121 km</span>
           </div>
-
           <div className="mb-4 text-sm text-gray-600">
             <span>Informasi Muatan (Total: 2.500 kg)</span>
           </div>
 
+          {/* Syarat & Ketentuan */}
           <div className="mb-4">
             <label className="flex cursor-pointer items-start gap-3">
               <input
@@ -182,6 +180,7 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
           </div>
         </div>
 
+        {/* Action Buttons */}
         <div className="flex flex-shrink-0 gap-3 pt-3">
           <Button
             variant="muattrans-error-secondary"

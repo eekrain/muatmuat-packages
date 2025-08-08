@@ -2,23 +2,13 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-// Mock configuration for testing different states
-const isMockTransportRequestList = true;
-
-// Testing configurations - Change these values to test different states:
+// Mock config for UI state testing
+const IS_MOCK = true;
 const MOCK_CONFIG = {
-  // UI States to test:
-  showEmptyState: false, // true = empty state, false = show requests
-  isSuspended: false, // true = suspended account, false = normal account
-  driverDelegationEnabled: false, // true = show delegation warning, false = normal account
-  isHalalCertified: true, // false = show halal certification warning, true = certified
-
-  // Quick toggle functions for easy testing:
-  // 1. Empty state: showEmptyState=true, isSuspended=false, driverDelegationEnabled=false, isHalalCertified=true
-  // 2. Normal state: showEmptyState=false, isSuspended=false, driverDelegationEnabled=false, isHalalCertified=true
-  // 3. Suspended state: showEmptyState=false, isSuspended=true, driverDelegationEnabled=false, isHalalCertified=true
-  // 4. Driver delegation: showEmptyState=false, isSuspended=false, driverDelegationEnabled=true, isHalalCertified=true
-  // 5. Halal certification needed: showEmptyState=false, isSuspended=false, driverDelegationEnabled=false, isHalalCertified=false
+  showEmptyState: false,
+  isSuspended: false,
+  driverDelegationEnabled: false,
+  isHalalCertified: true,
 };
 const apiResultTransportRequestList = {
   data: {
@@ -262,122 +252,58 @@ const apiResultTransportRequestList = {
 };
 
 export const fetcherTransportRequestList = async (params = {}) => {
-  console.log("🚀 fetcherTransportRequestList called with params:", params);
-
-  if (isMockTransportRequestList) {
-    // Simulate filtering, searching, and sorting
-    // IMPORTANT: Use deep copy to avoid mutations between different filter calls
+  if (IS_MOCK) {
     const result = JSON.parse(JSON.stringify(apiResultTransportRequestList));
-
-    console.log(
-      "📋 Initial mock data requests count:",
-      result.data.Data.requests.length
-    );
-
-    // Check if we should show empty state for testing
     if (result.data.Data.showEmptyState) {
       return {
         ...result.data.Data,
         requests: [],
-        tabCounts: {
-          tersedia: 0,
-          halal_logistik: 0,
-          disimpan: 0,
-        },
-        newRequestsCount: {
-          total: 0,
-          display: "0",
-          hasAnimation: false,
-        },
+        tabCounts: { tersedia: 0, halal_logistik: 0, disimpan: 0 },
+        newRequestsCount: { total: 0, display: "0", hasAnimation: false },
       };
     }
-
-    // Calculate tab counts FIRST based on original data (before any filtering)
     const originalRequests = [...result.data.Data.requests];
-    console.log(
-      "📊 Calculating tabCounts from originalRequests:",
-      originalRequests.length
-    );
-    console.log(
-      "📊 Original requests data:",
-      originalRequests.map((req) => ({
-        id: req.id,
-        orderCode: req.orderCode,
-        isHalalLogistics: req.isHalalLogistics,
-        isSaved: req.isSaved,
-      }))
-    );
-
     result.data.Data.tabCounts = {
       tersedia: originalRequests.length,
       halal_logistik: originalRequests.filter((req) => req.isHalalLogistics)
         .length,
       disimpan: originalRequests.filter((req) => req.isSaved).length,
     };
-
-    console.log("📊 Calculated tabCounts:", result.data.Data.tabCounts);
-
-    // Apply filters if provided
     if (params.orderStatus) {
       result.data.Data.requests = result.data.Data.requests.filter(
         (req) => req.orderStatus === params.orderStatus
       );
     }
-
     if (params.orderType) {
       result.data.Data.requests = result.data.Data.requests.filter(
         (req) => req.orderType === params.orderType
       );
     }
-
     if (params.isHalalLogistics !== undefined) {
       result.data.Data.requests = result.data.Data.requests.filter(
         (req) => req.isHalalLogistics === params.isHalalLogistics
       );
     }
-
     if (params.isSaved !== undefined) {
-      console.log("🔍 Filtering by isSaved:", params.isSaved);
-      console.log(
-        "📋 Before filter - requests count:",
-        result.data.Data.requests.length
-      );
       result.data.Data.requests = result.data.Data.requests.filter(
         (req) => req.isSaved === params.isSaved
       );
-      console.log(
-        "📋 After filter - requests count:",
-        result.data.Data.requests.length
-      );
-      console.log(
-        "📋 Filtered requests:",
-        result.data.Data.requests.map((req) => ({
-          id: req.id,
-          orderCode: req.orderCode,
-          isSaved: req.isSaved,
-        }))
-      );
     }
-
     if (params.isNew !== undefined) {
       result.data.Data.requests = result.data.Data.requests.filter(
         (req) => req.isNew === params.isNew
       );
     }
-
     if (params.truckTypeName) {
       result.data.Data.requests = result.data.Data.requests.filter(
         (req) => req.truckTypeName === params.truckTypeName
       );
     }
-
     if (params.carrierName) {
       result.data.Data.requests = result.data.Data.requests.filter(
         (req) => req.carrierName === params.carrierName
       );
     }
-
-    // Apply search if provided
     if (params.search) {
       const searchLower = params.search.toLowerCase();
       result.data.Data.requests = result.data.Data.requests.filter(
@@ -402,14 +328,10 @@ export const fetcherTransportRequestList = async (params = {}) => {
           )
       );
     }
-
-    // Apply sorting if provided
     if (params.sortBy) {
       result.data.Data.requests.sort((a, b) => {
         let aValue = a[params.sortBy];
         let bValue = b[params.sortBy];
-
-        // Handle date sorting
         if (
           params.sortBy === "loadTimeStart" ||
           params.sortBy === "createdAt"
@@ -417,21 +339,14 @@ export const fetcherTransportRequestList = async (params = {}) => {
           aValue = new Date(aValue);
           bValue = new Date(bValue);
         }
-
-        // Handle price sorting
         if (params.sortBy === "totalPrice") {
           aValue = parseFloat(aValue);
           bValue = parseFloat(bValue);
         }
-
-        if (params.sortOrder === "desc") {
-          return aValue > bValue ? -1 : 1;
-        }
+        if (params.sortOrder === "desc") return aValue > bValue ? -1 : 1;
         return aValue < bValue ? -1 : 1;
       });
     }
-
-    // Update new requests count based on filtered results
     const filteredRequests = result.data.Data.requests;
     const newRequests = filteredRequests.filter((req) => req.isNew);
     result.data.Data.newRequestsCount = {
@@ -439,7 +354,6 @@ export const fetcherTransportRequestList = async (params = {}) => {
       display: newRequests.length > 99 ? "99+" : newRequests.length.toString(),
       hasAnimation: newRequests.length > 0,
     };
-
     return result.data.Data;
   }
 
@@ -474,14 +388,9 @@ export const fetcherTransportRequestList = async (params = {}) => {
 };
 
 export const useGetTransportRequestList = (params = {}) => {
-  // Create cache key based on parameters
   const cacheKey = params
     ? `transport-request-list-${JSON.stringify(params)}`
     : "transport-request-list";
-
-  console.log("🔑 SWR Cache Key:", cacheKey);
-  console.log("🔑 Params for cache:", params);
-
   return useSWR(cacheKey, () => fetcherTransportRequestList(params));
 };
 

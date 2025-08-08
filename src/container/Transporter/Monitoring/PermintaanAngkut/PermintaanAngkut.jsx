@@ -32,58 +32,34 @@ const PermintaanAngkut = () => {
 
   const { data, error, isLoading } = useGetTransportRequestList(params);
 
-  const handleSearch = (value) => {
-    setSearchValue(value);
-    console.log("🔍 Search value:", value);
-  };
+  const handleSearch = (value) => setSearchValue(value);
 
   const handleBookmarkToggle = (requestId, newSavedState) => {
     const newBookmarkedItems = new Set(bookmarkedItems);
-
-    // Find the original request to check its original saved state
     const originalRequest = data?.requests?.find((req) => req.id === requestId);
     const originalSavedState = originalRequest?.isSaved || false;
-
-    console.log("🔖 Bookmark toggle:", {
-      requestId: requestId.slice(-4),
-      originalSavedState,
-      newSavedState,
-      isChangingFromOriginal: newSavedState !== originalSavedState,
-    });
-
     if (newSavedState === originalSavedState) {
-      // If new state matches original state, remove from tracking set
       newBookmarkedItems.delete(requestId);
-      console.log("🔖 Removed from tracking (back to original)");
     } else {
-      // If new state differs from original, track the change
       newBookmarkedItems.add(requestId);
-      console.log("🔖 Added to tracking (changed from original)");
     }
-
     setBookmarkedItems(newBookmarkedItems);
-    console.log("🔖 Current bookmarked items count:", newBookmarkedItems.size);
   };
 
   const handleUnderstand = (requestId) => {
     const newRemovedItems = new Set(removedItems);
     newRemovedItems.add(requestId);
     setRemovedItems(newRemovedItems);
-
-    console.log("🤝 Request understood and removed:", requestId.slice(-4));
-    console.log("🤝 Total removed items:", newRemovedItems.size);
   };
 
   const handleShowDetail = (request) => {
     setSelectedRequest(request);
     setShowDetail(true);
-    console.log("📋 Showing detail for:", request.orderCode);
   };
 
   const handleBackToList = () => {
     setSelectedRequest(null);
     setShowDetail(false);
-    console.log("🔙 Back to list");
   };
 
   // Calculate dynamic tab counts based on data and local state
