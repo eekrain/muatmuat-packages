@@ -3,8 +3,6 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import DataNotFound from "@/components/DataNotFound/DataNotFound";
-import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import {
   MonitoringTabTrigger,
   MonitoringTabs,
@@ -13,6 +11,7 @@ import {
 } from "@/components/MonitoringTabs/MonitoringTabs";
 import { NotificationCount } from "@/components/NotificationDot/NotificationCount";
 import DaftarArmada from "@/container/Transporter/Monitoring/DaftarArmada/DaftarArmada";
+import DaftarPesananAktif from "@/container/Transporter/Monitoring/DaftarPesananAktif/DaftarPesananAktif";
 import { MapInterfaceOverlay } from "@/container/Transporter/Monitoring/Map/MapInterfaceOverlay";
 import { MapMonitoring } from "@/container/Transporter/Monitoring/Map/MapMonitoring";
 import { NoFleetOverlay } from "@/container/Transporter/Monitoring/Map/NoFleetOverlay";
@@ -101,6 +100,7 @@ const Page = () => {
 
   const handleCloseLeftPanel = () => {
     setShowLeftPanel(false);
+    setIsBottomExpanded(true);
   };
 
   const handleApplyFilter = (truckStatuses, orderStatuses) => {
@@ -382,7 +382,7 @@ const Page = () => {
             {/* Left Panel - Daftar Armada or SOS */}
             <div
               className={cn(
-                "absolute left-0 top-0 z-20 h-full w-[350px] rounded-r-xl bg-white shadow-xl transition-transform duration-300 ease-in-out",
+                "absolute left-0 top-0 z-20 h-full w-[350px] rounded-r-xl bg-white shadow-muat transition-transform duration-300 ease-in-out",
                 showLeftPanel ? "translate-x-0" : "-translate-x-full"
               )}
             >
@@ -396,66 +396,17 @@ const Page = () => {
 
           {/* Bottom Panel - Daftar Pesanan Aktif */}
           <div
-            className="rounded-t-[20px] bg-white shadow-lg transition-all duration-300 ease-in-out"
+            className="rounded-t-[20px] bg-white shadow-muat transition-all duration-300 ease-in-out"
             style={{
               height: isBottomExpanded
                 ? "calc((100vh - 92px - 16px - 16px) / 2)"
                 : "calc(100vh - 100vh + 64px)",
             }}
           >
-            <div className="flex h-full flex-col">
-              <div className="flex h-16 items-center justify-between px-4">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-xs font-bold">
-                    Daftar <br /> Pesanan Aktif
-                  </h3>
-                  <InfoTooltip
-                    side="left"
-                    appearance={{
-                      iconClassName: "size-3.5",
-                    }}
-                  >
-                    <p>Daftar pesanan aktif yang sedang berlangsung.</p>
-                  </InfoTooltip>
-                </div>
-                <button
-                  onClick={handleToggleBottomPanel}
-                  className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100"
-                >
-                  <svg
-                    className={cn(
-                      "h-5 w-5 transform text-gray-600 transition-transform duration-300 ease-in-out",
-                      isBottomExpanded && "rotate-180"
-                    )}
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 15l7-7 7 7"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              {isBottomExpanded && (
-                <div className="flex-1 overflow-y-auto p-4">
-                  <DataNotFound className="h-full gap-y-5 pb-10" type="data">
-                    <div className="text-center">
-                      <p className="text-base font-semibold text-neutral-600">
-                        Oops, daftar pesananmu masih kosong
-                      </p>
-                      <p className="mt-1 text-xs text-gray-400">
-                        Mohon bersabar untuk menanti permintaan baru
-                      </p>
-                    </div>
-                  </DataNotFound>
-                </div>
-              )}
-            </div>
+            <DaftarPesananAktif
+              onToggleExpand={handleToggleBottomPanel}
+              isExpanded={isBottomExpanded}
+            />
           </div>
         </div>
 
@@ -468,7 +419,7 @@ const Page = () => {
         >
           <div
             className={cn(
-              "flex flex-col overflow-hidden bg-white shadow-lg transition-[border-radius,width] duration-300 ease-in-out",
+              "flex flex-col overflow-hidden bg-white shadow-muat transition-[border-radius,width] duration-300 ease-in-out",
               isFullscreen
                 ? "h-12 w-[429px] rounded-bl-xl"
                 : "h-full rounded-l-xl"

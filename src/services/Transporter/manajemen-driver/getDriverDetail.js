@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const isMockGetDriverDetail = true; // Enable mock for testing
+const isMockGetDriverDetail = false; // Enable mock for testing
 
 const mockGetDriverDetailResponse = {
   Message: {

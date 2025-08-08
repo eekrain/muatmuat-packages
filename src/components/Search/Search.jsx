@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 const Search = ({
   placeholder = "Search...",
   onSearch,
+  onFocus,
   debounceTime = 300,
   className,
   disabled = false,
@@ -86,6 +87,7 @@ const Search = ({
         value={searchValue}
         onChange={handleInputChange}
         onKeyUp={handleKeyUp}
+        onFocus={onFocus}
         disabled={disabled}
         icon={{
           left: <IconComponent src="/icons/datatable-search.svg" width={12} />,
@@ -101,7 +103,7 @@ const Search = ({
             ) : null,
         }}
         appearance={{
-          containerClassName: cn("h-8 w-[262px]", inputClassName),
+          containerClassName: cn("h-8", inputClassName),
           inputClassName: "text-xs font-medium mt-0",
         }}
         className={className}

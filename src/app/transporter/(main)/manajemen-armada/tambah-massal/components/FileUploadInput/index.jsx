@@ -47,6 +47,8 @@ const FileUploadInput = ({
     // File upload tracking
     if (value && (value.name || value.documentUrl)) {
       setHasFile(true);
+    } else {
+      setHasFile(false);
     }
   }, [value]);
 
@@ -56,7 +58,7 @@ const FileUploadInput = ({
         <div className="flex flex-col gap-1 text-xs font-medium">
           <div className="flex text-success-700">
             <p className="line-clamp-1 w-fit truncate">
-              {displayText.split(".")[0]}
+              {displayText?.split(".")[0]}
             </p>
             <span>.{fileExtension}</span>
           </div>

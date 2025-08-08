@@ -37,6 +37,13 @@ export const RingkasanPembayaranDefault = ({
     dataRingkasanPembayaran?.orderStatus?.startsWith("CANCELED");
 
   const { data: waitingTimeData } = useGetWaitingTime(params.orderId);
+  const priceChange = dataRingkasanPembayaran?.priceChange;
+  const additionalCost = priceChange?.additionalCost;
+  const penaltyFee = priceChange?.penaltyFee;
+  const adminFee = priceChange?.adminFee;
+  const taxAmount = priceChange?.taxAmount;
+  const totalAdjustment = priceChange?.totalAdjustment;
+
   const { data: overloadData } = useGetOverloadData(params.orderId);
 
   return (
@@ -49,130 +56,23 @@ export const RingkasanPembayaranDefault = ({
         </CardPayment.Header>
 
         <CardPayment.Body>
-          <CardPayment.CollapsibleSection title={t("titleDetailPesanan")}>
-            {dataRingkasanPembayaran?.paymentDueDateTime && (
+          {priceChange ? (
+            <CardPayment.CollapsibleSection title={t("titleDetailPesanan")}>
               <CardPayment.LineItem
-                label={t("labelWaktuPembayaran")}
-                value={formatDate(dataRingkasanPembayaran.paymentDueDateTime)}
-              />
-            )}
-            <CardPayment.LineItem
-              label={t("labelOpsiPembayaran")}
-              valueClassName="flex items-center gap-2"
-              value={
-                <>
-                  <img
-                    src={dataRingkasanPembayaran?.paymentLogo}
-                    alt={dataRingkasanPembayaran?.paymentMethod}
-                    className="h-4 w-4 bg-white"
-                  />
-                  <span className="capsize">
-                    {dataRingkasanPembayaran?.paymentMethod}
-                  </span>
-                </>
-              }
-            />
-
-            <CardPayment.Section title={t("titleBiayaPesanJasaAngkut")}>
-              <CardPayment.LineItem
-                label={t("labelNominalPesanJasaAngkut", {
-                  unit: dataRingkasanPembayaran?.totalTruckUnit,
-                })}
-                labelClassName="max-w-[160px]"
-                value={idrFormat(dataRingkasanPembayaran?.transportFee)}
-              />
-            </CardPayment.Section>
-
-            {dataRingkasanPembayaran?.insuranceFee > 0 && (
-              <CardPayment.Section title={t("titleBiayaAsuransiBarang")}>
-                <CardPayment.LineItem
-                  label={t("labelNominalPremiAsuransi")}
-                  value={idrFormat(dataRingkasanPembayaran.insuranceFee)}
-                />
-              </CardPayment.Section>
-            )}
-
-            <CardPayment.Section title={t("titleBiayaLayananTambahan")}>
-              <div className="flex flex-col gap-1">
-                <CardPayment.LineItem
-                  label={t("labelNominalKirimBuktiFisik")}
-                  value={idrFormat(
-                    dataRingkasanPembayaran?.documentShippingDetail?.totalPrice
-                  )}
-                />
-                <ModalDetailPengirimanDokumen
-                  dataRingkasanPembayaran={dataRingkasanPembayaran}
-                />
-              </div>
-              <CardPayment.LineItem
-                label={t("labelNominalBantuanTambahan")}
-                value={idrFormat(
-                  dataRingkasanPembayaran?.otherAdditionalService?.totalPrice
-                )}
-              />
-            </CardPayment.Section>
-
-            {dataRingkasanPembayaran?.voucherDiscount > 0 && (
-              <CardPayment.Section title={t("titleDiskonVoucher")}>
-                <CardPayment.LineItem
-                  label={t("labelVoucherCode", {
-                    code:
-                      dataRingkasanPembayaran?.voucherDiscount ||
-                      "DISKONPENGGUNABARU",
-                  })}
-                  variant="danger"
-                  value={`-${idrFormat(
-                    dataRingkasanPembayaran.voucherDiscount
-                  )}`}
-                />
-              </CardPayment.Section>
-            )}
-
-            <CardPayment.Section title={t("titleBiayaLainnya")}>
-              <CardPayment.LineItem
-                label={t("labelAdminLayanan")}
-                value={idrFormat(dataRingkasanPembayaran?.adminFee)}
+                className="-mt-1"
+                label="Waktu Pembayaran"
+                value="06 Jun 2024 19:00 WIB"
               />
               <CardPayment.LineItem
-                label={t("labelPajak")}
-                value={idrFormat(dataRingkasanPembayaran?.tax)}
-              />
-            </CardPayment.Section>
-          </CardPayment.CollapsibleSection>
-
-          {dataRingkasanPembayaran?.priceCharge?.waitingFee?.totalAmount >
-            0 && (
-            <CardPayment.CollapsibleSection
-              title={t("titleDetailTambahanBiaya")}
-            >
-              <CardPayment.LineItem
-                label={t("labelWaktuPembayaran")}
-                value={formatDate(dataRingkasanPembayaran?.paymentDueDateTime)}
-              />
-              <CardPayment.LineItem
-                label={t("labelOpsiPembayaran")}
-                valueClassName="flex items-center gap-2"
+                className="mt-1"
+                label="Opsi Pembayaran"
                 value={
                   <>
-                    <IconComponent
-                      src={
-                        PaymentMethodIconFromMethod[
-                          dataRingkasanPembayaran?.paymentMethod
-                        ]
-                      }
-                      width={16}
-                      height={16}
-                      className="bg-white"
-                    />
-                    <span>
-                      {
-                        PaymentMethodTitle[
-                          dataRingkasanPembayaran?.paymentMethod
-                        ]
-                      }
-                    </span>
+                    <IconComponent src="/icons/bca16.svg" />
+                    <span>BCA Virtual Account</span>
                   </>
                 }
+                valueClassName="flex items-center gap-x-2"
               />
 
               <CardPayment.Section title={t("titleBiayaWaktuTunggu")}>
@@ -211,20 +111,250 @@ export const RingkasanPembayaranDefault = ({
 
               <CardPayment.Section title={t("titleBiayaLainnya")}>
                 <CardPayment.LineItem
-                  label={t("labelAdminLayanan")}
-                  value={idrFormat(
-                    dataRingkasanPembayaran?.priceCharge?.adminFee
+                  label={t(
+                    "RingkasanPembayaranPerubahanPesanan.labelSelisihJarakPerubahanLokasi",
+                    {},
+                    "Selisih Jarak Perubahan Lokasi Bongkar"
                   )}
+                  value={idrFormat(additionalCost)}
                 />
               </CardPayment.Section>
+
+              <CardPayment.Section
+                title={t(
+                  "RingkasanPembayaranPerubahanPesanan.sectionBiayaAdministrasi",
+                  {},
+                  "Biaya Administrasi"
+                )}
+              >
+                <CardPayment.LineItem
+                  label="Biaya Penalti Ubah Pesanan"
+                  value={idrFormat(penaltyFee)}
+                />
+              </CardPayment.Section>
+
+              <CardPayment.Section
+                title={t(
+                  "RingkasanPembayaranPerubahanPesanan.sectionBiayaLainnya",
+                  {},
+                  "Biaya Lainnya"
+                )}
+              >
+                <CardPayment.LineItem
+                  label={t(
+                    "RingkasanPembayaranPerubahanPesanan.labelAdminLayanan",
+                    {},
+                    "Admin Layanan"
+                  )}
+                  value={idrFormat(adminFee)}
+                />
+                <CardPayment.LineItem
+                  label={t(
+                    "RingkasanPembayaranPerubahanPesanan.labelPajak",
+                    {},
+                    "Pajak"
+                  )}
+                  value={idrFormat(taxAmount)}
+                />
+              </CardPayment.Section>
+              <CardPayment.LineItem
+                className="mt-3"
+                labelClassName="text-sm font-semibold text-neutral-900"
+                valueClassName="text-sm font-semibold text-neutral-900"
+                label="Sub Total"
+                value={idrFormat(totalAdjustment)}
+              />
             </CardPayment.CollapsibleSection>
+          ) : (
+            <>
+              <CardPayment.CollapsibleSection title={t("titleDetailPesanan")}>
+                {dataRingkasanPembayaran?.paymentDueDateTime && (
+                  <CardPayment.LineItem
+                    label={t("labelWaktuPembayaran")}
+                    value={formatDate(
+                      dataRingkasanPembayaran.paymentDueDateTime
+                    )}
+                  />
+                )}
+                <CardPayment.LineItem
+                  label={t("labelOpsiPembayaran")}
+                  valueClassName="flex items-center gap-2"
+                  value={
+                    <>
+                      <img
+                        src={dataRingkasanPembayaran?.paymentLogo}
+                        alt={dataRingkasanPembayaran?.paymentMethod}
+                        className="h-4 w-4 bg-white"
+                      />
+                      <span className="capsize">
+                        {dataRingkasanPembayaran?.paymentMethod}
+                      </span>
+                    </>
+                  }
+                />
+
+                <CardPayment.Section title={t("titleBiayaPesanJasaAngkut")}>
+                  <CardPayment.LineItem
+                    label={t("labelNominalPesanJasaAngkut", {
+                      unit: dataRingkasanPembayaran?.totalTruckUnit,
+                    })}
+                    labelClassName="max-w-[160px]"
+                    value={idrFormat(dataRingkasanPembayaran?.transportFee)}
+                  />
+                </CardPayment.Section>
+
+                {dataRingkasanPembayaran?.insuranceFee > 0 && (
+                  <CardPayment.Section title={t("titleBiayaAsuransiBarang")}>
+                    <CardPayment.LineItem
+                      label={t("labelNominalPremiAsuransi")}
+                      value={idrFormat(dataRingkasanPembayaran.insuranceFee)}
+                    />
+                  </CardPayment.Section>
+                )}
+
+                <CardPayment.Section title={t("titleBiayaLayananTambahan")}>
+                  <div className="flex flex-col gap-1">
+                    <CardPayment.LineItem
+                      label={t("labelNominalKirimBuktiFisik")}
+                      value={idrFormat(
+                        dataRingkasanPembayaran?.documentShippingDetail
+                          ?.totalPrice
+                      )}
+                    />
+                    <ModalDetailPengirimanDokumen
+                      dataRingkasanPembayaran={dataRingkasanPembayaran}
+                    />
+                  </div>
+                  <CardPayment.LineItem
+                    label={t("labelNominalBantuanTambahan")}
+                    value={idrFormat(
+                      dataRingkasanPembayaran?.otherAdditionalService
+                        ?.totalPrice
+                    )}
+                  />
+                </CardPayment.Section>
+
+                {dataRingkasanPembayaran?.voucherDiscount > 0 && (
+                  <CardPayment.Section title={t("titleDiskonVoucher")}>
+                    <CardPayment.LineItem
+                      label={t("labelVoucherCode", {
+                        code:
+                          dataRingkasanPembayaran?.voucherDiscount ||
+                          "DISKONPENGGUNABARU",
+                      })}
+                      variant="danger"
+                      value={`-${idrFormat(
+                        dataRingkasanPembayaran.voucherDiscount
+                      )}`}
+                    />
+                  </CardPayment.Section>
+                )}
+
+                <CardPayment.Section title={t("titleBiayaLainnya")}>
+                  <CardPayment.LineItem
+                    label={t("labelAdminLayanan")}
+                    value={idrFormat(dataRingkasanPembayaran?.adminFee)}
+                  />
+                  <CardPayment.LineItem
+                    label={t("labelPajak")}
+                    value={idrFormat(dataRingkasanPembayaran?.tax)}
+                  />
+                </CardPayment.Section>
+              </CardPayment.CollapsibleSection>
+
+              {dataRingkasanPembayaran?.priceCharge?.waitingFee?.totalAmount >
+                0 && (
+                <CardPayment.CollapsibleSection
+                  title={t("titleDetailTambahanBiaya")}
+                >
+                  <CardPayment.LineItem
+                    label={t("labelWaktuPembayaran")}
+                    value={formatDate(
+                      dataRingkasanPembayaran?.paymentDueDateTime
+                    )}
+                  />
+                  <CardPayment.LineItem
+                    label={t("labelOpsiPembayaran")}
+                    valueClassName="flex items-center gap-2"
+                    value={
+                      <>
+                        <IconComponent
+                          src={
+                            PaymentMethodIconFromMethod[
+                              dataRingkasanPembayaran?.paymentMethod
+                            ]
+                          }
+                          width={16}
+                          height={16}
+                          className="bg-white"
+                        />
+                        <span>
+                          {
+                            PaymentMethodTitle[
+                              dataRingkasanPembayaran?.paymentMethod
+                            ]
+                          }
+                        </span>
+                      </>
+                    }
+                  />
+
+                  <CardPayment.Section title={t("titleBiayaWaktuTunggu")}>
+                    <div className="flex flex-col gap-1">
+                      <CardPayment.LineItem
+                        label={t("labelNominalWaktuTunggu", {
+                          driver:
+                            dataRingkasanPembayaran?.priceCharge?.waitingFee
+                              ?.totalDriver,
+                        })}
+                        value={idrFormat(
+                          dataRingkasanPembayaran?.priceCharge?.waitingFee
+                            ?.totalAmount
+                        )}
+                      />
+                      <ModalDetailWaktuTunggu drivers={waitingTimeData} />
+                    </div>
+                  </CardPayment.Section>
+
+                  <CardPayment.Section title={t("titleBiayaOverloadMuatan")}>
+                    <div className="flex flex-col gap-1">
+                      <CardPayment.LineItem
+                        label={t("labelNominalOverloadMuatan", {
+                          weight:
+                            dataRingkasanPembayaran?.priceCharge?.overloadFee
+                              ?.totalWeight,
+                        })}
+                        value={idrFormat(
+                          dataRingkasanPembayaran?.priceCharge?.overloadFee
+                            ?.totalAmount
+                        )}
+                      />
+                      <ModalDetailOverloadMuatan drivers={overloadData} />
+                    </div>
+                  </CardPayment.Section>
+
+                  <CardPayment.Section title={t("titleBiayaLainnya")}>
+                    <CardPayment.LineItem
+                      label={t("labelAdminLayanan")}
+                      value={idrFormat(
+                        dataRingkasanPembayaran?.priceCharge?.adminFee
+                      )}
+                    />
+                  </CardPayment.Section>
+                </CardPayment.CollapsibleSection>
+              )}
+            </>
           )}
         </CardPayment.Body>
 
         <CardPayment.Footer>
           <CardPayment.Total
             label={t("labelTotal")}
-            value={idrFormat(dataRingkasanPembayaran?.totalPrice)}
+            value={
+              priceChange
+                ? idrFormat(totalAdjustment)
+                : idrFormat(dataRingkasanPembayaran?.totalPrice)
+            }
           />
         </CardPayment.Footer>
       </CardPayment.Root>

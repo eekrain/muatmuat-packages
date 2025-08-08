@@ -60,9 +60,9 @@ const CollapsibleSection = ({
           {title}
         </h2>
         <IconComponent
-          src="/icons/chevron-up.svg"
+          src="/icons/chevron-up16.svg"
           className={cn(
-            "h-4 w-4 text-neutral-700 transition-transform duration-300",
+            "h-4 w-4 text-neutral-900 transition-transform duration-300",
             !isOpen && "rotate-180"
           )}
           alt="Toggle details visibility"
@@ -109,7 +109,7 @@ const LineItem = ({
           className={cn("text-xs font-medium text-neutral-600", labelClassName)}
           dangerouslySetInnerHTML={{ __html: label }}
         />
-        <span
+        <div
           className={cn(
             "whitespace-nowrap text-right text-xs font-medium",
             valueColorClass,
@@ -117,7 +117,7 @@ const LineItem = ({
           )}
         >
           {value}
-        </span>
+        </div>
       </div>
       {children}
     </div>
