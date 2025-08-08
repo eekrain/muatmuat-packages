@@ -488,7 +488,7 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
           <div className="my-4 border-b border-[#C4C4C4]"></div>
 
           {/* Layanan Tambahan */}
-          <div className="mb-4">
+          <div className="">
             <div className="mb-3 flex items-center justify-between">
               <h3 className="text-[12px] font-semibold text-neutral-600">
                 Layanan Tambahan
