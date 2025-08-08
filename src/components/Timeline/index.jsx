@@ -145,7 +145,7 @@ export const NewTimelineItem = ({
           <span
             onClick={onClick}
             className={cn(
-              "line-clamp-2 text-sm font-semibold text-neutral-900 md:mt-0.5",
+              "line-clamp-2 text-sm font-semibold text-neutral-900",
               buttonDetail && "-mt-[1px] line-clamp-1 break-all md:mt-0",
               onClick && "cursor-pointer",
               appearance.titleClassname
@@ -161,7 +161,7 @@ export const NewTimelineItem = ({
         ) : timestamp ? (
           <span
             className={cn(
-              "max-w-20 text-right text-xs font-medium text-neutral-600 md:w-fit",
+              "w-20 text-right text-xs font-medium text-neutral-600 md:w-auto",
               appearance.timestampClassname
             )}
           >

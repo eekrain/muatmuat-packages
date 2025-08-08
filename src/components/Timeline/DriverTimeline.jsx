@@ -11,6 +11,7 @@ import {
   OrderStatusTitle,
 } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { DriverStatusLabel } from "@/lib/constants/detailpesanan/driver-status.enum";
+import { getDriverStatusMetadata } from "@/lib/normalizers/detailpesanan/getDriverStatusMetadata";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/dateFormat";
 
@@ -192,41 +193,43 @@ const ItemWithLightbox = ({
   onClickProof,
 }) => {
   const { t } = useTranslation();
-  const subtitle = () => {
+  const { openLightbox, current } = useLightbox();
+  const { isMobile } = useDevice();
+
+  const buttonDetail = () => {
+    if (!driverStatusItem.requiresPhoto) return null;
+
+    let subtitle = "";
     if (
       driverStatusItem.statusCode.startsWith("MENUJU_") ||
       driverStatusItem.statusCode.startsWith("PENGIRIMAN_")
     ) {
-      return t("labelLihatBuktiMuatBarangPOD");
-    }
-
-    return t("labelLihatBuktiStatus", {
-      statusName: driverStatusItem.statusName,
-    });
-  };
-
-  const { openLightbox, current } = useLightbox();
-
-  const { isMobile } = useDevice();
-
-  const handleClickProof = () => {
-    if (isMobile && onClickProof) {
-      onClickProof(driverStatusItem);
+      subtitle = t("labelLihatBuktiMuatBarangPOD");
     } else {
-      setImages({
-        packages: driverStatusItem.photoEvidences.packages,
-        pods: driverStatusItem.photoEvidences.pods,
+      subtitle = t("labelLihatBuktiStatus", {
+        statusName: driverStatusItem.statusName,
       });
-      setCurrentStatus(driverStatusItem);
-      openLightbox(0);
     }
-  };
 
-  const buttonConfig = driverStatusItem.requiresPhoto ? (
-    <ButtonMini className="mt-1" onClick={handleClickProof}>
-      {subtitle()}
-    </ButtonMini>
-  ) : null;
+    const handleClickProof = () => {
+      if (isMobile && onClickProof) {
+        onClickProof(driverStatusItem);
+      } else {
+        setImages({
+          packages: driverStatusItem.photoEvidences.packages,
+          pods: driverStatusItem.photoEvidences.pods,
+        });
+        setCurrentStatus(driverStatusItem);
+        openLightbox(0);
+      }
+    };
+
+    return (
+      <ButtonMini className="mt-1" onClick={handleClickProof}>
+        {subtitle}
+      </ButtonMini>
+    );
+  };
 
   // Sync active index from Lightbox Provider
   useEffect(() => {
@@ -234,13 +237,18 @@ const ItemWithLightbox = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current]);
 
+  const statusMeta = getDriverStatusMetadata({
+    driverStatus: driverStatusItem.statusCode,
+    t,
+  });
+
   return (
     <NewTimelineItem
       variant="bullet-driver-status"
       totalLength={parent.children.length}
       index={index}
       activeIndex={parentIndex === 0 ? 0 : -1}
-      title={driverStatusItem.statusName}
+      title={statusMeta.label}
       isLast={index === parent.children.length - 1}
       timestamp={driverStatusItem.date}
       className="grid-cols-[32px_1fr] gap-x-3"
@@ -254,7 +262,7 @@ const ItemWithLightbox = ({
             ? "text-neutral-900"
             : "text-neutral-600",
       }}
-      buttonDetail={buttonConfig}
+      buttonDetail={buttonDetail()}
     />
   );
 };

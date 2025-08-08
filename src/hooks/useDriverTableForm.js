@@ -63,7 +63,7 @@ export const useDriverTableForm = (config) => {
 
   const handleDeleteRows = () => {
     if (selectedRowIndex.length === 0) {
-      toast.error("Pilih driver yang ingin dihapus");
+      toast.error("Harap pilih 1 driver untuk menghapus");
       return;
     }
     setConfirmDeleteModal(true);
@@ -108,7 +108,7 @@ export const useDriverTableForm = (config) => {
 
   const handleRemove = () => {
     if (selectedRowIndex.length === 0) {
-      toast.error("Pilih driver yang ingin dihapus");
+      toast.error("Harap pilih 1 driver untuk menghapus");
       return;
     }
 
@@ -123,7 +123,8 @@ export const useDriverTableForm = (config) => {
       append(createNewDriverEntry());
     }
     setConfirmDeleteModal(false);
-    toast.success(`${selectedRowIndex.length} driver berhasil dihapus`);
+    // toast.success(`${selectedRowIndex.length} driver berhasil dihapus`);
+    toast.success(`Berhasil hapus driver`);
   };
 
   // Submit handlers

@@ -44,9 +44,9 @@ const menuItems = [
 
 const UserJourney = () => {
   return (
-    <div className="h-[409px] w-[1232px] p-6">
-      <Card className="!border-none !p-0 shadow-muat">
-        <CardHeader className="!border-none !py-6">
+    <div className="py-6">
+      <Card className="h-[409px] w-[1232px] !border-none !p-0 !py-0 px-0 shadow-muat">
+        <CardHeader className="!border-none !px-6 !py-5">
           <h1 className="text-lg font-bold text-neutral-900">
             Langkah Mudah Untuk Mulai Mendapatkan Pesanan
           </h1>
@@ -55,7 +55,7 @@ const UserJourney = () => {
             pesanan di muatrans
           </p>
         </CardHeader>
-        <CardContent className="!px-12 !py-0">
+        <CardContent className="!px-6 !py-0">
           <div className="flex flex-col gap-6">
             {menuItems.map((item) => (
               <CardMenu

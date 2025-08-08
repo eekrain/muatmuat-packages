@@ -1,11 +1,14 @@
 import React from "react";
 
-import DashboardPage from "@/container/Transporter/Dashboard/Web/DashboardPage";
+import UserJourney from "@/container/Transporter/Dashboard/UserJourney";
 
 function Page() {
   return (
-    <div>
-      <p>Realtime Dashboard Route</p>
+    <div className="pt-8">
+      <h1 className="px-6 text-xl font-bold text-neutral-900">
+        Dashboard Analytics
+      </h1>
+      <UserJourney />
     </div>
   );
 }

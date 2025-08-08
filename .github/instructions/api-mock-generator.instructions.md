@@ -16,6 +16,7 @@ content-type: [json|formData|multipart/form-data]
 {
   // JSON Payload (omit this section for GET requests or when no payload is needed)
 }
+
 ---
 successResponse
 {
@@ -27,6 +28,7 @@ errorResponse
 {
   // JSON response object for error cases
 }
+
 ---
 ```
 
