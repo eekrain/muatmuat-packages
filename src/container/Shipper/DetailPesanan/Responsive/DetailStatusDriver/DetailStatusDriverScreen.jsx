@@ -1,6 +1,5 @@
 import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
-import { isDev } from "@/lib/constants/is-dev";
 import {
   useResponsiveNavigation,
   useResponsiveRouteParams,
@@ -46,7 +45,7 @@ const DetailStatusDriverScreen = ({ dataStatusPesanan }) => {
           />
         </div>
 
-        {isDev && <pre>{JSON.stringify(dataTimeline, null, 2)}</pre>}
+        {/* {isDev && <pre>{JSON.stringify(dataTimeline, null, 2)}</pre>} */}
       </div>
     </FormResponsiveLayout>
   );

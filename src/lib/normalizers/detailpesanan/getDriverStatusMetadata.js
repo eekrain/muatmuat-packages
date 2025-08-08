@@ -25,8 +25,8 @@ export const getDriverStatusMetadata = ({
   const splitStatus = driverStatus?.split?.("_");
   if (!splitStatus) return { variant, label };
 
-  if (orderStatus.startsWith("WAITING")) variant = "warning";
-  else if (orderStatus.startsWith("CANCELED")) variant = "error";
+  if (orderStatus?.startsWith("WAITING")) variant = "warning";
+  else if (orderStatus?.startsWith("CANCELED")) variant = "error";
   else if (orderStatus === OrderStatusEnum.COMPLETED) variant = "success";
 
   if (SHOULD_RETURNS_ORDER_STATUS.includes(orderStatus)) {
