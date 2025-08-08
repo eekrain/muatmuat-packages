@@ -541,7 +541,7 @@ const PermintaanAngkutDetail = ({ request, onBack }) => {
       <div className="flex-shrink-0 border-t border-neutral-200 bg-white p-4">
         <div className="flex gap-2">
           <Button
-            variant="muattrans-primary-secondary"
+            variant="muattrans-error-secondary"
             className="flex-1 py-2 text-[14px] font-semibold"
             onClick={onBack}
           >
