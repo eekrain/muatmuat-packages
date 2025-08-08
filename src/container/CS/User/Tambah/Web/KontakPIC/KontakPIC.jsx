@@ -13,26 +13,43 @@ import Input from "@/components/Form/Input";
 import { toast } from "@/lib/toast";
 import { useTransporterFormStore } from "@/store/CS/forms/registerTransporter";
 
-const phoneRegex = /^08[0-9]{8,11}$/;
+const nameRegex = /^[a-zA-Z\s'.]+$/;
+const phonePrefixRegex = /^08/;
 
-// Schema PIC wajib (PIC 1)
 const requiredPICSchema = v.object({
-  name: v.pipe(v.string(), v.minLength(1, "Nama wajib diisi")),
+  name: v.pipe(
+    v.string(),
+    v.minLength(1, "Nama wajib diisi"),
+    v.minLength(3, "Nama minimal 3 karakter"),
+    v.regex(nameRegex, "Nama tidak valid")
+  ),
   position: v.pipe(v.string(), v.minLength(1, "Jabatan wajib diisi")),
   phone: v.pipe(
     v.string(),
     v.minLength(1, "Nomor HP wajib diisi"),
-    v.regex(phoneRegex, "Format nomor HP tidak valid")
+    v.minLength(8, "No. HP PIC minimal 8 digit"),
+    v.regex(phonePrefixRegex, "Format No. HP Salah")
   ),
 });
 
-// Schema PIC opsional (PIC 2 & 3)
 const optionalPICSchema = v.object({
-  name: v.optional(v.string()),
-  position: v.optional(v.string()),
-  phone: v.optional(
-    v.string([v.regex(phoneRegex, "Format nomor HP tidak valid")])
-  ),
+  name: v.union([
+    v.literal(""),
+    v.pipe(
+      v.string(),
+      v.minLength(3, "Nama minimal 3 karakter"),
+      v.regex(nameRegex, "Nama tidak valid")
+    ),
+  ]),
+  position: v.union([v.literal(""), v.string()]),
+  phone: v.union([
+    v.literal(""),
+    v.pipe(
+      v.string(),
+      v.minLength(8, "No. HP PIC minimal 8 digit"),
+      v.regex(phonePrefixRegex, "Format No. HP Salah")
+    ),
+  ]),
 });
 
 const kontakPICSchema = v.object({
@@ -95,31 +112,78 @@ function KontakPIC({ onSave, onFormChange, setActiveIdx }) {
       hasError = true;
     }
 
+    const fieldNameMap = {
+      name: "Nama",
+      position: "Jabatan",
+      phone: "No. HP",
+    };
+    const pic1 = data.contacts[0];
     const pic2 = data.contacts[1];
     const pic3 = data.contacts[2];
-    const pic2Filled = Object.values(pic2).some((v) => v?.trim());
-    const pic3Filled = Object.values(pic3).some((v) => v?.trim());
+    const isPic2PartiallyFilled =
+      pic2.name?.trim() || pic2.position?.trim() || pic2.phone?.trim();
+    const isPic3PartiallyFilled =
+      pic3.name?.trim() || pic3.position?.trim() || pic3.phone?.trim();
+    const isPic2Complete =
+      pic2.name?.trim() && pic2.position?.trim() && pic2.phone?.trim();
 
-    if (pic2Filled || pic3Filled) {
+    if (pic1.phone === pic3.phone) {
+      hasError = true;
+      setError("contacts.0.phone", {
+        type: "manual",
+        message: "No. HP PIC Tidak Boleh Sama",
+      });
+    }
+
+    if (pic1.phone === pic2.phone) {
+      hasError = true;
+      setError("contacts.0.phone", {
+        type: "manual",
+        message: "No. HP PIC Tidak Boleh Sama",
+      });
+    }
+
+    if (pic2.phone === pic3.phone) {
+      hasError = true;
+      setError("contacts.1.phone", {
+        type: "manual",
+        message: "No. HP PIC Tidak Boleh Sama",
+      });
+    }
+
+    if (isPic3PartiallyFilled && !isPic2Complete) {
+      hasError = true;
       ["name", "position", "phone"].forEach((field) => {
         if (!pic2[field]?.trim()) {
           setError(`contacts.1.${field}`, {
             type: "manual",
-            message: "Wajib diisi",
+            message: `${fieldNameMap[field]} PIC 2 wajib diisi sebelum PIC 3`,
           });
-          hasError = true;
+        }
+      });
+
+      toast.error("PIC 2 harus diisi terlebih dahulu sebelum PIC 3");
+    } else if (isPic2PartiallyFilled && !isPic2Complete) {
+      hasError = true;
+      ["name", "position", "phone"].forEach((field) => {
+        if (!pic2[field]?.trim()) {
+          setError(`contacts.1.${field}`, {
+            type: "manual",
+            message: `${fieldNameMap[field]} PIC 2 wajib diisi`,
+          });
         }
       });
     }
-
-    if (pic3Filled) {
+    const isPic3Complete =
+      pic3.name?.trim() && pic3.position?.trim() && pic3.phone?.trim();
+    if (isPic3PartiallyFilled && !isPic3Complete) {
+      hasError = true;
       ["name", "position", "phone"].forEach((field) => {
         if (!pic3[field]?.trim()) {
           setError(`contacts.2.${field}`, {
             type: "manual",
-            message: "Wajib diisi",
+            message: `${fieldNameMap[field]} PIC 3 wajib diisi`,
           });
-          hasError = true;
         }
       });
     }
