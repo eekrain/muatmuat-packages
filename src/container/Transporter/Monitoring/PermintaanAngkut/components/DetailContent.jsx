@@ -634,6 +634,7 @@ const DetailContent = ({
               ]
             }
             title="Foto Muatan"
+            modalClassName="w-[592px] h-[445px]"
           >
             <div className="flex gap-2">
               {(
