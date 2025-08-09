@@ -97,43 +97,41 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                     Terima semua kebutuhan armada
                   </span>
                 </label>
-                <label className="flex cursor-pointer items-start">
+                <label className="flex cursor-pointer items-center">
                   <input
                     type="radio"
                     name="acceptOption"
                     value="partial"
                     checked={selectedOption === "partial"}
                     onChange={(e) => setSelectedOption(e.target.value)}
-                    className="mr-3 mt-0.5 h-4 w-4 text-primary-600"
+                    className="mr-3 h-4 w-4 text-primary-600"
                   />
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium text-gray-900">
-                        Terima dengan
-                      </span>
-                      <input
-                        type="number"
-                        min="1"
-                        placeholder="Jumlah"
-                        max={detail.truckCount || 2}
-                        value={
-                          selectedOption === "partial" && partialCount !== null
-                            ? partialCount
-                            : ""
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-gray-900">
+                      Terima dengan
+                    </span>
+                    <input
+                      type="number"
+                      min="1"
+                      placeholder="Jumlah"
+                      max={detail.truckCount || 2}
+                      value={
+                        selectedOption === "partial" && partialCount !== null
+                          ? partialCount
+                          : ""
+                      }
+                      onChange={(e) => {
+                        if (selectedOption === "partial") {
+                          const val = e.target.value;
+                          setPartialCount(val === "" ? null : val);
                         }
-                        onChange={(e) => {
-                          if (selectedOption === "partial") {
-                            const val = e.target.value;
-                            setPartialCount(val === "" ? null : val);
-                          }
-                        }}
-                        disabled={selectedOption !== "partial"}
-                        className="h-8 w-[65px] rounded border border-neutral-600 p-3 text-center text-xs font-medium text-neutral-600"
-                      />
-                      <span className="text-sm font-medium text-gray-900">
-                        unit armada
-                      </span>
-                    </div>
+                      }}
+                      disabled={selectedOption !== "partial"}
+                      className="h-8 w-[65px] rounded border border-neutral-600 p-3 text-center text-xs font-medium text-neutral-600"
+                    />
+                    <span className="text-sm font-medium text-gray-900">
+                      unit armada
+                    </span>
                   </div>
                 </label>
               </div>
@@ -382,7 +380,7 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                 />
                 <span className="flex justify-center text-xs font-medium text-neutral-900">
                   Saya menyetujui{" "}
-                  <span className="font-medium text-primary-700">
+                  <span className="ml-1 font-medium text-primary-700">
                     Syarat dan Ketentuan Muatrans
                   </span>
                 </span>
@@ -393,14 +391,14 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
             <div className="flex items-center justify-center gap-2">
               <Button
                 variant="muattrans-primary-secondary"
-                className="h-[34] w-[112px] rounded-[24px] py-3 text-[14px] font-medium"
+                className="h-[34] w-[112px] rounded-[24px] py-3 text-[14px] font-semibold"
                 onClick={onClose}
               >
                 Batal
               </Button>
               <Button
                 variant="muattrans-primary"
-                className="h h-[34] w-[112px] py-3 text-sm font-semibold"
+                className="h-[34] w-[112px] py-3 text-sm font-semibold"
               >
                 Terima
               </Button>
