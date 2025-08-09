@@ -4,7 +4,6 @@ import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
-import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useGetTransportRequestDetail } from "@/services/Transporter/monitoring/getTransportRequestListDetail";
 
@@ -21,9 +20,12 @@ const formatCurrency = (amount) => {
 };
 
 const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
-  const [selectedOption, setSelectedOption] = useState("all");
+  const [selectedOption, setSelectedOption] = useState("");
   const [partialCount, setPartialCount] = useState(null);
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [showTermsAlert, setShowTermsAlert] = useState(false);
+  const [showPartialAlert, setShowPartialAlert] = useState(false);
 
   // Ambil detail data berdasarkan request.id
   const {
@@ -36,21 +38,30 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
   if (!isOpen) return null;
 
   const handleAccept = () => {
-    if (selectedOption === "partial" && partialCount < 1) {
-      toast.error("Jumlah armada minimal 1 unit");
+    // Validasi kebutuhan armada
+    if (!selectedOption) {
+      setShowAlert(true);
       return;
     }
+
+    // Validasi jumlah armada jika memilih "partial"
+    if (selectedOption === "partial" && (!partialCount || partialCount < 1)) {
+      setShowPartialAlert(true);
+      return;
+    }
+
+    // Validasi syarat dan ketentuan
     if (!acceptTerms) {
-      toast.error("Harap setujui Syarat dan Ketentuan Muatrans");
+      setShowTermsAlert(true);
       return;
     }
+
     onAccept({
       requestId: detail.id,
       type: selectedOption,
       truckCount: selectedOption === "all" ? detail.truckCount : partialCount,
     });
   };
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4">
       <div className="flex h-[460px] w-[600px] flex-col rounded-xl bg-white p-6">
@@ -90,7 +101,10 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                     name="acceptOption"
                     value="all"
                     checked={selectedOption === "all"}
-                    onChange={(e) => setSelectedOption(e.target.value)}
+                    onChange={(e) => {
+                      setSelectedOption(e.target.value);
+                      setShowAlert(false);
+                    }}
                     className="mr-3 h-4 w-4 text-primary-600"
                   />
                   <span className="text-xs font-medium text-gray-900">
@@ -103,7 +117,11 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                     name="acceptOption"
                     value="partial"
                     checked={selectedOption === "partial"}
-                    onChange={(e) => setSelectedOption(e.target.value)}
+                    onChange={(e) => {
+                      setSelectedOption(e.target.value);
+                      setShowAlert(false);
+                      setShowPartialAlert(false);
+                    }}
                     className="mr-3 h-4 w-4 text-primary-600"
                   />
                   <div className="flex items-center gap-2">
@@ -124,10 +142,16 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                         if (selectedOption === "partial") {
                           const val = e.target.value;
                           setPartialCount(val === "" ? null : val);
+                          setShowPartialAlert(false);
                         }
                       }}
                       disabled={selectedOption !== "partial"}
-                      className="h-8 w-[65px] rounded border border-neutral-600 p-3 text-center text-xs font-medium text-neutral-600"
+                      className={cn(
+                        "h-8 w-[65px] rounded p-3 text-center text-xs font-medium text-neutral-600",
+                        showPartialAlert && selectedOption === "partial"
+                          ? "border border-error-400"
+                          : "border border-neutral-600"
+                      )}
                     />
                     <span className="text-sm font-medium text-gray-900">
                       unit armada
@@ -135,7 +159,20 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                   </div>
                 </label>
               </div>
+              {/* Alert for armada validation */}
+              {showAlert && (
+                <p className="mt-3 px-7 text-xs font-medium text-error-400">
+                  Kebutuhan armada wajib diisi
+                </p>
+              )}
+              {/* Alert for partial count validation */}
+              {showPartialAlert && (
+                <p className="mt-3 px-7 text-xs font-medium text-error-400">
+                  Jumlah armada wajib diisi
+                </p>
+              )}
             </div>
+
             {/* Content */}
             {/* Scrollable content only for info box */}
             <div className="mb-3 h-[175px] overflow-y-auto rounded-lg border border-neutral-400 p-4">
@@ -375,7 +412,10 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                 <input
                   type="checkbox"
                   checked={acceptTerms}
-                  onChange={(e) => setAcceptTerms(e.target.checked)}
+                  onChange={(e) => {
+                    setAcceptTerms(e.target.checked);
+                    setShowTermsAlert(false);
+                  }}
                   className="h-4 w-4 text-primary-600"
                 />
                 <span className="flex justify-center text-xs font-medium text-neutral-900">
@@ -385,6 +425,12 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                   </span>
                 </span>
               </label>
+              {/* Alert for terms validation */}
+              {showTermsAlert && (
+                <p className="mt-2 px-7 text-xs font-medium text-error-400">
+                  Setujui syarat dan ketentuan untuk menerima jasa angkut
+                </p>
+              )}
             </div>
 
             {/* Action Buttons */}
@@ -399,6 +445,7 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
               <Button
                 variant="muattrans-primary"
                 className="h-[34] w-[112px] py-3 text-sm font-semibold"
+                onClick={handleAccept}
               >
                 Terima
               </Button>
