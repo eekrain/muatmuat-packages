@@ -3,6 +3,7 @@ import { useState } from "react";
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useGetTransportRequestDetail } from "@/services/Transporter/monitoring/getTransportRequestListDetail";
@@ -73,7 +74,6 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                 <IconComponent src="/icons/close24.svg" className="h-5 w-5" />
               </button>
             </div>
-
             {/* Armada Selection */}
             <div className="mb-3 rounded-lg border border-neutral-400 p-4">
               <span className="mb-3 text-xs font-medium text-gray-600">
@@ -138,112 +138,269 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                 </label>
               </div>
             </div>
-
             {/* Content */}
-            <div className="flex-1 overflow-y-auto">
-              {/* Scrollable content */}
-              <div className="mb-3 rounded-lg border border-neutral-400 p-4">
-                <div className="mb-4 flex justify-between">
-                  <span className="text-xs font-medium text-gray-600">
-                    Informasi Pesanan
-                  </span>
-                  <span className="text-xs font-medium text-gray-600">
-                    Potensi Pendapatan
+            {/* Scrollable content only for info box */}
+            <div className="mb-3 h-[175px] overflow-y-auto rounded-lg border border-neutral-400 p-4">
+              <div className="mb-4 flex justify-between">
+                <span className="text-xs font-medium text-gray-600">
+                  Informasi Pesanan
+                </span>
+                <span className="text-xs font-medium text-gray-600">
+                  Potensi Pendapatan
+                </span>
+              </div>
+              <div className="mb-4 flex justify-between">
+                <div className="flex gap-2">
+                  {detail?.orderType && (
+                    <span className="flex h-6 items-center rounded-[6px] bg-blue-100 px-2 py-2 text-xs font-semibold text-blue-700">
+                      {detail.orderType === "INSTANT"
+                        ? "Instan"
+                        : detail.orderType === "SCHEDULED"
+                          ? "Terjadwal"
+                          : detail.orderType}
+                    </span>
+                  )}
+                  {detail?.timeLabel && (
+                    <span className="flex h-6 items-center rounded-[6px] bg-green-100 px-2 py-2 text-xs font-semibold text-green-700">
+                      {typeof detail.timeLabel === "object"
+                        ? detail.timeLabel.text
+                        : detail.timeLabel}
+                    </span>
+                  )}
+                  {(detail?.hasOverload ||
+                    detail?.overloadInfo?.hasOverload) && (
+                    <span className="flex h-6 items-center rounded-[6px] bg-red-100 px-2 py-2 text-xs font-semibold text-red-700">
+                      Potensi Overload
+                    </span>
+                  )}
+                  {detail?.isHalalLogistics && (
+                    <InfoTooltip
+                      side="left"
+                      align="center"
+                      sideOffset={8}
+                      trigger={
+                        <div
+                          className={cn(
+                            "flex h-6 w-6 cursor-pointer items-center justify-center rounded-md px-1 py-2",
+                            detail.isTaken ? "" : "bg-[#F7EAFD]"
+                          )}
+                        >
+                          <IconComponent
+                            src="/icons/halal.svg"
+                            className={cn(
+                              "h-4 w-3",
+                              detail.isTaken ? "text-neutral-700" : ""
+                            )}
+                          />
+                        </div>
+                      }
+                    >
+                      Memerlukan pengiriman
+                      <br />
+                      dengan sertifikasi halal logistik
+                    </InfoTooltip>
+                  )}
+                </div>
+                <div className="text-right">
+                  <span className="block text-sm font-bold text-blue-700">
+                    {formatCurrency(detail?.totalPrice)}
                   </span>
                 </div>
-                <div className="mb-4 flex justify-between">
-                  <div className="flex gap-2">
-                    {detail?.orderType && (
-                      <span className="flex h-6 items-center rounded-[6px] bg-blue-100 px-2 py-2 text-xs font-semibold text-blue-700">
-                        {detail.orderType === "INSTANT"
-                          ? "Instan"
-                          : detail.orderType === "SCHEDULED"
-                            ? "Terjadwal"
-                            : detail.orderType}
-                      </span>
-                    )}
-                    {detail?.timeLabel && (
-                      <span className="flex h-6 items-center rounded-[6px] bg-green-100 px-2 py-2 text-xs font-semibold text-green-700">
-                        {typeof detail.timeLabel === "object"
-                          ? detail.timeLabel.text
-                          : detail.timeLabel}
-                      </span>
-                    )}
-                    {(detail?.hasOverload ||
-                      detail?.overloadInfo?.hasOverload) && (
-                      <span className="flex h-6 items-center rounded-[6px] bg-red-100 px-2 py-2 text-xs font-semibold text-red-700">
-                        Potensi Overload
-                      </span>
-                    )}
-                    {detail?.isHalalLogistics && (
-                      <InfoTooltip
-                        side="left"
-                        align="center"
-                        sideOffset={8}
-                        trigger={
-                          <div
-                            className={cn(
-                              "flex h-6 w-6 cursor-pointer items-center justify-center rounded-md px-1 py-2",
-                              detail.isTaken ? "" : "bg-[#F7EAFD]"
-                            )}
-                          >
-                            <IconComponent
-                              src="/icons/halal.svg"
-                              className={cn(
-                                "h-4 w-3",
-                                detail.isTaken ? "text-neutral-700" : ""
-                              )}
-                            />
-                          </div>
+              </div>
+              <div className="mb-4 border-b border-[#C4C4C4]"></div>
+
+              {/* Location Info */}
+              <div className="mb-4 flex justify-between">
+                <div className="w-auto">
+                  <TimelineContainer>
+                    {[
+                      {
+                        fullAddress:
+                          detail.pickupLocations?.[0]?.fullAddress ||
+                          "Kota Surabaya, Kec. Tegalsari",
+                        type: "pickup",
+                      },
+                      {
+                        fullAddress:
+                          detail.dropoffLocations?.[0]?.fullAddress ||
+                          "Kab. Pasuruan, Kec. Klojen",
+                        type: "dropoff",
+                      },
+                    ].map((location, index) => (
+                      <NewTimelineItem
+                        key={index}
+                        variant="bullet"
+                        index={index}
+                        activeIndex={0}
+                        isLast={index === 1}
+                        title={
+                          location.fullAddress?.length > 38
+                            ? `${location.fullAddress.substring(0, 38)}...`
+                            : location.fullAddress
                         }
-                      >
-                        Memerlukan pengiriman
-                        <br />
-                        dengan sertifikasi halal logistik
-                      </InfoTooltip>
-                    )}
+                        className="pb-2"
+                        appearance={{
+                          titleClassname:
+                            "line-clamp-1 break-all text-xs font-bold text-neutral-900",
+                        }}
+                      />
+                    ))}
+                  </TimelineContainer>
+                </div>
+                <div className="text-right">
+                  <div className="text-[12px] font-medium text-neutral-600">
+                    Estimasi Jarak
                   </div>
-                  <div className="text-right">
-                    <span className="block text-sm font-bold text-blue-700">
-                      {formatCurrency(detail?.totalPrice)}
-                    </span>
+                  <div className="text-[12px] font-semibold text-neutral-900">
+                    {detail.estimatedDistance || 121} km
+                  </div>
+                </div>
+              </div>
+              <div className="mb-4 border-b border-[#C4C4C4]"></div>
+
+              {/* cargo info */}
+              <div className="mb-4 flex w-full items-start justify-between">
+                <div className="flex flex-1 items-start gap-3">
+                  <IconComponent
+                    src="/icons/box16.svg"
+                    className="mt-0.5 h-6 w-6 flex-shrink-0 text-neutral-600"
+                  />
+                  <div className="flex-1">
+                    <div className="text-xs font-medium text-neutral-600">
+                      Informasi Muatan (Total :{" "}
+                      {detail.cargos
+                        ?.reduce((sum, cargo) => sum + (cargo.weight || 0), 0)
+                        ?.toLocaleString("id-ID") || "2.500"}{" "}
+                      kg)
+                    </div>
+                    <div className="text-xs font-semibold text-neutral-900">
+                      {detail.cargos?.length > 1 ? (
+                        <>
+                          {detail.cargos[0]?.name || "Peralatan Tangga"},{" "}
+                          <InfoTooltip
+                            side="bottom"
+                            align="start"
+                            sideOffset={8}
+                            trigger={
+                              <span
+                                style={{
+                                  color: "#176CF7",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                +{detail.cargos.length - 1} lainnya
+                              </span>
+                            }
+                          >
+                            <div className="text-sm">
+                              <div className="mb-2 font-medium">
+                                Informasi Muatan
+                              </div>
+                              <div className="space-y-1">
+                                {detail.cargos.slice(1).map((cargo, index) => (
+                                  <div key={index} className="text-sm">
+                                    {index + 1}. {cargo.name}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </InfoTooltip>
+                        </>
+                      ) : (
+                        detail.cargos?.[0]?.name || "Peralatan Tangga"
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="ml-4">
+                  <span className="rounded-[6px] border border-[#7A360D] bg-white px-2 py-2 text-xs font-semibold text-[#7A360D]">
+                    {detail.orderCode || "MT25A001A"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Fleet Requirements Section */}
+              <div className="mb-4 flex items-start gap-3">
+                <IconComponent
+                  src="/icons/truk16.svg"
+                  className="mt-0.5 h-6 w-6 flex-shrink-0 text-neutral-600"
+                />
+                <div className="flex-1">
+                  <div className="text-xs font-medium text-neutral-600">
+                    Kebutuhan Armada
+                  </div>
+                  <div className="text-xs font-semibold text-neutral-900">
+                    {detail.truckCount || request?.truckCount || 3} Unit (
+                    {detail.truckTypeName ||
+                      request?.truckTypeName ||
+                      "Colt Diesel Engkel"}{" "}
+                    - {detail.carrierName || request?.carrierName || "Box"})
                   </div>
                 </div>
               </div>
 
-              {/* Syarat & Ketentuan */}
-              <div className="mb-4">
-                <label className="flex cursor-pointer items-start gap-3">
-                  <input
-                    type="checkbox"
-                    checked={acceptTerms}
-                    onChange={(e) => setAcceptTerms(e.target.checked)}
-                    className="mt-1 h-4 w-4 text-primary-600"
-                  />
-                  <span className="text-sm text-gray-600">
-                    Saya menyetujui{" "}
-                    <span className="font-medium text-primary-600 underline">
-                      Syarat dan Ketentuan Muatrans
-                    </span>
-                  </span>
-                </label>
+              {/* Loading Time Section */}
+              <div className="mb-4 flex items-start gap-3">
+                <IconComponent
+                  src="/icons/calendar16.svg"
+                  className="mt-0.5 h-6 w-6 flex-shrink-0 text-neutral-600"
+                />
+                <div className="flex-1">
+                  <div className="text-xs font-medium text-neutral-600">
+                    Waktu Muat
+                  </div>
+                  <div className="text-xs font-semibold text-neutral-900">
+                    {detail.loadDateTime ||
+                      request?.loadDateTime ||
+                      "03 Jan 2025 09:00 WIB s/d 04 Jan 2025 11:00 WIB"}
+                  </div>
+                </div>
               </div>
+
+              {/* Additional Services Section */}
+              {(detail.additionalServices?.length > 0 ||
+                request?.hasAdditionalService) && (
+                <div className="rounded-[4px] bg-warning-50 px-3 py-2">
+                  <div className="text-[12px] font-medium text-warning-800">
+                    +{" "}
+                    {detail.additionalServices?.[0]?.serviceName ||
+                      request?.additionalServices?.[0]?.serviceName ||
+                      "Bantuan Tambahan, Kirim Berkas"}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Syarat & Ketentuan (not scrollable) */}
+            <div className="mb-4">
+              <label className="flex cursor-pointer items-start gap-3">
+                <input
+                  type="checkbox"
+                  checked={acceptTerms}
+                  onChange={(e) => setAcceptTerms(e.target.checked)}
+                  className="h-4 w-4 text-primary-600"
+                />
+                <span className="flex justify-center text-xs font-medium text-neutral-900">
+                  Saya menyetujui{" "}
+                  <span className="font-medium text-primary-700">
+                    Syarat dan Ketentuan Muatrans
+                  </span>
+                </span>
+              </label>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-shrink-0 gap-3 pt-3">
+            <div className="flex items-center justify-center gap-2">
               <Button
-                variant="muattrans-error-secondary"
-                className="flex-1 py-2 text-sm font-semibold"
+                variant="muattrans-primary-secondary"
+                className="h-[34] w-[112px] rounded-[24px] py-3 text-[14px] font-medium"
                 onClick={onClose}
               >
                 Batal
               </Button>
               <Button
                 variant="muattrans-primary"
-                className="flex-1 py-2 text-sm font-semibold"
-                onClick={handleAccept}
-                disabled={!acceptTerms}
+                className="h h-[34] w-[112px] py-3 text-sm font-semibold"
               >
                 Terima
               </Button>
