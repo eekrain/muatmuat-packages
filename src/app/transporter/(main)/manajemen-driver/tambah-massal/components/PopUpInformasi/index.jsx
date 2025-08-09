@@ -97,59 +97,44 @@ export default function PopUpInformasi() {
       <ModalContent className="w-modal-small">
         <ModalHeader size="small" />
         <div>
-          {isLoading ? (
-            <div className="flex h-[420px] items-center justify-center p-6">
-              <div className="text-center text-neutral-600">Loading...</div>
+          <Slider.Root
+            items={onboardingSlides}
+            className="flex h-[420px] flex-col p-6"
+          >
+            <div className="flex flex-col items-center">
+              <div className="relative flex w-full items-center justify-center">
+                <Slider.DesktopNavigation />
+                <Slider.Content className="h-[150px] w-[150px]">
+                  {(item) => (
+                    <div className="flex h-full items-center justify-center">
+                      <img
+                        src={item.imgSrc}
+                        alt={item.title}
+                        className="h-full w-full object-contain"
+                      />
+                    </div>
+                  )}
+                </Slider.Content>
+              </div>
+              <Slider.Title className="mt-6 text-lg font-bold text-neutral-900" />
+              <Slider.Description className="text-sm font-medium text-neutral-900" />
             </div>
-          ) : error ? (
-            <div className="flex h-[420px] items-center justify-center p-6">
-              <div className="text-center text-red-600">
-                <div className="mb-2">Gagal memuat preferensi popup</div>
-                <div className="text-sm text-neutral-500">
-                  {error.message || "Terjadi kesalahan saat memuat data"}
-                </div>
-              </div>
+            <Slider.Indicator className="" />
+            <div className="mt-4 flex items-center justify-center">
+              <label className="flex items-center space-x-2 text-sm text-neutral-600">
+                <input
+                  type="checkbox"
+                  checked={dontShowAgain}
+                  onChange={(e) => setDontShowAgain(e.target.checked)}
+                  disabled={isUpdating}
+                  className="h-4 w-4 rounded border-neutral-300 text-primary-700 focus:ring-primary-700 disabled:opacity-50"
+                />
+                <span className={isUpdating ? "opacity-50" : ""}>
+                  {isUpdating ? "Menyimpan..." : "Jangan tampilkan lagi"}
+                </span>
+              </label>
             </div>
-          ) : (
-            <Slider.Root
-              items={onboardingSlides}
-              className="flex h-[420px] flex-col p-6"
-            >
-              <div className="flex flex-col items-center">
-                <div className="relative flex w-full items-center justify-center">
-                  <Slider.DesktopNavigation />
-                  <Slider.Content className="h-[150px] w-[150px]">
-                    {(item) => (
-                      <div className="flex h-full items-center justify-center">
-                        <img
-                          src={item.imgSrc}
-                          alt={item.title}
-                          className="h-full w-full object-contain"
-                        />
-                      </div>
-                    )}
-                  </Slider.Content>
-                </div>
-                <Slider.Title className="mt-6 text-lg font-bold text-neutral-900" />
-                <Slider.Description className="text-sm font-medium text-neutral-900" />
-              </div>
-              <Slider.Indicator className="" />
-              <div className="mt-4 flex items-center justify-center">
-                <label className="flex items-center space-x-2 text-sm text-neutral-600">
-                  <input
-                    type="checkbox"
-                    checked={dontShowAgain}
-                    onChange={(e) => setDontShowAgain(e.target.checked)}
-                    disabled={isUpdating}
-                    className="h-4 w-4 rounded border-neutral-300 text-primary-700 focus:ring-primary-700 disabled:opacity-50"
-                  />
-                  <span className={isUpdating ? "opacity-50" : ""}>
-                    {isUpdating ? "Menyimpan..." : "Jangan tampilkan lagi"}
-                  </span>
-                </label>
-              </div>
-            </Slider.Root>
-          )}
+          </Slider.Root>
         </div>
       </ModalContent>
     </Modal>
