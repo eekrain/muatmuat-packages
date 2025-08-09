@@ -35,6 +35,7 @@ const apiResultTransportRequestList = {
           truckTypeName: "Colt Diesel Engkel",
           carrierName: "Box",
           hasOverload: true,
+          overloadPotential: "Potensi Overload",
           hasAdditionalService: true,
           pickupLocations: [
             {
@@ -91,7 +92,6 @@ const apiResultTransportRequestList = {
           loadTimeText: "Muat Hari Ini",
           loadDateTime: "07 Agu 2025 09:00 WIB s/d 11:00 WIB",
           potentialEarnings: "Rp999.999.999",
-          overloadPotential: "Potensi Overload",
           createdAt: "2025-08-06T08:00:00+07:00",
           newRequestDuration: "2 menit yang lalu",
         },
