@@ -13,11 +13,11 @@ import {
   validateDriverForm,
 } from "@/config/forms/driverFormConfig";
 import { useDriverTableForm } from "@/hooks/useDriverTableForm";
-import { normalizePayloadTambahArmadaMassal } from "@/lib/normalizers/transporter/tambah-armada-massal/normalizePayloadTambahArmadaMassal";
 import { normalizePayloadTambahDriverMassal } from "@/lib/normalizers/transporter/tambah-driver-massal/normalizePayloadTambahDriverMassal";
 import { toast } from "@/lib/toast";
 import { useGetDriversDrafts } from "@/services/Transporter/manajemen-driver/getDriversDraft";
 import { usePostDriverBulkCreate } from "@/services/Transporter/manajemen-driver/postDriverBulkCreate";
+import { usePostDriverBulkDrafts } from "@/services/Transporter/manajemen-driver/postDriverBulkDrafts";
 
 import ModalAddArmadaImage from "../../../preview/components/ModalAddImage/ModalAddImage";
 import DriverTable from "../../DriverTable/DriverTable";
@@ -44,7 +44,7 @@ const mapDriversToFormData = (drivers) => {
 const Draft = ({ isDraftAvailable }) => {
   const router = useRouter();
   const isFirstMount = useRef(true);
-  const { data, isLoading, error } = useGetDriversDrafts(
+  const { data, isLoading, error, mutate } = useGetDriversDrafts(
     isDraftAvailable ? "/v1/drivers/draft" : null
   );
   const [activeIndex, setActiveIndex] = useState();
@@ -52,12 +52,13 @@ const Draft = ({ isDraftAvailable }) => {
 
   const { trigger: handlePostDriverBulkCreate, isMutating } =
     usePostDriverBulkCreate();
+  const { trigger: handlePostDriverBulkDrafts, isMutating: isLoadingDraft } =
+    usePostDriverBulkDrafts();
 
   // Custom submit handler for this page
   const handleSubmit = (value) => {
-    console.log("value", value);
     const payload = normalizePayloadTambahDriverMassal(value);
-    handlePostDriverBulkCreate(payload)
+    handlePostDriverBulkDrafts(payload)
       .then((res) => {
         // Show success message
         toast.success(`Berhasil menambahkan ${res.Data.totalSaved} Driver.`);
@@ -73,11 +74,13 @@ const Draft = ({ isDraftAvailable }) => {
 
   // Custom save as draft handler for this page
   const handleSaveAsDraft = (value) => {
-    const payload = normalizePayloadTambahArmadaMassal(value);
-    handlePostDriverBulkCreate(payload)
+    console.log("value", value);
+    const payload = normalizePayloadTambahDriverMassal(value);
+    handlePostDriverBulkDrafts(payload)
       .then(() => {
         // Show success message
-        toast.success("Draft armada berhasil disimpan.");
+        toast.success("Draft driver berhasil disimpan.");
+        mutate();
       })
       .catch((_error) => {
         // Show error message
@@ -85,7 +88,6 @@ const Draft = ({ isDraftAvailable }) => {
           "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
         );
       });
-    router.push(`/manajemen-armada?tab=process`);
   };
 
   // Use the reusable table form hook for vehicle data
@@ -107,6 +109,7 @@ const Draft = ({ isDraftAvailable }) => {
     setValue,
     reset,
     append,
+    handleSaveAsDraft: onSaveDraft,
   } = useDriverTableForm({
     defaultValues: driverDefaultValues, // Always start with default values
     schema: driverFormSchema,
@@ -124,11 +127,7 @@ const Draft = ({ isDraftAvailable }) => {
 
   // Update form data when API data loads
   useEffect(() => {
-    if (
-      data?.Data?.drivers &&
-      data.Data.drivers.length > 0 &&
-      isFirstMount.current
-    ) {
+    if (data?.Data?.drivers && data.Data.drivers.length > 0) {
       const formData = mapDriversToFormData(data.Data.drivers);
       reset(formData);
       isFirstMount.current = false;
@@ -192,7 +191,7 @@ const Draft = ({ isDraftAvailable }) => {
         <div className="flex items-center justify-end">
           <div className="mt-4 flex w-full items-end justify-end gap-3">
             <Button
-              onClick={handleSaveAsDraft}
+              onClick={onSaveDraft}
               variant="muattrans-primary-secondary"
               type="button"
             >

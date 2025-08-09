@@ -15,7 +15,10 @@ import {
   validateDriverForm,
 } from "@/config/forms/driverFormConfig";
 import { useDriverTableForm } from "@/hooks/useDriverTableForm";
-import { usePostFleetBulkCreate } from "@/services/Transporter/manajemen-armada/postFleetBulkCreate";
+import { normalizePayloadTambahDriverMassal } from "@/lib/normalizers/transporter/tambah-driver-massal/normalizePayloadTambahDriverMassal";
+import { toast } from "@/lib/toast";
+import { usePostDriverBulkCreate } from "@/services/Transporter/manajemen-driver/postDriverBulkCreate";
+import { usePostDriverBulkDrafts } from "@/services/Transporter/manajemen-driver/postDriverBulkDrafts";
 
 import DriverTable from "../../DriverTable/DriverTable";
 
@@ -25,15 +28,29 @@ const TambahDriverMassal = ({ isDraftAvailable }) => {
 
   const [isDraft] = useState(isDraftAvailable);
 
-  const { trigger: handlePostFleetBulkCreate, isMutating } =
-    usePostFleetBulkCreate();
+  const { trigger: handlePostDriverBulkCreate, isMutating: isLoadingCreate } =
+    usePostDriverBulkCreate();
+  const { trigger: handlePostDriverBulkDrafts, isMutating: isLoadingDraft } =
+    usePostDriverBulkDrafts();
 
   // Custom submit handler for this page
   const handleSubmit = (value) => {
     // const payload = normalizePayloadTambahDriverMassal(value);
     void value; // Temporarily silence unused variable warning
-    console.log("value", value);
-    // const payload = normalizePayloadTambahDriverMassal(value);
+    // console.log("value", value);
+    const payload = normalizePayloadTambahDriverMassal(value);
+    handlePostDriverBulkCreate(payload)
+      .then((res) => {
+        // Show success message
+        toast.success(`Berhasil menambahkan ${res.Data.totalSaved} Driver.`);
+        router.push(`/manajemen-driver?tab=process`);
+      })
+      .catch((_error) => {
+        // Show error message
+        toast.error(
+          "Gagal menyimpan draft driver. Periksa kembali data yang dimasukkan."
+        );
+      });
     // console.log("payload", payload);
     // console.log("payload", payload);
   };
@@ -41,19 +58,18 @@ const TambahDriverMassal = ({ isDraftAvailable }) => {
   // Custom save as draft handler for this page
   const handleSaveAsDraft = (value) => {
     // console.log("value", value);
-    // const payload = normalizePayloadTambahDriverMassal(value);
-    // console.log("payload", payload);
-    // handlePostFleetBulkCreate(payload)
-    //   .then(() => {
-    //     // Show success message
-    //     toast.success("Draft driver berhasil disimpan.");
-    //   })
-    //   .catch((_error) => {
-    //     // Show error message
-    //     toast.error(
-    //       "Gagal menyimpan draft driver. Periksa kembali data yang dimasukkan."
-    //     );
-    //   });
+    const payload = normalizePayloadTambahDriverMassal(value);
+    handlePostDriverBulkDrafts(payload)
+      .then(() => {
+        // Show success message
+        toast.success("Draft driver berhasil disimpan.");
+      })
+      .catch((_error) => {
+        // Show error message
+        toast.error(
+          "Gagal menyimpan draft driver. Periksa kembali data yang dimasukkan."
+        );
+      });
     router.push(`/manajemen-driver?tab=process`);
   };
 
@@ -104,7 +120,7 @@ const TambahDriverMassal = ({ isDraftAvailable }) => {
         <div className="flex items-center justify-end">
           <div className="mt-4 flex w-full items-end justify-end gap-3">
             <Button
-              disabled={isMutating}
+              disabled={isLoadingCreate || isLoadingDraft}
               onClick={handleSaveAsDraft}
               variant="muattrans-primary-secondary"
               type="button"
@@ -112,7 +128,7 @@ const TambahDriverMassal = ({ isDraftAvailable }) => {
               Simpan Sebagai Draft
             </Button>
             <Button
-              disabled={isMutating}
+              disabled={isLoadingCreate || isLoadingDraft}
               type="submit"
               onClick={() => {
                 handleSubmit();

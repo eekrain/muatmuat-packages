@@ -13,8 +13,8 @@ import Toggle from "@/components/Toggle/Toggle";
 import { isDev } from "@/lib/constants/is-dev";
 import { toast } from "@/lib/toast";
 import { formatDate } from "@/lib/utils/dateFormat";
-import { useGetFleetsUploadHistoryWithParams } from "@/services/Transporter/manajemen-armada/getFleetsUploadHistory";
 import { fetcherExcelDriversMassalTemplate } from "@/services/Transporter/manajemen-driver/getDriversExcelTemplate";
+import { useGetDriversUploadHistoryWithParams } from "@/services/Transporter/manajemen-driver/getDriversUploadHistory";
 import { usePostDriverExcelUpload } from "@/services/Transporter/manajemen-driver/postDriverExcelUpload";
 
 const TambahExcel = () => {
@@ -45,7 +45,7 @@ const TambahExcel = () => {
       width: "80px",
       sortable: false,
       render: (row) => (
-        <Link href={`/documents/${row.document}`} className="text-success-600">
+        <Link href={row.action} className="text-success-600">
           {row.document}
         </Link>
       ),
@@ -99,7 +99,8 @@ const TambahExcel = () => {
   const [uploadedFile, setUploadedFile] = useState(null);
   const [isDownloadingTemplate, setIsDownloadingTemplate] = useState(false);
 
-  const { data, isLoading } = useGetFleetsUploadHistoryWithParams(searchParams);
+  const { data, isLoading } =
+    useGetDriversUploadHistoryWithParams(searchParams);
   const { trigger, isMutating } = usePostDriverExcelUpload();
 
   const handleUpload = (file) => {
@@ -191,18 +192,24 @@ const TambahExcel = () => {
   };
 
   useEffect(() => {
+    console.log("data", data);
     if (data && data.Data && data.Data.history.length > 0) {
+      console.log("yas");
       setList(
         data.Data.history.map((item) => ({
           tanggal: item.uploadedAt,
-          document: item.originalFileName,
-          name: item.uploadBy,
+          document: item.fileName,
+          name: item.uploadedBy,
           status: item.status,
-          action: item.fileReport ? item.fileReport : "-",
+          action: item.reportUrl ? item.reportUrl : "-",
         }))
       );
     }
   }, [data]);
+
+  useEffect(() => {
+    console.log("list", list);
+  }, [list]);
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -297,7 +304,7 @@ const TambahExcel = () => {
             searchPlaceholder="Cari Nama Dokumen (min. 4 karakter)"
             currentPage={searchParams.page}
             totalPages={data?.Data?.pagination?.totalPages || 1}
-            totalItems={data?.Data?.pagination?.totalItems || 0}
+            totalItems={data?.Data?.pagination?.total || 0}
             perPage={searchParams.limit}
             // showDisplayView={false}
             showPagination={false}

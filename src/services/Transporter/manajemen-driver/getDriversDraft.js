@@ -13,7 +13,9 @@ export const fetcherDriversDraft = async (url, { arg }) => {
 };
 
 export const useGetDriversDrafts = (url) => {
-  return useSWR(url ? `driversDrafts-${url}` : null, () =>
-    fetcherDriversDraft(url, { arg: null })
+  return useSWR(
+    url ? `driversDrafts-${url}` : null,
+    () => fetcherDriversDraft(url, { arg: null }),
+    { revalidateOnFocus: false, revalidateOnReconnect: false }
   );
 };

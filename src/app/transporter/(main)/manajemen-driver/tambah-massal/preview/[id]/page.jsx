@@ -18,6 +18,7 @@ import { normalizePayloadTambahDriverMassal } from "@/lib/normalizers/transporte
 import { toast } from "@/lib/toast";
 import { useGetDriversPreview } from "@/services/Transporter/manajemen-driver/getDriverPreview";
 import { usePostDriverBulkCreate } from "@/services/Transporter/manajemen-driver/postDriverBulkCreate";
+import { usePostDriverBulkDrafts } from "@/services/Transporter/manajemen-driver/postDriverBulkDrafts";
 
 import DriverTable from "../../components/DriverTable/DriverTable";
 
@@ -59,8 +60,10 @@ export default function PreviewDriver({ params }) {
   );
 
   // TODO: Replace with actual driver bulk create service
-  const { trigger: handlePostDriverBulkCreate, isMutating } =
+  const { trigger: handlePostDriverBulkCreate, isMutating: isLoadingCreate } =
     usePostDriverBulkCreate();
+  const { trigger: handlePostDriverBulkDrafts, isMutating: isLoadingDraft } =
+    usePostDriverBulkDrafts();
   // const isMutating = false; // Temporary until service is implemented
 
   // Custom submit handler for this page
@@ -81,29 +84,28 @@ export default function PreviewDriver({ params }) {
       });
 
     // Temporary implementation
-    toast.success(`Berhasil menambahkan ${value.driverList.length} driver.`);
-    router.push(`/manajemen-driver`);
+    // toast.success(`Berhasil menambahkan ${value.driverList.length} driver.`);
+    // router.push(`/manajemen-driver`);
   };
 
   // Custom save as draft handler for this page
-  const handleSaveAsDraft = (_value) => {
+  const handleSaveAsDraft = (value) => {
     // TODO: Implement driver bulk create payload normalization
-    // const payload = normalizePayloadTambahDriverMassal(value);
-    // handlePostDriverBulkCreate(payload)
-    //   .then(() => {
-    //     // Show success message
-    //     toast.success("Draft driver berhasil disimpan.");
-    //   })
-    //   .catch((_error) => {
-    //     // Show error message
-    //     toast.error(
-    //       "Gagal menyimpan draft driver. Periksa kembali data yang dimasukkan."
-    //     );
-    //   });
+    const payload = normalizePayloadTambahDriverMassal(value);
+    handlePostDriverBulkCreate(payload)
+      .then(() => {
+        // Show success message
+        toast.success("Draft driver berhasil disimpan.");
+        router.push(`/manajemen-driver/tambah-massal?tab=draft`);
+      })
+      .catch((_error) => {
+        // Show error message
+        toast.error(
+          "Gagal menyimpan draft driver. Periksa kembali data yang dimasukkan."
+        );
+      });
 
     // Temporary implementation
-    toast.success("Draft driver berhasil disimpan.");
-    router.push("/manajemen-driver/tambah-massal");
   };
 
   // Handle back navigation with confirmation
@@ -229,13 +231,13 @@ export default function PreviewDriver({ params }) {
         <div className="mt-4 flex w-full items-end justify-end gap-3">
           <Button
             onClick={onSaveAsDraft}
-            disabled={isMutating}
+            disabled={isLoadingCreate || isLoadingDraft}
             variant="muattrans-primary-secondary"
             type="button"
           >
             Simpan Sebagai Draft
           </Button>
-          <Button disabled={isMutating} type="submit">
+          <Button disabled={isLoadingCreate || isLoadingDraft} type="submit">
             Simpan
           </Button>
         </div>
