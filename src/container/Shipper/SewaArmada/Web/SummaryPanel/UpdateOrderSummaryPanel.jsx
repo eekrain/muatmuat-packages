@@ -25,7 +25,11 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
   const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
 
   const priceSummary = useShallowMemo(() => {
-    if (!calculatedPrice || calculatedPrice?.totalPrice <= 0) {
+    if (
+      !calculatedPrice ||
+      calculatedPrice?.totalPrice <= 0 ||
+      !formValues.hasUpdatedForm
+    ) {
       return [];
     }
     return [
@@ -64,7 +68,7 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
         ],
       },
     ];
-  }, [calculatedPrice]);
+  }, [calculatedPrice, formValues.hasUpdatedForm]);
 
   const handleUpdateOrder = async () => {
     // setUpdateOrderSuccess(true);

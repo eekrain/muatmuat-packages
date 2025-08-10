@@ -86,6 +86,7 @@ export const normalizeDetailPesananOrderDetail = ({
       reviewData,
       isCancellable: Boolean(dataOrderDetail?.isCancellable),
       isChangeable: Boolean(dataOrderDetail?.isChangeable),
+      updatedAt: dataOrderDetail?.general.updatedAt,
     };
 
     const route = { muat: [], bongkar: [] };

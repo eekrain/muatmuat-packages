@@ -1,6 +1,7 @@
 import { useRouter } from "next/navigation";
 import { Fragment, useState } from "react";
 
+import { Alert } from "@/components/Alert/Alert";
 import { AlertMultilineResponsive } from "@/components/Alert/AlertMultilineResponsive";
 import BottomNavigationBar from "@/components/BottomNavigationBar/BottomNavigationBar";
 import Button from "@/components/Button/Button";
@@ -16,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { useWaitingSettlementModalAction } from "@/store/Shipper/forms/waitingSettlementModalStore";
 
 const ListScreen = ({
+  type,
   queryParams,
   onChangeQueryParams,
   orders,
@@ -34,6 +36,13 @@ const ListScreen = ({
   const [isPeriodBottomsheetOpen, setPeriodBottomsheetOpen] = useState(false);
   const { t } = useTranslation();
   const { setIsOpen } = useWaitingSettlementModalAction();
+
+  const isDefaultPage = type === "default";
+  const alertTitles = {
+    needConfirmation: "Terdapat pesanan yang membutuhkan konfirmasi",
+    waitingPayment: "Terdapat pesanan yang menunggu pembayaran",
+    waitingRepayment: "Terdapat pesanan yang menunggu pelunasan",
+  };
 
   const alertItems = useShallowMemo(() => {
     if (!settlementAlertInfo) return [];
@@ -144,10 +153,14 @@ const ListScreen = ({
 
   return (
     <SearchBarResponsiveLayout
-      withMenu={{
-        onClickPeriod: () => setPeriodBottomsheetOpen(true),
-        periodSelected: queryParams.startDate && queryParams.endDate,
-      }}
+      withMenu={
+        isDefaultPage
+          ? {
+              onClickPeriod: () => setPeriodBottomsheetOpen(true),
+              periodSelected: queryParams.startDate && queryParams.endDate,
+            }
+          : null
+      }
       onEnterPress={(value) => onChangeQueryParams("search", value)}
       placeholder="Cari Pesanan"
       shouldResetSearchValue={false}
@@ -159,68 +172,80 @@ const ListScreen = ({
         )}
       >
         {/* Filter */}
-        <div className="scrollbar-hide flex items-center gap-x-1 overflow-x-auto border-b border-b-neutral-400 bg-neutral-50 py-5 pl-4">
-          <button
-            className={cn(
-              "flex h-[30px] items-center gap-x-2 rounded-3xl px-3",
-              filterType === "radio" && queryParams.status
-                ? "border border-primary-700 bg-primary-50 text-primary-700"
-                : "bg-neutral-200 text-neutral-900"
-            )}
-            onClick={() => {
-              setFiltering(true);
-              navigation.push("/StatusFilter");
-            }}
-          >
-            <span className="text-sm font-medium leading-[1.1]">Filter</span>
-            <IconComponent
-              className={
-                filterType === "radio" && queryParams.status
-                  ? "text-primary-700"
-                  : "text-neutral-900"
-              }
-              src="/icons/filter14.svg"
-              width={14}
-              height={14}
+        {isDefaultPage ? (
+          <>
+            <div className="scrollbar-hide flex items-center gap-x-1 overflow-x-auto border-b border-b-neutral-400 bg-neutral-50 py-5 pl-4">
+              <button
+                className={cn(
+                  "flex h-[30px] items-center gap-x-2 rounded-3xl px-3",
+                  filterType === "radio" && queryParams.status
+                    ? "border border-primary-700 bg-primary-50 text-primary-700"
+                    : "bg-neutral-200 text-neutral-900"
+                )}
+                onClick={() => {
+                  setFiltering(true);
+                  navigation.push("/StatusFilter");
+                }}
+              >
+                <span className="text-sm font-medium leading-[1.1]">
+                  Filter
+                </span>
+                <IconComponent
+                  className={
+                    filterType === "radio" && queryParams.status
+                      ? "text-primary-700"
+                      : "text-neutral-900"
+                  }
+                  src="/icons/filter14.svg"
+                  width={14}
+                  height={14}
+                />
+              </button>
+              <div className="flex items-center gap-x-1">
+                {statusTabOptions.map((tab, key) => {
+                  // Check if this is the "Semua" tab (empty value) and if the current queryParams.status
+                  // isn't one of the specific tab values
+                  const isActiveAllTab =
+                    tab.value === "" &&
+                    queryParams.status !== "WAITING_PAYMENT" &&
+                    queryParams.status !== "WAITING_REPAYMENT" &&
+                    queryParams.status !== "DOCUMENT_SHIPPING";
+
+                  return (
+                    <div
+                      key={key}
+                      onClick={() => {
+                        onChangeQueryParams("status", tab.value);
+                        setFilterType("tab");
+                      }}
+                      className={cn(
+                        "flex h-[30px] min-w-fit cursor-pointer items-center rounded-full px-3 py-[6px] font-medium",
+                        (queryParams.status === tab.value &&
+                          filterType === "tab") ||
+                          isActiveAllTab
+                          ? "border border-primary-700 bg-primary-50 text-primary-700"
+                          : "bg-neutral-200 text-neutral-900"
+                      )}
+                    >
+                      <span className="text-sm leading-[1.1]">{tab.label}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <AlertMultilineResponsive
+              items={alertItems}
+              className="w-full rounded-none"
             />
-          </button>
-          <div className="flex items-center gap-x-1">
-            {statusTabOptions.map((tab, key) => {
-              // Check if this is the "Semua" tab (empty value) and if the current queryParams.status
-              // isn't one of the specific tab values
-              const isActiveAllTab =
-                tab.value === "" &&
-                queryParams.status !== "WAITING_PAYMENT" &&
-                queryParams.status !== "WAITING_REPAYMENT" &&
-                queryParams.status !== "DOCUMENT_SHIPPING";
-
-              return (
-                <div
-                  key={key}
-                  onClick={() => {
-                    onChangeQueryParams("status", tab.value);
-                    setFilterType("tab");
-                  }}
-                  className={cn(
-                    "flex h-[30px] min-w-fit cursor-pointer items-center rounded-full px-3 py-[6px] font-medium",
-                    (queryParams.status === tab.value &&
-                      filterType === "tab") ||
-                      isActiveAllTab
-                      ? "border border-primary-700 bg-primary-50 text-primary-700"
-                      : "bg-neutral-200 text-neutral-900"
-                  )}
-                >
-                  <span className="text-sm leading-[1.1]">{tab.label}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <AlertMultilineResponsive
-          items={alertItems}
-          className="w-full rounded-none"
-        />
+          </>
+        ) : hasFilteredOrders ? (
+          <Alert variant="warning" className="w-full gap-2.5">
+            <span className="text-xs font-medium text-neutral-900">
+              {alertTitles[type] || ""}
+            </span>
+          </Alert>
+        ) : null}
 
         {/* List Pesanan */}
         {isOrdersLoading ? null : !hasNoOrders ? (
@@ -282,7 +307,7 @@ const ListScreen = ({
           </div>
         )}
       </div>
-      <BottomNavigationBar />
+      {isDefaultPage ? <BottomNavigationBar /> : null}
 
       {/* Bottomsheet pilih periode */}
       <PeriodDropdown

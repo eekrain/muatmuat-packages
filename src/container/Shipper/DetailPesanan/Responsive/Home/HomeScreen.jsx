@@ -27,6 +27,7 @@ import { PendingPaymentAlert } from "./components/Pending/PendingPaymentAlert";
 import { PendingPaymentDetail } from "./components/Pending/PendingPaymentDetail";
 import { PendingPrepareFleetAlert } from "./components/Pending/PendingPrepareFleetAlert";
 import PendingUpdateConfirmation from "./components/Pending/PendingUpdateConfirmation";
+import PendingUpdateFeePayment from "./components/Pending/PendingUpdateFeePayment";
 import { BottomSheetPeriksaPesananKamu } from "./components/Popup/BottomSheetPeriksaPesananKamu";
 import { BottomsheetAlasanPembatalan } from "./components/Popup/BottomsheetAlasanPembatalan";
 import { BottomsheetMenuList } from "./components/Popup/BottomsheetMenuList";
@@ -176,6 +177,9 @@ const DetailPesananScreen = ({
         ) : dataStatusPesanan?.orderStatus ===
           OrderStatusEnum.WAITING_CONFIRMATION_CHANGES ? (
           <PendingUpdateConfirmation />
+        ) : dataStatusPesanan?.orderStatus ===
+          OrderStatusEnum.WAITING_PAYMENT_3 ? (
+          <PendingUpdateFeePayment />
         ) : null}
 
         <OrderInfo dataStatusPesanan={dataStatusPesanan} />
@@ -220,7 +224,7 @@ const DetailPesananScreen = ({
         </button>
       </div>
 
-      {!WHITELIST_PENDING_PAYMENT.includes(dataStatusPesanan?.orderStatus) ? (
+      {WHITELIST_PENDING_PAYMENT.includes(dataStatusPesanan?.orderStatus) ? (
         <FooterDetailPesanan
           dataStatusPesanan={dataStatusPesanan}
           dataRingkasanPembayaran={dataRingkasanPembayaran}

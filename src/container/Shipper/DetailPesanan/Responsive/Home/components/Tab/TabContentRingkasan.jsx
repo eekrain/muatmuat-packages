@@ -5,6 +5,7 @@ import AdditionalFeesDetail from "../AdditionalFeesDetail";
 import { MethodInfo } from "../MethodInfo";
 import RepaymentPaymentMethod from "../RepaymentPaymentMethod";
 import { TransactionSummary } from "../TransactionSummary";
+import UpdateOrderFeeSummary from "../UpdateOrderFeeSummary";
 import { InformasiArmadaFragment } from "../fragments/InformasiArmadaFragment";
 import { InformasiMuatanFragment } from "../fragments/InformasiMuatanFragment";
 import { LocationRouteFragment } from "../fragments/LocationRouteFragment";
@@ -52,6 +53,8 @@ export const TabContentRingkasan = ({
           priceCharge={dataRingkasanPembayaran.priceCharge}
           waitingTimeRaw={waitingTimeRaw}
         />
+      ) : dataStatusPesanan?.updatedAt ? (
+        <UpdateOrderFeeSummary />
       ) : (
         <TransactionSummary
           dataRingkasanPembayaran={dataRingkasanPembayaran}

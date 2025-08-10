@@ -71,15 +71,17 @@ const LocationPicDetailSection = ({ type }) => {
       title={headers[type]}
     >
       <div className="flex flex-col gap-y-4">
-        <h3 className="leading-[1.1[ text-sm font-semibold">{titles[type]}</h3>
+        <h3 className="text-sm font-semibold leading-[1.1]">{titles[type]}</h3>
         {locations[type].map((item, key) => (
           <div className="flex items-center gap-x-2" key={key}>
-            <IconComponent
-              className="text-neutral-700"
-              src={item.icon}
-              width={20}
-              height={20}
-            />
+            <div className="flex size-5 items-center">
+              <IconComponent
+                className="text-muat-trans-secondary-900"
+                src={item.icon}
+                width={20}
+                height={20}
+              />
+            </div>
             <span className="text-xs font-medium leading-[1.1]">
               {item.value}
             </span>

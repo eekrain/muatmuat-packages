@@ -88,8 +88,7 @@ const Header = ({
           variant={statusMeta.status.variant}
           className="w-fit"
         >
-          {/* {statusMeta.status.label} */}
-          Menunggu Konfirmasi
+          {statusMeta.status.label}
         </BadgeStatusPesanan>
       )}
       {withMenu && (
