@@ -3,6 +3,7 @@
 import {
   AlertTriangle,
   ChevronDown,
+  Clock3,
   MapPin,
   Phone,
   Truck,
@@ -19,260 +20,262 @@ import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import { cn } from "@/lib/utils";
 import { getTruckIcon } from "@/lib/utils/armadaStatus";
 
-export default function CardFleet({
-  fleet,
-  isExpanded,
-  onToggleExpand,
-  onOpenDriverModal,
-  isSOS,
-  className,
-}) {
-  const cardClasses = cn(
-    "overflow-hidden rounded-lg border p-3 transition-all duration-200",
-    isSOS
-      ? isExpanded
-        ? "border-error-400 bg-error-50"
-        : "border-gray-200 bg-error-50 hover:border-error-400 hover:bg-[#FFE9ED]"
-      : isExpanded
-        ? "border-[#FFC217] bg-[#FFFBEB]"
-        : "border-gray-200 bg-white hover:border-[#FFC217] hover:bg-[#FFFBEB]",
-    className
-  );
+// ----- Constants -----
+const STATUS_STYLES = {
+  SOS: {
+    expanded: "border-error-400 bg-error-50",
+    collapsed:
+      "border-gray-200 bg-error-50 hover:border-error-400 hover:bg-[#FFE9ED]",
+  },
+  DEFAULT: {
+    expanded: "border-[#FFC217] bg-[#FFFBEB]",
+    collapsed:
+      "border-gray-200 bg-white hover:border-[#FFC217] hover:bg-[#FFFBEB]",
+  },
+};
 
+// ----- Small Components -----
+const TruckIcon = ({ status }) => {
+  const icon = getTruckIcon?.(status) || "default.png";
+  return (
+    <div className="flex h-8 w-8 items-center justify-center">
+      <img
+        src={`/icons/armada-truck/${icon}`}
+        alt="Truck icon"
+        className="h-full w-full object-contain"
+        loading="lazy"
+      />
+    </div>
+  );
+};
+
+const ResponseChangeIndicator = () => (
+  <InfoTooltip
+    trigger={
+      <div className="group flex h-6 w-6 items-center justify-center rounded-lg bg-[#FFF9C1]">
+        <AlertTriangle className="h-4 w-4 text-yellow-500 group-hover:text-warning-800" />
+      </div>
+    }
+  >
+    <p className="text-center">
+      Pesanan Perlu <br /> Respon Perubahan
+    </p>
+  </InfoTooltip>
+);
+
+const SOSIndicator = () => (
+  <p className="rounded-md bg-[#EE4343] px-2 py-[2px] text-xs font-semibold text-white">
+    SOS
+  </p>
+);
+
+const SOSAlertHeader = ({ category, reportTime, showCategory = true }) => (
+  <div className="mt-2 flex flex-col border-b border-neutral-400 pb-3">
+    {showCategory && (
+      <p className="text-xs font-semibold text-error-400">{category || "-"}</p>
+    )}
+    <p className="flex items-center gap-2 text-xs text-neutral-600">
+      <Clock3 className="h-4 w-3 text-muat-trans-secondary-900" />
+      Laporan Masuk:{" "}
+      <span className="font-semibold text-neutral-900">
+        {reportTime || "-"}
+      </span>
+    </p>
+  </div>
+);
+
+const InfoWithTooltip = ({
+  icon: Icon,
+  label,
+  value,
+  showLabel,
+  className,
+}) => (
+  <div className="flex items-center space-x-2">
+    <Icon className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
+    <div className="min-w-0">
+      {showLabel && <label className="text-xs text-gray-500">{label}</label>}
+      <InfoTooltip
+        trigger={
+          <p className={cn("truncate text-xs font-semibold", className)}>
+            {value}
+          </p>
+        }
+      >
+        {value}
+      </InfoTooltip>
+    </div>
+  </div>
+);
+
+const DriverInfo = ({ driverName, showLabel = false }) => (
+  <InfoWithTooltip
+    icon={User}
+    label="Driver"
+    value={driverName || "-"}
+    showLabel={showLabel}
+    className={showLabel ? "text-gray-900" : "text-neutral-900"}
+  />
+);
+
+const LocationInfo = ({ locationText, showLabel = false }) => (
+  <InfoWithTooltip
+    icon={MapPin}
+    label="Lokasi Terakhir"
+    value={locationText || "Unknown"}
+    showLabel={showLabel}
+    className={showLabel ? "text-gray-900" : "text-neutral-900"}
+  />
+);
+
+const LocationTimelineItem = ({
+  location,
+  isLast,
+  index,
+  activeIndex,
+  label,
+}) => {
+  const district = location?.district || label;
+  const display =
+    district?.length > 38 ? `${district.substring(0, 38)}...` : district;
+
+  return (
+    <NewTimelineItem
+      variant="bullet"
+      index={index}
+      activeIndex={activeIndex}
+      isLast={isLast}
+      title={display || label}
+      className="pb-2"
+      appearance={{
+        titleClassname:
+          "text-xs font-bold text-neutral-900 line-clamp-1 break-all",
+      }}
+    />
+  );
+};
+
+// ----- Card Sections -----
+const CardHeader = ({ isExpanded, isSOS, fleet, onToggleExpand }) => {
   const chevronClasses = cn(
     "h-5 w-5 text-gray-400 transition-transform",
     isExpanded && "rotate-180"
   );
 
-  const renderHeader = () => (
+  return (
     <div className="flex items-center justify-between">
       <div className="flex items-center space-x-3">
-        <TruckIcon status={fleet.status} />
+        <TruckIcon status={fleet?.status} />
         <span className="text-sm font-bold text-gray-900">
-          {fleet.licensePlate}
+          {fleet?.licensePlate || "-"}
         </span>
       </div>
       <div className="flex items-center space-x-2">
-        {fleet.needsResponseChange && <ResponseChangeIndicator />}
-        {fleet.hasSOSAlert && <SOSIndicator />}
+        {fleet?.needsResponseChange && <ResponseChangeIndicator />}
+        {isSOS && <SOSIndicator />}
         <ChevronDown className={chevronClasses} />
       </div>
     </div>
   );
+};
 
-  const renderCollapsedContent = () => {
-    if (isExpanded) return null;
+const DriverAndPhoneSection = ({ driverName, phone }) => (
+  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <DriverInfo driverName={driverName} showLabel />
+    <InfoWithTooltip
+      icon={Phone}
+      label="No. HP Driver"
+      value={phone}
+      showLabel
+      className="text-gray-900"
+    />
+  </div>
+);
 
-    return isSOS ? (
-      <>
-        <div className="mt-2 flex flex-col border-b border-neutral-400 pb-3">
-          <p className="text-xs font-semibold text-error-400">
-            {fleet.detailSOS.sosCategory || "-"}
-          </p>
-          <div>
-            <p className="text-xs text-neutral-600">
-              Laporan Masuk :{" "}
-              <span className="text-xs font-semibold text-neutral-900">
-                10 Jan 2025 12:23 WIB
-              </span>
-            </p>
-          </div>
-        </div>
-        <div className="mt-2 grid grid-cols-2 gap-x-2 gap-y-0.5 text-sm">
-          <DriverInfo fleet={fleet} />
-          <LocationInfo fleet={fleet} />
-        </div>
-      </>
-    ) : (
-      <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-sm">
-        <DriverInfo fleet={fleet} showLabel />
-        <LocationInfo fleet={fleet} showLabel />
-      </div>
-    );
-  };
-
-  const renderExpandedContent = () => {
-    if (!isExpanded) return null;
-
-    return (
-      <div className="space-y-1 pt-2 text-sm">
-        {isSOS && (
-          <div className="mt-2 flex flex-col border-b border-neutral-400 pb-3">
-            <p className="text-xs font-semibold text-error-400">
-              {fleet?.detailSOS?.sosCategory || "-"}
-            </p>
-            <p className="text-xs font-semibold text-neutral-900">
-              {fleet?.detailSOS?.description}
-            </p>
-            {fleet.hasSOSAlert && fleet.detailSOS.photos.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {fleet.detailSOS.photos.map((image, index) => (
-                  <LightboxProvider key={index} images={fleet.detailSOS.photos}>
-                    <LightboxPreview
-                      image={image}
-                      index={index}
-                      alt={`SOS Image ${index + 1}`}
-                      className="h-14 w-14 rounded-md object-cover"
-                    />
-                  </LightboxProvider>
-                ))}
-              </div>
-            )}
-
-            <div>
-              <p className="text-xs text-neutral-600">
-                Laporan Masuk :{" "}
-                <span className="text-xs font-semibold text-neutral-900">
-                  10 Jan 2025 12:23 WIB
-                </span>
-              </p>
-            </div>
-          </div>
-        )}
-        <DriverAndPhoneSection fleet={fleet} />
-        <LocationAndFleetSection fleet={fleet} />
-        {(fleet.status === "ON_DUTY" ||
-          fleet.status === "WAITING_LOADING_TIME") && (
-          <>
-            <div className="border-t border-neutral-300 py-1" />
-            <OnDutyDetails fleet={fleet} />
-          </>
-        )}
-        {(!fleet.driver?.name || !fleet.driver?.phoneNumber) && (
-          <AssignDriverButton onClick={() => onOpenDriverModal(fleet)} />
-        )}
-        {fleet.needsResponseChange && (
-          <NeedResponseButton onClick={() => onOpenDriverModal(fleet)} />
-        )}
-        {fleet.hasSOSAlert === true && (
-          <SOSResponseButton onClick={() => onOpenDriverModal(fleet)} />
-        )}
-      </div>
-    );
-  };
-
-  return (
-    <div className={cardClasses}>
-      <div
-        className="cursor-pointer"
-        onClick={() => onToggleExpand(fleet.fleetId)}
-      >
-        {renderHeader()}
-        {renderCollapsedContent()}
-      </div>
-      {renderExpandedContent()}
-    </div>
-  );
-}
-
-// Sub-components
-function TruckIcon({ status }) {
-  return (
-    <div className="flex h-8 w-8 items-center justify-center">
-      <img
-        src={`/icons/armada-truck/${getTruckIcon(status)}`}
-        alt="Truck icon"
-        className="h-full w-full object-contain"
+const LocationAndFleetSection = ({ fleet }) => (
+  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div>
+      <LocationInfo
+        locationText={fleet?.lastLocation?.address?.district}
+        showLabel
       />
+      <p className="ml-6 text-xxs font-semibold">
+        {fleet?.lastLocation?.address?.city}
+      </p>
     </div>
-  );
-}
-
-function ResponseChangeIndicator() {
-  return (
-    <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#FFF9C1]">
-      <AlertTriangle className="h-4 w-4 text-yellow-500" />
+    <div>
+      <InfoWithTooltip
+        icon={Truck}
+        label="Armada"
+        value={fleet?.carrierType?.name || "-"}
+        showLabel
+        className="text-gray-900"
+      />
+      <p className="ml-6 text-xxs font-semibold">
+        {fleet?.truckType?.name || "-"}
+      </p>
     </div>
-  );
-}
+  </div>
+);
 
-function SOSIndicator() {
-  return (
-    <p className="rounded-md bg-[#EE4343] px-2 py-[2px] text-xs font-semibold text-white">
-      SOS
-    </p>
-  );
-}
+const ActionButton = ({
+  children,
+  onClick,
+  className,
+  variant = "default",
+}) => {
+  const baseClasses = "w-full rounded-xl px-4 py-2 text-sm font-medium";
+  const variantClasses = {
+    default: "bg-[#FFC217] text-[#461B02] hover:bg-[#FFD54F]",
+    sos: "bg-error-500 text-white hover:bg-error-600",
+  };
 
-function DriverAndPhoneSection({ fleet }) {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      <div className="flex items-center space-x-3">
-        <User className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
-        <div>
-          <label className="text-xs text-gray-500">Driver</label>
-          <p className="text-xs font-semibold text-gray-900">
-            {fleet.driver?.name || "-"}
-          </p>
+    <button
+      className={cn(baseClasses, variantClasses[variant], className)}
+      onClick={onClick}
+      type="button"
+    >
+      {children}
+    </button>
+  );
+};
+
+const OnDutyDetails = ({ fleet }) => {
+  const pickup = fleet?.activeOrder?.pickupLocation;
+  const dropoff = fleet?.activeOrder?.dropoffLocation;
+  const status = fleet?.status;
+  const needsResponse = fleet?.needsResponseChange;
+
+  const getStatusBadge = () => {
+    if (needsResponse) {
+      return (
+        <div className="flex items-center rounded-lg bg-warning-100 px-3 py-1 text-xs font-medium text-warning-900">
+          <AlertTriangle className="mr-2 h-4 w-3" />
+          Perlu Respon Perubahan
         </div>
-      </div>
+      );
+    }
 
-      <div className="flex items-center space-x-3">
-        <Phone className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
-        <div>
-          <label className="text-xs text-gray-500">No. HP Driver</label>
-          <p className="text-xs font-semibold text-gray-900">
-            {fleet.driver?.phoneNumber || "-"}
-          </p>
+    if (status === "ON_DUTY") {
+      return (
+        <div className="rounded-lg bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
+          Proses Muat
         </div>
-      </div>
-    </div>
-  );
-}
+      );
+    }
 
-function LocationAndFleetSection({ fleet }) {
-  return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      <LocationInfoExpanded fleet={fleet} />
-      <FleetInfo fleet={fleet} />
-    </div>
-  );
-}
+    if (status === "WAITING_LOADING_TIME") {
+      return (
+        <div className="rounded-lg bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
+          Armada Dijadwalkan
+        </div>
+      );
+    }
 
-function AssignDriverButton({ onClick }) {
-  return (
-    <div className="pt-2">
-      <button
-        className="w-full rounded-xl bg-[#FFC217] px-4 py-2 text-sm font-medium text-[#461B02] hover:bg-[#FFD54F]"
-        onClick={onClick}
-      >
-        Pasangkan Driver
-      </button>
-    </div>
-  );
-}
+    return null;
+  };
 
-function SOSResponseButton({ onClick }) {
-  return (
-    <div className="flex justify-between gap-2 pt-2">
-      <Button
-        variant="muattrans-primary-secondary"
-        className="w-full"
-        onClick={onClick}
-      >
-        Riwayat SOS
-      </Button>
-      <Button className="w-full" onClick={onClick}>
-        Mengerti
-      </Button>
-    </div>
-  );
-}
-
-function NeedResponseButton({ onClick }) {
-  return (
-    <div className="pt-2">
-      <button
-        className="w-full rounded-xl bg-[#FFC217] px-4 py-2 text-sm font-medium text-[#461B02] hover:bg-[#FFD54F]"
-        onClick={onClick}
-      >
-        Respon Perubahan
-      </button>
-    </div>
-  );
-}
-
-function OnDutyDetails({ fleet }) {
   return (
     <div className="mt-4 flex w-full flex-col gap-3 rounded-lg bg-[#F8F8FB] px-3 py-3 pt-4">
       <div>
@@ -281,22 +284,23 @@ function OnDutyDetails({ fleet }) {
           {fleet?.activeOrder?.orderCode || "-"}
         </p>
       </div>
+
       <div className="py-1">
         <p className="mb-2 text-xs text-gray-600">Lokasi Muat & Bongkar</p>
         <TimelineContainer>
-          {fleet?.activeOrder?.pickupLocation && (
+          {pickup && (
             <LocationTimelineItem
-              location={fleet.activeOrder.pickupLocation}
-              isLast={!fleet?.activeOrder?.dropoffLocation}
+              location={pickup}
+              isLast={!dropoff}
               index={0}
               activeIndex={0}
               label="Lokasi Muat"
             />
           )}
-          {fleet?.activeOrder?.dropoffLocation && (
+          {dropoff && (
             <LocationTimelineItem
-              location={fleet.activeOrder.dropoffLocation}
-              isLast={true}
+              location={dropoff}
+              isLast
               index={1}
               activeIndex={0}
               label="Lokasi Bongkar"
@@ -306,154 +310,174 @@ function OnDutyDetails({ fleet }) {
       </div>
 
       <div className="flex items-center justify-between">
-        {fleet.status === "ON_DUTY" && fleet.needsResponseChange === false && (
-          <div className="rounded-lg bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
-            Proses Muat
-          </div>
-        )}
-        {fleet.status === "WAITING_LOADING_TIME" &&
-          fleet.needsResponseChange === false && (
-            <div className="rounded-lg bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
-              Armada Dijadwalkan
-            </div>
-          )}
-        {fleet.needsResponseChange && (
-          <div className="flex rounded-lg bg-warning-100 px-3 py-1 text-xs font-medium text-warning-900">
-            <AlertTriangle className="mr-2 h-3 w-3" />
-            Perlu Respon Perubahan
-          </div>
-        )}
-        <button className="text-xs text-blue-700 hover:underline">
+        {getStatusBadge()}
+        <button className="text-xs text-blue-700 hover:underline" type="button">
           Lihat Detail
         </button>
       </div>
     </div>
   );
-}
+};
 
-function LocationTimelineItem({ location, isLast, index, activeIndex, label }) {
-  const displayText =
-    location.district?.length > 38
-      ? `${location.district.substring(0, 38)}...`
-      : location.district || label;
+const SOSExpandedSection = ({ fleet }) => {
+  const photos = fleet?.detailSOS?.photos || [];
 
   return (
-    <NewTimelineItem
-      variant="bullet"
-      index={index}
-      activeIndex={activeIndex}
-      isLast={isLast}
-      title={displayText}
-      className="pb-2"
-      appearance={{
-        titleClassname:
-          "text-xs font-bold text-neutral-900 line-clamp-1 break-all",
-      }}
-    />
-  );
-}
+    <div className="mt-2 flex flex-col pb-3">
+      <p className="text-xs font-semibold text-error-400">
+        {fleet?.detailSOS?.sosCategory || "-"}
+      </p>
+      {fleet?.detailSOS?.description && (
+        <p className="text-xs font-semibold text-neutral-900">
+          {fleet.detailSOS.description}
+        </p>
+      )}
 
-function DriverInfo({ fleet, showLabel = false }) {
-  return (
-    <div className="flex items-center space-x-2">
-      <User className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
-      <div className="min-w-0">
-        {showLabel && <label className="text-xs text-gray-500">Driver</label>}
-        <div className="flex items-center">
-          <InfoTooltip
-            trigger={
-              <p
-                className={cn(
-                  "truncate",
-                  showLabel
-                    ? "text-xs font-semibold text-gray-900"
-                    : "text-xs font-semibold text-neutral-900"
-                )}
-              >
-                {fleet.driver?.name || "-"}
-              </p>
-            }
-          >
-            {fleet.driver?.name || "-"}
-          </InfoTooltip>
+      {photos.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-2">
+          {photos.map((image, index) => (
+            <LightboxProvider key={`${image}-${index}`} images={photos}>
+              <LightboxPreview
+                image={image}
+                index={index}
+                alt={`SOS Image ${index + 1}`}
+                className="h-14 w-14 rounded-md object-cover"
+              />
+            </LightboxProvider>
+          ))}
         </div>
-      </div>
+      )}
+
+      <SOSAlertHeader
+        category={fleet?.detailSOS?.sosCategory}
+        reportTime={fleet?.detailSOS?.reportAt}
+        showCategory={false}
+      />
     </div>
   );
-}
+};
 
-function LocationInfo({ fleet, showLabel = false }) {
-  const locationText = fleet.lastLocation?.address
-    ? `${fleet.lastLocation.address.district}, ${fleet.lastLocation.address.city}`
+// ----- Main Card Component -----
+export default function CardFleet({
+  fleet,
+  isExpanded,
+  onToggleExpand,
+  onOpenDriverModal,
+  isSOS,
+  className,
+}) {
+  const driverName = fleet?.driver?.name;
+  const phone = fleet?.driver?.phoneNumber || "-";
+  const locationText = fleet?.lastLocation?.address
+    ? `${fleet.lastLocation.address.district || "-"}, ${fleet.lastLocation.address.city || "-"}`
     : "Unknown";
 
-  return (
-    <div className="flex items-center space-x-2">
-      <MapPin className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
-      <div className="min-w-0">
-        {showLabel && (
-          <label className="text-xs text-gray-500">Lokasi Terakhir</label>
+  const cardClasses = cn(
+    "group overflow-hidden rounded-lg border p-3 transition-all duration-200",
+    isSOS
+      ? isExpanded
+        ? STATUS_STYLES.SOS.expanded
+        : STATUS_STYLES.SOS.collapsed
+      : isExpanded
+        ? STATUS_STYLES.DEFAULT.expanded
+        : STATUS_STYLES.DEFAULT.collapsed,
+    className
+  );
+
+  const CollapsedContent = () => (
+    <>
+      {isSOS && (
+        <SOSAlertHeader
+          category={fleet?.detailSOS?.sosCategory}
+          reportTime={fleet?.detailSOS?.reportAt}
+          showCategory={true}
+        />
+      )}
+      <div
+        className={cn(
+          "mt-2 grid gap-x-2 gap-y-0.5 text-sm",
+          isSOS ? "grid-cols-2" : "grid-cols-2"
         )}
-        {showLabel ? (
-          <div className="truncate text-xs font-semibold text-gray-900">
-            {locationText}
+      >
+        <DriverInfo driverName={driverName} showLabel={!isSOS} />
+        <LocationInfo locationText={locationText} showLabel={!isSOS} />
+      </div>
+    </>
+  );
+
+  const ExpandedContent = () => {
+    const showOnDuty = ["ON_DUTY", "WAITING_LOADING_TIME"].includes(
+      fleet?.status
+    );
+    const missingDriver = !fleet?.driver?.name || !fleet?.driver?.phoneNumber;
+
+    return (
+      <div className="space-y-1 pt-2 text-sm">
+        {isSOS && <SOSExpandedSection fleet={fleet} />}
+        <DriverAndPhoneSection driverName={driverName} phone={phone} />
+        <LocationAndFleetSection fleet={fleet} />
+
+        {showOnDuty && (
+          <>
+            {!isSOS && <div className="border-b border-neutral-400" />}
+            <div className="mt-3">
+              <OnDutyDetails fleet={fleet} />
+            </div>
+          </>
+        )}
+
+        {missingDriver && (
+          <ActionButton onClick={() => onOpenDriverModal?.(fleet)}>
+            Pasangkan Driver
+          </ActionButton>
+        )}
+
+        {fleet?.needsResponseChange && (
+          <ActionButton onClick={() => onOpenDriverModal?.(fleet)}>
+            Respon Perubahan
+          </ActionButton>
+        )}
+
+        {isSOS && (
+          <div className="flex justify-between gap-2 pt-2">
+            <Button
+              variant="muattrans-primary-secondary"
+              className="w-full"
+              onClick={() => onOpenDriverModal?.(fleet)}
+            >
+              Riwayat SOS
+            </Button>
+            <Button
+              className="w-full"
+              onClick={() => onOpenDriverModal?.(fleet)}
+            >
+              Mengerti
+            </Button>
           </div>
-        ) : (
-          <InfoTooltip
-            trigger={
-              <p className="truncate text-xs font-semibold text-neutral-900">
-                {locationText}
-              </p>
-            }
-          >
-            {locationText}
-          </InfoTooltip>
         )}
       </div>
-    </div>
-  );
-}
+    );
+  };
 
-function LocationInfoExpanded({ fleet }) {
-  return (
-    <div className="flex items-center space-x-3">
-      <InfoTooltip
-        trigger={<MapPin className="h-4 w-4 flex-shrink-0 text-[#461B02]" />}
-      >
-        Lokasi terakhir armada
-      </InfoTooltip>
-      <div>
-        <label className="text-xs text-gray-500">Lokasi Terakhir</label>
-        <p className="text-xs font-semibold text-gray-900">
-          {fleet.lastLocation?.address?.district || "Unknown"}
-        </p>
-        <p className="text-xxs text-neutral-900">
-          {fleet.lastLocation?.address?.city || "Unknown"}
-        </p>
-      </div>
-    </div>
-  );
-}
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      onToggleExpand?.(fleet?.fleetId);
+    }
+  };
 
-function FleetInfo({ fleet }) {
   return (
-    <div className="flex items-center space-x-3">
-      <InfoTooltip
-        trigger={
-          <Truck className="h-4 w-4 flex-shrink-0 cursor-help text-[#461B02]" />
-        }
+    <div className={cardClasses}>
+      <div
+        className="cursor-pointer"
+        onClick={() => onToggleExpand?.(fleet?.fleetId)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={handleKeyDown}
       >
-        Info Armada
-      </InfoTooltip>
-      <div>
-        <label className="text-xs text-gray-500">Armada</label>
-        <p className="font-semibold text-gray-900">
-          {fleet.carrierType?.name || "-"}
-        </p>
-        <p className="text-xxs text-neutral-900">
-          {fleet.truckType?.name || "-"}
-        </p>
+        <CardHeader isExpanded={isExpanded} isSOS={isSOS} fleet={fleet} />
+        {!isExpanded && <CollapsedContent />}
       </div>
+      {isExpanded && <ExpandedContent />}
     </div>
   );
 }

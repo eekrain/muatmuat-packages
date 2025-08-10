@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { AlertTriangle, Loader2, X } from "lucide-react";
 
@@ -9,9 +9,11 @@ import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import Search from "@/components/Search/Search";
 import { useGetFleetList } from "@/services/Transporter/monitoring/getFleetList";
+import useSosWebSocket from "@/services/Transporter/monitoring/useSosWebSocket";
 
 import { DriverSelectionModal } from "../../Driver/DriverSelectionModal";
 import FilterPopoverArmada from "./components/FilterPopoverArmada";
+import SosPopupNotification from "./components/SosPopupNotification";
 
 const DaftarArmada = ({ onClose, onExpand }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,6 +23,7 @@ const DaftarArmada = ({ onClose, onExpand }) => {
   const [activeTab, setActiveTab] = useState("all"); // 'all' | 'sos'
   const [truckStatusFilter, setTruckStatusFilter] = useState([]);
   const [orderStatusFilter, setOrderStatusFilter] = useState([]);
+  const [showSosNotification, setShowSosNotification] = useState(false);
 
   const {
     data: fleetData,
@@ -38,6 +41,14 @@ const DaftarArmada = ({ onClose, onExpand }) => {
   const totalFleets = fleetData?.totalFleets || fleets.length;
   const sosCount = fleetData?.filter?.sos || 0;
   const hasFilterData = fleetData?.filter;
+  const { latestSosAlert, acknowledgeSosAlert } = useSosWebSocket();
+
+  // Show SOS notification when new alert arrives
+  useEffect(() => {
+    if (latestSosAlert) {
+      setShowSosNotification(true);
+    }
+  }, [latestSosAlert]);
 
   const toggleExpanded = (id) => {
     setExpandedId((prev) => {
@@ -95,12 +106,11 @@ const DaftarArmada = ({ onClose, onExpand }) => {
             autoSearch={true}
             debounceTime={300}
             defaultValue={searchTerm}
-            inputClassName={sosCount !== 0 ? "w-[315px]" : "w-[229px]"}
+            inputClassName={activeTab !== "all" ? "w-[315px]" : "w-[229px]"}
           />
-          {!hasFilterData ||
-            (sosCount === 0 && (
-              <FilterPopoverArmada onApplyFilter={handleApplyFilter} />
-            ))}
+          {activeTab === "all" && (
+            <FilterPopoverArmada onApplyFilter={handleApplyFilter} />
+          )}
         </div>
       </div>
 
@@ -184,6 +194,21 @@ const DaftarArmada = ({ onClose, onExpand }) => {
           title="Pasangkan Driver"
         />
       )}
+
+      {/* SOS Notification Modal */}
+      <SosPopupNotification
+        isOpen={showSosNotification}
+        sosCount={sosCount}
+        onClose={() => {
+          setShowSosNotification(false);
+          acknowledgeSosAlert();
+        }}
+        onConfirm={() => {
+          setActiveTab("sos");
+          setShowSosNotification(false);
+          acknowledgeSosAlert();
+        }}
+      />
     </div>
   );
 };

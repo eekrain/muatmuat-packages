@@ -432,7 +432,7 @@ const apiResultFleetList = {
       WaitingLoadingTime: 2,
       notPaired: 3,
       inactive: 1,
-      sos: 0,
+      sos: 1,
       needResponse: 3,
     },
   },
