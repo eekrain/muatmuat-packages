@@ -1,8 +1,9 @@
 "use client";
 
-import { AlertTriangle, MapPin } from "lucide-react";
+import { AlertTriangle, ArrowRight, Info, MapPin } from "lucide-react";
 
 import Button from "@/components/Button/Button";
+import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import {
   Modal,
   ModalClose,
@@ -44,12 +45,16 @@ export default function ModalResponseChange({
                 </div>
                 <div className="flex justify-between px-3 py-2 text-sm">
                   <div>
-                    <p className="text-neutral-500">Waktu Muat Awal</p>
-                    <p className="font-medium">{changeData.oldLoadTime}</p>
+                    <p className="font-bold text-[#0FBB81]">Waktu Muat Awal</p>
+                    <p className="text-xs font-medium text-neutral-900">
+                      {changeData.oldLoadTime}
+                    </p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-neutral-500">Waktu Muat Baru</p>
-                    <p className="font-medium">{changeData.newLoadTime}</p>
+                  <div className="w-1/2 border-l ps-6">
+                    <p className="font-bold text-[#7A360D]">Waktu Muat Baru</p>
+                    <p className="text-xs font-medium text-neutral-900">
+                      {changeData.newLoadTime}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -88,14 +93,24 @@ export default function ModalResponseChange({
           </div>
 
           {/* Penyesuaian Pendapatan with neutral-400 border */}
-          <div className="mb-6 flex h-[49px] items-center justify-between rounded-lg border border-neutral-400 px-3 py-2 text-sm font-semibold">
-            <span>Penyesuaian Pendapatan</span>
-            <span>
-              <span className="text-neutral-500 line-through">
+          <div className="mb-6 flex h-[49px] items-center justify-around rounded-lg border border-neutral-400 px-3 py-2 text-sm">
+            <div className="flex items-center gap-1">
+              <span className="font-semibold">Penyesuaian Pendapatan</span>
+              <InfoTooltip
+                trigger={<Info className="h-4 w-4 text-neutral-500" />}
+              >
+                Perubahan pendapatan berdasarkan perubahan rute dan waktu.
+              </InfoTooltip>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-neutral-900 line-through">
                 {changeData.oldIncome}
-              </span>{" "}
-              <span className="text-success-600">{changeData.newIncome}</span>
-            </span>
+              </span>
+              <ArrowRight className="h-4 w-4 text-neutral-500" />
+              <span className="font-bold text-neutral-900">
+                {changeData.newIncome}
+              </span>
+            </div>
           </div>
 
           {/* Centered Actions */}
