@@ -19,6 +19,7 @@ import {
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import { cn } from "@/lib/utils";
 import { getTruckIcon } from "@/lib/utils/armadaStatus";
+import { formatDate } from "@/lib/utils/dateFormat";
 
 // ----- Constants -----
 const STATUS_STYLES = {
@@ -52,8 +53,8 @@ const TruckIcon = ({ status }) => {
 const ResponseChangeIndicator = () => (
   <InfoTooltip
     trigger={
-      <div className="group flex h-6 w-6 items-center justify-center rounded-lg bg-[#FFF9C1]">
-        <AlertTriangle className="h-4 w-4 text-yellow-500 group-hover:text-warning-800" />
+      <div className="group flex h-6 w-6 items-center justify-center rounded-lg bg-[#FFF9C1] group-hover:bg-warning-800">
+        <AlertTriangle className="h-4 w-4 text-yellow-500 group-hover:text-white" />
       </div>
     }
   >
@@ -78,7 +79,7 @@ const SOSAlertHeader = ({ category, reportTime, showCategory = true }) => (
       <Clock3 className="h-4 w-3 text-muat-trans-secondary-900" />
       Laporan Masuk:{" "}
       <span className="font-semibold text-neutral-900">
-        {reportTime || "-"}
+        {reportTime ? formatDate(reportTime) : "-"}
       </span>
     </p>
   </div>
@@ -363,6 +364,7 @@ export default function CardFleet({
   isExpanded,
   onToggleExpand,
   onOpenDriverModal,
+  onOpenResponseChangeModal,
   isSOS,
   className,
 }) {
@@ -433,7 +435,7 @@ export default function CardFleet({
         )}
 
         {fleet?.needsResponseChange && (
-          <ActionButton onClick={() => onOpenDriverModal?.(fleet)}>
+          <ActionButton onClick={() => onOpenResponseChangeModal?.(fleet)}>
             Respon Perubahan
           </ActionButton>
         )}

@@ -49,9 +49,32 @@ const ORDER_STATUS_OPTIONS = [
   },
 ];
 
-export default function FilterPopoverArmada({ onApplyFilter }) {
+export default function FilterPopoverArmada({
+  onApplyFilter,
+  filterCounts = {},
+}) {
   const [selectedTruckStatuses, setSelectedTruckStatuses] = useState([]);
   const [selectedOrderStatuses, setSelectedOrderStatuses] = useState([]);
+
+  // Mapping from option IDs to API filter keys
+  const countKeyMapping = {
+    ON_DUTY: "OnDuty",
+    WAITING_LOADING_TIME: "WaitingLoadingTime",
+    READY_FOR_ORDER: "ReadyForOrder",
+    INACTIVE: "inactive",
+    NOT_PAIRED: "notPaired",
+    NEEDS_RESPONSE: "needResponse",
+  };
+
+  const truckStatusOptionsWithCount = TRUCK_STATUS_OPTIONS.map((opt) => ({
+    ...opt,
+    count: filterCounts[countKeyMapping[opt.id]] ?? 0,
+  }));
+
+  const orderStatusOptionsWithCount = ORDER_STATUS_OPTIONS.map((opt) => ({
+    ...opt,
+    count: filterCounts[countKeyMapping[opt.id]] ?? 0,
+  }));
 
   const toggleTruckStatus = (id) => {
     setSelectedTruckStatuses((prev) =>
@@ -88,11 +111,27 @@ export default function FilterPopoverArmada({ onApplyFilter }) {
       </PopoverTrigger>
 
       <PopoverContent
-        className="w-[420px] rounded-xl border border-gray-200 bg-white p-5 shadow-lg"
+        className="relative w-[500px] rounded-xl border-0 bg-white p-5 shadow-lg"
         side="right"
-        align="start"
-        sideOffset={12}
+        align="start" // Aligns the popover's top edge with the trigger's top edge
+        alignOffset={-4} // Moves the popover 4px up
+        sideOffset={12} // Distance from the side of the trigger
+        style={{ border: "none" }}
       >
+        {/* Arrow/triangle pointing left */}
+        <div
+          className="absolute"
+          style={{
+            width: 0,
+            height: 0,
+            borderStyle: "solid",
+            borderWidth: "8px 10px 8px 0",
+            borderColor: "transparent white transparent transparent",
+            left: "-9px",
+            top: "12px", // Adjusted to vertically center with the trigger
+            filter: "drop-shadow(-2px 2px 2px rgba(0, 0, 0, 0.1))",
+          }}
+        />
         <div className="flex flex-col gap-4">
           {/* Header */}
           <h3 className="text-base font-bold text-black">Filter Armada</h3>
@@ -101,7 +140,7 @@ export default function FilterPopoverArmada({ onApplyFilter }) {
           <div>
             <p className="mb-3 text-xs font-semibold text-black">Status Truk</p>
             <div className="grid grid-cols-2 gap-3">
-              {TRUCK_STATUS_OPTIONS.map((opt) => (
+              {truckStatusOptionsWithCount.map((opt) => (
                 <div key={opt.id} className="flex items-center gap-2">
                   <Checkbox
                     checked={selectedTruckStatuses.includes(opt.id)}
@@ -109,16 +148,22 @@ export default function FilterPopoverArmada({ onApplyFilter }) {
                     value={opt.id}
                     label=""
                   />
-                  <img
-                    src={opt.icon}
-                    alt={opt.label}
-                    className="h-5 w-5 object-contain"
-                  />
+                  <div
+                    className="flex h-[12px] w-[42px] cursor-pointer items-center justify-center"
+                    onClick={() => toggleTruckStatus(opt.id)}
+                  >
+                    <img
+                      src={opt.icon}
+                      alt={opt.label}
+                      className="h-[42px] w-[12px] object-contain"
+                      style={{ transform: "rotate(90deg)" }}
+                    />
+                  </div>
                   <span
                     className="cursor-pointer text-xs text-black"
                     onClick={() => toggleTruckStatus(opt.id)}
                   >
-                    {opt.label}
+                    {opt.label} ({opt.count})
                   </span>
                 </div>
               ))}
@@ -131,7 +176,7 @@ export default function FilterPopoverArmada({ onApplyFilter }) {
               Status Pesanan
             </p>
             <div className="flex flex-col gap-3">
-              {ORDER_STATUS_OPTIONS.map((opt) => (
+              {orderStatusOptionsWithCount.map((opt) => (
                 <div key={opt.id} className="flex items-center gap-2">
                   <Checkbox
                     checked={selectedOrderStatuses.includes(opt.id)}
@@ -149,7 +194,7 @@ export default function FilterPopoverArmada({ onApplyFilter }) {
                     className="cursor-pointer text-xs text-black"
                     onClick={() => toggleOrderStatus(opt.id)}
                   >
-                    {opt.label}
+                    {opt.label} ({opt.count})
                   </span>
                 </div>
               ))}

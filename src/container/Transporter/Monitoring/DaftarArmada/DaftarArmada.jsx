@@ -13,6 +13,7 @@ import useSosWebSocket from "@/services/Transporter/monitoring/useSosWebSocket";
 
 import { DriverSelectionModal } from "../../Driver/DriverSelectionModal";
 import FilterPopoverArmada from "./components/FilterPopoverArmada";
+import ModalResponseChange from "./components/ModalResponseChange";
 import SosPopupNotification from "./components/SosPopupNotification";
 
 const DaftarArmada = ({ onClose, onExpand }) => {
@@ -24,6 +25,9 @@ const DaftarArmada = ({ onClose, onExpand }) => {
   const [truckStatusFilter, setTruckStatusFilter] = useState([]);
   const [orderStatusFilter, setOrderStatusFilter] = useState([]);
   const [showSosNotification, setShowSosNotification] = useState(false);
+  const [showResponseChangeModal, setShowResponseChangeModal] = useState(false);
+  const [selectedFleetForResponse, setSelectedFleetForResponse] =
+    useState(null);
 
   const {
     data: fleetData,
@@ -63,6 +67,18 @@ const DaftarArmada = ({ onClose, onExpand }) => {
   const handleOpenDriverModal = (fleet) => {
     setSelectedFleet(fleet);
     setShowDriverModal(true);
+  };
+
+  const handleOpenResponseChangeModal = (fleet) => {
+    setSelectedFleetForResponse(fleet);
+    setShowResponseChangeModal(true);
+  };
+
+  const handleRespondToChange = () => {
+    // TODO: Implement actual response logic
+    console.log("Responding to change for fleet:", selectedFleetForResponse);
+    setShowResponseChangeModal(false);
+    setSelectedFleetForResponse(null);
   };
 
   const handleDriverSelectionSuccess = (vehicleId, driverId) => {
@@ -109,7 +125,10 @@ const DaftarArmada = ({ onClose, onExpand }) => {
             inputClassName={activeTab !== "all" ? "w-[315px]" : "w-[229px]"}
           />
           {activeTab === "all" && (
-            <FilterPopoverArmada onApplyFilter={handleApplyFilter} />
+            <FilterPopoverArmada
+              onApplyFilter={handleApplyFilter}
+              filterCounts={fleetData?.filter}
+            />
           )}
         </div>
       </div>
@@ -176,6 +195,7 @@ const DaftarArmada = ({ onClose, onExpand }) => {
                 isExpanded={expandedId === fleet.fleetId}
                 onToggleExpand={toggleExpanded}
                 onOpenDriverModal={handleOpenDriverModal}
+                onOpenResponseChangeModal={handleOpenResponseChangeModal}
                 isSOS={fleet.hasSOSAlert}
               />
             ))}
@@ -192,6 +212,30 @@ const DaftarArmada = ({ onClose, onExpand }) => {
           vehiclePlate={selectedFleet.licensePlate}
           currentDriverId={selectedFleet.driver?.id || null}
           title="Pasangkan Driver"
+        />
+      )}
+
+      {/* Response Change Modal */}
+      {showResponseChangeModal && selectedFleetForResponse && (
+        <ModalResponseChange
+          open={showResponseChangeModal}
+          onOpenChange={() => {
+            setShowResponseChangeModal(false);
+            setSelectedFleetForResponse(null);
+          }}
+          changeData={
+            selectedFleetForResponse.activeOrder?.changeDetails || {
+              oldLoadTime: "10 Jan 2025, 08:00 WIB",
+              newLoadTime: "11 Jan 2025, 10:00 WIB",
+              oldDistance: "150 km",
+              newDistance: "180 km",
+              oldRoute: "Surabaya - Malang",
+              newRoute: "Surabaya - Kediri - Malang",
+              oldIncome: "Rp 1.500.000",
+              newIncome: "Rp 1.750.000",
+            }
+          }
+          onRespond={handleRespondToChange}
         />
       )}
 
