@@ -221,16 +221,11 @@ const apiResultTransportRequestList = {
           createdAt: "2025-08-06T10:15:00+07:00",
         },
       ],
-      // newRequestsCount: {
-      //   total: 18, // 2-digit counter to test blinking animation (10-99 range)
-      //   display: "18",
-      //   hasAnimation: true,
-      // },
-      // tabCounts: {
-      //   tersedia: 35, // 2-digit total to test counter display and animation
-      //   halal_logistik: 22, // 2-digit halal requests to test animation
-      //   disimpan: 8, // Single digit saved requests
-      // },
+      tabCounts: {
+        tersedia: 35, // 2-digit total to test counter display and animation
+        halal_logistik: 22, // 2-digit halal requests to test animation
+        disimpan: 8, // Single digit saved requests
+      },
       userStatus: {
         isSuspended: MOCK_CONFIG.isSuspended,
         driverDelegationEnabled: MOCK_CONFIG.driverDelegationEnabled,
@@ -254,59 +249,62 @@ const apiResultTransportRequestList = {
 export const fetcherTransportRequestList = async (params = {}) => {
   if (IS_MOCK) {
     const result = JSON.parse(JSON.stringify(apiResultTransportRequestList));
+
     if (result.data.Data.showEmptyState) {
-      return {
-        ...result.data.Data,
-        requests: [],
-        tabCounts: { tersedia: 0, halal_logistik: 0, disimpan: 0 },
-        newRequestsCount: { total: 0, display: "0", hasAnimation: false },
-      };
+      return result.data.Data;
     }
+
+    // Simpan semua request original
     const originalRequests = [...result.data.Data.requests];
-    result.data.Data.tabCounts = {
-      tersedia: originalRequests.length,
-      halal_logistik: originalRequests.filter((req) => req.isHalalLogistics)
-        .length,
-      disimpan: originalRequests.filter((req) => req.isSaved).length,
+
+    // Hitung tabCounts sekali di awal
+    const tabCounts = result.data.Data.tabCounts || {
+      tersedia: 0,
+      halal_logistik: 0,
+      disimpan: 0,
     };
+
+    // Lanjut filter untuk tampilan saja
+    let filteredRequests = [...originalRequests];
+
     if (params.orderStatus) {
-      result.data.Data.requests = result.data.Data.requests.filter(
+      filteredRequests = filteredRequests.filter(
         (req) => req.orderStatus === params.orderStatus
       );
     }
     if (params.orderType) {
-      result.data.Data.requests = result.data.Data.requests.filter(
+      filteredRequests = filteredRequests.filter(
         (req) => req.orderType === params.orderType
       );
     }
     if (params.isHalalLogistics !== undefined) {
-      result.data.Data.requests = result.data.Data.requests.filter(
+      filteredRequests = filteredRequests.filter(
         (req) => req.isHalalLogistics === params.isHalalLogistics
       );
     }
     if (params.isSaved !== undefined) {
-      result.data.Data.requests = result.data.Data.requests.filter(
+      filteredRequests = filteredRequests.filter(
         (req) => req.isSaved === params.isSaved
       );
     }
     if (params.isNew !== undefined) {
-      result.data.Data.requests = result.data.Data.requests.filter(
+      filteredRequests = filteredRequests.filter(
         (req) => req.isNew === params.isNew
       );
     }
     if (params.truckTypeName) {
-      result.data.Data.requests = result.data.Data.requests.filter(
+      filteredRequests = filteredRequests.filter(
         (req) => req.truckTypeName === params.truckTypeName
       );
     }
     if (params.carrierName) {
-      result.data.Data.requests = result.data.Data.requests.filter(
+      filteredRequests = filteredRequests.filter(
         (req) => req.carrierName === params.carrierName
       );
     }
     if (params.search) {
       const searchLower = params.search.toLowerCase();
-      result.data.Data.requests = result.data.Data.requests.filter(
+      filteredRequests = filteredRequests.filter(
         (req) =>
           req.orderCode.toLowerCase().includes(searchLower) ||
           req.truckTypeName.toLowerCase().includes(searchLower) ||
@@ -329,7 +327,7 @@ export const fetcherTransportRequestList = async (params = {}) => {
       );
     }
     if (params.sortBy) {
-      result.data.Data.requests.sort((a, b) => {
+      filteredRequests.sort((a, b) => {
         let aValue = a[params.sortBy];
         let bValue = b[params.sortBy];
         if (
@@ -347,19 +345,26 @@ export const fetcherTransportRequestList = async (params = {}) => {
         return aValue < bValue ? -1 : 1;
       });
     }
-    const filteredRequests = result.data.Data.requests;
+
+    // Hitung request baru dari filtered data
     const newRequests = filteredRequests.filter((req) => req.isNew);
-    result.data.Data.newRequestsCount = {
+    const newRequestsCount = {
       total: newRequests.length,
       display: newRequests.length > 99 ? "99+" : newRequests.length.toString(),
       hasAnimation: newRequests.length > 0,
     };
-    return result.data.Data;
+
+    // Return data
+    return {
+      ...result.data.Data,
+      requests: filteredRequests,
+      tabCounts,
+      newRequestsCount,
+    };
   }
 
-  // Build query parameters
+  // API real
   const queryParams = new URLSearchParams();
-
   if (params.page) queryParams.append("page", params.page);
   if (params.limit) queryParams.append("limit", params.limit);
   if (params.orderStatus) queryParams.append("orderStatus", params.orderStatus);

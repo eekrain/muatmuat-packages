@@ -72,40 +72,35 @@ const PermintaanAngkut = () => {
       };
     }
 
-    const allRequests = data.requests;
-
-    // Filter out removed items and apply search filter
-    let visibleRequests = allRequests.filter(
-      (request) => !removedItems.has(request.id)
-    );
-
-    // Apply search filter if search value exists
-    if (searchValue && searchValue.trim() !== "") {
-      visibleRequests = visibleRequests.filter((request) =>
-        request.orderCode.toLowerCase().includes(searchValue.toLowerCase())
-      );
+    // Kalau tidak ada search, langsung pakai tabCounts asli
+    if (!searchValue || searchValue.trim() === "") {
+      return {
+        tersedia: data?.tabCounts?.tersedia ?? 0,
+        halal_logistik: data?.tabCounts?.halal_logistik ?? 0,
+        disimpan: data?.tabCounts?.disimpan ?? 0,
+      };
     }
 
-    // Calculate saved count based on current bookmark state (only for visible requests)
+    // Kalau ada search, hitung ulang berdasarkan data yang terlihat
+    const visibleRequests = data.requests.filter(
+      (request) =>
+        !removedItems.has(request.id) &&
+        request.orderCode.toLowerCase().includes(searchValue.toLowerCase())
+    );
+
+    // Hitung jumlah saved dengan memperhatikan perubahan bookmark state
     let savedCount = 0;
     visibleRequests.forEach((request) => {
       const isOriginallyBookmarked = request.isSaved;
       const hasStateChanged = bookmarkedItems.has(request.id);
-
-      // Determine current bookmark state:
-      // If state has changed, use opposite of original
-      // If state hasn't changed, use original
       const isCurrentlyBookmarked = hasStateChanged
         ? !isOriginallyBookmarked
         : isOriginallyBookmarked;
-
-      if (isCurrentlyBookmarked) {
-        savedCount++;
-      }
+      if (isCurrentlyBookmarked) savedCount++;
     });
 
     return {
-      tersedia: visibleRequests.length, // Use visible requests count instead of original tab count
+      tersedia: visibleRequests.length,
       halal_logistik: visibleRequests.filter((req) => req.isHalalLogistics)
         .length,
       disimpan: savedCount,
@@ -297,7 +292,7 @@ const PermintaanAngkut = () => {
                         dynamicTabCounts.halal_logistik,
                         data?.newRequestsCount?.hasAnimation
                       )
-                        ? "animate-pulse font-bold text-warning-600"
+                        ? "font-base animate-semibold"
                         : ""
                     }`}
                   >
@@ -326,7 +321,7 @@ const PermintaanAngkut = () => {
                               dynamicTabCounts.disimpan,
                               data?.newRequestsCount?.hasAnimation
                             )
-                          ? "animate-pulse font-bold text-warning-600"
+                          ? "font-base animate-semibold"
                           : ""
                     }`}
                   >
