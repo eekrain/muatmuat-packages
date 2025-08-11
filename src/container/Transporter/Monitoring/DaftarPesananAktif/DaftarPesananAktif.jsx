@@ -242,6 +242,12 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
                   </p>
                 </InfoTooltip>
               )}
+              {row.orderStatus === ORDER_STATUS.NEED_CONFIRMATION_READY && (
+                <IconComponent
+                  src="/icons/warning-red.svg"
+                  className="mr-1 h-3.5 w-3.5"
+                />
+              )}
               {statusBadge.label}
             </BadgeStatus>
             {row.orderStatus === ORDER_STATUS.NEED_ASSIGN_FLEET && (
@@ -374,6 +380,73 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
                   className="flex h-8 items-center"
                 >
                   Detail Pesanan
+                </SimpleDropdownItem>
+                <SimpleDropdownItem
+                  onClick={() => console.log("Batalkan Pesanan", row)}
+                  className="flex h-8 items-center text-error-400 hover:text-error-500"
+                >
+                  Batalkan Pesanan
+                </SimpleDropdownItem>
+              </SimpleDropdownContent>
+            </SimpleDropdown>
+          );
+        }
+
+        // Show dropdown for NEED_CONFIRMATION_READY status
+        if (row.orderStatus === ORDER_STATUS.NEED_CONFIRMATION_READY) {
+          return (
+            <SimpleDropdown
+              open={openDropdowns[row.id] || false}
+              onOpenChange={(isOpen) =>
+                setOpenDropdowns((prev) => ({ ...prev, [row.id]: isOpen }))
+              }
+            >
+              <SimpleDropdownTrigger asChild>
+                <button
+                  className={cn(
+                    "flex h-6 w-6 items-center justify-center rounded-lg",
+                    openDropdowns[row.id]
+                      ? "border border-primary-700 bg-primary-50"
+                      : "hover:border hover:border-primary-700 hover:bg-neutral-200"
+                  )}
+                >
+                  <IconComponent
+                    src="/icons/monitoring/daftar-pesanan-aktif/action.svg"
+                    className={cn(
+                      "h-[13px] w-[13px]",
+                      openDropdowns[row.id] ? "text-primary-700" : ""
+                    )}
+                  />
+                </button>
+              </SimpleDropdownTrigger>
+
+              <SimpleDropdownContent
+                className="mr-1 mt-0 w-[172px]"
+                side="left"
+              >
+                <SimpleDropdownItem
+                  onClick={() => console.log("Konfirmasi Siap", row)}
+                  className="flex h-8 items-center"
+                >
+                  Konfirmasi Siap
+                </SimpleDropdownItem>
+                <SimpleDropdownItem
+                  onClick={() => console.log("Lihat Armada", row)}
+                  className="flex h-8 items-center"
+                >
+                  Lihat Armada
+                </SimpleDropdownItem>
+                <SimpleDropdownItem
+                  onClick={() => console.log("Detail Pesanan", row)}
+                  className="flex h-8 items-center"
+                >
+                  Detail Pesanan
+                </SimpleDropdownItem>
+                <SimpleDropdownItem
+                  onClick={() => console.log("Batalkan Armada", row)}
+                  className="flex h-8 items-center text-error-400 hover:text-error-500"
+                >
+                  Batalkan Armada
                 </SimpleDropdownItem>
                 <SimpleDropdownItem
                   onClick={() => console.log("Batalkan Pesanan", row)}

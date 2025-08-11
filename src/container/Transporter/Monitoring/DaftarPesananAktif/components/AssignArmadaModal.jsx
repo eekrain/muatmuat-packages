@@ -59,7 +59,7 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
   return (
     <Modal open={isOpen} onOpenChange={onClose}>
       <ModalContent
-        type="muattrans"
+        type="muatmuat"
         className="w-[90vw] max-w-[800px]"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >

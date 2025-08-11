@@ -30,11 +30,11 @@ const apiResultActiveOrders = {
       // Primary status variants
       {
         id: "uuid1",
-        orderCode: "MT25PREP01",
+        orderCode: "MT25CONF01",
         orderType: "SCHEDULED",
         loadTimeStart: formatDateForAPI(today, 14),
         loadTimeEnd: formatDateForAPI(today, 16),
-        orderStatus: "PREPARE_FLEET",
+        orderStatus: "CONFIRMED",
         pickupLocations: [
           {
             id: "uuid",
@@ -247,46 +247,12 @@ const apiResultActiveOrders = {
 
       // Warning status variants
       {
-        id: "uuid6",
-        orderCode: "MT25PAY06",
-        orderType: "SCHEDULED",
-        loadTimeStart: formatDateForAPI(sevenDaysLater, 10),
-        loadTimeEnd: formatDateForAPI(sevenDaysLater, 14),
-        orderStatus: "NEED_ASSIGN_FLEET",
-        pickupLocations: [
-          {
-            id: "uuid",
-            sequence: 1,
-            fullAddress: "Sukolilo, Kota Surabaya",
-            city: "Kota Surabaya",
-            province: "Jawa Timur",
-          },
-        ],
-        dropoffLocations: [
-          {
-            id: "uuid",
-            sequence: 1,
-            fullAddress: "Mojokerto, Kab. Mojokerto",
-            city: "Kab. Mojokerto",
-            province: "Jawa Timur",
-          },
-        ],
-        truckType: { id: "uuid", name: "Fuso" },
-        carrierTruck: { id: "uuid", name: "Wing Box" },
-        truckCount: 1,
-        totalWeight: 5,
-        weightUnit: "ton",
-        assignedVehicles: [],
-        sosStatus: { hasSos: false, sosCount: 0, sosUnits: [] },
-        hasChangeRequest: false,
-      },
-      {
         id: "uuid7",
-        orderCode: "MT25PAY207",
+        orderCode: "MT25ASSIGN07",
         orderType: "INSTANT",
         loadTimeStart: formatDateForAPI(tomorrow, 14),
         loadTimeEnd: formatDateForAPI(tomorrow, 18),
-        orderStatus: "WAITING_PAYMENT_2",
+        orderStatus: "NEED_ASSIGN_FLEET",
         pickupLocations: [
           {
             id: "uuid",
@@ -315,12 +281,46 @@ const apiResultActiveOrders = {
         hasChangeRequest: false,
       },
       {
+        id: "uuid6",
+        orderCode: "MT25READY06",
+        orderType: "SCHEDULED",
+        loadTimeStart: formatDateForAPI(sevenDaysLater, 10),
+        loadTimeEnd: formatDateForAPI(sevenDaysLater, 14),
+        orderStatus: "NEED_CONFIRMATION_READY",
+        pickupLocations: [
+          {
+            id: "uuid",
+            sequence: 1,
+            fullAddress: "Sukolilo, Kota Surabaya",
+            city: "Kota Surabaya",
+            province: "Jawa Timur",
+          },
+        ],
+        dropoffLocations: [
+          {
+            id: "uuid",
+            sequence: 1,
+            fullAddress: "Mojokerto, Kab. Mojokerto",
+            city: "Kab. Mojokerto",
+            province: "Jawa Timur",
+          },
+        ],
+        truckType: { id: "uuid", name: "Fuso" },
+        carrierTruck: { id: "uuid", name: "Wing Box" },
+        truckCount: 1,
+        totalWeight: 5,
+        weightUnit: "ton",
+        assignedVehicles: [],
+        sosStatus: { hasSos: false, sosCount: 0, sosUnits: [] },
+        hasChangeRequest: false,
+      },
+      {
         id: "uuid8",
-        orderCode: "MT25REPAY08",
+        orderCode: "MT25PAY208",
         orderType: "SCHEDULED",
         loadTimeStart: formatDateForAPI(threeDaysLater, 7),
         loadTimeEnd: formatDateForAPI(threeDaysLater, 11),
-        orderStatus: "WAITING_REPAYMENT_1",
+        orderStatus: "WAITING_PAYMENT_2",
         pickupLocations: [
           {
             id: "uuid",

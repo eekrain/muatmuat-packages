@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { cn } from "@/lib/utils";
 
+import Button from "../Button/Button";
 import { Modal, ModalContent, ModalTitle, ModalTrigger } from "../Modal/Modal";
 
 const LocationItem = ({ location, isLast, appearance }) => (
@@ -108,9 +109,9 @@ const MuatBongkarStepperWithModal = ({
         {hasMultipleLocations && (
           <Modal open={isModalOpen} onOpenChange={setIsModalOpen}>
             <ModalTrigger asChild>
-              <button className="w-fit text-left text-xs font-medium leading-[120%] text-primary-700 hover:text-primary-800">
+              <Button variant="link" className="w-[110px] text-xs">
                 Lihat Lokasi Lainnya
-              </button>
+              </Button>
             </ModalTrigger>
 
             <ModalContent type="muatmuat" className="w-[600px] max-w-[90vw]">
