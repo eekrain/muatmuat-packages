@@ -19,8 +19,8 @@ import { getStatusLegend } from "./getStatusLegend";
 const useMockData = false; // mock detailpesanan
 
 const orderType = OrderTypeEnum.SCHEDULED;
-const orderStatus = OrderStatusEnum.UNLOADING;
-const unitFleetStatus = 3;
+const orderStatus = OrderStatusEnum.WAITING_REPAYMENT_1;
+const unitFleetStatus = 2;
 const totalUnit = 3;
 
 // Menentukan bisa nggaknya buat ubah pesanan
@@ -36,12 +36,12 @@ const priceCharge = {
     totalDriver: 3,
   },
   overloadFee: {
-    totalAmount: 0,
-    totalWeight: 0,
+    totalAmount: 100000,
+    totalWeight: 50,
     weightUnit: "kg",
   },
   adminFee: 10000,
-  totalCharge: 0,
+  totalCharge: 330000,
   isPaid: false,
 };
 
@@ -55,16 +55,16 @@ const priceChange = {
 };
 
 const otherStatus = [
-  // {
-  //   orderStatus: OrderStatusEnum.LOADING,
-  //   orderTitle: "Proses Muat",
-  //   unitFleetStatus: 1,
-  // },
-  // {
-  //   orderStatus: OrderStatusEnum.UNLOADING,
-  //   orderTitle: "Proses Muat",
-  //   unitFleetStatus: 2,
-  // },
+  {
+    orderStatus: OrderStatusEnum.WAITING_REPAYMENT_1,
+    orderTitle: "Proses Muat",
+    unitFleetStatus: 2,
+  },
+  {
+    orderStatus: OrderStatusEnum.PREPARE_DOCUMENT,
+    orderTitle: "Proses Muat",
+    unitFleetStatus: 1,
+  },
 ];
 
 const locations = [
@@ -85,23 +85,23 @@ const locations = [
     picPhoneNumber: "081234567001",
     scanStatus: "NOT_SCANNED",
   },
-  {
-    locationId: "b2c3d4e5-f6a7-8901-2345-67890abcdef0",
-    locationType: "PICKUP",
-    sequence: 2,
-    fullAddress:
-      "Jl. Darmo Permai I Blok B No.12, Darmo, Kecamatan Wonokromo, Surabaya",
-    detailAddress: "Ruko Darmo Permai I",
-    latitude: -7.268437819882224,
-    longitude: 112.71189655905856,
-    district: "Wonokromo",
-    city: "Surabaya",
-    province: "Jawa Timur",
-    postalCode: "60245",
-    picName: "Siti Nurhaliza",
-    picPhoneNumber: "081234567892",
-    scanStatus: "NOT_SCANNED",
-  },
+  // {
+  //   locationId: "b2c3d4e5-f6a7-8901-2345-67890abcdef0",
+  //   locationType: "PICKUP",
+  //   sequence: 2,
+  //   fullAddress:
+  //     "Jl. Darmo Permai I Blok B No.12, Darmo, Kecamatan Wonokromo, Surabaya",
+  //   detailAddress: "Ruko Darmo Permai I",
+  //   latitude: -7.268437819882224,
+  //   longitude: 112.71189655905856,
+  //   district: "Wonokromo",
+  //   city: "Surabaya",
+  //   province: "Jawa Timur",
+  //   postalCode: "60245",
+  //   picName: "Siti Nurhaliza",
+  //   picPhoneNumber: "081234567892",
+  //   scanStatus: "NOT_SCANNED",
+  // },
   {
     locationId: "c3d4e5f6-a7b8-9012-3456-7890abcdef01",
     locationType: "DROPOFF",
@@ -119,23 +119,23 @@ const locations = [
     picPhoneNumber: "081234567873",
     scanStatus: "NOT_SCANNED",
   },
-  {
-    locationId: "d4e5f6a7-b8c9-0123-4567-890abcdef012",
-    locationType: "DROPOFF",
-    sequence: 2,
-    fullAddress:
-      "Jl. Raya Kupang Indah No.55, Kupang Krajan, Kecamatan Sambikerep, Surabaya",
-    detailAddress: "Belakang Stasiun Kupang",
-    latitude: -7.282647557095082,
-    longitude: 112.77852171161224,
-    district: "Sambikerep",
-    city: "Surabaya",
-    province: "Jawa Timur",
-    postalCode: "60216",
-    picName: "Dewi Lestari",
-    picPhoneNumber: "081234567854",
-    scanStatus: "NOT_SCANNED",
-  },
+  // {
+  //   locationId: "d4e5f6a7-b8c9-0123-4567-890abcdef012",
+  //   locationType: "DROPOFF",
+  //   sequence: 2,
+  //   fullAddress:
+  //     "Jl. Raya Kupang Indah No.55, Kupang Krajan, Kecamatan Sambikerep, Surabaya",
+  //   detailAddress: "Belakang Stasiun Kupang",
+  //   latitude: -7.282647557095082,
+  //   longitude: 112.77852171161224,
+  //   district: "Sambikerep",
+  //   city: "Surabaya",
+  //   province: "Jawa Timur",
+  //   postalCode: "60216",
+  //   picName: "Dewi Lestari",
+  //   picPhoneNumber: "081234567854",
+  //   scanStatus: "NOT_SCANNED",
+  // },
 ];
 
 const apiResultOrderDetail = {

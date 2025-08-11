@@ -12,6 +12,7 @@ import {
   handleDriverCellValueChange,
   validateDriverForm,
 } from "@/config/forms/driverFormConfig";
+import { useTranslation } from "@/hooks/use-translation";
 import { useDriverTableForm } from "@/hooks/useDriverTableForm";
 import { normalizePayloadTambahDriverMassal } from "@/lib/normalizers/transporter/tambah-driver-massal/normalizePayloadTambahDriverMassal";
 import { toast } from "@/lib/toast";
@@ -42,6 +43,7 @@ const mapDriversToFormData = (drivers) => {
 };
 
 const Draft = ({ isDraftAvailable }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const isFirstMount = useRef(true);
   const { data, isLoading, error, mutate } = useGetDriversDrafts(
@@ -61,13 +63,23 @@ const Draft = ({ isDraftAvailable }) => {
     handlePostDriverBulkDrafts(payload)
       .then((res) => {
         // Show success message
-        toast.success(`Berhasil menambahkan ${res.Data.totalSaved} Driver.`);
+        toast.success(
+          t(
+            "Draft.messageSuccessAddDrivers",
+            { count: res.Data.totalSaved },
+            `Berhasil menambahkan ${res.Data.totalSaved} Driver.`
+          )
+        );
         router.push(`/manajemen-driver?tab=process`);
       })
       .catch((_error) => {
         // Show error message
         toast.error(
-          "Gagal menyimpan draft driver. Periksa kembali data yang dimasukkan."
+          t(
+            "Draft.messageErrorSaveDraft",
+            {},
+            "Gagal menyimpan draft driver. Periksa kembali data yang dimasukkan."
+          )
         );
       });
   };
@@ -79,13 +91,23 @@ const Draft = ({ isDraftAvailable }) => {
     handlePostDriverBulkDrafts(payload)
       .then(() => {
         // Show success message
-        toast.success("Draft driver berhasil disimpan.");
+        toast.success(
+          t(
+            "Draft.messageSuccessSaveDraft",
+            {},
+            "Draft driver berhasil disimpan."
+          )
+        );
         mutate();
       })
       .catch((_error) => {
         // Show error message
         toast.error(
-          "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
+          t(
+            "Draft.messageErrorSaveFleet",
+            {},
+            "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
+          )
         );
       });
   };
@@ -142,7 +164,10 @@ const Draft = ({ isDraftAvailable }) => {
   if (!isDraftAvailable) {
     return (
       <div className="flex h-[280px] w-full items-center justify-center rounded-xl bg-white p-8 shadow-md">
-        <DataNotFound type="data" title="Belum ada Draft Armada" />
+        <DataNotFound
+          type="data"
+          title={t("Draft.titleNoDraftFleet", {}, "Belum ada Draft Armada")}
+        />
       </div>
     );
   }
@@ -150,7 +175,9 @@ const Draft = ({ isDraftAvailable }) => {
   if (isLoading) {
     return (
       <div className="flex h-[280px] w-full items-center justify-center rounded-xl bg-white p-8 shadow-md">
-        <div className="text-neutral-500">Loading drafts...</div>
+        <div className="text-neutral-500">
+          {t("Draft.messageLoadingDrafts", {}, "Loading drafts...")}
+        </div>
       </div>
     );
   }
@@ -158,7 +185,14 @@ const Draft = ({ isDraftAvailable }) => {
   if (error) {
     return (
       <div className="flex h-[280px] w-full items-center justify-center rounded-xl bg-white p-8 shadow-md">
-        <DataNotFound type="error" title="Gagal memuat draft armada" />
+        <DataNotFound
+          type="error"
+          title={t(
+            "Draft.titleFailLoadDraftFleet",
+            {},
+            "Gagal memuat draft armada"
+          )}
+        />
       </div>
     );
   }
@@ -166,7 +200,14 @@ const Draft = ({ isDraftAvailable }) => {
   if (!data?.Data?.drivers || data.Data.drivers.length === 0) {
     return (
       <div className="flex h-[280px] w-full items-center justify-center rounded-xl bg-white p-8 shadow-md">
-        <DataNotFound type="data" title="Belum ada Draft Armada" />
+        <DataNotFound
+          type="data"
+          title={t(
+            "Draft.titleNoDraftFleetEmpty",
+            {},
+            "Belum ada Draft Armada"
+          )}
+        />
       </div>
     );
   }
@@ -195,7 +236,7 @@ const Draft = ({ isDraftAvailable }) => {
               variant="muattrans-primary-secondary"
               type="button"
             >
-              Simpan Sebagai Draft
+              {t("Draft.buttonSaveAsDraft", {}, "Simpan Sebagai Draft")}
             </Button>
             <Button
               type="submit"
@@ -203,7 +244,7 @@ const Draft = ({ isDraftAvailable }) => {
                 handleSubmit();
               }}
             >
-              Simpan
+              {t("Draft.buttonSave", {}, "Simpan")}
             </Button>
           </div>
         </div>
@@ -213,22 +254,29 @@ const Draft = ({ isDraftAvailable }) => {
         isOpen={confirmDeleteModal}
         setIsOpen={setConfirmDeleteModal}
         title={{
-          text: "Apakah kamu yakin untuk menghapus driver?",
+          text: t(
+            "Draft.titleConfirmDeleteDriver",
+            {},
+            "Apakah kamu yakin untuk menghapus driver?"
+          ),
           className: "text-sm font-medium text-center",
         }}
         confirm={{
-          text: "Hapus",
+          text: t("Draft.buttonDelete", {}, "Hapus"),
           onClick: handleRemove,
         }}
         cancel={{
-          text: "Batal",
+          text: t("Draft.buttonCancel", {}, "Batal"),
           onClick: () => {
             setConfirmDeleteModal(false);
           },
         }}
       >
-        Apakah kamu yakin ingin menghapus armada yang telah dipilih? Tindakan
-        ini tidak dapat dibatalkan.
+        {t(
+          "Draft.messageConfirmDeleteFleet",
+          {},
+          "Apakah kamu yakin ingin menghapus armada yang telah dipilih? Tindakan ini tidak dapat dibatalkan."
+        )}
       </ConfirmationModal>
 
       <ModalAddArmadaImage

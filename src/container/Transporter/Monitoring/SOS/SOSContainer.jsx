@@ -65,7 +65,7 @@ const SOSContainer = ({ onClose, onExpand }) => {
         <div className="flex items-center justify-between pb-3">
           <h2 className="text-[14px] font-bold text-gray-900">
             SOS{" "}
-            {!totalFleets === 0 ? (
+            {totalFleets > 0 ? (
               <span className="font-semibold">({totalFleets} Armada)</span>
             ) : (
               <span className="font-semibold">(Belum Ada Laporan)</span>

@@ -1,3 +1,4 @@
+import { intervalToDuration, parseISO } from "date-fns";
 import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
@@ -16,11 +17,24 @@ const apiResult = {
         {
           id: "9cf101e8-3645-4f72-a707-7e6576117efd",
           driverId: "51e64187-d4cb-4065-9776-7e1224fc6b35",
-          name: "Test Driver",
+          name: "Eka",
+          licensePlate: "B 1234 ABC",
+          startWaitingTime: "2025-08-11T13:00:00.000Z",
+          endWaitingTime: "2025-08-11T13:55:00.000Z", // Renders as "0 Jam 55 Menit"
+          waitingTime: "0.25",
+          waitingFee: 300000,
+          locationSequence: 1,
+          locationType: "PICKUP",
+          isMultiLocation: false,
+        },
+        {
+          id: "9cf101e8-3645-4f72-a707-7e6576117efd",
+          driverId: "51e64187-d4cb-4065-9776-7e1224fc6b35",
+          name: "Cakra",
           licensePlate: "B 1234 ABC",
           startWaitingTime: "2025-07-29T13:00:00.000Z",
-          endWaitingTime: "2025-07-29T16:00:00.000Z",
-          waitingTime: "3.00",
+          endWaitingTime: "2025-07-29T15:00:00.000Z", // Renders as "2 Jam 0 Menit"
+          waitingTime: "0.9",
           waitingFee: 300000,
           locationSequence: 1,
           locationType: "PICKUP",
@@ -33,12 +47,17 @@ const apiResult = {
 };
 
 const normalizeWaitingTime = (waitingTimeRaw) => {
-  const transformedWaitingTime = waitingTimeRaw?.map((item) => {
-    const waitingTimeHours = parseFloat(item.waitingTime);
-    const formattedWaitingTime =
-      waitingTimeHours >= 1
-        ? `${waitingTimeHours} Jam`
-        : `${Math.round(waitingTimeHours * 60)} Menit`;
+  if (!waitingTimeRaw) {
+    return [];
+  }
+
+  return waitingTimeRaw.map((item) => {
+    const startDate = parseISO(item.startWaitingTime);
+    const endDate = parseISO(item.endWaitingTime);
+    const duration = intervalToDuration({ start: startDate, end: endDate });
+
+    // Unconditionally format the string as "hh Jam mm Menit"
+    const formattedWaitingTime = `${duration.hours || 0} Jam ${duration.minutes || 0} Menit`;
 
     return {
       name: item.name,
@@ -54,7 +73,6 @@ const normalizeWaitingTime = (waitingTimeRaw) => {
       ],
     };
   });
-  return transformedWaitingTime || [];
 };
 
 export const getWaitingTime = async (cacheKey) => {

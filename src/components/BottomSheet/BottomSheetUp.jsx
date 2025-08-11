@@ -77,7 +77,7 @@ export const BottomSheetTitle = React.forwardRef((props, ref) => (
   <BottomSheetPrimitive.Title
     ref={ref}
     className={cn(
-      "w-full text-sm font-bold leading-[1.1] text-neutral-900",
+      "absolute left-1/2 -translate-x-1/2 text-sm font-bold leading-[1.1] text-neutral-900",
       props.className
     )}
     {...props}

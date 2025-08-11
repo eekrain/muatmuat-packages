@@ -299,9 +299,7 @@ const ParentItem = ({ parent, isActive, isLastItem, onSetLightboxData }) => {
               <span
                 className={cn(
                   "block w-20 text-right text-xs font-medium leading-tight md:w-fit",
-                  variant === "canceled"
-                    ? "text-neutral-900"
-                    : "text-neutral-600"
+                  isMobile ? "text-neutral-900" : "text-neutral-600"
                 )}
               >
                 {formatDate(timestamp)}

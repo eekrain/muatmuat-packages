@@ -13,6 +13,7 @@ import {
   handleDriverCellValueChange,
   validateDriverForm,
 } from "@/config/forms/driverFormConfig";
+import { useTranslation } from "@/hooks/use-translation";
 import { useDriverTableForm } from "@/hooks/useDriverTableForm";
 import { normalizePayloadTambahDriverMassal } from "@/lib/normalizers/transporter/tambah-driver-massal/normalizePayloadTambahDriverMassal";
 import { toast } from "@/lib/toast";
@@ -41,19 +42,40 @@ const mapDriversToFormData = (drivers) => {
   return { driverList };
 };
 
-// Define breadcrumb data
-const breadcrumbData = [
-  { name: "Manajemen Driver", href: "/manajemen-driver" },
-  { name: "Tambah Driver Massal", href: "/manajemen-driver/tambah-massal" },
-  { name: "Detail Driver" },
-];
-
 export default function PreviewDriver({ params }) {
+  const { t } = useTranslation();
   const router = useRouter();
   const { id } = use(params);
   const isFirstMount = useRef(true);
   const [showBackConfirmation, setShowBackConfirmation] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState(null);
+
+  // Define breadcrumb data with translations
+  const breadcrumbData = [
+    {
+      name: t(
+        "PreviewDriverScreen.breadcrumbManajemenDriver",
+        {},
+        "Manajemen Driver"
+      ),
+      href: "/manajemen-driver",
+    },
+    {
+      name: t(
+        "PreviewDriverScreen.breadcrumbTambahDriverMassal",
+        {},
+        "Tambah Driver Massal"
+      ),
+      href: "/manajemen-driver/tambah-massal",
+    },
+    {
+      name: t(
+        "PreviewDriverScreen.breadcrumbDetailDriver",
+        {},
+        "Detail Driver"
+      ),
+    },
+  ];
 
   const { data } = useGetDriversPreview(
     id ? `/v1/drivers/preview/${id}` : null
@@ -73,13 +95,23 @@ export default function PreviewDriver({ params }) {
     handlePostDriverBulkCreate(payload)
       .then((res) => {
         // Show success message
-        toast.success(`Berhasil menambahkan ${res.Data.savedDrivers} driver.`);
+        toast.success(
+          t(
+            "PreviewDriverScreen.messageSuccessAddDriver",
+            { count: res.Data.savedDrivers },
+            `Berhasil menambahkan ${res.Data.savedDrivers} driver.`
+          )
+        );
         router.push(`/manajemen-driver?tab=process`);
       })
       .catch((_error) => {
         // Show error message
         toast.error(
-          "Gagal menyimpan draft driver. Periksa kembali data yang dimasukkan."
+          t(
+            "PreviewDriverScreen.messageErrorSaveDraft",
+            {},
+            "Gagal menyimpan draft driver. Periksa kembali data yang dimasukkan."
+          )
         );
       });
 
@@ -95,13 +127,23 @@ export default function PreviewDriver({ params }) {
     handlePostDriverBulkCreate(payload)
       .then(() => {
         // Show success message
-        toast.success("Draft driver berhasil disimpan.");
+        toast.success(
+          t(
+            "PreviewDriverScreen.messageSuccessSaveDraft",
+            {},
+            "Draft driver berhasil disimpan."
+          )
+        );
         router.push(`/manajemen-driver/tambah-massal?tab=draft`);
       })
       .catch((_error) => {
         // Show error message
         toast.error(
-          "Gagal menyimpan draft driver. Periksa kembali data yang dimasukkan."
+          t(
+            "PreviewDriverScreen.messageErrorSaveDraft",
+            {},
+            "Gagal menyimpan draft driver. Periksa kembali data yang dimasukkan."
+          )
         );
       });
 
@@ -209,7 +251,9 @@ export default function PreviewDriver({ params }) {
     <div className="my-6 px-6">
       <div className="flex flex-col gap-4 p-3">
         <BreadCrumb data={enhancedBreadcrumbData} />
-        <PageTitle onClick={handleBackNavigation}>Preview Driver</PageTitle>
+        <PageTitle onClick={handleBackNavigation}>
+          {t("PreviewDriverScreen.titlePreviewDriver", {}, "Preview Driver")}
+        </PageTitle>
       </div>
       <form onSubmit={onSubmit}>
         <div className="rounded-lg bg-white shadow-muat">
@@ -235,10 +279,14 @@ export default function PreviewDriver({ params }) {
             variant="muattrans-primary-secondary"
             type="button"
           >
-            Simpan Sebagai Draft
+            {t(
+              "PreviewDriverScreen.buttonSaveAsDraft",
+              {},
+              "Simpan Sebagai Draft"
+            )}
           </Button>
           <Button disabled={isLoadingCreate || isLoadingDraft} type="submit">
-            Simpan
+            {t("PreviewDriverScreen.buttonSave", {}, "Simpan")}
           </Button>
         </div>
       </form>
@@ -246,22 +294,29 @@ export default function PreviewDriver({ params }) {
         isOpen={confirmDeleteModal}
         setIsOpen={setConfirmDeleteModal}
         title={{
-          text: "Apakah kamu yakin untuk menghapus driver ?",
+          text: t(
+            "PreviewDriverScreen.titleConfirmDeleteDriver",
+            {},
+            "Apakah kamu yakin untuk menghapus driver ?"
+          ),
           className: "text-sm font-medium text-center",
         }}
         confirm={{
-          text: "Hapus",
+          text: t("PreviewDriverScreen.buttonDelete", {}, "Hapus"),
           onClick: handleRemove,
         }}
         cancel={{
-          text: "Batal",
+          text: t("PreviewDriverScreen.buttonCancel", {}, "Batal"),
           onClick: () => {
             setConfirmDeleteModal(false);
           },
         }}
       >
-        Apakah kamu yakin ingin menghapus driver yang telah dipilih? Tindakan
-        ini tidak dapat dibatalkan.
+        {t(
+          "PreviewDriverScreen.messageConfirmDeleteDriver",
+          {},
+          "Apakah kamu yakin ingin menghapus driver yang telah dipilih? Tindakan ini tidak dapat dibatalkan."
+        )}
       </ConfirmationModal>
 
       {/* Back Navigation Confirmation Modal */}
@@ -269,19 +324,26 @@ export default function PreviewDriver({ params }) {
         isOpen={showBackConfirmation}
         setIsOpen={setShowBackConfirmation}
         description={{
-          text: "Apakah kamu yakin ingin berpindah halaman? Data yang telah diisi tidak akan disimpan",
+          text: t(
+            "PreviewDriverScreen.descriptionConfirmNavigation",
+            {},
+            "Apakah kamu yakin ingin berpindah halaman? Data yang telah diisi tidak akan disimpan"
+          ),
         }}
         confirm={{
-          text: "Batal",
+          text: t("PreviewDriverScreen.buttonCancel", {}, "Batal"),
           onClick: cancelNavigation,
         }}
         cancel={{
-          text: "Ya",
+          text: t("PreviewDriverScreen.buttonYes", {}, "Ya"),
           onClick: confirmNavigation,
         }}
       >
-        Data yang telah diisi tidak akan disimpan. Apakah kamu yakin ingin
-        meninggalkan halaman ini?
+        {t(
+          "PreviewDriverScreen.messageConfirmNavigation",
+          {},
+          "Data yang telah diisi tidak akan disimpan. Apakah kamu yakin ingin meninggalkan halaman ini?"
+        )}
       </ConfirmationModal>
     </div>
   );

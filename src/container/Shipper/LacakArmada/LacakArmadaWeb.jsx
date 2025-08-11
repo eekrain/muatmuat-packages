@@ -25,7 +25,7 @@ const LacakArmadaWeb = () => {
 
   return (
     <>
-      <div className="mx-auto grid h-[calc(100dvh-92px)] max-w-[1280px] grid-cols-[480px_1fr]">
+      <div className="mx-auto grid h-[calc(100dvh-92px)] grid-cols-[480px_1fr]">
         <LeftPanel dataDriverTimeline={dataDriverTimeline} />
         <MapPanel />
       </div>

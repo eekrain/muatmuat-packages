@@ -119,6 +119,7 @@ const DetailPesananScreen = ({
             t,
             onLihatDetailWaktuTunggu: () => alert("Not implemented yet"),
             onLihatPerubahan: () => alert("Not implemented yet"),
+            isMobile: true,
           })
         )
         .filter((val) => Boolean(val)),

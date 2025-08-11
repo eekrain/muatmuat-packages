@@ -7,6 +7,7 @@ import DatePicker from "@/components/DatePicker/DatePicker";
 import Checkbox from "@/components/Form/Checkbox";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
@@ -30,12 +31,14 @@ const getMaxDateSIMB2 = () => {
  * @param {Array} data - Array of driver data
  * @param {Function} setError - React Hook Form setError function (optional)
  * @param {string} fieldArrayName - Name of the field array (optional)
+ * @param {Function} t - Translation function (optional)
  * @returns {boolean} - True if no duplicates found, false if duplicates exist
  */
 export const validateAllWhatsAppNumbers = (
   data,
   setError = null,
-  fieldArrayName = "driverList"
+  fieldArrayName = "driverList",
+  t = null
 ) => {
   const whatsappNumbers = data
     .map((item, index) => ({
@@ -60,16 +63,24 @@ export const validateAllWhatsAppNumbers = (
   });
 
   if (duplicateIndexes.length > 0) {
+    const errorMessage = t
+      ? t(
+          "DriverTable.messageErrorDuplicateWhatsapp",
+          {},
+          "No. WhatsApp sudah terdaftar"
+        )
+      : "No. WhatsApp sudah terdaftar";
+
     // Set errors for duplicate WhatsApp numbers
     if (setError) {
       duplicateIndexes.forEach((index) => {
         setError(`${fieldArrayName}.${index}.whatsappNumber`, {
           type: "manual",
-          message: "No. WhatsApp sudah terdaftar",
+          message: errorMessage,
         });
       });
     }
-    toast.error("No. WhatsApp sudah terdaftar");
+    toast.error(errorMessage);
     return false;
   }
 
@@ -90,6 +101,7 @@ const DriverTable = ({
   className = "",
   errors,
 }) => {
+  const { t } = useTranslation();
   const [addArmadaImageModal, setAddArmadaImageModal] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(null);
 
@@ -154,7 +166,11 @@ const DriverTable = ({
                 icon={{ left: "/icons/search.svg" }}
                 appearance={{ iconClassName: "text-neutral-700" }}
                 className="!w-fit !p-0 pr-8 font-medium"
-                placeholder="Cari Driver"
+                placeholder={t(
+                  "DriverTable.placeholderSearchDriver",
+                  {},
+                  "Cari Driver"
+                )}
                 value={searchValue}
                 onChange={(e) => onSearchChange?.(e.target.value)}
               />
@@ -177,28 +193,47 @@ const DriverTable = ({
               onClick={onAddRow}
               variant="muatparts-primary-secondary"
             >
-              Tambah
+              {t("DriverTable.buttonAdd", {}, "Tambah")}
             </Button>
             <Button
               type="button"
               onClick={onDeleteRows}
               variant="muatparts-error-secondary"
             >
-              Hapus
+              {t("DriverTable.buttonDelete", {}, "Hapus")}
             </Button>
           </div>
           <div className="flex flex-col items-end gap-1">
             <p className="font-semibold">
-              Total : {filteredData.length} Driver
+              {t(
+                "DriverTable.labelTotalDrivers",
+                { count: filteredData.length },
+                `Total : ${filteredData.length} Driver`
+              )}
               {searchValue.trim() && filteredData.length !== data.length && (
-                <span className="text-neutral-600"> dari {data.length}</span>
+                <span className="text-neutral-600">
+                  {" "}
+                  {t(
+                    "DriverTable.labelFromTotal",
+                    { total: data.length },
+                    `dari ${data.length}`
+                  )}
+                </span>
               )}
             </p>
             {searchValue.trim() && (
               <p className="text-xs text-neutral-600">
                 {filteredData.length > 0
-                  ? `Menampilkan hasil pencarian untuk &ldquo;${searchValue}&rdquo;`
-                  : `Tidak ada hasil untuk &ldquo;${searchValue}&rdquo;`}
+                  ? t(
+                      "DriverTable.messageSearchResults",
+                      { keyword: searchValue },
+                      `Menampilkan hasil pencarian untuk &ldquo;${searchValue}&rdquo;`
+                    )
+                  : t(
+                      "DriverTable.messageNoSearchResults",
+                      { keyword: searchValue },
+                      `Tidak ada hasil untuk &ldquo;${searchValue}&rdquo;`
+                    )}
               </p>
             )}
           </div>
@@ -219,27 +254,35 @@ const DriverTable = ({
                   </th>
                   <th className="w-[232px]">
                     <span className="text-xs font-semibold text-gray-500">
-                      Driver*
+                      {t("DriverTable.headerDriver", {}, "Driver*")}
                     </span>
                   </th>
                   <th className="w-[180px]">
                     <span className="text-xs font-semibold text-gray-500">
-                      No. Whatsapp*
+                      {t(
+                        "DriverTable.headerWhatsappNumber",
+                        {},
+                        "No. Whatsapp*"
+                      )}
                     </span>
                   </th>
                   <th className="w-[180px]">
                     <span className="text-xs font-semibold text-gray-500">
-                      Foto KTP*
+                      {t("DriverTable.headerKtpPhoto", {}, "Foto KTP*")}
                     </span>
                   </th>
                   <th className="w-[180px]">
                     <span className="text-xs font-semibold text-gray-500">
-                      Foto SIM B2*
+                      {t("DriverTable.headerSimB2Photo", {}, "Foto SIM B2*")}
                     </span>
                   </th>
                   <th className="w-[180px]">
                     <span className="text-xs font-semibold text-gray-500">
-                      Masa Berlaku SIM B2*
+                      {t(
+                        "DriverTable.headerSimB2Expiry",
+                        {},
+                        "Masa Berlaku SIM B2*"
+                      )}
                     </span>
                   </th>
                 </tr>
@@ -251,7 +294,11 @@ const DriverTable = ({
                       <div className="flex flex-col items-center gap-3">
                         <DataNotFound
                           type="search"
-                          title={"Keyword Tidak Ditemukan"}
+                          title={t(
+                            "DriverTable.titleKeywordNotFound",
+                            {},
+                            "Keyword Tidak Ditemukan"
+                          )}
                         />
                       </div>
                     </td>
@@ -320,6 +367,8 @@ const DriverTableRow = ({
   onImageClick,
   errors,
 }) => {
+  const { t } = useTranslation();
+
   const handleFieldChange = (fieldPath, value) => {
     onCellValueChange?.(index, fieldPath, value);
   };
@@ -398,7 +447,7 @@ const DriverTableRow = ({
           {data?.driverImage ? (
             <img
               src={data.driverImage.driver_image}
-              alt="Foto Driver"
+              alt={t("DriverTable.altDriverPhoto", {}, "Foto Driver")}
               className={cn(
                 "w-12 shrink cursor-pointer rounded-lg object-cover",
                 hasError("driverImage") &&
@@ -422,7 +471,11 @@ const DriverTableRow = ({
           value={data?.fullName || ""}
           onChange={handleFullNameChange}
           hasError={hasError("fullName")}
-          placeholder="Masukkan Nama Lengkap"
+          placeholder={t(
+            "DriverTable.placeholderFullName",
+            {},
+            "Masukkan Nama Lengkap"
+          )}
         />
       </td>
 
@@ -432,7 +485,11 @@ const DriverTableRow = ({
           value={data?.whatsappNumber || ""}
           onChange={handleWhatsAppNumberChange}
           hasError={hasError("whatsappNumber")}
-          placeholder="Contoh: 08xxxxxxxxxx"
+          placeholder={t(
+            "DriverTable.placeholderPhoneNumber",
+            {},
+            "Contoh: 08xxxxxxxxxx"
+          )}
         />
       </td>
 
@@ -456,7 +513,11 @@ const DriverTableRow = ({
 
       <td className="relative">
         <DatePicker
-          placeholder="Pilih Tanggal"
+          placeholder={t(
+            "DriverTable.placeholderSelectDate",
+            {},
+            "Pilih Tanggal"
+          )}
           value={data?.simB2ExpiryDate || ""}
           onChange={(value) => handleFieldChange("simB2ExpiryDate", value)}
           errorMessage={getErrorMessage("simB2ExpiryDate")}
