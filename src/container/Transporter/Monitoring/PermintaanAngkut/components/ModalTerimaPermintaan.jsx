@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
+import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useGetTransportRequestDetail } from "@/services/Transporter/monitoring/getTransportRequestListDetail";
+import { usePostAcceptScheduledTransportRequest } from "@/services/Transporter/monitoring/postAcceptScheduledTransportRequest";
 
 // Utility function for currency formatting
 const formatCurrency = (amount) => {
@@ -26,6 +29,13 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
   const [showAlert, setShowAlert] = useState(false);
   const [showTermsAlert, setShowTermsAlert] = useState(false);
   const [showPartialAlert, setShowPartialAlert] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [modalType, setModalType] = useState(""); // "taken", "unit-change", "suspended"
+  const [modalData, setModalData] = useState({});
+
+  // API hooks
+  const { trigger: acceptScheduledRequest, isMutating } =
+    usePostAcceptScheduledTransportRequest();
 
   // Ambil detail data berdasarkan request.id
   const {
@@ -34,6 +44,19 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
     error,
   } = useGetTransportRequestDetail(request?.id);
   const detail = detailData || {};
+
+  // Check if order is already taken and show modal
+  useEffect(() => {
+    if (detail && detail.isTaken && isOpen) {
+      setModalType("taken");
+      setModalData({
+        title: "Pesanan Sudah Diambil",
+        message:
+          "Maaf, pesanan ini telah diambil oleh transporter lain. Silahkan pilih pesanan lainnya yang tersedia.",
+      });
+      setShowConfirmModal(true);
+    }
+  }, [detail, isOpen]);
 
   if (!isOpen) return null;
 
@@ -56,11 +79,105 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
       return;
     }
 
-    onAccept({
-      requestId: detail.id,
-      type: selectedOption,
-      truckCount: selectedOption === "all" ? detail.truckCount : partialCount,
-    });
+    // Directly call API
+    handleConfirmAccept();
+  };
+
+  const handleConfirmAccept = () => {
+    const requestData = {
+      id: detail.id || request?.id,
+      data: {
+        type: selectedOption,
+        truckCount: selectedOption === "all" ? detail.truckCount : partialCount,
+      },
+    };
+
+    console.log("Sending request data:", requestData); // Debug log
+
+    if (request.isTaken) {
+      setShowConfirmModal(true);
+    }
+    acceptScheduledRequest(requestData)
+      .then((response) => {
+        console.log("Success response:", response); // Debug log
+
+        // Show success toast
+        const message =
+          response.Data?.toast?.message ||
+          `Permintaan ${response.Data?.orderCode || "berhasil"} diterima`;
+        toast.success(message);
+
+        // Close modal
+        onClose();
+
+        // Call parent callback if needed
+        if (onAccept) {
+          onAccept(requestData);
+        }
+      })
+      .catch((error) => {
+        console.log("Error occurred:", error); // Debug log
+
+        // Handle different error scenarios
+        if (error.response?.status === 422) {
+          const errors = error.response?.data?.Data?.errors || [];
+
+          // Case 1: Pesanan sudah diambil
+          const orderStatusError = errors.find(
+            (err) => err.field === "orderStatus"
+          );
+          if (orderStatusError) {
+            setModalType("taken");
+            setModalData({
+              title: "Pesanan Sudah Diambil",
+              message:
+                "Maaf, pesanan ini telah diambil oleh transporter lain. Silahkan pilih pesanan lainnya yang tersedia.",
+            });
+            setShowConfirmModal(true);
+            return;
+          }
+
+          // Case 2: Perubahan kebutuhan unit
+          const vehicleCountError = errors.find(
+            (err) => err.field === "vehicleCount"
+          );
+          if (vehicleCountError) {
+            setModalType("unit-change");
+            setModalData({
+              title: "Perubahan Kebutuhan Unit",
+              message:
+                "Kebutuhan unit telah berubah. Silahkan refresh halaman dan pilih ulang jumlah unit yang diinginkan.",
+            });
+            setShowConfirmModal(true);
+            return;
+          }
+
+          // Case 3: Akun ditangguhkan
+          const accountError = errors.find(
+            (err) => err.field === "account" || err.field === "userStatus"
+          );
+          if (
+            accountError ||
+            error.response?.data?.Message?.Text?.includes("ditangguhkan") ||
+            error.response?.data?.Message?.Text?.includes("suspended")
+          ) {
+            setModalType("suspended");
+            setModalData({
+              title: "Akun Ditangguhkan",
+              message:
+                "Akun Anda telah ditangguhkan di tengah proses. Silahkan hubungi customer service untuk informasi lebih lanjut.",
+            });
+            setShowConfirmModal(true);
+            return;
+          }
+        }
+
+        // Case untuk error lainnya - show generic error toast
+        const errorMessage =
+          error.response?.data?.Message?.Text ||
+          "Gagal menerima permintaan. Silakan coba lagi.";
+        toast.error(errorMessage);
+      });
   };
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4">
@@ -446,6 +563,7 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
                 variant="muattrans-primary"
                 className="h-[34] w-[112px] py-3 text-sm font-semibold"
                 onClick={handleAccept}
+                disabled={isMutating}
               >
                 Terima
               </Button>
@@ -453,6 +571,49 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
           </>
         )}
       </div>
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showConfirmModal}
+        setIsOpen={setShowConfirmModal}
+        title={{
+          text: modalData.title || "Pemberitahuan",
+          className: "text-base font-bold",
+        }}
+        description={{
+          text: modalData.message || "",
+          className: "text-sm font-medium text-center",
+        }}
+        cancel={{
+          text: "Cancel",
+          onClick: () => {},
+          className: "hidden", // Hide cancel button
+        }}
+        confirm={{
+          text: "OK",
+          onClick: () => {
+            setShowConfirmModal(false);
+
+            // Different actions based on modal type
+            switch (modalType) {
+              case "taken":
+              case "suspended":
+                onClose(); // Close main modal
+                break;
+              case "unit-change":
+                // Just close confirmation modal, keep main modal open for user to re-select
+                break;
+              default:
+                onClose();
+                break;
+            }
+
+            // Reset modal state
+            setModalType("");
+            setModalData({});
+          },
+        }}
+      />
     </div>
   );
 };

@@ -11,7 +11,7 @@ const MOCK_CONFIG = {
   timeLabel: "Muat 3 Hari Lagi",
   photoCount: 4,
   hasAdditionalServices: true,
-  isTaken: false,
+  isTaken: true,
 };
 
 const IS_MOCK = true;
