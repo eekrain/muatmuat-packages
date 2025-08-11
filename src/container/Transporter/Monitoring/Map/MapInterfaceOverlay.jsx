@@ -6,6 +6,7 @@ import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { cn } from "@/lib/utils";
+import { useGetSosStatusSummary } from "@/services/Transporter/monitoring/getSosStatusSummary";
 
 import { FilterPopover } from "./components/FilterPopover";
 import { LegendButton } from "./components/LegendButton";
@@ -28,19 +29,17 @@ export const MapInterfaceOverlay = ({
   hasMapInteraction = false,
   hasData = true,
 }) => {
-  const [sosCount] = useState(2);
+  const { data: sosStatusSummary } = useGetSosStatusSummary();
   const [centerButtonClicked, setCenterButtonClicked] =
     useState(!hasMapInteraction);
 
   useEffect(() => {
-    // Reset center button state when map interaction changes
     if (hasMapInteraction) {
       setCenterButtonClicked(false);
     }
   }, [hasMapInteraction]);
 
   const handleCenterClick = () => {
-    // Immediately set center button as clicked
     setCenterButtonClicked(true);
     onCenter();
   };
@@ -119,16 +118,24 @@ export const MapInterfaceOverlay = ({
 
           {/* SOS Button */}
           <Button
-            variant="muattrans-error-secondary"
+            variant={
+              sosStatusSummary?.Data?.active > 0
+                ? "muattrans-error-secondary"
+                : "muattrans-primary-secondary"
+            }
             iconLeft={
-              <IconComponent
-                src="/icons/monitoring/sos.svg"
-                className="size-4"
-              />
+              sosStatusSummary?.Data?.active !== 0 && (
+                <IconComponent
+                  src="/icons/monitoring/sos.svg"
+                  className="size-4"
+                />
+              )
             }
             onClick={onClickSOS}
           >
-            SOS ({sosCount})
+            {sosStatusSummary?.Data?.active === 0
+              ? "Riwayat SOS"
+              : `SOS (${sosStatusSummary?.Data?.active})`}
           </Button>
         </div>
       )}

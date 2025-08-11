@@ -6,6 +6,7 @@ import { AlertTriangle, Loader2, X } from "lucide-react";
 
 import CardFleet from "@/components/Card/CardFleet";
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
+import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import Search from "@/components/Search/Search";
 import { useGetFleetList } from "@/services/Transporter/monitoring/getFleetList";
 
@@ -26,6 +27,8 @@ const SOSContainer = ({ onClose, onExpand }) => {
 
   const fleets = fleetData?.fleets || [];
   const totalFleets = fleetData?.totalFleets || fleets.length;
+
+  const [activeTab, setActiveTab] = useState("all");
 
   const toggleExpanded = (id) => {
     setExpandedId((prev) => {
@@ -61,7 +64,12 @@ const SOSContainer = ({ onClose, onExpand }) => {
       <div className="px-4">
         <div className="flex items-center justify-between pb-3">
           <h2 className="text-[14px] font-bold text-gray-900">
-            SOS <span className="font-semibold">({totalFleets} Armada)</span>
+            SOS{" "}
+            {!totalFleets === 0 ? (
+              <span className="font-semibold">({totalFleets} Armada)</span>
+            ) : (
+              <span className="font-semibold">(Belum Ada Laporan)</span>
+            )}
           </h2>
           <button className="text-blue-500" onClick={onClose}>
             <X className="h-5 w-5" />
@@ -79,6 +87,35 @@ const SOSContainer = ({ onClose, onExpand }) => {
           defaultValue={searchTerm}
           inputClassName="min-w-full"
         />
+      </div>
+
+      <div className="flex gap-2 px-4 pb-3">
+        <button
+          className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
+            activeTab === "sos"
+              ? "w-auto min-w-[79px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
+              : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
+          }`}
+          onClick={() => setActiveTab("sos")}
+        >
+          SOS ({1})
+          <NotificationDot
+            size="sm"
+            color="red"
+            position="absolute"
+            positionClasses="top-0 right-0"
+          />
+        </button>
+        <button
+          className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
+            activeTab === "all"
+              ? "w-auto min-w-[79px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
+              : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
+          }`}
+          onClick={() => setActiveTab("all")}
+        >
+          Riwayat ({totalFleets})
+        </button>
       </div>
 
       {/* Fleet List */}
@@ -99,7 +136,7 @@ const SOSContainer = ({ onClose, onExpand }) => {
             </div>
           </div>
         ) : filteredData.length === 0 ? (
-          <DataEmpty />
+          <DataEmpty title="Belum Ada Laporan SOS" />
         ) : (
           <div className="space-y-3">
             {filteredData.map((fleet) => (
