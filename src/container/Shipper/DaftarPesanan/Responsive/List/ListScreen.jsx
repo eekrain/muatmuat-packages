@@ -51,6 +51,7 @@ const ListScreen = ({
       "/daftarpesanan/pesananmenunggupembayaran",
       "/daftarpesanan/pesananmenunggupelunasan",
       "/daftarpesanan/butuhkonfirmasianda",
+      "/daftarpesanan/butuhkonfirmasianda",
     ];
 
     return settlementAlertInfo

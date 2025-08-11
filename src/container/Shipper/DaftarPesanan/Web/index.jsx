@@ -33,6 +33,7 @@ const DaftarPesananWeb = ({
       "/daftarpesanan/pesananmenunggupembayaran",
       "/daftarpesanan/pesananmenunggupelunasan",
       "/daftarpesanan/butuhkonfirmasianda",
+      "/daftarpesanan/butuhkonfirmasianda",
     ];
     return settlementAlertInfo
       .map((item, key) => {

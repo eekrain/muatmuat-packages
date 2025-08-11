@@ -83,6 +83,7 @@ export default function SewaArmadaWeb({
       "/daftarpesanan/pesananmenunggupembayaran",
       "/daftarpesanan/pesananmenunggupelunasan",
       "/daftarpesanan/butuhkonfirmasianda",
+      "/daftarpesanan/butuhkonfirmasianda",
     ];
 
     return settlementAlertInfo

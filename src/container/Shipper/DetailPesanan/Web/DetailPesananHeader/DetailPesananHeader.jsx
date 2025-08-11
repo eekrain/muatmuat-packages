@@ -332,6 +332,7 @@ const DetailPesananHeader = ({
 
       {/* Modal Konfirmasi Dokumen Diterima */}
       <ConfirmationModal
+        variant="muatparts"
         isOpen={isDocumentReceivedModalOpen}
         setIsOpen={setIsDocumentReceivedModalOpen}
         title={{
@@ -363,6 +364,7 @@ const DetailPesananHeader = ({
 
       {/* Modal Pesan Ulang */}
       <ConfirmationModal
+        variant="muatparts"
         isOpen={isReorderFleetModalOpen}
         setIsOpen={setIsReorderFleetModalOpen}
         description={{
