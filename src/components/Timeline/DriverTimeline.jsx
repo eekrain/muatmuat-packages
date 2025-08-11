@@ -243,7 +243,7 @@ const ParentItem = ({ parent, isActive, isLastItem, onSetLightboxData }) => {
     const evidence = parent?.shippingEvidence;
     if (evidence?.packages?.length > 0 || evidence?.pods?.length > 0) {
       return {
-        label: t("labelLihatBuktiBongkarBarangDanPOD"),
+        label: t("labelLihatBuktiMuatBarangPOD"),
         onClick: handleShowProof,
       };
     }
