@@ -7,16 +7,16 @@ const ConfirmationModal = ({
   variant = "primary",
   isOpen,
   setIsOpen,
-  title = { text: "", className: "" }, // Added default value here
+  title = { text: "", className: "" },
+  withCancel = true,
   description = { text: "", className: "" },
-  // 25. 18 - Web - LB - 0275
-  cancel = { classname: "", text: "", onClick: () => setIsOpen(false) }, // Added default for cancel
-  confirm = { classname: "", text: "", onClick: () => setIsOpen(false) }, // Added default for confirm
+  cancel = { classname: "", text: "", onClick: () => setIsOpen(false) },
+  confirm = { classname: "", text: "", onClick: () => setIsOpen(false) },
+  className = "",
 }) => {
   const { text: titleText = "", className: titleClassName = "" } = title;
   const { text: descriptionText = "", className: descriptionClassName = "" } =
     description;
-  // 25. 18 - Web - LB - 0275
   const {
     classname: cancelClassname = "",
     text: cancelText = "",
@@ -34,7 +34,7 @@ const ConfirmationModal = ({
   const modalClassname = modalClassnames[size] || modalClassnames.small;
   return (
     <Modal closeOnOutsideClick={false} open={isOpen} onOpenChange={setIsOpen}>
-      <ModalContent className={modalClassname} type="muattrans">
+      <ModalContent className={cn(modalClassname, className)} type="muattrans">
         <ModalHeader size={size} />
         <div className="flex flex-col items-center gap-y-6 px-6 py-9">
           {titleText ? (
@@ -60,16 +60,25 @@ const ConfirmationModal = ({
           <div className="flex items-center gap-x-2">
             <Button
               variant="muattrans-primary-secondary"
-              // 25. 18 - Web - LB - 0275
               className={cn("h-8", cancelClassname)}
               onClick={onCancel}
               type="button"
             >
               {cancelText}
             </Button>
+            {withCancel && (
+              <Button
+                variant="muattrans-primary-secondary"
+                // 25. 18 - Web - LB - 0275
+                className={cn("h-8", cancelClassname)}
+                onClick={onCancel}
+                type="button"
+              >
+                {cancelText}
+              </Button>
+            )}
             <Button
               variant="muattrans-primary"
-              // 25. 18 - Web - LB - 0275
               className={cn("h-8", confirmClassname)}
               onClick={onConfirm}
               type="button"
