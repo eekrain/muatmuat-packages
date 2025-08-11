@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import {
   AlertTriangle,
   ChevronDown,
@@ -50,11 +52,15 @@ const TruckIcon = ({ status }) => {
   );
 };
 
-const ResponseChangeIndicator = () => (
+const ResponseChangeIndicator = ({ isExpanded }) => (
   <InfoTooltip
     trigger={
-      <div className="group flex h-6 w-6 items-center justify-center rounded-lg bg-[#FFF9C1] group-hover:bg-warning-800">
-        <AlertTriangle className="h-4 w-4 text-yellow-500 group-hover:text-white" />
+      <div
+        className={`group flex h-6 w-6 items-center justify-center rounded-lg bg-[#FFF9C1] ${isExpanded ? "bg-warning-800" : "group-hover:bg-warning-800"}`}
+      >
+        <AlertTriangle
+          className={`h-4 w-4 ${isExpanded ? "text-white" : "text-yellow-500 group-hover:text-white"}`}
+        />
       </div>
     }
   >
@@ -95,7 +101,9 @@ const InfoWithTooltip = ({
   <div className="flex items-center space-x-2">
     <Icon className="h-4 w-4 flex-shrink-0 text-[#461B02]" />
     <div className="min-w-0">
-      {showLabel && <label className="text-xs text-gray-500">{label}</label>}
+      {showLabel && (
+        <label className="text-xs font-medium text-gray-500">{label}</label>
+      )}
       <InfoTooltip
         trigger={
           <p className={cn("truncate text-xs font-semibold", className)}>
@@ -172,7 +180,9 @@ const CardHeader = ({ isExpanded, isSOS, fleet, onToggleExpand }) => {
         </span>
       </div>
       <div className="flex items-center space-x-2">
-        {fleet?.needsResponseChange && <ResponseChangeIndicator />}
+        {fleet?.needsResponseChange && (
+          <ResponseChangeIndicator isExpanded={isExpanded} />
+        )}
         {isSOS && <SOSIndicator />}
         <ChevronDown className={chevronClasses} />
       </div>
@@ -278,7 +288,7 @@ const OnDutyDetails = ({ fleet }) => {
   };
 
   return (
-    <div className="mt-4 flex w-full flex-col gap-3 rounded-lg bg-[#F8F8FB] px-3 py-3 pt-4">
+    <div className="mt-3 flex w-full flex-col gap-3 rounded-lg bg-[#F8F8FB] px-3 py-3 pt-4">
       <div>
         <p className="mb-3 text-xs text-gray-600">No. Pesanan</p>
         <p className="text-xs font-semibold text-black">
@@ -312,9 +322,13 @@ const OnDutyDetails = ({ fleet }) => {
 
       <div className="flex items-center justify-between">
         {getStatusBadge()}
-        <button className="text-xs text-blue-700 hover:underline" type="button">
+        <Link
+          className="text-xs text-blue-700 hover:underline"
+          type="button"
+          href="/monitoring?tab=request"
+        >
           Lihat Detail
-        </button>
+        </Link>
       </div>
     </div>
   );
@@ -324,7 +338,7 @@ const SOSExpandedSection = ({ fleet }) => {
   const photos = fleet?.detailSOS?.photos || [];
 
   return (
-    <div className="mt-2 flex flex-col pb-3">
+    <div className="mt-2 flex flex-col">
       <p className="text-xs font-semibold text-error-400">
         {fleet?.detailSOS?.sosCategory || "-"}
       </p>
@@ -397,7 +411,7 @@ export default function CardFleet({
       )}
       <div
         className={cn(
-          "mt-2 grid gap-x-2 gap-y-0.5 text-sm",
+          "mt-3 grid gap-x-2 gap-y-0.5 text-sm",
           isSOS ? "grid-cols-2" : "grid-cols-2"
         )}
       >
@@ -414,7 +428,7 @@ export default function CardFleet({
     const missingDriver = !fleet?.driver?.name || !fleet?.driver?.phoneNumber;
 
     return (
-      <div className="space-y-1 pt-2 text-sm">
+      <div className="space-y-[12px] pt-2 text-sm">
         {isSOS && <SOSExpandedSection fleet={fleet} />}
         <DriverAndPhoneSection driverName={driverName} phone={phone} />
         <LocationAndFleetSection fleet={fleet} />
