@@ -17,6 +17,7 @@ import {
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { getAlertMetadata } from "@/lib/normalizers/detailpesanan/getAlertMetadata";
 import { toast } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import useGetFleetSearchStatus from "@/services/Shipper/detailpesanan/getFleetSearchStatus";
 
 import DriverInfoSlider from "./components/DriverInfoSlider";
@@ -44,6 +45,11 @@ const WHITELIST_PENDING_PAYMENT = [
   OrderStatusEnum.WAITING_PAYMENT_2,
   OrderStatusEnum.WAITING_PAYMENT_4,
   OrderStatusEnum.WAITING_REPAYMENT_2,
+];
+
+const LIST_SHOW_TOTAL_PRICE = [
+  OrderStatusEnum.WAITING_PAYMENT_1,
+  OrderStatusEnum.PREPARE_FLEET,
 ];
 
 const DetailPesananScreen = ({
@@ -157,7 +163,18 @@ const DetailPesananScreen = ({
       }}
       onClickBackButton={() => alert("onClickBackButton")}
     >
-      <div className="mb-16 space-y-2 bg-neutral-200">
+      {/* 25. 18 - Web - LB - 0294 */}
+      <div
+        className={cn(
+          "space-y-2 bg-neutral-200",
+          (LIST_SHOW_TOTAL_PRICE.includes(dataStatusPesanan?.orderStatus) &&
+            dataRingkasanPembayaran?.totalPrice) ||
+            dataRingkasanPembayaran?.priceCharge ||
+            dataStatusPesanan?.orderStatus === OrderStatusEnum.WAITING_PAYMENT_3
+            ? "mb-[100px]"
+            : "mb-16"
+        )}
+      >
         <AlertMultilineResponsive items={orderAlerts} />
 
         {shouldShowPendingPrepareFleetAlert ? (
@@ -224,7 +241,7 @@ const DetailPesananScreen = ({
         </button>
       </div>
 
-      {WHITELIST_PENDING_PAYMENT.includes(dataStatusPesanan?.orderStatus) ? (
+      {!WHITELIST_PENDING_PAYMENT.includes(dataStatusPesanan?.orderStatus) ? (
         <FooterDetailPesanan
           dataStatusPesanan={dataStatusPesanan}
           dataRingkasanPembayaran={dataRingkasanPembayaran}

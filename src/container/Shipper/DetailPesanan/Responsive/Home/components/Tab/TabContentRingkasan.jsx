@@ -25,7 +25,7 @@ export const TabContentRingkasan = ({
   waitingTimeRaw,
 }) => {
   return (
-    <TabsContent value="ringkasan" className="mb-28 space-y-2 bg-neutral-200">
+    <TabsContent value="ringkasan" className="space-y-2 bg-neutral-200">
       <InformasiArmadaFragment
         dataStatusPesanan={dataStatusPesanan}
         dataRingkasanPesanan={dataRingkasanPesanan}
@@ -48,19 +48,24 @@ export const TabContentRingkasan = ({
         <MethodInfo dataRingkasanPembayaran={dataRingkasanPembayaran} />
       )}
 
-      {dataRingkasanPembayaran && dataRingkasanPembayaran?.priceCharge ? (
-        <AdditionalFeesDetail
-          priceCharge={dataRingkasanPembayaran.priceCharge}
-          waitingTimeRaw={waitingTimeRaw}
-        />
-      ) : dataStatusPesanan?.updatedAt ? (
-        <UpdateOrderFeeSummary />
-      ) : (
-        <TransactionSummary
-          dataRingkasanPembayaran={dataRingkasanPembayaran}
-          documentShippingDetail={documentShippingDetail}
-        />
-      )}
+      {/* 25. 18 - Web - LB - 0294 */}
+      {dataStatusPesanan?.orderStatus !== OrderStatusEnum.COMPLETED ? (
+        <>
+          {dataRingkasanPembayaran && dataRingkasanPembayaran?.priceCharge ? (
+            <AdditionalFeesDetail
+              priceCharge={dataRingkasanPembayaran.priceCharge}
+              waitingTimeRaw={waitingTimeRaw}
+            />
+          ) : dataStatusPesanan?.updatedAt ? (
+            <UpdateOrderFeeSummary />
+          ) : (
+            <TransactionSummary
+              dataRingkasanPembayaran={dataRingkasanPembayaran}
+              documentShippingDetail={documentShippingDetail}
+            />
+          )}
+        </>
+      ) : null}
     </TabsContent>
   );
 };
