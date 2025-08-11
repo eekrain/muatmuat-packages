@@ -366,12 +366,13 @@ const PesananTable = ({
                           {/* Tanggal Muat */}
                           <td className="w-[156px] pb-4 pl-0 pr-6 pt-5 align-top">
                             <span className="text-xs font-medium text-neutral-900">
-                              {`${formatDate(order.loadTimeStart)}
-                              ${
-                                order.loadTimeEnd
-                                  ? ` s/d ${formatDate(order.loadTimeEnd)}`
-                                  : ""
-                              }`}
+                              {`${formatDate(order.loadTimeStart)}${order.loadTimeEnd ? " s/d" : ""}`}
+                              {order.loadTimeEnd ? (
+                                <>
+                                  <br />
+                                  {formatDate(order.loadTimeEnd)}
+                                </>
+                              ) : null}
                             </span>
                           </td>
 
