@@ -112,6 +112,9 @@ const OrderItem = ({
                 index={key}
                 activeIndex={0}
                 title={item?.fullAddress}
+                appearance={{
+                  titleClassname: "text-xxs",
+                }}
                 buttonDetail={
                   key === 0 && locations.pickup.length > 1 ? (
                     <ButtonMini

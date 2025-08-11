@@ -13,13 +13,13 @@ const apiResult = {
     },
     Data: {
       alerts: [
-        // {
-        //   type: "REMINDER_REPAYMENT_ORDER",
-        //   date: "2025-06-01T10:00:00+07:00",
-        //   label:
-        //     "Pesanan Anda memiliki tambahan biaya. Mohon selesaikan pembayaran sebelum tanggal <b>18 Juni 2024</b>.",
-        //   info: "",
-        // },
+        {
+          type: "REMINDER_REPAYMENT_ORDER",
+          date: "2025-06-01T10:00:00+07:00",
+          label:
+            "Pesanan Anda memiliki tambahan biaya. Mohon selesaikan pembayaran sebelum tanggal <b>18 Juni 2024</b>.",
+          info: "",
+        },
         // {
         //   type: "WAITING_TIME_CHARGE",
         //   date: "2025-06-02T10:00:00+07:00",

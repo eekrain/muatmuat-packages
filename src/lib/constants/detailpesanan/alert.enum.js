@@ -20,6 +20,19 @@ export const AlertLabelEnum = {
   CANCELED_BY_SYSTEM: "messageCanceledBySystem",
 };
 
+// Kalau mobile pake yang ini
+export const AlertLabelResponsiveEnum = {
+  REMINDER_REPAYMENT_ORDER:
+    "<b>Pesanan Anda memiliki tambahan biaya.</b><p>Mohon selesaikan pembayaran sebelum tanggal <b>07 Juli 2024.</b></p>",
+  WAITING_TIME_CHARGE: "messageWaitingTimeCharge",
+  SHOW_QRCODE_DRIVER: "messageShowQrcodeDriver",
+  REFUND_IN_PROCESS: "Pengembalian dana sedang dalam proses.",
+  REFUND_COMPLETED: "Pengembalian dana berhasil diproses.",
+  ORDER_CHANGES_CONFIRMATION: "messageOrderChangesConfirmation",
+  CONFIRMATION_WAITING_PREPARE_FLEET: "messageConfirmationWaitingPrepareFleet",
+  CANCELED_BY_SYSTEM: "messageCanceledBySystem",
+};
+
 export const AlertInfoEnum = {
   // Ini haruse bukan tooltip, tapi button bro
   // WAITING_TIME_CHARGE: "Informasi biaya waktu tunggu",
