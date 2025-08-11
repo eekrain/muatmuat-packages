@@ -23,6 +23,7 @@ export const TabContentRingkasan = ({
   dataRingkasanPembayaran,
   documentShippingDetail,
   waitingTimeRaw,
+  paymentMethods,
 }) => {
   return (
     <TabsContent value="ringkasan" className="space-y-2 bg-neutral-200">
@@ -44,7 +45,7 @@ export const TabContentRingkasan = ({
       {/* Ganti sendiri pakek logic menunggu pelunasan, ditoggle dulu sementara */}
       {dataRingkasanPembayaran?.orderStatus === "WAITING_PAYMENT_3" &&
       dataRingkasanPembayaran?.priceChange ? (
-        <RepaymentPaymentMethod />
+        <RepaymentPaymentMethod paymentMethods={paymentMethods} />
       ) : null}
 
       {dataRingkasanPembayaran && !LIST_HIDE_METHOD_INFO && (
