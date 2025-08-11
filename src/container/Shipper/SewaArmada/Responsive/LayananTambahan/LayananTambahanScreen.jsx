@@ -238,38 +238,20 @@ const LayananTambahanScreen = ({
   // NOTE: Removed automatic useEffect clearing to prevent data loss
   // Data clearing now ONLY happens on manual user action via handleKirimBuktiFisikChange
 
-  // Handle kirimBuktiFisik checkbox change - ONLY clear data on manual uncheck
+  // Handle kirimBuktiFisik checkbox change - preserve form data and store when unchecked
   const handleKirimBuktiFisikChange = (checked) => {
-    console.log("👤 User manually changed kirimBuktiFisik to:", checked);
-
     // Always update the checkbox state
     tambahanSetField("kirimBuktiFisik", checked);
 
-    // When unchecked, ONLY remove from store but KEEP form data for reuse
+    // When unchecked, DO NOT remove from store - only clear validation errors
     if (!checked) {
-      console.log(
-        "📝 User unchecked - removing service from store but keeping form data"
-      );
-
-      // Remove service from store
-      const existingShippingService = additionalServices.find(
-        (service) => service.withShipping
-      );
-      if (existingShippingService) {
-        console.log("🗑️ Removing shipping service from store");
-        const updatedServices = additionalServices.filter(
-          (service) => !service.withShipping
-        );
-        setSewaArmadaField("additionalServices", updatedServices);
-        setSewaArmadaField("shippingDetailsLocation", null);
-      }
-
       // Clear any validation errors
       setLocalFormErrors({});
 
-      // NOTE: Form data (opsiPegiriman, namaPIC, etc.) is preserved
-      // User can recheck and data will still be there
-      console.log("✅ Form data preserved for future use");
+      // NOTE: Store data is preserved - service remains in additionalServices
+      // Store will only be updated when user explicitly saves via handleSaveLayananTambahan
+      // ALL form data (opsiPegiriman, namaPIC, etc.) is also preserved
+      // This includes tambahanFormValues and locationFormValues
     }
   };
 
@@ -290,13 +272,6 @@ const LayananTambahanScreen = ({
 
     const isTambahanFormValid = Object.keys(tambahanErrors).length === 0;
 
-    console.log("🔍 Validation results:", {
-      isLocationFormValid,
-      isTambahanFormValid,
-      locationFormErrors,
-      tambahanErrors,
-    });
-
     if (!isLocationFormValid || !isTambahanFormValid) {
       // Count total errors from both form stores
       const locationErrorCount = Object.keys(locationFormErrors || {}).filter(
@@ -305,8 +280,6 @@ const LayananTambahanScreen = ({
       const tambahanErrorCount = Object.keys(tambahanErrors).length;
       const totalErrors = locationErrorCount + tambahanErrorCount;
 
-      console.log("❌ Validation failed. Total errors:", totalErrors);
-
       // Show toast if there are multiple errors
       if (totalErrors > 1) {
         toast.error(t("messageFieldKosong"));
@@ -314,15 +287,11 @@ const LayananTambahanScreen = ({
       return;
     }
 
-    console.log("✅ Validation passed, proceeding to save");
-
     // Create newAdditionalService if kirimBuktiFisik is checked - similar to DeliveryEvidenceModal
     if (
       tambahanFormValues.kirimBuktiFisik &&
       tambahanFormValues.opsiPegiriman
     ) {
-      console.log("🚚 Creating shipping service");
-
       const sendDeliveryEvidenceService = additionalServicesOptions.find(
         (item) => item.withShipping
       );
@@ -358,21 +327,17 @@ const LayananTambahanScreen = ({
           },
         };
 
-        console.log("📦 New additional service created:", newAdditionalService);
-
         const existingIndex = additionalServices.findIndex(
           (service) => service.serviceId === newAdditionalService.serviceId
         );
 
         if (existingIndex !== -1) {
           // Update existing service
-          console.log("🔄 Updating existing service at index:", existingIndex);
           const updatedServices = [...additionalServices];
           updatedServices[existingIndex] = newAdditionalService;
           setSewaArmadaField("additionalServices", updatedServices);
         } else {
           // Add new service
-          console.log("➕ Adding new service");
           setSewaArmadaField("additionalServices", [
             newAdditionalService,
             ...additionalServices,
@@ -380,22 +345,26 @@ const LayananTambahanScreen = ({
         }
 
         // Set shipping details location - same as DeliveryEvidenceModal
-        console.log("📍 Setting shipping details location");
         setSewaArmadaField("shippingDetailsLocation", locationFormValues);
       }
     } else if (!tambahanFormValues.kirimBuktiFisik) {
-      console.log(
-        "📝 Kirim bukti fisik not checked, saving without shipping service"
+      // User unchecked the checkbox - remove shipping service from store ONLY when saving
+      const existingShippingService = additionalServices.find(
+        (service) => service.withShipping
       );
+      if (existingShippingService) {
+        const updatedServices = additionalServices.filter(
+          (service) => !service.withShipping
+        );
+        setSewaArmadaField("additionalServices", updatedServices);
+        setSewaArmadaField("shippingDetailsLocation", null);
+      }
     }
 
     // Clear errors on successful validation
     setLocalFormErrors({});
-    console.log("✅ Save process completed successfully");
 
     // Navigate back and remove LayananTambahan from URL
-    console.log("🔙 Navigating back from LayananTambahan");
-
     // Use popTo root to ensure clean navigation
     navigation.popTo("/");
 
@@ -408,6 +377,21 @@ const LayananTambahanScreen = ({
     //     console.log("🧹 Cleaned LayananTambahan from URL");
     //   }
     // }, 50);
+  };
+
+  // Handle back button - preserve all form data
+  const handleBackButton = () => {
+    // If kirimBuktiFisik is unchecked but we have form data, preserve everything
+    if (
+      !tambahanFormValues.kirimBuktiFisik &&
+      tambahanFormValues.opsiPegiriman
+    ) {
+      // Form data is already preserved in the stores
+      // No need to clear anything
+    }
+
+    // Navigate back
+    navigation.popTo("/");
   };
 
   const otherAdditionalServices = useShallowMemo(
@@ -449,9 +433,7 @@ const LayananTambahanScreen = ({
 
   return (
     <FormResponsiveLayout
-      onClickBackButton={() => {
-        navigation.popTo("/");
-      }}
+      onClickBackButton={handleBackButton}
       title={{
         label: t("titleLayananTambahanScreen"), // Layanan Tambahan
       }}
@@ -485,7 +467,12 @@ const LayananTambahanScreen = ({
                       ).toString()
                     );
                     const insurancePrice = tambahanFormValues.asuransiPengiriman
-                      ? 10000
+                      ? parseInt(
+                          (
+                            tambahanFormValues.opsiPegiriman
+                              .originalInsurance || 0
+                          ).toString()
+                        )
                       : 0;
                     // Tambahkan harga layanan tambahan lainnya ke total
                     const total =
@@ -790,9 +777,9 @@ const LayananTambahanScreen = ({
                 className={`flex w-full cursor-pointer flex-col gap-y-3 rounded-md px-4 py-2 ${isKirimBuktiFisikDisabled || isLocationDisabled ? "cursor-not-allowed bg-neutral-200" : "cursor-pointer bg-primary-50"}`}
               >
                 <button
-                  className={`flex w-full items-center justify-between ${locationFormValues.opsiPegiriman ? "border-b border-b-neutral-400 pb-3" : ""}`}
+                  className={`flex w-full items-center justify-between ${tambahanFormValues.opsiPegiriman ? "border-b border-b-neutral-400 pb-3" : ""}`}
                   onClick={() => {
-                    if (!isKirimBuktiFisikDisabled || isLocationDisabled) {
+                    if (!isKirimBuktiFisikDisabled && !isLocationDisabled) {
                       navigation.push("/OpsiPengiriman", { shippingOptions });
                     }
                   }}
@@ -810,16 +797,14 @@ const LayananTambahanScreen = ({
                       />
                     </div>
                     <div className="flex flex-col items-start gap-y-2">
-                      {shippingOption?.id ? (
+                      {tambahanFormValues.opsiPegiriman?.id ? (
                         <>
-                          <span
-                            className={`text-neutral-900} text-sm font-semibold leading-[15.4px]`}
-                          >
-                            {shippingOption.courierName}
+                          <span className="text-sm font-semibold leading-[15.4px] text-neutral-900">
+                            {tambahanFormValues.opsiPegiriman.courierName}
                           </span>
                           <span className="text-xs font-medium leading-[13.2px] text-neutral-900">
-                            {shippingOption.originalCost
-                              ? `Rp${shippingOption.originalCost.toLocaleString("id-ID")}`
+                            {tambahanFormValues.opsiPegiriman.originalCost
+                              ? `Rp${tambahanFormValues.opsiPegiriman.originalCost.toLocaleString("id-ID")}`
                               : ""}
                           </span>
                         </>
@@ -840,14 +825,14 @@ const LayananTambahanScreen = ({
                     }
                   />
                 </button>
-                {shippingOption?.id ? (
+                {tambahanFormValues.opsiPegiriman?.id ? (
                   <Checkbox
                     disabled={isKirimBuktiFisikDisabled}
                     checked={tambahanFormValues.asuransiPengiriman}
                     onChange={(e) =>
                       tambahanSetField("asuransiPengiriman", e.checked)
                     }
-                    label={`Pakai Asuransi Pengiriman (Rp${shippingOption.originalInsurance.toLocaleString("id-ID")})`}
+                    label={`Pakai Asuransi Pengiriman (Rp${(tambahanFormValues.opsiPegiriman.originalInsurance || 0).toLocaleString("id-ID")})`}
                     className="!text-xs !font-medium !leading-[15.6px]"
                   />
                 ) : null}

@@ -10,8 +10,10 @@ import {
 } from "@/components/BottomSheet/BottomSheetUp";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 
-const BottomSheetPreviousDriver = ({ isOpen, setOpen }) => {
+const BottomSheetPreviousDriver = ({ isOpen, setOpen, oldDriverData }) => {
+  const { t } = useTranslation();
   return (
     <BottomSheet open={isOpen} onOpenChange={setOpen}>
       <BottomSheetTrigger asChild>
@@ -19,20 +21,40 @@ const BottomSheetPreviousDriver = ({ isOpen, setOpen }) => {
           type="button"
           className="w-full text-left text-sm font-semibold"
         >
-          Lihat Driver Sebelumnya
+          {t(
+            "BottomSheetPreviousDriver.buttonViewPreviousDriver",
+            {},
+            "Lihat Driver Sebelumnya"
+          )}
         </button>
       </BottomSheetTrigger>
       <BottomSheetContent>
         <BottomSheetHeader>
           <BottomSheetClose />
-          <BottomSheetTitle>Driver Sebelumnya</BottomSheetTitle>
+          <BottomSheetTitle>
+            {t(
+              "BottomSheetPreviousDriver.titlePreviousDriver",
+              {},
+              "Driver Sebelumnya"
+            )}
+          </BottomSheetTitle>
         </BottomSheetHeader>
         <div className="flex flex-col gap-y-4 p-4 pt-0 text-neutral-900">
           <div className="flex items-center gap-x-3 rounded-xl border border-neutral-400 p-4">
-            <Image src="/img/avatar2.png" width={40} height={40} alt="driver" />
+            <Image
+              src="/img/avatar2.png"
+              width={40}
+              height={40}
+              alt={t("BottomSheetPreviousDriver.altDriverAvatar", {}, "driver")}
+            />
             <div className="flex flex-col gap-y-3">
               <span className="text-base font-semibold leading-[1.1]">
-                Noel Gallagher
+                {oldDriverData?.driver?.name ||
+                  t(
+                    "BottomSheetPreviousDriver.textDriverNotFound",
+                    {},
+                    "Driver tidak ditemukan"
+                  )}
               </span>
               <div className="flex items-center gap-x-1">
                 <IconComponent
@@ -42,17 +64,25 @@ const BottomSheetPreviousDriver = ({ isOpen, setOpen }) => {
                   className="text-neutral-900"
                 />
                 <span className="text-base font-semibold leading-[1.1]">
-                  AE 666 LBA
+                  {oldDriverData?.driver?.licensePlate || "-"}
                 </span>
               </div>
             </div>
           </div>
+
           <Button
             variant="muatparts-primary-secondary"
-            onClick={() => {}}
+            onClick={() => {
+              // You can implement navigation to driver detail page here
+              // Navigate to driver detail with driverId: oldDriverData?.driver?.driverId
+            }}
             className="h-10 w-full"
           >
-            Detail Status Driver
+            {t(
+              "BottomSheetPreviousDriver.buttonDriverStatusDetail",
+              {},
+              "Detail Status Driver"
+            )}
           </Button>
         </div>
       </BottomSheetContent>
