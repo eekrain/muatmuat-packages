@@ -60,6 +60,7 @@ const DetailPesananScreen = ({
   documentShippingDetail,
   waitingTimeRaw,
   oldDriverData,
+  paymentMethods,
 }) => {
   const { t } = useTranslation();
   const params = useParams();
@@ -231,6 +232,7 @@ const DetailPesananScreen = ({
             dataRingkasanPembayaran={dataRingkasanPembayaran}
             documentShippingDetail={documentShippingDetail}
             waitingTimeRaw={waitingTimeRaw}
+            paymentMethods={paymentMethods}
           />
 
           <TabContentInformasiLainnya
