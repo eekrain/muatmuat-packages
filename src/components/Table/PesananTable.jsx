@@ -520,6 +520,10 @@ const PesananTable = ({
                                     latestStatus?.statusCode ===
                                       OrderStatusEnum.WAITING_PAYMENT_2 ||
                                     latestStatus?.statusCode ===
+                                      OrderStatusEnum.WAITING_PAYMENT_3 ||
+                                    latestStatus?.statusCode ===
+                                      OrderStatusEnum.WAITING_PAYMENT_4 ||
+                                    latestStatus?.statusCode ===
                                       OrderStatusEnum.WAITING_REPAYMENT_1 ||
                                     latestStatus?.statusCode ===
                                       OrderStatusEnum.WAITING_REPAYMENT_2
@@ -548,6 +552,10 @@ const PesananTable = ({
                                     OrderStatusEnum.WAITING_PAYMENT_1 ||
                                   latestStatus?.statusCode ===
                                     OrderStatusEnum.WAITING_PAYMENT_2 ||
+                                  latestStatus?.statusCode ===
+                                    OrderStatusEnum.WAITING_PAYMENT_3 ||
+                                  latestStatus?.statusCode ===
+                                    OrderStatusEnum.WAITING_PAYMENT_4 ||
                                   latestStatus?.statusCode ===
                                     OrderStatusEnum.WAITING_REPAYMENT_1 ||
                                   latestStatus?.statusCode ===
@@ -827,6 +835,10 @@ const PesananTable = ({
                         OrderStatusEnum.WAITING_PAYMENT_1 ||
                       status?.statusCode ===
                         OrderStatusEnum.WAITING_PAYMENT_2 ||
+                      status?.statusCode ===
+                        OrderStatusEnum.WAITING_PAYMENT_3 ||
+                      status?.statusCode ===
+                        OrderStatusEnum.WAITING_PAYMENT_4 ||
                       status?.statusCode ===
                         OrderStatusEnum.WAITING_REPAYMENT_1 ||
                       status?.statusCode === OrderStatusEnum.WAITING_REPAYMENT_2

@@ -189,6 +189,10 @@ const OrderItem = ({
                     latestStatus?.statusCode ===
                       OrderStatusEnum.WAITING_PAYMENT_2 ||
                     latestStatus?.statusCode ===
+                      OrderStatusEnum.WAITING_PAYMENT_3 ||
+                    latestStatus?.statusCode ===
+                      OrderStatusEnum.WAITING_PAYMENT_4 ||
+                    latestStatus?.statusCode ===
                       OrderStatusEnum.WAITING_REPAYMENT_1 ||
                     latestStatus?.statusCode ===
                       OrderStatusEnum.WAITING_REPAYMENT_2
@@ -217,6 +221,10 @@ const OrderItem = ({
                   latestStatus?.statusCode ===
                     OrderStatusEnum.WAITING_PAYMENT_2 ||
                   latestStatus?.statusCode ===
+                    OrderStatusEnum.WAITING_PAYMENT_3 ||
+                  latestStatus?.statusCode ===
+                    OrderStatusEnum.WAITING_PAYMENT_4 ||
+                  latestStatus?.statusCode ===
                     OrderStatusEnum.WAITING_REPAYMENT_1 ||
                   latestStatus?.statusCode ===
                     OrderStatusEnum.WAITING_REPAYMENT_2
@@ -234,8 +242,7 @@ const OrderItem = ({
                 }
                 className="w-full"
               >
-                {/* {latestStatus?.statusLabel} */}
-                Proses Pengiriman Dokumen
+                {latestStatus?.statusLabel}
               </BadgeStatusPesanan>
             )}
           </div>
