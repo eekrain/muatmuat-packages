@@ -7,8 +7,9 @@ import SewaArmadaWeb from "@/container/Shipper/SewaArmada/Web/SewaArmadaWeb";
 import useDevice from "@/hooks/use-device";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
-import { useSWRHook, useSWRMutateHook } from "@/hooks/use-swr";
+import { useSWRMutateHook } from "@/hooks/use-swr";
 import { normalizeFetchTruck } from "@/lib/normalizers/sewaarmada/normalizeFetchTruck";
+import { useGetSettlementInfo } from "@/services/Shipper/daftarpesanan/getSettementInfo";
 import { useGetRecommendedCarriers } from "@/services/Shipper/sewaarmada/getRecommendedCarriers";
 import { useGetRecommendedTrucks } from "@/services/Shipper/sewaarmada/getRecommendedTrucks";
 import { useGetReorderFleetData } from "@/services/Shipper/sewaarmada/getReorderFleetData";
@@ -50,9 +51,7 @@ const Page = () => {
 
   const { data: reorderData, isLoading } = useGetReorderFleetData(copyOrderId);
 
-  const { data: settlementAlertInfoData } = useSWRHook(
-    "v1/orders/settlement/alert-info"
-  );
+  const { data: settlementAlertInfo = [] } = useGetSettlementInfo(true);
   const {
     cargoCategories,
     cargoTypes,
@@ -68,7 +67,6 @@ const Page = () => {
   const { trigger: calculatePrice, data: calculatedPriceData } =
     useSWRMutateHook("v1/orders/calculate-price");
 
-  const settlementAlertInfo = settlementAlertInfoData?.Data || [];
   const calculatedPrice = calculatedPriceData?.Data.price || null;
 
   const shippingDetails = useShallowMemo(() => {

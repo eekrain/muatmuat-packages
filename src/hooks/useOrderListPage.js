@@ -3,8 +3,10 @@ import { useState } from "react";
 
 import useDevice from "@/hooks/use-device";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
-import { useSWRHook } from "@/hooks/use-swr";
 import { useTranslation } from "@/hooks/use-translation";
+import { useGetCountByStatus } from "@/services/Shipper/daftarpesanan/getCountByStatus";
+import { useGetOrderList } from "@/services/Shipper/daftarpesanan/getOrderList";
+import { useGetSettlementInfo } from "@/services/Shipper/daftarpesanan/getSettementInfo";
 
 import { useShallowMemo } from "./use-shallow-memo";
 
@@ -90,29 +92,13 @@ const useOrderListPage = (options = {}) => {
     return params.toString();
   }, [queryParams, requiresConfirmation, status, defaultPage]);
 
-  const { data: settlementAlertInfoData } = useSWRHook(
-    defaultPage ? "v1/orders/settlement/alert-info" : null
-  );
+  const { data: settlementAlertInfo = [] } = useGetSettlementInfo(defaultPage);
   // Fetch orders data
-  const { data: ordersData, isLoading: isOrdersLoading } = useSWRHook(
-    `v1/orders/list?${queryString}`
-  );
-  const { data: countByStatusData } = useSWRHook(
-    defaultPage ? "v1/orders/count-by-status" : null
-  );
-  const settlementAlertInfo = settlementAlertInfoData?.Data || [];
-  const orders = ordersData?.Data?.orders || [];
-  const countByStatus = countByStatusData?.Data?.statusCounts || {};
-
-  // Use the pagination from API response
-  const pagination = defaultPage
-    ? ordersData?.Data?.pagination || {
-        currentPage: 1,
-        totalPages: 1,
-        totalItems: 0,
-        itemsPerPage: 10,
-      }
-    : null;
+  const {
+    data: { orders = [], pagination = {} } = {},
+    isLoading: isOrdersLoading,
+  } = useGetOrderList(queryString);
+  const { data: countByStatus = {} } = useGetCountByStatus(defaultPage);
 
   const statusTabOptions = useShallowMemo(
     () => [

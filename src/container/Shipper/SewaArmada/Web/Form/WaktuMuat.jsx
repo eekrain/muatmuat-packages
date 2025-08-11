@@ -38,6 +38,9 @@ export const WaktuMuat = ({ orderStatus }) => {
     setField(field, newDate);
     if (!isEditPage) {
       setField("truckTypeId", null);
+    } else {
+      // 25. 18 - Web - LB - 0271
+      setField("hasUpdatedForm", true);
     }
   };
 
