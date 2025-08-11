@@ -38,6 +38,7 @@ const Page = () => {
   const [hasMapInteraction, setHasMapInteraction] = useState(false); // Track if user has interacted with map
   const [selectedTruckFilters, setSelectedTruckFilters] = useState([]);
   const [selectedOrderFilters, setSelectedOrderFilters] = useState([]);
+  const [selectedFleetId, setSelectedFleetId] = useState(null);
 
   // Map query param values to tab values
   const getTabValue = (queryValue) => {
@@ -200,6 +201,31 @@ const Page = () => {
     return { center, zoom };
   };
 
+  // Handle truck click on map - moved before usage
+  const handleTruckClick = (marker) => {
+    setSelectedFleetId(marker.fleet.id);
+    // Open the left panel if it's not already open
+    if (!showLeftPanel) {
+      handleOpenLeftPanel();
+    }
+  };
+
+  // Handle fleet click from list - focus map on selected fleet
+  const handleFleetClickFromList = (fleet) => {
+    // Find the corresponding marker from fleet locations
+    const marker = allFleetMarkers.find((m) => m.fleet.id === fleet.fleetId);
+    if (marker) {
+      // Center map on the selected fleet
+      setMapCenter({
+        lat: fleet.lastLocation.latitude,
+        lng: fleet.lastLocation.longitude,
+      });
+      setMapZoom(16); // Zoom in to focus on the truck
+      setAutoFitBounds(false); // Disable auto-fit
+      setHasMapInteraction(false);
+    }
+  };
+
   // Convert fleet locations to map markers and apply filters
   const allFleetMarkers =
     fleetLocationsData?.fleets?.map((fleet) => {
@@ -232,6 +258,7 @@ const Page = () => {
         icon: icon,
         rotation: fleet.heading || 0, // Pass heading as rotation
         fleet: fleet, // Keep fleet data for additional info
+        onClick: handleTruckClick, // Add click handler
       };
     }) || [];
 
@@ -389,7 +416,12 @@ const Page = () => {
               {leftPanelMode === "sos" ? (
                 <SOSContainer onClose={handleCloseLeftPanel} />
               ) : (
-                <DaftarArmada onClose={handleCloseLeftPanel} />
+                <DaftarArmada
+                  onClose={handleCloseLeftPanel}
+                  selectedFleetId={selectedFleetId}
+                  onFleetSelect={setSelectedFleetId}
+                  onFleetClick={handleFleetClickFromList}
+                />
               )}
             </div>
           </div>

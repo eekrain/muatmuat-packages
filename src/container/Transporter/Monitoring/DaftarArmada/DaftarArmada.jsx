@@ -16,7 +16,13 @@ import FilterPopoverArmada from "./components/FilterPopoverArmada";
 import ModalResponseChange from "./components/ModalResponseChange";
 import SosPopupNotification from "./components/SosPopupNotification";
 
-const DaftarArmada = ({ onClose, onExpand }) => {
+const DaftarArmada = ({
+  onClose,
+  onExpand,
+  selectedFleetId,
+  onFleetSelect,
+  onFleetClick,
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedId, setExpandedId] = useState(null);
   const [showDriverModal, setShowDriverModal] = useState(false);
@@ -54,6 +60,13 @@ const DaftarArmada = ({ onClose, onExpand }) => {
     }
   }, [latestSosAlert]);
 
+  // Expand the selected fleet when selectedFleetId changes
+  useEffect(() => {
+    if (selectedFleetId) {
+      setExpandedId(selectedFleetId);
+    }
+  }, [selectedFleetId]);
+
   const toggleExpanded = (id) => {
     setExpandedId((prev) => {
       const newId = prev === id ? null : id;
@@ -90,6 +103,17 @@ const DaftarArmada = ({ onClose, onExpand }) => {
   const handleApplyFilter = (truckStatuses, orderStatuses) => {
     setTruckStatusFilter(truckStatuses);
     setOrderStatusFilter(orderStatuses);
+  };
+
+  const handleFleetCardClick = (fleet) => {
+    // Focus map on this fleet
+    if (onFleetClick) {
+      onFleetClick(fleet);
+    }
+    // Also update the selected fleet ID
+    if (onFleetSelect) {
+      onFleetSelect(fleet.fleetId);
+    }
   };
 
   const filteredData = fleets.filter(
@@ -189,15 +213,20 @@ const DaftarArmada = ({ onClose, onExpand }) => {
         ) : (
           <div className="space-y-3">
             {filteredData.map((fleet) => (
-              <CardFleet
+              <div
                 key={fleet.fleetId}
-                fleet={fleet}
-                isExpanded={expandedId === fleet.fleetId}
-                onToggleExpand={toggleExpanded}
-                onOpenDriverModal={handleOpenDriverModal}
-                onOpenResponseChangeModal={handleOpenResponseChangeModal}
-                isSOS={fleet.hasSOSAlert}
-              />
+                onClick={() => handleFleetCardClick(fleet)}
+                className="cursor-pointer"
+              >
+                <CardFleet
+                  fleet={fleet}
+                  isExpanded={expandedId === fleet.fleetId}
+                  onToggleExpand={toggleExpanded}
+                  onOpenDriverModal={handleOpenDriverModal}
+                  onOpenResponseChangeModal={handleOpenResponseChangeModal}
+                  isSOS={fleet.hasSOSAlert}
+                />
+              </div>
             ))}
           </div>
         )}

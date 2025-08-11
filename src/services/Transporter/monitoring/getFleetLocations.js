@@ -13,13 +13,13 @@ const apiResultFleetLocations = {
     Data: {
       fleets: [
         {
-          id: "fleet-a",
-          licensePlate: "L 1234 ABC",
-          driverName: "Budi Santoso",
+          id: "fleet-uuid-1",
+          licensePlate: "B1234ABC",
+          driverName: "John Doe",
           latitude: -6.2088, // Jakarta - Monas area
           longitude: 106.8456,
           heading: 45, // Direction in degrees (0=North, 90=East, 180=South, 270=West)
-          lastLocationUpdate: "2024-04-01T10:30:00Z",
+          lastLocationUpdate: "2025-07-25T10:30:00Z",
           operationalStatus: "ON_DUTY",
           statusColor: "blue",
           hasSOSAlert: false,
