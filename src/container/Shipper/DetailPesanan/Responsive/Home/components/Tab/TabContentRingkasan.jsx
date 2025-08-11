@@ -42,7 +42,10 @@ export const TabContentRingkasan = ({
       </div>
 
       {/* Ganti sendiri pakek logic menunggu pelunasan, ditoggle dulu sementara */}
-      {false ? <RepaymentPaymentMethod /> : null}
+      {dataRingkasanPembayaran?.orderStatus === "WAITING_PAYMENT_3" &&
+      dataRingkasanPembayaran?.priceChange ? (
+        <RepaymentPaymentMethod />
+      ) : null}
 
       {dataRingkasanPembayaran && !LIST_HIDE_METHOD_INFO && (
         <MethodInfo dataRingkasanPembayaran={dataRingkasanPembayaran} />

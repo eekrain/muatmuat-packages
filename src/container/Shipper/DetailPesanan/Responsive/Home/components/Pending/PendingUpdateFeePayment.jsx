@@ -1,8 +1,17 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useCountdown } from "@/hooks/use-countdown";
 import { useTranslation } from "@/hooks/use-translation";
 
-const PendingUpdateFeePayment = () => {
+const PendingUpdateFeePayment = ({
+  paymentDueDateTime = "2025-08-11T15:30:00Z",
+}) => {
   const { t } = useTranslation();
+
+  const { countdown } = useCountdown({
+    endingDate: paymentDueDateTime,
+    isNeedCountdown: true,
+  });
+
   return (
     <div className="flex w-full flex-col items-center justify-center bg-warning-50 px-4 py-6">
       <div className="flex flex-col items-center justify-center gap-3 self-stretch">
@@ -46,7 +55,7 @@ const PendingUpdateFeePayment = () => {
               {},
               "Mohon lakukan pembayaran dalam waktu"
             )}
-            <span className="font-bold text-neutral-900">{` 00:29:59 `}</span>
+            <span className="font-bold text-neutral-900">{` ${countdown} `}</span>
             {t(
               "PendingUpdateFeePayment.messageAutoCancelWarning",
               {},

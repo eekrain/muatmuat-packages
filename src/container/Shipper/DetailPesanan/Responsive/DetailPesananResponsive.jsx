@@ -68,7 +68,7 @@ const DetailPesananResponsive = () => {
   const dataDetailPIC = data?.dataDetailPIC;
   const dataRingkasanPembayaran = data?.dataRingkasanPembayaran;
   const documentShippingDetail =
-    data?.dataRingkasanPembayaran.documentShippingDetail;
+    data?.dataRingkasanPembayaran?.documentShippingDetail;
   console.log(dataRingkasanPembayaran, "dataRingkasanPembayaran");
   useEffect(() => {
     setIsGlobalLoading(false);
