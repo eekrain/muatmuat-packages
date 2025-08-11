@@ -36,6 +36,10 @@ export const mockAPIResult = {
       ],
       alertText: "labelAlertInfoMenungguKonfirmasi",
     },
+    {
+      orderId: ["2f8d1b39-ae1c-45c0-a1be-326431d64255"],
+      alertText: "labelAlertInfoPesananTidakDapatDiproses",
+    },
   ],
   Type: "/v1/orders/settlement/alert-info",
 };

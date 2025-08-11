@@ -92,13 +92,13 @@ const useOrderListPage = (options = {}) => {
     return params.toString();
   }, [queryParams, requiresConfirmation, status, defaultPage]);
 
-  const { data: settlementAlertInfo } = useGetSettlementInfo(defaultPage);
+  const { data: settlementAlertInfo = [] } = useGetSettlementInfo(defaultPage);
   // Fetch orders data
   const {
     data: { orders = [], pagination = {} } = {},
     isLoading: isOrdersLoading,
   } = useGetOrderList(queryString);
-  const { data: countByStatus } = useGetCountByStatus(defaultPage);
+  const { data: countByStatus = {} } = useGetCountByStatus(defaultPage);
 
   const statusTabOptions = useShallowMemo(
     () => [
