@@ -16,7 +16,13 @@ import FilterPopoverArmada from "./components/FilterPopoverArmada";
 import ModalResponseChange from "./components/ModalResponseChange";
 import SosPopupNotification from "./components/SosPopupNotification";
 
-const DaftarArmada = ({ onClose, onExpand }) => {
+const DaftarArmada = ({
+  onClose,
+  onExpand,
+  selectedFleetId,
+  onFleetSelect,
+  onFleetClick,
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedId, setExpandedId] = useState(null);
   const [showDriverModal, setShowDriverModal] = useState(false);
@@ -54,6 +60,13 @@ const DaftarArmada = ({ onClose, onExpand }) => {
     }
   }, [latestSosAlert]);
 
+  // Expand the selected fleet when selectedFleetId changes
+  useEffect(() => {
+    if (selectedFleetId) {
+      setExpandedId(selectedFleetId);
+    }
+  }, [selectedFleetId]);
+
   const toggleExpanded = (id) => {
     setExpandedId((prev) => {
       const newId = prev === id ? null : id;
@@ -90,13 +103,31 @@ const DaftarArmada = ({ onClose, onExpand }) => {
   const handleApplyFilter = (truckStatuses, orderStatuses) => {
     setTruckStatusFilter(truckStatuses);
     setOrderStatusFilter(orderStatuses);
+    refetchFleets(); // Trigger a refetch with new filters
   };
 
-  const filteredData = fleets.filter(
-    (fleet) =>
+  const handleFleetCardClick = (fleet) => {
+    // Focus map on this fleet
+    if (onFleetClick) {
+      onFleetClick(fleet);
+    }
+    // Also update the selected fleet ID
+    if (onFleetSelect) {
+      onFleetSelect(fleet.fleetId);
+    }
+  };
+
+  const filteredData = fleets.filter((fleet) => {
+    const searchMatch =
       fleet.licensePlate?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      fleet.driver?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      fleet.driver?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    if (activeTab === "sos") {
+      return fleet.hasSOSAlert && searchMatch;
+    }
+
+    return searchMatch;
+  });
 
   return (
     <div className="flex h-[calc(100vh-92px-96px)] flex-col rounded-xl bg-white pt-4">
@@ -184,20 +215,34 @@ const DaftarArmada = ({ onClose, onExpand }) => {
           </div>
         ) : filteredData.length === 0 ? (
           <div className="flex h-full items-center justify-center">
-            <DataNotFound type="search" title={"Keyword Tidak Ditemukan"} />
+            <DataNotFound
+              type="search"
+              title={
+                truckStatusFilter.length > 0 ||
+                orderStatusFilter.length > 0 ||
+                activeTab === "sos"
+                  ? "Data Tidak Ditemukan. Mohon coba hapus beberapa filter"
+                  : "Keyword Tidak Ditemukan"
+              }
+            />
           </div>
         ) : (
           <div className="space-y-3">
             {filteredData.map((fleet) => (
-              <CardFleet
+              <div
                 key={fleet.fleetId}
-                fleet={fleet}
-                isExpanded={expandedId === fleet.fleetId}
-                onToggleExpand={toggleExpanded}
-                onOpenDriverModal={handleOpenDriverModal}
-                onOpenResponseChangeModal={handleOpenResponseChangeModal}
-                isSOS={fleet.hasSOSAlert}
-              />
+                onClick={() => handleFleetCardClick(fleet)}
+                className="cursor-pointer"
+              >
+                <CardFleet
+                  fleet={fleet}
+                  isExpanded={expandedId === fleet.fleetId}
+                  onToggleExpand={toggleExpanded}
+                  onOpenDriverModal={handleOpenDriverModal}
+                  onOpenResponseChangeModal={handleOpenResponseChangeModal}
+                  isSOS={fleet.hasSOSAlert}
+                />
+              </div>
             ))}
           </div>
         )}

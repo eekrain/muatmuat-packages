@@ -384,7 +384,7 @@ export default function DriverInfoSlider({
       <Indicator
         count={items.length}
         activeIndex={activeIndicatorIndex}
-        className="pb-5"
+        className="pb-5 pt-0"
       />
     </Root>
   );

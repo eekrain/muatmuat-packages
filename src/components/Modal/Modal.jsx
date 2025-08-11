@@ -73,6 +73,7 @@ export const ModalContent = ({
     backgroudClassname: "",
     closeButtonClassname: "",
   },
+  ...props
 }) => {
   const {
     open,
@@ -130,6 +131,7 @@ export const ModalContent = ({
             e.preventDefault();
           }
         }}
+        {...props}
         className={cn(
           "fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2",
           "rounded-xl bg-neutral-50 shadow-lg",

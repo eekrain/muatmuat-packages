@@ -12,6 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/Popover/Popover";
+import { isDev } from "@/lib/constants/is-dev";
 
 const TRUCK_STATUS_OPTIONS = [
   {
@@ -66,6 +67,7 @@ export default function FilterPopoverArmada({
     NEEDS_RESPONSE: "needResponse",
   };
 
+  // Add counts to each option
   const truckStatusOptionsWithCount = TRUCK_STATUS_OPTIONS.map((opt) => ({
     ...opt,
     count: filterCounts[countKeyMapping[opt.id]] ?? 0,
@@ -103,9 +105,9 @@ export default function FilterPopoverArmada({
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="flex items-center gap-2 rounded-md border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-600 transition-colors hover:border-primary-700 hover:bg-gray-50"
+          className="flex h-8 items-center gap-2 rounded-md border border-neutral-600 px-3 py-2 text-xs font-semibold text-neutral-600 transition-colors hover:border-primary-700 hover:bg-gray-50"
         >
-          <SlidersHorizontal className="h-4 w-4" />
+          <SlidersHorizontal className="h-4 w-4 text-neutral-600" />
           Filter
         </button>
       </PopoverTrigger>
@@ -113,9 +115,9 @@ export default function FilterPopoverArmada({
       <PopoverContent
         className="relative w-[500px] rounded-xl border-0 bg-white p-5 shadow-lg"
         side="right"
-        align="start" // Aligns the popover's top edge with the trigger's top edge
-        alignOffset={-4} // Moves the popover 4px up
-        sideOffset={12} // Distance from the side of the trigger
+        align="start"
+        alignOffset={-4}
+        sideOffset={12}
         style={{ border: "none" }}
       >
         {/* Arrow/triangle pointing left */}
@@ -128,7 +130,7 @@ export default function FilterPopoverArmada({
             borderWidth: "8px 10px 8px 0",
             borderColor: "transparent white transparent transparent",
             left: "-9px",
-            top: "12px", // Adjusted to vertically center with the trigger
+            top: "12px",
             filter: "drop-shadow(-2px 2px 2px rgba(0, 0, 0, 0.1))",
           }}
         />
@@ -160,7 +162,7 @@ export default function FilterPopoverArmada({
                     />
                   </div>
                   <span
-                    className="cursor-pointer text-xs text-black"
+                    className="cursor-pointer text-xs font-medium text-black"
                     onClick={() => toggleTruckStatus(opt.id)}
                   >
                     {opt.label} ({opt.count})
@@ -171,35 +173,37 @@ export default function FilterPopoverArmada({
           </div>
 
           {/* Order Status Filter */}
-          <div>
-            <p className="mb-3 text-xs font-semibold text-black">
-              Status Pesanan
-            </p>
-            <div className="flex flex-col gap-3">
-              {orderStatusOptionsWithCount.map((opt) => (
-                <div key={opt.id} className="flex items-center gap-2">
-                  <Checkbox
-                    checked={selectedOrderStatuses.includes(opt.id)}
-                    onChange={() => toggleOrderStatus(opt.id)}
-                    value={opt.id}
-                    label=""
-                  />
-                  {opt.icon === "warning" && (
-                    <IconComponent
-                      src="/icons/warning16.svg"
-                      className="h-4 w-4 text-orange-500"
+          {orderStatusOptionsWithCount.length > 0 && (
+            <div>
+              <p className="mb-3 text-xs font-semibold text-black">
+                Status Pesanan
+              </p>
+              <div className="flex flex-col gap-3">
+                {orderStatusOptionsWithCount.map((opt) => (
+                  <div key={opt.id} className="flex items-center gap-2">
+                    <Checkbox
+                      checked={selectedOrderStatuses.includes(opt.id)}
+                      onChange={() => toggleOrderStatus(opt.id)}
+                      value={opt.id}
+                      label=""
                     />
-                  )}
-                  <span
-                    className="cursor-pointer text-xs text-black"
-                    onClick={() => toggleOrderStatus(opt.id)}
-                  >
-                    {opt.label} ({opt.count})
-                  </span>
-                </div>
-              ))}
+                    {opt.icon === "warning" && (
+                      <IconComponent
+                        src="/icons/warning16.svg"
+                        className="h-4 w-4 text-orange-500"
+                      />
+                    )}
+                    <span
+                      className="cursor-pointer text-xs font-medium text-black"
+                      onClick={() => toggleOrderStatus(opt.id)}
+                    >
+                      {opt.label} ({opt.count})
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Action Buttons */}
           <div className="flex justify-end gap-2 border-t border-gray-200 pt-4">

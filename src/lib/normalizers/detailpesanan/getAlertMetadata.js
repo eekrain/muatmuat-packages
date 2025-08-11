@@ -1,6 +1,7 @@
 import {
   AlertInfoEnum,
   AlertLabelEnum,
+  AlertLabelResponsiveEnum,
   AlertNeedConfirmEnum,
   AlertTypeEnum,
 } from "@/lib/constants/detailpesanan/alert.enum";
@@ -10,6 +11,7 @@ export const getAlertMetadata = ({
   t,
   onLihatDetailWaktuTunggu = () => alert("Not implemented yet"),
   onLihatPerubahan = () => alert("Not implemented yet"),
+  isMobile = false,
 }) => {
   const info = AlertInfoEnum[type];
   if (
@@ -39,5 +41,7 @@ export const getAlertMetadata = ({
     };
   }
 
-  return { label: AlertLabelEnum[type] };
+  return {
+    label: isMobile ? AlertLabelResponsiveEnum[type] : AlertLabelEnum[type],
+  };
 };

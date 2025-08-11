@@ -25,7 +25,7 @@ export default function ModalResponseChange({
         </ModalTitle>
         <div className="px-6 pb-4">
           {/* Banner Warning */}
-          <div className="mb-4 flex items-start gap-2 rounded-lg bg-secondary-100 p-3">
+          <div className="mb-4 flex h-14 items-start gap-2 rounded-lg bg-secondary-100 px-6 py-4">
             <AlertTriangle className="h-5 w-5 shrink-0 text-warning-500" />
             <p className="text-sm font-medium text-neutral-800">
               Terdapat perubahan pesanan dari shipper, mohon pelajari
@@ -38,6 +38,9 @@ export default function ModalResponseChange({
             <div className="space-y-4 px-4 py-1">
               {/* Perubahan Waktu Muat - only bottom border */}
               <div className="border-b border-neutral-200 pb-4">
+                <div className="rounded-full bg-muat-trans-primary-400">
+                  tes
+                </div>
                 <div className="p-3">
                   <p className="text-sm font-semibold text-neutral-900">
                     Perubahan Waktu Muat

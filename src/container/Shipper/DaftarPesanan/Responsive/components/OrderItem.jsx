@@ -112,6 +112,9 @@ const OrderItem = ({
                 index={key}
                 activeIndex={0}
                 title={item?.fullAddress}
+                appearance={{
+                  titleClassname: "text-xxs",
+                }}
                 buttonDetail={
                   key === 0 && locations.pickup.length > 1 ? (
                     <ButtonMini
@@ -189,6 +192,10 @@ const OrderItem = ({
                     latestStatus?.statusCode ===
                       OrderStatusEnum.WAITING_PAYMENT_2 ||
                     latestStatus?.statusCode ===
+                      OrderStatusEnum.WAITING_PAYMENT_3 ||
+                    latestStatus?.statusCode ===
+                      OrderStatusEnum.WAITING_PAYMENT_4 ||
+                    latestStatus?.statusCode ===
                       OrderStatusEnum.WAITING_REPAYMENT_1 ||
                     latestStatus?.statusCode ===
                       OrderStatusEnum.WAITING_REPAYMENT_2
@@ -217,6 +224,10 @@ const OrderItem = ({
                   latestStatus?.statusCode ===
                     OrderStatusEnum.WAITING_PAYMENT_2 ||
                   latestStatus?.statusCode ===
+                    OrderStatusEnum.WAITING_PAYMENT_3 ||
+                  latestStatus?.statusCode ===
+                    OrderStatusEnum.WAITING_PAYMENT_4 ||
+                  latestStatus?.statusCode ===
                     OrderStatusEnum.WAITING_REPAYMENT_1 ||
                   latestStatus?.statusCode ===
                     OrderStatusEnum.WAITING_REPAYMENT_2
@@ -234,8 +245,7 @@ const OrderItem = ({
                 }
                 className="w-full"
               >
-                {/* {latestStatus?.statusLabel} */}
-                Proses Pengiriman Dokumen
+                {latestStatus?.statusLabel}
               </BadgeStatusPesanan>
             )}
           </div>

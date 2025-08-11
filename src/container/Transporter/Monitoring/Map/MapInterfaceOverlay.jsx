@@ -6,6 +6,7 @@ import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { cn } from "@/lib/utils";
+import { useGetSosStatusSummary } from "@/services/Transporter/monitoring/getSosStatusSummary";
 
 import { FilterPopover } from "./components/FilterPopover";
 import { LegendButton } from "./components/LegendButton";
@@ -26,20 +27,19 @@ export const MapInterfaceOverlay = ({
   onToggleLicensePlate,
   onCenter,
   hasMapInteraction = false,
+  hasData = true,
 }) => {
-  const [sosCount] = useState(2);
+  const { data: sosStatusSummary } = useGetSosStatusSummary();
   const [centerButtonClicked, setCenterButtonClicked] =
     useState(!hasMapInteraction);
 
   useEffect(() => {
-    // Reset center button state when map interaction changes
     if (hasMapInteraction) {
       setCenterButtonClicked(false);
     }
   }, [hasMapInteraction]);
 
   const handleCenterClick = () => {
-    // Immediately set center button as clicked
     setCenterButtonClicked(true);
     onCenter();
   };
@@ -81,6 +81,15 @@ export const MapInterfaceOverlay = ({
 
   return (
     <>
+      {/* Data Not Found Message */}
+      {!hasData && (
+        <div className="absolute left-1/2 top-40 z-30 flex h-[52px] w-[300px] -translate-x-1/2 transform items-center justify-center rounded-md border border-neutral-400 bg-white px-[10px] py-[22px] shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
+          <span className="text-center text-xs font-medium text-black">
+            Data Tidak Ditemukan
+          </span>
+        </div>
+      )}
+
       {/* Top Navigation Bar Overlay */}
       {!hideTopNavigation && (
         <div className="absolute left-0 right-0 top-0 z-20 flex items-center gap-3 p-4">
@@ -109,16 +118,24 @@ export const MapInterfaceOverlay = ({
 
           {/* SOS Button */}
           <Button
-            variant="muattrans-error-secondary"
+            variant={
+              sosStatusSummary?.Data?.active > 0
+                ? "muattrans-error-secondary"
+                : "muattrans-primary-secondary"
+            }
             iconLeft={
-              <IconComponent
-                src="/icons/monitoring/sos.svg"
-                className="size-4"
-              />
+              sosStatusSummary?.Data?.active !== 0 && (
+                <IconComponent
+                  src="/icons/monitoring/sos.svg"
+                  className="size-4"
+                />
+              )
             }
             onClick={onClickSOS}
           >
-            SOS ({sosCount})
+            {sosStatusSummary?.Data?.active === 0
+              ? "Riwayat SOS"
+              : `SOS (${sosStatusSummary?.Data?.active})`}
           </Button>
         </div>
       )}

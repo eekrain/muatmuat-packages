@@ -37,6 +37,9 @@ export const useModalLocation = () => {
         updateLokasi(MODE_MAP[formMode], index, newData);
         if (!isEditPage) {
           setField("truckTypeId", null);
+        } else {
+          // 25. 18 - Web - LB - 0271
+          setField("hasUpdatedForm", true);
         }
       },
       index,

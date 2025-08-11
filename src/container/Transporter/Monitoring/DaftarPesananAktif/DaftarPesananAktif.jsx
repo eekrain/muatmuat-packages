@@ -7,11 +7,19 @@ import { id } from "date-fns/locale";
 
 import BadgeOrderType from "@/components/Badge/BadgeOrderType";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
+import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
+import {
+  SimpleDropdown,
+  SimpleDropdownContent,
+  SimpleDropdownItem,
+  SimpleDropdownTrigger,
+} from "@/components/Dropdown/SimpleDropdownMenu";
+import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import Search from "@/components/Search/Search";
-import MuatBongkarStepper from "@/components/Stepper/MuatBongkarStepper";
+import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
 import Table from "@/components/Table/Table";
 import { cn } from "@/lib/utils";
 import { ORDER_STATUS, getOrderStatusBadge } from "@/lib/utils/orderStatus";
@@ -19,12 +27,16 @@ import { useGetActiveOrders } from "@/services/Transporter/monitoring/daftar-pes
 import { useGetActiveOrdersCount } from "@/services/Transporter/monitoring/daftar-pesanan-active/getActiveOrdersCount";
 
 import Onboarding from "../Onboarding/Onboarding";
+import AssignArmadaModal from "./components/AssignArmadaModal";
 
 const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
   const { data: activeOrdersCount } = useGetActiveOrdersCount();
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
   const [searchValue, setSearchValue] = useState("");
   const [selectedFilter, setSelectedFilter] = useState(null);
+  const [openDropdowns, setOpenDropdowns] = useState({});
+  const [assignArmadaModalOpen, setAssignArmadaModalOpen] = useState(false);
+  const [selectedOrderForArmada, setSelectedOrderForArmada] = useState(null);
 
   // Map filter keys to lowercase status values for API
   const getFilterStatus = (filterKey) => {
@@ -122,7 +134,7 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
       key: "orderCode",
       sortable: true,
       headerClassName: "px-4 py-3",
-      className: "p-4",
+      className: "p-4 align-top",
       render: (row) => (
         <div className="flex flex-col gap-2.5">
           <span className="text-xxs font-semibold text-gray-900">
@@ -137,7 +149,7 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
       key: "loadTimeStart",
       sortable: true,
       headerClassName: "px-4 py-3",
-      className: "p-4",
+      className: "p-4 align-top",
       render: (row) => {
         const { dateLabel, timeRange, dateColor } = formatLoadTime(row);
         return (
@@ -156,9 +168,9 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
       sortable: false,
       width: "350px",
       headerClassName: "px-4 py-3",
-      className: "p-4",
+      className: "p-4 align-top",
       render: (row) => (
-        <MuatBongkarStepper
+        <MuatBongkarStepperWithModal
           pickupLocations={row.pickupLocations}
           dropoffLocations={row.dropoffLocations}
           appearance={{
@@ -172,7 +184,7 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
       key: "armada",
       sortable: false,
       headerClassName: "px-4 py-3",
-      className: "p-4",
+      className: "p-4 align-top",
       render: (row) => (
         <div className="flex w-[140px] flex-col gap-1">
           <span className="line-clamp-1 break-all text-xs font-bold">
@@ -211,20 +223,45 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
       key: "orderStatus",
       sortable: false,
       headerClassName: "px-4 py-3 ",
-      className: "p-4",
+      className: "p-4 align-top",
       render: (row) => {
         const statusBadge = getOrderStatusBadge(row.orderStatus);
         return (
-          <div className="flex items-center gap-2">
-            {row.orderStatus === ORDER_STATUS.SCHEDULED_FLEET && (
-              <IconComponent
-                src="/icons/info-circle.svg"
-                className="h-4 w-4 text-primary-700"
-              />
-            )}
+          <div className="flex flex-col gap-2">
             <BadgeStatus variant={statusBadge.variant} className="w-[176px]">
+              {row.orderStatus === ORDER_STATUS.SCHEDULED_FLEET && (
+                <InfoTooltip
+                  side="top"
+                  appearance={{
+                    iconClassName: "text-primary-700 mr-1 size-3.5",
+                  }}
+                >
+                  <p>
+                    Armada kamu telah tercatat untuk pesanan ini, harap menunggu
+                    maks. 1 jam untuk konfirmasi dari Shipper
+                  </p>
+                </InfoTooltip>
+              )}
+              {row.orderStatus === ORDER_STATUS.NEED_CONFIRMATION_READY && (
+                <IconComponent
+                  src="/icons/warning-red.svg"
+                  className="mr-1 h-3.5 w-3.5"
+                />
+              )}
               {statusBadge.label}
             </BadgeStatus>
+            {row.orderStatus === ORDER_STATUS.NEED_ASSIGN_FLEET && (
+              <Button
+                variant="muattrans-primary"
+                onClick={() => {
+                  setSelectedOrderForArmada(row);
+                  setAssignArmadaModalOpen(true);
+                }}
+                className="mx-auto h-8 w-[147px] text-sm"
+              >
+                Assign Armada
+              </Button>
+            )}
           </div>
         );
       },
@@ -234,15 +271,253 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
       key: "actions",
       sortable: false,
       headerClassName: "px-4 py-3",
-      className: "p-4",
-      render: () => (
-        <button className="flex h-6 w-6 items-center justify-center rounded-lg hover:border hover:border-primary-700 hover:bg-neutral-200">
-          <IconComponent
-            src="/icons/monitoring/daftar-pesanan-aktif/action.svg"
-            className="h-[13px] w-[13px]"
-          />
-        </button>
-      ),
+      className: "p-4 align-top",
+      render: (row) => {
+        // Show dropdown for SCHEDULED_FLEET status
+        if (row.orderStatus === ORDER_STATUS.SCHEDULED_FLEET) {
+          return (
+            <SimpleDropdown
+              open={openDropdowns[row.id] || false}
+              onOpenChange={(isOpen) =>
+                setOpenDropdowns((prev) => ({ ...prev, [row.id]: isOpen }))
+              }
+            >
+              <SimpleDropdownTrigger asChild>
+                <button
+                  className={cn(
+                    "flex h-6 w-6 items-center justify-center rounded-lg",
+                    openDropdowns[row.id]
+                      ? "border border-primary-700 bg-primary-50"
+                      : "hover:border hover:border-primary-700 hover:bg-neutral-200"
+                  )}
+                >
+                  <IconComponent
+                    src="/icons/monitoring/daftar-pesanan-aktif/action.svg"
+                    className={cn(
+                      "h-[13px] w-[13px]",
+                      openDropdowns[row.id] ? "text-primary-700" : ""
+                    )}
+                  />
+                </button>
+              </SimpleDropdownTrigger>
+
+              <SimpleDropdownContent
+                className="mr-1 mt-0 w-[122px]"
+                side="left"
+              >
+                <SimpleDropdownItem
+                  onClick={() => console.log("Lihat Armada", row)}
+                  className="flex h-8 items-center"
+                >
+                  Lihat Armada
+                </SimpleDropdownItem>
+                <SimpleDropdownItem
+                  onClick={() => console.log("Detail Pesanan", row)}
+                  className="flex h-8 items-center"
+                >
+                  Detail Pesanan
+                </SimpleDropdownItem>
+                <SimpleDropdownItem
+                  onClick={() => console.log("Batalkan Pesanan", row)}
+                  className="flex h-8 items-center text-error-400 hover:text-error-500"
+                >
+                  Batalkan Pesanan
+                </SimpleDropdownItem>
+              </SimpleDropdownContent>
+            </SimpleDropdown>
+          );
+        }
+
+        // Show dropdown for NEED_ASSIGN_FLEET status
+        if (row.orderStatus === ORDER_STATUS.NEED_ASSIGN_FLEET) {
+          return (
+            <SimpleDropdown
+              open={openDropdowns[row.id] || false}
+              onOpenChange={(isOpen) =>
+                setOpenDropdowns((prev) => ({ ...prev, [row.id]: isOpen }))
+              }
+            >
+              <SimpleDropdownTrigger asChild>
+                <button
+                  className={cn(
+                    "flex h-6 w-6 items-center justify-center rounded-lg",
+                    openDropdowns[row.id]
+                      ? "border border-primary-700 bg-primary-50"
+                      : "hover:border hover:border-primary-700 hover:bg-neutral-200"
+                  )}
+                >
+                  <IconComponent
+                    src="/icons/monitoring/daftar-pesanan-aktif/action.svg"
+                    className={cn(
+                      "h-[13px] w-[13px]",
+                      openDropdowns[row.id] ? "text-primary-700" : ""
+                    )}
+                  />
+                </button>
+              </SimpleDropdownTrigger>
+
+              <SimpleDropdownContent
+                className="mr-1 mt-0 w-[160px]"
+                side="left"
+              >
+                <SimpleDropdownItem
+                  onClick={() => {
+                    setSelectedOrderForArmada(row);
+                    setAssignArmadaModalOpen(true);
+                  }}
+                  className="flex h-8 items-center"
+                >
+                  Assign Armada
+                </SimpleDropdownItem>
+                <SimpleDropdownItem
+                  onClick={() => console.log("Ubah Jumlah Unit", row)}
+                  className="flex h-8 items-center"
+                >
+                  Ubah Jumlah Unit
+                </SimpleDropdownItem>
+                <SimpleDropdownItem
+                  onClick={() => console.log("Detail Pesanan", row)}
+                  className="flex h-8 items-center"
+                >
+                  Detail Pesanan
+                </SimpleDropdownItem>
+                <SimpleDropdownItem
+                  onClick={() => console.log("Batalkan Pesanan", row)}
+                  className="flex h-8 items-center text-error-400 hover:text-error-500"
+                >
+                  Batalkan Pesanan
+                </SimpleDropdownItem>
+              </SimpleDropdownContent>
+            </SimpleDropdown>
+          );
+        }
+
+        // Show dropdown for NEED_CONFIRMATION_READY status
+        if (row.orderStatus === ORDER_STATUS.NEED_CONFIRMATION_READY) {
+          return (
+            <SimpleDropdown
+              open={openDropdowns[row.id] || false}
+              onOpenChange={(isOpen) =>
+                setOpenDropdowns((prev) => ({ ...prev, [row.id]: isOpen }))
+              }
+            >
+              <SimpleDropdownTrigger asChild>
+                <button
+                  className={cn(
+                    "flex h-6 w-6 items-center justify-center rounded-lg",
+                    openDropdowns[row.id]
+                      ? "border border-primary-700 bg-primary-50"
+                      : "hover:border hover:border-primary-700 hover:bg-neutral-200"
+                  )}
+                >
+                  <IconComponent
+                    src="/icons/monitoring/daftar-pesanan-aktif/action.svg"
+                    className={cn(
+                      "h-[13px] w-[13px]",
+                      openDropdowns[row.id] ? "text-primary-700" : ""
+                    )}
+                  />
+                </button>
+              </SimpleDropdownTrigger>
+
+              <SimpleDropdownContent
+                className="mr-1 mt-0 w-[172px]"
+                side="left"
+              >
+                <SimpleDropdownItem
+                  onClick={() => console.log("Konfirmasi Siap", row)}
+                  className="flex h-8 items-center"
+                >
+                  Konfirmasi Siap
+                </SimpleDropdownItem>
+                <SimpleDropdownItem
+                  onClick={() => console.log("Lihat Armada", row)}
+                  className="flex h-8 items-center"
+                >
+                  Lihat Armada
+                </SimpleDropdownItem>
+                <SimpleDropdownItem
+                  onClick={() => console.log("Detail Pesanan", row)}
+                  className="flex h-8 items-center"
+                >
+                  Detail Pesanan
+                </SimpleDropdownItem>
+                <SimpleDropdownItem
+                  onClick={() => console.log("Batalkan Armada", row)}
+                  className="flex h-8 items-center text-error-400 hover:text-error-500"
+                >
+                  Batalkan Armada
+                </SimpleDropdownItem>
+                <SimpleDropdownItem
+                  onClick={() => console.log("Batalkan Pesanan", row)}
+                  className="flex h-8 items-center text-error-400 hover:text-error-500"
+                >
+                  Batalkan Pesanan
+                </SimpleDropdownItem>
+              </SimpleDropdownContent>
+            </SimpleDropdown>
+          );
+        }
+
+        // Show dropdown for CONFIRMED status
+        if (row.orderStatus === ORDER_STATUS.CONFIRMED) {
+          return (
+            <SimpleDropdown
+              open={openDropdowns[row.id] || false}
+              onOpenChange={(isOpen) =>
+                setOpenDropdowns((prev) => ({ ...prev, [row.id]: isOpen }))
+              }
+            >
+              <SimpleDropdownTrigger asChild>
+                <button
+                  className={cn(
+                    "flex h-6 w-6 items-center justify-center rounded-lg",
+                    openDropdowns[row.id]
+                      ? "border border-primary-700 bg-primary-50"
+                      : "hover:border hover:border-primary-700 hover:bg-neutral-200"
+                  )}
+                >
+                  <IconComponent
+                    src="/icons/monitoring/daftar-pesanan-aktif/action.svg"
+                    className={cn(
+                      "h-[13px] w-[13px]",
+                      openDropdowns[row.id] ? "text-primary-700" : ""
+                    )}
+                  />
+                </button>
+              </SimpleDropdownTrigger>
+
+              <SimpleDropdownContent
+                className="mr-1 mt-0 w-[122px]"
+                side="left"
+              >
+                <SimpleDropdownItem
+                  onClick={() => console.log("Lihat Armada", row)}
+                  className="flex h-8 items-center"
+                >
+                  Lihat Armada
+                </SimpleDropdownItem>
+                <SimpleDropdownItem
+                  onClick={() => console.log("Detail Pesanan", row)}
+                  className="flex h-8 items-center"
+                >
+                  Detail Pesanan
+                </SimpleDropdownItem>
+              </SimpleDropdownContent>
+            </SimpleDropdown>
+          );
+        }
+
+        // Default action button for other statuses
+        return (
+          <button className="flex h-6 w-6 items-center justify-center rounded-lg hover:border hover:border-primary-700 hover:bg-neutral-200">
+            <IconComponent
+              src="/icons/monitoring/daftar-pesanan-aktif/action.svg"
+              className="h-[13px] w-[13px]"
+            />
+          </button>
+        );
+      },
     },
   ];
 
@@ -420,6 +695,16 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
           )}
         </div>
       )}
+
+      {/* Assign Armada Modal */}
+      <AssignArmadaModal
+        isOpen={assignArmadaModalOpen}
+        onClose={() => {
+          setAssignArmadaModalOpen(false);
+          setSelectedOrderForArmada(null);
+        }}
+        orderData={selectedOrderForArmada}
+      />
     </div>
   );
 };

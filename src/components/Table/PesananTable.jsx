@@ -366,12 +366,13 @@ const PesananTable = ({
                           {/* Tanggal Muat */}
                           <td className="w-[156px] pb-4 pl-0 pr-6 pt-5 align-top">
                             <span className="text-xs font-medium text-neutral-900">
-                              {`${formatDate(order.loadTimeStart)}
-                              ${
-                                order.loadTimeEnd
-                                  ? ` s/d ${formatDate(order.loadTimeEnd)}`
-                                  : ""
-                              }`}
+                              {`${formatDate(order.loadTimeStart)}${order.loadTimeEnd ? " s/d" : ""}`}
+                              {order.loadTimeEnd ? (
+                                <>
+                                  <br />
+                                  {formatDate(order.loadTimeEnd)}
+                                </>
+                              ) : null}
                             </span>
                           </td>
 
@@ -519,6 +520,10 @@ const PesananTable = ({
                                     latestStatus?.statusCode ===
                                       OrderStatusEnum.WAITING_PAYMENT_2 ||
                                     latestStatus?.statusCode ===
+                                      OrderStatusEnum.WAITING_PAYMENT_3 ||
+                                    latestStatus?.statusCode ===
+                                      OrderStatusEnum.WAITING_PAYMENT_4 ||
+                                    latestStatus?.statusCode ===
                                       OrderStatusEnum.WAITING_REPAYMENT_1 ||
                                     latestStatus?.statusCode ===
                                       OrderStatusEnum.WAITING_REPAYMENT_2
@@ -547,6 +552,10 @@ const PesananTable = ({
                                     OrderStatusEnum.WAITING_PAYMENT_1 ||
                                   latestStatus?.statusCode ===
                                     OrderStatusEnum.WAITING_PAYMENT_2 ||
+                                  latestStatus?.statusCode ===
+                                    OrderStatusEnum.WAITING_PAYMENT_3 ||
+                                  latestStatus?.statusCode ===
+                                    OrderStatusEnum.WAITING_PAYMENT_4 ||
                                   latestStatus?.statusCode ===
                                     OrderStatusEnum.WAITING_REPAYMENT_1 ||
                                   latestStatus?.statusCode ===
@@ -760,6 +769,7 @@ const PesananTable = ({
 
       {/* Modal Konfirmasi Dokumen Diterima */}
       <ConfirmationModal
+        variant="muatparts"
         isOpen={isDocumentReceivedModalOpen}
         setIsOpen={setIsDocumentReceivedModalOpen}
         title={{
@@ -781,6 +791,7 @@ const PesananTable = ({
 
       {/* Modal Pesan Ulang */}
       <ConfirmationModal
+        variant="muatparts"
         isOpen={isReorderFleetModalOpen}
         setIsOpen={setIsReorderFleetModalOpen}
         description={{
@@ -820,23 +831,26 @@ const PesananTable = ({
                 <Fragment key={key}>
                   <BadgeStatusPesanan
                     variant={
-                      status?.statusLabel ===
+                      status?.statusCode ===
                         OrderStatusEnum.WAITING_PAYMENT_1 ||
-                      status?.statusLabel ===
+                      status?.statusCode ===
                         OrderStatusEnum.WAITING_PAYMENT_2 ||
-                      status?.statusLabel ===
+                      status?.statusCode ===
+                        OrderStatusEnum.WAITING_PAYMENT_3 ||
+                      status?.statusCode ===
+                        OrderStatusEnum.WAITING_PAYMENT_4 ||
+                      status?.statusCode ===
                         OrderStatusEnum.WAITING_REPAYMENT_1 ||
-                      status?.statusLabel ===
-                        OrderStatusEnum.WAITING_REPAYMENT_2
+                      status?.statusCode === OrderStatusEnum.WAITING_REPAYMENT_2
                         ? "warning"
-                        : status?.statusLabel ===
+                        : status?.statusCode ===
                               OrderStatusEnum.CANCELED_BY_SHIPPER ||
-                            status?.statusLabel ===
+                            status?.statusCode ===
                               OrderStatusEnum.CANCELED_BY_SYSTEM ||
-                            status?.statusLabel ===
+                            status?.statusCode ===
                               OrderStatusEnum.CANCELED_BY_TRANSPORTER
                           ? "error"
-                          : status?.statusLabel === OrderStatusEnum.COMPLETED
+                          : status?.statusCode === OrderStatusEnum.COMPLETED
                             ? "success"
                             : "primary"
                     }

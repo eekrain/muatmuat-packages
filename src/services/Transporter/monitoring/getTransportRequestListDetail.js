@@ -9,7 +9,7 @@ const MOCK_CONFIG = {
   isSuspended: true,
   orderType: "SCHEDULED",
   timeLabel: "Muat 3 Hari Lagi",
-  photoCount: 4,
+  photoCount: 40,
   hasAdditionalServices: true,
   isTaken: false,
 };
@@ -42,7 +42,7 @@ const mockDetailData = {
       additionalServiceFee: 50000.0,
       adminFee: 25000.0,
       taxAmount: 125000.0,
-      truckCount: 1,
+      truckCount: 2,
       truckTypeID: "550e8400-e29b-41d4-a716-446655440099",
       truckTypeName:
         "Tractor head 6 x 4 dan Semi Trailer - Skeletal Container Jumbo 45 ft  (3 As)",

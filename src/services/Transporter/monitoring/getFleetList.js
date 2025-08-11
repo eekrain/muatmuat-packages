@@ -420,9 +420,41 @@ const apiResultFleetList = {
           },
         },
       },
+      {
+        fleetId: "uuid-fleet-id-2",
+        licensePlate: "L 5678 DEF",
+        driver: {
+          driverId: "driver-uuid-9",
+          name: "Siti Rahayu",
+          phoneNumber: "+628777888999",
+        },
+        lastLocation: {
+          latitude: -6.9175,
+          longitude: 107.6191,
+          address: {
+            district: "Dago",
+            city: "Bandung",
+          },
+          lastUpdate: "2024-04-01T10:25:00Z",
+        },
+        truckType: {
+          truckTypeId: "truck-type-uuid-2",
+          name: "Box",
+        },
+        carrierType: {
+          carrierId: "carrier-uuid-2",
+          name: "Bak Tertutup",
+        },
+        status: "READY_FOR_ORDER",
+        isActive: true,
+        hasSOSAlert: false,
+        detailSOS: null,
+        needsResponseChange: false,
+        activeOrder: null,
+      },
     ],
     pagination: {
-      totalFleets: 9,
+      totalFleets: 10,
       currentPage: 1,
       totalPages: 3,
     },
@@ -439,17 +471,27 @@ const apiResultFleetList = {
   Type: "FLEET_LIST",
 };
 
-export const fetcherFleetList = async () => {
-  if (isMockFleetList) {
-    return apiResultFleetList.Data;
-  }
+export const useGetFleetList = (params = {}) => {
+  const cacheKey = ["monitoring-fleet-list", params];
 
-  const result = await fetcherMuatrans.get("/v1/fleet-list");
-  return result?.data?.Data || {};
+  return useSWR(cacheKey, () => fetcherFleetList(params));
 };
 
-export const useGetFleetList = () => {
-  const cacheKey = "monitoring-fleet-list";
+export const fetcherFleetList = async (params = {}) => {
+  if (isMockFleetList) {
+    // Simulate filtering in mock data
+    const filteredData = {
+      ...apiResultFleetList.Data,
+      fleets: apiResultFleetList.Data.fleets.filter((fleet) => {
+        if (params.truckStatus && params.truckStatus.length > 0) {
+          return params.truckStatus.includes(fleet.status);
+        }
+        return true;
+      }),
+    };
+    return filteredData;
+  }
 
-  return useSWR(cacheKey, fetcherFleetList);
+  const result = await fetcherMuatrans.get("/v1/fleet-list", { params });
+  return result?.data?.Data || {};
 };

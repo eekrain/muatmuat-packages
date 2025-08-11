@@ -31,6 +31,7 @@ const badgeClasses = {
 
 // Truck Marker Component - Memoized to prevent unnecessary re-renders
 const TruckMarker = memo(({ marker, showLicensePlate }) => {
+  const [isHovered, setIsHovered] = useState(false);
   const hasAlerts =
     marker.fleet?.hasSOSAlert || marker.fleet?.needsResponseChange;
 
@@ -59,6 +60,8 @@ const TruckMarker = memo(({ marker, showLicensePlate }) => {
           transformStyle: "preserve-3d",
         }}
         onClick={() => marker.onClick?.(marker)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
         <img
           src={marker.icon}
@@ -87,7 +90,7 @@ const TruckMarker = memo(({ marker, showLicensePlate }) => {
       </div>
 
       {/* Label positioned at 2 o'clock from center - outside rotation */}
-      {(showLicensePlate || hasAlerts) && (
+      {(showLicensePlate || hasAlerts || isHovered) && (
         <div
           className="pointer-events-auto absolute flex h-5 flex-row items-center"
           style={{
@@ -99,8 +102,8 @@ const TruckMarker = memo(({ marker, showLicensePlate }) => {
             backfaceVisibility: "hidden",
           }}
         >
-          {/* License Plate Badge - Show if toggle is ON OR if there are alerts */}
-          {(showLicensePlate || hasAlerts) && (
+          {/* License Plate Badge - Show if toggle is ON OR if there are alerts OR on hover */}
+          {(showLicensePlate || hasAlerts || isHovered) && (
             <div
               className={cn(
                 badgeClasses.base,
