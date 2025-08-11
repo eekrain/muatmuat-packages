@@ -208,6 +208,14 @@ const Page = () => {
     if (!showLeftPanel) {
       handleOpenLeftPanel();
     }
+    // Center map on the clicked truck
+    setMapCenter({
+      lat: marker.position.lat,
+      lng: marker.position.lng,
+    });
+    setMapZoom(16); // Zoom in to focus on the truck
+    setAutoFitBounds(false); // Disable auto-fit
+    setHasMapInteraction(false);
   };
 
   // Handle fleet click from list - focus map on selected fleet
