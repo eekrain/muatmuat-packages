@@ -125,7 +125,7 @@ export const SearchSuggestions = ({
     }
   }, [isOpen, onSelect]);
 
-  if (!isOpen || suggestions.length === 0) return null;
+  if (!isOpen) return null;
 
   const getHighlightedText = (text, highlight) => {
     if (!highlight.trim()) return text;
@@ -148,28 +148,36 @@ export const SearchSuggestions = ({
     <div
       ref={suggestionsRef}
       className={cn(
-        "absolute left-0 top-full z-30 mt-1 w-[300px] overflow-hidden rounded-md border border-neutral-300 bg-white shadow-lg",
+        "absolute left-0 top-full z-30 mt-1 w-[300px] overflow-hidden rounded-md border border-neutral-400 bg-white shadow-muat",
         className
       )}
     >
-      <div className="search-suggestions-scroll relative max-h-[174px] overflow-y-auto overflow-x-hidden">
-        {suggestions.map((suggestion, index) => {
-          return (
-            <button
-              key={suggestion.id}
-              className="flex h-8 w-full items-center px-2.5 py-3 text-left transition-colors hover:bg-neutral-200"
-              onClick={() => onSelect(suggestion)}
-              onMouseEnter={() => setSelectedIndex(index)}
-            >
-              <div className="flex w-full items-center overflow-hidden">
-                <span className="text-xs font-medium text-black">
-                  {getHighlightedText(suggestion.displayText, searchValue)}
-                </span>
-              </div>
-            </button>
-          );
-        })}
-      </div>
+      {suggestions.length === 0 ? (
+        <div className="flex h-[52px] items-center justify-center px-2.5 py-[22px]">
+          <span className="text-center text-xs font-medium text-black">
+            Data Tidak Ditemukan
+          </span>
+        </div>
+      ) : (
+        <div className="search-suggestions-scroll relative max-h-[174px] overflow-y-auto overflow-x-hidden">
+          {suggestions.map((suggestion, index) => {
+            return (
+              <button
+                key={suggestion.id}
+                className="flex h-8 w-full items-center px-2.5 py-3 text-left transition-colors hover:bg-neutral-200"
+                onClick={() => onSelect(suggestion)}
+                onMouseEnter={() => setSelectedIndex(index)}
+              >
+                <div className="flex w-full items-center overflow-hidden">
+                  <span className="text-xs font-medium text-black">
+                    {getHighlightedText(suggestion.displayText, searchValue)}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
