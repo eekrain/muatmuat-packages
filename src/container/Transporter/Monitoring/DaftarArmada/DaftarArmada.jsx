@@ -116,11 +116,17 @@ const DaftarArmada = ({
     }
   };
 
-  const filteredData = fleets.filter(
-    (fleet) =>
+  const filteredData = fleets.filter((fleet) => {
+    const searchMatch =
       fleet.licensePlate?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      fleet.driver?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      fleet.driver?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    if (activeTab === "sos") {
+      return fleet.hasSOSAlert && searchMatch;
+    }
+
+    return searchMatch;
+  });
 
   return (
     <div className="flex h-[calc(100vh-92px-96px)] flex-col rounded-xl bg-white pt-4">

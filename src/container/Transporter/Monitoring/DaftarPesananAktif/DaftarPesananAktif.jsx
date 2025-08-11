@@ -11,7 +11,7 @@ import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import Search from "@/components/Search/Search";
-import MuatBongkarStepper from "@/components/Stepper/MuatBongkarStepper";
+import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
 import Table from "@/components/Table/Table";
 import { cn } from "@/lib/utils";
 import { ORDER_STATUS, getOrderStatusBadge } from "@/lib/utils/orderStatus";
@@ -158,7 +158,7 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
       headerClassName: "px-4 py-3",
       className: "p-4",
       render: (row) => (
-        <MuatBongkarStepper
+        <MuatBongkarStepperWithModal
           pickupLocations={row.pickupLocations}
           dropoffLocations={row.dropoffLocations}
           appearance={{
