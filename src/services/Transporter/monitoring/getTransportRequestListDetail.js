@@ -9,7 +9,7 @@ const MOCK_CONFIG = {
   isSuspended: true,
   orderType: "SCHEDULED",
   timeLabel: "Muat 3 Hari Lagi",
-  photoCount: 4,
+  photoCount: 40,
   hasAdditionalServices: true,
   isTaken: false,
 };
