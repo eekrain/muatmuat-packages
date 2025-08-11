@@ -14,6 +14,7 @@ import {
   vehicleDefaultValues,
   vehicleFormSchema,
 } from "@/config/forms/vehicleFormConfig";
+import { useTranslation } from "@/hooks/use-translation";
 import { useTableForm } from "@/hooks/useTableForm";
 import { normalizePayloadTambahArmadaMassal } from "@/lib/normalizers/transporter/tambah-armada-massal/normalizePayloadTambahArmadaMassal";
 import { toast } from "@/lib/toast";
@@ -23,6 +24,7 @@ import { usePostFleetBulkDrafts } from "@/services/Transporter/manajemen-armada/
 import ArmadaTable from "../../ArmadaTable/ArmadaTable";
 
 const TambahArmadaMassal = ({ isDraftAvailable }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { onValueChange } = useTabs();
 
@@ -40,13 +42,23 @@ const TambahArmadaMassal = ({ isDraftAvailable }) => {
     handlePostFleetBulkCreate(payload)
       .then((res) => {
         // Show success message
-        toast.success(`Berhasil menambahkan ${res.Data.savedFleets} armada.`);
+        toast.success(
+          t(
+            "TambahArmadaMassal.toastBerhasilMenambahkanArmada",
+            { count: res.Data.savedFleets },
+            `Berhasil menambahkan ${res.Data.savedFleets} armada.`
+          )
+        );
         router.push(`/manajemen-armada?tab=process`);
       })
       .catch((_error) => {
         // Show error message
         toast.error(
-          "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
+          t(
+            "TambahArmadaMassal.toastGagalMenyimpanDraftArmada",
+            {},
+            "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
+          )
         );
       });
   };
@@ -57,13 +69,23 @@ const TambahArmadaMassal = ({ isDraftAvailable }) => {
     handlePostFleetBulkDraft(payload)
       .then(() => {
         // Show success message
-        toast.success("Draft armada berhasil disimpan.");
+        toast.success(
+          t(
+            "TambahArmadaMassal.toastDraftArmadaBerhasilDisimpan",
+            {},
+            "Draft armada berhasil disimpan."
+          )
+        );
         onValueChange("draft");
       })
       .catch((_error) => {
         // Show error message
         toast.error(
-          "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
+          t(
+            "TambahArmadaMassal.toastGagalMenyimpanDraftArmadaSecond",
+            {},
+            "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
+          )
         );
       });
   };
@@ -121,10 +143,14 @@ const TambahArmadaMassal = ({ isDraftAvailable }) => {
               variant="muattrans-primary-secondary"
               type="button"
             >
-              Simpan Sebagai Draft
+              {t(
+                "TambahArmadaMassal.buttonSimpanSebagaiDraft",
+                {},
+                "Simpan Sebagai Draft"
+              )}
             </Button>
             <Button disabled={isMutating || isDraftMutating} type="submit">
-              Simpan
+              {t("TambahArmadaMassal.buttonSimpan", {}, "Simpan")}
             </Button>
           </div>
         </div>
@@ -139,14 +165,22 @@ const TambahArmadaMassal = ({ isDraftAvailable }) => {
         <ModalContent className="w-modal-small text-center">
           <ModalHeader size="small" />
           <div className="flex flex-col items-center gap-4 px-6 py-9 text-black">
-            <h2 className="text-base font-bold">Pemberitahuan</h2>
+            <h2 className="text-base font-bold">
+              {t("TambahArmadaMassal.titlePemberitahuan", {}, "Pemberitahuan")}
+            </h2>
             <p className="text-sm font-medium">
-              Harap selesaikan data pada menu Draft terlebih dahulu.
+              {t(
+                "TambahArmadaMassal.descriptionHarapSelesaikanData",
+                {},
+                "Harap selesaikan data pada menu Draft terlebih dahulu."
+              )}
               <br />
               <br />
-              Kamu memiliki draft tambah armada yang belum selesai. Silakan
-              simpan data tersebut atau hapus draft sebelum menambahkan armada
-              baru
+              {t(
+                "TambahArmadaMassal.descriptionKamuMemilikiDraft",
+                {},
+                "Kamu memiliki draft tambah armada yang belum selesai. Silakan simpan data tersebut atau hapus draft sebelum menambahkan armada baru"
+              )}
             </p>
             <Link href="#">
               <Button
@@ -154,7 +188,11 @@ const TambahArmadaMassal = ({ isDraftAvailable }) => {
                   onValueChange("draft");
                 }}
               >
-                Selesaikan Draft
+                {t(
+                  "TambahArmadaMassal.buttonSelesaikanDraft",
+                  {},
+                  "Selesaikan Draft"
+                )}
               </Button>
             </Link>
           </div>
@@ -165,22 +203,29 @@ const TambahArmadaMassal = ({ isDraftAvailable }) => {
         isOpen={confirmDeleteModal}
         setIsOpen={setConfirmDeleteModal}
         title={{
-          text: "Apakah kamu yakin untuk menghapus armada ?",
+          text: t(
+            "TambahArmadaMassal.titleConfirmDeleteArmada",
+            {},
+            "Apakah kamu yakin untuk menghapus armada ?"
+          ),
           className: "text-sm font-medium text-center",
         }}
         confirm={{
-          text: "Hapus",
+          text: t("TambahArmadaMassal.buttonHapus", {}, "Hapus"),
           onClick: handleRemove,
         }}
         cancel={{
-          text: "Batal",
+          text: t("TambahArmadaMassal.buttonBatal", {}, "Batal"),
           onClick: () => {
             setConfirmDeleteModal(false);
           },
         }}
       >
-        Apakah kamu yakin ingin menghapus armada yang telah dipilih? Tindakan
-        ini tidak dapat dibatalkan.
+        {t(
+          "TambahArmadaMassal.messageConfirmDeleteArmada",
+          {},
+          "Apakah kamu yakin ingin menghapus armada yang telah dipilih? Tindakan ini tidak dapat dibatalkan."
+        )}
       </ConfirmationModal>
     </div>
   );
