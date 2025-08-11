@@ -173,6 +173,7 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
       </Card>
 
       <ConfirmationModal
+        variant="muatparts"
         size="big"
         isOpen={isConfirmationModalOpen}
         setIsOpen={setConfirmationModalOpen}

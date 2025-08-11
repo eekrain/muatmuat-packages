@@ -761,6 +761,7 @@ const PesananTable = ({
 
       {/* Modal Konfirmasi Dokumen Diterima */}
       <ConfirmationModal
+        variant="muatparts"
         isOpen={isDocumentReceivedModalOpen}
         setIsOpen={setIsDocumentReceivedModalOpen}
         title={{
@@ -782,6 +783,7 @@ const PesananTable = ({
 
       {/* Modal Pesan Ulang */}
       <ConfirmationModal
+        variant="muatparts"
         isOpen={isReorderFleetModalOpen}
         setIsOpen={setIsReorderFleetModalOpen}
         description={{
