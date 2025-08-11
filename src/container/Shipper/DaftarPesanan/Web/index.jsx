@@ -184,7 +184,7 @@ const DaftarPesananWeb = ({
   return (
     <>
       <main className="flex justify-center px-10 py-8">
-        <div className="mx-auto flex max-w-[1280px] flex-col">
+        <div className="mx-auto flex max-w-[1200px] flex-col">
           {/* Header */}
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-bold leading-[120%] text-neutral-900">

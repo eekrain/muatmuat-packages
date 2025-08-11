@@ -134,7 +134,7 @@ export default function SewaArmadaWeb({
 
   return (
     <>
-      <main className="mx-auto flex min-h-full max-w-[1280px] flex-col items-center gap-6 px-10 py-8">
+      <main className="mx-auto flex min-h-full max-w-[1200px] flex-col items-center gap-6 px-10 py-8">
         {/* Carousel Banner */}
         <BannerCarousel banners={banners} />
 
