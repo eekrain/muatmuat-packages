@@ -414,7 +414,7 @@ const apiResultActiveOrders = {
         orderType: "SCHEDULED",
         loadTimeStart: formatDateForAPI(threeDaysLater, 7),
         loadTimeEnd: formatDateForAPI(threeDaysLater, 11),
-        orderStatus: "WAITING_PAYMENT_2",
+        orderStatus: "NEED_CHANGE_RESPONSE",
         pickupLocations: [
           {
             id: "uuid",
