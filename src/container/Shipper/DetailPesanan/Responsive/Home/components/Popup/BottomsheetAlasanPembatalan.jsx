@@ -187,8 +187,9 @@ export const BottomsheetAlasanPembatalan = ({
             <div
               key={reason?.value || index}
               className={cn(
-                "flex cursor-pointer items-center justify-between border-b border-transparent pb-4",
-                index !== cancellationReasons.length - 1 && "border-neutral-300"
+                "flex cursor-pointer items-center justify-between border-b border-transparent",
+                index !== cancellationReasons.length - 1 &&
+                  "border-neutral-300 pb-4"
               )}
               onClick={() => setSelectedReason(reason)}
             >
