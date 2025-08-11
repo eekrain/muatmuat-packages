@@ -47,6 +47,7 @@ export const normalizeDetailPesananOrderDetail = ({
         dataOrderDetail.general?.orderCode,
       orderStatus: dataOrderDetail.general?.orderStatus,
       unitFleetStatus: dataOrderDetail.general?.unitFleetStatus || 1,
+      totalTruckUnit: dataOrderDetail.summary?.truckType?.totalUnit || 1,
       driverStatus:
         (dataOrderStatusHistory?.driverStatus || []).map(
           ({ stepStatus, ...item }) => ({
@@ -85,6 +86,7 @@ export const normalizeDetailPesananOrderDetail = ({
       reviewData,
       isCancellable: Boolean(dataOrderDetail?.isCancellable),
       isChangeable: Boolean(dataOrderDetail?.isChangeable),
+      updatedAt: dataOrderDetail?.general.updatedAt,
     };
 
     const route = { muat: [], bongkar: [] };

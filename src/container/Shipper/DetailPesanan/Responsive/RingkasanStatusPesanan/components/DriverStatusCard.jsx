@@ -1,4 +1,5 @@
 import { useParams } from "next/navigation";
+import { Fragment } from "react";
 
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Button from "@/components/Button/Button";
@@ -7,20 +8,22 @@ import {
   StepperItemResponsive,
 } from "@/components/Stepper/Stepper";
 import { useTranslation } from "@/hooks/use-translation";
-import { getDriverStatusMetadata } from "@/lib/normalizers/detailpesanan/getDriverStatusMetadata";
+import { getStatusPesananMetadata } from "@/lib/normalizers/detailpesanan/getStatusPesananMetadata";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
 import { DriverInfo } from "../../Home/components/DriverInfoSlider";
 
-export const DriverStatusCard = ({ driver }) => {
+export const DriverStatusCard = ({ driver, dataStatusPesanan }) => {
   const navigation = useResponsiveNavigation();
   const { t } = useTranslation();
   const params = useParams();
 
-  const statusMeta = getDriverStatusMetadata({
-    driverStatus: driver.driverStatus,
+  const statusMeta = getStatusPesananMetadata({
     orderStatus: driver.orderStatus,
+    unitFleetStatus: 1,
+    totalUnit: 1,
     t,
+    orderType: dataStatusPesanan.orderType,
   });
 
   return (
@@ -39,7 +42,9 @@ export const DriverStatusCard = ({ driver }) => {
         totalStep={driver.stepperData?.length || 0}
       >
         {driver.stepperData?.map((step, index) => (
-          <StepperItemResponsive key={step.status} step={step} index={index} />
+          <Fragment key={index}>
+            <StepperItemResponsive step={step} index={index} />
+          </Fragment>
         ))}
       </StepperContainer>
 

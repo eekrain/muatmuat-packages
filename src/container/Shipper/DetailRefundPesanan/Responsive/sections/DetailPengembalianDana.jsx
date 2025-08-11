@@ -46,17 +46,7 @@ const DetailPengembalianDana = ({ breakdown, waitingTimeData }) => {
               )}
             >
               <CardPayment.LineItem
-                label={
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: t(
-                        "DetailPengembalianDana.labelWaitingTimeAmount",
-                        {},
-                        "Nominal Waktu Tunggu<br/>(1 Driver)"
-                      ),
-                    }}
-                  />
-                }
+                label={"Nominal Waktu Tunggu (2x24 Jam)<br/>- 1 Driver"}
                 value={
                   breakdown ? `-${idrFormat(breakdown.waitingTimeFee)}` : "-"
                 }

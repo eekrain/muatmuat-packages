@@ -50,6 +50,7 @@ const Page = () => {
     tempShippingOptions,
     businessEntity,
     voucherId,
+    hasUpdatedForm,
   } = useSewaArmadaStore((state) => state.formValues);
 
   const {
@@ -185,7 +186,7 @@ const Page = () => {
         console.error("Error calculating price:", error);
       }
     };
-    if (truckType?.truckTypeId) {
+    if (truckType?.truckTypeId && hasUpdatedForm) {
       handleCalculatePrice();
     }
   }, [
@@ -200,6 +201,7 @@ const Page = () => {
     shippingOption,
     businessEntity.isBusinessEntity,
     voucherId,
+    hasUpdatedForm,
   ]);
 
   // FIXED: Added a handler to implement the "Save Changes" flow (Requirement LD-G2.4)

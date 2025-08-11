@@ -22,7 +22,7 @@ export const ModalDetailOverloadMuatan = ({
       <ModalTrigger>
         <button
           type="button"
-          className="text-xs font-medium leading-[14.4px] text-primary-700"
+          className="text-left text-xs font-medium leading-[14.4px] text-primary-700"
         >
           Lihat Detail Overload Muatan
         </button>

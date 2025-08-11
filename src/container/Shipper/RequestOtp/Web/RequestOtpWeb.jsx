@@ -7,6 +7,7 @@ import { isAfter } from "date-fns";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 
 import Button from "@/components/Button/Button";
+import FloatingButton from "@/components/FloatingButton/FloatingButton";
 import {
   InputOTP,
   InputOTPGroup,
@@ -133,7 +134,7 @@ const RequestOtpWeb = ({
                 loading="eager"
               />
             </div>
-            <div className="mt-[6px] text-xs font-bold leading-[14.4px]">
+            <div className="mt-[6px] text-xs font-bold leading-none">
               {t("labelEasyWayTogether")}
             </div>
           </div>
@@ -188,11 +189,11 @@ const RequestOtpWeb = ({
           <div className="flex w-full flex-col items-center">
             {/* Email verification message */}
             {formValues?.verificationMethod === "whatsapp" ? (
-              <div className="max-w-[444px] text-center text-base font-medium leading-[19.2px] text-neutral-50">
+              <div className="max-w-[444px] text-center text-base font-medium leading-none text-neutral-50">
                 {t("descWhatsAppOTP")}
               </div>
             ) : (
-              <div className="max-w-[240px] text-center text-base font-medium leading-[19.2px] text-neutral-50">
+              <div className="max-w-[240px] text-center text-base font-medium leading-none text-neutral-50">
                 {t("labelCheckEmail")}
               </div>
             )}
@@ -201,10 +202,10 @@ const RequestOtpWeb = ({
             <div className="mt-6 flex w-full flex-col items-center">
               <div className="flex w-full flex-wrap items-center justify-center gap-6">
                 <div className="flex items-center gap-3">
-                  <div className="text-sm font-bold leading-[16.8px] text-neutral-50">
+                  <div className="text-sm font-bold leading-none text-neutral-50">
                     {`${formValues?.verificationMethod === "whatsapp" ? t("labelOTPPhoneNumber") : t("labelOtpIsSendToEmail")}`}
                   </div>
-                  <div className="max-w-[176px] truncate text-sm font-semibold leading-[16.8px] text-[#EBEBEB]">
+                  <div className="max-w-[176px] truncate text-sm font-semibold leading-none text-[#EBEBEB]">
                     {formValues?.verificationMethod === "whatsapp"
                       ? formValues?.verificationData.replace(/-/g, "")
                       : formValues?.verificationData}
@@ -213,7 +214,7 @@ const RequestOtpWeb = ({
               </div>
 
               <div className="mt-3 flex items-center justify-center gap-3">
-                <label className="w-[102px] text-sm font-bold leading-[16.8px] text-neutral-50">
+                <label className="w-[102px] text-sm font-bold leading-none text-neutral-50">
                   {t("labelEnterOTP")}
                 </label>
                 <InputOTP
@@ -247,8 +248,9 @@ const RequestOtpWeb = ({
             ) : null}
 
             {/* Timer message */}
-            <div className="mt-6 text-center text-base font-medium leading-[19.2px] text-neutral-50">
-              {`${t("labelOtpCodeExpiredIn")} `}
+            <div className="mt-6 text-center text-base font-medium leading-none text-neutral-50">
+              {/* {`${t("labelOtpCodeExpiredIn")} `} */}
+              {`Kode OTP akan berakhir dalam `}
               <span className="font-bold">{countdown}</span>
             </div>
           </div>
@@ -264,7 +266,7 @@ const RequestOtpWeb = ({
             onClick={() => handleRequestOtp(formValues)}
             disabled={!isCountdownFinished}
             className={cn(
-              "mt-[10px] flex h-8 w-full max-w-[319px] items-center !bg-[#EBEBEB] !text-[#868686]",
+              "mt-[10px] flex h-8 items-center !bg-[#EBEBEB] !text-[#868686]",
               isCountdownFinished && "!bg-[#FFC217] !text-primary-700"
             )}
           >
@@ -277,6 +279,8 @@ const RequestOtpWeb = ({
       <div className="absolute bottom-[118px] right-[7px]">
         <img src="/img/meteor2.png" alt="meteor2" width={160} height={160} />
       </div>
+
+      <FloatingButton />
     </div>
   );
 };

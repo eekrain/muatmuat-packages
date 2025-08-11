@@ -10,6 +10,7 @@ import {
 } from "@/lib/responsive-navigation";
 
 const DaftarPesananResponsive = ({
+  type = "default",
   queryParams,
   onChangeQueryParams,
   orders,
@@ -31,6 +32,7 @@ const DaftarPesananResponsive = ({
         path="/"
         component={
           <ListScreen
+            type={type}
             queryParams={queryParams}
             onChangeQueryParams={onChangeQueryParams}
             orders={orders}

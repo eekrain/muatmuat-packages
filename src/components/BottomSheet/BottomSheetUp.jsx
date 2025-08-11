@@ -92,11 +92,7 @@ BottomSheetTitle.displayName = "BottomSheetTitle";
  */
 export const BottomSheetClose = ({ className }) => (
   <BottomSheetPrimitive.Close asChild>
-    <button
-      type="button"
-      className={cn("absolute left-4 top-1/2 -translate-y-1/2", className)}
-      aria-label="Close"
-    >
+    <button type="button" className={cn("", className)} aria-label="Close">
       <IconComponent
         src="/icons/close24.svg"
         className="h-6 w-6 text-primary-600"

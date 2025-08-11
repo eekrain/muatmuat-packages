@@ -14,6 +14,7 @@ import {
   BottomSheetTrigger,
 } from "@/components/BottomSheet/BottomSheetUp";
 import Button from "@/components/Button/Button";
+import BottomSheetPreviousDriver from "@/container/Shipper/DetailPesanan/Responsive/Home/components/Popup/BottomSheetPreviousDriver";
 import { useDrag } from "@/hooks/use-drag";
 import { useTranslation } from "@/hooks/use-translation";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
@@ -105,7 +106,10 @@ const Header = ({
             <div className="flex flex-col gap-4 px-4 pb-6">
               <button
                 type="button"
-                className="w-full text-left text-sm font-semibold"
+                className={cn(
+                  "w-full text-left text-sm font-semibold",
+                  true ? "border-b border-b-neutral-400 pb-4" : ""
+                )}
                 onClick={() =>
                   navigation.push("/CariSemuaDriver", {
                     orderId: params.orderId,
@@ -114,6 +118,7 @@ const Header = ({
               >
                 Lihat Semua Driver
               </button>
+              {true ? <BottomSheetPreviousDriver /> : null}
             </div>
           </BottomSheetContent>
         </BottomSheet>
@@ -218,6 +223,7 @@ export default function DriverInfoSlider({
   orderId,
   defaultIndex = 0,
   withActions = true,
+  withMenu,
 }) {
   const items = driverStatus;
   const TRANSITION_DURATION_MS = 300;
@@ -289,7 +295,7 @@ export default function DriverInfoSlider({
               orderStatus={driver.orderStatus}
               driverStatus={driver.driverStatus}
               mode="driver-status"
-              withMenu={false}
+              withMenu={withMenu}
             />
             <Avatar driver={driver} />
             {withActions && (
@@ -339,7 +345,7 @@ export default function DriverInfoSlider({
                   orderStatus={driver.orderStatus}
                   driverStatus={driver.driverStatus}
                   mode="driver-status"
-                  withMenu
+                  withMenu={withMenu}
                 />
                 <Avatar driver={driver} />
                 {withActions && (

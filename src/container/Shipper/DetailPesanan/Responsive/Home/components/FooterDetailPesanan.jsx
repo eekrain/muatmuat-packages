@@ -258,6 +258,14 @@ export const FooterDetailPesanan = ({
             </div>
           )}
 
+          {dataStatusPesanan?.orderStatus ===
+          OrderStatusEnum.WAITING_PAYMENT_3 ? (
+            <div className="flex items-center justify-between text-sm leading-[1.1] text-neutral-900">
+              <div className="font-semibold">Total Tambahan Biaya</div>
+              <div className="font-bold">{idrFormat(667150)}</div>
+            </div>
+          ) : null}
+
           {/* Saya tidak tahu logic nya apa buat ngeshow, sementara toggle aja */}
           {false ? (
             <div className="flex items-center justify-between">
