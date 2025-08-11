@@ -50,7 +50,7 @@ export const ExpandableTextArea = ({
           {...inputProps}
           ref={textareaRef}
           className={cn(
-            "my-auto max-h-[76px] min-h-[12px] w-full resize-none overflow-y-auto text-xs font-medium leading-[1.2] text-neutral-900 outline-none placeholder:text-neutral-600",
+            "my-auto max-h-[76px] min-h-[12px] w-full resize-none overflow-y-auto text-sm font-semibold leading-[1.1] text-neutral-900 outline-none placeholder:text-neutral-600 md:text-xs md:font-medium md:leading-[1.2]",
             appearance.inputClassName
           )}
           maxLength={maxLength}

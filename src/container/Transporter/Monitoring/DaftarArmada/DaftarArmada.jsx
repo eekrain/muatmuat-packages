@@ -103,6 +103,7 @@ const DaftarArmada = ({
   const handleApplyFilter = (truckStatuses, orderStatuses) => {
     setTruckStatusFilter(truckStatuses);
     setOrderStatusFilter(orderStatuses);
+    refetchFleets(); // Trigger a refetch with new filters
   };
 
   const handleFleetCardClick = (fleet) => {
@@ -214,7 +215,16 @@ const DaftarArmada = ({
           </div>
         ) : filteredData.length === 0 ? (
           <div className="flex h-full items-center justify-center">
-            <DataNotFound type="search" title={"Keyword Tidak Ditemukan"} />
+            <DataNotFound
+              type="search"
+              title={
+                truckStatusFilter.length > 0 ||
+                orderStatusFilter.length > 0 ||
+                activeTab === "sos"
+                  ? "Data Tidak Ditemukan. Mohon coba hapus beberapa filter"
+                  : "Keyword Tidak Ditemukan"
+              }
+            />
           </div>
         ) : (
           <div className="space-y-3">

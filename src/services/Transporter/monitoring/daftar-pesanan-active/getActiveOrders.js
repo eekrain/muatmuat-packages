@@ -30,11 +30,11 @@ const apiResultActiveOrders = {
       // Primary status variants
       {
         id: "uuid1",
-        orderCode: "MT25PREP01",
+        orderCode: "MT25CONF01",
         orderType: "SCHEDULED",
         loadTimeStart: formatDateForAPI(today, 14),
         loadTimeEnd: formatDateForAPI(today, 16),
-        orderStatus: "PREPARE_FLEET",
+        orderStatus: "CONFIRMED",
         pickupLocations: [
           {
             id: "uuid",
@@ -166,7 +166,7 @@ const apiResultActiveOrders = {
         orderType: "SCHEDULED",
         loadTimeStart: formatDateForAPI(tomorrow, 9),
         loadTimeEnd: formatDateForAPI(tomorrow, 12),
-        orderStatus: "SCHEDULED_FLEET",
+        orderStatus: "CONFIRMED",
         pickupLocations: [
           {
             id: "uuid",
@@ -207,7 +207,7 @@ const apiResultActiveOrders = {
         orderType: "INSTANT",
         loadTimeStart: formatDateForAPI(threeDaysLater, 10),
         loadTimeEnd: formatDateForAPI(threeDaysLater, 14),
-        orderStatus: "CONFIRMED",
+        orderStatus: "SCHEDULED_FLEET",
         pickupLocations: [
           {
             id: "uuid",
@@ -244,135 +244,15 @@ const apiResultActiveOrders = {
         sosStatus: { hasSos: false, sosCount: 0, sosUnits: [] },
         hasChangeRequest: false,
       },
-      {
-        id: "uuid4",
-        orderCode: "MT25LOAD04",
-        orderType: "SCHEDULED",
-        loadTimeStart: formatDateForAPI(today, 8),
-        loadTimeEnd: formatDateForAPI(today, 10),
-        orderStatus: "LOADING",
-        pickupLocations: [
-          {
-            id: "uuid",
-            sequence: 1,
-            fullAddress: "Genteng, Kota Surabaya",
-            city: "Kota Surabaya",
-            province: "Jawa Timur",
-          },
-        ],
-        dropoffLocations: [
-          {
-            id: "uuid",
-            sequence: 1,
-            fullAddress: "Sidoarjo, Kab. Sidoarjo",
-            city: "Kab. Sidoarjo",
-            province: "Jawa Timur",
-          },
-        ],
-        truckType: { id: "uuid", name: "Colt Diesel Engkel" },
-        carrierTruck: { id: "uuid", name: "Box" },
-        truckCount: 1,
-        totalWeight: 3.2,
-        weightUnit: "ton",
-        assignedVehicles: [
-          {
-            id: "uuid",
-            fleetId: "uuid",
-            licensePlate: "B 1234 ABC",
-            driverName: "John Doe",
-            driverPhone: "081234567890",
-            driverStatus: "LOADING",
-          },
-        ],
-        sosStatus: { hasSos: false, sosCount: 0, sosUnits: [] },
-        hasChangeRequest: false,
-      },
-      {
-        id: "uuid5",
-        orderCode: "MT25UNLOAD05",
-        orderType: "INSTANT",
-        loadTimeStart: formatDateForAPI(today, 6),
-        loadTimeEnd: formatDateForAPI(today, 8),
-        orderStatus: "UNLOADING",
-        pickupLocations: [
-          {
-            id: "uuid",
-            sequence: 1,
-            fullAddress: "Rungkut, Kota Surabaya",
-            city: "Kota Surabaya",
-            province: "Jawa Timur",
-          },
-        ],
-        dropoffLocations: [
-          {
-            id: "uuid",
-            sequence: 1,
-            fullAddress: "Gresik, Kab. Gresik",
-            city: "Kab. Gresik",
-            province: "Jawa Timur",
-          },
-        ],
-        truckType: { id: "uuid", name: "Tronton" },
-        carrierTruck: { id: "uuid", name: "Box" },
-        truckCount: 1,
-        totalWeight: 10,
-        weightUnit: "ton",
-        assignedVehicles: [
-          {
-            id: "uuid",
-            fleetId: "uuid",
-            licensePlate: "B 5678 DEF",
-            driverName: "Jane Smith",
-            driverPhone: "081234567891",
-            driverStatus: "UNLOADING",
-          },
-        ],
-        sosStatus: { hasSos: false, sosCount: 0, sosUnits: [] },
-        hasChangeRequest: false,
-      },
 
       // Warning status variants
       {
-        id: "uuid6",
-        orderCode: "MT25PAY06",
-        orderType: "SCHEDULED",
-        loadTimeStart: formatDateForAPI(sevenDaysLater, 10),
-        loadTimeEnd: formatDateForAPI(sevenDaysLater, 14),
-        orderStatus: "WAITING_PAYMENT_1",
-        pickupLocations: [
-          {
-            id: "uuid",
-            sequence: 1,
-            fullAddress: "Sukolilo, Kota Surabaya",
-            city: "Kota Surabaya",
-            province: "Jawa Timur",
-          },
-        ],
-        dropoffLocations: [
-          {
-            id: "uuid",
-            sequence: 1,
-            fullAddress: "Mojokerto, Kab. Mojokerto",
-            city: "Kab. Mojokerto",
-            province: "Jawa Timur",
-          },
-        ],
-        truckType: { id: "uuid", name: "Fuso" },
-        carrierTruck: { id: "uuid", name: "Wing Box" },
-        truckCount: 1,
-        totalWeight: 5,
-        weightUnit: "ton",
-        assignedVehicles: [],
-        sosStatus: { hasSos: false, sosCount: 0, sosUnits: [] },
-        hasChangeRequest: false,
-      },
-      {
         id: "uuid7",
-        orderCode: "MT25PAY207",
+        orderCode: "MT25ASSIGN07",
         orderType: "INSTANT",
         loadTimeStart: formatDateForAPI(tomorrow, 14),
         loadTimeEnd: formatDateForAPI(tomorrow, 18),
-        orderStatus: "WAITING_PAYMENT_2",
+        orderStatus: "NEED_ASSIGN_FLEET",
         pickupLocations: [
           {
             id: "uuid",
@@ -401,12 +281,46 @@ const apiResultActiveOrders = {
         hasChangeRequest: false,
       },
       {
+        id: "uuid6",
+        orderCode: "MT25READY06",
+        orderType: "SCHEDULED",
+        loadTimeStart: formatDateForAPI(sevenDaysLater, 10),
+        loadTimeEnd: formatDateForAPI(sevenDaysLater, 14),
+        orderStatus: "NEED_CONFIRMATION_READY",
+        pickupLocations: [
+          {
+            id: "uuid",
+            sequence: 1,
+            fullAddress: "Sukolilo, Kota Surabaya",
+            city: "Kota Surabaya",
+            province: "Jawa Timur",
+          },
+        ],
+        dropoffLocations: [
+          {
+            id: "uuid",
+            sequence: 1,
+            fullAddress: "Mojokerto, Kab. Mojokerto",
+            city: "Kab. Mojokerto",
+            province: "Jawa Timur",
+          },
+        ],
+        truckType: { id: "uuid", name: "Fuso" },
+        carrierTruck: { id: "uuid", name: "Wing Box" },
+        truckCount: 1,
+        totalWeight: 5,
+        weightUnit: "ton",
+        assignedVehicles: [],
+        sosStatus: { hasSos: false, sosCount: 0, sosUnits: [] },
+        hasChangeRequest: false,
+      },
+      {
         id: "uuid8",
-        orderCode: "MT25REPAY08",
+        orderCode: "MT25PAY208",
         orderType: "SCHEDULED",
         loadTimeStart: formatDateForAPI(threeDaysLater, 7),
         loadTimeEnd: formatDateForAPI(threeDaysLater, 11),
-        orderStatus: "WAITING_REPAYMENT_1",
+        orderStatus: "WAITING_PAYMENT_2",
         pickupLocations: [
           {
             id: "uuid",

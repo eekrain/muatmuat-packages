@@ -160,16 +160,20 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
                 : "Rp0"}
             </span>
           </div>
-          <Button
-            variant="muatparts-primary"
-            onClick={() => setConfirmationModalOpen(true)}
-          >
-            Lanjut
-          </Button>
+          {/* 25. 18 - Web - LB - 0271 */}
+          {formValues.hasUpdatedForm ? (
+            <Button
+              variant="muatparts-primary"
+              onClick={() => setConfirmationModalOpen(true)}
+            >
+              Lanjut
+            </Button>
+          ) : null}
         </div>
       </Card>
 
       <ConfirmationModal
+        variant="muatparts"
         size="big"
         isOpen={isConfirmationModalOpen}
         setIsOpen={setConfirmationModalOpen}

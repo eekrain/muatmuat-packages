@@ -1,50 +1,141 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
 import Card, { CardContent, CardHeader } from "@/components/Card/Card";
 import CardMenu from "@/components/Card/CardMenu";
+import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 
 const menuItems = [
   {
     id: 1,
+    statusKey: "addFleetCompleted",
     icon: "/icons/dashboard/truck.svg",
     title: "Tambahkan Armada",
     description:
       "Kamu harus menambahkan armada yang akan digunakan untuk menerima pesanan.",
     buttonText: "Tambah Armada",
-    onClick: () => console.log("Navigating to Tambah Armada..."),
+    path: "/manajemen-armada",
   },
   {
     id: 2,
+    statusKey: "addDriverCompleted",
     icon: "/icons/dashboard/driver.svg",
     title: "Tambahkan Driver",
     description:
       "Kamu harus menambahkan driver terlebih dahulu untuk dapat digunakan menerima pesanan.",
     buttonText: "Tambah Driver",
-    onClick: () => console.log("Navigating to Tambah Driver..."),
+    path: "/manajemen-driver",
   },
   {
     id: 3,
+    statusKey: "fleetDriverAssignmentCompleted",
     icon: "/icons/dashboard/pair-driver-fleet.svg",
     title: "Pasangkan Armada dan Driver",
     description:
       "Pasangkan armada dengan driver yang sesuai agar siap menerima pesanan pengiriman.",
     buttonText: "Mulai Pasangkan",
-    onClick: () => console.log("Navigating to Pasangkan Armada..."),
+    path: "/manajemen-armada",
   },
   {
     id: 4,
+    statusKey: "areaSettingCompleted",
     icon: "/icons/dashboard/maps-box.svg",
     title: "Atur Area Muat & Bongkar dan Muatan yang Dilayani",
     description:
       "Atur area muat & bongkar dan jenis muatan agar kami dapat mencarikan pesanan yang sesuai untukmu.",
     buttonText: "Atur Area & Muatan",
-    onClick: () => console.log("Navigating to Atur Area & Muatan..."),
+    path: "/pengaturan",
   },
 ];
 
-const UserJourney = ({ title = "Dashboard Analytics" }) => {
+const UserJourney = ({ title = "Dashboard Analytics", journeyStatus }) => {
+  const router = useRouter();
+  const [modal, setModal] = useState({
+    isOpen: false,
+    message: "",
+    confirmText: "Mengerti",
+    confirmClassname: "",
+    modalContentClassname: "",
+    onConfirm: () => {}, // Default to an empty function
+  });
+
+  const closeModal = () =>
+    setModal({
+      isOpen: false,
+      message: "",
+      confirmText: "Mengerti",
+      confirmClassname: "",
+      modalContentClassname: "",
+      onConfirm: () => {}, // Reset to default
+    });
+
+  const handleMenuClick = (item) => {
+    if (item.statusKey === "fleetDriverAssignmentCompleted") {
+      const { addFleetCompleted, addDriverCompleted } = journeyStatus;
+
+      if (!addFleetCompleted && !addDriverCompleted) {
+        setModal({
+          isOpen: true,
+          message:
+            "Kamu harus menambahkan Armada dan Driver sebelum memulai proses pemasangan.",
+          confirmText: "Mengerti",
+          confirmClassname: "hidden",
+          modalContentClassname: "h-[169px]",
+          onConfirm: () => {}, // No action needed since button is hidden
+        });
+        return;
+      }
+
+      if (!addDriverCompleted) {
+        setModal({
+          isOpen: true,
+          message:
+            "Kamu harus menambahkan Driver sebelum memulai proses pemasangan.",
+          confirmText: "Tambah Driver",
+          confirmClassname: "",
+          modalContentClassname: "",
+          onConfirm: () => router.push("/manajemen-driver"),
+        });
+        return;
+      }
+
+      // 4. Set 'onConfirm' to route to the fleet management page
+      if (!addFleetCompleted) {
+        setModal({
+          isOpen: true,
+          message:
+            "Kamu harus menambahkan Armada sebelum memulai proses pemasangan.",
+          confirmText: "Tambah Armada",
+          confirmClassname: "",
+          modalContentClassname: "",
+          onConfirm: () => router.push("/manajemen-armada"),
+        });
+        return;
+      }
+    }
+    router.push(item.path);
+  };
+
   return (
     <>
+      <ConfirmationModal
+        isOpen={modal.isOpen}
+        setIsOpen={(isOpen) => setModal((prev) => ({ ...prev, isOpen }))}
+        description={{ text: modal.message }}
+        confirm={{
+          text: modal.confirmText,
+          onClick: () => {
+            modal.onConfirm();
+            closeModal();
+          },
+          classname: modal.confirmClassname,
+        }}
+        cancel={{ text: "Tutup", classname: "hidden" }}
+        className={modal.modalContentClassname}
+      />
+
       <h1 className="text-xl font-bold text-neutral-900">{title}</h1>
       <div className="py-6">
         <Card className="h-[409px] w-[1232px] !border-none !p-0 !py-0 px-0 shadow-muat">
@@ -66,7 +157,12 @@ const UserJourney = ({ title = "Dashboard Analytics" }) => {
                   title={item.title}
                   description={item.description}
                   buttonText={item.buttonText}
-                  onClick={item.onClick}
+                  onClick={() => handleMenuClick(item)}
+                  status={
+                    journeyStatus && journeyStatus[item.statusKey]
+                      ? "completed"
+                      : "incompleted"
+                  }
                 />
               ))}
             </div>

@@ -1,5 +1,7 @@
 export const ORDER_STATUS = {
   PREPARE_FLEET: "PREPARE_FLEET",
+  NEED_ASSIGN_FLEET: "NEED_ASSIGN_FLEET",
+  NEED_CONFIRMATION_READY: "NEED_CONFIRMATION_READY",
   WAITING_PAYMENT_1: "WAITING_PAYMENT_1",
   WAITING_PAYMENT_2: "WAITING_PAYMENT_2",
   SCHEDULED_FLEET: "SCHEDULED_FLEET",
@@ -26,6 +28,14 @@ export const ORDER_STATUS_CONFIG = {
   [ORDER_STATUS.PREPARE_FLEET]: {
     label: "Persiapan Armada",
     variant: "primary",
+  },
+  [ORDER_STATUS.NEED_ASSIGN_FLEET]: {
+    label: "Perlu Assign Armada",
+    variant: "warning",
+  },
+  [ORDER_STATUS.NEED_CONFIRMATION_READY]: {
+    label: "Perlu Konfirmasi Siap",
+    variant: "error",
   },
   [ORDER_STATUS.WAITING_PAYMENT_1]: {
     label: "Menunggu Pembayaran 1",
