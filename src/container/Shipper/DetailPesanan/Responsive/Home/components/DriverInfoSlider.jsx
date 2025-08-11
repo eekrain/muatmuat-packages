@@ -144,7 +144,13 @@ const Avatar = ({ driver }) => (
   </div>
 );
 
-const Actions = ({ driver, onDriverContactClicked, onLacakArmadaClicked }) => {
+const Actions = ({
+  driver,
+  orderId,
+  onDriverContactClicked,
+  onLacakArmadaClicked,
+}) => {
+  console.log("🚀 ~ orderId 2:", orderId);
   const navigation = useResponsiveNavigation();
   const LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER = [
     OrderStatusEnum.PREPARE_DOCUMENT,
@@ -165,8 +171,8 @@ const Actions = ({ driver, onDriverContactClicked, onLacakArmadaClicked }) => {
           variant="muatparts-primary-secondary"
           onClick={() =>
             navigation.push("/DetailStatusDriverScreen", {
+              orderId,
               driverId: driver.driverId,
-              orderId: driver.orderId,
             })
           }
           className="h-7 w-full !rounded-[20px] !border-primary-700 !text-xs !font-semibold !text-primary-700"
@@ -225,6 +231,7 @@ export default function DriverInfoSlider({
   withActions = true,
   withMenu,
 }) {
+  console.log("🚀 ~ orderId 1:", orderId);
   const items = driverStatus;
   const TRANSITION_DURATION_MS = 300;
 
@@ -301,6 +308,7 @@ export default function DriverInfoSlider({
             {withActions && (
               <Actions
                 driver={driver}
+                orderId={orderId}
                 onDriverContactClicked={() =>
                   alert(`Contacting ${driver.name}`)
                 }
@@ -351,6 +359,7 @@ export default function DriverInfoSlider({
                 {withActions && (
                   <Actions
                     driver={driver}
+                    orderId={orderId}
                     onDriverContactClicked={() =>
                       alert(`Contacting ${driver.name}`)
                     }
