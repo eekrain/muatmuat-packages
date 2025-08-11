@@ -85,7 +85,7 @@ export const lightboxPreviewRootVariants = cva("relative block w-fit", {
 });
 
 export const lightboxPreviewImageVariants = cva(
-  "size-[68px] rounded-xl border object-contain",
+  "size-[68px] rounded-xl border border-neutral-400 object-contain",
   {
     variants: { variant: { shipper: "" } },
     defaultVariants: { variant: "shipper" },

@@ -75,41 +75,7 @@ export const RingkasanPembayaranDefault = ({
                 valueClassName="flex items-center gap-x-2"
               />
 
-              <CardPayment.Section title={t("titleBiayaWaktuTunggu")}>
-                <div className="flex flex-col gap-1">
-                  <CardPayment.LineItem
-                    label={t("labelNominalWaktuTunggu", {
-                      driver:
-                        dataRingkasanPembayaran?.priceCharge?.waitingFee
-                          ?.totalDriver,
-                    })}
-                    value={idrFormat(
-                      dataRingkasanPembayaran?.priceCharge?.waitingFee
-                        ?.totalAmount
-                    )}
-                  />
-                  <ModalDetailWaktuTunggu drivers={waitingTimeData} />
-                </div>
-              </CardPayment.Section>
-
-              <CardPayment.Section title={t("titleBiayaOverloadMuatan")}>
-                <div className="flex flex-col gap-1">
-                  <CardPayment.LineItem
-                    label={t("labelNominalOverloadMuatan", {
-                      weight:
-                        dataRingkasanPembayaran?.priceCharge?.overloadFee
-                          ?.totalWeight,
-                    })}
-                    value={idrFormat(
-                      dataRingkasanPembayaran?.priceCharge?.overloadFee
-                        ?.totalAmount
-                    )}
-                  />
-                  <ModalDetailOverloadMuatan drivers={overloadData} />
-                </div>
-              </CardPayment.Section>
-
-              <CardPayment.Section title={t("titleBiayaLainnya")}>
+              <CardPayment.Section title="Biaya Perubahan Rute">
                 <CardPayment.LineItem
                   label={t(
                     "RingkasanPembayaranPerubahanPesanan.labelSelisihJarakPerubahanLokasi",

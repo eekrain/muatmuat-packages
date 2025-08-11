@@ -11,6 +11,7 @@ import { idrFormat } from "@/lib/utils/formatters";
 import { useSewaArmadaStore } from "@/store/Shipper/forms/sewaArmadaStore";
 
 import OrderConfirmationBottomSheet from "../InformasiPesanan/OrderConfirmationBottomSheet";
+import AdditionalFeeBottomsheet from "./AdditionalFeeBottomsheet";
 import { VoucherAppliedCard } from "./Voucher/VoucherAppliedCard";
 
 export const SewaArmadaFooter = ({
@@ -28,9 +29,12 @@ export const SewaArmadaFooter = ({
   const navigation = useResponsiveNavigation();
   const { t } = useTranslation();
   const formValues = useSewaArmadaStore((s) => s.formValues);
+  const hasUpdatedForm = useSewaArmadaStore(
+    (state) => state.formValues.hasUpdatedForm
+  );
   const footerRef = useRef(null);
 
-  const hasAdditioinalFee = true;
+  const hasAdditioinalFee = calculatedPrice?.totalPrice > 0 && hasUpdatedForm;
 
   const [
     isOrderConfirmationBottomsheetOpen,
@@ -79,14 +83,15 @@ export const SewaArmadaFooter = ({
           ) : null}
           <div className="flex items-center gap-x-2">
             {hasAdditioinalFee ? (
-              <Button
-                variant="muatparts-primary-secondary"
-                className="h-10 w-full"
-                onClick={() => {}}
-                type="button"
-              >
-                Lihat Detail Biaya
-              </Button>
+              <AdditionalFeeBottomsheet
+                isOrderConfirmationBottomsheetOpen={
+                  isOrderConfirmationBottomsheetOpen
+                }
+                setOrderConfirmationBottomsheetOpen={
+                  setOrderConfirmationBottomsheetOpen
+                }
+                calculatedPrice={calculatedPrice}
+              />
             ) : null}
             <OrderConfirmationBottomSheet
               isOpen={isOrderConfirmationBottomsheetOpen}

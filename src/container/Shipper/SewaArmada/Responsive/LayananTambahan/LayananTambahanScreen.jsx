@@ -507,7 +507,11 @@ const LayananTambahanScreen = ({
                 icon={{
                   right: (
                     <IconComponent
-                      className="icon-fill-primary-700"
+                      className={
+                        isKirimBuktiFisikDisabled
+                          ? "text-primary-400"
+                          : "icon-fill-primary-700"
+                      }
                       src="/icons/kontak-perusahaan16.svg"
                       onClick={async () => {
                         if (
@@ -609,7 +613,7 @@ const LayananTambahanScreen = ({
                       className={`min-h-[32px] w-full rounded-md border px-3 py-2 ${locationFormErrors?.dataLokasi ? "border-error-400" : "border-neutral-600"} ${isKirimBuktiFisikDisabled ? "cursor-not-allowed border-neutral-600 bg-neutral-200" : "bg-neutral-50"}`}
                     >
                       <div
-                        className={`break-words text-xs font-medium leading-[14.4px] max-[600px]:text-sm max-[600px]:font-semibold max-[600px]:leading-[15.4px] ${isKirimBuktiFisikDisabled ? "text-neutral-600" : "text-neutral-900"}`}
+                        className={`break-words text-xs font-medium leading-[14.4px] text-neutral-900 max-[600px]:text-sm max-[600px]:font-semibold max-[600px]:leading-[15.4px]`}
                       >
                         {locationFormValues?.dataLokasi?.location?.name}
                       </div>
@@ -690,11 +694,9 @@ const LayananTambahanScreen = ({
                 <span
                   className={cn(
                     "text-sm font-semibold leading-[15.4px]",
-                    !locationFormValues.dataLokasi?.district ||
-                      isKirimBuktiFisikDisabled ||
-                      isLocationDisabled
-                      ? "text-neutral-600"
-                      : "text-neutral-900"
+                    locationFormValues.dataLokasi?.district
+                      ? "text-neutral-900"
+                      : "text-neutral-600"
                   )}
                 >
                   {locationFormValues.dataLokasi?.district?.name ||
@@ -811,7 +813,7 @@ const LayananTambahanScreen = ({
                       {shippingOption?.id ? (
                         <>
                           <span
-                            className={`text-sm font-semibold leading-[15.4px] ${isKirimBuktiFisikDisabled || isLocationDisabled ? "text-neutral-600" : "text-neutral-900"}`}
+                            className={`text-neutral-900} text-sm font-semibold leading-[15.4px]`}
                           >
                             {shippingOption.courierName}
                           </span>
@@ -840,6 +842,7 @@ const LayananTambahanScreen = ({
                 </button>
                 {shippingOption?.id ? (
                   <Checkbox
+                    disabled={isKirimBuktiFisikDisabled}
                     checked={tambahanFormValues.asuransiPengiriman}
                     onChange={(e) =>
                       tambahanSetField("asuransiPengiriman", e.checked)

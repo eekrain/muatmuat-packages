@@ -128,8 +128,11 @@ const DetailRefundPesananWeb = ({ refundData, waitingTimeData = [] }) => {
                   <CardPayment.LineItem
                     label="Nominal Waktu Tunggu (1 Driver)"
                     value={
-                      breakdown ? idrFormat(breakdown.waitingTimeFee) : "-"
+                      breakdown
+                        ? `-${idrFormat(breakdown.waitingTimeFee)}`
+                        : "-"
                     }
+                    variant="danger"
                   />
                   <ModalDetailWaktuTunggu drivers={waitingTimeData} />
                 </div>

@@ -15,6 +15,7 @@ import {
 } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { toast } from "@/lib/toast";
 import { formatDate, formatShortDate } from "@/lib/utils/dateFormat";
+import { idrFormat } from "@/lib/utils/formatters";
 
 const OrderItem = ({
   orderId,
@@ -25,6 +26,7 @@ const OrderItem = ({
   locations,
   statusInfo = [],
   paymentDeadline,
+  additionalCost,
   requiresConfirmation,
   isRefundProcessing,
 }) => {
@@ -238,6 +240,17 @@ const OrderItem = ({
             )}
           </div>
         </div>
+        <div className="flex gap-x-4">
+          {armadaData.map((item, key) => (
+            <div
+              className="flex flex-1 flex-col gap-y-3 text-xs leading-[1.1]"
+              key={key}
+            >
+              <span className="font-medium text-neutral-600">{item.title}</span>
+              <span className="font-semibold">{item.value}</span>
+            </div>
+          ))}
+        </div>
         {paymentDeadline || requiresConfirmation || isRefundProcessing ? (
           <div className="flex h-[52px] items-center rounded-md bg-warning-100 px-3">
             {paymentDeadline ? (
@@ -277,17 +290,14 @@ const OrderItem = ({
             ) : null}
           </div>
         ) : null}
-        <div className="flex gap-x-4">
-          {armadaData.map((item, key) => (
-            <div
-              className="flex flex-1 flex-col gap-y-3 text-xs leading-[1.1]"
-              key={key}
-            >
-              <span className="font-medium text-neutral-600">{item.title}</span>
-              <span className="font-semibold">{item.value}</span>
-            </div>
-          ))}
-        </div>
+        {paymentDeadline &&
+        (latestStatus?.statusCode === OrderStatusEnum.WAITING_REPAYMENT_1 ||
+          latestStatus?.statusCode === OrderStatusEnum.WAITING_REPAYMENT_2) ? (
+          <div className="flex items-center justify-between text-xs leading-[1.1] text-neutral-900">
+            <span className="font-medium">Tambahan Biaya</span>
+            <span className="font-bold">{idrFormat(additionalCost)}</span>
+          </div>
+        ) : null}
         <div className="flex items-center gap-x-3">
           <Button
             className="h-7 w-full text-xs leading-[1.1]"

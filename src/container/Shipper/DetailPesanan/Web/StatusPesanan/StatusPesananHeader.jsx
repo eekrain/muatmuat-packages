@@ -200,7 +200,7 @@ export const StatusPesananHeader = ({ dataStatusPesanan, oldDriverData }) => {
         </div>
       </div>
 
-      {(dataStatusPesanan.driverStatus.length > 1 || oldDriverData) && (
+      {(dataStatusPesanan.totalTruckUnit > 1 || oldDriverData) && (
         <div className="w-[127px]">
           <SimpleDropdown onOpenChange={setIsDropdownOpen}>
             <SimpleDropdownTrigger asChild>

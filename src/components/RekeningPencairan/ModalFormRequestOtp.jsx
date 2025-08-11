@@ -43,7 +43,7 @@ export const ModalFormRequestOtp = ({
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <ModalContent className="w-modal-small" type="muattrans">
-        <ModalHeader type="muattrans" size="small" />
+        <ModalHeader size="small" />
         <div className="flex h-[338px] w-[386px] min-w-[386px] max-w-[558px] flex-col items-center justify-center gap-6 px-6 py-9">
           {/* Title */}
           <h2 className="w-[175px] max-w-[510px] text-center text-base font-bold leading-[19.2px] text-black">

@@ -82,10 +82,10 @@ export const ModalContent = ({
   const dialogRef = useRef(null);
 
   const iconClassnames = {
-    muatmuat: "icon-fill-primary-700",
-    muatparts: "icon-fill-muat-parts-non-800",
-    muattrans: "icon-fill-muat-trans-secondary-900",
-    lightbox: "icon-fill-primary-700",
+    muatmuat: "text-primary-700",
+    muatparts: "text-muat-parts-non-800",
+    muattrans: "text-muat-trans-secondary-900",
+    lightbox: "text-primary-700",
   };
 
   return (

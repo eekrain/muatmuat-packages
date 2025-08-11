@@ -1,21 +1,33 @@
 "use client";
 
+import DaftarPesananResponsive from "@/container/Shipper/DaftarPesanan/Responsive";
 import PendingOrderWeb from "@/container/Shipper/PendingOrder/Web";
-import usePendingOrdersPage from "@/services/Shipper/pendingOrder/getPendingOrder";
+import useOrderListPage from "@/hooks/useOrderListPage";
 
 const Page = () => {
   const {
+    mounted,
     isMobile,
     queryParams,
     lastFilterField,
     orders,
     handleChangeQueryParams,
-  } = usePendingOrdersPage({
+  } = useOrderListPage({
     status: "WAITING_REPAYMENT",
   });
 
+  if (!mounted) return null;
+
   if (isMobile) {
-    return <div>Responsive sementara</div>;
+    return (
+      <DaftarPesananResponsive
+        type="waitingRepayment"
+        queryParams={queryParams}
+        lastFilterField={lastFilterField}
+        onChangeQueryParams={handleChangeQueryParams}
+        orders={orders}
+      />
+    );
   }
 
   return (

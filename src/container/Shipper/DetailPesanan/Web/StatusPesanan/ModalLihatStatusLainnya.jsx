@@ -10,13 +10,13 @@ export const ModalLihatStatusLainnya = ({ otherStatus }) => {
   const { t } = useTranslation();
 
   return (
-    <Modal>
+    <Modal closeOnOutsideClick>
       <ModalTrigger>
         <button className="text-xs font-medium leading-[1.2] text-primary-700">
           Lihat Status Lainnya
         </button>
       </ModalTrigger>
-      <ModalContent className="px-6 py-8">
+      <ModalContent type="muatmuat" className="px-6 py-8">
         <h2 className="mb-6 text-center text-base font-bold leading-[1.2] text-neutral-900">
           Status Lainnya
         </h2>
