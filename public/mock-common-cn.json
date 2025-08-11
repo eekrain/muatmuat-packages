@@ -177,6 +177,10 @@
   "ModalBatalkanPesananResponsive.textMakeSureRead": "请确保你已阅读",
   "ModalBatalkanPesananResponsive.linkOurTerms": "我们的条款",
   "ModalBatalkanPesananResponsive.checkboxAgreeTerms": "是的，我同意条款",
+  "PendingUpdateFeePayment.altFleetFound": "找到车队",
+  "PendingUpdateFeePayment.messageOrderChangeSaved": "订单变更信息已成功保存。",
+  "PendingUpdateFeePayment.messagePaymentReminder": "请在规定时间内完成付款",
+  "PendingUpdateFeePayment.messageAutoCancelWarning": "如果超过规定时间限制，变更将自动取消。",
   "ModalBatalkanPesananResponsive.textCancelWithPenalty": "取消订单将收取每单 Rp100,000 的管理费",
   "ModalBatalkanPesananResponsive.textIAgreeTo": "我同意",
   "ModalBatalkanPesananResponsive.linkMuatransTerms": "Muatrans条款",
@@ -409,5 +413,10 @@
   "PopUpInformasi.errorGagalMemuatPreferensi": "加载弹窗偏好设置失败",
   "PopUpInformasi.errorTerjadiKesalahan": "加载数据时发生错误",
   "PopUpInformasi.statusMenyimpan": "保存中...",
-  "PopUpInformasi.labelJanganTampilkanLagi": "不再显示"
+  "PopUpInformasi.labelJanganTampilkanLagi": "不再显示",
+  "BottomSheetPreviousDriver.buttonViewPreviousDriver": "查看之前的司机",
+  "BottomSheetPreviousDriver.titlePreviousDriver": "之前的司机",
+  "BottomSheetPreviousDriver.altDriverAvatar": "司机",
+  "BottomSheetPreviousDriver.textDriverNotFound": "未找到司机",
+  "BottomSheetPreviousDriver.buttonDriverStatusDetail": "司机状态详情"
 }

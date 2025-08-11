@@ -40,6 +40,7 @@ const DetailPesananWeb = () => {
     data: dataDetailPesanan,
     isLoading: isLoadingDetailPesanan,
     error,
+    mutate,
   } = useGetDetailPesananData(params.orderId);
 
   const {
@@ -99,6 +100,7 @@ const DetailPesananWeb = () => {
           dataStatusPesanan={dataDetailPesanan?.dataStatusPesanan}
           dataRingkasanPembayaran={dataDetailPesanan?.dataRingkasanPembayaran}
           isShowWaitFleetAlert={isShowWaitFleetAlert}
+          mutateDetailPesanan={mutate}
         />
         <div className="grid grid-cols-[846px_1fr] gap-4">
           <div className="flex flex-col gap-4">
@@ -148,6 +150,7 @@ const DetailPesananWeb = () => {
               }
               dataStatusPesanan={dataDetailPesanan.dataStatusPesanan}
               isShowWaitFleetAlert={isShowWaitFleetAlert}
+              mutateDetailPesanan={mutate}
             />
           )}
         </div>

@@ -178,6 +178,10 @@
   "ModalBatalkanPesananResponsive.textMakeSureRead": "Pastikan kamu sudah membaca",
   "ModalBatalkanPesananResponsive.linkOurTerms": "Syarat dan Ketentuan kami.",
   "ModalBatalkanPesananResponsive.checkboxAgreeTerms": "Ya, Saya setuju dengan syarat dan ketentuan tersebut",
+  "PendingUpdateFeePayment.altFleetFound": "Armada ditemukan",
+  "PendingUpdateFeePayment.messageOrderChangeSaved": "Informasi perubahan pesanan telah berhasil kami simpan.",
+  "PendingUpdateFeePayment.messagePaymentReminder": "Mohon lakukan pembayaran dalam waktu",
+  "PendingUpdateFeePayment.messageAutoCancelWarning": "Perubahan secara otomatis dibatalkan, apabila melewati batas waktu yang ditentukan.",
   "ModalBatalkanPesananResponsive.textCancelWithPenalty": "Pembatalan pesanan akan dikenakan biaya admin sebesar Rp100.000/unit.",
   "ModalBatalkanPesananResponsive.textIAgreeTo": "Saya menyetujui",
   "ModalBatalkanPesananResponsive.linkMuatransTerms": "Syarat dan Ketentuan Muatrans",
@@ -410,5 +414,10 @@
   "PopUpInformasi.errorGagalMemuatPreferensi": "Gagal memuat preferensi popup",
   "PopUpInformasi.errorTerjadiKesalahan": "Terjadi kesalahan saat memuat data",
   "PopUpInformasi.statusMenyimpan": "Menyimpan...",
-  "PopUpInformasi.labelJanganTampilkanLagi": "Jangan tampilkan lagi"
+  "PopUpInformasi.labelJanganTampilkanLagi": "Jangan tampilkan lagi",
+  "BottomSheetPreviousDriver.buttonViewPreviousDriver": "Lihat Driver Sebelumnya",
+  "BottomSheetPreviousDriver.titlePreviousDriver": "Driver Sebelumnya",
+  "BottomSheetPreviousDriver.altDriverAvatar": "driver",
+  "BottomSheetPreviousDriver.textDriverNotFound": "Driver tidak ditemukan",
+  "BottomSheetPreviousDriver.buttonDriverStatusDetail": "Detail Status Driver"
 }

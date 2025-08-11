@@ -59,6 +59,7 @@ const DetailPesananScreen = ({
   dataRingkasanPembayaran,
   documentShippingDetail,
   waitingTimeRaw,
+  oldDriverData,
 }) => {
   const { t } = useTranslation();
   const params = useParams();
@@ -208,6 +209,7 @@ const DetailPesananScreen = ({
             orderId={dataStatusPesanan?.orderId}
             orderStatus={dataStatusPesanan?.orderStatus}
             withMenu={dataStatusPesanan?.totalTruckUnit > 1}
+            oldDriverData={oldDriverData}
           />
         ) : null}
 

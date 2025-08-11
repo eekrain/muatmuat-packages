@@ -42,6 +42,7 @@ const DetailPesananHeader = ({
   dataStatusPesanan,
   dataRingkasanPembayaran,
   isShowWaitFleetAlert,
+  mutateDetailPesanan,
 }) => {
   const { t } = useTranslation();
   const params = useParams();
@@ -110,8 +111,10 @@ const DetailPesananHeader = ({
         setIsDocumentReceivedModalOpen(false);
         // await autoComplete({});
 
-        // Optionally refresh the page or update the order status
-        router.refresh();
+        // Refresh order detail data using SWR mutate
+        if (mutateDetailPesanan) {
+          mutateDetailPesanan();
+        }
       } else {
         // toast.error(result?.Message?.Text || "Gagal mengkonfirmasi dokumen");
       }

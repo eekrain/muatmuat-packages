@@ -1,4 +1,4 @@
-import { usePathname } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import Button from "@/components/Button/Button";
@@ -33,6 +33,8 @@ export const SewaArmadaFooter = ({
     (state) => state.formValues.hasUpdatedForm
   );
   const footerRef = useRef(null);
+  const params = useParams();
+  const router = useRouter();
 
   const hasAdditioinalFee = calculatedPrice?.totalPrice > 0 && hasUpdatedForm;
 
@@ -64,6 +66,27 @@ export const SewaArmadaFooter = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isShowRecommendedTruckButton, isShowCostDetail]);
 
+  const handleUpdateOrder = () => {
+    try {
+      // const payload = normalizeUpdateOrder(
+      //   orderType,
+      //   formValues,
+      //   calculatedPrice
+      // );
+      // const response = trigger(payload);
+      // setUpdateOrderSuccess(true);
+      router.push(`/daftarpesanan/detailpesanan/${params.orderId}`);
+    } catch (err) {
+      // Enhanced error handling
+      console.error(err);
+      if (err?.response?.data) {
+        alert(`Error: ${err.response.data.message?.text || "Unknown error"}`);
+      } else {
+        alert("Terjadi kesalahan. Silakan coba lagi.");
+      }
+    }
+  };
+
   return (
     <ResponsiveFooter
       ref={footerRef}
@@ -78,7 +101,9 @@ export const SewaArmadaFooter = ({
           {hasAdditioinalFee ? (
             <div className="flex items-center justify-between text-sm leading-[1.1] text-neutral-900">
               <span className="font-semibold">Total Tambahan Biaya</span>
-              <span className="font-bold">Rp667.150</span>
+              <span className="font-bold">
+                {idrFormat(calculatedPrice?.totalPrice || 0)}
+              </span>
             </div>
           ) : null}
           <div className="flex items-center gap-x-2">
@@ -99,7 +124,7 @@ export const SewaArmadaFooter = ({
               onValidateInformasiPesanan={() =>
                 setOrderConfirmationBottomsheetOpen(true)
               }
-              onCreateOrder={() => {}}
+              onCreateOrder={handleUpdateOrder}
             />
           </div>
         </>

@@ -1,3 +1,4 @@
+import { useParams } from "next/navigation";
 import { useState } from "react";
 
 import Button from "@/components/Button/Button";
@@ -9,15 +10,17 @@ import {
   ModalTrigger,
 } from "@/components/Modal/Modal";
 import { ModalOpsiPembayaran } from "@/components/Modal/ModalOpsiPembayaran";
-import { useSWRHook } from "@/hooks/use-swr";
+import { useSWRHook, useSWRMutateHook } from "@/hooks/use-swr";
 import { useTranslation } from "@/hooks/use-translation";
 import { fetcherPayment } from "@/lib/axios";
 import { idrFormat } from "@/lib/utils/formatters";
 
 export const RingkasanPembayaranPerubahanPesanan = ({
   dataRingkasanPembayaran,
+  mutateDetailPesanan,
 }) => {
   const { t } = useTranslation();
+  const params = useParams();
 
   // Fetch payment methods using SWR
   const { data: paymentMethodsData } = useSWRHook(
@@ -26,7 +29,27 @@ export const RingkasanPembayaranPerubahanPesanan = ({
   );
 
   const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState(null);
+  const { trigger: paymentProcess, isMutating: isLoading } = useSWRMutateHook(
+    params.orderId ? `v1/orders/${params.orderId}/repayment-process` : null,
+    "POST"
+  );
+  const handleLanjutPembayaran = async () => {
+    if (!paymentProcess) return;
 
+    try {
+      const result = await paymentProcess({
+        paymentMethodId: dataRingkasanPembayaran.paymentMethodId,
+        repaymentType: "CHANGE",
+      });
+      console.log("Pembayaran berhasil:", result);
+      if (mutateDetailPesanan) {
+        mutateDetailPesanan();
+      }
+    } catch (err) {
+      console.error("Gagal lanjut pembayaran:", err);
+      // toast.error("Terjadi kesalahan saat memproses pembayaran");
+    }
+  };
   const priceChange = dataRingkasanPembayaran?.priceChange;
   const additionalCost = priceChange?.additionalCost;
   const penaltyFee = priceChange?.penaltyFee;
@@ -119,6 +142,7 @@ export const RingkasanPembayaranPerubahanPesanan = ({
             paymentMethods={paymentMethodsData?.Data}
             selectedPaymentMethodId={selectedPaymentMethodId}
             onSelectedPaymentMethodId={setSelectedPaymentMethodId}
+            onProceedPayment={handleLanjutPembayaran}
             className="mt-4"
           />
         </CardPayment.Footer>

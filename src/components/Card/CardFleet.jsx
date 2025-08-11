@@ -26,14 +26,13 @@ import { formatDate } from "@/lib/utils/dateFormat";
 // ----- Constants -----
 const STATUS_STYLES = {
   SOS: {
-    expanded: "border-error-400 bg-error-50",
-    collapsed:
-      "border-gray-200 bg-error-50 hover:border-error-400 hover:bg-[#FFE9ED]",
+    expanded: "border border-error-400 bg-error-50",
+    collapsed: " bg-error-50 hover:border-error-400 hover:bg-[#FFE9ED]",
   },
   DEFAULT: {
-    expanded: "border-[#FFC217] bg-[#FFFBEB]",
+    expanded: "border border-[#FFC217] bg-[#FFFBEB]",
     collapsed:
-      "border-gray-200 bg-white hover:border-[#FFC217] hover:bg-[#FFFBEB]",
+      " border border-gray-200 bg-white hover:border-[#FFC217] hover:bg-[#FFFBEB]",
   },
 };
 
@@ -77,9 +76,11 @@ const SOSIndicator = () => (
 );
 
 const SOSAlertHeader = ({ category, reportTime, showCategory = true }) => (
-  <div className="mt-2 flex flex-col border-b border-neutral-400 pb-3">
+  <div className="mt-3 flex flex-col border-b border-neutral-400 pb-3">
     {showCategory && (
-      <p className="text-xs font-semibold text-error-400">{category || "-"}</p>
+      <p className="mb-2 text-xs font-semibold text-error-400">
+        {category || "-"}
+      </p>
     )}
     <p className="flex items-center gap-2 text-xs text-neutral-600">
       <Clock3 className="h-4 w-3 text-muat-trans-secondary-900" />
@@ -338,18 +339,18 @@ const SOSExpandedSection = ({ fleet }) => {
   const photos = fleet?.detailSOS?.photos || [];
 
   return (
-    <div className="mt-2 flex flex-col">
+    <div className="mt-1 flex flex-col">
       <p className="text-xs font-semibold text-error-400">
         {fleet?.detailSOS?.sosCategory || "-"}
       </p>
       {fleet?.detailSOS?.description && (
-        <p className="text-xs font-semibold text-neutral-900">
+        <p className="mt-3 text-xs font-semibold text-neutral-900">
           {fleet.detailSOS.description}
         </p>
       )}
 
       {photos.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap gap-2">
           {photos.map((image, index) => (
             <LightboxProvider key={`${image}-${index}`} images={photos}>
               <LightboxPreview
@@ -389,7 +390,7 @@ export default function CardFleet({
     : "Unknown";
 
   const cardClasses = cn(
-    "group overflow-hidden rounded-lg border p-3 transition-all duration-200",
+    "group overflow-hidden rounded-lg p-3 transition-all duration-200",
     isSOS
       ? isExpanded
         ? STATUS_STYLES.SOS.expanded
