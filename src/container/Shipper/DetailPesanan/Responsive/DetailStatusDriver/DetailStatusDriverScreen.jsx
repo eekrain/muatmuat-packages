@@ -11,12 +11,14 @@ import DriverInfoSlider from "../Home/components/DriverInfoSlider";
 const DetailStatusDriverScreen = ({ dataStatusPesanan }) => {
   const navigation = useResponsiveNavigation();
   const params = useResponsiveRouteParams();
-  const { orderId, driverId } = params;
 
-  const { data: dataTimeline } = useGetDriverStatusTimeline(orderId, driverId);
+  const { data: dataTimeline } = useGetDriverStatusTimeline(
+    params?.orderId,
+    params?.driverId
+  );
 
   const defaultIndex = dataStatusPesanan?.driverStatus.findIndex(
-    (d) => d.driverId === driverId
+    (d) => d.driverId === params?.driverId
   );
 
   return (
@@ -30,7 +32,7 @@ const DetailStatusDriverScreen = ({ dataStatusPesanan }) => {
         {defaultIndex !== -1 && dataStatusPesanan?.driverStatus.length > 1 && (
           <DriverInfoSlider
             driverStatus={dataStatusPesanan?.driverStatus}
-            orderId={orderId}
+            orderId={params?.orderId}
             defaultIndex={defaultIndex}
             withActions={false}
           />

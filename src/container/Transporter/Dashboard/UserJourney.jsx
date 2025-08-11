@@ -42,35 +42,38 @@ const menuItems = [
   },
 ];
 
-const UserJourney = () => {
+const UserJourney = ({ title = "Dashboard Analytics" }) => {
   return (
-    <div className="py-6">
-      <Card className="h-[409px] w-[1232px] !border-none !p-0 !py-0 px-0 shadow-muat">
-        <CardHeader className="!border-none !px-6 !py-5">
-          <h1 className="text-lg font-bold text-neutral-900">
-            Langkah Mudah Untuk Mulai Mendapatkan Pesanan
-          </h1>
-          <p className="text-xs text-neutral-600">
-            Ayo lengkapi informasi armada dan driver kamu untuk mulai menerima
-            pesanan di muatrans
-          </p>
-        </CardHeader>
-        <CardContent className="!px-6 !py-0">
-          <div className="flex flex-col gap-6">
-            {menuItems.map((item) => (
-              <CardMenu
-                key={item.id}
-                icon={item.icon}
-                title={item.title}
-                description={item.description}
-                buttonText={item.buttonText}
-                onClick={item.onClick}
-              />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    <>
+      <h1 className="text-xl font-bold text-neutral-900">{title}</h1>
+      <div className="py-6">
+        <Card className="h-[409px] w-[1232px] !border-none !p-0 !py-0 px-0 shadow-muat">
+          <CardHeader className="!border-none !px-6 !py-5">
+            <h1 className="text-lg font-bold text-neutral-900">
+              Langkah Mudah Untuk Mulai Mendapatkan Pesanan
+            </h1>
+            <p className="text-xs text-neutral-600">
+              Ayo lengkapi informasi armada dan driver kamu untuk mulai menerima
+              pesanan di muatrans
+            </p>
+          </CardHeader>
+          <CardContent className="!px-6 !py-0">
+            <div className="flex flex-col gap-6">
+              {menuItems.map((item) => (
+                <CardMenu
+                  key={item.id}
+                  icon={item.icon}
+                  title={item.title}
+                  description={item.description}
+                  buttonText={item.buttonText}
+                  onClick={item.onClick}
+                />
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </>
   );
 };
 

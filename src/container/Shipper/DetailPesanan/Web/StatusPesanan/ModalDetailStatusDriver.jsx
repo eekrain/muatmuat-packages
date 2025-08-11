@@ -5,21 +5,12 @@ import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
 import Button from "@/components/Button/Button";
 import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
-import { useClientHeight } from "@/hooks/use-client-height";
 import { useTranslation } from "@/hooks/use-translation";
 import { useGetDriverStatusTimeline } from "@/services/Shipper/lacak-armada/getDriverStatusTimeline";
 
 const ModalDetailStatusDriver = ({ driver }) => {
   const { t } = useTranslation();
-  const params = useParams();
   const [isOpen, setIsOpen] = useState(false);
-
-  // Get order status history to get driver data
-  const { data: dataTimeline, isLoading } = useGetDriverStatusTimeline(
-    params.orderId,
-    driver.driverId
-  );
-  const { ref: contentRef, height: contentHeight } = useClientHeight();
 
   return (
     <Modal open={isOpen} onOpenChange={setIsOpen} closeOnOutsideClick>
@@ -40,58 +31,44 @@ const ModalDetailStatusDriver = ({ driver }) => {
             "Detail Status Driver"
           )}
         </h2>
-
-        <div
-          className="flex flex-col rounded-xl border border-neutral-400 pb-5 pt-5"
-          style={{
-            ...(!contentHeight && { height: "353px" }),
-            ...(contentHeight && { maxHeight: "353px" }),
-          }}
-        >
-          <div className="relative pl-4 pr-[7px]">
-            <AvatarDriver
-              name={
-                dataTimeline?.dataDriver?.name || driver?.name || "Ardian Eka"
-              }
-              image={
-                dataTimeline?.dataDriver?.profileImage ||
-                driver?.driverImage ||
-                "https://picsum.photos/50"
-              }
-              licensePlate={
-                dataTimeline?.dataDriver?.licensePlate ||
-                driver?.licensePlate ||
-                ""
-              }
-            />
-          </div>
-
-          <div className="my-6 w-full px-4">
-            <hr className="border-neutral-400" />
-          </div>
-
-          <div
-            ref={contentRef}
-            className="pr-[4px]"
-            style={{
-              ...(!contentHeight && { flex: 1 }),
-              ...(contentHeight && { maxHeight: contentHeight }),
-            }}
-          >
-            {contentHeight && dataTimeline ? (
-              <div
-                className="overflow-y-auto pl-4 pr-[7px]"
-                style={{
-                  ...(contentHeight ? { maxHeight: contentHeight } : {}),
-                }}
-              >
-                <DriverTimeline dataTimeline={dataTimeline} />
-              </div>
-            ) : null}
-          </div>
-        </div>
+        {isOpen && <Content driver={driver} t={t} />}
       </ModalContent>
     </Modal>
+  );
+};
+
+const Content = ({ driver, t }) => {
+  const params = useParams();
+  // Get order status history to get driver data
+  const { data: dataTimeline, isLoading } = useGetDriverStatusTimeline(
+    params.orderId,
+    driver.driverId
+  );
+
+  return (
+    <div className="flex max-h-[353px] flex-col rounded-xl border border-neutral-400 pb-5 pt-5">
+      <div className="relative pl-4 pr-[7px]">
+        <AvatarDriver
+          name={dataTimeline?.dataDriver?.name || driver?.name || "Ardian Eka"}
+          image={
+            dataTimeline?.dataDriver?.profileImage ||
+            driver?.driverImage ||
+            "https://picsum.photos/50"
+          }
+          licensePlate={
+            dataTimeline?.dataDriver?.licensePlate || driver?.licensePlate || ""
+          }
+        />
+      </div>
+
+      <div className="my-6 w-full px-4">
+        <hr className="border-neutral-400" />
+      </div>
+
+      <div className="mr-[4px] overflow-y-auto pb-[2px] pl-4 pr-[7px]">
+        {!!dataTimeline && <DriverTimeline dataTimeline={dataTimeline} />}
+      </div>
+    </div>
   );
 };
 

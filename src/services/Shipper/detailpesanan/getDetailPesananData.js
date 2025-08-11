@@ -19,7 +19,7 @@ import { getStatusLegend } from "./getStatusLegend";
 const useMockData = false; // mock detailpesanan
 
 const orderType = OrderTypeEnum.SCHEDULED;
-const orderStatus = OrderStatusEnum.LOADING;
+const orderStatus = OrderStatusEnum.UNLOADING;
 const unitFleetStatus = 3;
 const totalUnit = 3;
 
@@ -177,7 +177,7 @@ const apiResultOrderDetail = {
         loadTimeStart: "2025-02-08T09:00:00Z",
         loadTimeEnd: "2025-02-08T12:00:00Z",
         locations: locations,
-        isHalalLogistic: true,
+        isHalalLogistic: false,
         isEdit: false,
         cargo: [
           {
