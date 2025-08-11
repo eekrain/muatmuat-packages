@@ -77,9 +77,11 @@ const SOSIndicator = () => (
 );
 
 const SOSAlertHeader = ({ category, reportTime, showCategory = true }) => (
-  <div className="mt-2 flex flex-col border-b border-neutral-400 pb-3">
+  <div className="mt-3 flex flex-col border-b border-neutral-400 pb-3">
     {showCategory && (
-      <p className="text-xs font-semibold text-error-400">{category || "-"}</p>
+      <p className="mb-2 text-xs font-semibold text-error-400">
+        {category || "-"}
+      </p>
     )}
     <p className="flex items-center gap-2 text-xs text-neutral-600">
       <Clock3 className="h-4 w-3 text-muat-trans-secondary-900" />
@@ -338,18 +340,18 @@ const SOSExpandedSection = ({ fleet }) => {
   const photos = fleet?.detailSOS?.photos || [];
 
   return (
-    <div className="mt-2 flex flex-col">
+    <div className="mt-1 flex flex-col">
       <p className="text-xs font-semibold text-error-400">
         {fleet?.detailSOS?.sosCategory || "-"}
       </p>
       {fleet?.detailSOS?.description && (
-        <p className="text-xs font-semibold text-neutral-900">
+        <p className="mt-3 text-xs font-semibold text-neutral-900">
           {fleet.detailSOS.description}
         </p>
       )}
 
       {photos.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap gap-2">
           {photos.map((image, index) => (
             <LightboxProvider key={`${image}-${index}`} images={photos}>
               <LightboxPreview
