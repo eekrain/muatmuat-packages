@@ -1,5 +1,7 @@
 "use client";
 
+import { useParams, useRouter } from "next/navigation";
+
 import {
   BottomSheet,
   BottomSheetClose,
@@ -11,7 +13,10 @@ import {
 } from "@/components/BottomSheet/BottomSheetUp";
 import Button from "@/components/Button/Button";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { normalizeUpdateOrder } from "@/lib/normalizers/sewaarmada/normalizeUpdateOrder";
 import { idrFormat } from "@/lib/utils/formatters";
+import { useUpdateOrder } from "@/services/Shipper/sewaarmada/updateOrder";
+import { useSewaArmadaStore } from "@/store/Shipper/forms/sewaArmadaStore";
 
 import OrderConfirmationBottomSheet from "../InformasiPesanan/OrderConfirmationBottomSheet";
 
@@ -20,6 +25,15 @@ const AdditionalFeeBottomsheet = ({
   setOrderConfirmationBottomsheetOpen,
   calculatedPrice,
 }) => {
+  const params = useParams();
+  const router = useRouter();
+  const { setUpdateOrderSuccess } = useSewaArmadaStore(
+    (state) => state.actions
+  );
+  const formValues = useSewaArmadaStore((state) => state.formValues);
+  const orderType = useSewaArmadaStore((state) => state.orderType);
+  const { trigger, isMutating, error, data } = useUpdateOrder(params.orderId);
+
   const priceSummary = useShallowMemo(() => {
     if (!calculatedPrice || calculatedPrice?.totalPrice <= 0) {
       return [];
@@ -70,6 +84,26 @@ const AdditionalFeeBottomsheet = ({
     ];
   }, [calculatedPrice]);
 
+  const handleUpdateOrder = () => {
+    try {
+      const payload = normalizeUpdateOrder(
+        orderType,
+        formValues,
+        calculatedPrice
+      );
+      const response = trigger(payload);
+      setUpdateOrderSuccess(true);
+      router.push(`/daftarpesanan/detailpesanan/${params.orderId}`);
+    } catch (err) {
+      // Enhanced error handling
+      console.error(err);
+      if (err?.response?.data) {
+        alert(`Error: ${err.response.data.message?.text || "Unknown error"}`);
+      } else {
+        alert("Terjadi kesalahan. Silakan coba lagi.");
+      }
+    }
+  };
   return (
     <BottomSheet>
       <BottomSheetTrigger asChild>
@@ -127,7 +161,7 @@ const AdditionalFeeBottomsheet = ({
             onValidateInformasiPesanan={() =>
               setOrderConfirmationBottomsheetOpen(true)
             }
-            onCreateOrder={() => {}}
+            onCreateOrder={handleUpdateOrder}
           />
         </BottomSheetFooter>
       </BottomSheetContent>
