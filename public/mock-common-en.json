@@ -177,6 +177,10 @@
   "ModalBatalkanPesananResponsive.textMakeSureRead": "Make sure you have read",
   "ModalBatalkanPesananResponsive.linkOurTerms": "Our Terms and Conditions.",
   "ModalBatalkanPesananResponsive.checkboxAgreeTerms": "Yes, I agree to the terms and conditions",
+  "PendingUpdateFeePayment.altFleetFound": "Fleet found",
+  "PendingUpdateFeePayment.messageOrderChangeSaved": "Order change information has been successfully saved.",
+  "PendingUpdateFeePayment.messagePaymentReminder": "Please make payment within",
+  "PendingUpdateFeePayment.messageAutoCancelWarning": "Changes will be automatically cancelled if the specified time limit is exceeded.",
   "ModalBatalkanPesananResponsive.textCancelWithPenalty": "Order cancellation will incur an admin fee of Rp100,000/unit.",
   "ModalBatalkanPesananResponsive.textIAgreeTo": "I agree to",
   "ModalBatalkanPesananResponsive.linkMuatransTerms": "Muatrans Terms and Conditions",
@@ -188,5 +192,10 @@
   "WaitingTimeBottomsheet.labelTotal": "Total",
   "WaitingSettlementModal.titleUnpaidBills": "Oops! There are still unpaid bills",
   "WaitingSettlementModal.textUnpaidBills": "There are unpaid bills. Please complete the payment to proceed.",
-  "WaitingSettlementModal.buttonPayBill": "Pay Bill"
+  "WaitingSettlementModal.buttonPayBill": "Pay Bill",
+  "BottomSheetPreviousDriver.buttonViewPreviousDriver": "View Previous Driver",
+  "BottomSheetPreviousDriver.titlePreviousDriver": "Previous Driver",
+  "BottomSheetPreviousDriver.altDriverAvatar": "driver",
+  "BottomSheetPreviousDriver.textDriverNotFound": "Driver not found",
+  "BottomSheetPreviousDriver.buttonDriverStatusDetail": "Driver Status Details"
 }

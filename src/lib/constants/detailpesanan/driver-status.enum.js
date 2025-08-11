@@ -32,7 +32,7 @@ export const DriverStatusEnum = {
     },
     BONGKAR: {
       code: "SEDANG_BONGKAR",
-      name: "labelSedangBongkarr",
+      name: "labelSedangBongkar",
     },
     SELESAI: {
       code: "PENGIRIMAN_MUATAN_SELESAI",

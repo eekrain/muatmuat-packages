@@ -178,6 +178,10 @@
   "ModalBatalkanPesananResponsive.textMakeSureRead": "Pastikan kamu sudah membaca",
   "ModalBatalkanPesananResponsive.linkOurTerms": "Syarat dan Ketentuan kami.",
   "ModalBatalkanPesananResponsive.checkboxAgreeTerms": "Ya, Saya setuju dengan syarat dan ketentuan tersebut",
+  "PendingUpdateFeePayment.altFleetFound": "Armada ditemukan",
+  "PendingUpdateFeePayment.messageOrderChangeSaved": "Informasi perubahan pesanan telah berhasil kami simpan.",
+  "PendingUpdateFeePayment.messagePaymentReminder": "Mohon lakukan pembayaran dalam waktu",
+  "PendingUpdateFeePayment.messageAutoCancelWarning": "Perubahan secara otomatis dibatalkan, apabila melewati batas waktu yang ditentukan.",
   "ModalBatalkanPesananResponsive.textCancelWithPenalty": "Pembatalan pesanan akan dikenakan biaya admin sebesar Rp100.000/unit.",
   "ModalBatalkanPesananResponsive.textIAgreeTo": "Saya menyetujui",
   "ModalBatalkanPesananResponsive.linkMuatransTerms": "Syarat dan Ketentuan Muatrans",
@@ -189,5 +193,10 @@
   "WaitingTimeBottomsheet.labelTotal": "Total",
   "WaitingSettlementModal.titleUnpaidBills": "Oops! Masih Ada Tagihan Yang Belum Dilunasi",
   "WaitingSettlementModal.textUnpaidBills": "Ada tagihan yang belum dilunasi. Harap selesaikan pembayaran untuk dapat melanjutkan aksimu.",
-  "WaitingSettlementModal.buttonPayBill": "Bayar Tagihan"
+  "WaitingSettlementModal.buttonPayBill": "Bayar Tagihan",
+  "BottomSheetPreviousDriver.buttonViewPreviousDriver": "Lihat Driver Sebelumnya",
+  "BottomSheetPreviousDriver.titlePreviousDriver": "Driver Sebelumnya",
+  "BottomSheetPreviousDriver.altDriverAvatar": "driver",
+  "BottomSheetPreviousDriver.textDriverNotFound": "Driver tidak ditemukan",
+  "BottomSheetPreviousDriver.buttonDriverStatusDetail": "Detail Status Driver"
 }
