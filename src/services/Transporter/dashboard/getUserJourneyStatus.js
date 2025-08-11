@@ -2,10 +2,8 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-// Set to true to use mock data, false to make a real API call
 const useMockData = true;
 
-// Mock API result based on the provided success response
 export const mockAPIResult = {
   data: {
     Message: {
@@ -13,12 +11,12 @@ export const mockAPIResult = {
       Text: "User journey status retrieved successfully",
     },
     Data: {
-      addFleetCompleted: true,
+      addFleetCompleted: false,
       addDriverCompleted: true,
       fleetDriverAssignmentCompleted: false,
       areaSettingCompleted: false,
-      allStepsCompleted: false,
-      nextStep: "FLEET_DRIVER_ASSIGNMENT",
+      allStepsCompleted: false, // set to true to display Analytics, set False
+      nextStep: "FLEET_DRIVER_ASSIGNMENT", // ENUM: ADD_FLEET, ADD_DRIVER, FLEET_DRIVER_ASSIGNMENT, AREA_SETTING, COMPLETED
     },
     Type: "USER_JOURNEY_STATUS",
   },
