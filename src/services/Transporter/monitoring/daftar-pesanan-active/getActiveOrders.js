@@ -166,7 +166,7 @@ const apiResultActiveOrders = {
         orderType: "SCHEDULED",
         loadTimeStart: formatDateForAPI(tomorrow, 9),
         loadTimeEnd: formatDateForAPI(tomorrow, 12),
-        orderStatus: "SCHEDULED_FLEET",
+        orderStatus: "CONFIRMED",
         pickupLocations: [
           {
             id: "uuid",
@@ -207,7 +207,7 @@ const apiResultActiveOrders = {
         orderType: "INSTANT",
         loadTimeStart: formatDateForAPI(threeDaysLater, 10),
         loadTimeEnd: formatDateForAPI(threeDaysLater, 14),
-        orderStatus: "CONFIRMED",
+        orderStatus: "SCHEDULED_FLEET",
         pickupLocations: [
           {
             id: "uuid",
@@ -244,92 +244,6 @@ const apiResultActiveOrders = {
         sosStatus: { hasSos: false, sosCount: 0, sosUnits: [] },
         hasChangeRequest: false,
       },
-      {
-        id: "uuid4",
-        orderCode: "MT25LOAD04",
-        orderType: "SCHEDULED",
-        loadTimeStart: formatDateForAPI(today, 8),
-        loadTimeEnd: formatDateForAPI(today, 10),
-        orderStatus: "LOADING",
-        pickupLocations: [
-          {
-            id: "uuid",
-            sequence: 1,
-            fullAddress: "Genteng, Kota Surabaya",
-            city: "Kota Surabaya",
-            province: "Jawa Timur",
-          },
-        ],
-        dropoffLocations: [
-          {
-            id: "uuid",
-            sequence: 1,
-            fullAddress: "Sidoarjo, Kab. Sidoarjo",
-            city: "Kab. Sidoarjo",
-            province: "Jawa Timur",
-          },
-        ],
-        truckType: { id: "uuid", name: "Colt Diesel Engkel" },
-        carrierTruck: { id: "uuid", name: "Box" },
-        truckCount: 1,
-        totalWeight: 3.2,
-        weightUnit: "ton",
-        assignedVehicles: [
-          {
-            id: "uuid",
-            fleetId: "uuid",
-            licensePlate: "B 1234 ABC",
-            driverName: "John Doe",
-            driverPhone: "081234567890",
-            driverStatus: "LOADING",
-          },
-        ],
-        sosStatus: { hasSos: false, sosCount: 0, sosUnits: [] },
-        hasChangeRequest: false,
-      },
-      {
-        id: "uuid5",
-        orderCode: "MT25UNLOAD05",
-        orderType: "INSTANT",
-        loadTimeStart: formatDateForAPI(today, 6),
-        loadTimeEnd: formatDateForAPI(today, 8),
-        orderStatus: "UNLOADING",
-        pickupLocations: [
-          {
-            id: "uuid",
-            sequence: 1,
-            fullAddress: "Rungkut, Kota Surabaya",
-            city: "Kota Surabaya",
-            province: "Jawa Timur",
-          },
-        ],
-        dropoffLocations: [
-          {
-            id: "uuid",
-            sequence: 1,
-            fullAddress: "Gresik, Kab. Gresik",
-            city: "Kab. Gresik",
-            province: "Jawa Timur",
-          },
-        ],
-        truckType: { id: "uuid", name: "Tronton" },
-        carrierTruck: { id: "uuid", name: "Box" },
-        truckCount: 1,
-        totalWeight: 10,
-        weightUnit: "ton",
-        assignedVehicles: [
-          {
-            id: "uuid",
-            fleetId: "uuid",
-            licensePlate: "B 5678 DEF",
-            driverName: "Jane Smith",
-            driverPhone: "081234567891",
-            driverStatus: "UNLOADING",
-          },
-        ],
-        sosStatus: { hasSos: false, sosCount: 0, sosUnits: [] },
-        hasChangeRequest: false,
-      },
 
       // Warning status variants
       {
@@ -338,7 +252,7 @@ const apiResultActiveOrders = {
         orderType: "SCHEDULED",
         loadTimeStart: formatDateForAPI(sevenDaysLater, 10),
         loadTimeEnd: formatDateForAPI(sevenDaysLater, 14),
-        orderStatus: "WAITING_PAYMENT_1",
+        orderStatus: "NEED_ASSIGN_FLEET",
         pickupLocations: [
           {
             id: "uuid",

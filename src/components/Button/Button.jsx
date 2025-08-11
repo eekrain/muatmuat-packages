@@ -36,6 +36,9 @@ const buttonVariants = cva(
           "border border-error-400 bg-neutral-50 text-error-400 hover:bg-error-50",
         "muatparts-warning":
           "bg-secondary-500 text-primary-700 hover:bg-secondary-300",
+
+        // Link variant
+        link: "border-0 bg-transparent p-0 px-0 font-medium text-primary-700 no-underline hover:text-primary-800 md:h-[14px] md:px-0",
       },
       disabled: {
         true: "cursor-not-allowed bg-neutral-200 text-neutral-600 hover:bg-neutral-200",
@@ -61,6 +64,7 @@ const iconColorVariants = {
   "muatparts-error": "text-white",
   "muatparts-error-secondary": "text-error-400",
   "muatparts-warning": "text-primary-700",
+  link: "text-primary-700",
 };
 
 /**

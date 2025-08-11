@@ -12,12 +12,12 @@ const LocationItem = ({ location, isLast, appearance }) => (
     <div className="relative flex flex-shrink-0 justify-center">
       {/* Dashed line connector */}
       {!isLast && (
-        <div className="absolute left-1/2 top-[5px] h-[30px] w-0 -translate-x-1/2 border-l-[1.5px] border-dashed border-neutral-400" />
+        <div className="absolute left-1/2 top-[5px] z-0 h-[30px] w-0 -translate-x-1/2 border-l-[1.5px] border-dashed border-neutral-400" />
       )}
       {/* Bullet */}
       <div
         className={cn(
-          "relative z-10 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full",
+          "relative z-[1] flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full",
           location.type === "pickup"
             ? "bg-[#FFC217]" // MuatTrans primary yellow
             : "bg-[#461B02]" // MuatTrans secondary brown
@@ -134,14 +134,14 @@ const MuatBongkarStepperWithModal = ({
                           >
                             {/* Dashed line after each location except the last in this section */}
                             {index < pickupLocations.length - 1 && (
-                              <div className="absolute left-[7px] top-4 h-[calc(100%+12px)] w-0 border-l-2 border-dashed border-neutral-400" />
+                              <div className="absolute left-[7px] top-4 z-0 h-[calc(100%+12px)] w-0 border-l-2 border-dashed border-neutral-400" />
                             )}
                             {/* Dashed line connecting to dropoff section */}
                             {index === pickupLocations.length - 1 &&
                               dropoffLocations.length > 0 && (
-                                <div className="absolute left-[7px] top-4 h-[calc(100%+32px)] w-0 border-l-2 border-dashed border-neutral-400" />
+                                <div className="absolute left-[7px] top-4 z-0 h-[calc(100%+32px)] w-0 border-l-2 border-dashed border-neutral-400" />
                               )}
-                            <div className="relative z-10 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-[#FFC217]">
+                            <div className="relative z-[1] flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-[#FFC217]">
                               <span className="text-[10px] font-bold leading-[12px] text-[#461B02]">
                                 {pickup.sequence || index + 1}
                               </span>
@@ -169,9 +169,9 @@ const MuatBongkarStepperWithModal = ({
                           >
                             {/* Dashed line after each location except the last */}
                             {index < dropoffLocations.length - 1 && (
-                              <div className="absolute left-[7px] top-4 h-[calc(100%+12px)] w-0 border-l-2 border-dashed border-neutral-400" />
+                              <div className="absolute left-[7px] top-4 z-0 h-[calc(100%+12px)] w-0 border-l-2 border-dashed border-neutral-400" />
                             )}
-                            <div className="relative z-10 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-[#461B02]">
+                            <div className="relative z-[1] flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-[#461B02]">
                               <span className="text-[10px] font-bold leading-[12px] text-white">
                                 {dropoff.sequence || index + 1}
                               </span>
