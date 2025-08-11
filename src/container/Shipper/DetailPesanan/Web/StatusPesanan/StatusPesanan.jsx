@@ -94,6 +94,7 @@ const StatusPesanan = ({
             onLihatDetailWaktuTunggu: () =>
               setIsModalDetailWaktuTungguOpen(true),
             onLihatPerubahan: () => setIsModalPerubahanDataOpen(true),
+            isMobile: false,
           })
         )
         .filter((val) => Boolean(val)),

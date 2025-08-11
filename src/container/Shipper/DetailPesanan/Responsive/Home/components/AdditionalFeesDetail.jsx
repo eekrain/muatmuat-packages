@@ -1,5 +1,5 @@
+import BiayaOverloadMuatanBottomsheet from "@/components/BottomSheet/BiayaOverloadMuatanBottomsheet";
 import WaitingTimeBottomsheet from "@/components/BottomSheet/WaitingTimeBottomsheet";
-import BottomsheetCargoOverload from "@/container/Shipper/DetailPesanan/Responsive/Home/components/Popup/BottomsheetCargoOverload";
 import { cn } from "@/lib/utils";
 import { idrFormat } from "@/lib/utils/formatters";
 
@@ -44,15 +44,19 @@ const AdditionalFeesDetail = ({ priceCharge, waitingTimeRaw }) => {
             </p>
             <div className="flex items-start justify-between gap-x-[67px]">
               <div className="flex flex-col gap-y-2">
-                <span className="text-xs font-medium text-neutral-900">
-                  {/* gk tau knp ada yg 1x24 jamnya ada yg ga. misteri?? */}
-                  {/* di informasi biaya tunggu gini */}
-                  {`Nominal Waktu Tunggu`}
-                  <br />
-                  {`${priceCharge.waitingFee.totalDriver || 0} Driver`}
-                  {/* di reimbursement gini */}
-                  {/* {`Nominal Waktu Tunggu (1x24 Jam) - ${priceCharge.waitingFee.totalDriver || 0} Driver`} */}
-                </span>
+                {/* gk tau knp ada yg 1x24 jamnya ada yg ga. misteri?? */}
+                {/* di informasi biaya tunggu gini */}
+                {/* di reimbursement gini */}
+                {/* {`Nominal Waktu Tunggu (1x24 Jam) - ${priceCharge.waitingFee.totalDriver || 0} Driver`} */}
+                <span
+                  className="text-xs font-medium text-neutral-900"
+                  dangerouslySetInnerHTML={{
+                    __html: `
+                    Nominal Waktu Tunggu
+                    <br />(${priceCharge.waitingFee.totalDriver || 0} Driver)
+                  `,
+                  }}
+                />
                 {/* BottomSheet untuk detail waktu tunggu */}
                 <WaitingTimeBottomsheet waitingTimeData={waitingTimeRaw} />
               </div>
@@ -78,7 +82,7 @@ const AdditionalFeesDetail = ({ priceCharge, waitingTimeRaw }) => {
                   </span>
                 </div>
                 {/* BottomSheet overload muatan */}
-                <BottomsheetCargoOverload />
+                <BiayaOverloadMuatanBottomsheet />
               </div>
               <span className="text-sm font-semibold text-neutral-900">
                 {idrFormat(priceCharge.overloadFee.totalAmount)}

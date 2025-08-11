@@ -1,9 +1,11 @@
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Fragment, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
+import ConfirmationModalResponsive from "@/components/Modal/ConfirmationModalResponsive";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useTranslation } from "@/hooks/use-translation";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { idrFormat } from "@/lib/utils/formatters";
@@ -24,8 +26,10 @@ export const FooterDetailPesanan = ({
   isConfirmWaiting,
   onConfirmWaitingChange,
 }) => {
+  const { t } = useTranslation();
   const params = useParams();
   const navigation = useResponsiveNavigation();
+  const router = useRouter();
   const [isOpenModalBatalkanPesanan, setIsOpenModalBatalkanPesanan] =
     useState(false);
   const [
@@ -34,6 +38,22 @@ export const FooterDetailPesanan = ({
   ] = useState(false);
   const [isReceiveDocumentEvidenceOpen, setReceiveDocumentEvidenceOpen] =
     useState(false);
+
+  // ================================================================================================
+  // Pesan ulang
+  // ================================================================================================
+  const [isReorderFleetModalOpen, setIsReorderFleetModalOpen] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const handleReorderFleet = (id) => {
+    if (id) {
+      router.push(`/sewaarmada?orderId=${id}`);
+    } else {
+      router.push("/sewaarmada");
+    }
+    setIsReorderFleetModalOpen(false);
+    setSelectedOrderId(null);
+  };
+
   const { data: driverReviewsData } = useGetOrderDriverReviews(params.orderId);
   const drivers = driverReviewsData?.drivers || [];
 
@@ -49,10 +69,13 @@ export const FooterDetailPesanan = ({
           <Button
             variant={variant}
             className="h-10 w-full p-0"
-            onClick={() => alert("Simpan")}
+            onClick={() => {
+              setSelectedOrderId(params.orderId);
+              setIsReorderFleetModalOpen(true);
+            }}
             type="button"
           >
-            Pesan Ulang
+            {t("buttonPesanUlang")}
           </Button>
         ),
       },
@@ -311,6 +334,28 @@ export const FooterDetailPesanan = ({
         orderId={params.orderId}
         onConfirm={() => {
           setIsOpenBottomsheetAlasanPembatalan(false);
+        }}
+      />
+
+      {/* Modal Pesan Ulang */}
+      <ConfirmationModalResponsive
+        isOpen={isReorderFleetModalOpen}
+        setIsOpen={setIsReorderFleetModalOpen}
+        description={{
+          text: (
+            <>
+              Apakah kamu ingin menyalin <br /> pesanan ini untuk digunakan
+              kembali atau membuat pesanan baru dengan detail yang berbeda?
+            </>
+          ),
+        }}
+        cancel={{
+          text: t("buttonPesanBaru"),
+          onClick: () => handleReorderFleet(),
+        }}
+        confirm={{
+          text: t("buttonPesanUlangModal"),
+          onClick: () => handleReorderFleet(selectedOrderId),
         }}
       />
     </>

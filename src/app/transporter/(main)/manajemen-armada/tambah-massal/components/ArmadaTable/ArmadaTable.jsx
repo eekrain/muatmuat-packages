@@ -8,6 +8,7 @@ import { DimensionInput } from "@/components/Form/DimensionInput";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Select from "@/components/Select";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
@@ -64,12 +65,14 @@ const getMaxDateGPSEnd = (startDate) => {
  * @param {Array} data - Array of armada data
  * @param {Function} setError - React Hook Form setError function (optional)
  * @param {string} fieldArrayName - Name of the field array (optional)
+ * @param {Function} t - Translation function (optional)
  * @returns {boolean} - True if no duplicates found, false if duplicates exist
  */
 export const validateAllLicensePlates = (
   data,
   setError = null,
-  fieldArrayName = "informasiMuatan"
+  fieldArrayName = "informasiMuatan",
+  t = null
 ) => {
   const licensePlates = data
     .map((item, index) => ({
@@ -94,16 +97,28 @@ export const validateAllLicensePlates = (
   });
 
   if (duplicateIndexes.length > 0) {
+    const errorMessage = t
+      ? t(
+          "ArmadaTable.messageErrorLicensePlateDuplicate",
+          {},
+          "No. Polisi kendaraan sudah terdaftar"
+        )
+      : t(
+          "ArmadaTable.messageErrorLicensePlateDuplicate",
+          {},
+          "No. Polisi kendaraan sudah terdaftar"
+        );
+
     // Set errors for duplicate license plates
     if (setError) {
       duplicateIndexes.forEach((index) => {
         setError(`${fieldArrayName}.${index}.licensePlate`, {
           type: "manual",
-          message: "No. Polisi kendaraan sudah terdaftar",
+          message: errorMessage,
         });
       });
     }
-    toast.error("No. Polisi kendaraan sudah terdaftar");
+    toast.error(errorMessage);
     return false;
   }
 
@@ -124,6 +139,7 @@ const ArmadaTable = ({
   className = "",
   errors,
 }) => {
+  const { t } = useTranslation();
   const [addArmadaImageModal, setAddArmadaImageModal] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(null);
 
@@ -182,7 +198,11 @@ const ArmadaTable = ({
                 icon={{ left: "/icons/search.svg" }}
                 appearance={{ iconClassName: "text-neutral-700" }}
                 className="!w-fit !p-0 pr-8 font-medium"
-                placeholder="Cari Armada"
+                placeholder={t(
+                  "ArmadaTable.placeholderCariArmada",
+                  {},
+                  "Cari Armada"
+                )}
                 value={searchValue}
                 onChange={(e) => onSearchChange?.(e.target.value)}
               />
@@ -205,28 +225,47 @@ const ArmadaTable = ({
               onClick={onAddRow}
               variant="muatparts-primary-secondary"
             >
-              Tambah
+              {t("ArmadaTable.buttonTambah", {}, "Tambah")}
             </Button>
             <Button
               type="button"
               onClick={onDeleteRows}
               variant="muatparts-error-secondary"
             >
-              Hapus
+              {t("ArmadaTable.buttonHapus", {}, "Hapus")}
             </Button>
           </div>
           <div className="flex flex-col items-end gap-1">
             <p className="font-semibold">
-              Total : {filteredData.length} Armada
+              {t(
+                "ArmadaTable.labelTotalArmada",
+                { count: filteredData.length },
+                `Total : ${filteredData.length} Armada`
+              )}
               {searchValue.trim() && filteredData.length !== data.length && (
-                <span className="text-neutral-600"> dari {data.length}</span>
+                <span className="text-neutral-600">
+                  {" "}
+                  {t(
+                    "ArmadaTable.labelDariTotal",
+                    { total: data.length },
+                    ` dari ${data.length}`
+                  )}
+                </span>
               )}
             </p>
             {searchValue.trim() && (
               <p className="text-xs text-neutral-600">
                 {filteredData.length > 0
-                  ? `Menampilkan hasil pencarian untuk &ldquo;${searchValue}&rdquo;`
-                  : `Tidak ada hasil untuk &ldquo;${searchValue}&rdquo;`}
+                  ? t(
+                      "ArmadaTable.messageSearchResults",
+                      { keyword: searchValue },
+                      `Menampilkan hasil pencarian untuk &ldquo;${searchValue}&rdquo;`
+                    )
+                  : t(
+                      "ArmadaTable.messageNoSearchResults",
+                      { keyword: searchValue },
+                      `Tidak ada hasil untuk &ldquo;${searchValue}&rdquo;`
+                    )}
               </p>
             )}
           </div>
@@ -247,77 +286,117 @@ const ArmadaTable = ({
                   </th>
                   <th className="w-[232px]">
                     <span className="text-xs font-semibold text-gray-500">
-                      Armada*
+                      {t("ArmadaTable.headerArmada", {}, "Armada*")}
                     </span>
                   </th>
                   <th className="w-[180px]">
                     <span className="text-xs font-semibold text-gray-500">
-                      Jenis Truk*
+                      {t("ArmadaTable.headerJenisTruk", {}, "Jenis Truk*")}
                     </span>
                   </th>
                   <th className="w-[180px]">
                     <span className="text-xs font-semibold text-gray-500">
-                      Jenis Carrier*
+                      {t(
+                        "ArmadaTable.headerJenisCarrier",
+                        {},
+                        "Jenis Carrier*"
+                      )}
                     </span>
                   </th>
                   <th className="w-[180px]">
                     <span className="text-xs font-semibold text-gray-500">
-                      Merek Kendaraan*
+                      {t(
+                        "ArmadaTable.headerMerekKendaraan",
+                        {},
+                        "Merek Kendaraan*"
+                      )}
                     </span>
                   </th>
                   <th className="w-[180px]">
                     <span className="text-xs font-semibold text-gray-500">
-                      Tipe Kendaraan*
+                      {t(
+                        "ArmadaTable.headerTipeKendaraan",
+                        {},
+                        "Tipe Kendaraan*"
+                      )}
                     </span>
                   </th>
                   <th className="w-[180px]">
                     <span className="text-xs font-semibold text-gray-500">
-                      Tahun Registrasi Kendaraan*
+                      {t(
+                        "ArmadaTable.headerTahunRegistrasi",
+                        {},
+                        "Tahun Registrasi Kendaraan*"
+                      )}
                     </span>
                   </th>
                   <th className="w-[261px]">
                     <span className="text-xs font-semibold text-gray-500">
-                      Dimensi Carrier (Opsional)
+                      {t(
+                        "ArmadaTable.headerDimensiCarrier",
+                        {},
+                        "Dimensi Carrier (Opsional)"
+                      )}
                     </span>
                   </th>
                   <th className="w-[180px]">
                     <span className="text-xs font-semibold text-gray-500">
-                      Nomor Rangka*
+                      {t("ArmadaTable.headerNomorRangka", {}, "Nomor Rangka*")}
                     </span>
                   </th>
                   <th className="w-[180px]">
                     <span className="text-xs font-semibold text-gray-500">
-                      Masa Berlaku STNK*
+                      {t(
+                        "ArmadaTable.headerMasaBerlakuSTNK",
+                        {},
+                        "Masa Berlaku STNK*"
+                      )}
                     </span>
                   </th>
                   <th className="w-[98px]">
                     <span className="text-xs font-semibold text-gray-500">
-                      Foto STNK*
+                      {t("ArmadaTable.headerFotoSTNK", {}, "Foto STNK*")}
                     </span>
                   </th>
                   <th className="w-[133px]">
                     <span className="text-xs font-semibold text-gray-500">
-                      Foto Pajak Kendaraan*
+                      {t(
+                        "ArmadaTable.headerFotoPajakKendaraan",
+                        {},
+                        "Foto Pajak Kendaraan*"
+                      )}
                     </span>
                   </th>
                   <th className="w-[180px]">
                     <span className="text-xs font-semibold text-gray-500">
-                      KIR Kendaraan*
+                      {t(
+                        "ArmadaTable.headerKIRKendaraan",
+                        {},
+                        "KIR Kendaraan*"
+                      )}
                     </span>
                   </th>
                   <th className="w-[180px]">
                     <span className="text-xs font-semibold text-gray-500">
-                      Masa Berlaku KIR*
+                      {t(
+                        "ArmadaTable.headerMasaBerlakuKIR",
+                        {},
+                        "Masa Berlaku KIR*"
+                      )}
                     </span>
                   </th>
                   <th className="w-[98px]">
                     <span className="text-xs font-semibold text-gray-500">
-                      Foto Buku KIR*
+                      {t("ArmadaTable.headerFotoBukuKIR", {}, "Foto Buku KIR*")}
                     </span>
                   </th>
                   <th className="w-[394px]">
                     <span className="text-xs font-semibold text-gray-500">
-                      Estimasi Tanggal Pemasangan GPS*
+                      {t(
+                        "ArmadaTable.headerEstimasiTanggalPemasanganGPS",
+                        {},
+                        "Estimasi Tanggal Pemasangan GPS*"
+                      )}
                     </span>
                   </th>
                 </tr>
@@ -329,7 +408,11 @@ const ArmadaTable = ({
                       <div className="flex flex-col items-center gap-3">
                         <DataNotFound
                           type="search"
-                          title={"Keyword Tidak Ditemukan"}
+                          title={t(
+                            "ArmadaTable.titleKeywordNotFound",
+                            {},
+                            "Keyword Tidak Ditemukan"
+                          )}
                         />
                       </div>
                     </td>
@@ -399,6 +482,7 @@ const ArmadaTableRow = ({
   onImageClick,
   errors,
 }) => {
+  const { t } = useTranslation();
   const handleFieldChange = (fieldPath, value) => {
     onCellValueChange?.(index, fieldPath, value);
   };
@@ -476,7 +560,7 @@ const ArmadaTableRow = ({
           {data?.informasi_armada?.images?.image_armada_depan ? (
             <img
               src={data.informasi_armada.images.image_armada_depan}
-              alt="Foto Armada Depan"
+              alt={t("ArmadaTable.altFotoArmadaDepan", {}, "Foto Armada Depan")}
               className={cn(
                 "r aspect-square w-12 shrink cursor-pointer rounded-lg object-cover",
                 (hasError("informasi_armada.images.image_armada_belakang") ||
@@ -520,7 +604,11 @@ const ArmadaTableRow = ({
             // Clear carrier selection when truck type changes
             handleFieldChange("jenis_carrier", "");
           }}
-          placeholder="Pilih Jenis Truk"
+          placeholder={t(
+            "ArmadaTable.placeholderPilihJenisTruk",
+            {},
+            "Pilih Jenis Truk"
+          )}
           hasError={hasError("jenis_truk")}
         />
       </td>
@@ -535,7 +623,11 @@ const ArmadaTableRow = ({
           }
           value={data?.jenis_carrier || ""}
           onChange={(value) => handleFieldChange("jenis_carrier", value)}
-          placeholder="Pilih Jenis Carrier"
+          placeholder={t(
+            "ArmadaTable.placeholderPilihJenisCarrier",
+            {},
+            "Pilih Jenis Carrier"
+          )}
           hasError={hasError("jenis_carrier")}
         />
       </td>
@@ -545,7 +637,11 @@ const ArmadaTableRow = ({
           value={data?.merek_kendaraan_id || ""}
           url="v1/master/vehicle-brands"
           onChange={(value) => handleFieldChange("merek_kendaraan", value)}
-          placeholder="Pilih Merek Kendaraan"
+          placeholder={t(
+            "ArmadaTable.placeholderPilihMerekKendaraan",
+            {},
+            "Pilih Merek Kendaraan"
+          )}
           hasError={hasError("merek_kendaraan_id")}
         />
       </td>
@@ -560,7 +656,11 @@ const ArmadaTableRow = ({
           }
           value={data?.tipe_kendaraan_id || ""}
           onChange={(value) => handleFieldChange("tipe_kendaraan", value)}
-          placeholder="Pilih Tipe Kendaraan"
+          placeholder={t(
+            "ArmadaTable.placeholderPilihTipeKendaraan",
+            {},
+            "Pilih Tipe Kendaraan"
+          )}
           hasError={hasError("tipe_kendaraan_id")}
         />
       </td>
@@ -577,7 +677,13 @@ const ArmadaTableRow = ({
               hasError("tahun_registrasi_kendaraan") ? "border-error-400" : ""
             }
           >
-            <Select.Value placeholder="Pilih Tahun" />
+            <Select.Value
+              placeholder={t(
+                "ArmadaTable.placeholderPilihTahun",
+                {},
+                "Pilih Tahun"
+              )}
+            />
           </Select.Trigger>
           <Select.Content>
             {Array.from({ length: 100 }, (_, i) => {
@@ -624,7 +730,9 @@ const ArmadaTableRow = ({
             value={data?.dimensi_carrier?.unit || "m"}
           >
             <Select.Trigger>
-              <Select.Value placeholder="Unit" />
+              <Select.Value
+                placeholder={t("ArmadaTable.placeholderUnit", {}, "Unit")}
+              />
             </Select.Trigger>
             <Select.Content>
               {dimensionUnits.map((unit) => (
@@ -655,7 +763,11 @@ const ArmadaTableRow = ({
 
       <td className="relative">
         <DatePicker
-          placeholder="Pilih Tanggal"
+          placeholder={t(
+            "ArmadaTable.placeholderPilihTanggal",
+            {},
+            "Pilih Tanggal"
+          )}
           value={data?.masa_berlaku_stnk || ""}
           onChange={(value) => handleFieldChange("masa_berlaku_stnk", value)}
           errorMessage={getErrorMessage("masa_berlaku_stnk")}
@@ -698,7 +810,11 @@ const ArmadaTableRow = ({
 
       <td className="relative">
         <DatePicker
-          placeholder="Pilih Tanggal"
+          placeholder={t(
+            "ArmadaTable.placeholderPilihTanggal",
+            {},
+            "Pilih Tanggal"
+          )}
           value={data?.masa_berlaku_kir || ""}
           onChange={(value) => handleFieldChange("masa_berlaku_kir", value)}
           errorMessage={getErrorMessage("masa_berlaku_kir")}
@@ -720,7 +836,11 @@ const ArmadaTableRow = ({
       <td>
         <div className="flex items-center gap-2">
           <DatePicker
-            placeholder="Pilih Tanggal"
+            placeholder={t(
+              "ArmadaTable.placeholderPilihTanggal",
+              {},
+              "Pilih Tanggal"
+            )}
             value={data?.estimasi_tanggal_pemasangan_gps?.mulai || ""}
             onChange={handleGPSStartDateChange}
             errorMessage={getErrorMessage(
@@ -730,9 +850,15 @@ const ArmadaTableRow = ({
             minDate={new Date()}
             maxDate={getMaxDateGPSStart()}
           />
-          <span className="text-xs font-medium">s/d</span>
+          <span className="text-xs font-medium">
+            {t("ArmadaTable.sampaiDengan", {}, "s/d")}
+          </span>
           <DatePicker
-            placeholder="Pilih Tanggal"
+            placeholder={t(
+              "ArmadaTable.placeholderPilihTanggal",
+              {},
+              "Pilih Tanggal"
+            )}
             value={data?.estimasi_tanggal_pemasangan_gps?.selesai || ""}
             onChange={(value) =>
               handleFieldChange(

@@ -618,9 +618,15 @@ const InformasiPesananScreen = ({
                 {t("titleBiayaPesanJasaAngkut")}
               </h3>
               <div className="flex items-start justify-between gap-3">
-                <span className="flex-1 text-xs font-medium leading-[14.4px] text-neutral-600">
-                  {t("labelNominalPesanJasaAngkut")}
-                </span>
+                <span
+                  className="w-[180px] break-after-right text-xs font-medium leading-[14.4px] text-neutral-600"
+                  dangerouslySetInnerHTML={{
+                    __html: t("labelNominalPesanJasaAngkut").replace(
+                      " (",
+                      "<br/>("
+                    ),
+                  }}
+                />
                 <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
                   {calculatedPrice?.transportFee
                     ? `Rp${calculatedPrice.transportFee.toLocaleString("id-ID")}`
@@ -635,9 +641,15 @@ const InformasiPesananScreen = ({
                 {t("titleBiayaAsuransiBarang")}
               </h3>
               <div className="flex items-start justify-between gap-3">
-                <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
-                  {t("labelNominalPremiAsuransi")}
-                </span>
+                <span
+                  className="text-xs font-medium leading-[14.4px] text-neutral-600"
+                  dangerouslySetInnerHTML={{
+                    __html: t("labelNominalPremiAsuransi").replace(
+                      " (",
+                      "<br/>("
+                    ),
+                  }}
+                />
                 <span className="text-right text-xs font-medium leading-[14.4px] text-neutral-900">
                   {calculatedPrice?.insuranceFee
                     ? `Rp${calculatedPrice.insuranceFee.toLocaleString("id-ID")}`

@@ -13,6 +13,7 @@ import {
   vehicleDefaultValues,
   vehicleFormSchema,
 } from "@/config/forms/vehicleFormConfig";
+import { useTranslation } from "@/hooks/use-translation";
 import { useTableForm } from "@/hooks/useTableForm";
 import { normalizePayloadTambahArmadaMassal } from "@/lib/normalizers/transporter/tambah-armada-massal/normalizePayloadTambahArmadaMassal";
 import { toast } from "@/lib/toast";
@@ -99,6 +100,7 @@ const mapDraftsToFormData = (drafts) => {
 };
 
 const Draft = ({ isDraftAvailable }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const isFirstMount = useRef(true);
   const { data, isLoading, error, mutate } = useGetFleetsDrafts(
@@ -117,13 +119,23 @@ const Draft = ({ isDraftAvailable }) => {
     handlePostFleetBulkCreate(payload)
       .then((res) => {
         // Show success message
-        toast.success(`Berhasil menambahkan ${res.Data.savedFleets} armada.`);
+        toast.success(
+          t(
+            "Draft.toastBerhasilMenambahkanArmada",
+            { count: res.Data.savedFleets },
+            `Berhasil menambahkan ${res.Data.savedFleets} armada.`
+          )
+        );
         router.push(`/manajemen-armada?tab=process`);
       })
       .catch((_error) => {
         // Show error message
         toast.error(
-          "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
+          t(
+            "Draft.toastGagalMenyimpanDraftArmada",
+            {},
+            "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
+          )
         );
       });
   };
@@ -134,13 +146,23 @@ const Draft = ({ isDraftAvailable }) => {
     handlePostFleetBulkDraft(payload)
       .then(() => {
         // Show success message
-        toast.success("Draft armada berhasil disimpan.");
+        toast.success(
+          t(
+            "Draft.toastDraftArmadaBerhasilDisimpan",
+            {},
+            "Draft armada berhasil disimpan."
+          )
+        );
         mutate();
       })
       .catch((_error) => {
         // Show error message
         toast.error(
-          "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
+          t(
+            "Draft.toastGagalMenyimpanDraftArmadaSecond",
+            {},
+            "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
+          )
         );
       });
   };
@@ -196,7 +218,14 @@ const Draft = ({ isDraftAvailable }) => {
   if (!isDraftAvailable) {
     return (
       <div className="flex h-[280px] w-full items-center justify-center rounded-xl bg-white p-8 shadow-md">
-        <DataNotFound type="data" title="Belum ada Draft Armada" />
+        <DataNotFound
+          type="data"
+          title={t(
+            "Draft.titleBelumAdaDraftArmada",
+            {},
+            "Belum ada Draft Armada"
+          )}
+        />
       </div>
     );
   }
@@ -204,7 +233,9 @@ const Draft = ({ isDraftAvailable }) => {
   if (isLoading) {
     return (
       <div className="flex h-[280px] w-full items-center justify-center rounded-xl bg-white p-8 shadow-md">
-        <div className="text-neutral-500">Loading drafts...</div>
+        <div className="text-neutral-500">
+          {t("Draft.statusLoadingDrafts", {}, "Loading drafts...")}
+        </div>
       </div>
     );
   }
@@ -212,7 +243,14 @@ const Draft = ({ isDraftAvailable }) => {
   if (error) {
     return (
       <div className="flex h-[280px] w-full items-center justify-center rounded-xl bg-white p-8 shadow-md">
-        <DataNotFound type="error" title="Gagal memuat draft armada" />
+        <DataNotFound
+          type="error"
+          title={t(
+            "Draft.titleGagalMemuatDraftArmada",
+            {},
+            "Gagal memuat draft armada"
+          )}
+        />
       </div>
     );
   }
@@ -220,7 +258,14 @@ const Draft = ({ isDraftAvailable }) => {
   if (!data?.Data?.drafts || data.Data.drafts.length === 0) {
     return (
       <div className="flex h-[280px] w-full items-center justify-center rounded-xl bg-white p-8 shadow-md">
-        <DataNotFound type="data" title="Belum ada Draft Armada" />
+        <DataNotFound
+          type="data"
+          title={t(
+            "Draft.titleBelumAdaDraftArmadaEmpty",
+            {},
+            "Belum ada Draft Armada"
+          )}
+        />
       </div>
     );
   }
@@ -249,7 +294,7 @@ const Draft = ({ isDraftAvailable }) => {
               variant="muattrans-primary-secondary"
               type="button"
             >
-              Simpan Sebagai Draft
+              {t("Draft.buttonSimpanSebagaiDraft", {}, "Simpan Sebagai Draft")}
             </Button>
             <Button
               type="submit"
@@ -257,7 +302,7 @@ const Draft = ({ isDraftAvailable }) => {
                 handleSubmit();
               }}
             >
-              Simpan
+              {t("Draft.buttonSimpan", {}, "Simpan")}
             </Button>
           </div>
         </div>
@@ -267,22 +312,21 @@ const Draft = ({ isDraftAvailable }) => {
         isOpen={confirmDeleteModal}
         setIsOpen={setConfirmDeleteModal}
         title={{
-          text: "Apakah kamu yakin untuk menghapus armada ?",
+          text: t("Draft.confirmDeleteTitle"),
           className: "text-sm font-medium text-center",
         }}
         confirm={{
-          text: "Hapus",
+          text: t("Draft.confirmDeleteButton"),
           onClick: handleRemove,
         }}
         cancel={{
-          text: "Batal",
+          text: t("Draft.cancelButton"),
           onClick: () => {
             setConfirmDeleteModal(false);
           },
         }}
       >
-        Apakah kamu yakin ingin menghapus armada yang telah dipilih? Tindakan
-        ini tidak dapat dibatalkan.
+        {t("Draft.confirmDeleteMessage")}
       </ConfirmationModal>
     </div>
   );

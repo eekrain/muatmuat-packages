@@ -45,6 +45,7 @@ const Header = ({
   driverStatus,
   withMenu = true,
   mode = "driver-status",
+  oldDriverData,
 }) => {
   const { t } = useTranslation();
   const params = useParams();
@@ -108,7 +109,7 @@ const Header = ({
                 type="button"
                 className={cn(
                   "w-full text-left text-sm font-semibold",
-                  true ? "border-b border-b-neutral-400 pb-4" : ""
+                  oldDriverData ? "border-b border-b-neutral-400 pb-4" : ""
                 )}
                 onClick={() =>
                   navigation.push("/CariSemuaDriver", {
@@ -118,7 +119,9 @@ const Header = ({
               >
                 Lihat Semua Driver
               </button>
-              {true ? <BottomSheetPreviousDriver /> : null}
+              {oldDriverData ? (
+                <BottomSheetPreviousDriver oldDriverData={oldDriverData} />
+              ) : null}
             </div>
           </BottomSheetContent>
         </BottomSheet>
@@ -230,6 +233,7 @@ export default function DriverInfoSlider({
   defaultIndex = 0,
   withActions = true,
   withMenu,
+  oldDriverData,
 }) {
   console.log("🚀 ~ orderId 1:", orderId);
   const items = driverStatus;
@@ -354,6 +358,7 @@ export default function DriverInfoSlider({
                   driverStatus={driver.driverStatus}
                   mode="driver-status"
                   withMenu={withMenu}
+                  oldDriverData={oldDriverData}
                 />
                 <Avatar driver={driver} />
                 {withActions && (

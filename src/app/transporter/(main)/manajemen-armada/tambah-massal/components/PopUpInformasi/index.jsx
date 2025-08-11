@@ -10,36 +10,63 @@ import {
   ModalTrigger,
 } from "@/components/Modal/Modal";
 import { Slider } from "@/components/Slider/Slider";
+import { useTranslation } from "@/hooks/use-translation";
 import { useGetUserPopupPreference } from "@/services/Transporter/manajemen-armada/getUserPopupPreference";
 import { updateUserPopupPreference } from "@/services/Transporter/manajemen-armada/updateUserPopupPreference";
 
-const onboardingSlides = [
-  {
-    title: "Unggah Armada Massal",
-    imgSrc: "/img/tambah-armada-massal/popupinformasi-slider-1.png",
-    content: "Kamu bisa mengunggah armada secara massal menggunakan fitur ini.",
-  },
-  {
-    title: "Unggah Armada Massal",
-    imgSrc: "/img/tambah-armada-massal/popupinformasi-slider-2.png",
-    content:
-      "Ada dua pilihan untuk mengunggah armada secara massal : <ol><li>Menggunakan file excel</li><li>Mengisi kolom yang sudah tersedia</li></ol>",
-  },
-  {
-    title: "Unggah Dengan Excel",
-    imgSrc: "/img/tambah-armada-massal/popupinformasi-slider-3.png",
-    content:
-      "Kamu bisa mengunggah dengan langkah :<ol><li>Unduh template</li><li>Isi kolom yang tersedia (kamu bisa melihat contoh sheet prosedur)</li><li>Unggah file excel di kolom yang tersedia</li></ol>",
-  },
-  {
-    title: "Isi Kolom Massal",
-    imgSrc: "/img/tambah-armada-massal/popupinformasi-slider-4.png",
-    content:
-      "Kamu bisa mengunggah dengan langkah :<ol><li>Isi kolom yang tersedia</li><li>Klik Simpan (jika ingin menambah armada klik button Tambah padahalaman tersebut)</li></ol>",
-  },
-];
-
 export default function PopUpInformasi() {
+  const { t } = useTranslation();
+
+  const onboardingSlides = [
+    {
+      title: t(
+        "PopUpInformasi.titleUnggahArmadaMassal",
+        {},
+        "Unggah Armada Massal"
+      ),
+      imgSrc: "/img/tambah-armada-massal/popupinformasi-slider-1.png",
+      content: t(
+        "PopUpInformasi.contentUnggahArmadaMassal",
+        {},
+        "Kamu bisa mengunggah armada secara massal menggunakan fitur ini."
+      ),
+    },
+    {
+      title: t(
+        "PopUpInformasi.titleUnggahArmadaMassalSecond",
+        {},
+        "Unggah Armada Massal"
+      ),
+      imgSrc: "/img/tambah-armada-massal/popupinformasi-slider-2.png",
+      content: t(
+        "PopUpInformasi.contentDuaPilihanUnggah",
+        {},
+        "Ada dua pilihan untuk mengunggah armada secara massal : <ol><li>Menggunakan file excel</li><li>Mengisi kolom yang sudah tersedia</li></ol>"
+      ),
+    },
+    {
+      title: t(
+        "PopUpInformasi.titleUnggahDenganExcel",
+        {},
+        "Unggah Dengan Excel"
+      ),
+      imgSrc: "/img/tambah-armada-massal/popupinformasi-slider-3.png",
+      content: t(
+        "PopUpInformasi.contentUnggahDenganExcel",
+        {},
+        "Kamu bisa mengunggah dengan langkah :<ol><li>Unduh template</li><li>Isi kolom yang tersedia (kamu bisa melihat contoh sheet prosedur)</li><li>Unggah file excel di kolom yang tersedia</li></ol>"
+      ),
+    },
+    {
+      title: t("PopUpInformasi.titleIsiKolomMassal", {}, "Isi Kolom Massal"),
+      imgSrc: "/img/tambah-armada-massal/popupinformasi-slider-4.png",
+      content: t(
+        "PopUpInformasi.contentIsiKolomMassal",
+        {},
+        "Kamu bisa mengunggah dengan langkah :<ol><li>Isi kolom yang tersedia</li><li>Klik Simpan (jika ingin menambah armada klik button Tambah padahalaman tersebut)</li></ol>"
+      ),
+    },
+  ];
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [dontShowAgain, setDontShowAgain] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -90,7 +117,12 @@ export default function PopUpInformasi() {
             });
           } else {
             throw new Error(
-              response?.Message?.Text || "Gagal memperbarui preferensi"
+              response?.Message?.Text ||
+                t(
+                  "PopUpInformasi.errorGagalMemperbarui",
+                  {},
+                  "Gagal memperbarui preferensi"
+                )
             );
           }
         } catch (err) {
@@ -118,14 +150,27 @@ export default function PopUpInformasi() {
         <div>
           {isLoading ? (
             <div className="flex h-[420px] items-center justify-center p-6">
-              <div className="text-center text-neutral-600">Loading...</div>
+              <div className="text-center text-neutral-600">
+                {t("PopUpInformasi.statusLoading", {}, "Loading...")}
+              </div>
             </div>
           ) : error ? (
             <div className="flex h-[420px] items-center justify-center p-6">
               <div className="text-center text-red-600">
-                <div className="mb-2">Gagal memuat preferensi popup</div>
+                <div className="mb-2">
+                  {t(
+                    "PopUpInformasi.errorGagalMemuatPreferensi",
+                    {},
+                    "Gagal memuat preferensi popup"
+                  )}
+                </div>
                 <div className="text-sm text-neutral-500">
-                  {error.message || "Terjadi kesalahan saat memuat data"}
+                  {error.message ||
+                    t(
+                      "PopUpInformasi.errorTerjadiKesalahan",
+                      {},
+                      "Terjadi kesalahan saat memuat data"
+                    )}
                 </div>
               </div>
             </div>
@@ -163,7 +208,13 @@ export default function PopUpInformasi() {
                     className="h-4 w-4 rounded border-neutral-300 text-primary-700 focus:ring-primary-700 disabled:opacity-50"
                   />
                   <span className={isUpdating ? "opacity-50" : ""}>
-                    {isUpdating ? "Menyimpan..." : "Jangan tampilkan lagi"}
+                    {isUpdating
+                      ? t("PopUpInformasi.statusMenyimpan", {}, "Menyimpan...")
+                      : t(
+                          "PopUpInformasi.labelJanganTampilkanLagi",
+                          {},
+                          "Jangan tampilkan lagi"
+                        )}
                   </span>
                 </label>
               </div>

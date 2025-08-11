@@ -59,6 +59,7 @@ const DetailPesananScreen = ({
   dataRingkasanPembayaran,
   documentShippingDetail,
   waitingTimeRaw,
+  oldDriverData,
 }) => {
   const { t } = useTranslation();
   const params = useParams();
@@ -119,6 +120,7 @@ const DetailPesananScreen = ({
             t,
             onLihatDetailWaktuTunggu: () => alert("Not implemented yet"),
             onLihatPerubahan: () => alert("Not implemented yet"),
+            isMobile: true,
           })
         )
         .filter((val) => Boolean(val)),
@@ -207,6 +209,7 @@ const DetailPesananScreen = ({
             orderId={dataStatusPesanan?.orderId}
             orderStatus={dataStatusPesanan?.orderStatus}
             withMenu={dataStatusPesanan?.totalTruckUnit > 1}
+            oldDriverData={oldDriverData}
           />
         ) : null}
 

@@ -80,21 +80,12 @@ const ConfirmationModal = ({
             </p>
           ) : null}
           <div className="flex items-center gap-x-2">
-            <Button
-              variant={
-                secondaryButtonVariant[variant] ||
-                secondaryButtonVariant.muattrans
-              }
-              // 25. 18 - Web - LB - 0275
-              className={cn("h-8", cancelClassname)}
-              onClick={onCancel}
-              type="button"
-            >
-              {cancelText}
-            </Button>
             {withCancel && (
               <Button
-                variant="muattrans-primary-secondary"
+                variant={
+                  secondaryButtonVariant[variant] ||
+                  secondaryButtonVariant.muattrans
+                }
                 // 25. 18 - Web - LB - 0275
                 className={cn("h-8", cancelClassname)}
                 onClick={onCancel}

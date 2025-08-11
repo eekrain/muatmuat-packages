@@ -13,6 +13,7 @@ import {
   vehicleDefaultValues,
   vehicleFormSchema,
 } from "@/config/forms/vehicleFormConfig";
+import { useTranslation } from "@/hooks/use-translation";
 import { useTableForm } from "@/hooks/useTableForm";
 import { normalizePayloadTambahArmadaMassal } from "@/lib/normalizers/transporter/tambah-armada-massal/normalizePayloadTambahArmadaMassal";
 import { toast } from "@/lib/toast";
@@ -75,18 +76,34 @@ const mapFleetsToFormData = (fleets) => {
 };
 
 // Define units (kept for schema validation)
-const breadcrumbData = [
-  { name: "Manajemen Armada", href: "/manajemen-armada" },
-  { name: "Tambah Armada Massal", href: "/manajemen-armada/tambah-massal" },
-  { name: "Detail Armada" },
-];
 
 export default function PreviewArmada({ params }) {
+  const { t } = useTranslation();
   const router = useRouter();
   const { id } = use(params);
   const isFirstMount = useRef(true);
   const [showBackConfirmation, setShowBackConfirmation] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState(null);
+
+  const breadcrumbData = [
+    {
+      name: t(
+        "PreviewArmada.breadcrumbManajemenArmada",
+        {},
+        "Manajemen Armada"
+      ),
+      href: "/manajemen-armada",
+    },
+    {
+      name: t(
+        "PreviewArmada.breadcrumbTambahArmadaMassal",
+        {},
+        "Tambah Armada Massal"
+      ),
+      href: "/manajemen-armada/tambah-massal",
+    },
+    { name: t("PreviewArmada.breadcrumbDetailArmada", {}, "Detail Armada") },
+  ];
 
   const { data } = useGetFleetsPreviewArmada(
     id ? `/v1/fleet/preview/${id}` : null
@@ -100,13 +117,23 @@ export default function PreviewArmada({ params }) {
     handlePostFleetBulkCreate(payload)
       .then((res) => {
         // Show success message
-        toast.success(`Berhasil menambahkan ${res.Data.savedFleets} armada.`);
+        toast.success(
+          t(
+            "PreviewArmada.messageSuccessAddFleets",
+            { count: res.Data.savedFleets },
+            `Berhasil menambahkan ${res.Data.savedFleets} armada.`
+          )
+        );
         router.push(`/manajemen-armada?tab=process`);
       })
       .catch((_error) => {
         // Show error message
         toast.error(
-          "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
+          t(
+            "PreviewArmada.messageErrorSaveDraft",
+            {},
+            "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
+          )
         );
       });
   };
@@ -117,12 +144,22 @@ export default function PreviewArmada({ params }) {
     handlePostFleetBulkCreate(payload)
       .then(() => {
         // Show success message
-        toast.success("Draft armada berhasil disimpan.");
+        toast.success(
+          t(
+            "PreviewArmada.messageSuccessSaveDraft",
+            {},
+            "Draft armada berhasil disimpan."
+          )
+        );
       })
       .catch((_error) => {
         // Show error message
         toast.error(
-          "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
+          t(
+            "PreviewArmada.messageErrorSaveDraftSecond",
+            {},
+            "Gagal menyimpan draft armada. Periksa kembali data yang dimasukkan."
+          )
         );
       });
     redirect("/manajemen-armada/tambah-massal?tab=draft");
@@ -229,7 +266,9 @@ export default function PreviewArmada({ params }) {
     <div className="my-6 px-6">
       <div className="flex flex-col gap-4 p-3">
         <BreadCrumb data={enhancedBreadcrumbData} />
-        <PageTitle onClick={handleBackNavigation}>Preview Armada</PageTitle>
+        <PageTitle onClick={handleBackNavigation}>
+          {t("PreviewArmada.titlePreviewArmada", {}, "Preview Armada")}
+        </PageTitle>
       </div>
       <form onSubmit={onSubmit}>
         <div className="rounded-lg bg-white shadow-muat">
@@ -255,10 +294,10 @@ export default function PreviewArmada({ params }) {
             variant="muattrans-primary-secondary"
             type="button"
           >
-            Simpan Sebagai Draft
+            {t("PreviewArmada.buttonSaveAsDraft", {}, "Simpan Sebagai Draft")}
           </Button>
           <Button disabled={isMutating} type="submit">
-            Simpan
+            {t("PreviewArmada.buttonSave", {}, "Simpan")}
           </Button>
         </div>
       </form>
@@ -266,22 +305,29 @@ export default function PreviewArmada({ params }) {
         isOpen={confirmDeleteModal}
         setIsOpen={setConfirmDeleteModal}
         title={{
-          text: "Apakah kamu yakin untuk menghapus armada ?",
+          text: t(
+            "PreviewArmada.titleConfirmDeleteFleet",
+            {},
+            "Apakah kamu yakin untuk menghapus armada ?"
+          ),
           className: "text-sm font-medium text-center",
         }}
         confirm={{
-          text: "Hapus",
+          text: t("PreviewArmada.buttonDelete", {}, "Hapus"),
           onClick: handleRemove,
         }}
         cancel={{
-          text: "Batal",
+          text: t("PreviewArmada.buttonCancel", {}, "Batal"),
           onClick: () => {
             setConfirmDeleteModal(false);
           },
         }}
       >
-        Apakah kamu yakin ingin menghapus armada yang telah dipilih? Tindakan
-        ini tidak dapat dibatalkan.
+        {t(
+          "PreviewArmada.messageConfirmDeleteFleet",
+          {},
+          "Apakah kamu yakin ingin menghapus armada yang telah dipilih? Tindakan ini tidak dapat dibatalkan."
+        )}
       </ConfirmationModal>
 
       {/* Back Navigation Confirmation Modal */}
@@ -289,19 +335,26 @@ export default function PreviewArmada({ params }) {
         isOpen={showBackConfirmation}
         setIsOpen={setShowBackConfirmation}
         description={{
-          text: "Apakah kamu yakin ingin berpindah halaman? Data yang telah diisi tidak akan disimpan",
+          text: t(
+            "PreviewArmada.descriptionConfirmNavigation",
+            {},
+            "Apakah kamu yakin ingin berpindah halaman? Data yang telah diisi tidak akan disimpan"
+          ),
         }}
         confirm={{
-          text: "Batal",
+          text: t("PreviewArmada.buttonCancelNavigation", {}, "Batal"),
           onClick: cancelNavigation,
         }}
         cancel={{
-          text: "Ya",
+          text: t("PreviewArmada.buttonYes", {}, "Ya"),
           onClick: confirmNavigation,
         }}
       >
-        Data yang telah diisi tidak akan disimpan. Apakah kamu yakin ingin
-        meninggalkan halaman ini?
+        {t(
+          "PreviewArmada.messageConfirmNavigation",
+          {},
+          "Data yang telah diisi tidak akan disimpan. Apakah kamu yakin ingin meninggalkan halaman ini?"
+        )}
       </ConfirmationModal>
     </div>
   );

@@ -10,6 +10,7 @@ import { DataTable } from "@/components/DataTable";
 import DropzoneComponent from "@/components/Dropzone/Dropzone";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Toggle from "@/components/Toggle/Toggle";
+import { useTranslation } from "@/hooks/use-translation";
 import { isDev } from "@/lib/constants/is-dev";
 import { toast } from "@/lib/toast";
 import { formatDate } from "@/lib/utils/dateFormat";
@@ -18,6 +19,7 @@ import { useGetFleetsUploadHistoryWithParams } from "@/services/Transporter/mana
 import { usePostFleetBulkUpload } from "@/services/Transporter/manajemen-armada/postFleetBulkUpload";
 
 const TambahExcel = () => {
+  const { t } = useTranslation();
   const [list, setList] = useState([]);
   const [stateUpload, setStateUpload] = useState(true);
   const [searchParams, setSearchParams] = useState({
@@ -31,7 +33,7 @@ const TambahExcel = () => {
   const columns = [
     {
       key: "tanggal",
-      header: "Tanggal",
+      header: t("TambahExcel.headerTanggal", {}, "Tanggal"),
       width: "80px",
       sortable: true,
       render: (row) => {
@@ -41,7 +43,7 @@ const TambahExcel = () => {
     },
     {
       key: "document",
-      header: "Dokumen",
+      header: t("TambahExcel.headerDokumen", {}, "Dokumen"),
       width: "80px",
       sortable: false,
       render: (row) => (
@@ -52,26 +54,34 @@ const TambahExcel = () => {
     },
     {
       key: "name",
-      header: "Nama Pengunggah",
+      header: t("TambahExcel.headerNamaPengunggah", {}, "Nama Pengunggah"),
       width: "80px",
       sortable: false,
     },
     {
       key: "status",
-      header: "Status",
+      header: t("TambahExcel.headerStatus", {}, "Status"),
       width: "80px",
       sortable: false,
       render: (row) => (
         <>
           {row.status === "COMPLETED"
-            ? "Berhasil menambah armada"
-            : "Gagal menambah armada"}
+            ? t(
+                "TambahExcel.statusBerhasilMenambahArmada",
+                {},
+                "Berhasil menambah armada"
+              )
+            : t(
+                "TambahExcel.statusGagalMenambahArmada",
+                {},
+                "Gagal menambah armada"
+              )}
         </>
       ),
     },
     {
       key: "action",
-      header: "Tindakan",
+      header: t("TambahExcel.headerTindakan", {}, "Tindakan"),
       width: "80px",
       sortable: false,
       render: (row) => {
@@ -79,7 +89,7 @@ const TambahExcel = () => {
           return (
             <Link href={row.action} target="_blank">
               <button className="flex items-center gap-1 font-medium text-primary-700">
-                Unduh Report
+                {t("TambahExcel.buttonUnduhReport", {}, "Unduh Report")}
                 <IconComponent
                   src="/icons/download16.svg"
                   alt="download"
@@ -109,7 +119,13 @@ const TambahExcel = () => {
       .then((response) => {
         setUploadedFile(file);
         if (response?.Data?.bulkImportId) {
-          toast.success(`Berhasil menambah ${response.Data.totalRows} armada`);
+          toast.success(
+            t(
+              "TambahExcel.toastBerhasilMenambahArmada",
+              { totalRows: response.Data.totalRows },
+              `Berhasil menambah ${response.Data.totalRows} armada`
+            )
+          );
           router.push(
             `/manajemen-armada/tambah-massal/preview-armada/${response.Data.bulkImportId}`
           );
@@ -117,7 +133,11 @@ const TambahExcel = () => {
       })
       .catch((_error) => {
         toast.error(
-          "Gagal menambah armada.\n Periksa laporan untuk mengetahu armada yang gagal ditambahkan."
+          t(
+            "TambahExcel.toastGagalMenambahArmada",
+            {},
+            "Gagal menambah armada.\n Periksa laporan untuk mengetahu armada yang gagal ditambahkan."
+          )
         );
       });
   };
@@ -144,12 +164,30 @@ const TambahExcel = () => {
         link.click();
         document.body.removeChild(link);
 
-        toast.success("Template berhasil diunduh");
+        toast.success(
+          t(
+            "TambahExcel.toastTemplateBerhasilDiunduh",
+            {},
+            "Template berhasil diunduh"
+          )
+        );
       } else {
-        toast.error("Template tidak tersedia");
+        toast.error(
+          t(
+            "TambahExcel.toastTemplateTidakTersedia",
+            {},
+            "Template tidak tersedia"
+          )
+        );
       }
     } catch {
-      toast.error("Gagal mengunduh template");
+      toast.error(
+        t(
+          "TambahExcel.toastGagalMengunduhTemplate",
+          {},
+          "Gagal mengunduh template"
+        )
+      );
     } finally {
       setIsDownloadingTemplate(false);
     }
@@ -207,8 +245,16 @@ const TambahExcel = () => {
         <div className="md:col-span-2">
           <Toggle
             value={stateUpload}
-            textActive="Sukses unggah file"
-            textInactive="Gagal unggah file"
+            textActive={t(
+              "TambahExcel.toggleSuksesUnggahFile",
+              {},
+              "Sukses unggah file"
+            )}
+            textInactive={t(
+              "TambahExcel.toggleGagalUnggahFile",
+              {},
+              "Gagal unggah file"
+            )}
             onClick={() => setStateUpload(!stateUpload)}
           />
         </div>
@@ -224,13 +270,21 @@ const TambahExcel = () => {
               </span>
             </div>
             <h3 className="text-lg font-bold text-neutral-900">
-              Unduh Template Excel
+              {t(
+                "TambahExcel.titleUnduhTemplateExcel",
+                {},
+                "Unduh Template Excel"
+              )}
             </h3>
           </div>
           <p className="text-xs font-medium text-neutral-900">
-            Gunakan template ini untuk menambahkan armada sekaligus.{" "}
+            {t(
+              "TambahExcel.descriptionGunakanTemplate",
+              {},
+              "Gunakan template ini untuk menambahkan armada sekaligus."
+            )}{" "}
             <Link href="#" className="text-primary-700 underline">
-              klik di sini
+              {t("TambahExcel.linkKlikDisini", {}, "klik di sini")}
             </Link>
           </p>
         </div>
@@ -250,7 +304,9 @@ const TambahExcel = () => {
             disabled={isDownloadingTemplate}
             loading={isDownloadingTemplate}
           >
-            {isDownloadingTemplate ? "Memuat Template..." : "Unduh Template"}
+            {isDownloadingTemplate
+              ? t("TambahExcel.buttonMemuatTemplate", {}, "Memuat Template...")
+              : t("TambahExcel.buttonUnduhTemplate", {}, "Unduh Template")}
           </Button>
         </div>
       </div>
@@ -265,12 +321,15 @@ const TambahExcel = () => {
               </span>
             </div>
             <h3 className="text-lg font-bold text-neutral-900">
-              Unggah File Excel
+              {t("TambahExcel.titleUnggahFileExcel", {}, "Unggah File Excel")}
             </h3>
           </div>
           <p className="text-xs font-medium text-black">
-            Setelah melengkapi informasi armada, unggah file (.xls atau .xlsx)
-            maks. 300 armada dalam satu file.
+            {t(
+              "TambahExcel.descriptionSetelahMelengkapi",
+              {},
+              "Setelah melengkapi informasi armada, unggah file (.xls atau .xlsx) maks. 300 armada dalam satu file."
+            )}
           </p>
         </div>
         <div className="flex-grow">
@@ -278,7 +337,11 @@ const TambahExcel = () => {
             onUpload={handleUpload}
             file={uploadedFile}
             loading={isMutating}
-            placeholder="Seret dan lepas file di sini atau klik untuk memilih file"
+            placeholder={t(
+              "TambahExcel.placeholderSeretDanLepas",
+              {},
+              "Seret dan lepas file di sini atau klik untuk memilih file"
+            )}
             className={"w-full"}
           />
         </div>
@@ -290,7 +353,11 @@ const TambahExcel = () => {
           <DataTable
             data={list}
             columns={columns}
-            searchPlaceholder="Cari Nama Dokumen (min. 4 karakter)"
+            searchPlaceholder={t(
+              "TambahExcel.searchPlaceholderCariNamaDokumen",
+              {},
+              "Cari Nama Dokumen (min. 4 karakter)"
+            )}
             currentPage={searchParams.page}
             totalPages={data?.Data?.pagination?.totalPages || 1}
             totalItems={data?.Data?.pagination?.totalItems || 0}
@@ -300,7 +367,11 @@ const TambahExcel = () => {
             // showTotalCount={true}
             tableTitle={
               <h2 className="mr-3 text-xl font-bold text-neutral-900">
-                Riwayat Unggahan 90 Hari Terakhir
+                {t(
+                  "TambahExcel.titleRiwayatUnggahan90Hari",
+                  {},
+                  "Riwayat Unggahan 90 Hari Terakhir"
+                )}
               </h2>
             }
             fixedHeight={true}
@@ -314,7 +385,11 @@ const TambahExcel = () => {
           <DataNotFound
             className="w-full p-6"
             image="/icons/NotFoundVoucher.png"
-            title="Kamu belum punya riwayat unggahan"
+            title={t(
+              "TambahExcel.dataNotFoundTitle",
+              {},
+              "Kamu belum punya riwayat unggahan"
+            )}
             textClass={"w-full"}
           />
         )}
