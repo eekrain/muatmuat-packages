@@ -28,6 +28,7 @@ import { useGetActiveOrdersCount } from "@/services/Transporter/monitoring/dafta
 
 import Onboarding from "../Onboarding/Onboarding";
 import AssignArmadaModal from "./components/AssignArmadaModal";
+import ConfirmReadyModal from "./components/ConfirmReadyModal";
 
 const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
   const { data: activeOrdersCount } = useGetActiveOrdersCount();
@@ -37,6 +38,8 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
   const [openDropdowns, setOpenDropdowns] = useState({});
   const [assignArmadaModalOpen, setAssignArmadaModalOpen] = useState(false);
   const [selectedOrderForArmada, setSelectedOrderForArmada] = useState(null);
+  const [confirmReadyModalOpen, setConfirmReadyModalOpen] = useState(false);
+  const [selectedOrderForConfirm, setSelectedOrderForConfirm] = useState(null);
 
   // Map filter keys to lowercase status values for API
   const getFilterStatus = (filterKey) => {
@@ -257,9 +260,21 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
                   setSelectedOrderForArmada(row);
                   setAssignArmadaModalOpen(true);
                 }}
-                className="mx-auto h-8 w-[147px] text-sm"
+                className="mx-auto h-8 w-[147px] text-sm md:p-0"
               >
                 Assign Armada
+              </Button>
+            )}
+            {row.orderStatus === ORDER_STATUS.NEED_CONFIRMATION_READY && (
+              <Button
+                variant="muattrans-primary"
+                onClick={() => {
+                  setSelectedOrderForConfirm(row);
+                  setConfirmReadyModalOpen(true);
+                }}
+                className="mx-auto h-8 w-[147px] text-sm md:p-0"
+              >
+                Konfirmasi Siap
               </Button>
             )}
           </div>
@@ -425,7 +440,11 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
                 side="left"
               >
                 <SimpleDropdownItem
-                  onClick={() => console.log("Konfirmasi Siap", row)}
+                  onClick={() => {
+                    setSelectedOrderForConfirm(row);
+                    setConfirmReadyModalOpen(true);
+                    setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
+                  }}
                   className="flex h-8 items-center"
                 >
                   Konfirmasi Siap
@@ -704,6 +723,16 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
           setSelectedOrderForArmada(null);
         }}
         orderData={selectedOrderForArmada}
+      />
+
+      {/* Confirm Ready Modal */}
+      <ConfirmReadyModal
+        isOpen={confirmReadyModalOpen}
+        onClose={() => {
+          setConfirmReadyModalOpen(false);
+          setSelectedOrderForConfirm(null);
+        }}
+        orderData={selectedOrderForConfirm}
       />
     </div>
   );
