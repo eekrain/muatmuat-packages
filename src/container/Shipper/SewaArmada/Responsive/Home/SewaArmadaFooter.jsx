@@ -78,7 +78,9 @@ export const SewaArmadaFooter = ({
           {hasAdditioinalFee ? (
             <div className="flex items-center justify-between text-sm leading-[1.1] text-neutral-900">
               <span className="font-semibold">Total Tambahan Biaya</span>
-              <span className="font-bold">Rp667.150</span>
+              <span className="font-bold">
+                {idrFormat(calculatedPrice?.totalPrice || 0)}
+              </span>
             </div>
           ) : null}
           <div className="flex items-center gap-x-2">
