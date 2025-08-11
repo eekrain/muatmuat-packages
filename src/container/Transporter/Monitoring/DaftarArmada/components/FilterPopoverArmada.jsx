@@ -160,7 +160,7 @@ export default function FilterPopoverArmada({
                     />
                   </div>
                   <span
-                    className="cursor-pointer text-xs text-black"
+                    className="cursor-pointer text-xs font-medium text-black"
                     onClick={() => toggleTruckStatus(opt.id)}
                   >
                     {opt.label} ({opt.count})
@@ -191,7 +191,7 @@ export default function FilterPopoverArmada({
                     />
                   )}
                   <span
-                    className="cursor-pointer text-xs text-black"
+                    className="cursor-pointer text-xs font-medium text-black"
                     onClick={() => toggleOrderStatus(opt.id)}
                   >
                     {opt.label} ({opt.count})
