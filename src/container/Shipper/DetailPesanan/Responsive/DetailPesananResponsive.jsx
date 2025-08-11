@@ -46,8 +46,11 @@ const DriverQRCodeSingleScreen = dynamicScreen(
 const DriverQRCodeMultiScreen = dynamicScreen(
   () => import("./DriverQRCodeMulti/DriverQRCodeMultiScreen")
 );
+const OpsiPembayaranScreen = dynamicScreen(
+  () => import("./OpsiPembayaran/OpsiPembayaranScreen")
+);
 
-const DetailPesananResponsive = () => {
+const DetailPesananResponsive = ({ paymentMethods }) => {
   // const navigation = useResponsiveNavigation();
   // useEffect(() => {
   //   navigation.replace("/CariSemuaDriver");
@@ -93,6 +96,7 @@ const DetailPesananResponsive = () => {
             documentShippingDetail={documentShippingDetail}
             waitingTimeRaw={waitingTimeRaw}
             oldDriverData={oldDriverData}
+            paymentMethods={paymentMethods}
           />
         }
       />
@@ -146,6 +150,11 @@ const DetailPesananResponsive = () => {
       <ResponsiveRoute
         path="/DetailSebelumPerubahan"
         component={<DetailSebelumPerubahanScreen />}
+      />
+
+      <ResponsiveRoute
+        path="/OpsiPembayaran"
+        component={<OpsiPembayaranScreen paymentMethods={paymentMethods} />}
       />
     </ResponsiveProvider>
   );
