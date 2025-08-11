@@ -63,9 +63,9 @@ const TambahExcel = () => {
       sortable: false,
       render: (row) => (
         <>
-          {row.status === "COMPLETED"
-            ? "Berhasil menambah armada"
-            : "Gagal menambah armada"}
+          {row.status === "SUCCESS"
+            ? "Berhasil menambah driver"
+            : "Gagal menambah driver"}
         </>
       ),
     },
@@ -95,7 +95,7 @@ const TambahExcel = () => {
       },
     },
   ];
-  const [isUploading, setIsUploading] = useState(false);
+
   const [uploadedFile, setUploadedFile] = useState(null);
   const [isDownloadingTemplate, setIsDownloadingTemplate] = useState(false);
 
@@ -109,7 +109,7 @@ const TambahExcel = () => {
     formData.append("file", file);
     trigger(formData)
       .then((response) => {
-        setIsUploading(false);
+        // setIsUploading(false);
         setUploadedFile(file);
         if (response?.Data?.batchId) {
           toast.success(
@@ -192,9 +192,7 @@ const TambahExcel = () => {
   };
 
   useEffect(() => {
-    console.log("data", data);
     if (data && data.Data && data.Data.history.length > 0) {
-      console.log("yas");
       setList(
         data.Data.history.map((item) => ({
           tanggal: item.uploadedAt,
@@ -206,10 +204,6 @@ const TambahExcel = () => {
       );
     }
   }, [data]);
-
-  useEffect(() => {
-    console.log("list", list);
-  }, [list]);
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
