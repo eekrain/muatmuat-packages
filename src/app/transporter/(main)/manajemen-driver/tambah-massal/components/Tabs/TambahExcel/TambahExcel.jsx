@@ -63,9 +63,9 @@ const TambahExcel = () => {
       sortable: false,
       render: (row) => (
         <>
-          {row.status === "COMPLETED"
-            ? "Berhasil menambah armada"
-            : "Gagal menambah armada"}
+          {row.status === "SUCCESS"
+            ? "Berhasil menambah driver"
+            : "Gagal menambah driver"}
         </>
       ),
     },
