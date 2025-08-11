@@ -10,6 +10,7 @@ import {
   TabsList,
   TabsTriggerWithSeparator,
 } from "@/components/Tabs/Tabs";
+import { useTranslation } from "@/hooks/use-translation";
 import { useGetFleetsDraftCheck } from "@/services/Transporter/manajemen-armada/getFleetsDraftCheck";
 
 import PopUpInformasi from "./components/PopUpInformasi";
@@ -18,6 +19,7 @@ import TambahArmadaMassal from "./components/Tabs/TambahArmadaMassal/TambahArmad
 import TambahExcel from "./components/Tabs/TambahExcel/TambahExcel";
 
 export default function TambahMassal() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { data } = useGetFleetsDraftCheck("/v1/fleet/drafts/check");
   const searchParams = useSearchParams();
@@ -49,7 +51,11 @@ export default function TambahMassal() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <PageTitle className="mb-0" withBack={false}>
-            Tambah Armada Massal
+            {t(
+              "TambahMassal.titleTambahArmadaMassal",
+              {},
+              "Tambah Armada Massal"
+            )}
           </PageTitle>
           <PopUpInformasi />
         </div>
@@ -69,20 +75,28 @@ export default function TambahMassal() {
             value="tambah_armada_excel"
             activeColor="primary-700"
           >
-            Tambah Armada Dengan Excel
+            {t(
+              "TambahMassal.tabTambahArmadaDenganExcel",
+              {},
+              "Tambah Armada Dengan Excel"
+            )}
           </TabsTriggerWithSeparator>
           <TabsTriggerWithSeparator
             value="tambah_armada_massal"
             activeColor="primary-700"
           >
-            Tambah Armada Massal
+            {t(
+              "TambahMassal.tabTambahArmadaMassal",
+              {},
+              "Tambah Armada Massal"
+            )}
           </TabsTriggerWithSeparator>
           <TabsTriggerWithSeparator
             value="draft"
             activeColor="primary-700"
             showSeparator={false}
           >
-            Draft
+            {t("TambahMassal.tabDraft", {}, "Draft")}
           </TabsTriggerWithSeparator>
         </TabsList>
 

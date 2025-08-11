@@ -14,6 +14,7 @@ import {
   handleDriverCellValueChange,
   validateDriverForm,
 } from "@/config/forms/driverFormConfig";
+import { useTranslation } from "@/hooks/use-translation";
 import { useDriverTableForm } from "@/hooks/useDriverTableForm";
 import { normalizePayloadTambahDriverMassal } from "@/lib/normalizers/transporter/tambah-driver-massal/normalizePayloadTambahDriverMassal";
 import { toast } from "@/lib/toast";
@@ -23,6 +24,7 @@ import { usePostDriverBulkDrafts } from "@/services/Transporter/manajemen-driver
 import DriverTable from "../../DriverTable/DriverTable";
 
 const TambahDriverMassal = ({ isDraftAvailable }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { onValueChange } = useTabs();
 
@@ -42,13 +44,23 @@ const TambahDriverMassal = ({ isDraftAvailable }) => {
     handlePostDriverBulkCreate(payload)
       .then((res) => {
         // Show success message
-        toast.success(`Berhasil menambahkan ${res.Data.totalSaved} Driver.`);
+        toast.success(
+          t(
+            "TambahDriverMassalScreen.messageSuccessAddDriver",
+            { count: res.Data.totalSaved },
+            `Berhasil menambahkan ${res.Data.totalSaved} Driver.`
+          )
+        );
         router.push(`/manajemen-driver?tab=process`);
       })
       .catch((_error) => {
         // Show error message
         toast.error(
-          "Gagal menyimpan draft driver. Periksa kembali data yang dimasukkan."
+          t(
+            "TambahDriverMassalScreen.messageErrorSaveDriver",
+            {},
+            "Gagal menyimpan draft driver. Periksa kembali data yang dimasukkan."
+          )
         );
       });
     // console.log("payload", payload);
@@ -62,12 +74,22 @@ const TambahDriverMassal = ({ isDraftAvailable }) => {
     handlePostDriverBulkDrafts(payload)
       .then(() => {
         // Show success message
-        toast.success("Draft driver berhasil disimpan.");
+        toast.success(
+          t(
+            "TambahDriverMassalScreen.messageSuccessSaveDraft",
+            {},
+            "Draft driver berhasil disimpan."
+          )
+        );
       })
       .catch((_error) => {
         // Show error message
         toast.error(
-          "Gagal menyimpan draft driver. Periksa kembali data yang dimasukkan."
+          t(
+            "TambahDriverMassalScreen.messageErrorSaveDriver",
+            {},
+            "Gagal menyimpan draft driver. Periksa kembali data yang dimasukkan."
+          )
         );
       });
     router.push(`/manajemen-driver?tab=process`);
@@ -125,7 +147,11 @@ const TambahDriverMassal = ({ isDraftAvailable }) => {
               variant="muattrans-primary-secondary"
               type="button"
             >
-              Simpan Sebagai Draft
+              {t(
+                "TambahDriverMassalScreen.buttonSaveAsDraft",
+                {},
+                "Simpan Sebagai Draft"
+              )}
             </Button>
             <Button
               disabled={isLoadingCreate || isLoadingDraft}
@@ -134,7 +160,7 @@ const TambahDriverMassal = ({ isDraftAvailable }) => {
                 handleSubmit();
               }}
             >
-              Simpan
+              {t("TambahDriverMassalScreen.buttonSave", {}, "Simpan")}
             </Button>
           </div>
         </div>
@@ -149,14 +175,26 @@ const TambahDriverMassal = ({ isDraftAvailable }) => {
         <ModalContent className="w-modal-small text-center">
           <ModalHeader size="small" />
           <div className="flex flex-col items-center gap-4 px-6 py-9 text-black">
-            <h2 className="text-base font-bold">Pemberitahuan</h2>
+            <h2 className="text-base font-bold">
+              {t(
+                "TambahDriverMassalScreen.titleNotification",
+                {},
+                "Pemberitahuan"
+              )}
+            </h2>
             <p className="text-sm font-medium">
-              Harap selesaikan data pada menu Draft terlebih dahulu.
+              {t(
+                "TambahDriverMassalScreen.messageCompleteDraftFirst",
+                {},
+                "Harap selesaikan data pada menu Draft terlebih dahulu."
+              )}
               <br />
               <br />
-              Kamu memiliki draft tambah driver yang belum selesai. Silakan
-              simpan data tersebut atau hapus draft sebelum menambahkan driver
-              baru
+              {t(
+                "TambahDriverMassalScreen.messageUnfinishedDraft",
+                {},
+                "Kamu memiliki draft tambah driver yang belum selesai. Silakan simpan data tersebut atau hapus draft sebelum menambahkan driver baru"
+              )}
             </p>
             <Link href="#">
               <Button
@@ -164,7 +202,11 @@ const TambahDriverMassal = ({ isDraftAvailable }) => {
                   onValueChange("draft");
                 }}
               >
-                Selesaikan Draft
+                {t(
+                  "TambahDriverMassalScreen.buttonCompleteDraft",
+                  {},
+                  "Selesaikan Draft"
+                )}
               </Button>
             </Link>
           </div>
@@ -175,22 +217,29 @@ const TambahDriverMassal = ({ isDraftAvailable }) => {
         isOpen={confirmDeleteModal}
         setIsOpen={setConfirmDeleteModal}
         title={{
-          text: "Apakah kamu yakin untuk menghapus driver ?",
+          text: t(
+            "TambahDriverMassalScreen.titleConfirmDeleteDriver",
+            {},
+            "Apakah kamu yakin untuk menghapus driver ?"
+          ),
           className: "text-sm font-medium text-center",
         }}
         confirm={{
-          text: "Hapus",
+          text: t("TambahDriverMassalScreen.buttonDelete", {}, "Hapus"),
           onClick: handleRemove,
         }}
         cancel={{
-          text: "Batal",
+          text: t("TambahDriverMassalScreen.buttonCancel", {}, "Batal"),
           onClick: () => {
             setConfirmDeleteModal(false);
           },
         }}
       >
-        Apakah kamu yakin ingin menghapus driver yang telah dipilih? Tindakan
-        ini tidak dapat dibatalkan.
+        {t(
+          "TambahDriverMassalScreen.messageConfirmDeleteDriver",
+          {},
+          "Apakah kamu yakin ingin menghapus driver yang telah dipilih? Tindakan ini tidak dapat dibatalkan."
+        )}
       </ConfirmationModal>
     </div>
   );

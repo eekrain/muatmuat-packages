@@ -101,7 +101,7 @@ const WaitingTimeBottomsheet = ({ waitingTimeData }) => {
                         expandedDrivers[key] ? "rotate-180" : ""
                       )}
                       onClick={() => toggleExpanded(key)}
-                      src="/icons/chevron-up12.svg"
+                      src="/icons/chevron-down.svg"
                     />
                   ) : null}
                 </div>

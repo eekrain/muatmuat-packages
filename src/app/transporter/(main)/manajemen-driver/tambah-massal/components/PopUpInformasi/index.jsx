@@ -10,36 +10,51 @@ import {
   ModalTrigger,
 } from "@/components/Modal/Modal";
 import { Slider } from "@/components/Slider/Slider";
+import { useTranslation } from "@/hooks/use-translation";
 import { useGetUserPreferencesImportDriver } from "@/services/Transporter/manajemen-driver/getUserPreferencesImportDriver";
 import { usePostUserPopupPreferences } from "@/services/Transporter/manajemen-driver/postUserPopupPreferences";
 
-const onboardingSlides = [
-  {
-    title: "Unggah Driver Massal",
-    imgSrc: "/img/tambah-armada-massal/popupinformasi-slider-1.png",
-    content: "Kamu bisa mengunggah driver secara massal menggunakan fitur ini.",
-  },
-  {
-    title: "Unggah Driver Massal",
-    imgSrc: "/img/tambah-armada-massal/popupinformasi-slider-2.png",
-    content:
-      "Ada dua pilihan untuk mengunggah driver secara massal : <ol><li>Menggunakan file excel</li><li>Mengisi kolom yang sudah tersedia</li></ol>",
-  },
-  {
-    title: "Unggah Dengan Excel",
-    imgSrc: "/img/tambah-armada-massal/popupinformasi-slider-3.png",
-    content:
-      "Kamu bisa mengunggah dengan langkah :<ol><li>Unduh template</li><li>Isi kolom yang tersedia (kamu bisa melihat contoh sheet prosedur)</li><li>Unggah file excel di kolom yang tersedia</li></ol>",
-  },
-  {
-    title: "Isi Kolom Massal",
-    imgSrc: "/img/tambah-armada-massal/popupinformasi-slider-4.png",
-    content:
-      "Kamu bisa mengunggah dengan langkah :<ol><li>Isi kolom yang tersedia</li><li>Klik Simpan (jika ingin menambah armada klik button Tambah padahalaman tersebut)</li></ol>",
-  },
-];
-
 export default function PopUpInformasi() {
+  const { t } = useTranslation();
+
+  const onboardingSlides = [
+    {
+      title: t("PopUpInformasi.slideTitle1", {}, "Unggah Driver Massal"),
+      imgSrc: "/img/tambah-armada-massal/popupinformasi-slider-1.png",
+      content: t(
+        "PopUpInformasi.slideContent1",
+        {},
+        "Kamu bisa mengunggah driver secara massal menggunakan fitur ini."
+      ),
+    },
+    {
+      title: t("PopUpInformasi.slideTitle2", {}, "Unggah Driver Massal"),
+      imgSrc: "/img/tambah-armada-massal/popupinformasi-slider-2.png",
+      content: t(
+        "PopUpInformasi.slideContent2",
+        {},
+        "Ada dua pilihan untuk mengunggah driver secara massal : <ol><li>Menggunakan file excel</li><li>Mengisi kolom yang sudah tersedia</li></ol>"
+      ),
+    },
+    {
+      title: t("PopUpInformasi.slideTitle3", {}, "Unggah Dengan Excel"),
+      imgSrc: "/img/tambah-armada-massal/popupinformasi-slider-3.png",
+      content: t(
+        "PopUpInformasi.slideContent3",
+        {},
+        "Kamu bisa mengunggah dengan langkah :<ol><li>Unduh template</li><li>Isi kolom yang tersedia (kamu bisa melihat contoh sheet prosedur)</li><li>Unggah file excel di kolom yang tersedia</li></ol>"
+      ),
+    },
+    {
+      title: t("PopUpInformasi.slideTitle4", {}, "Isi Kolom Massal"),
+      imgSrc: "/img/tambah-armada-massal/popupinformasi-slider-4.png",
+      content: t(
+        "PopUpInformasi.slideContent4",
+        {},
+        "Kamu bisa mengunggah dengan langkah :<ol><li>Isi kolom yang tersedia</li><li>Klik Simpan (jika ingin menambah armada klik button Tambah padahalaman tersebut)</li></ol>"
+      ),
+    },
+  ];
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [dontShowAgain, setDontShowAgain] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -130,7 +145,13 @@ export default function PopUpInformasi() {
                   className="h-4 w-4 rounded border-neutral-300 text-primary-700 focus:ring-primary-700 disabled:opacity-50"
                 />
                 <span className={isUpdating ? "opacity-50" : ""}>
-                  {isUpdating ? "Menyimpan..." : "Jangan tampilkan lagi"}
+                  {isUpdating
+                    ? t("PopUpInformasi.messageSaving", {}, "Menyimpan...")
+                    : t(
+                        "PopUpInformasi.labelDontShowAgain",
+                        {},
+                        "Jangan tampilkan lagi"
+                      )}
                 </span>
               </label>
             </div>

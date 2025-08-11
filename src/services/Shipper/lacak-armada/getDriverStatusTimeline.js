@@ -24,20 +24,20 @@ const apiResult = {
       statusTitle: "Sedang Muat di Lokasi 2",
       licensePlate: "B 1234 CD",
       statusDefinitions: [
-        {
-          mappedOrderStatus: OrderStatusEnum.COMPLETED,
-          date: new Date().toISOString(),
-          shippingEvidence: {
-            packages: [
-              "https://picsum.photos/400/300?random=4",
-              "https://picsum.photos/400/300?random=5",
-            ],
-            pods: [
-              // "https://picsum.photos/400/300?random=42",
-              // "https://picsum.photos/400/300?random=43",
-            ],
-          },
-        },
+        // {
+        //   mappedOrderStatus: OrderStatusEnum.COMPLETED,
+        //   date: new Date().toISOString(),
+        //   shippingEvidence: {
+        //     packages: [
+        //       "https://picsum.photos/400/300?random=4",
+        //       "https://picsum.photos/400/300?random=5",
+        //     ],
+        //     pods: [
+        //       // "https://picsum.photos/400/300?random=42",
+        //       // "https://picsum.photos/400/300?random=43",
+        //     ],
+        //   },
+        // },
         // {
         //   mappedOrderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
         //   date: new Date().toISOString(),
@@ -51,13 +51,35 @@ const apiResult = {
         //     noted: "",
         //   },
         // },
+        {
+          mappedOrderStatus: OrderStatusEnum.PREPARE_DOCUMENT,
+          date: new Date().toISOString(),
+        },
         // {
-        //   mappedOrderStatus: OrderStatusEnum.PREPARE_DOCUMENT,
+        //   mappedOrderStatus: OrderStatusEnum.WAITING_REPAYMENT_1,
         //   date: new Date().toISOString(),
         // },
         {
           mappedOrderStatus: OrderStatusEnum.UNLOADING,
           children: [
+            {
+              statusCode: DriverStatusEnum.UNLOADING.SELESAI.code,
+              statusName: "Menuju ke Lokasi Bongkar 2", // This statusName will be updated
+              date: sub(new Date(), { hours: 5 }).toISOString(),
+              requiresQRScan: false,
+              requiresPhoto: true,
+              triggersWaitingFee: false,
+              photoEvidences: {
+                packages: [
+                  "https://picsum.photos/400/300?random=4",
+                  "https://picsum.photos/400/300?random=5",
+                ],
+                pods: [
+                  "https://picsum.photos/400/300?random=42",
+                  "https://picsum.photos/400/300?random=43",
+                ],
+              },
+            },
             // {
             //   statusCode: `${DriverStatusEnum.UNLOADING.BONGKAR.code}_2`,
             //   statusName: "Sedang Bongkar di Lokasi 2",
@@ -387,15 +409,10 @@ const fetcher = async (cacheKey) => {
   }
 };
 
-export const useGetDriverStatusTimeline = (orderId, driverId) => {
-  console.log("🚀 ~ useGetDriverStatusTimeline ~  {orderId, driverId}:", {
-    orderId,
-    driverId,
-  });
-  return useSWR(
+export const useGetDriverStatusTimeline = (orderId, driverId) =>
+  useSWR(
     !!orderId && !!driverId
       ? `driverStatusTimeline/${orderId}/${driverId}`
       : null,
     fetcher
   );
-};

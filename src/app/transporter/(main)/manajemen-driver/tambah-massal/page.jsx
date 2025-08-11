@@ -10,6 +10,7 @@ import {
   TabsList,
   TabsTriggerWithSeparator,
 } from "@/components/Tabs/Tabs";
+import { useTranslation } from "@/hooks/use-translation";
 import { useGetDriversDraftStatus } from "@/services/Transporter/manajemen-driver/getDriversDraftStatus";
 
 import PopUpInformasi from "./components/PopUpInformasi";
@@ -18,6 +19,7 @@ import TambahDriverMassal from "./components/Tabs/TambahDriverMassal/TambahDrive
 import TambahExcel from "./components/Tabs/TambahExcel/TambahExcel";
 
 export default function TambahMassal() {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const router = useRouter();
   const { data } = useGetDriversDraftStatus("/v1/drivers/draft/status");
@@ -48,7 +50,11 @@ export default function TambahMassal() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <PageTitle className="mb-0" withBack={false}>
-            Tambah Driver Massal
+            {t(
+              "TambahMassalScreen.titleTambahDriverMassal",
+              {},
+              "Tambah Driver Massal"
+            )}
           </PageTitle>
           <PopUpInformasi />
         </div>
@@ -66,20 +72,28 @@ export default function TambahMassal() {
             value="tambah_armada_excel"
             activeColor="primary-700"
           >
-            Tambah Driver Dengan Excel
+            {t(
+              "TambahMassalScreen.tabTambahDriverDenganExcel",
+              {},
+              "Tambah Driver Dengan Excel"
+            )}
           </TabsTriggerWithSeparator>
           <TabsTriggerWithSeparator
             value="tambah_driver_massal"
             activeColor="primary-700"
           >
-            Tambah Driver Massal
+            {t(
+              "TambahMassalScreen.tabTambahDriverMassal",
+              {},
+              "Tambah Driver Massal"
+            )}
           </TabsTriggerWithSeparator>
           <TabsTriggerWithSeparator
             value="draft"
             activeColor="primary-700"
             showSeparator={false}
           >
-            Draft
+            {t("TambahMassalScreen.tabDraft", {}, "Draft")}
           </TabsTriggerWithSeparator>
         </TabsList>
 
