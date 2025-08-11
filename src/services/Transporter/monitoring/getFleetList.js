@@ -471,17 +471,27 @@ const apiResultFleetList = {
   Type: "FLEET_LIST",
 };
 
-export const fetcherFleetList = async () => {
-  if (isMockFleetList) {
-    return apiResultFleetList.Data;
-  }
+export const useGetFleetList = (params = {}) => {
+  const cacheKey = ["monitoring-fleet-list", params];
 
-  const result = await fetcherMuatrans.get("/v1/fleet-list");
-  return result?.data?.Data || {};
+  return useSWR(cacheKey, () => fetcherFleetList(params));
 };
 
-export const useGetFleetList = () => {
-  const cacheKey = "monitoring-fleet-list";
+export const fetcherFleetList = async (params = {}) => {
+  if (isMockFleetList) {
+    // Simulate filtering in mock data
+    const filteredData = {
+      ...apiResultFleetList.Data,
+      fleets: apiResultFleetList.Data.fleets.filter((fleet) => {
+        if (params.truckStatus && params.truckStatus.length > 0) {
+          return params.truckStatus.includes(fleet.status);
+        }
+        return true;
+      }),
+    };
+    return filteredData;
+  }
 
-  return useSWR(cacheKey, fetcherFleetList);
+  const result = await fetcherMuatrans.get("/v1/fleet-list", { params });
+  return result?.data?.Data || {};
 };

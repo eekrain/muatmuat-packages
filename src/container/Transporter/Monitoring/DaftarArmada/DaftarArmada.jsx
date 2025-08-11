@@ -103,6 +103,7 @@ const DaftarArmada = ({
   const handleApplyFilter = (truckStatuses, orderStatuses) => {
     setTruckStatusFilter(truckStatuses);
     setOrderStatusFilter(orderStatuses);
+    refetchFleets(); // Trigger a refetch with new filters
   };
 
   const handleFleetCardClick = (fleet) => {
