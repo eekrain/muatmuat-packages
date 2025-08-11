@@ -6,19 +6,23 @@ import { idrFormat } from "@/lib/utils/formatters";
 
 import { BottomsheetDetailPengirimanDokumen } from "./Popup/BottomsheetDetailPengirimanDokumen";
 
-export const TransactionSummary = ({ dataRingkasanPembayaran }) => {
+export const TransactionSummary = ({
+  dataRingkasanPembayaran,
+  documentShippingDetail,
+}) => {
   const { t } = useTranslation();
   const isRingkasanTransaksi = true;
 
   const [isDocumentShippingDetailOpen, setDocumentShippingDetailOpen] =
     useState(false);
+  const documentShippingFee = documentShippingDetail?.totalPrice || 0;
+  const shippingData = documentShippingDetail;
 
   if (!dataRingkasanPembayaran) return null;
 
   const {
     transportFee = 0,
     insuranceFee = 0,
-    documentShippingDetail = null,
     otherAdditionalService = { totalPrice: 0 },
     voucher = null,
     adminFee = 0,
@@ -27,10 +31,7 @@ export const TransactionSummary = ({ dataRingkasanPembayaran }) => {
     totalTruckUnit = 1,
   } = dataRingkasanPembayaran;
 
-  const documentShippingFee = documentShippingDetail?.totalPrice || 0;
-
   // Use the data from props
-  const shippingData = documentShippingDetail;
   return (
     <>
       <div className="bg-white px-4 py-5">

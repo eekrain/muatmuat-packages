@@ -91,7 +91,7 @@ const WaitingTimeBottomsheet = ({ waitingTimeData }) => {
                   <div className="flex flex-col gap-y-2">
                     <span className="text-sm font-semibold leading-[1.1] text-neutral-900">{`${t("WaitingTimeBottomsheet.labelDriver", {}, "Driver :")} ${item.name}`}</span>
                     {!expandedDrivers[key] && isSectionExpandable ? (
-                      <span className="text-xs font-medium leading-[1.1] text-neutral-600">{`${t("WaitingTimeBottomsheet.labelTotalDuration", {}, "Durasi Total:")} ${item.durasiTotal}`}</span>
+                      <span className="text-xs font-medium leading-[1.1] text-neutral-600">{`${t("WaitingTimeBottomsheet.labelTotalDuration", {}, "Durasi Total:")} ${item.totalWaitingTime}`}</span>
                     ) : null}
                   </div>
                   {isSectionExpandable ? (

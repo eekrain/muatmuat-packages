@@ -5,7 +5,7 @@ import CardPayment from "@/components/Card/CardPayment";
 import { ModalDetailOverloadMuatan } from "@/components/Modal/ModalDetailOverloadMuatan";
 import { ModalDetailWaktuTunggu } from "@/components/Modal/ModalDetailWaktuTunggu";
 import { ModalOpsiPembayaran } from "@/components/Modal/ModalOpsiPembayaran";
-import { useSWRHook } from "@/hooks/use-swr";
+import { useSWRHook, useSWRMutateHook } from "@/hooks/use-swr";
 import { fetcherPayment } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { idrFormat } from "@/lib/utils/formatters";
@@ -14,6 +14,7 @@ import { useGetWaitingTime } from "@/services/Shipper/detailpesanan/getWaitingTi
 
 export const RingkasanPembayaranTambahanBiaya = ({
   dataRingkasanPembayaran,
+  mutateDetailPesanan,
 }) => {
   const params = useParams();
   // Fetch payment methods using SWR
@@ -24,7 +25,27 @@ export const RingkasanPembayaranTambahanBiaya = ({
   const { data: waitingTimeData } = useGetWaitingTime(params.orderId);
   const { data: overloadData } = useGetOverloadData(params.orderId);
   const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState(null);
+  const { trigger: paymentProcess, isMutating: isLoading } = useSWRMutateHook(
+    params.orderId ? `v1/orders/${params.orderId}/repayment-process` : null,
+    "POST"
+  );
+  const handleLanjutPembayaran = async () => {
+    if (!paymentProcess) return;
 
+    try {
+      const result = await paymentProcess({
+        paymentMethodId: dataRingkasanPembayaran.paymentMethodId,
+        repaymentType: "CHARGE",
+      });
+      console.log("Pembayaran berhasil:", result);
+      if (mutateDetailPesanan) {
+        mutateDetailPesanan();
+      }
+    } catch (err) {
+      console.error("Gagal lanjut pembayaran:", err);
+      // toast.error("Terjadi kesalahan saat memproses pembayaran");
+    }
+  };
   const waitingFee = dataRingkasanPembayaran?.priceCharge?.waitingFee;
   const overloadFee = dataRingkasanPembayaran?.priceCharge?.overloadFee;
   const totalCharge = dataRingkasanPembayaran?.priceCharge?.totalCharge;
@@ -42,7 +63,9 @@ export const RingkasanPembayaranTambahanBiaya = ({
                 label={`Nominal Waktu Tunggu (${waitingFee.totalDriver} Driver)`}
                 value={idrFormat(waitingFee.totalAmount)}
               />
-              <ModalDetailWaktuTunggu drivers={waitingTimeData} />
+              {waitingTimeData && waitingTimeData.length > 0 && (
+                <ModalDetailWaktuTunggu drivers={waitingTimeData} />
+              )}
             </CardPayment.Section>
           )}
 
@@ -54,7 +77,9 @@ export const RingkasanPembayaranTambahanBiaya = ({
                 ).toLocaleString("id-ID")} ${overloadFee.weightUnit})`}
                 value={idrFormat(overloadFee.totalAmount)}
               />
-              <ModalDetailOverloadMuatan drivers={overloadData} />
+              {overloadData && overloadData.length > 0 && (
+                <ModalDetailOverloadMuatan drivers={overloadData} />
+              )}
             </CardPayment.Section>
           )}
 
@@ -83,6 +108,7 @@ export const RingkasanPembayaranTambahanBiaya = ({
               paymentMethods={paymentMethodsData?.Data}
               selectedPaymentMethodId={selectedPaymentMethodId}
               onSelectedPaymentMethodId={setSelectedPaymentMethodId}
+              onProceedPayment={handleLanjutPembayaran}
               className="mt-4"
             />
           )}

@@ -18,6 +18,7 @@ export const RingkasanPembayaran = ({
   dataRingkasanPembayaran,
   dataStatusPesanan,
   isShowWaitFleetAlert,
+  mutateDetailPesanan,
 }) => {
   const prevStatusRef = useRef(dataRingkasanPembayaran?.orderStatus);
 
@@ -53,17 +54,20 @@ export const RingkasanPembayaran = ({
         dataRingkasanPembayaran?.priceCharge?.isPaid === false ? (
         <RingkasanPembayaranTambahanBiaya
           dataRingkasanPembayaran={dataRingkasanPembayaran}
+          mutateDetailPesanan={mutateDetailPesanan}
         />
       ) : dataRingkasanPembayaran?.orderStatus ===
         OrderStatusEnum.WAITING_PAYMENT_3 ? (
         <RingkasanPembayaranPerubahanPesanan
           dataRingkasanPembayaran={dataRingkasanPembayaran}
+          mutateDetailPesanan={mutateDetailPesanan}
         />
       ) : (
         <RingkasanPembayaranDefault
           dataRingkasanPembayaran={dataRingkasanPembayaran}
           dataStatusPesanan={dataStatusPesanan}
           isShowWaitFleetAlert={isShowWaitFleetAlert}
+          mutateDetailPesanan={mutateDetailPesanan}
         />
       )}
     </div>
