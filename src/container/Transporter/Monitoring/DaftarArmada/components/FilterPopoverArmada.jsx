@@ -105,9 +105,9 @@ export default function FilterPopoverArmada({
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="flex items-center gap-2 rounded-md border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-600 transition-colors hover:border-primary-700 hover:bg-gray-50"
+          className="flex h-8 items-center gap-2 rounded-md border border-neutral-600 px-3 py-2 text-xs font-semibold text-neutral-600 transition-colors hover:border-primary-700 hover:bg-gray-50"
         >
-          <SlidersHorizontal className="h-4 w-4" />
+          <SlidersHorizontal className="h-4 w-4 text-neutral-600" />
           Filter
         </button>
       </PopoverTrigger>
