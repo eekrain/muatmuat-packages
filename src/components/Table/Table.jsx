@@ -112,7 +112,9 @@ const Table = ({
                         key={colIndex}
                         className={cn("px-6 py-4 text-xxs", column.className)}
                       >
-                        {column.render ? column.render(row) : row[column.key]}
+                        {column.render
+                          ? column.render(row, rowIndex)
+                          : row[column.key]}
                       </td>
                     ))}
                   </tr>

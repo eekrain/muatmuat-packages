@@ -218,6 +218,7 @@ const RealtimeDashboardPage = () => {
             label="Rating Driver Keseluruhan"
             value={dashboardData.performance.overallRating}
             valueUnit="/5"
+            href="/dashboard/real-time/rating-driver"
             icon="/icons/star.svg"
             labelIcon="/icons/star_icon.svg"
             tooltipText={tooltipContent.performance.overallRating.text}

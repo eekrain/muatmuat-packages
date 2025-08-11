@@ -172,6 +172,7 @@ const PotentialEarningsTable = () => {
         key: "action",
         header: "",
         width: "120px",
+        sortable: false,
         render: (row) => (
           <Button
             variant="muattrans-primary-secondary"
