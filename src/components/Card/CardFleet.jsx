@@ -262,7 +262,7 @@ const OnDutyDetails = ({ fleet }) => {
     if (needsResponse) {
       return (
         <div className="flex items-center rounded-lg bg-warning-100 px-3 py-1 text-xs font-medium text-warning-900">
-          <AlertTriangle className="mr-2 h-4 w-3" />
+          <AlertTriangle className="mr-2 h-3 w-3" />
           Perlu Respon Perubahan
         </div>
       );
