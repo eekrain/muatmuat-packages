@@ -26,14 +26,13 @@ import { formatDate } from "@/lib/utils/dateFormat";
 // ----- Constants -----
 const STATUS_STYLES = {
   SOS: {
-    expanded: "border-error-400 bg-error-50",
-    collapsed:
-      "border-gray-200 bg-error-50 hover:border-error-400 hover:bg-[#FFE9ED]",
+    expanded: "border border-error-400 bg-error-50",
+    collapsed: " bg-error-50 hover:border-error-400 hover:bg-[#FFE9ED]",
   },
   DEFAULT: {
-    expanded: "border-[#FFC217] bg-[#FFFBEB]",
+    expanded: "border border-[#FFC217] bg-[#FFFBEB]",
     collapsed:
-      "border-gray-200 bg-white hover:border-[#FFC217] hover:bg-[#FFFBEB]",
+      " border border-gray-200 bg-white hover:border-[#FFC217] hover:bg-[#FFFBEB]",
   },
 };
 
@@ -391,7 +390,7 @@ export default function CardFleet({
     : "Unknown";
 
   const cardClasses = cn(
-    "group overflow-hidden rounded-lg border p-3 transition-all duration-200",
+    "group overflow-hidden rounded-lg p-3 transition-all duration-200",
     isSOS
       ? isExpanded
         ? STATUS_STYLES.SOS.expanded
