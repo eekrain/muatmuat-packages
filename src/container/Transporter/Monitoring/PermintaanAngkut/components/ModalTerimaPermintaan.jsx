@@ -32,6 +32,8 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [modalType, setModalType] = useState(""); // "taken", "unit-change", "suspended"
   const [modalData, setModalData] = useState({});
+  const [modalQueue, setModalQueue] = useState([]); // Queue for showing modals in sequence
+  const [currentModalIndex, setCurrentModalIndex] = useState(0);
 
   // API hooks
   const { trigger: acceptScheduledRequest, isMutating } =
@@ -60,6 +62,41 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
 
   if (!isOpen) return null;
 
+  // Function to show modals in sequence
+  const showModalSequence = () => {
+    const modals = [
+      {
+        type: "taken",
+        title: "Pesanan Sudah Diambil",
+        message:
+          "Maaf, pesanan ini telah diambil oleh transporter lain. Silahkan pilih pesanan lainnya yang tersedia.",
+      },
+      {
+        type: "unit-change",
+        title: "Perubahan Kebutuhan Unit",
+        message:
+          "Maaf, terdapat perubahan pada kebutuhan unit armada. Periksa kembali sebelum menerima permintaan.",
+      },
+      {
+        type: "suspended",
+        title: "Akun Ditangguhkan",
+        message:
+          "Maaf, kamu tidak bisa menerima pesanan karena akun kamu ditangguhkan, hubungi dukungan pelanggan untuk aktivasi kembali.",
+      },
+    ];
+
+    setModalQueue(modals);
+    setCurrentModalIndex(0);
+
+    // Show first modal
+    setModalType(modals[0].type);
+    setModalData({
+      title: modals[0].title,
+      message: modals[0].message,
+    });
+    setShowConfirmModal(true);
+  };
+
   const handleAccept = () => {
     // Validasi kebutuhan armada
     if (!selectedOption) {
@@ -79,8 +116,8 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
       return;
     }
 
-    // Directly call API
-    handleConfirmAccept();
+    // Show modal sequence for demo
+    showModalSequence();
   };
 
   const handleConfirmAccept = () => {
@@ -165,7 +202,7 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
             setModalData({
               title: "Akun Ditangguhkan",
               message:
-                "Akun Anda telah ditangguhkan di tengah proses. Silahkan hubungi customer service untuk informasi lebih lanjut.",
+                "Maaf, kamu tidak bisa menerima pesanan karena akun kamu ditangguhkan, hubungi dukungan pelanggan untuk aktivasi kembali.",
             });
             setShowConfirmModal(true);
             return;
@@ -577,40 +614,58 @@ const ModalTerimaPermintaan = ({ isOpen, onClose, request, onAccept }) => {
         isOpen={showConfirmModal}
         setIsOpen={setShowConfirmModal}
         title={{
-          text: modalData.title || "Pemberitahuan",
+          text: modalData?.title || "Pemberitahuan",
           className: "text-base font-bold",
         }}
         description={{
-          text: modalData.message || "",
+          text: modalData?.message || "",
           className: "text-sm font-medium text-center",
         }}
-        cancel={{
-          text: "Cancel",
-          onClick: () => {},
-          className: "hidden", // Hide cancel button
-        }}
+        withCancel={false}
         confirm={{
-          text: "OK",
+          text: modalType === "suspended" ? "Hubungi Customer Service" : "OK",
+          className:
+            "bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700",
           onClick: () => {
             setShowConfirmModal(false);
 
-            // Different actions based on modal type
-            switch (modalType) {
-              case "taken":
-              case "suspended":
-                onClose(); // Close main modal
-                break;
-              case "unit-change":
-                // Just close confirmation modal, keep main modal open for user to re-select
-                break;
-              default:
-                onClose();
-                break;
-            }
+            // Check if there are more modals in the queue
+            const nextIndex = currentModalIndex + 1;
+            if (nextIndex < modalQueue.length) {
+              // Show next modal after a short delay
+              setTimeout(() => {
+                const nextModal = modalQueue[nextIndex];
+                if (nextModal) {
+                  setModalType(nextModal.type);
+                  setModalData({
+                    title: nextModal.title,
+                    message: nextModal.message,
+                  });
+                  setCurrentModalIndex(nextIndex);
+                  setShowConfirmModal(true);
+                }
+              }, 500); // 500ms delay between modals
+            } else {
+              // All modals shown, handle final action
+              switch (modalType) {
+                case "taken":
+                case "suspended":
+                  onClose(); // Close main modal
+                  break;
+                case "unit-change":
+                  // Just close confirmation modal, keep main modal open for user to re-select
+                  break;
+                default:
+                  onClose();
+                  break;
+              }
 
-            // Reset modal state
-            setModalType("");
-            setModalData({});
+              // Reset modal state
+              setModalType("");
+              setModalData({});
+              setModalQueue([]);
+              setCurrentModalIndex(0);
+            }
           },
         }}
       />

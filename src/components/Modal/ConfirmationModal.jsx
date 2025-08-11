@@ -7,6 +7,7 @@ const ConfirmationModal = ({
   variant = "primary",
   isOpen,
   setIsOpen,
+  withCancel = true,
   title = { text: "", className: "" }, // Added default value here
   description = { text: "", className: "" },
   // 25. 18 - Web - LB - 0275
@@ -58,15 +59,17 @@ const ConfirmationModal = ({
             </p>
           ) : null}
           <div className="flex items-center gap-x-2">
-            <Button
-              variant="muattrans-primary-secondary"
-              // 25. 18 - Web - LB - 0275
-              className={cn("h-8", cancelClassname)}
-              onClick={onCancel}
-              type="button"
-            >
-              {cancelText}
-            </Button>
+            {withCancel && (
+              <Button
+                variant="muattrans-primary-secondary"
+                // 25. 18 - Web - LB - 0275
+                className={cn("h-8", cancelClassname)}
+                onClick={onCancel}
+                type="button"
+              >
+                {cancelText}
+              </Button>
+            )}
             <Button
               variant="muattrans-primary"
               // 25. 18 - Web - LB - 0275
