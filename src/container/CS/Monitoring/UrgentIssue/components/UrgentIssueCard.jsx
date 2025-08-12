@@ -111,8 +111,10 @@ export const UrgentIssueCard = ({
     alert("Testing click vehicle");
   };
 
+  const isCountDown = true;
+
   const { formatted, isNegative } = useFlexibleCountdown(
-    new Date("2025-08-12T16:20:00"), // start time
+    new Date(), // start time
     360 // durasi 6 menit (dalam detik)
   );
 
@@ -174,12 +176,14 @@ export const UrgentIssueCard = ({
                 {typeName}
               </span>
             </div>
-            <BadgeStatus
-              variant={isNegative ? "outlineWarning" : "outlineSecondary"}
-              className="w-max text-sm font-semibold"
-            >
-              {isNegative ? `-${formatted}` : formatted}
-            </BadgeStatus>
+            {isCountDown && (
+              <BadgeStatus
+                variant={isNegative ? "outlineWarning" : "outlineSecondary"}
+                className="w-max text-sm font-semibold"
+              >
+                {isNegative ? `-${formatted}` : formatted}
+              </BadgeStatus>
+            )}
           </div>
           <div className="mt-2 text-xs font-medium leading-[20px] text-neutral-600">
             Armada{" "}
