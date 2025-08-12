@@ -11,10 +11,14 @@ import Table from "@/components/Table/Table";
 import { cn } from "@/lib/utils";
 import { useGetAvailableFleet } from "@/services/Transporter/monitoring/getAvailableFleet";
 
-const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
+import ModalTerimaPermintaanInstan from "./components/ModalTerimaPermintaanInstan";
+
+const PilihArmada = ({ onToggleExpand, isExpanded }) => {
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
   const [searchValue, setSearchValue] = useState("");
   const [selectedFilter, setSelectedFilter] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedFleet, setSelectedFleet] = useState(null);
 
   // Get available fleet data for the selected order (using a mock orderId for now)
   const { data: fleetData, isLoading: fleetLoading } = useGetAvailableFleet(
@@ -256,6 +260,10 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
             <Button
               variant="muattrans-primary-secondary"
               className="h-8 w-[112px] text-sm font-semibold"
+              onClick={() => {
+                setSelectedFleet(row);
+                setIsModalOpen(true);
+              }}
             >
               Pilih
             </Button>
@@ -366,6 +374,19 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
                 rowClassName={getRowClassName}
                 rowRecomendations={[0, 1]}
               />
+              {/* Modal for accepting fleet request */}
+              <ModalTerimaPermintaanInstan
+                isOpen={isModalOpen}
+                onClose={() => {
+                  setIsModalOpen(false);
+                  setSelectedFleet(null);
+                }}
+                request={selectedFleet}
+                onAccept={() => {
+                  setIsModalOpen(false);
+                  setSelectedFleet(null);
+                }}
+              />
             </div>
           )}
         </div>
@@ -374,4 +395,4 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
   );
 };
 
-export default DaftarPesananAktif;
+export default PilihArmada;

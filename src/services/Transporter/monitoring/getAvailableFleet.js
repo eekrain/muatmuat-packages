@@ -24,8 +24,8 @@ const apiResultAvailableFleet = {
         fleetStatus: "ACTIVE",
         verificationStatus: "VERIFICATION_COMPLETE",
         operationalStatus: "READY_FOR_ORDER",
-        truckTypeName: "Colt Diesel Engkel",
-        carrierName: "Box",
+        truckTypeName: "Tractor head 6 x 4 dan Semi Trailer",
+        carrierName: "Skeletal Container Jumbo 45 ft (3 As",
         vehicleBrandName: "Mitsubishi",
         vehicleTypeName: "Canter",
         dimensions: {
@@ -36,7 +36,7 @@ const apiResultAvailableFleet = {
         },
         driver: {
           id: "driver-uuid-1",
-          name: "Mulkason",
+          name: "Muhammad Rizky Ramadhani Pratama Setiawan Nugroho Putra Perdana Kusuma Wijayanto Saputra Toldo Sasmita",
           phoneNumber: "081234567890",
           profileImage: "https://storage.example.com/driver1.jpg",
           driverStatus: "AVAILABLE",
