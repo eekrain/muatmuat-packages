@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
+import { useGetFleetLocations } from "@/services/Transporter/monitoring/getFleetLocations";
 
 import "./SearchSuggestions.css";
 
@@ -13,49 +14,51 @@ export const SearchSuggestions = ({
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const suggestionsRef = useRef(null);
 
-  // Mock data - these are all available vehicles/drivers in the system
-  const mockVehiclesAndDrivers = [
-    { id: "1", licensePlate: "B 1234 ABC", driverName: "Ahmad Subandi" },
-    { id: "2", licensePlate: "B 5678 DEF", driverName: "Budi Santoso" },
-    { id: "3", licensePlate: "L 4567 CD", driverName: "Siti Nurhaliza" },
-    { id: "4", licensePlate: "L 9012 GH", driverName: "Agus Prasetyo" },
-    { id: "5", licensePlate: "L 3456 IJ", driverName: "John Doe" },
-    { id: "6", licensePlate: "D 7890 KL", driverName: "Wahyu Hidayat" },
-    { id: "7", licensePlate: "F 2345 MN", driverName: "Eko Nugroho" },
-    { id: "8", licensePlate: "R 123 ABD", driverName: "Rizki Firmansyah" },
-    { id: "9", licensePlate: "B 9876 XYZ", driverName: "Abdulrohman" },
-    { id: "10", licensePlate: "L 555 ABD", driverName: "Fajar Sidik" },
-    { id: "11", licensePlate: "D 444 EFG", driverName: "Abdullah Malik" },
-    { id: "12", licensePlate: "B 321 ABD", driverName: "Hendra Gunawan" },
-  ];
+  // Get real fleet data from API
+  const { data: fleetLocationsData } = useGetFleetLocations();
+
+  // Use real fleet data or empty array if data is not loaded yet
+  const vehiclesAndDrivers = fleetLocationsData?.fleets || [];
 
   // Create separate suggestion entries for matching license plates and driver names
   const createSuggestions = () => {
-    if (!searchValue) return [];
+    if (!searchValue || !vehiclesAndDrivers.length) return [];
 
     const searchLower = searchValue.toLowerCase();
     const suggestions = [];
 
     // Add all matching license plates
-    mockVehiclesAndDrivers.forEach((item) => {
+    vehiclesAndDrivers.forEach((item) => {
       if (item.licensePlate.toLowerCase().includes(searchLower)) {
         suggestions.push({
           id: `plate-${item.id}`,
           type: "licensePlate",
           displayText: item.licensePlate,
-          originalData: item,
+          originalData: {
+            id: item.id,
+            licensePlate: item.licensePlate,
+            driverName: item.driverName,
+            latitude: item.latitude,
+            longitude: item.longitude,
+          },
         });
       }
     });
 
     // Add all matching driver names
-    mockVehiclesAndDrivers.forEach((item) => {
+    vehiclesAndDrivers.forEach((item) => {
       if (item.driverName.toLowerCase().includes(searchLower)) {
         suggestions.push({
           id: `driver-${item.id}`,
           type: "driverName",
           displayText: item.driverName,
-          originalData: item,
+          originalData: {
+            id: item.id,
+            licensePlate: item.licensePlate,
+            driverName: item.driverName,
+            latitude: item.latitude,
+            longitude: item.longitude,
+          },
         });
       }
     });

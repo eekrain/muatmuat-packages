@@ -234,6 +234,37 @@ const Page = () => {
     }
   };
 
+  // Handle search selection - focus map on selected vehicle
+  const handleSearchSelect = (searchData) => {
+    if (!searchData || !searchData.originalData) return;
+
+    // Find the corresponding marker from fleet locations
+    const marker = allFleetMarkers.find(
+      (m) =>
+        m.fleet.licensePlate === searchData.originalData.licensePlate ||
+        m.fleet.driverName === searchData.originalData.driverName
+    );
+
+    if (marker) {
+      // Center map on the selected vehicle
+      setMapCenter({
+        lat: marker.position.lat,
+        lng: marker.position.lng,
+      });
+      setMapZoom(16); // Zoom in to focus on the truck
+      setAutoFitBounds(false); // Disable auto-fit
+      setHasMapInteraction(false);
+
+      // Also select the fleet in the armada list if panel is open
+      setSelectedFleetId(marker.fleet.id);
+
+      // Open the left panel to show details
+      if (!showLeftPanel) {
+        handleOpenLeftPanel();
+      }
+    }
+  };
+
   // Convert fleet locations to map markers and apply filters
   const allFleetMarkers =
     fleetLocationsData?.fleets?.map((fleet) => {
@@ -411,6 +442,7 @@ const Page = () => {
                 onToggleLicensePlate={setShowLicensePlate}
                 onCenter={handleResetZoom}
                 hasMapInteraction={hasMapInteraction}
+                onSearch={handleSearchSelect}
               />
             )}
 

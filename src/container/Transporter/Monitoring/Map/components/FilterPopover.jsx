@@ -221,7 +221,7 @@ export const FilterPopover = ({ onApplyFilter, fleetCounts = {} }) => {
               onClick={handleApply}
               className="min-w-[115px]"
             >
-              Terapkan
+              Tampilkan
             </Button>
           </div>
         </div>
