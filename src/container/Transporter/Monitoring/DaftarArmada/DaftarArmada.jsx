@@ -9,6 +9,7 @@ import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import Search from "@/components/Search/Search";
 import { useGetFleetList } from "@/services/Transporter/monitoring/getFleetList";
+import { acknowledgeSos } from "@/services/Transporter/monitoring/getSosList";
 import useSosWebSocket from "@/services/Transporter/monitoring/useSosWebSocket";
 
 import { DriverSelectionModal } from "../../Driver/DriverSelectionModal";
@@ -52,6 +53,22 @@ const DaftarArmada = ({
   const sosCount = fleetData?.filter?.sos || 0;
   const hasFilterData = fleetData?.filter;
   const { latestSosAlert, acknowledgeSosAlert } = useSosWebSocket();
+
+  // ACK handler untuk tombol "Mengerti"
+  const handleAcknowledge = async (fleet) => {
+    try {
+      const sosId = fleet?.detailSOS?.sosId; // pastikan API mengirimkan ini di detailSOS
+      if (!sosId) {
+        console.warn("sosId tidak tersedia di fleet.detailSOS");
+        return;
+      }
+      await acknowledgeSos(sosId);
+      await refetchFleets(); // refresh list agar status & style berubah
+    } catch (e) {
+      console.error(e);
+      // TODO: tampilkan toast error kalau ada sistem notifikasi
+    }
+  };
 
   // Show SOS notification when new alert arrives
   useEffect(() => {
@@ -228,22 +245,30 @@ const DaftarArmada = ({
           </div>
         ) : (
           <div className="space-y-3">
-            {filteredData.map((fleet) => (
-              <div
-                key={fleet.fleetId}
-                onClick={() => handleFleetCardClick(fleet)}
-                className="cursor-pointer"
-              >
-                <CardFleet
-                  fleet={fleet}
-                  isExpanded={expandedId === fleet.fleetId}
-                  onToggleExpand={toggleExpanded}
-                  onOpenDriverModal={handleOpenDriverModal}
-                  onOpenResponseChangeModal={handleOpenResponseChangeModal}
-                  isSOS={fleet.hasSOSAlert}
-                />
-              </div>
-            ))}
+            {filteredData.map((fleet) => {
+              const isSOSVisual =
+                fleet.hasSOSAlert &&
+                (fleet.detailSOS?.sosStatus ??
+                  (fleet.hasSOSAlert ? "NEW" : "ACKNOWLEDGED")) === "NEW";
+
+              return (
+                <div
+                  key={fleet.fleetId}
+                  onClick={() => handleFleetCardClick(fleet)}
+                  className="cursor-pointer"
+                >
+                  <CardFleet
+                    fleet={fleet}
+                    isExpanded={expandedId === fleet.fleetId}
+                    onToggleExpand={toggleExpanded}
+                    onOpenDriverModal={handleOpenDriverModal}
+                    onOpenResponseChangeModal={handleOpenResponseChangeModal}
+                    isSOS={isSOSVisual}
+                    onAcknowledge={handleAcknowledge}
+                  />
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
