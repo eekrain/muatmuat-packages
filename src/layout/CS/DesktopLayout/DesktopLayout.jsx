@@ -23,14 +23,13 @@ export default function DesktopLayout({ children }) {
   return (
     <div className="relative min-h-screen">
       <HeaderLayout notifCounter={{ notification, chat }} />
-      <div
+      <main
         className={cn(
-          "mx-auto max-w-[1232px]",
           isLoggedIn ? "max-h-[calc(100dvh-92px)]" : "max-h-[calc(100dvh-60px)]"
         )}
       >
         {children}
-      </div>
+      </main>
       <FloatingButton />
 
       <img

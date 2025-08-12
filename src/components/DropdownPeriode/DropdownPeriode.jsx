@@ -49,7 +49,7 @@ const DropdownPeriode = ({
     end_date: false,
   });
   const [inputDateCustom, setInputDateCustom] = useState({
-    status: "",
+    status: null,
     start_date: "",
     end_date: "",
   });
@@ -109,7 +109,7 @@ const DropdownPeriode = ({
 
   const resetValue = () => {
     setInputDateCustom({
-      status: "",
+      status: null,
       start_date: "",
       end_date: "",
     });

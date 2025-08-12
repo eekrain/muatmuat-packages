@@ -10,6 +10,7 @@ import {
   MonitoringTabsList,
 } from "@/components/MonitoringTabs/MonitoringTabs";
 import { NotificationCount } from "@/components/NotificationDot/NotificationCount";
+import UrgentIssue from "@/container/CS/Monitoring/UrgentIssue/UrgentIssue";
 import DaftarArmada from "@/container/Transporter/Monitoring/DaftarArmada/DaftarArmada";
 import DaftarPesananAktif from "@/container/Transporter/Monitoring/DaftarPesananAktif/DaftarPesananAktif";
 import { MapInterfaceOverlay } from "@/container/Transporter/Monitoring/Map/MapInterfaceOverlay";
@@ -17,7 +18,6 @@ import { MapMonitoring } from "@/container/Transporter/Monitoring/Map/MapMonitor
 import { NoFleetOverlay } from "@/container/Transporter/Monitoring/Map/NoFleetOverlay";
 import PermintaanAngkut from "@/container/Transporter/Monitoring/PermintaanAngkut/PermintaanAngkut";
 import SOSContainer from "@/container/Transporter/Monitoring/SOS/SOSContainer";
-import UrgentIssue from "@/container/Transporter/Monitoring/UrgentIssue/UrgentIssue";
 import { cn } from "@/lib/utils";
 import { useGetFleetCount } from "@/services/Transporter/monitoring/getFleetCount";
 import { useGetFleetLocations } from "@/services/Transporter/monitoring/getFleetLocations";
@@ -442,7 +442,7 @@ const Page = () => {
           "relative left-[50%] right-[50%] ml-[-50vw] mr-[-50vw] h-[calc(100vh-92px)] w-screen overflow-hidden pl-6 transition-all duration-300 ease-in-out",
           isFullscreen
             ? "grid grid-cols-1 pr-6"
-            : "grid grid-cols-[1fr_429px] gap-4"
+            : "grid grid-cols-[minmax(811px,1fr)_429px] gap-4"
         )}
       >
         {/* Left Section - Map and Bottom Panel */}

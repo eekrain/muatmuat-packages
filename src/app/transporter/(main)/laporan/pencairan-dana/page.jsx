@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Download, Info } from "lucide-react";
@@ -9,6 +10,7 @@ import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import LaporanPencairanDanaTable from "@/components/LaporanPencairanDanaTable/LaporanPencairanDanaTable";
 
 export default function Page() {
+  const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -129,7 +131,14 @@ export default function Page() {
       key: "action",
       sortable: false,
       width: "100px",
-      render: (row) => <Button className="h-8 px-4 text-xs">Detail</Button>,
+      render: (row) => (
+        <Button
+          className="h-8 px-4 text-xs"
+          onClick={() => router.push(`/laporan/pencairan-dana/${row.id}`)}
+        >
+          Detail
+        </Button>
+      ),
     },
   ];
 
