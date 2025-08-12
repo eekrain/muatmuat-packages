@@ -21,12 +21,14 @@ import UrgentIssue from "@/container/Transporter/Monitoring/UrgentIssue/UrgentIs
 import { cn } from "@/lib/utils";
 import { useGetFleetCount } from "@/services/Transporter/monitoring/getFleetCount";
 import { useGetFleetLocations } from "@/services/Transporter/monitoring/getFleetLocations";
+import { useToastActions } from "@/store/Shipper/toastStore";
 
 const Page = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: fleetData, isLoading } = useGetFleetCount();
   const { data: fleetLocationsData } = useGetFleetLocations();
+  const { addToast } = useToastActions();
   const [isBottomExpanded, setIsBottomExpanded] = useState(true);
   const [mapZoom, setMapZoom] = useState(null); // Initialize as null, will be set from calculated bounds
   const [showLeftPanel, setShowLeftPanel] = useState(false);
@@ -105,6 +107,45 @@ const Page = () => {
   };
 
   const handleApplyFilter = (truckStatuses, orderStatuses) => {
+    // Check if any fleet will be visible after applying these filters
+    if (fleetLocationsData?.fleets) {
+      const willHaveData = fleetLocationsData.fleets.some((fleet) => {
+        // If no filters selected, will show all
+        if (truckStatuses.length === 0 && orderStatuses.length === 0) {
+          return true;
+        }
+
+        // Check truck status filter
+        if (truckStatuses.length > 0) {
+          if (!truckStatuses.includes(fleet.operationalStatus)) {
+            return false;
+          }
+        }
+
+        // Check order status filter
+        if (orderStatuses.length > 0) {
+          if (orderStatuses.includes("NEEDS_RESPONSE")) {
+            // This would need to be implemented based on your actual data structure
+            // return fleet.needsResponseChange || false;
+          }
+        }
+
+        return true;
+      });
+
+      // Show toast if no data will be shown
+      if (
+        !willHaveData &&
+        (truckStatuses.length > 0 || orderStatuses.length > 0)
+      ) {
+        addToast({
+          message: "Data tidak ditemukan",
+          type: "error",
+          duration: 3000,
+        });
+      }
+    }
+
     setSelectedTruckFilters(truckStatuses);
     setSelectedOrderFilters(orderStatuses);
   };
@@ -231,6 +272,37 @@ const Page = () => {
       setMapZoom(16); // Zoom in to focus on the truck
       setAutoFitBounds(false); // Disable auto-fit
       setHasMapInteraction(false);
+    }
+  };
+
+  // Handle search selection - focus map on selected vehicle
+  const handleSearchSelect = (searchData) => {
+    if (!searchData || !searchData.originalData) return;
+
+    // Find the corresponding marker from fleet locations
+    const marker = allFleetMarkers.find(
+      (m) =>
+        m.fleet.licensePlate === searchData.originalData.licensePlate ||
+        m.fleet.driverName === searchData.originalData.driverName
+    );
+
+    if (marker) {
+      // Center map on the selected vehicle
+      setMapCenter({
+        lat: marker.position.lat,
+        lng: marker.position.lng,
+      });
+      setMapZoom(16); // Zoom in to focus on the truck
+      setAutoFitBounds(false); // Disable auto-fit
+      setHasMapInteraction(false);
+
+      // Also select the fleet in the armada list if panel is open
+      setSelectedFleetId(marker.fleet.id);
+
+      // Open the left panel to show details
+      if (!showLeftPanel) {
+        handleOpenLeftPanel();
+      }
     }
   };
 
@@ -411,6 +483,11 @@ const Page = () => {
                 onToggleLicensePlate={setShowLicensePlate}
                 onCenter={handleResetZoom}
                 hasMapInteraction={hasMapInteraction}
+                onSearch={handleSearchSelect}
+                activeFilters={{
+                  truck: selectedTruckFilters,
+                  order: selectedOrderFilters,
+                }}
               />
             )}
 

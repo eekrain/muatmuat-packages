@@ -182,65 +182,63 @@ const DaftarPesananWeb = ({
   ];
 
   return (
-    <>
-      <main className="flex justify-center px-10 py-8">
-        <div className="mx-auto flex max-w-[1200px] flex-col">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <h1 className="text-xl font-bold leading-[120%] text-neutral-900">
-              Daftar Pesanan
-            </h1>
-            <DropdownPeriode
-              disable={
-                hasNoOrders ||
-                (!hasFilteredOrders &&
-                  !queryParams.startDate &&
-                  !queryParams.endDate)
-              }
-              options={periodOptions}
-              onSelect={handleSelectPeriod}
-              recentSelections={recentPeriodOptions}
-              value={currentPeriodValue} // Pass the current value to control the dropdown
+    <main className="flex justify-center">
+      <div className="mx-auto flex max-w-[1280px] flex-1 flex-col px-6 py-8">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-bold leading-[120%] text-neutral-900">
+            Daftar Pesanan
+          </h1>
+          <DropdownPeriode
+            disable={
+              hasNoOrders ||
+              (!hasFilteredOrders &&
+                !queryParams.startDate &&
+                !queryParams.endDate)
+            }
+            options={periodOptions}
+            onSelect={handleSelectPeriod}
+            recentSelections={recentPeriodOptions}
+            value={currentPeriodValue} // Pass the current value to control the dropdown
+          />
+        </div>
+
+        <AlertMultiline items={alertItems} className="mt-6" />
+
+        <PesananTable
+          queryParams={queryParams}
+          onChangeQueryParams={(field, value) => {
+            // Example: When changing certain filters, also reset the period dropdown
+            if (field === "search") {
+              resetPeriodDropdown();
+            }
+            onChangeQueryParams(field, value);
+          }}
+          tempSearch={tempSearch}
+          setTempSearch={setTempSearch}
+          orders={orders}
+          isOrdersLoading={isOrdersLoading}
+          hasNoOrders={hasNoOrders}
+          hasFilteredOrders={hasFilteredOrders}
+          lastFilterField={lastFilterField}
+          statusTabOptions={statusTabOptions}
+          statusRadioOptions={statusRadioOptions}
+        />
+
+        {/* Pagination */}
+        {hasFilteredOrders ? (
+          <div className="mt-4 flex items-center justify-between">
+            <Pagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+              perPage={pagination.itemsPerPage}
+              onPageChange={(value) => onChangeQueryParams("page", value)}
+              onPerPageChange={(value) => onChangeQueryParams("limit", value)}
             />
           </div>
-
-          <AlertMultiline items={alertItems} className="mt-6" />
-
-          <PesananTable
-            queryParams={queryParams}
-            onChangeQueryParams={(field, value) => {
-              // Example: When changing certain filters, also reset the period dropdown
-              if (field === "search") {
-                resetPeriodDropdown();
-              }
-              onChangeQueryParams(field, value);
-            }}
-            tempSearch={tempSearch}
-            setTempSearch={setTempSearch}
-            orders={orders}
-            isOrdersLoading={isOrdersLoading}
-            hasNoOrders={hasNoOrders}
-            hasFilteredOrders={hasFilteredOrders}
-            lastFilterField={lastFilterField}
-            statusTabOptions={statusTabOptions}
-            statusRadioOptions={statusRadioOptions}
-          />
-
-          {/* Pagination */}
-          {hasFilteredOrders ? (
-            <div className="mt-4 flex items-center justify-between">
-              <Pagination
-                currentPage={pagination.currentPage}
-                totalPages={pagination.totalPages}
-                perPage={pagination.itemsPerPage}
-                onPageChange={(value) => onChangeQueryParams("page", value)}
-                onPerPageChange={(value) => onChangeQueryParams("limit", value)}
-              />
-            </div>
-          ) : null}
-        </div>
-      </main>
-    </>
+        ) : null}
+      </div>
+    </main>
   );
 };
 
