@@ -442,12 +442,26 @@ const apiResultActiveOrders = {
             city: "Kota Surabaya",
             province: "Jawa Timur",
           },
+          {
+            id: "uuid",
+            sequence: 2,
+            fullAddress: "Jalan Raya No. 123, Kota Surabaya",
+            city: "Kota Surabaya",
+            province: "Jawa Timur",
+          },
         ],
         dropoffLocations: [
           {
             id: "uuid",
             sequence: 1,
             fullAddress: "Yogyakarta, Kota Yogyakarta",
+            city: "Kota Yogyakarta",
+            province: "D.I. Yogyakarta",
+          },
+          {
+            id: "uuid",
+            sequence: 2,
+            fullAddress: "Jalan Raya No. 456, Kota Yogyakarta",
             city: "Kota Yogyakarta",
             province: "D.I. Yogyakarta",
           },

@@ -32,6 +32,7 @@ import {
 import Onboarding from "../Onboarding/Onboarding";
 import AssignArmadaModal from "./components/AssignArmadaModal";
 import ConfirmReadyModal from "./components/ConfirmReadyModal";
+import RespondChangeModal from "./components/RespondChangeModal";
 
 const DaftarPesananAktif = ({
   onToggleExpand,
@@ -47,6 +48,8 @@ const DaftarPesananAktif = ({
   const [selectedOrderForArmada, setSelectedOrderForArmada] = useState(null);
   const [confirmReadyModalOpen, setConfirmReadyModalOpen] = useState(false);
   const [selectedOrderForConfirm, setSelectedOrderForConfirm] = useState(null);
+  const [respondChangeModalOpen, setRespondChangeModalOpen] = useState(false);
+  const [selectedOrderForChange, setSelectedOrderForChange] = useState(null);
 
   // Map filter keys to lowercase status values for API
   const getFilterStatus = (filterKey) => {
@@ -91,7 +94,9 @@ const DaftarPesananAktif = ({
         console.log("Ubah Jumlah Unit", row);
         break;
       case ORDER_ACTIONS.RESPOND_CHANGE.type:
-        console.log("Respon Perubahan", row);
+        setSelectedOrderForChange(row);
+        setRespondChangeModalOpen(true);
+        setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       case ORDER_ACTIONS.CANCEL_FLEET.type:
         console.log("Batalkan Armada", row);
@@ -292,6 +297,18 @@ const DaftarPesananAktif = ({
                 className="mx-auto h-8 w-[147px] text-sm md:p-0"
               >
                 Konfirmasi Siap
+              </Button>
+            )}
+            {row.orderStatus === ORDER_STATUS.NEED_CHANGE_RESPONSE && (
+              <Button
+                variant="muattrans-primary"
+                onClick={() => {
+                  setSelectedOrderForChange(row);
+                  setRespondChangeModalOpen(true);
+                }}
+                className="mx-auto h-8 w-[147px] text-sm md:p-0"
+              >
+                Respon Perubahan
               </Button>
             )}
           </div>
@@ -561,6 +578,16 @@ const DaftarPesananAktif = ({
           setSelectedOrderForConfirm(null);
         }}
         orderData={selectedOrderForConfirm}
+      />
+
+      {/* Respond Change Modal */}
+      <RespondChangeModal
+        isOpen={respondChangeModalOpen}
+        onClose={() => {
+          setRespondChangeModalOpen(false);
+          setSelectedOrderForChange(null);
+        }}
+        orderData={selectedOrderForChange}
       />
     </div>
   );
