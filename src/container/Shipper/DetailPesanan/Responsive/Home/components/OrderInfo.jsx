@@ -75,19 +75,47 @@ export const OrderInfo = ({ dataStatusPesanan }) => {
     const LIST_SHOW_QR_CODE_BUTTON = [
       OrderStatusEnum.LOADING,
       OrderStatusEnum.UNLOADING,
+      OrderStatusEnum.SCHEDULED_FLEET, // Added for fleet replacement scenarios (LD-4.17/4.18)
     ];
+
+    // Check if any driver needs QR Code (active drivers, not replacement waiting)
     const driverNeedsQRCode = dataStatusPesanan?.driverStatus?.find(
-      (driver) =>
-        driver.driverStatus.startsWith("MENUJU_") ||
-        driver.driverStatus.startsWith("TIBA_") ||
-        driver.driverStatus.startsWith("ANTRI_") ||
-        driver.driverStatus.startsWith("SEDANG_")
+      (driver) => {
+        // Don't show QR for drivers waiting for replacement
+        if (driver.driverStatus === "MENUNGGU_ARMADA_PENGGANTI") {
+          return false;
+        }
+
+        // Show QR for drivers that are actively working
+        return (
+          driver.driverStatus.startsWith("MENUJU_") ||
+          driver.driverStatus.startsWith("TIBA_") ||
+          driver.driverStatus.startsWith("ANTRI_") ||
+          driver.driverStatus.startsWith("SEDANG_")
+        );
+      }
     );
+
+    // Special case for mixed status scenarios (LD-4.17/4.18)
+    // When order status is SCHEDULED_FLEET but some drivers are actively working
+    const hasActiveDriversInScheduledFleet =
+      dataStatusPesanan?.orderStatus === OrderStatusEnum.SCHEDULED_FLEET &&
+      dataStatusPesanan?.otherStatus?.some(
+        (status) =>
+          status.orderStatus === OrderStatusEnum.UNLOADING ||
+          status.orderStatus === OrderStatusEnum.LOADING
+      );
+
     return (
-      LIST_SHOW_QR_CODE_BUTTON.includes(dataStatusPesanan?.orderStatus) &&
-      driverNeedsQRCode
+      (LIST_SHOW_QR_CODE_BUTTON.includes(dataStatusPesanan?.orderStatus) &&
+        driverNeedsQRCode) ||
+      hasActiveDriversInScheduledFleet
     );
-  }, [dataStatusPesanan?.driverStatus, dataStatusPesanan?.orderStatus]);
+  }, [
+    dataStatusPesanan?.driverStatus,
+    dataStatusPesanan?.orderStatus,
+    dataStatusPesanan?.otherStatus,
+  ]);
 
   // if dataStatusPesanan.otherStatus is more than 1 (mean there is more than 1 status), then show other status clickable label
   const isShowOtherStatus = dataStatusPesanan?.otherStatus?.length > 1;
