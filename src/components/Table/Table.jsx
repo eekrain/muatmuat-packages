@@ -5,7 +5,6 @@ const Table = ({
   columns = [],
   data = [],
   loading = false,
-  emptyState = null,
   onRowClick = null,
   rowClassName = null,
   onSort = null,
@@ -20,27 +19,30 @@ const Table = ({
   };
 
   const renderLoading = () => {
-    if (loadingComponent) return loadingComponent;
-
     return (
       <tr>
         <td colSpan={columns.length} className="px-6 py-8 text-center">
-          <div className="flex items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-700 border-t-transparent"></div>
-          </div>
+          {loadingComponent ? (
+            loadingComponent
+          ) : (
+            <div className="flex items-center justify-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-700 border-t-transparent"></div>
+            </div>
+          )}
         </td>
       </tr>
     );
   };
 
   const renderEmpty = () => {
-    if (emptyComponent) return emptyComponent;
-    if (emptyState) return emptyState;
-
     return (
       <tr>
         <td colSpan={columns.length} className="px-6 py-8 text-center">
-          <div className="text-neutral-500">No data available</div>
+          {emptyComponent ? (
+            emptyComponent
+          ) : (
+            <div className="text-neutral-500">No data available</div>
+          )}
         </td>
       </tr>
     );
@@ -48,7 +50,7 @@ const Table = ({
 
   return (
     <div className="h-full overflow-y-auto border-t border-neutral-400">
-      <table className="w-full table-auto">
+      <table className="w-full table-auto bg-white">
         <thead className="sticky top-0 z-10 bg-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[1px] after:bg-neutral-300">
           <tr>
             {columns.map((column, index) => {
