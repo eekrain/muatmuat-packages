@@ -59,7 +59,7 @@ export const ORDER_STATUS_CONFIG = {
     variant: "primary",
   },
   [ORDER_STATUS.LOADING]: {
-    label: "Sedang Muat",
+    label: "Proses Muat",
     variant: "primary",
   },
   [ORDER_STATUS.UNLOADING]: {

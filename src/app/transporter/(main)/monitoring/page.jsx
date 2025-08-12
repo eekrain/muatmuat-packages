@@ -13,6 +13,7 @@ import { NotificationCount } from "@/components/NotificationDot/NotificationCoun
 import UrgentIssue from "@/container/CS/Monitoring/UrgentIssue/UrgentIssue";
 import DaftarArmada from "@/container/Transporter/Monitoring/DaftarArmada/DaftarArmada";
 import DaftarPesananAktif from "@/container/Transporter/Monitoring/DaftarPesananAktif/DaftarPesananAktif";
+import LacakArmada from "@/container/Transporter/Monitoring/LacakArmada/LacakArmada";
 import { MapInterfaceOverlay } from "@/container/Transporter/Monitoring/Map/MapInterfaceOverlay";
 import { MapMonitoring } from "@/container/Transporter/Monitoring/Map/MapMonitoring";
 import { NoFleetOverlay } from "@/container/Transporter/Monitoring/Map/NoFleetOverlay";
@@ -41,6 +42,9 @@ const Page = () => {
   const [selectedTruckFilters, setSelectedTruckFilters] = useState([]);
   const [selectedOrderFilters, setSelectedOrderFilters] = useState([]);
   const [selectedFleetId, setSelectedFleetId] = useState(null);
+  const [showLacakArmada, setShowLacakArmada] = useState(false);
+  const [selectedOrderForTracking, setSelectedOrderForTracking] =
+    useState(null);
 
   // Map query param values to tab values
   const getTabValue = (queryValue) => {
@@ -448,7 +452,7 @@ const Page = () => {
         {/* Left Section - Map and Bottom Panel */}
         <div className="flex h-full flex-col gap-4 pt-4 transition-all duration-300 ease-in-out">
           {/* Map Container */}
-          <div className="relative flex-1 overflow-hidden rounded-[20px] bg-white shadow-lg transition-all duration-300 ease-in-out">
+          <div className="relative flex-1 overflow-hidden rounded-[20px] bg-white shadow-muat transition-all duration-300 ease-in-out">
             <MapMonitoring
               locationMarkers={fleetMarkers}
               center={mapConfig.center}
@@ -523,6 +527,14 @@ const Page = () => {
             <DaftarPesananAktif
               onToggleExpand={handleToggleBottomPanel}
               isExpanded={isBottomExpanded}
+              onViewFleetStatus={(order) => {
+                setSelectedOrderForTracking(order);
+                setShowLacakArmada(true);
+                // Automatically exit fullscreen mode when opening LacakArmada
+                if (isFullscreen) {
+                  setIsFullscreen(false);
+                }
+              }}
             />
           </div>
         </div>
@@ -530,20 +542,35 @@ const Page = () => {
         {/* Right Sidebar */}
         <div
           className={cn(
-            "transition-all duration-300 ease-in-out",
+            "relative transition-all duration-300 ease-in-out",
             isFullscreen ? "absolute right-0 top-0 z-30" : "h-full"
           )}
         >
+          {/* LacakArmada as overlay */}
+          {showLacakArmada && (
+            <div className="absolute right-0 top-0 z-50 h-screen w-[429px] overflow-hidden rounded-l-xl bg-white shadow-muat">
+              <LacakArmada
+                onClose={() => {
+                  setShowLacakArmada(false);
+                  setSelectedOrderForTracking(null);
+                }}
+                orderId={selectedOrderForTracking?.id}
+              />
+            </div>
+          )}
+
+          {/* Tab triggers - always visible */}
           <div
             className={cn(
-              "flex flex-col overflow-hidden bg-white shadow-muat transition-[border-radius,width] duration-300 ease-in-out",
-              isFullscreen
-                ? "h-12 w-[429px] rounded-bl-xl"
+              "relative flex flex-col overflow-hidden bg-white shadow-muat transition-[border-radius,width] duration-300 ease-in-out",
+              isFullscreen || showLacakArmada
+                ? "absolute right-0 top-0 z-[60] h-12 w-[429px] rounded-l-xl"
                 : "h-full rounded-l-xl"
             )}
           >
+            {/* Tabs with higher z-index for triggers */}
             <MonitoringTabs value={selectedTab} onValueChange={handleTabChange}>
-              <MonitoringTabsList>
+              <MonitoringTabsList className="relative z-20 bg-white">
                 <MonitoringTabTrigger
                   value="permintaan"
                   icon="/img/monitoring/permintaan-angkut.png"
@@ -584,7 +611,7 @@ const Page = () => {
                 </MonitoringTabTrigger>
               </MonitoringTabsList>
 
-              {!isFullscreen && (
+              {!isFullscreen && !showLacakArmada && (
                 <>
                   <MonitoringTabsContent value="permintaan">
                     <PermintaanAngkut />

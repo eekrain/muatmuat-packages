@@ -34,7 +34,7 @@ const apiResultActiveOrders = {
         orderType: "SCHEDULED",
         loadTimeStart: formatDateForAPI(today, 14),
         loadTimeEnd: formatDateForAPI(today, 16),
-        orderStatus: "CONFIRMED",
+        orderStatus: "LOADING",
         pickupLocations: [
           {
             id: "uuid",

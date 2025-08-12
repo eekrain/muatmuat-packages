@@ -38,7 +38,7 @@ const buttonVariants = cva(
           "bg-secondary-500 text-primary-700 hover:bg-secondary-300",
 
         // Link variant
-        link: "border-0 bg-transparent p-0 px-0 font-medium text-primary-700 no-underline hover:text-primary-800 md:h-[14px] md:px-0",
+        link: "border-0 bg-transparent p-0 px-0 font-semibold text-primary-700 no-underline hover:text-primary-800 md:h-[14px] md:px-0",
       },
       disabled: {
         true: "cursor-not-allowed bg-neutral-200 text-neutral-600 hover:bg-neutral-200",

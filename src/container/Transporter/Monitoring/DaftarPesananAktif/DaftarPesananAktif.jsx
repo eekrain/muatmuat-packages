@@ -30,7 +30,11 @@ import Onboarding from "../Onboarding/Onboarding";
 import AssignArmadaModal from "./components/AssignArmadaModal";
 import ConfirmReadyModal from "./components/ConfirmReadyModal";
 
-const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
+const DaftarPesananAktif = ({
+  onToggleExpand,
+  isExpanded,
+  onViewFleetStatus,
+}) => {
   const { data: activeOrdersCount } = useGetActiveOrdersCount();
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
   const [searchValue, setSearchValue] = useState("");
@@ -260,8 +264,21 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
                   className="mr-1 h-3.5 w-3.5 text-warning-900"
                 />
               )}
-              {statusBadge.label}
+              {row.orderStatus === ORDER_STATUS.LOADING
+                ? `${statusBadge.label} : ${row.truckCount || 0} Unit`
+                : statusBadge.label}
             </BadgeStatus>
+            {row.orderStatus === ORDER_STATUS.LOADING && (
+              <Button
+                variant="link"
+                onClick={() => {
+                  onViewFleetStatus?.(row);
+                }}
+                className="self-start text-xs"
+              >
+                Lihat Status Lainnya
+              </Button>
+            )}
             {row.orderStatus === ORDER_STATUS.NEED_ASSIGN_FLEET && (
               <Button
                 variant="muattrans-primary"
