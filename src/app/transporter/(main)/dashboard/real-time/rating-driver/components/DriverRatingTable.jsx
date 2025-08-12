@@ -74,6 +74,7 @@ const DriverRatingTable = () => {
         key: "no",
         header: "No.",
         width: "100px",
+        className: "!text-xs",
         sortable: false,
         render: (_value, rowIndex) => {
           const page = Number(currentPage) || 1;
