@@ -7,6 +7,7 @@ import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import { DataTable } from "@/components/DataTable";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import PageTitle from "@/components/PageTitle/PageTitle";
 
 import EmptyState from "./EmptyState";
 
@@ -168,7 +169,25 @@ const DriverRatingTable = () => {
   };
 
   return (
-    <div>
+    <>
+      <div className="flex w-full items-center justify-between">
+        <PageTitle className={"!leading-0 mb-0 self-center"} withBack={true}>
+          Rating Driver Keseluruhan
+        </PageTitle>
+        <Button
+          variant="muattrans-primary"
+          className="px-6 py-2 text-muat-trans-secondary-900 disabled:text-neutral-600"
+          disabled={loading || !tableData.drivers.length}
+          appearance={{
+            iconClassName:
+              "text-muat-trans-secondary-900 disabled:text-neutral-600",
+          }}
+          iconLeft="/icons/download16.svg"
+        >
+          <IconComponent src="/icons/download.svg" className="mr-2" />
+          Unduh
+        </Button>
+      </div>
       <DataTable
         data={tableData.drivers}
         columns={columns}
@@ -188,8 +207,9 @@ const DriverRatingTable = () => {
           <div className="flex items-center gap-4">
             <div className="text-sm font-semibold text-neutral-900">
               Rating Driver Keseluruhan :
-              <span className="ml-1 text-lg font-bold">
-                {tableData.summary.overallAverageRating}/5
+              <span className="ml-1 text-base font-bold">
+                {tableData.summary.overallAverageRating}
+                <span className="text-sm font-medium text-neutral-600">/5</span>
               </span>
             </div>
           </div>
@@ -197,7 +217,7 @@ const DriverRatingTable = () => {
         emptyComponent={renderEmptyContent()}
         showTotalCount={false}
       />
-    </div>
+    </>
   );
 };
 
