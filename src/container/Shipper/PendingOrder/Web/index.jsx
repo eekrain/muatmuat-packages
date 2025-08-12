@@ -24,8 +24,8 @@ const PendingOrderWeb = ({
   const hasFilteredOrders = orders.length > 0;
 
   return (
-    <main className="flex justify-center px-10 py-8">
-      <div className="mx-auto flex max-w-[1200px] flex-col">
+    <main className="flex justify-center">
+      <div className="mx-auto flex max-w-[1280px] flex-1 flex-col px-6 py-8">
         <BreadCrumb className="mb-0" data={breadcrumbData} />
         <div className="mt-6 flex h-8 items-center gap-x-3">
           <IconComponent
