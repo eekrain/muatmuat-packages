@@ -6,10 +6,10 @@ import { Download, Search } from "lucide-react";
 
 import Button from "@/components/Button/Button";
 import Card, { CardContent } from "@/components/Card/Card";
-import DataTable from "@/components/DataTable/DataTable";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import FilterDropdown from "@/components/FilterDropdown/FilterDropdown";
 import Input from "@/components/Input/Input";
+import LaporanAktivitasArmadaDriverTable from "@/components/LaporanAktivitasArmadaDriverTable";
 import MuatBongkarStepper from "@/components/Stepper/MuatBongkarStepper";
 import {
   Tabs,
@@ -127,10 +127,80 @@ export default function Page() {
   const driverData = [
     {
       id: 1,
-      name: "Ahmad Supriadi",
-      phoneNumber: "+62 812-3456-7890",
-      currentLocation: "Jakarta Pusat",
-      activeOrderCode: "ORD-001",
+      name: "Marc Andre",
+      phoneNumber: "0821-2089-9123",
+      armada: "L 1239 CAM",
+      vehicleType: "Colt Diesel Double - Dump",
+      location: "Kab. Jombang Kota Surabaya, K...",
+      activeOrderCode: "INV/MTR/210504/001/AAA",
+      activeOrderRoute: {
+        origin: "Kab. Jombang, Kec. Wonosalam",
+        destination: "Kab. Jombang, Kec. Wonosalam",
+        estimate: "121 km",
+      },
+      status: "Dijadwalkan",
+      statusType: "scheduled",
+      image: "/img/avatar.png",
+    },
+    {
+      id: 2,
+      name: "Dek Yamal",
+      phoneNumber: "0821-2089-9123-1",
+      armada: "L 1239 CAM",
+      vehicleType: "Colt Diesel Double - Dump",
+      location: "Kab. Jombang Kota Surabaya, K...",
+      activeOrderCode: "INV/MTR/210504/001/AAA",
+      activeOrderRoute: {
+        origin: "Kab. Jombang, Kec. Wonosalam",
+        destination: "Kab. Jombang, Kec. Wonosalam",
+        estimate: "121 km",
+      },
+      status: "Menunggu Jam Muat",
+      statusType: "waiting",
+      image: "/img/avatar2.png",
+    },
+    {
+      id: 3,
+      name: "Dek Pedri",
+      phoneNumber: "0821-2089-9123-1",
+      armada: "L 1239 CAM",
+      vehicleType: "Colt Diesel Double - Dump",
+      location: "Kab. Jombang Kota Surabaya, K...",
+      activeOrderCode: "INV/MTR/210504/001/AAA",
+      activeOrderRoute: {
+        origin: "Kab. Jombang, Kec. Wonosalam",
+        destination: "Kab. Jombang, Kec. Wonosalam",
+        estimate: "121 km",
+      },
+      status: "Non - Aktif",
+      statusType: "inactive",
+      image: "/img/avatar.png",
+    },
+    {
+      id: 4,
+      name: "Cubarsi",
+      phoneNumber: "0821-2089-9123-1",
+      armada: "L 1239 CAM",
+      vehicleType: "Colt Diesel Double - Dump",
+      location: "Kab. Jombang Kota Surabaya, K...",
+      activeOrderCode: "INV/MTR/210504/001/AAA",
+      activeOrderRoute: {
+        origin: "Kab. Jombang, Kec. Wonosalam",
+        destination: "Kab. Jombang, Kec. Wonosalam",
+        estimate: "121 km",
+      },
+      status: "Non - Aktif",
+      statusType: "inactive",
+      image: "/img/avatar2.png",
+    },
+    {
+      id: 5,
+      name: "Rafi Nya",
+      phoneNumber: "0821-2089-9123-1",
+      armada: "L 1239 CAM",
+      vehicleType: "Colt Diesel Double - Dump",
+      location: "Kab. Jombang Kota Surabaya, K...",
+      activeOrderCode: "INV/MTR/210504/001/AAA",
       activeOrderRoute: {
         origin: "Kab. Jombang, Kec. Wonosalam",
         destination: "Kab. Jombang, Kec. Wonosalam",
@@ -141,48 +211,21 @@ export default function Page() {
       image: "/img/avatar.png",
     },
     {
-      id: 2,
-      name: "Budi Santoso",
-      phoneNumber: "+62 813-4567-8901",
-      currentLocation: "Bandung",
-      activeOrderCode: "ORD-002",
-      activeOrderRoute: "Belum Ada",
-      status: "Dijadwalkan",
-      statusType: "scheduled",
+      id: 6,
+      name: "Cak Lewi",
+      phoneNumber: "0821-2089-9123-1",
+      armada: "L 1239 CAM",
+      vehicleType: "Colt Diesel Double - Dump",
+      location: "Kab. Jombang Kota Surabaya, K...",
+      activeOrderCode: "INV/MTR/210504/001/AAA",
+      activeOrderRoute: {
+        origin: "Kab. Jombang, Kec. Wonosalam",
+        destination: "Kab. Jombang, Kec. Wonosalam",
+        estimate: "121 km",
+      },
+      status: "Pengiriman Selesai",
+      statusType: "completed",
       image: "/img/avatar2.png",
-    },
-    {
-      id: 3,
-      name: "Candra Wijaya",
-      phoneNumber: "+62 814-5678-9012",
-      currentLocation: "Surabaya",
-      activeOrderCode: "ORD-003",
-      activeOrderRoute: "Belum Ada",
-      status: "Menunggu Jam Muat",
-      statusType: "waiting",
-      image: "/img/avatar.png",
-    },
-    {
-      id: 4,
-      name: "Dedi Kurniawan",
-      phoneNumber: "+62 815-6789-0123",
-      currentLocation: "Semarang",
-      activeOrderCode: "ORD-004",
-      activeOrderRoute: "Belum Ada",
-      status: "Dijadwalkan",
-      statusType: "scheduled",
-      image: "/img/avatar2.png",
-    },
-    {
-      id: 5,
-      name: "Eko Prasetyo",
-      phoneNumber: "+62 816-7890-1234",
-      currentLocation: "Yogyakarta",
-      activeOrderCode: "ORD-005",
-      activeOrderRoute: "Belum Ada",
-      status: "Bertugas",
-      statusType: "on_duty",
-      image: "/img/avatar.png",
     },
   ];
 
@@ -309,19 +352,33 @@ export default function Page() {
       header: "Nama Driver",
       key: "name",
       sortable: true,
-      width: "220px",
+      width: "200px",
       render: (row) => (
-        <div>
-          <div className="font-semibold text-gray-900">{row.name}</div>
-          <div className="text-xs text-gray-600">{row.phoneNumber}</div>
+        <div className="flex items-center gap-3">
+          <img
+            src={row.image}
+            alt="Driver"
+            className="h-10 w-10 rounded-full object-cover"
+          />
+          <div>
+            <div className="font-semibold text-gray-900">{row.name}</div>
+            <div className="text-xs text-gray-600">{row.phoneNumber}</div>
+          </div>
         </div>
       ),
     },
     {
-      header: "Lokasi Terkini",
-      key: "currentLocation",
-      sortable: false,
-      width: "150px",
+      header: "Armada",
+      key: "armada",
+      sortable: true,
+      width: "250px",
+      render: (row) => (
+        <div>
+          <div className="font-semibold text-gray-900">{row.armada}</div>
+          <div className="text-xs text-gray-600">{row.vehicleType}</div>
+          <div className="text-xs text-gray-500">{row.location}</div>
+        </div>
+      ),
     },
     {
       header: "Kode Pesanan Aktif",
@@ -371,7 +428,7 @@ export default function Page() {
       header: "Status",
       key: "status",
       sortable: true,
-      width: "180px",
+      width: "200px",
       render: (row) => {
         let bgColor = "bg-gray-200";
         let textColor = "text-gray-600";
@@ -385,6 +442,12 @@ export default function Page() {
         } else if (row.statusType === "on_duty") {
           bgColor = "bg-blue-100";
           textColor = "text-blue-900";
+        } else if (row.statusType === "completed") {
+          bgColor = "bg-green-100";
+          textColor = "text-green-900";
+        } else if (row.statusType === "inactive") {
+          bgColor = "bg-gray-100";
+          textColor = "text-gray-600";
         }
 
         return (
@@ -401,11 +464,7 @@ export default function Page() {
       key: "action",
       sortable: false,
       width: "100px",
-      render: (row) => (
-        <Button className="h-8 px-4 text-xs" variant="muattrans-warning">
-          Detail
-        </Button>
-      ),
+      render: (row) => <Button className="h-8 px-4 text-xs">Detail</Button>,
     },
   ];
 
@@ -576,7 +635,7 @@ export default function Page() {
       {/* Data Table */}
       <Card className="rounded-b-md rounded-t-none border border-none bg-white">
         <CardContent className="p-0">
-          <DataTable
+          <LaporanAktivitasArmadaDriverTable
             data={getCurrentData()}
             columns={getCurrentColumns()}
             showFilter={false}
