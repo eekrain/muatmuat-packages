@@ -54,13 +54,16 @@ const RingkasanStatusPesananScreen = ({ dataStatusPesanan }) => {
 
           {remainingDrivers > 0 && (
             <div className="flex flex-col gap-4 bg-neutral-50 px-4 py-6">
-              <BadgeStatusPesanan variant="muted" className="w-fit">
-                {t(
-                  "RingkasanStatusPesananScreen.badgeDriverBelumBerangkat",
-                  { count: remainingDrivers },
-                  "{count} Driver Belum Berangkat"
+              {dataStatusPesanan?.totalUnit &&
+                dataStatusPesanan?.totalUnit > 1 && (
+                  <BadgeStatusPesanan variant="muted" className="w-fit">
+                    {t(
+                      "RingkasanStatusPesananScreen.badgeDriverBelumBerangkat",
+                      { count: remainingDrivers },
+                      "{count} Driver Belum Berangkat"
+                    )}
+                  </BadgeStatusPesanan>
                 )}
-              </BadgeStatusPesanan>
 
               <span className="text-sm font-semibold">
                 {t(

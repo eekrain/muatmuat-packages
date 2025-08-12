@@ -176,7 +176,7 @@ const Page = () => {
   };
 
   return (
-    <div className="px-10">
+    <div className="mx-auto max-w-[1280px] px-10">
       <BreadCrumb className={"mb-4 mt-6"} data={breadcrumbData} />
       <PageTitle>Tambah Transporter</PageTitle>
       <div className="flex w-full items-start gap-6 pb-8">
