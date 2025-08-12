@@ -684,9 +684,7 @@ const DaftarPesananAktif = ({ onToggleExpand, isExpanded }) => {
       {/* Header */}
       <div className="flex h-16 items-center gap-3 px-4">
         <div className="flex items-center gap-2">
-          <h3 className="whitespace-nowrap text-xs font-bold">
-            Daftar <br /> Pesanan Aktif
-          </h3>
+          <h3 className="w-[80px] text-xs font-bold">Daftar Pesanan Aktif</h3>
           <Onboarding />
         </div>
         <div className="flex w-full items-center gap-3">
