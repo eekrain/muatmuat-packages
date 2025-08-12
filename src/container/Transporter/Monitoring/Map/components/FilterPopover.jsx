@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Form/Checkbox";
@@ -51,10 +51,24 @@ const ORDER_STATUS_OPTIONS = [
   },
 ];
 
-export const FilterPopover = ({ onApplyFilter, fleetCounts = {} }) => {
+export const FilterPopover = ({
+  onApplyFilter,
+  fleetCounts = {},
+  activeFilters = { truck: [], order: [] },
+}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedTruckStatuses, setSelectedTruckStatuses] = useState([]);
-  const [selectedOrderStatuses, setSelectedOrderStatuses] = useState([]);
+  const [selectedTruckStatuses, setSelectedTruckStatuses] = useState(
+    activeFilters.truck
+  );
+  const [selectedOrderStatuses, setSelectedOrderStatuses] = useState(
+    activeFilters.order
+  );
+
+  // Sync with parent state when activeFilters change
+  useEffect(() => {
+    setSelectedTruckStatuses(activeFilters.truck);
+    setSelectedOrderStatuses(activeFilters.order);
+  }, [activeFilters]);
 
   // Update counts from actual fleet data
   const truckStatusOptions = TRUCK_STATUS_OPTIONS.map((option) => ({
@@ -89,6 +103,10 @@ export const FilterPopover = ({ onApplyFilter, fleetCounts = {} }) => {
     setIsOpen(false);
   };
 
+  // Calculate total active filters for display (from parent state, not local state)
+  const totalActiveFilters =
+    activeFilters.truck.length + activeFilters.order.length;
+
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
@@ -101,7 +119,7 @@ export const FilterPopover = ({ onApplyFilter, fleetCounts = {} }) => {
             />
           }
         >
-          Filter
+          Filter {totalActiveFilters > 0 && `(${totalActiveFilters})`}
         </Button>
       </PopoverTrigger>
       <PopoverContent
