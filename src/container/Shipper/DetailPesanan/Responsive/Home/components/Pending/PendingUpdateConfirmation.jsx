@@ -1,6 +1,21 @@
+import { useEffect } from "react";
+
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
+import { toast } from "@/lib/toast";
 
 const PendingUpdateConfirmation = () => {
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    toast.error(
+      t(
+        "PendingUpdateFeePayment.toastFleetWillBeReprepared",
+        {},
+        "Armada akan disiapkan ulang sesuai dengan perubahan yang dilakukan."
+      )
+    );
+  }, [t]);
   return (
     <div className="flex w-full flex-col items-center justify-center bg-warning-50 px-4 py-6">
       <div className="flex flex-col items-center justify-center gap-3 self-stretch">
