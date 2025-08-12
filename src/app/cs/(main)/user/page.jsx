@@ -61,7 +61,7 @@ const Page = () => {
   const transporterCount = 75;
 
   return (
-    <div className="my-6 max-h-screen w-full space-y-4">
+    <div className="mx-auto my-6 max-h-screen w-full max-w-[1280px] space-y-4 px-6">
       <div className="-mb-4 flex items-center justify-between">
         <PageTitle withBack={false}>Daftar User</PageTitle>
       </div>
