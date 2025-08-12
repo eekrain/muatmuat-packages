@@ -163,6 +163,7 @@ const Page = () => {
 
   const handleToggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);
+    setShowLacakArmada(false);
     if (!isFullscreen) {
       setShowLeftPanel(false);
     }
@@ -542,13 +543,13 @@ const Page = () => {
         {/* Right Sidebar */}
         <div
           className={cn(
-            "relative transition-all duration-300 ease-in-out",
+            "relative rounded-l-xl shadow-muat transition-all duration-300 ease-in-out",
             isFullscreen ? "absolute right-0 top-0 z-30" : "h-full"
           )}
         >
           {/* LacakArmada as overlay */}
           {showLacakArmada && (
-            <div className="absolute right-0 top-0 z-50 h-screen w-[429px] overflow-hidden rounded-l-xl bg-white shadow-muat">
+            <div className="absolute right-0 top-0 z-30 h-screen w-[429px] overflow-hidden rounded-l-xl bg-white">
               <LacakArmada
                 onClose={() => {
                   setShowLacakArmada(false);
@@ -562,9 +563,9 @@ const Page = () => {
           {/* Tab triggers - always visible */}
           <div
             className={cn(
-              "relative flex flex-col overflow-hidden bg-white shadow-muat transition-[border-radius,width] duration-300 ease-in-out",
+              "relative flex flex-col overflow-hidden bg-white transition-[border-radius,width] duration-300 ease-in-out",
               isFullscreen || showLacakArmada
-                ? "absolute right-0 top-0 z-[60] h-12 w-[429px] rounded-l-xl"
+                ? "absolute right-0 top-0 z-[40] h-12 w-[429px] rounded-l-xl shadow-muat"
                 : "h-full rounded-l-xl"
             )}
           >
