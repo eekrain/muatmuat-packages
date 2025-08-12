@@ -40,7 +40,7 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
         <div>
           <div className="absolute left-0 top-0">
             {row.isRecommended && (
-              <span className="inline-block rounded-r bg-success-400 p-2 text-xs font-semibold text-success-50">
+              <span className="inline-block rounded-r-[6px] bg-success-400 p-2 text-xs font-semibold text-success-50">
                 Rekomendasi Armada
               </span>
             )}
@@ -103,14 +103,14 @@ const PilihArmada = ({ onToggleExpand, isExpanded }) => {
       render: (row) => (
         <div className="flex w-[188px] flex-col gap-1">
           {row.driver?.name ? (
-            row.driver.name.length > 49 ? (
+            row.driver.name.length > 39 ? (
               <InfoTooltip
                 side="top"
                 align="center"
                 sideOffset={8}
                 trigger={
                   <span className="cursor-pointer text-sm font-medium text-gray-900">
-                    {`${row.driver.name.slice(0, 49)}...`}
+                    {`${row.driver.name.slice(0, 39)}...`}
                   </span>
                 }
               >
