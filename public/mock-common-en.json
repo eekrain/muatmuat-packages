@@ -177,6 +177,10 @@
   "ModalBatalkanPesananResponsive.textMakeSureRead": "Make sure you have read",
   "ModalBatalkanPesananResponsive.linkOurTerms": "Our Terms and Conditions.",
   "ModalBatalkanPesananResponsive.checkboxAgreeTerms": "Yes, I agree to the terms and conditions",
+  "PendingUpdateFeePayment.altFleetFound": "Fleet found",
+  "PendingUpdateFeePayment.messageOrderChangeSaved": "Order change information has been successfully saved.",
+  "PendingUpdateFeePayment.messagePaymentReminder": "Please make payment within",
+  "PendingUpdateFeePayment.messageAutoCancelWarning": "Changes will be automatically cancelled if the specified time limit is exceeded.",
   "ModalBatalkanPesananResponsive.textCancelWithPenalty": "Order cancellation will incur an admin fee of Rp100,000/unit.",
   "ModalBatalkanPesananResponsive.textIAgreeTo": "I agree to",
   "ModalBatalkanPesananResponsive.linkMuatransTerms": "Muatrans Terms and Conditions",
@@ -409,5 +413,10 @@
   "PopUpInformasi.errorGagalMemuatPreferensi": "Failed to load popup preferences",
   "PopUpInformasi.errorTerjadiKesalahan": "An error occurred while loading data",
   "PopUpInformasi.statusMenyimpan": "Saving...",
-  "PopUpInformasi.labelJanganTampilkanLagi": "Don't show again"
+  "PopUpInformasi.labelJanganTampilkanLagi": "Don't show again",
+  "BottomSheetPreviousDriver.buttonViewPreviousDriver": "View Previous Driver",
+  "BottomSheetPreviousDriver.titlePreviousDriver": "Previous Driver",
+  "BottomSheetPreviousDriver.altDriverAvatar": "driver",
+  "BottomSheetPreviousDriver.textDriverNotFound": "Driver not found",
+  "BottomSheetPreviousDriver.buttonDriverStatusDetail": "Driver Status Details"
 }

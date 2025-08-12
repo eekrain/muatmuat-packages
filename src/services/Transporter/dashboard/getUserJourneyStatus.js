@@ -11,11 +11,11 @@ export const mockAPIResult = {
       Text: "User journey status retrieved successfully",
     },
     Data: {
-      addFleetCompleted: false,
+      addFleetCompleted: true,
       addDriverCompleted: true,
-      fleetDriverAssignmentCompleted: false,
-      areaSettingCompleted: false,
-      allStepsCompleted: false, // set to true to display Analytics, set False
+      fleetDriverAssignmentCompleted: true,
+      areaSettingCompleted: true,
+      allStepsCompleted: true, // set to true to display Analytics, set False
       nextStep: "FLEET_DRIVER_ASSIGNMENT", // ENUM: ADD_FLEET, ADD_DRIVER, FLEET_DRIVER_ASSIGNMENT, AREA_SETTING, COMPLETED
     },
     Type: "USER_JOURNEY_STATUS",

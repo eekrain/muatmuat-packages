@@ -26,6 +26,7 @@ export const RingkasanPembayaranDefault = ({
   dataRingkasanPembayaran,
   dataStatusPesanan,
   isShowWaitFleetAlert,
+  mutateDetailPesanan,
 }) => {
   const params = useParams();
   const { t } = useTranslation();
@@ -43,7 +44,7 @@ export const RingkasanPembayaranDefault = ({
   const adminFee = priceChange?.adminFee;
   const taxAmount = priceChange?.taxAmount;
   const totalAdjustment = priceChange?.totalAdjustment;
-
+  console.log("pembayaran default");
   const { data: overloadData } = useGetOverloadData(params.orderId);
 
   return (
@@ -331,6 +332,7 @@ export const RingkasanPembayaranDefault = ({
         dataRingkasanPembayaran={dataRingkasanPembayaran}
         isShowWaitFleetAlert={isShowWaitFleetAlert}
         t={t}
+        mutateDetailPesanan={mutateDetailPesanan}
       />
     </div>
   );
@@ -342,6 +344,7 @@ export const ButtonSection = ({
   isShowWaitFleetAlert,
   t,
   onLanjutPembayaran,
+  mutateDetailPesanan,
 }) => {
   const params = useParams();
   const router = useRouter();
@@ -364,7 +367,10 @@ export const ButtonSection = ({
       // Contoh tambahan jika ingin redirect atau toast
       // router.push(`/sewaarmada/pembayaran/${orderId}`);
       // toast.success("Pembayaran berhasil!");
-      router.refresh();
+      // Refresh order detail data using SWR mutate
+      if (mutateDetailPesanan) {
+        mutateDetailPesanan();
+      }
     } catch (err) {
       console.error("Gagal lanjut pembayaran:", err);
       // toast.error("Terjadi kesalahan saat memproses pembayaran");

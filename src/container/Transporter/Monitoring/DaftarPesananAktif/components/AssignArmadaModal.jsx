@@ -134,8 +134,8 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
                           </div>
                           <div className="flex items-center gap-2 text-xs">
                             <IconComponent
-                              src="/icons/calendar.svg"
-                              className="h-3.5 w-3.5 text-neutral-500"
+                              src="/icons/calendar16.svg"
+                              className="h-3.5 w-3.5 text-muat-trans-secondary-900"
                             />
                             <span className="text-neutral-600">
                               Jadwal Terdekat :{" "}

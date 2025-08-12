@@ -229,13 +229,6 @@ export const StatusPesananHeader = ({ dataStatusPesanan, oldDriverData }) => {
             </SimpleDropdownTrigger>
 
             <SimpleDropdownContent className="max-w-[198px]">
-              {oldDriverData && (
-                <SimpleDropdownItem
-                  onClick={() => setIsModalOldDriverOpen(true)}
-                >
-                  Lihat Driver Sebelumnya
-                </SimpleDropdownItem>
-              )}
               {dataStatusPesanan.driverStatus.length > 1 && (
                 <SimpleDropdownItem
                   onClick={() => setIsModalAllDriverOpen(true)}
@@ -245,6 +238,13 @@ export const StatusPesananHeader = ({ dataStatusPesanan, oldDriverData }) => {
                     {},
                     "Lihat Semua Driver"
                   )}
+                </SimpleDropdownItem>
+              )}
+              {oldDriverData && (
+                <SimpleDropdownItem
+                  onClick={() => setIsModalOldDriverOpen(true)}
+                >
+                  Lihat Driver Sebelumnya
                 </SimpleDropdownItem>
               )}
               {dataStatusPesanan.driverStatus.length > 1 &&

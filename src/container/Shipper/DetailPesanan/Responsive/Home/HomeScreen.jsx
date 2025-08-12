@@ -59,6 +59,8 @@ const DetailPesananScreen = ({
   dataRingkasanPembayaran,
   documentShippingDetail,
   waitingTimeRaw,
+  oldDriverData,
+  paymentMethods,
 }) => {
   const { t } = useTranslation();
   const params = useParams();
@@ -208,6 +210,7 @@ const DetailPesananScreen = ({
             orderId={dataStatusPesanan?.orderId}
             orderStatus={dataStatusPesanan?.orderStatus}
             withMenu={dataStatusPesanan?.totalTruckUnit > 1}
+            oldDriverData={oldDriverData}
           />
         ) : null}
 
@@ -229,6 +232,7 @@ const DetailPesananScreen = ({
             dataRingkasanPembayaran={dataRingkasanPembayaran}
             documentShippingDetail={documentShippingDetail}
             waitingTimeRaw={waitingTimeRaw}
+            paymentMethods={paymentMethods}
           />
 
           <TabContentInformasiLainnya

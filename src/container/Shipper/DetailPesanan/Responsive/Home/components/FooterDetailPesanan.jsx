@@ -272,20 +272,29 @@ export const FooterDetailPesanan = ({
               </div>
             )}
 
-          {dataRingkasanPembayaran?.priceCharge && (
-            <div className="flex items-center justify-between">
-              <div className="text-sm font-semibold">Total Tambahan Biaya</div>
-              <div className="text-sm font-bold">
-                {idrFormat(dataRingkasanPembayaran?.priceCharge?.totalCharge)}
+          {dataRingkasanPembayaran?.priceCharge &&
+            dataStatusPesanan?.orderStatus !==
+              OrderStatusEnum.WAITING_PAYMENT_3 && (
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold">
+                  Total Tambahan Biaya
+                </div>
+                <div className="text-sm font-bold">
+                  {idrFormat(dataRingkasanPembayaran?.priceCharge?.totalCharge)}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {dataStatusPesanan?.orderStatus ===
-          OrderStatusEnum.WAITING_PAYMENT_3 ? (
+          {dataRingkasanPembayaran?.priceChange &&
+          dataStatusPesanan?.orderStatus ===
+            OrderStatusEnum.WAITING_PAYMENT_3 ? (
             <div className="flex items-center justify-between text-sm leading-[1.1] text-neutral-900">
               <div className="font-semibold">Total Tambahan Biaya</div>
-              <div className="font-bold">{idrFormat(667150)}</div>
+              <div className="font-bold">
+                {idrFormat(
+                  dataRingkasanPembayaran?.priceChange?.totalAdjustment
+                )}
+              </div>
             </div>
           ) : null}
 

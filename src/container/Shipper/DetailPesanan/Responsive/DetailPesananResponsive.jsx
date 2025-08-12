@@ -11,6 +11,7 @@ import {
 // Import the default screen without dynamic import
 import { dynamicScreen } from "@/lib/utils/dynamic-screen";
 import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
+import { useGetOldDriver } from "@/services/Shipper/detailpesanan/getOldDriver";
 import { useGetWaitingTime } from "@/services/Shipper/detailpesanan/getWaitingTime";
 import { useLoadingAction } from "@/store/Shared/loadingStore";
 
@@ -45,8 +46,11 @@ const DriverQRCodeSingleScreen = dynamicScreen(
 const DriverQRCodeMultiScreen = dynamicScreen(
   () => import("./DriverQRCodeMulti/DriverQRCodeMultiScreen")
 );
+const OpsiPembayaranScreen = dynamicScreen(
+  () => import("./OpsiPembayaran/OpsiPembayaranScreen")
+);
 
-const DetailPesananResponsive = () => {
+const DetailPesananResponsive = ({ paymentMethods }) => {
   // const navigation = useResponsiveNavigation();
   // useEffect(() => {
   //   navigation.replace("/CariSemuaDriver");
@@ -67,12 +71,17 @@ const DetailPesananResponsive = () => {
   const dataDetailPIC = data?.dataDetailPIC;
   const dataRingkasanPembayaran = data?.dataRingkasanPembayaran;
   const documentShippingDetail =
-    data?.dataRingkasanPembayaran.documentShippingDetail;
+    data?.dataRingkasanPembayaran?.documentShippingDetail;
   console.log(dataRingkasanPembayaran, "dataRingkasanPembayaran");
   useEffect(() => {
     setIsGlobalLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const { data: oldDriverData } = useGetOldDriver(
+    params.orderId,
+    params.driverId
+  );
 
   return (
     <ResponsiveProvider>
@@ -86,6 +95,8 @@ const DetailPesananResponsive = () => {
             dataRingkasanPembayaran={dataRingkasanPembayaran}
             documentShippingDetail={documentShippingDetail}
             waitingTimeRaw={waitingTimeRaw}
+            oldDriverData={oldDriverData}
+            paymentMethods={paymentMethods}
           />
         }
       />
@@ -139,6 +150,11 @@ const DetailPesananResponsive = () => {
       <ResponsiveRoute
         path="/DetailSebelumPerubahan"
         component={<DetailSebelumPerubahanScreen />}
+      />
+
+      <ResponsiveRoute
+        path="/OpsiPembayaran"
+        component={<OpsiPembayaranScreen paymentMethods={paymentMethods} />}
       />
     </ResponsiveProvider>
   );
