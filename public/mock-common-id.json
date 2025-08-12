@@ -419,5 +419,6 @@
   "BottomSheetPreviousDriver.titlePreviousDriver": "Driver Sebelumnya",
   "BottomSheetPreviousDriver.altDriverAvatar": "driver",
   "BottomSheetPreviousDriver.textDriverNotFound": "Driver tidak ditemukan",
-  "BottomSheetPreviousDriver.buttonDriverStatusDetail": "Detail Status Driver"
+  "BottomSheetPreviousDriver.buttonDriverStatusDetail": "Detail Status Driver",
+  "PendingUpdateFeePayment.toastFleetWillBeReprepared": "Armada akan disiapkan ulang sesuai dengan perubahan yang dilakukan."
 }

@@ -4,6 +4,8 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+import IconComponent from "../IconComponent/IconComponent";
+
 const ActiveFiltersBar = ({
   filters = [],
   onRemoveFilter,
@@ -102,6 +104,9 @@ const ActiveFiltersBar = ({
                 tagClassName
               )}
             >
+              {filter.item?.icon && (
+                <IconComponent src={filter.item.icon} width={14} height={14} />
+              )}
               <span className="text-xs font-medium text-primary-700">
                 {filter.label}
               </span>

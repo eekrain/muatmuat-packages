@@ -28,6 +28,7 @@ export const MapInterfaceOverlay = ({
   onCenter,
   hasMapInteraction = false,
   hasData = true,
+  activeFilters = { truck: [], order: [] },
 }) => {
   const { data: sosStatusSummary } = useGetSosStatusSummary();
   const [centerButtonClicked, setCenterButtonClicked] =
@@ -114,6 +115,7 @@ export const MapInterfaceOverlay = ({
           <FilterPopover
             onApplyFilter={onApplyFilter}
             fleetCounts={fleetCounts}
+            activeFilters={activeFilters}
           />
 
           {/* SOS Button */}

@@ -6,7 +6,7 @@ import VoucherCard from "@/components/Voucher/VoucherCard";
 import VoucherEmptyState from "@/components/Voucher/VoucherEmptyState";
 import VoucherPopup from "@/components/Voucher/VoucherPopup";
 import VoucherSearchEmpty from "@/components/Voucher/VoucherSearchEmpty";
-import { formatDate, formatShortDate } from "@/lib/utils/dateFormat";
+import { formatShortDate } from "@/lib/utils/dateFormat";
 import {
   mockGetAvailableVouchers,
   mockValidateVoucher,
@@ -22,7 +22,7 @@ export const VoucherContainer = ({
   selectedVoucherId,
   baseOrderAmount,
   onVoucherSelect,
-  useMockData = true, // Add flag for testing
+  useMockData = false, // Add flag for testing
 }) => {
   // Voucher related state and hooks
   const [voucherList, setVoucherList] = useState([]);
@@ -211,7 +211,7 @@ export const VoucherContainer = ({
                       usagePercentage={v.usage?.globalPercentage || 0}
                       isOutOfStock={v.isOutOfStock || false}
                       startDate={formatShortDate(v.validFrom)}
-                      endDate={formatDate(v.validTo)}
+                      endDate={v.validTo}
                       isActive={selectedVoucherId === v.id}
                       onSelect={() => handleVoucherSelect(v)}
                       validationError={validationErrors[v.id]}

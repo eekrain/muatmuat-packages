@@ -1,9 +1,8 @@
-import { intervalToDuration, parseISO } from "date-fns";
 import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = true; // mock detailpesanan
+const useMockData = false; // mock detailpesanan
 
 // GET /api/v1/orders/${orderId}/waiting-time
 const apiResult = {
@@ -17,7 +16,7 @@ const apiResult = {
         {
           id: "9cf101e8-3645-4f72-a707-7e6576117efd",
           driverId: "51e64187-d4cb-4065-9776-7e1224fc6b35",
-          name: "Eka",
+          name: "Driver 1",
           licensePlate: "B 1234 ABC",
           startWaitingTime: "2025-08-11T13:00:00.000Z",
           endWaitingTime: "2025-08-11T13:55:00.000Z", // Renders as "0 Jam 55 Menit"
@@ -30,7 +29,7 @@ const apiResult = {
         {
           id: "9cf101e8-3645-4f72-a707-7e6576117efd",
           driverId: "51e64187-d4cb-4065-9776-7e1224fc6b35",
-          name: "Cakra",
+          name: "Driver 1",
           licensePlate: "B 1234 ABC",
           startWaitingTime: "2025-07-29T13:00:00.000Z",
           endWaitingTime: "2025-07-29T15:00:00.000Z", // Renders as "2 Jam 0 Menit"
@@ -43,7 +42,7 @@ const apiResult = {
         {
           id: "9cf101e8-3645-4f72-a707-7e6576117efd",
           driverId: "51e64187-d4cb-4065-9776-7e1224fc6b35",
-          name: "Test Driver",
+          name: "Driver 1",
           licensePlate: "B 1234 ABC",
           startWaitingTime: "2025-07-29T13:00:00.000Z",
           endWaitingTime: "2025-07-29T16:00:00.000Z",
@@ -55,8 +54,21 @@ const apiResult = {
         },
         {
           id: "9cf101e8-3645-4f72-a707-7e6576117efd",
+          driverId: "51e64187-d4cb-4065-9776-7e1224fc6b35",
+          name: "Driver 1",
+          licensePlate: "B 1234 ABC",
+          startWaitingTime: "2025-07-29T13:00:00.000Z",
+          endWaitingTime: "2025-07-29T16:00:00.000Z",
+          waitingTime: "3.00",
+          waitingFee: 300000,
+          locationSequence: 1,
+          locationType: "PICKUP",
+          isMultiLocation: false,
+        },
+        {
+          id: "9cf101e8-3645-4f72-a707-7e6576117efd",
           driverId: "51e64187-d4cb-5176-9776-7e1224fc6b35",
-          name: "Test Driver 2",
+          name: "Driver 2",
           licensePlate: "B 1234 DEF",
           startWaitingTime: "2025-07-29T13:00:00.000Z",
           endWaitingTime: "2025-07-29T16:00:00.000Z",
@@ -68,22 +80,35 @@ const apiResult = {
         },
         {
           id: "9cf101e8-3645-4f72-a707-7e6576117efd",
-          driverId: "51e64187-d4cb-4065-9776-7e1224fc6b35",
-          name: "Test Driver",
-          licensePlate: "B 1234 ABC",
+          driverId: "51e64187-d4cb-5176-9776-7e1224fc6b35",
+          name: "Driver 2",
+          licensePlate: "B 1234 DEF",
           startWaitingTime: "2025-07-29T13:00:00.000Z",
           endWaitingTime: "2025-07-29T16:00:00.000Z",
-          waitingTime: "3.00",
-          waitingFee: 300000,
+          waitingTime: "1.00",
+          waitingFee: 100000,
           locationSequence: 1,
           locationType: "DROPOFF",
           isMultiLocation: false,
         },
         {
           id: "9cf101e8-3645-4f72-a707-7e6576117efd",
-          driverId: "51e64187-d4cb-5176-9776-7e1224fc6b35",
-          name: "Test Driver 2",
-          licensePlate: "B 1234 DEF",
+          driverId: "51e64187-d4cb-6287-9776-7e1224fc6b35",
+          name: "Driver 3",
+          licensePlate: "B 1234 GHI",
+          startWaitingTime: "2025-07-29T13:00:00.000Z",
+          endWaitingTime: "2025-07-29T16:00:00.000Z",
+          waitingTime: "1.00",
+          waitingFee: 100000,
+          locationSequence: 1,
+          locationType: "PICKUP",
+          isMultiLocation: false,
+        },
+        {
+          id: "9cf101e8-3645-4f72-a707-7e6576117efd",
+          driverId: "51e64187-d4cb-6287-9776-7e1224fc6b35",
+          name: "Driver 3",
+          licensePlate: "B 1234 GHI",
           startWaitingTime: "2025-07-29T13:00:00.000Z",
           endWaitingTime: "2025-07-29T16:00:00.000Z",
           waitingTime: "1.00",

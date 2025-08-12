@@ -5,10 +5,7 @@ import { fetcherMuatrans } from "@/lib/axios";
 const isMockSosList = true;
 
 const apiResultSosList = {
-  Message: {
-    Code: 200,
-    Text: "Active SOS list retrieved successfully",
-  },
+  Message: { Code: 200, Text: "Active SOS list retrieved successfully" },
   Data: {
     sosList: [
       {
@@ -30,7 +27,7 @@ const apiResultSosList = {
         fleetId: "fleet-uuid-1",
         truckType: "Truk Engkel",
         carrierType: "Bak Terbuka",
-        photos: ["/img/sos-engine.jpg"],
+        photos: ["/img/depan.png"],
         orderInfo: {
           pickupLocation: {
             fullAddress: "Jl. Thamrin No. 1, Jakarta Pusat",
@@ -68,7 +65,7 @@ const apiResultSosList = {
         fleetId: "fleet-uuid-2",
         truckType: "Truk Box",
         carrierType: "Bak Tertutup",
-        photos: ["/img/sos-accident-1.jpg", "/img/sos-accident-2.jpg"],
+        photos: ["/img/kanan.png", "/img/kiri.png"],
         orderInfo: {
           pickupLocation: {
             fullAddress: "Jl. Gatot Subroto No. 12, Jakarta Selatan",
@@ -106,7 +103,12 @@ const apiResultSosList = {
         fleetId: "fleet-uuid-3",
         truckType: "Tronton",
         carrierType: "Container",
-        photos: [],
+        photos: [
+          "/img/kanan.png",
+          "/img/kiri.png",
+          "/img/depan.png",
+          "/img/belakang.png",
+        ],
         orderInfo: {
           pickupLocation: {
             fullAddress: "Jl. Pluit Raya No. 2, Jakarta Utara",
@@ -139,16 +141,10 @@ const apiResultSosList = {
 };
 
 const apiErrorSosList = {
-  Message: {
-    Code: 400,
-    Text: "Failed to retrieve SOS list",
-  },
+  Message: { Code: 400, Text: "Failed to retrieve SOS list" },
   Data: {
     errors: [
-      {
-        field: "general",
-        message: "Sistem tidak dapat mengambil daftar SOS",
-      },
+      { field: "general", message: "Sistem tidak dapat mengambil daftar SOS" },
     ],
   },
   Type: "SOS_LIST_ERROR",
@@ -156,24 +152,27 @@ const apiErrorSosList = {
 
 export const useGetSosList = (params = {}) => {
   const cacheKey = ["monitoring-sos-list", params];
-
   return useSWR(cacheKey, () => fetcherSosList(params), {
-    // Refresh every 30 seconds for real-time updates
     refreshInterval: 30000,
-    // Don't revalidate on focus to prevent flickering
     revalidateOnFocus: false,
   });
 };
 
 export const fetcherSosList = async (params = {}) => {
   if (isMockSosList) {
-    // Simulate filtering in mock data
     const filteredData = {
       ...apiResultSosList.Data,
       sosList: apiResultSosList.Data.sosList.filter((sos) => {
-        // Filter by status if provided
+        // filter by status (NEW, ACKNOWLEDGED, etc) jika dikirim
         if (params.status && params.status.length > 0) {
           return params.status.includes(sos.status);
+        }
+        // filter by search (licensePlate / driverName) jika dikirim
+        if (params.search && params.search.trim()) {
+          const q = params.search.trim().toLowerCase();
+          const plate = sos.licensePlate?.toLowerCase() || "";
+          const driver = sos.driverName?.toLowerCase() || "";
+          if (!plate.includes(q) && !driver.includes(q)) return false;
         }
         return true;
       }),
@@ -183,13 +182,12 @@ export const fetcherSosList = async (params = {}) => {
       },
     };
 
-    // Simulate pagination
+    // pagination mock
     if (params.page && params.pageSize) {
       const start = (params.page - 1) * params.pageSize;
       const end = start + params.pageSize;
       filteredData.sosList = filteredData.sosList.slice(start, end);
     }
-
     return filteredData;
   }
 
@@ -198,8 +196,29 @@ export const fetcherSosList = async (params = {}) => {
       "/v1/transporter/monitoring/sos/list",
       { params }
     );
-    return result?.data || {};
+    // pastikan balikan menyerupai Data di atas: { sosList, pagination }
+    return result?.data?.Data || { sosList: [], pagination: {} };
   } catch (error) {
-    throw error.response?.data || apiErrorSosList;
+    throw error?.response?.data || apiErrorSosList;
   }
+};
+
+export const acknowledgeSos = async (id) => {
+  if (!id) throw new Error("SOS id is required");
+
+  // MOCK: update data lokal saat isMockSosList = true
+  if (isMockSosList) {
+    const list = apiResultSosList.Data.sosList;
+    const idx = list.findIndex((s) => s.id === id);
+    if (idx !== -1) {
+      list[idx] = { ...list[idx], status: "ACKNOWLEDGED" };
+    }
+    return { Message: { Code: 200, Text: "Acknowledged (mock)" } };
+  }
+
+  // REAL API
+  const res = await fetcherMuatrans.put(
+    `/v1/transporter/monitoring/sos/${id}/acknowledge`
+  );
+  return res?.data;
 };

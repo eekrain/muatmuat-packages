@@ -418,5 +418,6 @@
   "BottomSheetPreviousDriver.titlePreviousDriver": "Previous Driver",
   "BottomSheetPreviousDriver.altDriverAvatar": "driver",
   "BottomSheetPreviousDriver.textDriverNotFound": "Driver not found",
-  "BottomSheetPreviousDriver.buttonDriverStatusDetail": "Driver Status Details"
+  "BottomSheetPreviousDriver.buttonDriverStatusDetail": "Driver Status Details",
+  "PendingUpdateFeePayment.toastFleetWillBeReprepared": "Fleet will be reprepared according to the changes made."
 }

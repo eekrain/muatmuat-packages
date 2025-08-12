@@ -178,7 +178,7 @@ const PesananTable = ({
 
   return (
     <>
-      <Card className="mt-6 h-auto w-[1232px] border-none shadow-muat">
+      <Card className="mt-6 h-auto w-full border-none shadow-muat">
         <CardContent className="p-0">
           {/* Table Filter */}
           <div className="flex flex-col gap-y-6 p-6 pt-5">

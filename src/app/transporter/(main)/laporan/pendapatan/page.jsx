@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Info } from "lucide-react";
@@ -7,12 +8,13 @@ import { Info } from "lucide-react";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
 import Card, { CardContent } from "@/components/Card/Card";
-import DataTable from "@/components/DataTable/DataTable";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
+import LaporanPendapatanTable from "@/components/LaporanPendapatanTable";
 import Pagination from "@/components/Pagination/Pagination";
 
 export default function Page() {
+  const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -89,6 +91,7 @@ export default function Page() {
   // Table data
   const tableData = [
     {
+      id: 1,
       orderNo: "INV/MTR/210504/001/AAA",
       source: "Tambahan Biaya",
       status: "Sudah Dicairkan",
@@ -97,6 +100,7 @@ export default function Page() {
       sourceType: "additional_cost",
     },
     {
+      id: 2,
       orderNo: "INV/MTR/210504/002/AAA",
       source: "Tambahan Biaya",
       status: "Dicairkan Sebagian",
@@ -105,6 +109,7 @@ export default function Page() {
       sourceType: "additional_cost",
     },
     {
+      id: 3,
       orderNo: "INV/MTR/210504/003/AAA",
       source: "Penyesuaian Pendapatan",
       status: "Sudah Dicairkan",
@@ -113,6 +118,7 @@ export default function Page() {
       sourceType: "revenue_adjustment",
     },
     {
+      id: 4,
       orderNo: "INV/MTR/210504/004/AAA",
       source: "Penyesuaian Pendapatan",
       status: "Dicairkan Sebagian",
@@ -121,6 +127,7 @@ export default function Page() {
       sourceType: "revenue_adjustment",
     },
     {
+      id: 5,
       orderNo: "INV/MTR/210504/005/AAA",
       source: "Pendapatan Pesanan",
       status: "Belum Dicairkan",
@@ -177,7 +184,14 @@ export default function Page() {
       key: "action",
       sortable: false,
       width: "100px",
-      render: (row) => <Button className="h-8 px-4 text-xs">Detail</Button>,
+      render: (row) => (
+        <Button
+          className="h-8 px-4 text-xs"
+          onClick={() => router.push(`/laporan/pendapatan/${row.id}`)}
+        >
+          Detail
+        </Button>
+      ),
     },
   ];
 
@@ -338,7 +352,7 @@ export default function Page() {
           <div className="p-1 pb-0">
             <div className="mb-4 flex items-center justify-between">
               <div className="flex-1">
-                <DataTable
+                <LaporanPendapatanTable
                   data={tableData}
                   columns={columns}
                   searchPlaceholder="Cari Pesanan"

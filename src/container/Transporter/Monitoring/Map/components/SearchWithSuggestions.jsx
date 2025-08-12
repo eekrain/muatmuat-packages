@@ -40,11 +40,12 @@ export const SearchWithSuggestions = ({
 
   const handleSuggestionSelect = (suggestion) => {
     if (suggestion) {
-      // Use the display text directly
+      // Use the display text for the input field
       const searchText = suggestion.displayText;
       setSearchValue(searchText);
       setShowSuggestions(false);
-      onSearch?.(searchText);
+      // Pass the full suggestion data to parent, including originalData
+      onSearch?.(suggestion);
     } else {
       setShowSuggestions(false);
     }
