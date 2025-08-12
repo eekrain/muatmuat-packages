@@ -106,11 +106,11 @@ const Page = () => {
           </div>
         </div>
 
-        <TabsContent value="shipper" className="pt-4">
-          <ShipperContainer count={shipperCount} />
-        </TabsContent>
         <TabsContent value="transporter" className="pt-4">
           <TransporterContainer count={transporterCount} />
+        </TabsContent>
+        <TabsContent value="shipper" className="pt-4">
+          <ShipperContainer count={shipperCount} />
         </TabsContent>
       </Tabs>
     </div>

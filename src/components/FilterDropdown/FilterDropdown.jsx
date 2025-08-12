@@ -23,6 +23,7 @@ const FilterDropdown = ({
   searchable = true,
   multiSelect = true,
   showSelectedCount = true,
+  triggerClassName,
   dropdownClassName,
   itemClassName,
   searchPlaceholder = "Search...",
@@ -152,6 +153,7 @@ const FilterDropdown = ({
         <button
           className={cn(
             "flex h-8 w-[104px] flex-row items-center justify-between gap-2 rounded-md border px-3 transition-colors duration-150 focus:outline-none",
+            triggerClassName,
             disabled
               ? "cursor-not-allowed border-neutral-600 bg-neutral-200"
               : totalSelected > 0
