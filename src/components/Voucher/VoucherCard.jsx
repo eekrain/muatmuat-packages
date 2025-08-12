@@ -51,6 +51,26 @@ export default function VoucherCard({
   // The description (discountInfo) and "Pakai" button are there.
 
   const bulletPoints = discountInfo?.split("\n") || [];
+  const getExpiryWarning = (endDate) => {
+    if (!endDate) return null;
+
+    const now = new Date();
+    const expiry = endDate instanceof Date ? endDate : new Date(endDate);
+    const diffMs = expiry - now;
+    const diffHours = diffMs / (1000 * 60 * 60);
+    const diffDays = Math.ceil(diffHours / 24);
+
+    if (diffHours < 24 && diffHours > 0) {
+      const hours = Math.floor(diffHours);
+      return `Sisa ${hours} jam lagi`;
+    }
+
+    if (diffDays <= 3 && diffDays > 0) {
+      return `Berakhir ${diffDays} hari lagi`;
+    }
+
+    return null;
+  };
 
   // Prepare voucher data for the info popup
   const voucherData = {
@@ -58,6 +78,7 @@ export default function VoucherCard({
     nominal: discountType.toLowerCase() === "fixed" ? discountAmount : 0,
     validFrom: startDate,
     validTo: endDate,
+    expiryWarning: getExpiryWarning(endDate),
     usagePercentage: usagePercentage,
     minOrderAmount: minTransaksi,
     termsAndConditions: [
