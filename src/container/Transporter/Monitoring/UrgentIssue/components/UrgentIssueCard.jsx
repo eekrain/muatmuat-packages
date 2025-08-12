@@ -186,7 +186,6 @@ export const UrgentIssueCard = ({
                 alt="calendar"
                 width={20}
                 height={20}
-                className="text-muat-trans-primary-400"
               />
               <div className="flex flex-col gap-1">
                 <span className="text-xs font-medium text-neutral-500">
@@ -206,7 +205,6 @@ export const UrgentIssueCard = ({
               alt="calendar"
               width={20}
               height={20}
-              className="text-muat-trans-primary-400"
             />
             <div className="flex flex-col gap-1">
               <span className="text-xs font-medium text-neutral-500">
