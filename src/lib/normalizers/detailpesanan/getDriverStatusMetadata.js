@@ -2,7 +2,10 @@ import {
   OrderStatusEnum,
   OrderStatusTitle,
 } from "@/lib/constants/detailpesanan/detailpesanan.enum";
-import { DriverStatusLabel } from "@/lib/constants/detailpesanan/driver-status.enum";
+import {
+  DriverStatusEnum,
+  DriverStatusLabel,
+} from "@/lib/constants/detailpesanan/driver-status.enum";
 
 const SHOULD_RETURNS_ORDER_STATUS = [
   OrderStatusEnum.WAITING_REPAYMENT_1,
@@ -25,7 +28,13 @@ export const getDriverStatusMetadata = ({
   const splitStatus = driverStatus?.split?.("_");
   if (!splitStatus) return { variant, label };
 
-  if (orderStatus?.startsWith("WAITING")) variant = "warning";
+  // Special case: WAITING_CONFIRMATION_CHANGES with MENUNGGU_ARMADA_PENGGANTI should use primary variant
+  if (
+    orderStatus === OrderStatusEnum.WAITING_CONFIRMATION_CHANGES &&
+    driverStatus === DriverStatusEnum.FLEET_CHANGE.MENUNGGU.code
+  ) {
+    variant = "primary";
+  } else if (orderStatus?.startsWith("WAITING")) variant = "warning";
   else if (orderStatus?.startsWith("CANCELED")) variant = "error";
   else if (orderStatus === OrderStatusEnum.COMPLETED) variant = "success";
 
