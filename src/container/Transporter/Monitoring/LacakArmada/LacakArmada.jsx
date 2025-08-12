@@ -133,7 +133,7 @@ const LacakArmada = ({ onClose, orderId }) => {
           {fleetData.vehicles.map((vehicle) => (
             <div
               key={vehicle.id}
-              className="flex flex-col rounded-lg border border-neutral-400 bg-white p-4"
+              className="relative flex flex-col rounded-lg border border-neutral-400 bg-white p-4"
             >
               {/* Status Badge */}
               <div className="mb-3">
@@ -174,21 +174,21 @@ const LacakArmada = ({ onClose, orderId }) => {
                     </div>
                   </div>
                 </div>
+              </div>
 
-                {/* Chevron Button - Absolutely positioned and centered */}
-                <div className="absolute right-0 top-1/2 -translate-y-1/2">
-                  <button
-                    onClick={() => toggleVehicle(vehicle.id)}
-                    className="rounded-full p-1 transition-colors hover:bg-neutral-100"
-                  >
-                    <ChevronDown
-                      className={cn(
-                        "h-5 w-5 text-neutral-600 transition-transform",
-                        expandedVehicles[vehicle.id] && "rotate-180"
-                      )}
-                    />
-                  </button>
-                </div>
+              {/* Chevron Button - Stay in first position */}
+              <div className="absolute right-4 top-[40px]">
+                <button
+                  onClick={() => toggleVehicle(vehicle.id)}
+                  className="rounded-full p-1 transition-colors hover:bg-neutral-100"
+                >
+                  <ChevronDown
+                    className={cn(
+                      "h-5 w-5 text-neutral-600 transition-transform",
+                      expandedVehicles[vehicle.id] && "rotate-180"
+                    )}
+                  />
+                </button>
               </div>
 
               {/* Expanded Details - Driver Timeline */}
