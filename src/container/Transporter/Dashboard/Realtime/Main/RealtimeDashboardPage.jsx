@@ -239,6 +239,7 @@ const RealtimeDashboardPage = () => {
             value={dashboardData.performance.penalties}
             valueUnit=" Penalti"
             icon="/icons/danger-triangle.svg"
+            href="/dashboard/real-time/penalti"
             tooltipText={tooltipContent.performance.penalties.text}
             side={tooltipContent.performance.penalties.side}
             variant="soft"

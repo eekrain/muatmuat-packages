@@ -12,6 +12,7 @@ const Table = ({
   sortConfig = { sort: null, order: null },
   loadingComponent = null,
   emptyComponent = null,
+  rowRecomendations = [],
 }) => {
   const handleSort = (columnKey) => {
     if (!onSort) return;
@@ -110,7 +111,11 @@ const Table = ({
                     {columns.map((column, colIndex) => (
                       <td
                         key={colIndex}
-                        className={cn("px-6 py-4 text-xxs", column.className)}
+                        className={cn(
+                          "text-xxs",
+                          column.className,
+                          !rowRecomendations.includes(rowIndex) && "px-6 py-4"
+                        )}
                       >
                         {column.render
                           ? column.render(row, rowIndex)

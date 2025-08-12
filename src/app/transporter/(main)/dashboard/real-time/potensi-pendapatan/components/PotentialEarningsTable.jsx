@@ -3,13 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
+import DashboardDataTable from "@/app/transporter/(main)/dashboard/real-time/components/DashboardDataTable";
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Button from "@/components/Button/Button";
-import DataNotFound from "@/components/DataNotFound/DataNotFound";
-import { DataTable } from "@/components/DataTable";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
-
-import EmptyState from "./EmptyState";
 
 const PotentialEarningsTable = () => {
   const router = useRouter();
@@ -46,8 +43,17 @@ const PotentialEarningsTable = () => {
         params.append("sort", sortConfig.sort);
         params.append("order", sortConfig.order);
       }
-      if (filters.status && filters.status.length > 0) {
-        filters.status.forEach((s) => params.append("status", s.id));
+      const statusFilter = filters.status;
+      if (statusFilter) {
+        if (Array.isArray(statusFilter) && statusFilter.length > 0) {
+          statusFilter.forEach((s) => params.append("status", s.id));
+        } else if (
+          typeof statusFilter === "object" &&
+          !Array.isArray(statusFilter) &&
+          statusFilter.id
+        ) {
+          params.append("status", statusFilter.id);
+        }
       }
 
       try {
@@ -78,7 +84,6 @@ const PotentialEarningsTable = () => {
       waiting_confirmation: {
         variant: "primary",
         label: "Menunggu Konfirmasi",
-        icon: "",
         tooltip:
           "Armada kamu telah tercatat untuk pesanan ini, harap menunggu maks. 1 jam untuk konfirmasi dari Shipper.",
       },
@@ -94,7 +99,6 @@ const PotentialEarningsTable = () => {
         variant: "primary",
         label: "Proses Pengiriman Dokumen",
       },
-      // Warning (Yellow)
       need_assignment: {
         variant: "warning",
         label: "Perlu Assign Armada",
@@ -105,7 +109,6 @@ const PotentialEarningsTable = () => {
         label: "Perlu Respon Perubahan",
         icon: "/icons/warning24.svg",
       },
-      // Error (Red)
       need_confirmation: {
         variant: "error",
         label: "Perlu Konfirmasi Siap",
@@ -139,7 +142,6 @@ const PotentialEarningsTable = () => {
     );
   };
 
-  // useMemo to prevent re-creating columns on every render
   const columns = useMemo(
     () => [
       {
@@ -166,7 +168,7 @@ const PotentialEarningsTable = () => {
         key: "status",
         header: "Status Pesanan",
         sortable: true,
-        render: (row) => getStatusBadge(row.status, row.statusTooltip),
+        render: (row) => getStatusBadge(row.status),
       },
       {
         key: "action",
@@ -192,7 +194,7 @@ const PotentialEarningsTable = () => {
   );
 
   const filterConfig = {
-    categories: [{ key: "status", label: "Status", type: "checkbox-multi" }],
+    categories: [{ key: "status", label: "Status", type: "radio-single" }],
     data: {
       status: [
         { id: "waiting_confirmation", label: "Menunggu Konfirmasi Shipper" },
@@ -208,59 +210,36 @@ const PotentialEarningsTable = () => {
     },
   };
 
-  const renderEmptyContent = () => {
-    if (error) {
-      return <DataNotFound className="h-full gap-y-5 pb-10" title={error} />;
-    }
-    if (tableData?.emptyState?.actionButton) {
-      return <EmptyState data={tableData.emptyState} />;
-    }
-    if (tableData?.emptyState?.title) {
-      return (
-        <DataNotFound
-          className="h-full gap-y-5 pb-10"
-          title={tableData.emptyState.title}
-        />
-      );
-    }
-    return (
-      <DataNotFound
-        className="h-full gap-y-5 pb-10"
-        title="Keyword Tidak Ditemukan"
-      />
-    );
-  };
-
   return (
-    <div>
-      <DataTable
-        data={tableData.earnings}
-        columns={columns}
-        loading={loading}
-        searchPlaceholder="Cari Pesanan"
-        showFilter={true}
-        showTotalCount={false}
-        filterConfig={filterConfig}
-        totalItems={tableData.pagination.totalItems}
-        currentPage={tableData.pagination.currentPage}
-        totalPages={tableData.pagination.totalPages}
-        perPage={tableData.pagination.itemsPerPage}
-        onPageChange={setCurrentPage}
-        onPerPageChange={setPerPage}
-        onSearch={setSearchValue}
-        onFilter={setFilters}
-        onSort={(sort, order) => setSortConfig({ sort, order })}
-        headerActions={
-          <div className="text-sm font-semibold text-neutral-900">
-            Total Potensi Pendapatan :{" "}
-            <span className="text-lg font-bold">
-              {formatCurrency(tableData.summary.totalPotential)}
-            </span>
-          </div>
-        }
-        emptyComponent={renderEmptyContent()}
-      />
-    </div>
+    <DashboardDataTable
+      data={tableData.earnings}
+      columns={columns}
+      loading={loading}
+      totalItems={tableData.pagination.totalItems}
+      currentPage={tableData.pagination.currentPage}
+      perPage={tableData.pagination.itemsPerPage}
+      onPageChange={setCurrentPage}
+      onPerPageChange={setPerPage}
+      activeSearchValue={searchValue}
+      onSearchChange={setSearchValue}
+      activeFilters={filters}
+      onFilterChange={setFilters}
+      onSort={(sort, order) => setSortConfig({ sort, order })}
+      searchPlaceholder="Cari Pesanan"
+      filterConfig={filterConfig}
+      firsTimerTitle="Oops, potensi pendapatan masih kosong"
+      firstTimerSubtitle="Mulai terima permintaan sekarang untuk menampilkan data potensi pendapatan disini"
+      firstTimerButtonText="Lihat Permintaan"
+      firstTimerButtonLink="/monitoring"
+      headerActions={
+        <div className="text-sm font-semibold text-neutral-900">
+          Total Potensi Pendapatan :{" "}
+          <span className="text-lg font-bold">
+            {formatCurrency(tableData.summary.totalPotential)}
+          </span>
+        </div>
+      }
+    />
   );
 };
 
