@@ -2,9 +2,6 @@
 
 import { useState } from "react";
 
-import { format } from "date-fns";
-import { id } from "date-fns/locale";
-
 import BadgeOrderType from "@/components/Badge/BadgeOrderType";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
@@ -24,6 +21,7 @@ import Table from "@/components/Table/Table";
 import { cn } from "@/lib/utils";
 import { useGetActiveOrders } from "@/services/Transporter/monitoring/daftar-pesanan-active/getActiveOrders";
 import { useGetActiveOrdersCount } from "@/services/Transporter/monitoring/daftar-pesanan-active/getActiveOrdersCount";
+import { formatMuatTime } from "@/utils/Transporter/dateTimeUtils";
 import {
   ORDER_ACTIONS,
   ORDER_STATUS,
@@ -65,80 +63,6 @@ const DaftarPesananAktif = ({
     status: getFilterStatus(selectedFilter),
     ...sortConfig,
   });
-
-  const formatLoadTime = (order) => {
-    const startDate = new Date(order.loadTimeStart);
-    const endDate = new Date(order.loadTimeEnd);
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    const orderDate = new Date(startDate);
-    orderDate.setHours(0, 0, 0, 0);
-
-    // Calculate days difference
-    const timeDiff = orderDate.getTime() - today.getTime();
-    const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-
-    let dateLabel = "";
-    let dateColor = "";
-
-    if (daysDiff === 0) {
-      dateLabel = "Muat Hari Ini";
-      dateColor = "text-success-400"; // Green for today
-    } else if (daysDiff === 1) {
-      dateLabel = "Muat Besok";
-      dateColor = "text-success-400"; // Green for tomorrow
-    } else if (daysDiff >= 2 && daysDiff <= 5) {
-      dateLabel = `Muat ${daysDiff} Hari Lagi`;
-      dateColor = "text-warning-900"; // Orange for 2-5 days
-    } else if (daysDiff > 5) {
-      dateLabel = `Muat ${daysDiff} Hari Lagi`;
-      dateColor = "text-primary-700"; // Blue for >5 days
-    } else {
-      // For past dates (negative daysDiff)
-      dateLabel = `Muat ${format(startDate, "dd MMM yyyy", { locale: id })}`;
-      dateColor = "text-gray-600";
-    }
-
-    // Format time range based on day difference
-    let timeRange = "";
-    if (daysDiff === 0) {
-      // Today: show date and time start only
-      timeRange = `${format(startDate, "dd MMM yyyy HH:mm")} WIB`;
-    } else if (daysDiff === 1) {
-      // Tomorrow: show date time start - time end
-      if (
-        order.loadTimeEnd &&
-        format(startDate, "HH:mm") !== format(endDate, "HH:mm")
-      ) {
-        timeRange = `${format(startDate, "dd MMM yyyy HH:mm")} WIB s/d ${format(endDate, "HH:mm")} WIB`;
-      } else {
-        timeRange = `${format(startDate, "dd MMM yyyy HH:mm")} WIB`;
-      }
-    } else {
-      // Other days: show date time start - date time end
-      if (order.loadTimeEnd) {
-        // Check if end date is different day
-        const startDateStr = format(startDate, "dd MMM yyyy");
-        const endDateStr = format(endDate, "dd MMM yyyy");
-
-        if (startDateStr === endDateStr) {
-          // Same day: show date once with time range
-          timeRange = `${format(startDate, "dd MMM yyyy HH:mm")} WIB s/d ${format(endDate, "HH:mm")} WIB`;
-        } else {
-          // Different days: show full date and time for both
-          timeRange = `${format(startDate, "dd MMM yyyy HH:mm")} WIB s/d ${format(endDate, "dd MMM yyyy HH:mm")} WIB`;
-        }
-      } else {
-        timeRange = `${format(startDate, "dd MMM yyyy HH:mm")} WIB`;
-      }
-    }
-
-    return { dateLabel, timeRange, dateColor };
-  };
 
   // Handle action button clicks based on action type
   const handleActionClick = (actionType, row) => {
@@ -205,7 +129,7 @@ const DaftarPesananAktif = ({
       headerClassName: "px-4 py-3",
       className: "p-4 align-top",
       render: (row) => {
-        const { dateLabel, timeRange, dateColor } = formatLoadTime(row);
+        const { dateLabel, timeRange, dateColor } = formatMuatTime(row);
         return (
           <div className="flex flex-col gap-1">
             <span className={`text-xs font-semibold ${dateColor}`}>

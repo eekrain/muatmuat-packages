@@ -121,9 +121,9 @@ const LacakArmada = ({ onClose, orderId }) => {
         <h2 className="text-base font-bold text-black">Lacak Armada</h2>
         <button
           onClick={onClose}
-          className="rounded-full p-1 transition-colors hover:bg-neutral-100"
+          className="rounded-full p-1 transition-colors"
         >
-          <X className="h-5 w-5 text-neutral-600" />
+          <X className="h-5 w-5 text-primary-700" />
         </button>
       </div>
 

@@ -565,7 +565,7 @@ const Page = () => {
             className={cn(
               "relative flex flex-col overflow-hidden bg-white transition-[border-radius,width] duration-300 ease-in-out",
               isFullscreen || showLacakArmada
-                ? "absolute right-0 top-0 z-[40] h-12 w-[429px] rounded-l-xl shadow-muat"
+                ? "absolute right-0 top-0 z-[40] h-12 w-[429px] rounded-l-xl shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1)]"
                 : "h-full rounded-l-xl"
             )}
           >
