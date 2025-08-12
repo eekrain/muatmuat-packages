@@ -131,21 +131,24 @@ const LacakArmada = ({ onClose, orderId }) => {
       <div className="flex-1 overflow-y-auto px-4 pb-4">
         <div className="flex flex-col gap-3">
           {fleetData.vehicles.map((vehicle) => (
-            <div key={vehicle.id} className="flex flex-col gap-3">
-              {/* Vehicle Card Content */}
-              <div className="flex flex-col rounded-lg border border-neutral-400 bg-white p-4">
-                {/* Status Badge */}
-                <div className="mb-3">
-                  <BadgeStatus
-                    variant={vehicle.statusVariant}
-                    className="inline-flex w-auto"
-                  >
-                    {vehicle.status}
-                  </BadgeStatus>
-                </div>
+            <div
+              key={vehicle.id}
+              className="flex flex-col rounded-lg border border-neutral-400 bg-white p-4"
+            >
+              {/* Status Badge */}
+              <div className="mb-3">
+                <BadgeStatus
+                  variant={vehicle.statusVariant}
+                  className="inline-flex w-auto"
+                >
+                  {vehicle.status}
+                </BadgeStatus>
+              </div>
 
-                {/* Vehicle Info Row with Chevron */}
-                <div className="flex items-center gap-4">
+              {/* Vehicle Info Row - separated divs */}
+              <div className="relative">
+                {/* Left side: Truck Icon and Details */}
+                <div className="flex items-center gap-4 pr-12">
                   {/* Truck Icon */}
                   <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[7px] border border-neutral-400 bg-white">
                     <img
@@ -170,8 +173,10 @@ const LacakArmada = ({ onClose, orderId }) => {
                       </span>
                     </div>
                   </div>
+                </div>
 
-                  {/* Chevron Button - Inside card */}
+                {/* Chevron Button - Absolutely positioned and centered */}
+                <div className="absolute right-0 top-1/2 -translate-y-1/2">
                   <button
                     onClick={() => toggleVehicle(vehicle.id)}
                     className="rounded-full p-1 transition-colors hover:bg-neutral-100"
