@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 
 import Checkbox from "@/components/Form/Checkbox";
-import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import {
   Modal,
@@ -137,21 +136,14 @@ const Onboarding = () => {
 
   return (
     <>
-      <InfoTooltip
-        side="right"
-        trigger={
-          <div onClick={() => setIsModalOpen(true)}>
-            <IconComponent
-              src="/icons/info16.svg"
-              width={14}
-              height={14}
-              className="cursor-pointer text-neutral-700"
-            />
-          </div>
-        }
-      >
-        <p>Daftar pesanan aktif yang sedang berlangsung.</p>
-      </InfoTooltip>
+      <div onClick={() => setIsModalOpen(true)}>
+        <IconComponent
+          src="/icons/info16.svg"
+          width={14}
+          height={14}
+          className="cursor-pointer text-neutral-700"
+        />
+      </div>
 
       {/* Modal is separate from tooltip */}
       <Modal open={isModalOpen} onOpenChange={handleOpenChange}>
