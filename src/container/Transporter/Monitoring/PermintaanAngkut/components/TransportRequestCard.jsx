@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -480,6 +481,13 @@ const TransportRequestCard = ({
             onClick={handleUnderstand}
           >
             Mengerti
+            <NotificationDot
+              position="absolute"
+              positionClasses="right-[1px] top-[-1px]"
+              size="md"
+              color="red"
+              animated={true}
+            />
           </div>
         </>
       )}
