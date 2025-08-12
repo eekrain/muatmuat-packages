@@ -3,10 +3,8 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
+import DashboardDataTable from "@/app/transporter/(main)/dashboard/real-time/components/DashboardDataTable";
 import Button from "@/components/Button/Button";
-import DataEmpty from "@/components/DataEmpty/DataEmpty";
-import DataNotFound from "@/components/DataNotFound/DataNotFound";
-import { DataTable } from "@/components/DataTable";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import PageTitle from "@/components/PageTitle/PageTitle";
@@ -41,9 +39,14 @@ const PenaltyTable = () => {
     sort: "cancellationDate",
     order: "desc",
   });
+
+  // States to be controlled by the parent for DashboardDataTable
   const [searchValue, setSearchValue] = useState("");
   const [period, setPeriod] = useState(null);
   const [recentPeriodOptions, setRecentPeriodOptions] = useState([]);
+  const [controlsDisabled, setControlsDisabled] = useState({
+    disablePeriod: false,
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -180,23 +183,6 @@ const PenaltyTable = () => {
     { name: "1 Tahun Terakhir", value: 365 },
   ];
 
-  const renderEmptyContent = () => {
-    if (error) return <DataNotFound title={error} />;
-    if (tableData.emptyState?.subtitle) {
-      return (
-        <DataEmpty
-          title={tableData.emptyState.title}
-          subtitle={tableData.emptyState.subtitle}
-          showButton={false}
-        />
-      );
-    }
-    if (tableData.emptyState?.title) {
-      return <DataNotFound title={tableData.emptyState.title} />;
-    }
-    return <DataNotFound title="Data tidak ditemukan" />;
-  };
-
   return (
     <>
       <div className="flex w-full items-center justify-between">
@@ -209,6 +195,7 @@ const PenaltyTable = () => {
             onSelect={handleSelectPeriod}
             options={periodOptions}
             recentSelections={recentPeriodOptions}
+            disable={controlsDisabled.disablePeriod}
           />
           <Button
             variant="muattrans-primary"
@@ -220,24 +207,30 @@ const PenaltyTable = () => {
                 "text-muat-trans-secondary-900 disabled:text-neutral-600",
             }}
           >
-            <IconComponent src="/icons/download.svg" className="mr-2" />
             Unduh
           </Button>
         </div>
       </div>
-      <DataTable
+
+      <DashboardDataTable
         data={tableData.penalties}
         columns={columns}
         loading={loading}
-        searchPlaceholder="Cari No. Pesanan / No. Polisi / Armada"
         totalItems={tableData.pagination.totalItems}
         currentPage={tableData.pagination.currentPage}
-        totalPages={tableData.pagination.totalPages}
         perPage={tableData.pagination.itemsPerPage}
         onPageChange={setCurrentPage}
         onPerPageChange={setPerPage}
-        onSearch={setSearchValue}
+        // Wire up the new props
+        activeSearchValue={searchValue}
+        onSearchChange={setSearchValue}
+        isPeriodActive={period && period.value !== ""}
+        onControlsStateChange={setControlsDisabled}
         onSort={(sort, order) => setSortConfig({ sort, order })}
+        searchPlaceholder="Cari No. Pesanan / No. Polisi / Armada"
+        showFilter={false}
+        firsTimerTitle="Tidak ada pesanan yang dibatalkan"
+        firstTimerSubtitle="Penalti dihitung dari jumlah pembatalan pesanan oleh Transporter atau Shipper"
         headerActions={
           <div className="text-base font-semibold">
             Total Penalti :{" "}
@@ -246,9 +239,6 @@ const PenaltyTable = () => {
             </span>
           </div>
         }
-        emptyComponent={renderEmptyContent()}
-        showFilter={false} // No filter button as per design
-        showTotalCount={false}
       />
     </>
   );

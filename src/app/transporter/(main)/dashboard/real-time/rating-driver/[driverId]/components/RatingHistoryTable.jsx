@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
+import DashboardDataTable from "@/app/transporter/(main)/dashboard/real-time/components/DashboardDataTable";
 import Button from "@/components/Button/Button";
-import { DataTable } from "@/components/DataTable";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import PageTitle from "@/components/PageTitle/PageTitle";
@@ -47,9 +47,11 @@ const RatingHistoryTable = () => {
   const [sortConfig, setSortConfig] = useState({ sort: "date", order: "desc" });
   const [searchValue, setSearchValue] = useState("");
   const [filters, setFilters] = useState({});
-
   const [period, setPeriod] = useState(null);
   const [recentPeriodOptions, setRecentPeriodOptions] = useState([]);
+  const [controlsDisabled, setControlsDisabled] = useState({
+    disablePeriod: false,
+  });
 
   useEffect(() => {
     if (!driverId) return;
@@ -61,6 +63,7 @@ const RatingHistoryTable = () => {
         page: currentPage,
         limit: perPage,
       });
+
       if (searchValue) queryParams.append("search", searchValue);
       if (sortConfig.sort) {
         queryParams.append("sort", sortConfig.sort);
@@ -72,20 +75,16 @@ const RatingHistoryTable = () => {
 
       if (period) {
         let dateFrom, dateTo;
-        console.log("SELECTED PERIOD", period);
         if (period.start_date && period.end_date) {
           dateFrom = toYYYYMMDD(period.start_date);
           dateTo = toYYYYMMDD(period.end_date);
-          console.log("dateFrom", dateFrom, dateTo);
         } else if (typeof period.value === "number") {
           const today = new Date();
           const fromDate = new Date();
           fromDate.setDate(today.getDate() - period.value);
-
           dateTo = toYYYYMMDD(today);
           dateFrom = toYYYYMMDD(fromDate);
         }
-
         if (dateFrom && dateTo) {
           queryParams.append("dateFrom", dateFrom);
           queryParams.append("dateTo", dateTo);
@@ -225,11 +224,11 @@ const RatingHistoryTable = () => {
     categories: [{ key: "rating", label: "Rating", type: "checkbox-multi" }],
     data: {
       rating: [
-        { id: 5, label: "5 Bintang" },
-        { id: 4, label: "4 Bintang" },
-        { id: 3, label: "3 Bintang" },
-        { id: 2, label: "2 Bintang" },
-        { id: 1, label: "1 Bintang" },
+        { id: 5, label: "5 Bintang", icon: "/icons/star_icon.svg" },
+        { id: 4, label: "4 Bintang", icon: "/icons/star_icon.svg" },
+        { id: 3, label: "3 Bintang", icon: "/icons/star_icon.svg" },
+        { id: 2, label: "2 Bintang", icon: "/icons/star_icon.svg" },
+        { id: 1, label: "1 Bintang", icon: "/icons/star_icon.svg" },
       ],
     },
   };
@@ -254,6 +253,7 @@ const RatingHistoryTable = () => {
             onSelect={handleSelectPeriod}
             options={periodOptions}
             recentSelections={recentPeriodOptions}
+            disable={controlsDisabled.disablePeriod}
           />
           <Button
             variant="muattrans-primary"
@@ -270,31 +270,35 @@ const RatingHistoryTable = () => {
         </div>
       </div>
 
-      <DataTable
+      <DashboardDataTable
         data={tableData.history}
         columns={columns}
         loading={loading}
-        searchPlaceholder="Cari No. Pesanan / Armada"
-        filterConfig={filterConfig}
         totalItems={tableData.pagination.totalItems}
         currentPage={tableData.pagination.currentPage}
-        totalPages={tableData.pagination.totalPages}
         perPage={tableData.pagination.itemsPerPage}
         onPageChange={setCurrentPage}
         onPerPageChange={setPerPage}
-        onSearch={setSearchValue}
-        onFilter={setFilters}
+        activeSearchValue={searchValue}
+        onSearchChange={setSearchValue}
+        activeFilters={filters}
+        onFilterChange={setFilters}
+        isPeriodActive={period && period.value !== ""}
         onSort={(sort, order) => setSortConfig({ sort, order })}
+        onControlsStateChange={setControlsDisabled}
+        searchPlaceholder="Cari No. Pesanan / Armada"
+        filterConfig={filterConfig}
         headerActions={
-          <div className="text-sm font-semibold">
-            Total Rating :
-            <span className="text-base font-bold">
-              {tableData.summary.totalRating}
-              <span className="text-sm font-medium text-neutral-600">/5</span>
-            </span>
+          <div className="flex items-center gap-4">
+            <div className="text-sm font-semibold">
+              Total Rating :
+              <span className="text-base font-bold">
+                {tableData.summary.totalRating}
+                <span className="text-sm font-medium text-neutral-600">/5</span>
+              </span>
+            </div>
           </div>
         }
-        showTotalCount={false}
       />
     </div>
   );
