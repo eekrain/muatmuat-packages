@@ -418,7 +418,7 @@ const TransportRequestCard = ({
               <>
                 <Button
                   variant="muattrans-primary-secondary"
-                  className="h-8 w-[87px] rounded-[24px] px-4 text-[14px] font-medium"
+                  className="h-8 w-[87px] rounded-[24px] px-4 text-[14px] font-semibold"
                   onClick={handleDetail}
                 >
                   Detail
