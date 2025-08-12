@@ -418,5 +418,6 @@
   "BottomSheetPreviousDriver.titlePreviousDriver": "之前的司机",
   "BottomSheetPreviousDriver.altDriverAvatar": "司机",
   "BottomSheetPreviousDriver.textDriverNotFound": "未找到司机",
-  "BottomSheetPreviousDriver.buttonDriverStatusDetail": "司机状态详情"
+  "BottomSheetPreviousDriver.buttonDriverStatusDetail": "司机状态详情",
+  "PendingUpdateFeePayment.toastFleetWillBeReprepared": "车队将根据所做的更改重新准备。"
 }

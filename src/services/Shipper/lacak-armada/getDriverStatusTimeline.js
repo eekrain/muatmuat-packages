@@ -396,7 +396,7 @@ const fetcher = async (cacheKey) => {
         : fetcherMuatrans.get(
             `v1/orders/status-driver?orderId=${orderId}&driverId=${driverId}`
           ),
-      getOrderDetail(orderId),
+      getOrderDetail(`detailpesanan/${orderId}`),
     ]);
     const result = transformDriverStatusData(
       dataDriverTimeline.data.Data,

@@ -27,12 +27,12 @@ import { formatDate } from "@/lib/utils/dateFormat";
 const STATUS_STYLES = {
   SOS: {
     expanded: "border border-error-400 bg-error-50",
-    collapsed: " bg-error-50 hover:border-error-400 hover:bg-[#FFE9ED]",
+    collapsed: "bg-error-50 hover:border-error-400 hover:bg-[#FFE9ED]",
   },
   DEFAULT: {
     expanded: "border border-[#FFC217] bg-[#FFFBEB]",
     collapsed:
-      " border border-gray-200 bg-white hover:border-[#FFC217] hover:bg-[#FFFBEB]",
+      "border border-gray-200 bg-white hover:border-[#FFC217] hover:bg-[#FFFBEB]",
   },
 };
 
@@ -55,10 +55,16 @@ const ResponseChangeIndicator = ({ isExpanded }) => (
   <InfoTooltip
     trigger={
       <div
-        className={`group flex h-6 w-6 items-center justify-center rounded-lg bg-[#FFF9C1] ${isExpanded ? "bg-warning-800" : "group-hover:bg-warning-800"}`}
+        className={cn(
+          "group flex h-6 w-6 items-center justify-center rounded-lg bg-[#FFF9C1]",
+          isExpanded ? "bg-warning-800" : "group-hover:bg-warning-800"
+        )}
       >
         <AlertTriangle
-          className={`h-4 w-4 ${isExpanded ? "text-white" : "text-yellow-500 group-hover:text-white"}`}
+          className={cn(
+            "h-4 w-4",
+            isExpanded ? "text-white" : "text-yellow-500 group-hover:text-white"
+          )}
         />
       </div>
     }
@@ -166,7 +172,7 @@ const LocationTimelineItem = ({
 };
 
 // ----- Card Sections -----
-const CardHeader = ({ isExpanded, isSOS, fleet, onToggleExpand }) => {
+const CardHeader = ({ isExpanded, fleet, showSOSBadge }) => {
   const chevronClasses = cn(
     "h-5 w-5 text-gray-400 transition-transform",
     isExpanded && "rotate-180"
@@ -184,7 +190,7 @@ const CardHeader = ({ isExpanded, isSOS, fleet, onToggleExpand }) => {
         {fleet?.needsResponseChange && (
           <ResponseChangeIndicator isExpanded={isExpanded} />
         )}
-        {isSOS && <SOSIndicator />}
+        {showSOSBadge && <SOSIndicator />}
         <ChevronDown className={chevronClasses} />
       </div>
     </div>
@@ -343,6 +349,7 @@ const SOSExpandedSection = ({ fleet }) => {
       <p className="text-xs font-semibold text-error-400">
         {fleet?.detailSOS?.sosCategory || "-"}
       </p>
+
       {fleet?.detailSOS?.description && (
         <p className="mt-3 text-xs font-semibold text-neutral-900">
           {fleet.detailSOS.description}
@@ -352,12 +359,17 @@ const SOSExpandedSection = ({ fleet }) => {
       {photos.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-2">
           {photos.map((image, index) => (
-            <LightboxProvider key={`${image}-${index}`} images={photos}>
+            <LightboxProvider
+              key={`${image}-${index}`}
+              images={photos}
+              title={"Foto Laporan SOS"}
+            >
               <LightboxPreview
                 image={image}
                 index={index}
                 alt={`SOS Image ${index + 1}`}
                 className="h-14 w-14 rounded-md object-cover"
+                variant="thumbnail"
               />
             </LightboxProvider>
           ))}
@@ -380,8 +392,9 @@ export default function CardFleet({
   onToggleExpand,
   onOpenDriverModal,
   onOpenResponseChangeModal,
-  isSOS,
+  isSOS, // true hanya saat NEW (dari container)
   className,
+  onAcknowledge, // handler klik Mengerti
 }) {
   const driverName = fleet?.driver?.name;
   const phone = fleet?.driver?.phoneNumber || "-";
@@ -389,9 +402,12 @@ export default function CardFleet({
     ? `${fleet.lastLocation.address.district || "-"}, ${fleet.lastLocation.address.city || "-"}`
     : "Unknown";
 
+  // SOS hanya untuk VISUAL saat status masih NEW
+  const isSOSVisual = isSOS && (fleet?.detailSOS?.sosStatus ?? "NEW") === "NEW";
+
   const cardClasses = cn(
     "group overflow-hidden rounded-lg p-3 transition-all duration-200",
-    isSOS
+    isSOSVisual
       ? isExpanded
         ? STATUS_STYLES.SOS.expanded
         : STATUS_STYLES.SOS.collapsed
@@ -403,21 +419,18 @@ export default function CardFleet({
 
   const CollapsedContent = () => (
     <>
-      {isSOS && (
+      {/* Header SOS selalu tampil jika hasSOSAlert (NEW & ACK), dan showCategory aktif */}
+      {fleet?.hasSOSAlert && (
         <SOSAlertHeader
           category={fleet?.detailSOS?.sosCategory}
           reportTime={fleet?.detailSOS?.reportAt}
           showCategory={true}
         />
       )}
-      <div
-        className={cn(
-          "mt-3 grid gap-x-2 gap-y-0.5 text-sm",
-          isSOS ? "grid-cols-2" : "grid-cols-2"
-        )}
-      >
-        <DriverInfo driverName={driverName} showLabel={!isSOS} />
-        <LocationInfo locationText={locationText} showLabel={!isSOS} />
+
+      <div className={cn("mt-3 grid gap-x-2 gap-y-0.5 text-sm", "grid-cols-2")}>
+        <DriverInfo driverName={driverName} showLabel={!isSOSVisual} />
+        <LocationInfo locationText={locationText} showLabel={!isSOSVisual} />
       </div>
     </>
   );
@@ -430,13 +443,24 @@ export default function CardFleet({
 
     return (
       <div className="space-y-[12px] pt-2 text-sm">
-        {isSOS && <SOSExpandedSection fleet={fleet} />}
+        {/* NEW: tampilkan detail SOS lengkap */}
+        {isSOSVisual && <SOSExpandedSection fleet={fleet} />}
+
+        {/* ACK: tetap tampilkan header SOS sederhana + category */}
+        {!isSOSVisual && fleet?.hasSOSAlert && (
+          <SOSAlertHeader
+            category={fleet?.detailSOS?.sosCategory}
+            reportTime={fleet?.detailSOS?.reportAt}
+            showCategory={true}
+          />
+        )}
+
         <DriverAndPhoneSection driverName={driverName} phone={phone} />
         <LocationAndFleetSection fleet={fleet} />
 
         {showOnDuty && (
           <>
-            {!isSOS && <div className="border-b border-neutral-400" />}
+            {!isSOSVisual && <div className="border-b border-neutral-400" />}
             <div className="mt-3">
               <OnDutyDetails fleet={fleet} />
             </div>
@@ -455,23 +479,31 @@ export default function CardFleet({
           </ActionButton>
         )}
 
-        {isSOS && (
-          <div className="flex justify-between gap-2 pt-2">
-            <Button
-              variant="muattrans-primary-secondary"
-              className="w-full"
+        {/* Tombol area: NEW => Riwayat + Mengerti, selain itu => Riwayat saja */}
+        <div className="pt-2">
+          {isSOSVisual ? (
+            <div className="flex justify-between gap-2">
+              <button
+                type="button"
+                onClick={() => onOpenDriverModal?.(fleet)}
+                className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-[#461B02] hover:border-[#FFC217] hover:bg-[#FFFBEB]"
+              >
+                Riwayat SOS
+              </button>
+              <Button className="w-full" onClick={() => onAcknowledge?.(fleet)}>
+                Mengerti
+              </Button>
+            </div>
+          ) : (
+            <button
+              type="button"
               onClick={() => onOpenDriverModal?.(fleet)}
+              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-[#461B02] hover:border-[#FFC217] hover:bg-[#FFFBEB]"
             >
               Riwayat SOS
-            </Button>
-            <Button
-              className="w-full"
-              onClick={() => onOpenDriverModal?.(fleet)}
-            >
-              Mengerti
-            </Button>
-          </div>
-        )}
+            </button>
+          )}
+        </div>
       </div>
     );
   };
@@ -491,9 +523,16 @@ export default function CardFleet({
         tabIndex={0}
         onKeyDown={handleKeyDown}
       >
-        <CardHeader isExpanded={isExpanded} isSOS={isSOS} fleet={fleet} />
+        {/* Badge SOS tetap tampil jika hasSOSAlert (NEW & ACK) */}
+        <CardHeader
+          isExpanded={isExpanded}
+          fleet={fleet}
+          showSOSBadge={Boolean(fleet?.hasSOSAlert)}
+        />
+
         {!isExpanded && <CollapsedContent />}
       </div>
+
       {isExpanded && <ExpandedContent />}
     </div>
   );

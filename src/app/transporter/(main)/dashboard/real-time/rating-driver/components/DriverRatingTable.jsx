@@ -3,12 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
+import DashboardDataTable from "@/app/transporter/(main)/dashboard/real-time/components/DashboardDataTable";
 import Button from "@/components/Button/Button";
-import DataNotFound from "@/components/DataNotFound/DataNotFound";
-import { DataTable } from "@/components/DataTable";
 import IconComponent from "@/components/IconComponent/IconComponent";
-
-import EmptyState from "./EmptyState";
+import PageTitle from "@/components/PageTitle/PageTitle";
 
 const DriverRatingTable = () => {
   const router = useRouter();
@@ -29,6 +27,8 @@ const DriverRatingTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
+
+  // States to be controlled by the parent
   const [searchValue, setSearchValue] = useState("");
   const [filters, setFilters] = useState({});
 
@@ -74,6 +74,7 @@ const DriverRatingTable = () => {
         key: "no",
         header: "No.",
         width: "100px",
+        className: "!text-xs",
         sortable: false,
         render: (_value, rowIndex) => {
           const page = Number(currentPage) || 1;
@@ -105,8 +106,8 @@ const DriverRatingTable = () => {
         render: (row) => (
           <div className="flex items-center gap-1 font-semibold">
             <IconComponent src="/icons/star_icon.svg" />
-            <p className="text-xs">
-              {row.rating.toFixed(1)}
+            <p className="mt-1 text-xs">
+              {Number(row.rating).toFixed(1)}
               <span className="text-[10px] text-neutral-600">/5</span>
             </p>
           </div>
@@ -147,57 +148,66 @@ const DriverRatingTable = () => {
     categories: [{ key: "rating", label: "Rating", type: "checkbox-multi" }],
     data: {
       rating: [
-        { id: 5, label: "5 Bintang" },
-        { id: 4, label: "4 Bintang" },
-        { id: 3, label: "3 Bintang" },
-        { id: 2, label: "2 Bintang" },
-        { id: 1, label: "1 Bintang" },
+        { id: 5, label: "5 Bintang", icon: "/icons/star_icon.svg" },
+        { id: 4, label: "4 Bintang", icon: "/icons/star_icon.svg" },
+        { id: 3, label: "3 Bintang", icon: "/icons/star_icon.svg" },
+        { id: 2, label: "2 Bintang", icon: "/icons/star_icon.svg" },
+        { id: 1, label: "1 Bintang", icon: "/icons/star_icon.svg" },
       ],
     },
   };
 
-  const renderEmptyContent = () => {
-    if (error) return <DataNotFound title={error} />;
-    if (tableData?.emptyState?.actionButton) {
-      return <EmptyState data={tableData.emptyState} />;
-    }
-    if (tableData?.emptyState?.title) {
-      return <DataNotFound title={tableData.emptyState.title} />;
-    }
-    return <DataNotFound title="Data tidak ditemukan" />;
-  };
-
   return (
-    <div>
-      <DataTable
+    <>
+      <div className="flex w-full items-center justify-between">
+        <PageTitle className={"!leading-0 mb-0 self-center"} withBack={true}>
+          Rating Driver Keseluruhan
+        </PageTitle>
+        <Button
+          variant="muattrans-primary"
+          className="px-6 py-2 text-muat-trans-secondary-900 disabled:text-neutral-600"
+          disabled={loading || !tableData.drivers.length}
+          appearance={{
+            iconClassName:
+              "text-muat-trans-secondary-900 disabled:text-neutral-600",
+          }}
+          iconLeft="/icons/download16.svg"
+        >
+          Unduh
+        </Button>
+      </div>
+
+      <DashboardDataTable
         data={tableData.drivers}
         columns={columns}
         loading={loading}
-        searchPlaceholder="Cari Nama Driver / No WhatsApp"
-        filterConfig={filterConfig}
         totalItems={tableData.pagination.totalItems}
         currentPage={tableData.pagination.currentPage}
-        totalPages={tableData.pagination.totalPages}
         perPage={tableData.pagination.itemsPerPage}
         onPageChange={setCurrentPage}
         onPerPageChange={setPerPage}
-        onSearch={setSearchValue}
-        onFilter={setFilters}
+        activeSearchValue={searchValue}
+        onSearchChange={setSearchValue}
+        activeFilters={filters}
+        onFilterChange={setFilters}
         onSort={(sort, order) => setSortConfig({ sort, order })}
+        searchPlaceholder="Cari Nama Driver / No WhatsApp"
+        filterConfig={filterConfig}
+        firsTimerTitle="Oops, rating driver masih kosong"
+        firstTimerSubtitle="Mulai terima permintaan sekarang untuk menampilkan data rating driver disini"
+        firstTimerButtonText="Lihat Permintaan"
+        firstTimerButtonLink="/monitoring"
         headerActions={
-          <div className="flex items-center gap-4">
-            <div className="text-sm font-semibold text-neutral-900">
-              Rating Driver Keseluruhan :
-              <span className="ml-1 text-lg font-bold">
-                {tableData.summary.overallAverageRating}/5
-              </span>
-            </div>
+          <div className="text-sm font-semibold text-neutral-900">
+            Rating Driver Keseluruhan :
+            <span className="ml-1 text-base font-bold">
+              {Number(tableData.summary.overallAverageRating).toFixed(1)}
+              <span className="text-sm font-medium text-neutral-600">/5</span>
+            </span>
           </div>
         }
-        emptyComponent={renderEmptyContent()}
-        showTotalCount={false}
       />
-    </div>
+    </>
   );
 };
 

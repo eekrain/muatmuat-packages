@@ -199,7 +199,9 @@ const DetailPesananScreen = ({
           <PendingUpdateConfirmation />
         ) : dataStatusPesanan?.orderStatus ===
           OrderStatusEnum.WAITING_PAYMENT_3 ? (
-          <PendingUpdateFeePayment />
+          <PendingUpdateFeePayment
+            paymentDueDateTime={dataStatusPesanan?.paymentDueDateTime}
+          />
         ) : null}
 
         <OrderInfo dataStatusPesanan={dataStatusPesanan} />

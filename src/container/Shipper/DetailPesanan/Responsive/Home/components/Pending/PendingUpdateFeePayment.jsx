@@ -2,9 +2,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { useCountdown } from "@/hooks/use-countdown";
 import { useTranslation } from "@/hooks/use-translation";
 
-const PendingUpdateFeePayment = ({
-  paymentDueDateTime = "2025-08-11T15:30:00Z",
-}) => {
+const PendingUpdateFeePayment = ({ paymentDueDateTime }) => {
   const { t } = useTranslation();
 
   const { countdown } = useCountdown({

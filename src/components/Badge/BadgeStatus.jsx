@@ -12,6 +12,9 @@ const BadgeStatus = ({
     warning: "bg-warning-100 text-warning-900 ",
     error: "bg-error-50 text-error-400 ",
     neutral: "bg-neutral-200 text-neutral-600 ",
+    outlineSecondary:
+      "border border-neutral-900 bg-transparent text-neutral-900",
+    outlineWarning: "border border-error-400 bg-transparent text-error-400",
   };
 
   return (
