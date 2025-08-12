@@ -442,7 +442,7 @@ const Page = () => {
           "relative left-[50%] right-[50%] ml-[-50vw] mr-[-50vw] h-[calc(100vh-92px)] w-screen overflow-hidden pl-6 transition-all duration-300 ease-in-out",
           isFullscreen
             ? "grid grid-cols-1 pr-6"
-            : "grid grid-cols-[1fr_429px] gap-4"
+            : "grid grid-cols-[minmax(811px,1fr)_429px] gap-4"
         )}
       >
         {/* Left Section - Map and Bottom Panel */}
