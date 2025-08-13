@@ -34,61 +34,74 @@ const RealtimeDashboardPage = () => {
     sosReports: "Laporan SOS",
   };
 
-  const tooltipContent = {
+  const contents = {
     orders: {
       waitingConfirmation: {
         text: "Armada kamu telah tercatat untuk pesanan ini, harap menunggu maks. 1 jam untuk konfirmasi dari Shipper.",
         side: "right",
+        href: "/daftar-pesanan?status=waitingConfirmation",
       },
       confirmed: {
         text: "Daftar pesanan yang telah terkonfirmasi dan sedang dalam tahap persiapan armada untuk pengangkutan.",
         side: "right",
+        href: "/daftar-pesanan?status=confirmed",
       },
       scheduled: {
         text: "Daftar pesanan dengan jadwal keberangkatan yang telah ditetapkan, menunggu proses pemuatan barang.",
         side: "top",
+        href: "/daftar-pesanan?status=scheduled",
       },
       loading: {
         text: "Daftar pesanan yang sedang dalam proses muat barang ke dalam armada di lokasi muat.",
         side: "left",
+        href: "/datar-pesanan?status=loading",
       },
       unloading: {
         text: "Daftar pesanan yang sedang dalam proses bongkar barang dari armada di lokasi bongkar.",
         side: "top",
+        href: "/daftar-pesanan?status=unloading",
       },
       documentPreparation: {
         text: "Daftar pesanan yang sedang dalam proses penyiapan dan verifikasi dokumen pengiriman.",
         side: "top",
+        href: "/daftar-pesanan?status=documentPreparation",
       },
       documentDelivery: {
         text: "Daftar pesanan dengan dokumen yang sedang dalam proses pengiriman ke pihak Shipper.",
         side: "top",
+        href: "/daftar-pesanan?status=documentDelivery",
       },
       completed: {
         text: "Daftar pesanan jasa angkut yang telah selesai diproses, termasuk pengiriman dokumen dan pembayaran.",
         side: "left",
+        href: "/daftar-pesanan?status=completed",
       },
     },
     alerts: {
       needResponse: {
         text: "Jumlah pesanan yang memerlukan respon perubahan dari Shipper hari ini",
         side: "top",
+        href: "/daftar-pesaanan?status=needResponse",
       },
       needConfirmation: {
         text: "Jumlah pesanan yang membutuhkan konfirmasi siap hari ini",
         side: "top",
+        href: "/daftar-pesanan?status=needConfirmation",
       },
       needAssignment: {
         text: "Jumlah pesanan yang belum memiliki armada hari ini",
         side: "top",
+        href: "/daftar-pesanan?status=needAssignment",
       },
       newReviews: {
         text: "Ulasan yang baru diberikan oleh Shipper untuk pengiriman yang telah selesai pada hari ini",
         side: "left",
+        href: "/dashboard/real-time/ulasan",
       },
       sosReports: {
         text: "Jumlah laporan SOS yang memerlukan tindakan penyelesaian hari ini",
         side: "top",
+        href: "/monitoring?tabActive=sos",
       },
     },
     performance: {
@@ -174,8 +187,9 @@ const RealtimeDashboardPage = () => {
               key={key}
               label={pesananLabel[key]}
               value={data.count}
-              tooltipText={tooltipContent.orders[key].text}
-              side={tooltipContent.orders[key].side}
+              href={contents.orders[key].href}
+              tooltipText={contents.orders[key].text}
+              side={contents.orders[key].side}
             />
           ))}
         </div>
@@ -200,9 +214,10 @@ const RealtimeDashboardPage = () => {
             <StatCard
               key={key}
               label={alertLabel[key]}
+              href={contents.alerts[key].href}
               value={data.count}
-              tooltipText={tooltipContent.alerts[key].text}
-              side={tooltipContent.alerts[key].side}
+              tooltipText={contents.alerts[key].text}
+              side={contents.alerts[key].side}
             />
           ))}
         </div>
@@ -221,8 +236,8 @@ const RealtimeDashboardPage = () => {
             href="/dashboard/real-time/rating-driver"
             icon="/icons/star.svg"
             labelIcon="/icons/star_icon.svg"
-            tooltipText={tooltipContent.performance.overallRating.text}
-            side={tooltipContent.performance.overallRating.side}
+            tooltipText={contents.performance.overallRating.text}
+            side={contents.performance.overallRating.side}
             variant="soft"
           />
           <StatCard
@@ -230,8 +245,9 @@ const RealtimeDashboardPage = () => {
             value={dashboardData.performance.cancelledOrders}
             valueUnit=" Pesanan"
             icon="/icons/cancel-circle.svg"
-            tooltipText={tooltipContent.performance.cancelledOrders.text}
-            side={tooltipContent.performance.cancelledOrders.side}
+            href="/daftar-pesanan?status=cancelledOrders"
+            tooltipText={contents.performance.cancelledOrders.text}
+            side={contents.performance.cancelledOrders.side}
             variant="soft"
           />
           <StatCard
@@ -240,8 +256,8 @@ const RealtimeDashboardPage = () => {
             valueUnit=" Penalti"
             icon="/icons/danger-triangle.svg"
             href="/dashboard/real-time/penalti"
-            tooltipText={tooltipContent.performance.penalties.text}
-            side={tooltipContent.performance.penalties.side}
+            tooltipText={contents.performance.penalties.text}
+            side={contents.performance.penalties.side}
             variant="soft"
           />
         </div>

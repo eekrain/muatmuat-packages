@@ -17,14 +17,14 @@ const IncomeCards = ({ data }) => {
       tooltip: "Pendapatan yang sudah berhasil dicairkan ke rekening kamu",
       side: "right",
       value: data.disbursed,
-      href: "#",
+      href: "/laporan/pendapatan?status=disbursed",
     },
     {
       title: "Belum Dicairkan",
       tooltip: "Jumlah pendapatan yang belum dicairkan ke rekening kamu",
       side: "left",
       value: data.pending,
-      href: "#",
+      href: "/laporan/pendapatan?status=pending",
     },
     {
       title: "Potensi Pendapatan",
@@ -47,7 +47,7 @@ const IncomeCards = ({ data }) => {
     <div className="flex w-full gap-6">
       {/* Card Utama */}
       <Link
-        href="#"
+        href="/laporan/pendapatan"
         className="relative flex w-[410px] flex-col justify-center rounded-lg bg-primary-50 p-6"
       >
         <InfoTooltip
