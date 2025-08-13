@@ -87,20 +87,20 @@ const HeaderLayout = ({
       isDropdown: true,
       dropdownItems: [
         {
-          id: "laporan-pendapatan",
-          label: "Laporan Pendapatan",
-          href: "/laporan/pendapatan",
+          id: "laporan-riwayat-transporter-tidak-aktif",
+          label: "Laporan Riwayat Transporter Tidak Aktif",
+          href: "/laporan/riwayattransportertidakaktif",
         },
         {
-          id: "laporan-pencairan-dana",
-          label: "Laporan Pencairan Dana",
-          href: "/laporan/pencairan-dana",
+          id: "laporan-permintaan-dibatalkan",
+          label: "Laporan Permintaan Dibatalkan",
+          href: "/laporan/permintaandibatalkan",
         },
-        {
-          id: "laporan-aktivitas",
-          label: "Laporan Aktivitas",
-          href: "/laporan/aktivitas",
-        },
+        // {
+        //   id: "laporan-aktivitas",
+        //   label: "Laporan Aktivitas",
+        //   href: "/laporan/aktivitas",
+        // },
       ],
     },
   ];
@@ -170,9 +170,15 @@ const HeaderLayout = ({
                     </button>
                   </SimpleHoverTrigger>
 
-                  <SimpleHoverContent>
+                  <SimpleHoverContent className="w-full">
                     {item.dropdownItems.map((dropdownItem) => (
                       <SimpleHoverItem
+                        className={cn(
+                          "flex items-center justify-between gap-x-2.5",
+                          pathname.includes(dropdownItem.href)
+                            ? "font-semibold"
+                            : ""
+                        )}
                         key={dropdownItem.id}
                         onClick={dropdownItem.onClick}
                       >
@@ -183,6 +189,14 @@ const HeaderLayout = ({
                         ) : (
                           <span>{dropdownItem.label}</span>
                         )}
+                        <div className="size-4">
+                          {pathname.includes(dropdownItem.href) ? (
+                            <IconComponent
+                              className="text-primary-700"
+                              src="/icons/check16.svg"
+                            />
+                          ) : null}
+                        </div>
                       </SimpleHoverItem>
                     ))}
                   </SimpleHoverContent>
