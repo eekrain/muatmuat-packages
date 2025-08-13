@@ -40,7 +40,7 @@ const SkeletonLoading = () => {
         <div className="h-6 w-1/3 animate-pulse rounded-md bg-[#ffdf7e]" />
         <div className="h-4 w-1/2 animate-pulse rounded-md bg-[#ffdf7e]" />
         <div className="mt-2 grid animate-pulse grid-cols-4 gap-4">
-          {Array.from({ length: 4 }).map((_, i) => (
+          {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="h-24 rounded-lg bg-neutral-100" />
           ))}
         </div>

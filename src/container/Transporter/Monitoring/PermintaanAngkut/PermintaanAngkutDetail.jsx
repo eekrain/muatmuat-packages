@@ -5,7 +5,7 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { useGetTransportRequestDetail } from "@/services/Transporter/monitoring/getTransportRequestListDetail";
+import { useGetTransportRequestDetail } from "@/services/Transporter/monitoring/permintaan-angkut/getTransportRequestListDetail";
 
 import DetailContent from "./components/DetailContent";
 import ModalTerimaPermintaan from "./components/ModalTerimaPermintaan";

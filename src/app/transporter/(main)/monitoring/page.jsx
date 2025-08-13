@@ -26,11 +26,7 @@ import { useGetFleetLocations } from "@/services/Transporter/monitoring/getFleet
 import { useToastActions } from "@/store/Shipper/toastStore";
 
 import { useMonitoringHandlers } from "./hooks/useMonitoringHandlers";
-import {
-  FILTER_ACTIONS,
-  filtersReducer,
-  initialFiltersState,
-} from "./reducers/filtersReducer";
+import { filtersReducer, initialFiltersState } from "./reducers/filtersReducer";
 import {
   MAP_ACTIONS,
   initialMapState,
@@ -46,12 +42,7 @@ import {
   initialSelectionsState,
   selectionsReducer,
 } from "./reducers/selectionsReducer";
-import {
-  applyFiltersToMarkers,
-  calculateFleetCounts,
-  calculateMapBounds,
-  convertFleetToMarkers,
-} from "./utils/mapUtils";
+import { calculateMapBounds } from "./utils/mapUtils";
 
 const Page = () => {
   const router = useRouter();
