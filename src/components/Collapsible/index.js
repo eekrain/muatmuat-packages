@@ -1,6 +1,6 @@
 export {
   Collapsible,
-  CollapsibleTrigger,
   CollapsibleContent,
+  CollapsibleTrigger,
   useCollapsible,
 } from "./Collapsible";
