@@ -37,6 +37,7 @@ const DropdownPeriode = ({
   onSelect,
   disable = false,
   value = null, // New prop to control the component externally
+  width = "w-[202px]",
 }) => {
   const { t } = useTranslation();
   const [selected, setSelected] = useState(
@@ -138,7 +139,7 @@ const DropdownPeriode = ({
   }, []);
 
   return (
-    <div className={"relative w-[202px] text-neutral-900"} ref={dropdownRef}>
+    <div className={cn("relative text-neutral-900", width)} ref={dropdownRef}>
       <button
         disabled={disable}
         className={cn(

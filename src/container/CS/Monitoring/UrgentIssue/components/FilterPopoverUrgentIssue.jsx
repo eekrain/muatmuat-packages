@@ -255,6 +255,7 @@ export default function FilterPopoverUrgentIssue({
                 onSelect={handleSelectPeriod}
                 recentSelections={recentPeriodOptions}
                 value={currentPeriodValue}
+                width="w-full"
               />
             </div>
           )}

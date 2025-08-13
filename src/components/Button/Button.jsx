@@ -18,6 +18,8 @@ const buttonVariants = cva(
         // MuatTrans variants
         "muattrans-primary":
           "bg-[--muat-trans-primary-400] text-neutral-900 hover:bg-[--muat-trans-primary-500]",
+        "muattrans-outline-primary":
+          "border border-neutral-900 bg-neutral-50 text-neutral-900",
         "muattrans-primary-secondary":
           "border border-[--muat-trans-secondary-900] bg-neutral-50 text-[--muat-trans-secondary-900] hover:bg-[--muat-trans-secondary-50]",
         "muattrans-error": "bg-error-400 text-neutral-50 hover:bg-error-600",
@@ -140,6 +142,7 @@ export default Button;
 Button.propTypes = {
   variant: PropTypes.oneOf([
     "muattrans-primary",
+    "muattrans-outline-primary",
     "muattrans-primary-secondary",
     "muattrans-error",
     "muattrans-error-secondary",

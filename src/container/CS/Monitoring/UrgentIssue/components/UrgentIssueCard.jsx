@@ -329,9 +329,9 @@ export const UrgentIssueCard = ({
                     setIsConfirmCompleted(true);
                   }
                 }}
-                className="mt-2 h-[32px] min-w-[112px] rounded-full bg-muat-trans-primary-400 px-6 py-3 text-sm font-semibold text-muat-trans-secondary-900"
+                variant="muattrans-outline-primary"
               >
-                {buttonLabel}
+                Ubah Transporter
               </Button>
             </div>
           )}
