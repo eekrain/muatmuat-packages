@@ -18,7 +18,7 @@ const ExpandableReview = ({ text, limit = 40 }) => {
       {showToggle && (
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="ml-1 mt-1 flex items-center gap-1 text-xs font-medium text-primary-700 hover:underline"
+          className="ml-1 mt-1 flex items-center gap-1 text-xs font-medium text-primary-700 hover:text-primary-800"
         >
           {isExpanded ? "Sembunyikan" : "Lihat Selengkapnya"}
           {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
