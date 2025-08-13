@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
@@ -29,6 +29,7 @@ export const MapInterfaceOverlay = ({
   hasMapInteraction = false,
   hasData = true,
   activeFilters = { truck: [], order: [] },
+  showPilihArmada = false,
 }) => {
   const { data: sosStatusSummary } = useGetSosStatusSummary();
   const [centerButtonClicked, setCenterButtonClicked] =
@@ -94,13 +95,14 @@ export const MapInterfaceOverlay = ({
       {/* Top Navigation Bar Overlay */}
       {!hideTopNavigation && (
         <div className="absolute left-0 right-0 top-0 z-20 flex items-center gap-3 p-4">
-          {/* Daftar Armada Button */}
+          {/* Daftar Armada / Kembali Button */}
           <Button
             variant="muattrans-primary"
-            iconRight={<ChevronRight size={16} />}
+            iconLeft={showPilihArmada ? <ChevronLeft size={16} /> : null}
+            iconRight={!showPilihArmada ? <ChevronRight size={16} /> : null}
             onClick={onClickDaftarArmada}
           >
-            Daftar Armada
+            {showPilihArmada ? "Kembali" : "Daftar Armada"}
           </Button>
 
           {/* Search Input with Suggestions */}

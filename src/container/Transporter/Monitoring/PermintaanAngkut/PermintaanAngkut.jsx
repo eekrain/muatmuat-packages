@@ -10,7 +10,7 @@ import { useGetTransportRequestList } from "@/services/Transporter/monitoring/ge
 import PermintaanAngkutDetail from "./PermintaanAngkutDetail";
 import TransportRequestCard from "./components/TransportRequestCard";
 
-const PermintaanAngkut = () => {
+const PermintaanAngkut = ({ onAcceptRequest }) => {
   const [activeTab, setActiveTab] = useState("tersedia");
   const [searchValue, setSearchValue] = useState("");
   const [bookmarkedItems, setBookmarkedItems] = useState(new Set());
@@ -347,6 +347,7 @@ const PermintaanAngkut = () => {
               onUnderstand={handleUnderstand}
               onShowDetail={handleShowDetail}
               searchValue={searchValue}
+              onAcceptRequest={onAcceptRequest}
             />
           </div>
         </>
@@ -366,6 +367,7 @@ const RequestList = ({
   onUnderstand,
   onShowDetail,
   searchValue,
+  onAcceptRequest,
 }) => {
   if (isLoading) {
     return (
@@ -480,6 +482,7 @@ const RequestList = ({
             isBookmarked={currentBookmarkState}
             onUnderstand={onUnderstand}
             onShowDetail={onShowDetail}
+            onAccept={onAcceptRequest}
           />
         );
       })}

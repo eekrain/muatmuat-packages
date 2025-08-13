@@ -78,7 +78,7 @@ const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
     <Modal open={isOpen} onOpenChange={onClose}>
       <ModalContent
         type="muatmuat"
-        className="w-[720px] max-w-[90vw]"
+        className="w-[800px]"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <div className="relative flex flex-col">
@@ -146,7 +146,7 @@ const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
                           </h3>
                         </div>
 
-                        <div className="relative mb-6 grid grid-cols-2 gap-12">
+                        <div className="relative mb-6 grid grid-cols-2 gap-12 px-12">
                           {/* Vertical divider line */}
                           <div className="absolute bottom-0 left-1/2 top-0 z-[3] w-0 -translate-x-1/2 border-l border-solid border-neutral-400" />
 
@@ -197,7 +197,7 @@ const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
                           </h3>
                         </div>
 
-                        <div className="relative grid grid-cols-2 gap-12">
+                        <div className="relative grid grid-cols-2 gap-12 px-12">
                           {/* Vertical divider line */}
                           <div className="absolute bottom-0 left-1/2 top-0 z-[3] w-0 -translate-x-1/2 border-l border-solid border-neutral-400" />
 
@@ -434,7 +434,7 @@ const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
 
                 {/* Income Adjustment Section */}
                 {changeDetails.incomeAdjustment?.hasAdjustment && (
-                  <div className="flex items-center gap-12 rounded-lg border border-neutral-400 px-4 py-4 pl-16">
+                  <div className="flex items-center gap-12 rounded-lg border border-neutral-400 px-16 py-4">
                     <div className="flex flex-1 items-center gap-2">
                       <h3 className="text-sm font-bold leading-[120%] text-black">
                         Penyesuaian Pendapatan
