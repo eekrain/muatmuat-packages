@@ -122,6 +122,8 @@
   "LacakArmadaScreen.labelEstimasiTibaLokasi": "预计到达<br/>{lokasi}地点",
   "LacakArmadaScreen.bottomSheetHeaderKeterangan": "说明",
   "LacakArmadaScreen.buttonDetailStatusDriver": "司机状态详情",
+  "Estimasi.labelMuat": "预计装货到达 {index}",
+  "Estimasi.labelBongkar": "预计卸货到达 {index}",
   "RingkasanPembayaranPerubahanPesanan.headerDetailTambahanBiaya": "额外费用详情",
   "RingkasanPembayaranPerubahanPesanan.sectionBiayaPerubahanRute": "路线变更费用",
   "RingkasanPembayaranPerubahanPesanan.labelSelisihJarakPerubahanLokasi": "位置变更距离差额",

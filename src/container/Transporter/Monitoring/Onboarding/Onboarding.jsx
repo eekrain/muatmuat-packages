@@ -71,11 +71,10 @@ const onboardingSlides = [
   },
 ];
 
-const Onboarding = () => {
+const Onboarding = ({ hasShownOnboarding, onOnboardingShown }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [dontShowAgain, setDontShowAgain] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const hasShownInSession = useRef(false);
 
   const {
     data: popupPreference,
@@ -86,15 +85,11 @@ const Onboarding = () => {
 
   // useEffect hanya untuk membuka modal secara otomatis
   useEffect(() => {
-    if (
-      popupPreference &&
-      popupPreference.showPopup &&
-      !hasShownInSession.current
-    ) {
+    if (popupPreference && popupPreference.showPopup && !hasShownOnboarding) {
       setIsModalOpen(true);
-      hasShownInSession.current = true;
+      onOnboardingShown?.();
     }
-  }, [popupPreference]);
+  }, [popupPreference, hasShownOnboarding, onOnboardingShown]);
 
   // useEffect untuk menyinkronkan checkbox saat modal dibuka secara manual
   useEffect(() => {
