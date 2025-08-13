@@ -7,7 +7,6 @@ import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
-import { useFlexibleCountdown } from "@/hooks/use-countdown";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
