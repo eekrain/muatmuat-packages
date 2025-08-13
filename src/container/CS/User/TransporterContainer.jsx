@@ -1,10 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ChevronDown } from "lucide-react";
 
+import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
+import ActiveFiltersBar from "@/components/ActiveFiltersBar/ActiveFiltersBar";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
@@ -22,18 +24,26 @@ import Pagination from "@/components/Pagination/Pagination";
 import Table from "@/components/Table/Table";
 import { toast } from "@/lib/toast";
 
-const TransporterContainer = ({ onPageChange, onPerPageChange, _count }) => {
+const TransporterContainer = ({
+  onPageChange,
+  onPerPageChange,
+  _count,
+  onDataStateChange,
+}) => {
   const router = useRouter();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [searchValue, setSearchValue] = useState("");
   const [filters, setFilters] = useState({});
+  const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
   const [modalState, setModalState] = useState({
     isOpen: false,
     type: "",
     data: null,
   });
+  const [hubungiModalOpen, setHubungiModalOpen] = useState(false);
+  const [selectedTransporter, setSelectedTransporter] = useState(null);
 
   const mockData = [
     {
@@ -162,6 +172,16 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, _count }) => {
     setModalState({ isOpen: true, type, data });
   };
 
+  const openHubungiModal = (transporterData) => {
+    setSelectedTransporter(transporterData);
+    setHubungiModalOpen(true);
+  };
+
+  const closeHubungiModal = () => {
+    setHubungiModalOpen(false);
+    setSelectedTransporter(null);
+  };
+
   const handleConfirmAction = () => {
     if (!modalState.data) return;
 
@@ -171,16 +191,24 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, _count }) => {
     } else if (modalState.type === "resend") {
       // console.log("Mengirim ulang verifikasi untuk:", modalState.data.companyName);
       toast.success("Verifikasi berhasil dikirim ulang");
+    } else if (modalState.type === "deactivate") {
+      // console.log("Menonaktifkan transporter:", modalState.data.companyName);
+      toast.success("Berhasil menonaktifkan Transporter");
+    } else if (modalState.type === "activate") {
+      // console.log("Mengaktifkan transporter:", modalState.data.companyName);
+      toast.success("Berhasil mengaktifkan Transporter");
     }
     setModalState({ isOpen: false, type: "", data: null });
   };
 
   const getStatusBadge = (status) => {
     let variant = "success";
-    if (status === "Non Aktif" || status === "Verifikasi Ditolak") {
+    if (status === "Verifikasi Ditolak") {
       variant = "error";
     } else if (status === "Dalam Verifikasi") {
       variant = "warning";
+    } else if (status === "Non Aktif") {
+      variant = "neutral";
     }
     return <BadgeStatus variant={variant}>{status}</BadgeStatus>;
   };
@@ -195,8 +223,13 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, _count }) => {
             >
               Detail
             </SimpleDropdownItem>
-            <SimpleDropdownItem onClick={() => {}}>Hubungi</SimpleDropdownItem>
-            <SimpleDropdownItem className={"text-red-500"} onClick={() => {}}>
+            <SimpleDropdownItem onClick={() => openHubungiModal(row)}>
+              Hubungi
+            </SimpleDropdownItem>
+            <SimpleDropdownItem
+              className={"text-red-500"}
+              onClick={() => openModal("deactivate", row)}
+            >
               Non Aktifkan
             </SimpleDropdownItem>
           </>
@@ -209,7 +242,12 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, _count }) => {
             >
               Detail
             </SimpleDropdownItem>
-            <SimpleDropdownItem onClick={() => {}}>Hubungi</SimpleDropdownItem>
+            <SimpleDropdownItem onClick={() => openHubungiModal(row)}>
+              Hubungi
+            </SimpleDropdownItem>
+            <SimpleDropdownItem onClick={() => openModal("activate", row)}>
+              Aktifkan
+            </SimpleDropdownItem>
           </>
         );
       case "Dalam Verifikasi":
@@ -220,7 +258,9 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, _count }) => {
             >
               Detail
             </SimpleDropdownItem>
-            <SimpleDropdownItem onClick={() => {}}>Hubungi</SimpleDropdownItem>
+            <SimpleDropdownItem onClick={() => openHubungiModal(row)}>
+              Hubungi
+            </SimpleDropdownItem>
           </>
         );
       case "Verifikasi Ditolak":
@@ -234,7 +274,9 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, _count }) => {
             >
               Detail
             </SimpleDropdownItem>
-            <SimpleDropdownItem onClick={() => {}}>Hubungi</SimpleDropdownItem>
+            <SimpleDropdownItem onClick={() => openHubungiModal(row)}>
+              Hubungi
+            </SimpleDropdownItem>
             <SimpleDropdownItem
               className={"text-red-500"}
               onClick={() => openModal("delete", row)}
@@ -322,6 +364,64 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, _count }) => {
       );
     }
 
+    if (modalState.type === "deactivate") {
+      return (
+        <ConfirmationModal
+          {...commonProps}
+          title={{ text: "Non Aktifkan Transporter" }}
+          description={{
+            text: (
+              <>
+                Apakah kamu yakin ingin menonaktifkan Transporter{" "}
+                <strong>{modalState.data.companyName}</strong>?
+              </>
+            ),
+          }}
+          confirm={{
+            text: "Ya, Non Aktifkan",
+            onClick: handleConfirmAction,
+            classname:
+              " border border-[--muat-trans-secondary-900] bg-neutral-50 text-[--muat-trans-secondary-900] hover:bg-[--muat-trans-secondary-50]",
+          }}
+          cancel={{
+            text: "Kembali",
+            classname:
+              " bg-[--muat-trans-primary-400] text-neutral-900 hover:bg-[--muat-trans-primary-500] border-none",
+            onClick: () => commonProps.setIsOpen(false),
+          }}
+        />
+      );
+    }
+
+    if (modalState.type === "activate") {
+      return (
+        <ConfirmationModal
+          {...commonProps}
+          title={{ text: "Aktifkan Transporter" }}
+          description={{
+            text: (
+              <>
+                Apakah kamu yakin ingin mengaktifkan Transporter{" "}
+                <strong>{modalState.data.companyName}</strong>?
+              </>
+            ),
+          }}
+          confirm={{
+            text: "Ya, Aktifkan",
+            onClick: handleConfirmAction,
+            classname:
+              " border border-[--muat-trans-secondary-900] bg-neutral-50 text-[--muat-trans-secondary-900] hover:bg-[--muat-trans-secondary-50]",
+          }}
+          cancel={{
+            text: "Kembali",
+            classname:
+              " bg-[--muat-trans-primary-400] text-neutral-900 hover:bg-[--muat-trans-primary-500] border-none",
+            onClick: () => commonProps.setIsOpen(false),
+          }}
+        />
+      );
+    }
+
     return null;
   };
 
@@ -329,6 +429,7 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, _count }) => {
     {
       key: "companyName",
       header: "Nama Perusahaan",
+      sortable: true,
       render: (row) => (
         <div className="flex items-center space-x-5">
           <div className="relative flex aspect-square h-14 w-14 items-center justify-center rounded-md border border-neutral-400 bg-white object-contain p-px">
@@ -371,6 +472,7 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, _count }) => {
       key: "fleetCount",
       header: "Jumlah Armada",
       width: "170px",
+      sortable: true,
       render: (row) => (
         <div className="text-xxs font-medium">
           {row.fleetCount > 0 ? `${row.fleetCount} Armada` : "Belum Ada"}
@@ -412,7 +514,26 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, _count }) => {
     setCurrentPage(1);
   };
 
+  const performSearch = (value) => {
+    if (value.length >= 3 || value.length === 0) {
+      // Only perform search if value is 3+ characters or empty (to reset)
+      setCurrentPage(1);
+    }
+  };
+
+  const handleSearchKeyDown = (e) => {
+    if (e.key === "Enter") {
+      performSearch(searchValue);
+    }
+  };
+
+  const handleClearSearch = () => {
+    setSearchValue("");
+    performSearch("");
+  };
+
   const handleFilter = (newFilters) => {
+    setFilters(newFilters);
     const processedFilters = {};
 
     Object.entries(newFilters).forEach(([key, value]) => {
@@ -427,7 +548,6 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, _count }) => {
       }
     });
 
-    setFilters(processedFilters);
     setCurrentPage(1);
   };
 
@@ -456,62 +576,182 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, _count }) => {
     };
   };
 
+  // Convert selected filters to active filter format
+  const getActiveFilters = () => {
+    const activeFilters = [];
+
+    Object.entries(filters).forEach(([categoryKey, items]) => {
+      if (Array.isArray(items)) {
+        // Multi-select
+        items.forEach((item) => {
+          activeFilters.push({
+            id: `${categoryKey}-${item.id}`,
+            label: item.label,
+            categoryKey,
+            item,
+          });
+        });
+      } else if (items) {
+        // Single-select - since status is single-select in this case
+        activeFilters.push({
+          id: `${categoryKey}-${items.id || items}`,
+          label: items.label || items,
+          categoryKey,
+          item: items,
+        });
+      }
+    });
+
+    return activeFilters;
+  };
+
+  const handleRemoveFilter = (filter) => {
+    const newFilters = { ...filters };
+
+    if (Array.isArray(newFilters[filter.categoryKey])) {
+      // Multi-select
+      newFilters[filter.categoryKey] = newFilters[filter.categoryKey].filter(
+        (item) => (item.id || item) !== (filter.item.id || filter.item)
+      );
+      if (newFilters[filter.categoryKey].length === 0) {
+        delete newFilters[filter.categoryKey];
+      }
+    } else {
+      // Single-select
+      delete newFilters[filter.categoryKey];
+    }
+
+    setFilters(newFilters);
+    setCurrentPage(1);
+  };
+
+  const handleClearAllFilters = () => {
+    setFilters({});
+    setCurrentPage(1);
+  };
+
+  const handleSort = (key) => {
+    let order = "asc";
+    if (sortConfig.sort === key && sortConfig.order === "asc") {
+      order = "desc";
+    }
+    setSortConfig({ sort: key, order });
+    setCurrentPage(1);
+  };
+
   // Calculate pagination
-  const totalItems = mockData.length;
+  const getFilteredData = () => {
+    let filteredData = [...mockData];
+
+    // Apply search filter only if searchValue is 3+ characters or empty
+    if (searchValue.trim() && searchValue.length >= 3) {
+      filteredData = filteredData.filter(
+        (item) =>
+          item.companyName.toLowerCase().includes(searchValue.toLowerCase()) ||
+          item.email.toLowerCase().includes(searchValue.toLowerCase()) ||
+          item.picName.toLowerCase().includes(searchValue.toLowerCase()) ||
+          item.address.toLowerCase().includes(searchValue.toLowerCase())
+      );
+    }
+
+    // Apply status filter
+    if (filters.status) {
+      filteredData = filteredData.filter(
+        (item) => item.status === filters.status
+      );
+    }
+
+    // Apply sorting
+    if (sortConfig.sort && sortConfig.order) {
+      filteredData.sort((a, b) => {
+        let aValue = a[sortConfig.sort];
+        let bValue = b[sortConfig.sort];
+
+        // Handle specific sorting cases
+        if (sortConfig.sort === "fleetCount") {
+          aValue = Number(aValue) || 0;
+          bValue = Number(bValue) || 0;
+        } else if (sortConfig.sort === "companyName") {
+          aValue = aValue?.toLowerCase() || "";
+          bValue = bValue?.toLowerCase() || "";
+        } else if (sortConfig.sort === "status") {
+          // Define status priority for sorting
+          const statusPriority = {
+            Aktif: 1,
+            "Dalam Verifikasi": 2,
+            "Non Aktif": 3,
+            "Verifikasi Ditolak": 4,
+          };
+          aValue = statusPriority[aValue] || 999;
+          bValue = statusPriority[bValue] || 999;
+        }
+
+        if (aValue < bValue) {
+          return sortConfig.order === "asc" ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.order === "asc" ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+
+    return filteredData;
+  };
+
+  const filteredData = getFilteredData();
+  const totalItems = filteredData.length;
   const totalPages = Math.ceil(totalItems / perPage);
   const startIndex = (currentPage - 1) * perPage;
   const endIndex = startIndex + perPage;
-  const paginatedData = mockData.slice(startIndex, endIndex);
+  const paginatedData = filteredData.slice(startIndex, endIndex);
   const showPagination = totalItems >= 10;
+
+  // Determine the current data state
+  const hasSearch = searchValue.trim().length > 0;
+  const hasFilters = Object.keys(filters).length > 0;
+  const hasData = filteredData.length > 0;
+  const originalDataExists = mockData.length > 0;
+
+  // Determine what to show
+  const showNoDataState = !originalDataExists;
+  const showSearchNotFoundState = hasSearch && !hasData && originalDataExists;
+  const showFilterNotFoundState =
+    hasFilters && !hasData && originalDataExists && !hasSearch;
+
+  // Notify parent about data state changes
+  useEffect(() => {
+    if (onDataStateChange) {
+      onDataStateChange({
+        hasData,
+        hasSearch,
+        hasFilters,
+        showSearchNotFoundState,
+        showFilterNotFoundState,
+        showNoDataState,
+        totalItems,
+      });
+    }
+  }, [
+    hasData,
+    hasSearch,
+    hasFilters,
+    showSearchNotFoundState,
+    showFilterNotFoundState,
+    showNoDataState,
+    totalItems,
+    onDataStateChange,
+  ]);
+
+  useEffect(() => {
+    // Reset to first page when filters change
+    setCurrentPage(1);
+  }, [filters, searchValue, sortConfig]);
 
   return (
     <>
       <div className="min-h-[280px] overflow-hidden rounded-xl bg-white shadow-muat">
-        {true ? (
-          <>
-            <div className="flex flex-col gap-5 px-6 pb-6 pt-5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center justify-center gap-3">
-                  <Input
-                    placeholder="Cari Transporter"
-                    value={searchValue}
-                    onChange={(e) => handleSearch(e.target.value)}
-                  />
-                  <FilterDropdown
-                    triggerClassName={"!w-[165px]"}
-                    selectedValues={filters}
-                    categories={getFilterConfig().categories}
-                    data={getFilterConfig().data}
-                    onSelectionChange={handleFilter}
-                    multiSelect={{ status: false }}
-                  />
-                </div>
-                <div>
-                  <p className="font-semibold">
-                    Total: {totalItems} Transporter
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="h-[calc(100vh-300px)]">
-              <Table
-                data={paginatedData}
-                columns={columns}
-                onRowClick={() => {
-                  // console.log("Row clicked");
-                }}
-                emptyComponent={
-                  <DataNotFound
-                    className="w-full"
-                    title="Tidak ada data ditemukan"
-                  />
-                }
-                // loading={true}
-              />
-              {renderConfirmationModal()}
-            </div>
-          </>
-        ) : (
+        {showNoDataState ? (
           <div className="flex h-[280px] w-full flex-col items-center justify-center">
             <DataNotFound type="data" title="Belum ada Transporter" />
             <Button
@@ -526,9 +766,106 @@ const TransporterContainer = ({ onPageChange, onPerPageChange, _count }) => {
               Tambah Transporter
             </Button>
           </div>
+        ) : (
+          <>
+            <div className="flex flex-col gap-5 px-6 pb-6 pt-5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center justify-center gap-3">
+                  <Input
+                    icon={{
+                      left: (
+                        <IconComponent
+                          src="/icons/search16.svg"
+                          className="!text-neutral-700"
+                        />
+                      ),
+                      right: searchValue.length > 0 && (
+                        <button onClick={handleClearSearch}>
+                          <IconComponent src="/icons/close20.svg" />
+                        </button>
+                      ),
+                    }}
+                    appearance={{
+                      inputClassName: "!text-xs",
+                      containerClassName: "!w-full min-w-[262px]",
+                    }}
+                    className="!w-full"
+                    placeholder="Cari Transporter/PIC Perusahaan"
+                    value={searchValue}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    onKeyDown={handleSearchKeyDown}
+                    disabled={showFilterNotFoundState}
+                  />
+                  <FilterDropdown
+                    triggerClassName={
+                      "!w-[165px] hover:!border-neutral-600 hover:!bg-white"
+                    }
+                    selectedValues={filters}
+                    categories={getFilterConfig().categories}
+                    data={getFilterConfig().data}
+                    onSelectionChange={handleFilter}
+                    multiSelect={false}
+                    searchable={false}
+                    disabled={showSearchNotFoundState}
+                  />
+                </div>
+                <div>
+                  <p className="font-semibold">
+                    Total: {totalItems} Transporter
+                  </p>
+                </div>
+              </div>
+              {/* Active Filters Bar */}
+              {Object.keys(filters).length > 0 && (
+                <ActiveFiltersBar
+                  filters={getActiveFilters()}
+                  onRemoveFilter={handleRemoveFilter}
+                  onClearAll={handleClearAllFilters}
+                />
+              )}
+            </div>
+
+            <div className="">
+              <Table
+                data={paginatedData}
+                columns={columns}
+                onRowClick={() => {
+                  // console.log("Row clicked");
+                }}
+                emptyComponent={
+                  showSearchNotFoundState ? (
+                    <DataNotFound
+                      type="search"
+                      title="Keyword Tidak Ditemukan"
+                    />
+                  ) : showFilterNotFoundState ? (
+                    <DataNotFound
+                      type="data"
+                      title="Data tidak Ditemukan."
+                      subtitle="Mohon coba hapus beberapa filter"
+                    />
+                  ) : (
+                    <DataNotFound
+                      className="w-full"
+                      title="Tidak ada data ditemukan"
+                    />
+                  )
+                }
+                // loading={true}
+                onSort={handleSort}
+                sortConfig={sortConfig}
+              />
+              {renderConfirmationModal()}
+              <HubungiModal
+                isOpen={hubungiModalOpen}
+                onClose={closeHubungiModal}
+                transporterData={selectedTransporter}
+              />
+            </div>
+          </>
         )}
       </div>
-      {showPagination && (
+      {showPagination && hasData && (
         <div className="px-6 pb-6">
           <Pagination
             currentPage={currentPage}

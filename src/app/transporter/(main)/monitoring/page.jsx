@@ -10,6 +10,7 @@ import {
   MonitoringTabsList,
 } from "@/components/MonitoringTabs/MonitoringTabs";
 import { NotificationCount } from "@/components/NotificationDot/NotificationCount";
+import PermintaanAngkut from "@/container/CS/Monitoring/PermintaanAngkut/PermintaanAngkut";
 import UrgentIssue from "@/container/CS/Monitoring/UrgentIssue/UrgentIssue";
 import DaftarArmada from "@/container/Transporter/Monitoring/DaftarArmada/DaftarArmada";
 import DaftarPesananAktif from "@/container/Transporter/Monitoring/DaftarPesananAktif/DaftarPesananAktif";
@@ -17,7 +18,6 @@ import LacakArmada from "@/container/Transporter/Monitoring/LacakArmada/LacakArm
 import { MapInterfaceOverlay } from "@/container/Transporter/Monitoring/Map/MapInterfaceOverlay";
 import { MapMonitoring } from "@/container/Transporter/Monitoring/Map/MapMonitoring";
 import { NoFleetOverlay } from "@/container/Transporter/Monitoring/Map/NoFleetOverlay";
-import PermintaanAngkut from "@/container/Transporter/Monitoring/PermintaanAngkut/PermintaanAngkut";
 import PilihArmada from "@/container/Transporter/Monitoring/PilihArmada/PilihArmada";
 import SOSContainer from "@/container/Transporter/Monitoring/SOS/SOSContainer";
 import { cn } from "@/lib/utils";
@@ -26,17 +26,23 @@ import { useGetFleetLocations } from "@/services/Transporter/monitoring/getFleet
 import { useToastActions } from "@/store/Shipper/toastStore";
 
 import { useMonitoringHandlers } from "./hooks/useMonitoringHandlers";
+import { filtersReducer, initialFiltersState } from "./reducers/filtersReducer";
 import {
-  MONITORING_ACTIONS,
-  initialMonitoringState,
-  monitoringReducer,
-} from "./monitoringReducer";
+  MAP_ACTIONS,
+  initialMapState,
+  mapReducer,
+} from "./reducers/mapReducer";
 import {
-  applyFiltersToMarkers,
-  calculateFleetCounts,
-  calculateMapBounds,
-  convertFleetToMarkers,
-} from "./utils/mapUtils";
+  PANEL_ACTIONS,
+  initialPanelsState,
+  panelsReducer,
+} from "./reducers/panelsReducer";
+import {
+  SELECTION_ACTIONS,
+  initialSelectionsState,
+  selectionsReducer,
+} from "./reducers/selectionsReducer";
+import { calculateMapBounds } from "./utils/mapUtils";
 
 const Page = () => {
   const router = useRouter();
@@ -45,16 +51,34 @@ const Page = () => {
   const { data: fleetLocationsData } = useGetFleetLocations();
   const { addToast } = useToastActions();
 
-  // Use reducer for complex state management
-  const [state, dispatch] = useReducer(
-    monitoringReducer,
-    initialMonitoringState
+  // Use multiple reducers for domain separation
+  const [panels, panelsDispatch] = useReducer(
+    panelsReducer,
+    initialPanelsState
+  );
+  const [map, mapDispatch] = useReducer(mapReducer, initialMapState);
+  const [filters, filtersDispatch] = useReducer(
+    filtersReducer,
+    initialFiltersState
+  );
+  const [selections, selectionsDispatch] = useReducer(
+    selectionsReducer,
+    initialSelectionsState
   );
 
-  // Destructure state for easier access
-  const { panels, map, filters, selections } = state;
+  // Track onboarding state at parent level to prevent reset
+  const [hasShownOnboarding, setHasShownOnboarding] = useState(false);
+
+  // Create combined state object for easier access
+  const state = { panels, map, filters, selections };
 
   // Use monitoring handlers hook
+  const dispatches = {
+    panelsDispatch,
+    mapDispatch,
+    filtersDispatch,
+    selectionsDispatch,
+  };
   const {
     handleOpenLeftPanel,
     handleOpenSOSPanel,
@@ -69,7 +93,7 @@ const Page = () => {
     handleTruckClick,
     handleAcceptRequest,
     handleTogglePilihArmada,
-  } = useMonitoringHandlers(dispatch, state, fleetLocationsData, addToast);
+  } = useMonitoringHandlers(dispatches, state, fleetLocationsData, addToast);
 
   // Map query param values to tab values
   const getTabValue = (queryValue) => {
@@ -107,7 +131,7 @@ const Page = () => {
     router.push(`/monitoring?tab=${queryValue}`);
     // Exit fullscreen mode when a tab is clicked
     if (panels.isFullscreen) {
-      dispatch({ type: MONITORING_ACTIONS.SET_FULLSCREEN, payload: false });
+      panelsDispatch({ type: PANEL_ACTIONS.SET_FULLSCREEN, payload: false });
     }
   };
 
@@ -125,20 +149,20 @@ const Page = () => {
     const marker = allFleetMarkers.find((m) => m.fleet.id === fleet.fleetId);
     if (marker) {
       // Center map on the selected fleet
-      dispatch({
-        type: MONITORING_ACTIONS.SET_MAP_CENTER,
+      mapDispatch({
+        type: MAP_ACTIONS.SET_MAP_CENTER,
         payload: {
           lat: fleet.lastLocation.latitude,
           lng: fleet.lastLocation.longitude,
         },
       });
-      dispatch({ type: MONITORING_ACTIONS.SET_MAP_ZOOM, payload: 16 }); // Zoom in to focus on the truck
-      dispatch({
-        type: MONITORING_ACTIONS.SET_AUTO_FIT_BOUNDS,
+      mapDispatch({ type: MAP_ACTIONS.SET_MAP_ZOOM, payload: 16 }); // Zoom in to focus on the truck
+      mapDispatch({
+        type: MAP_ACTIONS.SET_AUTO_FIT_BOUNDS,
         payload: false,
       }); // Disable auto-fit
-      dispatch({
-        type: MONITORING_ACTIONS.SET_MAP_INTERACTION,
+      mapDispatch({
+        type: MAP_ACTIONS.SET_MAP_INTERACTION,
         payload: false,
       });
     }
@@ -157,26 +181,26 @@ const Page = () => {
 
     if (marker) {
       // Center map on the selected vehicle
-      dispatch({
-        type: MONITORING_ACTIONS.SET_MAP_CENTER,
+      mapDispatch({
+        type: MAP_ACTIONS.SET_MAP_CENTER,
         payload: {
           lat: marker.position.lat,
           lng: marker.position.lng,
         },
       });
-      dispatch({ type: MONITORING_ACTIONS.SET_MAP_ZOOM, payload: 16 }); // Zoom in to focus on the truck
-      dispatch({
-        type: MONITORING_ACTIONS.SET_AUTO_FIT_BOUNDS,
+      mapDispatch({ type: MAP_ACTIONS.SET_MAP_ZOOM, payload: 16 }); // Zoom in to focus on the truck
+      mapDispatch({
+        type: MAP_ACTIONS.SET_AUTO_FIT_BOUNDS,
         payload: false,
       }); // Disable auto-fit
-      dispatch({
-        type: MONITORING_ACTIONS.SET_MAP_INTERACTION,
+      mapDispatch({
+        type: MAP_ACTIONS.SET_MAP_INTERACTION,
         payload: false,
       });
 
       // Also select the fleet in the armada list if panel is open
-      dispatch({
-        type: MONITORING_ACTIONS.SET_SELECTED_FLEET,
+      selectionsDispatch({
+        type: SELECTION_ACTIONS.SET_SELECTED_FLEET,
         payload: marker.fleet.id,
       });
 
@@ -268,21 +292,21 @@ const Page = () => {
   // Zoom handlers are now imported from useMonitoringHandlers hook
   // Need to create handleZoomIn and handleZoomOut that use calculatedBounds
   const handleZoomIn = () => {
-    dispatch({ type: MONITORING_ACTIONS.SET_AUTO_FIT_BOUNDS, payload: false });
-    dispatch({ type: MONITORING_ACTIONS.SET_MAP_INTERACTION, payload: true });
+    mapDispatch({ type: MAP_ACTIONS.SET_AUTO_FIT_BOUNDS, payload: false });
+    mapDispatch({ type: MAP_ACTIONS.SET_MAP_INTERACTION, payload: true });
     const currentZoom = map.zoom || calculatedBounds.zoom;
-    dispatch({
-      type: MONITORING_ACTIONS.SET_MAP_ZOOM,
+    mapDispatch({
+      type: MAP_ACTIONS.SET_MAP_ZOOM,
       payload: Math.min(currentZoom + 1, 20),
     });
   };
 
   const handleZoomOut = () => {
-    dispatch({ type: MONITORING_ACTIONS.SET_AUTO_FIT_BOUNDS, payload: false });
-    dispatch({ type: MONITORING_ACTIONS.SET_MAP_INTERACTION, payload: true });
+    mapDispatch({ type: MAP_ACTIONS.SET_AUTO_FIT_BOUNDS, payload: false });
+    mapDispatch({ type: MAP_ACTIONS.SET_MAP_INTERACTION, payload: true });
     const currentZoom = map.zoom || calculatedBounds.zoom;
-    dispatch({
-      type: MONITORING_ACTIONS.SET_MAP_ZOOM,
+    mapDispatch({
+      type: MAP_ACTIONS.SET_MAP_ZOOM,
       payload: Math.max(currentZoom - 1, 1),
     });
   };
@@ -342,8 +366,8 @@ const Page = () => {
                 onClickDaftarArmada={
                   panels.showPilihArmada
                     ? () => {
-                        dispatch({
-                          type: MONITORING_ACTIONS.HIDE_PILIH_ARMADA,
+                        panelsDispatch({
+                          type: PANEL_ACTIONS.HIDE_PILIH_ARMADA,
                         });
                       }
                     : handleOpenLeftPanel
@@ -356,7 +380,7 @@ const Page = () => {
                 isFullscreen={panels.isFullscreen}
                 showLicensePlate={map.showLicensePlate}
                 onToggleLicensePlate={(value) =>
-                  dispatch({ type: MONITORING_ACTIONS.TOGGLE_LICENSE_PLATE })
+                  mapDispatch({ type: MAP_ACTIONS.TOGGLE_LICENSE_PLATE })
                 }
                 onCenter={handleResetZoom}
                 hasMapInteraction={map.hasMapInteraction}
@@ -383,8 +407,8 @@ const Page = () => {
                   onClose={handleCloseLeftPanel}
                   selectedFleetId={selections.selectedFleetId}
                   onFleetSelect={(id) =>
-                    dispatch({
-                      type: MONITORING_ACTIONS.SET_SELECTED_FLEET,
+                    selectionsDispatch({
+                      type: SELECTION_ACTIONS.SET_SELECTED_FLEET,
                       payload: id,
                     })
                   }
@@ -394,7 +418,7 @@ const Page = () => {
             </div>
           </div>
 
-          {/* Bottom Panel - PilihArmada or Daftar Pesanan Aktif */}
+          {/* Bottom Panel - PilihArmada and Daftar Pesanan Aktif */}
           <div
             className="rounded-t-[20px] bg-white shadow-muat transition-all duration-300 ease-in-out"
             style={{
@@ -413,15 +437,20 @@ const Page = () => {
               <DaftarPesananAktif
                 onToggleExpand={handleToggleBottomPanel}
                 isExpanded={panels.isBottomExpanded}
+                hasShownOnboarding={hasShownOnboarding}
+                onOnboardingShown={() => setHasShownOnboarding(true)}
                 onViewFleetStatus={(order) => {
-                  dispatch({
-                    type: MONITORING_ACTIONS.SHOW_LACAK_ARMADA,
+                  panelsDispatch({
+                    type: PANEL_ACTIONS.SHOW_LACAK_ARMADA,
+                  });
+                  selectionsDispatch({
+                    type: SELECTION_ACTIONS.SET_SELECTED_ORDER_FOR_TRACKING,
                     payload: order,
                   });
                   // Automatically exit fullscreen mode when opening LacakArmada
                   if (panels.isFullscreen) {
-                    dispatch({
-                      type: MONITORING_ACTIONS.SET_FULLSCREEN,
+                    panelsDispatch({
+                      type: PANEL_ACTIONS.SET_FULLSCREEN,
                       payload: false,
                     });
                   }
@@ -443,7 +472,11 @@ const Page = () => {
             <div className="absolute right-0 top-0 z-30 h-screen w-[429px] overflow-hidden rounded-l-xl bg-white">
               <LacakArmada
                 onClose={() => {
-                  dispatch({ type: MONITORING_ACTIONS.HIDE_LACAK_ARMADA });
+                  panelsDispatch({ type: PANEL_ACTIONS.HIDE_LACAK_ARMADA });
+                  selectionsDispatch({
+                    type: SELECTION_ACTIONS.SET_SELECTED_ORDER_FOR_TRACKING,
+                    payload: null,
+                  });
                 }}
                 orderId={selections.selectedOrderForTracking?.id}
               />

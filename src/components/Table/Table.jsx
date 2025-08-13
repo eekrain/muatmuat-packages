@@ -1,6 +1,57 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { cn } from "@/lib/utils";
 
+/**
+ * A reusable Table component with sorting, loading, and empty state support
+ *
+ * @component
+ * @example
+ * // Basic usage
+ * <Table
+ *   columns={[
+ *     { key: 'name', header: 'Name', sortable: true },
+ *     { key: 'email', header: 'Email', sortable: false }
+ *   ]}
+ *   data={[
+ *     { name: 'John Doe', email: 'john@example.com' },
+ *     { name: 'Jane Smith', email: 'jane@example.com' }
+ *   ]}
+ *   onSort={(columnKey) => handleSort(columnKey)}
+ *   sortConfig={{ sort: 'name', order: 'asc' }}
+ * />
+ *
+ * @param {Object} props - The component props
+ * @param {Array<Column>} props.columns - Array of column configurations
+ * @param {string} props.columns[].key - Unique identifier for the column, used for sorting and data access
+ * @param {string} props.columns[].header - Display text for column header
+ * @param {boolean} [props.columns[].sortable=true] - Whether this column can be sorted (default: true if key exists and onSort is provided)
+ * @param {string} [props.columns[].width] - CSS width value for the column (e.g., "170px", "20%")
+ * @param {string} [props.columns[].className] - Additional CSS classes for table cells in this column
+ * @param {string} [props.columns[].headerClassName] - Additional CSS classes for the column header
+ * @param {Function} [props.columns[].render] - Custom render function for cell content: (row, rowIndex) => ReactNode
+ *
+ * @param {Array<Object>} props.data - Array of data objects to display in the table
+ *
+ * @param {boolean} [props.loading=false] - Whether the table is in loading state
+ *
+ * @param {Function} [props.onRowClick] - Callback when a row is clicked: (row, rowIndex) => void
+ *
+ * @param {Function} [props.rowClassName] - Function to determine additional CSS classes for rows: (row, rowIndex) => string
+ *
+ * @param {Function} [props.onSort] - Callback when a sortable column header is clicked: (columnKey) => void
+ *
+ * @param {Object} [props.sortConfig] - Current sort configuration
+ * @param {string|null} props.sortConfig.sort - Currently sorted column key
+ * @param {'asc'|'desc'|null} props.sortConfig.order - Current sort direction
+ *
+ * @param {React.ReactNode} [props.loadingComponent] - Custom loading component to display during loading state
+ *
+ * @param {React.ReactNode} [props.emptyComponent] - Custom component to display when no data is available
+ *
+ * @param {Array<number>} [props.rowRecomendations=[]] - Array of row indices that should receive special styling (legacy prop)
+ *
+ * @returns {React.ReactElement} The rendered Table component
+ */
 const Table = ({
   columns = [],
   data = [],

@@ -14,10 +14,11 @@ const ChangeWhatsappModal = ({
   setIsOpen,
   title = { text: "", className: "" }, // Added default value here
   description = { text: "", className: "" },
-  originalWhatsapp = "",
+  originalWhatsapp = "0812345678",
   // 25. 18 - Web - LB - 0275
   cancel = { classname: "", text: "", onClick: () => setIsOpen(false) }, // Added default for cancel
   confirm = { classname: "", text: "", onClick: () => setIsOpen(false) }, // Added default for confirm
+  isChangeNumber,
 }) => {
   const { t } = useTranslation();
   const [whatsappNumber, setWhatsappNumber] = useState("");
@@ -85,10 +86,14 @@ const ChangeWhatsappModal = ({
     big: "w-modal-big",
   };
   const modalClassname = modalClassnames[size] || modalClassnames.small;
+
   return (
     <Modal closeOnOutsideClick={false} open={isOpen} onOpenChange={setIsOpen}>
-      <ModalContent className="w-[496px]" type="muattrans">
-        <ModalHeader size={size} />
+      <ModalContent
+        className={`${isChangeNumber ? "w-[550px]" : "w-[496px]"} `}
+        type="muattrans"
+      >
+        <ModalHeader size={size} isChangeNumber={isChangeNumber} />
         <div className="flex flex-col items-center gap-y-6 px-6 py-9">
           {titleText ? (
             <h1
@@ -100,7 +105,7 @@ const ChangeWhatsappModal = ({
               {titleText}
             </h1>
           ) : null}
-          {errorMessage ? (
+          {!isChangeNumber && errorMessage ? (
             <div
               className={`flex w-full flex-row items-center justify-center gap-x-2.5 rounded-md border border-[#F71717] bg-[#FFE5E5] px-3 py-[15px]`}
             >
@@ -115,7 +120,9 @@ const ChangeWhatsappModal = ({
           ) : null}
           <Input
             icon={{ left: "/icons/whatsapp.svg" }}
-            placeholder={t("No. Whatsapp")}
+            placeholder={
+              isChangeNumber ? "Masukan No. Whatsapp" : "No. Whatsapp"
+            }
             value={whatsappNumber}
             onChange={(e) => {
               // Only allow numeric input
@@ -124,7 +131,8 @@ const ChangeWhatsappModal = ({
               // Clear error when typing
               if (errorMessage) setErrorMessage("");
             }}
-            hideErrorMessage={true}
+            errorMessage={errorMessage}
+            hideErrorMessage={isChangeNumber ? false : true}
             appearance={{
               containerClassName: errorMessage
                 ? "!h-12 border-[#F71717]"
@@ -135,7 +143,7 @@ const ChangeWhatsappModal = ({
           />
           <div className="flex items-center gap-x-2">
             <Button
-              variant="muatparts-primary"
+              variant={isChangeNumber ? "" : "muatparts-primary"}
               // 25. 18 - Web - LB - 0275
               className={cn("h-8 w-28", confirmClassname)}
               onClick={() => {
@@ -157,32 +165,59 @@ const ChangeWhatsappModal = ({
 
 export default ChangeWhatsappModal;
 
-export const ModalHeader = ({ className }) => (
+export const ModalHeader = ({ className, isChangeNumber }) => (
   <div
     className={cn(
-      "relative flex h-[70px] justify-between overflow-hidden rounded-t-xl bg-buyer-seller-900",
+      `relative flex h-[70px] justify-between overflow-hidden rounded-t-xl ${isChangeNumber ? "bg-muat-trans-primary-400" : "bg-buyer-seller-900"} `,
       className
     )}
   >
-    <div>
-      <img
-        alt="svg header modal kiri"
-        src="/img/otp-transporter/comet-kiri.png"
-        className="h-full w-full object-cover"
-      />
-    </div>
-    <div className="my-auto">
-      <img
-        alt="logo muatmuat header coklat"
-        src="/img/otp-transporter/muatmuat.png"
-      />
-    </div>
-    <div>
-      <img
-        alt="svg header modal kanan "
-        src="/img/otp-transporter/comet-kana.png"
-        className="h-full w-full object-cover"
-      />
-    </div>
+    {isChangeNumber ? (
+      <>
+        <div>
+          <img
+            alt="svg header modal kiri"
+            src="/img/header-modal/header-kiri.svg"
+            className="h-full w-full object-cover"
+          />
+        </div>
+        <div className="my-auto">
+          <img
+            alt="logo muatmuat header coklat"
+            src="/img/header-modal/muatmuat-brown.svg"
+          />
+        </div>
+        <div>
+          <img
+            alt="svg header modal kanan "
+            src="/img/header-modal/header-kanan.svg"
+            className="h-full w-full object-cover"
+          />
+        </div>
+      </>
+    ) : (
+      <>
+        <div>
+          <img
+            alt="svg header modal kiri"
+            src="/img/otp-transporter/comet-kiri.png"
+            className="h-full w-full object-cover"
+          />
+        </div>
+        <div className="my-auto">
+          <img
+            alt="logo muatmuat header coklat"
+            src="/img/otp-transporter/muatmuat.png"
+          />
+        </div>
+        <div>
+          <img
+            alt="svg header modal kanan "
+            src="/img/otp-transporter/comet-kana.png"
+            className="h-full w-full object-cover"
+          />
+        </div>
+      </>
+    )}
   </div>
 );

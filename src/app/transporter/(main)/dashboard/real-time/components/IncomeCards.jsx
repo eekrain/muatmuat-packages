@@ -17,14 +17,16 @@ const IncomeCards = ({ data }) => {
       tooltip: "Pendapatan yang sudah berhasil dicairkan ke rekening kamu",
       side: "right",
       value: data.disbursed,
-      href: "#",
+      href: "/laporan/pendapatan?status=disbursed",
+      openNewTab: true,
     },
     {
       title: "Belum Dicairkan",
       tooltip: "Jumlah pendapatan yang belum dicairkan ke rekening kamu",
       side: "left",
       value: data.pending,
-      href: "#",
+      href: "/laporan/pendapatan?status=pending",
+      openNewTab: true,
     },
     {
       title: "Potensi Pendapatan",
@@ -47,7 +49,8 @@ const IncomeCards = ({ data }) => {
     <div className="flex w-full gap-6">
       {/* Card Utama */}
       <Link
-        href="#"
+        href="/laporan/pendapatan"
+        target="_blank"
         className="relative flex w-[410px] flex-col justify-center rounded-lg bg-primary-50 p-6"
       >
         <InfoTooltip
@@ -80,6 +83,7 @@ const IncomeCards = ({ data }) => {
           <Link
             key={index}
             href={item.href}
+            target={item.openNewTab && "_blank"}
             className="w-full rounded-lg bg-[#F8F8FB] p-4"
           >
             <div className="flex items-center justify-between gap-2">

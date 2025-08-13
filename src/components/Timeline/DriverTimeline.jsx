@@ -111,7 +111,7 @@ export const DriverTimeline = ({ dataTimeline, onClickProof }) => {
         {dataTimeline?.statusDefinitions.map((parent, parentIndex) => (
           <Fragment key={`${parent.mappedOrderStatus}-${parentIndex}`}>
             {parent?.children?.length > 0 && (
-              <TimelineContainer className="mb-5">
+              <TimelineContainer className="mb-4 md:mb-5">
                 {parent.children.map((driverStatusItem, index) => (
                   <ItemWithLightbox
                     key={driverStatusItem.statusCode}
@@ -180,7 +180,7 @@ const ItemWithLightbox = ({
       title={statusMeta.label}
       isLast={isLastInGroup}
       timestamp={item.date}
-      className="grid-cols-[32px_1fr] gap-x-3"
+      className="grid-cols-[32px_1fr] gap-x-3 pb-4"
       appearance={{
         titleClassname: isActive
           ? "font-semibold text-neutral-900"
@@ -193,7 +193,12 @@ const ItemWithLightbox = ({
             {item.statusCode.startsWith("MENUJU_") ||
             item.statusCode.startsWith("PENGIRIMAN_")
               ? t("labelLihatBuktiMuatBarangPOD")
-              : t("labelLihatBuktiStatus", { statusName: item.statusName })}
+              : t("labelLihatBuktiStatus", {
+                  statusName: getDriverStatusMetadata({
+                    driverStatus: item.statusCode,
+                    t,
+                  }).label,
+                })}
           </ButtonMini>
         )
       }

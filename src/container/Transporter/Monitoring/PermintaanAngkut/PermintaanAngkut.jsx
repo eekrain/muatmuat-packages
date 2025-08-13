@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Search from "@/components/Search/Search";
-import { useGetTransportRequestList } from "@/services/Transporter/monitoring/getTransportRequestList";
+import { useGetTransportRequestList } from "@/services/Transporter/monitoring/permintaan-angkut/getTransportRequestList";
 
 import PermintaanAngkutDetail from "./PermintaanAngkutDetail";
 import TransportRequestCard from "./components/TransportRequestCard";
@@ -390,7 +390,7 @@ const RequestList = ({
         case "halal_logistik":
           return {
             title: "Belum Ada Permintaan Halal Logistik",
-            subtitle: "SMohon bersabar untuk menanti permintaan baru.",
+            subtitle: "Mohon bersabar untuk menanti permintaan baru.",
             icon: "/icons/halal.svg",
           };
         case "disimpan":

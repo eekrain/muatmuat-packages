@@ -16,8 +16,10 @@ import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import Search from "@/components/Search/Search";
+import SearchNotFound from "@/components/SearchNotFound/SearchNotFound";
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
 import Table from "@/components/Table/Table";
+import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useGetActiveOrders } from "@/services/Transporter/monitoring/daftar-pesanan-active/getActiveOrders";
 import { useGetActiveOrdersCount } from "@/services/Transporter/monitoring/daftar-pesanan-active/getActiveOrdersCount";
@@ -31,13 +33,18 @@ import {
 
 import Onboarding from "../Onboarding/Onboarding";
 import AssignArmadaModal from "./components/AssignArmadaModal";
+import BatalkanArmadaModal from "./components/BatalkanArmadaModal";
+import BatalkanPesananModal from "./components/BatalkanPesananModal";
 import ConfirmReadyModal from "./components/ConfirmReadyModal";
+import LihatArmadaModal from "./components/LihatArmadaModal";
 import RespondChangeModal from "./components/RespondChangeModal";
 
 const DaftarPesananAktif = ({
   onToggleExpand,
   isExpanded,
   onViewFleetStatus,
+  hasShownOnboarding,
+  onOnboardingShown,
 }) => {
   const { data: activeOrdersCount } = useGetActiveOrdersCount();
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
@@ -50,6 +57,15 @@ const DaftarPesananAktif = ({
   const [selectedOrderForConfirm, setSelectedOrderForConfirm] = useState(null);
   const [respondChangeModalOpen, setRespondChangeModalOpen] = useState(false);
   const [selectedOrderForChange, setSelectedOrderForChange] = useState(null);
+  const [batalkanArmadaModalOpen, setBatalkanArmadaModalOpen] = useState(false);
+  const [selectedOrderForCancel, setSelectedOrderForCancel] = useState(null);
+  const [batalkanPesananModalOpen, setBatalkanPesananModalOpen] =
+    useState(false);
+  const [selectedOrderForCancelOrder, setSelectedOrderForCancelOrder] =
+    useState(null);
+  const [lihatArmadaModalOpen, setLihatArmadaModalOpen] = useState(false);
+  const [selectedOrderForViewFleet, setSelectedOrderForViewFleet] =
+    useState(null);
 
   // Map filter keys to lowercase status values for API
   const getFilterStatus = (filterKey) => {
@@ -75,7 +91,9 @@ const DaftarPesananAktif = ({
         // TODO: Implement fleet tracking navigation
         break;
       case ORDER_ACTIONS.VIEW_FLEET.type:
-        console.log("Lihat Armada", row);
+        setSelectedOrderForViewFleet(row);
+        setLihatArmadaModalOpen(true);
+        setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       case ORDER_ACTIONS.VIEW_ORDER_DETAIL.type:
         console.log("Detail Pesanan", row);
@@ -84,7 +102,9 @@ const DaftarPesananAktif = ({
         console.log("Detail Armada", row);
         break;
       case ORDER_ACTIONS.CANCEL_ORDER.type:
-        console.log("Batalkan Pesanan", row);
+        setSelectedOrderForCancelOrder(row);
+        setBatalkanPesananModalOpen(true);
+        setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       case ORDER_ACTIONS.ASSIGN_FLEET.type:
         setSelectedOrderForArmada(row);
@@ -99,7 +119,9 @@ const DaftarPesananAktif = ({
         setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       case ORDER_ACTIONS.CANCEL_FLEET.type:
-        console.log("Batalkan Armada", row);
+        setSelectedOrderForCancel(row);
+        setBatalkanArmadaModalOpen(true);
+        setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       case ORDER_ACTIONS.CONFIRM_READY.type:
         setSelectedOrderForConfirm(row);
@@ -108,6 +130,53 @@ const DaftarPesananAktif = ({
         break;
       default:
         console.log("Unknown action:", actionType, row);
+    }
+  };
+
+  // Handler for confirming fleet cancellation
+  const handleCancelFleet = async (order) => {
+    try {
+      // TODO: Implement API call to cancel fleet assignment
+      console.log("Canceling fleet for order:", order);
+
+      // Example API call (replace with actual service)
+      // await cancelFleetAssignment(order.id);
+
+      // Show success toast notification
+      const truckCount = order?.truckCount || order?.vehicleCount || 1;
+      toast.success(
+        `Berhasil membatalkan ${truckCount} armada dari pesanan ${order?.orderCode || order?.orderNumber || ""}`
+      );
+
+      // TODO: Refresh data or update state as needed
+      // You might want to refetch the orders list here
+    } catch (error) {
+      console.error("Error canceling fleet:", error);
+      // Show error toast
+      toast.error("Gagal membatalkan armada. Silakan coba lagi.");
+    }
+  };
+
+  // Handler for confirming order cancellation
+  const handleCancelOrder = async (order) => {
+    try {
+      // TODO: Implement API call to cancel order
+      console.log("Canceling order:", order);
+
+      // Example API call (replace with actual service)
+      // await cancelOrder(order.id);
+
+      // Show success toast notification
+      toast.success(
+        `Berhasil membatalkan pesanan ${order?.orderCode || order?.orderNumber || ""}`
+      );
+
+      // TODO: Refresh data or update state as needed
+      // You might want to refetch the orders list here
+    } catch (error) {
+      console.error("Error canceling order:", error);
+      // Show error toast
+      toast.error("Gagal membatalkan pesanan. Silakan coba lagi.");
     }
   };
 
@@ -433,19 +502,19 @@ const DaftarPesananAktif = ({
     {
       key: "NEED_CHANGE_RESPONSE",
       label: "Respon Perubahan",
-      hasFilter: availableStatuses?.hasNeedChangeResponse,
+      hasFilter: !!availableStatuses?.totalNeedChangeResponse,
       count: availableStatuses?.totalNeedChangeResponse || 0,
     },
     {
       key: "NEED_CONFIRMATION_READY",
       label: "Perlu Konfirmasi Siap",
-      hasFilter: availableStatuses?.hasNeedConfirmationReady,
+      hasFilter: !!availableStatuses?.totalNeedConfirmationReady,
       count: availableStatuses?.totalNeedConfirmationReady || 0,
     },
     {
       key: "NEED_ASSIGN_VEHICLE",
       label: "Assign Armada",
-      hasFilter: availableStatuses?.hasNeedAssignVehicle,
+      hasFilter: !!availableStatuses?.totalNeedAssignVehicle,
       count: availableStatuses?.totalNeedAssignVehicle || 0,
     },
   ];
@@ -456,7 +525,10 @@ const DaftarPesananAktif = ({
       <div className="flex h-16 items-center gap-3 px-4">
         <div className="flex items-center gap-2">
           <h3 className="w-[80px] text-xs font-bold">Daftar Pesanan Aktif</h3>
-          <Onboarding />
+          <Onboarding
+            hasShownOnboarding={hasShownOnboarding}
+            onOnboardingShown={onOnboardingShown}
+          />
         </div>
         <div className="flex w-full items-center gap-3">
           {/* Status Filter Pills */}
@@ -472,10 +544,8 @@ const DaftarPesananAktif = ({
                         )
                       }
                       className={cn(
-                        "flex items-center gap-1 rounded-2xl border px-3 py-1.5 text-[10px] font-semibold leading-[130%] transition-colors",
-                        selectedFilter === filter.key
-                          ? "border-primary-700 bg-white text-primary-700"
-                          : "border-primary-700 bg-white text-primary-700"
+                        "flex items-center gap-1 rounded-2xl border border-primary-700 bg-white px-3 py-1.5 text-[10px] font-semibold leading-[130%] text-primary-700 transition-colors",
+                        selectedFilter === filter.key && "bg-primary-50"
                       )}
                     >
                       <span>{filter.label}</span>
@@ -501,8 +571,12 @@ const DaftarPesananAktif = ({
           <Search
             placeholder="Cari Pesanan"
             onSearch={(value) => {
+              console.log("🔍 Search triggered with value:", value);
+              console.log("🔍 Value length:", value.length);
+              console.log("🔍 Setting search value to:", value);
               setSearchValue(value);
-              // TODO: Implement search functionality
+              // Search functionality is implemented via useGetActiveOrders hook
+              // which automatically refetches data when searchValue changes
             }}
             onFocus={() => {
               if (!isExpanded) {
@@ -512,6 +586,8 @@ const DaftarPesananAktif = ({
             containerClassName="h-8 w-[180px]"
             inputClassName="text-xs"
             disabled={totalActiveOrders === 0}
+            autoSearch={false}
+            debounceTime={0}
           />
           <button
             onClick={onToggleExpand}
@@ -553,7 +629,13 @@ const DaftarPesananAktif = ({
                 loading={isLoading}
                 onSort={handleSort}
                 sortConfig={sortConfig}
-                emptyComponent={renderEmptyState()}
+                emptyComponent={
+                  searchValue && searchValue.length > 2 ? (
+                    <SearchNotFound searchTerm={searchValue} className="py-6" />
+                  ) : (
+                    renderEmptyState()
+                  )
+                }
               />
             </div>
           )}
@@ -588,6 +670,38 @@ const DaftarPesananAktif = ({
           setSelectedOrderForChange(null);
         }}
         orderData={selectedOrderForChange}
+      />
+
+      {/* Batalkan Armada Modal */}
+      <BatalkanArmadaModal
+        isOpen={batalkanArmadaModalOpen}
+        onClose={() => {
+          setBatalkanArmadaModalOpen(false);
+          setSelectedOrderForCancel(null);
+        }}
+        order={selectedOrderForCancel}
+        onConfirm={handleCancelFleet}
+      />
+
+      {/* Batalkan Pesanan Modal */}
+      <BatalkanPesananModal
+        isOpen={batalkanPesananModalOpen}
+        onClose={() => {
+          setBatalkanPesananModalOpen(false);
+          setSelectedOrderForCancelOrder(null);
+        }}
+        order={selectedOrderForCancelOrder}
+        onConfirm={handleCancelOrder}
+      />
+
+      {/* Lihat Armada Modal */}
+      <LihatArmadaModal
+        isOpen={lihatArmadaModalOpen}
+        onClose={() => {
+          setLihatArmadaModalOpen(false);
+          setSelectedOrderForViewFleet(null);
+        }}
+        orderData={selectedOrderForViewFleet}
       />
     </div>
   );
