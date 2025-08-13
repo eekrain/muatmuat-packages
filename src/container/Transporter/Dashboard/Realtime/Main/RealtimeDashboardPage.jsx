@@ -40,58 +40,69 @@ const RealtimeDashboardPage = () => {
         text: "Armada kamu telah tercatat untuk pesanan ini, harap menunggu maks. 1 jam untuk konfirmasi dari Shipper.",
         side: "right",
         href: "/daftar-pesanan?status=waitingConfirmation",
+        openNewTab: true,
       },
       confirmed: {
         text: "Daftar pesanan yang telah terkonfirmasi dan sedang dalam tahap persiapan armada untuk pengangkutan.",
         side: "right",
         href: "/daftar-pesanan?status=confirmed",
+        openNewTab: true,
       },
       scheduled: {
         text: "Daftar pesanan dengan jadwal keberangkatan yang telah ditetapkan, menunggu proses pemuatan barang.",
         side: "top",
         href: "/daftar-pesanan?status=scheduled",
+        openNewTab: true,
       },
       loading: {
         text: "Daftar pesanan yang sedang dalam proses muat barang ke dalam armada di lokasi muat.",
         side: "left",
-        href: "/datar-pesanan?status=loading",
+        href: "/daftar-pesanan?status=loading",
+        openNewTab: true,
       },
       unloading: {
         text: "Daftar pesanan yang sedang dalam proses bongkar barang dari armada di lokasi bongkar.",
         side: "top",
         href: "/daftar-pesanan?status=unloading",
+        openNewTab: true,
       },
       documentPreparation: {
         text: "Daftar pesanan yang sedang dalam proses penyiapan dan verifikasi dokumen pengiriman.",
         side: "top",
         href: "/daftar-pesanan?status=documentPreparation",
+        openNewTab: true,
       },
       documentDelivery: {
         text: "Daftar pesanan dengan dokumen yang sedang dalam proses pengiriman ke pihak Shipper.",
         side: "top",
         href: "/daftar-pesanan?status=documentDelivery",
+        openNewTab: true,
       },
       completed: {
         text: "Daftar pesanan jasa angkut yang telah selesai diproses, termasuk pengiriman dokumen dan pembayaran.",
         side: "left",
         href: "/daftar-pesanan?status=completed",
+        openNewTab: true,
       },
     },
     alerts: {
       needResponse: {
         text: "Jumlah pesanan yang memerlukan respon perubahan dari Shipper hari ini",
         side: "top",
-        href: "/daftar-pesaanan?status=needResponse",
+        href: "/daftar-pesanan?status=needResponse",
+        openNewTab: true,
       },
       needConfirmation: {
         text: "Jumlah pesanan yang membutuhkan konfirmasi siap hari ini",
         side: "top",
         href: "/daftar-pesanan?status=needConfirmation",
+        openNewTab: true,
       },
       needAssignment: {
         text: "Jumlah pesanan yang belum memiliki armada hari ini",
         side: "top",
         href: "/daftar-pesanan?status=needAssignment",
+        openNewTab: true,
       },
       newReviews: {
         text: "Ulasan yang baru diberikan oleh Shipper untuk pengiriman yang telah selesai pada hari ini",
@@ -102,6 +113,7 @@ const RealtimeDashboardPage = () => {
         text: "Jumlah laporan SOS yang memerlukan tindakan penyelesaian hari ini",
         side: "top",
         href: "/monitoring?tabActive=sos",
+        openNewTab: true,
       },
     },
     performance: {
@@ -188,6 +200,7 @@ const RealtimeDashboardPage = () => {
               label={pesananLabel[key]}
               value={data.count}
               href={contents.orders[key].href}
+              openNewTab={contents.orders[key].openNewTab}
               tooltipText={contents.orders[key].text}
               side={contents.orders[key].side}
             />
@@ -215,6 +228,7 @@ const RealtimeDashboardPage = () => {
               key={key}
               label={alertLabel[key]}
               href={contents.alerts[key].href}
+              openNewTab={contents.alerts[key].openNewTab}
               value={data.count}
               tooltipText={contents.alerts[key].text}
               side={contents.alerts[key].side}
@@ -246,6 +260,7 @@ const RealtimeDashboardPage = () => {
             valueUnit=" Pesanan"
             icon="/icons/cancel-circle.svg"
             href="/daftar-pesanan?status=cancelledOrders"
+            openNewTab={true}
             tooltipText={contents.performance.cancelledOrders.text}
             side={contents.performance.cancelledOrders.side}
             variant="soft"

@@ -18,6 +18,7 @@ const StatCard = ({
   href = "#",
   valueStyle = "text-2xl",
   valueUnit,
+  openNewTab = false,
   variant = "default", // 'default' | 'soft'
   side = "top",
 }) => {
@@ -46,7 +47,11 @@ const StatCard = ({
   const valueTextClass = `!text-base font-bold text-neutral-900 ${valueStyle}`;
 
   return (
-    <Link href={href} className={containerClass}>
+    <Link
+      href={href}
+      target={openNewTab && "_blank"}
+      className={containerClass}
+    >
       {iconWrapper}
       <div className={contentClass}>
         <div className={labelRowClass}>
