@@ -123,6 +123,8 @@
   "LacakArmadaScreen.labelEstimasiTibaLokasi": "Estimasi {labelTiba}",
   "LacakArmadaScreen.bottomSheetHeaderKeterangan": "Keterangan",
   "LacakArmadaScreen.buttonDetailStatusDriver": "Detail Status Driver",
+  "Estimasi.labelMuat": "Estimasi Kedatangan Muat {index}",
+  "Estimasi.labelBongkar": "Estimasi Kedatangan Bongkar {index}",
   "RingkasanPembayaranPerubahanPesanan.headerDetailTambahanBiaya": "Detail Tambahan Biaya",
   "RingkasanPembayaranPerubahanPesanan.sectionBiayaPerubahanRute": "Biaya Perubahan Rute",
   "RingkasanPembayaranPerubahanPesanan.labelSelisihJarakPerubahanLokasi": "Selisih Jarak Perubahan Lokasi Bongkar",
