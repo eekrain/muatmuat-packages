@@ -11,122 +11,109 @@ const MOCK_CONFIG = {
   isHalalCertified: true,
 };
 const apiResultTransportRequestList = {
-  data: {
-    Message: {
-      Code: 200,
-      Text: "Transport requests retrieved successfully",
-    },
-    Data: {
-      requests: [
-        {
-          id: "550e8400-e29b-41d4-a716-446655440007",
-          orderCode: "MT25A007G",
-          orderType: "INSTANT",
-          orderStatus: "PREPARE_FLEET",
-          isNew: false,
-          isHalalLogistics: false,
-          isSaved: true,
-          isTaken: false,
-          loadTimeStart: "2025-08-07T16:30:00+07:00",
-          loadTimeEnd: "2025-08-07T18:30:00+07:00",
-          estimatedDistance: 32,
-          totalPrice: 350000.0,
-          truckCount: 1,
-          truckTypeName: "Pick Up",
-          carrierName: "Terbuka",
-          hasOverload: false,
-          hasAdditionalService: true,
-          pickupLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440071",
-              sequence: 1,
-              fullAddress:
-                "Kab. Ogan Komering Ulu, Kec. Kedaton Peninjauan Raya",
-              city: "Tangerang",
-              province: "Banten",
-            },
-          ],
-          dropoffLocations: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440072",
-              sequence: 1,
-              fullAddress: "Kota Jakarta Barat, Kec. Kebon Jeruk",
-              city: "Jakarta Barat",
-              province: "DKI Jakarta",
-            },
-          ],
-          cargos: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440073",
-              name: "Dokumen Penting",
-              weight: 15,
-              weightUnit: "kg",
-              sequence: 1,
-            },
-          ],
-          additionalServices: [
-            {
-              id: "550e8400-e29b-41d4-a716-446655440074",
-              serviceName: "Pengiriman Ekspres",
-            },
-          ],
-          photos: [],
-          timeLabel: {
-            text: "Instan",
-            color: "green",
-            daysFromNow: 0,
-          },
-          loadTimeText: "Muat Hari Ini",
-          loadDateTime: "07 Agu 2025 16:30 WIB s/d 18:30 WIB",
-          potentialEarnings: "Rp350.000",
-          createdAt: "2025-08-06T10:15:00+07:00",
-        },
-      ],
-      tabCounts: {
-        tersedia: 35, // 2-digit total to test counter display and animation
-        halal_logistik: 22, // 2-digit halal requests to test animation
-        disimpan: 8, // Single digit saved requests
-      },
-      userStatus: {
-        isSuspended: MOCK_CONFIG.isSuspended,
-        driverDelegationEnabled: MOCK_CONFIG.driverDelegationEnabled,
-        isHalalCertified: MOCK_CONFIG.isHalalCertified,
-        suspensionReason: "Akun Kamu Ditangguhkan",
-        suspensionMessage: "Hubungi dukungan pelanggan untuk aktivasi kembali",
-        supportContactUrl: "tel:+62-811-1234-5678",
-        delegationWarningMessage:
-          "Tidak dapat menerima atau menolak pesanan secara langsung",
-        delegationResetUrl: "/settings/driver-delegation",
-        halalCertificationMessage:
-          "Tambahkan sertifikasi halal dengan menghubungi kami",
-        halalCertificationUrl: "tel:+62-811-1234-5678",
-      },
-      showEmptyState: MOCK_CONFIG.showEmptyState,
-    },
-    Type: "GET_TRANSPORT_REQUEST_LIST",
+  Message: {
+    Code: 200,
+    Text: "Successfully retrieved CS monitoring data",
   },
+  Data: {
+    requests: [
+      {
+        id: "uuid-1",
+        orderCode: "MT-2025-001",
+        shipperInfo: {
+          id: "shipper-1",
+          name: "PT Shipper ABC",
+          logo: "https://cdn.example.com/logo.jpg",
+          createdAt: "2025-01-15T10:30:00Z",
+        },
+        orderType: "INSTANT",
+        loadTimeStart: "2025-01-16T09:00:00Z",
+        loadTimeEnd: "2025-01-16T11:00:00Z",
+        timeLabels: {
+          category: "MUAT_HARI_INI",
+          display: "Muat Hari Ini",
+          color: "green",
+          countdown: "02:30:45",
+        },
+        pickupLocations: [
+          {
+            fullAddress: "Jl. Raya No. 1, Jakarta Selatan",
+            city: "Jakarta Selatan",
+            province: "DKI Jakarta",
+          },
+        ],
+        dropoffLocations: [
+          {
+            fullAddress: "Jl. Merdeka No. 99, Bandung",
+            city: "Bandung",
+            province: "Jawa Barat",
+          },
+        ],
+        estimatedDistance: 150.5,
+        cargos: [
+          {
+            name: "Peralatan Rumah Tangga",
+            weight: 1500,
+            weightUnit: "kg",
+            dimensions: "200x100x80 cm",
+          },
+        ],
+        totalPrice: 2500000,
+        transportFee: 2000000,
+        isHalalLogistics: false,
+        hasOverload: false,
+        requestAttempt: 1,
+        lastViewedAt: "2025-01-15T14:20:00Z",
+        lastSavedAt: "2025-01-15T13:45:00Z",
+        isSaved: false,
+        isNew: true,
+        truckTypeName: "Fuso",
+        carrierName: "Agam Tunggal Jaya",
+        truckCount: 2,
+        loadDateTime: "16 Jan 2025 09:00 WIB s/d 11:00 WIB",
+        potentialEarnings: "Rp2.500.000",
+        orderStatus: "PREPARE_FLEET",
+      },
+    ],
+    pagination: {
+      currentPage: 1,
+      totalPages: 10,
+      totalItems: 97,
+      hasNext: true,
+      hasPrevious: false,
+    },
+    tabCounts: {
+      tersedia: 97,
+      halal_logistik: 10,
+      disimpan: 5,
+    },
+    newRequestsCount: {
+      total: 1,
+      display: "1",
+      hasAnimation: true,
+    },
+    lastSyncTimestamp: "2025-01-15T15:00:00Z",
+    userStatus: {
+      isSuspended: false,
+      suspensionReason: "",
+      suspensionMessage: "",
+      supportContactUrl: "",
+      driverDelegationEnabled: false,
+      delegationWarningMessage: "",
+      delegationResetUrl: "",
+      isHalalCertified: true,
+      halalCertificationMessage: "",
+      halalCertificationUrl: "",
+    },
+  },
+  Type: "CS_REQUESTS",
 };
 
 export const fetcherTransportRequestList = async (params = {}) => {
   if (IS_MOCK) {
+    // Deep clone to avoid mutation
     const result = JSON.parse(JSON.stringify(apiResultTransportRequestList));
-
-    if (result.data.Data.showEmptyState) {
-      return result.data.Data;
-    }
-
-    // Simpan semua request original
-    const originalRequests = [...result.data.Data.requests];
-
-    // Hitung tabCounts sekali di awal
-    const tabCounts = result.data.Data.tabCounts || {
-      tersedia: 0,
-      halal_logistik: 0,
-      disimpan: 0,
-    };
-
-    // Lanjut filter untuk tampilan saja
-    let filteredRequests = [...originalRequests];
+    let filteredRequests = [...result.Data.requests];
 
     if (params.orderStatus) {
       filteredRequests = filteredRequests.filter(
@@ -207,20 +194,10 @@ export const fetcherTransportRequestList = async (params = {}) => {
       });
     }
 
-    // Hitung request baru dari filtered data
-    const newRequests = filteredRequests.filter((req) => req.isNew);
-    const newRequestsCount = {
-      total: newRequests.length,
-      display: newRequests.length > 99 ? "99+" : newRequests.length.toString(),
-      hasAnimation: newRequests.length > 0,
-    };
-
-    // Return data
+    // Return data with filtered requests
     return {
-      ...result.data.Data,
+      ...result.Data,
       requests: filteredRequests,
-      tabCounts,
-      newRequestsCount,
     };
   }
 

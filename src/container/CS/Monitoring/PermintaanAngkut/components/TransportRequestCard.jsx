@@ -7,6 +7,7 @@ import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
+import { useFlexibleCountdown } from "@/hooks/use-countdown";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
@@ -72,6 +73,45 @@ const TransportRequestCard = ({
     return `${weight.toLocaleString("id-ID")} ${unit}`;
   };
 
+  // Parse countdown string (HH:mm:ss) to seconds
+  const parseCountdownToSeconds = (str) => {
+    if (!str) return 0;
+    const parts = str.split(":");
+    if (parts.length !== 3) return 0;
+    const [h, m, s] = parts.map(Number);
+    return h * 3600 + m * 60 + s;
+  };
+
+  const countdownSeconds = parseCountdownToSeconds(
+    request.timeLabels?.countdown
+  );
+  // Local countdown state
+  const [countdown, setCountdown] = useState(countdownSeconds);
+  useEffect(() => {
+    setCountdown(countdownSeconds);
+    if (countdownSeconds > 0) {
+      const interval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [countdownSeconds]);
+
+  // Format always as hh:mm:ss for < 1 day
+  const formatHHMMSS = (seconds) => {
+    if (seconds <= 0) return "00:00:00";
+    const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
+    const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+    const s = String(seconds % 60).padStart(2, "0");
+    return `${h}:${m}:${s}`;
+  };
+
   return (
     <div className="relative">
       <div
@@ -85,12 +125,14 @@ const TransportRequestCard = ({
           <div className="flex h-[66px] items-center justify-between px-3 py-2">
             <div className="flex items-center gap-2">
               <img
-                src={"/img/muatan1.png"}
-                alt="Logo Transporter"
+                src={request.shipperInfo?.logo || "/img/muatan1.png"}
+                alt={request.shipperInfo?.name || "Logo Shipper"}
                 className="h-10 w-10 rounded-full border-[1.25px] border-neutral-400 object-cover"
               />
               <div className="space-y-1">
-                <p className="text-sm font-semibold">Agam Tunggal Jaya</p>
+                <p className="text-sm font-semibold">
+                  {request.shipperInfo?.name || "-"}
+                </p>
                 <div className="flex items-center gap-1">
                   <IconComponent
                     src="/icons/contact.svg"
@@ -107,7 +149,9 @@ const TransportRequestCard = ({
             </div>
             <div className="flex flex-col items-end">
               <p className="text-xs text-gray-600">1 Menit yang lalu</p>
-              <p className="text-xs font-semibold text-neutral-900">02:02</p>
+              <p className="text-xs font-semibold text-neutral-900">
+                {countdownSeconds > 0 ? formatHHMMSS(countdown) : "-"}
+              </p>
             </div>
           </div>
           <div className="border-b border-neutral-400"></div>
