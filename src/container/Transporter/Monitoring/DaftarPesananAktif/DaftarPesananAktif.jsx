@@ -38,6 +38,8 @@ const DaftarPesananAktif = ({
   onToggleExpand,
   isExpanded,
   onViewFleetStatus,
+  hasShownOnboarding,
+  onOnboardingShown,
 }) => {
   const { data: activeOrdersCount } = useGetActiveOrdersCount();
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
@@ -456,7 +458,10 @@ const DaftarPesananAktif = ({
       <div className="flex h-16 items-center gap-3 px-4">
         <div className="flex items-center gap-2">
           <h3 className="w-[80px] text-xs font-bold">Daftar Pesanan Aktif</h3>
-          <Onboarding />
+          <Onboarding
+            hasShownOnboarding={hasShownOnboarding}
+            onOnboardingShown={onOnboardingShown}
+          />
         </div>
         <div className="flex w-full items-center gap-3">
           {/* Status Filter Pills */}
