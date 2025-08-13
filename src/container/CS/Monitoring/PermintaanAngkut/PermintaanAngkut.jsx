@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Search from "@/components/Search/Search";
-import { useGetTransportRequestList } from "@/services/Transporter/monitoring/getTransportRequestList";
+import { useGetTransportRequestList } from "@/services/Transporter/monitoring/getTransportRequestListCS";
 
 import PermintaanAngkutDetail from "./PermintaanAngkutDetail";
 import TransportRequestCard from "./components/TransportRequestCard";
@@ -258,7 +258,59 @@ const PermintaanAngkut = () => {
                 }`}
               >
                 <span className="whitespace-nowrap">
-                  Tersedia (
+                  Semua (
+                  <span
+                    className={`${
+                      shouldAnimate(
+                        dynamicTabCounts.tersedia,
+                        data?.newRequestsCount?.hasAnimation
+                      )
+                        ? "font-base animate-semibold"
+                        : ""
+                    }`}
+                  >
+                    {formatCounter(dynamicTabCounts.tersedia)}
+                  </span>
+                  )
+                </span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab("instan")}
+                className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
+                  activeTab === "instan"
+                    ? "w-auto min-w-[79px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
+                    : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
+                }`}
+              >
+                <span className="whitespace-nowrap">
+                  Instan (
+                  <span
+                    className={`${
+                      shouldAnimate(
+                        dynamicTabCounts.tersedia,
+                        data?.newRequestsCount?.hasAnimation
+                      )
+                        ? "font-base animate-semibold"
+                        : ""
+                    }`}
+                  >
+                    {formatCounter(dynamicTabCounts.tersedia)}
+                  </span>
+                  )
+                </span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab("terjadwal")}
+                className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
+                  activeTab === "terjadwal"
+                    ? "w-auto min-w-[79px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
+                    : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
+                }`}
+              >
+                <span className="whitespace-nowrap">
+                  Terjadwal (
                   <span
                     className={`${
                       shouldAnimate(
@@ -297,35 +349,6 @@ const PermintaanAngkut = () => {
                     }`}
                   >
                     {formatCounter(dynamicTabCounts.halal_logistik)}
-                  </span>
-                  )
-                </span>
-              </button>
-
-              <button
-                onClick={() => setActiveTab("disimpan")}
-                className={`flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
-                  activeTab === "disimpan"
-                    ? "w-auto min-w-[104px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
-                    : "w-auto min-w-[104px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
-                }`}
-              >
-                <IconComponent src="/icons/bookmark.svg" className="h-4 w-4" />
-                <span className="whitespace-nowrap">
-                  Disimpan (
-                  <span
-                    className={`${
-                      dynamicTabCounts.disimpan >= 100
-                        ? "font-bold text-error-600" // Special styling for 99+
-                        : shouldAnimate(
-                              dynamicTabCounts.disimpan,
-                              data?.newRequestsCount?.hasAnimation
-                            )
-                          ? "font-base animate-semibold"
-                          : ""
-                    }`}
-                  >
-                    {formatCounter(dynamicTabCounts.disimpan)}
                   </span>
                   )
                 </span>
@@ -388,7 +411,7 @@ const RequestList = ({
         case "halal_logistik":
           return {
             title: "Belum Ada Permintaan Halal Logistik",
-            subtitle: "Mohon bersabar untuk menanti permintaan baru.",
+            subtitle: "Belum ada shipper yang membuat permintaan jasa angkut",
             icon: "/icons/halal.svg",
           };
         case "disimpan":
@@ -401,7 +424,7 @@ const RequestList = ({
         default:
           return {
             title: "Oops, belum ada permintaan jasa angkut",
-            subtitle: "Mohon bersabar untuk menanti permintaan baru",
+            subtitle: "Belum ada shipper yang membuat permintaan jasa angkut",
             icon: "/icons/truck-jenis.svg",
           };
       }
@@ -417,7 +440,7 @@ const RequestList = ({
               Oops, belum ada permintaan jasa angkut
             </p>
             <p className="mt-1 text-xs text-gray-400">
-              Mohon bersabar untuk menanti permintaan baru{" "}
+              Belum ada shipper yang membuat permintaan jasa angkut{" "}
             </p>
           </div>
         </DataNotFound>
