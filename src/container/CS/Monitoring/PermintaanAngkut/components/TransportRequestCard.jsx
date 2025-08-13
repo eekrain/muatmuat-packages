@@ -10,6 +10,8 @@ import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
+import ModalTransportTersedia from "./ModalTransportTersedia";
+
 const TransportRequestCard = ({
   request,
   isSuspended = false,
@@ -24,6 +26,7 @@ const TransportRequestCard = ({
   );
 
   const [showDetail, setShowDetail] = useState(false);
+  const [showModalTransporter, setShowModalTransporter] = useState(false);
 
   // Update local state when prop changes
   useEffect(() => {
@@ -425,7 +428,10 @@ const TransportRequestCard = ({
           {/* Transporter Info */}
           <div className="mb-3 flex items-center gap-2">
             {/* Transporter Tersedia */}
-            <div className="flex items-center gap-1">
+            <div
+              className="flex cursor-pointer items-center gap-1"
+              onClick={() => setShowModalTransporter(true)}
+            >
               <IconComponent
                 src="/icons/truk16.svg"
                 className="h-4 w-4 text-[#7B3F00]"
@@ -434,6 +440,13 @@ const TransportRequestCard = ({
                 16 Transporter Tersedia
               </span>
             </div>
+
+            {/* Modal */}
+            {showModalTransporter && (
+              <ModalTransportTersedia
+                onClose={() => setShowModalTransporter(false)}
+              />
+            )}
 
             {/* Dilihat */}
             <div className="flex items-center gap-1">

@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Search from "@/components/Search/Search";
-import { useGetTransportRequestList } from "@/services/Transporter/monitoring/getTransportRequestList";
+import { useGetTransportRequestList } from "@/services/Transporter/monitoring/permintaan-angkut/getTransportRequestList";
 
 import PermintaanAngkutDetail from "./PermintaanAngkutDetail";
 import TransportRequestCard from "./components/TransportRequestCard";
