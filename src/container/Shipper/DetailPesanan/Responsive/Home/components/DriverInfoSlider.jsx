@@ -23,6 +23,16 @@ import { getStatusScanMetadata } from "@/lib/normalizers/detailpesanan/getStatus
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
 
+const LIST_HIDE_STATUS_META = [
+  OrderStatusEnum.WAITING_REPAYMENT_1,
+  OrderStatusEnum.WAITING_REPAYMENT_2,
+  OrderStatusEnum.CANCELED_BY_SHIPPER,
+  OrderStatusEnum.CANCELED_BY_SHIPPER,
+  OrderStatusEnum.CANCELED_BY_TRANSPORTER,
+  OrderStatusEnum.PREPARE_DOCUMENT,
+  OrderStatusEnum.DOCUMENT_DELIVERY,
+];
+
 /**
  * @typedef {Object} Driver
  * @property {string} name
@@ -65,14 +75,8 @@ const Header = ({
     return response;
   }, [driverStatus, mode, orderStatus, statusScan, t]);
 
-  const showStatusMetaStatus =
-    ![
-      OrderStatusEnum.WAITING_REPAYMENT_1,
-      OrderStatusEnum.WAITING_REPAYMENT_2,
-      OrderStatusEnum.CANCELED_BY_SHIPPER,
-      OrderStatusEnum.CANCELED_BY_SHIPPER,
-      OrderStatusEnum.CANCELED_BY_TRANSPORTER,
-    ].includes(driverStatus) || withMenu;
+  const showStatusMetaStatus = !LIST_HIDE_STATUS_META.includes(orderStatus);
+  if (!showStatusMetaStatus) return null;
 
   return (
     <div className="flex w-full items-center justify-between">
@@ -84,7 +88,7 @@ const Header = ({
           {statusMeta.scan.statusText}
         </BadgeStatusPesanan>
       )}
-      {statusMeta?.status && showStatusMetaStatus && (
+      {statusMeta?.status && (
         <BadgeStatusPesanan
           variant={statusMeta.status.variant}
           className="w-fit"
@@ -147,6 +151,14 @@ const Avatar = ({ driver }) => (
   </div>
 );
 
+const LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER = [
+  OrderStatusEnum.PREPARE_DOCUMENT,
+  OrderStatusEnum.DOCUMENT_DELIVERY,
+  OrderStatusEnum.WAITING_REPAYMENT_1,
+  OrderStatusEnum.WAITING_REPAYMENT_2,
+  OrderStatusEnum.COMPLETED,
+];
+
 const Actions = ({
   driver,
   orderId,
@@ -155,13 +167,6 @@ const Actions = ({
 }) => {
   console.log("🚀 ~ orderId 2:", orderId);
   const navigation = useResponsiveNavigation();
-  const LIST_SHOW_MODAL_DETAIL_STATUS_DRIVER = [
-    OrderStatusEnum.PREPARE_DOCUMENT,
-    OrderStatusEnum.DOCUMENT_DELIVERY,
-    OrderStatusEnum.WAITING_REPAYMENT_1,
-    OrderStatusEnum.WAITING_REPAYMENT_2,
-    OrderStatusEnum.COMPLETED,
-  ];
 
   const showDetailStatusButton =
     driver?.orderStatus?.startsWith("CANCELED") ||
