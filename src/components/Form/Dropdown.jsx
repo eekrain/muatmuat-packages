@@ -15,6 +15,7 @@ export default function Dropdown({
   options,
   isAddable,
   isError = false,
+  searchable,
 }) {
   const [searchValue, setSearchValue] = useState("");
   return (
@@ -33,7 +34,7 @@ export default function Dropdown({
         </Select.Value>
       </Select.Trigger>
       <Select.Content
-        searchable
+        searchable={searchable}
         searchPlaceholder={searchPlaceholder}
         className="w-64"
       >
