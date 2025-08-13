@@ -30,7 +30,7 @@ const RealtimeDashboardPage = () => {
     needResponse: "Perlu Respon Perubahan",
     needConfirmation: "Perlu Konfirmasi Siap",
     needAssignment: "Perlu Assign Armada",
-    newReviews: "Daftar Ulasan",
+    newReviews: "Ulasan Baru",
     sosReports: "Laporan SOS",
   };
 
