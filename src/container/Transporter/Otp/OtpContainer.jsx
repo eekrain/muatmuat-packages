@@ -60,10 +60,6 @@ const OTP_TYPE_CONFIG = {
   },
 };
 
-// Constants
-const HARDCODED_SUCCESS_OTP = "654321";
-const DEFAULT_COUNTDOWN_MINUTES = 0.1;
-
 const OtpContainer = ({
   _dontRedirect = false,
   onVerifySuccess = () => {},
@@ -91,7 +87,7 @@ const OtpContainer = ({
   const [expiryDate, setExpiryDate] = useState(() => {
     return formValues?.expiresIn
       ? formValues.expiresIn
-      : addMinutes(new Date(), 0.1);
+      : addMinutes(new Date(), 2);
   });
 
   // Update expiryDate if formValues.expiresIn changes
@@ -122,7 +118,7 @@ const OtpContainer = ({
     }
 
     // Reset countdown by setting a new expiry date (2 minutes from now)
-    const newExpiry = addMinutes(new Date(), 0.1);
+    const newExpiry = addMinutes(new Date(), 2);
     setExpiryDate(newExpiry);
 
     // Set notification only if it's not a phone change (phone change sets its own notification)
