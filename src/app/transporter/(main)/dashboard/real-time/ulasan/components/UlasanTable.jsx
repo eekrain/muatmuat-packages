@@ -8,6 +8,7 @@ import ExpandableReview from "@/app/transporter/(main)/dashboard/real-time/ratin
 import Button from "@/components/Button/Button";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import Checkbox from "@/components/Form/Checkbox";
+import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
@@ -385,14 +386,24 @@ const UlasanTable = () => {
                     >
                       Batal
                     </Button>
-                    <Button
-                      className="h-9 px-6 text-muat-trans-secondary-900 disabled:text-neutral-600"
-                      onClick={() => setShowConfirmation(true)}
-                      disabled={selectedRows.length === 0}
-                      iconLeft="/icons/read.svg"
+                    <InfoTooltip
+                      trigger={
+                        <Button
+                          className="h-9 px-6 text-muat-trans-secondary-900 disabled:text-neutral-600"
+                          onClick={() => setShowConfirmation(true)}
+                          disabled={selectedRows.length === 0}
+                          iconLeft="/icons/read.svg"
+                        >
+                          Tandai Sudah Dibaca
+                        </Button>
+                      }
+                      className={`w-[210px] text-sm ${selectedRows.length !== 0 && "hidden"}`}
+                      side="top"
+                      sideOffset={2}
+                      align="start"
                     >
-                      Tandai Sudah Dibaca
-                    </Button>
+                      Pilih minimal 1 ulasan untuk ditandai sudah dibaca
+                    </InfoTooltip>
                   </>
                 )}
               </div>
