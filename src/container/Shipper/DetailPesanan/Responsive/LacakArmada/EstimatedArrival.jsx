@@ -2,33 +2,24 @@ import { useMemo } from "react";
 
 import { Alert } from "@/components/Alert/Alert";
 import { useTranslation } from "@/hooks/use-translation";
-import { DriverStatusLabel } from "@/lib/constants/detailpesanan/driver-status.enum";
 import { formatDate } from "@/lib/utils/dateFormat";
+
+const CUSTOM = {
+  MUAT: "Estimasi Tiba di Lokasi Muat {index}",
+  BONGKAR: "Estimasi Tiba di Lokasi Bongkar {index}",
+};
 
 export const EstimatedArrival = ({ arrivalTime, driverStatus }) => {
   const { t } = useTranslation();
   const isShowEstimatedArrival = driverStatus?.startsWith("MENUJU_");
   const label = useMemo(() => {
-    // Driver status pasti bakalan "MENUJU_blabla"
-    // Nah tinggal kita convert jadi "TIBA_blabla"
-    const replaced = driverStatus?.replace("MENUJU_", "TIBA_");
-    const index = parseInt(driverStatus?.split("_").slice(-1)[0]);
-    // Tinggal panggil enum label
-    // return `${t(DriverStatusLabel[replaced], { index: 1 })}`;
-    return t(
-      t(
-        "LacakArmadaScreen.labelEstimasiTibaLokasi",
-        {
-          labelTiba: t(
-            DriverStatusLabel[replaced],
-            { index },
-            "Tiba di Lokasi Bongkar 1"
-          ),
-        },
-        "Estimasi Tiba di Lokasi Bongkar 1"
-      )
-    );
-  }, [t, driverStatus]);
+    if (!driverStatus) return "";
+    const index = driverStatus.split("_").slice(-1)[0];
+    const label = driverStatus?.startsWith("MUAT")
+      ? CUSTOM.MUAT
+      : CUSTOM.BONGKAR;
+    return label.replace("{index}", index || "");
+  }, [driverStatus]);
 
   if (!isShowEstimatedArrival) return null;
 

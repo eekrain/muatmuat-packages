@@ -50,7 +50,7 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
       onClickBackButton={() => navigation.pop()}
     >
       <EstimatedArrival
-        driverStatus={driver.driverStatus}
+        driverStatus={driver?.driverStatus}
         arrivalTime={new Date().toISOString()}
       />
 
