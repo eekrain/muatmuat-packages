@@ -41,6 +41,7 @@ const DashboardDataTable = ({
   onControlsStateChange,
   filterConfig = null,
   headerActions = null,
+  displayActions = null,
   firsTimerTitle,
   firstTimerSubtitle,
   firstTimerButtonText,
@@ -111,12 +112,19 @@ const DashboardDataTable = ({
   const renderEmptyState = useMemo(() => {
     if (!hasNoData) return null;
     if (activeSearchValue)
-      return <DataNotFound title="Keyword Tidak Ditemukan" />;
-    if (Object.keys(activeFilters || {}).length > 0)
+      return (
+        <DataNotFound title="Keyword Tidak Ditemukan" className="!w-full" />
+      );
+    if (hasActiveFilters)
       return (
         <DataNotFound
-          title="Data Tidak Ditemukan"
-          subtitle="Mohon coba hapus beberapa filter"
+          title={
+            <p>
+              Data Tidak Ditemukan.
+              <br /> Mohon coba hapus beberapa filter
+            </p>
+          }
+          className="!w-full"
         />
       );
     if (isPeriodActive)
@@ -124,14 +132,14 @@ const DashboardDataTable = ({
         <DataEmpty
           title="Tidak ada data"
           subtitle=""
-          className="!shadow-none"
+          className="!w-full !shadow-none"
         />
       );
     return (
       <DataEmpty
         title={firsTimerTitle || "Tidak ada data"}
         subtitle={firstTimerSubtitle || ""}
-        className="!shadow-none"
+        className="!w-full !shadow-none"
       >
         {firstTimerButtonText && (
           <Button onClick={() => router.push(firstTimerButtonLink)}>
@@ -143,7 +151,7 @@ const DashboardDataTable = ({
   }, [
     hasNoData,
     activeSearchValue,
-    activeFilters,
+    hasActiveFilters,
     isPeriodActive,
     firsTimerTitle,
     firstTimerSubtitle,
@@ -258,14 +266,18 @@ const DashboardDataTable = ({
                   onClearAll={handleClearAllFilters}
                 />
               )}
-              {showDisplayView && displayOptions && (
-                <DisplayOptionsBar
-                  totalCount={displayOptions.totalCount || totalItems}
-                  statusOptions={displayOptions.statusOptions || []}
-                  currentStatus={displayOptions.currentStatus}
-                  onStatusChange={displayOptions.onStatusChange}
-                />
-              )}
+              <div className="flex w-full items-center justify-between">
+                {showDisplayView && displayOptions && (
+                  <DisplayOptionsBar
+                    totalCount={displayOptions.totalCount || totalItems}
+                    statusOptions={displayOptions.statusOptions || []}
+                    currentStatus={displayOptions.currentStatus}
+                    showAllOption={displayOptions.showAllOption}
+                    onStatusChange={displayOptions.onStatusChange}
+                  />
+                )}
+                {displayActions}
+              </div>
             </div>
 
             <div className="flex-1 overflow-hidden">
@@ -275,13 +287,7 @@ const DashboardDataTable = ({
                 loading={loading}
                 sortConfig={sortConfig}
                 onSort={handleSort}
-                emptyComponent={
-                  <tr>
-                    <td colSpan={columns.length} className="h-full py-8">
-                      {renderEmptyState}
-                    </td>
-                  </tr>
-                }
+                emptyComponent={<div className="py-4">{renderEmptyState}</div>}
               />
             </div>
           </>

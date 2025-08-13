@@ -1,15 +1,12 @@
-// app/(shipper)/dashboard/real-time/rating-driver/[driverId]/components/ExpandableReview.jsx
 "use client";
 
 import { useState } from "react";
 
 import { ChevronDown, ChevronUp } from "lucide-react";
 
-// app/(shipper)/dashboard/real-time/rating-driver/[driverId]/components/ExpandableReview.jsx
-
-const ExpandableReview = ({ text }) => {
+const ExpandableReview = ({ text, limit = 40 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const showToggle = text.length > 40;
+  const showToggle = text.length > limit;
 
   return (
     <div>
