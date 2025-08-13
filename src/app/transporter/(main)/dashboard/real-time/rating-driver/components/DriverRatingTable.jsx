@@ -8,6 +8,8 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import PageTitle from "@/components/PageTitle/PageTitle";
 
+import TruncatedTooltip from "../../components/TruncatedTooltip";
+
 const DriverRatingTable = () => {
   const router = useRouter();
   const [tableData, setTableData] = useState({
@@ -89,9 +91,11 @@ const DriverRatingTable = () => {
         sortable: true,
         render: (row) => (
           <div>
-            <p className="line-clamp-2 text-xs font-bold text-neutral-900">
-              {row.name}
-            </p>
+            <TruncatedTooltip
+              text={row.name}
+              lineClamp={2}
+              className="text-xs font-bold"
+            />
             <div className="mt-1 flex items-center gap-px">
               <IconComponent src="/icons/phone16.svg" width={14} height={14} />
               <p className="text-neutral-900">{row.phoneNumber}</p>

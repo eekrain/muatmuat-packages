@@ -10,6 +10,7 @@ import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import PageTitle from "@/components/PageTitle/PageTitle";
 
+import TruncatedTooltip from "../../../components/TruncatedTooltip";
 import ExpandableReview from "./ExpandableReview";
 
 const toYYYYMMDD = (date) => {
@@ -169,7 +170,9 @@ const RatingHistoryTable = () => {
         width: "230px",
         className: "!text-xs font-medium align-top",
         sortable: true,
-        render: (row) => <p className="line-clamp-2">{row.driverName}</p>,
+        render: (row) => (
+          <TruncatedTooltip text={row.driverName} lineClamp={2} />
+        ),
       },
       {
         key: "armada",

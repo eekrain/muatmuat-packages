@@ -1,38 +1,43 @@
 import { useCallback } from "react";
 
-import { MONITORING_ACTIONS } from "../monitoringReducer";
+import { FILTER_ACTIONS } from "../reducers/filtersReducer";
+import { MAP_ACTIONS } from "../reducers/mapReducer";
+import { PANEL_ACTIONS } from "../reducers/panelsReducer";
+import { SELECTION_ACTIONS } from "../reducers/selectionsReducer";
 
 export const useMonitoringHandlers = (
-  dispatch,
+  dispatches,
   state,
   fleetLocationsData,
   addToast
 ) => {
   const { panels, map, filters } = state;
+  const { panelsDispatch, mapDispatch, filtersDispatch, selectionsDispatch } =
+    dispatches;
 
   // Panel handlers
   const handleOpenLeftPanel = useCallback(() => {
-    dispatch({ type: MONITORING_ACTIONS.OPEN_LEFT_PANEL, payload: "armada" });
-  }, [dispatch]);
+    panelsDispatch({ type: PANEL_ACTIONS.OPEN_LEFT_PANEL, payload: "armada" });
+  }, [panelsDispatch]);
 
   const handleOpenSOSPanel = useCallback(() => {
-    dispatch({ type: MONITORING_ACTIONS.OPEN_LEFT_PANEL, payload: "sos" });
-  }, [dispatch]);
+    panelsDispatch({ type: PANEL_ACTIONS.OPEN_LEFT_PANEL, payload: "sos" });
+  }, [panelsDispatch]);
 
   const handleCloseLeftPanel = useCallback(() => {
-    dispatch({ type: MONITORING_ACTIONS.CLOSE_LEFT_PANEL });
-  }, [dispatch]);
+    panelsDispatch({ type: PANEL_ACTIONS.CLOSE_LEFT_PANEL });
+  }, [panelsDispatch]);
 
   const handleToggleBottomPanel = useCallback(() => {
-    dispatch({ type: MONITORING_ACTIONS.TOGGLE_BOTTOM_PANEL });
+    panelsDispatch({ type: PANEL_ACTIONS.TOGGLE_BOTTOM_PANEL });
     if (!panels.isBottomExpanded) {
-      dispatch({ type: MONITORING_ACTIONS.CLOSE_LEFT_PANEL });
+      panelsDispatch({ type: PANEL_ACTIONS.CLOSE_LEFT_PANEL });
     }
-  }, [dispatch, panels.isBottomExpanded]);
+  }, [panelsDispatch, panels.isBottomExpanded]);
 
   const handleToggleFullscreen = useCallback(() => {
-    dispatch({ type: MONITORING_ACTIONS.TOGGLE_FULLSCREEN });
-  }, [dispatch]);
+    panelsDispatch({ type: PANEL_ACTIONS.TOGGLE_FULLSCREEN });
+  }, [panelsDispatch]);
 
   // Filter handler
   const handleApplyFilter = useCallback(
@@ -71,87 +76,90 @@ export const useMonitoringHandlers = (
         }
       }
 
-      dispatch({
-        type: MONITORING_ACTIONS.SET_FILTERS,
+      filtersDispatch({
+        type: FILTER_ACTIONS.SET_FILTERS,
         payload: { truck: truckStatuses, order: orderStatuses },
       });
     },
-    [dispatch, fleetLocationsData, addToast]
+    [filtersDispatch, fleetLocationsData, addToast]
   );
 
   // Map handlers
   const handleMapDrag = useCallback(() => {
-    dispatch({ type: MONITORING_ACTIONS.SET_AUTO_FIT_BOUNDS, payload: false });
-    dispatch({ type: MONITORING_ACTIONS.SET_MAP_INTERACTION, payload: true });
-  }, [dispatch]);
+    mapDispatch({ type: MAP_ACTIONS.SET_AUTO_FIT_BOUNDS, payload: false });
+    mapDispatch({ type: MAP_ACTIONS.SET_MAP_INTERACTION, payload: true });
+  }, [mapDispatch]);
 
   const handleMapZoomChange = useCallback(
     (newZoom) => {
-      dispatch({
-        type: MONITORING_ACTIONS.SET_AUTO_FIT_BOUNDS,
+      mapDispatch({
+        type: MAP_ACTIONS.SET_AUTO_FIT_BOUNDS,
         payload: false,
       });
-      dispatch({ type: MONITORING_ACTIONS.SET_MAP_INTERACTION, payload: true });
-      dispatch({ type: MONITORING_ACTIONS.SET_MAP_ZOOM, payload: newZoom });
+      mapDispatch({ type: MAP_ACTIONS.SET_MAP_INTERACTION, payload: true });
+      mapDispatch({ type: MAP_ACTIONS.SET_MAP_ZOOM, payload: newZoom });
     },
-    [dispatch]
+    [mapDispatch]
   );
 
   const handleMapCenterChange = useCallback(
     (newCenter) => {
-      dispatch({ type: MONITORING_ACTIONS.SET_MAP_CENTER, payload: newCenter });
+      mapDispatch({ type: MAP_ACTIONS.SET_MAP_CENTER, payload: newCenter });
     },
-    [dispatch]
+    [mapDispatch]
   );
 
   const handleResetZoom = useCallback(() => {
-    dispatch({ type: MONITORING_ACTIONS.RESET_MAP });
-  }, [dispatch]);
+    mapDispatch({ type: MAP_ACTIONS.RESET_MAP });
+  }, [mapDispatch]);
 
   // Fleet selection handlers
   const handleTruckClick = useCallback(
     (marker) => {
-      dispatch({
-        type: MONITORING_ACTIONS.SET_SELECTED_FLEET,
+      selectionsDispatch({
+        type: SELECTION_ACTIONS.SET_SELECTED_FLEET,
         payload: marker.fleet.id,
       });
       if (!panels.showLeftPanel) {
         handleOpenLeftPanel();
       }
-      dispatch({
-        type: MONITORING_ACTIONS.SET_MAP_CENTER,
+      mapDispatch({
+        type: MAP_ACTIONS.SET_MAP_CENTER,
         payload: {
           lat: marker.position.lat,
           lng: marker.position.lng,
         },
       });
-      dispatch({ type: MONITORING_ACTIONS.SET_MAP_ZOOM, payload: 16 });
-      dispatch({
-        type: MONITORING_ACTIONS.SET_AUTO_FIT_BOUNDS,
+      mapDispatch({ type: MAP_ACTIONS.SET_MAP_ZOOM, payload: 16 });
+      mapDispatch({
+        type: MAP_ACTIONS.SET_AUTO_FIT_BOUNDS,
         payload: false,
       });
-      dispatch({
-        type: MONITORING_ACTIONS.SET_MAP_INTERACTION,
+      mapDispatch({
+        type: MAP_ACTIONS.SET_MAP_INTERACTION,
         payload: false,
       });
     },
-    [dispatch, panels.showLeftPanel, handleOpenLeftPanel]
+    [selectionsDispatch, mapDispatch, panels.showLeftPanel, handleOpenLeftPanel]
   );
 
   // PilihArmada handlers
   const handleAcceptRequest = useCallback(
     (request) => {
-      dispatch({
-        type: MONITORING_ACTIONS.SHOW_PILIH_ARMADA,
+      panelsDispatch({
+        type: PANEL_ACTIONS.SHOW_PILIH_ARMADA,
+      });
+      selectionsDispatch({
+        type: SELECTION_ACTIONS.SET_SELECTED_REQUEST_FOR_FLEET,
         payload: request,
       });
     },
-    [dispatch]
+    [panelsDispatch, selectionsDispatch]
   );
 
   const handleTogglePilihArmada = useCallback(() => {
-    dispatch({ type: MONITORING_ACTIONS.TOGGLE_BOTTOM_PANEL });
-  }, [dispatch]);
+    panelsDispatch({ type: PANEL_ACTIONS.TOGGLE_BOTTOM_PANEL });
+  }, [panelsDispatch]);
 
   return {
     handleOpenLeftPanel,

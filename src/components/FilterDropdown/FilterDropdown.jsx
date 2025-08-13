@@ -13,6 +13,7 @@ import Input from "@/components/Form/Input";
 import { cn } from "@/lib/utils";
 
 import IconComponent from "../IconComponent/IconComponent";
+import RadioButton from "../Radio/RadioButton";
 
 const FilterDropdown = ({
   trigger,
@@ -44,7 +45,12 @@ const FilterDropdown = ({
   const handleItemToggle = (categoryKey, item) => {
     if (!multiSelect) {
       // Single select mode
-      setTempSelectedValues({ [categoryKey]: item });
+      const newSelectedValues = { [categoryKey]: item };
+      setTempSelectedValues(newSelectedValues);
+
+      // Close the popover and apply the filter immediately
+      setOpenPopovers((prev) => ({ ...prev, [categoryKey]: false }));
+      onSelectionChange?.(newSelectedValues);
       return;
     }
 
@@ -316,18 +322,33 @@ const FilterDropdown = ({
                             itemClassName
                           )}
                         >
-                          <Checkbox
-                            checked={isItemSelected(category.key, item)}
-                            onChange={() =>
-                              handleItemToggle(category.key, item)
-                            }
-                            value={item.id}
-                            label={item.label}
-                            appearance={{
-                              labelClassName:
-                                "text-xs font-medium line-clamp-2 break-all",
-                            }}
-                          />
+                          {multiSelect ? (
+                            <Checkbox
+                              checked={isItemSelected(category.key, item)}
+                              onChange={() =>
+                                handleItemToggle(category.key, item)
+                              }
+                              value={item.id}
+                              label={item.label}
+                              appearance={{
+                                labelClassName:
+                                  "text-xs font-medium line-clamp-2 break-all",
+                              }}
+                            />
+                          ) : (
+                            <RadioButton
+                              checked={isItemSelected(category.key, item)}
+                              onClick={() =>
+                                handleItemToggle(category.key, item)
+                              }
+                              value={item.id}
+                              label={item.label}
+                              appearance={{
+                                labelClassName:
+                                  "text-xs font-medium line-clamp-2 break-all",
+                              }}
+                            />
+                          )}
                         </div>
                       ))
                     )}

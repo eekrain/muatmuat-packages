@@ -4,6 +4,11 @@ import { Alert } from "@/components/Alert/Alert";
 import { useTranslation } from "@/hooks/use-translation";
 import { formatDate } from "@/lib/utils/dateFormat";
 
+const CUSTOM = {
+  MUAT: "Estimasi Tiba di Lokasi Muat {index}",
+  BONGKAR: "Estimasi Tiba di Lokasi Bongkar {index}",
+};
+
 export const EstimatedArrival = ({ arrivalTime, driverStatus }) => {
   const { t } = useTranslation();
 
