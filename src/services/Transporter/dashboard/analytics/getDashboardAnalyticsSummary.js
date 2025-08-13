@@ -83,8 +83,8 @@ export const fetcherDashboardAnalyticsSummary = async (cacheKey) => {
 
   if (useMockData) {
     // To use the mock data without data, comment the first return and uncomment the second.
-    return mockAPIResultWithData.data.Data;
-    // return mockAPIResultWithoutData.data.Data;
+    // return mockAPIResultWithData.data.Data;
+    return mockAPIResultWithoutData.data.Data;
   }
 
   try {

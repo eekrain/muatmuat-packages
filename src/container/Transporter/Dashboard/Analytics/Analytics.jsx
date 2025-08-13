@@ -1,6 +1,9 @@
+"use client";
+
 import React, { useState } from "react";
 
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
+import { useGetDashboardAnalyticsSummary } from "@/services/Transporter/dashboard/analytics/getDashboardAnalyticsSummary";
 import { useGetDashboardAnalyticsTop5 } from "@/services/Transporter/dashboard/analytics/getDashboardAnalyticsTop5";
 
 import Leaderboard from "./Statistics/Leaderboard";
@@ -24,6 +27,15 @@ function Analytics() {
     setPeriod(selectedOption.value);
   };
 
+  // --- Data Fetching ---
+
+  // Fetch summary data for the top cards
+  const {
+    data: summaryData,
+    isLoading: isLoadingSummary,
+    isError: isErrorSummary,
+  } = useGetDashboardAnalyticsSummary({ period });
+
   // Fetch data for each leaderboard category
   const { data: driversData, isLoading: isLoadingDrivers } =
     useGetDashboardAnalyticsTop5({ category: "drivers", period });
@@ -33,6 +45,15 @@ function Analytics() {
     useGetDashboardAnalyticsTop5({ category: "loading-areas", period });
   const { data: unloadingAreasData, isLoading: isLoadingUnloading } =
     useGetDashboardAnalyticsTop5({ category: "unloading-areas", period });
+
+  // Handle error case for summary data
+  if (isErrorSummary) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <p className="text-error-500">Gagal memuat data ringkasan.</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -49,14 +70,26 @@ function Analytics() {
       <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Left and Center Columns */}
         <div className="grid content-start gap-6 lg:col-span-2">
-          <TotalOrders />
-          <TotalRevenue />
+          <TotalOrders
+            data={summaryData?.summary}
+            isLoading={isLoadingSummary}
+          />
+          <TotalRevenue
+            data={summaryData?.summary}
+            isLoading={isLoadingSummary}
+          />
         </div>
 
         {/* Right Column */}
         <div className="grid content-start gap-6 lg:col-span-1">
-          <TotalMissedOrders />
-          <SummaryShipment />
+          <TotalMissedOrders
+            data={summaryData?.summary}
+            isLoading={isLoadingSummary}
+          />
+          <SummaryShipment
+            data={summaryData?.shipmentSummary}
+            isLoading={isLoadingSummary}
+          />
         </div>
 
         {/* Bottom Full-Width Row */}
@@ -75,7 +108,7 @@ function Analytics() {
             category="truck-types"
             data={truckTypesData?.items}
             isLoading={isLoadingTrucks}
-            tooltipText="5 Jenis armada yang paling sering digunakan."
+            tooltipText="5 Jenis armada yang paling banyak ditugaskan untuk pengiriman."
           />
           <Leaderboard
             title="Area Muat"
@@ -83,7 +116,7 @@ function Analytics() {
             category="loading-areas"
             data={loadingAreasData?.items}
             isLoading={isLoadingLoading}
-            tooltipText="5 Area muat yang paling sering digunakan."
+            tooltipText="5 Kota/Kabupaten yang paling banyak menjadi tujuan muat."
           />
           <Leaderboard
             title="Area Bongkar"
@@ -91,7 +124,7 @@ function Analytics() {
             category="unloading-areas"
             data={unloadingAreasData?.items}
             isLoading={isLoadingUnloading}
-            tooltipText="5 Area bongkar yang paling sering digunakan."
+            tooltipText="5 Kota/Kabupaten yang paling banyak menjadi tujuan bongkar."
           />
         </div>
       </div>

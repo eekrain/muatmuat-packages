@@ -4,7 +4,7 @@ import { fetcherMuatrans } from "@/lib/axios";
 
 // --- Configuration ---
 // Set to true to use mock data, false for actual API calls.
-const useMockData = true;
+const useMockData = false;
 
 // --- Mock Data ---
 
@@ -55,7 +55,7 @@ export const mockAPIResultDrivers = {
           rank: 5,
           driverID: "uuid-driver-5",
           driverName: "Eko Prasetyo",
-          profileImage: " ",
+          profileImage: "https://picsum.photos/200/300",
           completedDeliveries: 33,
           rating: 4.5,
         },
