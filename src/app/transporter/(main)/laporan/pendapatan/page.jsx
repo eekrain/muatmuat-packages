@@ -3,24 +3,21 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { Info } from "lucide-react";
-
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
 import Card, { CardContent } from "@/components/Card/Card";
+import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
-import { InfoTooltip } from "@/components/Form/InfoTooltip";
-import LaporanPendapatanTable from "@/components/LaporanPendapatanTable";
 import Pagination from "@/components/Pagination/Pagination";
+import { ReportSummaryCards } from "@/components/Report";
+import LaporanPendapatanTable from "@/components/Report/LaporanPendapatanTable";
 
 export default function Page() {
   const router = useRouter();
-  const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [currentPeriodValue, setCurrentPeriodValue] = useState(null);
   const [recentPeriodOptions, setRecentPeriodOptions] = useState([]);
-  const [filters, setFilters] = useState({});
 
   // Konfigurasi periode
   const periodOptions = [
@@ -90,50 +87,100 @@ export default function Page() {
 
   // Table data
   const tableData = [
+    // Sumber: Tambahan Biaya (additional_cost)
     {
       id: 1,
       orderNo: "INV/MTR/210504/001/AAA",
       source: "Tambahan Biaya",
+      sourceType: "additional_cost",
       status: "Sudah Dicairkan",
+      statusType: "sudah_dicairkan",
       revenue: "Rp50.000.000",
       undisbursed: "Rp0",
-      sourceType: "additional_cost",
     },
     {
       id: 2,
       orderNo: "INV/MTR/210504/002/AAA",
       source: "Tambahan Biaya",
+      sourceType: "additional_cost",
       status: "Dicairkan Sebagian",
+      statusType: "dicairkan_sebagian",
       revenue: "Rp500.000",
       undisbursed: "Rp250.000",
-      sourceType: "additional_cost",
     },
     {
       id: 3,
       orderNo: "INV/MTR/210504/003/AAA",
-      source: "Penyesuaian Pendapatan",
-      status: "Sudah Dicairkan",
-      revenue: "Rp50.000.000",
-      undisbursed: "Rp0",
-      sourceType: "revenue_adjustment",
+      source: "Tambahan Biaya",
+      sourceType: "additional_cost",
+      status: "Belum Dicairkan",
+      statusType: "belum_dicairkan",
+      revenue: "Rp1.000.000",
+      undisbursed: "Rp1.000.000",
     },
+
+    // Sumber: Penyesuaian Pendapatan (revenue_adjustment)
     {
       id: 4,
       orderNo: "INV/MTR/210504/004/AAA",
       source: "Penyesuaian Pendapatan",
-      status: "Dicairkan Sebagian",
-      revenue: "Rp250.000",
-      undisbursed: "Rp200.000",
       sourceType: "revenue_adjustment",
+      status: "Sudah Dicairkan",
+      statusType: "sudah_dicairkan",
+      revenue: "Rp50.000.000",
+      undisbursed: "Rp0",
     },
     {
       id: 5,
       orderNo: "INV/MTR/210504/005/AAA",
-      source: "Pendapatan Pesanan",
+      source: "Penyesuaian Pendapatan",
+      sourceType: "revenue_adjustment",
+      status: "Dicairkan Sebagian",
+      statusType: "dicairkan_sebagian",
+      revenue: "Rp250.000",
+      undisbursed: "Rp200.000",
+    },
+    {
+      id: 6,
+      orderNo: "INV/MTR/210504/006/AAA",
+      source: "Penyesuaian Pendapatan",
+      sourceType: "revenue_adjustment",
       status: "Belum Dicairkan",
-      revenue: "Rp50.000.000",
-      undisbursed: "Rp50.000.000",
+      statusType: "belum_dicairkan",
+      revenue: "Rp750.000",
+      undisbursed: "Rp750.000",
+    },
+
+    // Sumber: Pendapatan Pesanan (order_revenue)
+    {
+      id: 7,
+      orderNo: "INV/MTR/210504/007/AAA",
+      source: "Pendapatan Pesanan",
       sourceType: "order_revenue",
+      status: "Sudah Dicairkan",
+      statusType: "sudah_dicairkan",
+      revenue: "Rp2.000.000",
+      undisbursed: "Rp0",
+    },
+    {
+      id: 8,
+      orderNo: "INV/MTR/210504/008/AAA",
+      source: "Pendapatan Pesanan",
+      sourceType: "order_revenue",
+      status: "Dicairkan Sebagian",
+      statusType: "dicairkan_sebagian",
+      revenue: "Rp1.500.000",
+      undisbursed: "Rp500.000",
+    },
+    {
+      id: 9,
+      orderNo: "INV/MTR/210504/009/AAA",
+      source: "Pendapatan Pesanan",
+      sourceType: "order_revenue",
+      status: "Belum Dicairkan",
+      statusType: "belum_dicairkan",
+      revenue: "Rp3.000.000",
+      undisbursed: "Rp3.000.000",
     },
   ];
 
@@ -248,18 +295,16 @@ export default function Page() {
     }
   };
 
-  const handleSearch = (value) => {
-    setSearchValue(value);
+  const handleSearch = () => {
     setCurrentPage(1);
   };
 
-  const handleFilter = (newFilters) => {
-    setFilters(newFilters);
+  const handleFilter = (_newFilters) => {
     setCurrentPage(1);
   };
 
-  const handleSort = (sort, order) => {
-    console.log("Sort by:", sort, "Order:", order);
+  const handleSort = (_sort, _order) => {
+    // no-op for now
   };
 
   const handlePageChange = (page) => {
@@ -271,132 +316,122 @@ export default function Page() {
     setCurrentPage(1);
   };
 
+  const isRevenueEmpty = !tableData || tableData.length === 0;
+
   return (
     <div className="mx-auto mt-7 max-w-full px-0">
       <h1 className="mb-5 text-2xl font-bold">Laporan Pendapatan</h1>
 
       {/* Summary Cards */}
-      <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {summaryData.map((item, index) => (
-          <div key={index} className={`${item.bgColor} rounded-lg p-4`}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">{item.title}</span>
-                {/* Tooltip hanya untuk Total Pendapatan dan Total Dana Belum Dicairkan */}
-                {(index === 0 || index === 1) && (
-                  <InfoTooltip
-                    className="w-80"
-                    side="right"
-                    trigger={
-                      <button className="flex text-neutral-600 hover:text-neutral-800">
-                        <Info size={18} />
-                      </button>
-                    }
-                  >
-                    {index === 0 && (
-                      <>
-                        <div className="mb-2 font-semibold">
-                          Breakdown Total Pendapatan:
-                        </div>
-                        <div className="space-y-1 text-sm">
-                          <div className="flex items-center gap-2">
-                            <span>Pendapatan Pesanan:</span>
-                            <span className="font-medium">Rp 10.000</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span>Penyesuaian Pendapatan:</span>
-                            <span className="font-medium">Rp 300.000</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span>Tambahan Biaya:</span>
-                            <span className="font-medium">Rp 200.000</span>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                    {index === 1 && (
-                      <>
-                        <div className="mb-2 font-semibold">
-                          Breakdown Dana Belum Dicairkan:
-                        </div>
-                        <div className="space-y-1 text-sm">
-                          <div className="flex items-center gap-2">
-                            <span>Pendapatan Pesanan:</span>
-                            <span className="font-medium">Rp 1.100.000</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span>Penyesuaian Pendapatan:</span>
-                            <span className="font-medium">Rp 300.000</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span>Tambahan Biaya:</span>
-                            <span className="font-medium">Rp 200.000</span>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </InfoTooltip>
-                )}
-              </div>
-            </div>
-            <div className={`mt-2 text-2xl font-bold ${item.textColor}`}>
-              {item.value}
-            </div>
-          </div>
-        ))}
-      </div>
+      <ReportSummaryCards
+        items={summaryData}
+        renderTooltip={(index) => {
+          if (index === 0) {
+            return (
+              <>
+                <div className="space-y-1 text-sm">
+                  <div className="flex items-center">
+                    <span>Pendapatan Pesanan:</span>
+                    <span>Rp 10.000</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span>Penyesuaian Pendapatan:</span>
+                    <span>Rp 300.000</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span>Tambahan Biaya:</span>
+                    <span>Rp 200.000</span>
+                  </div>
+                </div>
+              </>
+            );
+          }
+          if (index === 1) {
+            return (
+              <>
+                <div className="space-y-1 text-sm">
+                  <div className="flex items-center">
+                    <span>Pendapatan Pesanan:</span>
+                    <span>Rp 1.100.000</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span>Penyesuaian Pendapatan:</span>
+                    <span>Rp 300.000</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span>Tambahan Biaya:</span>
+                    <span>Rp 200.000</span>
+                  </div>
+                </div>
+              </>
+            );
+          }
+          return null;
+        }}
+      />
 
-      {/* Data Table with Filter */}
-      <Card className="border border-none">
-        <CardContent className="p-0">
-          <div className="p-1 pb-0">
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex-1">
-                <LaporanPendapatanTable
-                  data={tableData}
-                  columns={columns}
-                  searchPlaceholder="Cari Pesanan"
-                  showFilter={true}
-                  showSearch={true}
-                  showPagination={false}
-                  showTotalCount={false}
-                  currentPage={currentPage}
-                  totalPages={2}
-                  totalItems={tableData.length}
-                  perPage={perPage}
-                  onPageChange={handlePageChange}
-                  onPerPageChange={handlePerPageChange}
-                  onSearch={handleSearch}
-                  onFilter={handleFilter}
-                  onSort={handleSort}
-                  filterConfig={filterConfig}
-                  className="border-0"
-                  headerActions={
-                    <DropdownPeriode
-                      options={periodOptions}
-                      onSelect={handleSelectPeriod}
-                      recentSelections={recentPeriodOptions}
-                      value={currentPeriodValue}
-                    />
-                  }
-                />
+      {/* Data Table with Filter or Empty State */}
+      {isRevenueEmpty ? (
+        <DataEmpty
+          title="Belum ada laporan pendapatan"
+          subtitle="Saat ini belum tersedia laporan pendapatan. Yuk mulai catat transaksi agar laporan bisa tampil!"
+          className="mb-2 w-full"
+        />
+      ) : (
+        <Card className="border border-none">
+          <CardContent className="p-0">
+            <div className="p-1 pb-0">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex-1">
+                  <LaporanPendapatanTable
+                    data={tableData}
+                    columns={columns}
+                    searchPlaceholder="Cari Pesanan"
+                    showFilter={true}
+                    showSearch={true}
+                    showPagination={false}
+                    showTotalCount={false}
+                    currentPage={currentPage}
+                    totalPages={2}
+                    totalItems={tableData.length}
+                    perPage={perPage}
+                    onPageChange={handlePageChange}
+                    onPerPageChange={handlePerPageChange}
+                    onSearch={handleSearch}
+                    onFilter={handleFilter}
+                    onSort={handleSort}
+                    filterConfig={filterConfig}
+                    className="border-0"
+                    disabledByPeriod={!!currentPeriodValue}
+                    headerActions={
+                      <DropdownPeriode
+                        options={periodOptions}
+                        onSelect={handleSelectPeriod}
+                        recentSelections={recentPeriodOptions}
+                        value={currentPeriodValue}
+                      />
+                    }
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Pagination */}
-      <div className="mt-4">
-        <Pagination
-          currentPage={currentPage}
-          totalPages={2}
-          onPageChange={handlePageChange}
-          onPerPageChange={handlePerPageChange}
-          perPage={perPage}
-          variants="muattrans"
-        />
-      </div>
+      {!isRevenueEmpty && (
+        <div className="mt-4">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={2}
+            onPageChange={handlePageChange}
+            onPerPageChange={handlePerPageChange}
+            perPage={perPage}
+            variants="muattrans"
+          />
+        </div>
+      )}
     </div>
   );
 }

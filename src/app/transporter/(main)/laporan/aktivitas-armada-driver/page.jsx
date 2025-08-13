@@ -6,10 +6,11 @@ import { Download, Search } from "lucide-react";
 
 import Button from "@/components/Button/Button";
 import Card, { CardContent } from "@/components/Card/Card";
+import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import FilterDropdown from "@/components/FilterDropdown/FilterDropdown";
 import Input from "@/components/Input/Input";
-import LaporanAktivitasArmadaDriverTable from "@/components/LaporanAktivitasArmadaDriverTable";
+import LaporanAktivitasArmadaDriverTable from "@/components/Report/LaporanAktivitasArmadaDriverTable";
 import MuatBongkarStepper from "@/components/Stepper/MuatBongkarStepper";
 import {
   Tabs,
@@ -342,7 +343,7 @@ export default function Page() {
       key: "action",
       sortable: false,
       width: "100px",
-      render: (row) => <Button className="h-8 px-4 text-xs">Detail</Button>,
+      render: (_row) => <Button className="h-8 px-4 text-xs">Detail</Button>,
     },
   ];
 
@@ -464,7 +465,7 @@ export default function Page() {
       key: "action",
       sortable: false,
       width: "100px",
-      render: (row) => <Button className="h-8 px-4 text-xs">Detail</Button>,
+      render: (_row) => <Button className="h-8 px-4 text-xs">Detail</Button>,
     },
   ];
 
@@ -524,9 +525,7 @@ export default function Page() {
     setCurrentPage(1);
   };
 
-  const handleSort = (sort, order) => {
-    console.log("Sort by:", sort, "Order:", order);
-  };
+  const handleSort = (_sort, _order) => {};
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -537,9 +536,7 @@ export default function Page() {
     setCurrentPage(1);
   };
 
-  const handleDownload = () => {
-    console.log("Downloading activity report...");
-  };
+  const handleDownload = () => {};
 
   const getCurrentData = () => {
     return selectedTab === "armada" ? armadaData : driverData;
@@ -556,6 +553,8 @@ export default function Page() {
   const getTotalLabel = () => {
     return selectedTab === "armada" ? "Armada" : "Driver";
   };
+
+  const isCurrentEmpty = getCurrentData().length === 0;
 
   return (
     <div className="mx-auto mt-7 max-w-full px-0">
@@ -632,55 +631,66 @@ export default function Page() {
         </CardContent>
       </Card>
 
-      {/* Data Table */}
-      <Card className="rounded-b-md rounded-t-none border border-none bg-white">
-        <CardContent className="p-0">
-          <LaporanAktivitasArmadaDriverTable
-            data={getCurrentData()}
-            columns={getCurrentColumns()}
-            showFilter={false}
-            showSearch={false}
-            showPagination={false}
-            showTotalCount={false}
-            currentPage={currentPage}
-            totalPages={Math.ceil(getCurrentData().length / perPage)}
-            totalItems={getCurrentData().length}
-            perPage={perPage}
-            onPageChange={handlePageChange}
-            onPerPageChange={handlePerPageChange}
-            onSearch={handleSearch}
-            onFilter={handleFilter}
-            onSort={handleSort}
-            filterConfig={filterConfig}
-            className="border-0 [&>div:first-child]:!space-y-0 [&>div:first-child]:!p-0"
-            headerActions={null}
-            tableTitle={null}
-          />
-        </CardContent>
-      </Card>
+      {/* Data Table or Empty */}
+      {isCurrentEmpty ? (
+        <DataEmpty
+          title={`Belum ada ${getTotalLabel().toLowerCase()} yang tercatat`}
+          subtitle={`Saat ini belum ada data ${getTotalLabel().toLowerCase()} untuk ditampilkan.`}
+        />
+      ) : (
+        <Card className="rounded-b-md rounded-t-none border border-none bg-white">
+          <CardContent className="p-0">
+            <LaporanAktivitasArmadaDriverTable
+              data={getCurrentData()}
+              columns={getCurrentColumns()}
+              showFilter={false}
+              showSearch={false}
+              showPagination={false}
+              showTotalCount={false}
+              currentPage={currentPage}
+              totalPages={Math.ceil(getCurrentData().length / perPage)}
+              totalItems={getCurrentData().length}
+              perPage={perPage}
+              onPageChange={handlePageChange}
+              onPerPageChange={handlePerPageChange}
+              onSearch={handleSearch}
+              onFilter={handleFilter}
+              onSort={handleSort}
+              filterConfig={filterConfig}
+              className="border-0 [&>div:first-child]:!space-y-0 [&>div:first-child]:!p-0"
+              headerActions={null}
+              tableTitle={null}
+            />
+          </CardContent>
+        </Card>
+      )}
 
       {/* Pagination */}
-      <div className="mt-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded bg-yellow-400 text-sm font-semibold text-gray-900">
-            {currentPage}
+      {!isCurrentEmpty && (
+        <div className="mt-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded bg-yellow-400 text-sm font-semibold text-gray-900">
+              {currentPage}
+            </div>
+            <div className="flex h-8 w-8 items-center justify-center rounded border border-gray-300 text-sm text-gray-600">
+              2
+            </div>
           </div>
-          <div className="flex h-8 w-8 items-center justify-center rounded border border-gray-300 text-sm text-gray-600">
-            2
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-gray-600">
+              Tampilkan Jumlah detail
+            </span>
+            <Button
+              variant="muattrans-warning"
+              className="h-8 px-4 text-xs"
+              onClick={() => handlePerPageChange(perPage === 10 ? 20 : 10)}
+            >
+              {perPage}
+            </Button>
+            <span className="text-sm text-gray-600">40</span>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-600">Tampilkan Jumlah detail</span>
-          <Button
-            variant="muattrans-warning"
-            className="h-8 px-4 text-xs"
-            onClick={() => handlePerPageChange(perPage === 10 ? 20 : 10)}
-          >
-            {perPage}
-          </Button>
-          <span className="text-sm text-gray-600">40</span>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

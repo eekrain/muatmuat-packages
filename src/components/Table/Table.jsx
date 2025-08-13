@@ -88,12 +88,14 @@ const Table = ({
   const renderEmpty = () => {
     return (
       <tr>
-        <td colSpan={columns.length} className="px-6 py-8 text-center">
-          {emptyComponent ? (
-            emptyComponent
-          ) : (
-            <div className="text-neutral-500">No data available</div>
-          )}
+        <td colSpan={columns.length} className="px-6 py-12">
+          <div className="flex min-h-[220px] items-center justify-center">
+            {emptyComponent ? (
+              emptyComponent
+            ) : (
+              <div className="text-neutral-500">No data available</div>
+            )}
+          </div>
         </td>
       </tr>
     );
