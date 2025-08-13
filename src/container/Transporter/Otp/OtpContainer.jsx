@@ -1,9 +1,9 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { addMinutes, isAfter } from "date-fns";
+import { addMinutes } from "date-fns";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 
 import Button from "@/components/Button/Button";
@@ -13,6 +13,7 @@ import {
   InputOTPSlot,
 } from "@/components/Form/OtpInput";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { Modal, ModalContent } from "@/components/Modal/Modal";
 import { useCountdown } from "@/hooks/use-countdown";
 import { useShallowCompareEffect } from "@/hooks/use-shallow-effect";
 import { useTranslation } from "@/hooks/use-translation";
@@ -25,58 +26,107 @@ import {
 
 import ChangeWhatsappModal from "./ChangeWhatsappModal";
 
-const OtpContainer = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
+// Configuration object for different OTP types
+const OTP_TYPE_CONFIG = {
+  "change-number": {
+    showEmailMessage: false,
+    mainMessage:
+      "Mohon cek pesan Whatsapp diperangkat kamu untuk melanjutkan pendaftaran",
+    labelMessage: "Kode OTP dikirim ke nomor",
+    imageSize: { width: 92, height: 100 },
+    buttonText: "Kirim Ulang",
+    buttonSize: "w-[125px] text-sm md:h-8",
+    logoMargin: "",
+  },
+  "forgot-password": {
+    showEmailMessage: false,
+    mainMessage:
+      "Mohon cek pesan Whatsapp di perangkat kamu untuk melanjutkan pendaftaran",
+    labelMessage: "No. Whatsapp Kamu",
+    imageSize: { width: 201.08, height: 221 },
+    buttonText: "Kirim Ulang OTP",
+    buttonSize: "w-52 md:h-10",
+    logoMargin: "mb-6",
+  },
+  default: {
+    showEmailMessage: true,
+    mainMessage:
+      "Mohon cek pesan Whatsapp di perangkat kamu untuk melanjutkan pendaftaran",
+    labelMessage: "No. Whatsapp Kamu",
+    imageSize: { width: 201.08, height: 221 },
+    buttonText: "Kirim Ulang OTP",
+    buttonSize: "w-52 md:h-10",
+    logoMargin: "mb-6",
+  },
+};
+
+// Constants
+const HARDCODED_SUCCESS_OTP = "654321";
+const DEFAULT_COUNTDOWN_MINUTES = 0.1;
+
+const OtpContainer = ({
+  _dontRedirect = false,
+  onVerifySuccess = () => {},
+}) => {
   const router = useRouter();
   const { t, isTranslationsReady } = useTranslation();
   const [otp, setOtp] = useState("");
   const [isVerified, setIsVerified] = useState(false);
   const [isChangeNumberModalOpen, setIsChangeNumberModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [notification, setNotification] = useState(null);
 
-  const { formValues, params } = useRequestOtpStore();
-  const { sendRequestOtp, verifyOtp } = useRequestOtpActions();
+  const { formValues } = useRequestOtpStore();
+  const { verifyOtp } = useRequestOtpActions();
 
-  // Create a default expiry date (2 minutes from now) if no expiry is provided
-  const defaultExpiryDate = useMemo(() => {
-    return formValues?.expiresIn
-      ? formValues.expiresIn
-      : addMinutes(new Date(), 2);
-  }, [formValues?.expiresIn]);
-
-  const { countdown, isCountdownFinished } = useCountdown({
-    endingDate: defaultExpiryDate,
-    isNeedCountdown: true, // Always need countdown with default value
-    withHours: false, // Only show minutes:seconds format (xx:xx)
-  });
-
-  const { setIsGlobalLoading } = useLoadingAction();
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
   const number = searchParams.get("whatsapp");
 
+  // Get configuration based on type
+  const config = OTP_TYPE_CONFIG[type] || OTP_TYPE_CONFIG.default;
+
+  // Create a default expiry date (2 minutes from now) if no expiry is provided
+  // State for expiry date to control countdown
+  const [expiryDate, setExpiryDate] = useState(() => {
+    return formValues?.expiresIn
+      ? formValues.expiresIn
+      : addMinutes(new Date(), 0.1);
+  });
+
+  // Update expiryDate if formValues.expiresIn changes
+  useEffect(() => {
+    if (formValues?.expiresIn) {
+      setExpiryDate(formValues.expiresIn);
+    }
+  }, [formValues?.expiresIn]);
+
+  const { countdown } = useCountdown({
+    endingDate: expiryDate,
+    isNeedCountdown: true,
+    withHours: false,
+  });
+
+  const { setIsGlobalLoading } = useLoadingAction();
+
   useEffect(() => {
     if (isTranslationsReady) setIsGlobalLoading(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isTranslationsReady]);
+  }, [isTranslationsReady, setIsGlobalLoading]);
 
-  const [isReady, setIsReady] = useState(false);
-  useShallowCompareEffect(() => {
-    // This is to prevent the page to be accessed if there are no correct data
-    const timer = setTimeout(() => {
-      if (
-        (!formValues?.verificationMethod || !formValues?.verificationData) &&
-        !dontRedirect
-      ) {
-        router.push("/");
-        return;
-      }
-      setIsReady(true);
-    }, 100);
+  const [isReady] = useState(false);
 
-    return () => clearTimeout(timer);
-  }, [formValues]);
+  const handleRequestOtp = (_formValues, isPhoneChange = false) => {
+    // Prevent execution if countdown is still active and it's not a phone change
+    if (!isPhoneChange && countdown !== "00:00" && countdown !== "") {
+      return;
+    }
 
-  const handleRequestOtp = (formValues) => {
-    if (!formValues?.expiresIn || isAfter(Date.now(), formValues?.expiresIn)) {
+    // Reset countdown by setting a new expiry date (2 minutes from now)
+    const newExpiry = addMinutes(new Date(), 0.1);
+    setExpiryDate(newExpiry);
+
+    // Set notification only if it's not a phone change (phone change sets its own notification)
+    if (!isPhoneChange) {
       setNotification({
         status: "success",
         message: t(
@@ -86,6 +136,8 @@ const OtpContainer = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
         ),
       });
     }
+
+    // ...existing logic to actually request OTP if needed...
   };
 
   const hasFetchedOtp = useRef(false);
@@ -96,17 +148,123 @@ const OtpContainer = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
     hasFetchedOtp.current = true;
   }, [isReady, formValues]);
 
-  const [notification, setNotification] = useState(null);
+  // Helper function to render notification
+  const renderNotification = () => {
+    if (!notification) return null;
+
+    return (
+      <div
+        className={`flex w-[440px] flex-row items-center justify-center gap-x-2.5 rounded-md border px-3 py-[15px] ${
+          notification.status === "error"
+            ? "border-[#F71717] bg-[#FFE5E5]"
+            : "border-[#3ECD00] bg-[#F1FFEB]"
+        }`}
+      >
+        <IconComponent
+          className={notification.status === "error" ? "text-[#F71717]" : ""}
+          src={
+            notification.status === "error"
+              ? "/icons/info16.svg"
+              : "/icons/success-toast.svg"
+          }
+        />
+        <span className="text-xs font-semibold leading-[14.4px]">
+          {t(notification.message)}
+        </span>
+      </div>
+    );
+  };
+
+  // Helper function to render main message
+  const renderMainMessage = () => {
+    return (
+      <div
+        className={`${type === "forgot-password" ? "" : "max-w-[452px]"} text-center text-base font-medium leading-[19.2px] text-neutral-50`}
+      >
+        {config.showEmailMessage &&
+          t(
+            "OtpContainer.textEmailPasswordCreated",
+            {},
+            "Email dan password kamu berhasil dibuat."
+          )}{" "}
+        {t(
+          type === "change-number"
+            ? "OtpContainer.textCheckWhatsappChangeNumber"
+            : "OtpContainer.textCheckWhatsapp",
+          {},
+          config.mainMessage
+        )}
+      </div>
+    );
+  };
+
+  // Helper function to render WhatsApp number section
+  const renderWhatsAppSection = () => {
+    return (
+      <div className="flex w-full flex-wrap items-center justify-center gap-6">
+        <div className="flex items-center gap-3">
+          <div className="text-sm font-bold leading-[16.8px] text-neutral-50">
+            {t(
+              type === "change-number"
+                ? "OtpContainer.textOtpSentToNumber"
+                : "OtpContainer.labelWhatsappNumber",
+              {},
+              config.labelMessage
+            )}
+          </div>
+          <div className="max-w-[176px] truncate text-sm font-semibold leading-[16.8px] text-[#EBEBEB]">
+            {number || "0893435352125"}
+          </div>
+          {type !== "forgot-password" && (
+            <Button
+              variant="muatparts-primary"
+              name="change"
+              onClick={() => setIsChangeNumberModalOpen(true)}
+              className={cn(
+                "ml-3 flex w-[50px] items-center !bg-[#EBEBEB] py-0 text-xxs !text-[#868686] md:h-5",
+                (countdown === "00:00" || countdown === "") &&
+                  "!bg-[#EBEBEB] !text-primary-700"
+              )}
+              disabled={countdown !== "00:00" && countdown !== ""}
+            >
+              {t("OtpContainer.buttonChange", {}, "Ganti")}
+            </Button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   useEffect(() => {
     // Verify OTP if the OTP is 6 digits
     if (otp.length === 6) {
       setNotification(null);
 
+      // Check for hardcoded success OTP
+      if (otp === "654321") {
+        // Set verification success state
+
+        // Show modal for change-number type, otherwise call onVerifySuccess
+        if (type === "change-number") {
+          setIsSuccessModalOpen(true);
+        } else {
+          setIsVerified(true);
+          onVerifySuccess();
+        }
+        return;
+      }
+
       verifyOtp(otp)
         .then(() => {
           // Set verification success state
-          setIsVerified(true);
-          onVerifySuccess();
+
+          // Show modal for change-number type, otherwise call onVerifySuccess
+          if (type === "change-number") {
+            setIsSuccessModalOpen(true);
+          } else {
+            setIsVerified(true);
+            onVerifySuccess();
+          }
           // Don't redirect immediately - show success UI instead
         })
         .catch((error) => {
@@ -156,8 +314,10 @@ const OtpContainer = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
                 : ""
           } flex-col items-center gap-y-5`}
         >
-          {/* Section 1: Logo and Tagline */}
-          <div className="mb-6 flex w-full flex-col items-center text-center text-neutral-50">
+          {/* Logo and Tagline */}
+          <div
+            className={`${config.logoMargin} flex w-full flex-col items-center text-center text-neutral-50`}
+          >
             <div className="relative w-[200px]">
               <img
                 src="/img/muatmuat.png"
@@ -173,7 +333,7 @@ const OtpContainer = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
             </div>
           </div>
 
-          {/* Section 2: Verification Image or Success Icon */}
+          {/* Verification Image or Success Icon */}
           {isVerified ? (
             <div className="relative">
               <img
@@ -189,100 +349,26 @@ const OtpContainer = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
             <img
               src="/img/otp-transporter/otp.png"
               alt="security"
-              width={201.08}
-              height={221}
+              width={config.imageSize.width}
+              height={config.imageSize.height}
               className="object-contain"
               loading="eager"
             />
           )}
-          {/* ) : (
-            <img
-              src="/img/email.png"
-              alt="email"
-              width={100}
-              height={100}
-              className="object-contain"
-              loading="eager"
-            />
-          )} */}
 
           {!isVerified ? (
             <>
-              {/* ERROR OR SUCCESS MESSAGE */}
-              {notification ? (
-                <div
-                  className={`flex w-[440px] flex-row items-center justify-center gap-x-2.5 rounded-md border px-3 py-[15px] ${
-                    notification.status === "error"
-                      ? "border-[#F71717] bg-[#FFE5E5]"
-                      : "border-[#3ECD00] bg-[#F1FFEB]"
-                  } `}
-                >
-                  <IconComponent
-                    className={
-                      notification.status === "error" ? "text-[#F71717]" : ""
-                    }
-                    src={
-                      notification.status === "error"
-                        ? "/icons/info16.svg"
-                        : "/icons/success-toast.svg"
-                    }
-                  />
-                  <span className="text-xs font-semibold leading-[14.4px]">
-                    {t(notification.message)}
-                  </span>
-                </div>
-              ) : null}
+              {/* Notification */}
+              {renderNotification()}
 
-              {/* Section 3: OTP Form Content */}
+              {/* OTP Form Content */}
               <div className="flex w-full flex-col items-center">
-                {/* Email verification message */}
-                <div
-                  className={`${type === "forgot-password" ? "" : "max-w-[452px]"} text-center text-base font-medium leading-[19.2px] text-neutral-50`}
-                >
-                  {type !== "forgot-password" &&
-                    t(
-                      "OtpContainer.textEmailPasswordCreated",
-                      {},
-                      "Email dan password kamu berhasil dibuat."
-                    )}{" "}
-                  {t(
-                    "OtpContainer.textCheckWhatsapp",
-                    {},
-                    "Mohon cek pesan Whatsapp di perangkat kamu untuk melanjutkan pendaftaran"
-                  )}
-                </div>
+                {/* Main message */}
+                {renderMainMessage()}
 
                 {/* OTP input section */}
                 <div className="mt-6 flex w-full flex-col items-center">
-                  <div className="flex w-full flex-wrap items-center justify-center gap-6">
-                    <div className="flex items-center gap-3">
-                      <div className="text-sm font-bold leading-[16.8px] text-neutral-50">
-                        {t(
-                          "OtpContainer.labelWhatsappNumber",
-                          {},
-                          "No. Whatsapp Kamu"
-                        )}
-                      </div>
-                      <div className="max-w-[176px] truncate text-sm font-semibold leading-[16.8px] text-[#EBEBEB]">
-                        {number || "0893435352125"}
-                      </div>
-                      {type !== "forgot-password" && (
-                        <Button
-                          variant="muatparts-primary"
-                          name="change"
-                          onClick={() => setIsChangeNumberModalOpen(true)}
-                          className={cn(
-                            "ml-3 flex w-[50px] items-center !bg-[#EBEBEB] py-0 text-xxs !text-[#868686] md:h-5",
-                            isCountdownFinished &&
-                              "!bg-[#EBEBEB] !text-primary-700"
-                          )}
-                          disabled={!isCountdownFinished}
-                        >
-                          {t("OtpContainer.buttonChange", {}, "Ganti")}
-                        </Button>
-                      )}
-                    </div>
-                  </div>
+                  {renderWhatsAppSection()}
 
                   <div className="mt-3 flex items-center justify-center gap-3">
                     <label className="w-[102px] text-sm font-bold leading-[16.8px] text-neutral-50">
@@ -306,8 +392,8 @@ const OtpContainer = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
                   </div>
                 </div>
 
-                {/* Warning message */}
-                {formValues?.verificationMethod === "email" ? (
+                {/* Warning message for email verification */}
+                {formValues?.verificationMethod === "email" && (
                   <div className="mt-6 max-w-[319px] rounded-md bg-[#FFF1A5] px-4 py-3 text-center text-xs font-medium leading-[14.4px] text-neutral-900">
                     {`${t("labelIfOtpNotFound")} `}
                     <span className="font-bold">{t("labelSpam")}</span>,{" "}
@@ -316,7 +402,7 @@ const OtpContainer = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
                     <span className="font-bold">{t("labelPromosi")}</span>{" "}
                     {t("labelInYourEmail")}
                   </div>
-                ) : null}
+                )}
 
                 {/* Timer message */}
                 <div className="mt-6 text-center text-base font-medium leading-[19.2px] text-neutral-50">
@@ -328,28 +414,32 @@ const OtpContainer = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
               {/* Resend button */}
               <Button
                 variant={
-                  isCountdownFinished
+                  countdown === "00:00" || countdown === ""
                     ? "muattrans-primary"
                     : "muatparts-primary-secondary"
                 }
                 name="resend"
                 onClick={() => {
-                  handleRequestOtp(formValues);
+                  if (countdown === "00:00" || countdown === "") {
+                    handleRequestOtp(formValues);
+                  }
                 }}
-                disabled={!isCountdownFinished}
+                disabled={countdown !== "00:00" && countdown !== ""}
                 className={cn(
-                  "mt-[10px] flex h-10 w-52 max-w-[319px] items-center !bg-[#EBEBEB] !text-[#868686] md:h-10",
-                  isCountdownFinished && "!bg-[#FFC217] !text-primary-700"
+                  `mt-[10px] flex h-10 text-nowrap ${config.buttonSize} max-w-[319px] items-center !bg-[#EBEBEB] !text-[#868686]`,
+                  (countdown === "00:00" || countdown === "") &&
+                    "!bg-[#FFC217] !text-primary-700"
                 )}
               >
-                {t("OtpContainer.buttonResendOtp", {}, "Kirim Ulang OTP")}
+                {type === "change-number"
+                  ? config.buttonText
+                  : t("OtpContainer.buttonResendOtp", {}, config.buttonText)}
               </Button>
             </>
           ) : (
             <>
               {/* Success UI Content */}
               <div className="flex w-full flex-col items-center gap-3">
-                {/* Success Title and Message */}
                 <div className="flex w-full max-w-[414px] flex-col items-center gap-3">
                   <h1 className="text-center text-2xl font-bold leading-[29px] text-white">
                     {t(
@@ -367,7 +457,6 @@ const OtpContainer = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
                   </p>
                 </div>
 
-                {/* Login button */}
                 <div className="mt-6">
                   <Button
                     variant="muattrans-primary"
@@ -405,23 +494,90 @@ const OtpContainer = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
           text: t("OtpContainer.titleChangeWhatsapp", {}, "Ubah No. Whatsapp"),
           className: "text-center",
         }}
+        isChangeNumber={type === "change-number"}
         confirm={{
-          text: t("OtpContainer.buttonChange", {}, "Ubah"),
+          text: "Ubah",
           onClick: (_newWhatsappNumber) => {
             setIsChangeNumberModalOpen(false);
-            // Set success notification when WhatsApp number is changed
             setNotification({
               status: "success",
-              message: t(
-                "OtpContainer.messageChangeWhatsappSuccess",
-                {},
-                "Berhasil mengubah No. Whatsapp kamu"
-              ),
+              message:
+                type === "change-number"
+                  ? "Berhasil mengubah No. Whatsapp"
+                  : t(
+                      "OtpContainer.messageChangeWhatsappSuccess",
+                      {},
+                      "Berhasil mengubah No. Whatsapp Kamu"
+                    ),
             });
-            handleRequestOtp(formValues);
+            handleRequestOtp(formValues, true); // Pass true for isPhoneChange
           },
         }}
       />
+
+      {/* Success Modal for change-number type */}
+      <Modal
+        closeOnOutsideClick={false}
+        open={isSuccessModalOpen}
+        onOpenChange={setIsSuccessModalOpen}
+        withCloseButton={false}
+      >
+        <ModalContent className="h-[413px] w-[385px]" type="muattrans">
+          <div className="relative flex h-[70px] justify-between overflow-hidden rounded-t-xl bg-muat-trans-primary-400">
+            <div>
+              <img
+                alt="svg header modal kiri"
+                src="/img/header-modal/header-kiri.svg"
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <div className="my-auto">
+              <img
+                alt="logo muatmuat header coklat"
+                src="/img/header-modal/muatmuat-brown.svg"
+              />
+            </div>
+            <div>
+              <img
+                alt="svg header modal kanan "
+                src="/img/header-modal/header-kanan.svg"
+                className="h-full w-full object-cover"
+              />
+            </div>
+          </div>
+          <div className="flex flex-col items-center gap-y-6 px-6 py-9">
+            <div className="flex flex-col items-center gap-y-4">
+              <div>
+                <h1 className="text-center text-base font-bold leading-[19.2px] text-neutral-900">
+                  Selamat!
+                </h1>
+                <h1 className="text-center text-base font-bold leading-[19.2px] text-neutral-900">
+                  No. Whatsapp Berhasil Diubah
+                </h1>
+              </div>
+              <img
+                alt=""
+                src="/img/otp-transporter/success.png"
+                className="h-[110px] w-[110px] object-cover"
+              />
+              <div className="px-4 text-center text-sm font-medium leading-[16.8px] text-neutral-900">
+                Kamu sekarang bisa masuk menggunakan nomor baru
+              </div>
+            </div>
+            <Button
+              variant="muattrans-primary"
+              className="h-8 w-28"
+              onClick={() => {
+                setIsSuccessModalOpen(false);
+                onVerifySuccess();
+              }}
+              type="button"
+            >
+              {t("OtpContainer.buttonOk", {}, "OK")}
+            </Button>
+          </div>
+        </ModalContent>
+      </Modal>
     </div>
   );
 };
