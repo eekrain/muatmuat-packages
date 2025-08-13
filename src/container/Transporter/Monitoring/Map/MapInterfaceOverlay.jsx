@@ -94,7 +94,7 @@ export const MapInterfaceOverlay = ({
 
       {/* Top Navigation Bar Overlay */}
       {!hideTopNavigation && (
-        <div className="absolute left-0 right-0 top-0 z-20 flex items-center gap-3 p-4">
+        <div className="absolute left-0 right-0 top-0 z-10 flex items-center gap-3 p-4">
           {/* Daftar Armada / Kembali Button */}
           <Button
             variant="muattrans-primary"
