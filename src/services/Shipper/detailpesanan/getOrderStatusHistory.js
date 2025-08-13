@@ -2,6 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { DriverStatusEnum } from "@/lib/constants/detailpesanan/driver-status.enum";
 
 const useMockData = false; // mock detailpesanan
 
@@ -26,10 +27,10 @@ const stepStatus = [
   //   statusCode: OrderStatusEnum.FLEET_CHANGE,
   //   statusName: "Proses Pergantian Armada",
   // },
-  {
-    statusCode: OrderStatusEnum.WAITING_REPAYMENT_1,
-    statusName: "Proses Pergantian Armada",
-  },
+  // {
+  //   statusCode: OrderStatusEnum.WAITING_REPAYMENT_1,
+  //   statusName: "Proses Pergantian Armada",
+  // },
   {
     statusCode: OrderStatusEnum.PREPARE_DOCUMENT,
     statusName: "Dokumen Sedang Disiapkan",
@@ -57,17 +58,18 @@ const apiResultOrderStatusHistory = {
     },
     Data: {
       driverStatus: [
-        // {
-        //   driverId: "550e8400-e29b-41d4-a716-446655440021",
-        //   name: "Hendra",
-        //   driverImage: "https://picsum.photos/50",
-        //   licensePlate: "B 1234 CD",
-        //   orderStatus: OrderStatusEnum.WAITING_REPAYMENT_1,
-        //   orderStatusTitle: "Sedang Muat",
-        //   driverStatus: DriverStatusEnum.LOADING.MENUJU.code,
-        //   driverStatusTitle: "Menuju ke Lokasi Muat",
-        //   stepStatus,
-        // },
+        {
+          driverId: "550e8400-e29b-41d4-a716-446655440021",
+          name: "Hendra",
+          driverImage: "https://picsum.photos/50",
+          licensePlate: "B 1234 CD",
+          orderStatus: OrderStatusEnum.UNLOADING,
+          orderStatusTitle: "Sedang Muat",
+          driverStatus: `${DriverStatusEnum.UNLOADING.MENUJU.code}_1`,
+          // driverStatus: DriverStatusEnum.UNLOADING.MENUJU.code,
+          driverStatusTitle: "Menuju ke Lokasi Muat",
+          stepStatus,
+        },
         // {
         //   driverId: "550e8400-e29b-41d4-a716-446655440022",
         //   name: "Ardian Eka",
@@ -75,7 +77,7 @@ const apiResultOrderStatusHistory = {
         //   licensePlate: "B 1234 CD",
         //   orderStatus: OrderStatusEnum.WAITING_REPAYMENT_1,
         //   orderStatusTitle: "Proses Muat",
-        //   driverStatus: DriverStatusEnum.LOADING.MENUJU.code,
+        //   driverStatus: DriverStatusEnum.UNLOADING.MENUJU.code,
         //   driverStatusTitle: "Menuju ke Lokasi Muat",
         //   stepStatus,
         // },
@@ -86,7 +88,7 @@ const apiResultOrderStatusHistory = {
         //   licensePlate: "B 1234 CD",
         //   orderStatus: OrderStatusEnum.PREPARE_DOCUMENT,
         //   orderStatusTitle: "Proses Muat",
-        //   driverStatus: DriverStatusEnum.LOADING.MUAT.code,
+        //   driverStatus: DriverStatusEnum.UNLOADING.MUAT.code,
         //   driverStatusTitle: "Menuju ke Lokasi Muat",
         //   stepStatus,
         // },

@@ -20,6 +20,9 @@ export default function DesktopLayout({ children }) {
     return children;
   }
 
+  // Check if we're on the monitoring page
+  const isMonitoringPage = pathname.includes("/monitoring");
+
   return (
     <div className="relative min-h-screen">
       <HeaderLayout notifCounter={{ notification, chat }} />
@@ -31,7 +34,7 @@ export default function DesktopLayout({ children }) {
       >
         {children}
       </div>
-      <FloatingButton />
+      {!isMonitoringPage && <FloatingButton />}
 
       <img
         src="/img/background-indonesia-map.webp"
