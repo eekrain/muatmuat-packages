@@ -1,29 +1,52 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
-import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import { TagBubble } from "@/components/Badge/TagBubble";
 import Button from "@/components/Button/Button";
 import DataTable from "@/components/DataTable/DataTable";
+import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import Filter from "@/components/Filter/Filter";
-import { Select } from "@/components/Form/Select";
+import Input from "@/components/Form/Input";
+import IconComponent from "@/components/IconComponent/IconComponent";
 import Pagination from "@/components/Pagination/Pagination";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 
 const DaftarPesananPage = () => {
   const [selectedTab, setSelectedTab] = useState("semua");
-  const [selectedPeriode, setSelectedPeriode] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [searchValue, setSearchValue] = useState("");
+  const [tempSearch, setTempSearch] = useState("");
   const [filters, setFilters] = useState({});
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [recentPeriodOptions, setRecentPeriodOptions] = useState([]);
+  const [currentPeriodValue, setCurrentPeriodValue] = useState({
+    name: "Semua Periode (Default)",
+    value: "",
+    format: "day",
+  });
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   // Handle tab click
   const handleTabClick = (tabValue) => {
     setSelectedTab(tabValue);
     console.log("Selected tab:", tabValue);
+  };
+
+  // Handle search
+  const handleSearch = (e) => {
+    if (e.key === "Enter") {
+      setSearchValue(tempSearch);
+      console.log("Search:", tempSearch);
+    }
+  };
+
+  // Handle clear search
+  const handleClearSearch = () => {
+    setTempSearch("");
+    setSearchValue("");
   };
 
   // Tab options sesuai design
@@ -34,7 +57,7 @@ const DaftarPesananPage = () => {
     { label: "Perlu Assign Armada (3)", value: "perlu-assign" },
   ];
 
-  // Mock data sesuai dengan design - menambah lebih banyak data seperti di LDG-2
+  // Simple mock data
   const mockData = [
     {
       id: 1,
@@ -379,6 +402,115 @@ const DaftarPesananPage = () => {
 
   const selectedFilter = getSelectedFilter();
 
+  // Period options untuk dropdown
+  const periodOptions = [
+    {
+      name: "Semua Periode (Default)",
+      value: "",
+      format: "day",
+    },
+    {
+      name: "Hari Ini",
+      value: 0,
+      format: "day",
+    },
+    {
+      name: "1 Minggu Terakhir",
+      value: 7,
+      format: "day",
+    },
+    {
+      name: "30 Hari Terakhir",
+      value: 30,
+      format: "month",
+    },
+    {
+      name: "90 Hari Terakhir",
+      value: 90,
+      format: "month",
+    },
+    {
+      name: "1 Tahun Terakhir",
+      value: 365,
+      format: "year",
+    },
+  ];
+
+  // Helper function to format DD-MM-YYYY to YYYY-MM-DD
+  const formatToYYYYMMDD = (dateStr) => {
+    if (!dateStr) return "";
+
+    // Handle DD-MM-YYYY format (with dashes)
+    const dashParts = dateStr.split("-");
+    if (dashParts.length === 3 && dashParts[0].length <= 2) {
+      return `${dashParts[2]}-${dashParts[1]}-${dashParts[0]}`;
+    }
+
+    // Handle DD/MM/YYYY format (with slashes)
+    const slashParts = dateStr.split("/");
+    if (slashParts.length === 3 && slashParts[0].length <= 2) {
+      return `${slashParts[2]}-${slashParts[1]}-${slashParts[0]}`;
+    }
+
+    // If already in YYYY-MM-DD format, return as is
+    return dateStr;
+  };
+
+  // Handle select period dari dropdown
+  const handleSelectPeriod = (selectedOption) => {
+    // For custom date range option
+    if (selectedOption?.range) {
+      const formattedStartDate = formatToYYYYMMDD(selectedOption.start_date);
+      const formattedEndDate = formatToYYYYMMDD(selectedOption.end_date);
+
+      setStartDate(formattedStartDate);
+      setEndDate(formattedEndDate);
+
+      // Update recent selections
+      if (
+        !recentPeriodOptions?.some((s) => s?.value === selectedOption?.value)
+      ) {
+        setRecentPeriodOptions((prev) => [...prev, selectedOption]);
+      }
+
+      setCurrentPeriodValue(selectedOption);
+    }
+    // For default "Semua Periode" option
+    else if (selectedOption?.value === "") {
+      setStartDate(null);
+      setEndDate(null);
+      setCurrentPeriodValue(selectedOption);
+    }
+    // For predefined period options
+    else if (selectedOption?.value !== undefined) {
+      const getLocalDateString = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      };
+
+      const today = new Date();
+      const endDateStr = getLocalDateString(today);
+
+      let startDateStr;
+      if (selectedOption.value === 0) {
+        // Today
+        startDateStr = endDateStr;
+      } else {
+        // Other periods
+        const startDateObj = new Date();
+        startDateObj.setHours(12, 0, 0, 0);
+        startDateObj.setDate(today.getDate() - selectedOption.value);
+        startDateStr = getLocalDateString(startDateObj);
+      }
+
+      setStartDate(startDateStr);
+      setEndDate(endDateStr);
+      setCurrentPeriodValue(selectedOption);
+    }
+  };
+
   return (
     <div className="space-y-6 p-6">
       {/* Header sesuai LDG-2 */}
@@ -386,17 +518,12 @@ const DaftarPesananPage = () => {
         <h1 className="text-xl font-bold leading-none text-neutral-900">
           Daftar Pesanan
         </h1>
-        <Select
-          value={selectedPeriode}
-          onChange={setSelectedPeriode}
-          placeholder="Semua Periode"
-          options={[
-            { value: "all", label: "Semua Periode" },
-            { value: "today", label: "Hari Ini" },
-            { value: "week", label: "1 Minggu Terakhir" },
-            { value: "month", label: "1 Bulan Terakhir" },
-          ]}
-          className="w-48"
+        <DropdownPeriode
+          disable={mockData.length === 0}
+          options={periodOptions}
+          onSelect={handleSelectPeriod}
+          recentSelections={recentPeriodOptions}
+          value={currentPeriodValue}
         />
       </div>
 
@@ -407,15 +534,23 @@ const DaftarPesananPage = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               {/* Search Input */}
-              <input
-                type="text"
+              <Input
+                className="gap-0"
+                disabled={mockData.length === 0}
+                appearance={{ containerClassName: "w-[262px]" }}
                 placeholder="Cari pesanan"
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                onKeyUp={(e) =>
-                  e.key === "Enter" && console.log("Search:", searchValue)
-                }
-                className="h-8 w-[262px] rounded-md border border-neutral-300 px-3 text-xs font-medium placeholder:text-neutral-500 focus:border-primary-700 focus:outline-none"
+                icon={{
+                  left: "/icons/search16.svg",
+                  right: tempSearch ? (
+                    <IconComponent
+                      src="/icons/silang16.svg"
+                      onClick={handleClearSearch}
+                    />
+                  ) : null,
+                }}
+                value={tempSearch}
+                onChange={({ target: { value } }) => setTempSearch(value)}
+                onKeyUp={handleSearch}
               />
 
               {/* Filter Component */}
