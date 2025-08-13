@@ -17,6 +17,7 @@ const TransportRequestCard = ({
   isBookmarked,
   onUnderstand,
   onShowDetail,
+  onAccept,
 }) => {
   // Use the prop if provided, otherwise fall back to request.isSaved
   const [isSaved, setIsSaved] = useState(
@@ -45,7 +46,9 @@ const TransportRequestCard = ({
   };
 
   const handleAccept = () => {
-    // TODO: Implement accept functionality
+    if (onAccept) {
+      onAccept(request);
+    }
   };
 
   const handleUnderstand = () => {

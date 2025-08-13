@@ -18,7 +18,6 @@ import {
   useResponsiveNavigation,
   useResponsiveRouteParams,
 } from "@/lib/responsive-navigation";
-import { formatDate } from "@/lib/utils/dateFormat";
 import { useGetTrackingLocations } from "@/services/Shipper/lacak-armada/getTrackingLocations";
 
 import { DriverInfo } from "../Home/components/DriverInfoSlider";
@@ -39,7 +38,6 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
   const driver = dataStatusPesanan?.driverStatus.find(
     (d) => d.driverId === driverId
   );
-  const isShowEstimatedArrival = driver?.driverStatus.startsWith("MENUJU_");
 
   return (
     <FormResponsiveLayout
@@ -51,16 +49,10 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
       }}
       onClickBackButton={() => navigation.pop()}
     >
-      {isShowEstimatedArrival && (
-        <EstimatedArrival
-          label={t(
-            "LacakArmadaScreen.labelEstimasiTibaLokasi",
-            { lokasi: "Bongkar" },
-            "Estimasi Tiba di<br/>Lokasi {lokasi}"
-          )}
-          arrivalTime={formatDate(new Date().toISOString())}
-        />
-      )}
+      <EstimatedArrival
+        driverStatus={driver.driverStatus}
+        arrivalTime={new Date().toISOString()}
+      />
 
       <div className="mb-16 bg-neutral-200">
         {driver && (
