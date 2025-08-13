@@ -56,20 +56,23 @@ const PermintaanAngkutCS = () => {
 
   // Calculate dynamic tab counts based on data and local state
   const getDynamicTabCounts = () => {
+    // Use tabCounters from mock data
     if (!data?.requests) {
       return {
-        tersedia: data?.tabCounts?.tersedia ?? 0,
-        halal_logistik: data?.tabCounts?.halal_logistik ?? 0,
-        disimpan: data?.tabCounts?.disimpan ?? 0,
+        all: data?.tabCounters?.all ?? 0,
+        instant: data?.tabCounters?.instant ?? 0,
+        scheduled: data?.tabCounters?.scheduled ?? 0,
+        halal: data?.tabCounters?.halal ?? 0,
       };
     }
 
-    // Kalau tidak ada search, langsung pakai tabCounts asli
+    // Kalau tidak ada search, langsung pakai tabCounters asli
     if (!searchValue || searchValue.trim() === "") {
       return {
-        tersedia: data?.tabCounts?.tersedia ?? 0,
-        halal_logistik: data?.tabCounts?.halal_logistik ?? 0,
-        disimpan: data?.tabCounts?.disimpan ?? 0,
+        all: data?.tabCounters?.all ?? 0,
+        instant: data?.tabCounters?.instant ?? 0,
+        scheduled: data?.tabCounters?.scheduled ?? 0,
+        halal: data?.tabCounters?.halal ?? 0,
       };
     }
 
@@ -80,22 +83,13 @@ const PermintaanAngkutCS = () => {
         request.orderCode.toLowerCase().includes(searchValue.toLowerCase())
     );
 
-    // Hitung jumlah saved dengan memperhatikan perubahan bookmark state
-    let savedCount = 0;
-    visibleRequests.forEach((request) => {
-      const isOriginallyBookmarked = request.isSaved;
-      const hasStateChanged = bookmarkedItems.has(request.id);
-      const isCurrentlyBookmarked = hasStateChanged
-        ? !isOriginallyBookmarked
-        : isOriginallyBookmarked;
-      if (isCurrentlyBookmarked) savedCount++;
-    });
-
     return {
-      tersedia: visibleRequests.length,
-      halal_logistik: visibleRequests.filter((req) => req.isHalalLogistics)
+      all: visibleRequests.length,
+      instant: visibleRequests.filter((req) => req.orderType === "INSTANT")
         .length,
-      disimpan: savedCount,
+      scheduled: visibleRequests.filter((req) => req.orderType === "SCHEDULED")
+        .length,
+      halal: visibleRequests.filter((req) => req.isHalalLogistics).length,
     };
   };
 
@@ -247,14 +241,14 @@ const PermintaanAngkutCS = () => {
                 <span
                   className={`${
                     shouldAnimate(
-                      dynamicTabCounts.tersedia,
+                      dynamicTabCounts.all,
                       data?.newRequestsCount?.hasAnimation
                     )
                       ? "font-base animate-semibold"
                       : ""
                   }`}
                 >
-                  {formatCounter(dynamicTabCounts.tersedia)}
+                  {formatCounter(dynamicTabCounts.all)}
                 </span>
                 )
               </span>
@@ -273,14 +267,14 @@ const PermintaanAngkutCS = () => {
                 <span
                   className={`${
                     shouldAnimate(
-                      dynamicTabCounts.tersedia,
+                      dynamicTabCounts.instant,
                       data?.newRequestsCount?.hasAnimation
                     )
                       ? "font-base animate-semibold"
                       : ""
                   }`}
                 >
-                  {formatCounter(dynamicTabCounts.tersedia)}
+                  {formatCounter(dynamicTabCounts.instant)}
                 </span>
                 )
               </span>
@@ -299,14 +293,14 @@ const PermintaanAngkutCS = () => {
                 <span
                   className={`${
                     shouldAnimate(
-                      dynamicTabCounts.tersedia,
+                      dynamicTabCounts.scheduled,
                       data?.newRequestsCount?.hasAnimation
                     )
                       ? "font-base animate-semibold"
                       : ""
                   }`}
                 >
-                  {formatCounter(dynamicTabCounts.tersedia)}
+                  {formatCounter(dynamicTabCounts.scheduled)}
                 </span>
                 )
               </span>
@@ -326,14 +320,14 @@ const PermintaanAngkutCS = () => {
                 <span
                   className={`${
                     shouldAnimate(
-                      dynamicTabCounts.halal_logistik,
+                      dynamicTabCounts.halal,
                       data?.newRequestsCount?.hasAnimation
                     )
                       ? "font-base animate-semibold"
                       : ""
                   }`}
                 >
-                  {formatCounter(dynamicTabCounts.halal_logistik)}
+                  {formatCounter(dynamicTabCounts.halal)}
                 </span>
                 )
               </span>

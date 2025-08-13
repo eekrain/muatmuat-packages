@@ -82,10 +82,11 @@ const apiResultTransportRequestList = {
       hasNext: true,
       hasPrevious: false,
     },
-    tabCounts: {
-      tersedia: 97,
-      halal_logistik: 10,
-      disimpan: 5,
+    tabCounters: {
+      all: 97,
+      instant: 45,
+      scheduled: 42,
+      halal: 10,
     },
     newRequestsCount: {
       total: 1,
