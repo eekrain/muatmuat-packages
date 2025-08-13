@@ -43,11 +43,12 @@ const LaporanPendapatanTable = ({
   onSort,
   displayOptions = null,
   tableTitle = null,
+  disabledByPeriod = false,
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [selectedFilters, setSelectedFilters] = useState({});
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
-  console.log("LaporanPendapatanTable rendered with data:", data);
+  // debug log removed for production cleanliness
 
   const handleSearch = (value) => {
     setSearchValue(value);
@@ -149,9 +150,17 @@ const LaporanPendapatanTable = ({
       onSort(null, null);
     }
   };
-
   const renderHeader = () => {
-    const isDisabled = totalItems === 0 && !loading;
+    const noDataDisabled = totalItems === 0 && !loading;
+
+    // Interlock states
+    const isSearchActive = searchValue.length > 0;
+    const isFilterActive = Object.keys(selectedFilters).length > 0;
+
+    const disableSearchInput =
+      noDataDisabled || disabledByPeriod || isFilterActive;
+    const disableFilterDropdown =
+      noDataDisabled || disabledByPeriod || isSearchActive;
 
     return (
       <div className="flex items-center justify-between">
@@ -164,7 +173,7 @@ const LaporanPendapatanTable = ({
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               onKeyUp={handleSearchKeyUp}
-              disabled={isDisabled}
+              disabled={disableSearchInput}
               icon={{
                 left: (
                   <IconComponent src="/icons/datatable-search.svg" width={12} />
@@ -196,7 +205,7 @@ const LaporanPendapatanTable = ({
               selectedValues={selectedFilters}
               onSelectionChange={handleFilterChange}
               searchPlaceholder="Cari {category}"
-              disabled={isDisabled}
+              disabled={disableFilterDropdown}
             />
           )}
         </div>
@@ -214,17 +223,27 @@ const LaporanPendapatanTable = ({
 
   const renderEmptyState = () => {
     return (
-      <tr>
-        <td colSpan={columns.length} className="px-6 py-8 text-center">
-          {emptyState || (
-            <DataNotFound className="gap-y-5" title="Keyword Tidak Ditemukan" />
-          )}
-        </td>
-      </tr>
+      emptyState || (
+        <DataNotFound className="gap-y-5" title="Keyword Tidak Ditemukan" />
+      )
     );
   };
 
   const activeFilters = getActiveFilters();
+
+  // Apply client-side search filtering for better UX
+  const filteredData = Array.isArray(data)
+    ? data.filter((row) => {
+        if (!searchValue) return true;
+        const searchLower = String(searchValue).toLowerCase();
+        return columns.some((col) => {
+          const value = row[col.key];
+          return String(value ?? "")
+            .toLowerCase()
+            .includes(searchLower);
+        });
+      })
+    : [];
 
   return (
     <>
@@ -262,7 +281,7 @@ const LaporanPendapatanTable = ({
           <div className="flex-1 overflow-hidden">
             <Table
               columns={columns}
-              data={data}
+              data={filteredData}
               loading={loading}
               onRowClick={onRowClick}
               rowClassName={rowClassName}

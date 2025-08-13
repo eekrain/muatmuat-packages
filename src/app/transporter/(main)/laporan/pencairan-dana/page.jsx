@@ -6,8 +6,9 @@ import { useState } from "react";
 import { Download, Info } from "lucide-react";
 
 import Button from "@/components/Button/Button";
+import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
-import LaporanPencairanDanaTable from "@/components/LaporanPencairanDanaTable/LaporanPencairanDanaTable";
+import LaporanPencairanDanaTable from "@/components/Report/LaporanPencairanDanaTable/LaporanPencairanDanaTable";
 
 export default function Page() {
   const router = useRouter();
@@ -195,9 +196,7 @@ export default function Page() {
     setCurrentPage(1);
   };
 
-  const handleSort = (sort, order) => {
-    console.log("Sort by:", sort, "Order:", order);
-  };
+  const handleSort = (_sort, _order) => {};
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -208,10 +207,9 @@ export default function Page() {
     setCurrentPage(1);
   };
 
-  const handleDownload = () => {
-    console.log("Downloading disbursement report...");
-    // TODO: Implement download functionality
-  };
+  const handleDownload = () => {};
+
+  const isDisbursementEmpty = !tableData || tableData.length === 0;
 
   return (
     <div className="mx-auto mt-7 max-w-full px-0">
@@ -238,27 +236,35 @@ export default function Page() {
         </Button>
       </div>
 
-      {/* Data Table with Filter */}
-      <LaporanPencairanDanaTable
-        data={tableData}
-        columns={columns}
-        currentPage={currentPage}
-        totalPages={2}
-        perPage={perPage}
-        onPageChange={handlePageChange}
-        onPerPageChange={handlePerPageChange}
-        onSearch={handleSearch}
-        onFilter={handleFilter}
-        onSort={handleSort}
-        onDownload={handleDownload}
-        periodOptions={periodOptions}
-        currentPeriodValue={currentPeriodValue}
-        recentPeriodOptions={recentPeriodOptions}
-        filterConfig={filterConfig}
-        searchValue={searchValue}
-        filters={filters}
-        sortConfig={{ sort: null, order: null }}
-      />
+      {/* Data Table with Filter or Empty State */}
+      {isDisbursementEmpty ? (
+        <DataEmpty
+          title="Belum ada laporan pencairan"
+          subtitle="Saat ini belum tersedia laporan pencairan. Setelah ada transaksi pencairan, laporan akan muncul di sini."
+        />
+      ) : (
+        <LaporanPencairanDanaTable
+          data={tableData}
+          columns={columns}
+          currentPage={currentPage}
+          totalPages={2}
+          perPage={perPage}
+          onPageChange={handlePageChange}
+          onPerPageChange={handlePerPageChange}
+          onPeriodChange={handleSelectPeriod}
+          onSearch={handleSearch}
+          onFilter={handleFilter}
+          onSort={handleSort}
+          onDownload={handleDownload}
+          periodOptions={periodOptions}
+          currentPeriodValue={currentPeriodValue}
+          recentPeriodOptions={recentPeriodOptions}
+          filterConfig={filterConfig}
+          searchValue={searchValue}
+          filters={filters}
+          sortConfig={{ sort: null, order: null }}
+        />
+      )}
     </div>
   );
 }
