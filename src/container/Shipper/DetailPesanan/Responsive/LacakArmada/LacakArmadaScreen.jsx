@@ -50,7 +50,7 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
       onClickBackButton={() => navigation.pop()}
     >
       <EstimatedArrival
-        driverStatus={driver.driverStatus}
+        driverStatus={driver?.driverStatus}
         arrivalTime={new Date().toISOString()}
       />
 
@@ -80,6 +80,12 @@ const LacakArmadaScreen = ({ dataStatusPesanan }) => {
             }}
             showTruck={true}
             truckIcon="/icons/marker-truck.svg"
+            pathOptions={{
+              strokeWeight: 3,
+            }}
+            truckPathOptions={{
+              strokeWeight: 3,
+            }}
           />
         )}
       </div>

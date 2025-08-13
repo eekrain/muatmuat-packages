@@ -4,7 +4,8 @@ import { fetcherMuatparts } from "@/lib/axios";
 
 export const getBankAccounts = async (url) => {
   const res = await fetcherMuatparts.get(url);
-  return res.data?.Data?.accounts || [];
+  // return res.data?.Data?.accounts || [];
+  return [];
 };
 
 export const useGetBankAccounts = () => {

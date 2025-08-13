@@ -9,7 +9,6 @@ export const useCountdown = ({
 }) => {
   const [isCountdownFinished, setIsCountdownFinished] = useState(false);
   const [countdown, setCountdown] = useState("");
-  console.log("🚀 ~ countdown:", countdown);
   const intervalRef = useRef();
 
   useEffect(() => {
