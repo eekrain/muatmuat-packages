@@ -7,18 +7,23 @@ const DisplayOptionsBar = ({
   currentStatus = null,
   onStatusChange,
   className,
+  showAllOption = true,
 }) => {
-  // Add "All" option at the beginning if statusOptions exist
-  const allStatusOptions =
-    statusOptions.length > 0
+  const hasStatus = Array.isArray(statusOptions) && statusOptions.length > 0;
+
+  const options = hasStatus
+    ? showAllOption
       ? [{ value: null, label: `Semua (${totalCount})` }, ...statusOptions]
+      : statusOptions
+    : showAllOption
+      ? [{ value: null, label: `Semua (${totalCount})` }]
       : [];
 
   return (
     <div className={cn("flex items-center gap-2", className)}>
       <span className="text-xs font-bold">Tampilkan:</span>
       <div className="flex items-center gap-2 text-xxs">
-        {allStatusOptions.map((status) => (
+        {options.map((status) => (
           <button
             key={status.value ?? "all"}
             onClick={() => {
