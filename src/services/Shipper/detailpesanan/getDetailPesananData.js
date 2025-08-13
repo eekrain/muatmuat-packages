@@ -19,7 +19,7 @@ import { getStatusLegend } from "./getStatusLegend";
 const useMockData = false; // mock detailpesanan
 
 const orderType = OrderTypeEnum.INSTANT;
-const orderStatus = OrderStatusEnum.CONFIRMED;
+const orderStatus = OrderStatusEnum.UNLOADING;
 const unitFleetStatus = 1;
 const totalUnit = 1;
 

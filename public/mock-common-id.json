@@ -120,7 +120,7 @@
   "DriverRatingModal.titleUlasan": "Ulasan",
   "labelAlertInfoMenungguKonfirmasi": "Terdapat pesanan yang membutuhkan konfirmasi",
   "LacakArmadaScreen.titleLacakArmada": "Lacak Armada",
-  "LacakArmadaScreen.labelEstimasiTibaLokasi": "Estimasi Tiba di<br/>Lokasi {lokasi}",
+  "LacakArmadaScreen.labelEstimasiTibaLokasi": "Estimasi {labelTiba}",
   "LacakArmadaScreen.bottomSheetHeaderKeterangan": "Keterangan",
   "LacakArmadaScreen.buttonDetailStatusDriver": "Detail Status Driver",
   "RingkasanPembayaranPerubahanPesanan.headerDetailTambahanBiaya": "Detail Tambahan Biaya",
