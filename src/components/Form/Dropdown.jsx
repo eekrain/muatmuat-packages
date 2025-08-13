@@ -15,7 +15,7 @@ export default function Dropdown({
   options,
   isAddable,
   isError = false,
-  searchable,
+  searchable = true,
 }) {
   const [searchValue, setSearchValue] = useState("");
   return (
