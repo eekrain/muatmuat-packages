@@ -45,7 +45,12 @@ const FilterDropdown = ({
   const handleItemToggle = (categoryKey, item) => {
     if (!multiSelect) {
       // Single select mode
-      setTempSelectedValues({ [categoryKey]: item });
+      const newSelectedValues = { [categoryKey]: item };
+      setTempSelectedValues(newSelectedValues);
+
+      // Close the popover and apply the filter immediately
+      setOpenPopovers((prev) => ({ ...prev, [categoryKey]: false }));
+      onSelectionChange?.(newSelectedValues);
       return;
     }
 
