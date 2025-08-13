@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import {
@@ -20,10 +20,23 @@ const DriverQRCodeSingleScreen = () => {
     driverId: params.driverId,
     orderId: params.orderId,
   });
+
+  const title = useMemo(() => {
+    if (!qrData?.driverInfo?.statusScan) return "";
+    const split = parseInt(
+      qrData?.driverInfo?.statusScan.split("_").slice(-1)[0]
+    );
+    const index = !isNaN(split) ? split : "";
+
+    if (qrData?.driverInfo?.statusScan.includes("MUAT"))
+      return `QR Code Lokasi Muat ${index}`;
+    else return `QR Code Lokasi Bongkar ${index}`;
+  }, [qrData?.driverInfo?.statusScan]);
+
   return (
     <FormResponsiveLayout
       title={{
-        label: "QR Code Lokasi Muat",
+        label: title,
       }}
       withMenu={{
         onClickShare: () => setIsOpenShareVia(true),

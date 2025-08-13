@@ -719,6 +719,38 @@ const apiResultActiveOrders = {
             driverPhone: "081234567896",
             driverStatus: "DOCUMENT_DELIVERY",
           },
+          {
+            id: "uuid2",
+            fleetId: "uuid2",
+            licensePlate: "L 7891 MN",
+            driverName: "Bagus Santoso",
+            driverPhone: "081234567896",
+            driverStatus: "DOCUMENT_DELIVERY",
+          },
+          {
+            id: "uuid2",
+            fleetId: "uuid2",
+            licensePlate: "L 7891 MN",
+            driverName: "Bagus Santoso",
+            driverPhone: "081234567896",
+            driverStatus: "DOCUMENT_DELIVERY",
+          },
+          {
+            id: "uuid2",
+            fleetId: "uuid2",
+            licensePlate: "L 7891 MN",
+            driverName: "Bagus Santoso",
+            driverPhone: "081234567896",
+            driverStatus: "DOCUMENT_DELIVERY",
+          },
+          {
+            id: "uuid2",
+            fleetId: "uuid2",
+            licensePlate: "L 7891 MN",
+            driverName: "Bagus Santoso",
+            driverPhone: "081234567896",
+            driverStatus: "DOCUMENT_DELIVERY",
+          },
         ],
         sosStatus: { hasSos: false, sosCount: 0, sosUnits: [] },
         hasChangeRequest: false,
@@ -733,9 +765,6 @@ const apiResultActiveOrders = {
       hasPreviousPage: false,
     },
     availableStatuses: {
-      hasNeedChangeResponse: true,
-      hasNeedConfirmationReady: true,
-      hasNeedAssignVehicle: true,
       totalNeedChangeResponse: 1,
       totalNeedConfirmationReady: 1,
       totalNeedAssignVehicle: 1,
@@ -753,7 +782,84 @@ export const fetcherActiveOrders = async (cacheKey) => {
     : "/v1/active-orders";
 
   if (isMockActiveOrders) {
-    return apiResultActiveOrders.Data;
+    // Parse search parameter from query string
+    const params = new URLSearchParams(queryString);
+    const searchTerm = params.get("search")?.toLowerCase() || "";
+    const statusFilter = params.get("status") || "";
+
+    let filteredOrders = [...apiResultActiveOrders.Data.orders];
+
+    // Apply search filter
+    if (searchTerm && searchTerm.length > 2) {
+      filteredOrders = filteredOrders.filter((order) => {
+        // Search in order code
+        if (order.orderCode?.toLowerCase().includes(searchTerm)) return true;
+
+        // Search in driver names
+        if (
+          order.assignedVehicles?.some((vehicle) =>
+            vehicle.driverName?.toLowerCase().includes(searchTerm)
+          )
+        )
+          return true;
+
+        // Search in license plates
+        if (
+          order.assignedVehicles?.some((vehicle) =>
+            vehicle.licensePlate?.toLowerCase().includes(searchTerm)
+          )
+        )
+          return true;
+
+        // Search in locations
+        if (
+          order.pickupLocations?.some(
+            (loc) =>
+              loc.fullAddress?.toLowerCase().includes(searchTerm) ||
+              loc.city?.toLowerCase().includes(searchTerm)
+          )
+        )
+          return true;
+
+        if (
+          order.dropoffLocations?.some(
+            (loc) =>
+              loc.fullAddress?.toLowerCase().includes(searchTerm) ||
+              loc.city?.toLowerCase().includes(searchTerm)
+          )
+        )
+          return true;
+
+        // Search in truck type
+        if (order.truckType?.name?.toLowerCase().includes(searchTerm))
+          return true;
+
+        return false;
+      });
+    }
+
+    // Apply status filter
+    if (statusFilter) {
+      const statusMap = {
+        need_change_response: "NEED_CHANGE_RESPONSE",
+        need_confirmation_ready: "NEED_CONFIRMATION_READY",
+        need_assign_vehicle: "NEED_ASSIGN_FLEET",
+      };
+
+      const mappedStatus = statusMap[statusFilter] || statusFilter;
+      filteredOrders = filteredOrders.filter(
+        (order) => order.orderStatus === mappedStatus
+      );
+    }
+
+    return {
+      ...apiResultActiveOrders.Data,
+      orders: filteredOrders,
+      pagination: {
+        ...apiResultActiveOrders.Data.pagination,
+        totalItems: filteredOrders.length,
+      },
+    };
   }
 
   const result = await fetcherMuatrans.get(url);
@@ -761,7 +867,15 @@ export const fetcherActiveOrders = async (cacheKey) => {
 };
 
 export const useGetActiveOrders = (params = {}) => {
-  const queryParams = new URLSearchParams(params).toString();
+  // Filter out null/undefined values before creating URLSearchParams
+  const filteredParams = Object.entries(params).reduce((acc, [key, value]) => {
+    if (value !== null && value !== undefined && value !== "") {
+      acc[key] = value;
+    }
+    return acc;
+  }, {});
+
+  const queryParams = new URLSearchParams(filteredParams).toString();
   const cacheKey = `active-orders${queryParams ? `?${queryParams}` : ""}`;
 
   return useSWR(cacheKey, fetcherActiveOrders);

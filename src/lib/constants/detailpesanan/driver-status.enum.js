@@ -10,7 +10,7 @@ export const DriverStatusEnum = {
     },
     ANTRI: {
       code: "ANTRI_DI_LOKASI_MUAT",
-      name: "labelAntriDiLokasiMuatt",
+      name: "labelAntriDiLokasiMuat",
     },
     MUAT: {
       code: "SEDANG_MUAT",

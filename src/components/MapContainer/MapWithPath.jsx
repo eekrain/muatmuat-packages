@@ -10,6 +10,8 @@ import {
   useLoadScript,
 } from "@react-google-maps/api";
 
+import useDevice from "@/hooks/use-device";
+
 // Remove unused imports and code
 const defaultMapContainerStyle = { width: "100%", height: "400px" };
 const defaultCenter = { lat: -7.2575, lng: 112.7521 }; // Default to Surabaya
@@ -19,6 +21,13 @@ const defaultPathOptions = {
   strokeOpacity: 1,
   strokeWeight: 6,
 };
+const defaultTruckPathOptions = {
+  strokeColor: "#DD7B02",
+  strokeOpacity: 1,
+  strokeWeight: 6,
+  strokeDashArray: "10,5", // Dashed line to differentiate
+};
+
 const defaultMapOptions = {
   disableDefaultUI: false,
   zoomControl: false,
@@ -67,17 +76,14 @@ export const MapWithPath = ({
   locationPolyline = [], // Regular waypoints for connecting locations
   encodedTruckPolyline = "", // Separate truck waypoints from backend
   pathOptions = defaultPathOptions,
-  truckPathOptions = {
-    // Separate styling for truck path
-    strokeColor: "#FFC217",
-    strokeOpacity: 0.8,
-    strokeWeight: 6,
-    strokeDashArray: "10,5", // Dashed line to differentiate
-  },
+  truckPathOptions = defaultTruckPathOptions,
   mapOptions = {},
   showTruck = true,
   truckIcon = "/icons/truck-icon.svg", // Path to truck icon
 }) => {
+  pathOptions = { ...defaultPathOptions, ...pathOptions };
+  truckPathOptions = { ...defaultTruckPathOptions, ...truckPathOptions };
+  const { isMobile } = useDevice();
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: apiKey,
     libraries: ["places", "geometry"],
@@ -118,22 +124,55 @@ export const MapWithPath = ({
   // Process markers with proper icons when Google Maps is loaded
   const processedMarkers = useMemo(() => {
     if (!isLoaded || !window.google) return locationMarkers;
-    return locationMarkers.map((marker) => ({
-      ...marker,
-      icon: {
-        url: process.env.NEXT_PUBLIC_ASSET_REVERSE + marker.icon,
+    const isMultipleLocation = locationMarkers.length > 2;
+    return locationMarkers.map((marker) => {
+      let title = marker.title;
 
-        scaledSize: new window.google.maps.Size(45, 58),
-        anchor: new window.google.maps.Point(22.5, 48), // Center bottom of the marker
-      },
-    }));
+      if (isMobile && !isMultipleLocation) {
+        title = null;
+      } else if (isMobile && isMultipleLocation) {
+        const index = title.split("").slice(-1)[0];
+        title = index;
+      }
+
+      return {
+        ...marker,
+        title,
+        icon: {
+          url: process.env.NEXT_PUBLIC_ASSET_REVERSE + marker.icon,
+
+          scaledSize: new window.google.maps.Size(45, 58),
+          anchor: new window.google.maps.Point(22.5, 48), // Center bottom of the marker
+        },
+      };
+    });
   }, [locationMarkers, isLoaded]);
 
   // Add styles for marker labels
   useEffect(() => {
     // Add CSS for marker labels
     const style = document.createElement("style");
-    style.textContent = `
+    if (isMobile) {
+      style.textContent = `
+      .marker-label {
+        position: relative;
+        background: #EE4343;
+        color: white;
+        width: 18px;
+        height: 18px;
+        border-radius: 4px;
+        font-size: text-xs;
+        font-weight: bold;
+        white-space: nowrap;
+        transform: translate(11px, -22px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+      }
+    `;
+    } else {
+      style.textContent = `
       .marker-label {
         position: relative;
         background: black;
@@ -146,9 +185,10 @@ export const MapWithPath = ({
         transform: translateY(-38px);
       }
     `;
+    }
     document.head.appendChild(style);
     return () => document.head.removeChild(style);
-  }, []);
+  }, [isMobile]);
 
   const combinedMapOptions = useMemo(
     () => ({

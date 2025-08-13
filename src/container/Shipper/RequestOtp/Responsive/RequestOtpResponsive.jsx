@@ -38,7 +38,8 @@ const RequestOtpResponsive = ({
 
   const { countdown, isCountdownFinished } = useCountdown({
     endingDate: formValues?.expiresIn,
-    isNeedCountdown: false,
+    isNeedCountdown: Boolean(formValues?.expiresIn),
+    withHours: false,
   });
 
   const { setIsGlobalLoading } = useLoadingAction();
