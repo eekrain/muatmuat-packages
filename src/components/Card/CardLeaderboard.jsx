@@ -21,12 +21,12 @@ const CardLeaderboard = ({
   return (
     <div
       className={cn(
-        "last:border-non flex h-[52px] w-full max-w-[248px] items-center border-b border-neutral-300 py-3",
+        "flex h-[52px] w-[248px] items-center border-b border-neutral-300 py-3 last:border-none",
         className
       )}
     >
       {/* Column 1: Avatar or Icon */}
-      <div className="relative flex-shrink-0">
+      <div className="relative mb-[14px] flex-shrink-0">
         {variant === "default" ? (
           <AvatarDriver withIcon={false} image={avatarSrc} />
         ) : (
@@ -43,7 +43,7 @@ const CardLeaderboard = ({
       </div>
 
       {/* Column 2: Info */}
-      <div className="flex flex-1 flex-col justify-center gap-y-3 overflow-hidden">
+      <div className="mb-[14px] flex flex-1 flex-col justify-center gap-y-3 overflow-hidden">
         <h3 className="truncate text-sm font-semibold text-neutral-900">
           {title}
         </h3>
@@ -75,7 +75,7 @@ const CardLeaderboard = ({
 
       {/* Column 3: Rating (Default variant only) */}
       {variant === "default" && (
-        <div className="flex flex-shrink-0 items-center gap-x-2 pt-[28px]">
+        <div className="mb-[14px] flex flex-shrink-0 items-center gap-x-2 pt-[28px]">
           <IconComponent
             src="/icons/star16.svg"
             alt="Rating"
