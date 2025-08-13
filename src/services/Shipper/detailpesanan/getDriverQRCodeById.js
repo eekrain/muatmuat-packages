@@ -22,7 +22,7 @@ const apiResultQRCode = {
         driverImage: "https://picsum.photos/50",
         name: "Hendra",
         licensePlate: "B 1234 CD",
-        statusScan: DriverStatusScanEnum.BELUM_SCAN_BONGKAR,
+        statusScan: `${DriverStatusScanEnum.BELUM_SCAN_BONGKAR}_1`,
       },
       shareLink: "https://app.muattrans.com/qr/ABC123XYZ789",
       expiryTime: addMinutes(new Date(), 15),
