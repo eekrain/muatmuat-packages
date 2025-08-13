@@ -25,17 +25,14 @@ import {
 
 import ChangeWhatsappModal from "./ChangeWhatsappModal";
 
-const OtpContainer = ({
-  _dontRedirect = false,
-  onVerifySuccess = () => {},
-}) => {
+const OtpContainer = ({ dontRedirect = false, onVerifySuccess = () => {} }) => {
   const router = useRouter();
   const { t, isTranslationsReady } = useTranslation();
   const [otp, setOtp] = useState("");
   const [isVerified, setIsVerified] = useState(false);
   const [isChangeNumberModalOpen, setIsChangeNumberModalOpen] = useState(false);
 
-  const { formValues } = useRequestOtpStore();
+  const { formValues, params } = useRequestOtpStore();
   const { sendRequestOtp, verifyOtp } = useRequestOtpActions();
 
   // Create a default expiry date (2 minutes from now) if no expiry is provided
@@ -61,22 +58,22 @@ const OtpContainer = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTranslationsReady]);
 
-  const [isReady] = useState(false);
-  //   useShallowCompareEffect(() => {
-  //     // This is to prevent the page to be accessed if there are no correct data
-  //     const timer = setTimeout(() => {
-  //       if (
-  //         (!formValues?.verificationMethod || !formValues?.verificationData) &&
-  //         !dontRedirect
-  //       ) {
-  //         router.push("/");
-  //         return;
-  //       }
-  //       setIsReady(true);
-  //     }, 100);
+  const [isReady, setIsReady] = useState(false);
+  useShallowCompareEffect(() => {
+    // This is to prevent the page to be accessed if there are no correct data
+    const timer = setTimeout(() => {
+      if (
+        (!formValues?.verificationMethod || !formValues?.verificationData) &&
+        !dontRedirect
+      ) {
+        router.push("/");
+        return;
+      }
+      setIsReady(true);
+    }, 100);
 
-  //     return () => clearTimeout(timer);
-  //   }, [formValues]);
+    return () => clearTimeout(timer);
+  }, [formValues]);
 
   const handleRequestOtp = (formValues) => {
     if (!formValues?.expiresIn || isAfter(Date.now(), formValues?.expiresIn)) {
