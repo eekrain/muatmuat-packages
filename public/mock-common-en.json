@@ -122,6 +122,8 @@
   "LacakArmadaScreen.labelEstimasiTibaLokasi": "Estimated Arrival at<br/>{lokasi} Location",
   "LacakArmadaScreen.bottomSheetHeaderKeterangan": "Information",
   "LacakArmadaScreen.buttonDetailStatusDriver": "Driver Status Details",
+  "Estimasi.labelMuat": "Estimated Loading Arrival {index}",
+  "Estimasi.labelBongkar": "Estimated Unloading Arrival {index}",
   "RingkasanPembayaranPerubahanPesanan.headerDetailTambahanBiaya": "Additional Cost Details",
   "RingkasanPembayaranPerubahanPesanan.sectionBiayaPerubahanRute": "Route Change Cost",
   "RingkasanPembayaranPerubahanPesanan.labelSelisihJarakPerubahanLokasi": "Distance Difference for Location Change",

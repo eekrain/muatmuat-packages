@@ -17,12 +17,13 @@ const TransportRequestCard = ({
   isBookmarked,
   onUnderstand,
   onShowDetail,
-  onAccept,
 }) => {
   // Use the prop if provided, otherwise fall back to request.isSaved
   const [isSaved, setIsSaved] = useState(
     isBookmarked !== undefined ? isBookmarked : request.isSaved
   );
+
+  const [showDetail, setShowDetail] = useState(false);
 
   // Update local state when prop changes
   useEffect(() => {
@@ -46,9 +47,7 @@ const TransportRequestCard = ({
   };
 
   const handleAccept = () => {
-    if (onAccept) {
-      onAccept(request);
-    }
+    // TODO: Implement accept functionality
   };
 
   const handleUnderstand = () => {
@@ -79,20 +78,37 @@ const TransportRequestCard = ({
           request.isTaken && "brightness-95 grayscale"
         )}
       >
-        {/* New Request Header */}
-        {request.isNew && (
-          <>
-            <div className="flex h-[42px] items-center justify-between bg-muat-trans-primary-50 px-3 py-2">
-              <span className="text-sm font-semibold text-neutral-900">
-                Permintaan Baru
-              </span>
-              <span className="text-[12px] font-normal text-neutral-600">
-                {request.newRequestDuration}
-              </span>
+        <>
+          <div className="flex h-[66px] items-center justify-between px-3 py-2">
+            <div className="flex items-center gap-2">
+              <img
+                src={"/img/muatan1.png"}
+                alt="Logo Transporter"
+                className="h-10 w-10 rounded-full border-[1.25px] border-neutral-400 object-cover"
+              />
+              <div className="space-y-1">
+                <p className="text-sm font-semibold">Agam Tunggal Jaya</p>
+                <div className="flex items-center gap-1">
+                  <IconComponent
+                    src="/icons/contact.svg"
+                    className={cn(
+                      "h-4 w-4",
+                      request.isTaken ? "text-neutral-700" : ""
+                    )}
+                  />
+                  <p className="text-xs font-medium text-primary-700">
+                    Hubungi Shipper
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="border-b border-warning-400"></div>
-          </>
-        )}
+            <div className="flex flex-col items-end">
+              <p className="text-xs text-gray-600">1 Menit yang lalu</p>
+              <p className="text-xs font-semibold text-neutral-900">02:02</p>
+            </div>
+          </div>
+          <div className="border-b border-neutral-400"></div>
+        </>
 
         <div className="p-3">
           {/* Status Tags and Save Button Row */}
@@ -178,24 +194,6 @@ const TransportRequestCard = ({
                   dengan sertifikasi halal logistik
                 </InfoTooltip>
               )}
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleSave}
-                className={cn(
-                  "flex h-6 w-6 items-center justify-center rounded-full hover:opacity-75",
-                  isSaved ? "bg-[#FFE9ED]" : "border border-[#C4C4C4] bg-white"
-                )}
-              >
-                <IconComponent
-                  src={
-                    isSaved
-                      ? "/icons/bookmark-filled.svg"
-                      : "/icons/bookmark.svg"
-                  }
-                  className={cn("h-5 w-5", isSaved && "text-error-600")}
-                />
-              </button>
             </div>
           </div>
 
@@ -328,59 +326,93 @@ const TransportRequestCard = ({
               </span>
             </div>
           </div>
-
           {/* Vehicle Info */}
-          <div className="mb-4 flex items-start gap-3">
-            <IconComponent
-              src="/icons/truk16.svg"
-              className="mt-0.5 h-6 w-6 flex-shrink-0 text-neutral-600"
-            />
-            <div className="flex-1">
-              <div className="text-xs font-medium text-neutral-600">
-                Kebutuhan Armada
-              </div>
-              <div
-                className={cn(
-                  "text-xs font-semibold",
-                  request.isTaken ? "text-[#7B7B7B]" : "text-neutral-900"
-                )}
-              >
-                {request.truckCount} Unit ({request.truckTypeName} -{" "}
-                {request.carrierName})
-              </div>
-            </div>
-          </div>
-
-          {/* Schedule Info */}
-          <div className="mb-4 flex items-start gap-3">
-            <IconComponent
-              src="/icons/calendar16.svg"
-              className="mt-0.5 h-6 w-6 flex-shrink-0 text-neutral-600"
-            />
-            <div className="flex-1">
-              <div className="text-xs font-medium text-neutral-600">
-                Waktu Muat
-              </div>
-              <div
-                className={cn(
-                  "text-xs font-semibold",
-                  request.isTaken ? "text-[#7B7B7B]" : "text-neutral-900"
-                )}
-              >
-                {request.loadDateTime || "03 Jan 2025 09:00 WIB s/d 11:00 WIB"}
-              </div>
-            </div>
-          </div>
-
-          {/* Additional Services */}
-          {request.hasAdditionalService &&
-            request.additionalServices?.length > 0 && (
-              <div className="mb-3 rounded-[4px] bg-warning-50 px-3 py-2">
-                <div className="text-[12px] font-medium text-warning-800">
-                  + {request.additionalServices[0].serviceName}
+          {showDetail && (
+            <div className="mb-4 flex items-start gap-3">
+              <IconComponent
+                src="/icons/truk16.svg"
+                className="mt-0.5 h-6 w-6 flex-shrink-0 text-neutral-600"
+              />
+              <div className="flex-1">
+                <div className="text-xs font-medium text-neutral-600">
+                  Kebutuhan Armada
+                </div>
+                <div
+                  className={cn(
+                    "text-xs font-semibold",
+                    request.isTaken ? "text-[#7B7B7B]" : "text-neutral-900"
+                  )}
+                >
+                  {request.truckCount} Unit ({request.truckTypeName} -{" "}
+                  {request.carrierName})
                 </div>
               </div>
-            )}
+            </div>
+          )}
+
+          {/* Schedule Info */}
+          {showDetail && (
+            <div className="mb-4 flex items-start gap-3">
+              <IconComponent
+                src="/icons/calendar16.svg"
+                className="mt-0.5 h-6 w-6 flex-shrink-0 text-neutral-600"
+              />
+              <div className="flex-1">
+                <div className="text-xs font-medium text-neutral-600">
+                  Waktu Muat
+                </div>
+                <div
+                  className={cn(
+                    "text-xs font-semibold",
+                    request.isTaken ? "text-[#7B7B7B]" : "text-neutral-900"
+                  )}
+                >
+                  {request.loadDateTime ||
+                    "03 Jan 2025 09:00 WIB s/d 11:00 WIB"}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Toggle Button */}
+          <div className="mb-4 flex w-full items-center justify-between">
+            {/* Kiri */}
+            <div
+              className="flex cursor-pointer items-center gap-1"
+              onClick={() => setShowDetail((prev) => !prev)}
+            >
+              <span className="text-xs font-medium text-primary-700">
+                {showDetail ? "Sembunyikan" : "Lihat Selengkapnya"}
+              </span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className={`h-4 w-4 text-primary-700 transition-transform duration-300 ${
+                  showDetail ? "rotate-180" : ""
+                }`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+
+            {/* Kanan */}
+            <div className="flex flex-col items-end">
+              <span className="text-[10px] text-neutral-600">
+                Potensi Pendapatan
+              </span>
+              <span className="text-[12px] font-bold text-primary-700">
+                {request.potentialEarnings ||
+                  formatCurrency(request.totalPrice)}
+              </span>
+            </div>
+          </div>
 
           {/* Divider before action buttons */}
           <div
@@ -390,72 +422,62 @@ const TransportRequestCard = ({
             )}
           ></div>
 
+          {/* Transporter Info */}
+          <div className="mb-3 flex items-center gap-2">
+            {/* Transporter Tersedia */}
+            <div className="flex items-center gap-1">
+              <IconComponent
+                src="/icons/truk16.svg"
+                className="h-4 w-4 text-[#7B3F00]"
+              />
+              <span className="text-xs font-medium text-primary-700">
+                16 Transporter Tersedia
+              </span>
+            </div>
+
+            {/* Dilihat */}
+            <div className="flex items-center gap-1">
+              <IconComponent
+                src="/icons/eyes.svg"
+                className="h-4 w-4 text-[#7B3F00]"
+              />
+              <span className="text-xs font-medium text-primary-700">
+                15 Dilihat
+              </span>
+            </div>
+
+            {/* Disimpan */}
+            <div className="flex items-center gap-1">
+              <div className="flex h-4 w-4 items-center justify-center rounded-full bg-red-100">
+                <IconComponent
+                  src="/icons/bookmark-filled.svg"
+                  className="h-3 w-3 text-red-500"
+                />
+              </div>
+              <span className="text-xs font-medium text-primary-700">
+                21 Disimpan
+              </span>
+            </div>
+          </div>
+
           {/* Action Buttons */}
           <div className="flex items-center gap-1">
-            {request.isTaken ? (
-              // Show placeholder space and price info when request is taken
-              <>
-                <div className="flex-1">
-                  <div className="h-6"></div>{" "}
-                  {/* 12px + 12px spacing for message area */}
-                  <div className="h-8 w-[80px]"></div>{" "}
-                  {/* Placeholder space for button */}
-                  <div className="h-3"></div> {/* 12px bottom spacing */}
-                </div>
-                <div className="ml-auto text-right">
-                  {/* Empty space to align with button position */}
-                  <div className="h-6"></div> {/* Match message area spacing */}
-                  <div className="flex h-8 flex-col justify-center">
-                    <div className="text-[10px] font-normal text-neutral-600">
-                      Potensi Pendapatan
-                    </div>
-                    <div className="text-[12px] font-bold text-neutral-900">
-                      {request.potentialEarnings ||
-                        formatCurrency(request.totalPrice)}
-                    </div>
-                  </div>
-                  <div className="h-3"></div> {/* 12px bottom spacing */}
-                </div>
-              </>
-            ) : (
-              // Show normal buttons when request is not taken
-              <>
-                <Button
-                  variant="muattrans-primary-secondary"
-                  className="h-8 w-[87px] rounded-[24px] px-4 text-[14px] font-semibold"
-                  onClick={handleDetail}
-                >
-                  Detail
-                </Button>
-                {!isSuspended && (
-                  <>
-                    <Button
-                      variant="muattrans-error-secondary"
-                      className="h-8 w-[83px] rounded-[24px] px-4 text-[14px] font-semibold"
-                      onClick={handleReject}
-                    >
-                      Tolak
-                    </Button>
-                    <Button
-                      variant="muattrans-warning"
-                      className="h-8 w-[92px] rounded-[24px] px-4 text-[14px] font-semibold text-[#461B02]"
-                      onClick={handleAccept}
-                    >
-                      Terima
-                    </Button>
-                  </>
-                )}
-                <div className="ml-auto text-right">
-                  <div className="text-[10px] font-normal text-neutral-600">
-                    Potensi Pendapatan
-                  </div>
-                  <div className="text-[12px] font-bold text-primary-700">
-                    {request.potentialEarnings ||
-                      formatCurrency(request.totalPrice)}
-                  </div>
-                </div>
-              </>
-            )}
+            <>
+              <Button
+                variant="muattrans-primary-secondary"
+                className="h-8 w-[180px] rounded-[24px] px-4 text-[14px] font-semibold"
+                onClick={handleDetail}
+              >
+                Detail
+              </Button>
+              <Button
+                variant="muattrans-warning"
+                className="h-8 w-[180px] rounded-[24px] px-4 text-[14px] font-semibold text-[#461B02]"
+                onClick={handleAccept}
+              >
+                Assign Transporter
+              </Button>
+            </>
           </div>
         </div>
       </div>
