@@ -11,8 +11,10 @@ import Card, { CardContent } from "@/components/Card/Card";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import Pagination from "@/components/Pagination/Pagination";
 import Table from "@/components/Table/Table";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function DetailPencairanDanaPage({ params }) {
+  const { t } = useTranslation();
   const router = useRouter();
   const { id } = params;
 
@@ -30,25 +32,41 @@ export default function DetailPencairanDanaPage({ params }) {
       {
         id: 1,
         invoiceNumber: "INV/20240120/MPM/00001",
-        source: "Pendapatan Pesanan",
+        source: t(
+          "DetailPencairanDanaPage.sourceOrderRevenue",
+          {},
+          "Pendapatan Pesanan"
+        ),
         totalIncome: 220000,
       },
       {
         id: 2,
         invoiceNumber: "INV/20240120/MPM/00002",
-        source: "Pendapatan Pesanan",
+        source: t(
+          "DetailPencairanDanaPage.sourceOrderRevenue",
+          {},
+          "Pendapatan Pesanan"
+        ),
         totalIncome: 210000,
       },
       {
         id: 3,
         invoiceNumber: "INV/20240120/MPM/00003",
-        source: "Penyesuaian Pendapatan",
+        source: t(
+          "DetailPencairanDanaPage.sourceRevenueAdjustment",
+          {},
+          "Penyesuaian Pendapatan"
+        ),
         totalIncome: 300000,
       },
       {
         id: 4,
         invoiceNumber: "COM/20240120/MPM/00004",
-        source: "Penyesuaian Pendapatan",
+        source: t(
+          "DetailPencairanDanaPage.sourceRevenueAdjustment",
+          {},
+          "Penyesuaian Pendapatan"
+        ),
         totalIncome: 300000,
       },
     ],
@@ -63,17 +81,25 @@ export default function DetailPencairanDanaPage({ params }) {
 
   const columns = [
     {
-      header: "No. Invoice",
+      header: t(
+        "DetailPencairanDanaPage.tableColumnInvoiceNumber",
+        {},
+        "No. Invoice"
+      ),
       key: "invoiceNumber",
       width: "200px",
     },
     {
-      header: "Sumber",
+      header: t("DetailPencairanDanaPage.tableColumnSource", {}, "Sumber"),
       key: "source",
       width: "200px",
     },
     {
-      header: "Total Pendapatan",
+      header: t(
+        "DetailPencairanDanaPage.tableColumnTotalIncome",
+        {},
+        "Total Pendapatan"
+      ),
       key: "totalIncome",
       width: "150px",
       render: (row) => formatCurrency(row.totalIncome),
@@ -112,17 +138,36 @@ export default function DetailPencairanDanaPage({ params }) {
       {/* Breadcrumb */}
       <BreadCrumb
         data={[
-          { name: "Laporan Pencairan", href: "/laporan/pencairan-dana" },
-          { name: "Rincian Pencairan" },
+          {
+            name: t(
+              "DetailPencairanDanaPage.breadcrumbLaporanPencairan",
+              {},
+              "Laporan Pencairan"
+            ),
+            href: "/laporan/pencairan-dana",
+          },
+          {
+            name: t(
+              "DetailPencairanDanaPage.breadcrumbRincianPencairan",
+              {},
+              "Rincian Pencairan"
+            ),
+          },
         ]}
       />
 
       {/* Page Header */}
       <div className="mt-4 flex items-center justify-between">
         <PageTitle withBack={true} onClick={handleBack}>
-          Rincian Pencairan
+          {t(
+            "DetailPencairanDanaPage.titleRincianPencairan",
+            {},
+            "Rincian Pencairan"
+          )}
         </PageTitle>
-        <Button iconLeft={<Download size={16} />}>Unduh</Button>
+        <Button iconLeft={<Download size={16} />}>
+          {t("DetailPencairanDanaPage.buttonDownload", {}, "Unduh")}
+        </Button>
       </div>
 
       {/* Main Content */}
@@ -135,7 +180,11 @@ export default function DetailPencairanDanaPage({ params }) {
               <div className="mb-6 space-y-4">
                 <div className="flex items-center">
                   <label className="w-52 text-sm font-medium text-gray-600">
-                    Tanggal Pencairan
+                    {t(
+                      "DetailPencairanDanaPage.labelDisbursementDate",
+                      {},
+                      "Tanggal Pencairan"
+                    )}
                   </label>
                   <p className="text-sm text-gray-900">
                     {disbursementData.disbursementDate}
@@ -143,7 +192,11 @@ export default function DetailPencairanDanaPage({ params }) {
                 </div>
                 <div className="flex items-center">
                   <label className="w-52 text-sm font-medium text-gray-600">
-                    Rekening Pencairan
+                    {t(
+                      "DetailPencairanDanaPage.labelDisbursementAccount",
+                      {},
+                      "Rekening Pencairan"
+                    )}
                   </label>
                   <div className="flex items-center gap-2">
                     <img
@@ -170,7 +223,13 @@ export default function DetailPencairanDanaPage({ params }) {
                         className="px-6 py-8 text-center"
                       >
                         <div className="text-gray-500">
-                          <p className="font-medium">Tidak Ada Data Invoice</p>
+                          <p className="font-medium">
+                            {t(
+                              "DetailPencairanDanaPage.emptyStateNoInvoiceData",
+                              {},
+                              "Tidak Ada Data Invoice"
+                            )}
+                          </p>
                         </div>
                       </td>
                     </tr>
@@ -200,19 +259,31 @@ export default function DetailPencairanDanaPage({ params }) {
           <Card className="border-none">
             <CardContent className="p-6">
               <h3 className="mb-4 text-lg font-semibold text-gray-900">
-                Ringkasan Pencairan
+                {t(
+                  "DetailPencairanDanaPage.titleDisbursementSummary",
+                  {},
+                  "Ringkasan Pencairan"
+                )}
               </h3>
 
               <div className="space-y-4">
                 {/* Gross Income */}
                 <div>
                   <h4 className="mb-2 text-sm font-medium text-gray-700">
-                    Pendapatan Kotor
+                    {t(
+                      "DetailPencairanDanaPage.labelGrossIncome",
+                      {},
+                      "Pendapatan Kotor"
+                    )}
                   </h4>
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-600">
-                        Nominal Pendapatan
+                        {t(
+                          "DetailPencairanDanaPage.labelIncomeAmount",
+                          {},
+                          "Nominal Pendapatan"
+                        )}
                       </span>
                       <span className="text-sm font-medium text-gray-900">
                         {formatCurrency(disbursementData.summary.grossIncome)}
@@ -220,7 +291,11 @@ export default function DetailPencairanDanaPage({ params }) {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-600">
-                        Admin Layanan
+                        {t(
+                          "DetailPencairanDanaPage.labelServiceAdmin",
+                          {},
+                          "Admin Layanan"
+                        )}
                       </span>
                       <span className="text-sm font-medium text-red-600">
                         -{formatCurrency(disbursementData.summary.adminFee)}
@@ -232,23 +307,33 @@ export default function DetailPencairanDanaPage({ params }) {
                 {/* Other Costs */}
                 <div>
                   <h4 className="mb-2 text-sm font-medium text-gray-700">
-                    Biaya Lainnya
+                    {t(
+                      "DetailPencairanDanaPage.labelOtherCosts",
+                      {},
+                      "Biaya Lainnya"
+                    )}
                   </h4>
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">DPP</span>
+                      <span className="text-sm text-gray-600">
+                        {t("DetailPencairanDanaPage.labelDPP", {}, "DPP")}
+                      </span>
                       <span className="text-sm font-medium text-gray-900">
                         {formatCurrency(disbursementData.summary.dpp)}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">PPN 12%</span>
+                      <span className="text-sm text-gray-600">
+                        {t("DetailPencairanDanaPage.labelPPN", {}, "PPN 12%")}
+                      </span>
                       <span className="text-sm font-medium text-gray-900">
                         {formatCurrency(disbursementData.summary.ppn)}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">PPH 2%</span>
+                      <span className="text-sm text-gray-600">
+                        {t("DetailPencairanDanaPage.labelPPH", {}, "PPH 2%")}
+                      </span>
                       <span className="text-sm font-medium text-red-600">
                         -{formatCurrency(disbursementData.summary.pph)}
                       </span>
@@ -260,7 +345,7 @@ export default function DetailPencairanDanaPage({ params }) {
                 <div className="border-t border-gray-200 pt-4">
                   <div className="flex justify-between">
                     <span className="text-lg font-bold text-gray-900">
-                      Total
+                      {t("DetailPencairanDanaPage.labelTotal", {}, "Total")}
                     </span>
                     <span className="text-lg font-bold text-gray-900">
                       {formatCurrency(calculateTotal())}

@@ -11,8 +11,10 @@ import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import Pagination from "@/components/Pagination/Pagination";
 import { ReportSummaryCards } from "@/components/Report";
 import LaporanPendapatanTable from "@/components/Report/LaporanPendapatanTable";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function Page() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -22,32 +24,52 @@ export default function Page() {
   // Konfigurasi periode
   const periodOptions = [
     {
-      name: "Semua Periode (Default)",
+      name: t(
+        "LaporanPendapatanPage.periodOptionAllPeriods",
+        {},
+        "Semua Periode (Default)"
+      ),
       value: "",
       format: "day",
     },
     {
-      name: "Hari Ini",
+      name: t("LaporanPendapatanPage.periodOptionToday", {}, "Hari Ini"),
       value: 0,
       format: "day",
     },
     {
-      name: "1 Minggu Terakhir",
+      name: t(
+        "LaporanPendapatanPage.periodOptionLastWeek",
+        {},
+        "1 Minggu Terakhir"
+      ),
       value: 7,
       format: "day",
     },
     {
-      name: "30 Hari Terakhir",
+      name: t(
+        "LaporanPendapatanPage.periodOptionLastMonth",
+        {},
+        "30 Hari Terakhir"
+      ),
       value: 30,
       format: "month",
     },
     {
-      name: "90 Hari Terakhir",
+      name: t(
+        "LaporanPendapatanPage.periodOptionLastQuarter",
+        {},
+        "90 Hari Terakhir"
+      ),
       value: 90,
       format: "month",
     },
     {
-      name: "1 Tahun Terakhir",
+      name: t(
+        "LaporanPendapatanPage.periodOptionLastYear",
+        {},
+        "1 Tahun Terakhir"
+      ),
       value: 365,
       format: "year",
     },
@@ -56,28 +78,44 @@ export default function Page() {
   // Summary data
   const summaryData = [
     {
-      title: "Total Pendapatan",
+      title: t(
+        "LaporanPendapatanPage.summaryCardTotalRevenue",
+        {},
+        "Total Pendapatan"
+      ),
       value: "Rp1.400.000",
       bgColor: "bg-[#E3F5ED]",
       textColor: "text-[#00AF6C]",
       icon: "/icons/dashboard/armada.svg",
     },
     {
-      title: "Total Dana Belum Dicairkan",
+      title: t(
+        "LaporanPendapatanPage.summaryCardUndisbursedFunds",
+        {},
+        "Total Dana Belum Dicairkan"
+      ),
       value: "Rp 31.550.000",
       bgColor: "bg-[#FFF8E1]",
       textColor: "text-[#F57C00]",
       icon: "/icons/dashboard/armada.svg",
     },
     {
-      title: "Total Dana Sudah Dicairkan",
+      title: t(
+        "LaporanPendapatanPage.summaryCardDisbursedFunds",
+        {},
+        "Total Dana Sudah Dicairkan"
+      ),
       value: "Rp432.452.564",
       bgColor: "bg-[#E3F2FD]",
       textColor: "text-[#1976D2]",
       icon: "/icons/dashboard/armada.svg",
     },
     {
-      title: "Pendapatan Bulan Ini",
+      title: t(
+        "LaporanPendapatanPage.summaryCardThisMonthRevenue",
+        {},
+        "Pendapatan Bulan Ini"
+      ),
       value: "Rp432.452.564",
       bgColor: "bg-[#E3F2FD]",
       textColor: "text-[#1976D2]",
@@ -91,9 +129,13 @@ export default function Page() {
     {
       id: 1,
       orderNo: "INV/MTR/210504/001/AAA",
-      source: "Tambahan Biaya",
+      source: t(
+        "LaporanPendapatanPage.sourceAdditionalCost",
+        {},
+        "Tambahan Biaya"
+      ),
       sourceType: "additional_cost",
-      status: "Sudah Dicairkan",
+      status: t("LaporanPendapatanPage.statusDisbursed", {}, "Sudah Dicairkan"),
       statusType: "sudah_dicairkan",
       revenue: "Rp50.000.000",
       undisbursed: "Rp0",
@@ -101,9 +143,17 @@ export default function Page() {
     {
       id: 2,
       orderNo: "INV/MTR/210504/002/AAA",
-      source: "Tambahan Biaya",
+      source: t(
+        "LaporanPendapatanPage.sourceAdditionalCost",
+        {},
+        "Tambahan Biaya"
+      ),
       sourceType: "additional_cost",
-      status: "Dicairkan Sebagian",
+      status: t(
+        "LaporanPendapatanPage.statusPartiallyDisbursed",
+        {},
+        "Dicairkan Sebagian"
+      ),
       statusType: "dicairkan_sebagian",
       revenue: "Rp500.000",
       undisbursed: "Rp250.000",
@@ -111,9 +161,17 @@ export default function Page() {
     {
       id: 3,
       orderNo: "INV/MTR/210504/003/AAA",
-      source: "Tambahan Biaya",
+      source: t(
+        "LaporanPendapatanPage.sourceAdditionalCost",
+        {},
+        "Tambahan Biaya"
+      ),
       sourceType: "additional_cost",
-      status: "Belum Dicairkan",
+      status: t(
+        "LaporanPendapatanPage.statusNotDisbursed",
+        {},
+        "Belum Dicairkan"
+      ),
       statusType: "belum_dicairkan",
       revenue: "Rp1.000.000",
       undisbursed: "Rp1.000.000",
@@ -123,9 +181,13 @@ export default function Page() {
     {
       id: 4,
       orderNo: "INV/MTR/210504/004/AAA",
-      source: "Penyesuaian Pendapatan",
+      source: t(
+        "LaporanPendapatanPage.sourceRevenueAdjustment",
+        {},
+        "Penyesuaian Pendapatan"
+      ),
       sourceType: "revenue_adjustment",
-      status: "Sudah Dicairkan",
+      status: t("LaporanPendapatanPage.statusDisbursed", {}, "Sudah Dicairkan"),
       statusType: "sudah_dicairkan",
       revenue: "Rp50.000.000",
       undisbursed: "Rp0",
@@ -133,9 +195,17 @@ export default function Page() {
     {
       id: 5,
       orderNo: "INV/MTR/210504/005/AAA",
-      source: "Penyesuaian Pendapatan",
+      source: t(
+        "LaporanPendapatanPage.sourceRevenueAdjustment",
+        {},
+        "Penyesuaian Pendapatan"
+      ),
       sourceType: "revenue_adjustment",
-      status: "Dicairkan Sebagian",
+      status: t(
+        "LaporanPendapatanPage.statusPartiallyDisbursed",
+        {},
+        "Dicairkan Sebagian"
+      ),
       statusType: "dicairkan_sebagian",
       revenue: "Rp250.000",
       undisbursed: "Rp200.000",
@@ -143,9 +213,17 @@ export default function Page() {
     {
       id: 6,
       orderNo: "INV/MTR/210504/006/AAA",
-      source: "Penyesuaian Pendapatan",
+      source: t(
+        "LaporanPendapatanPage.sourceRevenueAdjustment",
+        {},
+        "Penyesuaian Pendapatan"
+      ),
       sourceType: "revenue_adjustment",
-      status: "Belum Dicairkan",
+      status: t(
+        "LaporanPendapatanPage.statusNotDisbursed",
+        {},
+        "Belum Dicairkan"
+      ),
       statusType: "belum_dicairkan",
       revenue: "Rp750.000",
       undisbursed: "Rp750.000",
@@ -155,9 +233,13 @@ export default function Page() {
     {
       id: 7,
       orderNo: "INV/MTR/210504/007/AAA",
-      source: "Pendapatan Pesanan",
+      source: t(
+        "LaporanPendapatanPage.sourceOrderRevenue",
+        {},
+        "Pendapatan Pesanan"
+      ),
       sourceType: "order_revenue",
-      status: "Sudah Dicairkan",
+      status: t("LaporanPendapatanPage.statusDisbursed", {}, "Sudah Dicairkan"),
       statusType: "sudah_dicairkan",
       revenue: "Rp2.000.000",
       undisbursed: "Rp0",
@@ -165,9 +247,17 @@ export default function Page() {
     {
       id: 8,
       orderNo: "INV/MTR/210504/008/AAA",
-      source: "Pendapatan Pesanan",
+      source: t(
+        "LaporanPendapatanPage.sourceOrderRevenue",
+        {},
+        "Pendapatan Pesanan"
+      ),
       sourceType: "order_revenue",
-      status: "Dicairkan Sebagian",
+      status: t(
+        "LaporanPendapatanPage.statusPartiallyDisbursed",
+        {},
+        "Dicairkan Sebagian"
+      ),
       statusType: "dicairkan_sebagian",
       revenue: "Rp1.500.000",
       undisbursed: "Rp500.000",
@@ -175,9 +265,17 @@ export default function Page() {
     {
       id: 9,
       orderNo: "INV/MTR/210504/009/AAA",
-      source: "Pendapatan Pesanan",
+      source: t(
+        "LaporanPendapatanPage.sourceOrderRevenue",
+        {},
+        "Pendapatan Pesanan"
+      ),
       sourceType: "order_revenue",
-      status: "Belum Dicairkan",
+      status: t(
+        "LaporanPendapatanPage.statusNotDisbursed",
+        {},
+        "Belum Dicairkan"
+      ),
       statusType: "belum_dicairkan",
       revenue: "Rp3.000.000",
       undisbursed: "Rp3.000.000",
@@ -187,47 +285,69 @@ export default function Page() {
   // Table columns
   const columns = [
     {
-      header: "No. Pesanan",
+      header: t(
+        "LaporanPendapatanPage.tableColumnOrderNumber",
+        {},
+        "No. Pesanan"
+      ),
       key: "orderNo",
       sortable: true,
       width: "200px",
     },
     {
-      header: "Sumber",
+      header: t("LaporanPendapatanPage.tableColumnSource", {}, "Sumber"),
       key: "source",
       sortable: true,
       width: "200px",
       render: (row) => <span>{row.source}</span>,
     },
     {
-      header: "Status",
+      header: t("LaporanPendapatanPage.tableColumnStatus", {}, "Status"),
       key: "status",
       sortable: true,
       width: "190px",
       render: (row) => {
         let variant = "success";
-        if (row.status === "Dicairkan Sebagian") {
+        if (
+          row.status ===
+          t(
+            "LaporanPendapatanPage.statusPartiallyDisbursed",
+            {},
+            "Dicairkan Sebagian"
+          )
+        ) {
           variant = "warning";
-        } else if (row.status === "Belum Dicairkan") {
+        } else if (
+          row.status ===
+          t("LaporanPendapatanPage.statusNotDisbursed", {}, "Belum Dicairkan")
+        ) {
           variant = "error";
         }
         return <BadgeStatus variant={variant}>{row.status}</BadgeStatus>;
       },
     },
     {
-      header: "Nominal Pendapatan",
+      header: t(
+        "LaporanPendapatanPage.tableColumnRevenueAmount",
+        {},
+        "Nominal Pendapatan"
+      ),
       key: "revenue",
       sortable: true,
       width: "180px",
     },
     {
-      header: "Dana Belum Dicairkan",
+      header: t(
+        "LaporanPendapatanPage.tableColumnUndisbursedFunds",
+        {},
+        "Dana Belum Dicairkan"
+      ),
       key: "undisbursed",
       sortable: true,
       width: "180px",
     },
     {
-      header: "Action",
+      header: t("LaporanPendapatanPage.tableColumnAction", {}, "Action"),
       key: "action",
       sortable: false,
       width: "100px",
@@ -236,7 +356,7 @@ export default function Page() {
           className="h-8 px-4 text-xs"
           onClick={() => router.push(`/laporan/pendapatan/${row.id}`)}
         >
-          Detail
+          {t("LaporanPendapatanPage.buttonDetail", {}, "Detail")}
         </Button>
       ),
     },
@@ -247,25 +367,67 @@ export default function Page() {
     categories: [
       {
         key: "status",
-        label: "Status",
+        label: t("LaporanPendapatanPage.filterCategoryStatus", {}, "Status"),
         searchable: true,
       },
       {
         key: "source",
-        label: "Sumber",
+        label: t("LaporanPendapatanPage.filterCategorySource", {}, "Sumber"),
         searchable: true,
       },
     ],
     data: {
       status: [
-        { id: "sudah_dicairkan", label: "Sudah Dicairkan" },
-        { id: "dicairkan_sebagian", label: "Dicairkan Sebagian" },
-        { id: "belum_dicairkan", label: "Belum Dicairkan" },
+        {
+          id: "sudah_dicairkan",
+          label: t(
+            "LaporanPendapatanPage.statusDisbursed",
+            {},
+            "Sudah Dicairkan"
+          ),
+        },
+        {
+          id: "dicairkan_sebagian",
+          label: t(
+            "LaporanPendapatanPage.statusPartiallyDisbursed",
+            {},
+            "Dicairkan Sebagian"
+          ),
+        },
+        {
+          id: "belum_dicairkan",
+          label: t(
+            "LaporanPendapatanPage.statusNotDisbursed",
+            {},
+            "Belum Dicairkan"
+          ),
+        },
       ],
       source: [
-        { id: "additional_cost", label: "Tambahan Biaya" },
-        { id: "revenue_adjustment", label: "Penyesuaian Pendapatan" },
-        { id: "order_revenue", label: "Pendapatan Pesanan" },
+        {
+          id: "additional_cost",
+          label: t(
+            "LaporanPendapatanPage.sourceAdditionalCost",
+            {},
+            "Tambahan Biaya"
+          ),
+        },
+        {
+          id: "revenue_adjustment",
+          label: t(
+            "LaporanPendapatanPage.sourceRevenueAdjustment",
+            {},
+            "Penyesuaian Pendapatan"
+          ),
+        },
+        {
+          id: "order_revenue",
+          label: t(
+            "LaporanPendapatanPage.sourceOrderRevenue",
+            {},
+            "Pendapatan Pesanan"
+          ),
+        },
       ],
     },
   };
@@ -320,7 +482,13 @@ export default function Page() {
 
   return (
     <div className="mx-auto mt-7 max-w-full px-0">
-      <h1 className="mb-5 text-2xl font-bold">Laporan Pendapatan</h1>
+      <h1 className="mb-5 text-2xl font-bold">
+        {t(
+          "LaporanPendapatanPage.titleLaporanPendapatan",
+          {},
+          "Laporan Pendapatan"
+        )}
+      </h1>
 
       {/* Summary Cards */}
       <ReportSummaryCards
@@ -331,15 +499,33 @@ export default function Page() {
               <>
                 <div className="space-y-1 text-sm">
                   <div className="flex items-center">
-                    <span>Pendapatan Pesanan:</span>
+                    <span>
+                      {t(
+                        "LaporanPendapatanPage.tooltipOrderRevenue",
+                        {},
+                        "Pendapatan Pesanan:"
+                      )}
+                    </span>
                     <span>Rp 10.000</span>
                   </div>
                   <div className="flex items-center">
-                    <span>Penyesuaian Pendapatan:</span>
+                    <span>
+                      {t(
+                        "LaporanPendapatanPage.tooltipRevenueAdjustment",
+                        {},
+                        "Penyesuaian Pendapatan:"
+                      )}
+                    </span>
                     <span>Rp 300.000</span>
                   </div>
                   <div className="flex items-center">
-                    <span>Tambahan Biaya:</span>
+                    <span>
+                      {t(
+                        "LaporanPendapatanPage.tooltipAdditionalCost",
+                        {},
+                        "Tambahan Biaya:"
+                      )}
+                    </span>
                     <span>Rp 200.000</span>
                   </div>
                 </div>
@@ -351,15 +537,33 @@ export default function Page() {
               <>
                 <div className="space-y-1 text-sm">
                   <div className="flex items-center">
-                    <span>Pendapatan Pesanan:</span>
+                    <span>
+                      {t(
+                        "LaporanPendapatanPage.tooltipOrderRevenue",
+                        {},
+                        "Pendapatan Pesanan:"
+                      )}
+                    </span>
                     <span>Rp 1.100.000</span>
                   </div>
                   <div className="flex items-center">
-                    <span>Penyesuaian Pendapatan:</span>
+                    <span>
+                      {t(
+                        "LaporanPendapatanPage.tooltipRevenueAdjustment",
+                        {},
+                        "Penyesuaian Pendapatan:"
+                      )}
+                    </span>
                     <span>Rp 300.000</span>
                   </div>
                   <div className="flex items-center">
-                    <span>Tambahan Biaya:</span>
+                    <span>
+                      {t(
+                        "LaporanPendapatanPage.tooltipAdditionalCost",
+                        {},
+                        "Tambahan Biaya:"
+                      )}
+                    </span>
                     <span>Rp 200.000</span>
                   </div>
                 </div>
@@ -373,8 +577,16 @@ export default function Page() {
       {/* Data Table with Filter or Empty State */}
       {isRevenueEmpty ? (
         <DataEmpty
-          title="Belum ada laporan pendapatan"
-          subtitle="Saat ini belum tersedia laporan pendapatan. Yuk mulai catat transaksi agar laporan bisa tampil!"
+          title={t(
+            "LaporanPendapatanPage.emptyStateTitle",
+            {},
+            "Belum ada laporan pendapatan"
+          )}
+          subtitle={t(
+            "LaporanPendapatanPage.emptyStateSubtitle",
+            {},
+            "Saat ini belum tersedia laporan pendapatan. Yuk mulai catat transaksi agar laporan bisa tampil!"
+          )}
           className="mb-2 w-full"
         />
       ) : (
@@ -386,7 +598,11 @@ export default function Page() {
                   <LaporanPendapatanTable
                     data={tableData}
                     columns={columns}
-                    searchPlaceholder="Cari Pesanan"
+                    searchPlaceholder={t(
+                      "LaporanPendapatanPage.searchPlaceholder",
+                      {},
+                      "Cari Pesanan"
+                    )}
                     showFilter={true}
                     showSearch={true}
                     showPagination={false}
