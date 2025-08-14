@@ -2,12 +2,11 @@ import { useState } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { Modal, ModalContent, ModalHeader } from "@/components/Modal";
 import { cn } from "@/lib/utils";
 import {
   useGetUrgentIssueCount,
   useGetUrgentIssueList,
-} from "@/services/Transporter/monitoring/getUrgentIssues";
+} from "@/services/CS/monitoring/urgent-issue/getUrgentIssues";
 
 import FilterPopoverUrgentIssue from "./components/FilterPopoverUrgentIssue";
 import { UrgentIssueCard } from "./components/UrgentIssueCard";
