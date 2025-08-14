@@ -32,6 +32,7 @@ import {
 } from "@/utils/Transporter/orderStatus";
 
 import Onboarding from "../Onboarding/Onboarding";
+import AlasanPembatalanModal from "./components/AlasanPembatalanModal";
 import AssignArmadaModal from "./components/AssignArmadaModal";
 import BatalkanArmadaModal from "./components/BatalkanArmadaModal";
 import BatalkanPesananModal from "./components/BatalkanPesananModal";
@@ -66,6 +67,9 @@ const DaftarPesananAktif = ({
   const [lihatArmadaModalOpen, setLihatArmadaModalOpen] = useState(false);
   const [selectedOrderForViewFleet, setSelectedOrderForViewFleet] =
     useState(null);
+  const [alasanPembatalanModalOpen, setAlasanPembatalanModalOpen] =
+    useState(false);
+  const [selectedOrderForAlasan, setSelectedOrderForAlasan] = useState(null);
 
   // Map filter keys to lowercase status values for API
   const getFilterStatus = (filterKey) => {
@@ -157,18 +161,28 @@ const DaftarPesananAktif = ({
     }
   };
 
-  // Handler for confirming order cancellation
-  const handleCancelOrder = async (order) => {
+  // Handler for opening alasan pembatalan modal
+  const handleOpenAlasanModal = (order) => {
+    setSelectedOrderForAlasan(order);
+    setAlasanPembatalanModalOpen(true);
+  };
+
+  // Handler for confirming order cancellation with reason
+  const handleCancelOrderWithReason = async (cancellationData) => {
     try {
-      // TODO: Implement API call to cancel order
-      console.log("Canceling order:", order);
+      // TODO: Implement API call to cancel order with reason and files
+      console.log("Canceling order with reason:", cancellationData);
 
       // Example API call (replace with actual service)
-      // await cancelOrder(order.id);
+      // await cancelOrderWithReason({
+      //   orderId: cancellationData.order.id,
+      //   reason: cancellationData.reason,
+      //   supportingFiles: cancellationData.supportingFiles
+      // });
 
       // Show success toast notification
       toast.success(
-        `Berhasil membatalkan pesanan ${order?.orderCode || order?.orderNumber || ""}`
+        `Berhasil membatalkan pesanan ${cancellationData.order?.orderCode || cancellationData.order?.orderNumber || ""}`
       );
 
       // TODO: Refresh data or update state as needed
@@ -691,7 +705,7 @@ const DaftarPesananAktif = ({
           setSelectedOrderForCancelOrder(null);
         }}
         order={selectedOrderForCancelOrder}
-        onConfirm={handleCancelOrder}
+        onOpenAlasanModal={handleOpenAlasanModal}
       />
 
       {/* Lihat Armada Modal */}
@@ -702,6 +716,17 @@ const DaftarPesananAktif = ({
           setSelectedOrderForViewFleet(null);
         }}
         orderData={selectedOrderForViewFleet}
+      />
+
+      {/* Alasan Pembatalan Modal */}
+      <AlasanPembatalanModal
+        isOpen={alasanPembatalanModalOpen}
+        onClose={() => {
+          setAlasanPembatalanModalOpen(false);
+          setSelectedOrderForAlasan(null);
+        }}
+        order={selectedOrderForAlasan}
+        onConfirm={handleCancelOrderWithReason}
       />
     </div>
   );

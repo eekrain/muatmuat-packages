@@ -6,7 +6,7 @@ import { useCallback, useRef } from "react";
 import "cropperjs/dist/cropper.css";
 import Cropper from "react-cropper";
 
-import { Modal, ModalContent } from "@/components/Modal/Modal";
+import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
 
 import IconComponent from "../IconComponent/IconComponent";
 import styles from "./CropperWeb.module.scss";
@@ -97,6 +97,7 @@ export default function CropperWebNew({
         className={`w-[424px] ${isCircle ? "modal-cropper-circle" : ""}`}
         type="muattrans"
       >
+        <ModalTitle className="sr-only">{title}</ModalTitle>
         <div className="px-6 py-9">
           <div className="mb-6 flex flex-col items-center gap-[18px]">
             <span className="text-base font-bold leading-[19.2px] text-neutral-900">

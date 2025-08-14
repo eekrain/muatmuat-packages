@@ -16,29 +16,28 @@ const BatalkanPesananModal = ({
   isOpen,
   onClose,
   order,
-  onConfirm,
+  onOpenAlasanModal,
   isLoading = false,
 }) => {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showError, setShowError] = useState(false);
 
   const handleConfirm = async () => {
-    if (!agreeToTerms) return;
-
-    setIsSubmitting(true);
-    try {
-      await onConfirm?.(order);
-      handleClose();
-    } catch (error) {
-      console.error("Error canceling order:", error);
-    } finally {
-      setIsSubmitting(false);
+    if (!agreeToTerms) {
+      setShowError(true);
+      return;
     }
+
+    // Close this modal and open the reason modal
+    handleClose();
+    onOpenAlasanModal?.(order);
   };
 
   const handleClose = () => {
     setAgreeToTerms(false);
     setIsSubmitting(false);
+    setShowError(false);
     onClose?.();
   };
 
@@ -91,13 +90,16 @@ const BatalkanPesananModal = ({
           {/* Checkbox Container */}
           <div
             className={cn(
-              "flex items-center justify-center",
+              "flex flex-col items-center justify-center",
               "w-[338px] flex-none"
             )}
           >
             <Checkbox
               checked={agreeToTerms}
-              onChange={({ checked }) => setAgreeToTerms(checked)}
+              onChange={({ checked }) => {
+                setAgreeToTerms(checked);
+                if (checked) setShowError(false);
+              }}
               disabled={isSubmitting || isLoading}
               appearance={{
                 labelClassName: "text-xs font-medium text-black",
@@ -116,6 +118,16 @@ const BatalkanPesananModal = ({
                 </a>
               </span>
             </Checkbox>
+
+            {/* Error Alert */}
+            {showError && (
+              <p
+                className="mt-2 text-center text-xs font-medium leading-tight"
+                style={{ color: "#EE4343" }}
+              >
+                Setujui syarat dan ketentuan untuk membatalkan pesanan
+              </p>
+            )}
           </div>
 
           {/* Action Buttons */}
@@ -134,7 +146,7 @@ const BatalkanPesananModal = ({
             <Button
               variant="muattrans-primary-secondary"
               onClick={handleConfirm}
-              disabled={!agreeToTerms || isSubmitting || isLoading}
+              disabled={isSubmitting || isLoading}
               {...((isSubmitting || isLoading) && { loading: true })}
               className={cn(
                 "h-8 text-sm font-semibold md:px-0",
