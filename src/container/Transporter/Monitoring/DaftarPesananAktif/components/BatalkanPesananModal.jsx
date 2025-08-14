@@ -112,7 +112,7 @@ const BatalkanPesananModal = ({
                   href="/syarat-ketentuan"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary-700 underline hover:text-primary-800"
+                  className="font-medium text-primary-700 hover:font-semibold hover:text-primary-800"
                 >
                   Syarat dan Ketentuan Muatrans
                 </a>

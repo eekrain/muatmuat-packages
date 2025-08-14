@@ -73,7 +73,10 @@ export const HeaderResponsiveSearchBar = ({
             ) : null,
           }}
           onKeyDown={(e) =>
-            onEnterPress && e.key === "Enter" && onEnterPress(searchValue)
+            onEnterPress &&
+            e.key === "Enter" &&
+            searchValue.length >= 3 &&
+            onEnterPress(searchValue)
           }
         />
       </div>
