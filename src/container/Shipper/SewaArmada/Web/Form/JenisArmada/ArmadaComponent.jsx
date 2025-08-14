@@ -4,7 +4,10 @@ import {
   LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
+import { OrderTypeEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { cn } from "@/lib/utils";
+import { idrFormat } from "@/lib/utils/formatters";
+import { useSewaArmadaStore } from "@/store/Shipper/forms/sewaArmadaStore";
 
 // Warning Badge Component
 export const WarningBadge = ({ className, message }) => {
@@ -95,7 +98,9 @@ export const TruckItem = ({
   image,
   description,
   name,
+  unit,
   price,
+  basePrice,
   maxWeight,
   weightUnit,
   dimensions,
@@ -103,6 +108,7 @@ export const TruckItem = ({
   showBottomBorder = true,
   isSelected = false,
 }) => {
+  const orderType = useSewaArmadaStore((state) => state.orderType);
   // Format capacity and dimensions from API data
   const capacity =
     maxWeight && weightUnit ? `${maxWeight} ${weightUnit}` : "N/A";
@@ -111,11 +117,15 @@ export const TruckItem = ({
     : "N/A";
 
   const details = [
-    // {
-    //   iconSrc: "/icons/truck16.svg",
-    //   title: "Harga per Unit : ",
-    //   value: formattedPrice,
-    // },
+    ...(orderType === OrderTypeEnum.SCHEDULED
+      ? [
+          {
+            iconSrc: "/icons/transporter16.svg",
+            title: "Harga per Unit :  ",
+            value: idrFormat(basePrice),
+          },
+        ]
+      : []),
     {
       iconSrc: "/icons/estimasi-kapasitas16.svg",
       title: "Estimasi Kapasitas : ",
@@ -138,7 +148,7 @@ export const TruckItem = ({
       )}
       onClick={() => onClick()}
     >
-      <div className="flex gap-x-2">
+      <div className="flex items-start gap-x-2">
         {/* Nanti dihapus aja button nya */}
         <button onClick={(e) => e.stopPropagation()}>
           {/* 25. 18 - Web - LB - 0273 */}
@@ -156,6 +166,9 @@ export const TruckItem = ({
             <div className="flex flex-col">
               <span className={"text-xs font-bold leading-[14.4px]"}>
                 {`${description} - ${name}`}
+                {orderType === OrderTypeEnum.SCHEDULED ? (
+                  <span className="font-semibold">{` (${unit} Unit)`}</span>
+                ) : null}
               </span>
             </div>
             <span className={"text-sm font-semibold leading-[15.4px]"}>
@@ -164,7 +177,10 @@ export const TruckItem = ({
             <div className="flex flex-col gap-y-2">
               {details.map((detail, key) => (
                 <div className="flex items-center gap-x-2" key={key}>
-                  <IconComponent src={detail.iconSrc} />
+                  <IconComponent
+                    className="text-muat-trans-secondary-900"
+                    src={detail.iconSrc}
+                  />
                   <span className="text-xxs font-medium leading-[13px]">
                     {`${detail.title}${detail.value}`}
                   </span>
