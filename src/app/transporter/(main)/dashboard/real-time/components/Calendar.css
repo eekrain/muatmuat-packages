@@ -1,0 +1,287 @@
+/* React Calendar Custom Styles - MuatTrans */
+
+.calendar-muattrans {
+  width: 350px;
+  max-width: 100%;
+  font-family:
+    "Avenir Next LT Pro",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Roboto",
+    sans-serif;
+  line-height: 1.125em;
+  background: white !important;
+  border-radius: 8px;
+}
+
+.calendar-muattrans .react-calendar {
+  width: 100%;
+  background: transparent;
+  border: none;
+  font-family:
+    "Avenir Next LT Pro",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Roboto",
+    sans-serif;
+  line-height: 1.125em;
+}
+
+.react-calendar--doubleView {
+  width: 700px;
+}
+
+.react-calendar--doubleView .react-calendar__viewContainer {
+  display: flex;
+  margin: -0.5em;
+}
+
+.react-calendar--doubleView .react-calendar__viewContainer > * {
+  width: 50%;
+  margin: 0.5em;
+}
+
+.react-calendar *,
+.react-calendar *:before,
+.react-calendar *:after {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.react-calendar button {
+  margin: 0;
+  border: 0;
+  outline: none;
+}
+
+.react-calendar button:enabled:hover,
+.react-calendar button:enabled:focus {
+  background-color: #f5f5f5;
+}
+
+.react-calendar button:enabled:hover {
+  cursor: pointer;
+}
+
+.calendar-muattrans .react-calendar__navigation__label {
+  font-weight: 600;
+  font-size: 14px !important;
+  line-height: 120%;
+  letter-spacing: 0%;
+  text-align: center;
+  color: #494e50;
+}
+
+.calendar-muattrans .react-calendar__navigation {
+  display: flex;
+  margin-bottom: 1em;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: none;
+}
+
+.calendar-muattrans .react-calendar__navigation button {
+  min-width: 32px;
+  height: 32px;
+  background: none;
+  font-size: 16px;
+  color: #666;
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-muattrans .react-calendar__navigation button:enabled:hover,
+.calendar-muattrans .react-calendar__navigation button:enabled:focus {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.calendar-muattrans .react-calendar__navigation button[disabled] {
+  background-color: transparent;
+  color: #d1d5db;
+  cursor: not-allowed;
+}
+
+.calendar-muattrans .react-calendar__navigation__label {
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.calendar-muattrans .react-calendar__navigation__label:hover {
+  background-color: #f5f5f5;
+}
+
+.react-calendar__navigation__arrow {
+  font-size: 20px;
+  color: #666;
+}
+
+.calendar-muattrans .react-calendar__viewContainer {
+  padding: 0;
+}
+
+.calendar-muattrans .react-calendar__month-view__weekdays {
+  text-align: center;
+  text-transform: capitalize;
+  color: #424242;
+  border-bottom: none;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 12px;
+  line-height: 120%;
+  letter-spacing: 0%;
+  text-align: center;
+}
+
+.calendar-muattrans .react-calendar__month-view__weekdays__weekday {
+  padding: 0.5em;
+  text-decoration: none !important;
+}
+
+.calendar-muattrans .react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none !important;
+}
+
+.react-calendar__month-view__weekNumbers .react-calendar__tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75em;
+  font-weight: 600;
+}
+
+.react-calendar__month-view__days__day--weekend {
+  color: #d10000;
+}
+
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: #ccc;
+}
+
+.react-calendar__year-view .react-calendar__tile,
+.react-calendar__decade-view .react-calendar__tile,
+.react-calendar__century-view .react-calendar__tile {
+  padding: 2em 0.5em;
+}
+
+.calendar-muattrans .react-calendar__tile {
+  max-width: 100%;
+  padding: 15px;
+  background: none;
+  text-align: center;
+  line-height: 16px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #000;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  aspect-ratio: 1;
+}
+
+.calendar-muattrans .react-calendar__tile:enabled:hover,
+.calendar-muattrans .react-calendar__tile:enabled:focus {
+  background-color: #f3f4f6;
+  color: #1f2937;
+}
+
+.calendar-muattrans .react-calendar__tile--now {
+  background: #176cf7 !important;
+  color: white;
+  border: 1px solid #176cf7;
+}
+
+.calendar-muattrans .react-calendar__tile--now:enabled:hover,
+.calendar-muattrans .react-calendar__tile--now:enabled:focus {
+  background: #136af6 !important;
+  color: white;
+  border: 1px solid #176cf7;
+}
+
+.calendar-muattrans .react-calendar__tile--active {
+  background: #176cf7 !important;
+  color: white !important;
+  font-weight: 500;
+  border: 1px solid #176cf7 !important;
+}
+
+.calendar-muattrans .react-calendar__tile--active:enabled:hover,
+.calendar-muattrans .react-calendar__tile--active:enabled:focus {
+  background: #2563eb !important;
+  border-color: #2563eb !important;
+}
+
+/* Style untuk tile yang disabled */
+.calendar-muattrans .react-calendar__tile:disabled {
+  color: #bdc0cc;
+  font-weight: 400;
+  cursor: not-allowed;
+}
+
+.calendar-muattrans .react-calendar__tile:disabled:hover {
+  color: #bdc0cc !important;
+}
+
+/* Karena showNeighboringMonth: false, style ini mungkin tidak diperlukan */
+.calendar-muattrans .react-calendar__month-view__days__day--neighboringMonth {
+  color: #bdc0cc !important;
+}
+
+/* Icon styling untuk navigation */
+.calendar-muattrans .react-calendar__navigation button svg,
+.calendar-muattrans .react-calendar__navigation button img {
+  width: 16px;
+  height: 16px;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.calendar-muattrans .react-calendar__navigation button:hover svg,
+.calendar-muattrans .react-calendar__navigation button:hover img {
+  opacity: 1;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .calendar-muattrans {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .calendar-muattrans .react-calendar__navigation {
+    padding: 0 12px;
+    height: 50px;
+  }
+
+  .calendar-muattrans .react-calendar__viewContainer {
+    padding: 0 12px 12px;
+  }
+
+  .calendar-muattrans .react-calendar__tile {
+    padding: 8px;
+    font-size: 13px;
+    min-height: 32px;
+  }
+
+  .calendar-muattrans .react-calendar__navigation__label {
+    font-size: 14px;
+  }
+}

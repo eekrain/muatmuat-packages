@@ -6,7 +6,6 @@ import { useEffect, useMemo, useState } from "react";
 import DashboardDataTable from "@/app/transporter/(main)/dashboard/real-time/components/DashboardDataTable";
 import ExpandableReview from "@/app/transporter/(main)/dashboard/real-time/rating-driver/[driverId]/components/ExpandableReview";
 import Button from "@/components/Button/Button";
-import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import Checkbox from "@/components/Form/Checkbox";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -14,6 +13,7 @@ import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { toast } from "@/lib/toast";
 
+import Period from "../../components/Period";
 import TruncatedTooltip from "../../components/TruncatedTooltip";
 
 const toYYYYMMDD = (date) => {
@@ -78,9 +78,9 @@ const UlasanTable = () => {
       }
       if (period) {
         let dateFrom, dateTo;
-        if (period.start_date && period.end_date) {
-          dateFrom = toYYYYMMDD(period.start_date);
-          dateTo = toYYYYMMDD(period.end_date);
+        if (period.iso_start_date && period.end_date) {
+          dateFrom = toYYYYMMDD(period.iso_start_date);
+          dateTo = toYYYYMMDD(period.iso_end_date);
         } else if (typeof period.value === "number") {
           const today = new Date();
           const fromDate = new Date();
@@ -323,7 +323,7 @@ const UlasanTable = () => {
           Daftar Ulasan
         </PageTitle>
         <div className="flex items-center gap-4">
-          <DropdownPeriode
+          <Period
             value={period}
             onSelect={handleSelectPeriod}
             options={periodOptions}
