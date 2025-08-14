@@ -197,20 +197,37 @@ const HeaderLayout = ({
                   </SimpleHoverTrigger>
 
                   <SimpleHoverContent>
-                    {item.dropdownItems.map((dropdownItem) => (
-                      <SimpleHoverItem
-                        key={dropdownItem.id}
-                        onClick={dropdownItem.onClick}
-                      >
-                        {dropdownItem.href ? (
-                          <Link href={dropdownItem.href}>
-                            {dropdownItem.label}
-                          </Link>
-                        ) : (
-                          <span>{dropdownItem.label}</span>
-                        )}
-                      </SimpleHoverItem>
-                    ))}
+                    {item.dropdownItems.map((dropdownItem) => {
+                      const isSelected =
+                        dropdownItem.href &&
+                        pathname.startsWith(dropdownItem.href);
+                      return (
+                        <SimpleHoverItem
+                          key={dropdownItem.id}
+                          onClick={dropdownItem.onClick}
+                        >
+                          {dropdownItem.href ? (
+                            <Link
+                              href={dropdownItem.href}
+                              className="flex w-full items-center justify-between"
+                            >
+                              <span>{dropdownItem.label}</span>
+                              {isSelected && (
+                                <ImageComponent
+                                  src="/img/checkedblue.png"
+                                  className="h-4 w-4"
+                                  alt="Selected Icon"
+                                />
+                              )}
+                            </Link>
+                          ) : (
+                            <span className="flex w-full items-center justify-between">
+                              {dropdownItem.label}
+                            </span>
+                          )}
+                        </SimpleHoverItem>
+                      );
+                    })}
                   </SimpleHoverContent>
                 </SimpleHover>
               );

@@ -138,6 +138,14 @@
   --muat-trans-secondary-900: #461b02;
 }
 
+.recharts-surface:focus {
+  outline: none;
+}
+
+.recharts-sector:focus {
+  outline: none;
+}
+
 @layer base {
   button,
   [role="button"] {
