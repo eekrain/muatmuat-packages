@@ -195,7 +195,9 @@ const DetailPesananScreen = ({
             dataRingkasanPembayaran={dataRingkasanPembayaran}
           />
         ) : dataStatusPesanan?.orderStatus ===
-          OrderStatusEnum.WAITING_CONFIRMATION_CHANGES ? (
+            OrderStatusEnum.WAITING_CONFIRMATION_CHANGES ||
+          dataStatusPesanan?.orderStatus ===
+            OrderStatusEnum.PREPARE_FLEET_CHANGES ? (
           <PendingUpdateConfirmation />
         ) : dataStatusPesanan?.orderStatus ===
           OrderStatusEnum.WAITING_PAYMENT_3 ? (

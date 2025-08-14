@@ -38,10 +38,10 @@ const apiResult = {
         //     ],
         //   },
         // },
-        // {
-        //   mappedOrderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
-        //   date: new Date().toISOString(),
-        // },
+        {
+          mappedOrderStatus: OrderStatusEnum.CANCELED_BY_SHIPPER,
+          date: new Date().toISOString(),
+        },
         // {
         //   mappedOrderStatus: OrderStatusEnum.DOCUMENT_DELIVERY,
         //   date: new Date().toISOString(),

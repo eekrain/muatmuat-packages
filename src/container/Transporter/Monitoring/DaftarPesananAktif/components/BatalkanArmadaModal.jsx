@@ -16,29 +16,28 @@ const BatalkanArmadaModal = ({
   isOpen,
   onClose,
   order,
-  onConfirm,
+  onOpenFleetModal,
   isLoading = false,
 }) => {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showError, setShowError] = useState(false);
 
   const handleConfirm = async () => {
-    if (!agreeToTerms) return;
-
-    setIsSubmitting(true);
-    try {
-      await onConfirm?.(order);
-      handleClose();
-    } catch (error) {
-      console.error("Error canceling fleet:", error);
-    } finally {
-      setIsSubmitting(false);
+    if (!agreeToTerms) {
+      setShowError(true);
+      return;
     }
+
+    // Close this modal and open the fleet selection modal
+    handleClose();
+    onOpenFleetModal?.(order);
   };
 
   const handleClose = () => {
     setAgreeToTerms(false);
     setIsSubmitting(false);
+    setShowError(false);
     onClose?.();
   };
 
@@ -91,13 +90,16 @@ const BatalkanArmadaModal = ({
           {/* Checkbox Container */}
           <div
             className={cn(
-              "flex items-center justify-center",
+              "flex flex-col items-center justify-center",
               "w-[338px] flex-none"
             )}
           >
             <Checkbox
               checked={agreeToTerms}
-              onChange={({ checked }) => setAgreeToTerms(checked)}
+              onChange={({ checked }) => {
+                setAgreeToTerms(checked);
+                if (checked) setShowError(false);
+              }}
               disabled={isSubmitting || isLoading}
               appearance={{
                 labelClassName: "text-xs font-medium text-black",
@@ -110,12 +112,22 @@ const BatalkanArmadaModal = ({
                   href="/syarat-ketentuan"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary-700 underline hover:text-primary-800"
+                  className="font-medium text-primary-700 hover:font-semibold hover:text-primary-800"
                 >
                   Syarat dan Ketentuan Muatrans
                 </a>
               </span>
             </Checkbox>
+
+            {/* Error Alert */}
+            {showError && (
+              <p
+                className="mt-2 text-center text-xs font-medium leading-tight"
+                style={{ color: "#EE4343" }}
+              >
+                Setujui syarat dan ketentuan untuk membatalkan armada
+              </p>
+            )}
           </div>
 
           {/* Action Buttons */}
@@ -134,7 +146,7 @@ const BatalkanArmadaModal = ({
             <Button
               variant="muattrans-primary-secondary"
               onClick={handleConfirm}
-              disabled={!agreeToTerms || isSubmitting || isLoading}
+              disabled={isSubmitting || isLoading}
               {...((isSubmitting || isLoading) && { loading: true })}
               className={cn(
                 "h-8 text-sm font-semibold md:px-0",

@@ -92,7 +92,7 @@ const HubungiModal = ({
                   </div>
                 </div>
                 <div className="flex w-full flex-row items-center justify-between gap-2">
-                  <div className="text-sm font-medium leading-none text-blue-600 underline">
+                  <div className="cursor-pointer text-sm font-medium leading-none text-blue-600 underline">
                     0821-2345-6869
                   </div>
                   <button
@@ -118,7 +118,7 @@ const HubungiModal = ({
                   </div>
                 </div>
                 <div className="flex w-full flex-row items-center justify-between gap-2">
-                  <div className="text-sm font-medium leading-none text-blue-600 underline">
+                  <div className="cursor-pointer text-sm font-medium leading-none text-blue-600 underline">
                     0821-2345-8686
                   </div>
                   <button
@@ -162,7 +162,7 @@ const HubungiModal = ({
                   </div>
                 </div>
                 <div className="flex w-full flex-row items-center justify-between gap-2">
-                  <div className="text-sm font-medium leading-none text-blue-600 underline">
+                  <div className="cursor-pointer text-sm font-medium leading-none text-blue-600 underline">
                     021-5550-1234
                   </div>
                   <button
@@ -188,7 +188,7 @@ const HubungiModal = ({
                   </div>
                 </div>
                 <div className="flex w-full flex-row items-center justify-between gap-2">
-                  <div className="text-sm font-medium leading-none text-blue-600 underline">
+                  <div className="cursor-pointer text-sm font-medium leading-none text-blue-600 underline">
                     0812-9876-5432
                   </div>
                   <button

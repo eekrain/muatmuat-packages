@@ -89,7 +89,7 @@ const Table = ({
     return (
       <tr>
         <td colSpan={columns.length} className="px-6 py-12">
-          <div className="flex min-h-[220px] items-center justify-center">
+          <div className="flex items-center justify-center">
             {emptyComponent ? (
               emptyComponent
             ) : (
