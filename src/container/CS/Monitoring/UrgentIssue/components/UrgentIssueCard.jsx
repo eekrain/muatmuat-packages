@@ -1,6 +1,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -49,6 +50,7 @@ export const UrgentIssueCard = ({
   const [isConfirmProccess, setIsConfirmProccess] = useState(false);
   const [isConfirmCompleted, setIsConfirmCompleted] = useState(false);
   const [hubungiModalOpen, setHubungiModalOpen] = useState(null);
+  const [showHubungiModal, setShowHubungiModal] = useState(false);
 
   // state untuk memicu update status
   const [updateParams, setUpdateParams] = useState({ id: null, body: null });
@@ -163,7 +165,7 @@ export const UrgentIssueCard = ({
           </div>
           <Button
             type="button"
-            onClick={() => setHubungiModalOpen("contact")}
+            onClick={() => setShowHubungiModal(true)}
             variant="muattrans-primary"
           >
             Hubungi
@@ -391,7 +393,7 @@ export const UrgentIssueCard = ({
           }}
         />
 
-        <Modal
+        {/* <Modal
           open={hubungiModalOpen === "contact"}
           onOpenChange={setHubungiModalOpen}
         >
@@ -410,7 +412,7 @@ export const UrgentIssueCard = ({
             </div>
             <div
               className="mx-auto mb-9 flex w-max cursor-pointer items-center justify-start gap-4 rounded-md border border-[#EBEBEB] px-6 py-4 text-left"
-              onClick={() => setHubungiModalOpen("detail_contact")}
+              onClick={() => setShowHubungiModal(true)}
             >
               <IconComponent
                 src="/icons/call20.svg"
@@ -428,21 +430,14 @@ export const UrgentIssueCard = ({
               </div>
             </div>
           </ModalContent>
-        </Modal>
+        </Modal> */}
 
-        <Modal>
-          <ModalContent className="w-modal-big" type="muattrans">
-            <ModalHeader size="small" />
-            <div className="px-6 py-9">
-              <p className="text-center text-sm font-bold text-black">
-                No Telepon/WhatsApp Yang Bisa Dihubungi
-              </p>
-              <div className="mt-6 space-y-4">
-                <div></div>
-              </div>
-            </div>
-          </ModalContent>
-        </Modal>
+        {/* HubungiModal integration */}
+        <HubungiModal
+          isOpen={showHubungiModal}
+          onClose={() => setShowHubungiModal(false)}
+          transporterData={null} // TODO: pass actual transporter data if available
+        />
       </div>
     </>
   );
