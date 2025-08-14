@@ -141,10 +141,10 @@ export const TabsTriggerWithSeparator = ({
           // Inactive state
           `text-neutral-700 hover:text-${activeColor}`,
           // Active state
-          isActive && ` border-${activeColor} font-bold text-${activeColor}`,
           // Disabled state
           disabled && "cursor-not-allowed opacity-50",
-          className
+          className,
+          isActive && ` border-${activeColor} font-bold text-${activeColor}`
         )}
         onClick={() => !disabled && onValueChange(value)}
         disabled={disabled}

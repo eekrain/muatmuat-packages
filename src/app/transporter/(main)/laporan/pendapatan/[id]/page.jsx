@@ -6,8 +6,10 @@ import BadgeStatus from "@/components/Badge/BadgeStatus";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Card, { CardContent } from "@/components/Card/Card";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function DetailPendapatanPage({ params }) {
+  const { t } = useTranslation();
   const router = useRouter();
   const { id } = params;
 
@@ -15,8 +17,12 @@ export default function DetailPendapatanPage({ params }) {
   const incomeData = {
     id: id,
     orderCode: "INV/MTR/210504/001/AAA",
-    source: "Penyesuaian Pendapatan",
-    status: "Belum Dicairkan",
+    source: t(
+      "DetailPendapatanPage.sourceRevenueAdjustment",
+      {},
+      "Penyesuaian Pendapatan"
+    ),
+    status: t("DetailPendapatanPage.statusNotDisbursed", {}, "Belum Dicairkan"),
     statusType: "not_disbursed",
     initialAmount: 7500000,
     disbursements: [
@@ -43,28 +49,46 @@ export default function DetailPendapatanPage({ params }) {
 
   const columns = [
     {
-      header: "No.",
+      header: t("DetailPendapatanPage.tableColumnNumber", {}, "No."),
       key: "no",
       width: "80px",
       render: (row, index) => index + 1,
     },
     {
-      header: "Tanggal Pencairan",
+      header: t(
+        "DetailPendapatanPage.tableColumnDisbursementDate",
+        {},
+        "Tanggal Pencairan"
+      ),
       key: "disbursementDate",
       width: "200px",
-      render: (row) => row.disbursementDate || "Belum Dicairkan",
+      render: (row) =>
+        row.disbursementDate ||
+        t("DetailPendapatanPage.statusNotDisbursed", {}, "Belum Dicairkan"),
     },
     {
-      header: "Jumlah Dana Dicairkan",
+      header: t(
+        "DetailPendapatanPage.tableColumnDisbursedAmount",
+        {},
+        "Jumlah Dana Dicairkan"
+      ),
       key: "disbursedAmount",
       width: "200px",
-      render: (row) => row.disbursedAmount || "Belum Dicairkan",
+      render: (row) =>
+        row.disbursedAmount ||
+        t("DetailPendapatanPage.statusNotDisbursed", {}, "Belum Dicairkan"),
     },
     {
-      header: "Sisa Dana Belum Dicairkan",
+      header: t(
+        "DetailPendapatanPage.tableColumnRemainingAmount",
+        {},
+        "Sisa Dana Belum Dicairkan"
+      ),
       key: "remainingAmount",
       width: "200px",
-      render: (row) => row.remainingAmount || "Belum Dicairkan",
+      render: (row) =>
+        row.remainingAmount ||
+        t("DetailPendapatanPage.statusNotDisbursed", {}, "Belum Dicairkan"),
     },
   ];
 
@@ -85,14 +109,31 @@ export default function DetailPendapatanPage({ params }) {
       {/* Breadcrumb */}
       <BreadCrumb
         data={[
-          { name: "Laporan Pendapatan", href: "/laporan/pendapatan" },
-          { name: "Detail Pendapatan" },
+          {
+            name: t(
+              "DetailPendapatanPage.breadcrumbLaporanPendapatan",
+              {},
+              "Laporan Pendapatan"
+            ),
+            href: "/laporan/pendapatan",
+          },
+          {
+            name: t(
+              "DetailPendapatanPage.breadcrumbDetailPendapatan",
+              {},
+              "Detail Pendapatan"
+            ),
+          },
         ]}
       />
 
       {/* Page Header */}
       <PageTitle className="mt-4" withBack={true} onClick={handleBack}>
-        Detail Pendapatan
+        {t(
+          "DetailPendapatanPage.titleDetailPendapatan",
+          {},
+          "Detail Pendapatan"
+        )}
       </PageTitle>
 
       {/* Income Details Card */}
@@ -101,7 +142,7 @@ export default function DetailPendapatanPage({ params }) {
           <div className="space-y-4">
             <div className="flex items-center">
               <label className="w-52 text-sm font-medium text-gray-600">
-                Kode Pesanan
+                {t("DetailPendapatanPage.labelOrderCode", {}, "Kode Pesanan")}
               </label>
               <p className="font-medium text-blue-600">
                 {incomeData.orderCode}
@@ -109,13 +150,13 @@ export default function DetailPendapatanPage({ params }) {
             </div>
             <div className="flex items-center">
               <label className="w-52 text-sm font-medium text-gray-600">
-                Sumber
+                {t("DetailPendapatanPage.labelSource", {}, "Sumber")}
               </label>
               <p className="text-gray-900">{incomeData.source}</p>
             </div>
             <div className="flex items-center">
               <label className="w-52 text-sm font-medium text-gray-600">
-                Status
+                {t("DetailPendapatanPage.labelStatus", {}, "Status")}
               </label>
               <BadgeStatus variant="error" className="w-fit">
                 {incomeData.status}
@@ -130,12 +171,20 @@ export default function DetailPendapatanPage({ params }) {
         <CardContent className="p-6">
           <div className="mb-6">
             <h2 className="mb-4 text-lg font-semibold text-gray-900">
-              Rincian Pendapatan
+              {t(
+                "DetailPendapatanPage.titleIncomeDetails",
+                {},
+                "Rincian Pendapatan"
+              )}
             </h2>
             <div className="space-y-4">
               <div className="flex items-center">
                 <label className="w-52 text-sm font-medium text-gray-600">
-                  Nilai Awal Pendapatan
+                  {t(
+                    "DetailPendapatanPage.labelInitialIncomeValue",
+                    {},
+                    "Nilai Awal Pendapatan"
+                  )}
                 </label>
                 <p className="text-sm font-medium text-gray-900">
                   {formatCurrency(incomeData.initialAmount)}
@@ -143,7 +192,7 @@ export default function DetailPendapatanPage({ params }) {
               </div>
               <div className="flex items-start">
                 <label className="w-52 pt-2 text-sm font-medium text-gray-600">
-                  Rincian
+                  {t("DetailPendapatanPage.labelDetails", {}, "Rincian")}
                 </label>
                 <div className="flex-1">
                   <div className="overflow-hidden rounded-lg border border-gray-200">
@@ -151,16 +200,32 @@ export default function DetailPendapatanPage({ params }) {
                       <thead>
                         <tr className="bg-[#F8F8FB]">
                           <th className="w-2 px-4 py-3 text-left text-sm font-semibold text-[#7B7B7B]">
-                            No.
+                            {t(
+                              "DetailPendapatanPage.tableColumnNumber",
+                              {},
+                              "No."
+                            )}
                           </th>
                           <th className="px-4 py-3 text-left text-sm font-semibold text-[#7B7B7B]">
-                            Tanggal Pencairan
+                            {t(
+                              "DetailPendapatanPage.tableColumnDisbursementDate",
+                              {},
+                              "Tanggal Pencairan"
+                            )}
                           </th>
                           <th className="px-4 py-3 text-right text-sm font-semibold text-[#7B7B7B]">
-                            Jumlah Dana Dicairkan
+                            {t(
+                              "DetailPendapatanPage.tableColumnDisbursedAmount",
+                              {},
+                              "Jumlah Dana Dicairkan"
+                            )}
                           </th>
                           <th className="px-4 py-3 text-right text-sm font-semibold text-[#7B7B7B]">
-                            Sisa Dana Belum Dicairkan
+                            {t(
+                              "DetailPendapatanPage.tableColumnRemainingAmount",
+                              {},
+                              "Sisa Dana Belum Dicairkan"
+                            )}
                           </th>
                         </tr>
                       </thead>
@@ -195,7 +260,11 @@ export default function DetailPendapatanPage({ params }) {
                               colSpan="4"
                               className="px-4 py-8 text-center text-gray-700"
                             >
-                              Belum Dicairkan
+                              {t(
+                                "DetailPendapatanPage.statusNotDisbursed",
+                                {},
+                                "Belum Dicairkan"
+                              )}
                             </td>
                           </tr>
                         )}

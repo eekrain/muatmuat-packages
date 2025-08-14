@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
+import { UrgentIssueCard } from "@/container/CS/Monitoring/UrgentIssue/components/UrgentIssueCard";
 import { useTranslation } from "@/hooks/use-translation";
 import {
   useGetUrgentIssueCount,
