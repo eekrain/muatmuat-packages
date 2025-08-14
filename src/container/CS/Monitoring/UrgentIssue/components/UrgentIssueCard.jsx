@@ -14,6 +14,7 @@ import { formatDate } from "@/lib/utils/dateFormat";
 import { useUpdateUrgentIssueStatus } from "@/services/Transporter/monitoring/getUrgentIssues";
 
 import CheckBoxGroup from "./CheckboxGroup";
+import ModalUbahTransporter from "./ModalUbahTransporter";
 
 export const UrgentIssueCard = ({
   data,
@@ -49,6 +50,7 @@ export const UrgentIssueCard = ({
   const [isConfirmProccess, setIsConfirmProccess] = useState(false);
   const [isConfirmCompleted, setIsConfirmCompleted] = useState(false);
   const [hubungiModalOpen, setHubungiModalOpen] = useState(null);
+  const [modalUbahTransporter, setModalUbahTransporter] = useState(false);
 
   // state untuk memicu update status
   const [updateParams, setUpdateParams] = useState({ id: null, body: null });
@@ -328,14 +330,8 @@ export const UrgentIssueCard = ({
               </div>
               <Button
                 type="button"
-                onClick={() => {
-                  if (statusDisplay === "baru") {
-                    setIsConfirmProccess(true);
-                  } else if (statusDisplay === "diproses") {
-                    setIsConfirmCompleted(true);
-                  }
-                }}
-                variant="muattrans-outline-primary"
+                onClick={() => setModalUbahTransporter(true)}
+                variant="muatparts-error-secondary"
               >
                 Ubah Transporter
               </Button>
@@ -443,6 +439,11 @@ export const UrgentIssueCard = ({
             </div>
           </ModalContent>
         </Modal>
+
+        <ModalUbahTransporter
+          open={modalUbahTransporter}
+          onClose={() => setModalUbahTransporter(false)}
+        />
       </div>
     </>
   );
