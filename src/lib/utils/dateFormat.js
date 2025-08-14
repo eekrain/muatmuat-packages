@@ -45,6 +45,17 @@ export function formatDate(isoString, padDay = false) {
 }
 
 /**
+ * Formats an ISO string into "HH:mm WIB".
+ */
+export function formatTime(isoString) {
+  const date = _parseDate(isoString);
+  if (!date) return "";
+
+  const formattedTime = format(date, "HH:mm", { locale: id });
+  return `${formattedTime} WIB`;
+}
+
+/**
  * Formats an ISO string with the full month name.
  */
 export function formatDateFullMonth(isoString) {

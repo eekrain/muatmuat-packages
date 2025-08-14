@@ -1,0 +1,72 @@
+import { useParams } from "next/navigation";
+import { useState } from "react";
+
+import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTriggerWithSeparator,
+} from "@/components/Tabs/Tabs";
+import DetailPesananHeader from "@/container/Transporter/DetailPesanan/DetailPesananHeader/DetailPesananHeader";
+import RingkasanPesanan from "@/container/Transporter/DetailPesanan/RingkasanPesanan/RingkasanPesanan";
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useGetOrderDetail } from "@/services/Transporter/daftar-pesanan/detail-pesanan/getOrderDetail";
+
+const DetailPesanan = ({ breadcrumbData }) => {
+  const params = useParams();
+  const [activeTab, setActiveTab] = useState("ringkasan-pesanan");
+
+  const { data: dataOrderDetail } = useGetOrderDetail(params.uuid);
+  console.log("dataOrderDetail", dataOrderDetail);
+  const tabItems = useShallowMemo(() => {
+    return [
+      {
+        value: "ringkasan-pesanan",
+        label: "Ringkasan Pesanan",
+      },
+      {
+        value: "lacak-armada",
+        label: "Lacak Armada (1)",
+      },
+      {
+        value: "riwayat-perubahan",
+        label: "Riwayat Perubahan",
+      },
+    ];
+  }, []);
+
+  return (
+    <div className="mx-auto flex max-w-[1200px] flex-col gap-y-4 py-6">
+      <BreadCrumb data={breadcrumbData} />
+      <DetailPesananHeader />
+      <Tabs
+        className="flex flex-col gap-y-4"
+        value={activeTab}
+        onValueChange={setActiveTab}
+      >
+        <TabsList className="w-fit justify-start">
+          {tabItems.map((tabItem, key) => (
+            <TabsTriggerWithSeparator
+              key={key}
+              value={tabItem.value}
+              activeColor="primary-700"
+              className="px-6 !text-base text-neutral-900"
+              showSeparator={key !== tabItems.length - 1}
+            >
+              <span className="whitespace-nowrap">{tabItem.label}</span>
+            </TabsTriggerWithSeparator>
+          ))}
+        </TabsList>
+        <TabsContent
+          className="flex flex-col gap-y-4"
+          value="ringkasan-pesanan"
+        >
+          <RingkasanPesanan dataOrderDetail={dataOrderDetail} />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+};
+
+export default DetailPesanan;
