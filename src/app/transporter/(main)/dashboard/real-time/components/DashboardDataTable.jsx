@@ -323,6 +323,7 @@ const DashboardDataTable = ({
                   totalCount={displayOptions.totalCount || totalItems}
                   statusOptions={displayOptions.statusOptions || []}
                   currentStatus={displayOptions.currentStatus}
+                  showAllOption={displayOptions.showAllOption}
                   onStatusChange={displayOptions.onStatusChange}
                 />
               )}
