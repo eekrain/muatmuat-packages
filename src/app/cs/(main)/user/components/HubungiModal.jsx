@@ -20,13 +20,65 @@ import { toast } from "@/lib/toast";
  * @param {string} props.transporterData.contacts[].phone - Contact person phone number
  * @param {string} [props.transporterData.contacts[].type] - Contact type (optional)
  */
-const HubungiModal = ({
-  isOpen,
-  onClose,
-  transporterData: _transporterData,
-}) => {
+const HubungiModal = ({ isOpen, onClose, transporterData }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [showCopySuccess, setShowCopySuccess] = useState(false);
+
+  // Default/dummy data shown when transporterData is not provided at all
+  const defaultContacts = [
+    {
+      name: "Alexander",
+      role: "Manajer Keuangan",
+      phone: "0821-2345-6869",
+      type: "PIC 1",
+    },
+    {
+      name: "Alexander krisna indra candra",
+      role: "Staf Admin Operasional",
+      phone: "0821-2345-8686",
+      type: "PIC 2",
+    },
+    { name: "-", role: "-", phone: "-", type: "PIC 3" },
+  ];
+  const defaultCompanyPhone = "021-5550-1234";
+  const defaultEmergencyContact = {
+    name: "Candra Ariansyah",
+    role: "Koordinator Staf Admin Operasional",
+    phone: "0812-9876-5432",
+  };
+
+  // If transporterData exists, use it; for missing slots/fields show '-'.
+  // Only show the hardcoded defaults when transporterData is absent (null/undefined).
+  const useDefaults = !transporterData;
+  const providedContacts = Array.isArray(transporterData?.contacts)
+    ? transporterData.contacts
+    : [];
+  const dashContacts = [
+    { name: "-", role: "-", phone: "-", type: "PIC 1" },
+    { name: "-", role: "-", phone: "-", type: "PIC 2" },
+    { name: "-", role: "-", phone: "-", type: "PIC 3" },
+  ];
+  const fallbackContacts = useDefaults ? defaultContacts : dashContacts;
+  const contacts = [0, 1, 2].map((i) => {
+    const d = fallbackContacts[i] || {};
+    const c = providedContacts[i] || {};
+    return {
+      name: c.name || d.name || "-",
+      role: c.role || d.role || "-",
+      phone: c.phone || d.phone || "-",
+      type: c.type || d.type || `PIC ${i + 1}`,
+    };
+  });
+  const companyPhone = useDefaults
+    ? defaultCompanyPhone
+    : transporterData?.companyPhone || "-";
+  const emergencyContact = useDefaults
+    ? defaultEmergencyContact
+    : {
+        name: transporterData?.emergencyContact?.name || "-",
+        role: transporterData?.emergencyContact?.role || "-",
+        phone: transporterData?.emergencyContact?.phone || "-",
+      };
 
   // Reset to initial view whenever modal is opened
   useEffect(() => {
@@ -78,77 +130,42 @@ const HubungiModal = ({
             </div>
 
             {/* Frame 40385 - Contact List Header */}
-            <div className="grid grid-cols-[100px_1fr] gap-y-2 px-12">
-              <div className="text-sm font-semibold leading-[17px] text-black">
-                PIC 1
-              </div>
-              <div className="flex flex-col items-start gap-0.5">
-                <div className="flex flex-col items-start gap-1">
-                  <div className="flex items-center text-sm font-medium leading-[17px] text-black">
-                    Alexander
+            <div className="grid w-full grid-cols-[100px_1fr] gap-y-2 px-12">
+              {contacts.map((c, idx) => (
+                <div key={idx} className="contents">
+                  <div className="text-sm font-semibold leading-[17px] text-black">
+                    {c.type || `PIC ${idx + 1}`}
                   </div>
-                  <div className="text-xs font-medium leading-[14px] text-gray-500">
-                    Manajer Keuangan
-                  </div>
-                </div>
-                <div className="flex w-full flex-row items-center justify-between gap-2">
-                  <div className="text-sm font-medium leading-none text-blue-600 underline">
-                    0821-2345-6869
-                  </div>
-                  <button
-                    onClick={() => handleCopyPhone("0821-2345-6869")}
-                    className="flex cursor-pointer items-start gap-2.5 rounded-full border border-blue-600 bg-white px-2 py-1"
-                  >
-                    <span className="text-xs font-medium leading-[14px] text-blue-600">
-                      Salin
-                    </span>
-                  </button>
-                </div>
-              </div>
-              <div className="text-sm font-semibold leading-[17px] text-black">
-                PIC 2
-              </div>
-              <div className="flex flex-col items-start gap-0.5">
-                <div className="flex flex-col items-start gap-1">
-                  <div className="flex items-center text-sm font-medium leading-[17px] text-black">
-                    Alexander krisna indra candra
-                  </div>
-                  <div className="text-xs font-medium leading-[14px] text-gray-500">
-                    Staf Admin Operasional
+                  <div className="flex flex-col items-start gap-0.5">
+                    <div className="flex flex-col items-start gap-1">
+                      <div className="flex items-center text-sm font-medium leading-[17px] text-black">
+                        {c.name || "-"}
+                      </div>
+                      <div className="text-xs font-medium leading-[14px] text-gray-500">
+                        {c.role || "-"}
+                      </div>
+                    </div>
+                    <div className="flex w-full flex-row items-center justify-between gap-2">
+                      <div
+                        className={`text-sm font-medium leading-none text-blue-600 ${c.phone && c.phone !== "-" ? "underline" : ""}`}
+                      >
+                        {c.phone || "-"}
+                      </div>
+                      {c.phone && c.phone !== "-" && (
+                        <button
+                          onClick={() => handleCopyPhone(c.phone)}
+                          className="flex cursor-pointer items-start gap-2.5 rounded-full border border-blue-600 bg-white px-2 py-1"
+                        >
+                          <span className="text-xs font-medium leading-[14px] text-blue-600">
+                            Salin
+                          </span>
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <div className="flex w-full flex-row items-center justify-between gap-2">
-                  <div className="text-sm font-medium leading-none text-blue-600 underline">
-                    0821-2345-8686
-                  </div>
-                  <button
-                    onClick={() => handleCopyPhone("0821-2345-8686")}
-                    className="flex cursor-pointer items-start gap-2.5 rounded-full border border-blue-600 bg-white px-2 py-1"
-                  >
-                    <span className="text-xs font-medium leading-[14px] text-blue-600">
-                      Salin
-                    </span>
-                  </button>
-                </div>
-              </div>
-              <div className="text-sm font-semibold leading-[17px] text-black">
-                PIC 3
-              </div>
-              <div className="flex flex-col items-start gap-0.5">
-                <div className="flex flex-col items-start gap-1">
-                  <div className="flex items-center text-sm font-medium leading-[17px] text-black">
-                    -
-                  </div>
-                  <div className="text-xs font-medium leading-[14px] text-gray-500">
-                    -
-                  </div>
-                </div>
-                <div className="flex flex-row items-center justify-between gap-2">
-                  <div className="text-sm font-medium leading-none text-blue-600">
-                    -
-                  </div>
-                </div>
-              </div>
+              ))}
+
               <div className="text-sm font-semibold leading-[17px] text-black">
                 No. Telepon Perusahaan
               </div>
@@ -162,43 +179,53 @@ const HubungiModal = ({
                   </div>
                 </div>
                 <div className="flex w-full flex-row items-center justify-between gap-2">
-                  <div className="text-sm font-medium leading-none text-blue-600 underline">
-                    021-5550-1234
-                  </div>
-                  <button
-                    onClick={() => handleCopyPhone("021-5550-1234")}
-                    className="flex cursor-pointer items-start gap-2.5 rounded-full border border-blue-600 bg-white px-2 py-1"
+                  <div
+                    className={`text-sm font-medium leading-none text-blue-600 ${companyPhone && companyPhone !== "-" ? "underline" : ""}`}
                   >
-                    <span className="text-xs font-medium leading-[14px] text-blue-600">
-                      Salin
-                    </span>
-                  </button>
+                    {companyPhone || "-"}
+                  </div>
+                  {companyPhone && companyPhone !== "-" && (
+                    <button
+                      onClick={() => handleCopyPhone(companyPhone)}
+                      className="flex cursor-pointer items-start gap-2.5 rounded-full border border-blue-600 bg-white px-2 py-1"
+                    >
+                      <span className="text-xs font-medium leading-[14px] text-blue-600">
+                        Salin
+                      </span>
+                    </button>
+                  )}
                 </div>
               </div>
+
               <div className="text-sm font-semibold leading-[17px] text-black">
                 No. Darurat
               </div>
               <div className="flex flex-col items-start gap-0.5">
                 <div className="flex flex-col items-start gap-1">
                   <div className="flex items-center text-sm font-medium leading-[17px] text-black">
-                    Candra Ariansyah
+                    {emergencyContact?.name || "-"}
                   </div>
                   <div className="text-xs font-medium leading-[14px] text-gray-500">
-                    Koordinator Staf Admin Operasional
+                    {emergencyContact?.role || "-"}
                   </div>
                 </div>
                 <div className="flex w-full flex-row items-center justify-between gap-2">
-                  <div className="text-sm font-medium leading-none text-blue-600 underline">
-                    0812-9876-5432
-                  </div>
-                  <button
-                    onClick={() => handleCopyPhone("0812-9876-5432")}
-                    className="flex cursor-pointer items-start gap-2.5 rounded-full border border-blue-600 bg-white px-2 py-1"
+                  <div
+                    className={`text-sm font-medium leading-none text-blue-600 ${emergencyContact?.phone && emergencyContact.phone !== "-" ? "underline" : ""}`}
                   >
-                    <span className="text-xs font-medium leading-[14px] text-blue-600">
-                      Salin
-                    </span>
-                  </button>
+                    {emergencyContact?.phone || "-"}
+                  </div>
+                  {emergencyContact?.phone &&
+                    emergencyContact.phone !== "-" && (
+                      <button
+                        onClick={() => handleCopyPhone(emergencyContact.phone)}
+                        className="flex cursor-pointer items-start gap-2.5 rounded-full border border-blue-600 bg-white px-2 py-1"
+                      >
+                        <span className="text-xs font-medium leading-[14px] text-blue-600">
+                          Salin
+                        </span>
+                      </button>
+                    )}
                 </div>
               </div>
             </div>
