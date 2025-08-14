@@ -1,12 +1,13 @@
 import { useState } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
+import { useTranslation } from "@/hooks/use-translation";
 import {
   useGetUrgentIssueCount,
   useGetUrgentIssueList,
 } from "@/services/Transporter/monitoring/getUrgentIssues";
 
-import { UrgentIssueCard } from "./components/UrgentIssueCard";
+import { UrgentIssueCardTransporter } from "./components/UrgentIssueCard";
 
 const statusMap = {
   baru: "new",
@@ -21,10 +22,14 @@ const RequestList = ({
   openDetails,
   toggleDetail,
 }) => {
+  const { t } = useTranslation();
+
   if (isLoading) {
     return (
       <div className="py-8">
-        <div className="text-center text-neutral-500">Memuat...</div>
+        <div className="text-center text-neutral-500">
+          {t("UrgentIssueTransporter.messageLoading", {}, "Memuat...")}
+        </div>
       </div>
     );
   }
@@ -44,12 +49,24 @@ const RequestList = ({
       <div className="h-full py-8">
         <DataNotFound className="h-full gap-y-5 pb-10" type="data">
           <p className="text-center text-base font-semibold text-neutral-600">
-            Belum ada laporan urgent issue{" "}
+            {t(
+              "UrgentIssueTransporter.messageNoReports",
+              {},
+              "Belum ada laporan urgent issue"
+            )}{" "}
             {status === "baru"
-              ? "baru"
+              ? t("UrgentIssueTransporter.messageNoReportsNew", {}, "baru")
               : status === "proses"
-                ? "sudah diproses"
-                : "yang diselesaikan"}
+                ? t(
+                    "UrgentIssueTransporter.messageNoReportsProcessing",
+                    {},
+                    "sudah diproses"
+                  )
+                : t(
+                    "UrgentIssueTransporter.messageNoReportsCompleted",
+                    {},
+                    "yang diselesaikan"
+                  )}
           </p>
         </DataNotFound>
       </div>
@@ -59,7 +76,7 @@ const RequestList = ({
   return (
     <div className="space-y-4 pb-12">
       {filtered.map((item) => (
-        <UrgentIssueCard
+        <UrgentIssueCardTransporter
           key={item.id}
           data={item}
           statusTab={status}
@@ -72,6 +89,7 @@ const RequestList = ({
 };
 
 const UrgentIssue = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("baru");
   const [openDetails, setOpenDetails] = useState([]);
 
@@ -109,7 +127,11 @@ const UrgentIssue = () => {
     <div className="flex h-[calc(100vh-92px-48px)] min-h-0 flex-col">
       <div className="flex-shrink-0 bg-white px-4 py-6">
         <h1 className="mb-4 text-base font-bold text-neutral-900">
-          Laporan Urgent Issue
+          {t(
+            "UrgentIssueTransporter.titleUrgentIssueReport",
+            {},
+            "Laporan Urgent Issue"
+          )}
         </h1>
         <div className="flex gap-2">
           <button
@@ -120,7 +142,7 @@ const UrgentIssue = () => {
                 : "border border-neutral-200 bg-neutral-200 text-neutral-900"
             }`}
           >
-            Baru (
+            {t("UrgentIssueTransporter.tabNew", {}, "Baru")} (
             {isCountLoading
               ? "-"
               : (count?.new ?? 0) > 99
@@ -136,7 +158,7 @@ const UrgentIssue = () => {
                 : "border border-neutral-200 bg-neutral-200 text-neutral-900"
             }`}
           >
-            Proses (
+            {t("UrgentIssueTransporter.tabProcessing", {}, "Proses")} (
             {isCountLoading
               ? "-"
               : (count?.processing ?? 0) > 99
@@ -152,7 +174,7 @@ const UrgentIssue = () => {
                 : "border border-neutral-200 bg-neutral-200 text-neutral-900"
             }`}
           >
-            Selesai (
+            {t("UrgentIssueTransporter.tabCompleted", {}, "Selesai")} (
             {isCountLoading
               ? "-"
               : (count?.completed ?? 0) > 99

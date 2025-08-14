@@ -23,41 +23,6 @@ import { cn } from "@/lib/utils";
 
 import InputAlasanLainnya from "./InputAlasanLainnya";
 
-// Valibot validation schema
-const FormSchema = v.pipe(
-  v.object({
-    unitCount: v.pipe(
-      v.string(),
-      v.minLength(1, "Jumlah unit wajib diisi"),
-      v.regex(/^\d+$/, "Jumlah unit harus berupa angka"),
-      v.transform((val) => parseInt(val, 10)),
-      v.minValue(1, "Jumlah unit minimal 1")
-    ),
-    selectedReason: v.pipe(
-      v.string(),
-      v.minLength(1, "Alasan perubahan wajib diisi")
-    ),
-    otherReason: v.string(),
-    supportingFiles: v.pipe(
-      v.array(v.any()),
-      v.minLength(1, "Foto Pendukung harus memiliki minimal 1 foto")
-    ),
-  }),
-  v.forward(
-    v.partialCheck(
-      [["selectedReason"], ["otherReason"]],
-      (input) => {
-        if (input.selectedReason === "Lainnya") {
-          return input.otherReason && input.otherReason.trim().length > 0;
-        }
-        return true;
-      },
-      "Alasan lainnya wajib diisi"
-    ),
-    ["otherReason"]
-  )
-);
-
 const PerubahanJumlahUnitModal = ({
   isOpen,
   onClose,
@@ -69,6 +34,44 @@ const PerubahanJumlahUnitModal = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const currentUnitCount = orderData?.truckCount || 3;
+  const maxAllowedUnits = orderData?.maxUnits || currentUnitCount * 2; // Max is double the current count or from orderData
+
+  // Create dynamic validation schema based on current unit count
+  const createFormSchema = (maxUnits) =>
+    v.pipe(
+      v.object({
+        unitCount: v.pipe(
+          v.string(),
+          v.minLength(1, "Jumlah unit armada wajib diisi"),
+          v.regex(/^\d+$/, "Jumlah unit harus berupa angka"),
+          v.transform((val) => parseInt(val, 10)),
+          v.minValue(1, "Jumlah unit minimal 1 armada"),
+          v.maxValue(maxUnits, "Jumlah unit melebihi kebutuhan armada")
+        ),
+        selectedReason: v.pipe(
+          v.string(),
+          v.minLength(1, "Alasan perubahan wajib diisi")
+        ),
+        otherReason: v.string(),
+        supportingFiles: v.pipe(
+          v.array(v.any()),
+          v.minLength(1, "Foto Pendukung harus memiliki minimal 1 foto")
+        ),
+      }),
+      v.forward(
+        v.partialCheck(
+          [["selectedReason"], ["otherReason"]],
+          (input) => {
+            if (input.selectedReason === "Lainnya") {
+              return input.otherReason && input.otherReason.trim().length > 0;
+            }
+            return true;
+          },
+          "Alasan lainnya wajib diisi"
+        ),
+        ["otherReason"]
+      )
+    );
 
   const {
     handleSubmit,
@@ -78,7 +81,7 @@ const PerubahanJumlahUnitModal = ({
     trigger,
     reset,
   } = useForm({
-    resolver: valibotResolver(FormSchema),
+    resolver: valibotResolver(createFormSchema(maxAllowedUnits)),
     defaultValues: {
       unitCount: "",
       selectedReason: "",
@@ -209,7 +212,7 @@ const PerubahanJumlahUnitModal = ({
                     disabled={isSubmitting || isLoading}
                     className="!w-[65px]"
                     appearance={{
-                      containerClassName: "h-8",
+                      containerClassName: `h-8 ${errors.unitCount ? "border-error-400" : ""}`,
                       inputClassName: "text-sm",
                     }}
                   />
