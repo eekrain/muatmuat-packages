@@ -5,7 +5,6 @@ import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { Modal, ModalContent, ModalHeader } from "@/components/Modal";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import { useFlexibleCountdown } from "@/hooks/use-countdown";
