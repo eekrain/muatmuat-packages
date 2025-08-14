@@ -2,22 +2,22 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
-import { ChevronDown } from "lucide-react";
-
+import {
+  SimpleDropdown,
+  SimpleDropdownContent,
+  SimpleDropdownItem,
+  SimpleDropdownTrigger,
+} from "@/components/Dropdown/SimpleDropdownMenu";
 import { DownloadPopover } from "@/components/Header/Web/DownloadPopover";
 import LanguageDropdown from "@/components/Header/Web/LanguageDropdown";
 import { UserDropdown } from "@/components/Header/Web/UserDropdown";
-import {
-  SimpleHover,
-  SimpleHoverContent,
-  SimpleHoverItem,
-  SimpleHoverTrigger,
-} from "@/components/HoverMenu/SimpleHoverMenu";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
+import { useOverlayAction } from "@/store/Shared/overlayStore";
 
 const HeaderLayout = ({
   notifCounter = {
@@ -27,6 +27,15 @@ const HeaderLayout = ({
 }) => {
   const pathname = usePathname();
   const { dataUser } = useAuth();
+  const { setIsOverlayActive } = useOverlayAction();
+
+  const [isOpenMenuDropdown, setOpenMenuDropdown] = useState(false);
+  const [openId, setOpenId] = useState(null);
+
+  useEffect(() => {
+    setIsOverlayActive(isOpenMenuDropdown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpenMenuDropdown]);
 
   const menuNotifications = [
     {
@@ -89,12 +98,12 @@ const HeaderLayout = ({
         {
           id: "laporan-riwayat-transporter-tidak-aktif",
           label: "Laporan Riwayat Transporter Tidak Aktif",
-          href: "/laporan/riwayattransportertidakaktif",
+          href: "/laporan/riwayat-transporter-tidak-aktif",
         },
         {
           id: "laporan-permintaan-dibatalkan",
           label: "Laporan Permintaan Dibatalkan",
-          href: "/laporan/permintaandibatalkan",
+          href: "/laporan/permintaan-dibatalkan",
         },
         // {
         //   id: "laporan-aktivitas",
@@ -158,28 +167,49 @@ const HeaderLayout = ({
         <div className="flex h-8 items-center gap-6 bg-muat-trans-secondary-900 px-10 text-xs font-medium leading-[1] text-neutral-50">
           <span className="block">Menu :</span>
 
-          {navigationMenu.map((item) => {
+          {navigationMenu.map((item, key) => {
             if (item.isDropdown) {
               return (
-                <SimpleHover key={item.id}>
-                  <SimpleHoverTrigger asChild>
-                    <button className="flex h-8 items-center gap-1 border-b-2 border-transparent outline-none">
+                <SimpleDropdown
+                  key={key}
+                  open={isOpenMenuDropdown && openId === item.id}
+                  onOpenChange={(val) => {
+                    setOpenId(item.id);
+                    setOpenMenuDropdown(val);
+                  }}
+                >
+                  <SimpleDropdownTrigger asChild>
+                    <button
+                      className={cn(
+                        "flex h-8 items-center gap-1 border-b-2 outline-none",
+                        pathname.includes(item.id)
+                          ? "border-muat-trans-primary-400"
+                          : "border-transparent"
+                      )}
+                    >
                       <IconComponent src={item.icon} />
                       <span>{item.label}</span>
-                      <ChevronDown className="h-4 w-4" />
+                      <IconComponent
+                        className={cn(
+                          isOpenMenuDropdown && openId === item.id
+                            ? "rotate-180 transition-transform duration-300"
+                            : "rotate-0 transition-transform duration-300"
+                        )}
+                        src="/icons/chevron-down.svg"
+                      />
                     </button>
-                  </SimpleHoverTrigger>
+                  </SimpleDropdownTrigger>
 
-                  <SimpleHoverContent className="w-full">
-                    {item.dropdownItems.map((dropdownItem) => (
-                      <SimpleHoverItem
+                  <SimpleDropdownContent className="w-full max-w-full">
+                    {item.dropdownItems.map((dropdownItem, key) => (
+                      <SimpleDropdownItem
                         className={cn(
                           "flex items-center justify-between gap-x-2.5",
                           pathname.includes(dropdownItem.href)
                             ? "font-semibold"
                             : ""
                         )}
-                        key={dropdownItem.id}
+                        key={key}
                         onClick={dropdownItem.onClick}
                       >
                         {dropdownItem.href ? (
@@ -197,16 +227,16 @@ const HeaderLayout = ({
                             />
                           ) : null}
                         </div>
-                      </SimpleHoverItem>
+                      </SimpleDropdownItem>
                     ))}
-                  </SimpleHoverContent>
-                </SimpleHover>
+                  </SimpleDropdownContent>
+                </SimpleDropdown>
               );
             }
 
             return (
               <Link
-                key={item.id}
+                key={key}
                 href={item.href}
                 className={cn(
                   "flex h-8 items-center gap-1 border-b-2 border-transparent",

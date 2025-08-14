@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import FloatingButton from "@/components/FloatingButton/FloatingButton";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
+import { useOverlay } from "@/store/Shared/overlayStore";
 import { useNotificationCounterStore } from "@/store/Shipper/notificationCounterStore";
 
 import HeaderLayout from "../HeaderLayout/HeaderLayout";
@@ -14,6 +15,7 @@ export default function DesktopLayout({ children }) {
 
   const { isLoggedIn } = useAuth();
   const { notification, chat } = useNotificationCounterStore();
+  const { isOverlayActive } = useOverlay();
 
   const arr = ["/register/otp"];
   if (arr.some((item) => pathname.includes(item))) {
@@ -26,10 +28,12 @@ export default function DesktopLayout({ children }) {
       <HeaderLayout notifCounter={{ notification, chat }} />
       <main
         className={cn(
-          isLoggedIn ? "max-h-[calc(100dvh-92px)]" : "max-h-[calc(100dvh-60px)]"
+          "relative",
+          isLoggedIn ? "min-h-[calc(100dvh-92px)]" : "min-h-[calc(100dvh-60px)]"
         )}
       >
         {children}
+        {isOverlayActive && <div className="absolute inset-0 bg-black/25" />}
       </main>
       {!isMonitoringPage && <FloatingButton />}
 
