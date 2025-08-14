@@ -96,7 +96,7 @@ const apiResultFleetList = {
           sosId: "sos-uuid-80",
           sosCategory: null,
           description: null,
-          completedAt: "2025-07-25T11:20:00Z",
+          reportAt: "2025-07-25T11:20:00Z",
           photos: ["/img/kanan.png", "/img/kiri.png"],
           sosStatus: "NEW",
         },
@@ -194,7 +194,7 @@ const apiResultFleetList = {
           reportAt: "2025-07-25T11:20:00Z",
           completedAt: "2025-07-25T11:20:00Z",
           photos: ["/img/kanan.png", "/img/kiri.png"],
-          sosStatus: "NEW",
+          sosStatus: "ACKNOWLEDGE",
         },
         needsResponseChange: false,
         activeOrder: {
