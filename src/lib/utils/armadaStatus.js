@@ -12,11 +12,11 @@ export const ARMADA_STATUS = {
 };
 
 export const ARMADA_TRUCK_IMAGE_STATUS = {
-  READY_FOR_ORDER: "truck-green.png",
-  ON_DUTY: "truck-blue.png",
-  WAITING_LOADING_TIME: "truck-yellow.png",
-  NOT_PAIRED: "truck-grey.png",
-  INACTIVE: "truck-red.png",
+  READY_FOR_ORDER: "/icons/armada-truck/truck-green.png",
+  ON_DUTY: "/icons/armada-truck/truck-blue.png",
+  WAITING_LOADING_TIME: "/icons/armada-truck/truck-yellow.png",
+  NOT_PAIRED: "/icons/armada-truck/truck-grey.png",
+  INACTIVE: "/icons/armada-truck/truck-red.png",
 };
 
 export const ARMADA_STATUS_CONFIG = {
@@ -74,5 +74,7 @@ export const getArmadaStatusBadge = (status) => {
 };
 
 export const getTruckIcon = (status) => {
-  return ARMADA_TRUCK_IMAGE_STATUS[status] || "truck-grey.png";
+  return (
+    ARMADA_TRUCK_IMAGE_STATUS[status] || "/icons/armada-truck/truck-red.png"
+  );
 };
