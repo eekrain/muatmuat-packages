@@ -6,7 +6,9 @@ import { useState } from "react";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import { toast } from "@/lib/toast";
 
+import ModalKonfirmasi from "../../../components/ModalKonfirmasi";
 import TransporterDetailContainer from "./containers/TransporterDetailContainer";
 
 export default function TransporterDetailPage() {
@@ -14,6 +16,7 @@ export default function TransporterDetailPage() {
   const transporterId = params.id;
 
   const [aktifState, setAktifState] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const breadcrumbData = [
     { name: "Daftar User", href: "/user" },
@@ -21,22 +24,44 @@ export default function TransporterDetailPage() {
     { name: "Detail Transporter" },
   ];
 
+  const handleConfirmAction = () => {
+    // Toggle the state
+    const newState = !aktifState;
+    setAktifState(newState);
+
+    // Show success toast
+    toast.success(
+      `Berhasil ${newState ? "mengaktifkan" : "menonaktifkan"} Transporter`
+    );
+  };
+
+  const handleCancelAction = () => {
+    // Just close the modal - no state change needed
+    // The modal will close automatically when this function completes
+  };
+
   return (
     <div className="mx-auto my-6 max-h-screen w-full max-w-[1280px] space-y-4 px-6">
       <BreadCrumb data={breadcrumbData} />
       <div className="flex items-center justify-between">
         <PageTitle href="/user">Detail Transporter</PageTitle>
         <Button
-          onClick={() => setAktifState(!aktifState)}
           variant={
-            aktifState
-              ? "muattrans-primary-secondary"
-              : "muattrans-error-secondary"
+            aktifState ? "muattrans-error-secondary" : "muattrans-primary"
           }
+          onClick={() => setIsModalOpen(true)}
         >
-          {aktifState ? "Aktifkan" : "Non Aktifkan"}
+          {aktifState ? "Non Aktifkan" : "Aktifkan"}
         </Button>
       </div>
+      <ModalKonfirmasi
+        isAktif={aktifState}
+        companyName="PT Kalimantan Timur Jaya Sentosa Makmur Sejahtera Internasional"
+        onConfirm={handleConfirmAction}
+        onCancel={handleCancelAction}
+        isOpen={isModalOpen}
+        setIsOpen={setIsModalOpen}
+      />
       <TransporterDetailContainer transporterId={transporterId} />
     </div>
   );
