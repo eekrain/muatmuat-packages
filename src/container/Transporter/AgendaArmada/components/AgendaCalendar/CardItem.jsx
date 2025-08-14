@@ -1,106 +1,59 @@
+import { useMemo } from "react";
+
 import IconComponent from "@/components/IconComponent/IconComponent";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/Popover/Popover";
-import PopoverAgenda from "@/components/PopoverAgenda/PopoverAgenda";
 import { cn } from "@/lib/utils";
 
 import LocationPoint from "./LocationPoint";
 
-// Map CardItem status to PopoverAgenda status
-const statusMapping = {
-  bertugas: "Bertugas",
-  selesai: "Pengiriman Selesai",
-  nonaktif: "Non Aktif",
-  menunggu_jam_muat: "Menunggu Jam Muat",
-  scheduled: "Dijadwalkan",
-};
-
-// Transform CardItem data to PopoverAgenda format
-const transformToAgendaData = (cardProps) => {
-  return {
-    status: statusMapping[cardProps.statusCode],
-    startDate: "02 Jan 2025 11:00 WIB", // Default values - should come from props
-    endDate: "02 Jan 2025 15:00 WIB",
-    invoice: "INV/MTR/120125/0002",
-    SOS: {
-      reason: "Muatan perlu dipindah",
-      active: false,
-    },
-    items: [
-      { name: "Semen", weight: "250 kg" },
-      { name: "Paku", weight: "50 kg" },
-      { name: "Cat Tembok", weight: "100 kg" },
-      { name: "Pipa PVC", weight: "50 kg" },
-      { name: "Keramik", weight: "50 kg" },
-    ],
-    name: cardProps.driverName,
-    phone: "0821208991231",
-    vehicle: "Colt Diesel Engkel - Box",
-    licensePlate: "L 9812 AX",
-    location: cardProps.currentLocation,
-    estimatedDistance: cardProps.estimation,
-    route: {
-      pickup: {
-        city:
-          cardProps.dataMuat.subtitle.split(",")[0] ||
-          cardProps.dataMuat.subtitle,
-        district: cardProps.dataMuat.subtitle.split(",")[1]?.trim() || "",
-      },
-      delivery: {
-        city:
-          cardProps.dataBongkar.subtitle.split(",")[0] ||
-          cardProps.dataBongkar.subtitle,
-        district: cardProps.dataBongkar.subtitle.split(",")[1]?.trim() || "",
-      },
-      estimatedDistance: `Est. ${cardProps.distanceRemaining} km`,
-    },
-  };
-};
-
 const TitleEnum = {
-  bertugas: "Bertugas",
-  selesai: "Pengiriman Selesai",
-  nonaktif: "Non Aktif",
-  menunggu_jam_muat: "Menunggu Jam Muat",
-  scheduled: "Dijadwalkan",
+  BERTUGAS: "Bertugas",
+  PENGIRIMAN_SELESAI: "Pengiriman Selesai",
+  NON_AKTIF: "Non Aktif",
+  MENUNGGU_JAM_MUAT: "Menunggu Jam Muat",
+  DIJADWALKAN: "Dijadwalkan",
 };
 
 const cardEstimationStyles = {
-  bertugas: "bg-primary-50",
-  selesai: "bg-neutral-200",
-  nonaktif: "bg-neutral-100",
-  menunggu_jam_muat: "bg-warning-100",
-  scheduled: "bg-warning-100",
+  BERTUGAS: "bg-primary-50",
+  PENGIRIMAN_SELESAI: "bg-neutral-200",
+  NON_AKTIF: "bg-neutral-100",
+  MENUNGGU_JAM_MUAT: "bg-warning-100",
+  DIJADWALKAN: "bg-warning-100",
+  SOS: "bg-error-50",
 };
 
 const cardAdditionalStyles = {
-  bertugas: "bg-primary-100",
-  selesai: "bg-neutral-200",
-  nonaktif: "bg-neutral-100",
-  menunggu_jam_muat: "bg-warning-200",
-  scheduled: "bg-warning-100",
+  BERTUGAS: "bg-primary-100",
+  PENGIRIMAN_SELESAI: "bg-neutral-200",
+  NON_AKTIF: "bg-neutral-100",
+  MENUNGGU_JAM_MUAT: "bg-warning-200",
+  DIJADWALKAN: "bg-warning-200",
+  SOS: "bg-error-100",
 };
 
 const cardBorderStyles = {
-  bertugas: "border-primary-700",
-  selesai: "border-neutral-400",
-  nonaktif: "border-neutral-400",
-  menunggu_jam_muat: "border-warning-900",
-  scheduled: "border-warning-900",
+  BERTUGAS: "border-primary-700",
+  PENGIRIMAN_SELESAI: "border-neutral-400",
+  NON_AKTIF: "border-neutral-400",
+  MENUNGGU_JAM_MUAT: "border-warning-900",
+  DIJADWALKAN: "border-warning-900",
+  SOS: "border-error-400",
 };
 
 const titleStyles = {
-  bertugas: "text-primary-700",
-  selesai: "text-neutral-600",
-  nonaktif: "text-neutral-900",
-  menunggu_jam_muat: "text-warning-900",
-  scheduled: "text-warning-900",
+  BERTUGAS: "text-primary-700",
+  PENGIRIMAN_SELESAI: "text-neutral-600",
+  NON_AKTIF: "text-neutral-900",
+  MENUNGGU_JAM_MUAT: "text-warning-900",
+  DIJADWALKAN: "text-warning-900",
+  SOS: "text-error-400",
 };
 
-const LIST_SHOW_UBAH_BUTTON = ["bertugas", "scheduled", "menunggu_jam_muat"];
+const LIST_SHOW_ESTIMASI_WAKTU_BONGKAR = [
+  "BERTUGAS",
+  "MENUNGGU_JAM_MUAT",
+  "DIJADWALKAN",
+];
 
 /**
  * @typedef {Object} LocationData
@@ -110,7 +63,7 @@ const LIST_SHOW_UBAH_BUTTON = ["bertugas", "scheduled", "menunggu_jam_muat"];
 
 /**
  * @typedef {Object} CardItemProps
- * @property {"bertugas" | "selesai" | "nonaktif" | "menunggu_jam_muat" | "scheduled"} [statusCode="bertugas"] - Status code that determines the title displayed
+ * @property {"BERTUGAS" | "PENGIRIMAN_SELESAI" | "NON_AKTIF" | "MENUNGGU_JAM_MUAT" | "DIJADWALKAN" | "sos"} [statusCode="BERTUGAS"] - Status code that determines the title displayed
  * @property {string} [driverName="Ahmad Maulana"] - Name of the driver assigned to this schedule
  * @property {string} [currentLocation="Rest Area KM 50"] - Current location of the driver/vehicle
  * @property {string} [estimation="est. 30km (1jam 30menit)"] - Estimated distance and time to destination
@@ -119,21 +72,22 @@ const LIST_SHOW_UBAH_BUTTON = ["bertugas", "scheduled", "menunggu_jam_muat"];
  * @property {LocationData} [dataBongkar] - Object containing delivery location information
  * @property {number} [scheduled=2] - Number of scheduled time slots (affects the width of the main card section)
  * @property {number} [additional=1] - Number of additional time slots (affects the width of the additional card section)
- * @property {number} [position=0] - Horizontal position offset for the card (multiplied by 205px)
+ * @property {number} [position=0] - Horizontal position offset for the card (multiplied by cellWidthpx)
+ * @property {boolean} [hasSosIssue=false] - Whether the card has a SOS issue
  */
 
 /**
- * CardItem component displays a scheduled delivery card with driver information, locations, and timing details.
- * The card consists of two sections: a main scheduled section and an additional section for delivery time estimation.
+ * CardItem component displays a DIJADWALKAN delivery card with driver information, locations, and timing details.
+ * The card consists of two sections: a main DIJADWALKAN section and an additional section for delivery time estimation.
  *
  * @param {CardItemProps} props - The component props
  * @returns {JSX.Element} A card component showing delivery schedule information
  */
 export const CardItem = ({
-  statusCode = "bertugas",
+  statusCode = "BERTUGAS",
   driverName = "Ahmad Maulana",
   currentLocation = "Rest Area KM 50",
-  estimation = "est. 30km (1jam 30menit ke titik bongkar)",
+  estimation = "est. 30km (1jam 30menit)",
   distanceRemaining = 121,
   dataMuat = {
     title: "Lokasi Muat",
@@ -146,133 +100,182 @@ export const CardItem = ({
   scheduled = 2,
   additional = 1,
   position = 0,
+  hasSosIssue = false,
+  containerWidth,
 }) => {
-  const agendaData = transformToAgendaData({
-    statusCode,
-    driverName,
-    currentLocation,
-    estimation,
-    distanceRemaining,
-    dataMuat,
-    dataBongkar,
-  });
+  const cellConfig = useMemo(() => {
+    const total = scheduled + additional;
+    let left = scheduled;
+    let right = additional;
+
+    if (total === 1) {
+      right = 0.32;
+      left = 1 - right;
+    } else if (additional === 0 && total % 2 === 0) {
+      left = total / 2;
+      right = total / 2;
+    } else if (additional === 0 && total % 2 !== 0) {
+      left = (total + 1) / 2;
+      right = (total - 1) / 2;
+    }
+
+    return { left, right, total };
+  }, [additional, scheduled]);
+
+  const cellWidth = containerWidth / 5;
+
+  if (!containerWidth) return null;
 
   return (
     <div
-      className={cn(
-        "absolute top-1/2 h-[105px] w-full -translate-y-1/2 translate-x-[1.5px] overflow-hidden rounded-lg border font-sans",
-        cardBorderStyles[statusCode]
-      )}
+      className={cn("absolute h-full overflow-hidden p-0.5")}
       style={{
-        width: `${(scheduled + additional) * 205}px`,
-        left: `${position * 205}px`,
+        width: `${(scheduled + additional) * cellWidth}px`,
+        left: `${position * cellWidth}px`,
       }}
     >
+      {/* FIX: Changed to a flex container */}
       <div
         className={cn(
-          "absolute left-0 flex h-full flex-col justify-between bg-primary-50 p-2",
-          cardEstimationStyles[statusCode]
+          "box-border flex h-full w-full overflow-hidden rounded-[4px] border",
+          hasSosIssue ? cardBorderStyles.SOS : cardBorderStyles[statusCode],
+          hasSosIssue
+            ? cardAdditionalStyles.SOS
+            : additional > 0
+              ? cardAdditionalStyles[statusCode]
+              : cardEstimationStyles[statusCode]
         )}
-        style={{ width: `${scheduled * 205}px` }}
       >
-        <div className="flex items-center gap-2">
-          <span
-            className={cn("text-xs font-semibold", titleStyles[statusCode])}
-          >
-            {TitleEnum[statusCode]}
-          </span>
-          <Popover>
-            <PopoverTrigger asChild>
-              <button>
-                <IconComponent
-                  src="/icons/info16.svg"
-                  className="text-neutral-700"
-                />
-              </button>
-            </PopoverTrigger>
-            <PopoverContent className="p-0">
-              <PopoverAgenda agendaData={agendaData} />
-            </PopoverContent>
-          </Popover>
-        </div>
-
-        <span className="text-xxs font-bold text-neutral-900">
-          {driverName}
-        </span>
-
-        <div className="flex items-center gap-[4.5px]">
-          <IconComponent
-            src="/icons/marker-outline.svg"
-            className="size-3 text-muat-trans-secondary-900"
-          />
-
-          <div className="flex flex-col">
-            <span className="text-[8px] font-medium text-neutral-900">
-              Lokasi Terkini
+        <div
+          className={cn(
+            "flex flex-col justify-between rounded-l-[4px] p-2",
+            hasSosIssue
+              ? cardEstimationStyles.SOS
+              : cardEstimationStyles[statusCode],
+            !dataBongkar || cellConfig.total === 1 ? "rounded-[4px]" : ""
+          )}
+          style={{
+            width: `${cellConfig.total === 1 ? 1 * cellWidth : cellConfig.left * cellWidth}px`,
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <span
+              className={cn(
+                "text-xs font-semibold",
+                hasSosIssue ? titleStyles.SOS : titleStyles[statusCode]
+              )}
+            >
+              {TitleEnum[statusCode]}
             </span>
 
-            <div className="flex items-center gap-1">
-              <span className="text-xxs font-semibold text-neutral-900">
-                {currentLocation}
+            {hasSosIssue && (
+              <span className="rounded-md bg-error-400 px-2 py-1 text-xs font-semibold leading-none text-white">
+                SOS
               </span>
-              <span className="text-xxs font-medium text-neutral-600">
-                {estimation}
-              </span>
+            )}
+
+            <IconComponent
+              src="/icons/info16.svg"
+              className="text-neutral-700"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <span className="text-xxs font-bold leading-none text-neutral-900">
+              {driverName}
+            </span>
+            <div className="flex items-center gap-[4.5px]">
+              <IconComponent
+                src="/icons/marker-outline.svg"
+                className="size-3 text-muat-trans-secondary-900"
+              />
+
+              <div className="flex flex-col gap-0.5">
+                <span className="text-[8px] font-medium leading-none text-neutral-900">
+                  Lokasi Terkini
+                </span>
+
+                <div className="flex items-center gap-1">
+                  <span className="line-clamp-1 break-all text-xxs font-semibold leading-none text-neutral-900">
+                    {currentLocation}
+                  </span>
+                  {estimation && (
+                    <span className="line-clamp-1 break-all pr-2 text-xxs font-medium leading-none text-neutral-600">
+                      {estimation}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-2">
-          <LocationPoint
-            type="muat"
-            title={dataMuat.title}
-            subtitle={dataMuat.subtitle}
-          />
-          <div className="relative basis-1/2">
-            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-neutral-400 bg-neutral-200 px-2 py-1 text-[8px] font-semibold text-neutral-900">
-              Est. {distanceRemaining} km
-            </span>
-            <hr className="w-full border-dashed border-neutral-400" />
-          </div>
-        </div>
-      </div>
-
-      <div
-        className={cn(
-          "absolute right-0 flex h-full flex-col justify-between bg-primary-100 p-2",
-          cardAdditionalStyles[statusCode]
-        )}
-        style={{ width: `${additional * 205}px` }}
-      >
-        <div className="relative h-full w-full">
-          {LIST_SHOW_UBAH_BUTTON.includes(statusCode) && (
-            <button
-              onClick={() => alert("Handle Ubah Estimasi Waktu Bongkar")}
-              className="absolute right-0 top-0 flex items-baseline gap-1 text-[8px] text-primary-700"
+          {dataMuat && (
+            <div
+              className="relative"
+              style={{ width: `${cellConfig.total * cellWidth}px` }}
             >
-              <span>Ubah</span>
-              <IconComponent
-                src="/icons/pencil-outline.svg"
-                width={10}
-                height={10}
-                className="mt-0.5"
-              />
-            </button>
-          )}
+              <div
+                className="flex items-center gap-4"
+                style={{
+                  width: `${cellConfig.left * cellWidth - 16}px`,
+                }}
+              >
+                <LocationPoint
+                  type="muat"
+                  title={dataMuat.title}
+                  subtitle={dataMuat.subtitle}
+                  className="basis-1/2"
+                />
+                <div className="relative basis-1/2">
+                  <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-nowrap rounded-full border border-neutral-400 bg-neutral-200 px-2 py-1 text-[8px] font-semibold leading-none text-neutral-900">
+                    Est. {distanceRemaining} km
+                  </span>
+                  <hr className="w-full border-dashed border-neutral-400" />
+                </div>
+              </div>
 
-          {statusCode === "bertugas" && (
-            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[8px] font-medium text-neutral-500">
-              Estimasi Waktu Bongkar
-            </span>
+              {dataBongkar && (
+                <LocationPoint
+                  type="bongkar"
+                  title={dataBongkar.title}
+                  subtitle={dataBongkar.subtitle}
+                  className="absolute top-1/2 -translate-y-1/2"
+                  style={{
+                    width: `${cellConfig.right * cellWidth - 16}px`,
+                    left: `${additional ? cellConfig.left * cellWidth : cellConfig.left * cellWidth - 8}px`,
+                  }}
+                />
+              )}
+            </div>
           )}
-
-          <LocationPoint
-            type="bongkar"
-            className="absolute bottom-0 left-0"
-            title={dataBongkar.title}
-            subtitle={dataBongkar.subtitle}
-          />
         </div>
+
+        {LIST_SHOW_ESTIMASI_WAKTU_BONGKAR.includes(statusCode) &&
+          cellConfig.right >= 1 && (
+            <div
+              className="absolute top-1/2 -translate-y-1/2 text-center text-[8px] font-medium text-neutral-500"
+              style={{
+                width: `${cellConfig.right * cellWidth - 16}px`,
+                left: `${cellConfig.left * cellWidth + 8}px`,
+              }}
+            >
+              Estimasi Waktu Bongkar
+            </div>
+          )}
+
+        {LIST_SHOW_ESTIMASI_WAKTU_BONGKAR.includes(statusCode) && (
+          <button
+            onClick={() => alert("Handle Ubah Estimasi Waktu Bongkar")}
+            className="absolute right-2 top-2 flex items-center gap-1 text-[8px] text-primary-700"
+          >
+            <span>Ubah</span>
+            <IconComponent
+              src="/icons/pencil-outline.svg"
+              width={12}
+              height={12}
+            />
+          </button>
+        )}
       </div>
     </div>
   );
