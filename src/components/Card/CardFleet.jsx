@@ -23,11 +23,21 @@ import { cn } from "@/lib/utils";
 import { getTruckIcon } from "@/lib/utils/armadaStatus";
 import { formatDate } from "@/lib/utils/dateFormat";
 
+import IconComponent from "../IconComponent/IconComponent";
+
 // ----- Constants -----
 const STATUS_STYLES = {
   SOS: {
-    expanded: "border border-error-400 bg-error-50",
-    collapsed: "bg-error-50 hover:border-error-400 hover:bg-[#FFE9ED]",
+    NEW: {
+      expanded: "border border-error-400 bg-error-50",
+      collapsed:
+        "border border-transparent bg-error-50 hover:border-error-400 hover:bg-[#FFE9ED]",
+    },
+    ACKNOWLEDGED: {
+      expanded: "border border-[#FFC217] bg-[#FFFBEB]",
+      collapsed:
+        "border border-gray-200 bg-white hover:border-[#FFC217] hover:bg-[#FFFBEB]",
+    },
   },
   DEFAULT: {
     expanded: "border border-[#FFC217] bg-[#FFFBEB]",
@@ -38,11 +48,11 @@ const STATUS_STYLES = {
 
 // ----- Small Components -----
 const TruckIcon = ({ status }) => {
-  const icon = getTruckIcon?.(status) || "default.png";
+  const truck = getTruckIcon?.(status);
   return (
     <div className="flex h-8 w-8 items-center justify-center">
       <img
-        src={`/icons/armada-truck/${icon}`}
+        src={truck}
         alt="Truck icon"
         className="h-full w-full object-contain"
         loading="lazy"
@@ -81,20 +91,38 @@ const SOSIndicator = () => (
   </p>
 );
 
-const SOSAlertHeader = ({ category, reportTime, showCategory = true }) => (
-  <div className="mt-3 flex flex-col border-b border-neutral-400 pb-3">
+const SOSAlertHeader = ({
+  category,
+  showCategory = true,
+  reportAt,
+  completedAt,
+}) => (
+  <div className="mt-3 flex flex-col gap-3 border-b border-neutral-400 pb-3">
     {showCategory && (
-      <p className="mb-2 text-xs font-semibold text-error-400">
-        {category || "-"}
-      </p>
+      <p className="text-xs font-semibold text-error-400">{category || "-"}</p>
     )}
-    <p className="flex items-center gap-2 text-xs text-neutral-600">
-      <Clock3 className="h-4 w-3 text-muat-trans-secondary-900" />
-      Laporan Masuk:{" "}
-      <span className="font-semibold text-neutral-900">
-        {reportTime ? formatDate(reportTime) : "-"}
-      </span>
-    </p>
+    {reportAt && <LaporanMasuk reportTime={reportAt} />}
+    {completedAt && <LaporanSelesai reportTime={completedAt} />}
+  </div>
+);
+
+const LaporanMasuk = ({ reportTime }) => (
+  <div className="flex items-center gap-1 text-xs text-neutral-600">
+    <Clock3 className="h-4 w-4 flex-shrink-0 text-muat-trans-secondary-900" />
+    <span className="w-[95px] flex-shrink-0">Laporan Masuk:</span>
+    <span className="font-semibold text-neutral-900">
+      {reportTime ? formatDate(reportTime) : "-"}
+    </span>
+  </div>
+);
+
+const LaporanSelesai = ({ reportTime }) => (
+  <div className="flex items-center gap-1 text-xs text-neutral-600">
+    <IconComponent src={"/icons/monitoring/circle-check.svg"} />
+    <span className="w-[95px] flex-shrink-0">Laporan Selesai:</span>
+    <span className="font-semibold text-neutral-900">
+      {reportTime ? formatDate(reportTime) : "-"}
+    </span>
   </div>
 );
 
@@ -236,29 +264,6 @@ const LocationAndFleetSection = ({ fleet }) => (
   </div>
 );
 
-const ActionButton = ({
-  children,
-  onClick,
-  className,
-  variant = "default",
-}) => {
-  const baseClasses = "w-full rounded-xl px-4 py-2 text-sm font-medium";
-  const variantClasses = {
-    default: "bg-[#FFC217] text-[#461B02] hover:bg-[#FFD54F]",
-    sos: "bg-error-500 text-white hover:bg-error-600",
-  };
-
-  return (
-    <button
-      className={cn(baseClasses, variantClasses[variant], className)}
-      onClick={onClick}
-      type="button"
-    >
-      {children}
-    </button>
-  );
-};
-
 const OnDutyDetails = ({ fleet }) => {
   const pickup = fleet?.activeOrder?.pickupLocation;
   const dropoff = fleet?.activeOrder?.dropoffLocation;
@@ -274,7 +279,6 @@ const OnDutyDetails = ({ fleet }) => {
         </div>
       );
     }
-
     if (status === "ON_DUTY") {
       return (
         <div className="rounded-lg bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
@@ -282,7 +286,6 @@ const OnDutyDetails = ({ fleet }) => {
         </div>
       );
     }
-
     if (status === "WAITING_LOADING_TIME") {
       return (
         <div className="rounded-lg bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
@@ -290,7 +293,6 @@ const OnDutyDetails = ({ fleet }) => {
         </div>
       );
     }
-
     return null;
   };
 
@@ -343,7 +345,6 @@ const OnDutyDetails = ({ fleet }) => {
 
 const SOSExpandedSection = ({ fleet }) => {
   const photos = fleet?.detailSOS?.photos || [];
-
   return (
     <div className="mt-1 flex flex-col">
       <p className="text-xs font-semibold text-error-400">
@@ -357,7 +358,10 @@ const SOSExpandedSection = ({ fleet }) => {
       )}
 
       {photos.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div
+          className="mt-3 flex flex-wrap gap-2"
+          onClick={(e) => e.stopPropagation()}
+        >
           {photos.map((image, index) => (
             <LightboxProvider
               key={`${image}-${index}`}
@@ -377,9 +381,9 @@ const SOSExpandedSection = ({ fleet }) => {
       )}
 
       <SOSAlertHeader
-        category={fleet?.detailSOS?.sosCategory}
-        reportTime={fleet?.detailSOS?.reportAt}
         showCategory={false}
+        reportAt={fleet?.detailSOS?.reportAt}
+        completedAt={fleet?.detailSOS?.completedAt}
       />
     </div>
   );
@@ -392,9 +396,9 @@ export default function CardFleet({
   onToggleExpand,
   onOpenDriverModal,
   onOpenResponseChangeModal,
-  isSOS, // true hanya saat NEW (dari container)
+  onOpenRiwayatSOS,
   className,
-  onAcknowledge, // handler klik Mengerti
+  onAcknowledge,
 }) {
   const driverName = fleet?.driver?.name;
   const phone = fleet?.driver?.phoneNumber || "-";
@@ -402,35 +406,38 @@ export default function CardFleet({
     ? `${fleet.lastLocation.address.district || "-"}, ${fleet.lastLocation.address.city || "-"}`
     : "Unknown";
 
-  // SOS hanya untuk VISUAL saat status masih NEW
-  const isSOSVisual = isSOS && (fleet?.detailSOS?.sosStatus ?? "NEW") === "NEW";
+  const sosStatus = fleet?.detailSOS?.sosStatus;
+  const isSOSNew = sosStatus === "NEW";
+
+  const getCardStyle = () => {
+    const state = isExpanded ? "expanded" : "collapsed";
+    if (fleet?.hasSOSAlert) {
+      return STATUS_STYLES.SOS[sosStatus === "NEW" ? "NEW" : "ACKNOWLEDGED"][
+        state
+      ];
+    }
+    return STATUS_STYLES.DEFAULT[state];
+  };
 
   const cardClasses = cn(
     "group overflow-hidden rounded-lg p-3 transition-all duration-200",
-    isSOSVisual
-      ? isExpanded
-        ? STATUS_STYLES.SOS.expanded
-        : STATUS_STYLES.SOS.collapsed
-      : isExpanded
-        ? STATUS_STYLES.DEFAULT.expanded
-        : STATUS_STYLES.DEFAULT.collapsed,
+    getCardStyle(),
     className
   );
 
   const CollapsedContent = () => (
     <>
-      {/* Header SOS selalu tampil jika hasSOSAlert (NEW & ACK), dan showCategory aktif */}
       {fleet?.hasSOSAlert && (
         <SOSAlertHeader
           category={fleet?.detailSOS?.sosCategory}
-          reportTime={fleet?.detailSOS?.reportAt}
+          reportAt={fleet?.detailSOS?.reportAt}
+          reportDoneAt={fleet?.detailSOS?.reportedDoneAt}
           showCategory={true}
         />
       )}
-
       <div className={cn("mt-3 grid gap-x-2 gap-y-0.5 text-sm", "grid-cols-2")}>
-        <DriverInfo driverName={driverName} showLabel={!isSOSVisual} />
-        <LocationInfo locationText={locationText} showLabel={!isSOSVisual} />
+        <DriverInfo driverName={driverName} showLabel={!isSOSNew} />
+        <LocationInfo locationText={locationText} showLabel={!isSOSNew} />
       </div>
     </>
   );
@@ -439,71 +446,70 @@ export default function CardFleet({
     const showOnDuty = ["ON_DUTY", "WAITING_LOADING_TIME"].includes(
       fleet?.status
     );
-    const missingDriver = !fleet?.driver?.name || !fleet?.driver?.phoneNumber;
+    const missingDriver = !driverName || !phone;
+
+    const handleActionClick = (e, action) => {
+      e.stopPropagation();
+      if (action) action(fleet);
+    };
 
     return (
       <div className="space-y-[12px] pt-2 text-sm">
-        {/* NEW: tampilkan detail SOS lengkap */}
-        {isSOSVisual && <SOSExpandedSection fleet={fleet} />}
-
-        {/* ACK: tetap tampilkan header SOS sederhana + category */}
-        {!isSOSVisual && fleet?.hasSOSAlert && (
-          <SOSAlertHeader
-            category={fleet?.detailSOS?.sosCategory}
-            reportTime={fleet?.detailSOS?.reportAt}
-            showCategory={true}
-          />
-        )}
+        {fleet?.hasSOSAlert && <SOSExpandedSection fleet={fleet} />}
 
         <DriverAndPhoneSection driverName={driverName} phone={phone} />
         <LocationAndFleetSection fleet={fleet} />
 
         {showOnDuty && (
           <>
-            {!isSOSVisual && <div className="border-b border-neutral-400" />}
-            <div className="mt-3">
-              <OnDutyDetails fleet={fleet} />
-            </div>
+            <div className="border-b border-neutral-400" />
+            <OnDutyDetails fleet={fleet} />
           </>
         )}
 
         {missingDriver && (
-          <ActionButton onClick={() => onOpenDriverModal?.(fleet)}>
+          <Button
+            className="w-full"
+            onClick={(e) => handleActionClick(e, onOpenDriverModal)}
+          >
             Pasangkan Driver
-          </ActionButton>
+          </Button>
         )}
-
         {fleet?.needsResponseChange && (
-          <ActionButton onClick={() => onOpenResponseChangeModal?.(fleet)}>
+          <Button
+            variant="muattrans-primary"
+            className="w-full"
+            onClick={(e) => handleActionClick(e, onOpenResponseChangeModal)}
+          >
             Respon Perubahan
-          </ActionButton>
+          </Button>
         )}
 
-        {/* Tombol area: NEW => Riwayat + Mengerti, selain itu => Riwayat saja */}
-        <div className="pt-2">
-          {isSOSVisual ? (
-            <div className="flex justify-between gap-2">
-              <button
-                type="button"
-                onClick={() => onOpenDriverModal?.(fleet)}
-                className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-[#461B02] hover:border-[#FFC217] hover:bg-[#FFFBEB]"
-              >
-                Riwayat SOS
-              </button>
-              <Button className="w-full" onClick={() => onAcknowledge?.(fleet)}>
-                Mengerti
-              </Button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => onOpenDriverModal?.(fleet)}
+        {sosStatus === "NEW" ? (
+          <div className="flex justify-between gap-2">
+            <Button
+              variant="muattrans-primary-secondary"
+              onClick={(e) => handleActionClick(e, onOpenRiwayatSOS)}
               className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-[#461B02] hover:border-[#FFC217] hover:bg-[#FFFBEB]"
             >
               Riwayat SOS
-            </button>
-          )}
-        </div>
+            </Button>
+            <Button
+              className="w-full"
+              onClick={(e) => handleActionClick(e, onAcknowledge)}
+            >
+              Mengerti
+            </Button>
+          </div>
+        ) : fleet?.hasSOSAlert ? (
+          <button
+            variant="muattrans-primary-secondary"
+            onClick={(e) => handleActionClick(e, onOpenRiwayatSOS)}
+            className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-[#461B02] hover:border-[#FFC217] hover:bg-[#FFFBEB]"
+          >
+            Riwayat SOS
+          </button>
+        ) : null}
       </div>
     );
   };
@@ -523,16 +529,13 @@ export default function CardFleet({
         tabIndex={0}
         onKeyDown={handleKeyDown}
       >
-        {/* Badge SOS tetap tampil jika hasSOSAlert (NEW & ACK) */}
         <CardHeader
           isExpanded={isExpanded}
           fleet={fleet}
-          showSOSBadge={Boolean(fleet?.hasSOSAlert)}
+          showSOSBadge={isSOSNew}
         />
-
         {!isExpanded && <CollapsedContent />}
       </div>
-
       {isExpanded && <ExpandedContent />}
     </div>
   );

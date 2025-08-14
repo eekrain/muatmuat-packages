@@ -121,7 +121,7 @@ export const UrgentIssueCard = ({
   const isCountDown = true;
 
   const { formatted, isNegative } = useFlexibleCountdown(
-    new Date("2025-08-14T11:20:00"), // start time
+    new Date(), // start time
     360 // durasi 6 menit (dalam detik)
   );
 
@@ -160,11 +160,6 @@ export const UrgentIssueCard = ({
           )}
         >
           <div className="flex items-center gap-2">
-            <img
-              src={data?.transporter?.logo || "/img/muatan1.png"}
-              alt="Logo Transporter"
-              className="h-10 w-10 rounded-full border-[1.25px] border-neutral-400 object-cover"
-            />
             <img
               src={data?.transporter?.logo || "/img/muatan1.png"}
               alt={t(

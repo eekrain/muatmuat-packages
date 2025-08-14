@@ -10,14 +10,15 @@ import {
   MonitoringTabsList,
 } from "@/components/MonitoringTabs/MonitoringTabs";
 import { NotificationCount } from "@/components/NotificationDot/NotificationCount";
-import PermintaanAngkut from "@/container/CS/Monitoring/PermintaanAngkut/PermintaanAngkut";
+import { MapInterfaceOverlay } from "@/container/Shared/Map/MapInterfaceOverlay";
+import { MapMonitoring } from "@/container/Shared/Map/MapMonitoring";
+import { NoFleetOverlay } from "@/container/Shared/Map/NoFleetOverlay";
 import DaftarArmada from "@/container/Transporter/Monitoring/DaftarArmada/DaftarArmada";
 import DaftarPesananAktif from "@/container/Transporter/Monitoring/DaftarPesananAktif/DaftarPesananAktif";
 import LacakArmada from "@/container/Transporter/Monitoring/LacakArmada/LacakArmada";
-import { MapInterfaceOverlay } from "@/container/Transporter/Monitoring/Map/MapInterfaceOverlay";
-import { MapMonitoring } from "@/container/Transporter/Monitoring/Map/MapMonitoring";
-import { NoFleetOverlay } from "@/container/Transporter/Monitoring/Map/NoFleetOverlay";
+import PermintaanAngkut from "@/container/Transporter/Monitoring/PermintaanAngkut/PermintaanAngkut";
 import PilihArmada from "@/container/Transporter/Monitoring/PilihArmada/PilihArmada";
+import RiwayatLaporanSOS from "@/container/Transporter/Monitoring/RiwayatLaporanSOS/RiwayatLaporanSOS";
 import SOSContainer from "@/container/Transporter/Monitoring/SOS/SOSContainer";
 import UrgentIssue from "@/container/Transporter/Monitoring/UrgentIssue/UrgentIssue";
 import { cn } from "@/lib/utils";
@@ -93,6 +94,8 @@ const Page = () => {
     handleTruckClick,
     handleAcceptRequest,
     handleTogglePilihArmada,
+    handleOpenRiwayatSOS,
+    handleCloseRiwayatSOS,
   } = useMonitoringHandlers(dispatches, state, fleetLocationsData, addToast);
 
   // Map query param values to tab values
@@ -413,6 +416,7 @@ const Page = () => {
                     })
                   }
                   onFleetClick={handleFleetClickFromList}
+                  onOpenRiwayatSOS={handleOpenRiwayatSOS}
                 />
               )}
             </div>
@@ -427,7 +431,14 @@ const Page = () => {
                 : "calc(100vh - 100vh + 64px)",
             }}
           >
-            {panels.showPilihArmada ? (
+            {panels.showRiwayatSOS ? (
+              <RiwayatLaporanSOS
+                onToggleExpand={() => {
+                  panelsDispatch({ type: PANEL_ACTIONS.TOGGLE_BOTTOM_PANEL });
+                }}
+                isExpanded={panels.isBottomExpanded}
+              />
+            ) : panels.showPilihArmada ? (
               <PilihArmada
                 onToggleExpand={handleTogglePilihArmada}
                 isExpanded={panels.isBottomExpanded}

@@ -31,12 +31,13 @@ import {
   MonitoringTabsList,
 } from "@/components/MonitoringTabs/MonitoringTabs";
 import { NotificationCount } from "@/components/NotificationDot/NotificationCount";
-import PermintaanAngkut from "@/container/CS/Monitoring/PermintaanAngkut/PermintaanAngkut";
+import PermintaanAngkutCS from "@/container/CS/Monitoring/PermintaanAngkut/PermintaanAngkut";
 import UrgentIssue from "@/container/CS/Monitoring/UrgentIssue/UrgentIssue";
+import { MapInterfaceOverlay } from "@/container/Shared/Map/MapInterfaceOverlay";
+import { MapMonitoring } from "@/container/Shared/Map/MapMonitoring";
+import { NoFleetOverlay } from "@/container/Shared/Map/NoFleetOverlay";
 import DaftarArmada from "@/container/Transporter/Monitoring/DaftarArmada/DaftarArmada";
 import LacakArmada from "@/container/Transporter/Monitoring/LacakArmada/LacakArmada";
-import { MapInterfaceOverlay } from "@/container/Transporter/Monitoring/Map/MapInterfaceOverlay";
-import { NoFleetOverlay } from "@/container/Transporter/Monitoring/Map/NoFleetOverlay";
 import PilihArmada from "@/container/Transporter/Monitoring/PilihArmada/PilihArmada";
 import SOSContainer from "@/container/Transporter/Monitoring/SOS/SOSContainer";
 import { cn } from "@/lib/utils";
@@ -44,7 +45,7 @@ import { useGetFleetCount } from "@/services/Transporter/monitoring/getFleetCoun
 import { useGetFleetLocations } from "@/services/Transporter/monitoring/getFleetLocations";
 import { useToastActions } from "@/store/Shipper/toastStore";
 
-import { MapMonitoring } from "./components/Map/MapMonitoring";
+import TruckMarker from "./components/Map/TruckMarker";
 import DaftarPesananAktif from "./containers/DaftarPesananAktif/DaftarPesananAktif";
 
 const Page = () => {
@@ -360,6 +361,7 @@ const Page = () => {
                 transition:
                   "height 300ms ease-in-out, width 300ms ease-in-out, margin-left 300ms ease-in-out",
               }}
+              Marker={TruckMarker}
             />
             {!isLoading && !hasFleet && <NoFleetOverlay />}
             {!isLoading && hasFleet && (
@@ -541,7 +543,7 @@ const Page = () => {
               {!panels.isFullscreen && !panels.showLacakArmada && (
                 <>
                   <MonitoringTabsContent value="permintaan">
-                    <PermintaanAngkut onAcceptRequest={handleAcceptRequest} />
+                    <PermintaanAngkutCS />
                   </MonitoringTabsContent>
 
                   <MonitoringTabsContent value="urgent">

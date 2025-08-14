@@ -23,6 +23,7 @@ const DaftarArmada = ({
   selectedFleetId,
   onFleetSelect,
   onFleetClick,
+  onOpenRiwayatSOS,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedId, setExpandedId] = useState(null);
@@ -105,7 +106,6 @@ const DaftarArmada = ({
   };
 
   const handleRespondToChange = () => {
-    // TODO: Implement actual response logic
     console.log("Responding to change for fleet:", selectedFleetForResponse);
     setShowResponseChangeModal(false);
     setSelectedFleetForResponse(null);
@@ -263,6 +263,7 @@ const DaftarArmada = ({
                     onToggleExpand={toggleExpanded}
                     onOpenDriverModal={handleOpenDriverModal}
                     onOpenResponseChangeModal={handleOpenResponseChangeModal}
+                    onOpenRiwayatSOS={onOpenRiwayatSOS}
                     isSOS={isSOSVisual}
                     onAcknowledge={handleAcknowledge}
                   />

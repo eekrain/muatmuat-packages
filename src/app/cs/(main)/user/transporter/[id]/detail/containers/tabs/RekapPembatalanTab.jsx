@@ -2,63 +2,144 @@
 
 import { useState } from "react";
 
-import BadgeStatus from "@/components/Badge/BadgeStatus";
+import RekapPembatalanList from "@/app/cs/(main)/user/components/RekapPembatalanList";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
-import Input from "@/components/Form/Input";
-import IconComponent from "@/components/IconComponent/IconComponent";
 import Pagination from "@/components/Pagination/Pagination";
-import Table from "@/components/Table/Table";
 import { TabsContent } from "@/components/Tabs/Tabs";
 
-const RekapPembatalanTab = ({ mockCancellationData = [] }) => {
+const RekapPembatalanTab = () => {
   // Local state for this tab
+  const fallbackMock = [
+    {
+      id: "row-5",
+      date: "1 Agu 2025 18:00 WIB",
+      orderCode: "MT25A002A",
+      orderStatusLabel: "Terjadwal",
+      penaltyStatus: "pending",
+      origin: "Kota Surabaya, Kec. Tegalsari Tegalsari",
+      destination: "Kota Pasuruan, Kec. Klojen",
+      vehicle: { name: "Colt Diesel Double", body: "Bak Terbuka" },
+      cargo: {
+        unitCount: 1,
+        unitLabel: "Unit",
+        items: ["Besi"],
+        weight: "1.000 kg",
+      },
+      reason: "Driver Berhalangan",
+      drivers: [
+        { image: "https://picsum.photos/seed/driver1/80" },
+        { image: "https://picsum.photos/seed/driver2/80" },
+        { image: "https://picsum.photos/seed/driver3/80" },
+      ],
+    },
+    {
+      id: "row-4",
+      date: "1 Agu 2025 18:00 WIB",
+      orderCode: "MT25A002A",
+      orderStatusLabel: "Instan",
+      penaltyStatus: "exempt",
+      origin: "Kota Surabaya, Kec. Tegalsari Tegalsari Tegalsari",
+      destination: "Kota Pasuruan, Kec. Klojen",
+      vehicle: { name: "Colt Diesel Double", body: "Bak Terbuka" },
+      cargo: {
+        unitCount: 1,
+        unitLabel: "Unit",
+        items: [
+          "Peralatan Rumah Tangga",
+          "Elektronik",
+          "Pakaian",
+          "Mainan",
+          "Buku",
+          "Perkakas",
+          "Aksesoris",
+          "Perlengkapan Dapur",
+        ],
+        weight: "2.500 kg",
+      },
+      reason: "Kendaraan Bermasalah",
+      drivers: [{ image: "https://picsum.photos/seed/driver4/80" }],
+    },
+    {
+      id: "row-3",
+      date: "1 Agu 2025 18:00 WIB",
+      orderCode: "MT25A002A",
+      orderStatusLabel: "Instan",
+      penaltyStatus: "penalized",
+      origin: "Kota Surabaya, Kec. Tegalsari Tegalsari",
+      destination: "Kota Pasuruan, Kec. Klojen",
+      vehicle: { name: "Colt Diesel Double", body: "Bak Terbuka" },
+      cargo: {
+        unitCount: 1,
+        unitLabel: "Unit",
+        items: [
+          "Peralatan Rumah Tangga",
+          "Elektronik",
+          "Pakaian",
+          "Mainan",
+          "Buku",
+          "Perkakas",
+          "Aksesoris",
+          "Perlengkapan Dapur",
+        ],
+        weight: "2.500 kg",
+      },
+      reason: "Kendaraan Bermasalah",
+      drivers: [{ image: "https://picsum.photos/seed/driver5/80" }],
+    },
+    {
+      id: "row-2",
+      date: "1 Agu 2025 18:00 WIB",
+      orderCode: "MT25A002A",
+      orderStatusLabel: "Instan",
+      penaltyStatus: "penalized",
+      origin: "Kota Surabaya, Kec. Tegalsari Tegalsari",
+      destination: "Kota Pasuruan, Kec. Klojen",
+      vehicle: { name: "Colt Diesel Double", body: "Bak Terbuka" },
+      cargo: {
+        unitCount: 1,
+        unitLabel: "Unit",
+        items: ["Besi"],
+        weight: "1.000 kg",
+      },
+      reason: "Bencana Alam",
+      drivers: [
+        { image: "https://picsum.photos/seed/driver6/80" },
+        { image: "https://picsum.photos/seed/driver7/80" },
+        { image: "https://picsum.photos/seed/driver8/80" },
+        { image: "https://picsum.photos/seed/driver9/80" },
+      ],
+    },
+    {
+      id: "row-1",
+      date: "1 Agu 2025 18:00 WIB",
+      orderCode: "MT25A002A",
+      orderStatusLabel: "Instan",
+      penaltyStatus: "penalized",
+      origin: "Kota Surabaya, Kec. Tegalsari Tegalsari",
+      destination: "Kota Pasuruan, Kec. Klojen",
+      vehicle: { name: "Colt Diesel Double", body: "Bak Terbuka" },
+      cargo: {
+        unitCount: 1,
+        unitLabel: "Unit",
+        items: ["Besi"],
+        weight: "1.000 kg",
+      },
+      reason:
+        "Lainnya: Pengemudi mengalami kendala teknis, tidak dapat melanjutkan pengiriman",
+      drivers: [
+        { image: "https://picsum.photos/seed/driver10/80" },
+        { image: "https://picsum.photos/seed/driver11/80" },
+        { image: "https://picsum.photos/seed/driver12/80" },
+      ],
+    },
+  ];
+  const initialData = fallbackMock;
+  const [data, setData] = useState(initialData);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [searchValue, setSearchValue] = useState("");
 
-  // Cancellation table columns
-  const cancellationColumns = [
-    {
-      key: "orderId",
-      header: "ID Order",
-      sortable: true,
-      render: (row) => <div className="text-sm font-medium">{row.orderId}</div>,
-    },
-    {
-      key: "date",
-      header: "Tanggal",
-      sortable: true,
-      render: (row) => <div className="text-sm">{row.date}</div>,
-    },
-    {
-      key: "route",
-      header: "Rute",
-      sortable: false,
-      render: (row) => (
-        <div className="text-sm">
-          {row.origin} → {row.destination}
-        </div>
-      ),
-    },
-    {
-      key: "reason",
-      header: "Alasan Pembatalan",
-      sortable: false,
-      render: (row) => <div className="text-sm">{row.reason}</div>,
-    },
-    {
-      key: "cancelledBy",
-      header: "Dibatalkan Oleh",
-      sortable: false,
-      render: (row) => <div className="text-sm">{row.cancelledBy}</div>,
-    },
-    {
-      key: "status",
-      header: "Status",
-      sortable: false,
-      render: () => <BadgeStatus variant="error">Dibatalkan</BadgeStatus>,
-    },
-  ];
+  // Table columns no longer used; list UI replaces table view
 
   // Search logic
   const handleSearch = (value) => {
@@ -72,14 +153,23 @@ const RekapPembatalanTab = ({ mockCancellationData = [] }) => {
 
   // Data filtering and pagination
   const getFilteredData = () => {
-    let filteredData = [...mockCancellationData];
+    let filteredData = Array.isArray(data) ? [...data] : [];
 
     if (searchValue.trim() && searchValue.length >= 3) {
-      filteredData = filteredData.filter((item) =>
-        Object.values(item).some((value) =>
-          value?.toString().toLowerCase().includes(searchValue.toLowerCase())
-        )
-      );
+      const sv = searchValue.toLowerCase();
+      filteredData = filteredData.filter((item) => {
+        const flat = {
+          orderId: item.orderId || item.orderCode,
+          date: item.date || item.cancelledAt,
+          origin: item.origin || item.route?.origin,
+          destination: item.destination || item.route?.destination,
+          reason: item.reason,
+          cancelledBy: item.cancelledBy,
+        };
+        return Object.values(flat).some((v) =>
+          v?.toString().toLowerCase().includes(sv)
+        );
+      });
     }
 
     return filteredData;
@@ -91,12 +181,31 @@ const RekapPembatalanTab = ({ mockCancellationData = [] }) => {
   const startIndex = (currentPage - 1) * perPage;
   const endIndex = startIndex + perPage;
   const paginatedData = filteredData.slice(startIndex, endIndex);
-  const showPagination = totalItems >= 10;
+  const showPagination = totalItems > 1;
 
   // Data state logic
   const hasSearch = searchValue.trim().length > 0;
   const hasData = filteredData.length > 0;
-  const originalDataExists = mockCancellationData.length > 0;
+  const originalDataExists = (data || []).length > 0;
+  // Handle confirm penalty from list
+  const handleConfirmPenalty = (item) => {
+    const code = item?.orderCode || item?.orderId || item?.id;
+    setData((prev) =>
+      prev.map((d) => {
+        const dCode = d.orderId || d.orderCode || d.id;
+        if (dCode === code) {
+          return { ...d, penaltyStatus: "penalized" };
+        }
+        return d;
+      })
+    );
+  };
+
+  // Compute total penalty points (1 per penalized)
+  const totalPenaltyPoints = (data || []).reduce(
+    (acc, d) => acc + (d.penaltyStatus === "penalized" ? 1 : 0),
+    0
+  );
 
   const showNoDataState = !originalDataExists;
   const showSearchNotFoundState = hasSearch && !hasData && originalDataExists;
@@ -117,53 +226,42 @@ const RekapPembatalanTab = ({ mockCancellationData = [] }) => {
           </div>
         ) : (
           <>
-            {/* Search Section */}
-            <div className="px-6 pb-6 pt-5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Input
-                    icon={{
-                      left: (
-                        <IconComponent
-                          src="/icons/search16.svg"
-                          className="!text-neutral-700"
-                          width={16}
-                          height={16}
-                        />
-                      ),
-                      right: searchValue.length > 0 && (
-                        <button onClick={handleClearSearch}>
-                          <IconComponent
-                            src="/icons/close20.svg"
-                            width={20}
-                            height={20}
-                          />
-                        </button>
-                      ),
-                    }}
-                    appearance={{
-                      inputClassName: "!text-xs",
-                      containerClassName: "!w-full min-w-[262px]",
-                    }}
-                    placeholder="Cari Pembatalan"
-                    value={searchValue}
-                    onChange={(e) => handleSearch(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <p className="font-semibold">
-                    Total: {totalItems} Pembatalan
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Table */}
-            <Table
-              data={paginatedData}
-              columns={cancellationColumns}
-              emptyComponent={
-                showSearchNotFoundState ? (
+            {/* List */}
+            {paginatedData.length > 0 ? (
+              <RekapPembatalanList
+                items={paginatedData.map((d, i) => ({
+                  id: d.id || d.orderId || d.orderCode,
+                  index: startIndex + i + 1,
+                  cancelledAt: d.date || d.cancelledAt,
+                  orderCode: d.orderId || d.orderCode,
+                  orderStatusLabel: d.orderStatusLabel || "Terjadwal",
+                  penaltyStatus: d.penaltyStatus,
+                  route: {
+                    origin: d.origin || d.route?.origin,
+                    destination: d.destination || d.route?.destination,
+                  },
+                  vehicle: d.vehicle || {
+                    name: d.vehicleName,
+                    body: d.vehicleBody,
+                  },
+                  cargo: d.cargo || {
+                    unitCount: d.unitCount,
+                    unitLabel: d.unitLabel,
+                    name: d.cargoName,
+                    weight: d.cargoWeight,
+                    items: d.cargoItems,
+                    itemsCount: d.cargoItemsCount,
+                  },
+                  reason: d.reason,
+                  drivers: d.drivers,
+                }))}
+                summary={{ totalPenaltyPoints }}
+                onConfirmPenalty={handleConfirmPenalty}
+                className=""
+              />
+            ) : (
+              <div className="px-6 pb-6">
+                {showSearchNotFoundState ? (
                   <DataNotFound type="search" title="Keyword Tidak Ditemukan" />
                 ) : (
                   <DataNotFound
@@ -171,9 +269,9 @@ const RekapPembatalanTab = ({ mockCancellationData = [] }) => {
                     title="Belum Ada Pembatalan"
                     subtitle="Belum ada riwayat pembatalan"
                   />
-                )
-              }
-            />
+                )}
+              </div>
+            )}
           </>
         )}
       </div>

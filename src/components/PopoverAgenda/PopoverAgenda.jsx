@@ -2,11 +2,6 @@
 
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/Popover/Popover";
 
 // import { cn } from "@/lib/utils";
 
@@ -111,12 +106,13 @@ const PopoverAgenda = ({ agendaData }) => {
                       </span>
                     ))}
                     {hiddenItems.length > 0 && (
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <button className="ml-1 font-medium text-primary-700">
-                            +{hiddenItems.length}
-                          </button>
-                        </PopoverTrigger>
+                      <>
+                        {/* <Popover>
+                        <PopoverTrigger asChild> */}
+                        <button className="ml-1 font-medium text-primary-700">
+                          +{hiddenItems.length}
+                        </button>
+                        {/* </PopoverTrigger>
                         <PopoverContent className="w-60 p-3">
                           <div className="space-y-2">
                             <p className="font-bold">Barang Lainnya</p>
@@ -132,7 +128,8 @@ const PopoverAgenda = ({ agendaData }) => {
                             </ul>
                           </div>
                         </PopoverContent>
-                      </Popover>
+                      </Popover> */}
+                      </>
                     )}
                   </p>
                 </div>
@@ -209,7 +206,7 @@ const PopoverAgenda = ({ agendaData }) => {
                   <div className="size-3 rounded-full border-4 border-[#461B02] bg-white" />
 
                   <div>
-                    <p className="text-xs font-medium text-neutral-500">
+                    <p className="text-xxs font-medium text-neutral-500">
                       Lokasi Bongkar
                     </p>
                     <p className="line-clamp-1 font-semibold text-neutral-900">

@@ -4,10 +4,9 @@ import { useState } from "react";
 
 import { ChevronDown, ChevronUp } from "lucide-react";
 
-import Button from "@/components/Button/Button";
+import ActiveFiltersBar from "@/components/ActiveFiltersBar/ActiveFiltersBar";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import FilterDropdown from "@/components/FilterDropdown/FilterDropdown";
-import Input from "@/components/Input/Input";
 import Pagination from "@/components/Pagination/Pagination";
 
 const LaporanPencairanDanaTable = ({
@@ -30,6 +29,10 @@ const LaporanPencairanDanaTable = ({
   searchValue = "",
   filters = {},
   sortConfig = { sort: null, order: null },
+  showFilter = true,
+  showSearch = true,
+  searchPlaceholder = "Cari Pencairan",
+  disabledByPeriod = false,
 }) => {
   const [localSearchValue, setLocalSearchValue] = useState(searchValue);
   const [localFilters, setLocalFilters] = useState(filters);
@@ -39,9 +42,69 @@ const LaporanPencairanDanaTable = ({
     onSearch?.(value);
   };
 
+  const handleSearchKeyUp = (e) => {
+    if (e.key === "Enter") {
+      handleSearch(localSearchValue);
+    }
+  };
+
   const handleFilter = (newFilters) => {
     setLocalFilters(newFilters);
     onFilter?.(newFilters);
+  };
+
+  // Convert selected filters to active filter format
+  const getActiveFilters = () => {
+    const activeFilters = [];
+
+    Object.entries(localFilters).forEach(([categoryKey, items]) => {
+      if (Array.isArray(items)) {
+        // Multi-select
+        items.forEach((item) => {
+          activeFilters.push({
+            id: `${categoryKey}-${item.id}`,
+            label: item.label,
+            categoryKey,
+            item,
+          });
+        });
+      } else if (items) {
+        // Single-select
+        activeFilters.push({
+          id: `${categoryKey}-${items.id}`,
+          label: items.label,
+          categoryKey,
+          item: items,
+        });
+      }
+    });
+
+    return activeFilters;
+  };
+
+  const handleRemoveFilter = (filter) => {
+    const newFilters = { ...localFilters };
+
+    if (Array.isArray(newFilters[filter.categoryKey])) {
+      // Multi-select
+      newFilters[filter.categoryKey] = newFilters[filter.categoryKey].filter(
+        (item) => item.id !== filter.item.id
+      );
+      if (newFilters[filter.categoryKey].length === 0) {
+        delete newFilters[filter.categoryKey];
+      }
+    } else {
+      // Single-select
+      delete newFilters[filter.categoryKey];
+    }
+
+    setLocalFilters(newFilters);
+    onFilter?.(newFilters);
+  };
+
+  const handleClearAllFilters = () => {
+    setLocalFilters({});
+    onFilter?.({});
   };
 
   const handleSort = (columnKey) => {
@@ -58,6 +121,46 @@ const LaporanPencairanDanaTable = ({
       );
     }
     return <ChevronDown className="h-4 w-4 text-gray-400" />;
+  };
+
+  const renderHeader = () => {
+    const noDataDisabled = data.length === 0;
+
+    // Interlock states - only disable when search is active, not when data is empty
+    const isSearchActive = localSearchValue.length > 0;
+    const isFilterActive = Object.keys(localFilters).length > 0;
+
+    const disableSearchInput =
+      noDataDisabled || disabledByPeriod || isFilterActive;
+    const disableFilterDropdown = disabledByPeriod || isSearchActive; // Remove noDataDisabled condition
+
+    return (
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          {showFilter && filterConfig && (
+            <FilterDropdown
+              categories={filterConfig.categories || []}
+              data={filterConfig.data || []}
+              selectedValues={localFilters}
+              onSelectionChange={handleFilter}
+              searchPlaceholder="Cari {category}"
+              disabled={disableFilterDropdown}
+            />
+          )}
+          <DropdownPeriode
+            options={periodOptions}
+            onSelect={onPeriodChange}
+            recentSelections={recentPeriodOptions}
+            value={currentPeriodValue}
+          />
+        </div>
+        <div className="flex flex-col items-end gap-2">
+          <div className="text-sm font-semibold text-neutral-900">
+            Total : {data.length} Pencairan
+          </div>
+        </div>
+      </div>
+    );
   };
 
   const filteredData = data.filter((row) => {
@@ -108,30 +211,21 @@ const LaporanPencairanDanaTable = ({
     return true;
   });
 
+  const activeFilters = getActiveFilters();
+
   return (
     <div className="rounded-lg border border-gray-200 bg-white">
       {/* Header with Filters */}
       <div className="border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <FilterDropdown
-              categories={filterConfig.categories || []}
-              data={filterConfig.data || []}
-              selectedValues={localFilters}
-              onSelectionChange={handleFilter}
-              searchPlaceholder="Cari Filter"
-            />
-            <DropdownPeriode
-              options={periodOptions}
-              onSelect={onPeriodChange}
-              recentSelections={recentPeriodOptions}
-              value={currentPeriodValue}
-            />
-          </div>
-          <div className="text-sm font-semibold text-neutral-900">
-            Total : {filteredData.length} Pencairan
-          </div>
-        </div>
+        {renderHeader()}
+        {showFilter && activeFilters.length > 0 && (
+          <ActiveFiltersBar
+            filters={activeFilters}
+            onRemoveFilter={handleRemoveFilter}
+            onClearAll={handleClearAllFilters}
+            className="mb-3 mt-5"
+          />
+        )}
       </div>
 
       {/* Search Bar */}

@@ -156,7 +156,7 @@ const HeaderLayout = ({
           </Link>
 
           <div className="flex items-center gap-x-3">
-            {dataUser?.Email && (
+            {dataUser?.name && (
               <div className="flex items-center gap-x-3 pr-3">
                 {menuNotifications.map((menu, key) => (
                   <Link href="#" className="relative" key={key}>
@@ -180,7 +180,7 @@ const HeaderLayout = ({
         </div>
       </div>
 
-      {dataUser?.Email && (
+      {dataUser?.name && (
         <div className="flex h-8 items-center gap-6 bg-muat-trans-secondary-900 px-10 text-xs font-medium leading-[1] text-neutral-50">
           <span className="block">Menu :</span>
 
@@ -197,20 +197,37 @@ const HeaderLayout = ({
                   </SimpleHoverTrigger>
 
                   <SimpleHoverContent>
-                    {item.dropdownItems.map((dropdownItem) => (
-                      <SimpleHoverItem
-                        key={dropdownItem.id}
-                        onClick={dropdownItem.onClick}
-                      >
-                        {dropdownItem.href ? (
-                          <Link href={dropdownItem.href}>
-                            {dropdownItem.label}
-                          </Link>
-                        ) : (
-                          <span>{dropdownItem.label}</span>
-                        )}
-                      </SimpleHoverItem>
-                    ))}
+                    {item.dropdownItems.map((dropdownItem) => {
+                      const isSelected =
+                        dropdownItem.href &&
+                        pathname.startsWith(dropdownItem.href);
+                      return (
+                        <SimpleHoverItem
+                          key={dropdownItem.id}
+                          onClick={dropdownItem.onClick}
+                        >
+                          {dropdownItem.href ? (
+                            <Link
+                              href={dropdownItem.href}
+                              className="flex w-full items-center justify-between"
+                            >
+                              <span>{dropdownItem.label}</span>
+                              {isSelected && (
+                                <ImageComponent
+                                  src="/img/checkedblue.png"
+                                  className="h-4 w-4"
+                                  alt="Selected Icon"
+                                />
+                              )}
+                            </Link>
+                          ) : (
+                            <span className="flex w-full items-center justify-between">
+                              {dropdownItem.label}
+                            </span>
+                          )}
+                        </SimpleHoverItem>
+                      );
+                    })}
                   </SimpleHoverContent>
                 </SimpleHover>
               );

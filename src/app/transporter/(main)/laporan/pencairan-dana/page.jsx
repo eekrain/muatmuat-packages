@@ -9,8 +9,10 @@ import Button from "@/components/Button/Button";
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import LaporanPencairanDanaTable from "@/components/Report/LaporanPencairanDanaTable/LaporanPencairanDanaTable";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function Page() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,32 +24,52 @@ export default function Page() {
   // Konfigurasi periode
   const periodOptions = [
     {
-      name: "Semua Periode (Default)",
+      name: t(
+        "LaporanPencairanDanaPage.periodOptionAllPeriods",
+        {},
+        "Semua Periode (Default)"
+      ),
       value: "",
       format: "day",
     },
     {
-      name: "Hari Ini",
+      name: t("LaporanPencairanDanaPage.periodOptionToday", {}, "Hari Ini"),
       value: 0,
       format: "day",
     },
     {
-      name: "1 Minggu Terakhir",
+      name: t(
+        "LaporanPencairanDanaPage.periodOptionLastWeek",
+        {},
+        "1 Minggu Terakhir"
+      ),
       value: 7,
       format: "day",
     },
     {
-      name: "30 Hari Terakhir",
+      name: t(
+        "LaporanPencairanDanaPage.periodOptionLastMonth",
+        {},
+        "30 Hari Terakhir"
+      ),
       value: 30,
       format: "month",
     },
     {
-      name: "90 Hari Terakhir",
+      name: t(
+        "LaporanPencairanDanaPage.periodOptionLastQuarter",
+        {},
+        "90 Hari Terakhir"
+      ),
       value: 90,
       format: "month",
     },
     {
-      name: "1 Tahun Terakhir",
+      name: t(
+        "LaporanPencairanDanaPage.periodOptionLastYear",
+        {},
+        "1 Tahun Terakhir"
+      ),
       value: 365,
       format: "year",
     },
@@ -100,19 +122,27 @@ export default function Page() {
   // Table columns
   const columns = [
     {
-      header: "Tanggal",
+      header: t("LaporanPencairanDanaPage.tableColumnDate", {}, "Tanggal"),
       key: "date",
       sortable: true,
       width: "200px",
     },
     {
-      header: "Jumlah Pencairan",
+      header: t(
+        "LaporanPencairanDanaPage.tableColumnDisbursementAmount",
+        {},
+        "Jumlah Pencairan"
+      ),
       key: "amount",
       sortable: true,
       width: "180px",
     },
     {
-      header: "Rekening Pencairan",
+      header: t(
+        "LaporanPencairanDanaPage.tableColumnDisbursementAccount",
+        {},
+        "Rekening Pencairan"
+      ),
       key: "account",
       sortable: true,
       width: "200px",
@@ -128,7 +158,7 @@ export default function Page() {
       ),
     },
     {
-      header: "Action",
+      header: t("LaporanPencairanDanaPage.tableColumnAction", {}, "Action"),
       key: "action",
       sortable: false,
       width: "100px",
@@ -137,7 +167,7 @@ export default function Page() {
           className="h-8 px-4 text-xs"
           onClick={() => router.push(`/laporan/pencairan-dana/${row.id}`)}
         >
-          Detail
+          {t("LaporanPencairanDanaPage.buttonDetail", {}, "Detail")}
         </Button>
       ),
     },
@@ -148,7 +178,11 @@ export default function Page() {
     categories: [
       {
         key: "bank",
-        label: "Rekening Pencairan",
+        label: t(
+          "LaporanPencairanDanaPage.filterCategoryDisbursementAccount",
+          {},
+          "Rekening Pencairan"
+        ),
         searchable: true,
       },
     ],
@@ -216,7 +250,13 @@ export default function Page() {
       {/* Header Section with Title, Tooltip, and Download Button */}
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold">Laporan Pencairan</h1>
+          <h1 className="text-2xl font-bold">
+            {t(
+              "LaporanPencairanDanaPage.titleLaporanPencairan",
+              {},
+              "Laporan Pencairan"
+            )}
+          </h1>
           <InfoTooltip
             className="w-80"
             side="right"
@@ -225,22 +265,31 @@ export default function Page() {
                 <Info size={18} />
               </button>
             }
-          >
-            Pantau semua pencairan dana yang sudah kamu terima dengan mudah.
-            Laporan ini mencatat setiap transaksi, lengkap dengan nominal,
-            tanggal, dan rekening pencairan.
-          </InfoTooltip>
+            render={t(
+              "LaporanPencairanDanaPage.infoTooltipDescription",
+              {},
+              "Pantau semua pencairan dana yang sudah kamu terima dengan mudah. Laporan ini mencatat setiap transaksi, lengkap dengan nominal, tanggal, dan rekening pencairan."
+            )}
+          />
         </div>
         <Button onClick={handleDownload} iconLeft={<Download size={16} />}>
-          Unduh
+          {t("LaporanPencairanDanaPage.buttonDownload", {}, "Unduh")}
         </Button>
       </div>
 
       {/* Data Table with Filter or Empty State */}
       {isDisbursementEmpty ? (
         <DataEmpty
-          title="Belum ada laporan pencairan"
-          subtitle="Saat ini belum tersedia laporan pencairan. Setelah ada transaksi pencairan, laporan akan muncul di sini."
+          title={t(
+            "LaporanPencairanDanaPage.emptyStateTitle",
+            {},
+            "Belum ada laporan pencairan"
+          )}
+          subtitle={t(
+            "LaporanPencairanDanaPage.emptyStateSubtitle",
+            {},
+            "Saat ini belum tersedia laporan pencairan. Setelah ada transaksi pencairan, laporan akan muncul di sini."
+          )}
         />
       ) : (
         <LaporanPencairanDanaTable
