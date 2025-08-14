@@ -156,7 +156,7 @@ const HeaderLayout = ({
           </Link>
 
           <div className="flex items-center gap-x-3">
-            {dataUser?.Email && (
+            {dataUser?.name && (
               <div className="flex items-center gap-x-3 pr-3">
                 {menuNotifications.map((menu, key) => (
                   <Link href="#" className="relative" key={key}>
@@ -180,7 +180,7 @@ const HeaderLayout = ({
         </div>
       </div>
 
-      {dataUser?.Email && (
+      {dataUser?.name && (
         <div className="flex h-8 items-center gap-6 bg-muat-trans-secondary-900 px-10 text-xs font-medium leading-[1] text-neutral-50">
           <span className="block">Menu :</span>
 
