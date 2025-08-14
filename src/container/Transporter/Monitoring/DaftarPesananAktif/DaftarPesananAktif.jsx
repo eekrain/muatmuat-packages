@@ -33,12 +33,14 @@ import {
 
 import Onboarding from "../Onboarding/Onboarding";
 import AlasanPembatalanModal from "./components/AlasanPembatalanModal";
-import AssignArmadaModal from "./components/AssignArmadaModal";
+import AssignArmadaWrapper from "./components/AssignArmadaWrapper";
 import BatalkanArmadaModal from "./components/BatalkanArmadaModal";
 import BatalkanPesananModal from "./components/BatalkanPesananModal";
 import ConfirmReadyModal from "./components/ConfirmReadyModal";
 import LihatArmadaModal from "./components/LihatArmadaModal";
+import PilihArmadaBatalkan from "./components/PilihArmadaBatalkan";
 import RespondChangeModal from "./components/RespondChangeModal";
+import UbahJumlahUnitModal from "./components/UbahJumlahUnitModal";
 
 const DaftarPesananAktif = ({
   onToggleExpand,
@@ -70,6 +72,13 @@ const DaftarPesananAktif = ({
   const [alasanPembatalanModalOpen, setAlasanPembatalanModalOpen] =
     useState(false);
   const [selectedOrderForAlasan, setSelectedOrderForAlasan] = useState(null);
+  const [pilihArmadaBatalkanModalOpen, setPilihArmadaBatalkanModalOpen] =
+    useState(false);
+  const [selectedOrderForFleetCancel, setSelectedOrderForFleetCancel] =
+    useState(null);
+  const [ubahJumlahUnitModalOpen, setUbahJumlahUnitModalOpen] = useState(false);
+  const [selectedOrderForChangeUnit, setSelectedOrderForChangeUnit] =
+    useState(null);
 
   // Map filter keys to lowercase status values for API
   const getFilterStatus = (filterKey) => {
@@ -115,7 +124,9 @@ const DaftarPesananAktif = ({
         setAssignArmadaModalOpen(true);
         break;
       case ORDER_ACTIONS.CHANGE_UNIT_COUNT.type:
-        console.log("Ubah Jumlah Unit", row);
+        setSelectedOrderForChangeUnit(row);
+        setUbahJumlahUnitModalOpen(true);
+        setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       case ORDER_ACTIONS.RESPOND_CHANGE.type:
         setSelectedOrderForChange(row);
@@ -191,6 +202,65 @@ const DaftarPesananAktif = ({
       console.error("Error canceling order:", error);
       // Show error toast
       toast.error("Gagal membatalkan pesanan. Silakan coba lagi.");
+    }
+  };
+
+  // Handler for opening fleet selection modal
+  const handleOpenFleetModal = (order) => {
+    setSelectedOrderForFleetCancel(order);
+    setPilihArmadaBatalkanModalOpen(true);
+  };
+
+  // Handler for confirming fleet cancellation with selected fleets
+  const handleCancelSelectedFleets = async (cancellationData) => {
+    try {
+      // TODO: Implement API call to cancel selected fleets
+      console.log("Canceling selected fleets:", cancellationData);
+
+      // Example API call (replace with actual service)
+      // await cancelSelectedFleets({
+      //   orderId: cancellationData.order.id,
+      //   fleetIds: cancellationData.selectedFleets
+      // });
+
+      // Show success toast notification
+      const fleetCount = cancellationData.selectedFleets.length;
+      toast.success(
+        `Berhasil membatalkan ${fleetCount} armada dari pesanan ${cancellationData.order?.orderCode || cancellationData.order?.orderNumber || ""}`
+      );
+
+      // TODO: Refresh data or update state as needed
+      // You might want to refetch the orders list here
+    } catch (error) {
+      console.error("Error canceling selected fleets:", error);
+      // Show error toast
+      toast.error("Gagal membatalkan armada. Silakan coba lagi.");
+    }
+  };
+
+  // Handler for confirming unit count change
+  const handleChangeUnitCount = async (order) => {
+    try {
+      // TODO: Implement API call to change unit count
+      console.log("Changing unit count for order:", order);
+
+      // Example API call (replace with actual service)
+      // await changeUnitCount({
+      //   orderId: order.id,
+      //   newCount: order.newUnitCount
+      // });
+
+      // Show success toast notification
+      toast.success(
+        `Berhasil mengubah jumlah unit untuk pesanan ${order?.orderCode || order?.orderNumber || ""}`
+      );
+
+      // TODO: Refresh data or update state as needed
+      // You might want to refetch the orders list here
+    } catch (error) {
+      console.error("Error changing unit count:", error);
+      // Show error toast
+      toast.error("Gagal mengubah jumlah unit. Silakan coba lagi.");
     }
   };
 
@@ -645,7 +715,7 @@ const DaftarPesananAktif = ({
                 sortConfig={sortConfig}
                 emptyComponent={
                   searchValue && searchValue.length > 2 ? (
-                    <SearchNotFound searchTerm={searchValue} className="py-6" />
+                    <SearchNotFound searchTerm={searchValue} className="py-0" />
                   ) : (
                     renderEmptyState()
                   )
@@ -656,8 +726,8 @@ const DaftarPesananAktif = ({
         </div>
       )}
 
-      {/* Assign Armada Modal */}
-      <AssignArmadaModal
+      {/* Assign Armada Wrapper - handles all armada assignment modals */}
+      <AssignArmadaWrapper
         isOpen={assignArmadaModalOpen}
         onClose={() => {
           setAssignArmadaModalOpen(false);
@@ -694,7 +764,7 @@ const DaftarPesananAktif = ({
           setSelectedOrderForCancel(null);
         }}
         order={selectedOrderForCancel}
-        onConfirm={handleCancelFleet}
+        onOpenFleetModal={handleOpenFleetModal}
       />
 
       {/* Batalkan Pesanan Modal */}
@@ -727,6 +797,50 @@ const DaftarPesananAktif = ({
         }}
         order={selectedOrderForAlasan}
         onConfirm={handleCancelOrderWithReason}
+      />
+
+      {/* Pilih Armada Batalkan Modal */}
+      <PilihArmadaBatalkan
+        isOpen={pilihArmadaBatalkanModalOpen}
+        onClose={() => {
+          setPilihArmadaBatalkanModalOpen(false);
+          setSelectedOrderForFleetCancel(null);
+        }}
+        order={selectedOrderForFleetCancel}
+        fleetList={
+          selectedOrderForFleetCancel?.fleets || [
+            {
+              id: 1,
+              plateNumber: "AE 1111 LBA",
+              driverName: "Noel Gallagher",
+              status: "Armada Dijadwalkan",
+            },
+            {
+              id: 2,
+              plateNumber: "AE 1111 LBA",
+              driverName: "Noel Gallagher",
+              status: "Armada Dijadwalkan",
+            },
+            {
+              id: 3,
+              plateNumber: "AE 1111 LBA",
+              driverName: "Noel Gallagher",
+              status: "Armada Dijadwalkan",
+            },
+          ]
+        }
+        onConfirm={handleCancelSelectedFleets}
+      />
+
+      {/* Ubah Jumlah Unit Modal */}
+      <UbahJumlahUnitModal
+        isOpen={ubahJumlahUnitModalOpen}
+        onClose={() => {
+          setUbahJumlahUnitModalOpen(false);
+          setSelectedOrderForChangeUnit(null);
+        }}
+        orderData={selectedOrderForChangeUnit}
+        onConfirm={handleChangeUnitCount}
       />
     </div>
   );

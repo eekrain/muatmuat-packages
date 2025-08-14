@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 
+import { valibotResolver } from "@hookform/resolvers/valibot";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
+import { useForm } from "react-hook-form";
+import * as v from "valibot";
 
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
@@ -15,8 +18,8 @@ import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
 import { useGetAvailableVehiclesList } from "@/services/Transporter/monitoring/daftar-pesanan-active/getAvailableVehiclesList";
 
 const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
-  const [selectedArmada, setSelectedArmada] = useState([]);
   const [searchValue, setSearchValue] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch available vehicles
   const { data, isLoading } = useGetAvailableVehiclesList(orderData?.id);
@@ -25,18 +28,91 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
     data?.orderInfo?.requiredTruckCount || orderData?.truckCount || 3;
   const availableVehicles = data?.availableVehicles || [];
 
+  // Create dynamic validation schema based on required units
+  const createValidationSchema = (requiredCount) => {
+    return v.pipe(
+      v.object({
+        selectedArmada: v.array(v.any()),
+      }),
+      v.forward(
+        v.partialCheck(
+          [["selectedArmada"]],
+          (input) => {
+            if (input.selectedArmada.length < requiredCount) {
+              return false;
+            }
+            return true;
+          },
+          "Armada terpilih kurang dari kebutuhan"
+        ),
+        ["selectedArmada"]
+      ),
+      v.forward(
+        v.partialCheck(
+          [["selectedArmada"]],
+          (input) => {
+            if (input.selectedArmada.length > requiredCount) {
+              return false;
+            }
+            return true;
+          },
+          "Jumlah Armada Yang Kamu Pilih Melebihi Kebutuhan"
+        ),
+        ["selectedArmada"]
+      )
+    );
+  };
+
+  const {
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+    reset,
+    trigger,
+  } = useForm({
+    resolver: valibotResolver(createValidationSchema(totalUnitsNeeded)),
+    defaultValues: {
+      selectedArmada: [],
+    },
+  });
+
+  const selectedArmada = watch("selectedArmada") || [];
+
   const handleSelectArmada = (armadaId) => {
-    if (selectedArmada.includes(armadaId)) {
-      setSelectedArmada(selectedArmada.filter((id) => id !== armadaId));
-    } else if (selectedArmada.length < totalUnitsNeeded) {
-      setSelectedArmada([...selectedArmada, armadaId]);
+    const currentArmada = selectedArmada;
+    if (currentArmada.includes(armadaId)) {
+      setValue(
+        "selectedArmada",
+        currentArmada.filter((id) => id !== armadaId)
+      );
+    } else {
+      setValue("selectedArmada", [...currentArmada, armadaId]);
+    }
+    trigger("selectedArmada");
+  };
+
+  const onSubmit = async (data) => {
+    setIsSubmitting(true);
+    try {
+      console.log("Selected armada:", data.selectedArmada);
+      const orderCode = orderData?.orderCode || "MT25A002A";
+      toast.success(`Berhasil assign armada untuk pesanan ${orderCode}`);
+      handleClose();
+    } catch (error) {
+      console.error("Error assigning armada:", error);
+      toast.error("Gagal assign armada. Silakan coba lagi.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleSave = () => {
-    console.log("Selected armada:", selectedArmada);
-    const orderCode = orderData?.orderCode || "MT25A002A";
-    toast.success(`Berhasil assign armada untuk pesanan ${orderCode}`);
+  const handleSave = handleSubmit(onSubmit);
+
+  const handleClose = () => {
+    reset();
+    setSearchValue("");
+    setIsSubmitting(false);
     onClose();
   };
 
@@ -56,8 +132,14 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
     );
   });
 
+  const handleOpenChange = (open) => {
+    if (!open) {
+      handleClose();
+    }
+  };
+
   return (
-    <Modal open={isOpen} onOpenChange={onClose}>
+    <Modal open={isOpen} onOpenChange={handleOpenChange}>
       <ModalContent
         type="muatmuat"
         className="w-[90vw] max-w-[800px]"
@@ -211,6 +293,18 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
             </div>
           </div>
 
+          {/* Error Alert */}
+          {errors.selectedArmada && (
+            <div className="px-6">
+              <p
+                className="text-left text-xs font-medium leading-tight"
+                style={{ color: "#EE4343" }}
+              >
+                {errors.selectedArmada.message}
+              </p>
+            </div>
+          )}
+
           {/* Footer */}
           <div className="flex items-center justify-between px-6 pb-4">
             <p className="text-xs font-bold">
@@ -220,7 +314,8 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
             <div className="flex gap-3">
               <Button
                 variant="muattrans-primary-secondary"
-                onClick={onClose}
+                onClick={handleClose}
+                disabled={isSubmitting}
                 className="px-6"
               >
                 Kembali
@@ -228,7 +323,8 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
               <Button
                 variant="muattrans-primary"
                 onClick={handleSave}
-                disabled={selectedArmada.length !== totalUnitsNeeded}
+                disabled={isSubmitting || isLoading}
+                {...((isSubmitting || isLoading) && { loading: true })}
                 className="px-6"
               >
                 Simpan
