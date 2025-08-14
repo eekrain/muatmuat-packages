@@ -92,6 +92,16 @@ const cardBorderStyles = {
   scheduled: "border-warning-900",
 };
 
+const titleStyles = {
+  bertugas: "text-primary-700",
+  selesai: "text-neutral-600",
+  nonaktif: "text-neutral-900",
+  menunggu_jam_muat: "text-warning-900",
+  scheduled: "text-warning-900",
+};
+
+const LIST_SHOW_UBAH_BUTTON = ["bertugas", "scheduled", "menunggu_jam_muat"];
+
 /**
  * @typedef {Object} LocationData
  * @property {string} title - The title/label for the location (e.g., "Lokasi Muat", "Lokasi Bongkar")
@@ -123,7 +133,7 @@ export const CardItem = ({
   statusCode = "bertugas",
   driverName = "Ahmad Maulana",
   currentLocation = "Rest Area KM 50",
-  estimation = "est. 30km (1jam 30menit)",
+  estimation = "est. 30km (1jam 30menit ke titik bongkar)",
   distanceRemaining = 121,
   dataMuat = {
     title: "Lokasi Muat",
@@ -166,7 +176,9 @@ export const CardItem = ({
         style={{ width: `${scheduled * 205}px` }}
       >
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-primary-700">
+          <span
+            className={cn("text-xs font-semibold", titleStyles[statusCode])}
+          >
             {TitleEnum[statusCode]}
           </span>
           <Popover>
@@ -233,18 +245,20 @@ export const CardItem = ({
         style={{ width: `${additional * 205}px` }}
       >
         <div className="relative h-full w-full">
-          <button
-            onClick={() => alert("Handle Ubah Estimasi Waktu Bongkar")}
-            className="absolute right-0 top-0 flex items-baseline gap-1 text-[8px] text-primary-700"
-          >
-            <span>Ubah</span>
-            <IconComponent
-              src="/icons/pencil-outline.svg"
-              width={10}
-              height={10}
-              className="mt-0.5"
-            />
-          </button>
+          {LIST_SHOW_UBAH_BUTTON.includes(statusCode) && (
+            <button
+              onClick={() => alert("Handle Ubah Estimasi Waktu Bongkar")}
+              className="absolute right-0 top-0 flex items-baseline gap-1 text-[8px] text-primary-700"
+            >
+              <span>Ubah</span>
+              <IconComponent
+                src="/icons/pencil-outline.svg"
+                width={10}
+                height={10}
+                className="mt-0.5"
+              />
+            </button>
+          )}
 
           {statusCode === "bertugas" && (
             <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[8px] font-medium text-neutral-500">

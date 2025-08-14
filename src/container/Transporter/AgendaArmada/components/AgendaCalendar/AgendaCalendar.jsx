@@ -116,7 +116,7 @@ const mockData = [
         },
         scheduled: 2,
         additional: 1,
-        position: 0,
+        position: -2,
       },
     ],
   },
@@ -128,7 +128,7 @@ const mockData = [
         statusCode: "selesai",
         driverName: "Siti Rahmawati",
         currentLocation: "Garasi Pool Kendaraan",
-        estimation: "Tidak aktif",
+        estimation: null,
         distanceRemaining: 0,
         dataMuat: {
           title: "Depo Kontainer",
