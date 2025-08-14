@@ -63,7 +63,7 @@ export const mockUrgentIssueList = {
           },
         },
         {
-          id: "ui-001",
+          id: "ui-002",
           issue_type: "LATE_TO_LOAD",
           typeName: "Armada Tidak Menuju Lokasi",
           status: "NEW",
@@ -90,7 +90,7 @@ export const mockUrgentIssueList = {
           },
         },
         {
-          id: "ui-001",
+          id: "ui-003",
           issue_type: "LATE_TO_LOAD",
           typeName: "Armada Tidak Siap Untuk Muat",
           status: "NEW",

@@ -116,7 +116,6 @@ const TransportRequestCard = ({
       <div
         className={cn(
           "overflow-hidden rounded-[8px] border border-[#C4C4C4] bg-white shadow-sm",
-          request.isNew && "border-warning-400",
           request.isTaken && "brightness-95 grayscale"
         )}
       >
@@ -506,7 +505,7 @@ const TransportRequestCard = ({
             <div className="flex items-center gap-1">
               <div className="flex h-4 w-4 items-center justify-center rounded-full bg-red-100">
                 <IconComponent
-                  src="/icons/bookmark-filled.svg"
+                  src="/icons/bookmark-fill.svg"
                   className="h-3 w-3 text-red-500"
                 />
               </div>
