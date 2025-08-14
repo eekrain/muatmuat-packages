@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
-import { Clock3, MapPin, MoreVertical } from "lucide-react";
+import { Clock3, MapPin } from "lucide-react";
 
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
