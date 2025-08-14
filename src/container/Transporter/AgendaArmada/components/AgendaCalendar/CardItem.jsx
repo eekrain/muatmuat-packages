@@ -1,7 +1,64 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/Popover/Popover";
+import PopoverAgenda from "@/components/PopoverAgenda/PopoverAgenda";
 import { cn } from "@/lib/utils";
 
 import LocationPoint from "./LocationPoint";
+
+// Map CardItem status to PopoverAgenda status
+const statusMapping = {
+  bertugas: "Bertugas",
+  selesai: "Pengiriman Selesai",
+  nonaktif: "Non Aktif",
+  menunggu_jam_muat: "Menunggu Jam Muat",
+  scheduled: "Dijadwalkan",
+};
+
+// Transform CardItem data to PopoverAgenda format
+const transformToAgendaData = (cardProps) => {
+  return {
+    status: statusMapping[cardProps.statusCode],
+    startDate: "02 Jan 2025 11:00 WIB", // Default values - should come from props
+    endDate: "02 Jan 2025 15:00 WIB",
+    invoice: "INV/MTR/120125/0002",
+    SOS: {
+      reason: "Muatan perlu dipindah",
+      active: false,
+    },
+    items: [
+      { name: "Semen", weight: "250 kg" },
+      { name: "Paku", weight: "50 kg" },
+      { name: "Cat Tembok", weight: "100 kg" },
+      { name: "Pipa PVC", weight: "50 kg" },
+      { name: "Keramik", weight: "50 kg" },
+    ],
+    name: cardProps.driverName,
+    phone: "0821208991231",
+    vehicle: "Colt Diesel Engkel - Box",
+    licensePlate: "L 9812 AX",
+    location: cardProps.currentLocation,
+    estimatedDistance: cardProps.estimation,
+    route: {
+      pickup: {
+        city:
+          cardProps.dataMuat.subtitle.split(",")[0] ||
+          cardProps.dataMuat.subtitle,
+        district: cardProps.dataMuat.subtitle.split(",")[1]?.trim() || "",
+      },
+      delivery: {
+        city:
+          cardProps.dataBongkar.subtitle.split(",")[0] ||
+          cardProps.dataBongkar.subtitle,
+        district: cardProps.dataBongkar.subtitle.split(",")[1]?.trim() || "",
+      },
+      estimatedDistance: `Est. ${cardProps.distanceRemaining} km`,
+    },
+  };
+};
 
 const TitleEnum = {
   bertugas: "Bertugas",
@@ -80,6 +137,16 @@ export const CardItem = ({
   additional = 1,
   position = 0,
 }) => {
+  const agendaData = transformToAgendaData({
+    statusCode,
+    driverName,
+    currentLocation,
+    estimation,
+    distanceRemaining,
+    dataMuat,
+    dataBongkar,
+  });
+
   return (
     <div
       className={cn(
@@ -102,7 +169,19 @@ export const CardItem = ({
           <span className="text-xs font-semibold text-primary-700">
             {TitleEnum[statusCode]}
           </span>
-          <IconComponent src="/icons/info16.svg" className="text-neutral-700" />
+          <Popover>
+            <PopoverTrigger asChild>
+              <button>
+                <IconComponent
+                  src="/icons/info16.svg"
+                  className="text-neutral-700"
+                />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="p-0">
+              <PopoverAgenda agendaData={agendaData} />
+            </PopoverContent>
+          </Popover>
         </div>
 
         <span className="text-xxs font-bold text-neutral-900">
