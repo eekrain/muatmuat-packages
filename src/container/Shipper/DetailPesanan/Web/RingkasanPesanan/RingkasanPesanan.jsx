@@ -9,6 +9,8 @@ import {
   LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
+import { Modal, ModalContent } from "@/components/Modal";
+import { ModalTrigger } from "@/components/Modal/Modal";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import { formatDate } from "@/lib/utils/dateFormat";
 
@@ -125,7 +127,7 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
 
         <SectionRow label="Informasi Muatan">
           <div className="flex flex-col gap-2">
-            {dataRingkasanPesanan?.cargos?.map((item, index) => (
+            {dataRingkasanPesanan?.cargos?.slice(0, 3).map((item, index) => (
               <div key={index} className="flex items-center gap-3">
                 <IconComponent
                   src="/icons/muatan16.svg"
@@ -137,6 +139,37 @@ const RingkasanPesanan = ({ dataRingkasanPesanan }) => {
                 </p>
               </div>
             ))}
+            <Modal closeOnOutsideClick>
+              {/* 25. 18 - Web - LB - 0085 */}
+              {dataRingkasanPesanan?.cargos?.length >= 4 ? (
+                <ModalTrigger>
+                  <button className="text-start text-xs font-medium leading-[14.4px] text-primary-700">
+                    Lihat Informasi Muatan Lainnya
+                  </button>
+                </ModalTrigger>
+              ) : null}
+              <ModalContent>
+                <div className="flex flex-col gap-y-3 p-6">
+                  {/* Header */}
+                  <h2 className="text-center text-base font-bold leading-[19.2px] text-neutral-900">
+                    Informasi Muatan
+                  </h2>
+                  <div className="flex w-[600px] flex-col items-start gap-2 rounded-xl border border-neutral-400 px-4 py-5">
+                    {dataRingkasanPesanan.cargos.map((item, index) => (
+                      <div
+                        key={index}
+                        className="flex w-full flex-row items-center gap-2"
+                      >
+                        <IconComponent src="/icons/muatan16.svg" />
+                        <span className="capsize text-xs font-medium leading-[14.4px] text-neutral-900">
+                          {item.name} ({item.weight} {item.weightUnit})
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </ModalContent>
+            </Modal>
           </div>
         </SectionRow>
 
