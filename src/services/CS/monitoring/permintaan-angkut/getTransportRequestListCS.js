@@ -18,15 +18,73 @@ const apiResultTransportRequestList = {
   Data: {
     requests: [
       {
+        id: "uuid", // [dbt_mt_order.id]
+        orderCode: "MT-2025-001", // [dbt_mt_order.orderCode]
+        shipperInfo: {
+          id: "uuid", // [dbt_mt_order.userID]
+          name: "PT Shipper ABC", // [dbm_mt_user.fullName]
+          logo: "https://cdn.example.com/logo.jpg", // [dbm_mt_user.profileImage]
+          createdAt: "2025-01-15T10:30:00Z", // [dbt_mt_order.createdAt]
+        },
+
+        orderType: "INSTANT",
+        loadTimeStart: "2025-01-16T09:00:00Z",
+        loadTimeEnd: "2025-01-16T11:00:00Z",
+        timeLabels: {
+          category: "MUAT_HARI_INI",
+          display: "Muat Hari Ini",
+          color: "green",
+          countdown: "02:30:45",
+        },
+        pickupLocations: [
+          {
+            fullAddress: "Jl. Raya No. 1, Jakarta Selatan",
+            city: "Jakarta Selatan",
+            province: "DKI Jakarta",
+          },
+        ],
+        dropoffLocations: [
+          {
+            fullAddress: "Jl. Merdeka No. 99, Bandung",
+            city: "Bandung",
+            province: "Jawa Barat",
+          },
+        ],
+        estimatedDistance: 150.5,
+        cargos: [
+          {
+            name: "Peralatan Rumah Tangga",
+            weight: 1500,
+            weightUnit: "kg",
+            dimensions: "200x100x80 cm",
+          },
+        ],
+        totalPrice: 2500000,
+        transportFee: 2000000,
+        isHalalLogistics: false,
+        hasOverload: false,
+        requestAttempt: 1,
+        lastViewedAt: "2025-01-15T14:20:00Z",
+        lastSavedAt: "2025-01-15T13:45:00Z",
+        isSaved: false,
+        isNew: true,
+        truckTypeName: "Fuso",
+        carrierName: "Agam Tunggal Jaya",
+        truckCount: 2,
+        loadDateTime: "16 Jan 2025 09:00 WIB s/d 11:00 WIB",
+        potentialEarnings: "Rp2.500.000",
+        orderStatus: "PREPARE_FLEET",
+      },
+      {
         id: "uuid-1",
-        orderCode: "MT-2025-001",
+        orderCode: "MT25A001A",
         shipperInfo: {
           id: "shipper-1",
           name: "PT Shipper ABC",
           logo: "https://cdn.example.com/logo.jpg",
           createdAt: "2025-01-15T10:30:00Z",
         },
-        orderType: "INSTANT",
+        orderType: "SCHEDULED",
         loadTimeStart: "2025-01-16T09:00:00Z",
         loadTimeEnd: "2025-01-16T11:00:00Z",
         timeLabels: {
@@ -83,8 +141,8 @@ const apiResultTransportRequestList = {
       hasPrevious: false,
     },
     tabCounters: {
-      all: 97,
-      instant: 45,
+      all: 150,
+      instant: 150,
       scheduled: 42,
       halal: 10,
     },
@@ -224,8 +282,8 @@ export const fetcherTransportRequestList = async (params = {}) => {
 
   const queryString = queryParams.toString();
   const endpoint = queryString
-    ? `v1/transport-requests?${queryString}`
-    : "v1/transport-requests";
+    ? `/v1/cs-requests?${queryString}`
+    : "/v1/cs-requests";
 
   const result = await fetcherMuatrans.get(endpoint);
   return result?.data?.Data || {};
@@ -233,8 +291,8 @@ export const fetcherTransportRequestList = async (params = {}) => {
 
 export const useGetTransportRequestList = (params = {}) => {
   const cacheKey = params
-    ? `transport-request-list-${JSON.stringify(params)}`
-    : "transport-request-list";
+    ? `cs-request-list-${JSON.stringify(params)}`
+    : "cs-request-list";
   return useSWR(cacheKey, () => fetcherTransportRequestList(params));
 };
 

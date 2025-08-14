@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import {
   useGetUrgentIssueCount,
@@ -24,10 +25,14 @@ const RequestList = ({
   openDetails,
   toggleDetail,
 }) => {
+  const { t } = useTranslation();
+
   if (isLoading) {
     return (
       <div className="py-8">
-        <div className="text-center text-neutral-500">Memuat...</div>
+        <div className="text-center text-neutral-500">
+          {t("UrgentIssue.messageLoading", {}, "Memuat...")}
+        </div>
       </div>
     );
   }
@@ -47,12 +52,24 @@ const RequestList = ({
       <div className="h-full py-8">
         <DataNotFound className="h-full gap-y-5 pb-10" type="data">
           <p className="text-center text-base font-semibold text-neutral-600">
-            Belum ada laporan urgent issue{" "}
+            {t(
+              "UrgentIssue.messageNoReports",
+              {},
+              "Belum ada laporan urgent issue"
+            )}{" "}
             {status === "baru"
-              ? "baru"
+              ? t("UrgentIssue.messageNoReportsNew", {}, "baru")
               : status === "proses"
-                ? "sudah diproses"
-                : "yang diselesaikan"}
+                ? t(
+                    "UrgentIssue.messageNoReportsProcessing",
+                    {},
+                    "sudah diproses"
+                  )
+                : t(
+                    "UrgentIssue.messageNoReportsCompleted",
+                    {},
+                    "yang diselesaikan"
+                  )}
           </p>
         </DataNotFound>
       </div>
@@ -75,6 +92,7 @@ const RequestList = ({
 };
 
 const UrgentIssue = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("baru");
   const [openDetails, setOpenDetails] = useState([]);
   const [filters, setFilters] = useState({});
@@ -120,27 +138,67 @@ const UrgentIssue = () => {
     categories: [
       {
         key: "status",
-        label: "Status",
+        label: t("UrgentIssue.filterStatus", {}, "Status"),
         searchable: true,
       },
       {
         key: "vehicleType",
-        label: "Jenis Kendaraan",
+        label: t("UrgentIssue.filterVehicleType", {}, "Jenis Kendaraan"),
         searchable: true,
       },
     ],
     data: {
       status: [
-        { id: "scheduled", label: "Dijadwalkan" },
-        { id: "waiting", label: "Menunggu Jam Muat" },
-        { id: "on_duty", label: "Bertugas" },
-        { id: "completed", label: "Pengiriman Selesai" },
-        { id: "inactive", label: "Non - Aktif" },
+        {
+          id: "scheduled",
+          label: t("UrgentIssue.filterStatusScheduled", {}, "Dijadwalkan"),
+        },
+        {
+          id: "waiting",
+          label: t("UrgentIssue.filterStatusWaiting", {}, "Menunggu Jam Muat"),
+        },
+        {
+          id: "on_duty",
+          label: t("UrgentIssue.filterStatusOnDuty", {}, "Bertugas"),
+        },
+        {
+          id: "completed",
+          label: t(
+            "UrgentIssue.filterStatusCompleted",
+            {},
+            "Pengiriman Selesai"
+          ),
+        },
+        {
+          id: "inactive",
+          label: t("UrgentIssue.filterStatusInactive", {}, "Non - Aktif"),
+        },
       ],
       vehicleType: [
-        { id: "truck", label: "Medium Truk 6x2 - Tangki" },
-        { id: "colt", label: "Colt Diesel Double - Bak Terbuka" },
-        { id: "dump", label: "Colt Diesel Double - Dump" },
+        {
+          id: "truck",
+          label: t(
+            "UrgentIssue.filterVehicleTypeTruck",
+            {},
+            "Medium Truk 6x2 - Tangki"
+          ),
+        },
+        {
+          id: "colt",
+          label: t(
+            "UrgentIssue.filterVehicleTypeColt",
+            {},
+            "Colt Diesel Double - Bak Terbuka"
+          ),
+        },
+        {
+          id: "dump",
+          label: t(
+            "UrgentIssue.filterVehicleTypeDump",
+            {},
+            "Colt Diesel Double - Dump"
+          ),
+        },
       ],
     },
   };
@@ -149,7 +207,7 @@ const UrgentIssue = () => {
     <div className="flex h-[calc(100vh-92px-48px)] min-h-0 flex-col">
       <div className="flex-shrink-0 bg-white px-4 py-6">
         <h1 className="mb-4 text-base font-bold text-neutral-900">
-          Laporan Urgent Issue
+          {t("UrgentIssue.titleUrgentIssueReport", {}, "Laporan Urgent Issue")}
         </h1>
         <div
           className={cn(
@@ -159,10 +217,19 @@ const UrgentIssue = () => {
           <IconComponent src="/icons/warning-red.svg" className="h-4 w-4" />
           <div className="flex flex-col">
             <span className={cn("text-xs font-semibold text-error-400")}>
-              2 Laporan Urgent Issue Melewati Batas Waktu
+              {t(
+                "UrgentIssue.alertOverdueReports",
+                {},
+                "{count} Laporan Urgent Issue Melewati Batas Waktu",
+                { count: 2 }
+              )}
             </span>
             <span className="text-[10px] font-medium text-neutral-900">
-              Segera hubungi Transporter terkait untuk penyelesaian laporan.
+              {t(
+                "UrgentIssue.alertOverdueReportsAction",
+                {},
+                "Segera hubungi Transporter terkait untuk penyelesaian laporan."
+              )}
             </span>
           </div>
         </div>
@@ -176,7 +243,7 @@ const UrgentIssue = () => {
                   : "border border-neutral-200 bg-neutral-200 text-neutral-900"
               }`}
             >
-              Baru (
+              {t("UrgentIssue.tabNew", {}, "Baru")} (
               {isCountLoading
                 ? "-"
                 : (count?.new ?? 0) > 99
@@ -192,7 +259,7 @@ const UrgentIssue = () => {
                   : "border border-neutral-200 bg-neutral-200 text-neutral-900"
               }`}
             >
-              Proses (
+              {t("UrgentIssue.tabProcessing", {}, "Proses")} (
               {isCountLoading
                 ? "-"
                 : (count?.processing ?? 0) > 99
@@ -208,7 +275,7 @@ const UrgentIssue = () => {
                   : "border border-neutral-200 bg-neutral-200 text-neutral-900"
               }`}
             >
-              Selesai (
+              {t("UrgentIssue.tabCompleted", {}, "Selesai")} (
               {isCountLoading
                 ? "-"
                 : (count?.completed ?? 0) > 99
@@ -221,24 +288,6 @@ const UrgentIssue = () => {
             onApplyFilter={handleFilter}
             filterCounts={filters}
           />
-          {/* <ConfirmationModal
-            isOpen={true}
-            setIsOpen={setRangeDateModal}
-            title={{
-              text: "Batalkan Armada",
-              className: "text-base font-bold text-center",
-            }}
-            description={{
-              text: "Maaf, kamu belum memiliki akses. Pembatalan Armada maupun Pesanan hanya bisa dilakukan oleh akses sebagai GM.",
-              className: "font-medium text-neutral-900 leading-tight",
-            }}
-            confirm={{
-              text: "Oke",
-              onClick: () => { },
-            }}
-            withCancel={false}
-          >
-          </ConfirmationModal> */}
         </div>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto bg-white px-4">
