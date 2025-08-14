@@ -22,11 +22,11 @@ const defaultMapOptions = {
 
 // Badge style classes
 const badgeClasses = {
-  base: "flex flex-col items-center px-1 py-1",
+  base: "flex h-5 flex-row items-center px-1 py-1",
   licensePlate: "gap-1 bg-muat-trans-secondary-700",
-  sos: "gap-1 bg-error-400 justify-center",
-  warning: "gap-0.5 bg-warning-100 justify-center",
-  text: "text-[8px] font-bold leading-[130%] text-white line-clamp-1 break-all",
+  sos: "gap-1 bg-error-400",
+  warning: "gap-0.5 bg-warning-100",
+  text: "text-[8px] font-bold leading-[130%] text-white",
 };
 
 // Truck Marker Component - Memoized to prevent unnecessary re-renders
@@ -92,7 +92,7 @@ const TruckMarker = memo(({ marker, showLicensePlate }) => {
       {/* Label positioned at 2 o'clock from center - outside rotation */}
       {(showLicensePlate || hasAlerts || isHovered) && (
         <div
-          className="pointer-events-auto absolute flex flex-row items-stretch"
+          className="pointer-events-auto absolute flex h-5 flex-row items-center"
           style={{
             top: "50%",
             left: "50%",
@@ -108,17 +108,13 @@ const TruckMarker = memo(({ marker, showLicensePlate }) => {
               className={cn(
                 badgeClasses.base,
                 badgeClasses.licensePlate,
-                badgeClasses.text,
                 hasAlerts ? "rounded-l" : "rounded",
-                "pointer-events-auto flex-1"
+                "pointer-events-auto"
               )}
             >
               <span className={cn(badgeClasses.text, "whitespace-nowrap")}>
                 {marker.fleet?.licensePlate || marker.title}
               </span>
-              <p className="text-neutral-200">
-                PT Truk Jaya Abadi Selalu Selamanya
-              </p>
             </div>
           )}
 
@@ -128,9 +124,8 @@ const TruckMarker = memo(({ marker, showLicensePlate }) => {
               className={cn(
                 badgeClasses.base,
                 badgeClasses.sos,
-                badgeClasses.text,
                 marker.fleet?.needsResponseChange ? "" : "rounded-r",
-                "pointer-events-auto flex items-center"
+                "pointer-events-auto"
               )}
             >
               <span className={badgeClasses.text}>SOS</span>
@@ -173,6 +168,7 @@ export const MapMonitoring = ({
   onMapDrag,
   onMapZoom,
   onMapCenterChange,
+  Marker = TruckMarker,
 }) => {
   // All hooks must be called in the same order every render
   const { isLoaded, loadError } = useLoadScript({
@@ -309,7 +305,7 @@ export const MapMonitoring = ({
             mapPaneName="floatPane"
             getPixelPositionOffset={getPixelPositionOffset}
           >
-            <TruckMarker marker={marker} showLicensePlate={showLicensePlate} />
+            <Marker marker={marker} showLicensePlate={showLicensePlate} />
           </OverlayViewF>
         ))}
       </GoogleMap>

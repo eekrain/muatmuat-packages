@@ -105,7 +105,6 @@ const DaftarArmada = ({
   };
 
   const handleRespondToChange = () => {
-    // TODO: Implement actual response logic
     console.log("Responding to change for fleet:", selectedFleetForResponse);
     setShowResponseChangeModal(false);
     setSelectedFleetForResponse(null);

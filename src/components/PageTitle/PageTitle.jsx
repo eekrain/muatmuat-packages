@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
+import IconComponent from "@/components/IconComponent/IconComponent";
 import { cn } from "@/lib/utils";
 
 const PageTitle = ({
@@ -26,13 +27,11 @@ const PageTitle = ({
   return (
     <div className={cn("mb-4 flex items-center gap-3", className)}>
       {withBack && (
-        <img
-          src="/icons/arrow-left24.svg"
-          width={24}
-          height={24}
-          className="cursor-pointer"
-          alt="Back"
+        <IconComponent
           onClick={handleBackClick}
+          src="/icons/arrow-left24.svg"
+          size="medium"
+          className="text-primary-700"
         />
       )}
       <h1 className="capsize text-xl font-bold">{children}</h1>

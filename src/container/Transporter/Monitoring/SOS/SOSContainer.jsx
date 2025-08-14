@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { AlertTriangle, Loader2, X } from "lucide-react";
 
@@ -8,106 +8,55 @@ import CardFleet from "@/components/Card/CardFleet";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import Search from "@/components/Search/Search";
-// PAKAI HOOK SOS BARU
-import {
-  acknowledgeSos,
-  useGetSosList,
-} from "@/services/Transporter/monitoring/getSosList";
+// acknowledgeSos mungkin masih relevan
+import { useGetFleetList } from "@/services/Transporter/monitoring/getFleetList";
+import { acknowledgeSos } from "@/services/Transporter/monitoring/getSosList";
+
+// Ganti dengan hook baru
 
 import { DriverSelectionModal } from "../../Driver/DriverSelectionModal";
-
-// --- helper: mapping order status -> truck status icon (opsional, buat ikon tidak default)
-const mapOrderStatusToFleetStatus = (orderStatus) => {
-  if (!orderStatus) return undefined;
-  const s = String(orderStatus).toUpperCase();
-  // sesuaikan dengan util getTruckIcon kamu
-  if (s === "LOADING" || s === "ON_THE_WAY") return "ON_DUTY";
-  return "READY_FOR_ORDER";
-};
-
-// --- adapter: ubah shape data SOS -> shape yang CardFleet harapkan
-const mapSosToCardFleet = (sos) => ({
-  fleetId: sos.fleetId,
-  licensePlate: sos.licensePlate,
-  status: mapOrderStatusToFleetStatus(sos?.orderInfo?.orderStatus),
-
-  driver: { name: sos.driverName, phoneNumber: sos.driverPhone },
-
-  lastLocation: {
-    address: {
-      fullAddress: sos?.lastLocation?.address || "",
-      district: sos?.lastLocation?.district || "",
-      city: sos?.lastLocation?.city || "",
-    },
-  },
-
-  truckType: { name: sos.truckType || "-" },
-  carrierType: { name: sos.carrierType || "-" },
-
-  // tambahkan sosId & sosStatus agar CardFleet bisa kontrol tombol
-  detailSOS: {
-    sosId: sos.id,
-    sosStatus: sos.status, // "NEW" | "ACKNOWLEDGED"
-    sosCategory: sos.categoryName,
-    description: sos.description,
-    photos: sos.photos || [],
-    reportAt: sos.reportedAt,
-  },
-
-  activeOrder: {
-    orderCode: sos.orderCode,
-    pickupLocation: sos?.orderInfo?.pickupLocation,
-    dropoffLocation: sos?.orderInfo?.dropoffLocation,
-  },
-
-  needsResponseChange: false,
-  hasSOSAlert: true,
-});
-
-// handler klik “Mengerti”
-const handleAcknowledge = async (fleet) => {
-  try {
-    const sosId = fleet?.detailSOS?.sosId;
-    if (!sosId) return;
-    await acknowledgeSos(sosId);
-    // refresh list agar status jadi ACKNOWLEDGED -> tombol mengerti hilang
-    // await refetchSos();
-  } catch (e) {
-    console.error(e);
-    // opsional: tampilkan toast error
-  }
-};
 
 const SOSContainer = ({ onClose, onExpand }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedId, setExpandedId] = useState(null);
   const [showDriverModal, setShowDriverModal] = useState(false);
   const [selectedFleet, setSelectedFleet] = useState(null);
-  const [activeTab, setActiveTab] = useState("sos"); // 'sos' | 'all' (untuk sekarang keduanya pakai data yang sama)
+  const [activeTab, setActiveTab] = useState("sos"); // 'sos' | 'all'
 
-  // Ambil data SOS (mock sudah support filter search/status)
+  // 1. Ganti hook useGetSosList dengan useGetFleetList
   const {
-    data,
+    data: fleetData,
     isLoading,
     error,
-    mutate: refetchSos,
-  } = useGetSosList({
-    search: searchTerm, // biar mock ikut filter juga
-    // status: ['NEW', 'ACKNOWLEDGED'] // kalau mau filter status tertentu
+    mutate: refetchFleetList,
+  } = useGetFleetList({
+    search: searchTerm,
     page: 1,
     pageSize: 50,
+    // Di API production, mungkin ada parameter seperti `hasAlert: true`
+    // untuk efisiensi. Untuk saat ini, filter dilakukan di client-side.
   });
 
-  // Normalisasi data ke shape CardFleet
-  const sosListRaw = data?.sosList || [];
-  const sosCardItems = useMemo(
-    () => sosListRaw.map(mapSosToCardFleet),
-    [sosListRaw]
+  // 2. Proses data dari useGetFleetList, tidak perlu adapter lagi
+  const allFleetsWithSos = useMemo(
+    () => (fleetData?.fleets || []).filter((fleet) => fleet.hasSOSAlert),
+    [fleetData?.fleets]
   );
 
-  // Tab "Riwayat" sementara pakai data yang sama (nanti tinggal ganti kalau endpoint riwayat siap)
-  const allHistoryItems = sosCardItems;
+  // 3. Pisahkan data untuk tab 'SOS' (baru) dan 'Riwayat' (sudah ditangani)
+  const activeSosItems = useMemo(
+    () =>
+      allFleetsWithSos.filter((fleet) => fleet.detailSOS?.sosStatus === "NEW"),
+    [allFleetsWithSos]
+  );
 
+  const historySosItems = useMemo(
+    () =>
+      allFleetsWithSos.filter((fleet) => fleet.detailSOS?.sosStatus !== "NEW"),
+    [allFleetsWithSos]
+  );
+
+  // Fungsi filter berdasarkan pencarian
   const filterFn = (fleet) =>
     (fleet.licensePlate || "")
       .toLowerCase()
@@ -116,12 +65,12 @@ const SOSContainer = ({ onClose, onExpand }) => {
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
 
-  const filteredSosData = sosCardItems.filter(filterFn);
-  const filteredHistoryData = allHistoryItems.filter(filterFn);
+  const filteredSosData = activeSosItems.filter(filterFn);
+  const filteredHistoryData = historySosItems.filter(filterFn);
 
   const dataToDisplay =
     activeTab === "sos" ? filteredSosData : filteredHistoryData;
-  const totalSos = sosCardItems.length;
+  const totalActiveSos = activeSosItems.length;
 
   const toggleExpanded = (id) => {
     setExpandedId((prev) => {
@@ -137,10 +86,27 @@ const SOSContainer = ({ onClose, onExpand }) => {
   };
 
   const handleDriverSelectionSuccess = () => {
-    refetchSos();
+    refetchFleetList();
     setShowDriverModal(false);
     setSelectedFleet(null);
   };
+
+  // 4. Pindahkan handler ke dalam komponen agar bisa akses `refetchFleetList`
+  const handleAcknowledge = useCallback(
+    async (fleet) => {
+      try {
+        const sosId = fleet?.detailSOS?.sosId;
+        if (!sosId) return;
+        await acknowledgeSos(sosId);
+        // Refresh list agar status jadi ACKNOWLEDGED -> tombol mengerti hilang
+        await refetchFleetList();
+      } catch (e) {
+        console.error(e);
+        // opsional: tampilkan toast error
+      }
+    },
+    [refetchFleetList]
+  );
 
   return (
     <div className="flex h-[calc(100vh-92px-96px)] flex-col rounded-xl bg-white pt-4">
@@ -149,8 +115,8 @@ const SOSContainer = ({ onClose, onExpand }) => {
         <div className="flex items-center justify-between pb-3">
           <h2 className="text-[14px] font-bold text-gray-900">
             SOS{" "}
-            {totalSos > 0 ? (
-              <span className="font-semibold">({totalSos} Armada)</span>
+            {totalActiveSos > 0 ? (
+              <span className="font-semibold">({totalActiveSos} Armada)</span>
             ) : (
               <span className="font-semibold">(Belum Ada Laporan)</span>
             )}
@@ -183,8 +149,8 @@ const SOSContainer = ({ onClose, onExpand }) => {
           }`}
           onClick={() => setActiveTab("sos")}
         >
-          SOS ({sosCardItems.length})
-          {sosCardItems.length > 0 && (
+          SOS ({activeSosItems.length})
+          {activeSosItems.length > 0 && (
             <NotificationDot
               size="sm"
               color="red"
@@ -202,7 +168,7 @@ const SOSContainer = ({ onClose, onExpand }) => {
           }`}
           onClick={() => setActiveTab("all")}
         >
-          Riwayat ({allHistoryItems.length})
+          Riwayat ({historySosItems.length})
         </button>
       </div>
 
@@ -228,7 +194,7 @@ const SOSContainer = ({ onClose, onExpand }) => {
             {dataToDisplay.map((fleet) => (
               <CardFleet
                 key={fleet.fleetId}
-                fleet={fleet}
+                fleet={fleet} // Data fleet sudah sesuai dengan props CardFleet
                 isExpanded={expandedId === fleet.fleetId}
                 onToggleExpand={toggleExpanded}
                 onOpenDriverModal={handleOpenDriverModal}

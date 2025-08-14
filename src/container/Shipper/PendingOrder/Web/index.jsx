@@ -32,6 +32,7 @@ const PendingOrderWeb = ({
             onClick={() => router.back()}
             src="/icons/arrow-left24.svg"
             size="medium"
+            className="text-primary-700"
           />
           <h1 className="text-xl font-bold leading-[24px] text-neutral-900">
             {title}

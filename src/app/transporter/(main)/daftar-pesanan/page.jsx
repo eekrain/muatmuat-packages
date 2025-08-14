@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { TagBubble } from "@/components/Badge/TagBubble";
 import Button from "@/components/Button/Button";
