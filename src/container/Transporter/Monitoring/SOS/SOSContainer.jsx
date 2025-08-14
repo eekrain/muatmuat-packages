@@ -8,11 +8,8 @@ import CardFleet from "@/components/Card/CardFleet";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import Search from "@/components/Search/Search";
-// acknowledgeSos mungkin masih relevan
 import { useGetFleetList } from "@/services/Transporter/monitoring/getFleetList";
 import { acknowledgeSos } from "@/services/Transporter/monitoring/getSosList";
-
-// Ganti dengan hook baru
 
 import { DriverSelectionModal } from "../../Driver/DriverSelectionModal";
 
