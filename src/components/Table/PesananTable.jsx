@@ -73,7 +73,7 @@ const PesananTable = ({
   );
 
   const handleSearch = (e) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && tempSearch.length >= 3) {
       onChangeQueryParams("search", tempSearch);
     }
   };
