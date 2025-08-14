@@ -206,7 +206,7 @@ const PopoverAgenda = ({ agendaData }) => {
                   <div className="size-3 rounded-full border-4 border-[#461B02] bg-white" />
 
                   <div>
-                    <p className="text-xs font-medium text-neutral-500">
+                    <p className="text-xxs font-medium text-neutral-500">
                       Lokasi Bongkar
                     </p>
                     <p className="line-clamp-1 font-semibold text-neutral-900">
