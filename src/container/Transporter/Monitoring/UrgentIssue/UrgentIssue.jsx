@@ -7,7 +7,7 @@ import {
   useGetUrgentIssueList,
 } from "@/services/Transporter/monitoring/getUrgentIssues";
 
-import { UrgentIssueCard } from "./components/UrgentIssueCard";
+import { UrgentIssueCardTransporter } from "./components/UrgentIssueCard";
 
 const statusMap = {
   baru: "new",
@@ -76,7 +76,7 @@ const RequestList = ({
   return (
     <div className="space-y-4 pb-12">
       {filtered.map((item) => (
-        <UrgentIssueCard
+        <UrgentIssueCardTransporter
           key={item.id}
           data={item}
           statusTab={status}

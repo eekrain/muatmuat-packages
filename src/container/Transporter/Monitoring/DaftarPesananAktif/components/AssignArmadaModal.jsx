@@ -13,6 +13,7 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
 import Search from "@/components/Search/Search";
+import SearchNotFound from "@/components/SearchNotFound/SearchNotFound";
 import { toast } from "@/lib/toast";
 import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
 import { useGetAvailableVehiclesList } from "@/services/Transporter/monitoring/daftar-pesanan-active/getAvailableVehiclesList";
@@ -168,7 +169,7 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
             </div>
 
             {/* Armada List */}
-            <div className="max-h-[271px] overflow-y-auto rounded-lg border border-neutral-400">
+            <div className="h-[287px] overflow-y-auto rounded-lg border border-neutral-400">
               {isLoading ? (
                 <div className="flex h-32 items-center justify-center">
                   <span className="text-sm text-neutral-600">
@@ -176,12 +177,8 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
                   </span>
                 </div>
               ) : filteredVehicles.length === 0 ? (
-                <div className="flex h-32 items-center justify-center">
-                  <span className="text-sm text-neutral-600">
-                    {searchValue
-                      ? "Tidak ada armada yang sesuai pencarian"
-                      : "Tidak ada armada tersedia"}
-                  </span>
+                <div className="flex h-full items-center justify-center">
+                  <SearchNotFound className="py-0" />
                 </div>
               ) : (
                 filteredVehicles.map((vehicle, index) => (
