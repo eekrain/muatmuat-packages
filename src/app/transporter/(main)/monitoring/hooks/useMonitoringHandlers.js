@@ -161,6 +161,14 @@ export const useMonitoringHandlers = (
     panelsDispatch({ type: PANEL_ACTIONS.TOGGLE_BOTTOM_PANEL });
   }, [panelsDispatch]);
 
+  const handleOpenRiwayatSOS = useCallback(() => {
+    panelsDispatch({ type: PANEL_ACTIONS.SHOW_RIWAYAT_SOS });
+  }, [panelsDispatch]);
+
+  const handleCloseRiwayatSOS = useCallback(() => {
+    panelsDispatch({ type: PANEL_ACTIONS.HIDE_RIWAYAT_SOS });
+  }, [panelsDispatch]);
+
   return {
     handleOpenLeftPanel,
     handleOpenSOSPanel,
@@ -175,5 +183,7 @@ export const useMonitoringHandlers = (
     handleTruckClick,
     handleAcceptRequest,
     handleTogglePilihArmada,
+    handleOpenRiwayatSOS,
+    handleCloseRiwayatSOS,
   };
 };

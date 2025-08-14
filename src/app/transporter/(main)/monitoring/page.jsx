@@ -18,6 +18,7 @@ import DaftarPesananAktif from "@/container/Transporter/Monitoring/DaftarPesanan
 import LacakArmada from "@/container/Transporter/Monitoring/LacakArmada/LacakArmada";
 import PermintaanAngkut from "@/container/Transporter/Monitoring/PermintaanAngkut/PermintaanAngkut";
 import PilihArmada from "@/container/Transporter/Monitoring/PilihArmada/PilihArmada";
+import RiwayatLaporanSOS from "@/container/Transporter/Monitoring/RiwayatLaporanSOS/RiwayatLaporanSOS";
 import SOSContainer from "@/container/Transporter/Monitoring/SOS/SOSContainer";
 import UrgentIssue from "@/container/Transporter/Monitoring/UrgentIssue/UrgentIssue";
 import { cn } from "@/lib/utils";
@@ -93,6 +94,8 @@ const Page = () => {
     handleTruckClick,
     handleAcceptRequest,
     handleTogglePilihArmada,
+    handleOpenRiwayatSOS,
+    handleCloseRiwayatSOS,
   } = useMonitoringHandlers(dispatches, state, fleetLocationsData, addToast);
 
   // Map query param values to tab values
@@ -413,6 +416,7 @@ const Page = () => {
                     })
                   }
                   onFleetClick={handleFleetClickFromList}
+                  onOpenRiwayatSOS={handleOpenRiwayatSOS}
                 />
               )}
             </div>
@@ -427,7 +431,14 @@ const Page = () => {
                 : "calc(100vh - 100vh + 64px)",
             }}
           >
-            {panels.showPilihArmada ? (
+            {panels.showRiwayatSOS ? (
+              <RiwayatLaporanSOS
+                onToggleExpand={() => {
+                  panelsDispatch({ type: PANEL_ACTIONS.TOGGLE_BOTTOM_PANEL });
+                }}
+                isExpanded={panels.isBottomExpanded}
+              />
+            ) : panels.showPilihArmada ? (
               <PilihArmada
                 onToggleExpand={handleTogglePilihArmada}
                 isExpanded={panels.isBottomExpanded}

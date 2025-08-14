@@ -396,6 +396,7 @@ export default function CardFleet({
   onToggleExpand,
   onOpenDriverModal,
   onOpenResponseChangeModal,
+  onOpenRiwayatSOS,
   className,
   onAcknowledge,
 }) {
@@ -488,7 +489,7 @@ export default function CardFleet({
           <div className="flex justify-between gap-2">
             <Button
               variant="muattrans-primary-secondary"
-              onClick={(e) => handleActionClick(e, onOpenDriverModal)}
+              onClick={(e) => handleActionClick(e, onOpenRiwayatSOS)}
               className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-[#461B02] hover:border-[#FFC217] hover:bg-[#FFFBEB]"
             >
               Riwayat SOS
@@ -503,7 +504,7 @@ export default function CardFleet({
         ) : fleet?.hasSOSAlert ? (
           <button
             variant="muattrans-primary-secondary"
-            onClick={(e) => handleActionClick(e, onOpenDriverModal)}
+            onClick={(e) => handleActionClick(e, onOpenRiwayatSOS)}
             className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-[#461B02] hover:border-[#FFC217] hover:bg-[#FFFBEB]"
           >
             Riwayat SOS

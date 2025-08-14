@@ -11,6 +11,8 @@ export const PANEL_ACTIONS = {
   HIDE_LACAK_ARMADA: "HIDE_LACAK_ARMADA",
   SHOW_PILIH_ARMADA: "SHOW_PILIH_ARMADA",
   HIDE_PILIH_ARMADA: "HIDE_PILIH_ARMADA",
+  SHOW_RIWAYAT_SOS: "SHOW_RIWAYAT_SOS",
+  HIDE_RIWAYAT_SOS: "HIDE_RIWAYAT_SOS",
 };
 
 // Initial panels state
@@ -20,6 +22,7 @@ export const initialPanelsState = {
   leftPanelMode: "armada", // "armada" or "sos"
   showLacakArmada: false,
   showPilihArmada: false,
+  showRiwayatSOS: false,
   isFullscreen: false,
 };
 
@@ -98,6 +101,24 @@ export function panelsReducer(state = initialPanelsState, action) {
       return {
         ...state,
         showPilihArmada: false,
+        isBottomExpanded: true,
+        isFullscreen: false,
+      };
+
+    case PANEL_ACTIONS.SHOW_RIWAYAT_SOS:
+      return {
+        ...state,
+        showRiwayatSOS: true,
+        isBottomExpanded: true,
+        showPilihArmada: false,
+        isFullscreen: true,
+        showLeftPanel: false,
+      };
+
+    case PANEL_ACTIONS.HIDE_RIWAYAT_SOS:
+      return {
+        ...state,
+        showRiwayatSOS: false,
         isBottomExpanded: true,
         isFullscreen: false,
       };
