@@ -45,12 +45,14 @@ export const KeteranganStatusPesanan = ({ legendStatus }) => {
       >
         {legendStatus.stepperData.map((item) => (
           <div key={item.status} className="flex items-center gap-2">
-            <div className="relative flex h-6 w-6 items-center justify-center rounded-full border border-[#FFC217] bg-[#FFC217] transition-all duration-300">
+            <div
+              className={`relative flex h-6 w-6 items-center justify-center rounded-full border ${item.status.includes("CANCEL") ? "border-error-400 bg-error-400" : "border-[#FFC217] bg-[#FFC217]"} transition-all duration-300`}
+            >
               <IconComponent
                 src={item.icon}
                 width={16}
                 height={16}
-                className="text-muat-trans-primary-900"
+                className={`${item.status.includes("CANCEL") ? "text-white" : "text-muat-trans-primary-900"}`}
               />
             </div>
             <span className="text-xs font-semibold text-neutral-900">
