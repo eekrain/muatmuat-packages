@@ -33,42 +33,7 @@ const getStatusColor = (status, sos) => {
   }
 };
 
-const PopoverAgenda = ({
-  agendaData = {
-    status: enumStatus.ONDUTY,
-    startDate: "02 Jan 2025 11:00 WIB",
-    endDate: "02 Jan 2025 15:00 WIB",
-    invoice: "INV/MTR/120125/0002",
-    SOS: {
-      reason: "Muatan perlu dipindah",
-      active: true,
-    },
-    items: [
-      { name: "Semen", weight: "250 kg" },
-      { name: "Paku", weight: "50 kg" },
-      { name: "Cat Tembok", weight: "100 kg" },
-      { name: "Pipa PVC", weight: "50 kg" },
-      { name: "Keramik", weight: "50 kg" },
-    ],
-    name: "Bayu Sasmita",
-    phone: "0821208991231",
-    vehicle: "ColDijadwalkant Diesel Engkel - Box",
-    licensePlate: "L 9812 AX",
-    location: "Kota Surabayaoawdkoa",
-    estimatedDistance: "est. 30km (1jam 20menit ke titik muat)",
-    route: {
-      pickup: {
-        city: "Kota Surabaya",
-        district: "Kec. Tegalsari",
-      },
-      delivery: {
-        city: "Kab. Malang",
-        district: "Kec. Sines",
-      },
-      estimatedDistance: "Est. 121 km",
-    },
-  },
-}) => {
+const PopoverAgenda = ({ agendaData }) => {
   // Show only first 3 items, rest go to popover
   const visibleItems = agendaData.items.slice(0, 3);
   const hiddenItems = agendaData.items.slice(3);
