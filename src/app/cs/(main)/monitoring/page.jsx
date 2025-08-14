@@ -31,7 +31,7 @@ import {
   MonitoringTabsList,
 } from "@/components/MonitoringTabs/MonitoringTabs";
 import { NotificationCount } from "@/components/NotificationDot/NotificationCount";
-import PermintaanAngkut from "@/container/CS/Monitoring/PermintaanAngkut/PermintaanAngkut";
+import PermintaanAngkutCS from "@/container/CS/Monitoring/PermintaanAngkut/PermintaanAngkut";
 import UrgentIssue from "@/container/CS/Monitoring/UrgentIssue/UrgentIssue";
 import { MapInterfaceOverlay } from "@/container/Shared/Map/MapInterfaceOverlay";
 import { MapMonitoring } from "@/container/Shared/Map/MapMonitoring";
@@ -543,7 +543,7 @@ const Page = () => {
               {!panels.isFullscreen && !panels.showLacakArmada && (
                 <>
                   <MonitoringTabsContent value="permintaan">
-                    <PermintaanAngkut onAcceptRequest={handleAcceptRequest} />
+                    <PermintaanAngkutCS />
                   </MonitoringTabsContent>
 
                   <MonitoringTabsContent value="urgent">
