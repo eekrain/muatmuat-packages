@@ -6,16 +6,18 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { useUpdateUrgentIssueStatus } from "@/services/Transporter/monitoring/getUrgentIssues";
 
-export const UrgentIssueCard = ({
+export const UrgentIssueCardTransporter = ({
   data,
   statusTab,
   isDetailOpen,
   onToggleDetail,
 }) => {
+  const { t } = useTranslation();
   const {
     id,
     typeName,
@@ -42,9 +44,8 @@ export const UrgentIssueCard = ({
   const router = useRouter();
   const [showDetail, setShowDetail] = useState(false);
   const [isConfirmProccess, setIsConfirmProccess] = useState(false);
-  const [isConfirmCompleted, setIsConfirmCompleted] = useState(false);
+  const [isConfirmCompleted, setIsConfirmCompleted] = useState(false); // state untuk memicu update status
 
-  // state untuk memicu update status
   const [updateParams, setUpdateParams] = useState({ id: null, body: null });
 
   const { message, isLoading, isError } = useUpdateUrgentIssueStatus(
@@ -87,8 +88,16 @@ export const UrgentIssueCard = ({
         timestamp: new Date().toISOString(),
         notes:
           status === "PROCESSING"
-            ? "Urgent issue sedang ditangani"
-            : "Urgent issue sudah selesai",
+            ? t(
+                "UrgentIssueCardTransporter.noteProcessing",
+                {},
+                "Urgent issue sedang ditangani"
+              )
+            : t(
+                "UrgentIssueCardTransporter.noteCompleted",
+                {},
+                "Urgent issue sudah selesai"
+              ),
       },
     });
 
@@ -103,8 +112,20 @@ export const UrgentIssueCard = ({
   const handleConfirmCompleted = () => handleConfirmStatus("COMPLETED");
 
   const handleClickVehiclePlateNumber = () => {
-    toast.success("Testing click vehicle");
-    alert("Testing click vehicle");
+    toast.success(
+      t(
+        "UrgentIssueCardTransporter.toastVehicleClick",
+        {},
+        "Testing click vehicle"
+      )
+    );
+    alert(
+      t(
+        "UrgentIssueCardTransporter.alertVehicleClick",
+        {},
+        "Testing click vehicle"
+      )
+    );
   };
 
   return (
@@ -124,15 +145,19 @@ export const UrgentIssueCard = ({
         </span>
       </div>
       <div className="mt-2 text-xs font-medium leading-[20px] text-neutral-600">
-        Armada{" "}
-        <span
-          onClick={() => handleClickVehiclePlateNumber()}
-          className="font-medium text-primary-700 hover:cursor-pointer"
-        >
-          {vehiclePlateNumber || "-"}
-        </span>{" "}
-        {description ||
-          "sudah harus sampai di lokasi muat dalam waktu 30 menit. Segera konfirmasi kepada driver untuk memperbarui status."}
+        {t(
+          "UrgentIssueCardTransporter.vehicleDescription",
+          {
+            vehiclePlateNumber: vehiclePlateNumber || "-",
+            description:
+              description ||
+              "sudah harus sampai di lokasi muat dalam waktu 30 menit. Segera konfirmasi kepada driver untuk memperbarui status.",
+          },
+          `Armada ${vehiclePlateNumber || "-"} ${
+            description ||
+            "sudah harus sampai di lokasi muat dalam waktu 30 menit. Segera konfirmasi kepada driver untuk memperbarui status."
+          }`
+        )}
       </div>
       <div className="my-3 h-px w-full bg-neutral-400" />
       {/* Selesai - Lihat Detail */}
@@ -143,7 +168,11 @@ export const UrgentIssueCard = ({
             className="flex items-center gap-1 text-xs font-medium text-primary-700 hover:cursor-pointer"
             onClick={onToggleDetail}
           >
-            Lihat Detail
+            {t(
+              "UrgentIssueCardTransporter.buttonViewDetail",
+              {},
+              "Lihat Detail"
+            )}
             <IconComponent
               src="/icons/chevron-down.svg"
               alt="chevron up"
@@ -153,7 +182,7 @@ export const UrgentIssueCard = ({
             />
           </button>
           <BadgeStatus variant="success" className="w-max text-xs">
-            Selesai
+            {t("UrgentIssueCardTransporter.statusCompleted", {}, "Selesai")}
           </BadgeStatus>
         </div>
       )}
@@ -170,7 +199,11 @@ export const UrgentIssueCard = ({
               />
               <div className="flex flex-col gap-1">
                 <span className="text-xs font-medium text-neutral-500">
-                  No. Pesanan
+                  {t(
+                    "UrgentIssueCardTransporter.labelOrderNumber",
+                    {},
+                    "No. Pesanan"
+                  )}
                 </span>
                 <span
                   onClick={() => handleClickOrder(orderId)}
@@ -189,7 +222,11 @@ export const UrgentIssueCard = ({
               />
               <div className="flex flex-col gap-1">
                 <span className="text-xs font-medium text-neutral-500">
-                  Tanggal Laporan Masuk
+                  {t(
+                    "UrgentIssueCardTransporter.labelReportDate",
+                    {},
+                    "Tanggal Laporan Masuk"
+                  )}
                 </span>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold text-neutral-900">
@@ -208,7 +245,11 @@ export const UrgentIssueCard = ({
             />
             <div className="flex flex-col gap-1">
               <span className="text-xs font-medium text-neutral-500">
-                Tanggal Laporan Diproses
+                {t(
+                  "UrgentIssueCardTransporter.labelDateProcessed",
+                  {},
+                  "Tanggal Laporan Diproses"
+                )}
               </span>
               <span className="text-xs font-semibold text-neutral-900">
                 {formatDate(completedAt)}
@@ -221,7 +262,7 @@ export const UrgentIssueCard = ({
               className="flex items-center gap-1 text-xs font-medium text-primary-700 hover:cursor-pointer"
               onClick={onToggleDetail}
             >
-              Sembunyikan
+              {t("UrgentIssueCardTransporter.buttonHide", {}, "Sembunyikan")}
               <IconComponent
                 src="/icons/chevron-up.svg"
                 alt="chevron up"
@@ -231,7 +272,7 @@ export const UrgentIssueCard = ({
               />
             </button>
             <BadgeStatus variant="success" className="w-max text-xs">
-              Selesai
+              {t("UrgentIssueCardTransporter.statusCompleted", {}, "Selesai")}
             </BadgeStatus>
           </div>
         </div>
@@ -248,7 +289,11 @@ export const UrgentIssueCard = ({
             />
             <div className="flex flex-col gap-1">
               <span className="text-xs font-medium text-neutral-500">
-                No. Pesanan
+                {t(
+                  "UrgentIssueCardTransporter.labelOrderNumber",
+                  {},
+                  "No. Pesanan"
+                )}
               </span>
               <span
                 onClick={() => handleClickOrder(orderId)}
@@ -269,7 +314,7 @@ export const UrgentIssueCard = ({
             }}
             className="mt-2 h-[32px] min-w-[112px] rounded-full bg-muat-trans-primary-400 px-6 py-3 text-sm font-semibold text-muat-trans-secondary-900"
           >
-            {buttonLabel}
+            {t("UrgentIssueCardTransporter.buttonProcess", {}, buttonLabel)}
           </Button>
         </div>
       )}
@@ -281,18 +326,21 @@ export const UrgentIssueCard = ({
         description={{
           text: (
             <span className="leading-tight">
-              Apakah kamu yakin ingin menyelesaikan urgent issue pesanan{" "}
-              {orderCode}?
+              {t(
+                "UrgentIssueCardTransporter.modalDescriptionComplete",
+                { orderCode },
+                `Apakah kamu yakin ingin menyelesaikan urgent issue pesanan ${orderCode}?`
+              )}
             </span>
           ),
         }}
         cancel={{
-          text: "Tidak",
+          text: t("UrgentIssueCardTransporter.buttonCancel", {}, "Tidak"),
           onClick: () => setIsConfirmCompleted(false),
           classname: "!w-[112px]",
         }}
         confirm={{
-          text: "Ya",
+          text: t("UrgentIssueCardTransporter.buttonConfirm", {}, "Ya"),
           onClick: () => handleConfirmCompleted(),
           classname: "!w-[112px]",
         }}
@@ -305,18 +353,21 @@ export const UrgentIssueCard = ({
         description={{
           text: (
             <span className="leading-tight">
-              Apakah kamu yakin ingin memproses urgent issue pesanan {orderCode}
-              ?
+              {t(
+                "UrgentIssueCardTransporter.modalDescriptionProcess",
+                { orderCode },
+                `Apakah kamu yakin ingin memproses urgent issue pesanan ${orderCode}?`
+              )}
             </span>
           ),
         }}
         cancel={{
-          text: "Tidak",
+          text: t("UrgentIssueCardTransporter.buttonCancel", {}, "Tidak"),
           onClick: () => setIsConfirmProccess(false),
           classname: "!w-[112px]",
         }}
         confirm={{
-          text: "Ya",
+          text: t("UrgentIssueCardTransporter.buttonConfirm", {}, "Ya"),
           onClick: () => handleConfirmProccess(),
           classname: "!w-[112px]",
         }}

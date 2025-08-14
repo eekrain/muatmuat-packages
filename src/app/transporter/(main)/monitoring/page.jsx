@@ -11,7 +11,6 @@ import {
 } from "@/components/MonitoringTabs/MonitoringTabs";
 import { NotificationCount } from "@/components/NotificationDot/NotificationCount";
 import PermintaanAngkut from "@/container/CS/Monitoring/PermintaanAngkut/PermintaanAngkut";
-import UrgentIssue from "@/container/CS/Monitoring/UrgentIssue/UrgentIssue";
 import DaftarArmada from "@/container/Transporter/Monitoring/DaftarArmada/DaftarArmada";
 import DaftarPesananAktif from "@/container/Transporter/Monitoring/DaftarPesananAktif/DaftarPesananAktif";
 import LacakArmada from "@/container/Transporter/Monitoring/LacakArmada/LacakArmada";
@@ -20,6 +19,7 @@ import { MapMonitoring } from "@/container/Transporter/Monitoring/Map/MapMonitor
 import { NoFleetOverlay } from "@/container/Transporter/Monitoring/Map/NoFleetOverlay";
 import PilihArmada from "@/container/Transporter/Monitoring/PilihArmada/PilihArmada";
 import SOSContainer from "@/container/Transporter/Monitoring/SOS/SOSContainer";
+import UrgentIssue from "@/container/Transporter/Monitoring/UrgentIssue/UrgentIssue";
 import { cn } from "@/lib/utils";
 import { useGetFleetCount } from "@/services/Transporter/monitoring/getFleetCount";
 import { useGetFleetLocations } from "@/services/Transporter/monitoring/getFleetLocations";

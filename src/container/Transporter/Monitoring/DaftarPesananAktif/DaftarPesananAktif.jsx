@@ -239,21 +239,30 @@ const DaftarPesananAktif = ({
   };
 
   // Handler for confirming unit count change
-  const handleChangeUnitCount = async (order) => {
+  const handleChangeUnitCount = async (changeData) => {
     try {
       // TODO: Implement API call to change unit count
-      console.log("Changing unit count for order:", order);
+      console.log("Changing unit count for order:", changeData);
 
       // Example API call (replace with actual service)
       // await changeUnitCount({
-      //   orderId: order.id,
-      //   newCount: order.newUnitCount
+      //   orderId: changeData.orderData.id,
+      //   newUnitCount: changeData.newUnitCount,
+      //   reason: changeData.reason,
+      //   supportingFiles: changeData.supportingFiles
       // });
 
       // Show success toast notification
       toast.success(
-        `Berhasil mengubah jumlah unit untuk pesanan ${order?.orderCode || order?.orderNumber || ""}`
+        `Berhasil melakukan perubahan jumlah unit pesanan ${changeData.orderData?.orderCode || changeData.orderData?.orderNumber || ""}`
       );
+
+      // Open AssignArmadaModal after successful unit count change
+      setSelectedOrderForArmada({
+        ...changeData.orderData,
+        truckCount: changeData.newUnitCount, // Update with new unit count
+      });
+      setAssignArmadaModalOpen(true);
 
       // TODO: Refresh data or update state as needed
       // You might want to refetch the orders list here

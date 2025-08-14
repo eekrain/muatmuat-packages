@@ -13,10 +13,32 @@ import { useShallowMemo } from "./use-shallow-memo";
 /**
  * Custom hook for order pages with shared query logic
  * @param {Object} options - Configuration options
- * @param {boolean} options.defaultPage - Whether it is all order list page or not
- * @param {boolean} options.requiresConfirmation - Whether to filter for orders requiring confirmation
- * @param {string} options.status - Optional status filter
- * @returns {Object} - Page data and handlers
+ * @param {boolean} options.defaultPage - Whether it is all order list page or not. If true, returns additional pagination and filter-related states.
+ * @param {boolean} options.requiresConfirmation - Whether to filter for orders requiring confirmation.
+ * @param {string} options.status - Optional status filter.
+ * @returns {Object} - Page data and handlers.
+ * @returns {Object} If `options.defaultPage` is true:
+ * @property {boolean} mounted - Indicates if the component is mounted.
+ * @property {boolean} isMobile - Indicates if the device is mobile.
+ * @property {Object} queryParams - Current query parameters state.
+ * @property {string} lastFilterField - The last field that was filtered.
+ * @property {boolean} hasNoOrders - True if no orders are found with current filters.
+ * @property {Array} settlementAlertInfo - Data related to settlement alerts.
+ * @property {Array} orders - List of orders.
+ * @property {boolean} isOrdersLoading - Loading state for orders.
+ * @property {Object} pagination - Pagination information for orders.
+ * @property {Array} statusRadioOptions - Options for status radio buttons.
+ * @property {Array} statusTabOptions - Options for status tabs.
+ * @property {Object} currentPeriodValue - Currently selected period value.
+ * @property {Function} setCurrentPeriodValue - Setter for current period value.
+ * @property {Function} handleChangeQueryParams - Function to handle changes in query parameters.
+ * @returns {Object} If `options.defaultPage` is false:
+ * @property {boolean} mounted - Indicates if the component is mounted.
+ * @property {boolean} isMobile - Indicates if the device is mobile.
+ * @property {Object} queryParams - Current query parameters state.
+ * @property {string} lastFilterField - The last field that was filtered.
+ * @property {Array} orders - List of orders.
+ * @property {Function} handleChangeQueryParams - Function to handle changes in query parameters.
  */
 const useOrderListPage = (options = {}) => {
   const {
@@ -71,7 +93,7 @@ const useOrderListPage = (options = {}) => {
         params.append("endDate", queryParams.endDate);
       }
     }
-    if (queryParams.search && queryParams.search.length >= 3) {
+    if (queryParams.search) {
       params.append("search", queryParams.search);
     }
     if (queryParams.sort) {

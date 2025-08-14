@@ -10,7 +10,7 @@ const config = {
     extend: {
       fontSize: {
         ...defaultTheme.fontSize,
-        xxs: ["10px", "12px"],
+        xxs: ["10px", { lineHeight: "12px" }],
         xs: ["12px", { lineHeight: "14.4px" }],
         sm: ["14px", { lineHeight: "16.8px" }],
         base: ["16px", { lineHeight: "19.2px" }],
