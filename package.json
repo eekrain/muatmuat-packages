@@ -9,8 +9,7 @@
     "lint": "next lint",
     "format": "next lint --fix && prettier --write .",
     "prepare": "husky",
-    "zip": "node ./scripts/zip.js",
-    "convert-fonts": "node ./scripts/convert-font-sizes-simple.js"
+    "zip": "node ./scripts/zip.js"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
