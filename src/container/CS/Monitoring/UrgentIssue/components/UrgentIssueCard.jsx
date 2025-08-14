@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { Modal, ModalContent, ModalHeader } from "@/components/Modal";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import { useFlexibleCountdown } from "@/hooks/use-countdown";
@@ -47,6 +48,7 @@ export const UrgentIssueCard = ({
   const [showDetail, setShowDetail] = useState(false);
   const [isConfirmProccess, setIsConfirmProccess] = useState(false);
   const [isConfirmCompleted, setIsConfirmCompleted] = useState(false);
+  const [hubungiModalOpen, setHubungiModalOpen] = useState(null);
 
   // state untuk memicu update status
   const [updateParams, setUpdateParams] = useState({ id: null, body: null });
@@ -159,7 +161,11 @@ export const UrgentIssueCard = ({
               <CheckBoxGroup label="Tampilan Grup" />
             </div>
           </div>
-          <Button type="button" variant="muattrans-primary">
+          <Button
+            type="button"
+            onClick={() => setHubungiModalOpen("contact")}
+            variant="muattrans-primary"
+          >
             Hubungi
           </Button>
         </div>
@@ -384,6 +390,59 @@ export const UrgentIssueCard = ({
             classname: "!w-[112px]",
           }}
         />
+
+        <Modal
+          open={hubungiModalOpen === "contact"}
+          onOpenChange={setHubungiModalOpen}
+        >
+          <ModalContent className="w-modal-big" type="muattrans">
+            <ModalHeader
+              size="small"
+              onClose={() => setHubungiModalOpen(null)}
+            />
+            <div className="space-y-2 px-6 pb-6 pt-9 text-center">
+              <p className="text-sm font-bold text-black">
+                Anda Ingin Menghubungi Via
+              </p>
+              <p className="text-xs font-semibold leading-tight text-[#868686]">
+                Anda dapat memilih menghubungi melalui pilihan berikut
+              </p>
+            </div>
+            <div
+              className="mx-auto mb-9 flex w-max cursor-pointer items-center justify-start gap-4 rounded-md border border-[#EBEBEB] px-6 py-4 text-left"
+              onClick={() => setHubungiModalOpen("detail_contact")}
+            >
+              <IconComponent
+                src="/icons/call20.svg"
+                width={24}
+                height={24}
+                className="mr-2 inline-block text-primary-700"
+              />
+              <div>
+                <p className="text-sm font-semibold text-primary-700">
+                  No. Telepon/Whatsapp
+                </p>
+                <p className="text-xs font-medium text-[#868686]">
+                  Anda langsung terhubung dengan Whatsapp
+                </p>
+              </div>
+            </div>
+          </ModalContent>
+        </Modal>
+
+        <Modal>
+          <ModalContent className="w-modal-big" type="muattrans">
+            <ModalHeader size="small" />
+            <div className="px-6 py-9">
+              <p className="text-center text-sm font-bold text-black">
+                No Telepon/WhatsApp Yang Bisa Dihubungi
+              </p>
+              <div className="mt-6 space-y-4">
+                <div></div>
+              </div>
+            </div>
+          </ModalContent>
+        </Modal>
       </div>
     </>
   );

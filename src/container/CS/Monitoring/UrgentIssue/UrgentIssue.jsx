@@ -240,48 +240,6 @@ const UrgentIssue = () => {
             withCancel={false}
           >
           </ConfirmationModal> */}
-          <Modal open={false}>
-            <ModalContent className="w-modal-big" type="muattrans">
-              <ModalHeader size="small" />
-              <div className="space-y-2 px-6 pb-6 pt-9 text-center">
-                <p className="text-sm font-bold text-black">
-                  Anda Ingin Menghubungi Via
-                </p>
-                <p className="text-xs font-semibold leading-tight text-[#868686]">
-                  Anda dapat memilih menghubungi melalui pilihan berikut
-                </p>
-              </div>
-              <div className="mx-auto mb-9 flex w-max cursor-pointer items-center justify-start gap-4 rounded-md border border-[#EBEBEB] px-6 py-4 text-left">
-                <IconComponent
-                  src="/icons/call20.svg"
-                  width={24}
-                  height={24}
-                  className="mr-2 inline-block text-primary-700"
-                />
-                <div>
-                  <p className="text-sm font-semibold text-primary-700">
-                    No. Telepon/Whatsapp
-                  </p>
-                  <p className="text-xs font-medium text-[#868686]">
-                    Anda langsung terhubung dengan Whatsapp
-                  </p>
-                </div>
-              </div>
-            </ModalContent>
-          </Modal>
-          <Modal open={false}>
-            <ModalContent className="w-modal-big" type="muattrans">
-              <ModalHeader size="small" />
-              <div className="px-6 py-9">
-                <p className="text-center text-sm font-bold text-black">
-                  No Telepon/WhatsApp Yang Bisa Dihubungi
-                </p>
-                <div className="mt-6 space-y-4">
-                  <div></div>
-                </div>
-              </div>
-            </ModalContent>
-          </Modal>
         </div>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto bg-white px-4">
