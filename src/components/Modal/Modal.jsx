@@ -197,6 +197,19 @@ export const ModalHeader = ({ className }) => (
   </div>
 );
 
+export const ModalFooter = ({ className, children }) => {
+  return (
+    <div
+      className={cn(
+        "flex items-center justify-center gap-3 rounded-b-xl bg-white px-6 pb-9 pt-6",
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
+};
+
 export const ModalClose = ({ asChild = true, children }) => {
   return <Dialog.Close asChild={asChild}>{children}</Dialog.Close>;
 };

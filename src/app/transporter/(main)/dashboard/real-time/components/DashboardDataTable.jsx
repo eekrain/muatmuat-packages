@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { X } from "lucide-react";
 
@@ -10,13 +10,20 @@ import Button from "@/components/Button/Button";
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import DisplayOptionsBar from "@/components/DisplayOptionsBar/DisplayOptionsBar";
+import FilterDropdown from "@/components/FilterDropdown";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Pagination from "@/components/Pagination/Pagination";
 import Table from "@/components/Table/Table";
 import { cn } from "@/lib/utils";
 
-import DashboardFilter from "./DashboardFilter";
+const usePrevious = (value) => {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+};
 
 const DashboardDataTable = ({
   data = [],
@@ -33,72 +40,82 @@ const DashboardDataTable = ({
   isPeriodActive,
   onPageChange,
   onPerPageChange,
-  displayOptions = null,
-  showDisplayView = false,
   onSearchChange,
   onFilterChange,
   onSort,
   onControlsStateChange,
   filterConfig = null,
   headerActions = null,
-  displayActions = null,
   firsTimerTitle,
   firstTimerSubtitle,
   firstTimerButtonText,
   firstTimerButtonLink,
   className,
+  displayOptions,
+  showDisplayView,
 }) => {
   const [localSearchValue, setLocalSearchValue] = useState(
     activeSearchValue || ""
   );
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
+
+  // --- NEW: Self-contained logic to track the last action ---
+  const [lastActionType, setLastActionType] = useState(null);
+
+  const prevSearch = usePrevious(activeSearchValue);
+  const prevFilters = usePrevious(JSON.stringify(activeFilters)); // Stringify for reliable comparison
+  const prevPeriod = usePrevious(isPeriodActive);
+
+  useEffect(() => {
+    if (activeSearchValue !== prevSearch) setLastActionType("search");
+    else if (JSON.stringify(activeFilters) !== prevFilters)
+      setLastActionType("filter");
+    else if (isPeriodActive !== prevPeriod) setLastActionType("period");
+  }, [
+    activeSearchValue,
+    activeFilters,
+    isPeriodActive,
+    prevSearch,
+    prevFilters,
+    prevPeriod,
+  ]);
+
   useEffect(() => {
     setLocalSearchValue(activeSearchValue || "");
   }, [activeSearchValue]);
+
   const hasNoData = !loading && totalItems === 0;
-  const disableSearch = hasNoData && !activeSearchValue;
-  const disableFilter = hasNoData && !Object.keys(activeFilters || {}).length;
+
+  const hasActiveFilters = useMemo(() => {
+    const filters = activeFilters || {};
+    return Object.values(filters).some((value) =>
+      Array.isArray(value) ? value.length > 0 : !!value
+    );
+  }, [activeFilters]);
+
+  const disableSearch = hasNoData && lastActionType !== "search";
+  const disableFilter = hasNoData && lastActionType !== "filter";
 
   useEffect(() => {
     onControlsStateChange?.({
-      disablePeriod: hasNoData && !isPeriodActive,
+      disablePeriod: hasNoData && lastActionType !== "period",
     });
-  }, [hasNoData, isPeriodActive, onControlsStateChange]);
-  const handleSearchKeyUp = (e) => {
-    if (e.key === "Enter") {
-      onSearchChange(localSearchValue);
-    }
-  };
+  }, [hasNoData, lastActionType, onControlsStateChange]);
 
+  const handleSearchKeyUp = (e) => {
+    if (e.key === "Enter") onSearchChange(localSearchValue);
+  };
   const handleClearSearch = () => {
     setLocalSearchValue("");
     onSearchChange("");
   };
 
-  const hasActiveFilters = Object.keys(activeFilters || {}).length > 0;
-  const isFirstTimer =
-    hasNoData && !isPeriodActive && !activeSearchValue && !hasActiveFilters;
-
-  const renderFirstTimer = (
-    <DataEmpty
-      title={firsTimerTitle || "Tidak ada data"}
-      subtitle={firstTimerSubtitle || ""}
-      className="!shadow-none"
-    >
-      {firstTimerButtonText && (
-        <Button onClick={() => router.push(firstTimerButtonLink)}>
-          {firstTimerButtonText}
-        </Button>
-      )}
-    </DataEmpty>
-  );
-
   const handleSort = (sort) => {
     if (!onSort) return;
     let newOrder = "asc";
-    if (sortConfig.sort === sort && sortConfig.order === "asc") {
+    if (sortConfig.sort === sort && sortConfig.order === "asc")
       newOrder = "desc";
-    } else if (sortConfig.sort === sort && sortConfig.order === "desc") {
+    else if (sortConfig.sort === sort && sortConfig.order === "desc") {
       setSortConfig({ sort: null, order: null });
       onSort(null, null);
       return;
@@ -110,54 +127,66 @@ const DashboardDataTable = ({
   const router = useRouter();
 
   const renderEmptyState = useMemo(() => {
+    console.log(lastActionType);
     if (!hasNoData) return null;
-    if (activeSearchValue)
-      return (
-        <DataNotFound title="Keyword Tidak Ditemukan" className="!w-full" />
-      );
-    if (hasActiveFilters)
-      return (
-        <DataNotFound
-          title={
-            <p>
-              Data Tidak Ditemukan.
-              <br /> Mohon coba hapus beberapa filter
-            </p>
-          }
-          className="!w-full"
-        />
-      );
-    if (isPeriodActive)
-      return (
-        <DataEmpty
-          title="Tidak ada data"
-          subtitle=""
-          className="!w-full !shadow-none"
-        />
-      );
-    return (
-      <DataEmpty
-        title={firsTimerTitle || "Tidak ada data"}
-        subtitle={firstTimerSubtitle || ""}
-        className="!w-full !shadow-none"
-      >
-        {firstTimerButtonText && (
-          <Button onClick={() => router.push(firstTimerButtonLink)}>
-            {firstTimerButtonText}
-          </Button>
-        )}
-      </DataEmpty>
-    );
+    switch (lastActionType) {
+      case "search":
+        return (
+          <DataNotFound title="Keyword Tidak Ditemukan" className="!w-full" />
+        );
+      case "filter":
+        return (
+          <DataNotFound
+            title={
+              <p>
+                Data Tidak Ditemukan.
+                <br /> Mohon coba hapus beberapa filter
+              </p>
+            }
+            className="!w-full"
+          />
+        );
+      case "period":
+        return (
+          <DataEmpty
+            title="Tidak ada data"
+            subtitle=""
+            className="!w-full !shadow-none"
+          />
+        );
+      default:
+        return (
+          <DataEmpty
+            title={firsTimerTitle || "Tidak ada data"}
+            subtitle=""
+            className="!shadow-none"
+          >
+            <div>
+              {firstTimerSubtitle && (
+                <div className="-mt-2 mb-1 text-center text-xs font-medium text-neutral-600">
+                  {firstTimerSubtitle}
+                </div>
+              )}
+              {firstTimerButtonText && (
+                <Button
+                  className="mx-auto mt-4"
+                  onClick={() => router.push(firstTimerButtonLink)}
+                >
+                  {firstTimerButtonText}
+                </Button>
+              )}
+            </div>
+          </DataEmpty>
+        );
+    }
   }, [
     hasNoData,
-    activeSearchValue,
-    hasActiveFilters,
-    isPeriodActive,
+    lastActionType,
     firsTimerTitle,
     firstTimerSubtitle,
     firstTimerButtonText,
-    router,
     firstTimerButtonLink,
+    router,
   ]);
 
   const activeFiltersForBar = useMemo(() => {
@@ -205,6 +234,9 @@ const DashboardDataTable = ({
 
   const handleClearAllFilters = () => onFilterChange({});
 
+  const isFirstTimer =
+    hasNoData && !isPeriodActive && !activeSearchValue && !hasActiveFilters;
+
   return (
     <>
       <div
@@ -215,7 +247,27 @@ const DashboardDataTable = ({
       >
         {isFirstTimer ? (
           <div className="flex h-full items-center justify-center pb-8 pt-16">
-            {renderFirstTimer}
+            <DataEmpty
+              title={firsTimerTitle || "Tidak ada data"}
+              subtitle=""
+              className="!shadow-none"
+            >
+              <div>
+                {firstTimerSubtitle && (
+                  <div className="-mt-2 mb-1 text-center text-xs font-medium text-neutral-600">
+                    {firstTimerSubtitle}
+                  </div>
+                )}
+                {firstTimerButtonText && (
+                  <Button
+                    className="mx-auto mt-4"
+                    onClick={() => router.push(firstTimerButtonLink)}
+                  >
+                    {firstTimerButtonText}
+                  </Button>
+                )}
+              </div>
+            </DataEmpty>
           </div>
         ) : (
           <>
@@ -247,7 +299,7 @@ const DashboardDataTable = ({
                     />
                   )}
                   {showFilter && filterConfig && (
-                    <DashboardFilter
+                    <FilterDropdown
                       categories={filterConfig.categories}
                       data={filterConfig.data}
                       selectedValues={activeFilters || {}}
@@ -266,18 +318,15 @@ const DashboardDataTable = ({
                   onClearAll={handleClearAllFilters}
                 />
               )}
-              <div className="flex w-full items-center justify-between">
-                {showDisplayView && displayOptions && (
-                  <DisplayOptionsBar
-                    totalCount={displayOptions.totalCount || totalItems}
-                    statusOptions={displayOptions.statusOptions || []}
-                    currentStatus={displayOptions.currentStatus}
-                    showAllOption={displayOptions.showAllOption}
-                    onStatusChange={displayOptions.onStatusChange}
-                  />
-                )}
-                {displayActions}
-              </div>
+              {showDisplayView && displayOptions && (
+                <DisplayOptionsBar
+                  totalCount={displayOptions.totalCount || totalItems}
+                  statusOptions={displayOptions.statusOptions || []}
+                  currentStatus={displayOptions.currentStatus}
+                  showAllOption={displayOptions.showAllOption}
+                  onStatusChange={displayOptions.onStatusChange}
+                />
+              )}
             </div>
 
             <div className="flex-1 overflow-hidden">
@@ -287,7 +336,7 @@ const DashboardDataTable = ({
                 loading={loading}
                 sortConfig={sortConfig}
                 onSort={handleSort}
-                emptyComponent={<div className="py-4">{renderEmptyState}</div>}
+                emptyComponent={renderEmptyState}
               />
             </div>
           </>
