@@ -13,6 +13,9 @@ import RingkasanPesanan from "@/container/Transporter/DetailPesanan/RingkasanPes
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useGetOrderDetail } from "@/services/Transporter/daftar-pesanan/detail-pesanan/getOrderDetail";
 
+import LacakArmada from "./LacakArmada/LacakArmada";
+import LabelLacakArmada from "./LacakArmada/components/LabelLacakArmada";
+
 const DetailPesanan = ({ breadcrumbData }) => {
   const params = useParams();
   const [activeTab, setActiveTab] = useState("ringkasan-pesanan");
@@ -27,7 +30,7 @@ const DetailPesanan = ({ breadcrumbData }) => {
       },
       {
         value: "lacak-armada",
-        label: "Lacak Armada (1)",
+        label: <LabelLacakArmada fleetCount={1} hasSOS={true} />,
       },
       {
         value: "riwayat-perubahan",
@@ -39,7 +42,7 @@ const DetailPesanan = ({ breadcrumbData }) => {
   return (
     <div className="mx-auto flex max-w-[1200px] flex-col gap-y-4 py-6">
       <BreadCrumb data={breadcrumbData} />
-      <DetailPesananHeader />
+      <DetailPesananHeader activeTab={activeTab} />
       <Tabs
         className="flex flex-col gap-y-4"
         value={activeTab}
@@ -63,6 +66,9 @@ const DetailPesanan = ({ breadcrumbData }) => {
           value="ringkasan-pesanan"
         >
           <RingkasanPesanan dataOrderDetail={dataOrderDetail} />
+        </TabsContent>
+        <TabsContent className="flex" value="lacak-armada">
+          <LacakArmada dataOrderDetail={dataOrderDetail} />
         </TabsContent>
       </Tabs>
     </div>

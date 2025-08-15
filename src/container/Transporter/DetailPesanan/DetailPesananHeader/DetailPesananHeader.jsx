@@ -2,10 +2,12 @@ import { useRouter } from "next/navigation";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 
-const DetailPesananHeader = () => {
+import ButtonDownloadDO from "../LacakArmada/components/ButtonDownloadDO";
+
+const DetailPesananHeader = ({ activeTab }) => {
   const router = useRouter();
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex h-6 items-center justify-between">
       <div className="flex items-center gap-x-3">
         <IconComponent
           onClick={() => router.back()}
@@ -15,6 +17,7 @@ const DetailPesananHeader = () => {
         />
         <h1 className="text-xl font-bold text-neutral-900">Detail Pesanan</h1>
       </div>
+      {activeTab === "lacak-armada" && <ButtonDownloadDO />}
     </div>
   );
 };
