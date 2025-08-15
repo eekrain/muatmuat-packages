@@ -1,6 +1,6 @@
 import { fetcherMuatrans } from "@/lib/axios";
 
-const isMockUpdateDriverFleet = true;
+const isMockUpdateDriverFleet = false;
 
 const mockUpdateDriverFleetResponse = (driverId, fleetId) => ({
   Message: {
@@ -20,8 +20,8 @@ export const updateDriverFleet = async (driverId, fleetId) => {
     return mockUpdateDriverFleetResponse(driverId, fleetId);
   }
 
-  const result = await fetcherMuatrans.put(`v1/drivers/${driverId}/fleet`, {
-    fleetId: fleetId,
-  });
+  const result = await fetcherMuatrans.put(
+    `v1/vehicles/${fleetId}/assign-driver/${driverId}`
+  );
   return result?.data;
 };
