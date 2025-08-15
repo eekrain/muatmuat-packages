@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useParams } from "next/navigation";
 
 import {
   BottomSheet,
@@ -11,9 +12,19 @@ import {
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
+import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 
-const BottomSheetPreviousDriver = ({ isOpen, setOpen, oldDriverData }) => {
+const BottomSheetPreviousDriver = ({
+  isOpen,
+  setOpen,
+  oldDriverData,
+  type,
+}) => {
   const { t } = useTranslation();
+  const params = useParams();
+  const navigation = useResponsiveNavigation();
+
   return (
     <BottomSheet open={isOpen} onOpenChange={setOpen}>
       <BottomSheetTrigger asChild>
@@ -70,20 +81,49 @@ const BottomSheetPreviousDriver = ({ isOpen, setOpen, oldDriverData }) => {
             </div>
           </div>
 
-          <Button
-            variant="muatparts-primary-secondary"
-            onClick={() => {
-              // You can implement navigation to driver detail page here
-              // Navigate to driver detail with driverId: oldDriverData?.driver?.driverId
-            }}
-            className="h-10 w-full"
-          >
-            {t(
-              "BottomSheetPreviousDriver.buttonDriverStatusDetail",
-              {},
-              "Detail Status Driver"
-            )}
-          </Button>
+          {oldDriverData?.orderStatus === OrderStatusEnum.FLEET_CHANGE ? (
+            <div className="flex w-full gap-3">
+              <Button
+                variant="muatparts-primary-secondary"
+                onClick={() =>
+                  alert(`Contacting ${oldDriverData?.driver?.name}`)
+                }
+                className="h-10 w-full !rounded-[20px] !border-primary-700 !text-xs !font-semibold !text-primary-700"
+              >
+                Hubungi Driver
+              </Button>
+              <Button
+                variant="muatparts-primary"
+                onClick={() =>
+                  navigation.push("/LacakArmada", {
+                    orderId: params.orderId,
+                    driverId: oldDriverData?.driver?.driverId,
+                  })
+                }
+                className="h-10 w-full !rounded-[20px] bg-primary-700 !text-xs !font-semibold text-white"
+              >
+                Lacak Armada
+              </Button>
+            </div>
+          ) : (
+            <Button
+              variant="muatparts-primary-secondary"
+              onClick={() => {
+                navigation.push("/DetailStatusDriverScreen", {
+                  orderId: params.orderId,
+                  driverId: oldDriverData?.driver?.driverId,
+                });
+              }}
+              className="h-10 w-full"
+            >
+              {t(
+                "BottomSheetPreviousDriver.buttonDriverStatusDetail",
+                {},
+                "Detail Status Driver"
+              )}
+            </Button>
+            //
+          )}
         </div>
       </BottomSheetContent>
     </BottomSheet>

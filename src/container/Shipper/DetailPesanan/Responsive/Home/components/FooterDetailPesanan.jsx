@@ -139,7 +139,7 @@ export const FooterDetailPesanan = ({
             <Button
               variant={variant}
               className="h-10 w-full p-0"
-              onClick={() => alert("Simpan")}
+              onClick={() => navigation.push("/OpsiPembayaran")}
               type="button"
             >
               Lanjut Pembayaran
