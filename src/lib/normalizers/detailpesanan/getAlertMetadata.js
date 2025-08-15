@@ -42,6 +42,7 @@ export const getAlertMetadata = ({
           "Lihat Perubahan"
         ),
       },
+      type,
     };
   }
 

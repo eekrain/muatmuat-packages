@@ -4,6 +4,60 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { cn } from "@/lib/utils";
 
 import LocationPoint from "./LocationPoint";
+import InfoPopover from "./PopoverAgenda";
+
+// Map CardItem status to PopoverAgenda status
+const statusMapping = {
+  BERTUGAS: "Bertugas",
+  PENGIRIMAN_SELESAI: "Pengiriman Selesai",
+  NON_AKTIF: "Non Aktif",
+  MENUNGGU_JAM_MUAT: "Menunggu Jam Muat",
+  DIJADWALKAN: "Dijadwalkan",
+};
+
+// Transform CardItem data to PopoverAgenda format
+const transformToAgendaData = (cardProps) => {
+  return {
+    status: statusMapping[cardProps.statusCode],
+    startDate: "02 Jan 2025 11:00 WIB", // Default values - should come from props
+    endDate: "02 Jan 2025 15:00 WIB",
+    invoice: "INV/MTR/120125/0002",
+    SOS: {
+      reason: "Muatan perlu dipindah",
+      active: cardProps.hasSosIssue || false,
+    },
+    items: [
+      { name: "Semen", weight: "250 kg" },
+      { name: "Paku", weight: "50 kg" },
+      { name: "Cat Tembok", weight: "100 kg" },
+      { name: "Pipa PVC", weight: "50 kg" },
+      { name: "Keramik", weight: "50 kg" },
+    ],
+    name: cardProps.driverName,
+    phone: "0821208991231",
+    vehicle: "Colt Diesel Engkel - Box",
+    licensePlate: "L 9812 AX",
+    location: cardProps.currentLocation,
+    estimatedDistance: cardProps.estimation,
+    route: {
+      pickup: {
+        city:
+          cardProps.dataMuat?.subtitle?.split(",")[0] ||
+          cardProps.dataMuat?.subtitle ||
+          "Unknown Location",
+        district: cardProps.dataMuat?.subtitle?.split(",")[1]?.trim() || "",
+      },
+      delivery: {
+        city:
+          cardProps.dataBongkar?.subtitle?.split(",")[0] ||
+          cardProps.dataBongkar?.subtitle ||
+          "Unknown Location",
+        district: cardProps.dataBongkar?.subtitle?.split(",")[1]?.trim() || "",
+      },
+      estimatedDistance: `Est. ${cardProps.distanceRemaining || 0} km`,
+    },
+  };
+};
 
 const TitleEnum = {
   BERTUGAS: "Bertugas",
@@ -74,6 +128,7 @@ const LIST_SHOW_ESTIMASI_WAKTU_BONGKAR = [
  * @property {number} [additional=1] - Number of additional time slots (affects the width of the additional card section)
  * @property {number} [position=0] - Horizontal position offset for the card (multiplied by cellWidthpx)
  * @property {boolean} [hasSosIssue=false] - Whether the card has a SOS issue
+ * @property {Object} [agendaData=null] - Data object for the PopoverAgenda component
  */
 
 /**
@@ -83,26 +138,28 @@ const LIST_SHOW_ESTIMASI_WAKTU_BONGKAR = [
  * @param {CardItemProps} props - The component props
  * @returns {JSX.Element} A card component showing delivery schedule information
  */
-export const CardItem = ({
-  statusCode = "BERTUGAS",
-  driverName = "Ahmad Maulana",
-  currentLocation = "Rest Area KM 50",
-  estimation = "est. 30km (1jam 30menit)",
-  distanceRemaining = 121,
-  dataMuat = {
-    title: "Lokasi Muat",
-    subtitle: "Kota Surabaya, Kec. Tegalsari",
-  },
-  dataBongkar = {
-    title: "Lokasi Bongkar",
-    subtitle: "Kab. Malang, Kec. Singosari",
-  },
-  scheduled = 2,
-  additional = 1,
-  position = 0,
-  hasSosIssue = false,
-  containerWidth,
-}) => {
+export const CardItem = (props) => {
+  const {
+    statusCode = "BERTUGAS",
+    driverName = "Ahmad Maulana",
+    currentLocation = "Rest Area KM 50",
+    estimation = "est. 30km (1jam 30menit)",
+    distanceRemaining = 121,
+    dataMuat = {
+      title: "Lokasi Muat",
+      subtitle: "Kota Surabaya, Kec. Tegalsari",
+    },
+    dataBongkar = {
+      title: "Lokasi Bongkar",
+      subtitle: "Kab. Malang, Kec. Singosari",
+    },
+    scheduled = 2,
+    additional = 1,
+    position = 0,
+    hasSosIssue = false,
+    cellWidth,
+  } = props;
+
   const cellConfig = useMemo(() => {
     const total = scheduled + additional;
     let left = scheduled;
@@ -122,15 +179,11 @@ export const CardItem = ({
     return { left, right, total };
   }, [additional, scheduled]);
 
-  const cellWidth = containerWidth / 5;
-
-  if (!containerWidth) return null;
-
   return (
     <div
       className={cn("absolute h-full overflow-hidden p-0.5")}
       style={{
-        width: `${(scheduled + additional) * cellWidth}px`,
+        width: `${(scheduled + additional) * cellWidth - 1.5}px`,
         left: `${position * cellWidth}px`,
       }}
     >
@@ -173,11 +226,7 @@ export const CardItem = ({
                 SOS
               </span>
             )}
-
-            <IconComponent
-              src="/icons/info16.svg"
-              className="text-neutral-700"
-            />
+            <InfoPopover data={props} />
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -242,7 +291,7 @@ export const CardItem = ({
                   className="absolute top-1/2 -translate-y-1/2"
                   style={{
                     width: `${cellConfig.right * cellWidth - 16}px`,
-                    left: `${additional ? cellConfig.left * cellWidth : cellConfig.left * cellWidth - 8}px`,
+                    left: `${cellConfig.right >= 1 ? cellConfig.left * cellWidth : cellConfig.left * cellWidth - 8}px`,
                   }}
                 />
               )}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import PageTitle from "@/components/PageTitle/PageTitle";
 import {
@@ -12,6 +12,7 @@ import {
 } from "@/components/Tabs/Tabs";
 import { useTranslation } from "@/hooks/use-translation";
 import { useGetFleetsDraftCheck } from "@/services/Transporter/manajemen-armada/getFleetsDraftCheck";
+import { useGetUserPopupPreference } from "@/services/Transporter/manajemen-armada/getUserPopupPreference";
 
 import PopUpInformasi from "./components/PopUpInformasi";
 import Draft from "./components/Tabs/Draft/Draft";
@@ -27,8 +28,16 @@ export default function TambahMassal() {
 
   const [activeTab, setActiveTab] = useState(tab);
 
+  // Get user popup preference in parent component
+  const {
+    data: popupPreference,
+    isLoading: isPopupLoading,
+    error: popupError,
+    mutate: mutatePopupPreference,
+  } = useGetUserPopupPreference();
+
   // Function to clear tab parameter from URL
-  const clearTabParam = () => {
+  const clearTabParam = useCallback(() => {
     const currentParams = new URLSearchParams(searchParams.toString());
     currentParams.delete("tab");
 
@@ -37,13 +46,13 @@ export default function TambahMassal() {
       : window.location.pathname;
 
     router.replace(newUrl);
-  };
+  }, [searchParams, router]);
 
   useEffect(() => {
     if (tab) {
       clearTabParam();
     }
-  }, [tab]);
+  }, [tab, clearTabParam]);
 
   return (
     <div className="my-6 max-h-screen w-full space-y-4 px-6 pb-20">
@@ -57,7 +66,12 @@ export default function TambahMassal() {
               "Tambah Armada Massal"
             )}
           </PageTitle>
-          <PopUpInformasi />
+          <PopUpInformasi
+            popupPreference={popupPreference}
+            isLoading={isPopupLoading}
+            error={popupError}
+            mutatePopupPreference={mutatePopupPreference}
+          />
         </div>
       </div>
 

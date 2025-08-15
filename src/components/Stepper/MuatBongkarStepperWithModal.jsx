@@ -107,7 +107,11 @@ const MuatBongkarStepperWithModal = ({
         </div>
 
         {hasMultipleLocations && (
-          <Modal open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <Modal
+            open={isModalOpen}
+            onOpenChange={setIsModalOpen}
+            closeOnOutsideClick
+          >
             <ModalTrigger asChild>
               <Button variant="link" className="w-[110px] text-xs">
                 Lihat Lokasi Lainnya
@@ -120,71 +124,73 @@ const MuatBongkarStepperWithModal = ({
                   Lokasi Muat & Bongkar
                 </ModalTitle>
 
-                <div className="relative flex max-h-[388px] flex-col gap-4 overflow-y-auto rounded-xl border border-neutral-400 bg-white p-4">
-                  {/* Pickup Locations */}
-                  {pickupLocations.length > 0 && (
-                    <div className="relative flex flex-col gap-3">
-                      <div className="ml-7 text-xs font-medium text-neutral-600">
-                        Lokasi Muat
-                      </div>
+                <div className="relative rounded-xl border border-neutral-400 bg-white px-4 pt-4">
+                  <div className="mr-[-10px] flex max-h-[368px] flex-col gap-4 overflow-y-auto pb-4 pr-[5px]">
+                    {/* Pickup Locations */}
+                    {pickupLocations.length > 0 && (
                       <div className="relative flex flex-col gap-3">
-                        {pickupLocations.map((pickup, index) => (
-                          <div
-                            key={index}
-                            className="relative flex items-center gap-3"
-                          >
-                            {/* Dashed line after each location except the last in this section */}
-                            {index < pickupLocations.length - 1 && (
-                              <div className="absolute left-[7px] top-4 z-0 h-[calc(100%+12px)] w-0 border-l-2 border-dashed border-neutral-400" />
-                            )}
-                            {/* Dashed line connecting to dropoff section */}
-                            {index === pickupLocations.length - 1 &&
-                              dropoffLocations.length > 0 && (
-                                <div className="absolute left-[7px] top-4 z-0 h-[calc(100%+32px)] w-0 border-l-2 border-dashed border-neutral-400" />
+                        <div className="ml-7 text-xs font-medium text-neutral-600">
+                          Lokasi Muat
+                        </div>
+                        <div className="relative flex flex-col gap-3">
+                          {pickupLocations.map((pickup, index) => (
+                            <div
+                              key={index}
+                              className="relative flex items-center gap-3"
+                            >
+                              {/* Dashed line after each location except the last in this section */}
+                              {index < pickupLocations.length - 1 && (
+                                <div className="absolute left-[7px] top-4 z-0 h-[calc(100%+12px)] w-0 border-l-2 border-dashed border-neutral-400" />
                               )}
-                            <div className="relative z-[1] flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-[#FFC217]">
-                              <span className="text-[10px] font-bold leading-[12px] text-[#461B02]">
-                                {pickup.sequence || index + 1}
+                              {/* Dashed line connecting to dropoff section */}
+                              {index === pickupLocations.length - 1 &&
+                                dropoffLocations.length > 0 && (
+                                  <div className="absolute left-[7px] top-4 z-0 h-[calc(100%+32px)] w-0 border-l-2 border-dashed border-neutral-400" />
+                                )}
+                              <div className="relative z-[1] flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-[#FFC217]">
+                                <span className="text-[10px] font-bold leading-[12px] text-[#461B02]">
+                                  {pickup.sequence || index + 1}
+                                </span>
+                              </div>
+                              <span className="text-xs font-medium leading-[120%] text-neutral-900">
+                                {pickup.fullAddress}
                               </span>
                             </div>
-                            <span className="text-xs font-medium leading-[120%] text-neutral-900">
-                              {pickup.fullAddress}
-                            </span>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {/* Dropoff Locations */}
-                  {dropoffLocations.length > 0 && (
-                    <div className="relative flex flex-col gap-3">
-                      <div className="ml-7 text-xs font-medium text-neutral-600">
-                        Lokasi Bongkar
-                      </div>
+                    {/* Dropoff Locations */}
+                    {dropoffLocations.length > 0 && (
                       <div className="relative flex flex-col gap-3">
-                        {dropoffLocations.map((dropoff, index) => (
-                          <div
-                            key={index}
-                            className="relative flex items-center gap-3"
-                          >
-                            {/* Dashed line after each location except the last */}
-                            {index < dropoffLocations.length - 1 && (
-                              <div className="absolute left-[7px] top-4 z-0 h-[calc(100%+12px)] w-0 border-l-2 border-dashed border-neutral-400" />
-                            )}
-                            <div className="relative z-[1] flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-[#461B02]">
-                              <span className="text-[10px] font-bold leading-[12px] text-white">
-                                {dropoff.sequence || index + 1}
+                        <div className="ml-7 text-xs font-medium text-neutral-600">
+                          Lokasi Bongkar
+                        </div>
+                        <div className="relative flex flex-col gap-3">
+                          {dropoffLocations.map((dropoff, index) => (
+                            <div
+                              key={index}
+                              className="relative flex items-center gap-3"
+                            >
+                              {/* Dashed line after each location except the last */}
+                              {index < dropoffLocations.length - 1 && (
+                                <div className="absolute left-[7px] top-4 z-0 h-[calc(100%+12px)] w-0 border-l-2 border-dashed border-neutral-400" />
+                              )}
+                              <div className="relative z-[1] flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-[#461B02]">
+                                <span className="text-[10px] font-bold leading-[12px] text-white">
+                                  {dropoff.sequence || index + 1}
+                                </span>
+                              </div>
+                              <span className="text-xs font-medium leading-[120%] text-neutral-900">
+                                {dropoff.fullAddress}
                               </span>
                             </div>
-                            <span className="text-xs font-medium leading-[120%] text-neutral-900">
-                              {dropoff.fullAddress}
-                            </span>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
             </ModalContent>

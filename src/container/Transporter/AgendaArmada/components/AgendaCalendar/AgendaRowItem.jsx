@@ -1,7 +1,3 @@
-import { useClientWidth } from "@/hooks/use-client-width";
-
-import { CardItem } from "./CardItem";
-
 /**
  * @typedef {Object} CardItemProps
  * @property {"BERTUGAS" | "PENGIRIMAN_SELESAI" | "NON_AKTIF" | "MENUNGGU_JAM_MUAT" | "DIJADWALKAN"} [statusCode="BERTUGAS"] - Status code that determines the title displayed
@@ -15,6 +11,7 @@ import { CardItem } from "./CardItem";
  * @property {number} [additional=1] - Number of additional time slots (affects the width of the additional card section)
  * @property {number} [position=0] - Horizontal position offset for the card (multiplied by 205px)
  */
+import { CardItem } from "./CardItem";
 
 /**
  * @typedef {Object} ArmadaProps
@@ -31,8 +28,7 @@ import { CardItem } from "./CardItem";
  * @returns {JSX.Element} A card component showing delivery schedule information
  */
 
-export const AgendaRowItem = ({ armada }) => {
-  const { ref, width: containerWidth } = useClientWidth();
+export const AgendaRowItem = ({ armada, cellWidth }) => {
   if (!armada) return null;
   return (
     <div className="grid grid-cols-[202px_1fr] grid-rows-[109px] divide-x">
@@ -41,17 +37,14 @@ export const AgendaRowItem = ({ armada }) => {
         <span className="text-xxs font-semibold">Colt Diesel Engkel - Box</span>
       </div>
 
-      <div
-        className="relative grid grid-cols-5 divide-x overflow-hidden"
-        ref={ref}
-      >
-        <div />
-        <div />
-        <div />
-        <div />
+      <div className="relative grid grid-cols-5 overflow-hidden">
+        <div className="border-r" />
+        <div className="border-r" />
+        <div className="border-r" />
+        <div className="border-r" />
         <div />
         {armada.rowData.map((item, index) => (
-          <CardItem key={index} {...item} containerWidth={containerWidth} />
+          <CardItem key={index} {...item} cellWidth={cellWidth} />
         ))}
       </div>
     </div>

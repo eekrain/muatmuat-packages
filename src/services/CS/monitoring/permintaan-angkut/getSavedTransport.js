@@ -42,10 +42,12 @@ const apiResultSavedTransporters = {
             carrierType: "Box",
             operationalStatus: "NOT_READY_FOR_ORDER",
             lastLocation: {
-              address: "Kec. Lowokwaru, Kota Malang",
+              distance: 10,
               latitude: -7.9467,
               longitude: 112.6154,
               lastUpdate: "2025-01-15T14:45:00Z",
+              City: "DKJ Jakarta",
+              District: "Kec. Kepulauan Seribu Selatan Seribu Selatan",
             },
             driver: {
               name: "Rizky Aditya Pratama",
@@ -60,11 +62,14 @@ const apiResultSavedTransporters = {
             carrierType: "Box",
             operationalStatus: "NOT_READY_FOR_ORDER",
             lastLocation: {
-              address:
-                "Kec. Kepulauan Seribu Selatan Seribu Selatan, DKJ Jakarta",
+              distance: 10,
               latitude: -6.2088,
               longitude: 106.8456,
               lastUpdate: "2025-01-15T14:45:00Z",
+              City: "Surabaya",
+              District: "Peneleh",
+              address:
+                "Kec. Kepulauan Seribu Selatan Seribu Selatan, DKJ Jakarta",
             },
             driver: {
               name: "Muhammad Rizky Ramadhani Pratama Setiawan Nugroho Putra Perdana Kusuma Wijayanto Saputra Toldo Sasmita",
@@ -106,10 +111,13 @@ const apiResultSavedTransporters = {
             carrierType: "Box",
             operationalStatus: "READY_FOR_ORDER",
             lastLocation: {
-              address: "Kec. Lowokwaru, Kota Malang",
+              distance: 10,
               latitude: -7.9467,
               longitude: 112.6154,
               lastUpdate: "2025-01-15T14:45:00Z",
+              City: "Surabaya",
+              District: "Peneleh",
+              address: "Kec. Lowokwaru, Kota Malang",
             },
             driver: {
               name: "Yudi Sutrisno",
