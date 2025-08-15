@@ -790,5 +790,12 @@
   "Period.messageErrorEndDateRequired": "End period is required",
   "Period.messageErrorEndDateBeforeStart": "End period cannot be earlier than start period",
   "Period.messageErrorRangeTooLarge": "Maximum range is 1 year from the start period",
-  "Period.buttonApply": "Apply"
+  "Period.buttonApply": "Apply",
+  "ModalPerubahanData.titleDetailSebelumPerubahan": "Detail Sebelum Perubahan",
+  "ModalPerubahanData.sectionWaktuMuat": "Waktu Muat",
+  "ModalPerubahanData.labelWaktuMuat": "Waktu Muat",
+  "ModalPerubahanData.sectionLokasiMuatBongkar": "Lokasi Muat & Bongkar",
+  "ModalPerubahanData.titleLokasiMuat": "Lokasi Muat",
+  "ModalPerubahanData.titleLokasiBongkar": "Lokasi Bongkar",
+  "ModalPerubahanData.timeRangeSeparator": "s/d"
 }
