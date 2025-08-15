@@ -1,5 +1,8 @@
 "use client";
 
+import React from "react";
+
+import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import BadgeOrderType from "@/components/Badge/BadgeOrderType";
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
@@ -28,6 +31,7 @@ const DaftarPesananAktifListItem = ({
   onActionClick,
   onViewFleetStatus,
 }) => {
+  const [showHubungiModal, setShowHubungiModal] = React.useState(false);
   const { dateLabel, timeRange, dateColor } = formatMuatTime(row);
   const statusBadge = getOrderStatusBadge(row.orderStatus);
   const config = getOrderStatusActions(row.orderStatus, row);
@@ -67,6 +71,7 @@ const DaftarPesananAktifListItem = ({
                   <IconComponent src="/icons/call16.svg" className="h-4 w-4" />
                 }
                 className="flex items-center gap-1 p-0 text-xs font-medium text-blue-600 hover:text-blue-700"
+                onClick={() => setShowHubungiModal(true)}
               >
                 Hubungi
               </Button>
@@ -94,6 +99,7 @@ const DaftarPesananAktifListItem = ({
                   <IconComponent src="/icons/call16.svg" className="h-4 w-4" />
                 }
                 className="flex items-center gap-1 p-0 text-xs font-medium text-blue-600 hover:text-blue-700"
+                onClick={() => setShowHubungiModal(true)}
               >
                 Hubungi
               </Button>
@@ -325,6 +331,12 @@ const DaftarPesananAktifListItem = ({
           )}
         </div>
       </div>
+      {/* HubungiModal integration */}
+      <HubungiModal
+        isOpen={showHubungiModal}
+        onClose={() => setShowHubungiModal(false)}
+        transporterData={null} // TODO: pass actual transporter data if available
+      />
     </div>
   );
 };
