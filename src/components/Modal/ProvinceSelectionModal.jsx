@@ -152,6 +152,7 @@ const ProvinceSelectionModal = ({
                   className="!gap-0"
                   label=""
                   checked={isAllSelected}
+                  disabled={provinces.length === 0}
                   onChange={(e) => handleSelectAll(e.checked)}
                 />
                 <span className="text-sm leading-[17.6px]">Pilih Semua</span>
