@@ -273,13 +273,13 @@ const TransportRequestCard = ({
                 {[
                   {
                     fullAddress:
-                      request.pickupLocations?.[0]?.fullAddress ||
+                      request.locations?.pickupLocations?.[0]?.fullAddress ||
                       "Lokasi Muat",
                     type: "pickup",
                   },
                   {
                     fullAddress:
-                      request.dropoffLocations?.[0]?.fullAddress ||
+                      request.locations?.dropoffLocations?.[0]?.fullAddress ||
                       "Lokasi Bongkar",
                     type: "dropoff",
                   },
@@ -337,8 +337,8 @@ const TransportRequestCard = ({
                 <div className="text-xs font-medium text-neutral-600">
                   Informasi Muatan (Total :{" "}
                   {formatWeight(
-                    request.cargos?.[0]?.weight || 0,
-                    request.cargos?.[0]?.weightUnit || "kg"
+                    request.cargo?.items?.[0]?.weight || 0,
+                    request.cargo?.items?.[0]?.weightUnit || "kg"
                   )}
                   )
                 </div>
@@ -348,9 +348,9 @@ const TransportRequestCard = ({
                     request.isTaken ? "text-[#7B7B7B]" : "text-neutral-900"
                   )}
                 >
-                  {request.cargos.length > 1 ? (
+                  {request.cargo?.items?.length > 1 ? (
                     <>
-                      {request.cargos[0].name},{" "}
+                      {request.cargo.items[0].name},{" "}
                       <InfoTooltip
                         side="bottom"
                         align="start"
@@ -362,7 +362,7 @@ const TransportRequestCard = ({
                               cursor: "pointer",
                             }}
                           >
-                            +{request.cargos.length - 1} lainnya
+                            +{request.cargo.items.length - 1} lainnya
                           </span>
                         }
                       >
@@ -371,17 +371,19 @@ const TransportRequestCard = ({
                             Informasi Muatan
                           </div>
                           <div className="space-y-1">
-                            {request.cargos.slice(1).map((cargo, index) => (
-                              <div key={index} className="text-sm">
-                                {index + 1}. {cargo.name}
-                              </div>
-                            ))}
+                            {request.cargo.items
+                              .slice(1)
+                              .map((cargo, index) => (
+                                <div key={index} className="text-sm">
+                                  {index + 1}. {cargo.name}
+                                </div>
+                              ))}
                           </div>
                         </div>
                       </InfoTooltip>
                     </>
                   ) : (
-                    request.cargos[0].name
+                    request.cargo?.items?.[0]?.name
                   )}
                 </div>
               </div>
