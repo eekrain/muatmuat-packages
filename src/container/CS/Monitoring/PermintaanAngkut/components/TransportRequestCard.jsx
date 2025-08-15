@@ -411,8 +411,8 @@ const TransportRequestCard = ({
                     request.isTaken ? "text-[#7B7B7B]" : "text-neutral-900"
                   )}
                 >
-                  {request.truckCount} Unit ({request.truckTypeName} -{" "}
-                  {request.carrierName})
+                  {request.vehicle?.truckCount} Unit (
+                  {request.vehicle?.truckType} - {request.vehicle?.carrierType})
                 </div>
               </div>
             </div>
@@ -476,8 +476,9 @@ const TransportRequestCard = ({
                 Potensi Pendapatan
               </span>
               <span className="text-[12px] font-bold text-primary-700">
-                {request.potentialEarnings ||
-                  formatCurrency(request.totalPrice)}
+                {request.pricing?.potentialIncome
+                  ? formatCurrency(request.pricing.potentialIncome)
+                  : "-"}
               </span>
             </div>
           </div>
