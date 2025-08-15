@@ -438,5 +438,12 @@
   "AlertInfoEnum.messageRefundInProcessInfo": "退款正在处理中，金额将在扣除<b>取消管理费</b>和<b>额外费用</b>后进行调整。如需更多信息，请联系客服。",
   "AlertInfoEnum.messageRefundCompletedInfo": "退款流程已成功转入您的账户。如需更多信息，请联系客服。",
   "getAlertMetadata.buttonLihatDetail": "查看详情",
-  "getAlertMetadata.buttonLihatPerubahan": "查看变更"
+  "getAlertMetadata.buttonLihatPerubahan": "查看变更",
+  "ModalPerubahanData.titleDetailSebelumPerubahan": "变更前详情",
+  "ModalPerubahanData.sectionWaktuMuat": "装货时间",
+  "ModalPerubahanData.labelWaktuMuat": "装货时间",
+  "ModalPerubahanData.sectionLokasiMuatBongkar": "装货和卸货地点",
+  "ModalPerubahanData.titleLokasiMuat": "装货地点",
+  "ModalPerubahanData.titleLokasiBongkar": "卸货地点",
+  "ModalPerubahanData.timeRangeSeparator": "至"
 }

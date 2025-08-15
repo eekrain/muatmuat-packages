@@ -437,5 +437,12 @@
   "AlertInfoEnum.messageRefundInProcessInfo": "Pengembalian dana sedang dalam proses, jumlah dana akan disesuakan setelah dikurangi <b>Admin Pembatalan</b> dan <b>Tambahan Biaya</b>. Info lebih lanjut hubungi Customer Service.",
   "AlertInfoEnum.messageRefundCompletedInfo": "Proses pengembalian dana telah berhasil dicairkan ke rekening kamu. Info lebih lanjut hubungi Customer Service.",
   "getAlertMetadata.buttonLihatDetail": "Lihat Detail",
-  "getAlertMetadata.buttonLihatPerubahan": "Lihat Perubahan"
+  "getAlertMetadata.buttonLihatPerubahan": "Lihat Perubahan",
+  "ModalPerubahanData.titleDetailSebelumPerubahan": "Detail Sebelum Perubahan",
+  "ModalPerubahanData.sectionWaktuMuat": "Waktu Muat",
+  "ModalPerubahanData.labelWaktuMuat": "Waktu Muat",
+  "ModalPerubahanData.sectionLokasiMuatBongkar": "Lokasi Muat & Bongkar",
+  "ModalPerubahanData.titleLokasiMuat": "Lokasi Muat",
+  "ModalPerubahanData.titleLokasiBongkar": "Lokasi Bongkar",
+  "ModalPerubahanData.timeRangeSeparator": "s/d"
 }
