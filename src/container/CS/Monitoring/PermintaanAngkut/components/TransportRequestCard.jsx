@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -31,6 +32,7 @@ const TransportRequestCard = ({
   const [showModalTransporter, setShowModalTransporter] = useState(false);
   const [showModalDisimpan, setShowModalDisimpan] = useState(false);
   const [showModalDilihat, setShowModalDilihat] = useState(false);
+  const [showHubungiModal, setShowHubungiModal] = useState(false);
 
   // Update local state when prop changes
   useEffect(() => {
@@ -135,7 +137,10 @@ const TransportRequestCard = ({
                 <p className="text-sm font-semibold">
                   {request.shipperInfo?.name || "-"}
                 </p>
-                <div className="flex items-center gap-1">
+                <div
+                  className="flex items-center gap-1"
+                  onClick={() => setShowHubungiModal(true)}
+                >
                   <IconComponent
                     src="/icons/contact.svg"
                     className={cn(
@@ -143,9 +148,16 @@ const TransportRequestCard = ({
                       request.isTaken ? "text-neutral-700" : ""
                     )}
                   />
-                  <p className="text-xs font-medium text-primary-700">
+                  <p className="cursor-pointer text-xs font-medium text-primary-700">
                     Hubungi Shipper
                   </p>
+
+                  {/* HubungiModal integration */}
+                  <HubungiModal
+                    isOpen={showHubungiModal}
+                    onClose={() => setShowHubungiModal(false)}
+                    transporterData={null} // TODO: pass actual transporter data if available
+                  />
                 </div>
               </div>
             </div>
@@ -591,6 +603,13 @@ const TransportRequestCard = ({
           </div>
         </>
       )}
+
+      {/* HubungiModal integration */}
+      <HubungiModal
+        isOpen={showHubungiModal}
+        onClose={() => setShowHubungiModal(false)}
+        transporterData={request.shipperInfo || null}
+      />
     </div>
   );
 };

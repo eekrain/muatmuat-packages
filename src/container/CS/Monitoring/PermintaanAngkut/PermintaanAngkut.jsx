@@ -244,7 +244,7 @@ const PermintaanAngkutCS = () => {
           {/* Search Input */}
           <div className="mb-4">
             <Search
-              placeholder="Cari No. Pesanan / Armada / Lokasi Muat & Bongkar / Muatan"
+              placeholder="Cari Permintaan Jasa Angkut"
               onSearch={handleSearch}
               autoSearch={true}
               debounceTime={300}
