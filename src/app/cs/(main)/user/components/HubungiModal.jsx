@@ -221,7 +221,7 @@ const HubungiModal = ({
     <Modal
       open={isOpen}
       onOpenChange={onClose}
-      withCloseButton={false}
+      withCloseButton={true}
       closeOnOutsideClick={true}
     >
       <ModalContent

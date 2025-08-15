@@ -12,12 +12,15 @@ export const LeftPanel = ({ dataDriverTimeline }) => {
   const { t } = useTranslation();
   const params = useParams();
   const breadcrumbItems = [
-    { name: t("labelDaftarPesanan"), href: "/daftarpesanan" },
     {
-      name: t("labelDetailPesanan"),
+      name: t("LeftPanel.breadcrumbDaftarPesanan", {}, "Daftar Pesanan"),
+      href: "/daftarpesanan",
+    },
+    {
+      name: t("LeftPanel.breadcrumbDetailPesanan", {}, "Detail Pesanan"),
       href: `/daftarpesanan/detailpesanan/${params.orderId}`,
     },
-    { name: t("titleLacakArmada") },
+    { name: t("LeftPanel.breadcrumbLacakArmada", {}, "Lacak Armada") },
   ];
 
   const statusMeta = getDriverStatusMetadata({
@@ -29,7 +32,9 @@ export const LeftPanel = ({ dataDriverTimeline }) => {
   return (
     <div className="grid max-h-[calc(100vh-92px)] grid-cols-1 grid-rows-[auto_auto_1fr] gap-6 bg-white px-6 pb-6 pt-8 shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
       <BreadCrumb data={breadcrumbItems} />
-      <PageTitle className="mb-0">{t("titleLacakArmada")}</PageTitle>
+      <PageTitle className="mb-0">
+        {t("LeftPanel.titleLacakArmada", {}, "Lacak Armada")}
+      </PageTitle>
 
       <div className="flex h-fit max-h-full flex-col gap-4 overflow-hidden rounded-xl border border-[#C4C4C4] pt-5">
         <div className="px-4">
@@ -50,7 +55,7 @@ export const LeftPanel = ({ dataDriverTimeline }) => {
         </div>
 
         <h2 className="px-4 text-xs font-semibold leading-[14.4px] text-black">
-          {t("titleDetailStatusDriver")}
+          {t("LeftPanel.titleDetailStatusDriver", {}, "Detail Status Driver")}
         </h2>
 
         {/* This div will now scroll correctly only when its content overflows the parent's available space. */}

@@ -27,7 +27,6 @@ const AgendaArmadaDriverPage = () => {
       {/* Content section */}
       {/* <AgendaNotFound /> */}
       <AgendaCalendar />
-      ``
     </div>
   );
 };

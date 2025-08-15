@@ -8,6 +8,7 @@ import DashboardDataTable from "@/app/transporter/(main)/dashboard/real-time/com
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import { useTranslation } from "@/hooks/use-translation";
 
 import Period from "../../../components/Period";
 import TruncatedTooltip from "../../../components/TruncatedTooltip";
@@ -26,6 +27,7 @@ const toYYYYMMDD = (date) => {
 };
 
 const RatingHistoryTable = () => {
+  const { t } = useTranslation();
   const params = useParams();
   const driverId = params.driverId;
 
@@ -56,7 +58,6 @@ const RatingHistoryTable = () => {
 
   useEffect(() => {
     if (!driverId) return;
-
     const fetchData = async () => {
       setLoading(true);
       setError(null);
@@ -64,7 +65,6 @@ const RatingHistoryTable = () => {
         page: currentPage,
         limit: perPage,
       });
-
       if (searchValue) queryParams.append("search", searchValue);
       if (sortConfig.sort) {
         queryParams.append("sort", sortConfig.sort);
@@ -73,7 +73,6 @@ const RatingHistoryTable = () => {
       if (filters.rating?.length) {
         filters.rating.forEach((r) => queryParams.append("rating", r.id));
       }
-
       if (period) {
         let dateFrom, dateTo;
         if (period.iso_start_date && period.iso_end_date) {
@@ -91,7 +90,6 @@ const RatingHistoryTable = () => {
           queryParams.append("dateTo", dateTo);
         }
       }
-
       try {
         const response = await fetch(
           `/api/v1/ratings/drivers/${driverId}?${queryParams.toString()}`
@@ -102,12 +100,17 @@ const RatingHistoryTable = () => {
         setTableData(result.Data);
       } catch (e) {
         console.error(e);
-        setError("Gagal memuat riwayat rating.");
+        setError(
+          t(
+            "RatingHistoryTable.messageErrorFetch",
+            {},
+            "Gagal memuat riwayat rating."
+          )
+        );
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [
     driverId,
@@ -117,6 +120,7 @@ const RatingHistoryTable = () => {
     searchValue,
     filters,
     period,
+    t,
   ]);
 
   const handleSelectPeriod = (selectedOption) => {
@@ -131,21 +135,14 @@ const RatingHistoryTable = () => {
   };
 
   const formatDate = (dateString) => {
-    return `${new Intl.DateTimeFormat("id-ID", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    }).format(new Date(dateString))} WIB`;
+    return `${new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date(dateString))} WIB`;
   };
 
   const columns = useMemo(
     () => [
       {
         key: "date",
-        header: "Tanggal",
+        header: t("RatingHistoryTable.columnDate", {}, "Tanggal"),
         sortable: true,
         className: "!text-xs font-medium align-top",
         width: "185px",
@@ -153,7 +150,7 @@ const RatingHistoryTable = () => {
       },
       {
         key: "orderNumber",
-        header: "No. Pesanan",
+        header: t("RatingHistoryTable.columnOrderNumber", {}, "No. Pesanan"),
         width: "204px",
         sortable: true,
         className:
@@ -166,7 +163,7 @@ const RatingHistoryTable = () => {
       },
       {
         key: "driverName",
-        header: "Nama Driver",
+        header: t("RatingHistoryTable.columnDriverName", {}, "Nama Driver"),
         width: "230px",
         className: "!text-xs font-medium align-top",
         sortable: true,
@@ -176,7 +173,7 @@ const RatingHistoryTable = () => {
       },
       {
         key: "armada",
-        header: "Armada",
+        header: t("RatingHistoryTable.columnFleet", {}, "Armada"),
         width: "300px",
         className: "align-top",
         sortable: false,
@@ -184,7 +181,9 @@ const RatingHistoryTable = () => {
           <div>
             <p className="text-xs font-bold">{row.armada.name}</p>
             <p className="mt-px text-[10px] font-medium text-neutral-900">
-              <span className="text-neutral-600">Carrier :</span>
+              <span className="text-neutral-600">
+                {t("RatingHistoryTable.labelCarrier", {}, "Carrier :")}
+              </span>
               {row.armada.carrier}
             </p>
             <span className="mt-2 flex items-center gap-1 text-[10px] font-medium text-neutral-900">
@@ -200,7 +199,11 @@ const RatingHistoryTable = () => {
       },
       {
         key: "rating",
-        header: "Rating dan Ulasan",
+        header: t(
+          "RatingHistoryTable.columnRatingReview",
+          {},
+          "Rating dan Ulasan"
+        ),
         className: "align-top",
         sortable: true,
         render: (row) => (
@@ -220,35 +223,102 @@ const RatingHistoryTable = () => {
         ),
       },
     ],
-    []
+    [t]
   );
 
-  const filterConfig = {
-    categories: [{ key: "rating", label: "Rating", type: "checkbox-multi" }],
-    data: {
-      rating: [
-        { id: 5, label: "5 Bintang", icon: "/icons/star_icon.svg" },
-        { id: 4, label: "4 Bintang", icon: "/icons/star_icon.svg" },
-        { id: 3, label: "3 Bintang", icon: "/icons/star_icon.svg" },
-        { id: 2, label: "2 Bintang", icon: "/icons/star_icon.svg" },
-        { id: 1, label: "1 Bintang", icon: "/icons/star_icon.svg" },
+  const filterConfig = useMemo(
+    () => ({
+      categories: [
+        {
+          key: "rating",
+          label: t("RatingHistoryTable.filterLabelRating", {}, "Rating"),
+          type: "checkbox-multi",
+        },
       ],
-    },
-  };
+      data: {
+        rating: [
+          {
+            id: 5,
+            label: t("RatingHistoryTable.filterOption5Stars", {}, "5 Bintang"),
+            icon: "/icons/star_icon.svg",
+          },
+          {
+            id: 4,
+            label: t("RatingHistoryTable.filterOption4Stars", {}, "4 Bintang"),
+            icon: "/icons/star_icon.svg",
+          },
+          {
+            id: 3,
+            label: t("RatingHistoryTable.filterOption3Stars", {}, "3 Bintang"),
+            icon: "/icons/star_icon.svg",
+          },
+          {
+            id: 2,
+            label: t("RatingHistoryTable.filterOption2Stars", {}, "2 Bintang"),
+            icon: "/icons/star_icon.svg",
+          },
+          {
+            id: 1,
+            label: t("RatingHistoryTable.filterOption1Star", {}, "1 Bintang"),
+            icon: "/icons/star_icon.svg",
+          },
+        ],
+      },
+    }),
+    [t]
+  );
 
-  const periodOptions = [
-    { name: "Semua Periode (Default)", value: "" },
-    { name: "Hari Ini", value: 0 },
-    { name: "1 Minggu Terakhir", value: 7 },
-    { name: "30 Hari Terakhir", value: 30 },
-    { name: "1 Tahun Terakhir", value: 365 },
-  ];
+  const periodOptions = useMemo(
+    () => [
+      {
+        name: t(
+          "RatingHistoryTable.periodOptionAll",
+          {},
+          "Semua Periode (Default)"
+        ),
+        value: "",
+      },
+      {
+        name: t("RatingHistoryTable.periodOptionToday", {}, "Hari Ini"),
+        value: 0,
+      },
+      {
+        name: t(
+          "RatingHistoryTable.periodOptionLast7Days",
+          {},
+          "7 Hari Terakhir"
+        ),
+        value: 7,
+      },
+      {
+        name: t(
+          "RatingHistoryTable.periodOptionLast30Days",
+          {},
+          "30 Hari Terakhir"
+        ),
+        value: 30,
+      },
+      {
+        name: t(
+          "RatingHistoryTable.periodOptionLastYear",
+          {},
+          "1 Tahun Terakhir"
+        ),
+        value: 365,
+      },
+    ],
+    [t]
+  );
 
   return (
     <div className="space-y-4">
       <div className="flex w-full items-center justify-between">
         <PageTitle withBack={true} className="!mb-0">
-          Riwayat Rating Driver Keseluruhan
+          {t(
+            "RatingDriverHistoryPage.titlePage",
+            {},
+            "Riwayat Rating Driver Keseluruhan"
+          )}
         </PageTitle>
         <div className="flex items-center gap-4">
           <Period
@@ -268,11 +338,10 @@ const RatingHistoryTable = () => {
                 "text-muat-trans-secondary-900 disabled:text-neutral-600",
             }}
           >
-            Unduh
+            {t("RatingHistoryTable.buttonDownload", {}, "Unduh")}
           </Button>
         </div>
       </div>
-
       <DashboardDataTable
         data={tableData.history}
         columns={columns}
@@ -289,12 +358,16 @@ const RatingHistoryTable = () => {
         isPeriodActive={period && period.value !== ""}
         onSort={(sort, order) => setSortConfig({ sort, order })}
         onControlsStateChange={setControlsDisabled}
-        searchPlaceholder="Cari No. Pesanan / Armada"
+        searchPlaceholder={t(
+          "RatingHistoryTable.searchPlaceholder",
+          {},
+          "Cari No. Pesanan / Armada"
+        )}
         filterConfig={filterConfig}
         headerActions={
           <div className="flex items-center gap-4">
             <div className="text-sm font-semibold">
-              Total Rating :
+              {t("RatingHistoryTable.headerTotalRating", {}, "Total Rating")} :
               <span className="text-base font-bold">
                 {tableData.summary.totalRating}
                 <span className="text-sm font-medium text-neutral-600">/5</span>

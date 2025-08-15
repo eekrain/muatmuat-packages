@@ -42,7 +42,10 @@ const DetailPesanan = ({ breadcrumbData }) => {
   return (
     <div className="mx-auto flex max-w-[1200px] flex-col gap-y-4 py-6">
       <BreadCrumb data={breadcrumbData} />
-      <DetailPesananHeader activeTab={activeTab} />
+      <DetailPesananHeader
+        dataOrderDetail={dataOrderDetail}
+        activeTab={activeTab}
+      />
       <Tabs
         className="flex flex-col gap-y-4"
         value={activeTab}

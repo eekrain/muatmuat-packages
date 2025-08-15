@@ -2,87 +2,604 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = true;
+const useMockData = false;
 
 const mockApiResult = {
   Message: {
     Code: 200,
-    Text: "Order detail retrieved successfully",
+    Text: "OK",
   },
   Data: {
-    orderId: "uuid",
-    orderCode: "MT25A002A",
-    invoiceNumber: "INV-2025-001",
-    orderStatus: "ARMADA_DIJADWALKAN",
+    orderId: "dcdaf886-56d6-4d84-89d6-a21ec18d0bc1",
+    orderCode: "MT25AA004",
+    invoiceNumber: "INV/MT25AA004",
+    orderStatus: "WAITING_PAYMENT_2",
     orderStatusUnit: 1,
     orderType: "SCHEDULED",
-    loadTimeStart: "2025-03-15T18:00:00Z",
-    loadTimeEnd: "2025-03-15T19:00:00Z",
-    estimatedDistance: 178.5,
-    isHalalLogistics: true,
+    loadTimeStart: "2025-07-20T10:46:00.000Z",
+    loadTimeEnd: null,
+    // loadTimeEnd: "2025-07-20T13:46:00.000Z",
+    estimatedDistance: 178,
+    isHalalLogistics: false,
     truckCount: 1,
-    hasSOSAlert: true,
+    hasSOSAlert: false,
     vehicle: {
-      truckTypeId: "uuid",
-      truckTypeName: "Colt Diesel Engkel - Box",
-      vehicleImage: "https://example.com/truck.jpg",
+      truckTypeId: "62a0f025-3143-4f84-99d3-a1c5ac1b8658",
+      truckTypeName: "Medium Truk 4 x 2 (Rigid)",
+      vehicleImage: "https://picsum.photos/50",
     },
     locations: [
       {
-        id: "uuid",
+        id: "ee06f46c-fd1d-4e6e-810c-2a1d4eda7391",
         type: "PICKUP",
         sequence: 1,
-        fullAddress: "Jl. Sudirman No. 123, Jakarta",
-        detailAddress: "Jl. Sudirman No. 123, Jakarta",
-        city: "Jakarta",
-        province: "DKI Jakarta",
-        latitude: -6.2,
-        longitude: 106.816666,
-        picName: "Jane Doe",
-        picPhoneNumber: "081234567891",
+        fullAddress:
+          "Galaxy Mall 2, Mulyorejo, Surabaya, Jawa Timur, Indonesia",
+        detailAddress: "",
+        coordinates: {
+          latitude: -7.2741549,
+          longitude: 112.7820621,
+        },
+        administrativeArea: {
+          district: "Mulyorejo",
+          city: "Kota Surabaya",
+          province: "Jawa Timur",
+          postalCode: "60115",
+        },
+        qrScan: {
+          status: "NOT_SCANNED",
+          token: null,
+          expiryTime: null,
+        },
+        isActive: true,
+        pic: {
+          name: "popo",
+          phoneNumber: "081974012740",
+        },
       },
+      {
+        id: "1e70ee97-04b5-4ee8-beea-963dffd0c126",
+        type: "DROPOFF",
+        sequence: 1,
+        fullAddress:
+          "Ciputra World Surabaya, Jalan Mayjen Sungkono, Gunung Sari, Surabaya, Jawa Timur, Indonesia",
+        detailAddress: "",
+        coordinates: {
+          latitude: -7.2925952,
+          longitude: 112.7200837,
+        },
+        administrativeArea: {
+          district: "Gambir",
+          city: "Kota Jakarta Pusat",
+          province: "Dki Jakarta",
+          postalCode: "10160",
+        },
+        qrScan: {
+          status: "NOT_SCANNED",
+          token: null,
+          expiryTime: null,
+        },
+        isActive: true,
+        pic: {
+          name: "pupu",
+          phoneNumber: "08172094790124",
+        },
+      },
+      // {
+      //   id: "ee06f46c-fd1d-4e6e-810c-2a1d4eda7391",
+      //   type: "PICKUP",
+      //   sequence: 1,
+      //   fullAddress: "Jalan Dinoyo No. 111, Kec. Tegalsari, Kota Surabaya",
+      //   detailAddress: "",
+      //   coordinates: {
+      //     latitude: -7.2741549,
+      //     longitude: 112.7820621,
+      //   },
+      //   administrativeArea: {
+      //     district: "Mulyorejo",
+      //     city: "Kota Surabaya",
+      //     province: "Jawa Timur",
+      //     postalCode: "60115",
+      //   },
+      //   qrScan: {
+      //     status: "NOT_SCANNED",
+      //     token: null,
+      //     expiryTime: null,
+      //   },
+      //   isActive: true,
+      //   pic: {
+      //     name: "popo",
+      //     phoneNumber: "081974012740",
+      //   },
+      // },
+      // {
+      //   id: "023149a5-db7e-4c4f-bd66-7664f27e37cf",
+      //   type: "PICKUP",
+      //   sequence: 2,
+      //   fullAddress: "Jl. Wonorejo II/88, Kec. Wonorejo, Kota Surabaya",
+      //   detailAddress: "",
+      //   coordinates: {
+      //     latitude: -7.267499000000001,
+      //     longitude: 112.7700864,
+      //   },
+      //   administrativeArea: {
+      //     district: "Gubeng",
+      //     city: "Kota Surabaya",
+      //     province: "Jawa Timur",
+      //     postalCode: "60285",
+      //   },
+      //   qrScan: {
+      //     status: "NOT_SCANNED",
+      //     token: null,
+      //     expiryTime: null,
+      //   },
+      //   isActive: true,
+      //   pic: {
+      //     name: "pipi",
+      //     phoneNumber: "081247091724",
+      //   },
+      // },
+      // {
+      //   id: "023149a5-db7e-4c4f-bd66-7664f27e37cf",
+      //   type: "PICKUP",
+      //   sequence: 3,
+      //   fullAddress: "Jl. Raya Sedati Agung No.23, Kec. Sedati, Kota Surabaya",
+      //   detailAddress: "",
+      //   coordinates: {
+      //     latitude: -7.267499000000001,
+      //     longitude: 112.7700864,
+      //   },
+      //   administrativeArea: {
+      //     district: "Gubeng",
+      //     city: "Kota Surabaya",
+      //     province: "Jawa Timur",
+      //     postalCode: "60285",
+      //   },
+      //   qrScan: {
+      //     status: "NOT_SCANNED",
+      //     token: null,
+      //     expiryTime: null,
+      //   },
+      //   isActive: true,
+      //   pic: {
+      //     name: "pipi",
+      //     phoneNumber: "081247091724",
+      //   },
+      // },
+      // {
+      //   id: "023149a5-db7e-4c4f-bd66-7664f27e37cf",
+      //   type: "PICKUP",
+      //   sequence: 4,
+      //   fullAddress:
+      //     "Graha Aero, Jl. Kedungdoro 88, Kedungdoro, Kec Tegalsari, Kota Surabaya, Jawa Timur 60261",
+      //   detailAddress: "",
+      //   coordinates: {
+      //     latitude: -7.267499000000001,
+      //     longitude: 112.7700864,
+      //   },
+      //   administrativeArea: {
+      //     district: "Gubeng",
+      //     city: "Kota Surabaya",
+      //     province: "Jawa Timur",
+      //     postalCode: "60285",
+      //   },
+      //   qrScan: {
+      //     status: "NOT_SCANNED",
+      //     token: null,
+      //     expiryTime: null,
+      //   },
+      //   isActive: true,
+      //   pic: {
+      //     name: "pipi",
+      //     phoneNumber: "081247091724",
+      //   },
+      // },
+      // {
+      //   id: "023149a5-db7e-4c4f-bd66-7664f27e37cf",
+      //   type: "PICKUP",
+      //   sequence: 5,
+      //   fullAddress:
+      //     "Jl. Gubernur Suryo No.1, Gajah Timur, Magersari, Kec. Sidoarjo, Kab. Sidoarjo",
+      //   detailAddress: "",
+      //   coordinates: {
+      //     latitude: -7.267499000000001,
+      //     longitude: 112.7700864,
+      //   },
+      //   administrativeArea: {
+      //     district: "Gubeng",
+      //     city: "Kota Surabaya",
+      //     province: "Jawa Timur",
+      //     postalCode: "60285",
+      //   },
+      //   qrScan: {
+      //     status: "NOT_SCANNED",
+      //     token: null,
+      //     expiryTime: null,
+      //   },
+      //   isActive: true,
+      //   pic: {
+      //     name: "pipi",
+      //     phoneNumber: "081247091724",
+      //   },
+      // },
+      // {
+      //   id: "1e70ee97-04b5-4ee8-beea-963dffd0c126",
+      //   type: "PICKUP",
+      //   sequence: 6,
+      //   fullAddress:
+      //     "Jl. Dharma Praja Komp. Perkantoran Gunung Tinggi, Kec. Karang bintang Bandar kedung mulyo Gunung, Kab. Tanah Bumbu Tanah Bumbu Tanah Bumbu Tanah Bumbu",
+      //   detailAddress: "",
+      //   coordinates: {
+      //     latitude: -7.2925952,
+      //     longitude: 112.7200837,
+      //   },
+      //   administrativeArea: {
+      //     district: "Gambir",
+      //     city: "Kota Jakarta Pusat",
+      //     province: "Dki Jakarta",
+      //     postalCode: "10160",
+      //   },
+      //   qrScan: {
+      //     status: "NOT_SCANNED",
+      //     token: null,
+      //     expiryTime: null,
+      //   },
+      //   isActive: true,
+      //   pic: {
+      //     name: "pupu",
+      //     phoneNumber: "08172094790124",
+      //   },
+      // },
+      // {
+      //   id: "1e70ee97-04b5-4ee8-beea-963dffd0c126",
+      //   type: "DROPOFF",
+      //   sequence: 1,
+      //   fullAddress:
+      //     "Jl. Terusan Kawi No.16 Bareng, Kec. Klojen, Kab. Pasuruan",
+      //   detailAddress: "",
+      //   coordinates: {
+      //     latitude: -7.2925952,
+      //     longitude: 112.7200837,
+      //   },
+      //   administrativeArea: {
+      //     district: "Gambir",
+      //     city: "Kota Jakarta Pusat",
+      //     province: "Dki Jakarta",
+      //     postalCode: "10160",
+      //   },
+      //   qrScan: {
+      //     status: "NOT_SCANNED",
+      //     token: null,
+      //     expiryTime: null,
+      //   },
+      //   isActive: true,
+      //   pic: {
+      //     name: "pupu",
+      //     phoneNumber: "08172094790124",
+      //   },
+      // },
+      // {
+      //   id: "1e70ee97-04b5-4ee8-beea-963dffd0c126",
+      //   type: "DROPOFF",
+      //   sequence: 2,
+      //   fullAddress: "Jalan Raden Intan Kav. 14, Kec. Blimbing, Malang ",
+      //   detailAddress: "",
+      //   coordinates: {
+      //     latitude: -7.2925952,
+      //     longitude: 112.7200837,
+      //   },
+      //   administrativeArea: {
+      //     district: "Gambir",
+      //     city: "Kota Jakarta Pusat",
+      //     province: "Dki Jakarta",
+      //     postalCode: "10160",
+      //   },
+      //   qrScan: {
+      //     status: "NOT_SCANNED",
+      //     token: null,
+      //     expiryTime: null,
+      //   },
+      //   isActive: true,
+      //   pic: {
+      //     name: "pupu",
+      //     phoneNumber: "08172094790124",
+      //   },
+      // },
+      // {
+      //   id: "1e70ee97-04b5-4ee8-beea-963dffd0c126",
+      //   type: "DROPOFF",
+      //   sequence: 3,
+      //   fullAddress: "Jl. Tadulako No.16, Kec. Bunta, Kab. Banggai",
+      //   detailAddress: "",
+      //   coordinates: {
+      //     latitude: -7.2925952,
+      //     longitude: 112.7200837,
+      //   },
+      //   administrativeArea: {
+      //     district: "Gambir",
+      //     city: "Kota Jakarta Pusat",
+      //     province: "Dki Jakarta",
+      //     postalCode: "10160",
+      //   },
+      //   qrScan: {
+      //     status: "NOT_SCANNED",
+      //     token: null,
+      //     expiryTime: null,
+      //   },
+      //   isActive: true,
+      //   pic: {
+      //     name: "pupu",
+      //     phoneNumber: "08172094790124",
+      //   },
+      // },
+      // {
+      //   id: "1e70ee97-04b5-4ee8-beea-963dffd0c126",
+      //   type: "DROPOFF",
+      //   sequence: 4,
+      //   fullAddress:
+      //     "Jl. Poros Lagadi - Tondasi, Kec. Tiworo Kepulauan, Kab. Muna Barat, ",
+      //   detailAddress: "",
+      //   coordinates: {
+      //     latitude: -7.2925952,
+      //     longitude: 112.7200837,
+      //   },
+      //   administrativeArea: {
+      //     district: "Gambir",
+      //     city: "Kota Jakarta Pusat",
+      //     province: "Dki Jakarta",
+      //     postalCode: "10160",
+      //   },
+      //   qrScan: {
+      //     status: "NOT_SCANNED",
+      //     token: null,
+      //     expiryTime: null,
+      //   },
+      //   isActive: true,
+      //   pic: {
+      //     name: "pupu",
+      //     phoneNumber: "08172094790124",
+      //   },
+      // },
+      // {
+      //   id: "1e70ee97-04b5-4ee8-beea-963dffd0c126",
+      //   type: "DROPOFF",
+      //   sequence: 5,
+      //   fullAddress:
+      //     "Jl. Tumapel No. 38 Singosari, Kec. Singosari, Kab. Malang",
+      //   detailAddress: "",
+      //   coordinates: {
+      //     latitude: -7.2925952,
+      //     longitude: 112.7200837,
+      //   },
+      //   administrativeArea: {
+      //     district: "Gambir",
+      //     city: "Kota Jakarta Pusat",
+      //     province: "Dki Jakarta",
+      //     postalCode: "10160",
+      //   },
+      //   qrScan: {
+      //     status: "NOT_SCANNED",
+      //     token: null,
+      //     expiryTime: null,
+      //   },
+      //   isActive: true,
+      //   pic: {
+      //     name: "pupu",
+      //     phoneNumber: "08172094790124",
+      //   },
+      // },
+      // {
+      //   id: "1e70ee97-04b5-4ee8-beea-963dffd0c126",
+      //   type: "DROPOFF",
+      //   sequence: 6,
+      //   fullAddress:
+      //     "Jl. Tumapel No. 38 Singosari, Kec. Singosari, Kab. Malang",
+      //   detailAddress: "",
+      //   coordinates: {
+      //     latitude: -7.2925952,
+      //     longitude: 112.7200837,
+      //   },
+      //   administrativeArea: {
+      //     district: "Gambir",
+      //     city: "Kota Jakarta Pusat",
+      //     province: "Dki Jakarta",
+      //     postalCode: "10160",
+      //   },
+      //   qrScan: {
+      //     status: "NOT_SCANNED",
+      //     token: null,
+      //     expiryTime: null,
+      //   },
+      //   isActive: true,
+      //   pic: {
+      //     name: "pupu",
+      //     phoneNumber: "08172094790124",
+      //   },
+      // },
+      // {
+      //   id: "1e70ee97-04b5-4ee8-beea-963dffd0c126",
+      //   type: "DROPOFF",
+      //   sequence: 1,
+      //   fullAddress:
+      //     "Jl. Terusan Kawi No.16 Bareng, Kec. Klojen, Kab. Pasuruan",
+      //   detailAddress: "",
+      //   coordinates: {
+      //     latitude: -7.2925952,
+      //     longitude: 112.7200837,
+      //   },
+      //   administrativeArea: {
+      //     district: "Gambir",
+      //     city: "Kota Jakarta Pusat",
+      //     province: "Dki Jakarta",
+      //     postalCode: "10160",
+      //   },
+      //   qrScan: {
+      //     status: "NOT_SCANNED",
+      //     token: null,
+      //     expiryTime: null,
+      //   },
+      //   isActive: true,
+      //   pic: {
+      //     name: "pupu",
+      //     phoneNumber: "08172094790124",
+      //   },
+      // },
     ],
     cargo: [
       {
-        id: "uuid",
-        name: "Besi Baja",
-        weight: 1000.0,
-        weightUnit: "kg",
-        length: 1.0,
-        width: 2.0,
-        height: 5.0,
+        id: "1085a673-4f31-4a66-ada6-79e5e61fe434",
+        name: "Furniture Kayu",
+        weight: 1,
+        weightUnit: "ton",
+        length: 1,
+        width: 1,
+        height: 1,
         dimensionUnit: "m",
-        cargoTypeName: "Besi",
-        cargoCategoryName: "Logam",
+        cargoTypeName: "Cargo Type",
+        cargoCategoryName: "Cargo Category",
       },
+      // {
+      //   id: "74b7ef5c-9732-47c0-9ea7-f327b65028d7",
+      //   name: "Elektronik Rumah Tangga",
+      //   weight: 2,
+      //   weightUnit: "ton",
+      //   length: 1,
+      //   width: 1,
+      //   height: 1,
+      //   dimensionUnit: "m",
+      //   cargoTypeName: "Cargo Type",
+      //   cargoCategoryName: "Cargo Category",
+      // },
+      // {
+      //   id: "29e7018f-b331-4d7e-818d-3bf39ea8ddf2",
+      //   name: "Peralatan dan Kebutuhan Kantor",
+      //   weight: 3,
+      //   weightUnit: "ton",
+      //   length: 1,
+      //   width: 1,
+      //   height: 1,
+      //   dimensionUnit: "m",
+      //   cargoTypeName: "Cargo Type",
+      //   cargoCategoryName: "Cargo Category",
+      // },
     ],
-    cargoDescription: "",
+    cargoDescription:
+      "Berikut temuan QC dalam Ronda RC untuk platform Web Desktop dan Responsive , mohon dapat difix.",
     photos: [
       {
-        id: "uuid",
-        photoUrl: "https://example.com/photo1.jpg",
+        id: "9bd5938f-8445-40ca-84b4-4939a5491256",
+        photoUrl:
+          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+        thumbnailUrl:
+          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+        fullSizeUrl:
+          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+        photoType: "MAIN_PHOTO",
+        description: null,
+        metadata: {
+          fileSize: 2048576,
+          format: "JPEG",
+          dimensions: {
+            width: 1920,
+            height: 1080,
+          },
+          uploadedAt: "2025-07-18T03:48:41.962Z",
+          uploadedBy: "transporter",
+        },
+        sequence: 1,
+      },
+      {
+        id: "9bd5938f-8445-40ca-84b4-4939a5491256",
+        photoUrl:
+          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+        thumbnailUrl:
+          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+        fullSizeUrl:
+          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+        photoType: "MAIN_PHOTO",
+        description: null,
+        metadata: {
+          fileSize: 2048576,
+          format: "JPEG",
+          dimensions: {
+            width: 1920,
+            height: 1080,
+          },
+          uploadedAt: "2025-07-18T03:48:41.962Z",
+          uploadedBy: "transporter",
+        },
+        sequence: 2,
+      },
+      {
+        id: "9bd5938f-8445-40ca-84b4-4939a5491256",
+        photoUrl:
+          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+        thumbnailUrl:
+          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+        fullSizeUrl:
+          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+        photoType: "MAIN_PHOTO",
+        description: null,
+        metadata: {
+          fileSize: 2048576,
+          format: "JPEG",
+          dimensions: {
+            width: 1920,
+            height: 1080,
+          },
+          uploadedAt: "2025-07-18T03:48:41.962Z",
+          uploadedBy: "transporter",
+        },
+        sequence: 3,
+      },
+      {
+        id: "9bd5938f-8445-40ca-84b4-4939a5491256",
+        photoUrl:
+          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+        thumbnailUrl:
+          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+        fullSizeUrl:
+          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+        photoType: "MAIN_PHOTO",
+        description: null,
+        metadata: {
+          fileSize: 2048576,
+          format: "JPEG",
+          dimensions: {
+            width: 1920,
+            height: 1080,
+          },
+          uploadedAt: "2025-07-18T03:48:41.962Z",
+          uploadedBy: "transporter",
+        },
+        sequence: 4,
       },
     ],
     additionalServices: [
       {
-        id: "uuid",
+        id: "0f678054-8459-4a36-8b1d-662e8de7580c",
+        serviceName: "Kirim Berkas",
+      },
+      {
+        id: "a0f1778f-0ee2-4ec1-8be8-3e7737832fe2",
         serviceName: "Kirim Berkas",
       },
     ],
     incomeSummary: {
-      totalPrice: 900000.0,
-      transportFee: 800000.0,
-      additionalServiceFee: 150000.0,
-      taxAmount: 50000.0,
+      totalPrice: 421751,
+      transportFee: 221751,
+      additionalServiceFee: 200000,
+      taxAmount: 0,
     },
     otherStatus: [
       {
-        orderStatus: "ARMADA_DIJADWALKAN",
-        orderStatusUnit: 1,
+        status: "WAITING_PAYMENT_2",
+        count: 1,
+        description: "Status tidak diketahui",
       },
     ],
   },
-  Type: "ORDER_DETAIL",
+  Type: "/v1/transporter/orders/dcdaf886-56d6-4d84-89d6-a21ec18d0bc1/detail-summary",
 };
 
 export const fetcherOrderDetail = async (cacheKey) => {

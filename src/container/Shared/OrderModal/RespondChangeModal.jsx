@@ -146,7 +146,7 @@ const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
                           </h3>
                         </div>
 
-                        <div className="relative mb-6 grid grid-cols-2 gap-12 px-12">
+                        <div className="relative grid grid-cols-2 gap-12 px-12">
                           {/* Vertical divider line */}
                           <div className="absolute bottom-0 left-1/2 top-0 z-[3] w-0 -translate-x-1/2 border-l border-solid border-neutral-400" />
 
@@ -178,7 +178,7 @@ const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
 
                     {/* Divider if both sections exist */}
                     {changeDetails.changeType === "LOCATION_AND_TIME" && (
-                      <div className="mb-6 border-b border-neutral-400"></div>
+                      <div className="my-6 border-b border-neutral-400"></div>
                     )}
 
                     {/* Location Change Section */}
@@ -439,8 +439,12 @@ const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
                       <h3 className="text-sm font-bold leading-[120%] text-black">
                         Penyesuaian Pendapatan
                       </h3>
-                      <InfoTooltip side="right">
-                        <p>{changeDetails.incomeAdjustment.reason}</p>
+                      <InfoTooltip side="top">
+                        <p>
+                          Penyesuaian pendapatan hanya estimasi. Pendapatan yang
+                          kamu terima menyesuaikan respon perubahan yang kamu
+                          kirimkan.
+                        </p>
                       </InfoTooltip>
                     </div>
                     <div className="flex flex-1 items-center justify-end gap-4">
@@ -471,25 +475,28 @@ const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
             )}
           </div>
 
-          {/* Footer */}
-          <div className="flex items-center justify-center gap-3 px-6 pb-4">
-            <Button
-              variant="muattrans-primary-secondary"
-              onClick={handleRejectChange}
-              disabled={isLoading}
-              className="w-[112px] text-sm md:h-[34px]"
-            >
-              Batal
-            </Button>
-            <Button
-              variant="muattrans-primary"
-              onClick={handleAcceptChange}
-              disabled={isLoading || isLoadingDetails}
-              className="w-[180px] text-sm md:h-[34px]"
-            >
-              {isLoading ? "Memproses..." : "Respon Perubahan"}
-            </Button>
-          </div>
+          {/* Footer - Only show when hasAdjustment is true AND changeType is LOCATION_AND_TIME */}
+          {changeDetails?.incomeAdjustment?.hasAdjustment &&
+            changeDetails?.changeType === "LOCATION_AND_TIME" && (
+              <div className="flex items-center justify-center gap-3 px-6 pb-4">
+                <Button
+                  variant="muattrans-primary-secondary"
+                  onClick={handleRejectChange}
+                  disabled={isLoading}
+                  className="w-[112px] text-sm md:h-[34px]"
+                >
+                  Batal
+                </Button>
+                <Button
+                  variant="muattrans-primary"
+                  onClick={handleAcceptChange}
+                  disabled={isLoading || isLoadingDetails}
+                  className="w-[180px] text-sm md:h-[34px]"
+                >
+                  {isLoading ? "Memproses..." : "Respon Perubahan"}
+                </Button>
+              </div>
+            )}
         </div>
       </ModalContent>
     </Modal>

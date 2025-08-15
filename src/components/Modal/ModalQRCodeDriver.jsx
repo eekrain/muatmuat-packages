@@ -8,6 +8,7 @@ import {
   ModalTrigger,
 } from "@/components/Modal/Modal";
 import useDevice from "@/hooks/use-device";
+import { useTranslation } from "@/hooks/use-translation";
 import { getStatusScanMetadata } from "@/lib/normalizers/detailpesanan/getStatusScanMetadata";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -20,6 +21,7 @@ export const ModalQRCodeDriver = ({
   children,
   showShareButton = true,
 }) => {
+  const { t } = useTranslation();
   const { isMobile } = useDevice();
   const { qrData } = useGetDriverQRCodeById({
     orderId,
@@ -32,7 +34,13 @@ export const ModalQRCodeDriver = ({
     navigator.clipboard.writeText(
       `${window.location.origin}/orders/${orderId}/drivers/${driverId}/qr-code`
     );
-    toast.success("Link QR Code berhasil disalin");
+    toast.success(
+      t(
+        "ModalQRCodeDriver.toastQRCodeCopied",
+        {},
+        "Link QR Code berhasil disalin"
+      )
+    );
   };
 
   if (!qrData) return null;
@@ -52,7 +60,7 @@ export const ModalQRCodeDriver = ({
         <div className="flex w-full flex-col items-center gap-y-6 p-[18px] md:px-6 md:py-9">
           <div>
             <h1 className="mb-[18px] text-base font-bold leading-[19.2px] text-neutral-900 md:mb-6">
-              {title}
+              {t("ModalQRCodeDriver.titleQRCodeLocation", {}, title)}
             </h1>
             <div className="flex flex-col items-center gap-y-3">
               <BadgeStatusPesanan
@@ -76,8 +84,11 @@ export const ModalQRCodeDriver = ({
           </div>
           <img src={qrData?.qrCodeImage} width={124} height={124} alt="" />
           <span className="text-center text-sm font-medium leading-[16.8px] text-neutral-900">
-            *Tunjukkan QR Code ini kepada pihak driver agar dapat melanjutkan ke
-            proses muat.
+            {t(
+              "ModalQRCodeDriver.instructionShowQRCode",
+              {},
+              "*Tunjukkan QR Code ini kepada pihak driver agar dapat melanjutkan ke proses muat."
+            )}
           </span>
           {showShareButton && (
             <Button
@@ -85,7 +96,7 @@ export const ModalQRCodeDriver = ({
               onClick={handleCopyQrCode}
               variant="muatparts-primary"
             >
-              Bagikan QR Code
+              {t("ModalQRCodeDriver.buttonShareQRCode", {}, "Bagikan QR Code")}
             </Button>
           )}
         </div>

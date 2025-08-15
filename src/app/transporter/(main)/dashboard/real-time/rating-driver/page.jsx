@@ -1,11 +1,29 @@
+"use client";
+
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
+import { useTranslation } from "@/hooks/use-translation";
 
 import DriverRatingTable from "./components/DriverRatingTable";
 
 const RatingDriverPage = () => {
+  const { t } = useTranslation();
+
   const breadcrumbData = [
-    { name: "Dashboard Real-time", href: "/dashboard/real-time" },
-    { name: "Rating Driver Keseluruhan" },
+    {
+      name: t(
+        "RatingDriverPage.breadcrumbDashboard",
+        {},
+        "Dashboard Real-time"
+      ),
+      href: "/dashboard/real-time",
+    },
+    {
+      name: t(
+        "RatingDriverPage.titleOverallDriverRating",
+        {},
+        "Rating Driver Keseluruhan"
+      ),
+    },
   ];
 
   return (
