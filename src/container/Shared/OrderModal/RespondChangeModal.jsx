@@ -9,15 +9,16 @@ import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
-import { toast } from "@/lib/toast";
 import {
   formatCurrency,
   formatDistance,
   useGetOrderChangeDetail,
 } from "@/services/Transporter/monitoring/order-change/getOrderChangeDetail";
 
+import RespondChangeFormModal from "./RespondChangeFormModal";
+
 const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [showFormModal, setShowFormModal] = useState(false);
 
   // Fetch order change details
   const { data: changeDetails, isLoading: isLoadingDetails } =
@@ -25,21 +26,13 @@ const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
       enabled: isOpen && !!orderData?.id,
     });
 
-  const handleAcceptChange = async () => {
-    setIsLoading(true);
-    try {
-      // TODO: Call API to accept change
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+  const handleAcceptChange = () => {
+    setShowFormModal(true);
+  };
 
-      toast.success(
-        `Berhasil mengirimkan respon perubahan untuk pesanan ${orderData?.orderCode}`
-      );
-      onClose();
-    } catch (error) {
-      toast.error("Gagal merespon perubahan. Silakan coba lagi.");
-    } finally {
-      setIsLoading(false);
-    }
+  const handleFormModalClose = () => {
+    setShowFormModal(false);
+    onClose(); // Close the parent modal when form modal is closed
   };
 
   const handleRejectChange = () => {
@@ -482,7 +475,7 @@ const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
                 <Button
                   variant="muattrans-primary-secondary"
                   onClick={handleRejectChange}
-                  disabled={isLoading}
+                  disabled={false}
                   className="w-[112px] text-sm md:h-[34px]"
                 >
                   Batal
@@ -490,15 +483,22 @@ const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
                 <Button
                   variant="muattrans-primary"
                   onClick={handleAcceptChange}
-                  disabled={isLoading || isLoadingDetails}
+                  disabled={isLoadingDetails}
                   className="w-[180px] text-sm md:h-[34px]"
                 >
-                  {isLoading ? "Memproses..." : "Respon Perubahan"}
+                  Respon Perubahan
                 </Button>
               </div>
             )}
         </div>
       </ModalContent>
+
+      {/* Form Modal */}
+      <RespondChangeFormModal
+        isOpen={showFormModal}
+        onClose={handleFormModalClose}
+        orderData={orderData}
+      />
     </Modal>
   );
 };

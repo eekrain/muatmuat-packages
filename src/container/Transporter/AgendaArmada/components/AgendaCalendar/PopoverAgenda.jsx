@@ -1,7 +1,14 @@
 "use client";
 
+import React from "react";
+
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/Popover/Popover";
 
 // import { cn } from "@/lib/utils";
 
@@ -244,4 +251,76 @@ const PopoverAgenda = ({ agendaData }) => {
   );
 };
 
-export default PopoverAgenda;
+// Transformation logic is now MOVED inside this file
+const statusMapping = {
+  BERTUGAS: "Bertugas",
+  PENGIRIMAN_SELESAI: "Pengiriman Selesai",
+  NON_AKTIF: "Non Aktif",
+  MENUNGGU_JAM_MUAT: "Menunggu Jam Muat",
+  DIJADWALKAN: "Dijadwalkan",
+};
+
+const transformToAgendaData = (data) => {
+  return {
+    status: statusMapping[data.statusCode],
+    startDate: "02 Jan 2025 11:00 WIB",
+    endDate: "02 Jan 2025 15:00 WIB",
+    invoice: "INV/MTR/120125/0002",
+    SOS: {
+      reason: "Muatan perlu dipindah",
+      active: data.hasSosIssue || false,
+    },
+    items: [
+      { name: "Semen", weight: "250 kg" },
+      { name: "Paku", weight: "50 kg" },
+      { name: "Cat Tembok", weight: "100 kg" },
+      { name: "Pipa PVC", weight: "50 kg" },
+      { name: "Keramik", weight: "50 kg" },
+    ],
+    name: data.driverName,
+    phone: "0821208991231",
+    vehicle: "Colt Diesel Engkel - Box",
+    licensePlate: "L 9812 AX",
+    location: data.currentLocation,
+    estimatedDistance: data.estimation,
+    route: {
+      pickup: {
+        city:
+          data.dataMuat?.subtitle?.split(",")[0] ||
+          data.dataMuat?.subtitle ||
+          "Unknown Location",
+        district: data.dataMuat?.subtitle?.split(",")[1]?.trim() || "",
+      },
+      delivery: {
+        city:
+          data.dataBongkar?.subtitle?.split(",")[0] ||
+          data.dataBongkar?.subtitle ||
+          "Unknown Location",
+        district: data.dataBongkar?.subtitle?.split(",")[1]?.trim() || "",
+      },
+      estimatedDistance: `Est. ${data.distanceRemaining || 0} km`,
+    },
+  };
+};
+
+// FIX 1: Component now accepts all the raw props it needs for the transformation
+const InfoPopover = React.memo(({ data }) => {
+  // FIX 2: The useMemo hook is now INSIDE this component
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button>
+          <IconComponent src="/icons/info16.svg" className="text-neutral-700" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="p-0">
+        <pre>{JSON.stringify(data, null, 2)}</pre>
+      </PopoverContent>
+    </Popover>
+  );
+});
+
+InfoPopover.displayName = "InfoPopover";
+
+export default InfoPopover;

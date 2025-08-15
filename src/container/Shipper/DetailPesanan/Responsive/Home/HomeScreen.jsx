@@ -85,6 +85,11 @@ const DetailPesananScreen = ({
     setIsOpenBottomsheetAlasanPembatalan,
   ] = useState(false);
 
+  // LD G2.13
+  // useEffect(() => {
+  //   toast.success("Pesanan kamu berhasil terkonfirmasi!");
+  // }, []);
+
   const hasConfirmationWaitingAlert = useMemo(() => {
     const hasConfirmAlert =
       isShowWaitFleetAlert ||

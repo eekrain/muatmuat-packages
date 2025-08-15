@@ -30,7 +30,7 @@ const RingkasanPendapatan = ({ dataOrderDetail }) => {
             <CardPayment.Section title="Potongan PPh">
               <CardPayment.LineItem
                 label="Nominal Potongan PPh"
-                value={idrFormat(dataOrderDetail?.incomeSummary.taxAmount)}
+                value={`-${idrFormat(dataOrderDetail?.incomeSummary.taxAmount)}`}
                 valueClassName="text-error-400"
               />
             </CardPayment.Section>
