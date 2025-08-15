@@ -3,23 +3,18 @@ import React from "react";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Search from "@/components/Search/Search";
-import { useGetAvailableTransporters } from "@/services/CS/monitoring/permintaan-angkut/getAvailableTransport";
+import { useGetSavedTransporters } from "@/services/CS/monitoring/permintaan-angkut/getSavedTransport";
 
-// const companyName = "PT Batavia Prosperindo Angkut Teknologi Indonesia Trans Tbk";
-
-const ModalTransportTersedia = ({ onClose, requestId = "dummy-id" }) => {
+const ModalTransportDisimpan = ({ onClose }) => {
   // Ambil data transporter dari mock API
-  const { data, isLoading } = useGetAvailableTransporters(requestId);
+  const { data, isLoading } = useGetSavedTransporters();
   const allTransporters = data?.transporters || [];
   // State untuk hasil search
   const [searchValue, setSearchValue] = React.useState("");
   const [filteredTransporters, setFilteredTransporters] =
     React.useState(allTransporters);
-  // Untuk demo, ambil transporter pertama
-  const transporter = filteredTransporters[0] || {};
-  const companyName = transporter.companyName || "-";
 
-  // State untuk expand/hide daftar armada per card
+  // State untuk expand/hide detail per card
   const [expandedCardId, setExpandedCardId] = React.useState(null);
   const handleToggleExpand = (id) => {
     setExpandedCardId((prev) => (prev === id ? null : id));
@@ -37,15 +32,7 @@ const ModalTransportTersedia = ({ onClose, requestId = "dummy-id" }) => {
       allTransporters.filter(
         (t) =>
           t.companyName.toLowerCase().includes(lower) ||
-          (t.fleet &&
-            (String(t.fleet.matchingUnits).includes(lower) ||
-              String(t.fleet.activeUnits).includes(lower) ||
-              String(t.fleet.inactiveUnits).includes(lower))) ||
-          t.expandedDetails?.fleetDetails?.some(
-            (fleet) =>
-              fleet.licensePlate.toLowerCase().includes(lower) ||
-              fleet.driver.name.toLowerCase().includes(lower)
-          )
+          t.tags?.some((tag) => tag.toLowerCase().includes(lower))
       )
     );
   };
@@ -54,13 +41,14 @@ const ModalTransportTersedia = ({ onClose, requestId = "dummy-id" }) => {
   React.useEffect(() => {
     setFilteredTransporters(allTransporters);
   }, [allTransporters]);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
       <div className="relative w-[600px] rounded-xl bg-white p-6 shadow-lg">
         {/* Header */}
         <div className="mb-4 flex items-center justify-center">
           <h2 className="text-[16px] font-bold text-neutral-900">
-            Transporter Tersedia
+            Transporter Menyimpan Permintaan
           </h2>
           <button
             onClick={onClose}
@@ -71,7 +59,7 @@ const ModalTransportTersedia = ({ onClose, requestId = "dummy-id" }) => {
         </div>
         {/* Search Bar */}
         <Search
-          placeholder="Cari No. Polisi / Nama Driver / Transporter "
+          placeholder="Cari Nama Transporter / Tag / Status"
           onSearch={handleSearch}
           autoSearch={true}
           debounceTime={300}
@@ -103,14 +91,6 @@ const ModalTransportTersedia = ({ onClose, requestId = "dummy-id" }) => {
                 className="relative mb-3 rounded-xl border border-neutral-400"
               >
                 <div className="rounded-xl bg-neutral-100">
-                  {/* Status Badge - pindahkan ke dalam card container */}
-                  {transporter.history?.hasRejectedThisRequest && (
-                    <div className="absolute -top-0 right-0 z-10">
-                      <div className="rounded-bl-lg rounded-tr-xl bg-red-500 px-5 py-[6px] text-xs font-semibold text-white shadow-lg">
-                        Menolak Permintaan
-                      </div>
-                    </div>
-                  )}
                   <div className="flex items-center justify-between p-4">
                     {/* Left: Logo & Info */}
                     <div className="flex items-center gap-3">
@@ -128,7 +108,8 @@ const ModalTransportTersedia = ({ onClose, requestId = "dummy-id" }) => {
                             : transporter.companyName}
                         </div>
                         <div className="mt-2 text-xs font-medium text-neutral-900">
-                          {transporter.fleet.matchingUnits} Armada Yang Cocok
+                          Disimpan pada{" "}
+                          {new Date(transporter.savedAt).toLocaleDateString()}
                         </div>
                         <div className="mt-2 flex items-center gap-4">
                           <span className="flex items-center gap-1 text-[10px] font-medium text-neutral-900">
@@ -145,6 +126,21 @@ const ModalTransportTersedia = ({ onClose, requestId = "dummy-id" }) => {
                             />
                             {transporter.fleet.inactiveUnits} Armada Nonaktif
                           </span>
+                        </div>
+                        <div className="mt-1 text-[10px] font-medium text-neutral-600">
+                          Disimpan :{" "}
+                          {new Date(transporter.savedAt).toLocaleString(
+                            "id-ID",
+                            {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: false,
+                            }
+                          )}{" "}
+                          WIB
                         </div>
                       </div>
                     </div>
@@ -181,14 +177,13 @@ const ModalTransportTersedia = ({ onClose, requestId = "dummy-id" }) => {
                   <div className="px-4 pb-4">
                     <div className="text-xs">
                       {/* Status/Info tambahan bisa di sini */}
-                      {transporter.status.activityStatus === "INACTIVE" ? (
+                      {transporter.currentStatus.activityStatus ===
+                      "INACTIVE" ? (
                         <>
                           <div className="mb-3 border-b border-neutral-400"></div>
-
                           <span className="font-medium text-error-400">
-                            {`Admin Terdeteksi Sering Idle (${transporter.history?.canceledOrders ?? 0}/${transporter.history?.completedOrders ?? 0} Order)`}
+                            {`Admin Terdeteksi Sering Idle (${transporter.usageStats.canceledOrders}/${transporter.usageStats.totalAssignments} Order)`}
                           </span>
-                          {/* Detail link dummy */}
                           <span className="ml-1 cursor-pointer text-xs font-medium text-primary-700">
                             Detail
                           </span>
@@ -205,59 +200,61 @@ const ModalTransportTersedia = ({ onClose, requestId = "dummy-id" }) => {
                         Daftar Armada Yang Cocok
                       </div>
                       <div className="space-y-3">
-                        {transporter.expandedDetails?.fleetDetails?.map(
-                          (fleet) => (
-                            <div
-                              key={fleet.id}
-                              className="flex items-center justify-between border-b border-neutral-400 pb-3"
-                            >
-                              <div className="flex items-center gap-3">
-                                <img
-                                  src="/truck-placeholder.png"
-                                  alt="Truck"
-                                  className="h-14 w-14 rounded border"
-                                />
-                                <div>
-                                  <div className="text-xs font-bold text-neutral-900">
-                                    {fleet.licensePlate} -{" "}
-                                    <span className="font-semibold">
-                                      {fleet.driver.name.length > 43
-                                        ? `${fleet.driver.name.slice(0, 43)}...`
-                                        : fleet.driver.name}
-                                    </span>
-                                  </div>
-                                  <div className="mt-1 flex items-center gap-1 text-[10px] font-medium text-neutral-600">
-                                    <IconComponent
-                                      src="/icons/location-driver.svg"
-                                      className="h-[14px] w-[14px]"
-                                    />
-                                    1,2 km dari lokasi muat -
-                                    <span className="font-semibold text-neutral-900">
-                                      {(() => {
-                                        const lokasi =
-                                          "Kec. Kepulauan Seribu Selatan Seribu Selatan, DKJ Jakarta";
-                                        return lokasi.length > 48
-                                          ? `${lokasi.slice(0, 48)}...`
-                                          : lokasi;
-                                      })()}
-                                    </span>
-                                  </div>
+                        {transporter.fleetDetails?.map((fleet) => (
+                          <div
+                            key={fleet.id}
+                            className="flex items-center justify-between border-b border-neutral-400 pb-3"
+                          >
+                            <div className="flex items-center gap-3">
+                              <img
+                                src={
+                                  fleet.truckImage || "/truck-placeholder.png"
+                                }
+                                alt="Truck"
+                                className="h-14 w-14 rounded border"
+                              />
+                              <div>
+                                <div className="text-xs font-bold text-neutral-900">
+                                  {fleet.licensePlate} -{" "}
+                                  <span className="font-semibold">
+                                    {fleet.driver?.name &&
+                                    fleet.driver.name.length > 43
+                                      ? `${fleet.driver.name.slice(0, 43)}...`
+                                      : fleet.driver?.name || "-"}
+                                  </span>
+                                </div>
+                                <div className="mt-1 flex items-center gap-1 text-[10px] font-medium text-neutral-600">
+                                  <IconComponent
+                                    src="/icons/location-driver.svg"
+                                    className="h-[14px] w-[14px]"
+                                  />
+                                  1,2 km dari lokasi muat -
+                                  <span className="font-semibold text-neutral-900">
+                                    {(() => {
+                                      const lokasi =
+                                        fleet.lastLocation?.address ||
+                                        "Kec. Kepulauan Seribu Selatan Seribu Selatan, DKJ Jakarta";
+                                      return lokasi.length > 48
+                                        ? `${lokasi.slice(0, 48)}...`
+                                        : lokasi;
+                                    })()}
+                                  </span>
                                 </div>
                               </div>
-                              <span
-                                className={`flex h-6 w-[70px] items-center justify-center rounded-md text-xs font-semibold ${
-                                  fleet.operationalStatus === "READY_FOR_ORDER"
-                                    ? "bg-success-50 text-success-400"
-                                    : "bg-neutral-200 text-neutral-600"
-                                } `}
-                              >
-                                {fleet.operationalStatus === "READY_FOR_ORDER"
-                                  ? "Aktif"
-                                  : "Nonaktif"}
-                              </span>
                             </div>
-                          )
-                        )}
+                            <span
+                              className={`flex h-6 w-[70px] items-center justify-center rounded-md text-xs font-semibold ${
+                                fleet.operationalStatus === "READY_FOR_ORDER"
+                                  ? "bg-success-50 text-success-400"
+                                  : "bg-neutral-200 text-neutral-600"
+                              } `}
+                            >
+                              {fleet.operationalStatus === "READY_FOR_ORDER"
+                                ? "Aktif"
+                                : "Nonaktif"}
+                            </span>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -271,4 +268,4 @@ const ModalTransportTersedia = ({ onClose, requestId = "dummy-id" }) => {
   );
 };
 
-export default ModalTransportTersedia;
+export default ModalTransportDisimpan;

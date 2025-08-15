@@ -7,10 +7,12 @@ import DashboardDataTable from "@/app/transporter/(main)/dashboard/real-time/com
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import { useTranslation } from "@/hooks/use-translation";
 
 import TruncatedTooltip from "../../components/TruncatedTooltip";
 
 const DriverRatingTable = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const [tableData, setTableData] = useState({
     drivers: [],
@@ -29,8 +31,6 @@ const DriverRatingTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
-
-  // States to be controlled by the parent
   const [searchValue, setSearchValue] = useState("");
   const [filters, setFilters] = useState({});
 
@@ -38,10 +38,7 @@ const DriverRatingTable = () => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
-      const params = new URLSearchParams({
-        page: currentPage,
-        limit: perPage,
-      });
+      const params = new URLSearchParams({ page: currentPage, limit: perPage });
       if (searchValue) params.append("search", searchValue);
       if (sortConfig.sort) {
         params.append("sort", sortConfig.sort);
@@ -61,20 +58,26 @@ const DriverRatingTable = () => {
         setTableData(result.Data);
       } catch (e) {
         console.error("Failed to fetch data:", e);
-        setError("Gagal mengambil data. Silakan coba lagi.");
+        setError(
+          t(
+            "DriverRatingTable.messageErrorFetch",
+            {},
+            "Gagal mengambil data. Silakan coba lagi."
+          )
+        );
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [currentPage, perPage, sortConfig, searchValue, filters]);
+  }, [currentPage, perPage, sortConfig, searchValue, filters, t]);
 
   const columns = useMemo(
     () => [
       {
         key: "no",
-        header: "No.",
+        header: t("DriverRatingTable.columnNo", {}, "No."),
         width: "100px",
         className: "!text-xs",
         sortable: false,
@@ -86,7 +89,7 @@ const DriverRatingTable = () => {
       },
       {
         key: "name",
-        header: "Driver",
+        header: t("DriverRatingTable.columnDriver", {}, "Driver"),
         width: "380px",
         sortable: true,
         render: (row) => (
@@ -105,7 +108,7 @@ const DriverRatingTable = () => {
       },
       {
         key: "rating",
-        header: "Rating",
+        header: t("DriverRatingTable.columnRating", {}, "Rating"),
         sortable: true,
         render: (row) => (
           <div className="flex items-center gap-1 font-semibold">
@@ -119,11 +122,15 @@ const DriverRatingTable = () => {
       },
       {
         key: "orderCount",
-        header: "Jumlah Pesanan",
+        header: t("DriverRatingTable.columnOrderCount", {}, "Jumlah Pesanan"),
         sortable: true,
         render: (row) => (
           <p className="text-xs font-medium text-neutral-900">
-            {row.orderCount} Pesanan
+            {t(
+              "DriverRatingTable.unitOrders",
+              { count: row.orderCount },
+              "{count} Pesanan"
+            )}
           </p>
         ),
       },
@@ -140,32 +147,65 @@ const DriverRatingTable = () => {
               router.push(`/dashboard/real-time/rating-driver/${row.id}`)
             }
           >
-            Riwayat
+            {t("DriverRatingTable.buttonHistory", {}, "Riwayat")}
           </Button>
         ),
       },
     ],
-    [router, currentPage, perPage]
+    [router, currentPage, perPage, t]
   );
 
-  const filterConfig = {
-    categories: [{ key: "rating", label: "Rating", type: "checkbox-multi" }],
-    data: {
-      rating: [
-        { id: 5, label: "5 Bintang", icon: "/icons/star_icon.svg" },
-        { id: 4, label: "4 Bintang", icon: "/icons/star_icon.svg" },
-        { id: 3, label: "3 Bintang", icon: "/icons/star_icon.svg" },
-        { id: 2, label: "2 Bintang", icon: "/icons/star_icon.svg" },
-        { id: 1, label: "1 Bintang", icon: "/icons/star_icon.svg" },
+  const filterConfig = useMemo(
+    () => ({
+      categories: [
+        {
+          key: "rating",
+          label: t("DriverRatingTable.filterLabelRating", {}, "Rating"),
+          type: "checkbox-multi",
+        },
       ],
-    },
-  };
+      data: {
+        rating: [
+          {
+            id: 5,
+            label: t("DriverRatingTable.filterOption5Stars", {}, "5 Bintang"),
+            icon: "/icons/star_icon.svg",
+          },
+          {
+            id: 4,
+            label: t("DriverRatingTable.filterOption4Stars", {}, "4 Bintang"),
+            icon: "/icons/star_icon.svg",
+          },
+          {
+            id: 3,
+            label: t("DriverRatingTable.filterOption3Stars", {}, "3 Bintang"),
+            icon: "/icons/star_icon.svg",
+          },
+          {
+            id: 2,
+            label: t("DriverRatingTable.filterOption2Stars", {}, "2 Bintang"),
+            icon: "/icons/star_icon.svg",
+          },
+          {
+            id: 1,
+            label: t("DriverRatingTable.filterOption1Star", {}, "1 Bintang"),
+            icon: "/icons/star_icon.svg",
+          },
+        ],
+      },
+    }),
+    [t]
+  );
 
   return (
     <>
       <div className="flex w-full items-center justify-between">
         <PageTitle className={"!leading-0 mb-0 self-center"} withBack={true}>
-          Rating Driver Keseluruhan
+          {t(
+            "RatingDriverPage.titleOverallDriverRating",
+            {},
+            "Rating Driver Keseluruhan"
+          )}
         </PageTitle>
         <Button
           variant="muattrans-primary"
@@ -177,7 +217,7 @@ const DriverRatingTable = () => {
           }}
           iconLeft="/icons/download16.svg"
         >
-          Unduh
+          {t("DriverRatingTable.buttonDownload", {}, "Unduh")}
         </Button>
       </div>
 
@@ -195,15 +235,36 @@ const DriverRatingTable = () => {
         activeFilters={filters}
         onFilterChange={setFilters}
         onSort={(sort, order) => setSortConfig({ sort, order })}
-        searchPlaceholder="Cari Nama Driver / No WhatsApp"
+        searchPlaceholder={t(
+          "DriverRatingTable.searchPlaceholder",
+          {},
+          "Cari Nama Driver / No WhatsApp"
+        )}
         filterConfig={filterConfig}
-        firsTimerTitle="Oops, rating driver masih kosong"
-        firstTimerSubtitle="Mulai terima permintaan sekarang untuk menampilkan data rating driver disini"
-        firstTimerButtonText="Lihat Permintaan"
+        firsTimerTitle={t(
+          "DriverRatingTable.emptyStateTitle",
+          {},
+          "Oops, rating driver masih kosong"
+        )}
+        firstTimerSubtitle={t(
+          "DriverRatingTable.emptyStateSubtitle",
+          {},
+          "Mulai terima permintaan sekarang untuk menampilkan data rating driver disini"
+        )}
+        firstTimerButtonText={t(
+          "DriverRatingTable.emptyStateButton",
+          {},
+          "Lihat Permintaan"
+        )}
         firstTimerButtonLink="/monitoring"
         headerActions={
           <div className="text-sm font-semibold text-neutral-900">
-            Rating Driver Keseluruhan :
+            {t(
+              "DriverRatingTable.headerOverallRating",
+              {},
+              "Rating Driver Keseluruhan"
+            )}{" "}
+            :
             <span className="ml-1 text-base font-bold">
               {Number(tableData.summary.overallAverageRating).toFixed(1)}
               <span className="text-sm font-medium text-neutral-600">/5</span>
