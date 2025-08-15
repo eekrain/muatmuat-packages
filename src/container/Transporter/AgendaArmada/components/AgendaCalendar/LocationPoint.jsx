@@ -18,9 +18,21 @@ const bulletStyles = {
  * created with a border to avoid nested divs.
  * @param {LocationPointProps} props
  */
-const LocationPoint = ({ title, subtitle, className, type = "muat" }) => {
+const LocationPoint = ({
+  title,
+  subtitle,
+  className,
+  style,
+  type = "muat",
+}) => {
   return (
-    <div className={cn("flex basis-1/2 items-center gap-[4.5px]", className)}>
+    <div
+      className={cn(
+        "grid grid-cols-[12px_1fr] items-center gap-[4.5px]",
+        className
+      )}
+      style={style}
+    >
       {/* Icon implementation:
         - A single div is used as requested.
         - `box-content` ensures the border is added outside the element's dimensions.
@@ -36,13 +48,13 @@ const LocationPoint = ({ title, subtitle, className, type = "muat" }) => {
         )}
       />
 
-      <div className="flex flex-col">
-        <p className="text-[8px] font-medium leading-[1.3] text-[#000000]">
+      <div className="flex flex-col gap-0.5">
+        <span className="line-clamp-1 break-all text-[8px] font-medium leading-none text-[#000000]">
           {title}
-        </p>
-        <p className="text-xxs font-semibold leading-[1.3] text-[#000000]">
+        </span>
+        <span className="line-clamp-1 break-all text-xxs font-semibold leading-none text-[#000000]">
           {subtitle}
-        </p>
+        </span>
       </div>
     </div>
   );
