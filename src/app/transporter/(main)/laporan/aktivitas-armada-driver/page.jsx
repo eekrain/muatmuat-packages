@@ -2,16 +2,13 @@
 
 import { useState } from "react";
 
-import { Download, Search } from "lucide-react";
+import { Download } from "lucide-react";
 
 import Button from "@/components/Button/Button";
-import Card, { CardContent } from "@/components/Card/Card";
-import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
-import FilterDropdown from "@/components/FilterDropdown/FilterDropdown";
-import Input from "@/components/Input/Input";
-import LaporanAktivitasArmadaDriverTable from "@/components/Report/LaporanAktivitasArmadaDriverTable";
-import MuatBongkarStepper from "@/components/Stepper/MuatBongkarStepper";
+import EmptyStateAktivitas from "@/components/Report/EmptyStateAktivitas";
+import LaporanAktivitasArmadaTable from "@/components/Report/LaporanAktivitasArmadaTable";
+import LaporanAktivitasDriverTable from "@/components/Report/LaporanAktivitasDriverTable";
 import {
   Tabs,
   TabsList,
@@ -230,245 +227,6 @@ export default function Page() {
     },
   ];
 
-  // Table columns for Armada
-  const armadaColumns = [
-    {
-      header: "No. Polisi",
-      key: "licensePlate",
-      sortable: true,
-      width: "250px",
-      render: (row) => (
-        <div className="flex items-center gap-3">
-          <img
-            src={row.image}
-            alt="Vehicle"
-            className="h-12 w-12 rounded object-cover"
-          />
-          <div>
-            <div className="font-semibold text-gray-900">
-              {row.licensePlate}
-            </div>
-            <div className="text-xs text-gray-600">{row.vehicleType}</div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      header: "Lokasi Terkini",
-      key: "currentLocation",
-      sortable: false,
-      width: "180px",
-    },
-    {
-      header: "Kode Pesanan Aktif",
-      key: "activeOrderCode",
-      sortable: true,
-      width: "100px",
-    },
-    {
-      header: "Rute Pesanan Aktif",
-      key: "activeOrderRoute",
-      sortable: true,
-      width: "220px",
-      render: (row) => {
-        if (!row.activeOrderRoute || row.activeOrderRoute === "Belum Ada") {
-          return <div className="text-sm">Belum Ada</div>;
-        }
-
-        // Parse route data to extract pickup and dropoff locations
-        const routeData = row.activeOrderRoute;
-        let pickupLocations = [];
-        let dropoffLocations = [];
-
-        if (routeData.origin && routeData.destination) {
-          pickupLocations = [routeData.origin];
-          dropoffLocations = [routeData.destination];
-        }
-
-        return (
-          <div className="space-y-2">
-            {routeData.estimate && (
-              <div className="text-xs font-medium text-neutral-700">
-                Estimasi: {routeData.estimate}
-              </div>
-            )}
-            <MuatBongkarStepper
-              pickupLocations={pickupLocations}
-              dropoffLocations={dropoffLocations}
-              appearance={{
-                titleClassName: "text-xs font-medium text-neutral-900",
-              }}
-            />
-          </div>
-        );
-      },
-    },
-    {
-      header: "Status",
-      key: "status",
-      sortable: true,
-      width: "200px",
-      render: (row) => {
-        let bgColor = "bg-gray-200";
-        let textColor = "text-gray-600";
-
-        if (row.statusType === "scheduled") {
-          bgColor = "bg-yellow-100";
-          textColor = "text-yellow-900";
-        } else if (row.statusType === "waiting") {
-          bgColor = "bg-orange-100";
-          textColor = "text-orange-900";
-        } else if (row.statusType === "on_duty") {
-          bgColor = "bg-blue-100";
-          textColor = "text-blue-900";
-        } else if (row.statusType === "completed") {
-          bgColor = "bg-green-100";
-          textColor = "text-green-900";
-        } else if (row.statusType === "inactive") {
-          bgColor = "bg-gray-100";
-          textColor = "text-gray-600";
-        }
-
-        return (
-          <span
-            className={`inline-flex w-full items-center justify-center rounded-md px-3 py-1.5 text-xs font-semibold ${bgColor} ${textColor}`}
-          >
-            {row.status}
-          </span>
-        );
-      },
-    },
-    {
-      header: "Action",
-      key: "action",
-      sortable: false,
-      width: "100px",
-      render: (_row) => <Button className="h-8 px-4 text-xs">Detail</Button>,
-    },
-  ];
-
-  // Table columns for Driver
-  const driverColumns = [
-    {
-      header: "Nama Driver",
-      key: "name",
-      sortable: true,
-      width: "200px",
-      render: (row) => (
-        <div className="flex items-center gap-3">
-          <img
-            src={row.image}
-            alt="Driver"
-            className="h-10 w-10 rounded-full object-cover"
-          />
-          <div>
-            <div className="font-semibold text-gray-900">{row.name}</div>
-            <div className="text-xs text-gray-600">{row.phoneNumber}</div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      header: "Armada",
-      key: "armada",
-      sortable: true,
-      width: "250px",
-      render: (row) => (
-        <div>
-          <div className="font-semibold text-gray-900">{row.armada}</div>
-          <div className="text-xs text-gray-600">{row.vehicleType}</div>
-          <div className="text-xs text-gray-500">{row.location}</div>
-        </div>
-      ),
-    },
-    {
-      header: "Kode Pesanan Aktif",
-      key: "activeOrderCode",
-      sortable: true,
-      width: "150px",
-    },
-    {
-      header: "Rute Pesanan Aktif",
-      key: "activeOrderRoute",
-      sortable: true,
-      width: "220px",
-      render: (row) => {
-        if (!row.activeOrderRoute || row.activeOrderRoute === "Belum Ada") {
-          return <div className="text-sm">Belum Ada</div>;
-        }
-
-        // Parse route data to extract pickup and dropoff locations
-        const routeData = row.activeOrderRoute;
-        let pickupLocations = [];
-        let dropoffLocations = [];
-
-        if (routeData.origin && routeData.destination) {
-          pickupLocations = [routeData.origin];
-          dropoffLocations = [routeData.destination];
-        }
-
-        return (
-          <div className="space-y-2">
-            {routeData.estimate && (
-              <div className="text-xs font-medium text-neutral-700">
-                Estimasi: {routeData.estimate}
-              </div>
-            )}
-            <MuatBongkarStepper
-              pickupLocations={pickupLocations}
-              dropoffLocations={dropoffLocations}
-              appearance={{
-                titleClassName: "text-xs font-medium text-neutral-900",
-              }}
-            />
-          </div>
-        );
-      },
-    },
-    {
-      header: "Status",
-      key: "status",
-      sortable: true,
-      width: "200px",
-      render: (row) => {
-        let bgColor = "bg-gray-200";
-        let textColor = "text-gray-600";
-
-        if (row.statusType === "scheduled") {
-          bgColor = "bg-yellow-100";
-          textColor = "text-yellow-900";
-        } else if (row.statusType === "waiting") {
-          bgColor = "bg-orange-100";
-          textColor = "text-orange-900";
-        } else if (row.statusType === "on_duty") {
-          bgColor = "bg-blue-100";
-          textColor = "text-blue-900";
-        } else if (row.statusType === "completed") {
-          bgColor = "bg-green-100";
-          textColor = "text-green-900";
-        } else if (row.statusType === "inactive") {
-          bgColor = "bg-gray-100";
-          textColor = "text-gray-600";
-        }
-
-        return (
-          <span
-            className={`inline-flex w-full items-center justify-center rounded-md px-3 py-1.5 text-xs font-semibold ${bgColor} ${textColor}`}
-          >
-            {row.status}
-          </span>
-        );
-      },
-    },
-    {
-      header: "Action",
-      key: "action",
-      sortable: false,
-      width: "100px",
-      render: (_row) => <Button className="h-8 px-4 text-xs">Detail</Button>,
-    },
-  ];
-
   // Filter configuration
   const filterConfig = {
     categories: [
@@ -542,18 +300,6 @@ export default function Page() {
     return selectedTab === "armada" ? armadaData : driverData;
   };
 
-  const getCurrentColumns = () => {
-    return selectedTab === "armada" ? armadaColumns : driverColumns;
-  };
-
-  const getTotalCount = () => {
-    return selectedTab === "armada" ? armadaData.length : driverData.length;
-  };
-
-  const getTotalLabel = () => {
-    return selectedTab === "armada" ? "Armada" : "Driver";
-  };
-
   const isCurrentEmpty = getCurrentData().length === 0;
 
   return (
@@ -594,102 +340,63 @@ export default function Page() {
         </div>
       </div>
 
-      {/* Search and Filter Bar */}
-      <Card className="rounded-b-none rounded-t-md border border-none bg-white">
-        <CardContent>
-          <div className="mb-1 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Input
-                type="text"
-                placeholder={
-                  selectedTab === "armada"
-                    ? "Cari No. Pol atau Kode Pesanan"
-                    : "Cari Nama Driver atau Kode Pesanan"
-                }
-                value={searchValue}
-                onChange={(e) => handleSearch(e.target.value)}
-                icon={{
-                  left: <Search className="h-4 w-4 text-gray-400" />,
-                }}
-                appearance={{
-                  containerClassName: "h-9 w-100",
-                  inputClassName: "text-sm",
-                }}
-              />
-              <FilterDropdown
-                categories={filterConfig.categories}
-                data={filterConfig.data}
-                selectedValues={filters}
-                onSelectionChange={handleFilter}
-                searchPlaceholder="Cari {category}"
-              />
-            </div>
-            <div className="text-sm font-semibold text-neutral-900">
-              Total : {getTotalCount()} {getTotalLabel()}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Data Table or Empty */}
       {isCurrentEmpty ? (
-        <DataEmpty
-          title={`Belum ada ${getTotalLabel().toLowerCase()} yang tercatat`}
-          subtitle={`Saat ini belum ada data ${getTotalLabel().toLowerCase()} untuk ditampilkan.`}
-        />
+        <EmptyStateAktivitas type={selectedTab} />
       ) : (
-        <Card className="rounded-b-md rounded-t-none border border-none bg-white">
-          <CardContent className="p-0">
-            <LaporanAktivitasArmadaDriverTable
+        <>
+          {selectedTab === "armada" ? (
+            <LaporanAktivitasArmadaTable
               data={getCurrentData()}
-              columns={getCurrentColumns()}
-              showFilter={false}
-              showSearch={false}
-              showPagination={false}
-              showTotalCount={false}
               currentPage={currentPage}
-              totalPages={Math.ceil(getCurrentData().length / perPage)}
-              totalItems={getCurrentData().length}
+              totalPages={2}
               perPage={perPage}
               onPageChange={handlePageChange}
               onPerPageChange={handlePerPageChange}
-              onSearch={handleSearch}
-              onFilter={handleFilter}
-              onSort={handleSort}
+              onPeriodChange={handleSelectPeriod}
+              onDownload={handleDownload}
+              periodOptions={periodOptions}
+              currentPeriodValue={currentPeriodValue}
+              recentPeriodOptions={recentPeriodOptions}
               filterConfig={filterConfig}
-              className="border-0 [&>div:first-child]:!space-y-0 [&>div:first-child]:!p-0"
-              headerActions={null}
-              tableTitle={null}
+              onFilter={handleFilter}
+              onSearch={handleSearch}
+              onSort={handleSort}
+              searchValue={searchValue}
+              filters={filters}
+              sortConfig={{ sort: null, order: null }}
+              showFilter={true}
+              showSearch={true}
+              searchPlaceholder="Cari Armada"
+              disabledByPeriod={false}
             />
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Pagination */}
-      {!isCurrentEmpty && (
-        <div className="mt-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-yellow-400 text-sm font-semibold text-gray-900">
-              {currentPage}
-            </div>
-            <div className="flex h-8 w-8 items-center justify-center rounded border border-gray-300 text-sm text-gray-600">
-              2
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-600">
-              Tampilkan Jumlah detail
-            </span>
-            <Button
-              variant="muattrans-warning"
-              className="h-8 px-4 text-xs"
-              onClick={() => handlePerPageChange(perPage === 10 ? 20 : 10)}
-            >
-              {perPage}
-            </Button>
-            <span className="text-sm text-gray-600">40</span>
-          </div>
-        </div>
+          ) : (
+            <LaporanAktivitasDriverTable
+              data={getCurrentData()}
+              currentPage={currentPage}
+              totalPages={2}
+              perPage={perPage}
+              onPageChange={handlePageChange}
+              onPerPageChange={handlePerPageChange}
+              onPeriodChange={handleSelectPeriod}
+              onDownload={handleDownload}
+              periodOptions={periodOptions}
+              currentPeriodValue={currentPeriodValue}
+              recentPeriodOptions={recentPeriodOptions}
+              filterConfig={filterConfig}
+              onFilter={handleFilter}
+              onSearch={handleSearch}
+              onSort={handleSort}
+              searchValue={searchValue}
+              filters={filters}
+              sortConfig={{ sort: null, order: null }}
+              showFilter={true}
+              showSearch={true}
+              searchPlaceholder="Cari Driver"
+              disabledByPeriod={false}
+            />
+          )}
+        </>
       )}
     </div>
   );

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -10,6 +11,8 @@ import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
+import ModalTransportDilihat from "./ModalTransportDilihat";
+import ModalTransportDisimpan from "./ModalTransportDisimpan";
 import ModalTransportTersedia from "./ModalTransportTersedia";
 
 const TransportRequestCard = ({
@@ -27,6 +30,9 @@ const TransportRequestCard = ({
 
   const [showDetail, setShowDetail] = useState(false);
   const [showModalTransporter, setShowModalTransporter] = useState(false);
+  const [showModalDisimpan, setShowModalDisimpan] = useState(false);
+  const [showModalDilihat, setShowModalDilihat] = useState(false);
+  const [showHubungiModal, setShowHubungiModal] = useState(false);
 
   // Update local state when prop changes
   useEffect(() => {
@@ -131,7 +137,10 @@ const TransportRequestCard = ({
                 <p className="text-sm font-semibold">
                   {request.shipperInfo?.name || "-"}
                 </p>
-                <div className="flex items-center gap-1">
+                <div
+                  className="flex items-center gap-1"
+                  onClick={() => setShowHubungiModal(true)}
+                >
                   <IconComponent
                     src="/icons/contact.svg"
                     className={cn(
@@ -139,9 +148,16 @@ const TransportRequestCard = ({
                       request.isTaken ? "text-neutral-700" : ""
                     )}
                   />
-                  <p className="text-xs font-medium text-primary-700">
+                  <p className="cursor-pointer text-xs font-medium text-primary-700">
                     Hubungi Shipper
                   </p>
+
+                  {/* HubungiModal integration */}
+                  <HubungiModal
+                    isOpen={showHubungiModal}
+                    onClose={() => setShowHubungiModal(false)}
+                    transporterData={null} // TODO: pass actual transporter data if available
+                  />
                 </div>
               </div>
             </div>
@@ -150,6 +166,11 @@ const TransportRequestCard = ({
               <p className="text-xs font-semibold text-neutral-900">
                 {countdownSeconds > 0 ? formatHHMMSS(countdown) : "-"}
               </p>
+              {request.reblast !== "1" && (
+                <p className="text-xs text-gray-600">
+                  Permintaan ke-{request.reblast}
+                </p>
+              )}
             </div>
           </div>
           <div className="border-b border-neutral-400"></div>
@@ -478,8 +499,8 @@ const TransportRequestCard = ({
                 src="/icons/truk16.svg"
                 className="h-4 w-4 text-[#7B3F00]"
               />
-              <span className="text-xs font-medium text-primary-700">
-                16 Transporter Tersedia
+              <span className="text-xs font-medium text-neutral-600">
+                0 Transporter Tersedia
               </span>
             </div>
 
@@ -491,28 +512,44 @@ const TransportRequestCard = ({
             )}
 
             {/* Dilihat */}
-            <div className="flex items-center gap-1">
+            <div
+              className="flex cursor-pointer items-center gap-1"
+              onClick={() => setShowModalDilihat(true)}
+            >
               <IconComponent
                 src="/icons/eyes.svg"
                 className="h-4 w-4 text-[#7B3F00]"
               />
-              <span className="text-xs font-medium text-primary-700">
-                15 Dilihat
+              <span className="text-xs font-medium text-neutral-600">
+                0 Dilihat
               </span>
             </div>
+            {showModalDilihat && (
+              <ModalTransportDilihat
+                onClose={() => setShowModalDilihat(false)}
+              />
+            )}
 
             {/* Disimpan */}
-            <div className="flex items-center gap-1">
+            <div
+              className="flex cursor-pointer items-center gap-1"
+              onClick={() => setShowModalDisimpan(true)}
+            >
               <div className="flex h-4 w-4 items-center justify-center rounded-full bg-red-100">
                 <IconComponent
                   src="/icons/bookmark-fill.svg"
                   className="h-3 w-3 text-red-500"
                 />
               </div>
-              <span className="text-xs font-medium text-primary-700">
-                21 Disimpan
+              <span className="text-xs font-medium text-neutral-600">
+                0 Disimpan
               </span>
             </div>
+            {showModalDisimpan && (
+              <ModalTransportDisimpan
+                onClose={() => setShowModalDisimpan(false)}
+              />
+            )}
           </div>
 
           {/* Action Buttons */}
@@ -571,6 +608,13 @@ const TransportRequestCard = ({
           </div>
         </>
       )}
+
+      {/* HubungiModal integration */}
+      <HubungiModal
+        isOpen={showHubungiModal}
+        onClose={() => setShowHubungiModal(false)}
+        transporterData={request.shipperInfo || null}
+      />
     </div>
   );
 };

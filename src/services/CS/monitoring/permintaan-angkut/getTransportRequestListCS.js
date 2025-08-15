@@ -20,6 +20,7 @@ const apiResultTransportRequestList = {
       {
         id: "uuid", // [dbt_mt_order.id]
         orderCode: "MT-2025-001", // [dbt_mt_order.orderCode]
+        reblast: "2",
         shipperInfo: {
           id: "uuid", // [dbt_mt_order.userID]
           name: "PT Shipper ABC", // [dbm_mt_user.fullName]
@@ -78,6 +79,7 @@ const apiResultTransportRequestList = {
       {
         id: "uuid-1",
         orderCode: "MT25A001A",
+        reblast: "1",
         shipperInfo: {
           id: "shipper-1",
           name: "PT Shipper ABC",

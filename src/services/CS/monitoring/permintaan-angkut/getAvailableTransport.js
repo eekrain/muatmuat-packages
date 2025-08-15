@@ -40,8 +40,8 @@ const apiResultAvailableTransporters = {
           totalReviews: 125,
         },
         history: {
-          completedOrders: 85,
-          canceledOrders: 2,
+          completedOrders: 35,
+          canceledOrders: 30,
           rejectedOrders: 1,
           hasRejectedThisRequest: true,
         },
@@ -60,9 +60,12 @@ const apiResultAvailableTransporters = {
               carrierType: "Box",
               operationalStatus: "READY_FOR_ORDER",
               lastLocation: {
+                distance: 10,
                 latitude: -6.2088,
                 longitude: 106.8456,
                 lastUpdate: "2025-01-15T14:45:00Z",
+                City: "Surabaya",
+                District: "Peneleh",
               },
               driver: {
                 name: "Rizky Aditya Pratama",
@@ -81,9 +84,12 @@ const apiResultAvailableTransporters = {
               carrierType: "Box",
               operationalStatus: "NOT_READY_FOR_ORDER",
               lastLocation: {
+                distance: 10,
                 latitude: -6.2088,
                 longitude: 106.8456,
                 lastUpdate: "2025-01-15T14:45:00Z",
+                City: "Surabaya",
+                District: "Peneleh",
               },
               driver: {
                 name: "Muhammad Rizky Ramadhani Pratama Setiawan Nugroho Putra Perdana Kusuma Wijayanto Saputra Toldo Sasmita",
@@ -125,8 +131,8 @@ const apiResultAvailableTransporters = {
           totalReviews: 125,
         },
         history: {
-          completedOrders: 85,
-          canceledOrders: 2,
+          completedOrders: 25,
+          canceledOrders: 10,
           rejectedOrders: 1,
           hasRejectedThisRequest: false,
         },
@@ -145,9 +151,12 @@ const apiResultAvailableTransporters = {
               carrierType: "Box",
               operationalStatus: "READY_FOR_ORDER",
               lastLocation: {
+                distance: 10,
                 latitude: -6.2088,
                 longitude: 106.8456,
                 lastUpdate: "2025-01-15T14:45:00Z",
+                City: "Surabaya",
+                District: "Peneleh",
               },
               driver: {
                 name: "Rizky Aditya Pratama",
@@ -166,9 +175,12 @@ const apiResultAvailableTransporters = {
               carrierType: "Box",
               operationalStatus: "NOT_READY_FOR_ORDER",
               lastLocation: {
+                distance: 10,
                 latitude: -6.2088,
                 longitude: 106.8456,
                 lastUpdate: "2025-01-15T14:45:00Z",
+                City: "Surabaya",
+                District: "Peneleh",
               },
               driver: {
                 name: "Muhammad Rizky Ramadhani Pratama Setiawan Nugroho Putra Perdana Kusuma Wijayanto Saputra Toldo Sasmita",
@@ -210,8 +222,8 @@ const apiResultAvailableTransporters = {
           totalReviews: 125,
         },
         history: {
-          completedOrders: 85,
-          canceledOrders: 2,
+          completedOrders: 15,
+          canceledOrders: 5,
           rejectedOrders: 1,
           hasRejectedThisRequest: false,
         },
@@ -230,9 +242,12 @@ const apiResultAvailableTransporters = {
               carrierType: "Box",
               operationalStatus: "READY_FOR_ORDER",
               lastLocation: {
+                distance: 10,
                 latitude: -6.2088,
                 longitude: 106.8456,
                 lastUpdate: "2025-01-15T14:45:00Z",
+                City: "Surabaya",
+                District: "Peneleh",
               },
               driver: {
                 name: "Rizky Aditya Pratama",
@@ -251,9 +266,12 @@ const apiResultAvailableTransporters = {
               carrierType: "Box",
               operationalStatus: "NOT_READY_FOR_ORDER",
               lastLocation: {
+                distance: 10,
                 latitude: -6.2088,
                 longitude: 106.8456,
                 lastUpdate: "2025-01-15T14:45:00Z",
+                City: "DKJ Jakarta",
+                District: "Kec. Kepulauan Seribu Selatan Seribu Selatan",
               },
               driver: {
                 name: "Muhammad Rizky Ramadhani Pratama Setiawan Nugroho Putra Perdana Kusuma Wijayanto Saputra Toldo Sasmita",

@@ -3,20 +3,19 @@
 import { useState } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
-import FormDropdown from "@/components/Form/Dropdown";
+import { FilterSelect } from "@/components/Form/FilterSelect";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import Search from "@/components/Search/Search";
+import AssignArmadaModal from "@/container/Shared/OrderModal/AssignArmadaModal";
+import ConfirmReadyModal from "@/container/Shared/OrderModal/ConfirmReadyModal";
+import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
 import { cn } from "@/lib/utils";
 import { useGetActiveOrders } from "@/services/Transporter/monitoring/daftar-pesanan-active/getActiveOrders";
 import { useGetActiveOrdersCount } from "@/services/Transporter/monitoring/daftar-pesanan-active/getActiveOrdersCount";
 import { ORDER_ACTIONS } from "@/utils/Transporter/orderStatus";
 
 import Onboarding from "../Onboarding/Onboarding";
-import AssignArmadaModal from "./components/AssignArmadaModal";
-import ConfirmReadyModal from "./components/ConfirmReadyModal";
 import DaftarPesananAktifListItem from "./components/DaftarPesananAktifListItem";
-import RespondChangeModal from "./components/RespondChangeModal";
 
 const DaftarPesananAktif = ({
   onToggleExpand,
@@ -27,7 +26,8 @@ const DaftarPesananAktif = ({
 }) => {
   const { data: activeOrdersCount } = useGetActiveOrdersCount();
   const [searchValue, setSearchValue] = useState("");
-  const [selectedStatusFilter, setSelectedStatusFilter] = useState("");
+  const [selectedStatusFilter, setSelectedStatusFilter] =
+    useState("ALL_STATUS");
   const [selectedGroupBy, setSelectedGroupBy] = useState("BY_PESANAN");
   const [selectedSort, setSelectedSort] = useState("WAKTU_MUAT_TERDEKAT");
   const [openDropdowns, setOpenDropdowns] = useState({});
@@ -40,7 +40,8 @@ const DaftarPesananAktif = ({
 
   // Map filter keys to lowercase status values for API
   const getFilterStatus = () => {
-    if (!selectedStatusFilter) return null;
+    if (!selectedStatusFilter || selectedStatusFilter === "ALL_STATUS")
+      return null;
 
     const statusMap = {
       NEED_CHANGE_RESPONSE: "need_change_response",
@@ -128,7 +129,10 @@ const DaftarPesananAktif = ({
       });
     }
 
-    return [{ value: "", label: "Semua Status (Default)" }, ...urgentStatuses];
+    return [
+      { value: "ALL_STATUS", label: "Semua Status (Default)" },
+      ...urgentStatuses,
+    ];
   };
 
   const groupByOptions = [
@@ -158,6 +162,19 @@ const DaftarPesananAktif = ({
     return total;
   };
 
+  const isOrderZero = orders.length === 0;
+
+  // Determine different empty states
+  const isFirstTimer = totalActiveOrders === 0; // No data at all in database
+  const hasSearchQuery = searchValue.trim() !== "";
+  const hasActiveFilter = selectedStatusFilter !== "ALL_STATUS";
+  const isSearchNotFound = hasSearchQuery && isOrderZero && !isFirstTimer;
+  const isFilterNotFound =
+    hasActiveFilter && isOrderZero && !isFirstTimer && !hasSearchQuery;
+
+  // Show header controls only if not first timer
+  const shouldShowControls = !isFirstTimer;
+
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
@@ -169,87 +186,83 @@ const DaftarPesananAktif = ({
             onOnboardingShown={onOnboardingShown}
           />
         </div>
-        <div className="flex w-full items-center gap-3">
-          {/* Filter Dropdowns */}
-          <div className="flex flex-1 items-center gap-3">
-            {/* Status Urgent Dropdown */}
-            <div className="relative">
+        {shouldShowControls && (
+          <div className="flex w-full items-center gap-4">
+            {/* Filter Dropdowns */}
+            <div className="flex w-full flex-1 items-center gap-3">
+              {/* Status Urgent Dropdown */}
               <div className="relative">
-                <FormDropdown
-                  value={selectedStatusFilter}
-                  onChange={setSelectedStatusFilter}
-                  placeholder={`Status Urgent (${getStatusUrgentCount() > 99 ? "99+" : getStatusUrgentCount()})`}
-                  options={getStatusOptions()}
-                  className="w-[130px]"
-                  searchable={false}
-                />
-                {getStatusUrgentCount() > 0 && (
-                  <NotificationDot
-                    position="absolute"
-                    positionClasses="right-[1px] top-[-1px]"
-                    size="md"
-                    color="red"
-                    animated={true}
+                <div className="relative">
+                  <FilterSelect
+                    value={selectedStatusFilter}
+                    onChange={setSelectedStatusFilter}
+                    placeholder={`Status Urgent (${getStatusUrgentCount() > 99 ? "99+" : getStatusUrgentCount()})`}
+                    options={getStatusOptions()}
+                    showNotificationDot={getStatusUrgentCount() > 0}
+                    notificationCount={getStatusUrgentCount()}
+                    className="max-w-[150px]"
+                    disabled={isSearchNotFound}
                   />
-                )}
+                </div>
               </div>
+
+              {/* Group By Dropdown */}
+              <FilterSelect
+                value={selectedGroupBy}
+                onChange={setSelectedGroupBy}
+                placeholder="By Pesanan"
+                options={groupByOptions}
+                icon="/icons/tabel.svg"
+                className="max-w-[148px]"
+                disabled={isSearchNotFound}
+              />
+
+              {/* Sort Dropdown */}
+              <FilterSelect
+                value={selectedSort}
+                onChange={setSelectedSort}
+                className="max-w-[136px]"
+                options={sortOptions}
+                icon="/icons/sorting16.svg"
+                disabled={isSearchNotFound}
+              />
             </div>
 
-            {/* Group By Dropdown */}
-            <FormDropdown
-              value={selectedGroupBy}
-              onChange={setSelectedGroupBy}
-              placeholder="By Pesanan"
-              options={groupByOptions}
-              className="w-[104px]"
-              searchable={false}
+            <Search
+              placeholder="Cari Pesanan"
+              onSearch={(value) => {
+                setSearchValue(value);
+              }}
+              onFocus={() => {
+                if (!isExpanded) {
+                  onToggleExpand();
+                }
+              }}
+              containerClassName="h-8 w-[180px]"
+              inputClassName="text-xs"
+              disabled={isFilterNotFound || totalActiveOrders === 0}
             />
-
-            {/* Sort Dropdown */}
-            <FormDropdown
-              value={selectedSort}
-              onChange={setSelectedSort}
-              placeholder="Waktu M..."
-              options={sortOptions}
-              className="w-[120px]"
-              searchable={false}
-            />
+            <button
+              onClick={onToggleExpand}
+              className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100"
+            >
+              <IconComponent
+                src="/icons/monitoring/collapse.svg"
+                className={cn(
+                  "h-5 w-5 transform transition-transform duration-300 ease-in-out",
+                  !isExpanded && "rotate-180"
+                )}
+              />
+            </button>
           </div>
-
-          <Search
-            placeholder="Cari Pesanan"
-            onSearch={(value) => {
-              setSearchValue(value);
-            }}
-            onFocus={() => {
-              if (!isExpanded) {
-                onToggleExpand();
-              }
-            }}
-            containerClassName="h-8 w-[180px]"
-            inputClassName="text-xs"
-            disabled={totalActiveOrders === 0}
-          />
-          <button
-            onClick={onToggleExpand}
-            className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100"
-          >
-            <IconComponent
-              src="/icons/monitoring/collapse.svg"
-              className={cn(
-                "h-5 w-5 transform transition-transform duration-300 ease-in-out",
-                !isExpanded && "rotate-180"
-              )}
-            />
-          </button>
-        </div>
+        )}
       </div>
 
       {/* Content */}
       {isExpanded && (
         <div className="flex-1 overflow-hidden">
           {/* Check if there are no active orders */}
-          {!isLoading && totalActiveOrders === 0 ? (
+          {!isLoading && isFirstTimer ? (
             <div className="flex h-full items-center justify-center p-4">
               <DataNotFound className="h-full gap-y-5 pb-10" type="data">
                 <div className="flex flex-col items-center gap-2">
@@ -272,16 +285,44 @@ const DaftarPesananAktif = ({
                     </p>
                   </div>
                 </div>
-              ) : orders.length === 0 ? (
-                <div className="flex h-full items-center justify-center p-4">
-                  <div className="text-center">
-                    <p className="text-base font-semibold text-neutral-600">
-                      Belum ada pesanan aktif
+              ) : isSearchNotFound ? (
+                <div className="flex h-full flex-grow flex-col items-center justify-center">
+                  <DataNotFound
+                    type="search"
+                    className="text-center text-neutral-600"
+                  >
+                    <p className="text-base font-semibold">
+                      Keyword Tidak Ditemukan
                     </p>
-                    <p className="mt-1 text-xs text-gray-400">
-                      Pesanan aktif akan muncul di sini
+                  </DataNotFound>
+                </div>
+              ) : isFilterNotFound ? (
+                <div className="flex h-full flex-grow flex-col items-center justify-center">
+                  <DataNotFound
+                    type="data"
+                    className="text-center text-neutral-600"
+                  >
+                    <p className="text-base font-semibold">
+                      Data Tidak Ditemukan.
                     </p>
-                  </div>
+                    <p className="mt-1 text-xs font-medium">
+                      Mohon coba hapus beberapa filter
+                    </p>
+                  </DataNotFound>
+                </div>
+              ) : isOrderZero ? (
+                <div className="flex h-full flex-grow flex-col items-center justify-center">
+                  <DataNotFound
+                    type="data"
+                    className="text-center text-neutral-600"
+                  >
+                    <p className="font-semibold">
+                      Oops, daftar pesanan masih kosong
+                    </p>
+                    <p className="mt-3 text-xs font-medium">
+                      Belum ada Transporter yang menerima permintaan
+                    </p>
+                  </DataNotFound>
                 </div>
               ) : (
                 <div className="flex flex-col">

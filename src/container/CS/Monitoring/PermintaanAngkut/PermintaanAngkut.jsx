@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Search from "@/components/Search/Search";
+import { toast } from "@/lib/toast";
 import { useGetTransportRequestList } from "@/services/CS/monitoring/permintaan-angkut/getTransportRequestListCS";
 
 import TransportRequestCard from "./components/TransportRequestCard";
@@ -125,6 +126,33 @@ const PermintaanAngkutCS = () => {
     return isActive ? baseWidth : `w-auto min-w-[${baseWidth}]`;
   };
 
+  // Show toast on every page refresh (mount)
+  useEffect(() => {
+    toast.success("Pesanan ORDER123 telah diambil oleh PT Transporter ABC");
+    toast.success("Pesanan ORDER123 telah diambil oleh PT Transporter ABC");
+    toast.success("Pesanan ORDER123 telah diambil oleh PT Transporter ABC");
+    toast.success("Pesanan ORDER123 telah diambil oleh PT Transporter ABC");
+    toast.success("Pesanan ORDER123 telah diambil oleh PT Transporter ABC");
+    toast.success("Pesanan ORDER123 telah diambil oleh PT Transporter ABC");
+  }, []);
+
+  // WebSocket for realtime transporter take order alert (disabled until API ready)
+  // useEffect(() => {
+  //   const ws = new WebSocket("wss://your-api-domain/v1/ws/cs/alert-transporter-take-order");
+  //   ws.onmessage = (event) => {
+  //     try {
+  //       const [type, payload] = JSON.parse(event.data);
+  //       if (type === "alert-transporter-take-order" && payload?.orderCode && payload?.transporterName) {
+  //         toast.success(`Pesanan ${payload.orderCode} telah diambil oleh ${payload.transporterName}`);
+  //         // Optionally update local state/UI here
+  //       }
+  //     } catch (err) {
+  //       // handle error
+  //     }
+  //   };
+  //   return () => ws.close();
+  // }, []);
+
   return (
     <div className="flex h-[calc(100vh-92px-48px)] flex-col bg-white">
       <>
@@ -216,7 +244,7 @@ const PermintaanAngkutCS = () => {
           {/* Search Input */}
           <div className="mb-4">
             <Search
-              placeholder="Cari No. Pesanan / Armada / Lokasi Muat & Bongkar / Muatan"
+              placeholder="Cari Permintaan Jasa Angkut"
               onSearch={handleSearch}
               autoSearch={true}
               debounceTime={300}
