@@ -18,25 +18,19 @@ const Profile = () => {
   };
 
   return (
-    <div className="flex h-screen">
-      {" "}
-      {/* Add h-screen */}
+    <div className="flex">
       <Sidebar />
-      <div className="flex-1 overflow-auto">
-        {" "}
-        {/* Add flex-1 and overflow-auto */}
-        <div className="ml-[273px] w-full space-y-6 p-6">
-          {/* Profile Header */}
-          <UserProfileInfo userProfile={userProfile} />
-          {/* Data Perusahaan */}
-          <CompanyProfileInfo />
+      <div className="ml-[273px] w-full space-y-6 p-6">
+        {/* Profile Header */}
+        <UserProfileInfo userProfile={userProfile} />
+        {/* Data Perusahaan */}
+        <CompanyProfileInfo />
 
-          {/* Legalitas Perusahaan */}
-          <CompanyLegality />
+        {/* Legalitas Perusahaan */}
+        <CompanyLegality />
 
-          {/* Data Kontak PIC Transporter */}
-          <PicContactInfo />
-        </div>
+        {/* Data Kontak PIC Transporter */}
+        <PicContactInfo />
       </div>
     </div>
   );
