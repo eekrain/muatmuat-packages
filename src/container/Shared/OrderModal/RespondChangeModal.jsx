@@ -146,7 +146,7 @@ const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
                           </h3>
                         </div>
 
-                        <div className="relative mb-6 grid grid-cols-2 gap-12 px-12">
+                        <div className="relative grid grid-cols-2 gap-12 px-12">
                           {/* Vertical divider line */}
                           <div className="absolute bottom-0 left-1/2 top-0 z-[3] w-0 -translate-x-1/2 border-l border-solid border-neutral-400" />
 
@@ -178,7 +178,7 @@ const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
 
                     {/* Divider if both sections exist */}
                     {changeDetails.changeType === "LOCATION_AND_TIME" && (
-                      <div className="mb-6 border-b border-neutral-400"></div>
+                      <div className="my-6 border-b border-neutral-400"></div>
                     )}
 
                     {/* Location Change Section */}
