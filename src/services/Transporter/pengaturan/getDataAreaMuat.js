@@ -5,10 +5,10 @@ import { fetcherMuatrans } from "@/lib/axios";
 const useMockData = false; // toggle mock data
 
 // Endpoint constants
-export const URL_MASTER_PROVINCES = "/v1/provinces";
-export const URL_AREA_MUAT_MANAGE = "/v1/area-muat/manage";
-export const URL_AREA_MUAT = "/v1/area-muat";
-export const URL_AREA_MUAT_STATUS = "/v1/area-muat/status";
+export const URL_MASTER_PROVINCES = "/v1/transporter/settings/provinces";
+export const URL_AREA_MUAT_MANAGE = "/v1/transporter/settings/area-muat/manage";
+export const URL_AREA_MUAT = "/v1/transporter/settings/area-muat";
+export const URL_AREA_MUAT_STATUS = "/v1/transporter/settings/area-muat/status";
 // Mock API results for development/testing
 export const mockMasterProvinces = {
   data: {
