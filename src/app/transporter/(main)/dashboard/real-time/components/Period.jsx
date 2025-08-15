@@ -13,9 +13,6 @@ import { formatDateInput } from "@/lib/utils/dateFormat";
 
 import "./Calendar.css";
 
-/* ------------------------- Helpers & Constants ------------------------- */
-
-// Normalisasi tanggal ke awal hari (agar perbandingan inklusif)
 const startOfDay = (d) => {
   const x = new Date(d);
   x.setHours(0, 0, 0, 0);
@@ -23,9 +20,8 @@ const startOfDay = (d) => {
 };
 
 const MIN_DATE = startOfDay(new Date(2000, 0, 1));
-const TODAY = startOfDay(new Date()); // <- hari ini inklusif
+const TODAY = startOfDay(new Date());
 
-// YYYY-MM-DD
 const toISO = (date) => {
   const d = startOfDay(date);
   const year = d.getFullYear();
@@ -34,7 +30,6 @@ const toISO = (date) => {
   return `${year}-${month}-${day}`;
 };
 
-// untuk tampilan, mengikuti util yang sudah ada
 const toDisplay = (date) =>
   formatDateInput(date, ["day", "month", "year"], false);
 
@@ -51,7 +46,6 @@ const clamp = (date, min, max) =>
     )
   );
 
-// Parser fallback dari display ke ISO (jaga kompatibilitas jika ada string masuk)
 const formatToISODate = (dateStr) => {
   if (!dateStr) return "";
   const dashParts = dateStr.split("-");
@@ -62,8 +56,6 @@ const formatToISODate = (dateStr) => {
     return `${slashParts[2]}-${slashParts[1]}-${slashParts[0]}`;
   return dateStr;
 };
-
-/* ----------------------------- Component ------------------------------- */
 
 const Period = ({
   options = [],
@@ -80,15 +72,13 @@ const Period = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isPeriode, setIsPeriode] = useState(false);
 
-  // gunakan string untuk pesan error -> lebih fleksibel
   const [validate, setValidate] = useState({
     start_date: "",
     end_date: "",
   });
 
-  // simpan display & ISO agar API gampang
   const [inputDateCustom, setInputDateCustom] = useState({
-    status: null, // 'start_date' | 'end_date' | null
+    status: null,
     start_date: "",
     end_date: "",
     start_iso: "",
@@ -97,13 +87,10 @@ const Period = ({
 
   const dropdownRef = useRef(null);
 
-  /* -------------------------- Initial & External -------------------------- */
-
   useEffect(() => {
     setSelected(options[0]);
   }, [JSON.stringify(options)]);
 
-  // mengakomodasi kontrol dari parent
   useEffect(() => {
     if (value !== null) {
       if (typeof value === "string") {
@@ -116,8 +103,6 @@ const Period = ({
       }
     }
   }, [value, options]);
-
-  /* ------------------------------ Handlers ------------------------------- */
 
   const handleSelect = (option, range) => {
     if (range) {
@@ -160,7 +145,6 @@ const Period = ({
     if (isPeriode) resetValue();
   }, [isPeriode]);
 
-  // click di luar menutup dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -171,44 +155,38 @@ const Period = ({
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  /* -------------------------- Calendar Boundaries ------------------------- */
-
-  // batas min/max kalender bergantung field aktif
   const calendarBounds = () => {
     if (inputDateCustom.status === "start_date") {
-      const max = inputDateCustom.end_iso
-        ? startOfDay(new Date(inputDateCustom.end_iso))
-        : TODAY; // ≤ TODAY, tetap pilih hari ini
-      return { min: MIN_DATE, max };
+      return { min: MIN_DATE, max: TODAY };
     }
     if (inputDateCustom.status === "end_date") {
       const start = inputDateCustom.start_iso
         ? startOfDay(new Date(inputDateCustom.start_iso))
         : MIN_DATE;
       const max = inputDateCustom.start_iso
-        ? clamp(addYears(start, 1), MIN_DATE, TODAY) // maksimum 1 tahun dari start, tapi tidak melewati TODAY
+        ? clamp(addYears(start, 1), MIN_DATE, TODAY)
         : TODAY;
       return { min: start, max };
     }
     return { min: MIN_DATE, max: TODAY };
   };
 
-  // disable tanggal yang melanggar aturan rentang 1 tahun
   const tileDisabledByRange = ({ date }) => {
     const d = startOfDay(date);
+
     if (inputDateCustom.status === "end_date" && inputDateCustom.start_iso) {
       const start = startOfDay(new Date(inputDateCustom.start_iso));
       return d > clamp(addYears(start, 1), MIN_DATE, TODAY) || d < start;
     }
-    if (inputDateCustom.status === "start_date" && inputDateCustom.end_iso) {
-      const end = startOfDay(new Date(inputDateCustom.end_iso));
-      return d > end || d < addYears(end, -1) || d < MIN_DATE;
+
+    if (inputDateCustom.status === "start_date") {
+      return d < MIN_DATE || d > TODAY;
     }
+
     const { min, max } = calendarBounds();
     return d < min || d > max;
   };
 
-  // pilih tanggal dari kalender (auto-normalisasi end jika perlu)
   const handleCalendarChange = (date) => {
     const dd = startOfDay(date);
     const display = toDisplay(dd);
@@ -217,45 +195,46 @@ const Period = ({
     setValidate((v) => ({ ...v, [inputDateCustom.status]: "" }));
 
     if (inputDateCustom.status === "start_date") {
-      let endISO = inputDateCustom.end_iso;
-      if (endISO) {
-        const start = startOfDay(new Date(iso));
-        const maxEnd = clamp(addYears(start, 1), MIN_DATE, TODAY);
-        if (startOfDay(new Date(endISO)) < start) endISO = iso;
-        if (startOfDay(new Date(endISO)) > maxEnd) endISO = toISO(maxEnd);
-      }
+      const shouldResetEndDate =
+        inputDateCustom.end_iso && !inputDateCustom.start_iso;
+
       setInputDateCustom((a) => ({
         ...a,
         start_date: display,
         start_iso: iso,
-        end_date: endISO ? toDisplay(startOfDay(new Date(endISO))) : a.end_date,
-        end_iso: endISO ?? a.end_iso,
+        end_date: shouldResetEndDate ? "" : a.end_date,
+        end_iso: shouldResetEndDate ? "" : a.end_iso,
         status: null,
       }));
     } else if (inputDateCustom.status === "end_date") {
-      const startISO = inputDateCustom.start_iso || iso;
-      const start = startOfDay(new Date(startISO));
-      const minEnd = start;
-      const maxEnd = clamp(addYears(start, 1), MIN_DATE, TODAY);
-      const safeEnd = clamp(dd, minEnd, maxEnd);
+      if (!inputDateCustom.start_iso) {
+        setInputDateCustom((a) => ({
+          ...a,
+          end_date: display,
+          end_iso: iso,
+          status: null,
+        }));
+      } else {
+        const start = startOfDay(new Date(inputDateCustom.start_iso));
+        const minEnd = start;
+        const maxEnd = clamp(addYears(start, 1), MIN_DATE, TODAY);
+        const safeEnd = clamp(dd, minEnd, maxEnd);
 
-      setInputDateCustom((a) => ({
-        ...a,
-        start_date: a.start_iso ? a.start_date : toDisplay(start),
-        start_iso: a.start_iso || toISO(start),
-        end_date: toDisplay(safeEnd),
-        end_iso: toISO(safeEnd),
-        status: null,
-      }));
+        setInputDateCustom((a) => ({
+          ...a,
+          end_date: toDisplay(safeEnd),
+          end_iso: toISO(safeEnd),
+          status: null,
+        }));
+      }
     }
   };
 
-  /* -------------------------------- Render -------------------------------- */
   const formatShortWeekday = (locale, date) => {
     const weekdays = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
     return weekdays[date.getDay()];
   };
-  // common props kalender (styling + locale + header)
+
   const calendarCommonProps = {
     locale: "id-ID",
     navigationLabel: ({ date }) =>
@@ -359,7 +338,6 @@ const Period = ({
         </ul>
       )}
 
-      {/* Modal Pilih Periode */}
       <Modal open={isPeriode} onOpenChange={setIsPeriode} closeOnOutsideClick>
         <ModalContent type="muattrans" className="w-modal-small">
           <ModalHeader size="small" />
@@ -369,7 +347,6 @@ const Period = ({
             </h3>
 
             <div className="relative flex items-start gap-2">
-              {/* Periode Awal */}
               <div className="relative">
                 <Input
                   value={inputDateCustom.start_date}
@@ -406,7 +383,6 @@ const Period = ({
 
               <span className="semi-xs mt-2 text-neutral-600">s/d</span>
 
-              {/* Periode Akhir */}
               <div className="relative">
                 <Input
                   value={inputDateCustom.end_date}
