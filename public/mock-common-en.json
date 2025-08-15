@@ -888,5 +888,14 @@
   "csUlasan.period.today": "Today",
   "csUlasan.period.last7Days": "Last 7 Days",
   "csUlasan.period.last30Days": "Last 30 Days",
-  "csUlasan.period.last1Year": "Last 1 Year"
+  "csUlasan.period.last1Year": "Last 1 Year",
+  "AlertPendingUpdateConfirmation.titleLocationChangeConfirmation": "Location change requires time for confirmation.",
+  "AlertPendingUpdateConfirmation.messageThankYouPatience": "Thank you for your patience.",
+  "AlertPendingUpdatePayment.titleOrderChangeSaved": "Order change information has been successfully saved.",
+  "AlertPendingUpdatePayment.messagePaymentReminder": "Please complete payment within",
+  "AlertPendingUpdatePayment.messageAutoCancelWarning": "Changes will be automatically cancelled if the time limit is exceeded.",
+  "AlertPendingPayment1.titleFleetFound": "A fleet that matches your order has been found",
+  "AlertPendingPayment1.messagePaymentReminder": "Please complete payment within",
+  "AlertPendingPrepareFleet.titlePreparingFleet": "Preparing a suitable fleet for your order",
+  "AlertPendingPrepareFleet.messageThankYouPatience": "Thank you for your patience."
 }

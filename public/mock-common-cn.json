@@ -736,5 +736,14 @@
   "csUlasan.period.today": "今天",
   "csUlasan.period.last7Days": "过去 7 天",
   "csUlasan.period.last30Days": "过去 30 天",
-  "csUlasan.period.last1Year": "过去 1 年"
+  "csUlasan.period.last1Year": "过去 1 年",
+  "AlertPendingUpdateConfirmation.titleLocationChangeConfirmation": "地点变更需要时间确认。",
+  "AlertPendingUpdateConfirmation.messageThankYouPatience": "感谢您的耐心等待。",
+  "AlertPendingUpdatePayment.titleOrderChangeSaved": "订单变更信息已成功保存。",
+  "AlertPendingUpdatePayment.messagePaymentReminder": "请在",
+  "AlertPendingUpdatePayment.messageAutoCancelWarning": "如果超过时间限制，变更将自动取消。",
+  "AlertPendingPayment1.titleFleetFound": "已找到与您订单匹配的车队",
+  "AlertPendingPayment1.messagePaymentReminder": "请在以下时间内付款",
+  "AlertPendingPrepareFleet.titlePreparingFleet": "正在为您的订单准备合适的车队",
+  "AlertPendingPrepareFleet.messageThankYouPatience": "感谢您的耐心等待。"
 }

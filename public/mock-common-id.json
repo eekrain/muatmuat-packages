@@ -887,5 +887,14 @@
   "csUlasan.period.today": "Hari Ini",
   "csUlasan.period.last7Days": "1 Minggu Terakhir",
   "csUlasan.period.last30Days": "30 Hari Terakhir",
-  "csUlasan.period.last1Year": "1 Tahun Terakhir"
+  "csUlasan.period.last1Year": "1 Tahun Terakhir",
+  "AlertPendingUpdateConfirmation.titleLocationChangeConfirmation": "Perubahan lokasi bongkar memerlukan waktu untuk konfirmasi.",
+  "AlertPendingUpdateConfirmation.messageThankYouPatience": "Terima kasih atas kesabaran kamu.",
+  "AlertPendingUpdatePayment.titleOrderChangeSaved": "Informasi perubahan pesanan telah berhasil kami simpan.",
+  "AlertPendingUpdatePayment.messagePaymentReminder": "Mohon lakukan pembayaran dalam waktu",
+  "AlertPendingUpdatePayment.messageAutoCancelWarning": "Perubahan secara otomatis dibatalkan, apabila melewati batas waktu yang ditentukan.",
+  "AlertPendingPayment1.titleFleetFound": "Armada yang sesuai dengan pesanan kamu telah ditemukan",
+  "AlertPendingPayment1.messagePaymentReminder": "Mohon lakukan pembayaran dalam waktu",
+  "AlertPendingPrepareFleet.titlePreparingFleet": "Sedang mempersiapkan armada yang sesuai untuk pesanan kamu",
+  "AlertPendingPrepareFleet.messageThankYouPatience": "Terimakasih atas kesabaran kamu."
 }
