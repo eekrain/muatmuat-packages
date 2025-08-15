@@ -10,6 +10,7 @@ import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
+import ModalTransportDisimpan from "./ModalTransportDisimpan";
 import ModalTransportTersedia from "./ModalTransportTersedia";
 
 const TransportRequestCard = ({
@@ -27,6 +28,7 @@ const TransportRequestCard = ({
 
   const [showDetail, setShowDetail] = useState(false);
   const [showModalTransporter, setShowModalTransporter] = useState(false);
+  const [showModalDisimpan, setShowModalDisimpan] = useState(false);
 
   // Update local state when prop changes
   useEffect(() => {
@@ -502,7 +504,10 @@ const TransportRequestCard = ({
             </div>
 
             {/* Disimpan */}
-            <div className="flex items-center gap-1">
+            <div
+              className="flex cursor-pointer items-center gap-1"
+              onClick={() => setShowModalDisimpan(true)}
+            >
               <div className="flex h-4 w-4 items-center justify-center rounded-full bg-red-100">
                 <IconComponent
                   src="/icons/bookmark-fill.svg"
@@ -513,6 +518,11 @@ const TransportRequestCard = ({
                 21 Disimpan
               </span>
             </div>
+            {showModalDisimpan && (
+              <ModalTransportDisimpan
+                onClose={() => setShowModalDisimpan(false)}
+              />
+            )}
           </div>
 
           {/* Action Buttons */}

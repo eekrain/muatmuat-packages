@@ -40,8 +40,8 @@ const apiResultAvailableTransporters = {
           totalReviews: 125,
         },
         history: {
-          completedOrders: 85,
-          canceledOrders: 2,
+          completedOrders: 35,
+          canceledOrders: 30,
           rejectedOrders: 1,
           hasRejectedThisRequest: true,
         },
@@ -125,8 +125,8 @@ const apiResultAvailableTransporters = {
           totalReviews: 125,
         },
         history: {
-          completedOrders: 85,
-          canceledOrders: 2,
+          completedOrders: 25,
+          canceledOrders: 10,
           rejectedOrders: 1,
           hasRejectedThisRequest: false,
         },
@@ -210,8 +210,8 @@ const apiResultAvailableTransporters = {
           totalReviews: 125,
         },
         history: {
-          completedOrders: 85,
-          canceledOrders: 2,
+          completedOrders: 15,
+          canceledOrders: 5,
           rejectedOrders: 1,
           hasRejectedThisRequest: false,
         },
