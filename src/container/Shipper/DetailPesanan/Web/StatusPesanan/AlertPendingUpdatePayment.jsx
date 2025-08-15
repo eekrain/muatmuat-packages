@@ -1,7 +1,9 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useCountdown } from "@/hooks/use-countdown";
+import { useTranslation } from "@/hooks/use-translation";
 
 export const AlertPendingUpdatePayment = ({ paymentDueDateTime }) => {
+  const { t } = useTranslation();
   const { countdown } = useCountdown({
     endingDate: paymentDueDateTime,
     isNeedCountdown: true,
@@ -26,14 +28,25 @@ export const AlertPendingUpdatePayment = ({ paymentDueDateTime }) => {
 
       <div className="flex flex-col">
         <h3 className="text-center text-sm font-semibold leading-[1.2] text-neutral-900 md:text-start md:text-lg">
-          Informasi perubahan pesanan telah berhasil kami simpan.
+          {t(
+            "AlertPendingUpdatePayment.titleOrderChangeSaved",
+            {},
+            "Informasi perubahan pesanan telah berhasil kami simpan."
+          )}
         </h3>
         <p className="text-xs font-medium leading-none text-neutral-600 md:text-sm md:text-neutral-900">
-          Mohon lakukan pembayaran dalam waktu
+          {t(
+            "AlertPendingUpdatePayment.messagePaymentReminder",
+            {},
+            "Mohon lakukan pembayaran dalam waktu"
+          )}
           <span className="font-bold text-neutral-900"> {countdown}</span>
           <br />
-          Perubahan secara otomatis dibatalkan, apabila melewati batas waktu
-          yang ditentukan.
+          {t(
+            "AlertPendingUpdatePayment.messageAutoCancelWarning",
+            {},
+            "Perubahan secara otomatis dibatalkan, apabila melewati batas waktu yang ditentukan."
+          )}
         </p>
       </div>
     </div>
