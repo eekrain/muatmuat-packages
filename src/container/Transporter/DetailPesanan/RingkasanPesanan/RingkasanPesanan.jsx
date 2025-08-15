@@ -5,10 +5,10 @@ import RingkasanPesananHeader from "@/container/Transporter/DetailPesanan/Ringka
 const RingkasanPesanan = ({ dataOrderDetail }) => {
   return (
     <>
-      <RingkasanPesananHeader />
+      <RingkasanPesananHeader dataOrderDetail={dataOrderDetail} />
       <div className="flex gap-x-4">
-        <RingkasanPesananBody dataRingkasanPesanan={dataOrderDetail} />
-        <RingkasanPendapatan dataRingkasanPesanan={dataOrderDetail} />
+        <RingkasanPesananBody dataOrderDetail={dataOrderDetail} />
+        <RingkasanPendapatan dataOrderDetail={dataOrderDetail} />
       </div>
     </>
   );
