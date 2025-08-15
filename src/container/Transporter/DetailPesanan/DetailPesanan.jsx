@@ -27,7 +27,12 @@ const DetailPesanan = ({ breadcrumbData }) => {
       },
       {
         value: "lacak-armada",
-        label: "Lacak Armada (1)",
+        label: (
+          <div className="flex items-center gap-x-1">
+            <span>Lacak Armada</span>
+            {true ? <span>(1)</span> : null}
+          </div>
+        ),
       },
       {
         value: "riwayat-perubahan",
@@ -39,7 +44,7 @@ const DetailPesanan = ({ breadcrumbData }) => {
   return (
     <div className="mx-auto flex max-w-[1200px] flex-col gap-y-4 py-6">
       <BreadCrumb data={breadcrumbData} />
-      <DetailPesananHeader />
+      <DetailPesananHeader dataOrderDetail={dataOrderDetail} />
       <Tabs
         className="flex flex-col gap-y-4"
         value={activeTab}
