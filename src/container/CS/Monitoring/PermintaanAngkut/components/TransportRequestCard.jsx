@@ -132,6 +132,30 @@ const TransportRequestCard = ({
     }${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   };
 
+  // Calculate loadTimeText (e.g., 'Muat 3 Hari Lagi')
+  let loadTimeText = request.loadTimeText;
+  let loadTimeColor = "bg-primary-50 text-primary-700";
+  if (request.loadTimeStart) {
+    const today = new Date();
+    const muatDate = new Date(request.loadTimeStart);
+    today.setHours(0, 0, 0, 0);
+    muatDate.setHours(0, 0, 0, 0);
+    const diffDays = Math.round((muatDate - today) / (1000 * 60 * 60 * 24));
+    if (diffDays === 0) {
+      loadTimeText = "Muat Hari Ini";
+      loadTimeColor = "bg-success-50 text-success-400";
+    } else if (diffDays === 1) {
+      loadTimeText = "Muat Besok";
+      loadTimeColor = "bg-success-50 text-success-400";
+    } else if (diffDays >= 2 && diffDays <= 5) {
+      loadTimeText = `Muat ${diffDays} Hari Lagi`;
+      loadTimeColor = "bg-warning-100 text-warning-900";
+    } else if (diffDays > 5) {
+      loadTimeText = `Muat ${diffDays} Hari Lagi`;
+      loadTimeColor = "bg-primary-50 text-primary-700";
+    }
+  }
+
   return (
     <div className="relative">
       <div
@@ -219,13 +243,9 @@ const TransportRequestCard = ({
                   "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
                   request.isTaken
                     ? "text-neutral-700"
-                    : request.timeLabel?.color === "green"
-                      ? "bg-success-50 text-success-700"
-                      : request.timeLabel?.color === "blue"
-                        ? "bg-primary-50 text-primary-700"
-                        : request.orderType === "INSTANT"
-                          ? "bg-success-50 text-success-700"
-                          : "bg-primary-50 text-primary-700"
+                    : request.orderType === "INSTANT"
+                      ? "bg-success-50 text-success-400"
+                      : "bg-primary-50 text-primary-700"
                 )}
               >
                 {request.orderType === "INSTANT" ? "Instan" : "Terjadwal"}
@@ -235,30 +255,20 @@ const TransportRequestCard = ({
               <span
                 className={cn(
                   "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
-                  request.isTaken
-                    ? "text-neutral-700"
-                    : request.loadTimeText?.includes("Hari Ini") ||
-                        request.loadTimeText?.includes("Besok")
-                      ? "bg-success-50 text-success-700"
-                      : request.loadTimeText?.includes("2 Hari") ||
-                          request.loadTimeText?.includes("3 Hari") ||
-                          request.loadTimeText?.includes("4 Hari") ||
-                          request.loadTimeText?.includes("5 Hari")
-                        ? "bg-warning-50 text-warning-700"
-                        : "bg-primary-50 text-primary-700"
+                  request.isTaken ? "text-neutral-700" : loadTimeColor
                 )}
               >
-                {request.loadTimeText || "Muat 7 Hari Lagi"}
+                {loadTimeText || "Muat 7 Hari Lagi"}
               </span>
 
               {/* Overload Badge */}
-              {request.hasOverload && (
+              {request.potentialOverload && (
                 <span
                   className={cn(
                     "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
                     request.isTaken
                       ? "text-neutral-700"
-                      : "bg-error-50 text-error-700"
+                      : "bg-error-50 text-error-400"
                   )}
                 >
                   Potensi Overload
@@ -536,7 +546,7 @@ const TransportRequestCard = ({
                 className="h-4 w-4 text-[#7B3F00]"
               />
               <span className="text-xs font-medium text-neutral-600">
-                0 Transporter Tersedia
+                {request.counters?.available ?? 0} Transporter Tersedia
               </span>
             </div>
 
@@ -557,7 +567,7 @@ const TransportRequestCard = ({
                 className="h-4 w-4 text-[#7B3F00]"
               />
               <span className="text-xs font-medium text-neutral-600">
-                0 Dilihat
+                {request.counters?.viewed ?? 0} Dilihat
               </span>
             </div>
             {showModalDilihat && (
@@ -578,7 +588,7 @@ const TransportRequestCard = ({
                 />
               </div>
               <span className="text-xs font-medium text-neutral-600">
-                0 Disimpan
+                {request.counters?.saved ?? 0} Disimpan
               </span>
             </div>
             {showModalDisimpan && (
