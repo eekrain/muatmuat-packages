@@ -1,6 +1,7 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ResponsiveSection from "@/components/Section/ResponsiveSection";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
+import { cn } from "@/lib/utils";
 
 const LoadTimeSection = () => {
   return (
@@ -27,42 +28,43 @@ const LocationPicDetailSection = ({ type }) => {
   const locations = {
     muat: [
       {
-        icon: "/icons/lokasi20.svg",
-        value:
-          "Jl. Ngagel Jaya No.128, Ngagel, Kec. Wonokromo, Surabaya, Jawa Timur 60246",
-      },
-      {
-        icon: "/icons/topik-amandemen20.svg",
-        value:
+        address:
+          "Jl. Ngagel No.128, Ngagel, Kec. Wonokromo, Surabaya, Jawa Timur 60246",
+        details:
           "Sebelah bakso presiden, gedung warna kuning, pagar warna hitam, ada mobil grandmax",
+        picName: "Siti Nurmala",
+        picPhone: "0813-9860-0000",
       },
       {
-        icon: "/icons/profile20.svg",
-        value: "Adam Sugeng Probokusumo",
+        address:
+          "Jl. Ambengan No.51, Pacar Keling, Kec. Genteng, Surabaya, Jawa Timur 60272",
+        details: "gedung warna kuning, pagar warna hitam",
+        picName: "Sari",
+        picPhone: "0812-8874-0230",
       },
-      {
-        icon: "/icons/call20.svg",
-        value: "0812-3193-1031",
-      },
+      // {
+      //   address:
+      //     "Jl. Ambengan No.51, Pacar Keling, Kec. Genteng, Surabaya, Jawa Timur 60272",
+      //   details: "gedung warna kuning, pagar warna hitam",
+      //   picName: "Sari",
+      //   picPhone: "0812-8874-0230",
+      // },
     ],
     bongkar: [
       {
-        icon: "/icons/lokasi20.svg",
-        value:
-          "Jl. S. Supriadi No.74, Sukun, Kec. Sukun, Kota Malang, Jawa Timur 65148",
+        address:
+          "Jl. Raya Darmo No.23, Keputran, Kec. Tegalsari, Surabaya, Jawa Timur 60265",
+        details: "gedung warna putih, sebelah bank BCA, ada pos satpam",
+        picName: "Budi Santoso",
+        picPhone: "0856-4321-9876",
       },
-      {
-        icon: "/icons/topik-amandemen20.svg",
-        value: "Pagar hijau lumut",
-      },
-      {
-        icon: "/icons/profile20.svg",
-        value: "Humam Husairi",
-      },
-      {
-        icon: "/icons/call20.svg",
-        value: "0812-3773-9909",
-      },
+      // {
+      //   address:
+      //     "Jl. Pemuda No.15, Embong Kaliasin, Kec. Genteng, Surabaya, Jawa Timur 60271",
+      //   details: "gedung perkantoran lantai 3, lobby warna abu-abu",
+      //   picName: "Linda Wijaya",
+      //   picPhone: "0878-5544-3322",
+      // },
     ],
   };
   return (
@@ -70,24 +72,56 @@ const LocationPicDetailSection = ({ type }) => {
       appearance={{ titleClassname: "text-base font-bold" }}
       title={headers[type]}
     >
-      <div className="flex flex-col gap-y-4">
-        <h3 className="text-sm font-semibold leading-[1.1]">{titles[type]}</h3>
-        {locations[type].map((item, key) => (
-          <div className="flex items-center gap-x-2" key={key}>
-            <div className="flex size-5 items-center">
-              <IconComponent
-                className="text-muat-trans-secondary-900"
-                src={item.icon}
-                width={20}
-                height={20}
-              />
-            </div>
-            <span className="text-xs font-medium leading-[1.1]">
-              {item.value}
-            </span>
+      {locations[type].map((location, key) => {
+        const locationItems = [
+          {
+            icon: "/icons/lokasi20.svg",
+            value: location.address,
+          },
+          {
+            icon: "/icons/topik-amandemen20.svg",
+            value: location.details,
+          },
+          {
+            icon: "/icons/profile20.svg",
+            value: location.picName,
+          },
+          {
+            icon: "/icons/call20.svg",
+            value: location.picPhone,
+          },
+        ];
+        return (
+          <div
+            className={cn(
+              "flex flex-col gap-y-4",
+              locations[type].length - 1 === key
+                ? ""
+                : "border-b border-neutral-400 pb-6"
+            )}
+            key={key}
+          >
+            <h3 className="text-sm font-semibold leading-[1.1]">
+              {titles[type]}
+            </h3>
+            {locationItems.map((item, itemKey) => (
+              <div className={cn("flex items-center gap-x-2")} key={itemKey}>
+                <div className="flex size-5 items-center">
+                  <IconComponent
+                    className="text-muat-trans-secondary-900"
+                    src={item.icon}
+                    width={20}
+                    height={20}
+                  />
+                </div>
+                <span className="text-xs font-medium leading-[1.1]">
+                  {item.value}
+                </span>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        );
+      })}
     </ResponsiveSection>
   );
 };

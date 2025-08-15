@@ -25,6 +25,7 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
 
             <span className="text-sm font-bold leading-[16.8px] text-neutral-900">
               {dataOrderDetail?.invoiceNumber || dataOrderDetail?.orderCode}
+              {/* MT25A010A */}
             </span>
 
             <div className="flex items-center gap-x-2">
@@ -38,7 +39,9 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
               >
                 <BadgeStatusPesanan variant="primary" className="w-fit">
                   {/* {statusMeta.label} */}
-                  Menunggu Konfirmasi Shipper
+                  {/* Menunggu Konfirmasi Shipper */}
+                  Armada Dijadwalkan
+                  {/* Menunggu Konfirmasi */}
                 </BadgeStatusPesanan>
               </div>
             </div>

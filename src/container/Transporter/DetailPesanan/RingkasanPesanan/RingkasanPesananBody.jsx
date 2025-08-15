@@ -1,14 +1,17 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 import { isSameDay } from "date-fns";
 
+import { TagBubble } from "@/components/Badge/TagBubble";
 import Card, { CardContent } from "@/components/Card/Card";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import {
   LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
-import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
+import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
+import { LocationTypeEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import { cn } from "@/lib/utils";
 import { formatDate, formatTime } from "@/lib/utils/dateFormat";
 
 const SectionRow = ({ label, children }) => (
@@ -19,6 +22,70 @@ const SectionRow = ({ label, children }) => (
     <div className="flex-1">{children}</div>
   </div>
 );
+
+// Component untuk detail item individual
+const PICDetailItem = ({ icon, text, className = "" }) => (
+  <div className={`flex items-center gap-2 ${className}`}>
+    <IconComponent src={icon} className="icon-fill-muat-trans-secondary-900" />
+    <span className="capsize text-xs font-medium leading-[14.4px] text-neutral-900">
+      {text}
+    </span>
+  </div>
+);
+
+// Component untuk kartu lokasi individual
+const PICLocationCard = ({ locations = [], title }) => {
+  console.log("locations", locations);
+  return (
+    <div className={"flex w-full flex-row gap-8"}>
+      <div className="flex h-8 min-w-[178px] items-center">
+        <span className="text-xs font-medium leading-[14.4px] text-neutral-600">
+          {title}
+        </span>
+      </div>
+
+      <Card className="rounded-xl border !border-neutral-400 bg-white !shadow-none">
+        <CardContent className="h-full px-4 py-5">
+          <div className="flex h-full flex-col gap-y-5">
+            {locations.map((location, index) => (
+              <Fragment key={index}>
+                <div
+                  className={cn(
+                    "flex flex-col gap-y-3",
+                    locations.length - 1 === index
+                      ? ""
+                      : "border border-b-neutral-400 pb-5"
+                  )}
+                >
+                  {/* Header lokasi */}
+                  <span className="text-xs font-bold leading-[14.4px] text-neutral-900">
+                    {location.type === LocationTypeEnum.PICKUP
+                      ? "Lokasi Muat"
+                      : "Lokasi Bongkar"}
+                  </span>
+
+                  {/* Detail items */}
+                  <PICDetailItem
+                    icon="/icons/lokasi16.svg"
+                    text={location.fullAddress}
+                  />
+                  <PICDetailItem
+                    icon="/icons/topik-amandemen16.svg"
+                    text={location.detailAddress}
+                  />
+                  <PICDetailItem
+                    icon="/icons/profile16.svg"
+                    text={location.pic.name}
+                  />
+                </div>
+              </Fragment>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
 
 const RingkasanPesananBody = ({ dataOrderDetail }) => {
   const [isMainSectionExpanded, setIsMainSectionExpanded] = useState(false);
@@ -80,7 +147,7 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
           <p className="text-xs font-medium text-neutral-900">
             {item.name}
             <span className="text-neutral-600">
-              {` (${formattedWeight} kg) ${!item.dimensionUnit ? `(${formattedLength}x${formattedWidth}x${formattedHeight} cm)` : ""}`}
+              {` (${formattedWeight} kg) ${item.dimensionUnit ? `(${formattedLength}x${formattedWidth}x${formattedHeight} cm)` : ""}`}
             </span>
           </p>
         </div>
@@ -122,7 +189,8 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
             </LightboxProvider>
             <div>
               <h3 className="text-xs font-bold text-neutral-900">
-                {dataOrderDetail?.vehicle?.truckTypeName}
+                {/* Carrier name menyusul */}
+                {`${dataOrderDetail?.vehicle?.truckTypeName} - Box`}
               </h3>
               <p className="mt-2 text-xs font-medium text-neutral-900">
                 Kebutuhan : {dataOrderDetail?.truckCount} Unit
@@ -150,34 +218,10 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
             <p className="text-xs font-medium text-neutral-900">
               Estimasi {dataOrderDetail?.estimatedDistance} km
             </p>
-            {/* <MuatBongkarStepperWithModal
+            <MuatBongkarStepperWithModal
               pickupLocations={pickupLocations}
               dropoffLocations={dropoffLocations}
-              appearance={{
-                titleClassName: "text-xxs font-semibold",
-              }}
-            /> */}
-            <TimelineContainer>
-              <NewTimelineItem
-                variant="bullet"
-                index={0}
-                activeIndex={0}
-                title={pickupLocations?.[0]?.fullAddress}
-                isLast={false}
-                appearance={{ titleClassname: "text-xs font-medium" }}
-              />
-              <NewTimelineItem
-                variant="bullet"
-                index={1}
-                activeIndex={0}
-                title={dropoffLocations?.[0]?.fullAddress}
-                isLast={true}
-                appearance={{ titleClassname: "text-xs font-medium" }}
-              />
-            </TimelineContainer>
-            {/* <Button className="self-start text-xs" variant="link">
-              Lihat Lokasi Lainnya
-            </Button> */}
+            />
           </div>
         </SectionRow>
 
@@ -206,7 +250,7 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
                   </p>
                 </SectionRow>
 
-                <SectionRow label="Lampiran/Foto Muatan">
+                <SectionRow label="Foto Muatan">
                   <LightboxProvider
                     images={dataOrderDetail?.photos?.map(
                       (photo) => photo.photoUrl
@@ -227,6 +271,38 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
                   </LightboxProvider>
                 </SectionRow>
 
+                {true ? (
+                  <SectionRow label="No. Delivery Order">
+                    <div className="flex flex-wrap gap-2">
+                      {["DO-20241023-001", "DO-20241023-002"]?.map(
+                        (order, index) => (
+                          <TagBubble key={index}>{order}</TagBubble>
+                        )
+                      )}
+                    </div>
+                  </SectionRow>
+                ) : null}
+
+                {dataOrderDetail?.additionalServices.length > 0 ? (
+                  <SectionRow label="Layanan Tambahan">
+                    <div className="flex flex-col gap-y-2">
+                      {dataOrderDetail?.additionalServices.map(
+                        (service, key) => (
+                          <div className="flex items-center gap-x-2" key={key}>
+                            <IconComponent
+                              className="text-muat-trans-secondary-900"
+                              src="/icons/layanan-tambahan16.svg"
+                            />
+                            <span className="text-xs font-semibold">
+                              {service.serviceName}
+                            </span>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </SectionRow>
+                ) : null}
+
                 <div className="flex w-full items-center justify-between">
                   <h1 className="text-lg font-semibold leading-[21.6px] text-neutral-900">
                     Detail PIC
@@ -242,6 +318,29 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
                       className={`text-neutral-700 transition-transform duration-300 ${isPicSectionExpanded ? "rotate-180" : ""}`}
                     />
                   </button>
+                </div>
+
+                {/* Main Content Area - FIXED VERSION */}
+                <div
+                  className={`w-full overflow-hidden transition-all duration-300 ease-in-out ${
+                    isPicSectionExpanded
+                      ? "max-h-[1000px] opacity-100"
+                      : "max-h-0 opacity-0"
+                  }`}
+                >
+                  <div className="flex flex-col gap-y-6">
+                    {/* Detail PIC Lokasi Muat Section */}
+                    <PICLocationCard
+                      locations={pickupLocations}
+                      title="Detail PIC Lokasi Muat"
+                    />
+
+                    {/* Detail PIC Lokasi Bongkar Section */}
+                    <PICLocationCard
+                      locations={dropoffLocations}
+                      title="Detail PIC Lokasi Bongkar"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
