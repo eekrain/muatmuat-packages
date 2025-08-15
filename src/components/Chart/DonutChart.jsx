@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 
 import {
   Tooltip as RadixTooltip,
@@ -60,21 +60,13 @@ const CustomLegend = ({ data, showThirdRow }) => (
 
 // The main Donut Chart component
 const DonutChart = ({ data, className, showThirdRow = false }) => {
-  const [activeIndex, setActiveIndex] = useState(null);
-
   const totalValue = useMemo(
     () => data.reduce((sum, entry) => sum + entry.value, 0),
     [data]
   );
 
-  const handlePieClick = (_data, index) => {
-    setActiveIndex((prevIndex) => (prevIndex === index ? null : index));
-  };
-
-  const centerTextValue =
-    activeIndex !== null ? data[activeIndex].value : totalValue;
-  const centerTextLabel =
-    activeIndex !== null ? data[activeIndex].unit : "Pesanan";
+  const centerTextValue = totalValue;
+  const centerTextLabel = "Pesanan";
 
   return (
     <TooltipProvider>
@@ -97,20 +89,12 @@ const DonutChart = ({ data, className, showThirdRow = false }) => {
                 outerRadius="100%"
                 labelLine={false}
                 label={false}
-                onClick={handlePieClick}
               >
                 {data.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={entry.color}
                     stroke="none"
-                    style={{
-                      transform:
-                        activeIndex === index ? "scale(1.04)" : "scale(1)",
-                      transition: "transform 0.2s ease-in-out",
-                      transformOrigin: "center center",
-                      cursor: "pointer",
-                    }}
                   />
                 ))}
               </Pie>
@@ -119,7 +103,7 @@ const DonutChart = ({ data, className, showThirdRow = false }) => {
 
           <RadixTooltip>
             <TooltipTrigger asChild>
-              <div className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 cursor-pointer text-center">
+              <div className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 text-center">
                 <p className="text-base font-bold text-neutral-900">
                   {formatNumberShorthand(centerTextValue)}
                 </p>
