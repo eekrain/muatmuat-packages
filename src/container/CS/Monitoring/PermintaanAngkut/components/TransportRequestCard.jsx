@@ -318,7 +318,7 @@ const TransportRequestCard = ({
                     : "font-semibold text-neutral-900"
                 )}
               >
-                {request.estimatedDistance} km
+                {request.locations?.estimatedDistance} km
               </div>
             </div>
           </div>
