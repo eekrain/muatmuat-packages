@@ -7,6 +7,7 @@ import { id } from "date-fns/locale";
 
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
+import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
@@ -252,14 +253,36 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                       </span>
                       <div className="flex items-center gap-1">
                         <span className="text-xs font-semibold leading-[120%] text-black">
-                          {orderInfo?.cargos?.[0]?.name ||
-                            "Peralatan Rumah Tangga"}
-                          ,
+                          {orderInfo?.cargos?.[0] || "Peralatan Rumah Tangga"}
+                          {orderInfo?.cargos?.length > 1 && ","}
                         </span>
                         {orderInfo?.cargos?.length > 1 && (
-                          <span className="text-xs font-semibold leading-[120%] text-primary-700">
-                            +{orderInfo.cargos.length - 1} lainnya
-                          </span>
+                          <InfoTooltip
+                            side="top"
+                            trigger={
+                              <span className="cursor-pointer text-xs font-semibold leading-[120%] text-primary-700">
+                                +{orderInfo.cargos.length - 1} lainnya
+                              </span>
+                            }
+                          >
+                            <div className="flex flex-col gap-1">
+                              <p className="text-sm font-medium text-gray-900">
+                                Informasi Muatan
+                              </p>
+                              <ol className="list-inside list-decimal space-y-0.5">
+                                {orderInfo.cargos
+                                  .slice(1)
+                                  .map((cargo, index) => (
+                                    <li
+                                      key={index}
+                                      className="text-xs font-medium text-gray-700"
+                                    >
+                                      {cargo}
+                                    </li>
+                                  ))}
+                              </ol>
+                            </div>
+                          </InfoTooltip>
                         )}
                       </div>
                     </div>
