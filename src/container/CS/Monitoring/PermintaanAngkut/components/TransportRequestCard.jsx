@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -31,6 +32,7 @@ const TransportRequestCard = ({
   const [showModalTransporter, setShowModalTransporter] = useState(false);
   const [showModalDisimpan, setShowModalDisimpan] = useState(false);
   const [showModalDilihat, setShowModalDilihat] = useState(false);
+  const [showHubungiModal, setShowHubungiModal] = useState(false);
 
   // Update local state when prop changes
   useEffect(() => {
@@ -135,7 +137,10 @@ const TransportRequestCard = ({
                 <p className="text-sm font-semibold">
                   {request.shipperInfo?.name || "-"}
                 </p>
-                <div className="flex items-center gap-1">
+                <div
+                  className="flex items-center gap-1"
+                  onClick={() => setShowHubungiModal(true)}
+                >
                   <IconComponent
                     src="/icons/contact.svg"
                     className={cn(
@@ -143,9 +148,16 @@ const TransportRequestCard = ({
                       request.isTaken ? "text-neutral-700" : ""
                     )}
                   />
-                  <p className="text-xs font-medium text-primary-700">
+                  <p className="cursor-pointer text-xs font-medium text-primary-700">
                     Hubungi Shipper
                   </p>
+
+                  {/* HubungiModal integration */}
+                  <HubungiModal
+                    isOpen={showHubungiModal}
+                    onClose={() => setShowHubungiModal(false)}
+                    transporterData={null} // TODO: pass actual transporter data if available
+                  />
                 </div>
               </div>
             </div>
@@ -154,6 +166,11 @@ const TransportRequestCard = ({
               <p className="text-xs font-semibold text-neutral-900">
                 {countdownSeconds > 0 ? formatHHMMSS(countdown) : "-"}
               </p>
+              {request.reblast !== "1" && (
+                <p className="text-xs text-gray-600">
+                  Permintaan ke-{request.reblast}
+                </p>
+              )}
             </div>
           </div>
           <div className="border-b border-neutral-400"></div>
@@ -256,13 +273,13 @@ const TransportRequestCard = ({
                 {[
                   {
                     fullAddress:
-                      request.pickupLocations?.[0]?.fullAddress ||
+                      request.locations?.pickupLocations?.[0]?.fullAddress ||
                       "Lokasi Muat",
                     type: "pickup",
                   },
                   {
                     fullAddress:
-                      request.dropoffLocations?.[0]?.fullAddress ||
+                      request.locations?.dropoffLocations?.[0]?.fullAddress ||
                       "Lokasi Bongkar",
                     type: "dropoff",
                   },
@@ -320,8 +337,8 @@ const TransportRequestCard = ({
                 <div className="text-xs font-medium text-neutral-600">
                   Informasi Muatan (Total :{" "}
                   {formatWeight(
-                    request.cargos?.[0]?.weight || 0,
-                    request.cargos?.[0]?.weightUnit || "kg"
+                    request.cargo?.items?.[0]?.weight || 0,
+                    request.cargo?.items?.[0]?.weightUnit || "kg"
                   )}
                   )
                 </div>
@@ -331,9 +348,9 @@ const TransportRequestCard = ({
                     request.isTaken ? "text-[#7B7B7B]" : "text-neutral-900"
                   )}
                 >
-                  {request.cargos.length > 1 ? (
+                  {request.cargo?.items?.length > 1 ? (
                     <>
-                      {request.cargos[0].name},{" "}
+                      {request.cargo.items[0].name},{" "}
                       <InfoTooltip
                         side="bottom"
                         align="start"
@@ -345,7 +362,7 @@ const TransportRequestCard = ({
                               cursor: "pointer",
                             }}
                           >
-                            +{request.cargos.length - 1} lainnya
+                            +{request.cargo.items.length - 1} lainnya
                           </span>
                         }
                       >
@@ -354,17 +371,19 @@ const TransportRequestCard = ({
                             Informasi Muatan
                           </div>
                           <div className="space-y-1">
-                            {request.cargos.slice(1).map((cargo, index) => (
-                              <div key={index} className="text-sm">
-                                {index + 1}. {cargo.name}
-                              </div>
-                            ))}
+                            {request.cargo.items
+                              .slice(1)
+                              .map((cargo, index) => (
+                                <div key={index} className="text-sm">
+                                  {index + 1}. {cargo.name}
+                                </div>
+                              ))}
                           </div>
                         </div>
                       </InfoTooltip>
                     </>
                   ) : (
-                    request.cargos[0].name
+                    request.cargo?.items?.[0]?.name
                   )}
                 </div>
               </div>
@@ -591,6 +610,13 @@ const TransportRequestCard = ({
           </div>
         </>
       )}
+
+      {/* HubungiModal integration */}
+      <HubungiModal
+        isOpen={showHubungiModal}
+        onClose={() => setShowHubungiModal(false)}
+        transporterData={request.shipperInfo || null}
+      />
     </div>
   );
 };

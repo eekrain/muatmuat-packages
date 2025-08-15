@@ -18,15 +18,15 @@ const apiResultTransportRequestList = {
   Data: {
     requests: [
       {
-        id: "uuid", // [dbt_mt_order.id]
-        orderCode: "MT-2025-001", // [dbt_mt_order.orderCode]
+        id: "uuid",
+        orderCode: "MT-2025-001",
+        reblast: "2",
         shipperInfo: {
-          id: "uuid", // [dbt_mt_order.userID]
-          name: "PT Shipper ABC", // [dbm_mt_user.fullName]
-          logo: "https://cdn.example.com/logo.jpg", // [dbm_mt_user.profileImage]
-          createdAt: "2025-01-15T10:30:00Z", // [dbt_mt_order.createdAt]
+          id: "uuid",
+          name: "PT Shipper ABC",
+          logo: "https://cdn.example.com/logo.jpg",
+          createdAt: "2025-01-15T10:30:00Z",
         },
-
         orderType: "INSTANT",
         loadTimeStart: "2025-01-16T09:00:00Z",
         loadTimeEnd: "2025-01-16T11:00:00Z",
@@ -36,55 +36,78 @@ const apiResultTransportRequestList = {
           color: "green",
           countdown: "02:30:45",
         },
-        pickupLocations: [
-          {
-            fullAddress: "Jl. Raya No. 1, Jakarta Selatan",
-            city: "Jakarta Selatan",
-            province: "DKI Jakarta",
-          },
-        ],
-        dropoffLocations: [
-          {
-            fullAddress: "Jl. Merdeka No. 99, Bandung",
-            city: "Bandung",
-            province: "Jawa Barat",
-          },
-        ],
-        estimatedDistance: 150.5,
-        cargos: [
-          {
-            name: "Peralatan Rumah Tangga",
-            weight: 1500,
-            weightUnit: "kg",
-            dimensions: "200x100x80 cm",
-          },
-        ],
-        totalPrice: 2500000,
-        transportFee: 2000000,
+        locations: {
+          pickupLocations: [
+            {
+              id: "pickup-1",
+              sequence: 1,
+              fullAddress: "Jl. Raya No. 1, Jakarta Selatan",
+              city: "Jakarta Selatan",
+              district: "Kebayoran Baru",
+              latitude: -6.2607,
+              longitude: 106.7816,
+            },
+          ],
+          dropoffLocations: [
+            {
+              id: "dropoff-1",
+              sequence: 1,
+              fullAddress: "Jl. Merdeka No. 99, Bandung",
+              city: "Bandung",
+              district: "Sumur Bandung",
+              latitude: -6.9147,
+              longitude: 107.6098,
+            },
+          ],
+          estimatedDistance: 150.5,
+        },
+        cargo: {
+          totalWeight: 1500,
+          weightUnit: "kg",
+          description: "Peralatan Rumah Tangga",
+          additionalItems: 7,
+          items: [
+            {
+              name: "Peralatan Rumah Tangga",
+              weight: 500,
+              dimensions: {
+                length: 2,
+                width: 1,
+                height: 0.8,
+              },
+              dimensionUnit: "m",
+            },
+          ],
+        },
+        pricing: {
+          potentialIncome: 200000,
+        },
+        counters: {
+          available: 25,
+          viewed: 12,
+          saved: 5,
+        },
+        vehicle: {
+          truckCount: 2,
+          truckType: "Fuso",
+          carrierType: "Agam Tunggal Jaya",
+        },
+        additionalServices: [{ id: "svc-1", serviceName: "Asuransi" }],
+        photos: ["https://cdn.example.com/photo1.jpg"],
         isHalalLogistics: false,
-        hasOverload: false,
-        requestAttempt: 1,
-        lastViewedAt: "2025-01-15T14:20:00Z",
-        lastSavedAt: "2025-01-15T13:45:00Z",
-        isSaved: false,
-        isNew: true,
-        truckTypeName: "Fuso",
-        carrierName: "Agam Tunggal Jaya",
-        truckCount: 2,
-        loadDateTime: "16 Jan 2025 09:00 WIB s/d 11:00 WIB",
-        potentialEarnings: "Rp2.500.000",
-        orderStatus: "PREPARE_FLEET",
+        potentialOverload: false,
       },
       {
-        id: "uuid-1",
-        orderCode: "MT25A001A",
+        id: "uuid",
+        orderCode: "MT-2025-001",
+        reblast: "1",
         shipperInfo: {
-          id: "shipper-1",
+          id: "uuid",
           name: "PT Shipper ABC",
           logo: "https://cdn.example.com/logo.jpg",
           createdAt: "2025-01-15T10:30:00Z",
         },
-        orderType: "SCHEDULED",
+        orderType: "INSTANT",
         loadTimeStart: "2025-01-16T09:00:00Z",
         loadTimeEnd: "2025-01-16T11:00:00Z",
         timeLabels: {
@@ -93,44 +116,66 @@ const apiResultTransportRequestList = {
           color: "green",
           countdown: "02:30:45",
         },
-        pickupLocations: [
-          {
-            fullAddress: "Jl. Raya No. 1, Jakarta Selatan",
-            city: "Jakarta Selatan",
-            province: "DKI Jakarta",
-          },
-        ],
-        dropoffLocations: [
-          {
-            fullAddress: "Jl. Merdeka No. 99, Bandung",
-            city: "Bandung",
-            province: "Jawa Barat",
-          },
-        ],
-        estimatedDistance: 150.5,
-        cargos: [
-          {
-            name: "Peralatan Rumah Tangga",
-            weight: 1500,
-            weightUnit: "kg",
-            dimensions: "200x100x80 cm",
-          },
-        ],
-        totalPrice: 2500000,
-        transportFee: 2000000,
+        locations: {
+          pickupLocations: [
+            {
+              id: "pickup-1",
+              sequence: 1,
+              fullAddress: "Jl. Raya No. 1, Jakarta Selatan",
+              city: "Jakarta Selatan",
+              district: "Kebayoran Baru",
+              latitude: -6.2607,
+              longitude: 106.7816,
+            },
+          ],
+          dropoffLocations: [
+            {
+              id: "dropoff-1",
+              sequence: 1,
+              fullAddress: "Jl. Merdeka No. 99, Bandung",
+              city: "Bandung",
+              district: "Sumur Bandung",
+              latitude: -6.9147,
+              longitude: 107.6098,
+            },
+          ],
+          estimatedDistance: 150.5,
+        },
+        cargo: {
+          totalWeight: 1500,
+          weightUnit: "kg",
+          description: "Peralatan Rumah Tangga",
+          additionalItems: 7,
+          items: [
+            {
+              name: "Peralatan Rumah Tangga",
+              weight: 500,
+              dimensions: {
+                length: 2,
+                width: 1,
+                height: 0.8,
+              },
+              dimensionUnit: "m",
+            },
+          ],
+        },
+        pricing: {
+          potentialIncome: 200000,
+        },
+        counters: {
+          available: 25,
+          viewed: 12,
+          saved: 5,
+        },
+        vehicle: {
+          truckCount: 2,
+          truckType: "Fuso",
+          carrierType: "Agam Tunggal Jaya",
+        },
+        additionalServices: [{ id: "svc-1", serviceName: "Asuransi" }],
+        photos: ["https://cdn.example.com/photo1.jpg"],
         isHalalLogistics: false,
-        hasOverload: false,
-        requestAttempt: 1,
-        lastViewedAt: "2025-01-15T14:20:00Z",
-        lastSavedAt: "2025-01-15T13:45:00Z",
-        isSaved: false,
-        isNew: true,
-        truckTypeName: "Fuso",
-        carrierName: "Agam Tunggal Jaya",
-        truckCount: 2,
-        loadDateTime: "16 Jan 2025 09:00 WIB s/d 11:00 WIB",
-        potentialEarnings: "Rp2.500.000",
-        orderStatus: "PREPARE_FLEET",
+        potentialOverload: false,
       },
     ],
     pagination: {
@@ -141,10 +186,11 @@ const apiResultTransportRequestList = {
       hasPrevious: false,
     },
     tabCounters: {
-      all: 150,
-      instant: 150,
+      all: 97,
+      instant: 45,
       scheduled: 42,
       halal: 10,
+      hasBlinkNode: true,
     },
     newRequestsCount: {
       total: 1,

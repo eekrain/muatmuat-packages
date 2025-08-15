@@ -10,13 +10,14 @@ import Button from "@/components/Button/Button";
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import DisplayOptionsBar from "@/components/DisplayOptionsBar/DisplayOptionsBar";
-import FilterDropdown from "@/components/FilterDropdown";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Pagination from "@/components/Pagination/Pagination";
 import Table from "@/components/Table/Table";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
+
+import DashboardFilter from "./DashboardFilter";
 
 const usePrevious = (value) => {
   const ref = useRef();
@@ -55,6 +56,8 @@ const DashboardDataTable = ({
   displayOptions,
   displayActions,
   showDisplayView,
+  containerClassName,
+  infoView,
 }) => {
   const { t } = useTranslation();
   const [localSearchValue, setLocalSearchValue] = useState(
@@ -294,7 +297,13 @@ const DashboardDataTable = ({
           </div>
         ) : (
           <>
-            <div className="flex-shrink-0 space-y-4 px-6 py-5">
+            <div
+              className={cn(
+                "flex-shrink-0 space-y-4 px-6 py-5",
+                containerClassName
+              )}
+            >
+              {infoView}
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   {showSearch && (
@@ -329,7 +338,7 @@ const DashboardDataTable = ({
                     />
                   )}
                   {showFilter && filterConfig && (
-                    <FilterDropdown
+                    <DashboardFilter
                       categories={filterConfig.categories}
                       data={filterConfig.data}
                       selectedValues={activeFilters || {}}
