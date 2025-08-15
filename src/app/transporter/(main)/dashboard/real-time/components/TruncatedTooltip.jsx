@@ -40,7 +40,7 @@ const TruncatedTooltip = ({ text, lineClamp = 2, className = "" }) => {
         trigger={textElement}
         side="top"
         align="start"
-        className="w-[336px]"
+        className="max-w-[336px]"
         sideOffset={2}
       >
         {text}

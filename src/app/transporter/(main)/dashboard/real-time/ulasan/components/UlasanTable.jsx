@@ -377,7 +377,11 @@ const UlasanTable = () => {
           />
           <Button
             variant="muattrans-primary"
-            className="h-9 px-6"
+            className="h-9 px-6 text-muat-trans-secondary-900 disabled:text-neutral-600"
+            iconLeft="/icons/download16.svg"
+            appearance={{
+              iconClassName: "text-muat-trans-secondary-900",
+            }}
             disabled={loading || !tableData.reviews.length}
           >
             {t("UlasanTable.buttonDownload", {}, "Unduh")}

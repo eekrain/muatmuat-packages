@@ -139,6 +139,7 @@ const CSDashboardPage = () => {
       tooltipKey: "csDashboard.tooltip.newReviews",
       tooltipFallback:
         "Ulasan yang baru diberikan oleh shipper untuk pengiriman yang telah selesai pada hari ini.",
+      href: "/dashboard/real-time/ulasan",
     },
     {
       key: "laporanSOS",
@@ -198,7 +199,7 @@ const CSDashboardPage = () => {
                 key={item.key}
                 label={t(item.labelKey, {}, item.labelFallback)}
                 value={dashboardData?.attentionItems?.[item.key] || 0}
-                href="/daftar-pesanan"
+                href={item.href || "/daftar-pesanan"}
                 tooltipText={t(item.tooltipKey, {}, item.tooltipFallback)}
               />
             ))}
