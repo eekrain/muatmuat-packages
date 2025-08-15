@@ -17,8 +17,8 @@ const mockApiResult = {
     orderStatusUnit: 1,
     orderType: "SCHEDULED",
     loadTimeStart: "2025-07-20T10:46:00.000Z",
-    loadTimeEnd: null,
-    // loadTimeEnd: "2025-07-20T13:46:00.000Z",
+    // loadTimeEnd: null,
+    loadTimeEnd: "2025-07-20T13:46:00.000Z",
     estimatedDistance: 178,
     isHalalLogistics: false,
     truckCount: 1,
@@ -35,7 +35,8 @@ const mockApiResult = {
         sequence: 1,
         fullAddress:
           "Galaxy Mall 2, Mulyorejo, Surabaya, Jawa Timur, Indonesia",
-        detailAddress: "",
+        detailAddress:
+          "Berikut temuan QC dalam Ronda RC untuk platform Web Desktop dan Responsive",
         coordinates: {
           latitude: -7.2741549,
           longitude: 112.7820621,
@@ -58,12 +59,42 @@ const mockApiResult = {
         },
       },
       {
+        id: "ee06f46c-fd1d-4e6e-810c-2a1d4eda7391",
+        type: "PICKUP",
+        sequence: 1,
+        fullAddress:
+          "Graha Aero, Jl. Kedungdoro 88, Kedungdoro, Kec Tegalsari, Kota Surabaya, Jawa Timur 60261",
+        detailAddress:
+          "Berikut temuan QC dalam Ronda RC untuk platform Web Desktop dan Responsive",
+        coordinates: {
+          latitude: -7.2741549,
+          longitude: 112.7820621,
+        },
+        administrativeArea: {
+          district: "Mulyorejo",
+          city: "Kota Surabaya",
+          province: "Jawa Timur",
+          postalCode: "60115",
+        },
+        qrScan: {
+          status: "NOT_SCANNED",
+          token: null,
+          expiryTime: null,
+        },
+        isActive: true,
+        pic: {
+          name: "Popol",
+          phoneNumber: "08197203572035",
+        },
+      },
+      {
         id: "1e70ee97-04b5-4ee8-beea-963dffd0c126",
         type: "DROPOFF",
         sequence: 1,
         fullAddress:
           "Ciputra World Surabaya, Jalan Mayjen Sungkono, Gunung Sari, Surabaya, Jawa Timur, Indonesia",
-        detailAddress: "",
+        detailAddress:
+          "Berikut temuan QC dalam Ronda RC untuk platform Web Desktop dan Responsive",
         coordinates: {
           latitude: -7.2925952,
           longitude: 112.7200837,
@@ -83,6 +114,35 @@ const mockApiResult = {
         pic: {
           name: "pupu",
           phoneNumber: "08172094790124",
+        },
+      },
+      {
+        id: "1e70ee97-04b5-4ee8-beea-963dffd0c126",
+        type: "DROPOFF",
+        sequence: 1,
+        fullAddress:
+          "Jl. Ambengan No.51, Pacar Keling, Kec. Genteng, Surabaya, Jawa Timur 60272",
+        detailAddress:
+          "Berikut temuan QC dalam Ronda RC untuk platform Web Desktop dan Responsive",
+        coordinates: {
+          latitude: -7.2925952,
+          longitude: 112.7200837,
+        },
+        administrativeArea: {
+          district: "Gambir",
+          city: "Kota Jakarta Pusat",
+          province: "Dki Jakarta",
+          postalCode: "10160",
+        },
+        qrScan: {
+          status: "NOT_SCANNED",
+          token: null,
+          expiryTime: null,
+        },
+        isActive: true,
+        pic: {
+          name: "Kupa",
+          phoneNumber: "081720949375034",
         },
       },
       // {
@@ -508,72 +568,72 @@ const mockApiResult = {
         },
         sequence: 1,
       },
-      {
-        id: "9bd5938f-8445-40ca-84b4-4939a5491256",
-        photoUrl:
-          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
-        thumbnailUrl:
-          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
-        fullSizeUrl:
-          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
-        photoType: "MAIN_PHOTO",
-        description: null,
-        metadata: {
-          fileSize: 2048576,
-          format: "JPEG",
-          dimensions: {
-            width: 1920,
-            height: 1080,
-          },
-          uploadedAt: "2025-07-18T03:48:41.962Z",
-          uploadedBy: "transporter",
-        },
-        sequence: 2,
-      },
-      {
-        id: "9bd5938f-8445-40ca-84b4-4939a5491256",
-        photoUrl:
-          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
-        thumbnailUrl:
-          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
-        fullSizeUrl:
-          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
-        photoType: "MAIN_PHOTO",
-        description: null,
-        metadata: {
-          fileSize: 2048576,
-          format: "JPEG",
-          dimensions: {
-            width: 1920,
-            height: 1080,
-          },
-          uploadedAt: "2025-07-18T03:48:41.962Z",
-          uploadedBy: "transporter",
-        },
-        sequence: 3,
-      },
-      {
-        id: "9bd5938f-8445-40ca-84b4-4939a5491256",
-        photoUrl:
-          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
-        thumbnailUrl:
-          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
-        fullSizeUrl:
-          "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
-        photoType: "MAIN_PHOTO",
-        description: null,
-        metadata: {
-          fileSize: 2048576,
-          format: "JPEG",
-          dimensions: {
-            width: 1920,
-            height: 1080,
-          },
-          uploadedAt: "2025-07-18T03:48:41.962Z",
-          uploadedBy: "transporter",
-        },
-        sequence: 4,
-      },
+      // {
+      //   id: "9bd5938f-8445-40ca-84b4-4939a5491256",
+      //   photoUrl:
+      //     "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+      //   thumbnailUrl:
+      //     "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+      //   fullSizeUrl:
+      //     "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+      //   photoType: "MAIN_PHOTO",
+      //   description: null,
+      //   metadata: {
+      //     fileSize: 2048576,
+      //     format: "JPEG",
+      //     dimensions: {
+      //       width: 1920,
+      //       height: 1080,
+      //     },
+      //     uploadedAt: "2025-07-18T03:48:41.962Z",
+      //     uploadedBy: "transporter",
+      //   },
+      //   sequence: 2,
+      // },
+      // {
+      //   id: "9bd5938f-8445-40ca-84b4-4939a5491256",
+      //   photoUrl:
+      //     "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+      //   thumbnailUrl:
+      //     "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+      //   fullSizeUrl:
+      //     "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+      //   photoType: "MAIN_PHOTO",
+      //   description: null,
+      //   metadata: {
+      //     fileSize: 2048576,
+      //     format: "JPEG",
+      //     dimensions: {
+      //       width: 1920,
+      //       height: 1080,
+      //     },
+      //     uploadedAt: "2025-07-18T03:48:41.962Z",
+      //     uploadedBy: "transporter",
+      //   },
+      //   sequence: 3,
+      // },
+      // {
+      //   id: "9bd5938f-8445-40ca-84b4-4939a5491256",
+      //   photoUrl:
+      //     "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+      //   thumbnailUrl:
+      //     "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+      //   fullSizeUrl:
+      //     "https://azlogistik.s3.ap-southeast-3.amazonaws.com/undefined/file-1752810489324.webp",
+      //   photoType: "MAIN_PHOTO",
+      //   description: null,
+      //   metadata: {
+      //     fileSize: 2048576,
+      //     format: "JPEG",
+      //     dimensions: {
+      //       width: 1920,
+      //       height: 1080,
+      //     },
+      //     uploadedAt: "2025-07-18T03:48:41.962Z",
+      //     uploadedBy: "transporter",
+      //   },
+      //   sequence: 4,
+      // },
     ],
     additionalServices: [
       {
@@ -582,14 +642,14 @@ const mockApiResult = {
       },
       {
         id: "a0f1778f-0ee2-4ec1-8be8-3e7737832fe2",
-        serviceName: "Kirim Berkas",
+        serviceName: "Bantuan Tambahan",
       },
     ],
     incomeSummary: {
-      totalPrice: 421751,
-      transportFee: 221751,
-      additionalServiceFee: 200000,
-      taxAmount: 0,
+      totalPrice: 800000,
+      transportFee: 800000,
+      additionalServiceFee: 100000,
+      taxAmount: 100000,
     },
     otherStatus: [
       {
