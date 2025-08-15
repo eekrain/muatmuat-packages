@@ -20,7 +20,7 @@ import RadioButton from "@/components/Radio/RadioButton";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
-import InputAlasanLainnya from "../../Transporter/Monitoring/DaftarPesananAktif/components/InputAlasanLainnya";
+import InputAlasanLainnya from "./InputAlasanLainnya";
 
 // Valibot validation schema
 const FormSchema = v.pipe(
