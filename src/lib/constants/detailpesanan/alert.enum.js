@@ -34,8 +34,6 @@ export const AlertLabelResponsiveEnum = {
 };
 
 export const AlertInfoEnum = {
-  // Ini haruse bukan tooltip, tapi button bro
-  // WAITING_TIME_CHARGE: "Informasi biaya waktu tunggu",
   SHOW_QRCODE_DRIVER: "AlertInfoEnum.messageShowQrcodeDriverInfo",
   REFUND_IN_PROCESS: "AlertInfoEnum.messageRefundInProcessInfo",
   REFUND_COMPLETED: "AlertInfoEnum.messageRefundCompletedInfo",
