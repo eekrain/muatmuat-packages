@@ -266,17 +266,14 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                             }
                           >
                             <div className="flex flex-col gap-1">
-                              <p className="text-sm font-medium text-gray-900">
+                              <p className="text-sm font-medium">
                                 Informasi Muatan
                               </p>
                               <ol className="list-inside list-decimal space-y-0.5">
                                 {orderInfo.cargos
                                   .slice(1)
                                   .map((cargo, index) => (
-                                    <li
-                                      key={index}
-                                      className="text-xs font-medium text-gray-700"
-                                    >
+                                    <li key={index} className="text-sm">
                                       {cargo}
                                     </li>
                                   ))}

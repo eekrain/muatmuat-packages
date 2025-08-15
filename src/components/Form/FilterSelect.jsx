@@ -1,0 +1,107 @@
+"use client";
+
+import { forwardRef } from "react";
+
+import { cn } from "@/lib/utils";
+
+import IconComponent from "../IconComponent/IconComponent";
+import { Select } from "../Select/Select";
+
+export const FilterSelect = forwardRef(
+  (
+    {
+      options = [],
+      value,
+      onChange,
+      placeholder = "Select filter...",
+      notFoundText = "No options available",
+      disabled = false,
+      className = "w-full",
+      errorMessage = null,
+      showNotificationDot = false,
+      notificationCount = 0,
+      icon = null,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <div className="relative flex flex-col gap-2">
+        {/* Custom wrapper to add icon and notification dot */}
+        <div className="relative">
+          <Select.Root
+            value={value}
+            onValueChange={onChange}
+            disabled={disabled}
+            {...props}
+          >
+            <Select.Trigger
+              placeholder={placeholder}
+              errorMessage={errorMessage}
+              className={cn(
+                "h-8 border-neutral-400 text-xs font-medium hover:border-neutral-500 focus:border-primary-700 data-[state=open]:border-primary-700",
+                icon && "pl-9", // Add left padding when icon is present
+                className
+              )}
+            >
+              <Select.Value placeholder={placeholder}>
+                {value
+                  ? options.find((option) => option.value === value)?.label ||
+                    value
+                  : placeholder}
+              </Select.Value>
+            </Select.Trigger>
+
+            <Select.Content
+              ref={ref}
+              className="w-auto min-w-[220px]"
+              maxHeight="280px"
+            >
+              {options.length === 0 ? (
+                <Select.Empty>{notFoundText}</Select.Empty>
+              ) : (
+                options.map((option) => (
+                  <Select.Item
+                    key={option.value}
+                    value={option.value}
+                    className="p-2 text-xs font-medium hover:bg-neutral-50 data-[highlighted]:bg-neutral-50"
+                  >
+                    <span className="truncate whitespace-nowrap">
+                      {option.label}
+                    </span>
+                  </Select.Item>
+                ))
+              )}
+            </Select.Content>
+          </Select.Root>
+
+          {/* Icon overlay */}
+          {icon && (
+            <div className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2">
+              <IconComponent
+                src={icon}
+                width={16}
+                height={16}
+                className={cn(
+                  "flex-shrink-0",
+                  disabled ? "text-neutral-400" : "text-neutral-700"
+                )}
+              />
+            </div>
+          )}
+
+          {/* Notification Dot */}
+          {showNotificationDot && notificationCount > 0 && (
+            <div className="absolute -right-1 -top-1 z-10">
+              <div className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                {notificationCount > 99 ? "99+" : notificationCount}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+);
+
+FilterSelect.displayName = "FilterSelect";
