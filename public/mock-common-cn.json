@@ -639,5 +639,12 @@
   "Period.messageErrorEndDateRequired": "必须填写结束期间",
   "Period.messageErrorEndDateBeforeStart": "结束期间不能早于开始期间",
   "Period.messageErrorRangeTooLarge": "最大范围为自开始期间起一年",
-  "Period.buttonApply": "应用"
+  "Period.buttonApply": "应用",
+  "ModalPerubahanData.titleDetailSebelumPerubahan": "变更前详情",
+  "ModalPerubahanData.sectionWaktuMuat": "装货时间",
+  "ModalPerubahanData.labelWaktuMuat": "装货时间",
+  "ModalPerubahanData.sectionLokasiMuatBongkar": "装货和卸货地点",
+  "ModalPerubahanData.titleLokasiMuat": "装货地点",
+  "ModalPerubahanData.titleLokasiBongkar": "卸货地点",
+  "ModalPerubahanData.timeRangeSeparator": "至"
 }
