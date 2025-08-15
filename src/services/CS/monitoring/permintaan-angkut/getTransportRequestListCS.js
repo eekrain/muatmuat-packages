@@ -25,7 +25,7 @@ const apiResultTransportRequestList = {
           id: "uuid",
           name: "PT Shipper ABC",
           logo: "https://cdn.example.com/logo.jpg",
-          createdAt: "2025-08-15T10:30:00Z",
+          createdAt: "2025-08-15T14:10:00+07:00",
         },
         orderType: "INSTANT",
         loadTimeStart: "2025-08-16T09:00:00Z",
@@ -115,7 +115,7 @@ const apiResultTransportRequestList = {
           category: "MUAT_HARI_INI",
           display: "Muat Hari Ini",
           color: "green",
-          countdown: "02:30:45",
+          countdown: "99:50:45",
         },
 
         pricing: {

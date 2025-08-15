@@ -87,34 +87,49 @@ const TransportRequestCard = ({
     return h * 3600 + m * 60 + s;
   };
 
-  const countdownSeconds = parseCountdownToSeconds(
-    request.timeLabels?.countdown
-  );
-  // Local countdown state
-  const [countdown, setCountdown] = useState(countdownSeconds);
+  // Countdown logic: start at createdAt, allow negative values
+  const getCountdownSeconds = () => {
+    if (!request.timeLabels?.countdown || !request.shipperInfo?.createdAt)
+      return 0;
+    const start = new Date(request.shipperInfo.createdAt);
+    const now = new Date();
+    const initial = parseCountdownToSeconds(request.timeLabels.countdown);
+    const elapsed = Math.floor((now - start) / 1000);
+    // Allow negative countdown if time has passed
+    return initial - elapsed;
+  };
+
+  const [countdown, setCountdown] = useState(getCountdownSeconds());
   useEffect(() => {
-    setCountdown(countdownSeconds);
-    if (countdownSeconds > 0) {
-      const interval = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(interval);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [countdownSeconds]);
+    setCountdown(getCountdownSeconds());
+    const interval = setInterval(() => {
+      setCountdown((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line
+  }, [request.timeLabels?.countdown, request.shipperInfo?.createdAt]);
+  // (removed duplicate countdown state/effect)
 
   // Format always as hh:mm:ss for < 1 day
   const formatHHMMSS = (seconds) => {
-    if (seconds <= 0) return "00:00:00";
-    const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
-    const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
-    const s = String(seconds % 60).padStart(2, "0");
-    return `${h}:${m}:${s}`;
+    const absSec = Math.abs(seconds);
+    const days = Math.floor(absSec / 86400);
+    if (days > 0) {
+      return `${seconds < 0 ? "-" : ""}${days} Hari`;
+    }
+    const hours = Math.floor((absSec % 86400) / 3600);
+    const minutes = Math.floor((absSec % 3600) / 60);
+    const secs = absSec % 60;
+    if (absSec < 3600) {
+      // Less than 1 hour: show mm:ss only
+      return `${
+        seconds < 0 ? "-" : ""
+      }${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    }
+    // 1 hour to < 1 day: show hh:mm:ss
+    return `${
+      seconds < 0 ? "-" : ""
+    }${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   };
 
   return (
@@ -162,15 +177,19 @@ const TransportRequestCard = ({
               </div>
             </div>
             <div className="flex flex-col items-end">
-              <p className="text-xs font-medium text-gray-600">
+              <p className="text-xs text-gray-600">
                 {(() => {
+                  // Anggap createdAt sudah WIB
                   const created = new Date(request.shipperInfo?.createdAt);
                   const now = new Date();
+
+                  // Hitung selisih dalam ms
                   const diffMs = now - created;
                   const diffSec = Math.floor(diffMs / 1000);
                   const diffMin = Math.floor(diffSec / 60);
                   const diffHour = Math.floor(diffMin / 60);
                   const diffDay = Math.floor(diffHour / 24);
+
                   if (diffDay > 0) return `${diffDay} Hari yang lalu`;
                   if (diffHour > 0) return `${diffHour} Jam yang lalu`;
                   if (diffMin > 0) return `${diffMin} Menit yang lalu`;
@@ -178,7 +197,7 @@ const TransportRequestCard = ({
                 })()}
               </p>
               <p className="text-xs font-semibold text-neutral-900">
-                {countdownSeconds > 0 ? formatHHMMSS(countdown) : "-"}
+                {formatHHMMSS(countdown)}
               </p>
               {request.reblast !== "1" && (
                 <p className="text-xs text-gray-600">
