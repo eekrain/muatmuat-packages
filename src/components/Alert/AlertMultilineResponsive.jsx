@@ -115,7 +115,7 @@ const Item = ({ item }) => {
         </Link>
       ) : item.label === "messageWaitingTimeCharge" ? (
         <InfoBottomsheetDriverCharge title="Informasi" />
-      ) : item.label === "messageOrderChangesConfirmation" ? (
+      ) : item.type === "ORDER_CHANGES_CONFIRMATION" ? (
         <IconComponent
           src="/icons/info16.svg"
           onClick={() => navigation.push("/DetailSebelumPerubahan")}
