@@ -78,7 +78,7 @@ const ModalTransportTersedia = ({ onClose, requestId = "dummy-id" }) => {
         />
         {/* List Transporter */}
         <div
-          className="max-h-[337px] overflow-y-auto pr-2"
+          className="h-[337px] overflow-y-auto pr-2"
           style={{ minWidth: "calc(100% + 12px)" }}
         >
           {isLoading ? (
