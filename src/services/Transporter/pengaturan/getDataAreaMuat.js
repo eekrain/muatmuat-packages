@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = true; // toggle mock data
+const useMockData = false; // toggle mock data
 
 // Endpoint constants
 export const URL_MASTER_PROVINCES = "/v1/provinces";
@@ -387,7 +387,7 @@ export const mockAreaMuatStatus = {
       Text: "Status area muat berhasil diambil",
     },
     Data: {
-      hasData: true,
+      hasData: false,
       transporterID: "550e8400-e29b-41d4-a716-446655440001",
       provinceCount: 4,
       totalCities: 23,

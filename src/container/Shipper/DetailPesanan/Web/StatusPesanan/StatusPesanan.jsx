@@ -34,6 +34,7 @@ const StatusPesanan = ({
   dataStatusPesanan,
   isShowWaitFleetAlert,
   oldDriverData,
+  orderChangeHistory,
 }) => {
   const { t } = useTranslation();
   const [isModalPerubahanDataOpen, setIsModalPerubahanDataOpen] =
@@ -178,10 +179,14 @@ const StatusPesanan = ({
         </CardContent>
       </Card>
 
-      <ModalPerubahanData
-        open={isModalPerubahanDataOpen}
-        onOpenChange={setIsModalPerubahanDataOpen}
-      />
+      {orderChangeHistory && (
+        <ModalPerubahanData
+          open={isModalPerubahanDataOpen}
+          onOpenChange={setIsModalPerubahanDataOpen}
+          orderChangeHistory={orderChangeHistory}
+        />
+      )}
+
       <ModalDetailWaktuTunggu
         open={isModalDetailWaktuTungguOpen}
         onOpenChange={setIsModalDetailWaktuTungguOpen}

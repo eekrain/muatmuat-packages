@@ -13,9 +13,6 @@ import { formatDateInput } from "@/lib/utils/dateFormat";
 
 import "./Calendar.css";
 
-/* ------------------------- Helpers & Constants ------------------------- */
-
-// Normalisasi tanggal ke awal hari (agar perbandingan inklusif)
 const startOfDay = (d) => {
   const x = new Date(d);
   x.setHours(0, 0, 0, 0);
@@ -23,9 +20,8 @@ const startOfDay = (d) => {
 };
 
 const MIN_DATE = startOfDay(new Date(2000, 0, 1));
-const TODAY = startOfDay(new Date()); // <- hari ini inklusif
+const TODAY = startOfDay(new Date());
 
-// YYYY-MM-DD
 const toISO = (date) => {
   const d = startOfDay(date);
   const year = d.getFullYear();
@@ -34,7 +30,6 @@ const toISO = (date) => {
   return `${year}-${month}-${day}`;
 };
 
-// untuk tampilan, mengikuti util yang sudah ada
 const toDisplay = (date) =>
   formatDateInput(date, ["day", "month", "year"], false);
 
@@ -51,7 +46,6 @@ const clamp = (date, min, max) =>
     )
   );
 
-// Parser fallback dari display ke ISO (jaga kompatibilitas jika ada string masuk)
 const formatToISODate = (dateStr) => {
   if (!dateStr) return "";
   const dashParts = dateStr.split("-");
@@ -62,8 +56,6 @@ const formatToISODate = (dateStr) => {
     return `${slashParts[2]}-${slashParts[1]}-${slashParts[0]}`;
   return dateStr;
 };
-
-/* ----------------------------- Component ------------------------------- */
 
 const Period = ({
   options = [],
@@ -80,15 +72,9 @@ const Period = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isPeriode, setIsPeriode] = useState(false);
 
-  // gunakan string untuk pesan error -> lebih fleksibel
-  const [validate, setValidate] = useState({
-    start_date: "",
-    end_date: "",
-  });
-
-  // simpan display & ISO agar API gampang
+  const [validate, setValidate] = useState({ start_date: "", end_date: "" });
   const [inputDateCustom, setInputDateCustom] = useState({
-    status: null, // 'start_date' | 'end_date' | null
+    status: null,
     start_date: "",
     end_date: "",
     start_iso: "",
@@ -97,13 +83,10 @@ const Period = ({
 
   const dropdownRef = useRef(null);
 
-  /* -------------------------- Initial & External -------------------------- */
-
   useEffect(() => {
     setSelected(options[0]);
   }, [JSON.stringify(options)]);
 
-  // mengakomodasi kontrol dari parent
   useEffect(() => {
     if (value !== null) {
       if (typeof value === "string") {
@@ -116,8 +99,6 @@ const Period = ({
       }
     }
   }, [value, options]);
-
-  /* ------------------------------ Handlers ------------------------------- */
 
   const handleSelect = (option, range) => {
     if (range) {
@@ -160,102 +141,86 @@ const Period = ({
     if (isPeriode) resetValue();
   }, [isPeriode]);
 
-  // click di luar menutup dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target))
         setIsOpen(false);
-      }
     };
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  /* -------------------------- Calendar Boundaries ------------------------- */
-
-  // batas min/max kalender bergantung field aktif
   const calendarBounds = () => {
-    if (inputDateCustom.status === "start_date") {
-      const max = inputDateCustom.end_iso
-        ? startOfDay(new Date(inputDateCustom.end_iso))
-        : TODAY; // ≤ TODAY, tetap pilih hari ini
-      return { min: MIN_DATE, max };
-    }
+    if (inputDateCustom.status === "start_date")
+      return { min: MIN_DATE, max: TODAY };
     if (inputDateCustom.status === "end_date") {
       const start = inputDateCustom.start_iso
         ? startOfDay(new Date(inputDateCustom.start_iso))
         : MIN_DATE;
       const max = inputDateCustom.start_iso
-        ? clamp(addYears(start, 1), MIN_DATE, TODAY) // maksimum 1 tahun dari start, tapi tidak melewati TODAY
+        ? clamp(addYears(start, 1), MIN_DATE, TODAY)
         : TODAY;
       return { min: start, max };
     }
     return { min: MIN_DATE, max: TODAY };
   };
 
-  // disable tanggal yang melanggar aturan rentang 1 tahun
   const tileDisabledByRange = ({ date }) => {
     const d = startOfDay(date);
     if (inputDateCustom.status === "end_date" && inputDateCustom.start_iso) {
       const start = startOfDay(new Date(inputDateCustom.start_iso));
       return d > clamp(addYears(start, 1), MIN_DATE, TODAY) || d < start;
     }
-    if (inputDateCustom.status === "start_date" && inputDateCustom.end_iso) {
-      const end = startOfDay(new Date(inputDateCustom.end_iso));
-      return d > end || d < addYears(end, -1) || d < MIN_DATE;
-    }
+    if (inputDateCustom.status === "start_date")
+      return d < MIN_DATE || d > TODAY;
     const { min, max } = calendarBounds();
     return d < min || d > max;
   };
 
-  // pilih tanggal dari kalender (auto-normalisasi end jika perlu)
   const handleCalendarChange = (date) => {
     const dd = startOfDay(date);
     const display = toDisplay(dd);
     const iso = toISO(dd);
-
     setValidate((v) => ({ ...v, [inputDateCustom.status]: "" }));
-
     if (inputDateCustom.status === "start_date") {
-      let endISO = inputDateCustom.end_iso;
-      if (endISO) {
-        const start = startOfDay(new Date(iso));
-        const maxEnd = clamp(addYears(start, 1), MIN_DATE, TODAY);
-        if (startOfDay(new Date(endISO)) < start) endISO = iso;
-        if (startOfDay(new Date(endISO)) > maxEnd) endISO = toISO(maxEnd);
-      }
+      const shouldResetEndDate =
+        inputDateCustom.end_iso && !inputDateCustom.start_iso;
       setInputDateCustom((a) => ({
         ...a,
         start_date: display,
         start_iso: iso,
-        end_date: endISO ? toDisplay(startOfDay(new Date(endISO))) : a.end_date,
-        end_iso: endISO ?? a.end_iso,
+        end_date: shouldResetEndDate ? "" : a.end_date,
+        end_iso: shouldResetEndDate ? "" : a.end_iso,
         status: null,
       }));
     } else if (inputDateCustom.status === "end_date") {
-      const startISO = inputDateCustom.start_iso || iso;
-      const start = startOfDay(new Date(startISO));
-      const minEnd = start;
-      const maxEnd = clamp(addYears(start, 1), MIN_DATE, TODAY);
-      const safeEnd = clamp(dd, minEnd, maxEnd);
-
-      setInputDateCustom((a) => ({
-        ...a,
-        start_date: a.start_iso ? a.start_date : toDisplay(start),
-        start_iso: a.start_iso || toISO(start),
-        end_date: toDisplay(safeEnd),
-        end_iso: toISO(safeEnd),
-        status: null,
-      }));
+      if (!inputDateCustom.start_iso) {
+        setInputDateCustom((a) => ({
+          ...a,
+          end_date: display,
+          end_iso: iso,
+          status: null,
+        }));
+      } else {
+        const start = startOfDay(new Date(inputDateCustom.start_iso));
+        const minEnd = start;
+        const maxEnd = clamp(addYears(start, 1), MIN_DATE, TODAY);
+        const safeEnd = clamp(dd, minEnd, maxEnd);
+        setInputDateCustom((a) => ({
+          ...a,
+          end_date: toDisplay(safeEnd),
+          end_iso: toISO(safeEnd),
+          status: null,
+        }));
+      }
     }
   };
 
-  /* -------------------------------- Render -------------------------------- */
   const formatShortWeekday = (locale, date) => {
     const weekdays = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
     return weekdays[date.getDay()];
   };
-  // common props kalender (styling + locale + header)
+
   const calendarCommonProps = {
     locale: "id-ID",
     navigationLabel: ({ date }) =>
@@ -323,16 +288,15 @@ const Period = ({
             <div className="flex w-full gap-2">
               <Plus width={15} height={15} className="text-primary-700" />
               <span className="medium-xs">
-                {t("AppMuatpartsAnalisaProdukPilihPeriode")}
+                {t("Period.actionSelectPeriod", {}, "Pilih Periode")}
               </span>
             </div>
           </li>
-
           {recentSelections.length > 0 && (
             <>
               <hr className="border-gray-200" />
               <li className="medium-xs px-[10px] py-2 text-neutral-600">
-                Terakhir Dicari
+                {t("Period.labelRecentlySearched", {}, "Terakhir Dicari")}
               </li>
               {recentSelections.map((option) => (
                 <li
@@ -359,17 +323,14 @@ const Period = ({
         </ul>
       )}
 
-      {/* Modal Pilih Periode */}
       <Modal open={isPeriode} onOpenChange={setIsPeriode} closeOnOutsideClick>
         <ModalContent type="muattrans" className="w-modal-small">
           <ModalHeader size="small" />
           <div className="flex flex-col items-center gap-6 px-4 py-7">
             <h3 className="bold-base text-center">
-              {t("AppMuatpartsAnalisaProdukPilihPeriode")}
+              {t("Period.actionSelectPeriod", {}, "Pilih Periode")}
             </h3>
-
             <div className="relative flex items-start gap-2">
-              {/* Periode Awal */}
               <div className="relative">
                 <Input
                   value={inputDateCustom.start_date}
@@ -380,13 +341,16 @@ const Period = ({
                   classInput="w-full"
                   status={validate.start_date ? "error" : undefined}
                   className="!w-[136px] max-w-none"
-                  placeholder={t("AppMuatpartsAnalisaProdukPeriodeAwal")}
+                  placeholder={t(
+                    "Period.placeholderStartDate",
+                    {},
+                    "Periode Awal"
+                  )}
                   icon={{
                     right: <IconComponent src={"/icons/calendar16.svg"} />,
                   }}
                   supportiveText={{ title: validate.start_date, desc: "" }}
                 />
-
                 {inputDateCustom.status === "start_date" && (
                   <div className="absolute left-0 top-10 z-30">
                     <Calendar
@@ -403,10 +367,9 @@ const Period = ({
                   </div>
                 )}
               </div>
-
-              <span className="semi-xs mt-2 text-neutral-600">s/d</span>
-
-              {/* Periode Akhir */}
+              <span className="semi-xs mt-2 text-neutral-600">
+                {t("Period.labelUntil", {}, "s/d")}
+              </span>
               <div className="relative">
                 <Input
                   value={inputDateCustom.end_date}
@@ -417,13 +380,16 @@ const Period = ({
                   classInput="w-full"
                   status={validate.end_date ? "error" : undefined}
                   className="!w-[136px] max-w-none"
-                  placeholder={t("AppMuatpartsAnalisaProdukPeriodeAkhir")}
+                  placeholder={t(
+                    "Period.placeholderEndDate",
+                    {},
+                    "Periode Akhir"
+                  )}
                   icon={{
                     right: <IconComponent src={"/icons/calendar16.svg"} />,
                   }}
                   supportiveText={{ title: validate.end_date, desc: "" }}
                 />
-
                 {inputDateCustom.status === "end_date" && (
                   <div className="absolute right-0 top-10 z-30">
                     <Calendar
@@ -441,49 +407,59 @@ const Period = ({
                 )}
               </div>
             </div>
-
             <Button
               variant="muattrans-primary"
               className="!h-8 w-[112px]"
               onClick={() => {
                 let hasError = false;
-
                 if (!inputDateCustom.start_iso) {
                   setValidate((v) => ({
                     ...v,
-                    start_date: "Periode awal harus diisi",
+                    start_date: t(
+                      "Period.messageErrorStartDateRequired",
+                      {},
+                      "Periode awal harus diisi"
+                    ),
                   }));
                   hasError = true;
                 }
                 if (!inputDateCustom.end_iso) {
                   setValidate((v) => ({
                     ...v,
-                    end_date: "Periode akhir harus diisi",
+                    end_date: t(
+                      "Period.messageErrorEndDateRequired",
+                      {},
+                      "Periode akhir harus diisi"
+                    ),
                   }));
                   hasError = true;
                 }
                 if (hasError) return;
-
                 const start = startOfDay(new Date(inputDateCustom.start_iso));
                 const end = startOfDay(new Date(inputDateCustom.end_iso));
                 const maxEnd = clamp(addYears(start, 1), MIN_DATE, TODAY);
-
                 if (end < start) {
                   setValidate((v) => ({
                     ...v,
-                    end_date:
-                      "Periode akhir tidak boleh lebih kecil dari periode awal",
+                    end_date: t(
+                      "Period.messageErrorEndDateBeforeStart",
+                      {},
+                      "Periode akhir tidak boleh lebih kecil dari periode awal"
+                    ),
                   }));
                   return;
                 }
                 if (end > maxEnd) {
                   setValidate((v) => ({
                     ...v,
-                    end_date: "Rentang maksimal 1 tahun dari periode awal",
+                    end_date: t(
+                      "Period.messageErrorRangeTooLarge",
+                      {},
+                      "Rentang maksimal 1 tahun dari periode awal"
+                    ),
                   }));
                   return;
                 }
-
                 const customOption = {
                   name: `${inputDateCustom.start_date} - ${inputDateCustom.end_date}`,
                   value: `${inputDateCustom.start_date} - ${inputDateCustom.end_date}`,
@@ -493,12 +469,11 @@ const Period = ({
                   iso_end_date: inputDateCustom.end_iso,
                   range: true,
                 };
-
                 handleSelect(customOption, true);
                 setIsPeriode(false);
               }}
             >
-              {t("AppMuatpartsAnalisaProdukTerapkan")}
+              {t("Period.buttonApply", {}, "Terapkan")}
             </Button>
           </div>
         </ModalContent>

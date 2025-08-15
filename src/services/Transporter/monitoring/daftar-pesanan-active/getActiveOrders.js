@@ -192,6 +192,16 @@ const apiResultActiveOrders = {
         truckCount: 3,
         totalWeight: 15,
         weightUnit: "ton",
+        cargos: [
+          "Peralatan Rumah Tangga",
+          "Besi Baja",
+          "Batu Bata",
+          "Karet Mentah",
+          "Kerikil",
+          "Makanan dan Minuman",
+          "Kayu",
+          "Bahan Mentah",
+        ],
         assignedVehicles: [
           {
             id: "vehicle1",

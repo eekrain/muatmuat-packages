@@ -1,96 +1,24 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Card, { CardContent } from "@/components/Card/Card";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { useTranslation } from "@/hooks/use-translation";
+import { useGetRevenueReportDetailById } from "@/services/Transporter/laporan/pendapatan/getRevenueDetail";
 
 export default function DetailPendapatanPage({ params }) {
   const { t } = useTranslation();
   const router = useRouter();
-  const { id } = params;
+  const { id } = useParams();
 
-  // Mock data - in real app this would come from API
-  const incomeData = {
-    id: id,
-    orderCode: "INV/MTR/210504/001/AAA",
-    source: t(
-      "DetailPendapatanPage.sourceRevenueAdjustment",
-      {},
-      "Penyesuaian Pendapatan"
-    ),
-    status: t("DetailPendapatanPage.statusNotDisbursed", {}, "Belum Dicairkan"),
-    statusType: "not_disbursed",
-    initialAmount: 7500000,
-    disbursements: [
-      {
-        id: 1,
-        disbursementDate: "24 Sep 2024 12:00 WIB",
-        disbursedAmount: 3750000,
-        remainingAmount: 3750000,
-      },
-      {
-        id: 2,
-        disbursementDate: "24 Okt 2024 12:00 WIB",
-        disbursedAmount: 1750000,
-        remainingAmount: 2000000,
-      },
-      {
-        id: 3,
-        disbursementDate: "24 Nov 2024 12:00 WIB",
-        disbursedAmount: 2000000,
-        remainingAmount: 0,
-      },
-    ],
-  };
+  const selectedTransporterId = "550e8400-e29b-41d4-a716-446655440002";
 
-  const columns = [
-    {
-      header: t("DetailPendapatanPage.tableColumnNumber", {}, "No."),
-      key: "no",
-      width: "80px",
-      render: (row, index) => index + 1,
-    },
-    {
-      header: t(
-        "DetailPendapatanPage.tableColumnDisbursementDate",
-        {},
-        "Tanggal Pencairan"
-      ),
-      key: "disbursementDate",
-      width: "200px",
-      render: (row) =>
-        row.disbursementDate ||
-        t("DetailPendapatanPage.statusNotDisbursed", {}, "Belum Dicairkan"),
-    },
-    {
-      header: t(
-        "DetailPendapatanPage.tableColumnDisbursedAmount",
-        {},
-        "Jumlah Dana Dicairkan"
-      ),
-      key: "disbursedAmount",
-      width: "200px",
-      render: (row) =>
-        row.disbursedAmount ||
-        t("DetailPendapatanPage.statusNotDisbursed", {}, "Belum Dicairkan"),
-    },
-    {
-      header: t(
-        "DetailPendapatanPage.tableColumnRemainingAmount",
-        {},
-        "Sisa Dana Belum Dicairkan"
-      ),
-      key: "remainingAmount",
-      width: "200px",
-      render: (row) =>
-        row.remainingAmount ||
-        t("DetailPendapatanPage.statusNotDisbursed", {}, "Belum Dicairkan"),
-    },
-  ];
+  const { data: revenueDetail, isLoading } = useGetRevenueReportDetailById(id, {
+    transporter_id: selectedTransporterId,
+  });
 
   const handleBack = () => {
     router.back();
@@ -101,7 +29,7 @@ export default function DetailPendapatanPage({ params }) {
       style: "currency",
       currency: "IDR",
       minimumFractionDigits: 0,
-    }).format(amount);
+    }).format(amount || 0);
   };
 
   return (
@@ -145,21 +73,28 @@ export default function DetailPendapatanPage({ params }) {
                 {t("DetailPendapatanPage.labelOrderCode", {}, "Kode Pesanan")}
               </label>
               <p className="font-medium text-blue-600">
-                {incomeData.orderCode}
+                {revenueDetail?.reportInfo?.orderCode || "-"}
               </p>
             </div>
             <div className="flex items-center">
               <label className="w-52 text-sm font-medium text-gray-600">
                 {t("DetailPendapatanPage.labelSource", {}, "Sumber")}
               </label>
-              <p className="text-gray-900">{incomeData.source}</p>
+              <p className="text-gray-900">
+                {revenueDetail?.reportInfo?.sourceName || "-"}
+              </p>
             </div>
             <div className="flex items-center">
               <label className="w-52 text-sm font-medium text-gray-600">
                 {t("DetailPendapatanPage.labelStatus", {}, "Status")}
               </label>
-              <BadgeStatus variant="error" className="w-fit">
-                {incomeData.status}
+              <BadgeStatus
+                variant={
+                  revenueDetail?.reportInfo?.statusBadge?.color || "default"
+                }
+                className="w-fit"
+              >
+                {revenueDetail?.reportInfo?.statusBadge?.text || "-"}
               </BadgeStatus>
             </div>
           </div>
@@ -187,7 +122,9 @@ export default function DetailPendapatanPage({ params }) {
                   )}
                 </label>
                 <p className="text-sm font-medium text-gray-900">
-                  {formatCurrency(incomeData.initialAmount)}
+                  {formatCurrency(
+                    revenueDetail?.revenueDetails?.initialRevenue?.amount
+                  )}
                 </p>
               </div>
               <div className="flex items-start">
@@ -230,30 +167,33 @@ export default function DetailPendapatanPage({ params }) {
                         </tr>
                       </thead>
                       <tbody>
-                        {incomeData.disbursements.length > 0 ? (
-                          incomeData.disbursements.map((item, index) => (
-                            <tr
-                              key={item.id}
-                              className={
-                                index < incomeData.disbursements.length - 1
-                                  ? "border-b border-gray-100"
-                                  : ""
-                              }
-                            >
-                              <td className="px-4 py-5 text-center text-xs text-gray-900">
-                                {item.id}
-                              </td>
-                              <td className="px-4 py-5 text-sm text-gray-900">
-                                {item.disbursementDate}
-                              </td>
-                              <td className="px-4 py-5 text-right text-sm text-gray-900">
-                                {formatCurrency(item.disbursedAmount)}
-                              </td>
-                              <td className="px-4 py-5 text-right text-sm text-gray-900">
-                                {formatCurrency(item.remainingAmount)}
-                              </td>
-                            </tr>
-                          ))
+                        {revenueDetail?.disbursementHistory?.length > 0 ? (
+                          revenueDetail.disbursementHistory.map(
+                            (item, index) => (
+                              <tr
+                                key={item?.reference || index}
+                                className={
+                                  index <
+                                  revenueDetail.disbursementHistory.length - 1
+                                    ? "border-b border-gray-100"
+                                    : ""
+                                }
+                              >
+                                <td className="px-4 py-5 text-center text-xs text-gray-900">
+                                  {index + 1}
+                                </td>
+                                <td className="px-4 py-5 text-sm text-gray-900">
+                                  {item?.disbursementDateFormatted || "-"}
+                                </td>
+                                <td className="px-4 py-5 text-right text-sm text-gray-900">
+                                  {formatCurrency(item?.disbursedAmount)}
+                                </td>
+                                <td className="px-4 py-5 text-right text-sm text-gray-900">
+                                  {formatCurrency(item?.remainingAfter)}
+                                </td>
+                              </tr>
+                            )
+                          )
                         ) : (
                           <tr>
                             <td

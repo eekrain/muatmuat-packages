@@ -104,6 +104,7 @@ const DropdownPeriode = ({
     } else {
       setSelected(option);
       setIsOpen(false);
+      console.log("Selected option without range:", option);
       if (onSelect) onSelect(option); // Callback for parent
     }
   };
