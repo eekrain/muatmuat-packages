@@ -475,25 +475,28 @@ const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
             )}
           </div>
 
-          {/* Footer */}
-          <div className="flex items-center justify-center gap-3 px-6 pb-4">
-            <Button
-              variant="muattrans-primary-secondary"
-              onClick={handleRejectChange}
-              disabled={isLoading}
-              className="w-[112px] text-sm md:h-[34px]"
-            >
-              Batal
-            </Button>
-            <Button
-              variant="muattrans-primary"
-              onClick={handleAcceptChange}
-              disabled={isLoading || isLoadingDetails}
-              className="w-[180px] text-sm md:h-[34px]"
-            >
-              {isLoading ? "Memproses..." : "Respon Perubahan"}
-            </Button>
-          </div>
+          {/* Footer - Only show when hasAdjustment is true AND changeType is LOCATION_AND_TIME */}
+          {changeDetails?.incomeAdjustment?.hasAdjustment &&
+            changeDetails?.changeType === "LOCATION_AND_TIME" && (
+              <div className="flex items-center justify-center gap-3 px-6 pb-4">
+                <Button
+                  variant="muattrans-primary-secondary"
+                  onClick={handleRejectChange}
+                  disabled={isLoading}
+                  className="w-[112px] text-sm md:h-[34px]"
+                >
+                  Batal
+                </Button>
+                <Button
+                  variant="muattrans-primary"
+                  onClick={handleAcceptChange}
+                  disabled={isLoading || isLoadingDetails}
+                  className="w-[180px] text-sm md:h-[34px]"
+                >
+                  {isLoading ? "Memproses..." : "Respon Perubahan"}
+                </Button>
+              </div>
+            )}
         </div>
       </ModalContent>
     </Modal>
