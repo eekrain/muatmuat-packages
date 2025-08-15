@@ -19,13 +19,13 @@ const menuItems = [
   {
     id: "management-user",
     label: "Manajemen User",
-    icon: "/icons/user16.svg", // Corrected icon path (using user16 as replacement)
+    icon: "/icons/multi-user.svg", // Corrected icon path (using user16 as replacement)
     href: "#",
   },
   {
     id: "management-role",
     label: "Manajemen Role",
-    icon: "/icons/note16.svg", // Corrected icon path (using note16 as replacement)
+    icon: "/icons/user-checkbox.svg", // Corrected icon path (using note16 as replacement)
     href: "#",
   },
 ];
@@ -34,7 +34,7 @@ const shortcutsItems = [
   {
     id: "home",
     label: "Home",
-    icon: "/icons/home.svg", // Corrected icon path (using store as replacement)
+    icon: "/icons/home-blue.svg", // Corrected icon path (using store as replacement)
     href: "/admin/profile",
   },
   {
