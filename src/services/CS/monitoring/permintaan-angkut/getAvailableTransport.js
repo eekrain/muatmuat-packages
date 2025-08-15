@@ -99,7 +99,7 @@ const apiResultAvailableTransporters = {
         },
       },
       {
-        id: "transporter-uuid-1",
+        id: "transporter-uuid-2",
         companyName: "PT Transporter ABC",
         logo: "https://cdn.example.com/transporter_logo.jpg",
         distance: 15.5,
@@ -184,7 +184,7 @@ const apiResultAvailableTransporters = {
         },
       },
       {
-        id: "transporter-uuid-1",
+        id: "transporter-uuid-3",
         companyName: "PT Transporter ABC",
         logo: "https://cdn.example.com/transporter_logo.jpg",
         distance: 15.5,

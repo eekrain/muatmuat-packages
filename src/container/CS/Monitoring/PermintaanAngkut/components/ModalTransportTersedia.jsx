@@ -19,9 +19,11 @@ const ModalTransportTersedia = ({ onClose, requestId = "dummy-id" }) => {
   const transporter = filteredTransporters[0] || {};
   const companyName = transporter.companyName || "-";
 
-  // State untuk expand/hide daftar armada
-  const [isExpanded, setIsExpanded] = React.useState(false);
-  const handleToggleExpand = () => setIsExpanded((prev) => !prev);
+  // State untuk expand/hide daftar armada per card
+  const [expandedCardId, setExpandedCardId] = React.useState(null);
+  const handleToggleExpand = (id) => {
+    setExpandedCardId((prev) => (prev === id ? null : id));
+  };
 
   // Handle search
   const handleSearch = (value) => {
@@ -154,10 +156,13 @@ const ModalTransportTersedia = ({ onClose, requestId = "dummy-id" }) => {
                       >
                         Hubungi
                       </Button>
-                      <button type="button" onClick={handleToggleExpand}>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleExpand(transporter.id)}
+                      >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className={`h-6 w-6 text-neutral-700 transition-transform duration-300 ${isExpanded ? "" : "rotate-180"}`}
+                          className={`h-6 w-6 text-neutral-700 transition-transform duration-300 ${expandedCardId === transporter.id ? "" : "rotate-180"}`}
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -192,7 +197,7 @@ const ModalTransportTersedia = ({ onClose, requestId = "dummy-id" }) => {
                     </div>
                   </div>
                 </div>
-                {isExpanded && (
+                {expandedCardId === transporter.id && (
                   <div className="rounded-xl bg-white">
                     {/* Daftar Armada Yang Cocok */}
                     <div className="p-4">
@@ -204,7 +209,7 @@ const ModalTransportTersedia = ({ onClose, requestId = "dummy-id" }) => {
                           (fleet) => (
                             <div
                               key={fleet.id}
-                              className="flex items-center justify-between border-b pb-3"
+                              className="flex items-center justify-between border-b border-neutral-400 pb-3"
                             >
                               <div className="flex items-center gap-3">
                                 <img
@@ -227,8 +232,14 @@ const ModalTransportTersedia = ({ onClose, requestId = "dummy-id" }) => {
                                       className="h-[14px] w-[14px]"
                                     />
                                     1,2 km dari lokasi muat -
-                                    <span className="ml-1 font-semibold text-neutral-900">
-                                      Kec. Kepulauan Seribu
+                                    <span className="font-semibold text-neutral-900">
+                                      {(() => {
+                                        const lokasi =
+                                          "Kec. Kepulauan Seribu Selatan Seribu Selatan, DKJ Jakarta";
+                                        return lokasi.length > 48
+                                          ? `${lokasi.slice(0, 48)}...`
+                                          : lokasi;
+                                      })()}
                                     </span>
                                   </div>
                                 </div>
