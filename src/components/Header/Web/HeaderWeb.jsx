@@ -77,7 +77,6 @@ const HeaderWeb = ({
   const headerTakeFullWidth = WHITELIST_HEADER_TAKE_FULL_WITH.some((regex) =>
     regex.test(pathname)
   );
-  console.log("🚀 ~ headerTakeFullWidth:", headerTakeFullWidth);
 
   return (
     <header className="sticky left-0 top-0 z-20 w-full">
