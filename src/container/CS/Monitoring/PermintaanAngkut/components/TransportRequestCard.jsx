@@ -10,6 +10,7 @@ import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
+import ModalTransportDilihat from "./ModalTransportDilihat";
 import ModalTransportDisimpan from "./ModalTransportDisimpan";
 import ModalTransportTersedia from "./ModalTransportTersedia";
 
@@ -29,6 +30,7 @@ const TransportRequestCard = ({
   const [showDetail, setShowDetail] = useState(false);
   const [showModalTransporter, setShowModalTransporter] = useState(false);
   const [showModalDisimpan, setShowModalDisimpan] = useState(false);
+  const [showModalDilihat, setShowModalDilihat] = useState(false);
 
   // Update local state when prop changes
   useEffect(() => {
@@ -480,8 +482,8 @@ const TransportRequestCard = ({
                 src="/icons/truk16.svg"
                 className="h-4 w-4 text-[#7B3F00]"
               />
-              <span className="text-xs font-medium text-primary-700">
-                16 Transporter Tersedia
+              <span className="text-xs font-medium text-neutral-600">
+                0 Transporter Tersedia
               </span>
             </div>
 
@@ -493,15 +495,23 @@ const TransportRequestCard = ({
             )}
 
             {/* Dilihat */}
-            <div className="flex items-center gap-1">
+            <div
+              className="flex cursor-pointer items-center gap-1"
+              onClick={() => setShowModalDilihat(true)}
+            >
               <IconComponent
                 src="/icons/eyes.svg"
                 className="h-4 w-4 text-[#7B3F00]"
               />
-              <span className="text-xs font-medium text-primary-700">
-                15 Dilihat
+              <span className="text-xs font-medium text-neutral-600">
+                0 Dilihat
               </span>
             </div>
+            {showModalDilihat && (
+              <ModalTransportDilihat
+                onClose={() => setShowModalDilihat(false)}
+              />
+            )}
 
             {/* Disimpan */}
             <div
@@ -514,8 +524,8 @@ const TransportRequestCard = ({
                   className="h-3 w-3 text-red-500"
                 />
               </div>
-              <span className="text-xs font-medium text-primary-700">
-                21 Disimpan
+              <span className="text-xs font-medium text-neutral-600">
+                0 Disimpan
               </span>
             </div>
             {showModalDisimpan && (

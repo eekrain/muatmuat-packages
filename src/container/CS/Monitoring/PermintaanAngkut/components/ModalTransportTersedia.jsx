@@ -162,7 +162,7 @@ const ModalTransportTersedia = ({ onClose, requestId = "dummy-id" }) => {
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className={`h-6 w-6 text-neutral-700 transition-transform duration-300 ${expandedCardId === transporter.id ? "" : "rotate-180"}`}
+                          className={`h-6 w-6 text-neutral-700 transition-transform duration-300 ${expandedCardId === transporter.id ? "rotate-180" : ""}`}
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -231,11 +231,12 @@ const ModalTransportTersedia = ({ onClose, requestId = "dummy-id" }) => {
                                       src="/icons/location-driver.svg"
                                       className="h-[14px] w-[14px]"
                                     />
-                                    1,2 km dari lokasi muat -
+                                    {fleet.lastLocation?.distance
+                                      ? `${fleet.lastLocation.distance} km dari lokasi muat -`
+                                      : "-"}
                                     <span className="font-semibold text-neutral-900">
                                       {(() => {
-                                        const lokasi =
-                                          "Kec. Kepulauan Seribu Selatan Seribu Selatan, DKJ Jakarta";
+                                        const lokasi = `${fleet.lastLocation?.District || "-"}, ${fleet.lastLocation?.City || "-"}`;
                                         return lokasi.length > 48
                                           ? `${lokasi.slice(0, 48)}...`
                                           : lokasi;

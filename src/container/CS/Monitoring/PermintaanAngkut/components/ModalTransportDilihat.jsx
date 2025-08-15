@@ -3,18 +3,18 @@ import React from "react";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Search from "@/components/Search/Search";
-import { useGetSavedTransporters } from "@/services/CS/monitoring/permintaan-angkut/getSavedTransport";
+import { useGetViewedOrder } from "@/services/CS/monitoring/permintaan-angkut/getViewedOrder";
 
-const ModalTransportDisimpan = ({ onClose }) => {
+const ModalTransportDilihat = ({ onClose, orderId = "dummy-id" }) => {
   // Ambil data transporter dari mock API
-  const { data, isLoading } = useGetSavedTransporters();
+  const { data, isLoading } = useGetViewedOrder(orderId);
   const allTransporters = data?.transporters || [];
   // State untuk hasil search
   const [searchValue, setSearchValue] = React.useState("");
   const [filteredTransporters, setFilteredTransporters] =
     React.useState(allTransporters);
 
-  // State untuk expand/hide detail per card
+  // State untuk expand/hide daftar armada per card
   const [expandedCardId, setExpandedCardId] = React.useState(null);
   const handleToggleExpand = (id) => {
     setExpandedCardId((prev) => (prev === id ? null : id));
@@ -32,7 +32,15 @@ const ModalTransportDisimpan = ({ onClose }) => {
       allTransporters.filter(
         (t) =>
           t.companyName.toLowerCase().includes(lower) ||
-          t.tags?.some((tag) => tag.toLowerCase().includes(lower))
+          (t.fleet &&
+            (String(t.fleet.matchingUnits).includes(lower) ||
+              String(t.fleet.activeUnits).includes(lower) ||
+              String(t.fleet.inactiveUnits).includes(lower))) ||
+          t.expandedDetails?.fleetDetails?.some(
+            (fleet) =>
+              fleet.licensePlate.toLowerCase().includes(lower) ||
+              fleet.driver.name.toLowerCase().includes(lower)
+          )
       )
     );
   };
@@ -48,7 +56,7 @@ const ModalTransportDisimpan = ({ onClose }) => {
         {/* Header */}
         <div className="mb-4 flex items-center justify-center">
           <h2 className="text-[16px] font-bold text-neutral-900">
-            Transporter Menyimpan Permintaan
+            Transporter Melihat Pesanan
           </h2>
           <button
             onClick={onClose}
@@ -59,7 +67,7 @@ const ModalTransportDisimpan = ({ onClose }) => {
         </div>
         {/* Search Bar */}
         <Search
-          placeholder="Cari Nama Transporter / Tag / Status"
+          placeholder="Cari No. Polisi / Nama Driver / Transporter "
           onSearch={handleSearch}
           autoSearch={true}
           debounceTime={300}
@@ -91,6 +99,14 @@ const ModalTransportDisimpan = ({ onClose }) => {
                 className="relative mb-3 rounded-xl border border-neutral-400"
               >
                 <div className="rounded-xl bg-neutral-100">
+                  {/* Status Badge - pindahkan ke dalam card container */}
+                  {transporter.history?.hasRejectedThisRequest && (
+                    <div className="absolute -top-0 right-0 z-10">
+                      <div className="rounded-bl-lg rounded-tr-xl bg-red-500 px-5 py-[6px] text-xs font-semibold text-white shadow-lg">
+                        Menolak Permintaan
+                      </div>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between p-4">
                     {/* Left: Logo & Info */}
                     <div className="flex items-center gap-3">
@@ -108,8 +124,7 @@ const ModalTransportDisimpan = ({ onClose }) => {
                             : transporter.companyName}
                         </div>
                         <div className="mt-2 text-xs font-medium text-neutral-900">
-                          Disimpan pada{" "}
-                          {new Date(transporter.savedAt).toLocaleDateString()}
+                          {transporter.fleet.matchingUnits} Armada Yang Cocok
                         </div>
                         <div className="mt-2 flex items-center gap-4">
                           <span className="flex items-center gap-1 text-[10px] font-medium text-neutral-900">
@@ -127,20 +142,29 @@ const ModalTransportDisimpan = ({ onClose }) => {
                             {transporter.fleet.inactiveUnits} Armada Nonaktif
                           </span>
                         </div>
-                        <div className="mt-1 text-[10px] font-medium text-neutral-600">
-                          Disimpan :{" "}
-                          {new Date(transporter.savedAt).toLocaleString(
-                            "id-ID",
-                            {
+                        <div className="mt-2 text-[10px] font-medium text-neutral-600">
+                          {`Dilihat: ${(() => {
+                            if (!transporter.lastViewedAt) return "-";
+                            const date = new Date(transporter.lastViewedAt);
+                            const options = {
                               day: "2-digit",
                               month: "short",
                               year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: false,
-                            }
-                          )}{" "}
-                          WIB
+                            };
+                            const dateStr = date.toLocaleDateString(
+                              "id-ID",
+                              options
+                            );
+                            const hours = String(date.getHours()).padStart(
+                              2,
+                              "0"
+                            );
+                            const minutes = String(date.getMinutes()).padStart(
+                              2,
+                              "0"
+                            );
+                            return `${dateStr} ${hours}:${minutes} WIB`;
+                          })()}`}
                         </div>
                       </div>
                     </div>
@@ -177,12 +201,11 @@ const ModalTransportDisimpan = ({ onClose }) => {
                   <div className="px-4">
                     <div className="pb-3 text-xs">
                       {/* Status/Info tambahan bisa di sini */}
-                      {transporter.currentStatus.activityStatus ===
-                      "INACTIVE" ? (
+                      {transporter.status.activityStatus === "INACTIVE" ? (
                         <>
                           <div className="mb-3 border-b border-neutral-400"></div>
                           <span className="font-medium text-error-400">
-                            {`Admin Terdeteksi Sering Idle (${transporter.usageStats.canceledOrders}/${transporter.usageStats.totalAssignments} Order)`}
+                            {`Admin Terdeteksi Sering Idle (${transporter.history?.canceledOrders ?? 0}/${transporter.history?.completedOrders ?? 0} Order)`}
                           </span>
                           <span className="ml-1 cursor-pointer text-xs font-medium text-primary-700">
                             Detail
@@ -200,61 +223,59 @@ const ModalTransportDisimpan = ({ onClose }) => {
                         Daftar Armada Yang Cocok
                       </div>
                       <div className="space-y-3">
-                        {transporter.fleetDetails?.map((fleet) => (
-                          <div
-                            key={fleet.id}
-                            className="flex items-center justify-between border-b border-neutral-400 pb-3"
-                          >
-                            <div className="flex items-center gap-3">
-                              <img
-                                src={
-                                  fleet.truckImage || "/truck-placeholder.png"
-                                }
-                                alt="Truck"
-                                className="h-14 w-14 rounded border"
-                              />
-                              <div>
-                                <div className="text-xs font-bold text-neutral-900">
-                                  {fleet.licensePlate} -{" "}
-                                  <span className="font-semibold">
-                                    {fleet.driver?.name &&
-                                    fleet.driver.name.length > 43
-                                      ? `${fleet.driver.name.slice(0, 43)}...`
-                                      : fleet.driver?.name || "-"}
-                                  </span>
-                                </div>
-                                <div className="mt-1 flex items-center gap-1 text-[10px] font-medium text-neutral-600">
-                                  <IconComponent
-                                    src="/icons/location-driver.svg"
-                                    className="h-[14px] w-[14px]"
-                                  />
-                                  {fleet.lastLocation?.distance
-                                    ? `${fleet.lastLocation.distance.toLocaleString("id-ID", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} km dari lokasi muat -`
-                                    : "-"}
-                                  <span className="font-semibold text-neutral-900">
-                                    {(() => {
-                                      const lokasi = `${fleet.lastLocation?.District || "-"}, ${fleet.lastLocation?.City || "-"}`;
-                                      return lokasi.length > 48
-                                        ? `${lokasi.slice(0, 48)}...`
-                                        : lokasi;
-                                    })()}
-                                  </span>
+                        {transporter.expandedDetails?.fleetDetails?.map(
+                          (fleet) => (
+                            <div
+                              key={fleet.id}
+                              className="flex items-center justify-between border-b border-neutral-400 pb-3"
+                            >
+                              <div className="flex items-center gap-3">
+                                <img
+                                  src="/truck-placeholder.png"
+                                  alt="Truck"
+                                  className="h-14 w-14 rounded border"
+                                />
+                                <div>
+                                  <div className="text-xs font-bold text-neutral-900">
+                                    {fleet.licensePlate} -{" "}
+                                    <span className="font-semibold">
+                                      {fleet.driver.name.length > 43
+                                        ? `${fleet.driver.name.slice(0, 43)}...`
+                                        : fleet.driver.name}
+                                    </span>
+                                  </div>
+                                  <div className="mt-1 flex items-center gap-1 text-[10px] font-medium text-neutral-600">
+                                    <IconComponent
+                                      src="/icons/location-driver.svg"
+                                      className="h-[14px] w-[14px]"
+                                    />
+                                    {fleet.lastLocation.distance} km dari lokasi
+                                    muat -
+                                    <span className="font-semibold text-neutral-900">
+                                      {(() => {
+                                        const lokasi = `${fleet.lastLocation.District}, ${fleet.lastLocation.City}`;
+                                        return lokasi.length > 48
+                                          ? `${lokasi.slice(0, 48)}...`
+                                          : lokasi;
+                                      })()}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
+                              <span
+                                className={`flex h-6 w-[70px] items-center justify-center rounded-md text-xs font-semibold ${
+                                  fleet.operationalStatus === "READY_FOR_ORDER"
+                                    ? "bg-success-50 text-success-400"
+                                    : "bg-neutral-200 text-neutral-600"
+                                } `}
+                              >
+                                {fleet.operationalStatus === "READY_FOR_ORDER"
+                                  ? "Aktif"
+                                  : "Nonaktif"}
+                              </span>
                             </div>
-                            <span
-                              className={`flex h-6 w-[70px] items-center justify-center rounded-md text-xs font-semibold ${
-                                fleet.operationalStatus === "READY_FOR_ORDER"
-                                  ? "bg-success-50 text-success-400"
-                                  : "bg-neutral-200 text-neutral-600"
-                              } `}
-                            >
-                              {fleet.operationalStatus === "READY_FOR_ORDER"
-                                ? "Aktif"
-                                : "Nonaktif"}
-                            </span>
-                          </div>
-                        ))}
+                          )
+                        )}
                       </div>
                     </div>
                   </div>
@@ -268,4 +289,4 @@ const ModalTransportDisimpan = ({ onClose }) => {
   );
 };
 
-export default ModalTransportDisimpan;
+export default ModalTransportDilihat;
