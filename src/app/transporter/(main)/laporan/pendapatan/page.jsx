@@ -175,165 +175,6 @@ export default function Page() {
     };
   });
 
-  // Table data
-  const data = [
-    // Sumber: Tambahan Biaya (additional_cost)
-    {
-      id: 1,
-      orderNo: "INV/MTR/210504/001/AAA",
-      source: t(
-        "LaporanPendapatanPage.sourceAdditionalCost",
-        {},
-        "Tambahan Biaya"
-      ),
-      sourceType: "additional_cost",
-      status: t("LaporanPendapatanPage.statusDisbursed", {}, "Sudah Dicairkan"),
-      statusType: "sudah_dicairkan",
-      revenue: "Rp50.000.000",
-      undisbursed: "Rp0",
-    },
-    {
-      id: 2,
-      orderNo: "INV/MTR/210504/002/AAA",
-      source: t(
-        "LaporanPendapatanPage.sourceAdditionalCost",
-        {},
-        "Tambahan Biaya"
-      ),
-      sourceType: "additional_cost",
-      status: t(
-        "LaporanPendapatanPage.statusPartiallyDisbursed",
-        {},
-        "Dicairkan Sebagian"
-      ),
-      statusType: "dicairkan_sebagian",
-      revenue: "Rp500.000",
-      undisbursed: "Rp250.000",
-    },
-    {
-      id: 3,
-      orderNo: "INV/MTR/210504/003/AAA",
-      source: t(
-        "LaporanPendapatanPage.sourceAdditionalCost",
-        {},
-        "Tambahan Biaya"
-      ),
-      sourceType: "additional_cost",
-      status: t(
-        "LaporanPendapatanPage.statusNotDisbursed",
-        {},
-        "Belum Dicairkan"
-      ),
-      statusType: "belum_dicairkan",
-      revenue: "Rp1.000.000",
-      undisbursed: "Rp1.000.000",
-    },
-
-    // Sumber: Penyesuaian Pendapatan (revenue_adjustment)
-    {
-      id: 4,
-      orderNo: "INV/MTR/210504/004/AAA",
-      source: t(
-        "LaporanPendapatanPage.sourceRevenueAdjustment",
-        {},
-        "Penyesuaian Pendapatan"
-      ),
-      sourceType: "revenue_adjustment",
-      status: t("LaporanPendapatanPage.statusDisbursed", {}, "Sudah Dicairkan"),
-      statusType: "sudah_dicairkan",
-      revenue: "Rp50.000.000",
-      undisbursed: "Rp0",
-    },
-    {
-      id: 5,
-      orderNo: "INV/MTR/210504/005/AAA",
-      source: t(
-        "LaporanPendapatanPage.sourceRevenueAdjustment",
-        {},
-        "Penyesuaian Pendapatan"
-      ),
-      sourceType: "revenue_adjustment",
-      status: t(
-        "LaporanPendapatanPage.statusPartiallyDisbursed",
-        {},
-        "Dicairkan Sebagian"
-      ),
-      statusType: "dicairkan_sebagian",
-      revenue: "Rp250.000",
-      undisbursed: "Rp200.000",
-    },
-    {
-      id: 6,
-      orderNo: "INV/MTR/210504/006/AAA",
-      source: t(
-        "LaporanPendapatanPage.sourceRevenueAdjustment",
-        {},
-        "Penyesuaian Pendapatan"
-      ),
-      sourceType: "revenue_adjustment",
-      status: t(
-        "LaporanPendapatanPage.statusNotDisbursed",
-        {},
-        "Belum Dicairkan"
-      ),
-      statusType: "belum_dicairkan",
-      revenue: "Rp750.000",
-      undisbursed: "Rp750.000",
-    },
-
-    // Sumber: Pendapatan Pesanan (order_revenue)
-    {
-      id: 7,
-      orderNo: "INV/MTR/210504/007/AAA",
-      source: t(
-        "LaporanPendapatanPage.sourceOrderRevenue",
-        {},
-        "Pendapatan Pesanan"
-      ),
-      sourceType: "order_revenue",
-      status: t("LaporanPendapatanPage.statusDisbursed", {}, "Sudah Dicairkan"),
-      statusType: "sudah_dicairkan",
-      revenue: "Rp2.000.000",
-      undisbursed: "Rp0",
-    },
-    {
-      id: 8,
-      orderNo: "INV/MTR/210504/008/AAA",
-      source: t(
-        "LaporanPendapatanPage.sourceOrderRevenue",
-        {},
-        "Pendapatan Pesanan"
-      ),
-      sourceType: "order_revenue",
-      status: t(
-        "LaporanPendapatanPage.statusPartiallyDisbursed",
-        {},
-        "Dicairkan Sebagian"
-      ),
-      statusType: "dicairkan_sebagian",
-      revenue: "Rp1.500.000",
-      undisbursed: "Rp500.000",
-    },
-    {
-      id: 9,
-      orderNo: "INV/MTR/210504/009/AAA",
-      source: t(
-        "LaporanPendapatanPage.sourceOrderRevenue",
-        {},
-        "Pendapatan Pesanan"
-      ),
-      sourceType: "order_revenue",
-      status: t(
-        "LaporanPendapatanPage.statusNotDisbursed",
-        {},
-        "Belum Dicairkan"
-      ),
-      statusType: "belum_dicairkan",
-      revenue: "Rp3.000.000",
-      undisbursed: "Rp3.000.000",
-    },
-  ];
-
   // Table columns
   const columns = [
     {
@@ -355,16 +196,18 @@ export default function Page() {
     },
     {
       header: t("LaporanPendapatanPage.tableColumnStatus", {}, "Status"),
-      key: "statusName",
+      key: "status",
       sortable: true,
       width: "190px",
       render: (row) => {
-        let variant = "success";
-        if (row.status === "PARTIALLY_DISBURSED") {
-          variant = "warning";
-        } else if (row.status === "NOT_DISBURSED") {
-          variant = "error";
-        }
+        const statusVariantMap = {
+          PARTIALLY_DISBURSED: "warning",
+          NOT_DISBURSED: "error",
+          DEFAULT: "success",
+        };
+
+        const variant =
+          statusVariantMap[row.status] || statusVariantMap.DEFAULT;
         return <BadgeStatus variant={variant}>{row.statusName}</BadgeStatus>;
       },
     },
@@ -474,33 +317,62 @@ export default function Page() {
     },
   };
 
-  // Handler untuk filter periode
   const handleSelectPeriod = (selectedOption) => {
-    // For custom date range option
+    let updatedFilters = { ...filters };
+
     if (selectedOption?.range) {
-      // Update recent selections - only add if not already in the array
-      if (
-        !recentPeriodOptions?.some((s) => s?.value === selectedOption?.value)
-      ) {
-        setRecentPeriodOptions((prev) => [...prev, selectedOption]);
-      }
-      // Update the current period value
-      setCurrentPeriodValue(selectedOption);
+      const { startDate, endDate } = selectedOption.range;
+      updatedFilters = {
+        ...updatedFilters,
+        start_date: startDate,
+        end_date: endDate,
+        page: 1,
+      };
+
+      const filteredData = tableData.filter((item) => {
+        const updatedAtDate = new Date(item.updatedAt);
+        return (
+          updatedAtDate >= new Date(startDate) &&
+          updatedAtDate <= new Date(endDate)
+        );
+      });
+
+      setTableData(filteredData);
+    } else if (selectedOption?.value === "") {
+      updatedFilters = {
+        ...updatedFilters,
+        start_date: "",
+        end_date: "",
+        page: 1,
+      };
+    } else if (selectedOption?.value !== undefined) {
+      updatedFilters = {
+        ...updatedFilters,
+        preset: selectedOption.value,
+        start_date: "",
+        end_date: "",
+        page: 1,
+      };
     }
-    // For default "Semua Periode" option
-    else if (selectedOption?.value === "") {
-      // Update the current period value
-      setCurrentPeriodValue(selectedOption);
-    }
-    // For predefined period options (today, last 7 days, etc.)
-    else if (selectedOption?.value !== undefined) {
-      // Update the current period value
-      setCurrentPeriodValue(selectedOption);
+
+    setFilters(updatedFilters);
+    setCurrentPeriodValue(selectedOption);
+
+    if (
+      selectedOption?.range &&
+      !recentPeriodOptions?.some((s) => s?.value === selectedOption?.value)
+    ) {
+      setRecentPeriodOptions((prev) => [...prev, selectedOption]);
     }
   };
 
-  const handleSearch = () => {
+  const handleSearch = (keyword) => {
     setCurrentPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      page: 1,
+      keyword: keyword ?? prev.keyword,
+    }));
   };
 
   const handleFilter = (_newFilters) => {
@@ -518,40 +390,52 @@ export default function Page() {
     const sortedData = [...tableData].sort((a, b) => {
       const isAsc = _order === "asc" ? 1 : -1;
 
-      if (_sort === "orderNo") {
-        return a.orderNo.localeCompare(b.orderNo) * isAsc;
+      if (_sort === "invoiceNumber") {
+        return a.invoiceNumber.localeCompare(b.invoiceNumber) * isAsc;
       }
-      if (_sort === "source") {
-        return a.source.localeCompare(b.source) * isAsc;
+      if (_sort === "sourceName") {
+        return a.sourceName.localeCompare(b.sourceName) * isAsc;
       }
       if (_sort === "status") {
         return a.status.localeCompare(b.status) * isAsc;
       }
-      if (_sort === "revenue") {
+      if (_sort === "revenueFormatted") {
         // Remove non-numeric characters (e.g., currency symbols, commas) and convert to numbers
-        const revenueA = parseFloat(a.revenue.replace(/[^\d.-]/g, ""));
-        const revenueB = parseFloat(b.revenue.replace(/[^\d.-]/g, ""));
+        const revenueA = parseFloat(a.revenueFormatted.replace(/[^\d.-]/g, ""));
+        const revenueB = parseFloat(b.revenueFormatted.replace(/[^\d.-]/g, ""));
         return (revenueA - revenueB) * isAsc;
       }
-      if (_sort === "undisbursed") {
+      if (_sort === "undisbursedFormatted") {
         // Remove non-numeric characters (e.g., currency symbols, commas) and convert to numbers
-        const undisbursedA = parseFloat(a.undisbursed.replace(/[^\d.-]/g, ""));
-        const undisbursedB = parseFloat(b.undisbursed.replace(/[^\d.-]/g, ""));
+        const undisbursedA = parseFloat(
+          a.undisbursedFormatted.replace(/[^\d.-]/g, "")
+        );
+        const undisbursedB = parseFloat(
+          b.undisbursedFormatted.replace(/[^\d.-]/g, "")
+        );
         return (undisbursedA - undisbursedB) * isAsc;
       }
       return 0;
     });
-    // Update state with sorted data
     setTableData(sortedData);
   };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
+    setFilters((prev) => ({
+      ...prev,
+      page,
+    }));
   };
 
   const handlePerPageChange = (perPageValue) => {
     setPerPage(perPageValue);
     setCurrentPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      limit: perPageValue,
+      page: 1,
+    }));
   };
 
   const isRevenueEmpty = !tableData || tableData.length === 0;
@@ -561,8 +445,7 @@ export default function Page() {
   }, [revenueReportList]);
 
   useEffect(() => {
-    // Set initial table data from revenue report list
-    if (revenueData) {
+    if (JSON.stringify(tableData) !== JSON.stringify(revenueData)) {
       setTableData(revenueData);
     }
   }, [revenueData]);
@@ -676,11 +559,11 @@ export default function Page() {
       {!isRevenueEmpty && (
         <div className="mt-4">
           <Pagination
-            currentPage={currentPage}
-            totalPages={2}
+            currentPage={revenueReportList?.pagination?.currentPage || 1}
+            totalPages={revenueReportList?.pagination?.totalPages || 1}
             onPageChange={handlePageChange}
             onPerPageChange={handlePerPageChange}
-            perPage={perPage}
+            perPage={revenueReportList?.pagination?.itemsPerPage || 10}
             variants="muattrans"
           />
         </div>
