@@ -3,20 +3,19 @@
 import { useState } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
-import FormDropdown from "@/components/Form/Dropdown";
+import { FilterSelect } from "@/components/Form/FilterSelect";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import Search from "@/components/Search/Search";
+import AssignArmadaModal from "@/container/Shared/OrderModal/AssignArmadaModal";
+import ConfirmReadyModal from "@/container/Shared/OrderModal/ConfirmReadyModal";
+import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
 import { cn } from "@/lib/utils";
 import { useGetActiveOrders } from "@/services/Transporter/monitoring/daftar-pesanan-active/getActiveOrders";
 import { useGetActiveOrdersCount } from "@/services/Transporter/monitoring/daftar-pesanan-active/getActiveOrdersCount";
 import { ORDER_ACTIONS } from "@/utils/Transporter/orderStatus";
 
 import Onboarding from "../Onboarding/Onboarding";
-import AssignArmadaModal from "./components/AssignArmadaModal";
-import ConfirmReadyModal from "./components/ConfirmReadyModal";
 import DaftarPesananAktifListItem from "./components/DaftarPesananAktifListItem";
-import RespondChangeModal from "./components/RespondChangeModal";
 
 const DaftarPesananAktif = ({
   onToggleExpand,
@@ -27,7 +26,8 @@ const DaftarPesananAktif = ({
 }) => {
   const { data: activeOrdersCount } = useGetActiveOrdersCount();
   const [searchValue, setSearchValue] = useState("");
-  const [selectedStatusFilter, setSelectedStatusFilter] = useState("");
+  const [selectedStatusFilter, setSelectedStatusFilter] =
+    useState("ALL_STATUS");
   const [selectedGroupBy, setSelectedGroupBy] = useState("BY_PESANAN");
   const [selectedSort, setSelectedSort] = useState("WAKTU_MUAT_TERDEKAT");
   const [openDropdowns, setOpenDropdowns] = useState({});
@@ -40,7 +40,8 @@ const DaftarPesananAktif = ({
 
   // Map filter keys to lowercase status values for API
   const getFilterStatus = () => {
-    if (!selectedStatusFilter) return null;
+    if (!selectedStatusFilter || selectedStatusFilter === "ALL_STATUS")
+      return null;
 
     const statusMap = {
       NEED_CHANGE_RESPONSE: "need_change_response",
@@ -128,7 +129,10 @@ const DaftarPesananAktif = ({
       });
     }
 
-    return [{ value: "", label: "Semua Status (Default)" }, ...urgentStatuses];
+    return [
+      { value: "ALL_STATUS", label: "Semua Status (Default)" },
+      ...urgentStatuses,
+    ];
   };
 
   const groupByOptions = [
@@ -160,6 +164,17 @@ const DaftarPesananAktif = ({
 
   const isOrderZero = orders.length === 0;
 
+  // Determine different empty states
+  const isFirstTimer = totalActiveOrders === 0; // No data at all in database
+  const hasSearchQuery = searchValue.trim() !== "";
+  const hasActiveFilter = selectedStatusFilter !== "ALL_STATUS";
+  const isSearchNotFound = hasSearchQuery && isOrderZero && !isFirstTimer;
+  const isFilterNotFound =
+    hasActiveFilter && isOrderZero && !isFirstTimer && !hasSearchQuery;
+
+  // Show header controls only if not first timer
+  const shouldShowControls = !isFirstTimer;
+
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
@@ -171,51 +186,45 @@ const DaftarPesananAktif = ({
             onOnboardingShown={onOnboardingShown}
           />
         </div>
-        {!isOrderZero && (
-          <div className="flex w-full items-center gap-3">
+        {shouldShowControls && (
+          <div className="flex w-full items-center gap-4">
             {/* Filter Dropdowns */}
-            <div className="flex flex-1 items-center gap-3">
+            <div className="flex w-full flex-1 items-center gap-3">
               {/* Status Urgent Dropdown */}
               <div className="relative">
                 <div className="relative">
-                  <FormDropdown
+                  <FilterSelect
                     value={selectedStatusFilter}
                     onChange={setSelectedStatusFilter}
                     placeholder={`Status Urgent (${getStatusUrgentCount() > 99 ? "99+" : getStatusUrgentCount()})`}
                     options={getStatusOptions()}
-                    className="w-[130px]"
-                    searchable={false}
+                    showNotificationDot={getStatusUrgentCount() > 0}
+                    notificationCount={getStatusUrgentCount()}
+                    className="max-w-[150px]"
+                    disabled={isSearchNotFound}
                   />
-                  {getStatusUrgentCount() > 0 && (
-                    <NotificationDot
-                      position="absolute"
-                      positionClasses="right-[1px] top-[-1px]"
-                      size="md"
-                      color="red"
-                      animated={true}
-                    />
-                  )}
                 </div>
               </div>
 
               {/* Group By Dropdown */}
-              <FormDropdown
+              <FilterSelect
                 value={selectedGroupBy}
                 onChange={setSelectedGroupBy}
                 placeholder="By Pesanan"
                 options={groupByOptions}
-                className="w-[104px]"
-                searchable={false}
+                icon="/icons/tabel.svg"
+                className="max-w-[148px]"
+                disabled={isSearchNotFound}
               />
 
               {/* Sort Dropdown */}
-              <FormDropdown
+              <FilterSelect
                 value={selectedSort}
                 onChange={setSelectedSort}
-                placeholder="Waktu M..."
+                className="max-w-[136px]"
                 options={sortOptions}
-                className="w-[120px]"
-                searchable={false}
+                icon="/icons/sorting16.svg"
+                disabled={isSearchNotFound}
               />
             </div>
 
@@ -231,7 +240,7 @@ const DaftarPesananAktif = ({
               }}
               containerClassName="h-8 w-[180px]"
               inputClassName="text-xs"
-              disabled={totalActiveOrders === 0}
+              disabled={isFilterNotFound || totalActiveOrders === 0}
             />
             <button
               onClick={onToggleExpand}
@@ -253,7 +262,7 @@ const DaftarPesananAktif = ({
       {isExpanded && (
         <div className="flex-1 overflow-hidden">
           {/* Check if there are no active orders */}
-          {!isLoading && totalActiveOrders === 0 ? (
+          {!isLoading && isFirstTimer ? (
             <div className="flex h-full items-center justify-center p-4">
               <DataNotFound className="h-full gap-y-5 pb-10" type="data">
                 <div className="flex flex-col items-center gap-2">
@@ -275,6 +284,31 @@ const DaftarPesananAktif = ({
                       Loading...
                     </p>
                   </div>
+                </div>
+              ) : isSearchNotFound ? (
+                <div className="flex h-full flex-grow flex-col items-center justify-center">
+                  <DataNotFound
+                    type="search"
+                    className="text-center text-neutral-600"
+                  >
+                    <p className="text-base font-semibold">
+                      Keyword Tidak Ditemukan
+                    </p>
+                  </DataNotFound>
+                </div>
+              ) : isFilterNotFound ? (
+                <div className="flex h-full flex-grow flex-col items-center justify-center">
+                  <DataNotFound
+                    type="data"
+                    className="text-center text-neutral-600"
+                  >
+                    <p className="text-base font-semibold">
+                      Data Tidak Ditemukan.
+                    </p>
+                    <p className="mt-1 text-xs font-medium">
+                      Mohon coba hapus beberapa filter
+                    </p>
+                  </DataNotFound>
                 </div>
               ) : isOrderZero ? (
                 <div className="flex h-full flex-grow flex-col items-center justify-center">

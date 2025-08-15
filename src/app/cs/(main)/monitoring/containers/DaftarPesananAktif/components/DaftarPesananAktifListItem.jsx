@@ -57,7 +57,7 @@ const DaftarPesananAktifListItem = ({
               <span className="text-xs font-bold text-white">S</span>
             </div>
 
-            <span className="line-clamp-1 break-all text-xs font-semibold text-black">
+            <span className="line-clamp-1 flex-grow break-all text-xs font-semibold text-black">
               PT Siba Surya PT Siba Surya PT Panjang Sekali Ini Omygod
             </span>
             <div className="border-l border-neutral-400 py-1 pl-2">
