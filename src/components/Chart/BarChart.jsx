@@ -12,7 +12,7 @@ import {
   YAxis,
 } from "recharts";
 
-// The CustomTooltip now accepts a 'dataKeys' prop
+// The CustomTooltip remains unchanged as it's already well-styled.
 const CustomTooltip = ({ active, payload, label, dataKeys }) => {
   if (active && payload && payload.length) {
     const total = payload.reduce((sum, entry) => sum + entry.value, 0);
@@ -21,8 +21,6 @@ const CustomTooltip = ({ active, payload, label, dataKeys }) => {
         <p className="text-xxs font-bold text-neutral-900">{`${label}`}</p>
         <p className="mb-1 text-xxs font-bold text-neutral-900">{`(${total} Pesanan)`}</p>
         <hr className="-ml-2 w-[136px]" />
-
-        {/* This parent div now controls the layout and spacing of the items below */}
         <div className="mt-1.5 flex flex-col gap-y-1.5">
           {payload.map((entry, index) => {
             const dataKeyInfo = dataKeys.find((dk) => dk.key === entry.dataKey);
@@ -53,19 +51,15 @@ const CustomTooltip = ({ active, payload, label, dataKeys }) => {
   return null;
 };
 
-// Custom shape for conditional radius (no changes)
-const ConditionalRadiusBar = (props) => {
-  const { index, radiusDataLimit, radiusValue } = props;
-  if (index < radiusDataLimit) {
-    return <Rectangle {...props} radius={[radiusValue, radiusValue, 0, 0]} />;
-  }
-  return <Rectangle {...props} />;
+// RENAMED and SIMPLIFIED: This shape now *always* applies the top radius.
+const RoundedTopBar = (props) => {
+  const { radiusValue } = props;
+  return <Rectangle {...props} radius={[radiusValue, radiusValue, 0, 0]} />;
 };
 
-// New custom component to render the Legend with rounded icons (no changes)
+// The CustomLegend remains unchanged.
 const CustomLegend = (props) => {
   const { payload } = props;
-
   return (
     <div
       className="flex items-center justify-center"
@@ -95,8 +89,10 @@ const CustomBarChart = ({
   dataKeys,
   colors,
   showXAxisLine = true,
-  radiusDataLimit = 4,
-  radiusValue = 4,
+  radiusValue = 6,
+  maxBarSize = 60,
+  barCategoryGap = "35%", // ADDED: Control the gap between bars
+  barSize, // ADDED: Set a fixed bar width (overrides responsiveness)
 }) => {
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -108,8 +104,9 @@ const CustomBarChart = ({
           left: -20,
           bottom: 5,
         }}
-        barCategoryGap="35%"
-        // REMOVED incorrect style prop from here
+        // Use the new props here
+        barCategoryGap={barCategoryGap}
+        barSize={barSize}
       >
         <CartesianGrid vertical={false} stroke="#d9d9d9" />
         <XAxis
@@ -127,9 +124,10 @@ const CustomBarChart = ({
           content={<CustomTooltip dataKeys={dataKeys} />}
           cursor={{ fill: "transparent" }}
         />
-        <Legend verticalAlign="top" content={<CustomLegend />} />
+        <Legend verticalAlign="top" align="center" content={<CustomLegend />} />
         {dataKeys.map((item, barIndex) => {
           const isTopBar = barIndex === dataKeys.length - 1;
+
           return (
             <Bar
               key={item.key}
@@ -137,17 +135,13 @@ const CustomBarChart = ({
               name={item.name}
               stackId="a"
               fill={colors[barIndex % colors.length]}
+              maxBarSize={maxBarSize}
               shape={
                 isTopBar ? (
-                  <ConditionalRadiusBar
-                    radiusDataLimit={radiusDataLimit}
-                    radiusValue={radiusValue}
-                  />
+                  <RoundedTopBar radiusValue={radiusValue} />
                 ) : undefined
               }
-              // THIS IS THE CORRECT WAY TO REMOVE THE OUTLINE
               activeBar={false}
-              // REMOVED incorrect style prop from here
             />
           );
         })}
