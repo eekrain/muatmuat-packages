@@ -42,10 +42,6 @@ const LIST_PUBLIC_ROUTES = [
     path: /^\/orders\/[^\/]+\/drivers\/[^\/]+\/qr-code$/,
     method: "regex",
   },
-  {
-    path: "/agenda-armada-driver",
-    method: "exact",
-  },
 ];
 
 export const createAxios = (baseURL) => {
