@@ -421,5 +421,22 @@
   "BottomSheetPreviousDriver.altDriverAvatar": "司机",
   "BottomSheetPreviousDriver.textDriverNotFound": "未找到司机",
   "BottomSheetPreviousDriver.buttonDriverStatusDetail": "司机状态详情",
-  "PendingUpdateFeePayment.toastFleetWillBeReprepared": "车队将根据所做的更改重新准备。"
+  "PendingUpdateFeePayment.toastFleetWillBeReprepared": "车队将根据所做的更改重新准备。",
+  "ModalQRCodeDriver.toastQRCodeCopied": "二维码链接复制成功",
+  "ModalQRCodeDriver.titleQRCodeLocation": "二维码位置",
+  "ModalQRCodeDriver.instructionShowQRCode": "向司机展示此二维码以更新其位置",
+  "ModalQRCodeDriver.buttonShareQRCode": "分享二维码",
+  "LeftPanel.breadcrumbDaftarPesanan": "订单列表",
+  "LeftPanel.breadcrumbDetailPesanan": "订单详情",
+  "LeftPanel.breadcrumbLacakArmada": "追踪车队",
+  "LeftPanel.titleLacakArmada": "追踪车队",
+  "LeftPanel.titleDetailStatusDriver": "司机状态详情",
+  "AlertLabelEnum.messageRefundInProcess": "退款正在处理中。",
+  "AlertLabelEnum.messageRefundCompleted": "退款已成功处理。",
+  "AlertLabelResponsiveEnum.messageReminderRepaymentOrderMobile": "<b>您的订单有额外费用。</b><p>请在<b>{date}</b>前完成付款。</p>",
+  "AlertInfoEnum.messageShowQrcodeDriverInfo": "司机需要二维码才能继续装货或卸货流程。",
+  "AlertInfoEnum.messageRefundInProcessInfo": "退款正在处理中，金额将在扣除<b>取消管理费</b>和<b>额外费用</b>后进行调整。如需更多信息，请联系客服。",
+  "AlertInfoEnum.messageRefundCompletedInfo": "退款流程已成功转入您的账户。如需更多信息，请联系客服。",
+  "getAlertMetadata.buttonLihatDetail": "查看详情",
+  "getAlertMetadata.buttonLihatPerubahan": "查看变更"
 }
