@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { NotificationDot } from "@/components/NotificationDot/NotificationDot";
 import Search from "@/components/Search/Search";
 import { toast } from "@/lib/toast";
 import { useGetTransportRequestList } from "@/services/CS/monitoring/permintaan-angkut/getTransportRequestListCS";
@@ -264,10 +265,10 @@ const PermintaanAngkutCS = () => {
                   : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
               }`}
             >
-              <span className="whitespace-nowrap">
+              <span className="relative whitespace-nowrap">
                 Semua (
                 <span
-                  className={`${
+                  className={`$${
                     shouldAnimate(
                       dynamicTabCounts.all,
                       data?.newRequestsCount?.hasAnimation
@@ -279,6 +280,15 @@ const PermintaanAngkutCS = () => {
                   {formatCounter(dynamicTabCounts.all)}
                 </span>
                 )
+                {data?.tabCounters?.hasBlinkNode && (
+                  <NotificationDot
+                    position="absolute"
+                    positionClasses="-right-3.5 -top-1.5"
+                    animated={true}
+                    size="md"
+                    color="red"
+                  />
+                )}
               </span>
             </button>
 
@@ -290,10 +300,10 @@ const PermintaanAngkutCS = () => {
                   : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
               }`}
             >
-              <span className="whitespace-nowrap">
+              <span className="relative whitespace-nowrap">
                 Instan (
                 <span
-                  className={`${
+                  className={`$${
                     shouldAnimate(
                       dynamicTabCounts.instant,
                       data?.newRequestsCount?.hasAnimation
@@ -305,6 +315,15 @@ const PermintaanAngkutCS = () => {
                   {formatCounter(dynamicTabCounts.instant)}
                 </span>
                 )
+                {data?.tabCounters?.hasBlinkNode && (
+                  <NotificationDot
+                    position="absolute"
+                    positionClasses="-right-3.5 -top-1.5"
+                    animated={true}
+                    size="md"
+                    color="red"
+                  />
+                )}
               </span>
             </button>
 
@@ -316,10 +335,10 @@ const PermintaanAngkutCS = () => {
                   : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
               }`}
             >
-              <span className="whitespace-nowrap">
+              <span className="relative whitespace-nowrap">
                 Terjadwal (
                 <span
-                  className={`${
+                  className={`$${
                     shouldAnimate(
                       dynamicTabCounts.scheduled,
                       data?.newRequestsCount?.hasAnimation
@@ -331,6 +350,15 @@ const PermintaanAngkutCS = () => {
                   {formatCounter(dynamicTabCounts.scheduled)}
                 </span>
                 )
+                {data?.tabCounters?.hasBlinkNode && (
+                  <NotificationDot
+                    position="absolute"
+                    positionClasses="-right-3.5 -top-1.5"
+                    animated={true}
+                    size="md"
+                    color="red"
+                  />
+                )}
               </span>
             </button>
 
@@ -343,10 +371,10 @@ const PermintaanAngkutCS = () => {
               }`}
             >
               <IconComponent src="/icons/halal.svg" className="h-4 w-4" />
-              <span className="whitespace-nowrap">
+              <span className="relative whitespace-nowrap">
                 Halal Logistik (
                 <span
-                  className={`${
+                  className={`$${
                     shouldAnimate(
                       dynamicTabCounts.halal,
                       data?.newRequestsCount?.hasAnimation
@@ -358,6 +386,15 @@ const PermintaanAngkutCS = () => {
                   {formatCounter(dynamicTabCounts.halal)}
                 </span>
                 )
+                {data?.tabCounters?.hasBlinkNode && (
+                  <NotificationDot
+                    position="absolute"
+                    positionClasses="-right-3.5 -top-1.5"
+                    animated={true}
+                    size="md"
+                    color="red"
+                  />
+                )}
               </span>
             </button>
           </div>
