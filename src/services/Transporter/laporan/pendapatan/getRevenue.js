@@ -15,7 +15,7 @@ export const mockRevenueReportList = {
         {
           id: "550e8400-e29b-41d4-a716-446655440001",
           orderCode: "MT2025010001",
-          invoiceNumber: "INV-2025-001",
+          invoiceNumber: "INV-2025-003",
           source: "ORDER_REVENUE",
           sourceName: "Pendapatan Pesanan",
           status: "DISBURSED",
