@@ -27,6 +27,7 @@ import { useGetDriverDelegationPopupPreference } from "@/services/Transporter/dr
 import { useUpdateDriverDelegationStatus } from "@/services/Transporter/driver-delegation/updateDelegationStatus";
 import { unlinkDriver } from "@/services/Transporter/manajemen-armada/unlinkDriver";
 import { useGetActiveDriversData } from "@/services/Transporter/manajemen-driver/getActiveDriversData";
+import { putNonaktifkanDriver } from "@/services/Transporter/manajemen-driver/nonaktifkanDriver";
 
 const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
   const router = useRouter();
@@ -105,7 +106,6 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
                   className="text-neutral-700 hover:text-primary-700"
                   onClick={() => {
                     setSelectedDriver(row);
-                    console.log(row);
                     setConfirmUnlinkDriver(true);
                   }}
                 >
@@ -116,7 +116,7 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
           </div>
           <div className="text-xxs font-medium">
             {row.fleet ? (
-              `${row.fleet.truckType?.carrierTruck?.name} - ${row.fleet.truckType?.name}`
+              `${row.fleet.carrierTruck?.name} - ${row.fleet.truckType?.name}`
             ) : (
               <button
                 className="font-semibold text-primary-700 hover:text-primary-700"
@@ -365,7 +365,7 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
   const handleNonaktifkanDriver = async () => {
     setIsUpdating(true);
     try {
-      await nonaktifkanDriver(selectedDriver?.id);
+      await putNonaktifkanDriver(selectedDriver?.id);
       toast.success("Berhasil menonaktifkan driver");
       setNonaktifkanDriver(false);
       setSelectedDriver(null);
@@ -410,6 +410,7 @@ const DriverAktif = ({ count, onPageChange, onPerPageChange }) => {
           driverName={selectedDriver?.name}
           currentFleetId={selectedDriver?.fleet?.id}
           title={selectedDriver?.fleet ? "Ubah Armada" : "Pilih Armada"}
+          mutate={mutate}
         />
       )}
 

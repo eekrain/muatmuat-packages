@@ -1,6 +1,6 @@
 import { fetcherMuatrans } from "@/lib/axios";
 
-const isMockUnlinkDriver = true;
+const isMockUnlinkDriver = false;
 
 const mockUnlinkDriverResponse = (driverId) => ({
   Message: {
@@ -20,6 +20,8 @@ export const unlinkDriver = async (driverId) => {
     return mockUnlinkDriverResponse(driverId);
   }
 
-  const result = await fetcherMuatrans.delete(`v1/drivers/${driverId}/vehicle`);
+  const result = await fetcherMuatrans.put(
+    `v1/vehicles/${driverId}/unassign-driver`
+  );
   return result?.data;
 };

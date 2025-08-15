@@ -22,6 +22,7 @@ import { ExpiredDocumentWarningModal } from "@/container/Transporter/Driver/Driv
 import { toast } from "@/lib/toast";
 import { getDriverStatusBadge } from "@/lib/utils/driverStatus";
 import { getPhoneNumberStatus } from "@/lib/utils/phoneNumberStatus";
+import { unlinkDriver } from "@/services/Transporter/manajemen-armada/unlinkDriver";
 import { useGetNonActiveDriversData } from "@/services/Transporter/manajemen-driver/getNonActiveDriversData";
 import { useGetSimExpiryNotification } from "@/services/Transporter/manajemen-driver/getSimExpiryNotification";
 
@@ -44,6 +45,8 @@ const DriverNonaktif = ({
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [confirmationModalConfig, setConfirmationModalConfig] = useState({});
   const [openDropdowns, setOpenDropdowns] = useState({});
+  const [confirmUnlinkDriver, setConfirmUnlinkDriver] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   // Fetch drivers data with pagination, filters and status
   const { data, isLoading, mutate } = useGetNonActiveDriversData({
@@ -160,7 +163,13 @@ const DriverNonaktif = ({
                       src={"/icons/pencil-outline.svg"}
                     />
                   </button>
-                  <button className="text-neutral-700 hover:text-primary-700">
+                  <button
+                    onClick={() => {
+                      setSelectedDriver(row);
+                      setConfirmUnlinkDriver(true);
+                    }}
+                    className="text-neutral-700 hover:text-primary-700"
+                  >
                     <IconComponent size={12} src={"/icons/unlink.svg"} />
                   </button>
                 </div>
@@ -171,7 +180,7 @@ const DriverNonaktif = ({
           </div>
           <div className="text-xxs font-medium text-neutral-600">
             {row.fleet ? (
-              `${row.fleet.truckType?.carrierTruck?.name} - ${row.fleet.truckType?.name}`
+              `${row.fleet.carrierTruck?.name} - ${row.fleet.truckType?.name}`
             ) : (
               <button
                 className="font-semibold text-primary-700 hover:text-primary-700"
@@ -358,6 +367,23 @@ const DriverNonaktif = ({
     // New status set
   };
 
+  const handleUnlinkDriver = async () => {
+    setIsUpdating(true);
+    try {
+      await unlinkDriver(selectedDriver?.id);
+      toast.success("Berhasil melepaskan armada");
+      setSelectedDriver(null);
+      setConfirmUnlinkDriver(false);
+      // Refresh the data after successful unlink
+      mutate();
+    } catch (error) {
+      console.error("Failed to unlink driver:", error);
+      toast.error("Gagal melepaskan armada. Silakan coba lagi.");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   // Prepare display options for status filter
   const getDisplayOptions = () => {
     // Get display options called
@@ -385,7 +411,12 @@ const DriverNonaktif = ({
       const count = getCountFromSummary(item.id);
       return {
         value: item.id,
-        label: item.value === "NOT_PAIRED" ? "Belum Dipasangkan" : item.value,
+        label:
+          item.value === "NOT_PAIRED"
+            ? "Belum Dipasangkan"
+            : item.value === "NON_ACTIVE"
+              ? "Tidak Aktif"
+              : item.value,
         count: count,
         hasNotification: item.id === "NOT_PAIRED" && count > 0,
       };
@@ -470,6 +501,33 @@ const DriverNonaktif = ({
           onClose={() => setShowExpiredWarning(false)}
         />
       )}
+
+      <ConfirmationModal
+        isOpen={confirmUnlinkDriver}
+        setIsOpen={setConfirmUnlinkDriver}
+        description={{
+          text: (
+            <p>
+              Apakah kamu ingin melepas <b>{selectedDriver?.name}</b> dari{" "}
+              <b>No. Polisi : {selectedDriver?.fleet?.licensePlate}</b>
+            </p>
+          ),
+        }}
+        confirm={{
+          text: "Ya",
+          onClick: () => {
+            handleUnlinkDriver();
+          },
+          classname: "w-[112px]",
+        }}
+        cancel={{
+          text: "Tidak",
+          onClick: () => {
+            setConfirmUnlinkDriver(false);
+          },
+          classname: "w-[112px]",
+        }}
+      />
 
       {isConfirmationModalOpen && (
         <ConfirmationModal
