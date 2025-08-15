@@ -76,7 +76,7 @@ const SubContent = React.forwardRef(
         {...props}
       >
         {/* Wrapper for fixed height and scrolling */}
-        <div className="mr-1 flex max-h-48 flex-col overflow-y-auto">
+        <div className="flex max-h-48 flex-col overflow-y-auto">
           {props.children}
         </div>
       </HoverCardPrimitive.Content>

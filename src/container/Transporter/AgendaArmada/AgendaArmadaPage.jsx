@@ -151,8 +151,8 @@ const AgendaArmadaDriverPage = () => {
       </div>
 
       <DateNavigatorProvider
-        initialDate={new Date("2025-08-28")}
-        todayDate={new Date("2025-08-28")}
+        // initialDate={new Date("2025-08-28")}
+        // todayDate={new Date("2025-08-28")}
         availablePeriods={periodsData?.Data}
         onDateRangeChange={handleDateRangeChange}
         search={search}
