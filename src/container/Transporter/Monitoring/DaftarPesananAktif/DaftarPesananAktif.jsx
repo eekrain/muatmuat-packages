@@ -19,6 +19,15 @@ import Search from "@/components/Search/Search";
 import SearchNotFound from "@/components/SearchNotFound/SearchNotFound";
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
 import Table from "@/components/Table/Table";
+import AlasanPembatalanModal from "@/container/Shared/OrderModal/AlasanPembatalanModal";
+import AssignArmadaWrapper from "@/container/Shared/OrderModal/AssignArmadaWrapper";
+import BatalkanArmadaModal from "@/container/Shared/OrderModal/BatalkanArmadaModal";
+import BatalkanPesananModal from "@/container/Shared/OrderModal/BatalkanPesananModal";
+import ConfirmReadyModal from "@/container/Shared/OrderModal/ConfirmReadyModal";
+import LihatArmadaModal from "@/container/Shared/OrderModal/LihatArmadaModal";
+import PilihArmadaBatalkan from "@/container/Shared/OrderModal/PilihArmadaBatalkan";
+import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
+import UbahJumlahUnitModal from "@/container/Shared/OrderModal/UbahJumlahUnitModal";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useGetActiveOrders } from "@/services/Transporter/monitoring/daftar-pesanan-active/getActiveOrders";
@@ -32,15 +41,6 @@ import {
 } from "@/utils/Transporter/orderStatus";
 
 import Onboarding from "../Onboarding/Onboarding";
-import AlasanPembatalanModal from "./components/AlasanPembatalanModal";
-import AssignArmadaWrapper from "./components/AssignArmadaWrapper";
-import BatalkanArmadaModal from "./components/BatalkanArmadaModal";
-import BatalkanPesananModal from "./components/BatalkanPesananModal";
-import ConfirmReadyModal from "./components/ConfirmReadyModal";
-import LihatArmadaModal from "./components/LihatArmadaModal";
-import PilihArmadaBatalkan from "./components/PilihArmadaBatalkan";
-import RespondChangeModal from "./components/RespondChangeModal";
-import UbahJumlahUnitModal from "./components/UbahJumlahUnitModal";
 
 const DaftarPesananAktif = ({
   onToggleExpand,
