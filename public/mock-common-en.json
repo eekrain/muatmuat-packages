@@ -573,5 +573,22 @@
   "DetailPencairanDanaPage.labelDPP": "DPP",
   "DetailPencairanDanaPage.labelPPN": "VAT 12%",
   "DetailPencairanDanaPage.labelPPH": "Income Tax 2%",
-  "DetailPencairanDanaPage.labelTotal": "Total"
+  "DetailPencairanDanaPage.labelTotal": "Total",
+  "ModalQRCodeDriver.toastQRCodeCopied": "QR Code link copied successfully",
+  "ModalQRCodeDriver.titleQRCodeLocation": "QR Code Location",
+  "ModalQRCodeDriver.instructionShowQRCode": "Show this QR Code to the driver to update their location",
+  "ModalQRCodeDriver.buttonShareQRCode": "Share QR Code",
+  "LeftPanel.breadcrumbDaftarPesanan": "Order List",
+  "LeftPanel.breadcrumbDetailPesanan": "Order Details",
+  "LeftPanel.breadcrumbLacakArmada": "Track Fleet",
+  "LeftPanel.titleLacakArmada": "Track Fleet",
+  "LeftPanel.titleDetailStatusDriver": "Driver Status Details",
+  "AlertLabelEnum.messageRefundInProcess": "Refund is being processed.",
+  "AlertLabelEnum.messageRefundCompleted": "Refund has been successfully processed.",
+  "AlertLabelResponsiveEnum.messageReminderRepaymentOrderMobile": "<b>Your order has additional charges.</b><p>Please complete payment before <b>{date}.</b></p>",
+  "AlertInfoEnum.messageShowQrcodeDriverInfo": "QR Code is required for the driver to proceed with loading or unloading goods.",
+  "AlertInfoEnum.messageRefundInProcessInfo": "Refund is being processed, the amount will be adjusted after deducting <b>Cancellation Admin</b> and <b>Additional Charges</b>. For more information, contact Customer Service.",
+  "AlertInfoEnum.messageRefundCompletedInfo": "The refund process has been successfully transferred to your account. For more information, contact Customer Service.",
+  "getAlertMetadata.buttonLihatDetail": "View Details",
+  "getAlertMetadata.buttonLihatPerubahan": "View Changes"
 }

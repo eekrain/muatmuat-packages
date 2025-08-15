@@ -13,8 +13,8 @@ export const AlertLabelEnum = {
   REMINDER_REPAYMENT_ORDER: "messageReminderRepaymentOrder",
   WAITING_TIME_CHARGE: "messageWaitingTimeCharge",
   SHOW_QRCODE_DRIVER: "messageShowQrcodeDriver",
-  REFUND_IN_PROCESS: "Pengembalian dana sedang dalam proses.",
-  REFUND_COMPLETED: "Pengembalian dana berhasil diproses.",
+  REFUND_IN_PROCESS: "AlertLabelEnum.messageRefundInProcess",
+  REFUND_COMPLETED: "AlertLabelEnum.messageRefundCompleted",
   ORDER_CHANGES_CONFIRMATION: "messageOrderChangesConfirmation",
   CONFIRMATION_WAITING_PREPARE_FLEET: "messageConfirmationWaitingPrepareFleet",
   CANCELED_BY_SYSTEM: "messageCanceledBySystem",
@@ -23,11 +23,11 @@ export const AlertLabelEnum = {
 // Kalau mobile pake yang ini
 export const AlertLabelResponsiveEnum = {
   REMINDER_REPAYMENT_ORDER:
-    "<b>Pesanan Anda memiliki tambahan biaya.</b><p>Mohon selesaikan pembayaran sebelum tanggal <b>07 Juli 2024.</b></p>",
+    "AlertLabelResponsiveEnum.messageReminderRepaymentOrderMobile",
   WAITING_TIME_CHARGE: "messageWaitingTimeCharge",
   SHOW_QRCODE_DRIVER: "messageShowQrcodeDriver",
-  REFUND_IN_PROCESS: "Pengembalian dana sedang dalam proses.",
-  REFUND_COMPLETED: "Pengembalian dana berhasil diproses.",
+  REFUND_IN_PROCESS: "AlertLabelEnum.messageRefundInProcess",
+  REFUND_COMPLETED: "AlertLabelEnum.messageRefundCompleted",
   ORDER_CHANGES_CONFIRMATION: "messageOrderChangesConfirmation",
   CONFIRMATION_WAITING_PREPARE_FLEET: "messageConfirmationWaitingPrepareFleet",
   CANCELED_BY_SYSTEM: "messageCanceledBySystem",
@@ -36,12 +36,9 @@ export const AlertLabelResponsiveEnum = {
 export const AlertInfoEnum = {
   // Ini haruse bukan tooltip, tapi button bro
   // WAITING_TIME_CHARGE: "Informasi biaya waktu tunggu",
-  SHOW_QRCODE_DRIVER:
-    "QR Code diperlukan agar driver dapat melanjutkan proses muat atau bongkar barang.",
-  REFUND_IN_PROCESS:
-    "Pengembalian dana sedang dalam proses, jumlah dana akan disesuakan setelah dikurangi <b>Admin Pembatalan</b> dan <b>Tambahan Biaya</b>. Info lebih lanjut hubungi Customer Service.",
-  REFUND_COMPLETED:
-    "Proses pengembalian dana telah berhasil dicairkan ke rekening kamu. Info lebih lanjut hubungi Customer Service.",
+  SHOW_QRCODE_DRIVER: "AlertInfoEnum.messageShowQrcodeDriverInfo",
+  REFUND_IN_PROCESS: "AlertInfoEnum.messageRefundInProcessInfo",
+  REFUND_COMPLETED: "AlertInfoEnum.messageRefundCompletedInfo",
   CANCELED_BY_SYSTEM: "infoCanceledBySystem",
 };
 

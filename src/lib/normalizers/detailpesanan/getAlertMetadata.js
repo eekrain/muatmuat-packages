@@ -26,7 +26,7 @@ export const getAlertMetadata = ({
       label: t(AlertLabelEnum.WAITING_TIME_CHARGE),
       button: {
         onClick: onLihatDetailWaktuTunggu,
-        label: "Lihat Detail",
+        label: t("getAlertMetadata.buttonLihatDetail", {}, "Lihat Detail"),
       },
     };
   }
@@ -36,7 +36,11 @@ export const getAlertMetadata = ({
       label: t(AlertLabelEnum.ORDER_CHANGES_CONFIRMATION),
       button: {
         onClick: onLihatPerubahan,
-        label: "Lihat Perubahan",
+        label: t(
+          "getAlertMetadata.buttonLihatPerubahan",
+          {},
+          "Lihat Perubahan"
+        ),
       },
     };
   }
