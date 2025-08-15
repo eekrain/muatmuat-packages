@@ -7,6 +7,7 @@ import DashboardDataTable from "@/app/transporter/(main)/dashboard/real-time/com
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import { useTranslation } from "@/hooks/use-translation";
 
 import Period from "../../components/Period";
 
@@ -20,6 +21,7 @@ const toYYYYMMDD = (date) => {
 };
 
 const PenaltyTable = () => {
+  const { t } = useTranslation();
   const [tableData, setTableData] = useState({
     penalties: [],
     pagination: {
@@ -40,8 +42,6 @@ const PenaltyTable = () => {
     sort: "cancellationDate",
     order: "desc",
   });
-
-  // States to be controlled by the parent for DashboardDataTable
   const [searchValue, setSearchValue] = useState("");
   const [period, setPeriod] = useState(null);
   const [recentPeriodOptions, setRecentPeriodOptions] = useState([]);
@@ -57,20 +57,16 @@ const PenaltyTable = () => {
         page: currentPage,
         limit: perPage,
       });
-
       if (searchValue) queryParams.append("search", searchValue);
       if (sortConfig.sort) {
         queryParams.append("sort", sortConfig.sort);
         queryParams.append("order", sortConfig.order);
       }
-
       if (period) {
-        console.log("period", period);
         let dateFrom, dateTo;
         if (period.iso_start_date && period.iso_end_date) {
           dateFrom = toYYYYMMDD(period.iso_start_date);
           dateTo = toYYYYMMDD(period.iso_end_date);
-          console.log("period", dateFrom, dateTo);
         } else if (typeof period.value === "number") {
           const today = new Date();
           const fromDate = new Date();
@@ -83,7 +79,6 @@ const PenaltyTable = () => {
           queryParams.append("dateTo", dateTo);
         }
       }
-
       try {
         const response = await fetch(
           `/api/v1/penalties?${queryParams.toString()}`
@@ -93,14 +88,15 @@ const PenaltyTable = () => {
         const result = await response.json();
         setTableData(result.Data);
       } catch (e) {
-        setError("Gagal memuat data penalti.");
+        setError(
+          t("PenaltyTable.messageErrorFetch", {}, "Gagal memuat data penalti.")
+        );
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
-  }, [currentPage, perPage, sortConfig, searchValue, period]);
+  }, [currentPage, perPage, sortConfig, searchValue, period, t]);
 
   const handleSelectPeriod = (selectedOption) => {
     if (selectedOption?.range) {
@@ -114,28 +110,25 @@ const PenaltyTable = () => {
   };
 
   const formatDate = (dateString) => {
-    return `${new Intl.DateTimeFormat("id-ID", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    }).format(new Date(dateString))} WIB`;
+    return `${new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date(dateString))} WIB`;
   };
 
   const columns = useMemo(
     () => [
       {
         key: "cancellationDate",
-        header: "Tanggal Pembatalan",
+        header: t(
+          "PenaltyTable.columnCancellationDate",
+          {},
+          "Tanggal Pembatalan"
+        ),
         className: "!text-xs font-medium align-top",
         sortable: true,
         render: (row) => formatDate(row.cancellationDate),
       },
       {
         key: "orderNumber",
-        header: "No. Pesanan",
+        header: t("PenaltyTable.columnOrderNumber", {}, "No. Pesanan"),
         sortable: true,
         className:
           "text-primary-700 font-medium !text-xs hover:text-primary-800 align-top",
@@ -147,14 +140,16 @@ const PenaltyTable = () => {
       },
       {
         key: "armada",
-        header: "Armada",
+        header: t("PenaltyTable.columnFleet", {}, "Armada"),
         className: "align-top",
         sortable: false,
         render: (row) => (
           <div>
             <p className="text-xs font-bold">{row.armada.name}</p>
             <p className="mt-px text-[10px] font-medium text-neutral-900">
-              <span className="text-neutral-600">Carrier :</span>
+              <span className="text-neutral-600">
+                {t("PenaltyTable.labelCarrier", {}, "Carrier :")}
+              </span>
               {row.armada.carrier}
             </p>
             <span className="mt-2 flex items-center gap-1 text-[10px] font-medium text-neutral-900">
@@ -170,27 +165,42 @@ const PenaltyTable = () => {
       },
       {
         key: "reason",
-        header: "Keterangan",
+        header: t("PenaltyTable.columnReason", {}, "Keterangan"),
         sortable: false,
         className: "!text-xs font-medium align-top",
       },
     ],
-    []
+    [t]
   );
 
-  const periodOptions = [
-    { name: "Semua Periode (Default)", value: "" },
-    { name: "Hari Ini", value: 0 },
-    { name: "1 Minggu Terakhir", value: 7 },
-    { name: "30 Hari Terakhir", value: 30 },
-    { name: "1 Tahun Terakhir", value: 365 },
-  ];
+  const periodOptions = useMemo(
+    () => [
+      {
+        name: t("PenaltyTable.periodOptionAll", {}, "Semua Periode (Default)"),
+        value: "",
+      },
+      { name: t("PenaltyTable.periodOptionToday", {}, "Hari Ini"), value: 0 },
+      {
+        name: t("PenaltyTable.periodOptionLast7Days", {}, "7 Hari Terakhir"),
+        value: 7,
+      },
+      {
+        name: t("PenaltyTable.periodOptionLast30Days", {}, "30 Hari Terakhir"),
+        value: 30,
+      },
+      {
+        name: t("PenaltyTable.periodOptionLastYear", {}, "1 Tahun Terakhir"),
+        value: 365,
+      },
+    ],
+    [t]
+  );
 
   return (
     <>
       <div className="flex w-full items-center justify-between">
         <PageTitle withBack={true} className="!mb-0">
-          Jumlah Penalti
+          {t("PenaltyPage.titlePage", {}, "Jumlah Penalti")}
         </PageTitle>
         <div className="flex items-center gap-4">
           <Period
@@ -210,11 +220,10 @@ const PenaltyTable = () => {
                 "text-muat-trans-secondary-900 disabled:text-neutral-600",
             }}
           >
-            Unduh
+            {t("PenaltyTable.buttonDownload", {}, "Unduh")}
           </Button>
         </div>
       </div>
-
       <DashboardDataTable
         data={tableData.penalties}
         columns={columns}
@@ -224,21 +233,36 @@ const PenaltyTable = () => {
         perPage={tableData.pagination.itemsPerPage}
         onPageChange={setCurrentPage}
         onPerPageChange={setPerPage}
-        // Wire up the new props
         activeSearchValue={searchValue}
         onSearchChange={setSearchValue}
         isPeriodActive={period && period.value !== ""}
         onControlsStateChange={setControlsDisabled}
         onSort={(sort, order) => setSortConfig({ sort, order })}
-        searchPlaceholder="Cari No. Pesanan / No. Polisi / Armada"
+        searchPlaceholder={t(
+          "PenaltyTable.searchPlaceholder",
+          {},
+          "Cari No. Pesanan / No. Polisi / Armada"
+        )}
         showFilter={false}
-        firsTimerTitle="Tidak ada pesanan yang dibatalkan"
-        firstTimerSubtitle="Penalti dihitung dari jumlah pembatalan pesanan oleh Transporter atau Shipper"
+        firsTimerTitle={t(
+          "PenaltyTable.emptyStateTitle",
+          {},
+          "Tidak ada pesanan yang dibatalkan"
+        )}
+        firstTimerSubtitle={t(
+          "PenaltyTable.emptyStateSubtitle",
+          {},
+          "Penalti dihitung dari jumlah pembatalan pesanan oleh Transporter atau Shipper"
+        )}
         headerActions={
           <div className="text-base font-semibold">
-            Total Penalti :{" "}
+            {t("PenaltyTable.headerTotalPenalty", {}, "Total Penalti :")}{" "}
             <span className="font-bold">
-              {tableData.summary.totalPenalties} Penalti
+              {t(
+                "PenaltyTable.unitPenalty",
+                { count: tableData.summary.totalPenalties },
+                "{count} Penalti"
+              )}
             </span>
           </div>
         }
