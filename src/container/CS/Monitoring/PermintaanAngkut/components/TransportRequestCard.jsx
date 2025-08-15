@@ -166,6 +166,11 @@ const TransportRequestCard = ({
               <p className="text-xs font-semibold text-neutral-900">
                 {countdownSeconds > 0 ? formatHHMMSS(countdown) : "-"}
               </p>
+              {request.reblast !== "1" && (
+                <p className="text-xs text-gray-600">
+                  Permintaan ke-{request.reblast}
+                </p>
+              )}
             </div>
           </div>
           <div className="border-b border-neutral-400"></div>
