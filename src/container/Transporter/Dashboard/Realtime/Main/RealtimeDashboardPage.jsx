@@ -137,7 +137,7 @@ const RealtimeDashboardPage = () => {
 
   return (
     <div className="space-y-4 pb-6">
-      <PageTitle>
+      <PageTitle withBack={false}>
         {t("RealtimeDashboardPage.titlePage", {}, "Dashboard Real-time")}
       </PageTitle>
 
