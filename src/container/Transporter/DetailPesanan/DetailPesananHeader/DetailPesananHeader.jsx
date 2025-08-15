@@ -4,10 +4,10 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
-const DetailPesananHeader = ({ dataOrderDetail }) => {
+const DetailPesananHeader = ({ dataOrderDetail, activeTab }) => {
   const router = useRouter();
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex h-6 items-center justify-between">
       <div className="flex items-center gap-x-3">
         <IconComponent
           onClick={() => router.back()}
