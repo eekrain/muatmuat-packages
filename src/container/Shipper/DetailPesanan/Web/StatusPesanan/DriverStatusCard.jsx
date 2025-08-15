@@ -141,7 +141,12 @@ const LIST_HIDE_DRIVER_STATUS = [
   OrderStatusEnum.COMPLETED,
 ];
 
-export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
+export const DriverStatusCardItem = ({
+  driver,
+  orderId,
+  orderStatus,
+  isOldDriver = false,
+}) => {
   const { t } = useTranslation();
   const pathname = usePathname();
   const SHOW_DRIVER_STATUS =
@@ -176,7 +181,7 @@ export const DriverStatusCardItem = ({ driver, orderId, orderStatus }) => {
                 )}
 
                 {/* Modal QR Code Supir */}
-                {!orderStatus.startsWith("CANCELED") && (
+                {!orderStatus.startsWith("CANCELED") && !isOldDriver && (
                   <ModalQRCodeDriver
                     orderId={orderId}
                     driverId={driver.driverId}

@@ -435,6 +435,7 @@ const ModalOldDriver = ({ open, onOpenChange, oldDriverData, orderId }) => {
                 }}
                 orderId={orderId}
                 orderStatus={oldDriverData.driver.orderStatus}
+                isOldDriver={true}
               />
             </div>
           </div>
