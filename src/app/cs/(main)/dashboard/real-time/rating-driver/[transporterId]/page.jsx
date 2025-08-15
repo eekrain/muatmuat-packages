@@ -11,7 +11,7 @@ const DetailRatingDriverPage = () => {
   const breadcrumbData = [
     {
       name: t("csDashboard.pageTitle", {}, "Dashboard Real-time"),
-      href: "/cs/dashboard/real-time",
+      href: "/dashboard/real-time",
     },
     {
       name: t(
@@ -19,7 +19,7 @@ const DetailRatingDriverPage = () => {
         {},
         "Rating Transporter Keseluruhan"
       ),
-      href: "/cs/dashboard/real-time/rating-transporter",
+      href: "/dashboard/real-time/rating-transporter",
     },
     {
       name: t(

@@ -11,7 +11,7 @@ const RatingTransporterPage = () => {
   const breadcrumbData = [
     {
       name: t("csDashboard.pageTitle", {}, "Dashboard Real-time"),
-      href: "/cs/dashboard/real-time",
+      href: "/dashboard/real-time",
     },
     {
       name: t(

@@ -170,7 +170,7 @@ const CSDashboardPage = () => {
               key={item.key}
               label={t(item.labelKey, {}, item.labelFallback)}
               value={dashboardData?.orderStatusCounts?.[item.key] || 0}
-              href="/cs/daftar-pesanan"
+              href="/daftar-pesanan"
               tooltipText={t(item.tooltipKey, {}, item.tooltipFallback)}
               side={item.side || "top"}
             />
@@ -198,7 +198,7 @@ const CSDashboardPage = () => {
                 key={item.key}
                 label={t(item.labelKey, {}, item.labelFallback)}
                 value={dashboardData?.attentionItems?.[item.key] || 0}
-                href="/cs/daftar-pesanan"
+                href="/daftar-pesanan"
                 tooltipText={t(item.tooltipKey, {}, item.tooltipFallback)}
               />
             ))}
