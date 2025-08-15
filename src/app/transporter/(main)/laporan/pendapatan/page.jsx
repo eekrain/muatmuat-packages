@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import Button from "@/components/Button/Button";
@@ -12,6 +12,12 @@ import Pagination from "@/components/Pagination/Pagination";
 import { ReportSummaryCards } from "@/components/Report";
 import LaporanPendapatanTable from "@/components/Report/LaporanPendapatanTable";
 import { useTranslation } from "@/hooks/use-translation";
+import {
+  useGetTotalRevenueBreakdown,
+  useGetUndisbursedFundsBreakdown,
+} from "@/services/Transporter/laporan/pendapatan/getBreakdownRevenue";
+import { useGetRevenueReportList } from "@/services/Transporter/laporan/pendapatan/getRevenue";
+import { useGetRevenueSummary } from "@/services/Transporter/laporan/pendapatan/getSummary";
 
 export default function Page() {
   const { t } = useTranslation();
@@ -20,6 +26,39 @@ export default function Page() {
   const [perPage, setPerPage] = useState(10);
   const [currentPeriodValue, setCurrentPeriodValue] = useState(null);
   const [recentPeriodOptions, setRecentPeriodOptions] = useState([]);
+  const [tableData, setTableData] = useState([]);
+  const [selectedTransporterId, setSelectedTransporterId] = useState(
+    "550e8400-e29b-41d4-a716-446655440001"
+  );
+  const [filters, setFilters] = useState({
+    transporter_id: selectedTransporterId,
+    page: 1,
+    limit: 10,
+    sort: "createdAt",
+    order: "desc",
+    keyword: "",
+    status: ["DISBURSED", "PARTIALLY_DISBURSED"],
+    source: ["ORDER_REVENUE"],
+    preset: "this_month",
+    start_date: "",
+    end_date: "",
+  });
+
+  const { data: revenueSummary } = useGetRevenueSummary(selectedTransporterId);
+
+  const { data: totalRevenueBreakdown, isLoading: loadingTotalRevenue } =
+    useGetTotalRevenueBreakdown(selectedTransporterId);
+
+  const {
+    data: undisbursedFundsBreakdown,
+    isLoading: loadingUndisbursedFunds,
+  } = useGetUndisbursedFundsBreakdown(selectedTransporterId);
+
+  const {
+    data: revenueReportList,
+    isLoading: loadingRevenueReportList,
+    isError: errorRevenueReportList,
+  } = useGetRevenueReportList(filters);
 
   // Konfigurasi periode
   const periodOptions = [
@@ -76,55 +115,68 @@ export default function Page() {
   ];
 
   // Summary data
-  const summaryData = [
+  const defaultSummaryData = [
     {
+      key: "totalRevenue",
       title: t(
         "LaporanPendapatanPage.summaryCardTotalRevenue",
         {},
         "Total Pendapatan"
       ),
-      value: "Rp1.400.000",
+      value: "Rp0",
       bgColor: "bg-[#E3F5ED]",
       textColor: "text-[#00AF6C]",
       icon: "/icons/dashboard/armada.svg",
     },
     {
+      key: "totalUndisbursed",
       title: t(
         "LaporanPendapatanPage.summaryCardUndisbursedFunds",
         {},
         "Total Dana Belum Dicairkan"
       ),
-      value: "Rp 31.550.000",
+      value: "Rp0",
       bgColor: "bg-[#FFF8E1]",
       textColor: "text-[#F57C00]",
       icon: "/icons/dashboard/armada.svg",
     },
     {
+      key: "totalDisbursed",
       title: t(
         "LaporanPendapatanPage.summaryCardDisbursedFunds",
         {},
         "Total Dana Sudah Dicairkan"
       ),
-      value: "Rp432.452.564",
+      value: "Rp0",
       bgColor: "bg-[#E3F2FD]",
       textColor: "text-[#1976D2]",
       icon: "/icons/dashboard/armada.svg",
     },
     {
+      key: "monthlyRevenue",
       title: t(
         "LaporanPendapatanPage.summaryCardThisMonthRevenue",
         {},
         "Pendapatan Bulan Ini"
       ),
-      value: "Rp432.452.564",
+      value: "Rp0",
       bgColor: "bg-[#E3F2FD]",
       textColor: "text-[#1976D2]",
       icon: "/icons/dashboard/armada.svg",
     },
   ];
 
+  // merge API data dengan default
+  const summaryData = defaultSummaryData.map((item) => {
+    const apiValue = revenueSummary?.[item.key]?.formatted;
+    return {
+      ...item,
+      value: apiValue || item.value, // kalau ada dari API pakai itu, kalau tidak pakai default
+    };
+  });
+
   // Table data
-  const tableData = [
+  const data = [
     // Sumber: Tambahan Biaya (additional_cost)
     {
       id: 1,
@@ -290,40 +342,30 @@ export default function Page() {
         {},
         "No. Pesanan"
       ),
-      key: "orderNo",
+      key: "invoiceNumber",
       sortable: true,
       width: "200px",
     },
     {
       header: t("LaporanPendapatanPage.tableColumnSource", {}, "Sumber"),
-      key: "source",
+      key: "sourceName",
       sortable: true,
       width: "200px",
-      render: (row) => <span>{row.source}</span>,
+      render: (row) => <span>{row.sourceName}</span>,
     },
     {
       header: t("LaporanPendapatanPage.tableColumnStatus", {}, "Status"),
-      key: "status",
+      key: "statusName",
       sortable: true,
       width: "190px",
       render: (row) => {
         let variant = "success";
-        if (
-          row.status ===
-          t(
-            "LaporanPendapatanPage.statusPartiallyDisbursed",
-            {},
-            "Dicairkan Sebagian"
-          )
-        ) {
+        if (row.status === "PARTIALLY_DISBURSED") {
           variant = "warning";
-        } else if (
-          row.status ===
-          t("LaporanPendapatanPage.statusNotDisbursed", {}, "Belum Dicairkan")
-        ) {
+        } else if (row.status === "NOT_DISBURSED") {
           variant = "error";
         }
-        return <BadgeStatus variant={variant}>{row.status}</BadgeStatus>;
+        return <BadgeStatus variant={variant}>{row.statusName}</BadgeStatus>;
       },
     },
     {
@@ -332,7 +374,7 @@ export default function Page() {
         {},
         "Nominal Pendapatan"
       ),
-      key: "revenue",
+      key: "revenueFormatted",
       sortable: true,
       width: "180px",
     },
@@ -342,7 +384,7 @@ export default function Page() {
         {},
         "Dana Belum Dicairkan"
       ),
-      key: "undisbursed",
+      key: "undisbursedFormatted",
       sortable: true,
       width: "180px",
     },
@@ -379,7 +421,7 @@ export default function Page() {
     data: {
       status: [
         {
-          id: "sudah_dicairkan",
+          id: "DISBURSED",
           label: t(
             "LaporanPendapatanPage.statusDisbursed",
             {},
@@ -387,7 +429,7 @@ export default function Page() {
           ),
         },
         {
-          id: "dicairkan_sebagian",
+          id: "PARTIALLY_DISBURSED",
           label: t(
             "LaporanPendapatanPage.statusPartiallyDisbursed",
             {},
@@ -395,7 +437,7 @@ export default function Page() {
           ),
         },
         {
-          id: "belum_dicairkan",
+          id: "NOT_DISBURSED",
           label: t(
             "LaporanPendapatanPage.statusNotDisbursed",
             {},
@@ -405,7 +447,7 @@ export default function Page() {
       ],
       source: [
         {
-          id: "additional_cost",
+          id: "ADDITIONAL_COST",
           label: t(
             "LaporanPendapatanPage.sourceAdditionalCost",
             {},
@@ -413,7 +455,7 @@ export default function Page() {
           ),
         },
         {
-          id: "revenue_adjustment",
+          id: "REVENUE_ADJUSTMENT",
           label: t(
             "LaporanPendapatanPage.sourceRevenueAdjustment",
             {},
@@ -421,7 +463,7 @@ export default function Page() {
           ),
         },
         {
-          id: "order_revenue",
+          id: "ORDER_REVENUE",
           label: t(
             "LaporanPendapatanPage.sourceOrderRevenue",
             {},
@@ -463,10 +505,44 @@ export default function Page() {
 
   const handleFilter = (_newFilters) => {
     setCurrentPage(1);
+    setFilters((prev) => ({
+      ...prev,
+      status: _newFilters.status || [],
+      source: _newFilters.source || [],
+      keyword: _newFilters.keyword || "",
+      page: 1,
+    }));
   };
 
   const handleSort = (_sort, _order) => {
-    // no-op for now
+    const sortedData = [...tableData].sort((a, b) => {
+      const isAsc = _order === "asc" ? 1 : -1;
+
+      if (_sort === "orderNo") {
+        return a.orderNo.localeCompare(b.orderNo) * isAsc;
+      }
+      if (_sort === "source") {
+        return a.source.localeCompare(b.source) * isAsc;
+      }
+      if (_sort === "status") {
+        return a.status.localeCompare(b.status) * isAsc;
+      }
+      if (_sort === "revenue") {
+        // Remove non-numeric characters (e.g., currency symbols, commas) and convert to numbers
+        const revenueA = parseFloat(a.revenue.replace(/[^\d.-]/g, ""));
+        const revenueB = parseFloat(b.revenue.replace(/[^\d.-]/g, ""));
+        return (revenueA - revenueB) * isAsc;
+      }
+      if (_sort === "undisbursed") {
+        // Remove non-numeric characters (e.g., currency symbols, commas) and convert to numbers
+        const undisbursedA = parseFloat(a.undisbursed.replace(/[^\d.-]/g, ""));
+        const undisbursedB = parseFloat(b.undisbursed.replace(/[^\d.-]/g, ""));
+        return (undisbursedA - undisbursedB) * isAsc;
+      }
+      return 0;
+    });
+    // Update state with sorted data
+    setTableData(sortedData);
   };
 
   const handlePageChange = (page) => {
@@ -480,6 +556,48 @@ export default function Page() {
 
   const isRevenueEmpty = !tableData || tableData.length === 0;
 
+  const revenueData = useMemo(() => {
+    return revenueReportList?.reports || [];
+  }, [revenueReportList]);
+
+  useEffect(() => {
+    // Set initial table data from revenue report list
+    if (revenueData) {
+      setTableData(revenueData);
+    }
+  }, [revenueData]);
+
+  const renderTooltip = (index) => {
+    if (index === 0) {
+      const { orderRevenue, adjustmentRevenue } = totalRevenueBreakdown || {};
+      return (
+        <div className="space-y-1 text-sm">
+          <div className="flex items-center">
+            <span>Pendapatan Pesanan:</span>
+            <span>{orderRevenue?.formatted || "Rp0"}</span>
+          </div>
+          <div className="flex items-center">
+            <span>Penyesuaian Pendapatan:</span>
+            <span>{adjustmentRevenue?.formatted || "Rp0"}</span>
+          </div>
+        </div>
+      );
+    }
+    if (index === 1) {
+      return (
+        <div className="space-y-1 text-sm">
+          {undisbursedFundsBreakdown?.undisbursedBySource?.map((item, idx) => (
+            <div className="flex items-center" key={idx}>
+              <span>{item.sourceName}:</span>
+              <span>{item.formatted}</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="mx-auto mt-7 max-w-full px-0">
       <h1 className="mb-5 text-2xl font-bold">
@@ -491,88 +609,7 @@ export default function Page() {
       </h1>
 
       {/* Summary Cards */}
-      <ReportSummaryCards
-        items={summaryData}
-        renderTooltip={(index) => {
-          if (index === 0) {
-            return (
-              <>
-                <div className="space-y-1 text-sm">
-                  <div className="flex items-center">
-                    <span>
-                      {t(
-                        "LaporanPendapatanPage.tooltipOrderRevenue",
-                        {},
-                        "Pendapatan Pesanan:"
-                      )}
-                    </span>
-                    <span>Rp 10.000</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span>
-                      {t(
-                        "LaporanPendapatanPage.tooltipRevenueAdjustment",
-                        {},
-                        "Penyesuaian Pendapatan:"
-                      )}
-                    </span>
-                    <span>Rp 300.000</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span>
-                      {t(
-                        "LaporanPendapatanPage.tooltipAdditionalCost",
-                        {},
-                        "Tambahan Biaya:"
-                      )}
-                    </span>
-                    <span>Rp 200.000</span>
-                  </div>
-                </div>
-              </>
-            );
-          }
-          if (index === 1) {
-            return (
-              <>
-                <div className="space-y-1 text-sm">
-                  <div className="flex items-center">
-                    <span>
-                      {t(
-                        "LaporanPendapatanPage.tooltipOrderRevenue",
-                        {},
-                        "Pendapatan Pesanan:"
-                      )}
-                    </span>
-                    <span>Rp 1.100.000</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span>
-                      {t(
-                        "LaporanPendapatanPage.tooltipRevenueAdjustment",
-                        {},
-                        "Penyesuaian Pendapatan:"
-                      )}
-                    </span>
-                    <span>Rp 300.000</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span>
-                      {t(
-                        "LaporanPendapatanPage.tooltipAdditionalCost",
-                        {},
-                        "Tambahan Biaya:"
-                      )}
-                    </span>
-                    <span>Rp 200.000</span>
-                  </div>
-                </div>
-              </>
-            );
-          }
-          return null;
-        }}
-      />
+      <ReportSummaryCards items={summaryData} renderTooltip={renderTooltip} />
 
       {/* Data Table with Filter or Empty State */}
       {isRevenueEmpty ? (

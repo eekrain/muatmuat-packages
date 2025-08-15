@@ -158,7 +158,16 @@ export default function DetailPendapatanPage({ params }) {
               <label className="w-52 text-sm font-medium text-gray-600">
                 {t("DetailPendapatanPage.labelStatus", {}, "Status")}
               </label>
-              <BadgeStatus variant="error" className="w-fit">
+              <BadgeStatus
+                variant={
+                  incomeData.statusType === "not_disbursed"
+                    ? "error"
+                    : incomeData.statusType === "success"
+                      ? "success"
+                      : "warning"
+                }
+                className="w-fit"
+              >
                 {incomeData.status}
               </BadgeStatus>
             </div>

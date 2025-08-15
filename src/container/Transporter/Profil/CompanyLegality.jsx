@@ -28,27 +28,36 @@ const LegalityRow = ({ label, value, type, isStriped }) => {
   return (
     <div
       className={cn(
-        "flex items-center justify-between px-6 py-4",
-        isStriped && "bg-neutral-100" // Background abu-abu untuk baris bergantian
+        // Container utama tetap flex row untuk menjaga tampilan
+        "flex items-center justify-start px-6 py-4",
+        isStriped && "bg-neutral-100"
       )}
     >
-      <span className="text-sm font-medium text-neutral-600">{label}</span>
+      {/* Kolom pertama untuk label */}
+      <div className="w-1/3">
+        <span className="text-sm font-medium text-neutral-600">{label}</span>
+      </div>
 
-      {type === "status" ? (
-        <div className="flex items-center gap-2">
-          <IconComponent
-            src="/icons/check-circle-green.svg"
-            alt="Verified"
-            width={16}
-            height={16}
-          />
-          <span className="text-sm font-semibold text-green-600">
-            Terverifikasi
+      {/* Kolom kedua untuk value atau status */}
+      <div className="w-2/3">
+        {type === "status" ? (
+          <div className="flex items-center gap-2">
+            <IconComponent
+              src="/icons/verified-green.svg"
+              alt="Verified"
+              width={16}
+              height={16}
+            />
+            <span className="text-sm font-semibold text-green-600">
+              Terverifikasi
+            </span>
+          </div>
+        ) : (
+          <span className="text-sm font-semibold text-neutral-900">
+            {value}
           </span>
-        </div>
-      ) : (
-        <span className="text-sm font-semibold text-neutral-900">{value}</span>
-      )}
+        )}
+      </div>
     </div>
   );
 };
