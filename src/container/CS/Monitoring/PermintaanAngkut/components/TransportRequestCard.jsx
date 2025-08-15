@@ -272,15 +272,15 @@ const TransportRequestCard = ({
               <TimelineContainer>
                 {[
                   {
-                    fullAddress:
-                      request.locations?.pickupLocations?.[0]?.fullAddress ||
-                      "Lokasi Muat",
+                    fullAddress: request.locations?.pickupLocations?.[0]
+                      ? `${request.locations.pickupLocations[0].city}, ${request.locations.pickupLocations[0].district}`
+                      : "Lokasi Muat",
                     type: "pickup",
                   },
                   {
-                    fullAddress:
-                      request.locations?.dropoffLocations?.[0]?.fullAddress ||
-                      "Lokasi Bongkar",
+                    fullAddress: request.locations?.dropoffLocations?.[0]
+                      ? `${request.locations.dropoffLocations[0].city}, ${request.locations.dropoffLocations[0].district}`
+                      : "Lokasi Bongkar",
                     type: "dropoff",
                   },
                 ].map((location, index) => (
@@ -348,7 +348,7 @@ const TransportRequestCard = ({
                     request.isTaken ? "text-[#7B7B7B]" : "text-neutral-900"
                   )}
                 >
-                  {request.cargo?.items?.length > 1 ? (
+                  {request.cargo?.additionalItems > 0 ? (
                     <>
                       {request.cargo.items[0].name},{" "}
                       <InfoTooltip
@@ -362,7 +362,7 @@ const TransportRequestCard = ({
                               cursor: "pointer",
                             }}
                           >
-                            +{request.cargo.items.length - 1} lainnya
+                            +{request.cargo.additionalItems} lainnya
                           </span>
                         }
                       >

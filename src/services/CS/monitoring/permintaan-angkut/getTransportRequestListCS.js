@@ -30,12 +30,6 @@ const apiResultTransportRequestList = {
         orderType: "INSTANT",
         loadTimeStart: "2025-01-16T09:00:00Z",
         loadTimeEnd: "2025-01-16T11:00:00Z",
-        timeLabels: {
-          category: "MUAT_HARI_INI",
-          display: "Muat Hari Ini",
-          color: "green",
-          countdown: "02:30:45",
-        },
         locations: {
           pickupLocations: [
             {
@@ -70,15 +64,60 @@ const apiResultTransportRequestList = {
             {
               name: "Peralatan Rumah Tangga",
               weight: 500,
-              dimensions: {
-                length: 2,
-                width: 1,
-                height: 0.8,
-              },
+              dimensions: { length: 2, width: 1, height: 0.8 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Elektronik",
+              weight: 200,
+              dimensions: { length: 1, width: 0.5, height: 0.4 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Mebel",
+              weight: 300,
+              dimensions: { length: 2, width: 1, height: 1 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Bahan Bangunan",
+              weight: 150,
+              dimensions: { length: 1.5, width: 0.7, height: 0.5 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Pakaian",
+              weight: 100,
+              dimensions: { length: 0.8, width: 0.5, height: 0.3 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Mainan Anak",
+              weight: 80,
+              dimensions: { length: 0.6, width: 0.4, height: 0.2 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Alat Dapur",
+              weight: 70,
+              dimensions: { length: 0.5, width: 0.3, height: 0.2 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Buku & Alat Tulis",
+              weight: 100,
+              dimensions: { length: 0.7, width: 0.4, height: 0.2 },
               dimensionUnit: "m",
             },
           ],
         },
+        timeLabels: {
+          category: "MUAT_HARI_INI",
+          display: "Muat Hari Ini",
+          color: "green",
+          countdown: "02:30:45",
+        },
+
         pricing: {
           potentialIncome: 200000,
         },
