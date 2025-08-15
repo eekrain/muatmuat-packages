@@ -6,10 +6,10 @@ import { useEffect, useMemo, useState } from "react";
 
 import DashboardDataTable from "@/app/transporter/(main)/dashboard/real-time/components/DashboardDataTable";
 import Button from "@/components/Button/Button";
-import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import PageTitle from "@/components/PageTitle/PageTitle";
 
+import Period from "../../../components/Period";
 import TruncatedTooltip from "../../../components/TruncatedTooltip";
 import ExpandableReview from "./ExpandableReview";
 
@@ -76,9 +76,9 @@ const RatingHistoryTable = () => {
 
       if (period) {
         let dateFrom, dateTo;
-        if (period.start_date && period.end_date) {
-          dateFrom = toYYYYMMDD(period.start_date);
-          dateTo = toYYYYMMDD(period.end_date);
+        if (period.iso_start_date && period.iso_end_date) {
+          dateFrom = toYYYYMMDD(period.iso_start_date);
+          dateTo = toYYYYMMDD(period.iso_end_date);
         } else if (typeof period.value === "number") {
           const today = new Date();
           const fromDate = new Date();
@@ -251,7 +251,7 @@ const RatingHistoryTable = () => {
           Riwayat Rating Driver Keseluruhan
         </PageTitle>
         <div className="flex items-center gap-4">
-          <DropdownPeriode
+          <Period
             value={period}
             onSelect={handleSelectPeriod}
             options={periodOptions}

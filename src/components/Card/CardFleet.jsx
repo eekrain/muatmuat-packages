@@ -25,7 +25,7 @@ import { formatDate } from "@/lib/utils/dateFormat";
 
 import IconComponent from "../IconComponent/IconComponent";
 
-// ----- Constants -----
+// Card Style
 const STATUS_STYLES = {
   SOS: {
     NEW: {
@@ -46,7 +46,7 @@ const STATUS_STYLES = {
   },
 };
 
-// ----- Small Components -----
+// Icon Truck
 const TruckIcon = ({ status }) => {
   const truck = getTruckIcon?.(status);
   return (
@@ -61,6 +61,7 @@ const TruckIcon = ({ status }) => {
   );
 };
 
+// Icon Response Change
 const ResponseChangeIndicator = ({ isExpanded }) => (
   <InfoTooltip
     trigger={
@@ -85,28 +86,15 @@ const ResponseChangeIndicator = ({ isExpanded }) => (
   </InfoTooltip>
 );
 
+// Icon SOS
 const SOSIndicator = () => (
-  <p className="rounded-md bg-[#EE4343] px-2 py-[2px] text-xs font-semibold text-white">
+  <div className="inline-flex h-6 w-10 items-center justify-center rounded-md bg-error-400 text-xs font-semibold text-error-50">
     SOS
-  </p>
-);
-
-const SOSAlertHeader = ({
-  category,
-  showCategory = true,
-  reportAt,
-  completedAt,
-}) => (
-  <div className="mt-3 flex flex-col gap-3 border-b border-neutral-400 pb-3">
-    {showCategory && (
-      <p className="text-xs font-semibold text-error-400">{category || "-"}</p>
-    )}
-    {reportAt && <LaporanMasuk reportTime={reportAt} />}
-    {completedAt && <LaporanSelesai reportTime={completedAt} />}
   </div>
 );
 
-const LaporanMasuk = ({ reportTime }) => (
+// Waktu Laporan SOS Masuk
+const TimeReportIncome = ({ reportTime }) => (
   <div className="flex items-center gap-1 text-xs text-neutral-600">
     <Clock3 className="h-4 w-4 flex-shrink-0 text-muat-trans-secondary-900" />
     <span className="w-[95px] flex-shrink-0">Laporan Masuk:</span>
@@ -116,13 +104,43 @@ const LaporanMasuk = ({ reportTime }) => (
   </div>
 );
 
-const LaporanSelesai = ({ reportTime }) => (
+// Waktu Laporan SOS Selesai
+const TimeReportCompleted = ({ reportTime }) => (
   <div className="flex items-center gap-1 text-xs text-neutral-600">
     <IconComponent src={"/icons/monitoring/circle-check.svg"} />
     <span className="w-[95px] flex-shrink-0">Laporan Selesai:</span>
     <span className="font-semibold text-neutral-900">
       {reportTime ? formatDate(reportTime) : "-"}
     </span>
+  </div>
+);
+
+// Categori SOS
+const SOSCategory = ({ category }) => (
+  <p className="text-xs font-semibold text-error-400">{category || "-"}</p>
+);
+
+// Deskripsi SOS
+const SOSDescription = ({ description }) => (
+  <p className="text-xs font-semibold text-neutral-900">{description}</p>
+);
+
+const SOSAlertHeader = ({
+  category,
+  showCategory = true,
+  reportAt,
+  completedAt,
+  isExpanded,
+}) => (
+  <div
+    className={cn(
+      "mt-3 flex flex-col border-b border-neutral-400 pb-3",
+      isExpanded ? "gap-3" : "gap-2"
+    )}
+  >
+    {showCategory && <SOSCategory category={category} />}
+    {reportAt && <TimeReportIncome reportTime={reportAt} />}
+    {completedAt && <TimeReportCompleted reportTime={completedAt} />}
   </div>
 );
 
@@ -172,6 +190,35 @@ const LocationInfo = ({ locationText, showLabel = false }) => (
   />
 );
 
+// Foto-Foto SOS
+const SOSPhotos = ({ photos = [], className }) => {
+  if (!photos || photos.length === 0) return null;
+
+  return (
+    <div
+      className={cn("flex flex-wrap gap-2", className)}
+      onClick={(e) => e.stopPropagation()}
+      aria-label="Foto Laporan SOS"
+    >
+      {photos.map((image, index) => (
+        <LightboxProvider
+          key={`${image}-${index}`}
+          images={photos}
+          title="Foto Laporan SOS"
+        >
+          <LightboxPreview
+            image={image}
+            index={index}
+            alt={`SOS Image ${index + 1}`}
+            className="h-14 w-14 rounded-md object-cover"
+            variant="thumbnail"
+          />
+        </LightboxProvider>
+      ))}
+    </div>
+  );
+};
+
 const LocationTimelineItem = ({
   location,
   isLast,
@@ -199,13 +246,7 @@ const LocationTimelineItem = ({
   );
 };
 
-// ----- Card Sections -----
 const CardHeader = ({ isExpanded, fleet, showSOSBadge }) => {
-  const chevronClasses = cn(
-    "h-5 w-5 text-gray-400 transition-transform",
-    isExpanded && "rotate-180"
-  );
-
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center space-x-3">
@@ -219,7 +260,12 @@ const CardHeader = ({ isExpanded, fleet, showSOSBadge }) => {
           <ResponseChangeIndicator isExpanded={isExpanded} />
         )}
         {showSOSBadge && <SOSIndicator />}
-        <ChevronDown className={chevronClasses} />
+        <ChevronDown
+          className={cn(
+            "h-5 w-5 text-gray-400 transition-transform",
+            isExpanded && "rotate-180"
+          )}
+        />
       </div>
     </div>
   );
@@ -264,6 +310,7 @@ const LocationAndFleetSection = ({ fleet }) => (
   </div>
 );
 
+// (Expanded All case if On_Duty) Detail No. Pesanan & Lokasi Muat Bongkar
 const OnDutyDetails = ({ fleet }) => {
   const pickup = fleet?.activeOrder?.pickupLocation;
   const dropoff = fleet?.activeOrder?.dropoffLocation;
@@ -343,48 +390,23 @@ const OnDutyDetails = ({ fleet }) => {
   );
 };
 
+// SOS Expanded
 const SOSExpandedSection = ({ fleet }) => {
   const photos = fleet?.detailSOS?.photos || [];
+  const category = fleet?.detailSOS?.sosCategory;
+  const description = fleet?.detailSOS?.description;
+  const reportAt = fleet?.detailSOS?.reportAt;
+  const completedAt = fleet?.detailSOS?.completedAt;
+
   return (
-    <div className="mt-1 flex flex-col">
-      <p className="text-xs font-semibold text-error-400">
-        {fleet?.detailSOS?.sosCategory || "-"}
-      </p>
-
-      {fleet?.detailSOS?.description && (
-        <p className="mt-3 text-xs font-semibold text-neutral-900">
-          {fleet.detailSOS.description}
-        </p>
-      )}
-
-      {photos.length > 0 && (
-        <div
-          className="mt-3 flex flex-wrap gap-2"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {photos.map((image, index) => (
-            <LightboxProvider
-              key={`${image}-${index}`}
-              images={photos}
-              title={"Foto Laporan SOS"}
-            >
-              <LightboxPreview
-                image={image}
-                index={index}
-                alt={`SOS Image ${index + 1}`}
-                className="h-14 w-14 rounded-md object-cover"
-                variant="thumbnail"
-              />
-            </LightboxProvider>
-          ))}
-        </div>
-      )}
-
-      <SOSAlertHeader
-        showCategory={false}
-        reportAt={fleet?.detailSOS?.reportAt}
-        completedAt={fleet?.detailSOS?.completedAt}
-      />
+    <div className="flex flex-col gap-y-3">
+      <SOSCategory category={category} />
+      {description && <SOSDescription description={description} />}
+      <SOSPhotos photos={photos} />
+      <div className="flex flex-col gap-3 border-b border-neutral-400 pb-3">
+        {reportAt && <TimeReportIncome reportTime={reportAt} />}
+        {completedAt && <TimeReportCompleted reportTime={completedAt} />}
+      </div>
     </div>
   );
 };
@@ -433,9 +455,10 @@ export default function CardFleet({
           reportAt={fleet?.detailSOS?.reportAt}
           reportDoneAt={fleet?.detailSOS?.reportedDoneAt}
           showCategory={true}
+          isExpanded={isExpanded}
         />
       )}
-      <div className={cn("mt-3 grid gap-x-2 gap-y-0.5 text-sm", "grid-cols-2")}>
+      <div className={cn("mt-3 grid grid-cols-2 gap-x-2 gap-y-0.5 text-sm")}>
         <DriverInfo driverName={driverName} showLabel={!isSOSNew} />
         <LocationInfo locationText={locationText} showLabel={!isSOSNew} />
       </div>
@@ -456,17 +479,14 @@ export default function CardFleet({
     return (
       <div className="space-y-[12px] pt-2 text-sm">
         {fleet?.hasSOSAlert && <SOSExpandedSection fleet={fleet} />}
-
         <DriverAndPhoneSection driverName={driverName} phone={phone} />
         <LocationAndFleetSection fleet={fleet} />
-
         {showOnDuty && (
           <>
             <div className="border-b border-neutral-400" />
             <OnDutyDetails fleet={fleet} />
           </>
         )}
-
         {missingDriver && (
           <Button
             className="w-full"
@@ -490,12 +510,12 @@ export default function CardFleet({
             <Button
               variant="muattrans-primary-secondary"
               onClick={(e) => handleActionClick(e, onOpenRiwayatSOS)}
-              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-[#461B02] hover:border-[#FFC217] hover:bg-[#FFFBEB]"
+              className="w-1/2"
             >
               Riwayat SOS
             </Button>
             <Button
-              className="w-full"
+              className="w-1/2"
               onClick={(e) => handleActionClick(e, onAcknowledge)}
             >
               Mengerti
