@@ -158,6 +158,8 @@ const DaftarPesananAktif = ({
     return total;
   };
 
+  const isOrderZero = orders.length === 0;
+
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
@@ -169,80 +171,82 @@ const DaftarPesananAktif = ({
             onOnboardingShown={onOnboardingShown}
           />
         </div>
-        <div className="flex w-full items-center gap-3">
-          {/* Filter Dropdowns */}
-          <div className="flex flex-1 items-center gap-3">
-            {/* Status Urgent Dropdown */}
-            <div className="relative">
+        {!isOrderZero && (
+          <div className="flex w-full items-center gap-3">
+            {/* Filter Dropdowns */}
+            <div className="flex flex-1 items-center gap-3">
+              {/* Status Urgent Dropdown */}
               <div className="relative">
-                <FormDropdown
-                  value={selectedStatusFilter}
-                  onChange={setSelectedStatusFilter}
-                  placeholder={`Status Urgent (${getStatusUrgentCount() > 99 ? "99+" : getStatusUrgentCount()})`}
-                  options={getStatusOptions()}
-                  className="w-[130px]"
-                  searchable={false}
-                />
-                {getStatusUrgentCount() > 0 && (
-                  <NotificationDot
-                    position="absolute"
-                    positionClasses="right-[1px] top-[-1px]"
-                    size="md"
-                    color="red"
-                    animated={true}
+                <div className="relative">
+                  <FormDropdown
+                    value={selectedStatusFilter}
+                    onChange={setSelectedStatusFilter}
+                    placeholder={`Status Urgent (${getStatusUrgentCount() > 99 ? "99+" : getStatusUrgentCount()})`}
+                    options={getStatusOptions()}
+                    className="w-[130px]"
+                    searchable={false}
                   />
-                )}
+                  {getStatusUrgentCount() > 0 && (
+                    <NotificationDot
+                      position="absolute"
+                      positionClasses="right-[1px] top-[-1px]"
+                      size="md"
+                      color="red"
+                      animated={true}
+                    />
+                  )}
+                </div>
               </div>
+
+              {/* Group By Dropdown */}
+              <FormDropdown
+                value={selectedGroupBy}
+                onChange={setSelectedGroupBy}
+                placeholder="By Pesanan"
+                options={groupByOptions}
+                className="w-[104px]"
+                searchable={false}
+              />
+
+              {/* Sort Dropdown */}
+              <FormDropdown
+                value={selectedSort}
+                onChange={setSelectedSort}
+                placeholder="Waktu M..."
+                options={sortOptions}
+                className="w-[120px]"
+                searchable={false}
+              />
             </div>
 
-            {/* Group By Dropdown */}
-            <FormDropdown
-              value={selectedGroupBy}
-              onChange={setSelectedGroupBy}
-              placeholder="By Pesanan"
-              options={groupByOptions}
-              className="w-[104px]"
-              searchable={false}
+            <Search
+              placeholder="Cari Pesanan"
+              onSearch={(value) => {
+                setSearchValue(value);
+              }}
+              onFocus={() => {
+                if (!isExpanded) {
+                  onToggleExpand();
+                }
+              }}
+              containerClassName="h-8 w-[180px]"
+              inputClassName="text-xs"
+              disabled={totalActiveOrders === 0}
             />
-
-            {/* Sort Dropdown */}
-            <FormDropdown
-              value={selectedSort}
-              onChange={setSelectedSort}
-              placeholder="Waktu M..."
-              options={sortOptions}
-              className="w-[120px]"
-              searchable={false}
-            />
+            <button
+              onClick={onToggleExpand}
+              className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100"
+            >
+              <IconComponent
+                src="/icons/monitoring/collapse.svg"
+                className={cn(
+                  "h-5 w-5 transform transition-transform duration-300 ease-in-out",
+                  !isExpanded && "rotate-180"
+                )}
+              />
+            </button>
           </div>
-
-          <Search
-            placeholder="Cari Pesanan"
-            onSearch={(value) => {
-              setSearchValue(value);
-            }}
-            onFocus={() => {
-              if (!isExpanded) {
-                onToggleExpand();
-              }
-            }}
-            containerClassName="h-8 w-[180px]"
-            inputClassName="text-xs"
-            disabled={totalActiveOrders === 0}
-          />
-          <button
-            onClick={onToggleExpand}
-            className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100"
-          >
-            <IconComponent
-              src="/icons/monitoring/collapse.svg"
-              className={cn(
-                "h-5 w-5 transform transition-transform duration-300 ease-in-out",
-                !isExpanded && "rotate-180"
-              )}
-            />
-          </button>
-        </div>
+        )}
       </div>
 
       {/* Content */}
@@ -272,16 +276,19 @@ const DaftarPesananAktif = ({
                     </p>
                   </div>
                 </div>
-              ) : orders.length === 0 ? (
-                <div className="flex h-full items-center justify-center p-4">
-                  <div className="text-center">
-                    <p className="text-base font-semibold text-neutral-600">
-                      Belum ada pesanan aktif
+              ) : isOrderZero ? (
+                <div className="flex h-full flex-grow flex-col items-center justify-center">
+                  <DataNotFound
+                    type="data"
+                    className="text-center text-neutral-600"
+                  >
+                    <p className="font-semibold">
+                      Oops, daftar pesanan masih kosong
                     </p>
-                    <p className="mt-1 text-xs text-gray-400">
-                      Pesanan aktif akan muncul di sini
+                    <p className="mt-3 text-xs font-medium">
+                      Belum ada Transporter yang menerima permintaan
                     </p>
-                  </div>
+                  </DataNotFound>
                 </div>
               ) : (
                 <div className="flex flex-col">

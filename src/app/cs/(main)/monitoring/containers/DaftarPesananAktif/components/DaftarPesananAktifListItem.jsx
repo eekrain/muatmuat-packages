@@ -102,11 +102,11 @@ const DaftarPesananAktifListItem = ({
         </div>
       </div>
 
-      <div className="flex w-full items-start gap-4 p-4">
+      <div className="flex w-full shrink-0 items-start gap-4 p-4">
         {/* Order Code & Type */}
-        <div className="flex w-[120px] flex-col gap-2.5">
-          <div className="flex items-center gap-1 text-xxs font-semibold text-primary-700 hover:text-primary-800">
-            <InfoTooltip
+        <div className="flex w-full max-w-[120px] flex-col gap-2.5">
+          <div className="line-clamp-1 flex items-center gap-1 truncate text-xxs font-semibold">
+            {/* <InfoTooltip
               side="right"
               appearance={{
                 iconClassName: "text-primary-700  size-4",
@@ -116,14 +116,58 @@ const DaftarPesananAktifListItem = ({
                 Armada kamu telah tercatat untuk pesanan ini, harap menunggu
                 maks. 1 jam untuk konfirmasi dari Shipper
               </p>
-            </InfoTooltip>
-            {row.orderCode}
+            </InfoTooltip> */}
+            {row.orderStatus === ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER && (
+              <InfoTooltip
+                side="right"
+                appearance={{
+                  iconClassName: "text-primary-700 mr-1 size-3.5",
+                }}
+              >
+                <p className="max-w-[312px]">
+                  Armada kamu telah tercatat untuk pesanan ini, harap menunggu
+                  maks. 1 jam untuk konfirmasi dari Shipper
+                </p>
+              </InfoTooltip>
+            )}
+            {row.orderStatus === ORDER_STATUS.NEED_CONFIRMATION_READY && (
+              <InfoTooltip
+                icon="/icons/warning20.svg"
+                side="right"
+                appearance={{
+                  iconClassName: "text-error-400 mr-1 size-3.5",
+                }}
+              >
+                <p className="max-w-[312px]">
+                  Pesanan belum di konfirmasi siap, mohon segera melakukan
+                  pengecekan kesiapan armada dan konfirmasi siap sebelum waktu
+                  muat
+                </p>
+              </InfoTooltip>
+            )}
+            {row.orderStatus === ORDER_STATUS.NEED_CHANGE_RESPONSE && (
+              <InfoTooltip
+                icon="/icons/warning20.svg"
+                side="right"
+                appearance={{
+                  iconClassName: "text-warning-900 mr-1 size-3.5",
+                }}
+              >
+                <p className="max-w-[312px]">
+                  Terdapat perubahan pesanan dari Shipper, mohon pelajari
+                  perubahannya dan segera beri respon
+                </p>
+              </InfoTooltip>
+            )}
+            <span className="text-primary-700 hover:cursor-pointer hover:text-primary-800">
+              {row.orderCode}
+            </span>
           </div>
           <BadgeOrderType type={row.orderType} className="w-[70px]" />
         </div>
 
         {/* Waktu Muat */}
-        <div className="flex w-[140px] flex-col gap-1">
+        <div className="flex w-[140px] shrink-0 flex-col gap-1">
           <span className={`text-xs font-semibold ${dateColor}`}>
             {dateLabel}
           </span>
@@ -131,7 +175,7 @@ const DaftarPesananAktifListItem = ({
         </div>
 
         {/* Rute Muat & Bongkar */}
-        <div className="max-w-[350px] flex-1">
+        <div className="flex w-[160px] shrink-0">
           <MuatBongkarStepperWithModal
             pickupLocations={row.pickupLocations}
             dropoffLocations={row.dropoffLocations}
@@ -142,7 +186,7 @@ const DaftarPesananAktifListItem = ({
         </div>
 
         {/* Armada */}
-        <div className="flex w-[140px] flex-col gap-1">
+        <div className="flex w-full flex-col gap-1">
           <span className="line-clamp-1 break-all text-xs font-bold">
             {row.truckType.name}
           </span>
@@ -195,9 +239,12 @@ const DaftarPesananAktifListItem = ({
         </div>
 
         {/* Status */}
-        <div className="flex w-[200px] flex-col gap-2">
-          <BadgeStatus variant={statusBadge.variant} className="w-[176px] px-0">
-            {row.orderStatus === ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER && (
+        <div className="flex w-[120px] shrink-0 flex-col gap-2">
+          <BadgeStatus
+            variant={statusBadge.variant}
+            className="w-full p-2 text-center"
+          >
+            {/* {row.orderStatus === ORDER_STATUS.WAITING_CONFIRMATION_SHIPPER && (
               <InfoTooltip
                 side="top"
                 appearance={{
@@ -209,24 +256,24 @@ const DaftarPesananAktifListItem = ({
                   maks. 1 jam untuk konfirmasi dari Shipper
                 </p>
               </InfoTooltip>
-            )}
-            {row.orderStatus === ORDER_STATUS.NEED_CONFIRMATION_READY && (
+            )} */}
+            {/* {row.orderStatus === ORDER_STATUS.NEED_CONFIRMATION_READY && (
               <IconComponent
                 src="/icons/warning-red.svg"
                 className="mr-1 h-3.5 w-3.5"
               />
-            )}
-            {row.orderStatus === ORDER_STATUS.NEED_CHANGE_RESPONSE && (
+            )} */}
+            {/* {row.orderStatus === ORDER_STATUS.NEED_CHANGE_RESPONSE && (
               <IconComponent
                 src="/icons/warning24.svg"
                 className="mr-1 h-3.5 w-3.5 text-warning-900"
               />
-            )}
+            )} */}
             {row.orderStatus === ORDER_STATUS.LOADING
               ? `${statusBadge.label} : ${row.truckCount || 0} Unit`
               : statusBadge.label}
           </BadgeStatus>
-          {row.orderStatus === ORDER_STATUS.LOADING && (
+          {/* {row.orderStatus === ORDER_STATUS.LOADING && (
             <Button
               variant="link"
               onClick={() => {
@@ -236,8 +283,8 @@ const DaftarPesananAktifListItem = ({
             >
               Lihat Status Lainnya
             </Button>
-          )}
-          {row.orderStatus === ORDER_STATUS.NEED_ASSIGN_FLEET && (
+          )} */}
+          {/* {row.orderStatus === ORDER_STATUS.NEED_ASSIGN_FLEET && (
             <Button
               variant="muattrans-primary"
               onClick={() => handleActionClick(ORDER_ACTIONS.ASSIGN_FLEET.type)}
@@ -245,8 +292,8 @@ const DaftarPesananAktifListItem = ({
             >
               Assign Armada
             </Button>
-          )}
-          {row.orderStatus === ORDER_STATUS.NEED_CONFIRMATION_READY && (
+          )} */}
+          {/* {row.orderStatus === ORDER_STATUS.NEED_CONFIRMATION_READY && (
             <Button
               variant="muattrans-primary"
               onClick={() =>
@@ -256,8 +303,8 @@ const DaftarPesananAktifListItem = ({
             >
               Konfirmasi Siap
             </Button>
-          )}
-          {row.orderStatus === ORDER_STATUS.NEED_CHANGE_RESPONSE && (
+          )} */}
+          {/* {row.orderStatus === ORDER_STATUS.NEED_CHANGE_RESPONSE && (
             <Button
               variant="muattrans-primary"
               onClick={() =>
@@ -267,11 +314,11 @@ const DaftarPesananAktifListItem = ({
             >
               Respon Perubahan
             </Button>
-          )}
+          )} */}
         </div>
 
         {/* Actions */}
-        <div className="flex w-[40px] justify-center">
+        <div className="flex w-[40px] grow-0 justify-center">
           {config ? (
             <SimpleDropdown
               open={isOpen || false}
