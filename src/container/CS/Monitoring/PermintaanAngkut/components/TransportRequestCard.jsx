@@ -162,7 +162,21 @@ const TransportRequestCard = ({
               </div>
             </div>
             <div className="flex flex-col items-end">
-              <p className="text-xs text-gray-600">1 Menit yang lalu</p>
+              <p className="text-xs font-medium text-gray-600">
+                {(() => {
+                  const created = new Date(request.shipperInfo?.createdAt);
+                  const now = new Date();
+                  const diffMs = now - created;
+                  const diffSec = Math.floor(diffMs / 1000);
+                  const diffMin = Math.floor(diffSec / 60);
+                  const diffHour = Math.floor(diffMin / 60);
+                  const diffDay = Math.floor(diffHour / 24);
+                  if (diffDay > 0) return `${diffDay} Hari yang lalu`;
+                  if (diffHour > 0) return `${diffHour} Jam yang lalu`;
+                  if (diffMin > 0) return `${diffMin} Menit yang lalu`;
+                  return `${diffSec} Detik yang lalu`;
+                })()}
+              </p>
               <p className="text-xs font-semibold text-neutral-900">
                 {countdownSeconds > 0 ? formatHHMMSS(countdown) : "-"}
               </p>
