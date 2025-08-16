@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import BadgeOrderType from "@/components/Badge/BadgeOrderType";
@@ -79,6 +80,7 @@ const DaftarPesananAktif = ({
   const [ubahJumlahUnitModalOpen, setUbahJumlahUnitModalOpen] = useState(false);
   const [selectedOrderForChangeUnit, setSelectedOrderForChangeUnit] =
     useState(null);
+  const router = useRouter();
 
   // Map filter keys to lowercase status values for API
   const getFilterStatus = (filterKey) => {
@@ -110,6 +112,7 @@ const DaftarPesananAktif = ({
         break;
       case ORDER_ACTIONS.VIEW_ORDER_DETAIL.type:
         console.log("Detail Pesanan", row);
+        router.push(`/monitoring/${row.id}/detail-pesanan`);
         break;
       case ORDER_ACTIONS.DETAIL_ARMADA.type:
         console.log("Detail Armada", row);
