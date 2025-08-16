@@ -5,21 +5,21 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import NotificationDot from "@/components/NotificationDot/NotificationDot";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { useGetTransportRequestDetail } from "@/services/Transporter/monitoring/permintaan-angkut/getTransportRequestListDetail";
+import { useGetTransportRequestList } from "@/services/CS/monitoring/permintaan-angkut/getTransportRequestListCS";
 
 import DetailContent from "./components/DetailContent";
-import ModalTerimaPermintaan from "./components/ModalTerimaPermintaan";
 
-const PermintaanAngkutDetail = ({ request, onBack, onUnderstand }) => {
-  // Fetch detail data
-  const { data: detailData, isLoading } = useGetTransportRequestDetail(
-    request?.id
-  );
-  const displayData = detailData || request;
+const PermintaanAngkutDetailCS = ({ request, onBack, onUnderstand }) => {
+  // Use the CS mock API for all data
+  const { data, isLoading } = useGetTransportRequestList();
+  // Find the request by id, fallback to first
+  const displayData =
+    (request?.id && data?.requests?.find((r) => r.id === request.id)) ||
+    data?.requests?.[0] ||
+    {};
 
   // State
   const [isSaved, setIsSaved] = useState(displayData?.isSaved || false);
-  const [showAcceptModal, setShowAcceptModal] = useState(false);
 
   // Bookmark handler
   const handleSave = () => {
@@ -27,22 +27,18 @@ const PermintaanAngkutDetail = ({ request, onBack, onUnderstand }) => {
     // TODO: API call for bookmark
   };
 
-  // Accept modal handler
-  const handleAcceptClick = () => setShowAcceptModal(true);
-  const handleModalAccept = (acceptData) => {
+  // Accept handler - CS assigns transporter instead of accepting directly
+  const handleAssignTransporter = () => {
     toast.success(
-      `Permintaan ${displayData?.orderCode} berhasil diterima dengan ${acceptData.truckCount} unit`
+      `Transporter berhasil di-assign untuk permintaan ${displayData?.orderCode}`
     );
-    setShowAcceptModal(false);
     onBack();
   };
 
   // Understand handler
   const handleUnderstand = () => {
-    toast.success(
-      `Permintaan ${displayData?.orderCode || request?.orderCode} berhasil ditutup`
-    );
-    if (onUnderstand) onUnderstand(displayData?.id || request?.id);
+    toast.success(`Permintaan ${displayData.orderCode} berhasil ditutup`);
+    if (onUnderstand) onUnderstand(displayData.id);
     onBack();
   };
 
@@ -85,7 +81,7 @@ const PermintaanAngkutDetail = ({ request, onBack, onUnderstand }) => {
       {/* Header */}
       <div
         className={cn(
-          "flex flex-shrink-0 justify-between bg-white px-4",
+          "relative flex flex-shrink-0 justify-between bg-white px-4",
           displayData?.isTaken && "grayscale"
         )}
       >
@@ -99,7 +95,7 @@ const PermintaanAngkutDetail = ({ request, onBack, onUnderstand }) => {
         </h1>
         <button
           onClick={onBack}
-          className="flex h-8 w-8 items-center justify-center rounded-full pt-2 hover:bg-neutral-100"
+          className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full"
         >
           <IconComponent
             src="/icons/close24.svg"
@@ -114,7 +110,7 @@ const PermintaanAngkutDetail = ({ request, onBack, onUnderstand }) => {
       {/* Scrollable Content */}
       <DetailContent
         displayData={displayData}
-        request={request}
+        request={displayData}
         formatCurrency={formatCurrency}
         getOrderTypeStyle={getOrderTypeStyle}
         getTimeLabelStyle={getTimeLabelStyle}
@@ -150,33 +146,25 @@ const PermintaanAngkutDetail = ({ request, onBack, onUnderstand }) => {
           ) : (
             <>
               <Button
-                variant="muattrans-error-secondary"
+                variant="muattrans-primary-secondary"
                 className="flex-1 py-2 text-[14px] font-semibold"
                 onClick={onBack}
               >
-                Tolak
+                Kembali
               </Button>
               <Button
                 variant="muattrans-primary"
                 className="flex-1 py-2 text-[14px] font-semibold"
-                onClick={handleAcceptClick}
+                onClick={handleAssignTransporter}
               >
-                Terima
+                Assign Transporter
               </Button>
             </>
           )}
         </div>
       </div>
-
-      {/* Modal Terima Permintaan */}
-      <ModalTerimaPermintaan
-        isOpen={showAcceptModal}
-        onClose={() => setShowAcceptModal(false)}
-        request={displayData}
-        onAccept={handleModalAccept}
-      />
     </div>
   );
 };
 
-export default PermintaanAngkutDetail;
+export default PermintaanAngkutDetailCS;

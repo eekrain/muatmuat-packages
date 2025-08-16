@@ -15,6 +15,7 @@ import { useGetOrderDetail } from "@/services/Transporter/daftar-pesanan/detail-
 
 import LacakArmada from "./LacakArmada/LacakArmada";
 import LabelLacakArmada from "./LacakArmada/components/LabelLacakArmada";
+import RiwayatPerubahan from "./RiwayatPerubahan/RiwayatPerubahan";
 
 const DetailPesanan = ({ breadcrumbData }) => {
   const params = useParams();
@@ -30,7 +31,7 @@ const DetailPesanan = ({ breadcrumbData }) => {
       },
       {
         value: "lacak-armada",
-        label: <LabelLacakArmada fleetCount={1} hasSOS={true} />,
+        label: <LabelLacakArmada fleetCount={1} hasSOS={false} />,
       },
       {
         value: "riwayat-perubahan",
@@ -72,6 +73,9 @@ const DetailPesanan = ({ breadcrumbData }) => {
         </TabsContent>
         <TabsContent className="flex" value="lacak-armada">
           <LacakArmada dataOrderDetail={dataOrderDetail} />
+        </TabsContent>
+        <TabsContent className="flex" value="riwayat-perubahan">
+          <RiwayatPerubahan dataOrderDetail={dataOrderDetail} />
         </TabsContent>
       </Tabs>
     </div>

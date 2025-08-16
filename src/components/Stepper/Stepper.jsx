@@ -1,4 +1,4 @@
-import {
+import React, {
   createContext,
   useContext,
   useEffect,
@@ -216,6 +216,322 @@ export const StepperItemResponsive = ({ step, index }) => {
         >
           {step?.subtitle && <div className="mt-2">{step?.subtitle}</div>}
         </div>
+      </div>
+    </div>
+  );
+};
+
+const StepperContext = createContext({
+  activeIndex: 0,
+  totalStep: 0,
+});
+
+/**
+ * Vertical Stepper Container with dotted connecting lines
+ * @param {Object} props
+ * @param {number} props.totalStep - Total number of steps
+ * @param {number} props.activeIndex - Currently active step index
+ * @param {React.ReactNode} props.children - StepperItem components
+ * @param {string} [props.className] - Additional CSS classes
+ */
+export const VerticalStepperContainer = ({
+  totalStep,
+  activeIndex,
+  children,
+  className = "",
+}) => {
+  return (
+    <StepperContext.Provider value={{ activeIndex, totalStep }}>
+      <div className={`flex flex-col ${className}`}>
+        {React.Children.map(children, (child, index) => (
+          <div key={index} className="relative">
+            {React.cloneElement(child, {
+              index,
+              isLast: index === totalStep - 1,
+              isFirst: index === 0,
+            })}
+          </div>
+        ))}
+      </div>
+    </StepperContext.Provider>
+  );
+};
+
+/**
+ * @typedef {Object} StepperItemData
+ * @property {string} label - Step label
+ * @property {string} [status] - Step status (CANCELED, etc.)
+ * @property {string|React.ReactNode} icon - Step icon
+ * @property {string} [subtitle] - Step subtitle
+ */
+
+/**
+ * Vertical Stepper Item with dotted connecting lines
+ * @param {Object} props
+ * @param {StepperItemData} props.step - Step data
+ * @param {number} [props.index] - Step index (auto-provided)
+ * @param {boolean} [props.isLast] - Is last step (auto-provided)
+ * @param {boolean} [props.isFirst] - Is first step (auto-provided)
+ * @param {React.ReactNode} [props.children] - Additional content below the step
+ * @param {string} [props.className] - Additional CSS classes
+ */
+export const VerticalStepperItem = ({
+  step,
+  index = 0,
+  isLast = false,
+  isFirst = false,
+  children,
+  className = "",
+}) => {
+  const { t } = useTranslation();
+  const { activeIndex } = useContext(StepperContext);
+  const { isMobile } = useDevice();
+
+  const status = useMemo(() => {
+    if (step?.status && step.status.startsWith("CANCELED")) return "canceled";
+    if (index < activeIndex) return "completed";
+    if (index === activeIndex) return "active";
+    return "inactive";
+  }, [step, activeIndex, index]);
+
+  const { ref: contentRef, height: contentHeight } = useClientHeight();
+
+  return (
+    <div
+      className={`relative flex gap-4 ${className}`}
+      style={{ paddingBottom: isLast ? 0 : 24 }}
+    >
+      {/* Timeline column */}
+      <div className="relative flex flex-col items-center">
+        {/* Connecting line from previous step */}
+        {!isFirst && (
+          <div className="relative h-6 w-0.5">
+            {/* Dotted line - abu-abu */}
+            <div
+              className="absolute left-0 top-0 h-full w-0.5"
+              style={{
+                backgroundImage:
+                  "repeating-linear-gradient(to bottom, #C4C4C4 0, #C4C4C4 4px, transparent 4px, transparent 8px)",
+                backgroundSize: "1px 8px",
+              }}
+            />
+
+            {/* Active progress line - kuning untuk step yang sudah selesai */}
+            {index <= activeIndex && (
+              <div
+                className="absolute left-0 top-0 h-full w-0.5 transition-all duration-300"
+                style={{
+                  backgroundImage:
+                    "repeating-linear-gradient(to bottom, #FFC217 0, #FFC217 4px, transparent 4px, transparent 8px)",
+                  backgroundSize: "1px 8px",
+                }}
+              />
+            )}
+          </div>
+        )}
+
+        {/* Step Circle */}
+        <div
+          className={cn(
+            "relative z-10 flex items-center justify-center rounded-full border transition-all duration-300",
+            !isMobile ? "h-4 w-4" : "h-7 w-7",
+            "border-[#C4C4C4] bg-[#F1F1F1]",
+            (status === "active" || status === "completed") &&
+              "border-[#FFC217] bg-[#FFC217]",
+            status === "canceled" && "border-red-400 bg-red-400"
+          )}
+        >
+          <IconComponent
+            src={step.icon}
+            width={!isMobile ? 16 : 14}
+            height={!isMobile ? 16 : 14}
+            className={cn(
+              "text-neutral-600",
+              status !== "inactive" && "text-yellow-900",
+              status === "canceled" && "text-neutral-50"
+            )}
+          />
+        </div>
+
+        {/* Connecting line to next step */}
+        {!isLast && (
+          <div
+            className="absolute left-1/2 h-full w-0.5 -translate-x-1/2 transform"
+            style={{
+              top: !isMobile ? "16px" : "28px", // Start after circle
+            }}
+          >
+            {/* Dotted line - abu-abu */}
+            <div
+              className="absolute left-0 top-0 h-full w-0.5"
+              style={{
+                backgroundImage:
+                  "repeating-linear-gradient(to bottom, #C4C4C4 0, #C4C4C4 4px, transparent 4px, transparent 8px)",
+                backgroundSize: "1px 8px",
+              }}
+            />
+
+            {/* Active progress line - kuning untuk step yang sudah selesai */}
+            {index < activeIndex && (
+              <div
+                className="absolute left-0 top-0 h-full w-0.5 transition-all duration-300"
+                style={{
+                  backgroundImage:
+                    "repeating-linear-gradient(to bottom, #FFC217 0, #FFC217 4px, transparent 4px, transparent 8px)",
+                  backgroundSize: "1px 8px",
+                }}
+              />
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Content column */}
+      <div ref={contentRef} className="flex-1 pb-6">
+        {/* Step label and subtitle */}
+        <div className="mb-2">
+          <div
+            className={cn(
+              "font-semibold text-[#000000]",
+              !isMobile ? "text-sm" : "text-xs"
+            )}
+          >
+            {t(step.label)}
+          </div>
+          {step.subtitle && (
+            <div
+              className={cn(
+                "mt-1 text-gray-600",
+                !isMobile ? "text-xs" : "text-xs"
+              )}
+            >
+              {step.subtitle}
+            </div>
+          )}
+        </div>
+
+        {/* Additional content */}
+        {children && <div className="mt-3">{children}</div>}
+      </div>
+    </div>
+  );
+};
+
+/**
+ * Responsive version - simplified stepper item
+ */
+export const VerticalStepperItemResponsive = ({
+  step,
+  index = 0,
+  isLast = false,
+  isFirst = false,
+  children,
+  className = "",
+}) => {
+  const { activeIndex } = useContext(StepperContext);
+
+  const statusCode = useMemo(() => {
+    if (step?.status && step.status.startsWith("CANCELED")) return "canceled";
+    if (index < activeIndex) return "completed";
+    if (index === activeIndex) return "active";
+    return "inactive";
+  }, [step?.status, activeIndex, index]);
+
+  const { ref: contentRef, height: contentHeight } = useClientHeight();
+
+  const lineHeight = useMemo(() => {
+    if (children && contentHeight > 0) {
+      return Math.max(contentHeight + 20, 60);
+    }
+    return 60;
+  }, [contentHeight, children]);
+
+  return (
+    <div className={`relative flex gap-3 ${className}`}>
+      {/* Timeline column */}
+      <div className="flex flex-col items-center">
+        {/* Connecting line from previous step */}
+        {!isFirst && (
+          <div className="relative h-5 w-0.5">
+            <div
+              className="absolute left-0 top-0 h-full w-0.5"
+              style={{
+                backgroundImage:
+                  "repeating-linear-gradient(to bottom, #C4C4C4 0, #C4C4C4 3px, transparent 3px, transparent 6px)",
+                backgroundSize: "1px 6px",
+              }}
+            />
+            {index <= activeIndex && (
+              <div
+                className="absolute left-0 top-0 h-full w-0.5 transition-all duration-300"
+                style={{
+                  backgroundImage:
+                    index <= activeIndex
+                      ? "repeating-linear-gradient(to bottom, #FFC217 0, #FFC217 3px, transparent 3px, transparent 6px)"
+                      : "none",
+                  backgroundSize: "1px 6px",
+                }}
+              />
+            )}
+          </div>
+        )}
+
+        {/* Step Circle */}
+        <div
+          className={cn(
+            "relative z-10 flex h-6 w-6 items-center justify-center rounded-full border transition-all duration-300",
+            "border-[#C4C4C4] bg-[#F1F1F1]",
+            (statusCode === "active" || statusCode === "completed") &&
+              "border-[#FFC217] bg-[#FFC217]",
+            statusCode === "canceled" && "border-red-400 bg-red-400"
+          )}
+        >
+          <IconComponent
+            src={step?.icon}
+            width={12}
+            height={12}
+            className={cn(
+              "text-neutral-600",
+              statusCode !== "inactive" && "text-yellow-900",
+              statusCode === "canceled" && "text-neutral-50"
+            )}
+          />
+        </div>
+
+        {/* Connecting line to next step */}
+        {!isLast && (
+          <div className="relative w-0.5" style={{ height: lineHeight }}>
+            <div
+              className="absolute left-0 top-0 h-full w-0.5"
+              style={{
+                backgroundImage:
+                  "repeating-linear-gradient(to bottom, #C4C4C4 0, #C4C4C4 3px, transparent 3px, transparent 6px)",
+                backgroundSize: "1px 6px",
+              }}
+            />
+            {index < activeIndex && (
+              <div
+                className="absolute left-0 top-0 h-full w-0.5 transition-all duration-300"
+                style={{
+                  backgroundImage:
+                    "repeating-linear-gradient(to bottom, #FFC217 0, #FFC217 3px, transparent 3px, transparent 6px)",
+                  backgroundSize: "1px 6px",
+                }}
+              />
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Content column */}
+      <div ref={contentRef} className="flex-1 pb-4">
+        {step?.subtitle && (
+          <div className="mb-2 text-xs font-medium text-[#000000]">
+            {step?.subtitle}
+          </div>
+        )}
+
+        {children && <div className="mt-2">{children}</div>}
       </div>
     </div>
   );

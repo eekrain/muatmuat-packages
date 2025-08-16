@@ -41,6 +41,15 @@ const apiResultTransportRequestList = {
               latitude: -6.2607,
               longitude: 106.7816,
             },
+            {
+              id: "pickup-2",
+              sequence: 2,
+              fullAddress: "Jl. Raya No. 2, Jakarta Selatan",
+              city: "Jakarta Selatan",
+              district: "Kebayoran Baru",
+              latitude: -6.2607,
+              longitude: 106.7816,
+            },
           ],
           dropoffLocations: [
             {
@@ -52,13 +61,23 @@ const apiResultTransportRequestList = {
               latitude: -6.9147,
               longitude: 107.6098,
             },
+            {
+              id: "dropoff-2",
+              sequence: 1,
+              fullAddress: "Jl. Merdeka No. 99, Jember",
+              city: "Bandung",
+              district: "Sumur Bandung",
+              latitude: -6.9147,
+              longitude: 107.6098,
+            },
           ],
           estimatedDistance: 150.5,
         },
         cargo: {
           totalWeight: 1500,
           weightUnit: "kg",
-          description: "Peralatan Rumah Tangga",
+          description:
+            "tolong kirim muatan dengan hati hati, jangan sampai rusak dan hancur, terimakasih",
           additionalItems: 7,
           items: [
             {
@@ -121,16 +140,26 @@ const apiResultTransportRequestList = {
         },
         counters: {
           available: 25,
-          viewed: 12,
-          saved: 5,
+          viewed: 0,
+          saved: 0,
         },
         vehicle: {
           truckCount: 2,
-          truckType: "Fuso",
-          carrierType: "Agam Tunggal Jaya",
+          truckType: "Tractor head 6 x 4 dan Semi Trailer",
+          carrierType: "Skeletal Container Jumbo 45 ft  (3 As)",
         },
-        additionalServices: [{ id: "svc-1", serviceName: "Asuransi" }],
-        photos: ["https://cdn.example.com/photo1.jpg"],
+
+        additionalServices: [
+          { id: "svc-1", serviceName: "Asuransi" },
+          { id: "svc-2", serviceName: "Packing" },
+          { id: "svc-3", serviceName: "Pengiriman" },
+        ],
+        photos: [
+          "https://picsum.photos/400/300?random=1",
+          "https://picsum.photos/400/300?random=2",
+          "https://picsum.photos/400/300?random=3",
+          "https://picsum.photos/400/300?random=4",
+        ],
         isHalalLogistics: true,
         potentialOverload: true,
       },
@@ -247,7 +276,12 @@ const apiResultTransportRequestList = {
           carrierType: "Agam Tunggal Jaya",
         },
         additionalServices: [{ id: "svc-1", serviceName: "Asuransi" }],
-        photos: ["https://cdn.example.com/photo1.jpg"],
+        photos: [
+          "https://picsum.photos/400/300?random=5",
+          "https://picsum.photos/400/300?random=6",
+          "https://picsum.photos/400/300?random=7",
+          "https://picsum.photos/400/300?random=8",
+        ],
         isHalalLogistics: true,
         potentialOverload: true,
       },
@@ -364,7 +398,12 @@ const apiResultTransportRequestList = {
           carrierType: "Agam Tunggal Jaya",
         },
         additionalServices: [{ id: "svc-1", serviceName: "Asuransi" }],
-        photos: ["https://cdn.example.com/photo1.jpg"],
+        photos: [
+          "https://picsum.photos/400/300?random=9",
+          "https://picsum.photos/400/300?random=10",
+          "https://picsum.photos/400/300?random=11",
+          "https://picsum.photos/400/300?random=12",
+        ],
         isHalalLogistics: true,
         potentialOverload: true,
       },
