@@ -6,6 +6,7 @@ import {
   LightboxPreview,
   LightboxProvider,
 } from "@/components/Lightbox/Lightbox";
+import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import { cn } from "@/lib/utils";
 
 const DetailContent = ({
@@ -51,6 +52,20 @@ const DetailContent = ({
         displayData?.isTaken && "grayscale"
       )}
     >
+      {/* Halal Certification Notice */}
+      {(displayData?.isHalalLogistics || request?.isHalalLogistics) && (
+        <div className="flex-shrink-0 pb-4">
+          <div className="flex items-center gap-3 rounded-xl bg-[#F7EAFD] px-4 py-2">
+            <IconComponent src="/icons/halal.svg" className="h-6 w-[18px]" />
+            <div className="flex flex-col">
+              <span className="text-xs font-semibold text-[#652672]">
+                Memerlukan pengiriman dengan sertifikasi halal logistik
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Informasi Shipper */}
       <div className="mb-4">
         <div className="flex items-center justify-between">
@@ -267,26 +282,6 @@ const DetailContent = ({
               Potensi Overload
             </span>
           )}
-
-          {/* Halal Certification Required Badge */}
-          {(displayData?.isHalalLogistics || request?.isHalalLogistics) && (
-            <div
-              className={cn(
-                "flex h-6 w-6 cursor-pointer items-center justify-center rounded-md px-1 py-2",
-                displayData?.isTaken || request?.isTaken ? "" : "bg-[#F7EAFD]"
-              )}
-            >
-              <IconComponent
-                src="/icons/halal.svg"
-                className={cn(
-                  "h-[15.286855697631836px] w-[11.406869888305664px]",
-                  displayData?.isTaken || request?.isTaken
-                    ? "text-neutral-700"
-                    : ""
-                )}
-              />
-            </div>
-          )}
         </div>
       </div>
 
@@ -364,20 +359,19 @@ const DetailContent = ({
       {/* Informasi Armada */}
       <div className="mb-4">
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-neutral-900">
+          <h3 className="text-xs font-semibold text-neutral-600">
             Informasi Armada
           </h3>
-          <h3 className="text-sm font-semibold text-neutral-500">
+          <h3 className="text-xs font-semibold text-neutral-600">
             Potensi Pendapatan
           </h3>
         </div>
 
         <div className="mb-3 flex justify-between">
-          <p className="text-sm font-bold text-neutral-900">
-            {displayData?.vehicle?.truckType || "Tractor head 6 x 4"} dan{" "}
+          <p className="w-[251px] text-sm font-bold text-neutral-900">
+            {displayData?.vehicle?.truckType || "Tractor head 6 x 4"} -{" "}
             {displayData?.vehicle?.carrierType ||
-              "Semi Trailer - Skeletal Container Jumbo 45 ft"}{" "}
-            ({displayData?.vehicle?.truckCount || 3} As)
+              "Semi Trailer - Skeletal Container Jumbo 45 ft (3 As  )"}{" "}
           </p>
           <p className="text-sm font-bold text-primary-700">
             {formatCurrency(displayData?.pricing?.potentialIncome || 800000)}
@@ -387,83 +381,161 @@ const DetailContent = ({
         <div className="flex items-center justify-between">
           <p className="flex items-center text-xs font-medium text-neutral-600">
             <IconComponent
-              src="/icons/truck.svg"
+              src="/icons/truk16.svg"
               className="mr-2 h-4 w-4 text-neutral-600"
             />
-            Kebutuhan : {displayData?.vehicle?.truckCount || 3} Unit
+            Kebutuhan :{" "}
+            <span className="ml-1 text-neutral-900">
+              {displayData?.vehicle?.truckCount || 3} Unit
+            </span>
           </p>
-          <div className="rounded-md border border-orange-600 bg-white px-2 py-1 text-xs font-semibold text-orange-600">
+          <div className="rounded-md border border-muat-trans-primary-900 bg-white px-2 py-1 text-xs font-semibold text-muat-trans-primary-900">
             {displayData?.orderCode || request?.orderCode || "MT25A001A"}
           </div>
         </div>
       </div>
 
+      <div className="mb-3 border-b border-[#C4C4C4] px-4"></div>
+
       {/* Waktu Muat */}
       <div className="mb-4">
-        <h3 className="mb-3 text-sm font-semibold text-neutral-900">
+        <h3 className="mb-3 text-xs font-semibold text-neutral-600">
           Waktu Muat
         </h3>
         <div className="flex items-center">
           <IconComponent
-            src="/icons/calendar.svg"
+            src="/icons/calendar16.svg"
             className="mr-2 h-4 w-4 text-orange-600"
           />
-          <span className="text-sm font-semibold text-neutral-900">
+          <span className="text-xs font-semibold text-neutral-900">
             {formatLoadDateTime()}
           </span>
         </div>
       </div>
 
+      <div className="mb-3 border-b border-[#C4C4C4] px-4"></div>
+
       {/* Rute Muat & Bongkar */}
       <div className="mb-4">
         <div className="mb-3 flex items-center">
-          <h3 className="text-sm font-semibold text-neutral-900">
+          <h3 className="text-xs font-semibold text-neutral-600">
             Rute Muat & Bongkar
           </h3>
-          <span className="ml-2 inline-flex items-center rounded-full border border-neutral-400 bg-neutral-200 px-3 py-1 text-xs font-semibold text-neutral-900">
-            Estimasi Jarak: {displayData?.locations?.estimatedDistance || 121}{" "}
+          <span className="ml-2 inline-flex items-center rounded-[100px] border border-neutral-400 bg-neutral-200 px-3 py-2 text-[10px] font-semibold text-neutral-900">
+            Estimasi Jarak:{" "}
+            {displayData?.locations?.estimatedDistance ||
+              request?.locations?.estimatedDistance ||
+              0}{" "}
             km
           </span>
         </div>
 
-        <div className="space-y-3">
-          {/* Lokasi Muat */}
-          <div>
-            <h4 className="mb-2 text-xs font-medium text-neutral-600">
-              Lokasi Muat
-            </h4>
-            <div className="flex items-start gap-2">
-              <div className="mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-orange-100">
-                <span className="text-xs font-semibold text-orange-600">1</span>
-              </div>
-              <span className="text-sm font-medium text-neutral-900">
-                {displayData?.locations?.pickupLocations?.[0]?.fullAddress ||
-                  "Kota Surabaya, Kec. Tegalsari"}
-              </span>
-            </div>
-          </div>
+        <div className="mb-4 flex w-full justify-between">
+          <div className="w-full">
+            {(() => {
+              const pickupLocations =
+                displayData?.locations?.pickupLocations ||
+                request?.locations?.pickupLocations ||
+                [];
+              const dropoffLocations =
+                displayData?.locations?.dropoffLocations ||
+                request?.locations?.dropoffLocations ||
+                [];
 
-          {/* Lokasi Bongkar */}
-          <div>
-            <h4 className="mb-2 text-xs font-medium text-neutral-600">
-              Lokasi Bongkar
-            </h4>
-            <div className="flex items-start gap-2">
-              <div className="mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-green-100">
-                <span className="text-xs font-semibold text-green-600">1</span>
-              </div>
-              <span className="text-sm font-medium text-neutral-900">
-                {displayData?.locations?.dropoffLocations?.[0]?.fullAddress ||
-                  "Kab. Tanah Bumbu Tanah Bumbu Tanah Bumbu Tanah Bumbu, Kec. Karangbintang Bandarkarangmulyo Gunung"}
-              </span>
-            </div>
+              // Create items array with headers and locations
+              const timelineItems = [];
+
+              // Add Lokasi Muat header
+              timelineItems.push({
+                type: "header",
+                text: "Lokasi Muat",
+              });
+
+              // Add pickup locations
+              pickupLocations.forEach((location, index) => {
+                timelineItems.push({
+                  type: "location",
+                  variant: "number-muat",
+                  location: location,
+                  originalIndex: index,
+                });
+              });
+
+              // Add Lokasi Bongkar header
+              timelineItems.push({
+                type: "header",
+                text: "Lokasi Bongkar",
+              });
+
+              // Add dropoff locations
+              dropoffLocations.forEach((location, index) => {
+                timelineItems.push({
+                  type: "location",
+                  variant: "number-bongkar",
+                  location: location,
+                  originalIndex: index,
+                });
+              });
+
+              return (
+                <div>
+                  <TimelineContainer>
+                    {timelineItems.map((item, globalIndex) => {
+                      const isLastItem =
+                        globalIndex === timelineItems.length - 1;
+
+                      if (item.type === "header") {
+                        return (
+                          <div
+                            key={`header-${globalIndex}`}
+                            className="grid grid-cols-[16px_1fr] items-center gap-x-2 pb-2"
+                          >
+                            <div className="relative flex justify-center">
+                              {/* Garis penghubung untuk header - hanya untuk "Lokasi Bongkar" */}
+                              {!isLastItem &&
+                                item.text === "Lokasi Bongkar" && (
+                                  <div className="absolute left-1/2 top-0 h-[32px] w-px -translate-x-1/2 border-l-2 border-dashed border-neutral-400" />
+                                )}
+                            </div>
+                            <div className="">
+                              <h4 className="text-xs font-medium text-neutral-600">
+                                {item.text}
+                              </h4>
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <NewTimelineItem
+                          key={`${item.variant}-${item.originalIndex}`}
+                          variant={item.variant}
+                          index={item.originalIndex}
+                          activeIndex={0}
+                          isLast={isLastItem}
+                          title={`${item.location.city}, ${item.location.district}`}
+                          className="pb-2"
+                          appearance={{
+                            titleClassname:
+                              "break-all text-xs font-medium text-neutral-900",
+                          }}
+                        />
+                      );
+                    })}
+                  </TimelineContainer>
+                </div>
+              );
+            })()}
           </div>
         </div>
       </div>
 
+      {/* Divider after rute */}
+      <div className="mb-3 border-b border-[#C4C4C4] px-4"></div>
+
       {/* Informasi Muatan */}
       <div className="mb-4">
-        <h3 className="mb-3 text-sm font-semibold text-neutral-900">
+        <h3 className="mb-3 text-xs font-semibold text-neutral-600">
           Informasi Muatan (Total: {displayData?.cargo?.totalWeight || 2500} kg)
         </h3>
 
@@ -471,12 +543,12 @@ const DetailContent = ({
           {displayData?.cargo?.items?.slice(0, 3).map((item, index) => (
             <div key={index} className="flex items-center">
               <IconComponent
-                src="/icons/box.svg"
+                src="/icons/box16.svg"
                 className="mr-2 h-4 w-4 text-orange-600"
               />
-              <span className="text-sm font-semibold text-neutral-900">
+              <span className="text-xs font-semibold text-neutral-900">
                 {item.name}{" "}
-                <span className="font-medium text-neutral-600">
+                <span className="text-xs font-semibold text-neutral-600">
                   ({item.weight?.toLocaleString("id-ID") || "0"} kg)
                   {item.dimensions && (
                     <span>
@@ -531,20 +603,24 @@ const DetailContent = ({
         </div>
       </div>
 
+      <div className="mb-3 border-b border-[#C4C4C4] px-4"></div>
+
       {/* Deskripsi Muatan */}
       <div className="mb-4">
-        <h3 className="mb-3 text-sm font-semibold text-neutral-900">
+        <h3 className="mb-3 text-xs font-semibold text-neutral-600">
           Deskripsi Muatan
         </h3>
-        <p className="text-sm font-medium text-neutral-900">
+        <p className="text-xs font-semibold text-neutral-900">
           {displayData?.cargo?.description ||
             "tolong kirim muatan dengan hati hati, jangan sampai rusak dan hancur, terimakasih"}
         </p>
       </div>
 
+      <div className="mb-3 border-b border-[#C4C4C4] px-4"></div>
+
       {/* Foto Muatan */}
       <div className="mb-4">
-        <h3 className="mb-3 text-sm font-semibold text-neutral-900">
+        <h3 className="mb-3 text-xs font-semibold text-neutral-600">
           Foto Muatan
         </h3>
 
@@ -579,6 +655,57 @@ const DetailContent = ({
             ))}
           </div>
         </LightboxProvider>
+      </div>
+
+      <div className="mb-3 border-b border-[#C4C4C4] px-4"></div>
+
+      <div className="mb-4">
+        <h3 className="mb-3 text-xs font-semibold text-neutral-600">
+          Layanan Tambahan
+        </h3>
+
+        <div className="space-y-2">
+          {(
+            displayData?.additionalServices ||
+            request?.additionalServices ||
+            []
+          ).map((service, index) => (
+            <div key={service.id || index} className="flex items-center gap-2">
+              <IconComponent
+                src="/icons/service-plus.svg"
+                className="h-4 w-4 text-primary-700"
+              />
+              <span className="text-xs font-medium text-neutral-900">
+                {service.serviceName}
+              </span>
+            </div>
+          ))}
+
+          {/* Fallback jika tidak ada layanan tambahan */}
+          {!displayData?.additionalServices && !request?.additionalServices && (
+            <div className="flex items-center gap-2">
+              <IconComponent
+                src="/icons/service-plus.svg"
+                className="h-4 w-4 text-primary-700"
+              />
+              <span className="text-xs font-medium text-neutral-900">
+                Kirim Berkas
+              </span>
+            </div>
+          )}
+
+          {!displayData?.additionalServices && !request?.additionalServices && (
+            <div className="flex items-center gap-2">
+              <IconComponent
+                src="/icons/service-plus.svg"
+                className="h-4 w-4 text-primary-700"
+              />
+              <span className="text-xs font-medium text-neutral-900">
+                Bantuan Tambahan
+              </span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Hubungi Modal */}
