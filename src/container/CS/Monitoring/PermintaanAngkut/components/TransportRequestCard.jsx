@@ -547,7 +547,14 @@ const TransportRequestCard = ({
                 src="/icons/truk16.svg"
                 className="h-4 w-4 text-[#7B3F00]"
               />
-              <span className="text-xs font-medium text-neutral-600">
+              <span
+                className={cn(
+                  "text-xs font-medium",
+                  (request.counters?.available ?? 0) > 0
+                    ? "text-primary-700"
+                    : "text-neutral-600"
+                )}
+              >
                 {request.counters?.available ?? 0} Transporter Tersedia
               </span>
             </div>
@@ -568,7 +575,14 @@ const TransportRequestCard = ({
                 src="/icons/eyes.svg"
                 className="h-4 w-4 text-[#7B3F00]"
               />
-              <span className="text-xs font-medium text-neutral-600">
+              <span
+                className={cn(
+                  "text-xs font-medium",
+                  (request.counters?.viewed ?? 0) > 0
+                    ? "text-primary-700"
+                    : "text-neutral-600"
+                )}
+              >
                 {request.counters?.viewed ?? 0} Dilihat
               </span>
             </div>
@@ -589,7 +603,14 @@ const TransportRequestCard = ({
                   className="h-3 w-3 text-red-500"
                 />
               </div>
-              <span className="text-xs font-medium text-neutral-600">
+              <span
+                className={cn(
+                  "text-xs font-medium",
+                  (request.counters?.saved ?? 0) > 0
+                    ? "text-primary-700"
+                    : "text-neutral-600"
+                )}
+              >
                 {request.counters?.saved ?? 0} Disimpan
               </span>
             </div>

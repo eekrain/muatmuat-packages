@@ -1,3 +1,6 @@
+import { useState } from "react";
+
+import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import {
   LightboxPreview,
@@ -14,21 +17,7 @@ const DetailContent = ({
   handleSave,
   isSaved,
 }) => {
-  // Helper function to calculate load time text
-  const getLoadTimeText = () => {
-    if (!displayData?.loadTimeStart) return "Muat 7 Hari Lagi";
-
-    const today = new Date();
-    const muatDate = new Date(displayData.loadTimeStart);
-    today.setHours(0, 0, 0, 0);
-    muatDate.setHours(0, 0, 0, 0);
-    const diffDays = Math.round((muatDate - today) / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 0) return "Muat Hari Ini";
-    if (diffDays === 1) return "Muat Besok";
-    if (diffDays > 1) return `Muat ${diffDays} Hari Lagi`;
-    return "Muat 7 Hari Lagi";
-  };
+  const [showHubungiModal, setShowHubungiModal] = useState(false);
 
   // Helper function to format load date time
   const formatLoadDateTime = () => {
@@ -58,76 +47,319 @@ const DetailContent = ({
   return (
     <div
       className={cn(
-        "flex-1 overflow-y-auto p-4",
+        "flex-1 overflow-y-auto px-4",
         displayData?.isTaken && "grayscale"
       )}
     >
       {/* Informasi Shipper */}
       <div className="mb-4">
-        <h3 className="mb-3 text-sm font-semibold text-neutral-900">
-          Informasi Shipper
-        </h3>
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
-            <span className="text-sm font-semibold text-gray-600">
-              {displayData?.shipperInfo?.name?.charAt(0) || "A"}
-            </span>
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-neutral-900">
-              {displayData?.shipperInfo?.name || "Agam Tunggal Jaya"}
-            </p>
-            <div className="flex items-center gap-1 text-xs text-primary-700">
-              <IconComponent src="/icons/phone.svg" className="h-3 w-3" />
-              <span>Hubungi</span>
-              <span className="ml-2 text-neutral-600">
-                {(() => {
-                  const created = new Date(
-                    displayData?.shipperInfo?.createdAt || new Date()
-                  );
-                  const now = new Date();
-                  const diffMin = Math.floor((now - created) / (1000 * 60));
-                  const diffHour = Math.floor(diffMin / 60);
-
-                  if (diffHour > 0) return `${diffHour} Jam yang lalu`;
-                  return `${diffMin} Menit yang lalu`;
-                })()}
-              </span>
-              <span className="ml-auto text-sm font-semibold text-neutral-900">
-                {getLoadTimeText()}
-              </span>
+        <div className="flex items-center justify-between">
+          <div className="flex h-14 flex-col justify-between">
+            <h3 className="text-xs font-bold text-neutral-900">
+              Informasi Shipper
+            </h3>
+            <div className="flex items-center gap-2">
+              <img
+                src={request.shipperInfo?.logo || "/img/muatan1.png"}
+                alt={request.shipperInfo?.name || "Logo Shipper"}
+                className="h-8 w-8 rounded-full border-[1.25px] border-neutral-400 object-cover"
+              />
+              <div className="space-y-1">
+                <p className="text-xs font-bold">
+                  {request.shipperInfo?.name || "-"}
+                </p>
+                <div className="flex items-center gap-1">
+                  <div
+                    className="flex items-center gap-1"
+                    onClick={() => setShowHubungiModal(true)}
+                  >
+                    <IconComponent
+                      src="/icons/contact.svg"
+                      className={cn(
+                        "h-4 w-4",
+                        request.isTaken ? "text-neutral-700" : ""
+                      )}
+                    />
+                    <p className="cursor-pointer text-xs font-medium text-primary-700">
+                      Hubungi
+                    </p>
+                  </div>
+                  <div className="mx-1 h-0.5 w-0.5 rounded-full bg-neutral-600"></div>
+                  <div className="flex items-center gap-1">
+                    <IconComponent
+                      src="/icons/location-driver.svg"
+                      className="h-4 w-4 text-neutral-600"
+                    />
+                    <p className="text-[10px] font-medium text-neutral-900">
+                      {(() => {
+                        const location = "Kec. Tegalsari kulon, Kota Surabaya";
+                        return location.length > 31
+                          ? `${location.substring(0, 31)}...`
+                          : location;
+                      })()}
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+
+          <div className="flex flex-col items-end">
+            <p className="text-xs font-medium text-gray-600">
+              {(() => {
+                // Anggap createdAt sudah WIB
+                const created = new Date(
+                  displayData?.shipperInfo?.createdAt ||
+                    request?.shipperInfo?.createdAt
+                );
+                const now = new Date();
+
+                // Hitung selisih dalam ms
+                const diffMs = now - created;
+                const diffSec = Math.floor(diffMs / 1000);
+                const diffMin = Math.floor(diffSec / 60);
+                const diffHour = Math.floor(diffMin / 60);
+                const diffDay = Math.floor(diffHour / 24);
+
+                if (diffDay > 0) return `${diffDay} Hari yang lalu`;
+                if (diffHour > 0) return `${diffHour} Jam yang lalu`;
+                if (diffMin > 0) return `${diffMin} Menit yang lalu`;
+                return `${diffSec} Detik yang lalu`;
+              })()}
+            </p>
+            <p className="text-sm font-semibold text-neutral-900">
+              {(() => {
+                // Format countdown time
+                const parseCountdownToSeconds = (timeStr) => {
+                  if (!timeStr) return 0;
+                  const parts = timeStr.split(":");
+                  if (parts.length !== 3) return 0;
+                  const [h, m, s] = parts.map(Number);
+                  return h * 3600 + m * 60 + s;
+                };
+
+                const getCountdownSeconds = () => {
+                  const timeLabels =
+                    displayData?.timeLabels || request?.timeLabels;
+                  const createdAt =
+                    displayData?.shipperInfo?.createdAt ||
+                    request?.shipperInfo?.createdAt;
+
+                  if (!timeLabels?.countdown || !createdAt) return 0;
+
+                  const start = new Date(createdAt);
+                  const now = new Date();
+                  const initial = parseCountdownToSeconds(timeLabels.countdown);
+                  const elapsed = Math.floor((now - start) / 1000);
+                  return initial - elapsed;
+                };
+
+                const formatHHMMSS = (seconds) => {
+                  const absSec = Math.abs(seconds);
+                  const days = Math.floor(absSec / 86400);
+                  if (days > 0) {
+                    return `${seconds < 0 ? "-" : ""}${days} Hari`;
+                  }
+                  const hours = Math.floor((absSec % 86400) / 3600);
+                  const minutes = Math.floor((absSec % 3600) / 60);
+                  const secs = absSec % 60;
+                  if (absSec < 3600) {
+                    return `${seconds < 0 ? "-" : ""}${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+                  }
+                  return `${seconds < 0 ? "-" : ""}${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+                };
+
+                const countdown = getCountdownSeconds();
+                return formatHHMMSS(countdown);
+              })()}
+            </p>
+            {(displayData?.reblast !== "1" || request?.reblast !== "1") && (
+              <p className="text-xs font-medium text-gray-600">
+                Permintaan ke-{displayData?.reblast || request?.reblast}
+              </p>
+            )}
+          </div>
         </div>
+        <div className="border-b border-neutral-400 pt-4"></div>
       </div>
 
       {/* Status Tags */}
-      <div className="mb-4 flex gap-2">
-        <span className="rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700">
-          {displayData?.orderType === "INSTANT" ? "Instan" : "Terjadwal"}
-        </span>
-        <span className="rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700">
-          {getLoadTimeText()}
-        </span>
+      <div className="mb-3 flex h-6 w-full items-start justify-between">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Time Label */}
+          <span
+            className={cn(
+              "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
+              displayData?.isTaken || request?.isTaken
+                ? "text-neutral-700"
+                : (displayData?.orderType || request?.orderType) === "INSTANT"
+                  ? "bg-success-50 text-success-400"
+                  : "bg-primary-50 text-primary-700"
+            )}
+          >
+            {(displayData?.orderType || request?.orderType) === "INSTANT"
+              ? "Instan"
+              : "Terjadwal"}
+          </span>
+
+          {/* Load Time Label */}
+          <span
+            className={cn(
+              "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
+              displayData?.isTaken || request?.isTaken
+                ? "text-neutral-700"
+                : (() => {
+                    const loadTimeStart =
+                      displayData?.loadTimeStart || request?.loadTimeStart;
+                    if (loadTimeStart) {
+                      const today = new Date();
+                      const muatDate = new Date(loadTimeStart);
+                      today.setHours(0, 0, 0, 0);
+                      muatDate.setHours(0, 0, 0, 0);
+                      const diffDays = Math.round(
+                        (muatDate - today) / (1000 * 60 * 60 * 24)
+                      );
+
+                      if (diffDays === 0 || diffDays === 1)
+                        return "bg-success-50 text-success-400";
+                      if (diffDays >= 2 && diffDays <= 5)
+                        return "bg-warning-100 text-warning-900";
+                      if (diffDays > 5) return "bg-primary-50 text-primary-700";
+                    }
+                    return "bg-primary-50 text-primary-700";
+                  })()
+            )}
+          >
+            {(() => {
+              const loadTimeStart =
+                displayData?.loadTimeStart || request?.loadTimeStart;
+              if (loadTimeStart) {
+                const today = new Date();
+                const muatDate = new Date(loadTimeStart);
+                today.setHours(0, 0, 0, 0);
+                muatDate.setHours(0, 0, 0, 0);
+                const diffDays = Math.round(
+                  (muatDate - today) / (1000 * 60 * 60 * 24)
+                );
+
+                if (diffDays === 0) return "Muat Hari Ini";
+                if (diffDays === 1) return "Muat Besok";
+                if (diffDays > 1) return `Muat ${diffDays} Hari Lagi`;
+              }
+              return (
+                displayData?.loadTimeText ||
+                request?.loadTimeText ||
+                "Muat 7 Hari Lagi"
+              );
+            })()}
+          </span>
+
+          {/* Overload Badge */}
+          {(displayData?.potentialOverload || request?.potentialOverload) && (
+            <span
+              className={cn(
+                "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
+                displayData?.isTaken || request?.isTaken
+                  ? "text-neutral-700"
+                  : "bg-error-50 text-error-400"
+              )}
+            >
+              Potensi Overload
+            </span>
+          )}
+
+          {/* Halal Certification Required Badge */}
+          {(displayData?.isHalalLogistics || request?.isHalalLogistics) && (
+            <div
+              className={cn(
+                "flex h-6 w-6 cursor-pointer items-center justify-center rounded-md px-1 py-2",
+                displayData?.isTaken || request?.isTaken ? "" : "bg-[#F7EAFD]"
+              )}
+            >
+              <IconComponent
+                src="/icons/halal.svg"
+                className={cn(
+                  "h-[15.286855697631836px] w-[11.406869888305664px]",
+                  displayData?.isTaken || request?.isTaken
+                    ? "text-neutral-700"
+                    : ""
+                )}
+              />
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Counters */}
-      <div className="mb-4 flex gap-4 text-xs text-neutral-600">
-        <div className="flex items-center gap-1">
-          <IconComponent src="/icons/truck.svg" className="h-4 w-4" />
-          <span>
-            {displayData?.counters?.available || 16} Transporter Tersedia
+      {/* Transporter Info */}
+      <div className="mb-3 flex items-center gap-2">
+        {/* Transporter Tersedia */}
+        <div className="flex cursor-pointer items-center gap-1">
+          <IconComponent
+            src="/icons/truk16.svg"
+            className="h-4 w-4 text-[#7B3F00]"
+          />
+          <span
+            className={cn(
+              "text-xs font-medium",
+              ((displayData?.counters?.available ||
+                request?.counters?.available) ??
+                0) > 0
+                ? "text-primary-700"
+                : "text-neutral-600"
+            )}
+          >
+            {(displayData?.counters?.available ||
+              request?.counters?.available) ??
+              0}{" "}
+            Transporter Tersedia
           </span>
         </div>
-        <div className="flex items-center gap-1">
-          <IconComponent src="/icons/eye.svg" className="h-4 w-4" />
-          <span>{displayData?.counters?.viewed || 0} Dilihat</span>
+
+        {/* Dilihat */}
+        <div className="flex cursor-pointer items-center gap-1">
+          <IconComponent
+            src="/icons/eyes.svg"
+            className="h-4 w-4 text-[#7B3F00]"
+          />
+          <span
+            className={cn(
+              "text-xs font-medium",
+              ((displayData?.counters?.viewed || request?.counters?.viewed) ??
+                0) > 0
+                ? "text-primary-700"
+                : "text-neutral-600"
+            )}
+          >
+            {(displayData?.counters?.viewed || request?.counters?.viewed) ?? 0}{" "}
+            Dilihat
+          </span>
         </div>
-        <div className="flex items-center gap-1">
-          <IconComponent src="/icons/bookmark.svg" className="h-4 w-4" />
-          <span>{displayData?.counters?.saved || 0} Disimpan</span>
+
+        {/* Disimpan */}
+        <div className="flex cursor-pointer items-center gap-1">
+          <div className="flex h-4 w-4 items-center justify-center rounded-full bg-red-100">
+            <IconComponent
+              src="/icons/bookmark-fill.svg"
+              className="h-3 w-3 text-red-500"
+            />
+          </div>
+          <span
+            className={cn(
+              "text-xs font-medium",
+              ((displayData?.counters?.saved || request?.counters?.saved) ??
+                0) > 0
+                ? "text-primary-700"
+                : "text-neutral-600"
+            )}
+          >
+            {(displayData?.counters?.saved || request?.counters?.saved) ?? 0}{" "}
+            Disimpan
+          </span>
         </div>
       </div>
+
+      {/* Divider after status tags */}
+      <div className="mb-3 border-b border-[#C4C4C4] px-4"></div>
 
       {/* Informasi Armada */}
       <div className="mb-4">
@@ -348,6 +580,14 @@ const DetailContent = ({
           </div>
         </LightboxProvider>
       </div>
+
+      {/* Hubungi Modal */}
+      {showHubungiModal && (
+        <HubungiModal
+          onClose={() => setShowHubungiModal(false)}
+          shipperData={displayData?.shipperInfo || request?.shipperInfo}
+        />
+      )}
     </div>
   );
 };
