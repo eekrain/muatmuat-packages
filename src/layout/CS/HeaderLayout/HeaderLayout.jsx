@@ -80,7 +80,7 @@ const HeaderLayout = ({
     {
       id: "order",
       label: "Daftar Pesanan",
-      href: "/order",
+      href: "/daftar-pesanan",
       icon: "/icons/header-transporter/agenda.svg",
     },
     {

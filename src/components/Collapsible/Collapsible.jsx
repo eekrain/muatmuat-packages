@@ -56,7 +56,8 @@ export const CollapsibleTrigger = React.forwardRef(
         )}
         {...props}
       >
-        {children}
+        {/* kalau children function, kasih open */}
+        {typeof children === "function" ? children({ open }) : children}
       </CollapsiblePrimitive.Trigger>
     );
   }

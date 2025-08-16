@@ -68,7 +68,13 @@ const RequestOtpResponsive = ({
   const handleRequestOtp = (formValues) => {
     if (!formValues?.expiresIn || isAfter(Date.now(), formValues?.expiresIn)) {
       sendRequestOtp().catch((error) => {
-        toast.error("Gagal meminta request OTP");
+        toast.error(
+          t(
+            "RequestOtpResponsive.errorRequestOtp",
+            {},
+            "Gagal meminta request OTP"
+          )
+        );
       });
     }
   };
@@ -166,7 +172,11 @@ const RequestOtpResponsive = ({
           <div className="max-w-[301px] text-center text-sm font-semibold leading-none">
             {formValues?.verificationMethod === "whatsapp"
               ? t("descWhatsAppOTP")
-              : "Mohon cek pesan email diperangkat Anda untuk melanjutkan pendaftaran"}
+              : t(
+                  "RequestOtpResponsive.emailVerificationMessage",
+                  {},
+                  "Mohon cek pesan email diperangkat Anda untuk melanjutkan pendaftaran"
+                )}
           </div>
 
           {/* OTP input section */}
@@ -215,7 +225,11 @@ const RequestOtpResponsive = ({
 
           {/* Timer message */}
           <span className="text-xs font-medium leading-none">
-            {`Kode OTP akan berakhir dalam`}
+            {t(
+              "RequestOtpResponsive.otpExpiresIn",
+              {},
+              "Kode OTP akan berakhir dalam"
+            )}
             <span className="font-semibold">{` ${countdown}`}</span>
           </span>
 
