@@ -81,7 +81,7 @@ const PermintaanAngkutDetailCS = ({ request, onBack, onUnderstand }) => {
       {/* Header */}
       <div
         className={cn(
-          "flex flex-shrink-0 justify-between bg-white px-4",
+          "relative flex flex-shrink-0 justify-between bg-white px-4",
           displayData?.isTaken && "grayscale"
         )}
       >
@@ -95,7 +95,7 @@ const PermintaanAngkutDetailCS = ({ request, onBack, onUnderstand }) => {
         </h1>
         <button
           onClick={onBack}
-          className="flex h-8 w-8 items-center justify-center rounded-full pt-2 hover:bg-neutral-100"
+          className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full"
         >
           <IconComponent
             src="/icons/close24.svg"
@@ -163,8 +163,6 @@ const PermintaanAngkutDetailCS = ({ request, onBack, onUnderstand }) => {
           )}
         </div>
       </div>
-
-      {/* Modal Terima Permintaan dihapus sesuai permintaan */}
     </div>
   );
 };
