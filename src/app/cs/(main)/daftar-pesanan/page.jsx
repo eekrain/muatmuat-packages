@@ -1,0 +1,143 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+
+import Period from "@/app/transporter/(main)/dashboard/real-time/components/Period";
+import Button from "@/components/Button/Button";
+import PageTitle from "@/components/PageTitle/PageTitle";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTriggerWithSeparator,
+} from "@/components/Tabs/Tabs";
+import { useTranslation } from "@/hooks/use-translation";
+
+import PesananAktifTab from "./components/PesananAktifTab";
+import RiwayatTab from "./components/RiwayatTab";
+
+const DaftarPesananPage = () => {
+  const { t } = useTranslation();
+
+  const [useMockData, setUseMockData] = useState(true);
+  const [userRole, setUserRole] = useState("CS");
+
+  const [activeTab, setActiveTab] = useState("pesanan-aktif");
+  const [dashboardData, setDashboardData] = useState({
+    active: 0,
+    history: 0,
+    urgentCounts: {},
+  });
+  const [period, setPeriod] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasData, setHasData] = useState(true);
+  const [lastAction, setLastAction] = useState("initial");
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      const endpoint = useMockData
+        ? "/api/v1/cs/dashboard"
+        : "/v1/cs/dashboard";
+      try {
+        const response = await fetch(endpoint);
+        const result = await response.json();
+        if (result.Data) {
+          setDashboardData({
+            active: result.Data.orderCounts?.active || 0,
+            history: result.Data.orderCounts?.history || 0,
+            urgentCounts: result.Data.urgentCounts || {},
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch dashboard data:", error);
+      }
+    };
+    fetchDashboardData();
+  }, [useMockData]);
+
+  const periodOptions = useMemo(
+    () => [
+      { name: t("daftarPesanan.periodAll", {}, "Semua Periode"), value: "" },
+      { name: t("daftarPesanan.periodToday", {}, "Hari Ini"), value: 0 },
+      { name: t("daftarPesanan.period7Days", {}, "7 Hari Terakhir"), value: 7 },
+      {
+        name: t("daftarPesanan.period30Days", {}, "30 Hari Terakhir"),
+        value: 30,
+      },
+    ],
+    [t]
+  );
+
+  const disableDownloadButton = isLoading || !hasData;
+  const disablePeriodButton =
+    isLoading || (!hasData && lastAction !== "period");
+
+  return (
+    <div className="mx-auto my-6 max-h-screen w-full max-w-[1280px] space-y-4 px-6">
+      <PageTitle withBack={false}>
+        {t("daftarPesanan.title", {}, "Daftar Pesanan")}
+      </PageTitle>
+      <Tabs
+        className="w-full"
+        value={activeTab}
+        onValueChange={(v) => setActiveTab(v)}
+      >
+        <div className="flex items-center justify-between">
+          <TabsList className="w-[380px]">
+            <TabsTriggerWithSeparator
+              value="pesanan-aktif"
+              activeColor="primary-700"
+              className={"!text-base"}
+            >
+              {t("daftarPesanan.tabActive", {}, "Pesanan Aktif")}
+              {dashboardData.active > 0 ? ` (${dashboardData.active})` : ""}
+            </TabsTriggerWithSeparator>
+            <TabsTriggerWithSeparator
+              value="riwayat"
+              activeColor="primary-700"
+              showSeparator={false}
+              className={"!text-base"}
+            >
+              {t("daftarPesanan.tabHistory", {}, "Riwayat")}
+            </TabsTriggerWithSeparator>
+          </TabsList>
+          <div className="flex items-center gap-3">
+            <div className="w-[200px]">
+              <Period
+                value={period}
+                onSelect={(p) => setPeriod(p)}
+                options={periodOptions}
+                disable={disablePeriodButton}
+              />
+            </div>
+            <Button variant="muattrans-primary-secondary">
+              {t("daftarPesanan.buttonUploadReceipt", {}, "Unggah Resi")}
+            </Button>
+            <Button
+              variant="muattrans-primary"
+              disabled={disableDownloadButton}
+            >
+              {t("daftarPesanan.buttonDownload", {}, "Unduh")}
+            </Button>
+          </div>
+        </div>
+        <TabsContent value="pesanan-aktif" className="pt-4">
+          <PesananAktifTab
+            useMockData={useMockData}
+            userRole={userRole}
+            period={period}
+            urgentCounts={dashboardData.urgentCounts}
+            setIsLoading={setIsLoading}
+            setHasData={setHasData}
+            setLastAction={setLastAction}
+          />
+        </TabsContent>
+        <TabsContent value="riwayat" className="pt-4">
+          <RiwayatTab />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+};
+
+export default DaftarPesananPage;
