@@ -146,11 +146,11 @@ const PermintaanAngkutDetailCS = ({ request, onBack, onUnderstand }) => {
           ) : (
             <>
               <Button
-                variant="muattrans-error-secondary"
+                variant="muattrans-primary-secondary"
                 className="flex-1 py-2 text-[14px] font-semibold"
                 onClick={onBack}
               >
-                Tolak
+                Kembali
               </Button>
               <Button
                 variant="muattrans-primary"
