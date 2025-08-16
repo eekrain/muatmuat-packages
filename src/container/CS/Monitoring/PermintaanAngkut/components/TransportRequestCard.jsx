@@ -48,7 +48,9 @@ const TransportRequestCard = ({
   };
 
   const handleDetail = () => {
-    if (onShowDetail) onShowDetail(request);
+    if (onShowDetail) {
+      onShowDetail(request);
+    }
   };
 
   const handleReject = () => {

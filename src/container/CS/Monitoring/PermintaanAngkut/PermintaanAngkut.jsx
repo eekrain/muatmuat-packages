@@ -9,6 +9,7 @@ import Search from "@/components/Search/Search";
 import { toast } from "@/lib/toast";
 import { useGetTransportRequestList } from "@/services/CS/monitoring/permintaan-angkut/getTransportRequestListCS";
 
+import PermintaanAngkutDetailCS from "./PermintaanAngkutDetailCS.jsx";
 import TransportRequestCard from "./components/TransportRequestCard";
 
 const PermintaanAngkutCS = () => {
@@ -60,6 +61,10 @@ const PermintaanAngkutCS = () => {
 
   const handleBackToList = () => {
     setSelectedRequest(null);
+  };
+
+  const handleShowDetail = (request) => {
+    setSelectedRequest(request);
   };
 
   // Calculate dynamic tab counts based on data and local state
@@ -159,6 +164,17 @@ const PermintaanAngkutCS = () => {
   //   };
   //   return () => ws.close();
   // }, []);
+
+  // If a request is selected, show detail view
+  if (selectedRequest) {
+    return (
+      <PermintaanAngkutDetailCS
+        request={selectedRequest}
+        onBack={handleBackToList}
+        onUnderstand={handleUnderstand}
+      />
+    );
+  }
 
   return (
     <div className="flex h-[calc(100vh-92px-48px)] flex-col bg-white">
@@ -419,6 +435,7 @@ const PermintaanAngkutCS = () => {
             removedItems={removedItems}
             onUnderstand={handleUnderstand}
             searchValue={searchValue}
+            onShowDetail={handleShowDetail}
           />
         </div>
       </>
@@ -436,6 +453,7 @@ const RequestList = ({
   removedItems,
   onUnderstand,
   searchValue,
+  onShowDetail,
 }) => {
   if (isLoading) {
     return (
@@ -549,6 +567,7 @@ const RequestList = ({
             onBookmarkToggle={onBookmarkToggle}
             isBookmarked={currentBookmarkState}
             onUnderstand={onUnderstand}
+            onShowDetail={onShowDetail}
           />
         );
       })}
