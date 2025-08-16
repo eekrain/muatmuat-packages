@@ -115,6 +115,7 @@ const DaftarPesananPage = () => {
             </Button>
             <Button
               variant="muattrans-primary"
+              iconLeft="/icons/download16.svg"
               disabled={disableDownloadButton}
             >
               {t("daftarPesanan.buttonDownload", {}, "Unduh")}

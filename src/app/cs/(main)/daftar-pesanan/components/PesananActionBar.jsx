@@ -117,7 +117,10 @@ const PesananActionBar = ({
           onKeyUp={handleSearchKeyUp}
           placeholder={t("daftarPesanan.searchPlaceholder", {}, "Cari Pesanan")}
           disabled={disableSearch}
-          appearance={{ containerClassName: "!border-neutral-600" }}
+          appearance={{
+            containerClassName:
+              "!border-neutral-600 hover:!border-primary-700 ",
+          }}
           icon={{
             left: (
               <IconComponent src="/icons/datatable-search.svg" width={12} />
@@ -138,7 +141,8 @@ const PesananActionBar = ({
           disabled={disableUrgent}
           showNotificationDot={totalUrgentCount > 0}
           notificationCount={totalUrgentCount}
-          className="w-[158px] !border-neutral-600"
+          className="w-[158px] !border-neutral-600 hover:!border-primary-700"
+          itemClassName="hover:!bg-neutral-200"
         />
         <DashboardFilter
           categories={filterConfig.categories}
@@ -155,7 +159,8 @@ const PesananActionBar = ({
           icon="/icons/sort-gray.svg"
           options={sortOptions}
           disabled={disableSort}
-          className="w-[136px] !border-neutral-600"
+          className="w-[136px] !border-neutral-600 hover:!border-primary-700"
+          itemClassName="hover:!bg-neutral-200"
         />
       </div>
       <div className="flex items-center gap-4 text-xs text-gray-600">
@@ -168,7 +173,8 @@ const PesananActionBar = ({
             ]}
             value={"pesanan"}
             onChange={() => {}}
-            className="!border-neutral-600"
+            className="!border-neutral-600 hover:!border-primary-700"
+            itemClassName="hover:!bg-neutral-200"
             disabled={disableViewBy}
           />
         </div>

@@ -19,6 +19,7 @@ export const FilterSelect = forwardRef(
       className = "w-full",
       errorMessage = null,
       showNotificationDot = false,
+      itemClassName = "",
       notificationCount = 0,
       icon = null,
       ...props
@@ -64,7 +65,10 @@ export const FilterSelect = forwardRef(
                   <Select.Item
                     key={option.value}
                     value={option.value}
-                    className="p-2 text-xs font-medium hover:bg-neutral-50 data-[highlighted]:bg-neutral-50"
+                    className={cn(
+                      "p-2 text-xs font-medium hover:bg-neutral-50 data-[highlighted]:bg-neutral-50",
+                      itemClassName
+                    )}
                   >
                     <span className="truncate whitespace-nowrap">
                       {option.label}
