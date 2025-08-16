@@ -19,6 +19,7 @@ import {
 import useDevice from "@/hooks/use-device";
 
 import ModalUbahDriver from "./ModalUbahDriver";
+import PopUpBatalkanArmada from "./PopUpBatalkanArmada";
 
 // --- Main Card Component ---
 
@@ -26,8 +27,7 @@ function CardLacakArmada({
   plateNumber,
   driverName,
   vehicleImageUrl,
-  sosActive,
-  onActionClick,
+
   onViewSosClick,
   vehicleId, // Prop yang dibutuhkan modal
   driverId, // Prop yang dibutuhkan modal
@@ -36,6 +36,8 @@ function CardLacakArmada({
 
   // State untuk mengontrol visibilitas modal pemilihan driver
   const [isDriverModalOpen, setIsDriverModalOpen] = useState(false);
+  const [isBatalkanArmadaPopupOpen, setIsBatalkanArmadaPopupOpen] =
+    useState(false);
 
   const steps = [
     { label: "Armada Dijadwalkan", icon: "/icons/info-pra-tender.svg" },
@@ -77,9 +79,14 @@ function CardLacakArmada({
     handleCloseDriverModal();
   };
 
-  // --- Handler untuk Aksi Lainnya ---
-  const handleViewDetails = () => alert("Ubah Armada diklik...");
-  const handleCancelFleet = () => alert("Batalkan Armada diklik...");
+  const handleCancelFleet = () => {
+    setIsBatalkanArmadaPopupOpen(true);
+  };
+
+  const handleConfirmCancelFleet = () => {
+    alert("Armada dibatalkan!");
+    setIsBatalkanArmadaPopupOpen(false);
+  };
 
   // Variabel untuk simulasi state
   const isSOS = false;
@@ -238,9 +245,7 @@ function CardLacakArmada({
               </button>
             </SimpleDropdownTrigger>
             <SimpleDropdownContent align="end">
-              <SimpleDropdownItem onClick={handleViewDetails}>
-                Ubah Armada
-              </SimpleDropdownItem>
+              <SimpleDropdownItem onClick={""}>Ubah Armada</SimpleDropdownItem>
               <SimpleDropdownItem onClick={handleOpenDriverModal}>
                 Ubah Driver
               </SimpleDropdownItem>
@@ -312,6 +317,12 @@ function CardLacakArmada({
           title="Ubah Driver"
         />
       )}
+
+      <PopUpBatalkanArmada
+        isOpen={isBatalkanArmadaPopupOpen}
+        onClose={() => setIsBatalkanArmadaPopupOpen(false)}
+        onConfirm={handleConfirmCancelFleet}
+      />
     </>
   );
 }
