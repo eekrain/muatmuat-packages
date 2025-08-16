@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = false;
+const useMockData = true;
 
 const mockApiResult = {
   Message: {
@@ -13,20 +13,29 @@ const mockApiResult = {
     orderId: "dcdaf886-56d6-4d84-89d6-a21ec18d0bc1",
     orderCode: "MT25AA004",
     invoiceNumber: "INV/MT25AA004",
-    orderStatus: "WAITING_PAYMENT_2",
+    // orderStatus: "NEED_RESPONSE_CHANGE",
+    // orderStatus: "CONFIRMED_ORDER",
+    orderStatus: "CANCELLED_TRANSPORTER",
+    // orderStatus: "WAITING_PAYMENT_2",
     orderStatusUnit: 1,
     orderType: "SCHEDULED",
     loadTimeStart: "2025-07-20T10:46:00.000Z",
     // loadTimeEnd: null,
     loadTimeEnd: "2025-07-20T13:46:00.000Z",
     estimatedDistance: 178,
-    isHalalLogistics: false,
+    isHalalLogistics: true,
     truckCount: 1,
     hasSOSAlert: false,
     vehicle: {
       truckTypeId: "62a0f025-3143-4f84-99d3-a1c5ac1b8658",
       truckTypeName: "Medium Truk 4 x 2 (Rigid)",
       vehicleImage: "https://picsum.photos/50",
+      plateNumber: "B 1234 XYZ",
+    },
+    driver: {
+      name: "Budi Santoso",
+      phoneNumber: "081234567890",
+      driverImage: "https://picsum.photos/50",
     },
     locations: [
       {
@@ -650,6 +659,7 @@ const mockApiResult = {
       transportFee: 800000,
       additionalServiceFee: 100000,
       taxAmount: 100000,
+      totalRouteChange: 100000,
     },
     otherStatus: [
       {

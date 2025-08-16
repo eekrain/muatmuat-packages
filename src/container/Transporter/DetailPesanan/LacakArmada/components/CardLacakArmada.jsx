@@ -44,6 +44,8 @@ function CardLacakArmada({
   const handleContactDriver = () => alert("Menghubungi driver...");
   const handleShareLocation = () => alert("Membagikan lokasi...");
 
+  const isSOS = false;
+
   return (
     <div className="border-netral-400 w-full rounded-xl border px-4 py-5">
       {/* Header Actions */}
@@ -52,7 +54,7 @@ function CardLacakArmada({
           <div className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-600 hover:bg-blue-100">
             Menuju ke Lokasi Bongkar
           </div>
-          {true && (
+          {isSOS && (
             <>
               <div className="inline-flex items-center justify-center rounded-md bg-red-500 px-3 py-1 text-xs font-bold text-white">
                 SOS
