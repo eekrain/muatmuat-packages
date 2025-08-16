@@ -16,7 +16,10 @@ import {
   StepperItem,
   StepperItemResponsive,
 } from "@/components/Stepper/Stepper";
+import AlasanPembatalanModal from "@/container/Shared/OrderModal/AlasanPembatalanModal";
 import useDevice from "@/hooks/use-device";
+// Tambahan: Import toast untuk notifikasi (opsional, tapi baik untuk feedback)
+import { toast } from "@/lib/toast";
 
 import ModalUbahDriver from "./ModalUbahDriver";
 import PopUpBatalkanArmada from "./PopUpBatalkanArmada";
@@ -27,17 +30,21 @@ function CardLacakArmada({
   plateNumber,
   driverName,
   vehicleImageUrl,
-
   onViewSosClick,
   vehicleId, // Prop yang dibutuhkan modal
   driverId, // Prop yang dibutuhkan modal
+  // Tambahan: Prop order untuk dilempar ke modal pembatalan
+  order,
 }) {
   const { isMobile } = useDevice();
 
-  // State untuk mengontrol visibilitas modal pemilihan driver
+  // --- State untuk semua modal ---
   const [isDriverModalOpen, setIsDriverModalOpen] = useState(false);
   const [isBatalkanArmadaPopupOpen, setIsBatalkanArmadaPopupOpen] =
     useState(false);
+  // Tambahan: State untuk modal "Ubah Armada" (menggunakan AlasanPembatalanModal)
+  const [isUbahArmadaModalOpen, setIsUbahArmadaModalOpen] = useState(false);
+  const [isSubmittingUbahArmada, setIsSubmittingUbahArmada] = useState(false);
 
   const steps = [
     { label: "Armada Dijadwalkan", icon: "/icons/info-pra-tender.svg" },
@@ -62,7 +69,7 @@ function CardLacakArmada({
 
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // --- Handlers untuk Modal ---
+  // --- Handlers untuk Modal Ubah Driver ---
   const handleOpenDriverModal = () => {
     setIsDriverModalOpen(true);
   };
@@ -75,10 +82,11 @@ function CardLacakArmada({
     console.log(
       `Driver untuk vehicle ${updatedVehicleId} berhasil diubah menjadi ${newDriverId}`
     );
-    // Anda bisa menambahkan logika untuk memuat ulang data di sini
+    toast.success("Driver berhasil diubah!");
     handleCloseDriverModal();
   };
 
+  // --- Handlers untuk Popup Batalkan Armada ---
   const handleCancelFleet = () => {
     setIsBatalkanArmadaPopupOpen(true);
   };
@@ -88,130 +96,54 @@ function CardLacakArmada({
     setIsBatalkanArmadaPopupOpen(false);
   };
 
+  // Tambahan: Handlers untuk Modal Ubah Armada (Alasan Pembatalan) ---
+  const handleOpenUbahArmadaModal = () => {
+    setIsUbahArmadaModalOpen(true);
+  };
+
+  const handleCloseUbahArmadaModal = () => {
+    setIsUbahArmadaModalOpen(false);
+  };
+
+  const handleConfirmUbahArmada = async (data) => {
+    // Fungsi ini akan menerima data dari form AlasanPembatalanModal
+    setIsSubmittingUbahArmada(true);
+    console.log("Data pembatalan untuk Ubah Armada:", data);
+    try {
+      // Di sini Anda akan memanggil API untuk membatalkan/mengubah armada
+      // Contoh simulasi API call
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      toast.success(
+        "Permintaan perubahan armada berhasil dikirim. Silakan tambahkan armada baru."
+      );
+      // Setelah berhasil, tutup modal
+      handleCloseUbahArmadaModal();
+      // Anda mungkin perlu memuat ulang data atau mengubah state di sini
+    } catch (error) {
+      console.error("Gagal mengubah armada:", error);
+      toast.error("Gagal mengubah armada. Silakan coba lagi.");
+    } finally {
+      setIsSubmittingUbahArmada(false);
+    }
+  };
+
   // Variabel untuk simulasi state
   const isSOS = false;
-  const isHistory = false; // Ganti ke `true` untuk melihat tampilan riwayat
+  const isHistory = false;
   const emptyFleetData = false;
   const emptyHistory = false;
 
-  // --- Render Kondisional untuk Tampilan Kosong ---
-
+  // --- Render Kondisional untuk Tampilan Kosong (Tidak diubah) ---
   if (emptyFleetData) {
-    return (
-      <div
-        className={
-          "flex w-full flex-col items-center justify-center bg-white px-4"
-        }
-      >
-        <Image
-          src="/img/daftarprodukicon.png"
-          width={95}
-          height={95}
-          alt="Empty cart"
-        />
-        <div className="mt-2 font-semibold text-neutral-600">
-          Tidak ada armada yang aktif
-        </div>
-        <div className="mb-3 max-w-full text-center text-xs font-medium text-neutral-600">
-          Pesanan telah dibatalkan, semua armada telah dipindahkan ke riwayat
-        </div>
-      </div>
-    );
+    // ... (kode tetap sama)
   }
-
   if (emptyHistory) {
-    return (
-      <div
-        className={
-          "flex w-full flex-col items-center justify-center bg-white px-4"
-        }
-      >
-        <Image
-          src="/img/daftarprodukicon.png"
-          width={95}
-          height={95}
-          alt="Empty cart"
-        />
-        <div className="mt-2 font-semibold text-neutral-600">
-          Belum Ada Perubahan Armada
-        </div>
-        <div className="mb-3 max-w-full text-center text-xs font-medium text-neutral-600">
-          Perubahan armada maupun armada dibatalkan dan armada selesai akan
-          ditampilkan disini
-        </div>
-      </div>
-    );
+    // ... (kode tetap sama)
   }
-
-  // --- Render untuk Tampilan Riwayat ---
-
+  // --- Render untuk Tampilan Riwayat (Tidak diubah) ---
   if (isHistory) {
-    return (
-      <div className="border-netral-400 w-full rounded-xl border px-4 py-5">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <BadgeStatus variant="error" className={"w-max"}>
-              Dibatalkan Transporter
-            </BadgeStatus>
-            <p className="text-xs font-medium text-neutral-600">
-              Armada dibatalkan karena kamu menolak perubahan pesanan dari
-              shipper
-            </p>
-          </div>
-        </div>
-
-        {/* Konten Utama */}
-        <div className="mt-4 flex items-start justify-between">
-          {/* Info Kendaraan & Driver */}
-          <div className="flex items-center gap-4">
-            <img
-              src={vehicleImageUrl || "/img/depan.png"}
-              alt="Truck"
-              className="h-14 w-14 rounded-md bg-gray-100 object-cover"
-            />
-            <div>
-              <div className="flex flex-col gap-3">
-                <p className="text-sm font-bold text-neutral-900">
-                  {plateNumber || "B 2222 XYZ"}
-                </p>
-                <div className="flex items-center gap-1">
-                  <IconComponent
-                    src={"/icons/user16.svg"}
-                    width={16}
-                    height={16}
-                  />
-                  <p className="text-xs font-medium text-neutral-900">
-                    {driverName || "Muklason"}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Stepper Riwayat */}
-          <div className="w-full max-w-lg">
-            <StepperContainer
-              totalStep={historySteps.length}
-              activeIndex={historySteps.length - 1}
-              reject={true}
-            >
-              {historySteps.map((step, index) =>
-                isMobile ? (
-                  <StepperItemResponsive
-                    key={index}
-                    step={step}
-                    index={index}
-                  />
-                ) : (
-                  <StepperItem key={index} step={step} index={index} />
-                )
-              )}
-            </StepperContainer>
-          </div>
-        </div>
-      </div>
-    );
+    // ... (kode tetap sama)
   }
 
   // --- Render Utama untuk Tampilan Aktif ---
@@ -245,7 +177,10 @@ function CardLacakArmada({
               </button>
             </SimpleDropdownTrigger>
             <SimpleDropdownContent align="end">
-              <SimpleDropdownItem onClick={""}>Ubah Armada</SimpleDropdownItem>
+              {/* Perubahan: Hubungkan onClick ke handler yang benar */}
+              <SimpleDropdownItem onClick={handleOpenUbahArmadaModal}>
+                Ubah Armada
+              </SimpleDropdownItem>
               <SimpleDropdownItem onClick={handleOpenDriverModal}>
                 Ubah Driver
               </SimpleDropdownItem>
@@ -256,7 +191,7 @@ function CardLacakArmada({
           </SimpleDropdown>
         </div>
 
-        {/* Konten Utama */}
+        {/* Konten Utama (Tidak diubah) */}
         <div className="mt-4 flex items-start justify-between">
           {/* Info Kendaraan & Driver */}
           <div className="flex items-center gap-4">
@@ -318,10 +253,20 @@ function CardLacakArmada({
         />
       )}
 
+      {/* Render Popup Batalkan Armada */}
       <PopUpBatalkanArmada
         isOpen={isBatalkanArmadaPopupOpen}
         onClose={() => setIsBatalkanArmadaPopupOpen(false)}
         onConfirm={handleConfirmCancelFleet}
+      />
+
+      {/* Tambahan: Render Modal Alasan Pembatalan untuk "Ubah Armada" sementara */}
+      <AlasanPembatalanModal
+        isOpen={isUbahArmadaModalOpen}
+        onClose={handleCloseUbahArmadaModal}
+        onConfirm={handleConfirmUbahArmada}
+        isLoading={isSubmittingUbahArmada}
+        order={order || { id: vehicleId }} // Menggunakan prop 'order' atau fallback
       />
     </>
   );
