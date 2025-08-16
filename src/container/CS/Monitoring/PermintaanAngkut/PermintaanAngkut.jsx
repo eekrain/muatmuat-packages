@@ -283,7 +283,7 @@ const PermintaanAngkutCS = () => {
                 {data?.tabCounters?.hasBlinkNode && (
                   <NotificationDot
                     position="absolute"
-                    positionClasses="-right-3.5 -top-1.5"
+                    positionClasses="-right-3 -top-1.5"
                     animated={true}
                     size="md"
                     color="red"
@@ -318,7 +318,7 @@ const PermintaanAngkutCS = () => {
                 {data?.tabCounters?.hasBlinkNode && (
                   <NotificationDot
                     position="absolute"
-                    positionClasses="-right-3.5 -top-1.5"
+                    positionClasses="-right-3 -top-1.5"
                     animated={true}
                     size="md"
                     color="red"
@@ -353,7 +353,7 @@ const PermintaanAngkutCS = () => {
                 {data?.tabCounters?.hasBlinkNode && (
                   <NotificationDot
                     position="absolute"
-                    positionClasses="-right-3.5 -top-1.5"
+                    positionClasses="-right-3 -top-1.5"
                     animated={true}
                     size="md"
                     color="red"
@@ -389,7 +389,7 @@ const PermintaanAngkutCS = () => {
                 {data?.tabCounters?.hasBlinkNode && (
                   <NotificationDot
                     position="absolute"
-                    positionClasses="-right-3.5 -top-1.5"
+                    positionClasses="-right-3 -top-1.5"
                     animated={true}
                     size="md"
                     color="red"

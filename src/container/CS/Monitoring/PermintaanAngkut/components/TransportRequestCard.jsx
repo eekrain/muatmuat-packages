@@ -291,7 +291,7 @@ const TransportRequestCard = ({
                       <IconComponent
                         src="/icons/halal.svg"
                         className={cn(
-                          "h-4 w-3",
+                          "h-[15.286855697631836px] w-[11.406869888305664px]",
                           request.isTaken ? "text-neutral-700" : ""
                         )}
                       />
