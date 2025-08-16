@@ -31,7 +31,7 @@ const DetailPesanan = ({ breadcrumbData }) => {
       },
       {
         value: "lacak-armada",
-        label: <LabelLacakArmada fleetCount={1} hasSOS={false} />,
+        label: <LabelLacakArmada fleetCount={0} hasSOS={false} />,
       },
       {
         value: "riwayat-perubahan",

@@ -8,7 +8,7 @@ const RiwayatPerubahan = ({ dataOrderDetail }) => {
     <Card className="border-none">
       <CardContent className="flex flex-col gap-y-6 p-6">
         <RiwayatPerubahanHeader />
-        <CardRiwayatPerubahan shipmentData={dataOrderDetail} />
+        <CardRiwayatPerubahan dataOrderDetail={dataOrderDetail} />
       </CardContent>
     </Card>
   );

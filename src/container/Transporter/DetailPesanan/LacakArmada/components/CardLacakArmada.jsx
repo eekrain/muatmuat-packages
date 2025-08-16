@@ -44,12 +44,12 @@ function CardLacakArmada({
 
   const historySteps = [
     { label: "Armada Dijadwalkan", icon: "/icons/info-pra-tender.svg" },
-    // { label: "Selesai", icon: "/icons/check16.svg" },
-    {
-      label: "Dibatalkan",
-      status: "CANCELED",
-      icon: "/icons/silang-white.svg",
-    },
+    { label: "Selesai", icon: "/icons/check16.svg" },
+    // {
+    //   label: "Dibatalkan",
+    //   status: "CANCELED",
+    //   icon: "/icons/silang-white.svg",
+    // },
   ];
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -62,7 +62,7 @@ function CardLacakArmada({
   const isSOS = false;
   const isHistory = true; // Ganti dengan kondisi sebenarnya
 
-  const emptyFleetData = false;
+  const emptyFleetData = true;
   const emptyHistory = false;
 
   if (emptyFleetData) {
@@ -119,14 +119,14 @@ function CardLacakArmada({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2">
-              <BadgeStatus variant="error" className={"w-max"}>
-                {/* Selesai */}
-                Dibatalkan Transporter
+              <BadgeStatus variant="success" className={"w-max"}>
+                Selesai
+                {/* Dibatalkan Transporter */}
               </BadgeStatus>
-              <p className="text-xs font-medium text-neutral-600">
+              {/* <p className="text-xs font-medium text-neutral-600">
                 Armada dibatalkan karena kamu menolak perubahan pesanan dari
                 shipper
-              </p>
+              </p> */}
             </div>
             {isSOS && (
               <>
