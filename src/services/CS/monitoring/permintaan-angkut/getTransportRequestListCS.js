@@ -519,8 +519,8 @@ export const fetcherTransportRequestList = async (params = {}) => {
 
   const queryString = queryParams.toString();
   const endpoint = queryString
-    ? `/v1/cs-requests?${queryString}`
-    : "/v1/cs-requests";
+    ? `/v1/cs/transport-request?${queryString}`
+    : "/v1/cs/transport-request";
 
   const result = await fetcherMuatrans.get(endpoint);
   return result?.data?.Data || {};

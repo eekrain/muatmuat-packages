@@ -1,6 +1,8 @@
 // Mock data and fetcher for Get Viewed Order by Transporter
 import useSWR from "swr";
 
+import { fetcherMuatrans } from "@/lib/axios";
+
 const IS_MOCK = true;
 
 const apiResultViewedOrder = {
@@ -197,30 +199,25 @@ const apiResultViewedOrder = {
 
 export const fetcherViewedOrder = async (orderId, params = {}) => {
   if (IS_MOCK) {
-    // Deep clone to avoid mutation
+    // ...existing code...
     const result = JSON.parse(JSON.stringify(apiResultViewedOrder));
     let filteredTransporters = [...result.Data.transporters];
-
-    // Example filter by companyName
     if (params.companyName) {
       filteredTransporters = filteredTransporters.filter(
         (t) => t.companyName === params.companyName
       );
     }
-    // Example filter by isActive
     if (params.isActive !== undefined) {
       filteredTransporters = filteredTransporters.filter(
         (t) => t.status.isActive === params.isActive
       );
     }
-    // Example search by companyName
     if (params.search) {
       const searchLower = params.search.toLowerCase();
       filteredTransporters = filteredTransporters.filter((t) =>
         t.companyName.toLowerCase().includes(searchLower)
       );
     }
-
     return {
       ...result.Data,
       transporters: filteredTransporters,
@@ -228,8 +225,21 @@ export const fetcherViewedOrder = async (orderId, params = {}) => {
   }
 
   // Real API
-  // Implement real API call here if needed
-  return {};
+  const queryParams = new URLSearchParams();
+  if (params.companyName) queryParams.append("companyName", params.companyName);
+  if (params.isActive !== undefined)
+    queryParams.append("isActive", params.isActive);
+  if (params.search) queryParams.append("search", params.search);
+  if (params.page) queryParams.append("page", params.page);
+  if (params.limit) queryParams.append("limit", params.limit);
+
+  const queryString = queryParams.toString();
+  const endpoint = queryString
+    ? `/v1/cs/transport-request/${orderId}/viewers?${queryString}`
+    : `/v1/cs/transport-request/${orderId}/viewers`;
+
+  const result = await fetcherMuatrans.get(endpoint);
+  return result?.data?.Data || {};
 };
 
 export const useGetViewedOrder = (orderId, params = {}) => {

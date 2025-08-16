@@ -1,6 +1,8 @@
 // Mock data and fetcher for Get Saved Transporters
 import useSWR from "swr";
 
+import { fetcherMuatrans } from "@/lib/axios";
+
 const IS_MOCK = true;
 
 const apiResultSavedTransporters = {
@@ -147,30 +149,25 @@ const apiResultSavedTransporters = {
 
 export const fetcherSavedTransporters = async (params = {}) => {
   if (IS_MOCK) {
-    // Deep clone to avoid mutation
+    // ...existing code...
     const result = JSON.parse(JSON.stringify(apiResultSavedTransporters));
     let filteredTransporters = [...result.Data.transporters];
-
-    // Example filter by companyName
     if (params.companyName) {
       filteredTransporters = filteredTransporters.filter(
         (t) => t.companyName === params.companyName
       );
     }
-    // Example filter by isActive
     if (params.isActive !== undefined) {
       filteredTransporters = filteredTransporters.filter(
         (t) => t.currentStatus.isActive === params.isActive
       );
     }
-    // Example search by companyName
     if (params.search) {
       const searchLower = params.search.toLowerCase();
       filteredTransporters = filteredTransporters.filter((t) =>
         t.companyName.toLowerCase().includes(searchLower)
       );
     }
-
     return {
       ...result.Data,
       transporters: filteredTransporters,
@@ -178,8 +175,25 @@ export const fetcherSavedTransporters = async (params = {}) => {
   }
 
   // Real API
-  // Implement real API call here if needed
-  return {};
+  const { orderId, ...restParams } = params;
+  const queryParams = new URLSearchParams();
+  if (restParams.companyName)
+    queryParams.append("companyName", restParams.companyName);
+  if (restParams.isActive !== undefined)
+    queryParams.append("isActive", restParams.isActive);
+  if (restParams.search) queryParams.append("search", restParams.search);
+  if (restParams.page) queryParams.append("page", restParams.page);
+  if (restParams.limit) queryParams.append("limit", restParams.limit);
+
+  if (!orderId) throw new Error("orderId is required for real API call");
+
+  const queryString = queryParams.toString();
+  const endpoint = queryString
+    ? `/v1/cs/transport-request/${orderId}/saved?${queryString}`
+    : `/v1/cs/transport-request/${orderId}/saved`;
+
+  const result = await fetcherMuatrans.get(endpoint);
+  return result?.data?.Data || {};
 };
 
 export const useGetSavedTransporters = (params = {}) => {
