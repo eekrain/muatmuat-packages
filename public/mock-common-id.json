@@ -784,7 +784,7 @@
   "Period.actionSelectPeriod": "Pilih Periode",
   "Period.labelRecentlySearched": "Pencarian Terakhir",
   "Period.placeholderStartDate": "Tanggal Mulai",
-  "Period.labelUntil": "sampai",
+  "Period.labelUntil": "s/d",
   "Period.placeholderEndDate": "Tanggal Selesai",
   "Period.messageErrorStartDateRequired": "Tanggal mulai wajib diisi",
   "Period.messageErrorEndDateRequired": "Tanggal selesai wajib diisi",
