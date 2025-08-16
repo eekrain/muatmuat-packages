@@ -121,8 +121,8 @@ const apiResultTransportRequestList = {
         },
         counters: {
           available: 25,
-          viewed: 12,
-          saved: 5,
+          viewed: 0,
+          saved: 0,
         },
         vehicle: {
           truckCount: 2,
