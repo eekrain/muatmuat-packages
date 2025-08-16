@@ -4,6 +4,7 @@ import { useState } from "react";
 // Import separate components
 import { Alert } from "@/components/Alert/Alert";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
+import { useTranslation } from "@/hooks/use-translation";
 import FormResponsiveLayout from "@/layout/Shipper/ResponsiveLayout/FormResponsiveLayout";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import {
@@ -16,6 +17,7 @@ import { SaveBottomSheet } from "./SaveBottomSheet";
 
 // Main Component
 const FormRekeningBankScreen = () => {
+  const { t } = useTranslation();
   const navigation = useResponsiveNavigation();
   const router = useRouter();
   const { setParams } = useRequestOtpActions();
@@ -59,7 +61,7 @@ const FormRekeningBankScreen = () => {
   return (
     <FormResponsiveLayout
       title={{
-        label: "Informasi Rekening Bank",
+        label: t("FormRekeningBankScreen.title", {}, "Informasi Rekening Bank"),
       }}
       onClickBackButton={() => navigation.pop()}
       variant="muatmuat"
@@ -80,8 +82,11 @@ const FormRekeningBankScreen = () => {
           variant="warning"
           className="mt-6 flex h-[38px] items-center gap-2.5 bg-warning-100 p-3"
         >
-          Rekening Bank akan digunakan sebagai rekening tujuan transaksi
-          keuangan kamu.
+          {t(
+            "FormRekeningBankScreen.bankAccountInfo",
+            {},
+            "Rekening Bank akan digunakan sebagai rekening tujuan transaksi keuangan kamu."
+          )}
         </Alert>
       </div>
 

@@ -14,6 +14,7 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
 import { useAuth } from "@/hooks/use-auth";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import {
@@ -64,6 +65,7 @@ export const SaveBottomSheet = ({
   setSelectedVerificationMethod,
   onVerification,
 }) => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { dataUser } = useAuth();
   const formValues = useRequestOtpStore((state) => state.formValues);
@@ -96,7 +98,14 @@ export const SaveBottomSheet = ({
       await sendRequestOtp();
       onVerification();
     } catch (error) {
-      toast.error(error?.message || "Gagal mengirim kode verifikasi");
+      toast.error(
+        error?.message ||
+          t(
+            "SaveBottomSheet.errorSendVerificationCode",
+            {},
+            "Gagal mengirim kode verifikasi"
+          )
+      );
     } finally {
       setIsLoading(false);
     }
@@ -106,18 +115,23 @@ export const SaveBottomSheet = ({
     <BottomSheet>
       <BottomSheetTrigger asChild>
         <Button variant="muatparts-primary" className="w-full">
-          Simpan
+          {t("SaveBottomSheet.saveButton", {}, "Simpan")}
         </Button>
       </BottomSheetTrigger>
       <BottomSheetContent>
         <BottomSheetHeader>
           <BottomSheetClose />
-          <BottomSheetTitle>Informasi</BottomSheetTitle>
+          <BottomSheetTitle>
+            {t("SaveBottomSheet.informationTitle", {}, "Informasi")}
+          </BottomSheetTitle>
         </BottomSheetHeader>
         <div className="flex flex-col gap-4 px-4">
           <p className="text-center text-sm font-medium leading-tight text-neutral-900">
-            Pilih salah satu metode dibawah ini untuk mendapatkan kode
-            verifikasi
+            {t(
+              "SaveBottomSheet.verificationMethodMessage",
+              {},
+              "Pilih salah satu metode dibawah ini untuk mendapatkan kode verifikasi"
+            )}
           </p>
 
           <div className="flex w-full flex-col gap-4">
@@ -138,7 +152,7 @@ export const SaveBottomSheet = ({
             disabled={!selectedVerificationMethod}
             className="w-full"
           >
-            Verifikasi
+            {t("SaveBottomSheet.verifyButton", {}, "Verifikasi")}
           </Button>
         </BottomSheetFooter>
       </BottomSheetContent>

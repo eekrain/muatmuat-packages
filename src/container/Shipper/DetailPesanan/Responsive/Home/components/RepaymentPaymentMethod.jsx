@@ -1,7 +1,9 @@
+import { useTranslation } from "@/hooks/use-translation";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { useSewaArmadaStore } from "@/store/Shipper/forms/sewaArmadaStore";
 
 const RepaymentPaymentMethod = ({ paymentMethods }) => {
+  const { t } = useTranslation();
   const navigation = useResponsiveNavigation();
   const paymentMethodId = useSewaArmadaStore(
     (state) => state.formValues.paymentMethodId
@@ -18,12 +20,16 @@ const RepaymentPaymentMethod = ({ paymentMethods }) => {
   return (
     <div className="flex flex-col gap-y-3 bg-neutral-50 px-4 py-5">
       <div className="flex items-center justify-between text-sm font-semibold leading-[1.1]">
-        <span className="text-neutral-900">Opsi Pembayaran</span>
+        <span className="text-neutral-900">
+          {t("RepaymentPaymentMethod.paymentOptions", {}, "Opsi Pembayaran")}
+        </span>
         <button
           className="text-primary-700"
           onClick={() => navigation.push("/OpsiPembayaran")}
         >
-          {hasPaymentMethod ? "Ubah" : "Pilih"}
+          {hasPaymentMethod
+            ? t("RepaymentPaymentMethod.changeButton", {}, "Ubah")
+            : t("RepaymentPaymentMethod.selectButton", {}, "Pilih")}
         </button>
       </div>
       {hasPaymentMethod ? (
