@@ -12,7 +12,7 @@ import { useGetTransportRequestList } from "@/services/CS/monitoring/permintaan-
 import TransportRequestCard from "./components/TransportRequestCard";
 
 const PermintaanAngkutCS = () => {
-  const [activeTab, setActiveTab] = useState("tersedia");
+  const [activeTab, setActiveTab] = useState("semua");
   const [searchValue, setSearchValue] = useState("");
   const [bookmarkedItems, setBookmarkedItems] = useState(new Set());
   const [removedItems, setRemovedItems] = useState(new Set());
@@ -21,6 +21,12 @@ const PermintaanAngkutCS = () => {
   // Get data based on active tab
   const params = useMemo(() => {
     switch (activeTab) {
+      case "semua":
+        return {}; // Show all requests
+      case "instan":
+        return { orderType: "INSTANT" };
+      case "terjadwal":
+        return { orderType: "SCHEDULED" };
       case "halal_logistik":
         return { isHalalLogistics: true };
       case "disimpan":
@@ -258,9 +264,9 @@ const PermintaanAngkutCS = () => {
           {/* Tabs */}
           <div className="flex h-7 w-auto max-w-[450px] gap-2">
             <button
-              onClick={() => setActiveTab("tersedia")}
+              onClick={() => setActiveTab("semua")}
               className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
-                activeTab === "tersedia"
+                activeTab === "semua"
                   ? "w-auto min-w-[79px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
                   : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
               }`}
