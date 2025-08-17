@@ -439,8 +439,13 @@ const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
                       <h3 className="text-sm font-bold leading-[120%] text-black">
                         Penyesuaian Pendapatan
                       </h3>
-                      <InfoTooltip side="right">
-                        <p>{changeDetails.incomeAdjustment.reason}</p>
+                      <InfoTooltip side="top">
+                        {/* <p>{changeDetails.incomeAdjustment.reason}</p> */}
+                        <p>
+                          Penyesuaian pendapatan hanya estimasi.<br></br>
+                          Pendapatan yang kamu terima menyesuaikan <br></br>
+                          respon perubahan yang kamu kirimkan
+                        </p>
                       </InfoTooltip>
                     </div>
                     <div className="flex flex-1 items-center justify-end gap-4">

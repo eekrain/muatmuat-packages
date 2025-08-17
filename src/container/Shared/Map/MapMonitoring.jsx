@@ -2,7 +2,12 @@
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { GoogleMap, OverlayViewF, useLoadScript } from "@react-google-maps/api";
+import {
+  GoogleMap,
+  OverlayViewF,
+  Polyline,
+  useLoadScript,
+} from "@react-google-maps/api";
 
 import { cn } from "@/lib/utils";
 
@@ -30,130 +35,132 @@ const badgeClasses = {
 };
 
 // Truck Marker Component - Memoized to prevent unnecessary re-renders
-const TruckMarker = memo(({ marker, showLicensePlate }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const hasAlerts =
-    marker.fleet?.hasSOSAlert || marker.fleet?.needsResponseChange;
+const TruckMarker = memo(
+  ({ marker, showLicensePlate, truckSize = { width: 12, height: 42 } }) => {
+    const [isHovered, setIsHovered] = useState(false);
+    const hasAlerts =
+      marker.fleet?.hasSOSAlert || marker.fleet?.needsResponseChange;
 
-  const rotation = marker.rotation || 0;
+    const rotation = marker.rotation || 0;
 
-  // Position label at 2 o'clock relative to center (red circle)
-  // 2 o'clock = 60 degrees from top (12 o'clock)
-  const angleInDegrees = -60; // Negative because CSS rotation is clockwise
-  const angleInRadians = (angleInDegrees * Math.PI) / 180;
-  const radius = 50; // Distance from center
+    // Position label at 2 o'clock relative to center (red circle)
+    // 2 o'clock = 60 degrees from top (12 o'clock)
+    const angleInDegrees = -60; // Negative because CSS rotation is clockwise
+    const angleInRadians = (angleInDegrees * Math.PI) / 180;
+    const radius = 50; // Distance from center
 
-  // Calculate x,y position for 2 o'clock
-  const labelX = radius * Math.sin(-angleInRadians);
-  const labelY = radius * Math.cos(-angleInRadians);
+    // Calculate x,y position for 2 o'clock
+    const labelX = radius * Math.sin(-angleInRadians);
+    const labelY = radius * Math.cos(-angleInRadians);
 
-  return (
-    <>
-      {/* Rotating truck container */}
-      <div
-        className="pointer-events-auto relative origin-center cursor-pointer"
-        style={{
-          transform: `rotate(${rotation}deg)`,
-          willChange: "transform",
-          backfaceVisibility: "hidden",
-          perspective: "1000px",
-          transformStyle: "preserve-3d",
-        }}
-        onClick={() => marker.onClick?.(marker)}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <img
-          src={marker.icon}
-          alt={marker.title}
-          width={12}
-          height={42}
-          className="absolute"
+    return (
+      <>
+        {/* Rotating truck container */}
+        <div
+          className="pointer-events-auto relative origin-center cursor-pointer"
           style={{
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
+            transform: `rotate(${rotation}deg)`,
+            willChange: "transform",
             backfaceVisibility: "hidden",
+            perspective: "1000px",
+            transformStyle: "preserve-3d",
           }}
-        />
-        {/* Debug: Red circle at center */}
-        {isDebugMode && (
-          <div
-            className="absolute h-3 w-3 rounded-full bg-red-500"
+          onClick={() => marker.onClick?.(marker)}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <img
+            src={marker.icon}
+            alt={marker.title}
+            width={truckSize.width}
+            height={truckSize.height}
+            className="absolute"
             style={{
               top: "50%",
               left: "50%",
               transform: "translate(-50%, -50%)",
+              backfaceVisibility: "hidden",
             }}
           />
-        )}
-      </div>
-
-      {/* Label positioned at 2 o'clock from center - outside rotation */}
-      {(showLicensePlate || hasAlerts || isHovered) && (
-        <div
-          className="pointer-events-auto absolute flex h-5 flex-row items-center"
-          style={{
-            top: "50%",
-            left: "50%",
-            marginLeft: `${labelX}px`,
-            marginTop: `${-labelY}px`,
-            transform: "translate(-50%, -50%)",
-            backfaceVisibility: "hidden",
-          }}
-        >
-          {/* License Plate Badge - Show if toggle is ON OR if there are alerts OR on hover */}
-          {(showLicensePlate || hasAlerts || isHovered) && (
+          {/* Debug: Red circle at center */}
+          {isDebugMode && (
             <div
-              className={cn(
-                badgeClasses.base,
-                badgeClasses.licensePlate,
-                hasAlerts ? "rounded-l" : "rounded",
-                "pointer-events-auto"
-              )}
-            >
-              <span className={cn(badgeClasses.text, "whitespace-nowrap")}>
-                {marker.fleet?.licensePlate || marker.title}
-              </span>
-            </div>
-          )}
-
-          {/* SOS Badge */}
-          {marker.fleet?.hasSOSAlert && (
-            <div
-              className={cn(
-                badgeClasses.base,
-                badgeClasses.sos,
-                marker.fleet?.needsResponseChange ? "" : "rounded-r",
-                "pointer-events-auto"
-              )}
-            >
-              <span className={badgeClasses.text}>SOS</span>
-            </div>
-          )}
-
-          {/* Warning Badge for needsResponseChange */}
-          {marker.fleet?.needsResponseChange && (
-            <div
-              className={cn(
-                badgeClasses.base,
-                badgeClasses.warning,
-                "rounded-r",
-                "pointer-events-auto"
-              )}
-            >
-              <img
-                src="/icons/warning16.svg"
-                alt="Warning"
-                className="h-3 w-3"
-              />
-            </div>
+              className="absolute h-3 w-3 rounded-full bg-red-500"
+              style={{
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+              }}
+            />
           )}
         </div>
-      )}
-    </>
-  );
-});
+
+        {/* Label positioned at 2 o'clock from center - outside rotation */}
+        {(showLicensePlate || hasAlerts || isHovered) && (
+          <div
+            className="pointer-events-auto absolute flex h-5 flex-row items-center"
+            style={{
+              top: "50%",
+              left: "50%",
+              marginLeft: `${labelX}px`,
+              marginTop: `${-labelY}px`,
+              transform: "translate(-50%, -50%)",
+              backfaceVisibility: "hidden",
+            }}
+          >
+            {/* License Plate Badge - Show if toggle is ON OR if there are alerts OR on hover */}
+            {(showLicensePlate || hasAlerts || isHovered) && (
+              <div
+                className={cn(
+                  badgeClasses.base,
+                  badgeClasses.licensePlate,
+                  hasAlerts ? "rounded-l" : "rounded",
+                  "pointer-events-auto"
+                )}
+              >
+                <span className={cn(badgeClasses.text, "whitespace-nowrap")}>
+                  {marker.fleet?.licensePlate || marker.title}
+                </span>
+              </div>
+            )}
+
+            {/* SOS Badge */}
+            {marker.fleet?.hasSOSAlert && (
+              <div
+                className={cn(
+                  badgeClasses.base,
+                  badgeClasses.sos,
+                  marker.fleet?.needsResponseChange ? "" : "rounded-r",
+                  "pointer-events-auto"
+                )}
+              >
+                <span className={badgeClasses.text}>SOS</span>
+              </div>
+            )}
+
+            {/* Warning Badge for needsResponseChange */}
+            {marker.fleet?.needsResponseChange && (
+              <div
+                className={cn(
+                  badgeClasses.base,
+                  badgeClasses.warning,
+                  "rounded-r",
+                  "pointer-events-auto"
+                )}
+              >
+                <img
+                  src="/icons/warning16.svg"
+                  alt="Warning"
+                  className="h-3 w-3"
+                />
+              </div>
+            )}
+          </div>
+        )}
+      </>
+    );
+  }
+);
 
 TruckMarker.displayName = "TruckMarker";
 
@@ -163,8 +170,12 @@ export const MapMonitoring = ({
   center = defaultCenter,
   zoom = defaultZoom,
   locationMarkers = [],
+  locationPolyline = [],
+  encodedTruckPolyline = "",
   mapOptions = {},
   showLicensePlate = true,
+  showTruck = true,
+  truckSize = { width: 12, height: 42 },
   onMapDrag,
   onMapZoom,
   onMapCenterChange,
@@ -184,6 +195,29 @@ export const MapMonitoring = ({
     if (!isLoaded || !window.google) return locationMarkers;
     return locationMarkers;
   }, [locationMarkers, isLoaded]);
+
+  // Decode truck polyline
+  const truckPolyline = useMemo(() => {
+    if (!encodedTruckPolyline || !isLoaded || !window.google) {
+      return [];
+    }
+    return window.google.maps.geometry.encoding.decodePath(
+      encodedTruckPolyline
+    );
+  }, [encodedTruckPolyline, isLoaded]);
+
+  // Polyline options - same as MapWithPath
+  const pathOptions = {
+    strokeColor: "#DD7B02",
+    strokeOpacity: 1,
+    strokeWeight: 6,
+  };
+
+  const truckPathOptions = {
+    strokeColor: "#FFC217", // Yellow color like MapWithPath
+    strokeOpacity: 1,
+    strokeWeight: 6,
+  };
 
   const combinedMapOptions = useMemo(
     () => ({
@@ -297,17 +331,52 @@ export const MapMonitoring = ({
         onDragEnd={handleDragEnd}
         onZoomChanged={handleZoomChanged}
       >
+        {/* Render location polyline */}
+        {locationPolyline && locationPolyline.length >= 2 && (
+          <Polyline path={locationPolyline} options={pathOptions} />
+        )}
+
+        {/* Render truck polyline */}
+        {truckPolyline && truckPolyline.length >= 2 && (
+          <Polyline path={truckPolyline} options={truckPathOptions} />
+        )}
+
+        {/* Render location markers (non-truck markers) */}
+        {processedMarkers
+          .filter((marker) => !marker.fleet)
+          .map((marker) => (
+            <OverlayViewF
+              key={marker.title}
+              position={marker.position}
+              mapPaneName="floatPane"
+              getPixelPositionOffset={getPixelPositionOffset}
+            >
+              <Marker
+                marker={marker}
+                showLicensePlate={showLicensePlate}
+                truckSize={truckSize}
+              />
+            </OverlayViewF>
+          ))}
+
         {/* Render truck markers with rotation using OverlayViewF */}
-        {processedMarkers.map((marker) => (
-          <OverlayViewF
-            key={marker.title}
-            position={marker.position}
-            mapPaneName="floatPane"
-            getPixelPositionOffset={getPixelPositionOffset}
-          >
-            <Marker marker={marker} showLicensePlate={showLicensePlate} />
-          </OverlayViewF>
-        ))}
+        {showTruck &&
+          processedMarkers
+            .filter((marker) => marker.fleet)
+            .map((marker) => (
+              <OverlayViewF
+                key={marker.title}
+                position={marker.position}
+                mapPaneName="floatPane"
+                getPixelPositionOffset={getPixelPositionOffset}
+              >
+                <Marker
+                  marker={marker}
+                  showLicensePlate={showLicensePlate}
+                  truckSize={truckSize}
+                />
+              </OverlayViewF>
+            ))}
       </GoogleMap>
     </div>
   );
