@@ -18,10 +18,10 @@ import { getStatusLegend } from "./getStatusLegend";
 
 const useMockData = false; // mock detailpesanan
 
-const orderType = OrderTypeEnum.INSTANT;
-const orderStatus = OrderStatusEnum.UNLOADING;
+const orderType = OrderTypeEnum.SCHEDULED;
+const orderStatus = OrderStatusEnum.SCHEDULED_FLEET;
 const unitFleetStatus = 1;
-const totalUnit = 1;
+const totalUnit = 3;
 
 // Menentukan bisa nggaknya buat ubah pesanan
 const isChangeable = true;
@@ -55,11 +55,16 @@ const priceChange = {
 };
 
 const otherStatus = [
-  // {
-  //   orderStatus: OrderStatusEnum.WAITING_REPAYMENT_1,
-  //   orderTitle: "Proses Muat",
-  //   unitFleetStatus: 2,
-  // },
+  {
+    orderStatus: OrderStatusEnum.SCHEDULED_FLEET,
+    orderTitle: "Proses Muat",
+    unitFleetStatus: 1,
+  },
+  {
+    orderStatus: OrderStatusEnum.LOADING,
+    orderTitle: "Proses Muat",
+    unitFleetStatus: 2,
+  },
   // {
   //   orderStatus: OrderStatusEnum.PREPARE_DOCUMENT,
   //   orderTitle: "Proses Muat",

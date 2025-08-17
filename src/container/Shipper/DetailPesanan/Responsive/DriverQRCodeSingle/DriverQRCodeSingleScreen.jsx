@@ -20,6 +20,7 @@ const DriverQRCodeSingleScreen = () => {
     driverId: params.driverId,
     orderId: params.orderId,
   });
+  console.log("🚀 ~ DriverQRCodeSingleScreen ~ qrData:", qrData);
 
   const title = useMemo(() => {
     if (!qrData?.driverInfo?.statusScan) return "";
