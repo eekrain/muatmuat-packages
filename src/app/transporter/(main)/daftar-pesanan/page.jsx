@@ -11,6 +11,7 @@ import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Pagination from "@/components/Pagination/Pagination";
 import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
+import RespondChangeModal from "@/container/Transporter/DaftarPesanan/components/RespondChangeModal";
 
 const DaftarPesananPage = () => {
   const [selectedTab, setSelectedTab] = useState("semua");
@@ -28,6 +29,9 @@ const DaftarPesananPage = () => {
   });
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [isRespondChangeModalOpen, setIsRespondChangeModalOpen] =
+    useState(false);
+  const [selectedOrderForChange, setSelectedOrderForChange] = useState(null);
 
   // Handle tab click
   const handleTabClick = (tabValue) => {
@@ -47,6 +51,17 @@ const DaftarPesananPage = () => {
   const handleClearSearch = () => {
     setTempSearch("");
     setSearchValue("");
+  };
+
+  // Handle respond change modal
+  const handleRespondChange = (orderData) => {
+    setSelectedOrderForChange(orderData);
+    setIsRespondChangeModalOpen(true);
+  };
+
+  const handleCloseRespondChangeModal = () => {
+    setIsRespondChangeModalOpen(false);
+    setSelectedOrderForChange(null);
   };
 
   // Tab options sesuai design
@@ -358,6 +373,14 @@ const DaftarPesananPage = () => {
           >
             Assign Armada
           </Button>
+        ) : row.status === "perlu-respon-perubahan" ? (
+          <Button
+            variant="muattrans-primary"
+            className="!h-8 !w-[174px] !rounded-3xl text-xs font-semibold"
+            onClick={() => handleRespondChange(row)}
+          >
+            Respon Perubahan
+          </Button>
         ) : (
           <Button
             variant="muattrans-primary-secondary"
@@ -631,6 +654,13 @@ const DaftarPesananPage = () => {
         onPageChange={setCurrentPage}
         onPerPageChange={setPerPage}
         variants="muatrans"
+      />
+
+      {/* Respond Change Modal */}
+      <RespondChangeModal
+        isOpen={isRespondChangeModalOpen}
+        onClose={handleCloseRespondChangeModal}
+        orderData={selectedOrderForChange}
       />
     </div>
   );

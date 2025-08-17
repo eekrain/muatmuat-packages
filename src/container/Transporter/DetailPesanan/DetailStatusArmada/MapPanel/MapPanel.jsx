@@ -1,10 +1,12 @@
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+// import { MapWithPath } from "@/components/MapContainer/MapWithPath";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { MapWithPath } from "@/components/MapContainer/MapWithPath";
-import { useGetTrackingLocations } from "@/services/Shipper/lacak-armada/getTrackingLocations";
+import { MapMonitoring } from "@/container/Shared/Map/MapMonitoring";
+import { LegendButton } from "@/container/Shared/Map/components/LegendButton";
+import { useGetFleetDetailedInfo } from "@/services/Transporter/daftar-pesanan/detail-status-armada/getFleetDetailedInfo";
 
 export const MapPanel = () => {
   const params = useParams();
@@ -13,10 +15,14 @@ export const MapPanel = () => {
   const [showLicensePlate, setShowLicensePlate] = useState(false);
   const [mapZoom, setMapZoom] = useState(13);
   const [mapCenter, setMapCenter] = useState(null);
-  const { data: dataTracking } = useGetTrackingLocations(
-    params.orderId,
-    params.driverId
-  );
+  // For now, using driverId as fleetId - this should be updated based on actual URL structure
+  const {
+    data: dataTracking,
+    error,
+    isLoading,
+  } = useGetFleetDetailedInfo("uuid");
+
+  // Transform fleet detailed info to match MapWithPath expected format
 
   useEffect(() => {
     if (containerRef.current) {
@@ -44,6 +50,15 @@ export const MapPanel = () => {
       setMapZoom(13);
     }
   };
+  console.log("=== DEBUG MAP DATA ===");
+  console.log("dataTracking:", dataTracking);
+  console.log("locationMarkers:", dataTracking?.locationMarkers);
+  console.log("locationPolyline:", dataTracking?.locationPolyline);
+  console.log("mapCenter:", mapCenter);
+  console.log("height:", height);
+  console.log("isLoading:", isLoading);
+  console.log("error:", error);
+  console.log("=== END DEBUG ===");
 
   const mapControls = [
     {
@@ -62,26 +77,29 @@ export const MapPanel = () => {
       onClick: handleZoomOut,
     },
   ];
-  console.log("dataTracking", dataTracking, containerRef);
+
   return (
     <div
       ref={containerRef}
       className="relative h-[596px] w-full flex-1 overflow-hidden rounded-r-[20px]"
     >
       {dataTracking && height > 0 && (
-        <MapWithPath
+        <MapMonitoring
           apiKey="AIzaSyDw_9D9-4zTechHn1wMEILZqiBv51Q7jHU"
           locationMarkers={dataTracking.locationMarkers}
-          locationPolyline={dataTracking.locationPolyline} // Location connection waypoints
+          locationPolyline={dataTracking.locationPolyline}
           encodedTruckPolyline={dataTracking.encodedTruckPolyline}
-          center={dataTracking?.locationPolyline?.[0]}
+          center={mapCenter || dataTracking?.locationPolyline?.[0]}
           zoom={mapZoom}
           mapContainerStyle={{
             width: "100%",
             height: height,
           }}
-          showTruck={true}
-          truckIcon="/icons/marker-truck.svg"
+          showLicensePlate={showLicensePlate}
+          truckSize={{ width: 32, height: 112 }}
+          onMapCenterChange={setMapCenter}
+          onMapZoom={setMapZoom}
+          showTruck={false}
         />
       )}
 
@@ -91,10 +109,7 @@ export const MapPanel = () => {
           {/* Main map controls */}
           <div className="flex h-[35px] w-[35px] items-center justify-center rounded-[13px] bg-muat-trans-secondary-900 shadow-lg">
             <div className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-white">
-              <IconComponent
-                src="/icons/Union-1.svg"
-                className="h-6 w-6 text-muat-trans-secondary-900"
-              />
+              <LegendButton />
             </div>
           </div>
         </div>
