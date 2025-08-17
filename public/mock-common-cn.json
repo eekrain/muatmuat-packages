@@ -783,5 +783,6 @@
   "RequestOtpResponsive.otpExpiresIn": "OTP验证码将在以下时间过期",
   "RepaymentPaymentMethod.paymentOptions": "支付选项",
   "RepaymentPaymentMethod.changeButton": "更改",
-  "RepaymentPaymentMethod.selectButton": "选择"
+  "RepaymentPaymentMethod.selectButton": "选择",
+  "useAutoComplete.errorSameCityOnly": "装货地点只能在同一城市内更改。"
 }

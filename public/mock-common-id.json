@@ -934,5 +934,6 @@
   "RequestOtpResponsive.otpExpiresIn": "Kode OTP akan berakhir dalam",
   "RepaymentPaymentMethod.paymentOptions": "Opsi Pembayaran",
   "RepaymentPaymentMethod.changeButton": "Ubah",
-  "RepaymentPaymentMethod.selectButton": "Pilih"
+  "RepaymentPaymentMethod.selectButton": "Pilih",
+  "useAutoComplete.errorSameCityOnly": "Perubahan lokasi muat hanya bisa diganti jika masih di kota yang sama."
 }

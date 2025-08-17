@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from "react";
 
 import { normalizePostalCodeData } from "@/hooks/use-location/normalizer";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 
@@ -14,7 +15,9 @@ export const usePostalCode = ({
   tempLocation,
   setAutoCompleteSearchPhrase,
 }) => {
+  const { t } = useTranslation();
   const { isMobile } = useDevice();
+
   const setLocationPartial = useLocationFormStore(
     (state) => state.setLocationPartial
   );
@@ -47,7 +50,11 @@ export const usePostalCode = ({
         setAutoCompleteSearchPhrase(lastValidLocation?.location?.name);
         setIsModalPostalCodeOpen(false);
         return toast.error(
-          "Perubahan lokasi muat hanya bisa diganti jika masih di kota yang sama."
+          t(
+            "useAutoComplete.errorSameCityOnly",
+            {},
+            "Perubahan lokasi muat hanya bisa diganti jika masih di kota yang sama."
+          )
         );
       }
       setLocationPartial(result);
