@@ -12,6 +12,7 @@ import { idrFormat } from "@/lib/utils/formatters";
 import { useGetOrderDriverReviews } from "@/services/Shipper/detailpesanan/getOrderDriverReviews";
 
 import { BottomsheetAlasanPembatalan } from "./Popup/BottomsheetAlasanPembatalan";
+import CancelUpdateOrderModal from "./Popup/CancelUpdateOrderModal";
 import { ModalBatalkanPesananResponsive } from "./Popup/ModalBatalkanPesananResponsive";
 import { ModalKonfimasiBuktiDokumenDiterima } from "./Popup/ModalKonfimasiBuktiDokumenDiterima";
 
@@ -38,6 +39,8 @@ export const FooterDetailPesanan = ({
   ] = useState(false);
   const [isReceiveDocumentEvidenceOpen, setReceiveDocumentEvidenceOpen] =
     useState(false);
+
+  const [isCancelUpdateOrderModal, setCancelUpdateOrderModal] = useState(false);
 
   // ================================================================================================
   // Pesan ulang
@@ -114,8 +117,7 @@ export const FooterDetailPesanan = ({
         ),
       });
     } else if (
-      dataStatusPesanan?.orderStatus === OrderStatusEnum.WAITING_PAYMENT_1 ||
-      dataStatusPesanan?.orderStatus === OrderStatusEnum.WAITING_PAYMENT_3
+      dataStatusPesanan?.orderStatus === OrderStatusEnum.WAITING_PAYMENT_1
     ) {
       components = [
         {
@@ -152,19 +154,52 @@ export const FooterDetailPesanan = ({
     ) {
       components = [];
     } else if (
+      dataStatusPesanan?.orderStatus === OrderStatusEnum.WAITING_PAYMENT_3
+    ) {
+      components = [
+        {
+          id: "batalkan-perubahan",
+          variant: "muatparts-error-secondary",
+          el: (variant) => (
+            <Button
+              variant={variant}
+              className="h-10 w-full p-0"
+              onClick={() => setCancelUpdateOrderModal(true)}
+              type="button"
+            >
+              Batalkan Perubahan
+            </Button>
+          ),
+        },
+        {
+          id: "lanjut-pembayaran",
+          variant: "muatparts-primary",
+          el: (variant) => (
+            <Button
+              variant={variant}
+              className="h-10 w-full p-0"
+              onClick={() => alert("Simpan")}
+              type="button"
+            >
+              Lanjut Pembayaran
+            </Button>
+          ),
+        },
+      ];
+    } else if (
       dataStatusPesanan?.orderStatus === OrderStatusEnum.WAITING_PAYMENT_4
     ) {
       components.unshift({
-        id: "batalkan-pesanan",
+        id: "batalkan-perubahan",
         variant: "muatparts-error-secondary",
         el: (variant) => (
           <Button
             variant={variant}
             className="h-10 w-full p-0"
-            onClick={() => setIsOpenModalBatalkanPesanan(true)}
+            onClick={() => setCancelUpdateOrderModal(true)}
             type="button"
           >
-            Batalkan Pesanan
+            Batalkan Perubahan
           </Button>
         ),
       });
@@ -366,6 +401,12 @@ export const FooterDetailPesanan = ({
           text: t("buttonPesanUlangModal"),
           onClick: () => handleReorderFleet(selectedOrderId),
         }}
+      />
+
+      {/* Modal Batalkan Perubahan */}
+      <CancelUpdateOrderModal
+        isOpen={isCancelUpdateOrderModal}
+        setOpen={setCancelUpdateOrderModal}
       />
     </>
   );

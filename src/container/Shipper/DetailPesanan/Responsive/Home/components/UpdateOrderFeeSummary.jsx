@@ -4,8 +4,14 @@ import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { cn } from "@/lib/utils";
 import { idrFormat } from "@/lib/utils/formatters";
 
-const UpdateOrderFeeSummary = () => {
+const UpdateOrderFeeSummary = ({ dataRingkasanPembayaran }) => {
   const priceSummary = useShallowMemo(() => {
+    const { priceChange } = dataRingkasanPembayaran || {};
+
+    if (!priceChange) {
+      return [];
+    }
+
     return [
       {
         children: [
@@ -14,7 +20,7 @@ const UpdateOrderFeeSummary = () => {
             items: [
               {
                 label: "Nominal Selisih Jarak Perubahan Lokasi Bongkar",
-                price: 600000,
+                price: priceChange.additionalCost || 0,
               },
             ],
           },
@@ -23,7 +29,7 @@ const UpdateOrderFeeSummary = () => {
             items: [
               {
                 label: "Admin Ubah Pesanan",
-                price: 50000,
+                price: priceChange.penaltyFee || 0,
               },
             ],
           },
@@ -36,18 +42,19 @@ const UpdateOrderFeeSummary = () => {
             items: [
               {
                 label: "Admin Layanan",
-                price: 10000,
+                price: priceChange.adminFee || 0,
               },
               {
                 label: "Pajak",
-                price: 7150,
+                price: priceChange.taxAmount || 0,
               },
             ],
           },
         ],
       },
     ];
-  }, []);
+  }, [dataRingkasanPembayaran]);
+
   return (
     <div className="flex flex-col gap-y-6 bg-neutral-50 px-4 py-5 text-neutral-900">
       <h1 className="text-sm font-semibold leading-[1.1]">

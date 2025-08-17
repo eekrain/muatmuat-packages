@@ -17,6 +17,15 @@ const LIST_HIDE_METHOD_INFO = [
   OrderStatusEnum.WAITING_REPAYMENT_2,
 ];
 
+const SHOW_UPDATE_ORDER_FEE = [
+  OrderStatusEnum.WAITING_PAYMENT_3,
+  OrderStatusEnum.WAITING_PAYMENT_4,
+];
+
+const BLACKLIST_SHOW_TRANSACTION_SUMMARY = [
+  OrderStatusEnum.WAITING_CONFIRMATION_CHANGES,
+];
+
 export const TabContentRingkasan = ({
   dataStatusPesanan,
   dataRingkasanPesanan,
@@ -60,14 +69,18 @@ export const TabContentRingkasan = ({
               priceCharge={dataRingkasanPembayaran.priceCharge}
               waitingTimeRaw={waitingTimeRaw}
             />
-          ) : dataStatusPesanan?.updatedAt ? (
-            <UpdateOrderFeeSummary />
-          ) : (
+          ) : SHOW_UPDATE_ORDER_FEE.includes(dataStatusPesanan?.orderStatus) ? (
+            <UpdateOrderFeeSummary
+              dataRingkasanPembayaran={dataRingkasanPembayaran}
+            />
+          ) : !BLACKLIST_SHOW_TRANSACTION_SUMMARY.includes(
+              dataStatusPesanan?.orderStatus
+            ) ? (
             <TransactionSummary
               dataRingkasanPembayaran={dataRingkasanPembayaran}
               documentShippingDetail={documentShippingDetail}
             />
-          )}
+          ) : null}
         </>
       ) : null}
     </TabsContent>
