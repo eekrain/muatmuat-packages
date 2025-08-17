@@ -935,5 +935,6 @@
   "RequestOtpResponsive.otpExpiresIn": "OTP code will expire in",
   "RepaymentPaymentMethod.paymentOptions": "Payment Options",
   "RepaymentPaymentMethod.changeButton": "Change",
-  "RepaymentPaymentMethod.selectButton": "Select"
+  "RepaymentPaymentMethod.selectButton": "Select",
+  "useAutoComplete.errorSameCityOnly": "Loading location can only be changed if it's still in the same city."
 }

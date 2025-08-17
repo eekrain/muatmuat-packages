@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from "react";
 
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 import { useLocationFormStore } from "@/store/Shipper/forms/locationFormStore";
 import { useResponsiveSearchStore } from "@/store/Shipper/zustand/responsiveSearchStore";
@@ -20,6 +21,8 @@ export const useAutoComplete = ({
   refetchHistoryResult,
 }) => {
   const { isMobile } = useDevice();
+  const { t } = useTranslation();
+
   const responsiveSearchValue = useResponsiveSearchStore(
     (state) => state.searchValue
   );
@@ -69,7 +72,11 @@ export const useAutoComplete = ({
       ) {
         setAutoCompleteSearchPhrase(lastValidLocation?.location?.name);
         return toast.error(
-          "Perubahan lokasi muat hanya bisa diganti jika masih di kota yang sama."
+          t(
+            "useAutoComplete.errorSameCityOnly",
+            {},
+            "Perubahan lokasi muat hanya bisa diganti jika masih di kota yang sama."
+          )
         );
       }
       setLocationPartial(result);
