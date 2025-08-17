@@ -149,15 +149,21 @@ const DaftarArmada = ({
   return (
     <div className="flex h-[calc(100vh-92px-96px)] flex-col rounded-xl bg-white pt-4">
       {/* Header */}
+      <button
+        className="absolute right-2 top-2 z-10 text-primary-700 hover:text-primary-800"
+        onClick={onClose}
+      >
+        <X className="h-5 w-5" />
+      </button>
+
       <div className="px-4">
-        <div className="flex items-center justify-between pb-3">
+        <div className="pb-3">
+          {" "}
+          {/* div flex-nya sudah tidak diperlukan lagi */}
           <h2 className="text-[14px] font-bold text-gray-900">
             Daftar Armada{" "}
             <span className="font-semibold">({totalFleets} Armada)</span>
           </h2>
-          <button className="text-blue-500" onClick={onClose}>
-            <X className="h-5 w-5" />
-          </button>
         </div>
       </div>
 
