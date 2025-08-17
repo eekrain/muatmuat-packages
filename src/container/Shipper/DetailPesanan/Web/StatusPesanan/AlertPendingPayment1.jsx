@@ -1,7 +1,9 @@
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useCountdown } from "@/hooks/use-countdown";
+import { useTranslation } from "@/hooks/use-translation";
 
 export const AlertPendingPayment1 = ({ paymentDueDateTime }) => {
+  const { t } = useTranslation();
   const { countdown } = useCountdown({
     endingDate: paymentDueDateTime,
     isNeedCountdown: true,
@@ -26,10 +28,18 @@ export const AlertPendingPayment1 = ({ paymentDueDateTime }) => {
 
       <div className="flex flex-col gap-y-3">
         <h3 className="text-center text-sm font-semibold leading-[1.2] text-neutral-900 md:text-start md:text-lg">
-          Armada yang sesuai dengan pesanan kamu telah ditemukan
+          {t(
+            "AlertPendingPayment1.titleFleetFound",
+            {},
+            "Armada yang sesuai dengan pesanan kamu telah ditemukan"
+          )}
         </h3>
         <p className="text-xs font-medium leading-[1.2] text-neutral-600 md:text-sm md:text-neutral-900">
-          Mohon lakukan pembayaran dalam waktu
+          {t(
+            "AlertPendingPayment1.messagePaymentReminder",
+            {},
+            "Mohon lakukan pembayaran dalam waktu"
+          )}
           <span className="font-bold text-neutral-900">{countdown}</span>
         </p>
       </div>

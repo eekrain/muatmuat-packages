@@ -1,16 +1,19 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { NotificationDot } from "@/components/NotificationDot/NotificationDot";
 import Search from "@/components/Search/Search";
+import { toast } from "@/lib/toast";
 import { useGetTransportRequestList } from "@/services/CS/monitoring/permintaan-angkut/getTransportRequestListCS";
 
+import PermintaanAngkutDetailCS from "./PermintaanAngkutDetailCS.jsx";
 import TransportRequestCard from "./components/TransportRequestCard";
 
 const PermintaanAngkutCS = () => {
-  const [activeTab, setActiveTab] = useState("tersedia");
+  const [activeTab, setActiveTab] = useState("semua");
   const [searchValue, setSearchValue] = useState("");
   const [bookmarkedItems, setBookmarkedItems] = useState(new Set());
   const [removedItems, setRemovedItems] = useState(new Set());
@@ -19,6 +22,12 @@ const PermintaanAngkutCS = () => {
   // Get data based on active tab
   const params = useMemo(() => {
     switch (activeTab) {
+      case "semua":
+        return {}; // Show all requests
+      case "instan":
+        return { orderType: "INSTANT" };
+      case "terjadwal":
+        return { orderType: "SCHEDULED" };
       case "halal_logistik":
         return { isHalalLogistics: true };
       case "disimpan":
@@ -52,6 +61,10 @@ const PermintaanAngkutCS = () => {
 
   const handleBackToList = () => {
     setSelectedRequest(null);
+  };
+
+  const handleShowDetail = (request) => {
+    setSelectedRequest(request);
   };
 
   // Calculate dynamic tab counts based on data and local state
@@ -124,6 +137,44 @@ const PermintaanAngkutCS = () => {
     // 1-digit numbers use base width
     return isActive ? baseWidth : `w-auto min-w-[${baseWidth}]`;
   };
+
+  // Show toast on every page refresh (mount)
+  useEffect(() => {
+    toast.success("Pesanan ORDER123 telah diambil oleh PT Transporter ABC");
+    toast.success("Pesanan ORDER123 telah diambil oleh PT Transporter ABC");
+    toast.success("Pesanan ORDER123 telah diambil oleh PT Transporter ABC");
+    toast.success("Pesanan ORDER123 telah diambil oleh PT Transporter ABC");
+    toast.success("Pesanan ORDER123 telah diambil oleh PT Transporter ABC");
+    toast.success("Pesanan ORDER123 telah diambil oleh PT Transporter ABC");
+  }, []);
+
+  // WebSocket for realtime transporter take order alert (disabled until API ready)
+  // useEffect(() => {
+  //   const ws = new WebSocket("wss://your-api-domain/v1/ws/cs/alert-transporter-take-order");
+  //   ws.onmessage = (event) => {
+  //     try {
+  //       const [type, payload] = JSON.parse(event.data);
+  //       if (type === "alert-transporter-take-order" && payload?.orderCode && payload?.transporterName) {
+  //         toast.success(`Pesanan ${payload.orderCode} telah diambil oleh ${payload.transporterName}`);
+  //         // Optionally update local state/UI here
+  //       }
+  //     } catch (err) {
+  //       // handle error
+  //     }
+  //   };
+  //   return () => ws.close();
+  // }, []);
+
+  // If a request is selected, show detail view
+  if (selectedRequest) {
+    return (
+      <PermintaanAngkutDetailCS
+        request={selectedRequest}
+        onBack={handleBackToList}
+        onUnderstand={handleUnderstand}
+      />
+    );
+  }
 
   return (
     <div className="flex h-[calc(100vh-92px-48px)] flex-col bg-white">
@@ -216,7 +267,7 @@ const PermintaanAngkutCS = () => {
           {/* Search Input */}
           <div className="mb-4">
             <Search
-              placeholder="Cari No. Pesanan / Armada / Lokasi Muat & Bongkar / Muatan"
+              placeholder="Cari Permintaan Jasa Angkut"
               onSearch={handleSearch}
               autoSearch={true}
               debounceTime={300}
@@ -229,17 +280,17 @@ const PermintaanAngkutCS = () => {
           {/* Tabs */}
           <div className="flex h-7 w-auto max-w-[450px] gap-2">
             <button
-              onClick={() => setActiveTab("tersedia")}
+              onClick={() => setActiveTab("semua")}
               className={`relative flex h-full items-center justify-center gap-1 rounded-full border px-3 py-1 text-[10px] font-semibold transition-colors ${
-                activeTab === "tersedia"
+                activeTab === "semua"
                   ? "w-auto min-w-[79px] border-[#176CF7] bg-[#E2F2FF] text-[#176CF7]"
                   : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
               }`}
             >
-              <span className="whitespace-nowrap">
+              <span className="relative whitespace-nowrap">
                 Semua (
                 <span
-                  className={`${
+                  className={`$${
                     shouldAnimate(
                       dynamicTabCounts.all,
                       data?.newRequestsCount?.hasAnimation
@@ -251,6 +302,15 @@ const PermintaanAngkutCS = () => {
                   {formatCounter(dynamicTabCounts.all)}
                 </span>
                 )
+                {data?.tabCounters?.hasBlinkNode && (
+                  <NotificationDot
+                    position="absolute"
+                    positionClasses="-right-3 -top-1.5"
+                    animated={true}
+                    size="md"
+                    color="red"
+                  />
+                )}
               </span>
             </button>
 
@@ -262,10 +322,10 @@ const PermintaanAngkutCS = () => {
                   : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
               }`}
             >
-              <span className="whitespace-nowrap">
+              <span className="relative whitespace-nowrap">
                 Instan (
                 <span
-                  className={`${
+                  className={`$${
                     shouldAnimate(
                       dynamicTabCounts.instant,
                       data?.newRequestsCount?.hasAnimation
@@ -277,6 +337,15 @@ const PermintaanAngkutCS = () => {
                   {formatCounter(dynamicTabCounts.instant)}
                 </span>
                 )
+                {data?.tabCounters?.hasBlinkNode && (
+                  <NotificationDot
+                    position="absolute"
+                    positionClasses="-right-3 -top-1.5"
+                    animated={true}
+                    size="md"
+                    color="red"
+                  />
+                )}
               </span>
             </button>
 
@@ -288,10 +357,10 @@ const PermintaanAngkutCS = () => {
                   : "w-auto min-w-[79px] border-[#F1F1F1] bg-[#F1F1F1] text-[#000000]"
               }`}
             >
-              <span className="whitespace-nowrap">
+              <span className="relative whitespace-nowrap">
                 Terjadwal (
                 <span
-                  className={`${
+                  className={`$${
                     shouldAnimate(
                       dynamicTabCounts.scheduled,
                       data?.newRequestsCount?.hasAnimation
@@ -303,6 +372,15 @@ const PermintaanAngkutCS = () => {
                   {formatCounter(dynamicTabCounts.scheduled)}
                 </span>
                 )
+                {data?.tabCounters?.hasBlinkNode && (
+                  <NotificationDot
+                    position="absolute"
+                    positionClasses="-right-3 -top-1.5"
+                    animated={true}
+                    size="md"
+                    color="red"
+                  />
+                )}
               </span>
             </button>
 
@@ -315,10 +393,10 @@ const PermintaanAngkutCS = () => {
               }`}
             >
               <IconComponent src="/icons/halal.svg" className="h-4 w-4" />
-              <span className="whitespace-nowrap">
+              <span className="relative whitespace-nowrap">
                 Halal Logistik (
                 <span
-                  className={`${
+                  className={`$${
                     shouldAnimate(
                       dynamicTabCounts.halal,
                       data?.newRequestsCount?.hasAnimation
@@ -330,6 +408,15 @@ const PermintaanAngkutCS = () => {
                   {formatCounter(dynamicTabCounts.halal)}
                 </span>
                 )
+                {data?.tabCounters?.hasBlinkNode && (
+                  <NotificationDot
+                    position="absolute"
+                    positionClasses="-right-3 -top-1.5"
+                    animated={true}
+                    size="md"
+                    color="red"
+                  />
+                )}
               </span>
             </button>
           </div>
@@ -348,6 +435,7 @@ const PermintaanAngkutCS = () => {
             removedItems={removedItems}
             onUnderstand={handleUnderstand}
             searchValue={searchValue}
+            onShowDetail={handleShowDetail}
           />
         </div>
       </>
@@ -365,6 +453,7 @@ const RequestList = ({
   removedItems,
   onUnderstand,
   searchValue,
+  onShowDetail,
 }) => {
   if (isLoading) {
     return (
@@ -478,6 +567,7 @@ const RequestList = ({
             onBookmarkToggle={onBookmarkToggle}
             isBookmarked={currentBookmarkState}
             onUnderstand={onUnderstand}
+            onShowDetail={onShowDetail}
           />
         );
       })}

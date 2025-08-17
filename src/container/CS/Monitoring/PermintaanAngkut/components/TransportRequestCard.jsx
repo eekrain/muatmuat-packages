@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import HubungiModal from "@/app/cs/(main)/user/components/HubungiModal";
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -10,6 +11,8 @@ import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
+import ModalTransportDilihat from "./ModalTransportDilihat";
+import ModalTransportDisimpan from "./ModalTransportDisimpan";
 import ModalTransportTersedia from "./ModalTransportTersedia";
 
 const TransportRequestCard = ({
@@ -27,6 +30,9 @@ const TransportRequestCard = ({
 
   const [showDetail, setShowDetail] = useState(false);
   const [showModalTransporter, setShowModalTransporter] = useState(false);
+  const [showModalDisimpan, setShowModalDisimpan] = useState(false);
+  const [showModalDilihat, setShowModalDilihat] = useState(false);
+  const [showHubungiModal, setShowHubungiModal] = useState(false);
 
   // Update local state when prop changes
   useEffect(() => {
@@ -42,7 +48,9 @@ const TransportRequestCard = ({
   };
 
   const handleDetail = () => {
-    if (onShowDetail) onShowDetail(request);
+    if (onShowDetail) {
+      onShowDetail(request);
+    }
   };
 
   const handleReject = () => {
@@ -81,35 +89,74 @@ const TransportRequestCard = ({
     return h * 3600 + m * 60 + s;
   };
 
-  const countdownSeconds = parseCountdownToSeconds(
-    request.timeLabels?.countdown
-  );
-  // Local countdown state
-  const [countdown, setCountdown] = useState(countdownSeconds);
+  // Countdown logic: start at createdAt, allow negative values
+  const getCountdownSeconds = () => {
+    if (!request.timeLabels?.countdown || !request.shipperInfo?.createdAt)
+      return 0;
+    const start = new Date(request.shipperInfo.createdAt);
+    const now = new Date();
+    const initial = parseCountdownToSeconds(request.timeLabels.countdown);
+    const elapsed = Math.floor((now - start) / 1000);
+    // Allow negative countdown if time has passed
+    return initial - elapsed;
+  };
+
+  const [countdown, setCountdown] = useState(getCountdownSeconds());
   useEffect(() => {
-    setCountdown(countdownSeconds);
-    if (countdownSeconds > 0) {
-      const interval = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(interval);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [countdownSeconds]);
+    setCountdown(getCountdownSeconds());
+    const interval = setInterval(() => {
+      setCountdown((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line
+  }, [request.timeLabels?.countdown, request.shipperInfo?.createdAt]);
+  // (removed duplicate countdown state/effect)
 
   // Format always as hh:mm:ss for < 1 day
   const formatHHMMSS = (seconds) => {
-    if (seconds <= 0) return "00:00:00";
-    const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
-    const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
-    const s = String(seconds % 60).padStart(2, "0");
-    return `${h}:${m}:${s}`;
+    const absSec = Math.abs(seconds);
+    const days = Math.floor(absSec / 86400);
+    if (days > 0) {
+      return `${seconds < 0 ? "-" : ""}${days} Hari`;
+    }
+    const hours = Math.floor((absSec % 86400) / 3600);
+    const minutes = Math.floor((absSec % 3600) / 60);
+    const secs = absSec % 60;
+    if (absSec < 3600) {
+      // Less than 1 hour: show mm:ss only
+      return `${
+        seconds < 0 ? "-" : ""
+      }${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    }
+    // 1 hour to < 1 day: show hh:mm:ss
+    return `${
+      seconds < 0 ? "-" : ""
+    }${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   };
+
+  // Calculate loadTimeText (e.g., 'Muat 3 Hari Lagi')
+  let loadTimeText = request.loadTimeText;
+  let loadTimeColor = "bg-primary-50 text-primary-700";
+  if (request.loadTimeStart) {
+    const today = new Date();
+    const muatDate = new Date(request.loadTimeStart);
+    today.setHours(0, 0, 0, 0);
+    muatDate.setHours(0, 0, 0, 0);
+    const diffDays = Math.round((muatDate - today) / (1000 * 60 * 60 * 24));
+    if (diffDays === 0) {
+      loadTimeText = "Muat Hari Ini";
+      loadTimeColor = "bg-success-50 text-success-400";
+    } else if (diffDays === 1) {
+      loadTimeText = "Muat Besok";
+      loadTimeColor = "bg-success-50 text-success-400";
+    } else if (diffDays >= 2 && diffDays <= 5) {
+      loadTimeText = `Muat ${diffDays} Hari Lagi`;
+      loadTimeColor = "bg-warning-100 text-warning-900";
+    } else if (diffDays > 5) {
+      loadTimeText = `Muat ${diffDays} Hari Lagi`;
+      loadTimeColor = "bg-primary-50 text-primary-700";
+    }
+  }
 
   return (
     <div className="relative">
@@ -131,7 +178,10 @@ const TransportRequestCard = ({
                 <p className="text-sm font-semibold">
                   {request.shipperInfo?.name || "-"}
                 </p>
-                <div className="flex items-center gap-1">
+                <div
+                  className="flex items-center gap-1"
+                  onClick={() => setShowHubungiModal(true)}
+                >
                   <IconComponent
                     src="/icons/contact.svg"
                     className={cn(
@@ -139,17 +189,47 @@ const TransportRequestCard = ({
                       request.isTaken ? "text-neutral-700" : ""
                     )}
                   />
-                  <p className="text-xs font-medium text-primary-700">
+                  <p className="cursor-pointer text-xs font-medium text-primary-700">
                     Hubungi Shipper
                   </p>
+
+                  {/* HubungiModal integration */}
+                  <HubungiModal
+                    isOpen={showHubungiModal}
+                    onClose={() => setShowHubungiModal(false)}
+                    transporterData={null} // TODO: pass actual transporter data if available
+                  />
                 </div>
               </div>
             </div>
             <div className="flex flex-col items-end">
-              <p className="text-xs text-gray-600">1 Menit yang lalu</p>
-              <p className="text-xs font-semibold text-neutral-900">
-                {countdownSeconds > 0 ? formatHHMMSS(countdown) : "-"}
+              <p className="text-xs text-gray-600">
+                {(() => {
+                  // Anggap createdAt sudah WIB
+                  const created = new Date(request.shipperInfo?.createdAt);
+                  const now = new Date();
+
+                  // Hitung selisih dalam ms
+                  const diffMs = now - created;
+                  const diffSec = Math.floor(diffMs / 1000);
+                  const diffMin = Math.floor(diffSec / 60);
+                  const diffHour = Math.floor(diffMin / 60);
+                  const diffDay = Math.floor(diffHour / 24);
+
+                  if (diffDay > 0) return `${diffDay} Hari yang lalu`;
+                  if (diffHour > 0) return `${diffHour} Jam yang lalu`;
+                  if (diffMin > 0) return `${diffMin} Menit yang lalu`;
+                  return `${diffSec} Detik yang lalu`;
+                })()}
               </p>
+              <p className="text-xs font-semibold text-neutral-900">
+                {formatHHMMSS(countdown)}
+              </p>
+              {request.reblast !== "1" && (
+                <p className="text-xs text-gray-600">
+                  Permintaan ke-{request.reblast}
+                </p>
+              )}
             </div>
           </div>
           <div className="border-b border-neutral-400"></div>
@@ -165,13 +245,9 @@ const TransportRequestCard = ({
                   "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
                   request.isTaken
                     ? "text-neutral-700"
-                    : request.timeLabel?.color === "green"
-                      ? "bg-success-50 text-success-700"
-                      : request.timeLabel?.color === "blue"
-                        ? "bg-primary-50 text-primary-700"
-                        : request.orderType === "INSTANT"
-                          ? "bg-success-50 text-success-700"
-                          : "bg-primary-50 text-primary-700"
+                    : request.orderType === "INSTANT"
+                      ? "bg-success-50 text-success-400"
+                      : "bg-primary-50 text-primary-700"
                 )}
               >
                 {request.orderType === "INSTANT" ? "Instan" : "Terjadwal"}
@@ -181,30 +257,20 @@ const TransportRequestCard = ({
               <span
                 className={cn(
                   "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
-                  request.isTaken
-                    ? "text-neutral-700"
-                    : request.loadTimeText?.includes("Hari Ini") ||
-                        request.loadTimeText?.includes("Besok")
-                      ? "bg-success-50 text-success-700"
-                      : request.loadTimeText?.includes("2 Hari") ||
-                          request.loadTimeText?.includes("3 Hari") ||
-                          request.loadTimeText?.includes("4 Hari") ||
-                          request.loadTimeText?.includes("5 Hari")
-                        ? "bg-warning-50 text-warning-700"
-                        : "bg-primary-50 text-primary-700"
+                  request.isTaken ? "text-neutral-700" : loadTimeColor
                 )}
               >
-                {request.loadTimeText || "Muat 7 Hari Lagi"}
+                {loadTimeText || "Muat 7 Hari Lagi"}
               </span>
 
               {/* Overload Badge */}
-              {request.hasOverload && (
+              {request.potentialOverload && (
                 <span
                   className={cn(
                     "flex h-6 items-center rounded-[6px] px-2 text-xs font-semibold",
                     request.isTaken
                       ? "text-neutral-700"
-                      : "bg-error-50 text-error-700"
+                      : "bg-error-50 text-error-400"
                   )}
                 >
                   Potensi Overload
@@ -227,7 +293,7 @@ const TransportRequestCard = ({
                       <IconComponent
                         src="/icons/halal.svg"
                         className={cn(
-                          "h-4 w-3",
+                          "h-[15.286855697631836px] w-[11.406869888305664px]",
                           request.isTaken ? "text-neutral-700" : ""
                         )}
                       />
@@ -251,15 +317,15 @@ const TransportRequestCard = ({
               <TimelineContainer>
                 {[
                   {
-                    fullAddress:
-                      request.pickupLocations?.[0]?.fullAddress ||
-                      "Lokasi Muat",
+                    fullAddress: request.locations?.pickupLocations?.[0]
+                      ? `${request.locations.pickupLocations[0].city}, ${request.locations.pickupLocations[0].district}`
+                      : "Lokasi Muat",
                     type: "pickup",
                   },
                   {
-                    fullAddress:
-                      request.dropoffLocations?.[0]?.fullAddress ||
-                      "Lokasi Bongkar",
+                    fullAddress: request.locations?.dropoffLocations?.[0]
+                      ? `${request.locations.dropoffLocations[0].city}, ${request.locations.dropoffLocations[0].district}`
+                      : "Lokasi Bongkar",
                     type: "dropoff",
                   },
                 ].map((location, index) => (
@@ -297,7 +363,7 @@ const TransportRequestCard = ({
                     : "font-semibold text-neutral-900"
                 )}
               >
-                {request.estimatedDistance} km
+                {request.locations?.estimatedDistance} km
               </div>
             </div>
           </div>
@@ -316,8 +382,8 @@ const TransportRequestCard = ({
                 <div className="text-xs font-medium text-neutral-600">
                   Informasi Muatan (Total :{" "}
                   {formatWeight(
-                    request.cargos?.[0]?.weight || 0,
-                    request.cargos?.[0]?.weightUnit || "kg"
+                    request.cargo?.items?.[0]?.weight || 0,
+                    request.cargo?.items?.[0]?.weightUnit || "kg"
                   )}
                   )
                 </div>
@@ -327,9 +393,9 @@ const TransportRequestCard = ({
                     request.isTaken ? "text-[#7B7B7B]" : "text-neutral-900"
                   )}
                 >
-                  {request.cargos.length > 1 ? (
+                  {request.cargo?.additionalItems > 0 ? (
                     <>
-                      {request.cargos[0].name},{" "}
+                      {request.cargo.items[0].name},{" "}
                       <InfoTooltip
                         side="bottom"
                         align="start"
@@ -341,7 +407,7 @@ const TransportRequestCard = ({
                               cursor: "pointer",
                             }}
                           >
-                            +{request.cargos.length - 1} lainnya
+                            +{request.cargo.additionalItems} lainnya
                           </span>
                         }
                       >
@@ -350,17 +416,19 @@ const TransportRequestCard = ({
                             Informasi Muatan
                           </div>
                           <div className="space-y-1">
-                            {request.cargos.slice(1).map((cargo, index) => (
-                              <div key={index} className="text-sm">
-                                {index + 1}. {cargo.name}
-                              </div>
-                            ))}
+                            {request.cargo.items
+                              .slice(1)
+                              .map((cargo, index) => (
+                                <div key={index} className="text-sm">
+                                  {index + 1}. {cargo.name}
+                                </div>
+                              ))}
                           </div>
                         </div>
                       </InfoTooltip>
                     </>
                   ) : (
-                    request.cargos[0].name
+                    request.cargo?.items?.[0]?.name
                   )}
                 </div>
               </div>
@@ -388,8 +456,8 @@ const TransportRequestCard = ({
                     request.isTaken ? "text-[#7B7B7B]" : "text-neutral-900"
                   )}
                 >
-                  {request.truckCount} Unit ({request.truckTypeName} -{" "}
-                  {request.carrierName})
+                  {request.vehicle?.truckCount} Unit (
+                  {request.vehicle?.truckType} - {request.vehicle?.carrierType})
                 </div>
               </div>
             </div>
@@ -453,8 +521,9 @@ const TransportRequestCard = ({
                 Potensi Pendapatan
               </span>
               <span className="text-[12px] font-bold text-primary-700">
-                {request.potentialEarnings ||
-                  formatCurrency(request.totalPrice)}
+                {request.pricing?.potentialIncome
+                  ? formatCurrency(request.pricing.potentialIncome)
+                  : "-"}
               </span>
             </div>
           </div>
@@ -478,8 +547,15 @@ const TransportRequestCard = ({
                 src="/icons/truk16.svg"
                 className="h-4 w-4 text-[#7B3F00]"
               />
-              <span className="text-xs font-medium text-primary-700">
-                16 Transporter Tersedia
+              <span
+                className={cn(
+                  "text-xs font-medium",
+                  (request.counters?.available ?? 0) > 0
+                    ? "text-primary-700"
+                    : "text-neutral-600"
+                )}
+              >
+                {request.counters?.available ?? 0} Transporter Tersedia
               </span>
             </div>
 
@@ -491,28 +567,58 @@ const TransportRequestCard = ({
             )}
 
             {/* Dilihat */}
-            <div className="flex items-center gap-1">
+            <div
+              className="flex cursor-pointer items-center gap-1"
+              onClick={() => setShowModalDilihat(true)}
+            >
               <IconComponent
                 src="/icons/eyes.svg"
                 className="h-4 w-4 text-[#7B3F00]"
               />
-              <span className="text-xs font-medium text-primary-700">
-                15 Dilihat
+              <span
+                className={cn(
+                  "text-xs font-medium",
+                  (request.counters?.viewed ?? 0) > 0
+                    ? "text-primary-700"
+                    : "text-neutral-600"
+                )}
+              >
+                {request.counters?.viewed ?? 0} Dilihat
               </span>
             </div>
+            {showModalDilihat && (
+              <ModalTransportDilihat
+                onClose={() => setShowModalDilihat(false)}
+              />
+            )}
 
             {/* Disimpan */}
-            <div className="flex items-center gap-1">
+            <div
+              className="flex cursor-pointer items-center gap-1"
+              onClick={() => setShowModalDisimpan(true)}
+            >
               <div className="flex h-4 w-4 items-center justify-center rounded-full bg-red-100">
                 <IconComponent
                   src="/icons/bookmark-fill.svg"
                   className="h-3 w-3 text-red-500"
                 />
               </div>
-              <span className="text-xs font-medium text-primary-700">
-                21 Disimpan
+              <span
+                className={cn(
+                  "text-xs font-medium",
+                  (request.counters?.saved ?? 0) > 0
+                    ? "text-primary-700"
+                    : "text-neutral-600"
+                )}
+              >
+                {request.counters?.saved ?? 0} Disimpan
               </span>
             </div>
+            {showModalDisimpan && (
+              <ModalTransportDisimpan
+                onClose={() => setShowModalDisimpan(false)}
+              />
+            )}
           </div>
 
           {/* Action Buttons */}
@@ -571,6 +677,13 @@ const TransportRequestCard = ({
           </div>
         </>
       )}
+
+      {/* HubungiModal integration */}
+      <HubungiModal
+        isOpen={showHubungiModal}
+        onClose={() => setShowHubungiModal(false)}
+        transporterData={request.shipperInfo || null}
+      />
     </div>
   );
 };

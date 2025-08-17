@@ -2,13 +2,13 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = true; // toggle mock data
+const useMockData = false; // toggle mock data
 
 // Endpoint constants
-export const URL_MASTER_PROVINCES = "/v1/provinces";
-export const URL_AREA_MUAT_MANAGE = "/v1/area-muat/manage";
-export const URL_AREA_MUAT = "/v1/area-muat";
-export const URL_AREA_MUAT_STATUS = "/v1/area-muat/status";
+export const URL_MASTER_PROVINCES = "/v1/transporter/settings/provinces";
+export const URL_AREA_MUAT_MANAGE = "/v1/transporter/settings/area-muat/manage";
+export const URL_AREA_MUAT = "/v1/transporter/settings/area-muat";
+export const URL_AREA_MUAT_STATUS = "/v1/transporter/settings/area-muat/status";
 // Mock API results for development/testing
 export const mockMasterProvinces = {
   data: {
@@ -387,7 +387,7 @@ export const mockAreaMuatStatus = {
       Text: "Status area muat berhasil diambil",
     },
     Data: {
-      hasData: true,
+      hasData: false,
       transporterID: "550e8400-e29b-41d4-a716-446655440001",
       provinceCount: 4,
       totalCities: 23,

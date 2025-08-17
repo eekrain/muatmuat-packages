@@ -72,11 +72,7 @@ const Period = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isPeriode, setIsPeriode] = useState(false);
 
-  const [validate, setValidate] = useState({
-    start_date: "",
-    end_date: "",
-  });
-
+  const [validate, setValidate] = useState({ start_date: "", end_date: "" });
   const [inputDateCustom, setInputDateCustom] = useState({
     status: null,
     start_date: "",
@@ -147,18 +143,16 @@ const Period = ({
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target))
         setIsOpen(false);
-      }
     };
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
   const calendarBounds = () => {
-    if (inputDateCustom.status === "start_date") {
+    if (inputDateCustom.status === "start_date")
       return { min: MIN_DATE, max: TODAY };
-    }
     if (inputDateCustom.status === "end_date") {
       const start = inputDateCustom.start_iso
         ? startOfDay(new Date(inputDateCustom.start_iso))
@@ -173,16 +167,12 @@ const Period = ({
 
   const tileDisabledByRange = ({ date }) => {
     const d = startOfDay(date);
-
     if (inputDateCustom.status === "end_date" && inputDateCustom.start_iso) {
       const start = startOfDay(new Date(inputDateCustom.start_iso));
       return d > clamp(addYears(start, 1), MIN_DATE, TODAY) || d < start;
     }
-
-    if (inputDateCustom.status === "start_date") {
+    if (inputDateCustom.status === "start_date")
       return d < MIN_DATE || d > TODAY;
-    }
-
     const { min, max } = calendarBounds();
     return d < min || d > max;
   };
@@ -191,13 +181,10 @@ const Period = ({
     const dd = startOfDay(date);
     const display = toDisplay(dd);
     const iso = toISO(dd);
-
     setValidate((v) => ({ ...v, [inputDateCustom.status]: "" }));
-
     if (inputDateCustom.status === "start_date") {
       const shouldResetEndDate =
         inputDateCustom.end_iso && !inputDateCustom.start_iso;
-
       setInputDateCustom((a) => ({
         ...a,
         start_date: display,
@@ -219,7 +206,6 @@ const Period = ({
         const minEnd = start;
         const maxEnd = clamp(addYears(start, 1), MIN_DATE, TODAY);
         const safeEnd = clamp(dd, minEnd, maxEnd);
-
         setInputDateCustom((a) => ({
           ...a,
           end_date: toDisplay(safeEnd),
@@ -302,16 +288,15 @@ const Period = ({
             <div className="flex w-full gap-2">
               <Plus width={15} height={15} className="text-primary-700" />
               <span className="medium-xs">
-                {t("AppMuatpartsAnalisaProdukPilihPeriode")}
+                {t("Period.actionSelectPeriod", {}, "Pilih Periode")}
               </span>
             </div>
           </li>
-
           {recentSelections.length > 0 && (
             <>
               <hr className="border-gray-200" />
               <li className="medium-xs px-[10px] py-2 text-neutral-600">
-                Terakhir Dicari
+                {t("Period.labelRecentlySearched", {}, "Terakhir Dicari")}
               </li>
               {recentSelections.map((option) => (
                 <li
@@ -343,9 +328,8 @@ const Period = ({
           <ModalHeader size="small" />
           <div className="flex flex-col items-center gap-6 px-4 py-7">
             <h3 className="bold-base text-center">
-              {t("AppMuatpartsAnalisaProdukPilihPeriode")}
+              {t("Period.actionSelectPeriod", {}, "Pilih Periode")}
             </h3>
-
             <div className="relative flex items-start gap-2">
               <div className="relative">
                 <Input
@@ -357,13 +341,16 @@ const Period = ({
                   classInput="w-full"
                   status={validate.start_date ? "error" : undefined}
                   className="!w-[136px] max-w-none"
-                  placeholder={t("AppMuatpartsAnalisaProdukPeriodeAwal")}
+                  placeholder={t(
+                    "Period.placeholderStartDate",
+                    {},
+                    "Periode Awal"
+                  )}
                   icon={{
                     right: <IconComponent src={"/icons/calendar16.svg"} />,
                   }}
                   supportiveText={{ title: validate.start_date, desc: "" }}
                 />
-
                 {inputDateCustom.status === "start_date" && (
                   <div className="absolute left-0 top-10 z-30">
                     <Calendar
@@ -380,9 +367,9 @@ const Period = ({
                   </div>
                 )}
               </div>
-
-              <span className="semi-xs mt-2 text-neutral-600">s/d</span>
-
+              <span className="semi-xs mt-2 text-neutral-600">
+                {t("Period.labelUntil", {}, "s/d")}
+              </span>
               <div className="relative">
                 <Input
                   value={inputDateCustom.end_date}
@@ -393,13 +380,16 @@ const Period = ({
                   classInput="w-full"
                   status={validate.end_date ? "error" : undefined}
                   className="!w-[136px] max-w-none"
-                  placeholder={t("AppMuatpartsAnalisaProdukPeriodeAkhir")}
+                  placeholder={t(
+                    "Period.placeholderEndDate",
+                    {},
+                    "Periode Akhir"
+                  )}
                   icon={{
                     right: <IconComponent src={"/icons/calendar16.svg"} />,
                   }}
                   supportiveText={{ title: validate.end_date, desc: "" }}
                 />
-
                 {inputDateCustom.status === "end_date" && (
                   <div className="absolute right-0 top-10 z-30">
                     <Calendar
@@ -417,49 +407,59 @@ const Period = ({
                 )}
               </div>
             </div>
-
             <Button
               variant="muattrans-primary"
               className="!h-8 w-[112px]"
               onClick={() => {
                 let hasError = false;
-
                 if (!inputDateCustom.start_iso) {
                   setValidate((v) => ({
                     ...v,
-                    start_date: "Periode awal harus diisi",
+                    start_date: t(
+                      "Period.messageErrorStartDateRequired",
+                      {},
+                      "Periode awal harus diisi"
+                    ),
                   }));
                   hasError = true;
                 }
                 if (!inputDateCustom.end_iso) {
                   setValidate((v) => ({
                     ...v,
-                    end_date: "Periode akhir harus diisi",
+                    end_date: t(
+                      "Period.messageErrorEndDateRequired",
+                      {},
+                      "Periode akhir harus diisi"
+                    ),
                   }));
                   hasError = true;
                 }
                 if (hasError) return;
-
                 const start = startOfDay(new Date(inputDateCustom.start_iso));
                 const end = startOfDay(new Date(inputDateCustom.end_iso));
                 const maxEnd = clamp(addYears(start, 1), MIN_DATE, TODAY);
-
                 if (end < start) {
                   setValidate((v) => ({
                     ...v,
-                    end_date:
-                      "Periode akhir tidak boleh lebih kecil dari periode awal",
+                    end_date: t(
+                      "Period.messageErrorEndDateBeforeStart",
+                      {},
+                      "Periode akhir tidak boleh lebih kecil dari periode awal"
+                    ),
                   }));
                   return;
                 }
                 if (end > maxEnd) {
                   setValidate((v) => ({
                     ...v,
-                    end_date: "Rentang maksimal 1 tahun dari periode awal",
+                    end_date: t(
+                      "Period.messageErrorRangeTooLarge",
+                      {},
+                      "Rentang maksimal 1 tahun dari periode awal"
+                    ),
                   }));
                   return;
                 }
-
                 const customOption = {
                   name: `${inputDateCustom.start_date} - ${inputDateCustom.end_date}`,
                   value: `${inputDateCustom.start_date} - ${inputDateCustom.end_date}`,
@@ -469,12 +469,11 @@ const Period = ({
                   iso_end_date: inputDateCustom.end_iso,
                   range: true,
                 };
-
                 handleSelect(customOption, true);
                 setIsPeriode(false);
               }}
             >
-              {t("AppMuatpartsAnalisaProdukTerapkan")}
+              {t("Period.buttonApply", {}, "Terapkan")}
             </Button>
           </div>
         </ModalContent>

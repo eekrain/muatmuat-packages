@@ -5,6 +5,7 @@ import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { MapContainer } from "@/components/MapContainer/MapContainer";
 import { TabsContent } from "@/components/Tabs/Tabs";
+import { toast } from "@/lib/toast";
 
 const SectionHeader = ({ title }) => (
   <div className="flex items-center px-6 py-4">
@@ -46,40 +47,64 @@ const FileRow = ({ label, fileName, isOdd = false }) => (
   </div>
 );
 
-const ContactRow = ({ picNumber, name, position, phone, isOdd = false }) => (
-  <div
-    className={`flex items-center gap-11 px-6 py-4 ${isOdd ? "bg-neutral-100" : "bg-white"}`}
-  >
-    <div className="flex items-center gap-2">
-      <div className="flex h-[18px] w-[18px] items-center justify-center rounded-full">
+const ContactRow = ({ picNumber, name, position, phone, isOdd = false }) => {
+  const handleCopyPhone = async () => {
+    try {
+      await navigator.clipboard.writeText(phone);
+      toast.success("No. HP PIC berhasil disalin");
+    } catch {
+      // Fallback for older browsers
+      const textArea = document.createElement("textarea");
+      textArea.value = phone;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      toast.success("No. HP PIC berhasil disalin");
+    }
+  };
+
+  return (
+    <div
+      className={`flex items-center gap-11 px-6 py-4 ${isOdd ? "bg-neutral-100" : "bg-white"}`}
+    >
+      <div className="flex items-center gap-2">
+        <div className="flex h-[18px] w-[18px] items-center justify-center rounded-full">
+          <IconComponent
+            src="/icons/profile16.svg"
+            className="text-muat-trans-secondary-900"
+          />
+        </div>
+        <span className="w-10 text-xs font-medium text-neutral-600">
+          {picNumber}
+        </span>
+      </div>
+
+      <div className="w-48 text-xs font-medium text-black">{name}</div>
+
+      <div className="w-48 text-xs font-medium text-black">{position}</div>
+
+      <div className="w-24 text-xs font-medium text-black">{phone}</div>
+
+      <div className="flex items-center gap-3">
+        <button
+          onClick={handleCopyPhone}
+          className="flex h-[18px] w-[18px] items-center justify-center rounded transition-colors hover:bg-neutral-100"
+          title="Salin nomor telepon"
+        >
+          <IconComponent
+            src="/icons/salin.svg"
+            className="h-[18px] w-[18px] text-primary-700"
+          />
+        </button>
         <IconComponent
-          src="/icons/profile16.svg"
-          className="text-muat-trans-secondary-900"
+          src="/icons/driver-whatsapp.svg"
+          className="h-[18px] w-[18px] text-primary-700"
         />
       </div>
-      <span className="w-10 text-xs font-medium text-neutral-600">
-        {picNumber}
-      </span>
     </div>
-
-    <div className="w-48 text-xs font-medium text-black">{name}</div>
-
-    <div className="w-48 text-xs font-medium text-black">{position}</div>
-
-    <div className="w-24 text-xs font-medium text-black">{phone}</div>
-
-    <div className="flex items-center gap-3">
-      <IconComponent
-        src="/icons/salin.svg"
-        className="h-[18px] w-[18px] text-primary-700"
-      />
-      <IconComponent
-        src="/icons/driver-whatsapp.svg"
-        className="h-[18px] w-[18px] text-primary-700"
-      />
-    </div>
-  </div>
-);
+  );
+};
 
 const MapPlaceholder = () => (
   <div className="relative h-[154px] w-64">

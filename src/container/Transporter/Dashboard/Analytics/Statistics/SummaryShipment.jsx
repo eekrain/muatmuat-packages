@@ -84,7 +84,7 @@ const SummaryShipment = ({ data, isLoading }) => {
                         </span>
                       </TooltipTrigger>
                       <TooltipContent className="rounded-md border border-neutral-200 bg-white px-3 py-1.5 text-sm text-neutral-900 shadow-md">
-                        <p>{`${rawValue} ${item.unit}`}</p>
+                        <p>{`${rawValue.toLocaleString("id-ID")} ${item.unit}`}</p>
                       </TooltipContent>
                     </Tooltip>
                   }

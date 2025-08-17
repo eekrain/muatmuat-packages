@@ -10,12 +10,14 @@ import Button from "@/components/Button/Button";
 import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import DisplayOptionsBar from "@/components/DisplayOptionsBar/DisplayOptionsBar";
-import FilterDropdown from "@/components/FilterDropdown";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import Pagination from "@/components/Pagination/Pagination";
 import Table from "@/components/Table/Table";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
+
+import DashboardFilter from "./DashboardFilter";
 
 const usePrevious = (value) => {
   const ref = useRef();
@@ -30,7 +32,7 @@ const DashboardDataTable = ({
   columns = [],
   loading = false,
   totalItems = 0,
-  searchPlaceholder = "Search...",
+  searchPlaceholder,
   showFilter = true,
   showSearch = true,
   currentPage,
@@ -52,18 +54,20 @@ const DashboardDataTable = ({
   firstTimerButtonLink,
   className,
   displayOptions,
+  displayActions,
   showDisplayView,
+  containerClassName,
+  infoView,
 }) => {
+  const { t } = useTranslation();
   const [localSearchValue, setLocalSearchValue] = useState(
     activeSearchValue || ""
   );
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
-
-  // --- NEW: Self-contained logic to track the last action ---
   const [lastActionType, setLastActionType] = useState(null);
 
   const prevSearch = usePrevious(activeSearchValue);
-  const prevFilters = usePrevious(JSON.stringify(activeFilters)); // Stringify for reliable comparison
+  const prevFilters = usePrevious(JSON.stringify(activeFilters));
   const prevPeriod = usePrevious(isPeriodActive);
 
   useEffect(() => {
@@ -127,20 +131,35 @@ const DashboardDataTable = ({
   const router = useRouter();
 
   const renderEmptyState = useMemo(() => {
-    console.log(lastActionType);
     if (!hasNoData) return null;
     switch (lastActionType) {
       case "search":
         return (
-          <DataNotFound title="Keyword Tidak Ditemukan" className="!w-full" />
+          <DataNotFound
+            title={t(
+              "DashboardDataTable.notFoundSearchTitle",
+              {},
+              "Keyword Tidak Ditemukan"
+            )}
+            className="!w-full"
+          />
         );
       case "filter":
         return (
           <DataNotFound
             title={
               <p>
-                Data Tidak Ditemukan.
-                <br /> Mohon coba hapus beberapa filter
+                {t(
+                  "DashboardDataTable.notFoundFilterPart1",
+                  {},
+                  "Data Tidak Ditemukan."
+                )}
+                <br />
+                {t(
+                  "DashboardDataTable.notFoundFilterPart2",
+                  {},
+                  "Mohon coba hapus beberapa filter"
+                )}
               </p>
             }
             className="!w-full"
@@ -149,7 +168,7 @@ const DashboardDataTable = ({
       case "period":
         return (
           <DataEmpty
-            title="Tidak ada data"
+            title={t("DashboardDataTable.emptyDataTitle", {}, "Tidak ada data")}
             subtitle=""
             className="!w-full !shadow-none"
           />
@@ -157,7 +176,10 @@ const DashboardDataTable = ({
       default:
         return (
           <DataEmpty
-            title={firsTimerTitle || "Tidak ada data"}
+            title={
+              firsTimerTitle ||
+              t("DashboardDataTable.emptyDataTitle", {}, "Tidak ada data")
+            }
             subtitle=""
             className="!shadow-none"
           >
@@ -187,6 +209,7 @@ const DashboardDataTable = ({
     firstTimerButtonText,
     firstTimerButtonLink,
     router,
+    t,
   ]);
 
   const activeFiltersForBar = useMemo(() => {
@@ -248,7 +271,10 @@ const DashboardDataTable = ({
         {isFirstTimer ? (
           <div className="flex h-full items-center justify-center pb-8 pt-16">
             <DataEmpty
-              title={firsTimerTitle || "Tidak ada data"}
+              title={
+                firsTimerTitle ||
+                t("DashboardDataTable.emptyDataTitle", {}, "Tidak ada data")
+              }
               subtitle=""
               className="!shadow-none"
             >
@@ -271,13 +297,26 @@ const DashboardDataTable = ({
           </div>
         ) : (
           <>
-            <div className="flex-shrink-0 space-y-4 px-6 py-5">
+            <div
+              className={cn(
+                "flex-shrink-0 space-y-4 px-6 py-5",
+                containerClassName
+              )}
+            >
+              {infoView}
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   {showSearch && (
                     <Input
                       type="text"
-                      placeholder={searchPlaceholder}
+                      placeholder={
+                        searchPlaceholder ||
+                        t(
+                          "DashboardDataTable.searchPlaceholderDefault",
+                          {},
+                          "Search..."
+                        )
+                      }
                       value={localSearchValue}
                       onChange={(e) => setLocalSearchValue(e.target.value)}
                       onKeyUp={handleSearchKeyUp}
@@ -299,7 +338,7 @@ const DashboardDataTable = ({
                     />
                   )}
                   {showFilter && filterConfig && (
-                    <FilterDropdown
+                    <DashboardFilter
                       categories={filterConfig.categories}
                       data={filterConfig.data}
                       selectedValues={activeFilters || {}}
@@ -318,15 +357,18 @@ const DashboardDataTable = ({
                   onClearAll={handleClearAllFilters}
                 />
               )}
-              {showDisplayView && displayOptions && (
-                <DisplayOptionsBar
-                  totalCount={displayOptions.totalCount || totalItems}
-                  statusOptions={displayOptions.statusOptions || []}
-                  currentStatus={displayOptions.currentStatus}
-                  showAllOption={displayOptions.showAllOption}
-                  onStatusChange={displayOptions.onStatusChange}
-                />
-              )}
+              <div className="flex w-full justify-between">
+                {showDisplayView && displayOptions && (
+                  <DisplayOptionsBar
+                    totalCount={displayOptions.totalCount || totalItems}
+                    statusOptions={displayOptions.statusOptions || []}
+                    currentStatus={displayOptions.currentStatus}
+                    showAllOption={displayOptions.showAllOption}
+                    onStatusChange={displayOptions.onStatusChange}
+                  />
+                )}
+                {displayActions}
+              </div>
             </div>
 
             <div className="flex-1 overflow-hidden">

@@ -21,7 +21,8 @@ export default function DesktopLayout({ children }) {
   }
 
   // Check if we're on the monitoring page
-  const isMonitoringPage = pathname.includes("/monitoring");
+  const isMonitoringPage =
+    pathname.includes("/monitoring") && !pathname.includes("/detail-pesanan");
 
   return (
     <div className="relative min-h-screen">

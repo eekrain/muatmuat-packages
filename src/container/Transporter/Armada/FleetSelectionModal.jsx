@@ -24,6 +24,7 @@ const FleetSelectionModal = ({
   driverName = "Driver",
   currentFleetId,
   title = "Ubah Armada",
+  mutate,
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [selectedFleetId, setSelectedFleetId] = useState(
@@ -84,6 +85,7 @@ const FleetSelectionModal = ({
       setIsUpdating(true);
       try {
         await updateDriverFleet(driverId, selectedFleetId);
+        mutate(); // Refresh the driver data after update
 
         // Success handling
         toast.success("Berhasil memilih armada");

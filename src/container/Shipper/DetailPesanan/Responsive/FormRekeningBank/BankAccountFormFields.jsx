@@ -2,6 +2,7 @@ import Checkbox from "@/components/Form/Checkbox";
 import { FormContainer, FormLabel } from "@/components/Form/Form";
 import Input from "@/components/Form/Input";
 import { Select } from "@/components/Form/Select";
+import { useTranslation } from "@/hooks/use-translation";
 import { useGetAvailableBankOptions } from "@/services/Shipper/detailpesanan/batalkan-pesanan/getAvailableBankOptions";
 
 // Mock data for the bank selection dropdown (fallback)
@@ -23,6 +24,8 @@ const BankAccountFormFields = ({
   isPrimary,
   setIsPrimary,
 }) => {
+  const { t } = useTranslation();
+
   // Fetch bank options from API
   const {
     data: apiBankOptions,
@@ -37,9 +40,15 @@ const BankAccountFormFields = ({
     <div className="flex flex-col gap-6">
       {/* Bank Selection Field */}
       <FormContainer>
-        <FormLabel required>Nama Bank</FormLabel>
+        <FormLabel required>
+          {t("BankAccountFormFields.bankNameLabel", {}, "Nama Bank")}
+        </FormLabel>
         <Select
-          placeholder="Pilih Bank"
+          placeholder={t(
+            "BankAccountFormFields.selectBankPlaceholder",
+            {},
+            "Pilih Bank"
+          )}
           options={bankOptions}
           value={selectedBank}
           onChange={setSelectedBank}
@@ -48,10 +57,16 @@ const BankAccountFormFields = ({
 
       {/* Account Number Field */}
       <FormContainer>
-        <FormLabel required>Nomor Rekening</FormLabel>
+        <FormLabel required>
+          {t("BankAccountFormFields.accountNumberLabel", {}, "Nomor Rekening")}
+        </FormLabel>
         <Input
           type="text"
-          placeholder="Masukkan Nomor Rekening"
+          placeholder={t(
+            "BankAccountFormFields.accountNumberPlaceholder",
+            {},
+            "Masukkan Nomor Rekening"
+          )}
           value={accountNumber}
           onChange={(e) => setAccountNumber(e.target.value)}
           className="border-neutral-600 placeholder:text-neutral-600"
@@ -60,10 +75,20 @@ const BankAccountFormFields = ({
 
       {/* Account Holder Name Field */}
       <FormContainer>
-        <FormLabel required>Nama Pemilik Rekening</FormLabel>
+        <FormLabel required>
+          {t(
+            "BankAccountFormFields.accountHolderNameLabel",
+            {},
+            "Nama Pemilik Rekening"
+          )}
+        </FormLabel>
         <Input
           type="text"
-          placeholder="Masukkan Nama Pemilik Rekening"
+          placeholder={t(
+            "BankAccountFormFields.accountHolderNamePlaceholder",
+            {},
+            "Masukkan Nama Pemilik Rekening"
+          )}
           value={accountHolderName}
           onChange={(e) => setAccountHolderName(e.target.value)}
           className="border-neutral-600 placeholder:text-neutral-600"
@@ -72,7 +97,11 @@ const BankAccountFormFields = ({
 
       {/* Primary Account Checkbox */}
       <Checkbox
-        label="Jadikan sebagai rekening utama"
+        label={t(
+          "BankAccountFormFields.primaryAccountLabel",
+          {},
+          "Jadikan sebagai rekening utama"
+        )}
         checked={isPrimary}
         onChange={({ checked }) => setIsPrimary(checked)}
         labelClassName="font-semibold text-sm text-neutral-900"

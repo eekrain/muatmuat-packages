@@ -19,7 +19,7 @@
  */
 import { create } from "zustand";
 
-const MAX_TOASTS = 5;
+const MAX_TOASTS = 3;
 const TOAST_LIMIT_BUFFER = 1000; // 1 second buffer between removing old toasts
 
 export const useToastStore = create(

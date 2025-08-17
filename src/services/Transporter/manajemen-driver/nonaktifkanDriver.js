@@ -15,7 +15,7 @@ const mockNonaktifkanDriverResponse = (driverId) => ({
   Type: "DRIVER_DEACTIVATE",
 });
 
-export const nonaktifkanDriver = async (driverId) => {
+export const putNonaktifkanDriver = async (driverId) => {
   if (isMockNonaktifkanDriver) {
     return mockNonaktifkanDriverResponse(driverId);
   }

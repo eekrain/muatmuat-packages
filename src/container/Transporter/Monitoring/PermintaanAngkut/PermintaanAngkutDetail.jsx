@@ -39,8 +39,10 @@ const PermintaanAngkutDetail = ({ request, onBack, onUnderstand }) => {
 
   // Understand handler
   const handleUnderstand = () => {
-    toast.success(`Permintaan ${request.orderCode} berhasil ditutup`);
-    if (onUnderstand) onUnderstand(request.id);
+    toast.success(
+      `Permintaan ${displayData?.orderCode || request?.orderCode} berhasil ditutup`
+    );
+    if (onUnderstand) onUnderstand(displayData?.id || request?.id);
     onBack();
   };
 

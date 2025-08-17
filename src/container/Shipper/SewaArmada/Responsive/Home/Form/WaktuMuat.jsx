@@ -19,6 +19,7 @@ import Checkbox from "@/components/Form/Checkbox";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import RadioButton from "@/components/Radio/RadioButton";
 import { usePrevious } from "@/hooks/use-previous";
+import { useTranslation } from "@/hooks/use-translation";
 import { OrderTypeEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { cn } from "@/lib/utils";
 import { useGetOrderSettingsTime } from "@/services/Shipper/sewaarmada/getOrderSettingsTime";
@@ -31,6 +32,7 @@ const WaktuMuatBottomsheet = ({
   handleCheckLoggedIn,
   hasNotDepartedToPickup,
 }) => {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const isEditPage = pathname.includes("/ubahpesanan");
   const dateFormat = "dd MMM yyyy HH:mm";
@@ -120,7 +122,11 @@ const WaktuMuatBottomsheet = ({
       : new Date();
 
     if (!bottomsheetFormValues.loadTimeStart) {
-      newErrors.loadTimeStart = "Tanggal & waktu muat wajib diisi";
+      newErrors.loadTimeStart = t(
+        "WaktuMuat.errorLoadTimeRequired",
+        {},
+        "Tanggal & waktu muat wajib diisi"
+      );
     }
 
     // Validasi khusus untuk orderType INSTANT
@@ -138,9 +144,17 @@ const WaktuMuatBottomsheet = ({
       );
       console.log(start, minStart, maxStart, "start,minStart,maxStart");
       if (start < minStart) {
-        newErrors.loadTimeStart = `Tanggal & waktu muat minimal ${instantOrder.minHoursFromNow} jam dari sekarang`;
+        newErrors.loadTimeStart = t(
+          "WaktuMuat.errorInstantMinTime",
+          { hours: instantOrder.minHoursFromNow },
+          `Tanggal & waktu muat minimal ${instantOrder.minHoursFromNow} jam dari sekarang`
+        );
       } else if (start > maxStart) {
-        newErrors.loadTimeStart = `Tanggal & waktu muat maksimal ${instantOrder.maxDaysFromNow} hari dari sekarang`;
+        newErrors.loadTimeStart = t(
+          "WaktuMuat.errorInstantMaxTime",
+          { days: instantOrder.maxDaysFromNow },
+          `Tanggal & waktu muat maksimal ${instantOrder.maxDaysFromNow} hari dari sekarang`
+        );
       }
     }
 
@@ -160,9 +174,17 @@ const WaktuMuatBottomsheet = ({
           (scheduledOrder.maxDaysFromNow ?? 30) * 24 * 60 * 60 * 1000
       );
       if (start < minStart) {
-        newErrors.loadTimeStart = `Tanggal & waktu muat minimal ${scheduledOrder.minDaysFromNow} hari dari sekarang`;
+        newErrors.loadTimeStart = t(
+          "WaktuMuat.errorScheduledMinTime",
+          { days: scheduledOrder.minDaysFromNow },
+          `Tanggal & waktu muat minimal ${scheduledOrder.minDaysFromNow} hari dari sekarang`
+        );
       } else if (start > maxStart) {
-        newErrors.loadTimeStart = `Tanggal & waktu muat maksimal ${scheduledOrder.maxDaysFromNow} hari dari sekarang`;
+        newErrors.loadTimeStart = t(
+          "WaktuMuat.errorScheduledMaxTime",
+          { days: scheduledOrder.maxDaysFromNow },
+          `Tanggal & waktu muat maksimal ${scheduledOrder.maxDaysFromNow} hari dari sekarang`
+        );
       }
     }
     if (
@@ -174,11 +196,23 @@ const WaktuMuatBottomsheet = ({
       const diffMs = end - start;
       const diffHours = diffMs / (1000 * 60 * 60);
       if (!bottomsheetFormValues.loadTimeEnd) {
-        newErrors.loadTimeEnd = "Rentang waktu muat awal & akhir wajib diisi";
+        newErrors.loadTimeEnd = t(
+          "WaktuMuat.errorRangeRequired",
+          {},
+          "Rentang waktu muat awal & akhir wajib diisi"
+        );
       } else if (diffHours < minRangeHours) {
-        newErrors.loadTimeEnd = `Rentang waktu muat awal & akhir minimal ${minRangeHours} jam`;
+        newErrors.loadTimeEnd = t(
+          "WaktuMuat.errorRangeMinHours",
+          { hours: minRangeHours },
+          `Rentang waktu muat awal & akhir minimal ${minRangeHours} jam`
+        );
       } else if (diffHours > maxRangeHours) {
-        newErrors.loadTimeEnd = `Rentang waktu muat awal & akhir maksimal ${maxRangeHours} jam`;
+        newErrors.loadTimeEnd = t(
+          "WaktuMuat.errorRangeMaxHours",
+          { hours: maxRangeHours },
+          `Rentang waktu muat awal & akhir maksimal ${maxRangeHours} jam`
+        );
       }
     }
     setBottomsheetFormErrors(newErrors);
@@ -239,7 +273,11 @@ const WaktuMuatBottomsheet = ({
               <span className="text-neutral-900">{`${formatDate(loadTimeStart)} WIB`}</span>
             ) : (
               <span className="text-neutral-600">
-                {"Pilih Tanggal & Waktu Muat"}
+                {t(
+                  "WaktuMuat.selectDateTimePlaceholder",
+                  {},
+                  "Pilih Tanggal & Waktu Muat"
+                )}
               </span>
             )}
           </span>
@@ -247,7 +285,7 @@ const WaktuMuatBottomsheet = ({
         {showRangeOption ? (
           <>
             <span className="text-xs font-semibold leading-[13.2px] text-neutral-600">
-              Sampai dengan
+              {t("WaktuMuat.untilLabel", {}, "Sampai dengan")}
             </span>
             <button
               disabled={isDisabledWaktuMuat}
@@ -268,7 +306,11 @@ const WaktuMuatBottomsheet = ({
                   <span className="text-neutral-900">{`${formatDate(loadTimeEnd)} WIB`}</span>
                 ) : (
                   <span className="text-neutral-600">
-                    {"Pilih Tanggal & Waktu Muat"}
+                    {t(
+                      "WaktuMuat.selectDateTimePlaceholder",
+                      {},
+                      "Pilih Tanggal & Waktu Muat"
+                    )}
                   </span>
                 )}
               </span>
@@ -279,7 +321,9 @@ const WaktuMuatBottomsheet = ({
       <BottomSheetContent>
         <BottomSheetHeader>
           <BottomSheetClose />
-          <BottomSheetTitle>Tanggal & Waktu Muat</BottomSheetTitle>
+          <BottomSheetTitle>
+            {t("WaktuMuat.title", {}, "Tanggal & Waktu Muat")}
+          </BottomSheetTitle>
         </BottomSheetHeader>
         <div className="flex w-full flex-col gap-4 overflow-y-auto bg-white px-4">
           {/* Section Tipe Pengiriman */}
@@ -296,11 +340,14 @@ const WaktuMuatBottomsheet = ({
                 onClick={(data) =>
                   handleChangeBottomsheetFormValues("orderType", data.value)
                 }
-                label="Instan"
+                label={t("WaktuMuat.instantLabel", {}, "Instan")}
               />
               <p className="pl-6 text-xs font-medium leading-[14.4px] text-neutral-600">
-                Pesan jasa angkut untuk penjemputan dan pengiriman segera atau
-                di Hari+1.
+                {t(
+                  "WaktuMuat.instantDescription",
+                  {},
+                  "Pesan jasa angkut untuk penjemputan dan pengiriman segera atau di Hari+1."
+                )}
               </p>
             </div>
 
@@ -316,11 +363,14 @@ const WaktuMuatBottomsheet = ({
                 onClick={(data) =>
                   handleChangeBottomsheetFormValues("orderType", data.value)
                 }
-                label="Terjadwal"
+                label={t("WaktuMuat.scheduledLabel", {}, "Terjadwal")}
               />
               <p className="pl-6 text-xs font-medium leading-[14.4px] text-neutral-600">
-                Pesan jasa angkut untuk penjemputan dan pengiriman di Hari+2
-                sampai dengan Hari+30.
+                {t(
+                  "WaktuMuat.scheduledDescription",
+                  {},
+                  "Pesan jasa angkut untuk penjemputan dan pengiriman di Hari+2 sampai dengan Hari+30."
+                )}
               </p>
             </div>
           </div>
@@ -336,7 +386,11 @@ const WaktuMuatBottomsheet = ({
               onApply={(date) =>
                 handleChangeBottomsheetFormValues("loadTimeStart", date)
               }
-              placeholder="Pilih Tanggal & Waktu Muat"
+              placeholder={t(
+                "WaktuMuat.selectDateTimePlaceholder",
+                {},
+                "Pilih Tanggal & Waktu Muat"
+              )}
               status={bottomsheetFormErrors.loadTimeStart ? "error" : null}
               className="w-full"
               minDate={minDate}
@@ -351,7 +405,7 @@ const WaktuMuatBottomsheet = ({
               <>
                 {/* Label "Sampai dengan" */}
                 <span className="text-xs font-semibold leading-[13.2px] text-neutral-600">
-                  Sampai dengan
+                  {t("WaktuMuat.untilLabel", {}, "Sampai dengan")}
                 </span>
 
                 {/* Field Tanggal Akhir */}
@@ -360,7 +414,11 @@ const WaktuMuatBottomsheet = ({
                   onApply={(date) =>
                     handleChangeBottomsheetFormValues("loadTimeEnd", date)
                   }
-                  placeholder="Pilih Tanggal & Waktu Muat"
+                  placeholder={t(
+                    "WaktuMuat.selectDateTimePlaceholder",
+                    {},
+                    "Pilih Tanggal & Waktu Muat"
+                  )}
                   disabled={!bottomsheetFormValues.loadTimeStart}
                   status={bottomsheetFormErrors.loadTimeEnd ? "error" : null}
                   className="w-full"
@@ -379,7 +437,11 @@ const WaktuMuatBottomsheet = ({
           <div className="flex flex-col gap-y-3">
             <Checkbox
               disabled={isEditPage}
-              label="Dengan Rentang Waktu"
+              label={t(
+                "WaktuMuat.withTimeRangeLabel",
+                {},
+                "Dengan Rentang Waktu"
+              )}
               value="showRangeOption"
               checked={bottomsheetFormValues.showRangeOption}
               onChange={(e) =>
@@ -387,8 +449,11 @@ const WaktuMuatBottomsheet = ({
               }
             />
             <p className="pl-6 text-xs font-medium leading-[14.4px] text-neutral-600">
-              Jika kamu memilih opsi ini, kamu dapat menentukan pukul mulai dan
-              pukul akhir untuk penjemputan muatan.
+              {t(
+                "WaktuMuat.timeRangeDescription",
+                {},
+                "Jika kamu memilih opsi ini, kamu dapat menentukan pukul mulai dan pukul akhir untuk penjemputan muatan."
+              )}
             </p>
           </div>
         </div>
@@ -398,7 +463,7 @@ const WaktuMuatBottomsheet = ({
             className="h-10 w-full"
             onClick={handleSubmit}
           >
-            Simpan
+            {t("WaktuMuat.saveButton", {}, "Simpan")}
           </Button>
         </BottomSheetFooter>
       </BottomSheetContent>

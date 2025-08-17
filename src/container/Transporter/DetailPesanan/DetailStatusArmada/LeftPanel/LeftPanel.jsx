@@ -1,0 +1,168 @@
+import { useParams } from "next/navigation";
+import { useState } from "react";
+
+import { AvatarDriver } from "@/components/Avatar/AvatarDriver";
+import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
+import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
+import IconComponent from "@/components/IconComponent/IconComponent";
+import PageTitle from "@/components/PageTitle/PageTitle";
+import { DriverTimeline } from "@/components/Timeline/DriverTimeline";
+import { useTranslation } from "@/hooks/use-translation";
+import { getDriverStatusMetadata } from "@/lib/normalizers/detailpesanan/getDriverStatusMetadata";
+
+export const LeftPanel = ({ dataDriverTimeline, allDriversData }) => {
+  const { t } = useTranslation();
+  const params = useParams();
+  const [selectedDriverId, setSelectedDriverId] = useState(null);
+
+  const breadcrumbItems = [
+    { name: t("Daftar Pesanan"), href: "/daftarpesanan" },
+    {
+      name: t("Detail Pesanan"),
+      href: `/daftarpesanan/detailpesanan/${params.orderId}`,
+    },
+    { name: t("Detail Status Armada") },
+  ];
+
+  // Jika hanya ada 1 driver, langsung tampilkan timeline
+  const isMultipleDrivers = allDriversData?.drivers?.length > 1;
+
+  // Data driver yang sedang ditampilkan
+  const currentDriverData = selectedDriverId
+    ? allDriversData?.drivers?.find(
+        (d) => d.dataDriver.driverId === selectedDriverId
+      )
+    : dataDriverTimeline;
+
+  const statusMeta = getDriverStatusMetadata({
+    driverStatus: currentDriverData?.dataDriver?.driverStatus,
+    orderStatus: currentDriverData?.dataDriver?.orderStatus,
+    t,
+  });
+
+  const handleDriverClick = (driverId) => {
+    if (selectedDriverId === driverId) {
+      // Jika driver yang sama diklik, toggle collapse/expand
+      setSelectedDriverId(null);
+    } else {
+      // Pilih driver baru
+      setSelectedDriverId(driverId);
+    }
+  };
+
+  // Jika tidak ada multiple drivers, tampilkan single driver timeline
+  if (!isMultipleDrivers) {
+    return (
+      <div
+        className="absolute left-0 top-0 z-10 flex h-[596px] w-[480px] flex-col rounded-l-[20px] rounded-r-xl bg-white p-4 shadow-sm"
+        style={{
+          borderTopLeftRadius: "20px",
+          borderBottomLeftRadius: "20px",
+          borderTopRightRadius: "12px",
+          borderBottomRightRadius: "12px",
+        }}
+      >
+        <BreadCrumb data={breadcrumbItems} />
+        <PageTitle className="mb-0">{t("titleLacakArmada")}</PageTitle>
+
+        <div className="flex h-fit max-h-full flex-col gap-4 overflow-hidden rounded-xl border border-[#C4C4C4] pt-5">
+          <div className="px-4">
+            <div className="flex flex-col gap-3 border-b border-neutral-400 pb-4">
+              <BadgeStatusPesanan
+                className="h-6 w-fit"
+                variant={statusMeta.variant}
+              >
+                {statusMeta.label}
+              </BadgeStatusPesanan>
+
+              <AvatarDriver
+                name={currentDriverData?.dataDriver?.name}
+                image={currentDriverData?.dataDriver?.profileImage}
+                licensePlate={currentDriverData?.dataDriver?.licensePlate}
+              />
+            </div>
+          </div>
+
+          <h2 className="px-4 text-xs font-semibold leading-[14.4px] text-black">
+            {t("titleDetailStatusDriver")}
+          </h2>
+
+          <div className="mr-2 flex-1 overflow-y-auto pb-5 pl-4 pr-1.5">
+            <DriverTimeline dataTimeline={currentDriverData} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Tampilkan multiple drivers dengan dropdown
+  return (
+    <div className="grid h-[596px] w-[480px] grid-cols-1 grid-rows-[auto_auto_1fr] gap-6 rounded-l-[20px] rounded-r-xl bg-white pb-6 pl-6 pr-3 pt-8 shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
+      <BreadCrumb data={breadcrumbItems} />
+      <PageTitle className="mb-0">{t("titleLacakArmada")}</PageTitle>
+
+      <div className="flex h-fit max-h-full flex-col gap-4 overflow-y-auto pr-3 [background-clip:content-box] [scrollbar-gutter:stable]">
+        <div className="flex flex-col gap-4">
+          {allDriversData?.drivers?.map((driver) => {
+            const driverStatusMeta = getDriverStatusMetadata({
+              driverStatus: driver.dataDriver.driverStatus,
+              orderStatus: driver.dataDriver.orderStatus,
+              t,
+            });
+            const isSelected = selectedDriverId === driver.dataDriver.driverId;
+
+            return (
+              <div key={driver.dataDriver.driverId} className="flex flex-col">
+                <div
+                  className={`flex flex-col gap-4 rounded-xl border border-[rgb(196,196,196)] p-5 transition-colors hover:bg-neutral-50`}
+                >
+                  <div className="flex flex-col gap-3">
+                    <BadgeStatusPesanan
+                      className="h-6 w-fit"
+                      variant={driverStatusMeta.variant}
+                    >
+                      {driverStatusMeta.label}
+                    </BadgeStatusPesanan>
+
+                    <div
+                      className={`flex cursor-pointer items-center justify-between pb-4 ${isSelected ? "border-b border-neutral-400" : "border-b-none"}`}
+                      onClick={() =>
+                        handleDriverClick(driver.dataDriver.driverId)
+                      }
+                    >
+                      <AvatarDriver
+                        name={driver.dataDriver.name}
+                        image={driver.dataDriver.profileImage}
+                        licensePlate={driver.dataDriver.licensePlate}
+                      />
+                      <IconComponent
+                        src="/icons/chevron-down.svg"
+                        className={`h-6 w-6 text-neutral-500 transition-transform duration-200 ${
+                          isSelected ? "rotate-180" : ""
+                        }`}
+                        width={24}
+                        height={24}
+                      />
+                    </div>
+                    {/* Driver Timeline - Expandable */}
+                    {isSelected && (
+                      <div className="">
+                        <h2 className="text-xs font-semibold leading-[14.4px] text-black">
+                          {t("titleDetailStatusDriver")}
+                        </h2>
+
+                        <div className="flex-1 overflow-y-auto pb-5 pr-1.5 pt-2">
+                          <DriverTimeline dataTimeline={currentDriverData} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};

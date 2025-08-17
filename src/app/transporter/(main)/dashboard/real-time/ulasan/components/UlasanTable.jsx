@@ -11,6 +11,7 @@ import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import ConfirmationModal from "@/components/Modal/ConfirmationModal";
 import PageTitle from "@/components/PageTitle/PageTitle";
+import { useTranslation } from "@/hooks/use-translation";
 import { toast } from "@/lib/toast";
 
 import Period from "../../components/Period";
@@ -26,6 +27,7 @@ const toYYYYMMDD = (date) => {
 };
 
 const UlasanTable = () => {
+  const { t } = useTranslation();
   const [tableData, setTableData] = useState({
     reviews: [],
     pagination: {
@@ -38,7 +40,6 @@ const UlasanTable = () => {
   });
   const [loading, setLoading] = useState(true);
   const [isMarkingAsRead, setIsMarkingAsRead] = useState(false);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [sortConfig, setSortConfig] = useState({ sort: "date", order: "desc" });
@@ -50,10 +51,8 @@ const UlasanTable = () => {
     disablePeriod: false,
   });
   const [activeTab, setActiveTab] = useState("new");
-
   const [isSelectionModeActive, setIsSelectionModeActive] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
-
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [refetchTrigger, setRefetchTrigger] = useState(0);
 
@@ -136,8 +135,17 @@ const UlasanTable = () => {
       });
       const result = await response.json();
       if (!response.ok)
-        throw new Error(result.Message.Text || "Gagal menandai ulasan");
-      toast.success("Ulasan berhasil ditandai sebagai sudah dibaca");
+        throw new Error(
+          result.Message.Text ||
+            t("UlasanTable.toastErrorMarkAsRead", {}, "Gagal menandai ulasan")
+        );
+      toast.success(
+        t(
+          "UlasanTable.toastSuccessMarkAsRead",
+          {},
+          "Ulasan berhasil ditandai sebagai sudah dibaca"
+        )
+      );
       setRefetchTrigger((prev) => prev + 1);
     } catch (error) {
       toast.error(error.message);
@@ -148,19 +156,13 @@ const UlasanTable = () => {
   };
 
   const handleSelectAll = ({ checked }) => {
-    if (checked) {
-      setSelectedRows(tableData.reviews.map((r) => r.id));
-    } else {
-      setSelectedRows([]);
-    }
+    if (checked) setSelectedRows(tableData.reviews.map((r) => r.id));
+    else setSelectedRows([]);
   };
 
   const handleSelectRow = ({ checked }, rowId) => {
-    if (checked) {
-      setSelectedRows((prev) => [...prev, rowId]);
-    } else {
-      setSelectedRows((prev) => prev.filter((id) => id !== rowId));
-    }
+    if (checked) setSelectedRows((prev) => [...prev, rowId]);
+    else setSelectedRows((prev) => prev.filter((id) => id !== rowId));
   };
 
   const handleCancelSelectionMode = () => {
@@ -172,7 +174,7 @@ const UlasanTable = () => {
     const baseColumns = [
       {
         key: "date",
-        header: "Tanggal",
+        header: t("UlasanTable.columnDate", {}, "Tanggal"),
         width: "180px",
         sortable: true,
         className: "!text-xs font-medium align-top",
@@ -181,7 +183,7 @@ const UlasanTable = () => {
       },
       {
         key: "orderNumber",
-        header: "No. Pesanan",
+        header: t("UlasanTable.columnOrderNumber", {}, "No. Pesanan"),
         width: "200px",
         sortable: true,
         className:
@@ -194,7 +196,7 @@ const UlasanTable = () => {
       },
       {
         key: "driver",
-        header: "Driver",
+        header: t("UlasanTable.columnDriver", {}, "Driver"),
         width: "360px",
         sortable: true,
         className: "align-top",
@@ -218,7 +220,7 @@ const UlasanTable = () => {
       },
       {
         key: "rating",
-        header: "Rating dan Ulasan",
+        header: t("UlasanTable.columnRatingAndReview", {}, "Rating dan Ulasan"),
         width: "450px",
         sortable: true,
         className: "align-top",
@@ -269,42 +271,85 @@ const UlasanTable = () => {
       ];
     }
     return baseColumns;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab, isSelectionModeActive, selectedRows, tableData.reviews]);
+  }, [activeTab, isSelectionModeActive, selectedRows, tableData.reviews, t]);
 
-  const filterConfig = {
-    categories: [{ key: "rating", label: "Rating", type: "checkbox-multi" }],
-    data: {
-      rating: [
-        { id: 5, label: "5 Bintang", icon: "/icons/star_icon.svg" },
-        { id: 4, label: "4 Bintang", icon: "/icons/star_icon.svg" },
-        { id: 3, label: "3 Bintang", icon: "/icons/star_icon.svg" },
-        { id: 2, label: "2 Bintang", icon: "/icons/star_icon.svg" },
-        { id: 1, label: "1 Bintang", icon: "/icons/star_icon.svg" },
+  const filterConfig = useMemo(
+    () => ({
+      categories: [
+        {
+          key: "rating",
+          label: t("UlasanTable.filterLabelRating", {}, "Rating"),
+          type: "checkbox-multi",
+        },
       ],
-    },
-  };
+      data: {
+        rating: [
+          {
+            id: 5,
+            label: t("UlasanTable.filterOption5Stars", {}, "5 Bintang"),
+            icon: "/icons/star_icon.svg",
+          },
+          {
+            id: 4,
+            label: t("UlasanTable.filterOption4Stars", {}, "4 Bintang"),
+            icon: "/icons/star_icon.svg",
+          },
+          {
+            id: 3,
+            label: t("UlasanTable.filterOption3Stars", {}, "3 Bintang"),
+            icon: "/icons/star_icon.svg",
+          },
+          {
+            id: 2,
+            label: t("UlasanTable.filterOption2Stars", {}, "2 Bintang"),
+            icon: "/icons/star_icon.svg",
+          },
+          {
+            id: 1,
+            label: t("UlasanTable.filterOption1Star", {}, "1 Bintang"),
+            icon: "/icons/star_icon.svg",
+          },
+        ],
+      },
+    }),
+    [t]
+  );
 
-  const periodOptions = [
-    { name: "Semua Periode (Default)", value: "" },
-    { name: "Hari Ini", value: 0 },
-    { name: "1 Minggu Terakhir", value: 7 },
-    { name: "30 Hari Terakhir", value: 30 },
-    { name: "1 Tahun Terakhir", value: 365 },
-  ];
+  const periodOptions = useMemo(
+    () => [
+      {
+        name: t("UlasanTable.periodOptionAll", {}, "Semua Periode (Default)"),
+        value: "",
+      },
+      { name: t("UlasanTable.periodOptionToday", {}, "Hari Ini"), value: 0 },
+      {
+        name: t("UlasanTable.periodOptionLast7Days", {}, "7 Hari Terakhir"),
+        value: 7,
+      },
+      {
+        name: t("UlasanTable.periodOptionLast30Days", {}, "30 Hari Terakhir"),
+        value: 30,
+      },
+      {
+        name: t("UlasanTable.periodOptionLastYear", {}, "1 Tahun Terakhir"),
+        value: 365,
+      },
+    ],
+    [t]
+  );
 
   const displayOptions = {
     totalCount: tableData.pagination.totalItems,
     statusOptions: [
       {
         value: "new",
-        label: "Baru",
+        label: t("UlasanTable.tabNew", {}, "Baru"),
         hasNotification: activeTab === "read" && tableData.summary.newCount > 0,
         count: tableData.summary.newCount,
       },
       {
         value: "read",
-        label: "Sudah Dibaca",
+        label: t("UlasanTable.tabRead", {}, "Sudah Dibaca"),
         count: tableData.summary.readCount,
       },
     ],
@@ -320,7 +365,7 @@ const UlasanTable = () => {
     <div className="space-y-4">
       <div className="flex w-full items-center justify-between">
         <PageTitle withBack={true} className="!mb-0">
-          Daftar Ulasan
+          {t("UlasanPage.titleReviewList", {}, "Daftar Ulasan")}
         </PageTitle>
         <div className="flex items-center gap-4">
           <Period
@@ -332,10 +377,14 @@ const UlasanTable = () => {
           />
           <Button
             variant="muattrans-primary"
-            className="h-9 px-6"
+            className="h-9 px-6 text-muat-trans-secondary-900 disabled:text-neutral-600"
+            iconLeft="/icons/download16.svg"
+            appearance={{
+              iconClassName: "text-muat-trans-secondary-900",
+            }}
             disabled={loading || !tableData.reviews.length}
           >
-            Unduh
+            {t("UlasanTable.buttonDownload", {}, "Unduh")}
           </Button>
         </div>
       </div>
@@ -355,13 +404,29 @@ const UlasanTable = () => {
         isPeriodActive={period && period.value !== ""}
         onSort={(sort, order) => setSortConfig({ sort, order })}
         onControlsStateChange={setControlsDisabled}
-        searchPlaceholder="Cari Ulasan"
+        searchPlaceholder={t(
+          "UlasanTable.searchPlaceholder",
+          {},
+          "Cari Ulasan"
+        )}
         filterConfig={filterConfig}
         showDisplayView={true}
         displayOptions={displayOptions}
-        firsTimerTitle="Oops, Daftar Ulasan masih kosong"
-        firstTimerSubtitle="Ulasan dari shipper akan ditampilkan disini"
-        firstTimerButtonText="Lihat Permintaan"
+        firsTimerTitle={t(
+          "UlasanTable.emptyStateTitle",
+          {},
+          "Oops, Daftar Ulasan masih kosong"
+        )}
+        firstTimerSubtitle={t(
+          "UlasanTable.emptyStateSubtitle",
+          {},
+          "Ulasan dari shipper akan ditampilkan disini"
+        )}
+        firstTimerButtonText={t(
+          "UlasanTable.emptyStateButton",
+          {},
+          "Lihat Permintaan"
+        )}
         firstTimerButtonLink="/monitoring"
         displayActions={
           <>
@@ -375,7 +440,11 @@ const UlasanTable = () => {
                     disabled={loading || tableData.reviews.length === 0}
                     iconLeft="/icons/read.svg"
                   >
-                    Tandai Sudah Dibaca
+                    {t(
+                      "UlasanTable.buttonMarkAsRead",
+                      {},
+                      "Tandai Sudah Dibaca"
+                    )}
                   </Button>
                 ) : (
                   <>
@@ -384,7 +453,7 @@ const UlasanTable = () => {
                       className="px-6"
                       onClick={handleCancelSelectionMode}
                     >
-                      Batal
+                      {t("UlasanTable.buttonCancel", {}, "Batal")}
                     </Button>
                     <InfoTooltip
                       trigger={
@@ -394,7 +463,11 @@ const UlasanTable = () => {
                           disabled={selectedRows.length === 0}
                           iconLeft="/icons/read.svg"
                         >
-                          Tandai Sudah Dibaca
+                          {t(
+                            "UlasanTable.buttonMarkAsRead",
+                            {},
+                            "Tandai Sudah Dibaca"
+                          )}
                         </Button>
                       }
                       className={`w-[210px] text-sm ${selectedRows.length !== 0 && "hidden"}`}
@@ -402,7 +475,11 @@ const UlasanTable = () => {
                       sideOffset={2}
                       align="start"
                     >
-                      Pilih minimal 1 ulasan untuk ditandai sudah dibaca
+                      {t(
+                        "UlasanTable.tooltipSelectReview",
+                        {},
+                        "Pilih minimal 1 ulasan untuk ditandai sudah dibaca"
+                      )}
                     </InfoTooltip>
                   </>
                 )}
@@ -413,7 +490,7 @@ const UlasanTable = () => {
         headerActions={
           <div>
             <div className="text-sm font-semibold">
-              Total Rating :{" "}
+              {t("UlasanTable.headerTotalRating", {}, "Total Rating")} :{" "}
               <span className="text-base font-bold">
                 {tableData.summary.averageRating}
                 <span className="text-sm font-medium text-neutral-600">/5</span>
@@ -426,15 +503,19 @@ const UlasanTable = () => {
         isOpen={showConfirmation}
         setIsOpen={setShowConfirmation}
         description={{
-          text: "Ulasan akan dipindahkan ke tab Sudah Dibaca dan tidak akan muncul lagi di daftar Daftar Ulasan. Kamu yakin ingin melanjutkan?",
+          text: t(
+            "UlasanTable.modalConfirmDescription",
+            {},
+            "Ulasan akan dipindahkan ke tab Sudah Dibaca dan tidak akan muncul lagi di daftar Daftar Ulasan. Kamu yakin ingin melanjutkan?"
+          ),
         }}
         confirm={{
-          text: "Ya",
+          text: t("UlasanTable.modalConfirmYes", {}, "Ya"),
           onClick: handleMarkAsRead,
           classname: "w-[112px]",
         }}
         cancel={{
-          text: "Tidak",
+          text: t("UlasanTable.modalConfirmNo", {}, "Tidak"),
           onClick: () => setShowConfirmation(false),
           classname: "w-[112px]",
         }}

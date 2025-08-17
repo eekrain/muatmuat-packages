@@ -1,6 +1,6 @@
 import { fetcherMuatrans } from "@/lib/axios";
 
-const isMockDeleteDriver = true;
+const isMockDeleteDriver = false;
 
 const mockDeleteDriverResponse = (driverId) => ({
   Message: {

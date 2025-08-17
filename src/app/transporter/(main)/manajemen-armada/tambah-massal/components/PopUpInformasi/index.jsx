@@ -11,10 +11,14 @@ import {
 } from "@/components/Modal/Modal";
 import { Slider } from "@/components/Slider/Slider";
 import { useTranslation } from "@/hooks/use-translation";
-import { useGetUserPopupPreference } from "@/services/Transporter/manajemen-armada/getUserPopupPreference";
 import { updateUserPopupPreference } from "@/services/Transporter/manajemen-armada/updateUserPopupPreference";
 
-export default function PopUpInformasi() {
+export default function PopUpInformasi({
+  popupPreference,
+  isLoading,
+  error,
+  mutatePopupPreference: mutate,
+}) {
   const { t } = useTranslation();
 
   const onboardingSlides = [
@@ -72,13 +76,6 @@ export default function PopUpInformasi() {
   const [isUpdating, setIsUpdating] = useState(false);
   const hasShownInSession = useRef(false);
 
-  const {
-    data: popupPreference,
-    isLoading,
-    error,
-    mutate,
-  } = useGetUserPopupPreference();
-
   // useEffect hanya untuk membuka modal secara otomatis
   useEffect(() => {
     if (
@@ -126,6 +123,7 @@ export default function PopUpInformasi() {
             );
           }
         } catch (err) {
+          // eslint-disable-next-line no-console
           console.error("Gagal memperbarui preferensi popup:", err);
         } finally {
           setIsUpdating(false);

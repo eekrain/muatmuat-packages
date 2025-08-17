@@ -9,6 +9,7 @@ import { toast } from "@/lib/toast";
 import { useGetDetailPesananData } from "@/services/Shipper/detailpesanan/getDetailPesananData";
 import useGetFleetSearchStatus from "@/services/Shipper/detailpesanan/getFleetSearchStatus";
 import { useGetOldDriver } from "@/services/Shipper/detailpesanan/getOldDriver";
+import { useGetOrderChangeHistory } from "@/services/Shipper/detailpesanan/getOrderChangeHistory";
 import { useLoadingAction } from "@/store/Shared/loadingStore";
 import {
   useSewaArmadaActions,
@@ -86,6 +87,7 @@ const DetailPesananWeb = () => {
     params.orderId,
     params.driverId
   );
+  const { data: orderChangeHistory } = useGetOrderChangeHistory(params.orderId);
 
   if (isLoadingDetailPesanan) {
     return null;
@@ -123,6 +125,7 @@ const DetailPesananWeb = () => {
                 dataStatusPesanan={dataDetailPesanan.dataStatusPesanan}
                 isShowWaitFleetAlert={isShowWaitFleetAlert}
                 oldDriverData={oldDriverData}
+                orderChangeHistory={orderChangeHistory}
               />
             )}
 

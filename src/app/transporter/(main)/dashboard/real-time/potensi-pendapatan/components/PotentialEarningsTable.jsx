@@ -7,8 +7,10 @@ import DashboardDataTable from "@/app/transporter/(main)/dashboard/real-time/com
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Button from "@/components/Button/Button";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
+import { useTranslation } from "@/hooks/use-translation";
 
 const PotentialEarningsTable = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const [tableData, setTableData] = useState({
     earnings: [],
@@ -67,75 +69,76 @@ const PotentialEarningsTable = () => {
         setTableData(result.Data);
       } catch (e) {
         console.error("Failed to fetch data:", e);
-        setError("Gagal mengambil data. Silakan coba lagi.");
+        setError(
+          t(
+            "PotentialEarningsTable.messageErrorFetch",
+            {},
+            "Gagal mengambil data. Silakan coba lagi."
+          )
+        );
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [currentPage, perPage, sortConfig, searchValue, filters]);
+  }, [currentPage, perPage, sortConfig, searchValue, filters, t]);
 
   const formatCurrency = (amount) =>
     `Rp${new Intl.NumberFormat("id-ID").format(amount)}`;
 
   const getStatusBadge = (status) => {
     const statusMap = {
-      waiting_confirmation: {
-        variant: "primary",
-        label: "Menunggu Konfirmasi",
-        tooltip:
-          "Armada kamu telah tercatat untuk pesanan ini, harap menunggu maks. 1 jam untuk konfirmasi dari Shipper.",
-      },
-      confirmed: { variant: "primary", label: "Pesanan Terkonfirmasi" },
-      scheduled: { variant: "primary", label: "Armada Dijadwalkan" },
-      loading: { variant: "primary", label: "Proses Muat" },
-      unloading: { variant: "primary", label: "Proses Bongkar" },
-      document_preparation: {
-        variant: "primary",
-        label: "Dokumen Sedang Disiapkan",
-      },
-      document_delivery: {
-        variant: "primary",
-        label: "Proses Pengiriman Dokumen",
-      },
-      need_assignment: {
-        variant: "warning",
-        label: "Perlu Assign Armada",
-        icon: "/icons/warning24.svg",
-      },
-      need_response: {
-        variant: "warning",
-        label: "Perlu Respon Perubahan",
-        icon: "/icons/warning24.svg",
-      },
-      need_confirmation: {
-        variant: "error",
-        label: "Perlu Konfirmasi Siap",
-        icon: "/icons/warning24.svg",
-      },
+      waiting_confirmation: { variant: "primary", icon: null, tooltip: true },
+      confirmed: { variant: "primary", icon: null },
+      scheduled: { variant: "primary", icon: null },
+      loading: { variant: "primary", icon: null },
+      unloading: { variant: "primary", icon: null },
+      document_preparation: { variant: "primary", icon: null },
+      document_delivery: { variant: "primary", icon: null },
+      need_assignment: { variant: "warning", icon: "/icons/warning24.svg" },
+      need_response: { variant: "warning", icon: "/icons/warning24.svg" },
+      need_confirmation: { variant: "error", icon: "/icons/warning24.svg" },
     };
+
+    const statusKeyMap = {
+      waiting_confirmation: "WaitingConfirmation",
+      confirmed: "Confirmed",
+      scheduled: "Scheduled",
+      loading: "Loading",
+      unloading: "Unloading",
+      document_preparation: "DocumentPreparation",
+      document_delivery: "DocumentDelivery",
+      need_assignment: "NeedAssignment",
+      need_response: "NeedResponse",
+      need_confirmation: "NeedConfirmation",
+    };
+
+    const keySuffix = statusKeyMap[status] || status;
+    const label = t(`PotentialEarningsTable.status${keySuffix}`);
+    const tooltip = t(`PotentialEarningsTable.tooltip${keySuffix}`, {}, ""); // Fallback to empty string if no tooltip
 
     const config = statusMap[status] || { variant: "default", label: status };
 
     return (
       <div className="inline-block">
         <BadgeStatusPesanan
+          className="text-center"
           variant={config.variant}
           icon={{ iconLeft: config.icon }}
         >
           <div className="flex items-center gap-1">
-            {config.tooltip && (
+            {tooltip && config.tooltip && (
               <InfoTooltip
                 className={"w-[336px]"}
                 appearance={{
                   iconClassName: "text-primary-700 !w-3 !h-3",
                 }}
               >
-                <p className="text-sm">{config.tooltip}</p>
+                <p className="text-sm">{tooltip}</p>
               </InfoTooltip>
             )}
-            <p>{config.label}</p>
+            <p>{label}</p>
           </div>
         </BadgeStatusPesanan>
       </div>
@@ -146,7 +149,11 @@ const PotentialEarningsTable = () => {
     () => [
       {
         key: "orderNumber",
-        header: "No. Pesanan",
+        header: t(
+          "PotentialEarningsTable.columnOrderNumber",
+          {},
+          "No. Pesanan"
+        ),
         sortable: true,
         render: (row) => (
           <div className="font-semibold text-neutral-900">
@@ -156,7 +163,11 @@ const PotentialEarningsTable = () => {
       },
       {
         key: "potentialAmount",
-        header: "Potensi Pendapatan",
+        header: t(
+          "PotentialEarningsTable.columnPotentialAmount",
+          {},
+          "Potensi Pendapatan"
+        ),
         sortable: true,
         render: (row) => (
           <div className="font-semibold text-neutral-900">
@@ -166,7 +177,7 @@ const PotentialEarningsTable = () => {
       },
       {
         key: "status",
-        header: "Status Pesanan",
+        header: t("PotentialEarningsTable.columnStatus", {}, "Status Pesanan"),
         sortable: true,
         render: (row) => getStatusBadge(row.status),
       },
@@ -185,30 +196,102 @@ const PotentialEarningsTable = () => {
               )
             }
           >
-            Detail
+            {t("PotentialEarningsTable.buttonDetail", {}, "Detail")}
           </Button>
         ),
       },
     ],
-    [router]
+    [router, t]
   );
 
-  const filterConfig = {
-    categories: [{ key: "status", label: "Status", type: "radio-single" }],
-    data: {
-      status: [
-        { id: "waiting_confirmation", label: "Menunggu Konfirmasi Shipper" },
-        { id: "confirmed", label: "Pesanan Terkonfirmasi" },
-        { id: "scheduled", label: "Armada Dijadwalkan" },
-        { id: "need_response", label: "Perlu Respon Perubahan" },
-        { id: "need_confirmation", label: "Perlu Konfirmasi Siap" },
-        { id: "need_assignment", label: "Perlu Assign Armada" },
-        { id: "loading", label: "Proses Muat" },
-        { id: "unloading", label: "Proses Bongkar" },
-        { id: "document_delivery", label: "Proses Pengiriman Dokumen" },
+  const filterConfig = useMemo(
+    () => ({
+      categories: [
+        {
+          key: "status",
+          label: t("PotentialEarningsTable.filterLabelStatus", {}, "Status"),
+          type: "radio-single",
+        },
       ],
-    },
-  };
+      data: {
+        status: [
+          {
+            id: "waiting_confirmation",
+            label: t(
+              "PotentialEarningsTable.filterOptionWaitingConfirmation",
+              {},
+              "Menunggu Konfirmasi Shipper"
+            ),
+          },
+          {
+            id: "confirmed",
+            label: t(
+              "PotentialEarningsTable.filterOptionConfirmed",
+              {},
+              "Pesanan Terkonfirmasi"
+            ),
+          },
+          {
+            id: "scheduled",
+            label: t(
+              "PotentialEarningsTable.filterOptionScheduled",
+              {},
+              "Armada Dijadwalkan"
+            ),
+          },
+          {
+            id: "need_response",
+            label: t(
+              "PotentialEarningsTable.filterOptionNeedResponse",
+              {},
+              "Perlu Respon Perubahan"
+            ),
+          },
+          {
+            id: "need_confirmation",
+            label: t(
+              "PotentialEarningsTable.filterOptionNeedConfirmation",
+              {},
+              "Perlu Konfirmasi Siap"
+            ),
+          },
+          {
+            id: "need_assignment",
+            label: t(
+              "PotentialEarningsTable.filterOptionNeedAssignment",
+              {},
+              "Perlu Assign Armada"
+            ),
+          },
+          {
+            id: "loading",
+            label: t(
+              "PotentialEarningsTable.filterOptionLoading",
+              {},
+              "Proses Muat"
+            ),
+          },
+          {
+            id: "unloading",
+            label: t(
+              "PotentialEarningsTable.filterOptionUnloading",
+              {},
+              "Proses Bongkar"
+            ),
+          },
+          {
+            id: "document_delivery",
+            label: t(
+              "PotentialEarningsTable.filterOptionDocumentDelivery",
+              {},
+              "Proses Pengiriman Dokumen"
+            ),
+          },
+        ],
+      },
+    }),
+    [t]
+  );
 
   return (
     <DashboardDataTable
@@ -225,15 +308,36 @@ const PotentialEarningsTable = () => {
       activeFilters={filters}
       onFilterChange={setFilters}
       onSort={(sort, order) => setSortConfig({ sort, order })}
-      searchPlaceholder="Cari Pesanan"
+      searchPlaceholder={t(
+        "PotentialEarningsTable.searchPlaceholder",
+        {},
+        "Cari Pesanan"
+      )}
       filterConfig={filterConfig}
-      firsTimerTitle="Oops, potensi pendapatan masih kosong"
-      firstTimerSubtitle="Mulai terima permintaan sekarang untuk menampilkan data potensi pendapatan disini"
-      firstTimerButtonText="Lihat Permintaan"
+      firsTimerTitle={t(
+        "PotentialEarningsTable.emptyStateTitle",
+        {},
+        "Oops, potensi pendapatan masih kosong"
+      )}
+      firstTimerSubtitle={t(
+        "PotentialEarningsTable.emptyStateSubtitle",
+        {},
+        "Mulai terima permintaan sekarang untuk menampilkan data potensi pendapatan disini"
+      )}
+      firstTimerButtonText={t(
+        "PotentialEarningsTable.emptyStateButton",
+        {},
+        "Lihat Permintaan"
+      )}
       firstTimerButtonLink="/monitoring"
       headerActions={
         <div className="text-sm font-semibold text-neutral-900">
-          Total Potensi Pendapatan :{" "}
+          {t(
+            "PotentialEarningsTable.headerTotalPotential",
+            {},
+            "Total Potensi Pendapatan"
+          )}{" "}
+          :{" "}
           <span className="text-lg font-bold">
             {formatCurrency(tableData.summary.totalPotential)}
           </span>

@@ -89,7 +89,7 @@ const DriverProses = ({
       header: "Status",
       sortable: false,
       width: "170px",
-      render: (row) => getStatusBadge(row.driverStatus),
+      render: (row) => getStatusBadge(row.status),
     },
     {
       key: "action",
@@ -211,7 +211,12 @@ const DriverProses = ({
       const count = getCountFromSummary(item.id);
       return {
         value: item.id,
-        label: item.value,
+        label:
+          item.value === "IN_PROGRESS"
+            ? "Dalam Tinjauan"
+            : item.value === "REJECTED"
+              ? "Ditolak"
+              : item.value,
         count: count,
       };
     });

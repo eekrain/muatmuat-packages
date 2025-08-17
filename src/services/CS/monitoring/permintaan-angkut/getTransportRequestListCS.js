@@ -18,119 +18,394 @@ const apiResultTransportRequestList = {
   Data: {
     requests: [
       {
-        id: "uuid", // [dbt_mt_order.id]
-        orderCode: "MT-2025-001", // [dbt_mt_order.orderCode]
+        id: "uuid",
+        orderCode: "MT2025001",
+        reblast: "2",
         shipperInfo: {
-          id: "uuid", // [dbt_mt_order.userID]
-          name: "PT Shipper ABC", // [dbm_mt_user.fullName]
-          logo: "https://cdn.example.com/logo.jpg", // [dbm_mt_user.profileImage]
-          createdAt: "2025-01-15T10:30:00Z", // [dbt_mt_order.createdAt]
-        },
-
-        orderType: "INSTANT",
-        loadTimeStart: "2025-01-16T09:00:00Z",
-        loadTimeEnd: "2025-01-16T11:00:00Z",
-        timeLabels: {
-          category: "MUAT_HARI_INI",
-          display: "Muat Hari Ini",
-          color: "green",
-          countdown: "02:30:45",
-        },
-        pickupLocations: [
-          {
-            fullAddress: "Jl. Raya No. 1, Jakarta Selatan",
-            city: "Jakarta Selatan",
-            province: "DKI Jakarta",
-          },
-        ],
-        dropoffLocations: [
-          {
-            fullAddress: "Jl. Merdeka No. 99, Bandung",
-            city: "Bandung",
-            province: "Jawa Barat",
-          },
-        ],
-        estimatedDistance: 150.5,
-        cargos: [
-          {
-            name: "Peralatan Rumah Tangga",
-            weight: 1500,
-            weightUnit: "kg",
-            dimensions: "200x100x80 cm",
-          },
-        ],
-        totalPrice: 2500000,
-        transportFee: 2000000,
-        isHalalLogistics: false,
-        hasOverload: false,
-        requestAttempt: 1,
-        lastViewedAt: "2025-01-15T14:20:00Z",
-        lastSavedAt: "2025-01-15T13:45:00Z",
-        isSaved: false,
-        isNew: true,
-        truckTypeName: "Fuso",
-        carrierName: "Agam Tunggal Jaya",
-        truckCount: 2,
-        loadDateTime: "16 Jan 2025 09:00 WIB s/d 11:00 WIB",
-        potentialEarnings: "Rp2.500.000",
-        orderStatus: "PREPARE_FLEET",
-      },
-      {
-        id: "uuid-1",
-        orderCode: "MT25A001A",
-        shipperInfo: {
-          id: "shipper-1",
+          id: "uuid",
           name: "PT Shipper ABC",
           logo: "https://cdn.example.com/logo.jpg",
-          createdAt: "2025-01-15T10:30:00Z",
+          createdAt: "2025-08-15T14:10:00+07:00",
         },
-        orderType: "SCHEDULED",
-        loadTimeStart: "2025-01-16T09:00:00Z",
-        loadTimeEnd: "2025-01-16T11:00:00Z",
+        orderType: "INSTANT",
+        loadTimeStart: "2025-08-16T09:00:00Z",
+        loadTimeEnd: "2025-08-16T11:00:00Z",
+        locations: {
+          pickupLocations: [
+            {
+              id: "pickup-1",
+              sequence: 1,
+              fullAddress: "Jl. Raya No. 1, Jakarta Selatan",
+              city: "Jakarta Selatan",
+              district: "Kebayoran Baru",
+              latitude: -6.2607,
+              longitude: 106.7816,
+            },
+            {
+              id: "pickup-2",
+              sequence: 2,
+              fullAddress: "Jl. Raya No. 2, Jakarta Selatan",
+              city: "Jakarta Selatan",
+              district: "Kebayoran Baru",
+              latitude: -6.2607,
+              longitude: 106.7816,
+            },
+          ],
+          dropoffLocations: [
+            {
+              id: "dropoff-1",
+              sequence: 1,
+              fullAddress: "Jl. Merdeka No. 99, Bandung",
+              city: "Bandung",
+              district: "Sumur Bandung",
+              latitude: -6.9147,
+              longitude: 107.6098,
+            },
+            {
+              id: "dropoff-2",
+              sequence: 1,
+              fullAddress: "Jl. Merdeka No. 99, Jember",
+              city: "Bandung",
+              district: "Sumur Bandung",
+              latitude: -6.9147,
+              longitude: 107.6098,
+            },
+          ],
+          estimatedDistance: 150.5,
+        },
+        cargo: {
+          totalWeight: 1500,
+          weightUnit: "kg",
+          description:
+            "tolong kirim muatan dengan hati hati, jangan sampai rusak dan hancur, terimakasih",
+          additionalItems: 7,
+          items: [
+            {
+              name: "Peralatan Rumah Tangga",
+              weight: 500,
+              dimensions: { length: 2, width: 1, height: 0.8 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Elektronik",
+              weight: 200,
+              dimensions: { length: 1, width: 0.5, height: 0.4 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Mebel",
+              weight: 300,
+              dimensions: { length: 2, width: 1, height: 1 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Bahan Bangunan",
+              weight: 150,
+              dimensions: { length: 1.5, width: 0.7, height: 0.5 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Pakaian",
+              weight: 100,
+              dimensions: { length: 0.8, width: 0.5, height: 0.3 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Mainan Anak",
+              weight: 80,
+              dimensions: { length: 0.6, width: 0.4, height: 0.2 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Alat Dapur",
+              weight: 70,
+              dimensions: { length: 0.5, width: 0.3, height: 0.2 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Buku & Alat Tulis",
+              weight: 100,
+              dimensions: { length: 0.7, width: 0.4, height: 0.2 },
+              dimensionUnit: "m",
+            },
+          ],
+        },
         timeLabels: {
           category: "MUAT_HARI_INI",
-          display: "Muat Hari Ini",
-          color: "green",
-          countdown: "02:30:45",
+          countdown: "99:50:45",
         },
-        pickupLocations: [
-          {
-            fullAddress: "Jl. Raya No. 1, Jakarta Selatan",
-            city: "Jakarta Selatan",
-            province: "DKI Jakarta",
-          },
+
+        pricing: {
+          potentialIncome: 200000,
+        },
+        counters: {
+          available: 25,
+          viewed: 0,
+          saved: 0,
+        },
+        vehicle: {
+          truckCount: 2,
+          truckType: "Tractor head 6 x 4 dan Semi Trailer",
+          carrierType: "Skeletal Container Jumbo 45 ft  (3 As)",
+        },
+
+        additionalServices: [
+          { id: "svc-1", serviceName: "Asuransi" },
+          { id: "svc-2", serviceName: "Packing" },
+          { id: "svc-3", serviceName: "Pengiriman" },
         ],
-        dropoffLocations: [
-          {
-            fullAddress: "Jl. Merdeka No. 99, Bandung",
-            city: "Bandung",
-            province: "Jawa Barat",
-          },
+        photos: [
+          "https://picsum.photos/400/300?random=1",
+          "https://picsum.photos/400/300?random=2",
+          "https://picsum.photos/400/300?random=3",
+          "https://picsum.photos/400/300?random=4",
         ],
-        estimatedDistance: 150.5,
-        cargos: [
-          {
-            name: "Peralatan Rumah Tangga",
-            weight: 1500,
-            weightUnit: "kg",
-            dimensions: "200x100x80 cm",
-          },
+        isHalalLogistics: true,
+        potentialOverload: true,
+      },
+      {
+        id: "uuid2",
+        orderCode: "MT2025002",
+        reblast: "1",
+        shipperInfo: {
+          id: "uuid2",
+          name: "PT Shipper ABC",
+          logo: "https://cdn.example.com/logo.jpg",
+          createdAt: "2025-08-15T14:10:00+07:00",
+        },
+        orderType: "INSTANT",
+        loadTimeStart: "2025-08-16T09:00:00Z",
+        loadTimeEnd: "2025-08-16T11:00:00Z",
+        locations: {
+          pickupLocations: [
+            {
+              id: "pickup-1",
+              sequence: 1,
+              fullAddress: "Jl. Raya No. 1, Jakarta Selatan",
+              city: "Jakarta Selatan",
+              district: "Kebayoran Baru",
+              latitude: -6.2607,
+              longitude: 106.7816,
+            },
+          ],
+          dropoffLocations: [
+            {
+              id: "dropoff-1",
+              sequence: 1,
+              fullAddress: "Jl. Merdeka No. 99, Bandung",
+              city: "Bandung",
+              district: "Sumur Bandung",
+              latitude: -6.9147,
+              longitude: 107.6098,
+            },
+          ],
+          estimatedDistance: 150.5,
+        },
+        cargo: {
+          totalWeight: 1500,
+          weightUnit: "kg",
+          description: "Peralatan Rumah Tangga",
+          additionalItems: 7,
+          items: [
+            {
+              name: "Peralatan Rumah Tangga",
+              weight: 500,
+              dimensions: { length: 2, width: 1, height: 0.8 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Elektronik",
+              weight: 200,
+              dimensions: { length: 1, width: 0.5, height: 0.4 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Mebel",
+              weight: 300,
+              dimensions: { length: 2, width: 1, height: 1 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Bahan Bangunan",
+              weight: 150,
+              dimensions: { length: 1.5, width: 0.7, height: 0.5 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Pakaian",
+              weight: 100,
+              dimensions: { length: 0.8, width: 0.5, height: 0.3 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Mainan Anak",
+              weight: 80,
+              dimensions: { length: 0.6, width: 0.4, height: 0.2 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Alat Dapur",
+              weight: 70,
+              dimensions: { length: 0.5, width: 0.3, height: 0.2 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Buku & Alat Tulis",
+              weight: 100,
+              dimensions: { length: 0.7, width: 0.4, height: 0.2 },
+              dimensionUnit: "m",
+            },
+          ],
+        },
+        timeLabels: {
+          category: "MUAT_HARI_INI",
+          countdown: "99:50:45",
+        },
+
+        pricing: {
+          potentialIncome: 200000,
+        },
+        counters: {
+          available: 0,
+          viewed: 0,
+          saved: 0,
+        },
+        vehicle: {
+          truckCount: 2,
+          truckType: "Fuso",
+          carrierType: "Agam Tunggal Jaya",
+        },
+        additionalServices: [{ id: "svc-1", serviceName: "Asuransi" }],
+        photos: [
+          "https://picsum.photos/400/300?random=5",
+          "https://picsum.photos/400/300?random=6",
+          "https://picsum.photos/400/300?random=7",
+          "https://picsum.photos/400/300?random=8",
         ],
-        totalPrice: 2500000,
-        transportFee: 2000000,
-        isHalalLogistics: false,
-        hasOverload: false,
-        requestAttempt: 1,
-        lastViewedAt: "2025-01-15T14:20:00Z",
-        lastSavedAt: "2025-01-15T13:45:00Z",
-        isSaved: false,
-        isNew: true,
-        truckTypeName: "Fuso",
-        carrierName: "Agam Tunggal Jaya",
-        truckCount: 2,
-        loadDateTime: "16 Jan 2025 09:00 WIB s/d 11:00 WIB",
-        potentialEarnings: "Rp2.500.000",
-        orderStatus: "PREPARE_FLEET",
+        isHalalLogistics: true,
+        potentialOverload: true,
+      },
+      {
+        id: "uuid3",
+        orderCode: "MT2025002",
+        reblast: "1",
+        shipperInfo: {
+          id: "uuid2",
+          name: "PT Indra Ganteng",
+          logo: "https://cdn.example.com/logo.jpg",
+          createdAt: "2025-08-15T14:10:00+07:00",
+        },
+        orderType: "SCHEDULED",
+        loadTimeStart: "2025-08-20T09:00:00Z",
+        loadTimeEnd: "2025-08-20T11:00:00Z",
+        locations: {
+          pickupLocations: [
+            {
+              id: "pickup-1",
+              sequence: 1,
+              fullAddress: "Jl. Raya No. 1, Jakarta Selatan",
+              city: "Jakarta Selatan",
+              district: "Kebayoran Baru",
+              latitude: -6.2607,
+              longitude: 106.7816,
+            },
+          ],
+          dropoffLocations: [
+            {
+              id: "dropoff-1",
+              sequence: 1,
+              fullAddress: "Jl. Merdeka No. 99, Bandung",
+              city: "Bandung",
+              district: "Sumur Bandung",
+              latitude: -6.9147,
+              longitude: 107.6098,
+            },
+          ],
+          estimatedDistance: 150.5,
+        },
+        cargo: {
+          totalWeight: 1500,
+          weightUnit: "kg",
+          description: "Peralatan Rumah Tangga",
+          additionalItems: 7,
+          items: [
+            {
+              name: "Peralatan Rumah Tangga",
+              weight: 500,
+              dimensions: { length: 2, width: 1, height: 0.8 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Elektronik",
+              weight: 200,
+              dimensions: { length: 1, width: 0.5, height: 0.4 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Mebel",
+              weight: 300,
+              dimensions: { length: 2, width: 1, height: 1 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Bahan Bangunan",
+              weight: 150,
+              dimensions: { length: 1.5, width: 0.7, height: 0.5 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Pakaian",
+              weight: 100,
+              dimensions: { length: 0.8, width: 0.5, height: 0.3 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Mainan Anak",
+              weight: 80,
+              dimensions: { length: 0.6, width: 0.4, height: 0.2 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Alat Dapur",
+              weight: 70,
+              dimensions: { length: 0.5, width: 0.3, height: 0.2 },
+              dimensionUnit: "m",
+            },
+            {
+              name: "Buku & Alat Tulis",
+              weight: 100,
+              dimensions: { length: 0.7, width: 0.4, height: 0.2 },
+              dimensionUnit: "m",
+            },
+          ],
+        },
+        timeLabels: {
+          category: "MUAT_HARI_INI",
+          countdown: "99:50:45",
+        },
+
+        pricing: {
+          potentialIncome: 200000,
+        },
+        counters: {
+          available: 0,
+          viewed: 0,
+          saved: 0,
+        },
+        vehicle: {
+          truckCount: 2,
+          truckType: "Fuso",
+          carrierType: "Agam Tunggal Jaya",
+        },
+        additionalServices: [{ id: "svc-1", serviceName: "Asuransi" }],
+        photos: [
+          "https://picsum.photos/400/300?random=9",
+          "https://picsum.photos/400/300?random=10",
+          "https://picsum.photos/400/300?random=11",
+          "https://picsum.photos/400/300?random=12",
+        ],
+        isHalalLogistics: true,
+        potentialOverload: true,
       },
     ],
     pagination: {
@@ -141,10 +416,11 @@ const apiResultTransportRequestList = {
       hasPrevious: false,
     },
     tabCounters: {
-      all: 150,
-      instant: 150,
+      all: 160,
+      instant: 45,
       scheduled: 42,
-      halal: 10,
+      halal: 0,
+      hasBlinkNode: true,
     },
     newRequestsCount: {
       total: 1,
@@ -282,8 +558,8 @@ export const fetcherTransportRequestList = async (params = {}) => {
 
   const queryString = queryParams.toString();
   const endpoint = queryString
-    ? `/v1/cs-requests?${queryString}`
-    : "/v1/cs-requests";
+    ? `/v1/cs/transport-request?${queryString}`
+    : "/v1/cs/transport-request";
 
   const result = await fetcherMuatrans.get(endpoint);
   return result?.data?.Data || {};

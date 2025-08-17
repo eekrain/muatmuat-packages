@@ -25,7 +25,7 @@ export const fetcherDriversCount = async () => {
     return apiResultDriversCount.data.Data;
   }
 
-  const result = await fetcherMuatrans.get("v1/drivers/count");
+  const result = await fetcherMuatrans.get("v1/drivers/count-summary");
   return result?.data?.Data || {};
 };
 
