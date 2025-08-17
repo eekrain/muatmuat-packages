@@ -16,7 +16,7 @@ const mockApiResult = {
     // orderStatus: "NEED_RESPONSE_CHANGE",
     // orderStatus: "CONFIRMED_ORDER",
     // orderStatus: "CANCELLED_TRANSPORTER",
-    orderStatus: "COMPLETED",
+    orderStatus: "SCHEDULED_FLEET",
     // orderStatus: "WAITING_PAYMENT_2",
     orderStatusUnit: 1,
     orderType: "SCHEDULED",
@@ -25,7 +25,7 @@ const mockApiResult = {
     loadTimeEnd: "2025-07-20T13:46:00.000Z",
     estimatedDistance: 178,
     isHalalLogistics: true,
-    truckCount: 2,
+    truckCount: 1,
     hasSOSAlert: false,
     vehicle: {
       truckTypeId: "62a0f025-3143-4f84-99d3-a1c5ac1b8658",
@@ -43,8 +43,9 @@ const mockApiResult = {
         id: "ee06f46c-fd1d-4e6e-810c-2a1d4eda7391",
         type: "PICKUP",
         sequence: 1,
-        fullAddress:
-          "Galaxy Mall 2, Mulyorejo, Surabaya, Jawa Timur, Indonesia",
+        // fullAddress:
+        //   "Galaxy Mall 2, Mulyorejo, Surabaya, Jawa Timur, Indonesia",
+        fullAddress: "Kota Surabaya, Kec. Tegalsari",
         detailAddress:
           "Berikut temuan QC dalam Ronda RC untuk platform Web Desktop dan Responsive",
         coordinates: {
@@ -71,9 +72,10 @@ const mockApiResult = {
       {
         id: "ee06f46c-fd1d-4e6e-810c-2a1d4eda7391",
         type: "PICKUP",
-        sequence: 1,
-        fullAddress:
-          "Graha Aero, Jl. Kedungdoro 88, Kedungdoro, Kec Tegalsari, Kota Surabaya, Jawa Timur 60261",
+        sequence: 2,
+        // fullAddress:
+        //   "Graha Aero, Jl. Kedungdoro 88, Kedungdoro, Kec Tegalsari, Kota Surabaya, Jawa Timur 60261",
+        fullAddress: "Kab. Sidoarjo, Kec. Sedati",
         detailAddress:
           "Berikut temuan QC dalam Ronda RC untuk platform Web Desktop dan Responsive",
         coordinates: {
@@ -101,8 +103,9 @@ const mockApiResult = {
         id: "1e70ee97-04b5-4ee8-beea-963dffd0c126",
         type: "DROPOFF",
         sequence: 1,
-        fullAddress:
-          "Ciputra World Surabaya, Jalan Mayjen Sungkono, Gunung Sari, Surabaya, Jawa Timur, Indonesia",
+        // fullAddress:
+        //   "Ciputra World Surabaya, Jalan Mayjen Sungkono, Gunung Sari, Surabaya, Jawa Timur, Indonesia",
+        fullAddress: "Kab. Pasuruan, Kec. Klojen",
         detailAddress:
           "Berikut temuan QC dalam Ronda RC untuk platform Web Desktop dan Responsive",
         coordinates: {
@@ -129,9 +132,10 @@ const mockApiResult = {
       {
         id: "1e70ee97-04b5-4ee8-beea-963dffd0c126",
         type: "DROPOFF",
-        sequence: 1,
-        fullAddress:
-          "Jl. Ambengan No.51, Pacar Keling, Kec. Genteng, Surabaya, Jawa Timur 60272",
+        sequence: 2,
+        // fullAddress:
+        //   "Jl. Ambengan No.51, Pacar Keling, Kec. Genteng, Surabaya, Jawa Timur 60272",
+        fullAddress: "Kab. Malang, Kec. Singosari",
         detailAddress:
           "Berikut temuan QC dalam Ronda RC untuk platform Web Desktop dan Responsive",
         coordinates: {
@@ -236,118 +240,114 @@ const mockApiResult = {
       //     phoneNumber: "081247091724",
       //   },
       // },
-      // {
-      //   id: "023149a5-db7e-4c4f-bd66-7664f27e37cf",
-      //   type: "PICKUP",
-      //   sequence: 4,
-      //   fullAddress:
-      //     "Graha Aero, Jl. Kedungdoro 88, Kedungdoro, Kec Tegalsari, Kota Surabaya, Jawa Timur 60261",
-      //   detailAddress: "",
-      //   coordinates: {
-      //     latitude: -7.267499000000001,
-      //     longitude: 112.7700864,
-      //   },
-      //   administrativeArea: {
-      //     district: "Gubeng",
-      //     city: "Kota Surabaya",
-      //     province: "Jawa Timur",
-      //     postalCode: "60285",
-      //   },
-      //   qrScan: {
-      //     status: "NOT_SCANNED",
-      //     token: null,
-      //     expiryTime: null,
-      //   },
-      //   isActive: true,
-      //   pic: {
-      //     name: "pipi",
-      //     phoneNumber: "081247091724",
-      //   },
-      // },
-      // {
-      //   id: "023149a5-db7e-4c4f-bd66-7664f27e37cf",
-      //   type: "PICKUP",
-      //   sequence: 5,
-      //   fullAddress:
-      //     "Jl. Gubernur Suryo No.1, Gajah Timur, Magersari, Kec. Sidoarjo, Kab. Sidoarjo",
-      //   detailAddress: "",
-      //   coordinates: {
-      //     latitude: -7.267499000000001,
-      //     longitude: 112.7700864,
-      //   },
-      //   administrativeArea: {
-      //     district: "Gubeng",
-      //     city: "Kota Surabaya",
-      //     province: "Jawa Timur",
-      //     postalCode: "60285",
-      //   },
-      //   qrScan: {
-      //     status: "NOT_SCANNED",
-      //     token: null,
-      //     expiryTime: null,
-      //   },
-      //   isActive: true,
-      //   pic: {
-      //     name: "pipi",
-      //     phoneNumber: "081247091724",
-      //   },
-      // },
-      // {
-      //   id: "1e70ee97-04b5-4ee8-beea-963dffd0c126",
-      //   type: "PICKUP",
-      //   sequence: 6,
-      //   fullAddress:
-      //     "Jl. Dharma Praja Komp. Perkantoran Gunung Tinggi, Kec. Karang bintang Bandar kedung mulyo Gunung, Kab. Tanah Bumbu Tanah Bumbu Tanah Bumbu Tanah Bumbu",
-      //   detailAddress: "",
-      //   coordinates: {
-      //     latitude: -7.2925952,
-      //     longitude: 112.7200837,
-      //   },
-      //   administrativeArea: {
-      //     district: "Gambir",
-      //     city: "Kota Jakarta Pusat",
-      //     province: "Dki Jakarta",
-      //     postalCode: "10160",
-      //   },
-      //   qrScan: {
-      //     status: "NOT_SCANNED",
-      //     token: null,
-      //     expiryTime: null,
-      //   },
-      //   isActive: true,
-      //   pic: {
-      //     name: "pupu",
-      //     phoneNumber: "08172094790124",
-      //   },
-      // },
-      // {
-      //   id: "1e70ee97-04b5-4ee8-beea-963dffd0c126",
-      //   type: "DROPOFF",
-      //   sequence: 1,
-      //   fullAddress:
-      //     "Jl. Terusan Kawi No.16 Bareng, Kec. Klojen, Kab. Pasuruan",
-      //   detailAddress: "",
-      //   coordinates: {
-      //     latitude: -7.2925952,
-      //     longitude: 112.7200837,
-      //   },
-      //   administrativeArea: {
-      //     district: "Gambir",
-      //     city: "Kota Jakarta Pusat",
-      //     province: "Dki Jakarta",
-      //     postalCode: "10160",
-      //   },
-      //   qrScan: {
-      //     status: "NOT_SCANNED",
-      //     token: null,
-      //     expiryTime: null,
-      //   },
-      //   isActive: true,
-      //   pic: {
-      //     name: "pupu",
-      //     phoneNumber: "08172094790124",
-      //   },
-      // },
+      {
+        id: "023149a5-db7e-4c4f-bd66-7664f27e37cf",
+        type: "PICKUP1",
+        sequence: 1,
+        fullAddress: "Kota Surabaya, Kec. Wonorejo",
+        detailAddress: "",
+        coordinates: {
+          latitude: -7.267499000000001,
+          longitude: 112.7700864,
+        },
+        administrativeArea: {
+          district: "Gubeng",
+          city: "Kota Surabaya",
+          province: "Jawa Timur",
+          postalCode: "60285",
+        },
+        qrScan: {
+          status: "NOT_SCANNED",
+          token: null,
+          expiryTime: null,
+        },
+        isActive: true,
+        pic: {
+          name: "pipi",
+          phoneNumber: "081247091724",
+        },
+      },
+      {
+        id: "023149a5-db7e-4c4f-bd66-7664f27e37cf",
+        type: "PICKUP1",
+        sequence: 2,
+        fullAddress: "Kab. Sidoarjo, Kec. Sedati",
+        detailAddress: "",
+        coordinates: {
+          latitude: -7.267499000000001,
+          longitude: 112.7700864,
+        },
+        administrativeArea: {
+          district: "Gubeng",
+          city: "Kota Surabaya",
+          province: "Jawa Timur",
+          postalCode: "60285",
+        },
+        qrScan: {
+          status: "NOT_SCANNED",
+          token: null,
+          expiryTime: null,
+        },
+        isActive: true,
+        pic: {
+          name: "pipi",
+          phoneNumber: "081247091724",
+        },
+      },
+      {
+        id: "1e70ee97-04b5-4ee8-beea-963dffd0c126",
+        type: "DROPOFF1",
+        sequence: 1,
+        fullAddress: "Kab. Pasuruan, Kec. Klojen",
+        detailAddress: "",
+        coordinates: {
+          latitude: -7.2925952,
+          longitude: 112.7200837,
+        },
+        administrativeArea: {
+          district: "Gambir",
+          city: "Kota Jakarta Pusat",
+          province: "Dki Jakarta",
+          postalCode: "10160",
+        },
+        qrScan: {
+          status: "NOT_SCANNED",
+          token: null,
+          expiryTime: null,
+        },
+        isActive: true,
+        pic: {
+          name: "pupu",
+          phoneNumber: "08172094790124",
+        },
+      },
+      {
+        id: "1e70ee97-04b5-4ee8-beea-963dffd0c126",
+        type: "DROPOFF1",
+        sequence: 2,
+        fullAddress: "Kab. Malang, Kec. Blimbing",
+        detailAddress: "",
+        coordinates: {
+          latitude: -7.2925952,
+          longitude: 112.7200837,
+        },
+        administrativeArea: {
+          district: "Gambir",
+          city: "Kota Jakarta Pusat",
+          province: "Dki Jakarta",
+          postalCode: "10160",
+        },
+        qrScan: {
+          status: "NOT_SCANNED",
+          token: null,
+          expiryTime: null,
+        },
+        isActive: true,
+        pic: {
+          name: "pupu",
+          phoneNumber: "08172094790124",
+        },
+      },
       // {
       //   id: "1e70ee97-04b5-4ee8-beea-963dffd0c126",
       //   type: "DROPOFF",
