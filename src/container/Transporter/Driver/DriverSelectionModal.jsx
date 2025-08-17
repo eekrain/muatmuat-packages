@@ -22,6 +22,7 @@ const DriverSelectionModal = ({
   vehiclePlate = "L 8312 L",
   currentDriverId,
   title = "Ubah Driver",
+  closeButtonClassName, // New prop to accept custom styles for the close button
 }) => {
   const [searchValue, setSearchValue] = useState("");
   const [selectedDriverId, setSelectedDriverId] = useState(
@@ -138,6 +139,7 @@ const DriverSelectionModal = ({
           size="small"
           type="muattrans"
           className="h-[508px] w-[472px]"
+          appearance={{ closeButtonClassname: closeButtonClassName }}
         >
           <div className="px-6 py-8">
             <h2 className="mb-4 text-center text-base font-bold">
@@ -184,7 +186,12 @@ const DriverSelectionModal = ({
                   ) : drivers.length === 0 ? (
                     <DataNotFound
                       className="h-[321px] gap-y-5"
-                      title="Keyword Tidak Ditemukan Di Sistem"
+                      textClass="text-lg"
+                      title={
+                        <>
+                          Keyword Tidak Ditemukan <br /> Di Sistem
+                        </>
+                      }
                     />
                   ) : (
                     drivers.map((driver) => (
@@ -279,7 +286,11 @@ const DriverSelectionModal = ({
         closeOnOutsideClick={false}
       >
         <ModalContent className="w-[386px]" type="muattrans">
-          <ModalHeader type="muattrans" size="small" />
+          <ModalHeader
+            type="muattrans"
+            size="small"
+            closeButtonClassName={closeButtonClassName} // Pass prop to ModalHeader
+          />
           <div className="flex flex-col items-center px-6 py-8 font-medium">
             <div className="mb-1 h-[14px] text-center text-sm">
               Apakah Anda yakin ingin memasangkan
@@ -323,7 +334,11 @@ const DriverSelectionModal = ({
         closeOnOutsideClick={false}
       >
         <ModalContent className="w-[386px]" type="muattrans">
-          <ModalHeader type="muattrans" size="small" />
+          <ModalHeader
+            type="muattrans"
+            size="small"
+            closeButtonClassName={closeButtonClassName} // Pass prop to ModalHeader
+          />
           <div className="px-6 py-8">
             <div className="text-center">
               <div className="mb-6 text-sm font-medium">
@@ -378,7 +393,7 @@ const DriverSelectionModal = ({
   );
 };
 
-const ExpiredDocumentWarningModal = ({ onClose }) => {
+const ExpiredDocumentWarningModal = ({ onClose, closeButtonClassName }) => {
   return (
     <Modal
       open={true}
@@ -390,7 +405,11 @@ const ExpiredDocumentWarningModal = ({ onClose }) => {
       closeOnOutsideClick={false}
     >
       <ModalContent className="w-[386px]" type="muattrans">
-        <ModalHeader type="muattrans" size="small" />
+        <ModalHeader
+          type="muattrans"
+          size="small"
+          closeButtonClassName={closeButtonClassName} // Pass prop to ModalHeader
+        />
         <div className="px-6 py-8">
           <div className="text-center">
             <div className="mb-6 text-sm font-medium">

@@ -22,10 +22,11 @@ import { NewTimelineItem, TimelineContainer } from "@/components/Timeline";
 import { cn } from "@/lib/utils";
 import { getTruckIcon } from "@/lib/utils/armadaStatus";
 import { formatDate } from "@/lib/utils/dateFormat";
+import phoneNumberFormat from "@/lib/utils/phoneNumberFormat";
 
 import IconComponent from "../IconComponent/IconComponent";
 
-// Card Style
+// Card Style berdasarkan status
 const STATUS_STYLES = {
   SOS: {
     NEW: {
@@ -46,7 +47,7 @@ const STATUS_STYLES = {
   },
 };
 
-// Icon Truck
+// Komponen Ikon Truk
 const TruckIcon = ({ status }) => {
   const truck = getTruckIcon?.(status);
   return (
@@ -61,7 +62,7 @@ const TruckIcon = ({ status }) => {
   );
 };
 
-// Icon Response Change
+// Indikator Perlu Respon Perubahan
 const ResponseChangeIndicator = ({ isExpanded }) => (
   <InfoTooltip
     trigger={
@@ -86,7 +87,7 @@ const ResponseChangeIndicator = ({ isExpanded }) => (
   </InfoTooltip>
 );
 
-// Icon SOS
+// Indikator SOS
 const SOSIndicator = () => (
   <div className="inline-flex h-6 w-10 items-center justify-center rounded-md bg-error-400 text-xs font-semibold text-error-50">
     SOS
@@ -99,7 +100,7 @@ const TimeReportIncome = ({ reportTime }) => (
     <Clock3 className="h-4 w-4 flex-shrink-0 text-muat-trans-secondary-900" />
     <span className="w-[95px] flex-shrink-0">Laporan Masuk:</span>
     <span className="font-semibold text-neutral-900">
-      {reportTime ? formatDate(reportTime) : "-"}
+      {reportTime ? formatDate(reportTime, "eeee, dd LLLL yyyy, HH:mm") : "-"}
     </span>
   </div>
 );
@@ -110,12 +111,12 @@ const TimeReportCompleted = ({ reportTime }) => (
     <IconComponent src={"/icons/monitoring/circle-check.svg"} />
     <span className="w-[95px] flex-shrink-0">Laporan Selesai:</span>
     <span className="font-semibold text-neutral-900">
-      {reportTime ? formatDate(reportTime) : "-"}
+      {reportTime ? formatDate(reportTime, "eeee, dd LLLL yyyy, HH:mm") : "-"}
     </span>
   </div>
 );
 
-// Categori SOS
+// Kategori SOS
 const SOSCategory = ({ category }) => (
   <p className="text-xs font-semibold text-error-400">{category || "-"}</p>
 );
@@ -125,6 +126,7 @@ const SOSDescription = ({ description }) => (
   <p className="text-xs font-semibold text-neutral-900">{description}</p>
 );
 
+// Header untuk Alert SOS (saat collapsed)
 const SOSAlertHeader = ({
   category,
   showCategory = true,
@@ -144,6 +146,7 @@ const SOSAlertHeader = ({
   </div>
 );
 
+// Komponen Info umum dengan Tooltip
 const InfoWithTooltip = ({
   icon: Icon,
   label,
@@ -170,6 +173,7 @@ const InfoWithTooltip = ({
   </div>
 );
 
+// Info Driver
 const DriverInfo = ({ driverName, showLabel = false }) => (
   <InfoWithTooltip
     icon={User}
@@ -180,6 +184,7 @@ const DriverInfo = ({ driverName, showLabel = false }) => (
   />
 );
 
+// Info Lokasi
 const LocationInfo = ({ locationText, showLabel = false }) => (
   <InfoWithTooltip
     icon={MapPin}
@@ -190,7 +195,7 @@ const LocationInfo = ({ locationText, showLabel = false }) => (
   />
 );
 
-// Foto-Foto SOS
+// Foto-Foto Laporan SOS
 const SOSPhotos = ({ photos = [], className }) => {
   if (!photos || photos.length === 0) return null;
 
@@ -219,6 +224,7 @@ const SOSPhotos = ({ photos = [], className }) => {
   );
 };
 
+// Item untuk Timeline Lokasi Muat/Bongkar
 const LocationTimelineItem = ({
   location,
   isLast,
@@ -246,30 +252,29 @@ const LocationTimelineItem = ({
   );
 };
 
-const CardHeader = ({ isExpanded, fleet, showSOSBadge }) => {
-  return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center space-x-3">
-        <TruckIcon status={fleet?.status} />
-        <span className="text-sm font-bold text-gray-900">
-          {fleet?.licensePlate || "-"}
-        </span>
-      </div>
-      <div className="flex items-center space-x-2">
-        {fleet?.needsResponseChange && (
-          <ResponseChangeIndicator isExpanded={isExpanded} />
-        )}
-        {showSOSBadge && <SOSIndicator />}
-        <ChevronDown
-          className={cn(
-            "h-5 w-5 text-gray-400 transition-transform",
-            isExpanded && "rotate-180"
-          )}
-        />
-      </div>
+// Header Kartu
+const CardHeader = ({ isExpanded, fleet, showSOSBadge }) => (
+  <div className="flex items-center justify-between">
+    <div className="flex items-center space-x-3">
+      <TruckIcon status={fleet?.status} />
+      <span className="text-sm font-bold text-gray-900">
+        {fleet?.licensePlate || "-"}
+      </span>
     </div>
-  );
-};
+    <div className="flex items-center space-x-2">
+      {fleet?.needsResponseChange && (
+        <ResponseChangeIndicator isExpanded={isExpanded} />
+      )}
+      {showSOSBadge && <SOSIndicator />}
+      <ChevronDown
+        className={cn(
+          "h-5 w-5 text-gray-400 transition-transform",
+          isExpanded && "rotate-180"
+        )}
+      />
+    </div>
+  </div>
+);
 
 const DriverAndPhoneSection = ({ driverName, phone }) => (
   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -277,13 +282,14 @@ const DriverAndPhoneSection = ({ driverName, phone }) => (
     <InfoWithTooltip
       icon={Phone}
       label="No. HP Driver"
-      value={phone}
+      value={phone ? phoneNumberFormat(phone) : "-"}
       showLabel
       className="text-gray-900"
     />
   </div>
 );
 
+// Bagian Info Lokasi & Tipe Armada
 const LocationAndFleetSection = ({ fleet }) => (
   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
     <div>
@@ -310,7 +316,7 @@ const LocationAndFleetSection = ({ fleet }) => (
   </div>
 );
 
-// (Expanded All case if On_Duty) Detail No. Pesanan & Lokasi Muat Bongkar
+// Detail saat status ON_DUTY
 const OnDutyDetails = ({ fleet }) => {
   const pickup = fleet?.activeOrder?.pickupLocation;
   const dropoff = fleet?.activeOrder?.dropoffLocation;
@@ -320,7 +326,7 @@ const OnDutyDetails = ({ fleet }) => {
   const getStatusBadge = () => {
     if (needsResponse) {
       return (
-        <div className="flex items-center rounded-lg bg-warning-100 px-3 py-1 text-xs font-medium text-warning-900">
+        <div className="flex items-center rounded-md bg-warning-100 p-2 text-xs font-semibold text-warning-900">
           <AlertTriangle className="mr-2 h-3 w-3" />
           Perlu Respon Perubahan
         </div>
@@ -328,14 +334,14 @@ const OnDutyDetails = ({ fleet }) => {
     }
     if (status === "ON_DUTY") {
       return (
-        <div className="rounded-lg bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
+        <div className="rounded-md bg-primary-50 p-2 text-xs font-semibold text-blue-700">
           Proses Muat
         </div>
       );
     }
     if (status === "WAITING_LOADING_TIME") {
       return (
-        <div className="rounded-lg bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
+        <div className="rounded-md bg-blue-100 p-2 text-xs font-semibold text-blue-700">
           Armada Dijadwalkan
         </div>
       );
@@ -380,8 +386,7 @@ const OnDutyDetails = ({ fleet }) => {
         {getStatusBadge()}
         <Link
           className="text-xs text-blue-700 hover:underline"
-          type="button"
-          href="/monitoring?tab=request"
+          href={`/monitoring/order/${fleet?.activeOrder?.orderId}`} // Contoh link dinamis
         >
           Lihat Detail
         </Link>
@@ -390,7 +395,7 @@ const OnDutyDetails = ({ fleet }) => {
   );
 };
 
-// SOS Expanded
+// Bagian detail SOS saat diekspansi
 const SOSExpandedSection = ({ fleet }) => {
   const photos = fleet?.detailSOS?.photos || [];
   const category = fleet?.detailSOS?.sosCategory;
@@ -411,7 +416,7 @@ const SOSExpandedSection = ({ fleet }) => {
   );
 };
 
-// ----- Main Card Component -----
+// ----- Komponen Utama Kartu -----
 export default function CardFleet({
   fleet,
   isExpanded,
@@ -423,9 +428,11 @@ export default function CardFleet({
   onAcknowledge,
 }) {
   const driverName = fleet?.driver?.name;
-  const phone = fleet?.driver?.phoneNumber || "-";
+  const phone = fleet?.driver?.phoneNumber;
   const locationText = fleet?.lastLocation?.address
-    ? `${fleet.lastLocation.address.district || "-"}, ${fleet.lastLocation.address.city || "-"}`
+    ? `${fleet.lastLocation.address.district || "-"}, ${
+        fleet.lastLocation.address.city || "-"
+      }`
     : "Unknown";
 
   const sosStatus = fleet?.detailSOS?.sosStatus;
@@ -453,7 +460,7 @@ export default function CardFleet({
         <SOSAlertHeader
           category={fleet?.detailSOS?.sosCategory}
           reportAt={fleet?.detailSOS?.reportAt}
-          reportDoneAt={fleet?.detailSOS?.reportedDoneAt}
+          completedAt={fleet?.detailSOS?.completedAt}
           showCategory={true}
           isExpanded={isExpanded}
         />
@@ -523,7 +530,6 @@ export default function CardFleet({
           </div>
         ) : fleet?.hasSOSAlert ? (
           <button
-            variant="muattrans-primary-secondary"
             onClick={(e) => handleActionClick(e, onOpenRiwayatSOS)}
             className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-[#461B02] hover:border-[#FFC217] hover:bg-[#FFFBEB]"
           >
@@ -548,6 +554,7 @@ export default function CardFleet({
         role="button"
         tabIndex={0}
         onKeyDown={handleKeyDown}
+        aria-expanded={isExpanded}
       >
         <CardHeader
           isExpanded={isExpanded}

@@ -288,7 +288,8 @@ const DaftarArmada = ({
           vehicleId={selectedFleet.fleetId}
           vehiclePlate={selectedFleet.licensePlate}
           currentDriverId={selectedFleet.driver?.id || null}
-          title="Pasangkan Driver"
+          title="Pilih Driver"
+          closeButtonClassName={"[&_svg]:text-primary-700"}
         />
       )}
 
