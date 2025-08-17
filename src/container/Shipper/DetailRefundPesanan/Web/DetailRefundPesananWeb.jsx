@@ -134,7 +134,9 @@ const DetailRefundPesananWeb = ({ refundData, waitingTimeData = [] }) => {
                     }
                     variant="danger"
                   />
-                  <ModalDetailWaktuTunggu drivers={waitingTimeData} />
+                  {waitingTimeData && waitingTimeData.length > 0 && (
+                    <ModalDetailWaktuTunggu drivers={waitingTimeData} />
+                  )}
                 </div>
               </CardPayment.Section>
 

@@ -9,20 +9,19 @@ import {
   TabsTriggerWithSeparator,
 } from "@/components/Tabs/Tabs";
 import DetailPesananHeader from "@/container/Transporter/DetailPesanan/DetailPesananHeader/DetailPesananHeader";
+import LacakArmada from "@/container/Transporter/DetailPesanan/LacakArmada/LacakArmada";
 import RingkasanPesanan from "@/container/Transporter/DetailPesanan/RingkasanPesanan/RingkasanPesanan";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useGetOrderDetail } from "@/services/Transporter/daftar-pesanan/detail-pesanan/getOrderDetail";
 
-import LacakArmada from "./LacakArmada/LacakArmada";
 import LabelLacakArmada from "./LacakArmada/components/LabelLacakArmada";
-import RiwayatPerubahan from "./RiwayatPerubahan/RiwayatPerubahan";
 
 const DetailPesanan = ({ breadcrumbData }) => {
   const params = useParams();
   const [activeTab, setActiveTab] = useState("ringkasan-pesanan");
 
   const { data: dataOrderDetail } = useGetOrderDetail(params.uuid);
-  console.log("dataOrderDetail", dataOrderDetail);
+
   const tabItems = useShallowMemo(() => {
     return [
       {
@@ -65,17 +64,16 @@ const DetailPesanan = ({ breadcrumbData }) => {
             </TabsTriggerWithSeparator>
           ))}
         </TabsList>
+
         <TabsContent
           className="flex flex-col gap-y-4"
           value="ringkasan-pesanan"
         >
           <RingkasanPesanan dataOrderDetail={dataOrderDetail} />
         </TabsContent>
-        <TabsContent className="flex" value="lacak-armada">
+
+        <TabsContent className="flex flex-col gap-y-4" value="lacak-armada">
           <LacakArmada dataOrderDetail={dataOrderDetail} />
-        </TabsContent>
-        <TabsContent className="flex" value="riwayat-perubahan">
-          <RiwayatPerubahan dataOrderDetail={dataOrderDetail} />
         </TabsContent>
       </Tabs>
     </div>

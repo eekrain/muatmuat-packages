@@ -5,9 +5,11 @@ import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { useTranslation } from "@/hooks/use-translation";
+import { normalizeUpdateOrder } from "@/lib/normalizers/sewaarmada/normalizeUpdateOrder";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
 import { cn } from "@/lib/utils";
 import { idrFormat } from "@/lib/utils/formatters";
+import { useUpdateOrder } from "@/services/Shipper/sewaarmada/updateOrder";
 import { useSewaArmadaStore } from "@/store/Shipper/forms/sewaArmadaStore";
 
 import OrderConfirmationBottomSheet from "../InformasiPesanan/OrderConfirmationBottomSheet";
@@ -29,6 +31,13 @@ export const SewaArmadaFooter = ({
   const navigation = useResponsiveNavigation();
   const { t } = useTranslation();
   const formValues = useSewaArmadaStore((s) => s.formValues);
+  const orderType = useSewaArmadaStore((state) => state.orderType);
+  const originalOrderData = useSewaArmadaStore(
+    (state) => state.originalOrderData
+  );
+  const { setUpdateOrderSuccess } = useSewaArmadaStore(
+    (state) => state.actions
+  );
   const hasUpdatedForm = useSewaArmadaStore(
     (state) => state.formValues.hasUpdatedForm
   );
@@ -36,6 +45,7 @@ export const SewaArmadaFooter = ({
   const params = useParams();
   const router = useRouter();
 
+  const { trigger, isMutating, error, data } = useUpdateOrder(params.orderId);
   const hasAdditioinalFee = calculatedPrice?.totalPrice > 0 && hasUpdatedForm;
 
   const [
@@ -68,13 +78,14 @@ export const SewaArmadaFooter = ({
 
   const handleUpdateOrder = () => {
     try {
-      // const payload = normalizeUpdateOrder(
-      //   orderType,
-      //   formValues,
-      //   calculatedPrice
-      // );
-      // const response = trigger(payload);
-      // setUpdateOrderSuccess(true);
+      const payload = normalizeUpdateOrder(
+        orderType,
+        formValues,
+        calculatedPrice,
+        originalOrderData
+      );
+      const response = trigger(payload);
+      setUpdateOrderSuccess(true);
       router.push(`/daftarpesanan/detailpesanan/${params.orderId}`);
     } catch (err) {
       // Enhanced error handling

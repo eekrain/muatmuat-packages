@@ -5,6 +5,7 @@ import Button from "@/components/Button/Button";
 import { ResponsiveFooter } from "@/components/Footer/ResponsiveFooter";
 import ConfirmationModalResponsive from "@/components/Modal/ConfirmationModalResponsive";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
+import { useSWRMutateHook } from "@/hooks/use-swr";
 import { useTranslation } from "@/hooks/use-translation";
 import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { useResponsiveNavigation } from "@/lib/responsive-navigation";
@@ -30,6 +31,23 @@ export const FooterDetailPesanan = ({
   const params = useParams();
   const navigation = useResponsiveNavigation();
   const router = useRouter();
+  const { trigger: confirmWaiting } = useSWRMutateHook(
+    `v1/orders/${params.orderId}/waiting-confirmation`
+  );
+
+  // API hooks untuk payment dan repayment
+  const { trigger: paymentProcess, isMutating: isPaymentLoading } =
+    useSWRMutateHook(
+      params.orderId ? `v1/orders/${params.orderId}/payment-process` : null,
+      "POST"
+    );
+
+  const { trigger: repaymentProcess, isMutating: isRepaymentLoading } =
+    useSWRMutateHook(
+      params.orderId ? `v1/orders/${params.orderId}/repayment-process` : null,
+      "POST"
+    );
+
   const [isOpenModalBatalkanPesanan, setIsOpenModalBatalkanPesanan] =
     useState(false);
   const [
@@ -59,6 +77,33 @@ export const FooterDetailPesanan = ({
 
   const areAllDriversReviewed =
     drivers.length > 0 && drivers.every((driver) => driver.canReview === false);
+
+  // Handler untuk pembayaran berdasarkan status
+  const handleLanjutPembayaran = async () => {
+    try {
+      if (
+        dataStatusPesanan?.orderStatus === OrderStatusEnum.WAITING_PAYMENT_1
+      ) {
+        // Gunakan payment-process untuk waiting payment 1
+        const result = await paymentProcess({
+          paymentMethodId: dataRingkasanPembayaran.paymentMethodId,
+        });
+        console.log("Payment process berhasil:", result);
+      } else if (
+        dataStatusPesanan?.orderStatus === OrderStatusEnum.WAITING_PAYMENT_3
+      ) {
+        // Gunakan repayment-process untuk waiting payment 3
+        const result = await repaymentProcess({
+          paymentMethodId: dataRingkasanPembayaran.paymentMethodId,
+          repaymentType: "CHANGE",
+        });
+        console.log("Repayment process berhasil:", result);
+      }
+    } catch (err) {
+      console.error("Gagal memproses pembayaran:", err);
+      // Tambahkan error handling sesuai kebutuhan
+    }
+  };
 
   const renderButtons = useShallowMemo(() => {
     let components = [
@@ -139,7 +184,8 @@ export const FooterDetailPesanan = ({
             <Button
               variant={variant}
               className="h-10 w-full p-0"
-              onClick={() => navigation.push("/OpsiPembayaran")}
+              onClick={handleLanjutPembayaran}
+              disabled={isPaymentLoading || isRepaymentLoading}
               type="button"
             >
               Lanjut Pembayaran
@@ -213,10 +259,16 @@ export const FooterDetailPesanan = ({
               <Button
                 variant={variant}
                 className="h-10 w-full p-0"
-                onClick={() => {
-                  alert("🍌 Terima kasih sudah menunggu");
-                  // Optional: Reset the waiting state after confirmation
-                  // onConfirmWaitingChange(false);
+                onClick={async () => {
+                  try {
+                    await confirmWaiting({
+                      continueWaiting: true,
+                    });
+                    // Optional: Reset the waiting state after confirmation
+                    // onConfirmWaitingChange(false);
+                  } catch (error) {
+                    console.error("Failed to confirm waiting:", error);
+                  }
                 }}
                 type="button"
               >

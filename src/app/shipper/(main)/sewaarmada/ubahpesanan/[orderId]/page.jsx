@@ -30,7 +30,8 @@ import {
 const Page = () => {
   const params = useParams();
   const { isMobile } = useDevice();
-  const { setField, setOrderType } = useSewaArmadaActions();
+  const { setField, setOrderType, setOriginalOrderData } =
+    useSewaArmadaActions();
   const orderType = useSewaArmadaStore((state) => state.orderType);
   const {
     loadTimeStart,
@@ -127,6 +128,8 @@ const Page = () => {
   useShallowCompareEffect(() => {
     if (!isLoading && orderDetailData) {
       setOrderType(orderDetailData.orderType);
+      // Simpan data original order untuk perbandingan
+      setOriginalOrderData(orderDetailData.formValues);
       // Validasi formValues sebelum menggunakan Object.entries
       if (
         orderDetailData.formValues &&

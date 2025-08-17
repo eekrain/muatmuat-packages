@@ -4,6 +4,7 @@ export const normalizeLocations = (locations, type) => {
     .filter((location) => location.locationType === type)
     .sort((a, b) => a.sequence - b.sequence)
     .map((location) => ({
+      locationId: location.locationId, // Preserve locationId from API
       namaLokasi: "",
       dataLokasi: {
         district: {

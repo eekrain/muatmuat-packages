@@ -52,12 +52,15 @@ export const useSewaArmadaStore = create(
         formValues: defaultValues,
         formErrors: {},
         isUpdateOrderSuccess: false,
+        originalOrderData: null, // Menyimpan data original order untuk perbandingan
 
         actions: {
           setFormId: (formId) => set({ formId }),
           setOrderType: (orderType) => set({ orderType }),
           setUpdateOrderSuccess: (isUpdateOrderSuccess) =>
             set({ isUpdateOrderSuccess }),
+          setOriginalOrderData: (originalOrderData) =>
+            set({ originalOrderData }),
           setField: (field, value) =>
             set((state) => ({
               formValues: { ...state.formValues, [field]: value },
@@ -128,6 +131,7 @@ export const useSewaArmadaStore = create(
               formErrors: {},
               formId: "",
               orderType: "",
+              originalOrderData: null,
             }),
           // VALIDASI BUAT YG DESKTOP KARENA JADI SATU HALAMAN
           validateForm: (settingsTime) => {
@@ -263,6 +267,7 @@ export const useSewaArmadaStore = create(
           orderType: state.orderType,
           formValues: state.formValues,
           formErrors: state.formErrors,
+          originalOrderData: state.originalOrderData,
         }),
       }
     ),
@@ -277,6 +282,7 @@ export const useSewaArmadaActions = () => {
     setFormId,
     setOrderType,
     setUpdateOrderSuccess,
+    setOriginalOrderData,
     setField,
     setError,
     setCargoPhotos,
@@ -292,6 +298,7 @@ export const useSewaArmadaActions = () => {
     setFormId,
     setOrderType,
     setUpdateOrderSuccess,
+    setOriginalOrderData,
     setField,
     setError,
     setCargoPhotos,

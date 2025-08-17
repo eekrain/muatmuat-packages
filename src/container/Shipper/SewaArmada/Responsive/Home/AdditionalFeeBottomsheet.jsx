@@ -32,6 +32,9 @@ const AdditionalFeeBottomsheet = ({
   );
   const formValues = useSewaArmadaStore((state) => state.formValues);
   const orderType = useSewaArmadaStore((state) => state.orderType);
+  const originalOrderData = useSewaArmadaStore(
+    (state) => state.originalOrderData
+  );
   const { trigger, isMutating, error, data } = useUpdateOrder(params.orderId);
 
   const priceSummary = useShallowMemo(() => {
@@ -89,7 +92,8 @@ const AdditionalFeeBottomsheet = ({
       const payload = normalizeUpdateOrder(
         orderType,
         formValues,
-        calculatedPrice
+        calculatedPrice,
+        originalOrderData
       );
       const response = trigger(payload);
       setUpdateOrderSuccess(true);

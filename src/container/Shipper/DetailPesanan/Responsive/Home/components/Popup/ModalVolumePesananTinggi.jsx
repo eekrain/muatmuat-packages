@@ -1,5 +1,8 @@
+import { useParams } from "next/navigation";
+
 import Button from "@/components/Button/Button";
 import { Modal, ModalContent } from "@/components/Modal/Modal";
+import { useSWRMutateHook } from "@/hooks/use-swr";
 
 /**
  * A confirmation modal displayed when order volumes are high.
@@ -17,6 +20,24 @@ export const ModalVolumePesananTinggi = ({
   onConfirm,
   onCancel,
 }) => {
+  const params = useParams();
+  const { trigger: confirmWaiting } = useSWRMutateHook(
+    `v1/orders/${params.orderId}/waiting-confirmation`
+  );
+
+  const handleConfirmWaiting = async () => {
+    try {
+      await confirmWaiting({
+        continueWaiting: true,
+      });
+      onConfirm?.();
+    } catch (error) {
+      console.error("Failed to confirm waiting:", error);
+      // Handle error if needed
+      onConfirm?.(); // Still call onConfirm to close modal
+    }
+  };
+
   return (
     <Modal open={open} onOpenChange={onOpenChange}>
       <ModalContent className="w-[296px] rounded-[10px] p-0" type="muatmuat">
@@ -40,7 +61,7 @@ export const ModalVolumePesananTinggi = ({
             </Button>
             <Button
               variant="muatparts-primary"
-              onClick={onConfirm}
+              onClick={handleConfirmWaiting}
               className="h-7 min-w-[112px] rounded-[20px] px-6 py-3 text-xs font-semibold"
             >
               Ya, Menunggu

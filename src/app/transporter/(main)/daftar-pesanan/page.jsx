@@ -29,8 +29,7 @@ const DaftarPesananPage = () => {
   });
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [isRespondChangeModalOpen, setIsRespondChangeModalOpen] =
-    useState(false);
+  const [isRespondModalOpen, setIsRespondModalOpen] = useState(false);
   const [selectedOrderForChange, setSelectedOrderForChange] = useState(null);
 
   // Handle tab click
@@ -53,15 +52,15 @@ const DaftarPesananPage = () => {
     setSearchValue("");
   };
 
-  // Handle respond change modal
-  const handleRespondChange = (orderData) => {
-    setSelectedOrderForChange(orderData);
-    setIsRespondChangeModalOpen(true);
+  // Handle opening the response change modal
+  const handleOpenRespondModal = (order) => {
+    setSelectedOrderForChange(order);
+    setIsRespondModalOpen(true);
   };
 
-  const handleCloseRespondChangeModal = () => {
-    setIsRespondChangeModalOpen(false);
+  const handleCloseRespondModal = () => {
     setSelectedOrderForChange(null);
+    setIsRespondModalOpen(false);
   };
 
   // Tab options sesuai design
@@ -115,7 +114,17 @@ const DaftarPesananPage = () => {
         capacity: "2.500 kg",
       },
       status: "perlu-respon-perubahan",
-      actionType: "detail",
+      actionType: "perlu-respon-perubahan",
+      changeDetails: {
+        oldLoadTime: "13 Apr 2025, 18:30 WIB s/d 19:00 WIB",
+        newLoadTime: "14 Apr 2025, 09:00 WIB s/d 09:30 WIB",
+        oldDistance: "50 km",
+        newDistance: "60 km",
+        oldRoute: "Kota Bekasi Timur - DKI Jakarta, Kec. Tambora",
+        newRoute: "Kota Bekasi Timur - DKI Jakarta, Kec. Palmerah",
+        oldIncome: "Rp 500.000",
+        newIncome: "Rp 550.000",
+      },
     },
     {
       id: 3,
@@ -178,6 +187,73 @@ const DaftarPesananPage = () => {
         capacity: "2.500 kg",
       },
       status: "pesanan-dijadwalkan",
+      actionType: "detail",
+    },
+    {
+      id: "uuid5",
+      noPesanan: "MT25CHANGE05",
+      tipeOrder: "terjadwal",
+      waktuMuat: {
+        date: "16 Apr 2025",
+        time: "07:00 WIB s/d 11:00 WIB",
+      },
+      locations: {
+        pickup: [{ fullAddress: "Dukuh Pakis, Kota Surabaya" }],
+        dropoff: [{ fullAddress: "Tuban, Kab. Tuban" }],
+      },
+      armada: {
+        type: "Trailer",
+        carrier: "Lowbed",
+        unit: 1,
+        capacity: "25 ton",
+      },
+      status: "perlu-respon-perubahan",
+      actionType: "perlu-respon-perubahan",
+      changeRequestDetails: {
+        old: {
+          loadTimeStart: "2025-04-14T08:00:00.000+07:00",
+          loadTimeEnd: "2025-04-14T12:00:00.000+07:00",
+          totalPrice: 2500000,
+          route: [
+            { type: "pickup", city: "Surabaya" },
+            { type: "dropoff", city: "Gresik" },
+          ],
+          distance: 150,
+        },
+        new: {
+          loadTimeStart: "2025-04-16T07:00:00.000+07:00",
+          loadTimeEnd: "2025-04-16T11:00:00.000+07:00",
+          totalPrice: 2800000,
+          route: [
+            { type: "pickup", city: "Surabaya" },
+            { type: "dropoff", city: "Tuban" },
+          ],
+          distance: 200,
+        },
+        changeReason: "Shipper requested a change in destination.",
+        changeRequestedBy: "SHIPPER",
+        changeRequestedAt: "2025-04-13T10:00:00.000+07:00",
+      },
+    },
+    {
+      id: 3,
+      noPesanan: "MT25A012C",
+      tipeOrder: "instan",
+      waktuMuat: {
+        date: "13 Apr 2025",
+        time: "19:00 WIB s/d 19:30 WIB",
+      },
+      locations: {
+        pickup: [{ fullAddress: "Jakarta Pusat" }],
+        dropoff: [{ fullAddress: "Depok, Jawa Barat" }],
+      },
+      armada: {
+        type: "Colt Diesel Double",
+        carrier: "Box",
+        unit: 1,
+        capacity: "3.000 kg",
+      },
+      status: "perlu-konfirmasi-siap",
       actionType: "detail",
     },
   ];
@@ -377,7 +453,7 @@ const DaftarPesananPage = () => {
           <Button
             variant="muattrans-primary"
             className="!h-8 !w-[174px] !rounded-3xl text-xs font-semibold"
-            onClick={() => handleRespondChange(row)}
+            onClick={() => handleOpenRespondModal(row)}
           >
             Respon Perubahan
           </Button>
@@ -655,13 +731,13 @@ const DaftarPesananPage = () => {
         onPerPageChange={setPerPage}
         variants="muatrans"
       />
-
-      {/* Respond Change Modal */}
-      <RespondChangeModal
-        isOpen={isRespondChangeModalOpen}
-        onClose={handleCloseRespondChangeModal}
-        orderData={selectedOrderForChange}
-      />
+      {selectedOrderForChange && (
+        <RespondChangeModal
+          isOpen={isRespondModalOpen}
+          onClose={handleCloseRespondModal}
+          orderData={selectedOrderForChange}
+        />
+      )}
     </div>
   );
 };

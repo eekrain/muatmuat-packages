@@ -60,8 +60,11 @@ export const TabContentRingkasan = ({
               priceCharge={dataRingkasanPembayaran.priceCharge}
               waitingTimeRaw={waitingTimeRaw}
             />
-          ) : dataStatusPesanan?.updatedAt ? (
-            <UpdateOrderFeeSummary />
+          ) : dataRingkasanPembayaran &&
+            dataRingkasanPembayaran?.priceChange ? (
+            <UpdateOrderFeeSummary
+              dataRingkasanPembayaran={dataRingkasanPembayaran}
+            />
           ) : (
             <TransactionSummary
               dataRingkasanPembayaran={dataRingkasanPembayaran}

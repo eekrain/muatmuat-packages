@@ -21,6 +21,9 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
   );
   const formValues = useSewaArmadaStore((state) => state.formValues);
   const orderType = useSewaArmadaStore((state) => state.orderType);
+  const originalOrderData = useSewaArmadaStore(
+    (state) => state.originalOrderData
+  );
   const { trigger, isMutating, error, data } = useUpdateOrder(params.orderId);
   const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
 
@@ -77,8 +80,10 @@ const UpdateOrderSummaryPanel = ({ calculatedPrice }) => {
       const payload = normalizeUpdateOrder(
         orderType,
         formValues,
-        calculatedPrice
+        calculatedPrice,
+        originalOrderData
       );
+      console.log(payload, "payload");
       const response = await trigger(payload);
       setUpdateOrderSuccess(true);
       router.push(`/daftarpesanan/detailpesanan/${params.orderId}`);
