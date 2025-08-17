@@ -3,15 +3,15 @@ import { useState } from "react";
 import IconComponent from "@/components/IconComponent/IconComponent";
 
 import { ButtonTab } from "./ButtonTab";
-import { useDateNavigator } from "./agenda-provider";
+import { useDateNavigator } from "./use-date-navigator";
 
 export const CalendarHeader2 = () => {
   const [activeView, setActiveView] = useState("armada");
   const { displayedDates, handleNext, handlePrev } = useDateNavigator();
 
   return (
-    <div className="grid h-[56px] w-full grid-cols-[202px_1fr] shadow-md">
-      <div className="flex h-full items-center gap-2 border-r border-neutral-300 px-3">
+    <div className="grid h-[56px] w-full grid-cols-[202px_1fr] border-b border-neutral-300 shadow-md">
+      <div className="flex h-full items-center gap-2 px-3">
         <ButtonTab
           active={activeView === "armada"}
           onClick={() => setActiveView("armada")}
@@ -26,8 +26,8 @@ export const CalendarHeader2 = () => {
         </ButtonTab>
       </div>
 
-      <div className="relative grid h-full grid-cols-5 items-center justify-center">
-        {displayedDates.map((item) => {
+      <div className="relative grid h-full grid-cols-5 items-center justify-center border-l border-neutral-300">
+        {displayedDates?.map((item) => {
           return (
             <div
               key={item.fullDate}

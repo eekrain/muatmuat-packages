@@ -41,7 +41,7 @@ const PopoverAgenda = ({ agendaData }) => {
   const hiddenItems = agendaData.items.slice(3);
   const statusColor = getStatusColor(agendaData.status, agendaData.SOS.active);
   return (
-    <div className="bg-whitefont-sans w-[397px] max-w-[397px] rounded-lg border border-neutral-200 text-xs shadow-md">
+    <div className="w-[397px] max-w-[397px] rounded-lg border border-neutral-200 bg-white font-sans text-xs shadow-md">
       <div className="p-3">
         <div className="space-y-3">
           <p className={`text-xs font-semibold ${statusColor}`}>
@@ -315,7 +315,7 @@ const InfoPopover = React.memo(({ data }) => {
         </button>
       </PopoverTrigger>
       <PopoverContent className="p-0">
-        <pre>{JSON.stringify(data, null, 2)}</pre>
+        <PopoverAgenda agendaData={transformToAgendaData(data)} />
       </PopoverContent>
     </Popover>
   );

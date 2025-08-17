@@ -30,19 +30,37 @@ import { CardItem } from "./CardItem";
 
 export const AgendaRowItem = ({ armada, cellWidth }) => {
   if (!armada) return null;
+
+  // Handle placeholder items for consistent grid layout
+  if (armada.isPlaceholder) {
+    return (
+      <div className="grid grid-cols-[202px_1fr] grid-rows-[109px] divide-x">
+        <div className="px-3 py-4">{/* Empty placeholder content */}</div>
+        <div className="relative grid grid-cols-5 overflow-hidden">
+          <div className="border-b border-r border-neutral-200" />
+          <div className="border-b border-r border-neutral-200" />
+          <div className="border-b border-r border-neutral-200" />
+          <div className="border-b border-r border-neutral-200" />
+          <div className="border-b border-neutral-200" />
+          {/* No cards for placeholder rows */}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-[202px_1fr] grid-rows-[109px] divide-x">
-      <div className="px-3 py-4">
-        <h5 className="text-xs font-bold">L 1239 CAM</h5>
-        <span className="text-xxs font-semibold">Colt Diesel Engkel - Box</span>
+      <div className="border-b border-neutral-200 px-3 py-4">
+        <h5 className="text-xs font-bold">{armada.plateNumber}</h5>
+        <span className="text-xxs font-semibold">{armada.truckType}</span>
       </div>
 
       <div className="relative grid grid-cols-5 overflow-hidden">
-        <div className="border-r" />
-        <div className="border-r" />
-        <div className="border-r" />
-        <div className="border-r" />
-        <div />
+        <div className="border-b border-r border-neutral-200" />
+        <div className="border-b border-r border-neutral-200" />
+        <div className="border-b border-r border-neutral-200" />
+        <div className="border-b border-r border-neutral-200" />
+        <div className="border-b border-neutral-200" />
         {armada.rowData.map((item, index) => (
           <CardItem key={index} {...item} cellWidth={cellWidth} />
         ))}

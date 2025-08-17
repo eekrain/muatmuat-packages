@@ -178,6 +178,7 @@ export const CardItem = (props) => {
 
     return { left, right, total };
   }, [additional, scheduled]);
+  console.log("🚀 ~ CardItem ~ additional:", additional);
 
   return (
     <div
@@ -300,6 +301,7 @@ export const CardItem = (props) => {
         </div>
 
         {LIST_SHOW_ESTIMASI_WAKTU_BONGKAR.includes(statusCode) &&
+          additional > 0 &&
           cellConfig.right >= 1 && (
             <div
               className="absolute top-1/2 -translate-y-1/2 text-center text-[8px] font-medium text-neutral-500"
