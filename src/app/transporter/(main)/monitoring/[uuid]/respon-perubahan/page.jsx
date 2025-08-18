@@ -194,14 +194,15 @@ const ResponPerubahanPage = () => {
               />
 
               <div className="flex items-center gap-3">
-                <SelectResponPerubahan
-                  value={bulkResponse}
-                  onChange={handleBulkResponse}
-                  options={responseOptions}
-                  placeholder="Atur Respon Massal"
-                  className="w-[216px]"
-                  contentWidth="242px"
-                />
+                <div className="w-[216px]">
+                  <SelectResponPerubahan
+                    value={bulkResponse}
+                    onChange={handleBulkResponse}
+                    options={responseOptions}
+                    placeholder="Atur Respon Massal"
+                    contentWidth="242px"
+                  />
+                </div>
                 <Button
                   variant="muattrans-primary-secondary"
                   onClick={handleSaveAsDraft}
@@ -273,15 +274,16 @@ const ResponPerubahanPage = () => {
                 </div>
 
                 {/* Response Dropdown */}
-                <SelectResponPerubahan
-                  value={individualResponses[armada.id] || ""}
-                  onChange={(value) =>
-                    handleIndividualResponse(armada.id, value)
-                  }
-                  options={responseOptions}
-                  placeholder="Pilih Respon Perubahan"
-                  className="w-[345px]"
-                />
+                <div className="w-[345px]">
+                  <SelectResponPerubahan
+                    value={individualResponses[armada.id] || ""}
+                    onChange={(value) =>
+                      handleIndividualResponse(armada.id, value)
+                    }
+                    options={responseOptions}
+                    placeholder="Pilih Respon Perubahan"
+                  />
+                </div>
               </div>
             ))}
           </div>
