@@ -32,10 +32,10 @@ const SelectResponPerubahan = ({
     <Select.Root value={value} onValueChange={onChange} disabled={disabled}>
       <Select.Trigger
         placeholder={placeholder}
-        className={cn("!rounded-md !border-neutral-600", className)}
+        className={cn("rounded-md border-neutral-600")}
         isError={error}
       >
-        <Select.Value placeholder={placeholder}>
+        <Select.Value placeholder={placeholder} className={className}>
           {selectedOption?.label}
         </Select.Value>
       </Select.Trigger>

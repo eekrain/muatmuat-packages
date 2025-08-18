@@ -201,6 +201,7 @@ const ResponPerubahanPage = () => {
                     options={responseOptions}
                     placeholder="Atur Respon Massal"
                     contentWidth="242px"
+                    className="text-neutral-900"
                   />
                 </div>
                 <Button
