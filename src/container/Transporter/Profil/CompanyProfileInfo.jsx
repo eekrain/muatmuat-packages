@@ -2,6 +2,7 @@ import { Alert } from "@/components/Alert/Alert";
 import Button from "@/components/Button/Button";
 import Card from "@/components/Card/Card";
 import ImageComponent from "@/components/ImageComponent/ImageComponent";
+import { MapContainer } from "@/components/MapContainer/MapContainer";
 
 // --- Mock Data ---
 const companyData = {
@@ -28,10 +29,15 @@ const companyData = {
     postalCode: "16452",
     pinLocation: (
       <dd className="relative col-span-2 h-[180px] w-full overflow-hidden rounded-lg">
-        <ImageComponent
-          src={"https://picsum.photos/400/200?random=2"}
-          alt="Peta Lokasi"
-          className="h-full w-full object-cover"
+        <MapContainer
+          coordinates={{
+            latitude: -6.3937,
+            longitude: 106.8286,
+          }}
+          className="h-full w-full rounded-lg"
+          viewOnly={true}
+          textLabel="Lokasi Perusahaan"
+          draggableMarker={false}
         />
         <div className="absolute inset-0 flex items-center justify-center bg-black/20">
           <Button variant="muattrans-primary">Lihat Lokasi</Button>

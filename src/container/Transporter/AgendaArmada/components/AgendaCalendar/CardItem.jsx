@@ -1,8 +1,10 @@
 import { useMemo } from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import { cn } from "@/lib/utils";
 
+import EditSchedule from "./EditSchedule";
 import LocationPoint from "./LocationPoint";
 import InfoPopover from "./PopoverAgenda";
 
@@ -13,50 +15,6 @@ const statusMapping = {
   NON_AKTIF: "Non Aktif",
   MENUNGGU_JAM_MUAT: "Menunggu Jam Muat",
   DIJADWALKAN: "Dijadwalkan",
-};
-
-// Transform CardItem data to PopoverAgenda format
-const transformToAgendaData = (cardProps) => {
-  return {
-    status: statusMapping[cardProps.statusCode],
-    startDate: "02 Jan 2025 11:00 WIB", // Default values - should come from props
-    endDate: "02 Jan 2025 15:00 WIB",
-    invoice: "INV/MTR/120125/0002",
-    SOS: {
-      reason: "Muatan perlu dipindah",
-      active: cardProps.hasSosIssue || false,
-    },
-    items: [
-      { name: "Semen", weight: "250 kg" },
-      { name: "Paku", weight: "50 kg" },
-      { name: "Cat Tembok", weight: "100 kg" },
-      { name: "Pipa PVC", weight: "50 kg" },
-      { name: "Keramik", weight: "50 kg" },
-    ],
-    name: cardProps.driverName,
-    phone: "0821208991231",
-    vehicle: "Colt Diesel Engkel - Box",
-    licensePlate: "L 9812 AX",
-    location: cardProps.currentLocation,
-    estimatedDistance: cardProps.estimation,
-    route: {
-      pickup: {
-        city:
-          cardProps.dataMuat?.subtitle?.split(",")[0] ||
-          cardProps.dataMuat?.subtitle ||
-          "Unknown Location",
-        district: cardProps.dataMuat?.subtitle?.split(",")[1]?.trim() || "",
-      },
-      delivery: {
-        city:
-          cardProps.dataBongkar?.subtitle?.split(",")[0] ||
-          cardProps.dataBongkar?.subtitle ||
-          "Unknown Location",
-        district: cardProps.dataBongkar?.subtitle?.split(",")[1]?.trim() || "",
-      },
-      estimatedDistance: `Est. ${cardProps.distanceRemaining || 0} km`,
-    },
-  };
 };
 
 const TitleEnum = {
@@ -158,6 +116,8 @@ export const CardItem = (props) => {
     position = 0,
     hasSosIssue = false,
     cellWidth,
+    viewType = "armada",
+    truckType,
   } = props;
 
   const cellConfig = useMemo(() => {
@@ -178,7 +138,6 @@ export const CardItem = (props) => {
 
     return { left, right, total };
   }, [additional, scheduled]);
-  console.log("🚀 ~ CardItem ~ additional:", additional);
 
   return (
     <div
@@ -232,7 +191,7 @@ export const CardItem = (props) => {
 
           <div className="flex flex-col gap-1.5">
             <span className="text-xxs font-bold leading-none text-neutral-900">
-              {driverName}
+              {viewType === "armada" ? driverName : truckType}
             </span>
             <div className="flex items-center gap-[4.5px]">
               <IconComponent
@@ -315,17 +274,45 @@ export const CardItem = (props) => {
           )}
 
         {LIST_SHOW_ESTIMASI_WAKTU_BONGKAR.includes(statusCode) && (
-          <button
-            onClick={() => alert("Handle Ubah Estimasi Waktu Bongkar")}
-            className="absolute right-2 top-2 flex items-center gap-1 text-[8px] text-primary-700"
-          >
-            <span>Ubah</span>
-            <IconComponent
-              src="/icons/pencil-outline.svg"
-              width={12}
-              height={12}
-            />
-          </button>
+          <Modal>
+            <ModalTrigger asChild>
+              <button className="absolute right-2 top-2 flex items-center gap-1 text-[8px] text-primary-700">
+                <span>Ubah</span>
+                <IconComponent
+                  src="/icons/pencil-outline.svg"
+                  width={12}
+                  height={12}
+                />
+              </button>
+            </ModalTrigger>
+            <ModalContent className="h-[413px] w-[908]">
+              <div className="relative flex h-[70px] justify-between overflow-hidden rounded-t-xl bg-muat-trans-primary-400">
+                <div>
+                  <img
+                    alt="svg header modal kiri"
+                    src="/img/header-modal/header-kiri.svg"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="my-auto">
+                  <img
+                    alt="logo muatmuat header coklat"
+                    src="/img/header-modal/muatmuat-brown.svg"
+                  />
+                </div>
+                <div>
+                  <img
+                    alt="svg header modal kanan "
+                    src="/img/header-modal/header-kanan.svg"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              </div>{" "}
+              <div className="p-6">
+                <EditSchedule />
+              </div>
+            </ModalContent>
+          </Modal>
         )}
       </div>
     </div>

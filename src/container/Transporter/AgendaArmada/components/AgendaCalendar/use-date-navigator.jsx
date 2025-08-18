@@ -26,6 +26,7 @@ export const useDateNavigator = (options = {}) => {
     intervalDays,
     isNavigating,
     previousSchedules,
+    lastInteraction,
   } = store;
 
   useEffect(() => {
@@ -105,6 +106,8 @@ export const useDateNavigator = (options = {}) => {
     ...store,
     ...derivedDateState,
     dateRange,
+    status, // Expose status for toast notifications
+    lastInteraction, // Expose last user interaction for error message logic
     isLoading: status === "loading",
     isLoadingMore: status === "loading-more",
     isError: status === "error",
@@ -125,18 +128,6 @@ export const useDateNavigator = (options = {}) => {
     availablePeriods, // Pass through the availablePeriods option
     todayDate, // Add todayDate for use in components
   };
-
-  console.log("🎯 useDateNavigator return values:", {
-    hasNextPage: finalResult.hasNextPage,
-    isLoadingMore: finalResult.isLoadingMore,
-    isLoading: finalResult.isLoading,
-    isNavigating: finalResult.isNavigating,
-    displaySchedulesLength: finalResult.displaySchedules.length,
-    storeSchedulesLength: store.schedules.length,
-    previousSchedulesLength: previousSchedules.length,
-    status,
-    timestamp: new Date().toLocaleTimeString(),
-  });
 
   return finalResult;
 };

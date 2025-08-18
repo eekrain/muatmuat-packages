@@ -3,6 +3,7 @@ import {
   differenceInDays,
   format,
   isPast,
+  isSameDay,
   parseISO,
   subDays,
 } from "date-fns";
@@ -178,3 +179,44 @@ export const formatDateRange = (startDate, endDate) => {
   // Return whichever one is valid, or a default message.
   return formattedStart || formattedEnd || "";
 };
+
+/**
+ * Formats load time based on start and end dates.
+ * If only loadTimeStart is present, formats as "DD MMM YYYY HH:mm WIB".
+ * If both are present and on the same day, formats as "DD MMM YYYY HH:mm WIB s/d HH:mm WIB".
+ * If both are present and on different days, formats as "DD MMM YYYY HH:mm WIB s/d DD MMM YYYY HH:mm WIB".
+ */
+export function formatLoadTime(loadTimeStart, loadTimeEnd) {
+  const startDate = _parseDate(loadTimeStart);
+  const endDate = _parseDate(loadTimeEnd);
+
+  if (!startDate) return "";
+
+  const formattedStartDate = format(startDate, "dd MMM yyyy", { locale: id });
+  const formattedStartTime = `${format(startDate, "HH:mm", { locale: id })} WIB`;
+
+  if (!endDate) {
+    return `${formattedStartDate} ${formattedStartTime}`;
+  }
+
+  const formattedEndDate = format(endDate, "dd MMM yyyy", { locale: id });
+  const formattedEndTime = `${format(endDate, "HH:mm", { locale: id })} WIB`;
+
+  if (isSameDay(startDate, endDate)) {
+    return (
+      <span>
+        {`${formattedStartDate} ${formattedStartTime} s/d `}
+        <br />
+        {`${formattedEndTime}`}
+      </span>
+    );
+  } else {
+    return (
+      <span>
+        {`${formattedStartDate} ${formattedStartTime} s/d `}
+        <br />
+        {`${formattedEndDate} ${formattedEndTime}`}
+      </span>
+    );
+  }
+}

@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useState } from "react";
 
+import { toast } from "@/lib/toast";
 import { formatDate } from "@/lib/utils/dateFormat";
 import { useGetAvailableSchedulePeriods } from "@/services/Transporter/agenda-armada-driver/getAvailableSchedulePeriods";
 
@@ -12,6 +13,8 @@ import RefreshButton from "./components/ButtonRefresh";
 
 const AgendaArmadaDriverPage = () => {
   const { data: periodsData } = useGetAvailableSchedulePeriods();
+  const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const {
     // Data state
@@ -21,6 +24,7 @@ const AgendaArmadaDriverPage = () => {
     isError,
     hasNextPage,
     isNavigating, // New: track navigation state
+    status, // Add status to track fetch results
     // Actions
     fetchNextPage,
     fetchSchedules,
@@ -36,26 +40,29 @@ const AgendaArmadaDriverPage = () => {
     availablePeriods: periodsData?.Data,
   });
 
-  const handleLoadMore = useCallback(() => {
-    console.log("📊 handleLoadMore called:", {
-      hasNextPage,
-      isLoadingMore,
-      schedulesLength: displaySchedules.length,
-      timestamp: new Date().toLocaleTimeString(),
-    });
-
-    if (hasNextPage && !isLoadingMore) {
-      console.log("🚀 Calling fetchNextPage...");
-      fetchNextPage();
-    } else {
-      console.log("🛑 Not calling fetchNextPage:", {
-        hasNextPage,
-        isLoadingMore,
-      });
+  // Watch for status changes to show toast notifications only during manual refresh
+  useEffect(() => {
+    if (isRefreshing) {
+      if (status === "success") {
+        toast.success("Jadwal berhasil diperbarui!");
+        setLastUpdated(new Date());
+        setIsRefreshing(false);
+      } else if (status === "error") {
+        toast.error("Jadwal tidak ada perubahan");
+        setIsRefreshing(false);
+      }
     }
-  }, [hasNextPage, isLoadingMore, fetchNextPage, displaySchedules.length]);
+  }, [status, isRefreshing]);
+
+  const handleLoadMore = useCallback(() => {
+    if (hasNextPage && !isLoadingMore) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isLoadingMore, fetchNextPage]);
 
   const handleRefresh = useCallback(() => {
+    // toast.error("Jadwal tidak ada perubahan")
+    setIsRefreshing(true);
     fetchSchedules();
   }, [fetchSchedules]);
 
@@ -72,10 +79,6 @@ const AgendaArmadaDriverPage = () => {
     },
     [setFilterAgendaStatus]
   );
-
-  const lastUpdated = useMemo(() => {
-    return new Date();
-  }, []);
 
   // Show overlay loading during navigation with existing data
   const shouldShowOverlay =

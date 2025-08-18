@@ -16,6 +16,7 @@ import Search from "@/components/Search/Search";
 import SearchNotFound from "@/components/SearchNotFound/SearchNotFound";
 import SelectResponPerubahan from "@/components/Select/SelectResponPerubahan";
 import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
+import TerimaDanUbahArmadaModal from "@/container/Shared/OrderModal/TerimaDanUbahArmadaModal";
 import { toast } from "@/lib/toast";
 
 // Create validation schema for all armada responses
@@ -38,6 +39,8 @@ const ResponPerubahanPage = () => {
   const [bulkResponse, setBulkResponse] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isChangeModalOpen, setIsChangeModalOpen] = useState(false);
+  const [isArmadaModalOpen, setIsArmadaModalOpen] = useState(false);
+  const [currentArmadaId, setCurrentArmadaId] = useState(null);
 
   // Mock data for demonstration
   const armadaList = [
@@ -117,12 +120,27 @@ const ResponPerubahanPage = () => {
   );
 
   const handleIndividualResponse = (armadaId, value) => {
-    setValue(`armada_${armadaId}`, value);
-    trigger(`armada_${armadaId}`);
+    if (value === "change") {
+      // Open armada selection modal for "Terima Perubahan & Ubah Armada"
+      setCurrentArmadaId(armadaId);
+      setIsArmadaModalOpen(true);
+    } else {
+      setValue(`armada_${armadaId}`, value);
+      trigger(`armada_${armadaId}`);
+    }
   };
 
   const handleBulkResponse = (value) => {
     setBulkResponse(value);
+    if (value === "change") {
+      // For bulk change, we'll need to handle multiple armada selections
+      // For now, just show a message that bulk change needs individual selection
+      toast.error(
+        "Untuk mengubah armada, silakan pilih satu per satu pada setiap armada"
+      );
+      setBulkResponse("");
+      return;
+    }
     // Apply to all armada
     armadaList.forEach((armada) => {
       setValue(`armada_${armada.id}`, value);
@@ -150,6 +168,22 @@ const ResponPerubahanPage = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Check if any response is filled
+  const hasAnyResponse = armadaList.some(
+    (armada) =>
+      formValues[`armada_${armada.id}`] &&
+      formValues[`armada_${armada.id}`] !== ""
+  );
+
+  const handleArmadaSave = (selectedArmada) => {
+    console.log("Selected armada for replacement:", selectedArmada);
+    // Set the response value for the current armada
+    setValue(`armada_${currentArmadaId}`, "change");
+    trigger(`armada_${currentArmadaId}`);
+    // Reset current armada ID
+    setCurrentArmadaId(null);
   };
 
   const onSubmit = async (data) => {
@@ -207,7 +241,7 @@ const ResponPerubahanPage = () => {
   ];
 
   return (
-    <div className="mx-auto flex h-full max-w-[1200px] flex-col py-6">
+    <div className="mx-auto flex h-full max-w-[1200px] flex-col pb-20 pt-6">
       {/* Header */}
       <div className="">
         <div className="flex flex-col gap-4">
@@ -294,7 +328,7 @@ const ResponPerubahanPage = () => {
                 <Button
                   variant="muattrans-primary-secondary"
                   onClick={handleSaveAsDraft}
-                  disabled={isLoading}
+                  disabled={isLoading || !hasAnyResponse}
                   className="h-10 px-6"
                 >
                   {isLoading ? "Menyimpan..." : "Simpan sebagai Draf"}
@@ -383,6 +417,20 @@ const ResponPerubahanPage = () => {
                     </div>
                   )}
 
+                  {/* Info Message for Reject Response */}
+                  {formValues[`armada_${armada.id}`] === "reject" && (
+                    <div className="flex flex-1 items-center gap-6">
+                      <IconComponent
+                        src="/icons/arrow-right.svg"
+                        className="h-4 w-4 text-error-400"
+                      />
+                      <span className="w-[340px] text-xs font-semibold text-error-400">
+                        Armada akan dibatalkan, akan ada penyesuaian pendapatan,
+                        dan tidak ada kompensasi
+                      </span>
+                    </div>
+                  )}
+
                   {/* Response Dropdown */}
                   <div className="w-[345px]">
                     <SelectResponPerubahan
@@ -408,6 +456,18 @@ const ResponPerubahanPage = () => {
         onClose={() => setIsChangeModalOpen(false)}
         orderData={{ id: params.uuid }}
         hideActionButton
+      />
+
+      {/* TerimaDanUbahArmadaModal */}
+      <TerimaDanUbahArmadaModal
+        isOpen={isArmadaModalOpen}
+        onClose={() => {
+          setIsArmadaModalOpen(false);
+          setCurrentArmadaId(null);
+        }}
+        orderData={{ id: params.uuid }}
+        armadaId={currentArmadaId}
+        onSave={handleArmadaSave}
       />
     </div>
   );

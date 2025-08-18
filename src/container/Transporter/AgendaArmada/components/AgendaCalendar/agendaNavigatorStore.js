@@ -6,10 +6,32 @@ import { getAgendaSchedules } from "@/services/Transporter/agenda-armada-driver/
 // Make sure the path to your services file is correct
 
 const getCenteredStartDate = (date, intervalDays) => {
+  // If the date is the first day of the month, don't center it - use it as the start date
+  if (date.getDate() === 1) {
+    return date;
+  }
+
+  // Get the last day of the current month
+  const lastDayOfMonth = new Date(
+    date.getFullYear(),
+    date.getMonth() + 1,
+    0
+  ).getDate();
+
+  // Only apply special end-of-month logic if it's the actual last day of the month
+  if (date.getDate() === lastDayOfMonth) {
+    // Calculate start date so that we show the last `intervalDays` of the month
+    return new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      lastDayOfMonth - intervalDays + 1
+    );
+  }
+
+  // Otherwise, center around the given date
   const offset = Math.floor(intervalDays / 2);
   return subDays(date, offset);
 };
-
 export const useAgendaNavigatorStore = create((set, get) => ({
   // --- UI & Filter State ---
   isInitialized: false,
@@ -18,7 +40,9 @@ export const useAgendaNavigatorStore = create((set, get) => ({
   intervalDays: 5,
   search: "",
   filterAgendaStatus: [],
+  viewType: "armada", // Track current view type: 'armada' | 'driver'
   isNavigating: false, // Track if user is navigating dates
+  lastInteraction: null, // Track last user interaction: 'search' | 'filter' | null
 
   // --- Data & Fetching State ---
   schedules: [],
@@ -55,10 +79,16 @@ export const useAgendaNavigatorStore = create((set, get) => ({
     });
   },
 
-  setSearch: (search) => get()._resetDataState({ search }, false),
-  clearSearch: () => get()._resetDataState({ search: "" }, false),
+  setSearch: (search) =>
+    get()._resetDataState({ search, lastInteraction: "search" }, false),
+  clearSearch: () =>
+    get()._resetDataState({ search: "", lastInteraction: null }, false),
   setFilterAgendaStatus: (filters) =>
-    get()._resetDataState({ filterAgendaStatus: filters }, false),
+    get()._resetDataState(
+      { filterAgendaStatus: filters, lastInteraction: "filter" },
+      false
+    ),
+  setViewType: (viewType) => get()._resetDataState({ viewType }, false),
 
   nextInterval: () => {
     const { currentStartDate, intervalDays } = get();
@@ -145,8 +175,13 @@ export const useAgendaNavigatorStore = create((set, get) => ({
     set({ status: "loading", error: null });
 
     try {
-      const { search, filterAgendaStatus, currentStartDate, intervalDays } =
-        get();
+      const {
+        search,
+        filterAgendaStatus,
+        currentStartDate,
+        intervalDays,
+        viewType,
+      } = get();
       const dateRange = {
         start: currentStartDate,
         end: addDays(currentStartDate, intervalDays),
@@ -159,6 +194,7 @@ export const useAgendaNavigatorStore = create((set, get) => ({
           filterAgendaStatus.length > 0 ? filterAgendaStatus : undefined,
         schedule_date_from: dateRange.start.toISOString().split("T")[0],
         schedule_date_to: dateRange.end.toISOString().split("T")[0],
+        view_type: viewType,
       };
 
       const response = await getAgendaSchedules([
@@ -212,8 +248,13 @@ export const useAgendaNavigatorStore = create((set, get) => ({
     set({ status: "loading-more" });
 
     try {
-      const { search, filterAgendaStatus, currentStartDate, intervalDays } =
-        get();
+      const {
+        search,
+        filterAgendaStatus,
+        currentStartDate,
+        intervalDays,
+        viewType,
+      } = get();
       const nextPage = page + 1;
       const dateRange = {
         start: currentStartDate,
@@ -227,6 +268,7 @@ export const useAgendaNavigatorStore = create((set, get) => ({
           filterAgendaStatus.length > 0 ? filterAgendaStatus : undefined,
         schedule_date_from: dateRange.start.toISOString().split("T")[0],
         schedule_date_to: dateRange.end.toISOString().split("T")[0],
+        view_type: viewType,
       };
 
       const response = await getAgendaSchedules([

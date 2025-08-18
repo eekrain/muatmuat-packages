@@ -1,26 +1,29 @@
-import { useState } from "react";
-
 import IconComponent from "@/components/IconComponent/IconComponent";
 
 import { ButtonTab } from "./ButtonTab";
+import { useAgendaNavigatorStore } from "./agendaNavigatorStore";
 import { useDateNavigator } from "./use-date-navigator";
 
 export const CalendarHeader2 = () => {
-  const [activeView, setActiveView] = useState("armada");
+  const { viewType, setViewType } = useAgendaNavigatorStore();
   const { displayedDates, handleNext, handlePrev } = useDateNavigator();
+
+  const handleViewChange = async (newViewType) => {
+    await setViewType(newViewType);
+  };
 
   return (
     <div className="grid h-[56px] w-full grid-cols-[202px_1fr] border-b border-neutral-300 shadow-md">
       <div className="flex h-full items-center gap-2 px-3">
         <ButtonTab
-          active={activeView === "armada"}
-          onClick={() => setActiveView("armada")}
+          active={viewType === "armada"}
+          onClick={() => handleViewChange("armada")}
         >
           Armada
         </ButtonTab>
         <ButtonTab
-          active={activeView === "driver"}
-          onClick={() => setActiveView("driver")}
+          active={viewType === "driver"}
+          onClick={() => handleViewChange("driver")}
         >
           Driver
         </ButtonTab>
