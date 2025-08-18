@@ -11,10 +11,23 @@ import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import FilterDropdown from "@/components/FilterDropdown/FilterDropdown";
 import Input from "@/components/Form/Input";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { Modal, ModalContent } from "@/components/Modal/Modal";
 import Pagination from "@/components/Pagination/Pagination";
 import MuatBongkarStepper from "@/components/Stepper/MuatBongkarStepper";
 import Table from "@/components/Table/Table";
 import { cn } from "@/lib/utils";
+
+// Custom component untuk image yang bisa diklik
+const ClickableImage = ({ src, alt, className, onImageClick }) => {
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      onClick={() => onImageClick(src)}
+    />
+  );
+};
 
 const LaporanAktivitasArmadaTable = ({
   data = [],
@@ -38,11 +51,13 @@ const LaporanAktivitasArmadaTable = ({
   disabledByPeriod = false,
   loading = false,
   className = "border-0",
+  multiSelect = true, // ✅ Default to true, bisa di-override
 }) => {
   const router = useRouter();
   const [localSearchValue, setLocalSearchValue] = useState(searchValue);
   const [localFilters, setLocalFilters] = useState(filters);
   const [localSortConfig, setLocalSortConfig] = useState(sortConfig);
+  const [selectedImage, setSelectedImage] = useState("");
 
   // Table columns for Armada
   const columns = [
@@ -54,16 +69,19 @@ const LaporanAktivitasArmadaTable = ({
       searchable: true,
       render: (row) => (
         <div className="flex items-center gap-3">
-          <img
-            src={row.image}
+          <ClickableImage
+            src={row.fleetImage}
             alt="Vehicle"
-            className="h-12 w-12 rounded object-cover"
+            className="h-12 w-12 cursor-pointer rounded object-cover transition-opacity hover:opacity-80"
+            onImageClick={setSelectedImage}
           />
           <div>
             <div className="font-semibold text-gray-900">
               {row.licensePlate}
             </div>
-            <div className="text-xs text-gray-600">{row.vehicleType}</div>
+            <div className="text-xs text-gray-600">
+              {row.truckType} - {row.carrierType}
+            </div>
           </div>
         </div>
       ),
@@ -81,6 +99,12 @@ const LaporanAktivitasArmadaTable = ({
       sortable: true,
       width: "100px",
       searchable: true,
+      render: (row) => {
+        if (!row.activeOrderCode || row.activeOrderCode === "") {
+          return <div className="text-sm">Belum Ada</div>;
+        }
+        return <div className="text-sm">{row.activeOrderCode}</div>;
+      },
     },
     {
       header: "Rute Pesanan Aktif",
@@ -131,28 +155,47 @@ const LaporanAktivitasArmadaTable = ({
         let bgColor = "bg-gray-200";
         let textColor = "text-gray-600";
 
-        if (row.statusType === "scheduled") {
-          bgColor = "bg-yellow-100";
-          textColor = "text-yellow-900";
-        } else if (row.statusType === "waiting") {
-          bgColor = "bg-orange-100";
-          textColor = "text-orange-900";
-        } else if (row.statusType === "on_duty") {
-          bgColor = "bg-blue-100";
-          textColor = "text-blue-900";
-        } else if (row.statusType === "completed") {
+        if (row.status === "READY_FOR_ORDER") {
           bgColor = "bg-green-100";
           textColor = "text-green-900";
-        } else if (row.statusType === "inactive") {
+        } else if (row.status === "NOT_PAIRED") {
           bgColor = "bg-gray-100";
           textColor = "text-gray-600";
+        } else if (row.status === "ON_DUTY") {
+          bgColor = "bg-blue-100";
+          textColor = "text-blue-900";
+        } else if (row.status === "WAITING_LOADING_TIME") {
+          bgColor = "bg-yellow-100";
+          textColor = "text-yellow-900";
+        } else if (row.status === "INACTIVE") {
+          bgColor = "bg-red-100";
+          textColor = "text-red-900";
+        } else if (row.status === null) {
+          bgColor = "bg-gray-100";
+          textColor = "text-gray-500";
+        }
+
+        // Map status to display labels
+        let displayStatus = row.status;
+        if (row.status === "READY_FOR_ORDER") {
+          displayStatus = "Siap Menerima Order";
+        } else if (row.status === "NOT_PAIRED") {
+          displayStatus = "Belum Dipasangkan";
+        } else if (row.status === "ON_DUTY") {
+          displayStatus = "Bertugas";
+        } else if (row.status === "WAITING_LOADING_TIME") {
+          displayStatus = "Akan Muat Hari Ini";
+        } else if (row.status === "INACTIVE") {
+          displayStatus = "Nonaktif";
+        } else if (row.status === null) {
+          displayStatus = "Tidak Ada Status";
         }
 
         return (
           <span
             className={`inline-flex w-full items-center justify-center rounded-md px-3 py-1.5 text-xs font-semibold ${bgColor} ${textColor}`}
           >
-            {row.status}
+            {displayStatus}
           </span>
         );
       },
@@ -167,7 +210,10 @@ const LaporanAktivitasArmadaTable = ({
         <Button
           className="h-8 px-4 text-xs"
           onClick={() => {
-            router.push(`/laporan/aktivitas-armada-driver/armada/${row.id}`);
+            // Navigate to detail page with only fleet ID
+            router.push(
+              `/laporan/aktivitas-armada-driver/armada/${row.fleetId}`
+            );
           }}
         >
           Detail
@@ -278,16 +324,18 @@ const LaporanAktivitasArmadaTable = ({
   };
 
   const renderHeader = () => {
-    const noDataDisabled = data.length === 0 && !loading;
+    // Search input should never be disabled by data availability
+    const disableSearchInput = disabledByPeriod;
 
-    // Interlock states
+    // Interlock states - FilterDropdown disabled when search is active
     const isSearchActive = localSearchValue.length > 0;
-    const isFilterActive = Object.keys(localFilters).length > 0;
+    const isFilterActive = Object.keys(localFilters).some(
+      (key) => localFilters[key] && localFilters[key] !== ""
+    );
 
-    const disableSearchInput =
-      noDataDisabled || disabledByPeriod || isFilterActive;
+    // Filter dropdown can be disabled by no data or search active
     const disableFilterDropdown =
-      noDataDisabled || disabledByPeriod || isSearchActive;
+      (data.length === 0 && !loading) || disabledByPeriod || isSearchActive;
 
     return (
       <div className="flex items-center justify-between">
@@ -298,14 +346,18 @@ const LaporanAktivitasArmadaTable = ({
               placeholder={searchPlaceholder}
               value={localSearchValue}
               onChange={(e) => setLocalSearchValue(e.target.value)}
-              onKeyUp={handleSearchKeyUp}
+              onKeyUp={(e) => {
+                if (e.key === "Enter") {
+                  onSearch?.(localSearchValue);
+                }
+              }}
               disabled={disableSearchInput}
               icon={{
                 left: (
                   <IconComponent src="/icons/datatable-search.svg" width={12} />
                 ),
                 right:
-                  localSearchValue.length > 2 ? (
+                  localSearchValue.length > 0 ? (
                     <button
                       onClick={() => {
                         setLocalSearchValue("");
@@ -332,6 +384,7 @@ const LaporanAktivitasArmadaTable = ({
               onSelectionChange={handleFilter}
               searchPlaceholder="Cari {category}"
               disabled={disableFilterDropdown}
+              multiSelect={multiSelect} // ✅ Gunakan prop multiSelect
             />
           )}
         </div>
@@ -347,24 +400,72 @@ const LaporanAktivitasArmadaTable = ({
   };
 
   const renderEmptyState = () => {
-    return <DataNotFound className="gap-y-5" title="Keyword Tidak Ditemukan" />;
+    // Check if this is a search/filter result or truly no data
+    const hasSearchOrFilter =
+      localSearchValue ||
+      Object.keys(localFilters).some(
+        (key) => localFilters[key] && localFilters[key] !== ""
+      );
+
+    if (hasSearchOrFilter) {
+      return (
+        <div className="flex flex-col items-center justify-center py-12">
+          <div className="mb-4 flex items-center gap-3">
+            {/* Magnifying glass with X */}
+            <div className="relative">
+              <div className="h-16 w-16 rounded-full bg-blue-100 p-3">
+                <svg
+                  className="h-full w-full text-blue-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+                <div className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white">
+                  <span className="text-xs font-bold">×</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Yellow circle with smiley */}
+            <div className="h-12 w-12 rounded-full bg-yellow-100 p-2">
+              <div className="flex h-full w-full items-center justify-center rounded-full bg-yellow-400">
+                <span className="text-lg">😊</span>
+              </div>
+            </div>
+
+            {/* Yellow square with X */}
+            <div className="h-8 w-8 rounded bg-yellow-100 p-1">
+              <div className="flex h-full w-full items-center justify-center rounded bg-yellow-400">
+                <span className="text-xs font-bold text-black">×</span>
+              </div>
+            </div>
+          </div>
+
+          <h3 className="mb-2 text-lg font-semibold text-gray-900">
+            Data tidak Ditemukan
+          </h3>
+          <p className="text-center text-gray-600">
+            Mohon coba hapus beberapa filter
+          </p>
+        </div>
+      );
+    }
+
+    // Default empty state for no data
+    return <DataNotFound className="gap-y-5" title="Belum Ada Data" />;
   };
 
   const activeFilters = getActiveFilters();
 
-  // Apply client-side search filtering for better UX
-  const filteredData = Array.isArray(data)
-    ? data.filter((row) => {
-        if (!localSearchValue) return true;
-        const searchLower = String(localSearchValue).toLowerCase();
-        return columns.some((col) => {
-          const value = row[col.key];
-          return String(value ?? "")
-            .toLowerCase()
-            .includes(searchLower);
-        });
-      })
-    : [];
+  // Use data directly from API (no client-side filtering)
+  const filteredData = data;
 
   return (
     <>
@@ -384,26 +485,18 @@ const LaporanAktivitasArmadaTable = ({
             />
           )}
         </div>
-        {data.length === 0 && !loading ? (
-          <DataNotFound
-            className="h-full gap-y-5 pb-10"
-            title="Belum Ada Data"
-            type="data"
+        <div className="flex-1 overflow-hidden">
+          <Table
+            columns={columns}
+            data={filteredData}
+            loading={loading}
+            onSort={handleSort}
+            sortConfig={localSortConfig}
+            emptyComponent={renderEmptyState()}
           />
-        ) : (
-          <div className="flex-1 overflow-hidden">
-            <Table
-              columns={columns}
-              data={filteredData}
-              loading={loading}
-              onSort={handleSort}
-              sortConfig={localSortConfig}
-              emptyComponent={renderEmptyState()}
-            />
-          </div>
-        )}
+        </div>
       </div>
-      {showPagination && !loading && data.length > 0 && (
+      {showPagination && !loading && (
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
@@ -414,6 +507,32 @@ const LaporanAktivitasArmadaTable = ({
           className="pb-0"
         />
       )}
+
+      {/* Image Modal */}
+      <Modal open={!!selectedImage} onOpenChange={() => setSelectedImage("")}>
+        <ModalContent className="h-full max-h-[65vh] w-full max-w-[40vw]">
+          <div className="p-4 md:p-6">
+            <div className="mb-4 flex items-center justify-center">
+              <h2 className="text-center text-xl font-semibold md:text-2xl">
+                Gambar Armada
+              </h2>
+            </div>
+            {selectedImage && (
+              <div className="flex justify-center rounded-lg">
+                <img
+                  src={selectedImage}
+                  alt="Vehicle"
+                  className="h-full w-full rounded-lg object-contain"
+                  style={{
+                    maxHeight: "calc(60vh - 100px)",
+                    maxWidth: "100%",
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        </ModalContent>
+      </Modal>
     </>
   );
 };
