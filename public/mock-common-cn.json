@@ -784,5 +784,22 @@
   "RepaymentPaymentMethod.paymentOptions": "支付选项",
   "RepaymentPaymentMethod.changeButton": "更改",
   "RepaymentPaymentMethod.selectButton": "选择",
-  "useAutoComplete.errorSameCityOnly": "装货地点只能在同一城市内更改。"
+  "useAutoComplete.errorSameCityOnly": "装货地点只能在同一城市内更改。",
+  "AdditionalFeesDetail.title": "额外费用详情",
+  "AdditionalFeesDetail.waitingFeeTitle": "等待时间费",
+  "AdditionalFeesDetail.waitingFeeNominal": "等待时间金额",
+  "AdditionalFeesDetail.driver": "司机",
+  "AdditionalFeesDetail.overloadFeeTitle": "超载费",
+  "AdditionalFeesDetail.overloadFeeNominal": "超载金额",
+  "AdditionalFeesDetail.otherFeesTitle": "其他费用",
+  "AdditionalFeesDetail.adminService": "服务管理",
+  "PopoverAgenda.reason": "原因",
+  "PopoverAgenda.loadingTime": "装货时间",
+  "PopoverAgenda.until": "至",
+  "PopoverAgenda.others": "其他",
+  "PopoverAgenda.travelRoute": "行程路线",
+  "PopoverAgenda.pickupLocation": "取货地点",
+  "PopoverAgenda.unloadLocation": "卸货地点",
+  "PopoverAgenda.trackFleet": "追踪车队",
+  "PopoverAgenda.detail": "详情"
 }
