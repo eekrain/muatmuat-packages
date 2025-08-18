@@ -36,7 +36,7 @@ const BreadCrumb = ({
             </Link>
           ) : (
             <div
-              style={{ maxWidth: maxWidth ? `${maxWidth}` : "86px" }}
+              style={{ maxWidth: maxWidth ? `${maxWidth}px` : "86px" }}
               className={getItemClasses(idx)}
             >
               {val.name}
