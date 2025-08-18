@@ -28,35 +28,59 @@ import ChangeWhatsappModal from "./ChangeWhatsappModal";
 
 // Configuration object for different OTP types
 const OTP_TYPE_CONFIG = {
+  whatsapp: {
+    showEmailMessage: false,
+    mainMessage:
+      "Mohon masukkan OTP yang dikirim melalui pesan Whatsapp diperangkat kamu untuk melanjutkan perubahan",
+    labelMessage: "Kode OTP dikirim ke nomor",
+    inputLabel: "Masukkan OTP",
+    imageSrc: "/img/otp-transporter/security-amico.png",
+    imageSize: { width: 120, height: 108 },
+    buttonText: "Kirim Ulang",
+    buttonSize: "w-[125px] text-sm md:h-8",
+    textColor: "text-white",
+    labelColor: "text-white",
+    otpInputClass: "!bg-white !text-black !border-white",
+    activeResendButtonClass: "bg-muat-trans-primary-400 text-blue-600",
+    resendButtonClass:
+      "bg-[#F0F0F0] text-neutral-400 hover:bg-[#F0F0F0] cursor-not-allowed",
+    showMeteors: true,
+  },
   "change-number": {
     showEmailMessage: false,
     mainMessage:
       "Mohon cek pesan Whatsapp diperangkat kamu untuk melanjutkan pendaftaran",
     labelMessage: "Kode OTP dikirim ke nomor",
+    imageSrc: "/img/otp-transporter/otp.png",
     imageSize: { width: 92, height: 100 },
     buttonText: "Kirim Ulang",
     buttonSize: "w-[125px] text-sm md:h-8",
     logoMargin: "",
+    showMeteors: true,
   },
   "forgot-password": {
     showEmailMessage: false,
     mainMessage:
       "Mohon cek pesan Whatsapp di perangkat kamu untuk melanjutkan pendaftaran",
     labelMessage: "No. Whatsapp Kamu",
+    imageSrc: "/img/otp-transporter/otp.png",
     imageSize: { width: 201.08, height: 221 },
     buttonText: "Kirim Ulang OTP",
     buttonSize: "w-52 md:h-10",
     logoMargin: "mb-6",
+    showMeteors: true,
   },
   default: {
     showEmailMessage: true,
     mainMessage:
       "Mohon cek pesan Whatsapp di perangkat kamu untuk melanjutkan pendaftaran",
     labelMessage: "No. Whatsapp Kamu",
+    imageSrc: "/img/otp-transporter/otp.png",
     imageSize: { width: 201.08, height: 221 },
     buttonText: "Kirim Ulang OTP",
     buttonSize: "w-52 md:h-10",
     logoMargin: "mb-6",
+    showMeteors: true,
   },
 };
 
@@ -79,18 +103,17 @@ const OtpContainer = ({
   const type = searchParams.get("type");
   const number = searchParams.get("whatsapp");
 
-  // Get configuration based on type
+  // Get configuration based on type, fallback to default
   const config = OTP_TYPE_CONFIG[type] || OTP_TYPE_CONFIG.default;
+  const isCountdownFinished = (countdown) =>
+    countdown === "00:00" || countdown === "";
 
-  // Create a default expiry date (2 minutes from now) if no expiry is provided
-  // State for expiry date to control countdown
   const [expiryDate, setExpiryDate] = useState(() => {
     return formValues?.expiresIn
       ? formValues.expiresIn
       : addMinutes(new Date(), 2);
   });
 
-  // Update expiryDate if formValues.expiresIn changes
   useEffect(() => {
     if (formValues?.expiresIn) {
       setExpiryDate(formValues.expiresIn);
@@ -112,16 +135,13 @@ const OtpContainer = ({
   const [isReady] = useState(false);
 
   const handleRequestOtp = (_formValues, isPhoneChange = false) => {
-    // Prevent execution if countdown is still active and it's not a phone change
-    if (!isPhoneChange && countdown !== "00:00" && countdown !== "") {
+    if (!isPhoneChange && !isCountdownFinished(countdown)) {
       return;
     }
 
-    // Reset countdown by setting a new expiry date (2 minutes from now)
     const newExpiry = addMinutes(new Date(), 2);
     setExpiryDate(newExpiry);
 
-    // Set notification only if it's not a phone change (phone change sets its own notification)
     if (!isPhoneChange) {
       setNotification({
         status: "success",
@@ -132,8 +152,6 @@ const OtpContainer = ({
         ),
       });
     }
-
-    // ...existing logic to actually request OTP if needed...
   };
 
   const hasFetchedOtp = useRef(false);
@@ -144,7 +162,6 @@ const OtpContainer = ({
     hasFetchedOtp.current = true;
   }, [isReady, formValues]);
 
-  // Helper function to render notification
   const renderNotification = () => {
     if (!notification) return null;
 
@@ -171,11 +188,17 @@ const OtpContainer = ({
     );
   };
 
-  // Helper function to render main message
   const renderMainMessage = () => {
     return (
       <div
-        className={`${type === "forgot-password" ? "" : "max-w-[452px]"} text-center text-base font-medium leading-[19.2px] text-neutral-50`}
+        className={cn(
+          "text-center text-base font-medium leading-[19.2px]",
+          type === "forgot-password" || type === "whatsapp"
+            ? ""
+            : "max-w-[452px]",
+
+          config.textColor || "text-neutral-50"
+        )}
       >
         {config.showEmailMessage &&
           t(
@@ -186,7 +209,9 @@ const OtpContainer = ({
         {t(
           type === "change-number"
             ? "OtpContainer.textCheckWhatsappChangeNumber"
-            : "OtpContainer.textCheckWhatsapp",
+            : type === "whatsapp"
+              ? "OtpContainer.textCheckWhatsappForWhatsapp" // Key baru untuk tipe whatsapp
+              : "OtpContainer.textCheckWhatsapp",
           {},
           config.mainMessage
         )}
@@ -194,12 +219,16 @@ const OtpContainer = ({
     );
   };
 
-  // Helper function to render WhatsApp number section
   const renderWhatsAppSection = () => {
     return (
       <div className="flex w-full flex-wrap items-center justify-center gap-6">
         <div className="flex items-center gap-3">
-          <div className="text-sm font-bold leading-[16.8px] text-neutral-50">
+          <div
+            className={cn(
+              "text-sm font-bold leading-[16.8px]",
+              config.textColor || "text-neutral-50"
+            )}
+          >
             {t(
               type === "change-number"
                 ? "OtpContainer.textOtpSentToNumber"
@@ -208,20 +237,25 @@ const OtpContainer = ({
               config.labelMessage
             )}
           </div>
-          <div className="max-w-[176px] truncate text-sm font-semibold leading-[16.8px] text-[#EBEBEB]">
+          <div
+            className={cn(
+              "max-w-[176px] truncate text-sm font-semibold leading-[16.8px]",
+              config.labelColor || "text-[#EBEBEB]"
+            )}
+          >
             {number || "0893435352125"}
           </div>
-          {type !== "forgot-password" && (
+          {type !== "forgot-password" && type !== "whatsapp" && (
             <Button
               variant="muatparts-primary"
               name="change"
               onClick={() => setIsChangeNumberModalOpen(true)}
               className={cn(
                 "ml-3 flex w-[50px] items-center !bg-[#EBEBEB] py-0 text-xxs !text-[#868686] md:h-5",
-                (countdown === "00:00" || countdown === "") &&
+                isCountdownFinished(countdown) &&
                   "!bg-[#EBEBEB] !text-primary-700"
               )}
-              disabled={countdown !== "00:00" && countdown !== ""}
+              disabled={!isCountdownFinished(countdown)}
             >
               {t("OtpContainer.buttonChange", {}, "Ganti")}
             </Button>
@@ -232,39 +266,33 @@ const OtpContainer = ({
   };
 
   useEffect(() => {
-    // Verify OTP if the OTP is 6 digits
     if (otp.length === 6) {
       setNotification(null);
 
-      // Check for hardcoded success OTP
-      if (otp === "654321") {
-        // Set verification success state
+      const handleSuccess = () => {
+        // If the type is 'whatsapp', redirect to profile to open the change number modal.
+        if (type === "whatsapp") {
+          router.push("/profil?hasVerified=true");
+          return;
+        }
 
-        // Show modal for change-number type, otherwise call onVerifySuccess
         if (type === "change-number") {
           setIsSuccessModalOpen(true);
         } else {
           setIsVerified(true);
           onVerifySuccess();
         }
+      };
+
+      // Mock OTP "654321" untuk testing atau gunakan logic verifikasi asli
+      if (otp === "654321") {
+        handleSuccess();
         return;
       }
 
       verifyOtp(otp)
-        .then(() => {
-          // Set verification success state
-
-          // Show modal for change-number type, otherwise call onVerifySuccess
-          if (type === "change-number") {
-            setIsSuccessModalOpen(true);
-          } else {
-            setIsVerified(true);
-            onVerifySuccess();
-          }
-          // Don't redirect immediately - show success UI instead
-        })
+        .then(handleSuccess)
         .catch((error) => {
-          // Check specific error types and set appropriate messages
           if (
             error?.code === "EXPIRED_OTP" ||
             error?.message?.includes("expired")
@@ -290,16 +318,38 @@ const OtpContainer = ({
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [otp]);
+  }, [otp, type, router, onVerifySuccess, verifyOtp]);
 
   return (
-    <div className="relative flex min-h-screen bg-primary-700">
-      {/* Left meteor */}
-      <div className="absolute left-0 top-0">
-        <img src="/img/meteor1.png" alt="meteor1" width={160} height={160} />
-      </div>
+    <div
+      className={cn(
+        "relative flex min-h-screen",
+        config.backgroundColor || "bg-primary-700"
+      )}
+    >
+      {config.showMeteors && (
+        <>
+          <div className="absolute left-0 top-0">
+            <img
+              src="/img/meteor1.png"
+              alt="meteor1"
+              width={160}
+              height={160}
+            />
+          </div>
+          <div
+            className={`absolute ${isVerified ? "bottom-[80px]" : "bottom-[118px]"} right-[7px]`}
+          >
+            <img
+              src="/img/meteor2.png"
+              alt="meteor2"
+              width={160}
+              height={160}
+            />
+          </div>
+        </>
+      )}
 
-      {/* Main content */}
       <div className="flex flex-1 items-center justify-center">
         <div
           className={`flex w-full ${
@@ -310,9 +360,11 @@ const OtpContainer = ({
                 : ""
           } flex-col items-center gap-y-5`}
         >
-          {/* Logo and Tagline */}
           <div
-            className={`${config.logoMargin} flex w-full flex-col items-center text-center text-neutral-50`}
+            className={cn(
+              `${config.logoMargin} flex w-full flex-col items-center text-center`,
+              config.textColor || "text-neutral-50"
+            )}
           >
             <div className="relative w-[200px]">
               <img
@@ -329,46 +381,31 @@ const OtpContainer = ({
             </div>
           </div>
 
-          {/* Verification Image or Success Icon */}
-          {isVerified ? (
-            <div className="relative">
-              <img
-                src="/img/otp-transporter/logo.png"
-                alt="success"
-                width={200}
-                height={221}
-                className="object-contain"
-                loading="eager"
-              />
-            </div>
-          ) : (
-            <img
-              src="/img/otp-transporter/otp.png"
-              alt="security"
-              width={config.imageSize.width}
-              height={config.imageSize.height}
-              className="object-contain"
-              loading="eager"
-            />
-          )}
+          <img
+            src={isVerified ? "/img/otp-transporter/logo.png" : config.imageSrc}
+            alt={isVerified ? "success" : "security"}
+            width={isVerified ? 200 : config.imageSize.width}
+            height={isVerified ? 221 : config.imageSize.height}
+            className="object-contain"
+            loading="eager"
+          />
 
           {!isVerified ? (
             <>
-              {/* Notification */}
               {renderNotification()}
-
-              {/* OTP Form Content */}
               <div className="flex w-full flex-col items-center">
-                {/* Main message */}
                 {renderMainMessage()}
-
-                {/* OTP input section */}
                 <div className="mt-6 flex w-full flex-col items-center">
                   {renderWhatsAppSection()}
-
                   <div className="mt-3 flex items-center justify-center gap-3">
-                    <label className="w-[102px] text-sm font-bold leading-[16.8px] text-neutral-50">
-                      {t("labelEnterOTP")}
+                    <label
+                      className={cn(
+                        "text-sm font-bold leading-[16.8px]",
+                        config.textColor || "text-neutral-50",
+                        type === "whatsapp" ? "w-auto" : "w-[102px]"
+                      )}
+                    >
+                      {config.inputLabel || t("labelEnterOTP")}
                     </label>
                     <InputOTP
                       maxLength={6}
@@ -377,18 +414,35 @@ const OtpContainer = ({
                       pattern={REGEXP_ONLY_DIGITS}
                     >
                       <InputOTPGroup>
-                        <InputOTPSlot index={0} />
-                        <InputOTPSlot index={1} />
-                        <InputOTPSlot index={2} />
-                        <InputOTPSlot index={3} />
-                        <InputOTPSlot index={4} />
-                        <InputOTPSlot index={5} />
+                        <InputOTPSlot
+                          index={0}
+                          className={config.otpInputClass}
+                        />
+                        <InputOTPSlot
+                          index={1}
+                          className={config.otpInputClass}
+                        />
+                        <InputOTPSlot
+                          index={2}
+                          className={config.otpInputClass}
+                        />
+                        <InputOTPSlot
+                          index={3}
+                          className={config.otpInputClass}
+                        />
+                        <InputOTPSlot
+                          index={4}
+                          className={config.otpInputClass}
+                        />
+                        <InputOTPSlot
+                          index={5}
+                          className={config.otpInputClass}
+                        />
                       </InputOTPGroup>
                     </InputOTP>
                   </div>
                 </div>
 
-                {/* Warning message for email verification */}
                 {formValues?.verificationMethod === "email" && (
                   <div className="mt-6 max-w-[319px] rounded-md bg-[#FFF1A5] px-4 py-3 text-center text-xs font-medium leading-[14.4px] text-neutral-900">
                     {`${t("labelIfOtpNotFound")} `}
@@ -400,41 +454,42 @@ const OtpContainer = ({
                   </div>
                 )}
 
-                {/* Timer message */}
-                <div className="mt-6 text-center text-base font-medium leading-[19.2px] text-neutral-50">
+                <div
+                  className={cn(
+                    "mt-6 text-center text-base font-medium leading-[19.2px]",
+                    config.textColor || "text-neutral-50"
+                  )}
+                >
                   {`${t("labelOtpCodeExpiredIn")} `}
                   <span className="font-bold">{countdown}</span>
                 </div>
               </div>
 
-              {/* Resend button */}
               <Button
-                variant={
-                  countdown === "00:00" || countdown === ""
-                    ? "muattrans-primary"
-                    : "muatparts-primary-secondary"
-                }
                 name="resend"
                 onClick={() => {
-                  if (countdown === "00:00" || countdown === "") {
+                  if (isCountdownFinished(countdown)) {
                     handleRequestOtp(formValues);
                   }
                 }}
-                disabled={countdown !== "00:00" && countdown !== ""}
+                disabled={!isCountdownFinished(countdown)}
                 className={cn(
-                  `mt-[10px] flex h-10 text-nowrap ${config.buttonSize} max-w-[319px] items-center !bg-[#EBEBEB] !text-[#868686]`,
-                  (countdown === "00:00" || countdown === "") &&
-                    "!bg-[#FFC217] !text-primary-700"
+                  `mt-[10px] flex h-10 max-w-[319px] items-center justify-center text-nowrap font-bold transition-colors duration-300`,
+                  config.buttonSize,
+                  isCountdownFinished(countdown)
+                    ? config.activeResendButtonClass ||
+                        "!bg-muat-trans-primary-400 !text-primary-700"
+                    : config.resendButtonClass ||
+                        "!bg-[#EBEBEB] !text-[#868686]"
                 )}
               >
-                {type === "change-number"
+                {type === "change-number" || type === "whatsapp"
                   ? config.buttonText
                   : t("OtpContainer.buttonResendOtp", {}, config.buttonText)}
               </Button>
             </>
           ) : (
             <>
-              {/* Success UI Content */}
               <div className="flex w-full flex-col items-center gap-3">
                 <div className="flex w-full max-w-[414px] flex-col items-center gap-3">
                   <h1 className="text-center text-2xl font-bold leading-[29px] text-white">
@@ -452,7 +507,6 @@ const OtpContainer = ({
                     )}
                   </p>
                 </div>
-
                 <div className="mt-6">
                   <Button
                     variant="muattrans-primary"
@@ -474,14 +528,6 @@ const OtpContainer = ({
         </div>
       </div>
 
-      {/* Right meteor */}
-      <div
-        className={`absolute ${isVerified ? "bottom-[80px]" : "bottom-[118px]"} right-[7px]`}
-      >
-        <img src="/img/meteor2.png" alt="meteor2" width={160} height={160} />
-      </div>
-
-      {/* Change Number Confirmation Modal */}
       <ChangeWhatsappModal
         isOpen={isChangeNumberModalOpen}
         size="big"
@@ -506,12 +552,11 @@ const OtpContainer = ({
                       "Berhasil mengubah No. Whatsapp Kamu"
                     ),
             });
-            handleRequestOtp(formValues, true); // Pass true for isPhoneChange
+            handleRequestOtp(formValues, true);
           },
         }}
       />
 
-      {/* Success Modal for change-number type */}
       <Modal
         closeOnOutsideClick={false}
         open={isSuccessModalOpen}

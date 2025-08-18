@@ -1,14 +1,45 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
+import Button from "@/components/Button/Button";
+import ButtonPlusMinus from "@/components/Form/ButtonPlusMinus";
 import IconComponent from "@/components/IconComponent/IconComponent";
-import { Modal, ModalContent, ModalTrigger } from "@/components/Modal/Modal";
 import { cn } from "@/lib/utils";
 
-import EditSchedule from "./EditSchedule";
-import LocationPoint from "./LocationPoint";
-import InfoPopover from "./PopoverAgenda";
+// --- Helper Components (Mocks for provided CardItem) ---
+// These are simplified versions of components used by CardItem for demonstration purposes.
 
-// Map CardItem status to PopoverAgenda status
+const LocationPoint = ({ type, title, subtitle, className, style }) => (
+  <div className={cn("flex items-start gap-2", className)} style={style}>
+    <div
+      className={cn(
+        "mt-1 h-3 w-3 flex-shrink-0 rounded-full",
+        type === "muat"
+          ? "border border-yellow-600 bg-yellow-400"
+          : "box-content border-[3px] border-neutral-900 bg-white"
+      )}
+    />
+    <div>
+      <p className="text-[10px] leading-tight text-neutral-500">{title}</p>
+      <p className="text-xs font-semibold leading-tight text-neutral-900">
+        {subtitle}
+      </p>
+    </div>
+  </div>
+);
+
+const InfoPopover = ({ data }) => {
+  // In a real scenario, this would be a popover component.
+  // For this implementation, it's just an icon.
+  return (
+    <IconComponent
+      src="/icons/info-outline.svg"
+      className="size-4 text-primary-700"
+    />
+  );
+};
+
+// --- CardItem Component (Adjusted as per request) ---
+
 const statusMapping = {
   BERTUGAS: "Bertugas",
   PENGIRIMAN_SELESAI: "Pengiriman Selesai",
@@ -67,35 +98,6 @@ const LIST_SHOW_ESTIMASI_WAKTU_BONGKAR = [
   "DIJADWALKAN",
 ];
 
-/**
- * @typedef {Object} LocationData
- * @property {string} title - The title/label for the location (e.g., "Lokasi Muat", "Lokasi Bongkar")
- * @property {string} subtitle - The detailed location description (e.g., "Kota Surabaya, Kec. Tegalsari")
- */
-
-/**
- * @typedef {Object} CardItemProps
- * @property {"BERTUGAS" | "PENGIRIMAN_SELESAI" | "NON_AKTIF" | "MENUNGGU_JAM_MUAT" | "DIJADWALKAN" | "sos"} [statusCode="BERTUGAS"] - Status code that determines the title displayed
- * @property {string} [driverName="Ahmad Maulana"] - Name of the driver assigned to this schedule
- * @property {string} [currentLocation="Rest Area KM 50"] - Current location of the driver/vehicle
- * @property {string} [estimation="est. 30km (1jam 30menit)"] - Estimated distance and time to destination
- * @property {number} [distanceRemaining=121] - Remaining distance in kilometers between pickup and delivery locations
- * @property {LocationData} [dataMuat] - Object containing pickup location information
- * @property {LocationData} [dataBongkar] - Object containing delivery location information
- * @property {number} [scheduled=2] - Number of scheduled time slots (affects the width of the main card section)
- * @property {number} [additional=1] - Number of additional time slots (affects the width of the additional card section)
- * @property {number} [position=0] - Horizontal position offset for the card (multiplied by cellWidthpx)
- * @property {boolean} [hasSosIssue=false] - Whether the card has a SOS issue
- * @property {Object} [agendaData=null] - Data object for the PopoverAgenda component
- */
-
-/**
- * CardItem component displays a DIJADWALKAN delivery card with driver information, locations, and timing details.
- * The card consists of two sections: a main DIJADWALKAN section and an additional section for delivery time estimation.
- *
- * @param {CardItemProps} props - The component props
- * @returns {JSX.Element} A card component showing delivery schedule information
- */
 export const CardItem = (props) => {
   const {
     statusCode = "BERTUGAS",
@@ -116,8 +118,7 @@ export const CardItem = (props) => {
     position = 0,
     hasSosIssue = false,
     cellWidth,
-    viewType = "armada",
-    truckType,
+    showEditButton = true, // Prop to control the "Ubah" button visibility
   } = props;
 
   const cellConfig = useMemo(() => {
@@ -147,7 +148,6 @@ export const CardItem = (props) => {
         left: `${position * cellWidth}px`,
       }}
     >
-      {/* FIX: Changed to a flex container */}
       <div
         className={cn(
           "box-border flex h-full w-full overflow-hidden rounded-[4px] border",
@@ -191,7 +191,7 @@ export const CardItem = (props) => {
 
           <div className="flex flex-col gap-1.5">
             <span className="text-xxs font-bold leading-none text-neutral-900">
-              {viewType === "armada" ? driverName : truckType}
+              {driverName}
             </span>
             <div className="flex items-center gap-[4.5px]">
               <IconComponent
@@ -272,49 +272,85 @@ export const CardItem = (props) => {
               Estimasi Waktu Bongkar
             </div>
           )}
-
-        {LIST_SHOW_ESTIMASI_WAKTU_BONGKAR.includes(statusCode) && (
-          <Modal>
-            <ModalTrigger asChild>
-              <button className="absolute right-2 top-2 flex items-center gap-1 text-[8px] text-primary-700">
-                <span>Ubah</span>
-                <IconComponent
-                  src="/icons/pencil-outline.svg"
-                  width={12}
-                  height={12}
-                />
-              </button>
-            </ModalTrigger>
-            <ModalContent className="h-[413px] w-[908]">
-              <div className="relative flex h-[70px] justify-between overflow-hidden rounded-t-xl bg-muat-trans-primary-400">
-                <div>
-                  <img
-                    alt="svg header modal kiri"
-                    src="/img/header-modal/header-kiri.svg"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="my-auto">
-                  <img
-                    alt="logo muatmuat header coklat"
-                    src="/img/header-modal/muatmuat-brown.svg"
-                  />
-                </div>
-                <div>
-                  <img
-                    alt="svg header modal kanan "
-                    src="/img/header-modal/header-kanan.svg"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-              </div>{" "}
-              <div className="p-6">
-                <EditSchedule />
-              </div>
-            </ModalContent>
-          </Modal>
-        )}
       </div>
     </div>
   );
 };
+
+// --- Main Component ---
+
+const DATES = [
+  "Jumat, 10",
+  "Sabtu, 11",
+  "Minggu, 12",
+  "Senin, 13",
+  "Selasa, 14",
+];
+
+const EditSchedule = () => {
+  const [days, setDays] = useState(1);
+  const scheduleContainerWidth = 860;
+  const cellWidth = scheduleContainerWidth / DATES.length;
+
+  return (
+    <div className="space-y-7">
+      <div className="flex flex-col items-center justify-center">
+        <div className="text-lg font-bold text-neutral-900">Ubah Estimasi</div>
+      </div>
+      <div className="flex items-center gap-8 border-neutral-200">
+        <div className="text-sm font-medium text-neutral-600">
+          Estimasi Waktu Bongkar
+        </div>
+        <div className="flex items-center gap-2">
+          {/* Assuming ButtonPlusMinus is a number input with steppers */}
+          <ButtonPlusMinus value={days} onChange={setDays} />
+          <span className="text-sm font-medium text-neutral-900">Hari</span>
+        </div>
+      </div>
+      <div
+        className="rounded-md border border-neutral-400"
+        style={{ width: `${scheduleContainerWidth}px` }}
+      >
+        <div className="grid h-14 grid-cols-5 items-center border-b border-neutral-200 text-center">
+          {DATES.map((date, index) => (
+            <div
+              key={date}
+              className={`text-sm font-semibold text-neutral-900 ${
+                index < DATES.length - 1 ? "border-r border-neutral-200" : ""
+              }`}
+            >
+              {date}
+            </div>
+          ))}
+        </div>
+
+        <div className="relative h-[68px]">
+          <CardItem
+            cellWidth={cellWidth}
+            statusCode="BERTUGAS"
+            scheduled={1}
+            additional={1}
+            position={0}
+            distanceRemaining={121}
+            dataMuat={{
+              title: "Lokasi Muat",
+              subtitle: "Kota Surabaya, Kec. Tegalsari",
+            }}
+            dataBongkar={{
+              title: "Lokasi Bongkar",
+              subtitle: "Kab. Malang, Kec. Singosari",
+            }}
+            showEditButton={false} // Hide the recursive "Ubah" button
+          />
+        </div>
+      </div>
+      <div className="flex justify-center">
+        <Button variant="warning" className="w-[120px]">
+          Simpan
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+export default EditSchedule;

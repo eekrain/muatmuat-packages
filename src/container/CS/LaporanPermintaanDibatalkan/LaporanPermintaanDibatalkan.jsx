@@ -44,13 +44,13 @@ const LaporanPermintaanDibatalkan = () => {
 
   const columns = [
     {
-      key: "cancelled-date",
+      key: "cancelledDate",
       header: "Tanggal Dibatalkan",
       width: "174px",
       className: "align-top !pl-6 !pr-2.5",
       headerClassName: "pl-6 pr-2.5",
       render: (row) => (
-        <span className="text-xs font-medium">13 Apr 2025 17:39 WIB</span>
+        <span className="mt-1 text-xs font-medium">13 Apr 2025 17:39 WIB</span>
       ),
     },
     {
@@ -59,10 +59,12 @@ const LaporanPermintaanDibatalkan = () => {
       width: "132px",
       className: "align-top !px-2.5",
       headerClassName: "px-2.5",
-      render: (row) => <span className="text-xs font-medium">MT25A002A</span>,
+      render: (row) => (
+        <span className="mt-1 text-xs font-medium">MT25A002A</span>
+      ),
     },
     {
-      key: "load-time",
+      key: "loadTime",
       header: "Waktu Muat",
       width: "180px",
       className: "align-top !px-2.5",
@@ -165,7 +167,7 @@ const LaporanPermintaanDibatalkan = () => {
           },
         ];
         return (
-          <div className="flex flex-col gap-y-2">
+          <div className="mt-0.5 flex flex-col gap-y-2">
             <span className="text-xs font-semibold">Colt Diesel Engkel</span>
             <span className="text-xxs font-medium leading-[1.3]">Box</span>
             <div className="flex items-center gap-x-2">
@@ -194,7 +196,7 @@ const LaporanPermintaanDibatalkan = () => {
       },
     },
     {
-      key: "number-of-request",
+      key: "numberOfRequest",
       header: "Permintaan Ke",
       width: "116px",
       headerClassName: "px-2.5",
