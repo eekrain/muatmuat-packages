@@ -77,7 +77,7 @@ export const UrgentIssueCardTransporter = ({
   }, [message, isError, updateParams, orderCode]);
 
   const handleClickOrder = (orderId) => {
-    router.push(`/daftarpesanan/detailpesanan/${orderId}`);
+    router.push(`/monitoring/${orderId}/detail-pesanan?urgent-issue`);
   };
 
   const handleConfirmStatus = (status) => {
