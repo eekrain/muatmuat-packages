@@ -15,6 +15,7 @@ import PageTitle from "@/components/PageTitle/PageTitle";
 import Search from "@/components/Search/Search";
 import SearchNotFound from "@/components/SearchNotFound/SearchNotFound";
 import SelectResponPerubahan from "@/components/Select/SelectResponPerubahan";
+import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
 import { toast } from "@/lib/toast";
 
 // Create validation schema for all armada responses
@@ -36,6 +37,7 @@ const ResponPerubahanPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [bulkResponse, setBulkResponse] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isChangeModalOpen, setIsChangeModalOpen] = useState(false);
 
   // Mock data for demonstration
   const armadaList = [
@@ -219,7 +221,7 @@ const ResponPerubahanPage = () => {
             <div className="flex items-center gap-3">
               <Button
                 variant="muattrans-primary-secondary"
-                onClick={() => console.log("View changes")}
+                onClick={() => setIsChangeModalOpen(true)}
                 className="h-10 px-4"
               >
                 Lihat Perubahan
@@ -399,6 +401,14 @@ const ResponPerubahanPage = () => {
           </div>
         </div>
       </div>
+
+      {/* RespondChangeModal */}
+      <RespondChangeModal
+        isOpen={isChangeModalOpen}
+        onClose={() => setIsChangeModalOpen(false)}
+        orderData={{ id: params.uuid }}
+        hideActionButton
+      />
     </div>
   );
 };
