@@ -174,8 +174,9 @@ const MultilevelSelect = ({ options, value, onChange, disabled }) => {
         </div>
         <IconComponent
           className={cn(
-            isActive ? "icon-blue" : "",
-            disabled ? "icon-gray" : ""
+            "text-neutral-700",
+            isActive && "text-primary-700",
+            disabled && "text-neutral-600"
           )}
           src="/icons/filter16.svg"
         />
