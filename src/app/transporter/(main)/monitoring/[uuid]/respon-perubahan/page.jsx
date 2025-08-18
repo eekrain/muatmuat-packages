@@ -3,20 +3,39 @@
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { valibotResolver } from "@hookform/resolvers/valibot";
+import { useForm } from "react-hook-form";
+import * as v from "valibot";
+
 import BadgeStatus from "@/components/Badge/BadgeStatus";
 import BreadCrumb from "@/components/Breadcrumb/Breadcrumb";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import Search from "@/components/Search/Search";
+import SearchNotFound from "@/components/SearchNotFound/SearchNotFound";
 import SelectResponPerubahan from "@/components/Select/SelectResponPerubahan";
+import { toast } from "@/lib/toast";
+
+// Create validation schema for all armada responses
+const createFormSchema = (armadaList) => {
+  const responseSchema = {};
+  armadaList.forEach((armada) => {
+    responseSchema[`armada_${armada.id}`] = v.pipe(
+      v.string(),
+      v.minLength(1, `Respon untuk ${armada.plateNumber} wajib dipilih`)
+    );
+  });
+
+  return v.object(responseSchema);
+};
 
 const ResponPerubahanPage = () => {
   const router = useRouter();
   const params = useParams();
   const [searchTerm, setSearchTerm] = useState("");
   const [bulkResponse, setBulkResponse] = useState("");
-  const [individualResponses, setIndividualResponses] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   // Mock data for demonstration
   const armadaList = [
@@ -70,6 +89,25 @@ const ResponPerubahanPage = () => {
     { value: "reject", label: "Tolak Perubahan & Batalkan Armada" },
   ];
 
+  // Initialize form with validation
+  const formSchema = createFormSchema(armadaList);
+  const {
+    setValue,
+    watch,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    trigger,
+  } = useForm({
+    resolver: valibotResolver(formSchema),
+    defaultValues: armadaList.reduce((acc, armada) => {
+      acc[`armada_${armada.id}`] = "";
+      return acc;
+    }, {}),
+  });
+
+  const formValues = watch();
+
   const filteredArmada = armadaList.filter(
     (armada) =>
       armada.plateNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -77,31 +115,78 @@ const ResponPerubahanPage = () => {
   );
 
   const handleIndividualResponse = (armadaId, value) => {
-    setIndividualResponses((prev) => ({
-      ...prev,
-      [armadaId]: value,
-    }));
+    setValue(`armada_${armadaId}`, value);
+    trigger(`armada_${armadaId}`);
   };
 
   const handleBulkResponse = (value) => {
     setBulkResponse(value);
     // Apply to all armada
-    const newResponses = {};
     armadaList.forEach((armada) => {
-      newResponses[armada.id] = value;
+      setValue(`armada_${armada.id}`, value);
     });
-    setIndividualResponses(newResponses);
+    // Trigger validation for all fields
+    trigger();
   };
 
-  const handleSaveAsDraft = () => {
-    console.log("Saving as draft", individualResponses);
-    // TODO: Implement save as draft logic
+  const handleSaveAsDraft = async () => {
+    setIsLoading(true);
+    try {
+      // Save as draft without validation
+      const responses = armadaList.map((armada) => ({
+        armadaId: armada.id,
+        plateNumber: armada.plateNumber,
+        response: formValues[`armada_${armada.id}`] || "",
+      }));
+
+      console.log("Saving as draft", responses);
+      // TODO: Implement save as draft API call
+
+      toast.success("Respon berhasil disimpan sebagai draf");
+    } catch (error) {
+      toast.error("Gagal menyimpan draf. Silakan coba lagi.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleSubmitResponse = () => {
-    console.log("Submitting responses", individualResponses);
-    // TODO: Implement submit response logic
+  const onSubmit = async (data) => {
+    setIsLoading(true);
+    try {
+      // Convert form data to response format
+      const responses = armadaList.map((armada) => ({
+        armadaId: armada.id,
+        plateNumber: armada.plateNumber,
+        response: data[`armada_${armada.id}`],
+      }));
+
+      console.log("Submitting responses", responses);
+      // TODO: Implement submit response API call
+
+      toast.success("Respon perubahan berhasil dikirim");
+      // Optionally navigate back or reset form
+    } catch (error) {
+      toast.error("Gagal mengirim respon. Silakan coba lagi.");
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  const handleSubmitResponse = handleSubmit(onSubmit, (errors) => {
+    // Show appropriate toast based on validation errors
+    const errorCount = Object.keys(errors).length;
+    const totalArmada = armadaList.length;
+
+    if (errorCount === totalArmada) {
+      // All responses are missing
+      toast.error("Respon perubahan wajib diisi");
+    } else {
+      // Some responses are missing
+      toast.error("Respon perubahan wajib terisi semua");
+    }
+
+    console.log("Validation errors:", errors);
+  });
 
   const getStatusBadgeVariant = (status) => {
     const statusVariants = {
@@ -207,86 +292,110 @@ const ResponPerubahanPage = () => {
                 <Button
                   variant="muattrans-primary-secondary"
                   onClick={handleSaveAsDraft}
+                  disabled={isLoading}
                   className="h-10 px-6"
                 >
-                  Simpan sebagai Draf
+                  {isLoading ? "Menyimpan..." : "Simpan sebagai Draf"}
                 </Button>
                 <Button
                   variant="muattrans-primary"
                   onClick={handleSubmitResponse}
+                  disabled={isLoading}
                   className="h-10 px-6"
                 >
-                  Kirim Respon
+                  {isLoading ? "Mengirim..." : "Kirim Respon"}
                 </Button>
               </div>
             </div>
           </div>
 
           {/* Armada List Header */}
-          <div className="flex items-center justify-between px-6 text-xs font-bold text-neutral-600">
+          <div className="grid grid-cols-3 items-center gap-9 px-6 text-xs font-bold text-neutral-600">
             <div>Daftar Armada ({filteredArmada.length} Armada)</div>
-            <div>Pilih Respon Perubahan</div>
+            <div className="">Armada Pengganti</div>
+            <div className="">Pilih Respon Perubahan</div>
           </div>
 
           {/* Armada List */}
           <div className="flex flex-col gap-3 p-6 pt-4">
-            {filteredArmada.map((armada) => (
-              <div
-                key={armada.id}
-                className="flex items-center justify-between rounded-xl border border-neutral-400 p-4"
-              >
-                <div className="flex items-center gap-3">
-                  {/* Truck Image */}
-                  <div className="relative flex h-[56px] w-[56px] items-center justify-center overflow-hidden rounded-[4px] border border-neutral-400 bg-white">
-                    <img
-                      src={`/img/mock-armada/${armada.id === 1 ? "one" : armada.id === 2 ? "two" : armada.id === 3 ? "three" : armada.id === 4 ? "four" : armada.id === 5 ? "five" : "six"}.png`}
-                      alt={`Truck ${armada.plateNumber}`}
-                      className="absolute inset-0 h-full w-full object-cover"
-                      onError={(e) => {
-                        e.target.style.display = "none";
-                        e.target.nextSibling.style.display = "flex";
-                      }}
-                    />
-                    <div className="hidden h-full w-full items-center justify-center">
-                      <IconComponent
-                        src="/icons/monitoring/daftar-pesanan-aktif/truck.svg"
-                        className="h-8 w-8 text-gray-600"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Armada Info */}
-                  <div className="flex-1">
-                    <div className="mb-3 flex items-center gap-1">
-                      <span className="text-xs font-bold text-black">
-                        {armada.plateNumber}
-                      </span>
-                      <span className="text-xs font-semibold text-neutral-800">
-                        - {armada.driverName}
-                      </span>
-                    </div>
-                    <BadgeStatus
-                      variant={getStatusBadgeVariant(armada.status)}
-                      className="w-auto"
-                    >
-                      {armada.status}
-                    </BadgeStatus>
-                  </div>
-                </div>
-
-                {/* Response Dropdown */}
-                <div className="w-[345px]">
-                  <SelectResponPerubahan
-                    value={individualResponses[armada.id] || ""}
-                    onChange={(value) =>
-                      handleIndividualResponse(armada.id, value)
-                    }
-                    options={responseOptions}
-                    placeholder="Pilih Respon Perubahan"
-                  />
-                </div>
+            {filteredArmada.length === 0 && searchTerm ? (
+              <div className="flex items-center justify-center py-8">
+                <SearchNotFound />
               </div>
-            ))}
+            ) : (
+              filteredArmada.map((armada) => (
+                <div
+                  key={armada.id}
+                  className="flex items-center justify-between rounded-xl border border-neutral-400 p-4"
+                >
+                  <div className="flex w-[340px] items-center gap-3">
+                    {/* Truck Image */}
+                    <div className="relative flex h-[56px] w-[56px] items-center justify-center overflow-hidden rounded-[4px] border border-neutral-400 bg-white">
+                      <img
+                        src={`/img/mock-armada/${armada.id === 1 ? "one" : armada.id === 2 ? "two" : armada.id === 3 ? "three" : armada.id === 4 ? "four" : armada.id === 5 ? "five" : "six"}.png`}
+                        alt={`Truck ${armada.plateNumber}`}
+                        className="absolute inset-0 h-full w-full object-cover"
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                          e.target.nextSibling.style.display = "flex";
+                        }}
+                      />
+                      <div className="hidden h-full w-full items-center justify-center">
+                        <IconComponent
+                          src="/icons/monitoring/daftar-pesanan-aktif/truck.svg"
+                          className="h-8 w-8 text-gray-600"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Armada Info */}
+                    <div className="flex-1">
+                      <div className="mb-3 flex items-center gap-1">
+                        <span className="text-xs font-bold text-black">
+                          {armada.plateNumber}
+                        </span>
+                        <span className="text-xs font-semibold text-neutral-800">
+                          - {armada.driverName}
+                        </span>
+                      </div>
+                      <BadgeStatus
+                        variant={getStatusBadgeVariant(armada.status)}
+                        className="w-auto"
+                      >
+                        {armada.status}
+                      </BadgeStatus>
+                    </div>
+                  </div>
+
+                  {/* Info Message for Accept Response */}
+                  {formValues[`armada_${armada.id}`] === "accept" && (
+                    <div className="flex flex-1 items-center gap-6">
+                      <IconComponent
+                        src="/icons/arrow-right.svg"
+                        className="h-4 w-4 text-success-600"
+                      />
+                      <span className="w-[340px] text-xs font-semibold text-success-400">
+                        Tidak ada perubahan armada dan akan ada penyesuaian
+                        pendapatan
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Response Dropdown */}
+                  <div className="w-[345px]">
+                    <SelectResponPerubahan
+                      value={formValues[`armada_${armada.id}`] || ""}
+                      onChange={(value) =>
+                        handleIndividualResponse(armada.id, value)
+                      }
+                      options={responseOptions}
+                      placeholder="Pilih Respon Perubahan"
+                      error={!!errors[`armada_${armada.id}`]}
+                    />
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
