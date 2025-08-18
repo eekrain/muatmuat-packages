@@ -10,7 +10,7 @@ const apiResultOrderChangeDetail = {
     Text: "Order change details retrieved successfully",
   },
   Data: {
-    orderId: "uuid", // [dbt_mt_order.id]
+    orderId: "dcdaf886-56d6-4d84-89d6-a21ec18d0bc1", // [dbt_mt_order.id]
     orderCode: "MT001234", // [dbt_mt_order.orderCode]
     changeType: "LOCATION_AND_TIME", // Derived from change request
     requestedAt: "2024-04-01T07:30:00", // [dbt_mt_order_change_history.createdAt]

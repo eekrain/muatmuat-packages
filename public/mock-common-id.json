@@ -935,5 +935,22 @@
   "RepaymentPaymentMethod.paymentOptions": "Opsi Pembayaran",
   "RepaymentPaymentMethod.changeButton": "Ubah",
   "RepaymentPaymentMethod.selectButton": "Pilih",
-  "useAutoComplete.errorSameCityOnly": "Perubahan lokasi muat hanya bisa diganti jika masih di kota yang sama."
+  "useAutoComplete.errorSameCityOnly": "Perubahan lokasi muat hanya bisa diganti jika masih di kota yang sama.",
+  "AdditionalFeesDetail.title": "Detail Tambahan Biaya",
+  "AdditionalFeesDetail.waitingFeeTitle": "Biaya Waktu Tunggu",
+  "AdditionalFeesDetail.waitingFeeNominal": "Nominal Waktu Tunggu",
+  "AdditionalFeesDetail.driver": "Driver",
+  "AdditionalFeesDetail.overloadFeeTitle": "Biaya Overload Muatan",
+  "AdditionalFeesDetail.overloadFeeNominal": "Nominal Overload Muatan",
+  "AdditionalFeesDetail.otherFeesTitle": "Biaya Lainnya",
+  "AdditionalFeesDetail.adminService": "Admin Layanan",
+  "PopoverAgenda.reason": "Alasan",
+  "PopoverAgenda.loadingTime": "Waktu Muat",
+  "PopoverAgenda.until": "s/d",
+  "PopoverAgenda.others": "lainnya",
+  "PopoverAgenda.travelRoute": "Rute Perjalanan",
+  "PopoverAgenda.pickupLocation": "Lokasi Muat",
+  "PopoverAgenda.unloadLocation": "Lokasi Bongkar",
+  "PopoverAgenda.trackFleet": "Lacak Armada",
+  "PopoverAgenda.detail": "Detail"
 }

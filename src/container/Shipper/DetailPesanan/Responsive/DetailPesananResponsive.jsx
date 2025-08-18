@@ -5,6 +5,10 @@ import { useEffect } from "react";
 
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import {
+  OrderStatusEnum,
+  getOrderStatusRank,
+} from "@/lib/constants/detailpesanan/detailpesanan.enum";
+import {
   ResponsiveProvider,
   ResponsiveRoute,
 } from "@/lib/responsive-navigation";
@@ -77,10 +81,14 @@ const DetailPesananResponsive = ({ paymentMethods }) => {
     setIsGlobalLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  const shouldFetchOldDriver =
+    dataStatusPesanan?.orderStatus &&
+    getOrderStatusRank(dataStatusPesanan.orderStatus) >=
+      getOrderStatusRank(OrderStatusEnum.LOADING);
 
   const { data: oldDriverData } = useGetOldDriver(
-    params.orderId,
-    dataStatusPesanan?.driverStatus[0]?.driverId
+    shouldFetchOldDriver ? params.orderId : null,
+    shouldFetchOldDriver ? dataStatusPesanan.driverStatus[0].driverId : null
   );
 
   return (

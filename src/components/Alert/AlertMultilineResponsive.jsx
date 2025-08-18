@@ -113,7 +113,9 @@ const Item = ({ item }) => {
         >
           {t(item.link.label)}
         </Link>
-      ) : item.label === "messageWaitingTimeCharge" ? (
+      ) : item.label === "Driver kamu akan dikenakan biaya waktu tunggu." ||
+        item.label === "Your driver will be charged waiting time fee." ||
+        item.label === "您的司机将被收取等待时间费用。" ? (
         <InfoBottomsheetDriverCharge title="Informasi" />
       ) : item.type === "ORDER_CHANGES_CONFIRMATION" ? (
         <IconComponent

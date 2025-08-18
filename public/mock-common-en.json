@@ -936,5 +936,22 @@
   "RepaymentPaymentMethod.paymentOptions": "Payment Options",
   "RepaymentPaymentMethod.changeButton": "Change",
   "RepaymentPaymentMethod.selectButton": "Select",
-  "useAutoComplete.errorSameCityOnly": "Loading location can only be changed if it's still in the same city."
+  "useAutoComplete.errorSameCityOnly": "Loading location can only be changed if it's still in the same city.",
+  "AdditionalFeesDetail.title": "Additional Fee Details",
+  "AdditionalFeesDetail.waitingFeeTitle": "Waiting Time Fee",
+  "AdditionalFeesDetail.waitingFeeNominal": "Waiting Time Amount",
+  "AdditionalFeesDetail.driver": "Driver",
+  "AdditionalFeesDetail.overloadFeeTitle": "Overload Fee",
+  "AdditionalFeesDetail.overloadFeeNominal": "Overload Amount",
+  "AdditionalFeesDetail.otherFeesTitle": "Other Fees",
+  "AdditionalFeesDetail.adminService": "Service Admin",
+  "PopoverAgenda.reason": "Reason",
+  "PopoverAgenda.loadingTime": "Loading Time",
+  "PopoverAgenda.until": "to",
+  "PopoverAgenda.others": "others",
+  "PopoverAgenda.travelRoute": "Travel Route",
+  "PopoverAgenda.pickupLocation": "Pickup Location",
+  "PopoverAgenda.unloadLocation": "Unload Location",
+  "PopoverAgenda.trackFleet": "Track Fleet",
+  "PopoverAgenda.detail": "Detail"
 }
