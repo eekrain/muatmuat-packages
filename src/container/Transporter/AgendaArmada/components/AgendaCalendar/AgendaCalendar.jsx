@@ -1,50 +1,222 @@
-import React from "react";
+import { useEffect, useMemo, useRef } from "react";
 
+import DataNotFound from "@/components/DataNotFound/DataNotFound";
 import { useClientWidth } from "@/hooks/use-client-width";
-import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 
 import { AgendaRowItem } from "./AgendaRowItem";
 import { CalendarHeader1 } from "./CalendarHeader1";
 import { CalendarHeader2 } from "./CalendarHeader2";
-import { useDateNavigator } from "./agenda-provider";
-
-const DEBUG_PREFIX = "[AGENDA_DEBUG]";
+import { useDateNavigator } from "./use-date-navigator";
 
 export const AgendaCalendar = ({
   data = [],
   onLoadMore,
   isLoadingMore,
   isReachingEnd,
+  search,
+  onSearchChange,
+  filterAgendaStatus,
+  onFilterChange,
+  availablePeriods,
+  shouldShowOverlay,
+  mutate,
 }) => {
-  console.log(`${DEBUG_PREFIX} AgendaCalendar component rendering.`);
+  const navigator = useDateNavigator();
+  const {
+    displayedDates,
+    displaySchedules,
+    selectedDate,
+    navigateToDate,
+    goToPrevious,
+    goToNext,
+    isLoading,
+    isNavigating,
+    hasNextPage,
+    isLoadingMore: hookIsLoadingMore,
+    setSearch,
+    setFilterAgendaStatus,
+    searchValue,
+    filterValue,
+  } = navigator;
+
+  const clientWidth = useClientWidth();
+  const loadMoreRef = useRef(null);
+
+  // Memoize calendar dates to prevent unnecessary recalculations
+  const calendarDates = useMemo(() => {
+    if (!displayedDates || displayedDates.length === 0) return [];
+
+    return displayedDates.map((dateStr) => {
+      const date = new Date(dateStr);
+      const dayName = date.toLocaleDateString("id-ID", { weekday: "short" });
+      const dayNumber = date.getDate();
+      const monthName = date.toLocaleDateString("id-ID", { month: "short" });
+
+      return {
+        date: dateStr,
+        dayName,
+        dayNumber,
+        monthName,
+        isSelected: dateStr === selectedDate,
+      };
+    });
+  }, [displayedDates, selectedDate]);
+
+  // Get schedules for selected date
+  const selectedDateSchedules = useMemo(() => {
+    if (!displaySchedules || displaySchedules.length === 0) return [];
+    return displaySchedules.filter(
+      (schedule) => schedule.start_date === selectedDate
+    );
+  }, [displaySchedules, selectedDate]);
+
+  // Intersection Observer for infinite scrolling
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        const isIntersecting = entry.isIntersecting;
+        const isReachingEnd = !hasNextPage;
+
+        console.log("🔍 Intersection Observer Effect:", {
+          isIntersecting,
+          isLoadingMore,
+          isReachingEnd,
+          hasOnLoadMore: !!onLoadMore,
+          dataLength: displaySchedules?.length || 0,
+          timestamp: new Date().toLocaleTimeString(),
+        });
+
+        if (isIntersecting && !isLoadingMore && !isReachingEnd && onLoadMore) {
+          console.log("✅ Triggering onLoadMore...");
+          onLoadMore();
+        } else {
+          console.log("❌ Not triggering onLoadMore:", {
+            isIntersecting,
+            isLoadingMore,
+            isReachingEnd,
+            hasOnLoadMore: !!onLoadMore,
+          });
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: "50px",
+      }
+    );
+
+    const currentRef = loadMoreRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+    };
+  }, [hasNextPage, isLoadingMore, onLoadMore, displaySchedules?.length]);
+
+  // Force scroll check after navigation
+  useEffect(() => {
+    if (!isNavigating && !isLoading && displaySchedules?.length > 0) {
+      const timeoutId = setTimeout(() => {
+        if (loadMoreRef.current) {
+          const rect = loadMoreRef.current.getBoundingClientRect();
+          const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+
+          console.log("🔄 Post-navigation check:", {
+            isVisible,
+            hasNextPage,
+            isLoadingMore,
+            dataLength: displaySchedules?.length,
+            rect: { top: rect.top, bottom: rect.bottom },
+            windowHeight: window.innerHeight,
+            timestamp: new Date().toLocaleTimeString(),
+          });
+
+          if (isVisible && hasNextPage && !isLoadingMore && onLoadMore) {
+            console.log("🚀 Force triggering onLoadMore after navigation...");
+            onLoadMore();
+          }
+        }
+      }, 100);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [
+    isNavigating,
+    isLoading,
+    displaySchedules?.length,
+    hasNextPage,
+    isLoadingMore,
+    onLoadMore,
+  ]);
+
   return (
-    <div className="w-full rounded-xl bg-white shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
-      <CalendarHeader1 />
-      <CalendarHeader2 />
+    <div className="relative w-full overflow-hidden rounded-xl bg-white shadow-[0px_4px_11px_rgba(65,65,65,0.25)]">
+      {(shouldShowOverlay || isNavigating) && (
+        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-white/70 backdrop-blur-sm">
+          <div className="pointer-events-auto flex flex-col items-center gap-2 rounded-lg bg-white px-3 py-2 shadow-md">
+            <img
+              src="/img/loading-animation.webp"
+              width={80}
+              height={80}
+              alt="loading"
+            />
+            <div className="text-sm text-gray-600">Memuat...</div>
+          </div>
+        </div>
+      )}
+      <CalendarHeader1
+        selectedDate={selectedDate}
+        goToPrevious={goToPrevious}
+        goToNext={goToNext}
+        setSearch={setSearch}
+        setFilterAgendaStatus={setFilterAgendaStatus}
+        searchValue={searchValue}
+        filterValue={filterValue}
+        search={search}
+        onSearchChange={onSearchChange}
+        _filterAgendaStatus={filterAgendaStatus}
+        onFilterChange={onFilterChange}
+        availablePeriods={availablePeriods}
+      />
+      <CalendarHeader2
+        calendarDates={calendarDates}
+        selectedDate={selectedDate}
+        navigateToDate={navigateToDate}
+        clientWidth={clientWidth}
+      />
       <Content
         data={data}
+        displaySchedules={displaySchedules}
+        selectedDateSchedules={selectedDateSchedules}
         onLoadMore={onLoadMore}
-        isLoadingMore={isLoadingMore}
+        isLoadingMore={isLoadingMore || hookIsLoadingMore}
         isReachingEnd={isReachingEnd}
+        hasNextPage={hasNextPage}
+        loadMoreRef={loadMoreRef}
+        mutate={mutate}
       />
     </div>
   );
 };
 
-export const Content = ({ data, onLoadMore, isLoadingMore, isReachingEnd }) => {
-  const { currentDayIndex } = useDateNavigator();
+export const Content = ({
+  data,
+  displaySchedules,
+  selectedDateSchedules,
+  onLoadMore,
+  isLoadingMore,
+  isReachingEnd,
+  hasNextPage,
+  loadMoreRef,
+  mutate,
+}) => {
+  const navigator = useDateNavigator();
+  const { currentDayIndex } = navigator;
   const { width: containerWidth, ref } = useClientWidth();
-
-  const { ref: loadMoreRef, isIntersecting } = useIntersectionObserver({
-    threshold: 0.1,
-    rootMargin: "20px",
-  });
-
-  React.useEffect(() => {
-    if (isIntersecting && !isLoadingMore && !isReachingEnd && onLoadMore) {
-      onLoadMore();
-    }
-  }, [isIntersecting, isLoadingMore, isReachingEnd, onLoadMore]);
 
   const SIDEBAR_WIDTH = 202;
   const DAY_COLUMNS = 5;
@@ -53,16 +225,61 @@ export const Content = ({ data, onLoadMore, isLoadingMore, isReachingEnd }) => {
       ? (containerWidth - SIDEBAR_WIDTH) / DAY_COLUMNS - 1
       : 0;
 
+  // Use data if provided, otherwise use selectedDateSchedules
+  const dataToRender = data?.length > 0 ? data : selectedDateSchedules || [];
+  const dataLength = dataToRender.length;
+
+  // Get search state to determine what empty state to show
+  const { search, filterAgendaStatus } = useDateNavigator();
+
+  // Check if all items are placeholders (meaning no real data found)
+  const isSearching = search && search.trim().length > 0;
+  // Filter is active when it's an array with specific filters (not empty array which means all enabled)
+  const isFiltering =
+    Array.isArray(filterAgendaStatus) && filterAgendaStatus.length > 0;
+  const hasOnlyPlaceholders =
+    dataToRender.length > 0 && dataToRender.every((item) => item.isPlaceholder);
+
+  const shouldShowSearchNotFound = isSearching && hasOnlyPlaceholders;
+  const shouldShowFilterNotFound =
+    !isSearching && isFiltering && hasOnlyPlaceholders;
+
+  if (!dataLength && !isLoadingMore) {
+    // Default empty state when not searching and truly no data
+    return (
+      <div className="flex h-[calc(100dvh-295px)] items-center justify-center bg-neutral-50">
+        <div className="flex flex-col items-center justify-center text-center">
+          <h3 className="mb-2 text-lg font-semibold text-gray-700">
+            Belum ada Agenda Armada & Driver
+          </h3>
+          <p className="text-sm text-gray-500">
+            Tunggu pesanan masuk untuk membuat agenda
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="h-[calc(100dvh-295px)] pr-0.5">
+    <div className="h-[calc(100dvh-295px)] bg-neutral-50 pr-0.5">
       <div ref={ref} className="relative h-full w-full">
-        <div className="absolute inset-0 divide-y overflow-y-auto">
-          {data.map((item, index) => (
-            <AgendaRowItem key={index} armada={item} cellWidth={cellWidth} />
+        <div className="absolute inset-0 overflow-y-auto bg-white">
+          {dataToRender.map((item, index) => (
+            <AgendaRowItem
+              key={`${item.id || item.vehicle_id || index}-${item.start_date || item.date || index}`}
+              data={item}
+              armada={item}
+              cellWidth={cellWidth}
+              mutate={mutate}
+            />
           ))}
 
-          {!isReachingEnd && (
-            <div ref={loadMoreRef} className="h-4 w-full">
+          {hasNextPage && !isReachingEnd && (
+            <div
+              key="load-more-trigger"
+              ref={loadMoreRef}
+              className="h-4 w-full bg-white"
+            >
               {isLoadingMore && (
                 <div className="flex items-center justify-center py-4">
                   <div className="text-sm text-gray-500">Loading more...</div>
@@ -71,6 +288,30 @@ export const Content = ({ data, onLoadMore, isLoadingMore, isReachingEnd }) => {
             </div>
           )}
         </div>
+
+        {(shouldShowSearchNotFound || shouldShowFilterNotFound) && (
+          <div
+            className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2"
+            style={{
+              left: SIDEBAR_WIDTH + (2 * cellWidth + cellWidth / 2),
+            }}
+          >
+            <DataNotFound
+              type="search"
+              title={
+                shouldShowSearchNotFound ? (
+                  <span>Keyword Tidak Ditemukan</span>
+                ) : (
+                  <span>
+                    Data tidak Ditemukan.
+                    <br />
+                    Mohon coba hapus beberapa filter
+                  </span>
+                )
+              }
+            />
+          </div>
+        )}
 
         {currentDayIndex > 0 && (
           <>

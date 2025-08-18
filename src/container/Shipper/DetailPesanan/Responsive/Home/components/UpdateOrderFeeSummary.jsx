@@ -1,116 +1,60 @@
 import { Fragment } from "react";
 
+import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { cn } from "@/lib/utils";
 import { idrFormat } from "@/lib/utils/formatters";
 
 const UpdateOrderFeeSummary = ({ dataRingkasanPembayaran }) => {
-  const priceCharge = dataRingkasanPembayaran?.priceCharge;
-  const priceChange = dataRingkasanPembayaran?.priceChange;
+  const priceSummary = useShallowMemo(() => {
+    const { priceChange } = dataRingkasanPembayaran || {};
 
-  // Jika tidak ada data biaya tambahan, jangan render komponen
-  if (!priceCharge && !priceChange) {
-    return null;
-  }
-
-  const waitingFee = priceCharge?.waitingFee;
-  const overloadFee = priceCharge?.overloadFee;
-  const adminFee = priceCharge?.adminFee || priceChange?.adminFee;
-  const taxAmount = priceCharge?.taxAmount || priceChange?.taxAmount;
-  const additionalCost = priceChange?.additionalCost;
-  const penaltyFee = priceChange?.penaltyFee;
-
-  const priceSummary = [];
-
-  // Biaya Perubahan Rute (jika ada priceChange)
-  if (priceChange && (additionalCost > 0 || penaltyFee > 0)) {
-    const routeChangeItems = [];
-    if (additionalCost > 0) {
-      routeChangeItems.push({
-        label: "Nominal Selisih Jarak Perubahan Lokasi Bongkar",
-        price: additionalCost,
-      });
-    }
-    if (penaltyFee > 0) {
-      routeChangeItems.push({
-        label: "Biaya Penalti",
-        price: penaltyFee,
-      });
+    if (!priceChange) {
+      return [];
     }
 
-    priceSummary.push({
-      children: [
-        {
-          title: "Biaya Perubahan Rute",
-          items: routeChangeItems,
-        },
-      ],
-    });
-  }
+    return [
+      {
+        children: [
+          {
+            title: "Biaya Perubahan Rute",
+            items: [
+              {
+                label: "Nominal Selisih Jarak Perubahan Lokasi Bongkar",
+                price: priceChange.additionalCost || 0,
+              },
+            ],
+          },
+          {
+            title: "Biaya Administrasi",
+            items: [
+              {
+                label: "Admin Ubah Pesanan",
+                price: priceChange.penaltyFee || 0,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        children: [
+          {
+            title: "Biaya Lainnya",
+            items: [
+              {
+                label: "Admin Layanan",
+                price: priceChange.adminFee || 0,
+              },
+              {
+                label: "Pajak",
+                price: priceChange.taxAmount || 0,
+              },
+            ],
+          },
+        ],
+      },
+    ];
+  }, [dataRingkasanPembayaran]);
 
-  // Biaya Waktu Tunggu dan Overload
-  const additionalFeeItems = [];
-  if (waitingFee?.totalAmount > 0) {
-    additionalFeeItems.push({
-      title: "Biaya Waktu Tunggu",
-      items: [
-        {
-          label: `Nominal Waktu Tunggu (${waitingFee.totalDriver} Driver)`,
-          price: waitingFee.totalAmount,
-        },
-      ],
-    });
-  }
-
-  if (overloadFee?.totalAmount > 0) {
-    additionalFeeItems.push({
-      title: "Biaya Overload Muatan",
-      items: [
-        {
-          label: `Nominal Overload Muatan (${Number(
-            overloadFee.totalWeight
-          ).toLocaleString("id-ID")} ${overloadFee.weightUnit})`,
-          price: overloadFee.totalAmount,
-        },
-      ],
-    });
-  }
-
-  if (additionalFeeItems.length > 0) {
-    priceSummary.push({
-      children: additionalFeeItems,
-    });
-  }
-
-  // Biaya Lainnya (Admin dan Pajak)
-  if (adminFee > 0 || taxAmount > 0) {
-    const otherFeeItems = [];
-    if (adminFee > 0) {
-      otherFeeItems.push({
-        label: "Admin Layanan",
-        price: adminFee,
-      });
-    }
-    if (taxAmount > 0) {
-      otherFeeItems.push({
-        label: "Pajak",
-        price: taxAmount,
-      });
-    }
-
-    priceSummary.push({
-      children: [
-        {
-          title: "Biaya Lainnya",
-          items: otherFeeItems,
-        },
-      ],
-    });
-  }
-
-  // Jika tidak ada data untuk ditampilkan
-  if (priceSummary.length === 0) {
-    return null;
-  }
   return (
     <div className="flex flex-col gap-y-6 bg-neutral-50 px-4 py-5 text-neutral-900">
       <h1 className="text-sm font-semibold leading-[1.1]">

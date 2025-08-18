@@ -54,7 +54,7 @@ const PICLocationCard = ({ locations = [], title }) => {
                     "flex flex-col gap-y-3",
                     locations.length - 1 === index
                       ? ""
-                      : "border border-b-neutral-400 pb-5"
+                      : "border-b border-b-neutral-400 pb-5"
                   )}
                 >
                   {/* Header lokasi */}

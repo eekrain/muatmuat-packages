@@ -1,22 +1,39 @@
-import useSWRInfinite from "swr/infinite";
+import { STATUS_CODES, locations, truckTypes } from "./getAgendaSchedules.data";
 
-import {
-  STATUS_CODES,
-  driverNames,
-  locations,
-  truckTypes,
-} from "./getAgendaSchedules.data";
+// Hardcoded license plates and driver names for consistent autocomplete
+export const HARDCODED_PLATES = [
+  "B 1234 ABC",
+  "L 5678 XYZ",
+  "D 9999 DEF",
+  "W 1111 GHI",
+  "F 2222 JKL",
+  "B 3333 MNO",
+  "L 4444 PQR",
+  "D 5555 STU",
+];
+
+export const HARDCODED_DRIVERS = [
+  "John Doe",
+  "Jane Smith",
+  "Ahmad Rahman",
+  "Siti Nurhaliza",
+  "Budi Santoso",
+  "Maria Santos",
+  "Ridwan Kamil",
+  "Dewi Sartika",
+];
 
 const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const getRandomInt = (min, max) =>
   Math.floor(Math.random() * (max - min + 1)) + min;
+
+// Updated to use hardcoded values
 const generatePlateNumber = () => {
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const randomLetters = Array.from(
-    { length: 3 },
-    () => letters[Math.floor(Math.random() * letters.length)]
-  ).join("");
-  return `L ${getRandomInt(1000, 9999)} ${randomLetters}`;
+  return getRandomElement(HARDCODED_PLATES);
+};
+
+const getDriverName = () => {
+  return getRandomElement(HARDCODED_DRIVERS);
 };
 
 // --- Updated Data Generator ---
@@ -68,7 +85,7 @@ const generateMockRowData = () => {
     position,
     scheduled,
     additional,
-    driverName: getRandomElement(driverNames),
+    driverName: getDriverName(),
     hasSosIssue: statusCode === "BERTUGAS" && Math.random() < 0.5,
     currentLocation: isInactive
       ? "Garasi Pool Kendaraan"
@@ -110,18 +127,15 @@ const generateDatasetForDateRange = (startDate, endDate) => {
     const localSeed = Math.abs(hash + i * 1000);
     const pseudoRandom1 = (localSeed % 1000) / 1000;
     const pseudoRandom2 = ((localSeed * 7) % 1000) / 1000;
-    const pseudoRandom3 = ((localSeed * 13) % 1000) / 1000;
 
     // Mix real randomness with pseudo-randomness for variety
     const mixedRandom1 = (Math.random() + pseudoRandom1) / 2;
     const mixedRandom2 = (Math.random() + pseudoRandom2) / 2;
-    const mixedRandom3 = (Math.random() + pseudoRandom3) / 2;
 
     // Generate variations in the data
     const statusOptions = STATUS_CODES;
     const statusIndex = Math.floor(mixedRandom1 * statusOptions.length);
     const locationIndex = Math.floor(mixedRandom2 * locations.length);
-    const driverIndex = Math.floor(mixedRandom3 * driverNames.length);
 
     dataset.push({
       plateNumber: generatePlateNumber(),
@@ -134,7 +148,7 @@ const generateDatasetForDateRange = (startDate, endDate) => {
             statusOptions[statusIndex] === "NON_AKTIF"
               ? "Garasi Pool Kendaraan"
               : locations[locationIndex],
-          driverName: driverNames[driverIndex],
+          driverName: getDriverName(),
         },
       ],
     });
@@ -176,6 +190,16 @@ const runMockApiLogic = (params) => {
         item.plateNumber.toLowerCase().includes(search.toLowerCase()) ||
         item.rowData[0].driverName.toLowerCase().includes(search.toLowerCase())
     );
+
+    // Ensure unique plate numbers when searching
+    const seenPlates = new Set();
+    results = results.filter((item) => {
+      if (seenPlates.has(item.plateNumber)) {
+        return false;
+      }
+      seenPlates.add(item.plateNumber);
+      return true;
+    });
   }
 
   if (agenda_status && agenda_status.length > 0) {
@@ -186,7 +210,19 @@ const runMockApiLogic = (params) => {
 
   const totalItems = results.length;
   const totalPages = Math.ceil(totalItems / limit);
-  const paginatedSchedules = results.slice((page - 1) * limit, page * limit);
+  const baseSchedules = results.slice((page - 1) * limit, page * limit);
+
+  // Ensure minimum 4 rows for consistent grid layout
+  const minRows = 4;
+  const placeholderCount = Math.max(0, minRows - baseSchedules.length);
+  const placeholders = Array.from({ length: placeholderCount }, () => ({
+    plateNumber: null,
+    truckType: null,
+    rowData: [],
+    isPlaceholder: true, // Mark as placeholder for frontend handling
+  }));
+
+  const paginatedSchedules = [...baseSchedules, ...placeholders];
 
   return {
     Message: { Code: 200, Text: "Data agenda berhasil dimuat" },
@@ -212,69 +248,4 @@ export const getAgendaSchedules = async (key) => {
   // const probability = Math.random();
   // if (probability < 0.2) throw new Error("Mock API error for testing purposes");
   return runMockApiLogic(params);
-};
-
-// --- The Hook ---
-export const useGetAgendaSchedules = ({
-  limit = 10,
-  view_type = "armada",
-  agenda_status = [],
-  search,
-  schedule_date_from,
-  schedule_date_to,
-}) => {
-  const { data, error, size, setSize, isValidating, mutate } = useSWRInfinite(
-    (pageIndex, previousPageData) => {
-      if (previousPageData && !previousPageData.Data.schedules.length)
-        return null;
-      if (
-        previousPageData &&
-        previousPageData.Data.pagination.currentPage >=
-          previousPageData.Data.pagination.totalPages
-      )
-        return null;
-
-      const page = pageIndex + 1;
-      const params = {
-        page,
-        limit,
-        view_type,
-        agenda_status: agenda_status.length > 0 ? agenda_status : undefined,
-        search: search || undefined,
-        schedule_date_from: schedule_date_from
-          ? schedule_date_from.toISOString().split("T")[0]
-          : undefined,
-        schedule_date_to: schedule_date_to
-          ? schedule_date_to.toISOString().split("T")[0]
-          : undefined,
-      };
-      return [`/v1/transporter/agenda-schedules`, params];
-    },
-    getAgendaSchedules
-  );
-
-  const schedules = data ? data.flatMap((page) => page?.Data?.schedules) : [];
-  // const schedules = [];
-  const isLoadingInitialData = !data && !error;
-  const isLoadingMore =
-    isLoadingInitialData ||
-    (size > 0 && data && typeof data[size - 1] === "undefined");
-  const isEmpty = data?.[0]?.Data.schedules.length === 0;
-
-  const pagination = data?.[data.length - 1]?.Data.pagination;
-  const isReachingEnd =
-    isEmpty || (pagination && pagination.currentPage >= pagination.totalPages);
-
-  return {
-    schedules,
-    data,
-    error,
-    isLoadingInitialData,
-    isLoadingMore,
-    isReachingEnd,
-    size,
-    setSize,
-    isValidating,
-    mutate,
-  };
 };

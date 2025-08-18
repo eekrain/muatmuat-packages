@@ -10,6 +10,15 @@ export const Popover = PopoverPrimitive.Root;
 export const PopoverTrigger = PopoverPrimitive.Trigger;
 export const PopoverClose = PopoverPrimitive.Close;
 
+export const PopoverArrow = () => (
+  <PopoverPrimitive.Arrow
+    className="h-[11px] w-4 fill-white"
+    style={{
+      filter: "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))",
+    }}
+  />
+);
+
 export const PopoverContent = React.forwardRef(
   ({ className, children, ...props }, ref) => (
     <PopoverPrimitive.Portal>
