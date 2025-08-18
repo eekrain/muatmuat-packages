@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Button from "@/components/Button/Button";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import { toast } from "@/lib/toast";
+import { useUploadDriverPhotos } from "@/services/Transporter/manajemen-driver/postDriverPhoto";
 
 import UploadVehiclePhotos from "../../../../manajemen-armada/tambah-massal/components/UploadVehiclePhotos/UploadVehiclePhotos";
 
@@ -35,6 +36,8 @@ export default function ModalAddImage({
   );
   const [isError, setIsError] = useState(false);
 
+  const { trigger, isMutating, data, error } = useUploadDriverPhotos();
+
   const handleImageChange = (imageType, image) => {
     setImages((prev) => ({
       ...prev,
@@ -51,7 +54,17 @@ export default function ModalAddImage({
   };
 
   const handleSave = () => {
-    // Logic to handle saving images
+    const formData = new FormData();
+    console.log(images);
+    formData.append("photo", images);
+    trigger(formData)
+      .then((response) => {
+        handleImageChange("driver_image", response.Data.photoUrl);
+      })
+      .catch((err) => {
+        console.error("Error uploading image:", err);
+        toast.error(err.response.data.Data.errors[0].message);
+      });
     if (!images.driver_image) {
       toast.error("Foto Driver wajib diisi");
       setIsError(true);
