@@ -146,19 +146,37 @@ export const UrgentIssueCardTransporter = ({
         </span>
       </div>
       <div className="mt-2 text-xs font-medium leading-[20px] text-neutral-600">
-        {t(
-          "UrgentIssueCardTransporter.vehicleDescription",
-          {
-            vehiclePlateNumber: vehiclePlateNumber || "-",
-            description:
-              description ||
-              "sudah harus sampai di lokasi muat dalam waktu 30 menit. Segera konfirmasi kepada driver untuk memperbarui status.",
-          },
-          `Armada ${vehiclePlateNumber || "-"} ${
+        {(() => {
+          // Get translation string, but replace vehiclePlateNumber with styled span
+          const desc =
             description ||
-            "sudah harus sampai di lokasi muat dalam waktu 30 menit. Segera konfirmasi kepada driver untuk memperbarui status."
-          }`
-        )}
+            "sudah harus sampai di lokasi muat dalam waktu 30 menit. Segera konfirmasi kepada driver untuk memperbarui status.";
+          // If translation returns a string, split and replace plate number
+          const plate = vehiclePlateNumber || "-";
+          // Try to find and replace only the plate number
+          const text = t(
+            "UrgentIssueCardTransporter.vehicleDescription",
+            {
+              vehiclePlateNumber: plate,
+              description: desc,
+            },
+            `Armada ${plate} ${desc}`
+          );
+          // Replace only the first occurrence of plate number with styled span
+          const parts = text.split(plate);
+          return (
+            <>
+              {parts[0]}
+              <span
+                className="cursor-pointer text-primary-800"
+                onClick={handleClickVehiclePlateNumber}
+              >
+                {plate}
+              </span>
+              {parts.slice(1).join(plate)}
+            </>
+          );
+        })()}
       </div>
       <div className="my-3 h-px w-full bg-neutral-400" />
       {/* Selesai - Lihat Detail */}

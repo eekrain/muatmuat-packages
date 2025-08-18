@@ -75,8 +75,8 @@ export const mockUrgentIssueList = {
           id: "ui-003",
           type: "POTENTIAL_DRIVER_LATE",
           typeName: "Potensi Driver Terlambat",
-          status: "COMPLETED",
-          statusName: "Selesai",
+          status: "PROCESSING",
+          statusName: "Diproses",
           description:
             "Laporan sudah dikonfirmasi dan driver telah melakukan update status.",
           orderId: "order-003",
