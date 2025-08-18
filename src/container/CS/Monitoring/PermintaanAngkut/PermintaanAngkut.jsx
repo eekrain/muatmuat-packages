@@ -7,12 +7,16 @@ import IconComponent from "@/components/IconComponent/IconComponent";
 import { NotificationDot } from "@/components/NotificationDot/NotificationDot";
 import Search from "@/components/Search/Search";
 import { toast } from "@/lib/toast";
+import { useGetInactiveTransporter } from "@/services/CS/monitoring/permintaan-angkut/getInactiveTransporter";
 import { useGetTransportRequestList } from "@/services/CS/monitoring/permintaan-angkut/getTransportRequestListCS";
 
 import PermintaanAngkutDetailCS from "./PermintaanAngkutDetailCS.jsx";
+import ModalTransporterTidakAktif from "./components/ModalTransporterTidakAktif";
 import TransportRequestCard from "./components/TransportRequestCard";
 
 const PermintaanAngkutCS = () => {
+  const [showModalTransporterTidakAktif, setShowModalTransporterTidakAktif] =
+    useState(false);
   const [activeTab, setActiveTab] = useState("semua");
   const [searchValue, setSearchValue] = useState("");
   const [bookmarkedItems, setBookmarkedItems] = useState(new Set());
@@ -38,6 +42,7 @@ const PermintaanAngkutCS = () => {
   }, [activeTab]);
 
   const { data, error, isLoading } = useGetTransportRequestList(params);
+  const { data: inactiveAlertData } = useGetInactiveTransporter();
 
   const handleSearch = (value) => setSearchValue(value);
 
@@ -181,9 +186,20 @@ const PermintaanAngkutCS = () => {
       <>
         {/* Fixed Header - Search Input and Tabs */}
         <div className="flex-shrink-0 bg-white px-4 py-6">
-          <h1 className="mb-4 text-base font-bold text-neutral-900">
-            Permintaan Jasa Angkut
-          </h1>
+          <div className="mb-4 flex justify-between">
+            <h1 className="text-base font-bold text-neutral-900">
+              Permintaan Jasa Angkut
+            </h1>
+            {inactiveAlertData?.alertSummary?.hasAlert && (
+              <p
+                className="flex cursor-pointer items-center text-xs font-medium text-primary-600"
+                onClick={() => setShowModalTransporterTidakAktif(true)}
+              >
+                Transporter Tidak Aktif
+                <NotificationDot size="md" color="red" className="-top-1" />
+              </p>
+            )}
+          </div>
 
           {/* Suspended Account Alert */}
           {data?.userStatus?.isSuspended && (
@@ -437,6 +453,11 @@ const PermintaanAngkutCS = () => {
             searchValue={searchValue}
             onShowDetail={handleShowDetail}
           />
+          {showModalTransporterTidakAktif && (
+            <ModalTransporterTidakAktif
+              onClose={() => setShowModalTransporterTidakAktif(false)}
+            />
+          )}
         </div>
       </>
     </div>

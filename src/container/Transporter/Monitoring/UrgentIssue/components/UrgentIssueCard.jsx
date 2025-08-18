@@ -163,17 +163,17 @@ export const UrgentIssueCardTransporter = ({
             `Armada ${plate} ${desc}`
           );
           // Replace only the first occurrence of plate number with styled span
-          const parts = text.split(plate);
+          // const parts = text.split(plate);
           return (
             <>
-              {parts[0]}
+              Armada
               <span
                 className="cursor-pointer text-primary-800"
                 onClick={handleClickVehiclePlateNumber}
               >
                 {plate}
               </span>
-              {parts.slice(1).join(plate)}
+              {description}
             </>
           );
         })()}

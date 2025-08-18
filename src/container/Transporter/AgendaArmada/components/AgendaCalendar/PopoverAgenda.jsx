@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
@@ -9,36 +10,44 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/Popover/Popover";
+import { useTranslation } from "@/hooks/use-translation";
+import { StatusArmadaTypeEnum } from "@/lib/constants/agendaArmada/agenda.enum";
 
 // import { cn } from "@/lib/utils";
 
-const enumStatus = {
-  SCHEDULED: "Dijadwalkan",
-  WAITING_LOADING: "Menunggu Jam Muat",
-  ONDUTY: "Bertugas",
-  INACTIVE: "Non Aktif",
-  COMPLETED: "Pengiriman Selesai",
-};
-
 const getStatusColor = (status, sos) => {
   switch (status) {
-    case enumStatus.SCHEDULED:
-    case enumStatus.WAITING_LOADING:
+    case StatusArmadaTypeEnum.DIJADWALKAN:
+    case StatusArmadaTypeEnum.MENUNGGU_JAM_MUAT:
       return "text-warning-900";
-    case enumStatus.ONDUTY:
+    case StatusArmadaTypeEnum.BERTUGAS:
       return sos ? "text-error-400" : "text-primary-700";
-    case enumStatus.COMPLETED:
-    case enumStatus.INACTIVE:
+    case StatusArmadaTypeEnum.PENGIRIMAN_SELESAI:
+    case StatusArmadaTypeEnum.NON_AKTIF:
       return "text-neutral-900";
     default:
       return "text-neutral-900";
   }
 };
 
+const statusMapping = {
+  BERTUGAS: StatusArmadaTypeEnum.BERTUGAS,
+  PENGIRIMAN_SELESAI: StatusArmadaTypeEnum.PENGIRIMAN_SELESAI,
+  NON_AKTIF: StatusArmadaTypeEnum.NON_AKTIF,
+  MENUNGGU_JAM_MUAT: StatusArmadaTypeEnum.MENUNGGU_JAM_MUAT,
+  DIJADWALKAN: StatusArmadaTypeEnum.DIJADWALKAN,
+};
+
 const PopoverAgenda = ({ agendaData }) => {
-  // Show only first 3 items, rest go to popover
-  const visibleItems = agendaData.items.slice(0, 3);
-  const hiddenItems = agendaData.items.slice(3);
+  const { t } = useTranslation();
+  const [showAllItems, setShowAllItems] = useState(false);
+  const router = useRouter();
+
+  // Show only first 3 items when collapsed, all items when expanded
+  const visibleItems = showAllItems
+    ? agendaData.items
+    : agendaData.items.slice(0, 3);
+  const hiddenItems = showAllItems ? [] : agendaData.items.slice(3);
   const statusColor = getStatusColor(agendaData.status, agendaData.SOS.active);
   return (
     <div className="w-[397px] max-w-[397px] rounded-lg border border-neutral-200 bg-white font-sans text-xs shadow-md">
@@ -47,17 +56,17 @@ const PopoverAgenda = ({ agendaData }) => {
           <p className={`text-xs font-semibold ${statusColor}`}>
             {agendaData.status}{" "}
             {agendaData.SOS.active &&
-              agendaData.status === enumStatus.ONDUTY && (
+              agendaData.status === StatusArmadaTypeEnum.BERTUGAS && (
                 <span className="inline-fle ml-1 h-5 w-10 items-center justify-center rounded-md bg-error-400 px-2 py-0.5 text-xs font-semibold text-white">
                   SOS
                 </span>
               )}
           </p>
-          {agendaData.status !== enumStatus.INACTIVE && (
+          {agendaData.status !== StatusArmadaTypeEnum.NON_AKTIF && (
             <>
               <div className="space-y-2">
                 {agendaData.SOS.active &&
-                  agendaData.status === enumStatus.ONDUTY && (
+                  agendaData.status === StatusArmadaTypeEnum.BERTUGAS && (
                     <div className="flex items-center gap-2 rounded-md bg-error-50 px-2 py-1 text-xxs font-semibold text-error-400">
                       <IconComponent
                         src="/icons/warning-red.svg"
@@ -66,7 +75,9 @@ const PopoverAgenda = ({ agendaData }) => {
                         height={12}
                       />
                       <span className="font-medium">
-                        <span className="text-neutral-600">Alasan :</span>{" "}
+                        <span className="text-neutral-600">
+                          {t("PopoverAgenda.reason", {}, "Alasan")} :
+                        </span>{" "}
                         <span className="text-neutral-900">
                           {agendaData.SOS.reason}
                         </span>
@@ -82,9 +93,13 @@ const PopoverAgenda = ({ agendaData }) => {
                     height={12}
                   />
                   <span className="font-medium text-neutral-900">
-                    <span className="text-neutral-600">Waktu Muat :</span>{" "}
+                    <span className="text-neutral-600">
+                      {t("PopoverAgenda.loadingTime", {}, "Waktu Muat")} :
+                    </span>{" "}
                     {agendaData.startDate}{" "}
-                    <span className="text-neutral-600">s/d</span>{" "}
+                    <span className="text-neutral-600">
+                      {t("PopoverAgenda.until", {}, "s/d")}
+                    </span>{" "}
                     {agendaData.endDate}
                   </span>
                 </div>
@@ -113,30 +128,13 @@ const PopoverAgenda = ({ agendaData }) => {
                       </span>
                     ))}
                     {hiddenItems.length > 0 && (
-                      <>
-                        {/* <Popover>
-                        <PopoverTrigger asChild> */}
-                        <button className="ml-1 font-medium text-primary-700">
-                          +{hiddenItems.length}
-                        </button>
-                        {/* </PopoverTrigger>
-                        <PopoverContent className="w-60 p-3">
-                          <div className="space-y-2">
-                            <p className="font-bold">Barang Lainnya</p>
-                            <ul className="list-inside list-disc space-y-1 text-neutral-700">
-                              {hiddenItems.map((item, index) => (
-                                <li key={index}>
-                                  {item.name}{" "}
-                                  <span className="text-neutral-500">
-                                    ({item.weight})
-                                  </span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </PopoverContent>
-                      </Popover> */}
-                      </>
+                      <button
+                        className="ml-1 font-medium text-primary-700"
+                        onClick={() => setShowAllItems(true)}
+                      >
+                        +{hiddenItems.length}{" "}
+                        {t("PopoverAgenda.others", {}, "lainnya")}
+                      </button>
                     )}
                   </p>
                 </div>
@@ -185,14 +183,18 @@ const PopoverAgenda = ({ agendaData }) => {
               </span>
             </div>
           </div>
-          {agendaData.status !== enumStatus.INACTIVE && (
+          {agendaData.status !== StatusArmadaTypeEnum.NON_AKTIF && (
             <div className="space-y-1">
-              <p className="font-semibold text-neutral-900">Rute Perjalanan</p>
+              <p className="font-semibold text-neutral-900">
+                {t("PopoverAgenda.travelRoute", {}, "Rute Perjalanan")}
+              </p>
               <div className="flex items-center justify-between text-xxs">
                 <div className="flex min-w-[127.5px] items-center gap-2">
                   <div className="size-3 rounded-full border-4 border-muat-trans-primary-400 bg-[#461B02]" />
                   <div>
-                    <p className="font-medium text-neutral-600">Lokasi Muat</p>
+                    <p className="font-medium text-neutral-600">
+                      {t("PopoverAgenda.pickupLocation", {}, "Lokasi Muat")}
+                    </p>
                     <p className="line-clamp-1 font-semibold text-neutral-900">
                       {agendaData.route.pickup.city}
                       {agendaData.route.pickup.district
@@ -214,7 +216,7 @@ const PopoverAgenda = ({ agendaData }) => {
 
                   <div>
                     <p className="text-xxs font-medium text-neutral-500">
-                      Lokasi Bongkar
+                      {t("PopoverAgenda.unloadLocation", {}, "Lokasi Bongkar")}
                     </p>
                     <p className="line-clamp-1 font-semibold text-neutral-900">
                       {agendaData.route.delivery.city}
@@ -233,17 +235,24 @@ const PopoverAgenda = ({ agendaData }) => {
       <div className="border-t border-neutral-400"></div>
 
       <div className="flex justify-end gap-2 p-3">
-        {agendaData.status !== enumStatus.COMPLETED && (
+        {agendaData.status !== StatusArmadaTypeEnum.PENGIRIMAN_SELESAI && (
           <Button
             variant="muattrans-primary-secondary"
             className="h-8 w-[140px] text-nowrap"
+            onClick={() => router.push(`/monitoring`)}
           >
-            Lacak Armada
+            {t("PopoverAgenda.trackFleet", {}, "Lacak Armada")}
           </Button>
         )}
-        {agendaData.status !== enumStatus.INACTIVE && (
-          <Button variant="muattrans-primary" className="h-8 w-28">
-            Detail
+        {agendaData.status !== StatusArmadaTypeEnum.NON_AKTIF && (
+          <Button
+            variant="muattrans-primary"
+            className="h-8 w-28"
+            onClick={() =>
+              router.push(`/monitoring/${agendaData.id}/detail-pesanan`)
+            }
+          >
+            {t("PopoverAgenda.detail", {}, "Detail")}
           </Button>
         )}
       </div>
@@ -252,16 +261,10 @@ const PopoverAgenda = ({ agendaData }) => {
 };
 
 // Transformation logic is now MOVED inside this file
-const statusMapping = {
-  BERTUGAS: "Bertugas",
-  PENGIRIMAN_SELESAI: "Pengiriman Selesai",
-  NON_AKTIF: "Non Aktif",
-  MENUNGGU_JAM_MUAT: "Menunggu Jam Muat",
-  DIJADWALKAN: "Dijadwalkan",
-};
 
 const transformToAgendaData = (data) => {
   return {
+    id: "123",
     status: statusMapping[data.statusCode],
     startDate: "02 Jan 2025 11:00 WIB",
     endDate: "02 Jan 2025 15:00 WIB",

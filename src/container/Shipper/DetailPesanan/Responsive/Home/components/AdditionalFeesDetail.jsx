@@ -1,5 +1,6 @@
 import BiayaOverloadMuatanBottomsheet from "@/components/BottomSheet/BiayaOverloadMuatanBottomsheet";
 import WaitingTimeBottomsheet from "@/components/BottomSheet/WaitingTimeBottomsheet";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import { idrFormat } from "@/lib/utils/formatters";
 
@@ -8,6 +9,8 @@ import { idrFormat } from "@/lib/utils/formatters";
  * Menggunakan BottomSheet untuk menampilkan detail waktu tunggu.
  */
 const AdditionalFeesDetail = ({ priceCharge, waitingTimeRaw }) => {
+  const { t } = useTranslation();
+
   // Jika tidak ada biaya tambahan, jangan tampilkan komponen
   if (
     !priceCharge ||
@@ -25,7 +28,7 @@ const AdditionalFeesDetail = ({ priceCharge, waitingTimeRaw }) => {
   return (
     <div className="flex flex-col gap-y-6 bg-neutral-50 px-4 py-5">
       <h2 className="text-sm font-bold leading-[1.1] text-neutral-900">
-        Detail Tambahan Biaya
+        {t("AdditionalFeesDetail.title", {}, "Detail Tambahan Biaya")}
       </h2>
 
       <div
@@ -40,7 +43,11 @@ const AdditionalFeesDetail = ({ priceCharge, waitingTimeRaw }) => {
         {hasWaitingFee && (
           <div className="flex flex-col gap-y-4">
             <p className="text-sm font-semibold text-neutral-900">
-              Biaya Waktu Tunggu
+              {t(
+                "AdditionalFeesDetail.waitingFeeTitle",
+                {},
+                "Biaya Waktu Tunggu"
+              )}
             </p>
             <div className="flex items-start justify-between gap-x-[67px]">
               <div className="flex flex-col gap-y-2">
@@ -52,8 +59,8 @@ const AdditionalFeesDetail = ({ priceCharge, waitingTimeRaw }) => {
                   className="text-xs font-medium text-neutral-900"
                   dangerouslySetInnerHTML={{
                     __html: `
-                    Nominal Waktu Tunggu
-                    <br />(${priceCharge.waitingFee.totalDriver || 0} Driver)
+                    ${t("AdditionalFeesDetail.waitingFeeNominal", {}, "Nominal Waktu Tunggu")}
+                    <br />(${priceCharge.waitingFee.totalDriver || 0} ${t("AdditionalFeesDetail.driver", {}, "Driver")})
                   `,
                   }}
                 />
@@ -71,12 +78,22 @@ const AdditionalFeesDetail = ({ priceCharge, waitingTimeRaw }) => {
         {hasOverloadFee && (
           <div className={`flex flex-col gap-y-4`}>
             <p className="text-sm font-semibold text-neutral-900">
-              Biaya Overload Muatan
+              {t(
+                "AdditionalFeesDetail.overloadFeeTitle",
+                {},
+                "Biaya Overload Muatan"
+              )}
             </p>
             <div className="flex items-start justify-between gap-x-[67px] text-xs font-medium text-neutral-900">
               <div className="flex flex-col gap-y-4">
                 <div className="flex flex-col gap-y-2">
-                  <span>Nominal Overload Muatan</span>
+                  <span>
+                    {t(
+                      "AdditionalFeesDetail.overloadFeeNominal",
+                      {},
+                      "Nominal Overload Muatan"
+                    )}
+                  </span>
                   <span>
                     {`(${priceCharge.overloadFee.totalWeight} ${priceCharge.overloadFee.weightUnit})`}
                   </span>
@@ -96,11 +113,11 @@ const AdditionalFeesDetail = ({ priceCharge, waitingTimeRaw }) => {
       {hasAdminFee && (
         <div className="flex flex-col gap-y-4">
           <p className="text-sm font-semibold text-neutral-900">
-            Biaya Lainnya
+            {t("AdditionalFeesDetail.otherFeesTitle", {}, "Biaya Lainnya")}
           </p>
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-neutral-600">
-              Admin Layanan
+              {t("AdditionalFeesDetail.adminService", {}, "Admin Layanan")}
             </span>
             <span className="text-sm font-medium text-neutral-900">
               {idrFormat(priceCharge.adminFee)}

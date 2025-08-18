@@ -539,7 +539,7 @@ const Page = () => {
                   <div className="flex items-center gap-2">
                     <span>Urgent Issue</span>
                     <NotificationCount
-                      count={urgentCount?.new + urgentCount?.processing}
+                      count={urgentCount?.new + urgentCount?.processing || 0}
                       backgroundColor="error"
                       color="white"
                       variant="bordered"
