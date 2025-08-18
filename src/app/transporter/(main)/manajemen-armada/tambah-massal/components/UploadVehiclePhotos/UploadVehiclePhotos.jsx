@@ -17,7 +17,8 @@ export default function UploadVehiclePhotos({
       onUpload(null);
     } else {
       const formData = new FormData();
-      formData.append("file", image);
+      console.log(image);
+      formData.append("photo", image);
       trigger(formData)
         .then((response) => {
           // console.log(response);
