@@ -9,6 +9,7 @@ import { useTokenActions } from "@/store/AuthStore/tokenStore";
 const DevLoginContainer = ({ onSuccessRedirect = "/manajemen-armada" }) => {
   const [formData, setFormData] = useState({
     email: "",
+    password: "",
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -122,6 +123,30 @@ const DevLoginContainer = ({ onSuccessRedirect = "/manajemen-armada" }) => {
               />
               {errors.email && (
                 <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+              )}
+            </div>
+            <div>
+              <label
+                htmlFor="email"
+                className="mb-1 block text-sm font-medium text-gray-700"
+              >
+                Password<span className="text-red-500">*</span>
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your Password"
+                value={formData.password}
+                onChange={handleInputChange}
+                disabled={isLoading}
+                autoComplete="current-password"
+                className={`w-full rounded-md border px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.password ? "border-red-500" : "border-gray-300"
+                } ${isLoading ? "cursor-not-allowed bg-gray-100" : ""}`}
+              />
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-500">{errors.password}</p>
               )}
             </div>
 

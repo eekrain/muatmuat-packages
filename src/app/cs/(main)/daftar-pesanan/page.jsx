@@ -69,6 +69,7 @@ const DaftarPesananPage = () => {
   );
 
   const disableDownloadButton = isLoading || !hasData;
+  const disableUploadButton = isLoading || !hasData; // Added logic for Unggah Resi
   const disablePeriodButton =
     isLoading || (!hasData && lastAction !== "period");
 
@@ -110,12 +111,14 @@ const DaftarPesananPage = () => {
                 disable={disablePeriodButton}
               />
             </div>
-            <Button variant="muattrans-primary-secondary">
+            <Button
+              variant="muattrans-primary-secondary"
+              disabled={disableUploadButton}
+            >
               {t("daftarPesanan.buttonUploadReceipt", {}, "Unggah Resi")}
             </Button>
             <Button
               variant="muattrans-primary"
-              iconLeft="/icons/download16.svg"
               disabled={disableDownloadButton}
             >
               {t("daftarPesanan.buttonDownload", {}, "Unduh")}
