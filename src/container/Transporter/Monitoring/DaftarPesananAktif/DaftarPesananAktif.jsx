@@ -132,8 +132,14 @@ const DaftarPesananAktif = ({
         setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       case ORDER_ACTIONS.RESPOND_CHANGE.type:
-        setSelectedOrderForChange(row);
-        setRespondChangeModalOpen(true);
+        // Navigate to respon-perubahan page if truckCount > 1
+        if (row.truckCount > 1) {
+          router.push(`/monitoring/${row.id}/respon-perubahan`);
+        } else {
+          // Use modal for single truck
+          setSelectedOrderForChange(row);
+          setRespondChangeModalOpen(true);
+        }
         setOpenDropdowns((prev) => ({ ...prev, [row.id]: false }));
         break;
       case ORDER_ACTIONS.CANCEL_FLEET.type:
@@ -468,8 +474,14 @@ const DaftarPesananAktif = ({
               <Button
                 variant="muattrans-primary"
                 onClick={() => {
-                  setSelectedOrderForChange(row);
-                  setRespondChangeModalOpen(true);
+                  // Navigate to respon-perubahan page if truckCount > 1
+                  if (row.truckCount > 1) {
+                    router.push(`/monitoring/${row.id}/respon-perubahan`);
+                  } else {
+                    // Use modal for single truck
+                    setSelectedOrderForChange(row);
+                    setRespondChangeModalOpen(true);
+                  }
                 }}
                 className="mx-auto h-8 w-[147px] text-sm md:p-0"
               >

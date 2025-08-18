@@ -151,7 +151,9 @@ export const StepperItem = ({ step, index }) => {
           className="absolute -bottom-2 left-1/2 -translate-x-1/2 translate-y-full text-center text-xs font-medium leading-[1.2] text-[#000000]"
           style={{ width: titleWidth }}
         >
-          <span className="block font-semibold">{t(step.label)}</span>
+          <span className="block text-center font-semibold">
+            {t(step.label)}
+          </span>
           {step.subtitle && <div className="mt-2">{step.subtitle}</div>}
         </div>
       </div>

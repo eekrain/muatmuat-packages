@@ -1,8 +1,22 @@
 import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
+import { OrderStatusEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 
 const useMockData = true;
+
+const otherStatus = [
+  {
+    status: OrderStatusEnum.UNLOADING,
+    count: 1,
+    description: "Status tidak diketahui",
+  },
+  {
+    status: OrderStatusEnum.LOADING,
+    count: 1,
+    description: "Status tidak diketahui",
+  },
+];
 
 const mockApiResult = {
   Message: {
@@ -19,24 +33,18 @@ const mockApiResult = {
     // orderStatus: "SCHEDULED_FLEET",
     // orderStatus: "WAITING_PAYMENT_2",
     orderStatusUnit: 1,
+    truckCount: 2,
     orderType: "SCHEDULED",
     loadTimeStart: "2025-07-20T10:46:00.000Z",
     // loadTimeEnd: null,
     loadTimeEnd: "2025-07-20T13:46:00.000Z",
     estimatedDistance: 178,
     isHalalLogistics: true,
-    truckCount: 1,
     hasSOSAlert: false,
     vehicle: {
       truckTypeId: "62a0f025-3143-4f84-99d3-a1c5ac1b8658",
       truckTypeName: "Medium Truk 4 x 2 (Rigid)",
-      vehicleImage: "/img/truck.png",
-      plateNumber: "B 1234 XYZ",
-    },
-    driver: {
-      name: "Budi Santoso",
-      phoneNumber: "081234567890",
-      driverImage: "https://picsum.photos/50",
+      vehicleImage: "https://picsum.photos/200",
     },
     locations: [
       {
@@ -69,36 +77,35 @@ const mockApiResult = {
           phoneNumber: "081974012740",
         },
       },
-      {
-        id: "ee06f46c-fd1d-4e6e-810c-2a1d4eda7391",
-        type: "PICKUP",
-        sequence: 2,
-        // fullAddress:
-        //   "Graha Aero, Jl. Kedungdoro 88, Kedungdoro, Kec Tegalsari, Kota Surabaya, Jawa Timur 60261",
-        fullAddress: "Kab. Sidoarjo, Kec. Sedati",
-        detailAddress:
-          "Berikut temuan QC dalam Ronda RC untuk platform Web Desktop dan Responsive",
-        coordinates: {
-          latitude: -7.2741549,
-          longitude: 112.7820621,
-        },
-        administrativeArea: {
-          district: "Mulyorejo",
-          city: "Kota Surabaya",
-          province: "Jawa Timur",
-          postalCode: "60115",
-        },
-        qrScan: {
-          status: "NOT_SCANNED",
-          token: null,
-          expiryTime: null,
-        },
-        isActive: true,
-        pic: {
-          name: "Popol",
-          phoneNumber: "08197203572035",
-        },
-      },
+      // {
+      //   id: "ee06f46c-fd1d-4e6e-810c-2a1d4eda7391",
+      //   type: "PICKUP",
+      //   sequence: 1,
+      //   fullAddress:
+      //     "Graha Aero, Jl. Kedungdoro 88, Kedungdoro, Kec Tegalsari, Kota Surabaya, Jawa Timur 60261",
+      //   detailAddress:
+      //     "Berikut temuan QC dalam Ronda RC untuk platform Web Desktop dan Responsive",
+      //   coordinates: {
+      //     latitude: -7.2741549,
+      //     longitude: 112.7820621,
+      //   },
+      //   administrativeArea: {
+      //     district: "Mulyorejo",
+      //     city: "Kota Surabaya",
+      //     province: "Jawa Timur",
+      //     postalCode: "60115",
+      //   },
+      //   qrScan: {
+      //     status: "NOT_SCANNED",
+      //     token: null,
+      //     expiryTime: null,
+      //   },
+      //   isActive: true,
+      //   pic: {
+      //     name: "Popol",
+      //     phoneNumber: "08197203572035",
+      //   },
+      // },
       {
         id: "1e70ee97-04b5-4ee8-beea-963dffd0c126",
         type: "DROPOFF",
@@ -129,36 +136,35 @@ const mockApiResult = {
           phoneNumber: "08172094790124",
         },
       },
-      {
-        id: "1e70ee97-04b5-4ee8-beea-963dffd0c126",
-        type: "DROPOFF",
-        sequence: 2,
-        // fullAddress:
-        //   "Jl. Ambengan No.51, Pacar Keling, Kec. Genteng, Surabaya, Jawa Timur 60272",
-        fullAddress: "Kab. Malang, Kec. Singosari",
-        detailAddress:
-          "Berikut temuan QC dalam Ronda RC untuk platform Web Desktop dan Responsive",
-        coordinates: {
-          latitude: -7.2925952,
-          longitude: 112.7200837,
-        },
-        administrativeArea: {
-          district: "Gambir",
-          city: "Kota Jakarta Pusat",
-          province: "Dki Jakarta",
-          postalCode: "10160",
-        },
-        qrScan: {
-          status: "NOT_SCANNED",
-          token: null,
-          expiryTime: null,
-        },
-        isActive: true,
-        pic: {
-          name: "Kupa",
-          phoneNumber: "081720949375034",
-        },
-      },
+      // {
+      //   id: "1e70ee97-04b5-4ee8-beea-963dffd0c126",
+      //   type: "DROPOFF",
+      //   sequence: 1,
+      //   fullAddress:
+      //     "Jl. Ambengan No.51, Pacar Keling, Kec. Genteng, Surabaya, Jawa Timur 60272",
+      //   detailAddress:
+      //     "Berikut temuan QC dalam Ronda RC untuk platform Web Desktop dan Responsive",
+      //   coordinates: {
+      //     latitude: -7.2925952,
+      //     longitude: 112.7200837,
+      //   },
+      //   administrativeArea: {
+      //     district: "Gambir",
+      //     city: "Kota Jakarta Pusat",
+      //     province: "Dki Jakarta",
+      //     postalCode: "10160",
+      //   },
+      //   qrScan: {
+      //     status: "NOT_SCANNED",
+      //     token: null,
+      //     expiryTime: null,
+      //   },
+      //   isActive: true,
+      //   pic: {
+      //     name: "Kupa",
+      //     phoneNumber: "081720949375034",
+      //   },
+      // },
       // {
       //   id: "ee06f46c-fd1d-4e6e-810c-2a1d4eda7391",
       //   type: "PICKUP",
@@ -662,13 +668,7 @@ const mockApiResult = {
       taxAmount: 100000,
       totalRouteChange: 100000,
     },
-    otherStatus: [
-      {
-        status: "WAITING_PAYMENT_2",
-        count: 1,
-        description: "Status tidak diketahui",
-      },
-    ],
+    otherStatus,
   },
   Type: "/v1/transporter/orders/dcdaf886-56d6-4d84-89d6-a21ec18d0bc1/detail-summary",
 };
