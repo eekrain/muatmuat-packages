@@ -12,6 +12,8 @@ import {
 } from "@/components/Popover/Popover";
 import { useTranslation } from "@/hooks/use-translation";
 import { StatusArmadaTypeEnum } from "@/lib/constants/agendaArmada/agenda.enum";
+import { formatDate } from "@/lib/utils/dateFormat";
+import { getAgendaScheduleDetail } from "@/services/Transporter/agenda-armada-driver/getAgendaScheduleDetail";
 
 // import { cn } from "@/lib/utils";
 
@@ -45,28 +47,34 @@ const PopoverAgenda = ({ agendaData }) => {
 
   // Show only first 3 items when collapsed, all items when expanded
   const visibleItems = showAllItems
-    ? agendaData.items
-    : agendaData.items.slice(0, 3);
-  const hiddenItems = showAllItems ? [] : agendaData.items.slice(3);
-  const statusColor = getStatusColor(agendaData.status, agendaData.SOS.active);
+    ? agendaData.cargo || []
+    : (agendaData.cargo || []).slice(0, 3);
+  const hiddenItems = showAllItems ? [] : (agendaData.cargo || []).slice(3);
+  const statusColor = getStatusColor(
+    statusMapping[agendaData.agendaStatus],
+    agendaData.issues?.hasSosIssue
+  );
   return (
     <div className="w-[397px] max-w-[397px] rounded-lg border border-neutral-200 bg-white font-sans text-xs shadow-md">
       <div className="p-3">
         <div className="space-y-3">
           <p className={`text-xs font-semibold ${statusColor}`}>
-            {agendaData.status}{" "}
-            {agendaData.SOS.active &&
-              agendaData.status === StatusArmadaTypeEnum.BERTUGAS && (
+            {statusMapping[agendaData.agendaStatus]}{" "}
+            {agendaData.issues?.hasSosIssue &&
+              statusMapping[agendaData.agendaStatus] ===
+                StatusArmadaTypeEnum.BERTUGAS && (
                 <span className="inline-fle ml-1 h-5 w-10 items-center justify-center rounded-md bg-error-400 px-2 py-0.5 text-xs font-semibold text-white">
                   SOS
                 </span>
               )}
           </p>
-          {agendaData.status !== StatusArmadaTypeEnum.NON_AKTIF && (
+          {statusMapping[agendaData.agendaStatus] !==
+            StatusArmadaTypeEnum.NON_AKTIF && (
             <>
               <div className="space-y-2">
-                {agendaData.SOS.active &&
-                  agendaData.status === StatusArmadaTypeEnum.BERTUGAS && (
+                {agendaData.issues?.hasSosIssue &&
+                  statusMapping[agendaData.agendaStatus] ===
+                    StatusArmadaTypeEnum.BERTUGAS && (
                     <div className="flex items-center gap-2 rounded-md bg-error-50 px-2 py-1 text-xxs font-semibold text-error-400">
                       <IconComponent
                         src="/icons/warning-red.svg"
@@ -79,7 +87,7 @@ const PopoverAgenda = ({ agendaData }) => {
                           {t("PopoverAgenda.reason", {}, "Alasan")} :
                         </span>{" "}
                         <span className="text-neutral-900">
-                          {agendaData.SOS.reason}
+                          {agendaData.issues?.sosMessage}
                         </span>
                       </span>
                     </div>
@@ -96,18 +104,18 @@ const PopoverAgenda = ({ agendaData }) => {
                     <span className="text-neutral-600">
                       {t("PopoverAgenda.loadingTime", {}, "Waktu Muat")} :
                     </span>{" "}
-                    {agendaData.startDate}{" "}
+                    {formatDate(agendaData.schedule?.scheduledStartTime)}{" "}
                     <span className="text-neutral-600">
                       {t("PopoverAgenda.until", {}, "s/d")}
                     </span>{" "}
-                    {agendaData.endDate}
+                    {formatDate(agendaData.schedule?.scheduledEndTime)}
                   </span>
                 </div>
               </div>
 
               <div className="space-y-1">
                 <p className="text-xs font-semibold text-neutral-900">
-                  {agendaData.invoice}
+                  {agendaData.orderCode}
                 </p>
                 <div className="flex items-center text-xxs font-medium text-neutral-900">
                   <IconComponent
@@ -122,7 +130,7 @@ const PopoverAgenda = ({ agendaData }) => {
                       <span key={idx}>
                         {item.name}{" "}
                         <span className="text-neutral-600">
-                          ({item.weight})
+                          ({item.quantity} {item.unit})
                         </span>
                         {idx < visibleItems.length - 1 ? ", " : ""}
                       </span>
@@ -143,7 +151,9 @@ const PopoverAgenda = ({ agendaData }) => {
           )}
 
           <div className="space-y-1">
-            <p className="font-semibold text-neutral-900">{agendaData.name}</p>
+            <p className="font-semibold text-neutral-900">
+              {agendaData.driver?.name}
+            </p>
             <div className="flex items-center text-xxs font-medium text-neutral-900">
               <IconComponent
                 src="/icons/verify-whatsapp.svg"
@@ -153,14 +163,14 @@ const PopoverAgenda = ({ agendaData }) => {
                 className="mr-2"
               />
               <p className="text-xxs font-medium text-neutral-900">
-                {agendaData.phone}
+                {agendaData.driver?.phoneNumber}
               </p>
             </div>
           </div>
 
           <div className="space-y-1">
             <p className="font-semibold text-neutral-900">
-              {agendaData.vehicle}
+              {agendaData.fleet?.truckTypeName}
             </p>
             <div className="flex items-center gap-2 text-nowrap text-xxs font-medium text-neutral-900">
               <IconComponent
@@ -169,7 +179,7 @@ const PopoverAgenda = ({ agendaData }) => {
                 width={16}
                 height={16}
               />
-              <span>{agendaData.licensePlate}</span>
+              <span>{agendaData.fleet?.licensePlate}</span>
               <span className="text-neutral-600">•</span>
               <IconComponent
                 src="/icons/location.svg"
@@ -177,13 +187,26 @@ const PopoverAgenda = ({ agendaData }) => {
                 width={16}
                 height={16}
               />
-              <span className="line-clamp-1">{agendaData.location}</span>
+              <span className="line-clamp-1">
+                {agendaData.fleet?.currentLocation?.name}
+              </span>
               <span className="text-nowrap text-neutral-600">
-                {agendaData.estimatedDistance}
+                est.{" "}
+                {
+                  agendaData.fleet?.currentLocation
+                    ?.estimatedNextDestinationDistance
+                }
+                km (
+                {
+                  agendaData.fleet?.currentLocation
+                    ?.estimatedNextDestinationTime
+                }
+                menit)
               </span>
             </div>
           </div>
-          {agendaData.status !== StatusArmadaTypeEnum.NON_AKTIF && (
+          {statusMapping[agendaData.agendaStatus] !==
+            StatusArmadaTypeEnum.NON_AKTIF && (
             <div className="space-y-1">
               <p className="font-semibold text-neutral-900">
                 {t("PopoverAgenda.travelRoute", {}, "Rute Perjalanan")}
@@ -196,10 +219,7 @@ const PopoverAgenda = ({ agendaData }) => {
                       {t("PopoverAgenda.pickupLocation", {}, "Lokasi Muat")}
                     </p>
                     <p className="line-clamp-1 font-semibold text-neutral-900">
-                      {agendaData.route.pickup.city}
-                      {agendaData.route.pickup.district
-                        ? `, ${agendaData.route.pickup.district}`
-                        : ""}
+                      {agendaData.route?.loadingName}
                     </p>
                   </div>
                 </div>
@@ -207,7 +227,7 @@ const PopoverAgenda = ({ agendaData }) => {
                 <div className="relative flex min-w-[116px] flex-1 items-center text-nowrap px-2 text-[8px]">
                   <div className="w-full border-t border-dashed border-neutral-400"></div>
                   <p className="absolute left-1/2 -translate-x-1/2 rounded-md border border-neutral-400 bg-white px-2 font-semibold text-neutral-900">
-                    {agendaData.route.estimatedDistance}
+                    Est. {agendaData.route?.estimatedDistanceKm} km
                   </p>
                 </div>
 
@@ -219,10 +239,7 @@ const PopoverAgenda = ({ agendaData }) => {
                       {t("PopoverAgenda.unloadLocation", {}, "Lokasi Bongkar")}
                     </p>
                     <p className="line-clamp-1 font-semibold text-neutral-900">
-                      {agendaData.route.delivery.city}
-                      {agendaData.route.delivery.district
-                        ? `, ${agendaData.route.delivery.district}`
-                        : ""}
+                      {agendaData.route?.unloadingName}
                     </p>
                   </div>
                 </div>
@@ -235,7 +252,8 @@ const PopoverAgenda = ({ agendaData }) => {
       <div className="border-t border-neutral-400"></div>
 
       <div className="flex justify-end gap-2 p-3">
-        {agendaData.status !== StatusArmadaTypeEnum.PENGIRIMAN_SELESAI && (
+        {statusMapping[agendaData.agendaStatus] !==
+          StatusArmadaTypeEnum.PENGIRIMAN_SELESAI && (
           <Button
             variant="muattrans-primary-secondary"
             className="h-8 w-[140px] text-nowrap"
@@ -244,7 +262,8 @@ const PopoverAgenda = ({ agendaData }) => {
             {t("PopoverAgenda.trackFleet", {}, "Lacak Armada")}
           </Button>
         )}
-        {agendaData.status !== StatusArmadaTypeEnum.NON_AKTIF && (
+        {statusMapping[agendaData.agendaStatus] !==
+          StatusArmadaTypeEnum.NON_AKTIF && (
           <Button
             variant="muattrans-primary"
             className="h-8 w-28"
@@ -262,63 +281,58 @@ const PopoverAgenda = ({ agendaData }) => {
 
 // Transformation logic is now MOVED inside this file
 
-const transformToAgendaData = (data) => {
-  return {
-    id: "123",
-    status: statusMapping[data.statusCode],
-    startDate: "02 Jan 2025 11:00 WIB",
-    endDate: "02 Jan 2025 15:00 WIB",
-    invoice: "INV/MTR/120125/0002",
-    SOS: {
-      reason: "Muatan perlu dipindah",
-      active: data.hasSosIssue || false,
-    },
-    items: [
-      { name: "Semen", weight: "250 kg" },
-      { name: "Paku", weight: "50 kg" },
-      { name: "Cat Tembok", weight: "100 kg" },
-      { name: "Pipa PVC", weight: "50 kg" },
-      { name: "Keramik", weight: "50 kg" },
-    ],
-    name: data.driverName,
-    phone: "0821208991231",
-    vehicle: "Colt Diesel Engkel - Box",
-    licensePlate: "L 9812 AX",
-    location: data.currentLocation,
-    estimatedDistance: data.estimation,
-    route: {
-      pickup: {
-        city:
-          data.dataMuat?.subtitle?.split(",")[0] ||
-          data.dataMuat?.subtitle ||
-          "Unknown Location",
-        district: data.dataMuat?.subtitle?.split(",")[1]?.trim() || "",
-      },
-      delivery: {
-        city:
-          data.dataBongkar?.subtitle?.split(",")[0] ||
-          data.dataBongkar?.subtitle ||
-          "Unknown Location",
-        district: data.dataBongkar?.subtitle?.split(",")[1]?.trim() || "",
-      },
-      estimatedDistance: `Est. ${data.distanceRemaining || 0} km`,
-    },
-  };
-};
-
 // FIX 1: Component now accepts all the raw props it needs for the transformation
 const InfoPopover = React.memo(({ data }) => {
-  // FIX 2: The useMemo hook is now INSIDE this component
+  const [agendaScheduleDetail, setAgendaScheduleDetail] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const getAgendaDetail = async (driverId) => {
+    if (!driverId) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const result = await getAgendaScheduleDetail({ driverId });
+      setAgendaScheduleDetail(result.Data);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleOpenChange = (open) => {
+    setIsOpen(open);
+    if (open && !isLoading) {
+      // Fetch data when popover opens and we don't have data yet
+      getAgendaDetail(data.id || "uuid");
+    }
+  };
+
+  const displayData = agendaScheduleDetail || data;
 
   return (
-    <Popover>
+    <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <button>
           <IconComponent src="/icons/info16.svg" className="text-neutral-700" />
         </button>
       </PopoverTrigger>
       <PopoverContent className="p-0">
-        <PopoverAgenda agendaData={transformToAgendaData(data)} />
+        {isLoading ? (
+          <div className="flex items-center justify-center p-8">
+            <div className="text-sm text-neutral-600">Loading...</div>
+          </div>
+        ) : error ? (
+          <div className="flex items-center justify-center p-8">
+            <div className="text-sm text-error-400">Failed to load data</div>
+          </div>
+        ) : (
+          <PopoverAgenda agendaData={displayData} />
+        )}
       </PopoverContent>
     </Popover>
   );
