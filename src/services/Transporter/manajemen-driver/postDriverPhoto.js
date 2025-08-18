@@ -4,7 +4,7 @@ import { fetcherMock, fetcherMuatrans } from "@/lib/axios";
 
 const isMockUploadFile = false;
 
-export const fetcherUploadVehiclePhotos = async (url, { arg }) => {
+export const fetcherUploadDriverPhotos = async (url, { arg }) => {
   if (isMockUploadFile) {
     const result = await fetcherMock.post(`/api/${url}`, arg ?? null);
     return result.data;
@@ -13,8 +13,8 @@ export const fetcherUploadVehiclePhotos = async (url, { arg }) => {
   return result.data;
 };
 
-export const usePostDriverExcelUpload = () => {
-  return useSWRMutation("v1/drivers/excel-upload", (url, { arg }) => {
-    return fetcherUploadVehiclePhotos(url, { arg });
+export const useUploadDriverPhotos = () => {
+  return useSWRMutation("v1/upload/driver-photos", (url, { arg }) => {
+    return fetcherUploadDriverPhotos(url, { arg });
   });
 };

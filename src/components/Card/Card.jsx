@@ -31,7 +31,9 @@ export default Card;
 // props children, valuenya berupa tag elemen html yang akan dirender di dalam cardnya. disini anda juga dapat mengisi fungsi export dari  komponen lainnya ("<span>Data card</span>") / (<div><Badges>Tolak</Badges><Button>Detail</Button></div>)
 export const CardHeader = ({ className, children }) => {
   return (
-    <header className={`border-b border-neutral-600 px-8 py-5 ${className}`}>
+    <header
+      className={cn(`border-b border-neutral-600 px-8 py-5 ${className}`)}
+    >
       {children}
     </header>
   );

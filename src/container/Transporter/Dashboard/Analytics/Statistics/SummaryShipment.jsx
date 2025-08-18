@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import {
   Tooltip,
   TooltipContent,
@@ -53,9 +55,11 @@ const SummaryShipment = ({ data, isLoading }) => {
           <p className="text-lg font-bold text-neutral-900">
             Ringkasan Pengiriman
           </p>
-          <p className="cursor-pointer text-xs font-semibold text-primary-800">
-            Lihat Laporan
-          </p>
+          <Link href="/dashboard/analytics/laporan">
+            <p className="cursor-pointer text-xs font-semibold text-primary-800">
+              Lihat Laporan
+            </p>
+          </Link>
         </CardHeader>
         <CardContent className="!p-0 py-5">
           <div className="flex flex-col gap-4 px-6">
