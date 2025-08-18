@@ -34,7 +34,6 @@ const onboardingSlides = [
     title: "Detail Status",
     imgSrc: "/img/detail-pesanan-first-time/4-detail-status.webp",
     content:
-      // eslint-disable-next-line quotes
       'Pantau perkembangan status driver secara menyeluruh dengan mengakses menu "Detail Status" pada bagian informasi driver.',
   },
   {

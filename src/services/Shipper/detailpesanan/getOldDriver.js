@@ -61,7 +61,7 @@ export const fetcherOldDriver = async (cacheKey) => {
 };
 
 // SWR hook for old driver detail
-export const useGetOldDriver = (orderId, driverId = "uuid") =>
+export const useGetOldDriver = (orderId, driverId) =>
   useSWR(
     orderId && driverId ? `oldDriver/${orderId}/${driverId}` : null,
     fetcherOldDriver

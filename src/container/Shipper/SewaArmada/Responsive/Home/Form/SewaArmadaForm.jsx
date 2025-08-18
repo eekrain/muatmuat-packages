@@ -57,6 +57,10 @@ export const SewaArmadaForm = ({
   ];
   const hasNotDepartedToPickup =
     hasNotDepartedToPickupStatuses.includes(orderStatus);
+  const hasNotDepartedToDropoff = [
+    ...hasNotDepartedToPickupStatuses,
+    OrderStatusEnum.LOADING,
+  ].includes(orderStatus);
   const needValidateLocationChange =
     isEditPage && orderType === "SCHEDULED" && hasNotDepartedToPickup;
 
@@ -176,11 +180,8 @@ export const SewaArmadaForm = ({
           onEditLocation={(index) => {
             if (!handleCheckLoggedIn()) return;
             if (
-              !(
-                isEditPage &&
-                orderType === "SCHEDULED" &&
-                !hasNotDepartedToPickup
-              )
+              !isEditPage ||
+              (orderType === "SCHEDULED" && hasNotDepartedToPickup)
             ) {
               handleEditLokasi({ formMode: "muat", index });
             }
@@ -242,7 +243,7 @@ export const SewaArmadaForm = ({
               index={index}
               key={index}
               buttonRemove={
-                !isEditPage &&
+                !(isEditPage && !hasNotDepartedToDropoff) &&
                 showRemoveButton.bongkar && (
                   <TimelineField.RemoveButton
                     onClick={() => removeLokasi("lokasiBongkar", index)}
@@ -408,8 +409,18 @@ export const SewaArmadaForm = ({
                   key={key}
                 >
                   <div className="flex flex-1 items-center gap-x-2">
-                    <div className="flex size-[16px] items-center justify-center rounded-[90px] border border-primary-700">
-                      <span className="text-xxs font-bold leading-none text-primary-700">
+                    <div
+                      className={cn(
+                        "flex size-[16px] items-center justify-center rounded-[90px] border",
+                        isEditPage ? "border-neutral-600" : "border-primary-700"
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "text-xxs font-bold leading-none",
+                          isEditPage ? "text-neutral-600" : "text-primary-700"
+                        )}
+                      >
                         {key + 1}
                       </span>
                     </div>

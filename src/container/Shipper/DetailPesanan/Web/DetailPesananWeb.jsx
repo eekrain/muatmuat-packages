@@ -85,7 +85,7 @@ const DetailPesananWeb = () => {
 
   const { data: oldDriverData } = useGetOldDriver(
     params.orderId,
-    params.driverId
+    dataDetailPesanan?.dataStatusPesanan.driverStatus[0].driverId
   );
   const { data: orderChangeHistory } = useGetOrderChangeHistory(params.orderId);
 

@@ -118,6 +118,7 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
   }, [truckTypeId, trucks, isEditPage, truckType]);
 
   const recommendedTruckPriceDiff = useShallowMemo(() => {
+    if (isEditPage) return 0;
     if (!selectedTruck || trucks.length === 0) {
       return 0;
     }
@@ -126,7 +127,7 @@ export const JenisArmada = ({ carriers, trucks, onFetchTrucks }) => {
       "price"
     );
     return selectedTruck.price - lowestRecommendedTruckPrice?.price;
-  }, [selectedTruck, trucks]);
+  }, [selectedTruck, trucks, isEditPage]);
 
   // Ketika modal dibuka dan tipe adalah truck, fetch data truk
   const handleOpenModal = async (type) => {

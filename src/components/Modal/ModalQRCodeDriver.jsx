@@ -59,7 +59,7 @@ export const ModalQRCodeDriver = ({
         <ModalHeader size="big" />
         <div className="flex w-full flex-col items-center gap-y-6 p-[18px] md:px-6 md:py-9">
           <div>
-            <h1 className="mb-[18px] text-base font-bold leading-[19.2px] text-neutral-900 md:mb-6">
+            <h1 className="mb-[18px] text-center text-base font-bold leading-[19.2px] text-neutral-900 md:mb-6">
               {t("ModalQRCodeDriver.titleQRCodeLocation", {}, title)}
             </h1>
             <div className="flex flex-col items-center gap-y-3">

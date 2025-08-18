@@ -57,11 +57,8 @@ export const LokasiMuat = ({ orderStatus, maxLocation }) => {
           }
           onEditLocation={(index) => {
             if (
-              !(
-                isEditPage &&
-                orderType === "SCHEDULED" &&
-                !hasNotDepartedToPickup
-              )
+              !isEditPage ||
+              (orderType === "SCHEDULED" && hasNotDepartedToPickup)
             ) {
               handleFirstTime(() => {
                 handleOpenModalLocation({

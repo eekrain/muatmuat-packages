@@ -47,6 +47,12 @@ const WHITELIST_PENDING_PAYMENT = [
   OrderStatusEnum.WAITING_REPAYMENT_2,
 ];
 
+// changes refer to LD G2.8
+const NOT_ALLOWED_SHOW_FOOTER = [
+  OrderStatusEnum.WAITING_PAYMENT_2,
+  OrderStatusEnum.WAITING_REPAYMENT_2,
+];
+
 const LIST_SHOW_TOTAL_PRICE = [
   OrderStatusEnum.WAITING_PAYMENT_1,
   OrderStatusEnum.PREPARE_FLEET,
@@ -255,7 +261,7 @@ const DetailPesananScreen = ({
         </button>
       </div>
 
-      {!WHITELIST_PENDING_PAYMENT.includes(dataStatusPesanan?.orderStatus) ? (
+      {!NOT_ALLOWED_SHOW_FOOTER.includes(dataStatusPesanan?.orderStatus) ? (
         <FooterDetailPesanan
           dataStatusPesanan={dataStatusPesanan}
           dataRingkasanPembayaran={dataRingkasanPembayaran}
