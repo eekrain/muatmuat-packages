@@ -39,7 +39,7 @@ const PesananActionBar = ({
   const noData = totalItems === 0;
   const disableSearch = loading || (noData && lastAction !== "search");
   const disableFilter = loading || (noData && lastAction !== "filter");
-  const disableUrgent = loading || (noData && lastAction !== "filter");
+  const disableUrgent = loading || (noData && lastAction !== "urgent");
   const disableSort = loading || noData;
   const disableViewBy = loading || noData;
 
