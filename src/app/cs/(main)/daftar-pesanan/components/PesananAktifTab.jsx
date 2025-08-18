@@ -11,20 +11,20 @@ import { useTranslation } from "@/hooks/use-translation";
 import PesananActionBar from "./PesananActionBar";
 import PesananCard from "./PesananCard";
 
-export const toYYYYMMDD = (date) => {
-  const d = new Date(date);
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
-
 const usePrevious = (value) => {
   const ref = useRef();
   useEffect(() => {
     ref.current = value;
   });
   return ref.current;
+};
+
+export const toYYYYMMDD = (date) => {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 };
 
 const PesananAktifTab = ({
@@ -67,7 +67,7 @@ const PesananAktifTab = ({
     if (searchQuery !== prevSearch) action = "search";
     else if (JSON.stringify(activeFilters) !== prevFilters) action = "filter";
     else if (period !== prevPeriod) action = "period";
-    else if (urgentStatusFilter !== prevUrgent) action = "filter";
+    else if (urgentStatusFilter !== prevUrgent) action = "urgent"; // Separate action for urgent filter
     localLastAction.current = action;
     setLastAction(action);
   }, [
@@ -276,7 +276,10 @@ const PesananAktifTab = ({
             className="h-[500px]"
           />
         );
-      if (localLastAction.current === "filter")
+      if (
+        localLastAction.current === "filter" ||
+        localLastAction.current === "urgent"
+      )
         return (
           <DataNotFound className="h-[500px]">
             <p className="w-[257px] text-center text-base font-[600] text-neutral-600">
@@ -347,7 +350,7 @@ const PesananAktifTab = ({
           totalItems={totalItems}
         />
         {hasActiveFilters && (
-          <div className="border-neutral-300 px-4">
+          <div className="px-4">
             <ActiveFiltersBar
               filters={activeFiltersForBar}
               onRemoveFilter={handleRemoveFilter}
@@ -355,7 +358,7 @@ const PesananAktifTab = ({
             />
           </div>
         )}
-        <div className="border-neutral-300">{renderContent()}</div>
+        <div className="pt-4">{renderContent()}</div>
       </div>
       {!loading && totalItems > 0 && (
         <Pagination

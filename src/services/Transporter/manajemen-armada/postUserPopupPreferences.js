@@ -1,0 +1,23 @@
+import useSWRMutation from "swr/mutation";
+
+import { fetcherMock, fetcherMuatrans } from "@/lib/axios";
+
+const isMockUploadFile = true;
+
+export const fetcherUploadVehiclePhotos = async (url, { arg }) => {
+  if (isMockUploadFile) {
+    const result = await fetcherMock.post(`/api/${url}`, arg ?? null);
+    return result.data;
+  }
+  const result = await fetcherMuatrans.post(url, arg);
+  return result.data;
+};
+
+export const usePostUserPopupPreferences = () => {
+  return useSWRMutation(
+    "v1/users/popup-preferences/import-fleet",
+    (url, { arg }) => {
+      return fetcherUploadVehiclePhotos(url, { arg });
+    }
+  );
+};

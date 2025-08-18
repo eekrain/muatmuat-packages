@@ -32,12 +32,12 @@ const TambahExcel = () => {
   const router = useRouter();
   const columns = [
     {
-      key: "tanggal",
+      key: "createdAt",
       header: t("TambahExcel.headerTanggal", {}, "Tanggal"),
       width: "80px",
       sortable: true,
       render: (row) => {
-        const date = new Date(row.tanggal).toISOString();
+        const date = new Date(row.createdAt).toISOString();
         return formatDate(date);
       },
     },
@@ -136,7 +136,7 @@ const TambahExcel = () => {
           t(
             "TambahExcel.toastGagalMenambahArmada",
             {},
-            "Gagal menambah armada.\n Periksa laporan untuk mengetahu armada yang gagal ditambahkan."
+            "Gagal menambah armada.\n Periksa laporan untuk mengetahui armada yang gagal ditambahkan."
           )
         );
       });
@@ -228,7 +228,7 @@ const TambahExcel = () => {
     if (data && data.Data && data.Data.history.length > 0) {
       setList(
         data.Data.history.map((item) => ({
-          tanggal: item.uploadedAt,
+          createdAt: item.uploadedAt,
           document: item.originalFileName,
           name: item.uploadBy,
           status: item.status,

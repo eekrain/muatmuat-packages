@@ -107,7 +107,12 @@ function LocationList({
   );
 }
 
-const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
+const RespondChangeModal = ({
+  isOpen,
+  onClose,
+  orderData,
+  hideActionButton = false,
+}) => {
   const [showFormModal, setShowFormModal] = useState(false);
 
   // Fetch order change details
@@ -408,8 +413,9 @@ const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
             )}
           </div>
 
-          {/* Footer - Only show when hasAdjustment is true AND changeType is LOCATION_AND_TIME */}
-          {changeDetails?.incomeAdjustment?.hasAdjustment &&
+          {/* Footer - Only show when hasAdjustment is true AND changeType is LOCATION_AND_TIME AND not hideActionButton */}
+          {!hideActionButton &&
+            changeDetails?.incomeAdjustment?.hasAdjustment &&
             changeDetails?.changeType === "LOCATION_AND_TIME" && (
               <div className="flex items-center justify-center gap-3 px-6 pb-4">
                 <Button
