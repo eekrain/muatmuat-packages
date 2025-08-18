@@ -29,7 +29,7 @@ const apiResultActiveOrders = {
     orders: [
       // WAITING_CONFIRMATION_SHIPPER status
       {
-        id: "uuid1",
+        id: "dcdaf886-56d6-4d84-89d6-a21ec18d0bc1",
         orderCode: "MT25WAITCONF01",
         orderType: "SCHEDULED",
         loadTimeStart: formatDateForAPI(tomorrow, 8),
