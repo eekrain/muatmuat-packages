@@ -12,9 +12,39 @@ import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import { formatDateInput } from "@/lib/utils/dateFormat";
 
-// Helper function to convert DD-MM-YYYY to YYYY-MM-DD
+// Helper function to convert various date formats to YYYY-MM-DD
 const formatToISODate = (dateStr) => {
   if (!dateStr) return "";
+
+  // Handle DD Mon YYYY format (e.g., "04 Agu 2025")
+  const monthMap = {
+    Jan: "01",
+    Feb: "02",
+    Mar: "03",
+    Apr: "04",
+    Mei: "05",
+    Jun: "06",
+    Jul: "07",
+    Agu: "08",
+    Sep: "09",
+    Okt: "10",
+    Nov: "11",
+    Des: "12",
+  };
+
+  const spaceParts = dateStr.split(" ");
+  if (spaceParts.length === 3) {
+    const day = spaceParts[0];
+    const month = spaceParts[1];
+    const year = spaceParts[2];
+
+    // Check if it's DD Mon YYYY format
+    if (monthMap[month] && day.length <= 2 && year.length === 4) {
+      const paddedDay = day.padStart(2, "0");
+      const paddedMonth = monthMap[month];
+      return `${year}-${paddedMonth}-${paddedDay}`;
+    }
+  }
 
   // Handle DD-MM-YYYY format
   const dashParts = dateStr.split("-");
@@ -28,7 +58,13 @@ const formatToISODate = (dateStr) => {
     return `${slashParts[2]}-${slashParts[1]}-${slashParts[0]}`;
   }
 
-  return dateStr; // Return as is if already in correct format or unrecognized
+  // If already in YYYY-MM-DD format, return as is
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    return dateStr;
+  }
+
+  console.warn("Unrecognized date format:", dateStr);
+  return dateStr; // Return as is if unrecognized
 };
 
 const DropdownPeriode = ({

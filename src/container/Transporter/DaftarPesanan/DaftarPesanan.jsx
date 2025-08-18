@@ -109,7 +109,7 @@ const DaftarPesanan = ({
       ),
     },
     {
-      key: "loadTime",
+      key: "loadingTime",
       header: "Waktu Muat",
       sortable: true,
       width: "202px",
