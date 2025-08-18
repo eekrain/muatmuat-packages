@@ -80,7 +80,7 @@ const DetailPesananResponsive = ({ paymentMethods }) => {
 
   const { data: oldDriverData } = useGetOldDriver(
     params.orderId,
-    params.driverId
+    dataStatusPesanan?.driverStatus[0]?.driverId
   );
 
   return (
