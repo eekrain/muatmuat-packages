@@ -27,7 +27,7 @@ export const useGetFleetsUploadHistoryWithParams = (params = {}) => {
   const queryParams = new URLSearchParams();
   if (page) queryParams.append("page", page.toString());
   if (limit) queryParams.append("limit", limit.toString());
-  if (search) queryParams.append("filename", search);
+  if (search) queryParams.append("search", search);
   if (sort) queryParams.append("sort", sort);
   if (order) queryParams.append("order", order);
 
