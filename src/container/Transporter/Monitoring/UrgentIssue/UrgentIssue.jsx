@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import DataNotFound from "@/components/DataNotFound/DataNotFound";
-import { UrgentIssueCard } from "@/container/CS/Monitoring/UrgentIssue/components/UrgentIssueCard";
 import { useTranslation } from "@/hooks/use-translation";
 import {
   useGetUrgentIssueCount,
@@ -11,12 +10,13 @@ import {
 import { UrgentIssueCardTransporter } from "./components/UrgentIssueCard";
 
 const statusMap = {
-  baru: "new",
-  proses: "processing",
-  selesai: "completed",
+  baru: "NEW",
+  proses: "PROCESSING",
+  selesai: "COMPLETED",
 };
 
 const RequestList = ({
+  ref,
   requests,
   isLoading,
   status,
@@ -75,10 +75,10 @@ const RequestList = ({
   }
 
   return (
-    <div className="space-y-4 pb-12">
-      {filtered.map((item) => (
+    <div className="space-y-4 pb-12" ref={ref}>
+      {filtered.map((item, index) => (
         <UrgentIssueCardTransporter
-          key={item.id}
+          key={index}
           data={item}
           statusTab={status}
           isDetailOpen={openDetails.includes(item.id)}
@@ -93,12 +93,15 @@ const UrgentIssue = () => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("baru");
   const [openDetails, setOpenDetails] = useState([]);
+  const [data, setData] = useState([]);
+  const [page, setPage] = useState(1);
+  const requestContainer = useRef(null);
 
   const { count, isLoading: isCountLoading } = useGetUrgentIssueCount();
 
   const { items, isLoading } = useGetUrgentIssueList({
     status: statusMap[activeTab],
-    page: 1,
+    page,
     limit: 10,
     sort: "detectedAt",
     sortDirection: "desc",
@@ -123,6 +126,37 @@ const UrgentIssue = () => {
       return newOpen;
     });
   };
+
+  useEffect(() => {
+    setData(items);
+    setPage(1);
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (!items) return;
+
+    setData((prev) => (page === 1 ? items : [...prev, ...items]));
+  }, [items, page]);
+
+  useEffect(() => {
+    setData(items);
+    const handleScroll = () => {
+      const container = requestContainer.current;
+      if (!container) return;
+
+      const { scrollTop, scrollHeight, clientHeight } = container;
+
+      if (scrollTop + clientHeight >= scrollHeight - 100) {
+        setPage((p) => p + 1);
+      }
+    };
+
+    const container = requestContainer.current;
+    if (!container) return;
+
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div className="flex h-[calc(100vh-92px-48px)] min-h-0 flex-col">
@@ -187,6 +221,7 @@ const UrgentIssue = () => {
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto bg-white px-4">
         <RequestList
+          ref={requestContainer}
           requests={items}
           isLoading={isLoading}
           status={activeTab}

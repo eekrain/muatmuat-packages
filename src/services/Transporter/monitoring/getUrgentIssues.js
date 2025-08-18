@@ -2,7 +2,7 @@ import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = true;
+const useMockData = false;
 
 export const mockUrgentIssueCount = {
   data: {
@@ -11,10 +11,10 @@ export const mockUrgentIssueCount = {
       Text: "Successfully retrieved urgent issue count",
     },
     Data: {
-      new: 150,
+      new: 7,
       processing: 50,
       completed: 1,
-      total: 2,
+      total: 7,
       activeTotal: 15,
     },
     Type: "URGENT_ISSUE_COUNT",
@@ -298,7 +298,7 @@ export const getUrgentIssueCount = async (cacheKey) => {
   let result;
   if (useMockData) {
     const status = searchParams.get("status");
-    if (status && !["new", "processing", "completed", "all"].includes(status)) {
+    if (status && !["NEW", "PROCESSING", "COMPLETED", "all"].includes(status)) {
       result = mockUrgentIssueCountError;
     } else {
       result = mockUrgentIssueCount;
@@ -310,34 +310,6 @@ export const getUrgentIssueCount = async (cacheKey) => {
 
   return {
     count: result?.data?.Data || {},
-    message: result?.data?.Message,
-    type: result?.data?.Type,
-    raw: result,
-  };
-};
-
-export const getUrgentIssueList = async (cacheKey) => {
-  const params = cacheKey?.split("/")?.[1];
-  const searchParams = params
-    ? new URLSearchParams(params)
-    : new URLSearchParams();
-
-  let result;
-  if (useMockData) {
-    const status = searchParams.get("status");
-    if (status && !["new", "processing", "completed"].includes(status)) {
-      result = mockUrgentIssueListError;
-    } else {
-      result = mockUrgentIssueList;
-    }
-  } else {
-    const query = params ? `?${new URLSearchParams(params).toString()}` : "";
-    result = await fetcherMuatrans.get(`/v1/urgent-issues${query}`);
-  }
-
-  return {
-    items: result?.data?.Data?.items || [],
-    pagination: result?.data?.Data?.pagination || {},
     message: result?.data?.Message,
     type: result?.data?.Type,
     raw: result,
@@ -357,6 +329,34 @@ export const useGetUrgentIssueCount = (params) => {
     raw: data?.raw,
     isLoading,
     isError: !!error,
+  };
+};
+
+export const getUrgentIssueList = async (cacheKey) => {
+  const params = cacheKey?.split("/")?.[1];
+  const searchParams = params
+    ? new URLSearchParams(params)
+    : new URLSearchParams();
+
+  let result;
+  if (useMockData) {
+    const status = searchParams.get("status");
+    if (status && !["NEW", "PROCESSING", "COMPLETED"].includes(status)) {
+      result = mockUrgentIssueListError;
+    } else {
+      result = mockUrgentIssueList;
+    }
+  } else {
+    const query = params ? `?${new URLSearchParams(params).toString()}` : "";
+    result = await fetcherMuatrans.get(`/v1/urgent-issues${query}`);
+  }
+
+  return {
+    items: result?.data?.Data?.items || [],
+    pagination: result?.data?.Data?.pagination || {},
+    message: result?.data?.Message,
+    type: result?.data?.Type,
+    raw: result,
   };
 };
 
