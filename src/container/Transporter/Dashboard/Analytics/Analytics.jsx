@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
 import { useGetDashboardAnalyticsSummary } from "@/services/Transporter/dashboard/analytics/getDashboardAnalyticsSummary";
 import { useGetDashboardAnalyticsTop5 } from "@/services/Transporter/dashboard/analytics/getDashboardAnalyticsTop5";
+import { useAnalyticsStore } from "@/store/Transporter/analyticStore";
 
 import Leaderboard from "./Statistics/Leaderboard";
 import SummaryShipment from "./Statistics/SummaryShipment";
@@ -12,8 +13,8 @@ import TotalMissedOrders from "./Statistics/TotalMissedOrders";
 import TotalOrders from "./Statistics/TotalOrders";
 import TotalRevenue from "./Statistics/TotalRevenue";
 
-const periodOptions = [
-  { name: "Bulan Ini (Default)", value: "month" },
+const basePeriodOptions = [
+  { name: "Bulan Ini", value: "month" },
   { name: "Hari Ini", value: "today" },
   { name: "1 Minggu Terakhir", value: "week" },
   { name: "30 Hari Terakhir", value: "30days" },
@@ -21,13 +22,31 @@ const periodOptions = [
 ];
 
 function Analytics() {
-  const [period, setPeriod] = useState("month");
+  const { period, setPeriod } = useAnalyticsStore();
+
+  console.log(`[Analytics.jsx] Component is rendering with period:`, period);
 
   const handlePeriodSelect = (selectedOption) => {
+    console.log(
+      `[Analytics.jsx] handlePeriodSelect triggered with:`,
+      selectedOption
+    );
     setPeriod(selectedOption.value);
   };
 
-  // --- Data Fetching ---
+  // 2. Try to find the selected period in the default list.
+  let selectedOption = basePeriodOptions.find(
+    (option) => option.value === period
+  );
+  const finalOptions = [...basePeriodOptions];
+
+  if (!selectedOption && period) {
+    // Create a new option object for the custom period.
+    const customOption = { name: period, value: period };
+    selectedOption = customOption;
+    // Add the custom option to the top of the list so it's visible.
+    finalOptions.unshift(customOption);
+  }
 
   // Fetch summary data for the top cards
   const {
@@ -62,8 +81,9 @@ function Analytics() {
           Dashboard Analytics
         </h1>
         <DropdownPeriode
-          options={periodOptions}
+          options={finalOptions}
           onSelect={handlePeriodSelect}
+          value={selectedOption}
         />
       </div>
 

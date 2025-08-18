@@ -12,6 +12,7 @@ const CardLeaderboard = ({
   title,
   shipmentCount,
   badgeClassname,
+  infoClassname,
   rating,
   className,
   iconSrc,
@@ -43,7 +44,12 @@ const CardLeaderboard = ({
       </div>
 
       {/* Column 2: Info */}
-      <div className="mb-[14px] flex flex-1 flex-col justify-center gap-y-3 overflow-hidden">
+      <div
+        className={cn(
+          "mb-[14px] flex flex-1 flex-col justify-center gap-y-3 overflow-hidden",
+          infoClassname
+        )}
+      >
         <h3 className="truncate text-sm font-semibold text-neutral-900">
           {title}
         </h3>

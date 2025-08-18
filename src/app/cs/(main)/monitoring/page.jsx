@@ -31,16 +31,16 @@ import {
   MonitoringTabsList,
 } from "@/components/MonitoringTabs/MonitoringTabs";
 import { NotificationCount } from "@/components/NotificationDot/NotificationCount";
+import DaftarArmadaCs from "@/container/CS/Monitoring/DaftarArmada/DaftarArmadaCs";
 import PermintaanAngkutCS from "@/container/CS/Monitoring/PermintaanAngkut/PermintaanAngkut";
 import UrgentIssue from "@/container/CS/Monitoring/UrgentIssue/UrgentIssue";
 import { MapMonitoring } from "@/container/Shared/Map/MapMonitoring";
-import DaftarArmada from "@/container/Transporter/Monitoring/DaftarArmada/DaftarArmada";
 import LacakArmada from "@/container/Transporter/Monitoring/LacakArmada/LacakArmada";
 import PilihArmada from "@/container/Transporter/Monitoring/PilihArmada/PilihArmada";
 import SOSContainer from "@/container/Transporter/Monitoring/SOS/SOSContainer";
 import { cn } from "@/lib/utils";
+import { useGetCsFleetLocations } from "@/services/CS/monitoring/getCsFleetLocation";
 import { useGetFleetCount } from "@/services/Transporter/monitoring/getFleetCount";
-import { useGetFleetLocations } from "@/services/Transporter/monitoring/getFleetLocations";
 import { useToastActions } from "@/store/Shipper/toastStore";
 
 import { MapInterfaceOverlay } from "./components/Map/MapInterfaceOverlay";
@@ -52,7 +52,7 @@ const Page = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: fleetData, isLoading } = useGetFleetCount();
-  const { data: fleetLocationsData } = useGetFleetLocations();
+  const { data: fleetLocationsData } = useGetCsFleetLocations();
   const { addToast } = useToastActions();
 
   // Use multiple reducers for domain separation
@@ -150,14 +150,14 @@ const Page = () => {
   // Handle fleet click from list - focus map on selected fleet
   const handleFleetClickFromList = (fleet) => {
     // Find the corresponding marker from fleet locations
-    const marker = allFleetMarkers.find((m) => m.fleet.id === fleet.fleetId);
+    const marker = allFleetMarkers.find((m) => m.fleet.id === fleet.id);
     if (marker) {
       // Center map on the selected fleet
       mapDispatch({
         type: MAP_ACTIONS.SET_MAP_CENTER,
         payload: {
-          lat: fleet.lastLocation.latitude,
-          lng: fleet.lastLocation.longitude,
+          lat: fleet.lastLatitude,
+          lng: fleet.lastLongitude,
         },
       });
       mapDispatch({ type: MAP_ACTIONS.SET_MAP_ZOOM, payload: 16 }); // Zoom in to focus on the truck
@@ -408,7 +408,7 @@ const Page = () => {
               {panels.leftPanelMode === "sos" ? (
                 <SOSContainer onClose={handleCloseLeftPanel} />
               ) : (
-                <DaftarArmada
+                <DaftarArmadaCs
                   onClose={handleCloseLeftPanel}
                   selectedFleetId={selections.selectedFleetId}
                   onFleetSelect={(id) =>
