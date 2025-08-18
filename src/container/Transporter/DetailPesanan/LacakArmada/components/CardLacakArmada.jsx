@@ -220,7 +220,7 @@ function CardLacakArmada({
   // --- Render Utama untuk Tampilan Aktif ---
   return (
     <>
-      <div className="flex w-full flex-col rounded-xl border border-neutral-300 bg-white p-4">
+      <div className="flex w-full flex-col gap-4 rounded-xl border border-neutral-300 bg-white p-4">
         {/* Header dengan Aksi */}
         <div className="flex items-center justify-between">
           <div className="mb-2 flex items-center gap-2">
@@ -272,7 +272,7 @@ function CardLacakArmada({
           {/* Driver Info */}
           <div className="flex w-[360px] items-center gap-3">
             {/* Icon Truck */}
-            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-neutral-100">
+            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg border-neutral-400 bg-neutral-100">
               <img
                 src={vehicleImageUrl || "/img/truck.png"}
                 alt="Truck"
@@ -281,18 +281,20 @@ function CardLacakArmada({
             </div>
             {/* Plate Number dan Driver */}
             <div className="flex flex-col">
-              <h3 className="mb-1 text-lg font-semibold text-neutral-900">
+              <h3 className="mb-1 text-sm font-bold text-neutral-900">
                 {plateNumber || "B 2222 XYZ"}
               </h3>
-              <div className="flex items-start gap-2">
+              <div className="flex items-center gap-2">
+                {" "}
+                {/* <-- Perubahan di sini */}
                 <IconComponent
                   src="/icons/user16.svg"
                   width={16}
                   height={16}
-                  className="mt-0.5 flex-shrink-0 text-neutral-500"
+                  className="flex-shrink-0 text-neutral-500"
                 />
                 <span
-                  className="line-clamp-2 max-w-[280px] text-[12px] leading-4 text-neutral-900"
+                  className="line-clamp-2 max-w-[280px] text-[12px] font-medium leading-4 text-neutral-900"
                   title={driverName || "Muklason"}
                   style={{
                     display: "-webkit-box",

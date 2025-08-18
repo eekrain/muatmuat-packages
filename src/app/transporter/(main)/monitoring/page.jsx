@@ -24,6 +24,7 @@ import UrgentIssue from "@/container/Transporter/Monitoring/UrgentIssue/UrgentIs
 import { cn } from "@/lib/utils";
 import { useGetFleetCount } from "@/services/Transporter/monitoring/getFleetCount";
 import { useGetFleetLocations } from "@/services/Transporter/monitoring/getFleetLocations";
+import { useGetUrgentIssueCount } from "@/services/Transporter/monitoring/getUrgentIssues";
 import { useToastActions } from "@/store/Shipper/toastStore";
 
 import { useMonitoringHandlers } from "./hooks/useMonitoringHandlers";
@@ -69,6 +70,9 @@ const Page = () => {
 
   // Track onboarding state at parent level to prevent reset
   const [hasShownOnboarding, setHasShownOnboarding] = useState(false);
+
+  const { count: urgentCount, isLoading: isCountLoading } =
+    useGetUrgentIssueCount();
 
   // Create combined state object for easier access
   const state = { panels, map, filters, selections };
@@ -142,7 +146,7 @@ const Page = () => {
 
   // Mock notification counts - replace with actual API data
   const requestCount = 100; // Replace with actual count from API
-  const urgentCount = 2; // Replace with actual count from API
+  // const urgentCount = 2; // Replace with actual count from API
 
   // handleTruckClick is now imported from useMonitoringHandlers hook
 
@@ -535,7 +539,7 @@ const Page = () => {
                   <div className="flex items-center gap-2">
                     <span>Urgent Issue</span>
                     <NotificationCount
-                      count={urgentCount}
+                      count={urgentCount?.new + urgentCount?.processing}
                       backgroundColor="error"
                       color="white"
                       variant="bordered"
