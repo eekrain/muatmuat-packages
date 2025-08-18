@@ -14,23 +14,59 @@ import Input from "@/components/Form/Input";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { SelectedProvinces } from "@/components/SelectedProvinces";
 import LayoutOverlayButton from "@/container/Transporter/Pengaturan/LayoutOverlayButton";
-import { useGetAreaMuatManage } from "@/services/Transporter/pengaturan/getDataAreaMuat";
+import {
+  deleteProvinsiAreaBongkar,
+  saveAreaBongkar,
+  useGetAreaBongkarManage,
+  useGetMasterKotaKabupaten,
+  useGetMasterProvinsi,
+} from "@/services/Transporter/pengaturan/getDataAreaBongkar";
 
 export default function Page() {
   const router = useRouter();
   const [searchCity, setSearchCity] = useState("");
   const [showSelectedOnly, setShowSelectedOnly] = useState(false);
   const [expandedProvinces, setExpandedProvinces] = useState({});
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Local state to manage checkbox selections
   const [localProvinces, setLocalProvinces] = useState([]);
 
-  // Fetch area muat management data
+  // Fetch area bongkar management data
   const { provinces, isLoading, totalProvinces, totalSelectedCities } =
-    useGetAreaMuatManage({
+    useGetAreaBongkarManage({
       search: searchCity,
       showSelected: showSelectedOnly,
     });
+
+  // Fetch master provinsi data for reference (can be used for province selection popup)
+  const { provinsi: masterProvinsi, isLoading: isLoadingMasterProvinsi } =
+    useGetMasterProvinsi({
+      search: "", // Can be used for province search in popup
+      page: 1,
+      limit: 50,
+      excludeSelected: false,
+    });
+
+  // Get selected province IDs for fetching kota/kabupaten
+  const selectedProvinceIds =
+    provinces
+      ?.filter((province) => province.cities?.some((city) => city.isSelected))
+      ?.map((province) => province.id)
+      ?.join(",") || "";
+
+  // Fetch master kota/kabupaten data based on selected provinces
+  const {
+    cities: masterKotaKabupaten,
+    isLoading: isLoadingMasterKotaKabupaten,
+  } = useGetMasterKotaKabupaten({
+    provinceIds: selectedProvinceIds,
+    search: searchCity,
+    selectedOnly: showSelectedOnly,
+    page: 1,
+    limit: 50,
+  });
 
   // Initialize local state when provinces data changes
   useEffect(() => {
@@ -48,14 +84,72 @@ export default function Page() {
     }
   }, [provinces]);
 
+  // Log master data for demonstration
+  useEffect(() => {
+    if (masterProvinsi && masterProvinsi.length > 0) {
+      console.log("Master Provinsi data loaded:", masterProvinsi);
+    }
+  }, [masterProvinsi]);
+
+  useEffect(() => {
+    if (masterKotaKabupaten && masterKotaKabupaten.length > 0) {
+      console.log("Master Kota/Kabupaten data loaded:", masterKotaKabupaten);
+    }
+  }, [masterKotaKabupaten]);
+
   const BREADCRUMB = [
     { name: "Pengaturan", href: "/pengaturan" },
     { name: "Atur Area Bongkar" },
   ];
 
   // Handle remove province
-  const handleRemoveProvince = (provinceId) => {
-    console.log("Remove province:", provinceId);
+  const handleRemoveProvince = async (provinceId) => {
+    try {
+      setIsDeleting(true);
+
+      // Find province name for confirmation
+      const province = localProvinces.find((p) => p.id === provinceId);
+      const provinceName = province?.province || "provinsi ini";
+
+      // Show confirmation dialog
+      const confirmDelete = confirm(
+        `Apakah kamu yakin ingin menghapus provinsi ${provinceName} dari area bongkar?`
+      );
+      if (!confirmDelete) {
+        return;
+      }
+
+      const result = await deleteProvinsiAreaBongkar(provinceId);
+
+      if (result.deleted) {
+        alert(
+          `Berhasil menghapus ${result.deletedProvinsiName || provinceName} dari area bongkar. Sisa ${result.remainingProvinsi} provinsi.`
+        );
+
+        // Remove province from local state
+        setLocalProvinces((prevProvinces) =>
+          prevProvinces.filter((province) => province.id !== provinceId)
+        );
+
+        console.log("Delete result:", result);
+      } else {
+        alert("Gagal menghapus provinsi dari area bongkar");
+      }
+    } catch (error) {
+      console.error("Delete province error:", error);
+
+      // Parse error message if it's a JSON string
+      try {
+        const errorData = JSON.parse(error.message);
+        alert(
+          errorData.Message?.Text || "Terjadi kesalahan saat menghapus provinsi"
+        );
+      } catch {
+        alert("Terjadi kesalahan saat menghapus provinsi");
+      }
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   // Handle select all for a province
@@ -111,13 +205,78 @@ export default function Page() {
     }));
   };
 
+  // Handle save area bongkar
+  const handleSaveAreaBongkar = async () => {
+    try {
+      setIsSaving(true);
+
+      // Transform local provinces data to API format
+      const selectedProvinces = localProvinces.filter((province) =>
+        province.cities.some((city) => city.isSelected)
+      );
+
+      if (selectedProvinces.length === 0) {
+        alert("Pilih minimal 1 provinsi");
+        return;
+      }
+
+      // Validate each province has at least one selected city
+      for (const province of selectedProvinces) {
+        const selectedCities = province.cities.filter(
+          (city) => city.isSelected
+        );
+        if (selectedCities.length === 0) {
+          alert(
+            `Pilih minimal 1 kota/kabupaten untuk provinsi ${province.province}`
+          );
+          return;
+        }
+      }
+
+      const unloadingAreas = selectedProvinces.map((province) => ({
+        provinceId: province.id,
+        provinceName: province.province,
+        cities: province.cities
+          .filter((city) => city.isSelected)
+          .map((city) => ({
+            cityId: city.cityId,
+            cityName: city.cityName,
+          })),
+      }));
+
+      const result = await saveAreaBongkar({ unloadingAreas });
+
+      if (result.saved) {
+        alert(
+          `Berhasil menyimpan area bongkar: ${result.totalProvinces} provinsi, ${result.totalKota} kota/kabupaten`
+        );
+        console.log("Save result:", result);
+      } else {
+        alert("Gagal menyimpan area bongkar");
+      }
+    } catch (error) {
+      console.error("Save error:", error);
+
+      // Parse error message if it's a JSON string
+      try {
+        const errorData = JSON.parse(error.message);
+        alert(errorData.Message?.Text || "Terjadi kesalahan saat menyimpan");
+      } catch {
+        alert("Terjadi kesalahan saat menyimpan area bongkar");
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const simpanButton = (
     <Button
       size="lg"
       className="w-full cursor-pointer md:w-auto"
-      onClick={() => alert("Hello")}
+      onClick={handleSaveAreaBongkar}
+      disabled={isSaving}
     >
-      Simpan
+      {isSaving ? "Menyimpan..." : "Simpan"}
     </Button>
   );
 
@@ -179,6 +338,7 @@ export default function Page() {
                 )}
                 onRemove={handleRemoveProvince}
                 onAdd={() => console.log("Add province")}
+                isDeleting={isDeleting}
               />
 
               {/* Search and Filter */}
@@ -206,7 +366,7 @@ export default function Page() {
               </div>
 
               {/* Loading State */}
-              {isLoading ? (
+              {isLoading || isLoadingMasterKotaKabupaten ? (
                 <div className="flex h-[200px] items-center justify-center">
                   <span className="text-sm font-normal leading-[16.8px] text-neutral-600">
                     Loading...
@@ -342,9 +502,10 @@ export default function Page() {
             <Button
               variant="muattrans-primary"
               className="h-12 rounded-full px-8 shadow-lg"
-              onClick={() => console.log("Save area bongkar")}
+              onClick={handleSaveAreaBongkar}
+              disabled={isSaving}
             >
-              Simpan
+              {isSaving ? "Menyimpan..." : "Simpan"}
             </Button>
           </div>
         </div>

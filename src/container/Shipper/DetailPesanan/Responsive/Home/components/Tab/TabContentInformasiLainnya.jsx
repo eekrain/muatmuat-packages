@@ -5,11 +5,13 @@ import {
 import { TabsContent } from "@/components/Tabs/Tabs";
 
 export const TabContentInformasiLainnya = ({ dataRingkasanPesanan }) => {
-  const images = (dataRingkasanPesanan?.cargoPhotos || []).map((src, index) => ({
-    id: index + 1,
-    src,
-    alt: `Foto Muatan ${index + 1}`,
-  }));
+  const images = (dataRingkasanPesanan?.cargoPhotos || []).map(
+    (src, index) => ({
+      id: index + 1,
+      src,
+      alt: `Foto Muatan ${index + 1}`,
+    })
+  );
 
   const doNumbers = dataRingkasanPesanan?.numberDeliveryOrder || [];
   const cargoDescription = dataRingkasanPesanan?.cargoDescription || "";
