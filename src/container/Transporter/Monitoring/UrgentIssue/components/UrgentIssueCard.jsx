@@ -35,10 +35,11 @@ export const UrgentIssueCardTransporter = ({
   if (status?.toLowerCase() === "processing" || statusTab === "proses") {
     statusDisplay = "diproses";
     buttonLabel = "Selesai";
-  }
-  if (status?.toLowerCase() === "completed" || statusTab === "selesai") {
+  } else if (status?.toLowerCase() === "completed" || statusTab === "selesai") {
     statusDisplay = "selesai";
     buttonLabel = "Selesai";
+  } else {
+    buttonLabel = "Proses";
   }
 
   const router = useRouter();
@@ -314,7 +315,13 @@ export const UrgentIssueCardTransporter = ({
             }}
             className="mt-2 h-[32px] min-w-[112px] rounded-full bg-muat-trans-primary-400 px-6 py-3 text-sm font-semibold text-muat-trans-secondary-900"
           >
-            {t("UrgentIssueCardTransporter.buttonProcess", {}, buttonLabel)}
+            {t(
+              statusDisplay === "diproses"
+                ? "UrgentIssueCardTransporter.buttonComplete"
+                : "UrgentIssueCardTransporter.buttonProcess",
+              {},
+              buttonLabel
+            )}
           </Button>
         </div>
       )}
