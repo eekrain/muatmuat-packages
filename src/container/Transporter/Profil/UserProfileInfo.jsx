@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-import Button from "@/components/Button/Button";
 import CropperWeb from "@/components/Cropper/CropperWeb";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import ChangeWhatsappNumberModal from "@/components/Modal/ChangeWhatsappNumberModal";
 import { Modal, ModalContent, ModalHeader } from "@/components/Modal/Modal";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -100,12 +101,41 @@ const EditableField = ({ label, value, href = "#" }) => (
 
 // --- Main Profile Component ---
 const UserProfileInfo = ({ userProfile }) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [isUploadModalOpen, setUploadModalOpen] = useState(false);
   const [isCropModalOpen, setCropModalOpen] = useState(false);
   const [imageToCrop, setImageToCrop] = useState(null);
   const [sourceFile, setSourceFile] = useState(null);
   const fileInputRef = useRef(null);
+  const [isChangeWhatsappModalOpen, setChangeWhatsappModalOpen] =
+    useState(false);
+
+  const [hasVerified, setHasVerified] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("hasVerified") === "true") {
+      setHasVerified(true);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (hasVerified) {
+      setChangeWhatsappModalOpen(true);
+    }
+  }, [hasVerified]);
+
+  // This effect correctly opens the modal upon successful OTP redirect
+  useEffect(() => {
+    if (searchParams.get("change_whatsapp") === "true") {
+      setChangeWhatsappModalOpen(true);
+      // Clean up URL to prevent modal from re-opening on refresh
+      const newPath = window.location.pathname;
+      router.replace(newPath, { scroll: false });
+    }
+  }, [searchParams, router]);
 
   const userData = {
     initials: "DT",
@@ -134,6 +164,12 @@ const UserProfileInfo = ({ userProfile }) => {
     setImageToCrop(null);
     setSourceFile(null);
     setUploadModalOpen(true); // Re-open the upload modal if crop is cancelled
+  };
+
+  const handleWhatsappSubmit = (newNumber) => {
+    console.log("New WhatsApp number submitted:", newNumber);
+    setChangeWhatsappModalOpen(false);
+    toast.success("Nomor WhatsApp baru akan segera diverifikasi.");
   };
 
   return (
@@ -167,7 +203,11 @@ const UserProfileInfo = ({ userProfile }) => {
             {userData.name}
           </h2>
           <div className="grid flex-1 grid-cols-2 gap-x-10 gap-y-6">
-            <EditableField label="No. Whatsapp" value={userData.whatsapp} />
+            <EditableField
+              label="No. Whatsapp"
+              value={userData.whatsapp}
+              href={"/otp?type=whatsapp"}
+            />
             <EditableField label="Email" value={userData.email} />
             <EditableField label="Password" value="********" />
           </div>
@@ -203,6 +243,16 @@ const UserProfileInfo = ({ userProfile }) => {
         isCircle={true}
         title="Ubah Foto Profil"
         aspectRatio={1}
+      />
+
+      {/* Modal for Changing WhatsApp Number */}
+      <ChangeWhatsappNumberModal
+        type="profile"
+        open={isChangeWhatsappModalOpen}
+        onOpenChange={setChangeWhatsappModalOpen}
+        onSubmit={handleWhatsappSubmit}
+        // originalWhatsapp={userData.whatsapp}
+        originalWhatsapp={"081252355711"}
       />
     </>
   );
