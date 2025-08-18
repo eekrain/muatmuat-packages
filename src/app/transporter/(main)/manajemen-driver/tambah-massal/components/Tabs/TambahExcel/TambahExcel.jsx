@@ -155,7 +155,7 @@ const TambahExcel = () => {
 
       // Fetch template data when user clicks download
       const templateData = await fetcherExcelDriversMassalTemplate(
-        "v1/fleet/excel-template",
+        "v1/drivers/excel-template",
         { arg: null }
       );
 
