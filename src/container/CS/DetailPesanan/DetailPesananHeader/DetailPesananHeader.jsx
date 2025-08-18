@@ -30,15 +30,6 @@ const DetailPesananHeader = ({ dataOrderDetail }) => {
             Batalkan Pesanan
           </Button>
         )}
-        {dataOrderDetail?.orderStatus === OrderStatusEnum.SCHEDULED_FLEET && (
-          <Button
-            variant="muattrans-primary-secondary"
-            iconLeft="/icons/download16.svg"
-            onClick={() => {}}
-          >
-            Unduh DO
-          </Button>
-        )}
       </div>
     </div>
   );
