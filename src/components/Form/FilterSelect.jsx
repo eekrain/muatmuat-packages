@@ -19,16 +19,18 @@ export const FilterSelect = forwardRef(
       className = "w-full",
       errorMessage = null,
       showNotificationDot = false,
+      showNotificationDotWithoutNumber = false,
       itemClassName = "",
       notificationCount = 0,
       icon = null,
+      displayValueOverride = null,
+      renderItem = null,
       ...props
     },
     ref
   ) => {
     return (
       <div className="relative flex flex-col gap-2">
-        {/* Custom wrapper to add icon and notification dot */}
         <div className="relative">
           <Select.Root
             value={value}
@@ -41,15 +43,17 @@ export const FilterSelect = forwardRef(
               errorMessage={errorMessage}
               className={cn(
                 "h-8 border-neutral-400 text-xs font-medium hover:border-neutral-500 focus:border-primary-700 data-[state=open]:border-primary-700",
-                icon && "pl-9", // Add left padding when icon is present
+                icon && "pl-9",
                 className
               )}
             >
               <Select.Value placeholder={placeholder}>
-                {value
-                  ? options.find((option) => option.value === value)?.label ||
-                    value
-                  : placeholder}
+                {displayValueOverride !== null
+                  ? displayValueOverride
+                  : value
+                    ? options.find((option) => option.value === value)?.label ||
+                      value
+                    : placeholder}
               </Select.Value>
             </Select.Trigger>
 
@@ -66,20 +70,23 @@ export const FilterSelect = forwardRef(
                     key={option.value}
                     value={option.value}
                     className={cn(
-                      "p-2 text-xs font-medium hover:bg-neutral-50 data-[highlighted]:bg-neutral-50",
+                      "p-2 text-xs font-medium hover:bg-neutral-50 data-[highlighted]:bg-neutral-50 data-[state=checked]:bg-primary-50",
                       itemClassName
                     )}
                   >
-                    <span className="truncate whitespace-nowrap">
-                      {option.label}
-                    </span>
+                    {renderItem ? (
+                      renderItem(option)
+                    ) : (
+                      <span className="truncate whitespace-nowrap">
+                        {option.label}
+                      </span>
+                    )}
                   </Select.Item>
                 ))
               )}
             </Select.Content>
           </Select.Root>
 
-          {/* Icon overlay */}
           {icon && (
             <div className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2">
               <IconComponent
@@ -93,14 +100,15 @@ export const FilterSelect = forwardRef(
               />
             </div>
           )}
-
-          {/* Notification Dot */}
           {showNotificationDot && notificationCount > 0 && (
             <div className="absolute -right-1 -top-1 z-10">
               <div className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
                 {notificationCount > 99 ? "99+" : notificationCount}
               </div>
             </div>
+          )}
+          {showNotificationDotWithoutNumber && (
+            <div className="absolute -right-[3px] -top-[3px] z-10 flex aspect-square h-2 items-center justify-center rounded-full bg-red-500"></div>
           )}
         </div>
       </div>

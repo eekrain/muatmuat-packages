@@ -89,14 +89,17 @@ const PesananActionBar = ({
       {
         value: "PERLU_RESPON_PERUBAHAN",
         label: `${t("pesananActionBar.urgent.response", {}, "Perlu Respon Perubahan")} (${urgentCounts?.PERLU_RESPON_PERUBAHAN || 0})`,
+        count: urgentCounts?.PERLU_RESPON_PERUBAHAN || 0,
       },
       {
         value: "PERLU_KONFIRMASI_SIAP",
         label: `${t("pesananActionBar.urgent.ready", {}, "Perlu Konfirmasi Siap")} (${urgentCounts?.PERLU_KONFIRMASI_SIAP || 0})`,
+        count: urgentCounts?.PERLU_KONFIRMASI_SIAP || 0,
       },
       {
         value: "PERLU_ASSIGN_ARMADA",
         label: `${t("pesananActionBar.urgent.assign", {}, "Perlu Assign Armada")} (${urgentCounts?.PERLU_ASSIGN_ARMADA || 0})`,
+        count: urgentCounts?.PERLU_ASSIGN_ARMADA || 0,
       },
     ],
     [urgentCounts, t]
@@ -106,6 +109,17 @@ const PesananActionBar = ({
     () =>
       Object.values(urgentCounts || {}).reduce((sum, count) => sum + count, 0),
     [urgentCounts]
+  );
+
+  const urgentPlaceholder = `${t("pesananActionBar.urgentStatus", {}, "Status Urgent")} (${totalUrgentCount > 99 ? "99+" : totalUrgentCount})`;
+
+  const renderUrgentItem = (option) => (
+    <span className="inline-flex items-start truncate whitespace-nowrap">
+      {option.label}
+      {option.count > 0 && (
+        <span className="relative aspect-square h-1 w-1 rounded-full bg-red-500"></span>
+      )}
+    </span>
   );
 
   return (
@@ -134,16 +148,23 @@ const PesananActionBar = ({
           className="w-[262px]"
         />
         <FilterSelect
-          placeholder={t("pesananActionBar.urgentStatus", {}, "Status Urgent")}
+          placeholder={urgentPlaceholder}
           options={urgentStatusOptions}
           value={urgentStatusFilter}
+          showNotificationDotWithoutNumber
           onChange={onUrgentStatusChange}
           disabled={disableUrgent}
-          showNotificationDot={totalUrgentCount > 0}
-          notificationCount={totalUrgentCount}
           className="w-[158px] !border-neutral-600 hover:!border-primary-700"
           itemClassName="hover:!bg-neutral-200"
+          displayValueOverride={
+            urgentStatusFilter !== "all"
+              ? urgentStatusOptions.find((o) => o.value === urgentStatusFilter)
+                  ?.label
+              : urgentPlaceholder
+          }
+          renderItem={renderUrgentItem}
         />
+
         <DashboardFilter
           categories={filterConfig.categories}
           data={filterConfig.data}
