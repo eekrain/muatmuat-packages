@@ -37,7 +37,7 @@ export const BadgeStatusPesanan = ({
       {typeof icon.iconLeft === "string" && (
         <IconComponent src={icon.iconLeft} width={14} height={14} />
       )}
-      <span className="block">{children}</span>
+      <div>{children}</div>
     </div>
   );
 };
