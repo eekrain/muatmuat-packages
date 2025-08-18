@@ -7,15 +7,16 @@ import {
   ModalTrigger,
 } from "@/components/Modal/Modal";
 
+import { ModalDetailKontak } from "./ModalDetailKontak";
+
 /**
  * @param {object} props
- * @param {boolean} props.open - Controlled state for the modal.
- * @param {(open: boolean) => void} props.onOpenChange - Callback for when the modal state changes.
+ * @param {"shipper" | "transporter"} [props.mode="shipper"] - Mode of the modal, default is "shipper"
  * @returns {JSX.Element}
  */
-export const HubungiMuatransModal = ({ open, onOpenChange }) => {
+export const ModalPilihMetodeHubungi = ({ mode = "shipper" }) => {
   return (
-    <Modal open={open} onOpenChange={onOpenChange}>
+    <Modal>
       <ModalTrigger asChild>
         <Button
           variant="muattrans-primary"
@@ -39,23 +40,25 @@ export const HubungiMuatransModal = ({ open, onOpenChange }) => {
           </div>
 
           {/* Contact Button */}
-          <button className="flex w-full items-center gap-3 rounded-md border border-[#EBEBEB] px-6 pb-[14px] pt-[18px] text-left">
-            <IconComponent
-              src="/icons/contact.svg"
-              alt="Phone Icon"
-              width={24}
-              height={24}
-              className="text-primary-700"
-            />
-            <div className="flex flex-col gap-1">
-              <span className="text-sm font-semibold leading-tight text-primary-700">
-                No. Telepon / WhatsApp
-              </span>
-              <span className="text-xs font-medium leading-[14px] text-[#868686]">
-                Anda langsung terhubung dengan Whatsapp
-              </span>
-            </div>
-          </button>
+          <ModalDetailKontak mode={mode}>
+            <button className="flex w-full items-center gap-3 rounded-md border border-[#EBEBEB] px-6 pb-[14px] pt-[18px] text-left">
+              <IconComponent
+                src="/icons/contact.svg"
+                alt="Phone Icon"
+                width={24}
+                height={24}
+                className="text-primary-700"
+              />
+              <div className="flex flex-col gap-1">
+                <span className="text-sm font-semibold leading-tight text-primary-700">
+                  No. Telepon / WhatsApp
+                </span>
+                <span className="text-xs font-medium leading-[14px] text-[#868686]">
+                  Anda langsung terhubung dengan Whatsapp
+                </span>
+              </div>
+            </button>
+          </ModalDetailKontak>
         </div>
       </ModalContent>
     </Modal>

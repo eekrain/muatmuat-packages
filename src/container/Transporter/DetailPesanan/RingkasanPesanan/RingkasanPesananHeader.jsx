@@ -1,16 +1,20 @@
+"use client";
+
+import { useState } from "react";
+
 import { BadgeStatusPesanan } from "@/components/Badge/BadgeStatusPesanan";
 import Button from "@/components/Button/Button";
 import Card, { CardContent } from "@/components/Card/Card";
+import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
 import { useTranslation } from "@/hooks/use-translation";
-import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
 const RingkasanPesananHeader = ({ dataOrderDetail }) => {
   const { t } = useTranslation();
+  const [isRespondModalOpen, setIsRespondModalOpen] = useState(false);
 
   const handleResponPerubahan = () => {
-    toast.success("Berhasil kirim respon perubahan untuk pesanan MT25A012A");
-    console.log(dataOrderDetail);
+    setIsRespondModalOpen(true);
   };
 
   return (
@@ -38,9 +42,9 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
               <div
                 className={cn(
                   "flex items-center gap-x-2"
-                  //   dataStatusPesanan.orderStatus.startsWith("CANCELED") &&
-                  //     dataStatusPesanan.cancellationHistory &&
-                  //     "gap-x-5"
+                  // dataStatusPesanan.orderStatus.startsWith("CANCELED") &&
+                  //   dataStatusPesanan.cancellationHistory &&
+                  //   "gap-x-5"
                 )}
               >
                 <BadgeStatusPesanan
@@ -58,10 +62,6 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
                   }}
                   className="w-fit"
                 >
-                  {/* {statusMeta.label} */}
-                  {/* Menunggu Konfirmasi Shipper */}
-                  {/* Armada Dijadwalkan */}
-                  {/* Menunggu Konfirmasi */}
                   {dataOrderDetail?.orderStatus === "NEED_RESPONSE_CHANGE" &&
                     "Perlu Respon Perubahan"}
                   {dataOrderDetail?.orderStatus === "CONFIRMED_ORDER" &&
@@ -72,11 +72,22 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
               </div>
             </div>
           </div>
+
           {dataOrderDetail?.orderStatus === "NEED_RESPONSE_CHANGE" && (
             <Button onClick={handleResponPerubahan}>Respon Perubahan</Button>
           )}
         </div>
       </CardContent>
+
+      {/* Modal Response Change*/}
+      <RespondChangeModal
+        isOpen={isRespondModalOpen}
+        onClose={() => setIsRespondModalOpen(false)}
+        orderData={{
+          ...dataOrderDetail,
+          id: dataOrderDetail?.orderId, // map orderId ke id menyesuaikan api yang diterima modal
+        }}
+      />
     </Card>
   );
 };

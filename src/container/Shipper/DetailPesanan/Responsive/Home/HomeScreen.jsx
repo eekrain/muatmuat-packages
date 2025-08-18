@@ -197,7 +197,7 @@ const DetailPesananScreen = ({
           />
         ) : WHITELIST_FLEET_FOUND.includes(dataStatusPesanan?.orderStatus) ? (
           <PendingPaymentAlert
-            paymentDueDateTime={dataRingkasanPembayaran?.expiredAt}
+            paymentDueDateTime={dataStatusPesanan.paymentDueDateTime}
           />
         ) : WHITELIST_PENDING_PAYMENT.includes(
             dataStatusPesanan?.orderStatus
