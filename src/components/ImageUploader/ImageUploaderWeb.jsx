@@ -32,6 +32,7 @@ export default function ImageUploaderWeb({
   const [isCropperOpen, setIsCropperOpen] = useState(false);
   const [preview, setPreview] = useState(null);
   const [error, setError] = useState(false);
+  const [image, setImage] = useState(null);
 
   // --- THIS IS THE KEY LOGIC ---
   // This effect correctly handles the 'value' prop from the parent.
@@ -77,6 +78,8 @@ export default function ImageUploaderWeb({
       return;
     }
 
+    setImage(file);
+
     const reader = new FileReader();
     reader.onloadend = () => {
       setImageSrc(reader.result);
@@ -101,6 +104,7 @@ export default function ImageUploaderWeb({
       imageRef.current.value = null;
     }
     setImageSrc(null);
+    setImage(null);
     setPreview(null);
     setError(false);
   };
@@ -204,6 +208,7 @@ export default function ImageUploaderWeb({
       </div>
       {isCropperOpen && (
         <CropperWebNew
+          imageFile={image}
           imageSource={imageSrc}
           isOpen={isCropperOpen}
           setIsOpen={setIsCropperOpen}
