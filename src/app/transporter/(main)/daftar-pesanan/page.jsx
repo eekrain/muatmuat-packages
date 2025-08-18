@@ -61,11 +61,31 @@ const DaftarPesananPage = () => {
 
   if (!mounted) return null;
 
+  const handleChangeQueryParams = (field, value) => {
+    setQueryParams((prevState) => {
+      // Reset to page 1 when changing filters
+      if (field !== "page") {
+        return { ...prevState, [field]: value, page: 1 };
+      }
+      return { ...prevState, [field]: value };
+    });
+    // if (defaultPage) {
+    //   setCurrentPeriodValue((prevState) =>
+    //     field === "search"
+    //       ? { name: "Semua Periode (Default)", value: "", format: "day" }
+    //       : prevState
+    //   );
+    //   setLastFilterField(field);
+    // }
+  };
+
   return (
     <DaftarPesanan
       isFirstTimer={isFirstTimer}
       orders={orders}
       pagination={pagination}
+      queryParams={queryParams}
+      onChangeQueryParams={handleChangeQueryParams}
     />
   );
 };

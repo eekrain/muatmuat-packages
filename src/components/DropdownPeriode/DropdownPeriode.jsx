@@ -170,7 +170,7 @@ const DropdownPeriode = ({
           {options.map((option) => (
             <li
               key={option.value}
-              className={`cursor-pointer px-[10px] py-2 hover:text-primary-700 ${selected?.value === option?.value ? "semi-xs" : "medium-xs"}`}
+              className={`cursor-pointer bg-neutral-50 px-[10px] py-2 hover:bg-neutral-200 ${selected?.value === option?.value ? "semi-xs" : "medium-xs"}`}
               onClick={() => handleSelect(option)}
             >
               <div className="flex w-full items-center justify-between">

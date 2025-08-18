@@ -20,14 +20,21 @@ import { formatLoadTime } from "@/lib/utils/dateFormat";
 
 // Import the new function
 
-const DaftarPesanan = ({ isFirstTimer, orders, pagination }) => {
+const DaftarPesanan = ({
+  isFirstTimer,
+  orders,
+  pagination,
+  queryParams,
+  onChangeQueryParams,
+}) => {
   const { t } = useTranslation();
+
+  const [tempSearch, setTempSearch] = useState("");
   console.log("isFirstTimer", isFirstTimer);
   const [selectedTab, setSelectedTab] = useState("semua");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [searchValue, setSearchValue] = useState("");
-  const [tempSearch, setTempSearch] = useState("");
   const [filters, setFilters] = useState({});
   const [selectedStatus, setSelectedStatus] = useState("");
   const [recentPeriodOptions, setRecentPeriodOptions] = useState([]);
@@ -49,9 +56,8 @@ const DaftarPesanan = ({ isFirstTimer, orders, pagination }) => {
 
   // Handle search
   const handleSearch = (e) => {
-    if (e.key === "Enter") {
-      setSearchValue(tempSearch);
-      console.log("Search:", tempSearch);
+    if (e.key === "Enter" && tempSearch.length >= 3) {
+      onChangeQueryParams("search", tempSearch);
     }
   };
 
@@ -376,6 +382,24 @@ const DaftarPesanan = ({ isFirstTimer, orders, pagination }) => {
     },
   ];
 
+  // Generic function to handle sorting for any column
+  const handleSort = (columnName) => {
+    // If sort is empty or not the current column, set to current column and order to desc
+    if (queryParams.sort !== columnName) {
+      onChangeQueryParams("sort", columnName);
+      onChangeQueryParams("order", "desc");
+    }
+    // If sort is the current column and order is desc, change to asc
+    else if (queryParams.sort === columnName && queryParams.order === "desc") {
+      onChangeQueryParams("order", "asc");
+    }
+    // If sort is the current column and order is asc, reset sort and order
+    else {
+      onChangeQueryParams("sort", "");
+      onChangeQueryParams("order", "");
+    }
+  };
+
   // Helper function to format DD-MM-YYYY to YYYY-MM-DD
   const formatToYYYYMMDD = (dateStr) => {
     if (!dateStr) return "";
@@ -452,7 +476,7 @@ const DaftarPesanan = ({ isFirstTimer, orders, pagination }) => {
   };
 
   return (
-    <div className="flex flex-col gap-y-6 py-6">
+    <div className="flex flex-col gap-y-4 py-6">
       {/* Header sesuai LDG-2 */}
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-neutral-900">Daftar Pesanan</h1>
@@ -563,14 +587,10 @@ const DaftarPesanan = ({ isFirstTimer, orders, pagination }) => {
                     return (
                       <div
                         key={key}
-                        onClick={() =>
-                          // onChangeQueryParams("status", tab.value)
-                          {}
-                        }
+                        onClick={() => onChangeQueryParams("status", tab.value)}
                         className={cn(
                           "relative flex h-7 cursor-pointer items-center rounded-full px-3 py-[6px] font-semibold",
-                          //   queryParams.status === tab.value ||
-                          isActiveAllTab
+                          queryParams.status === tab.value || isActiveAllTab
                             ? "border border-primary-700 bg-primary-50 text-primary-700"
                             : "bg-neutral-200 text-neutral-900"
                         )}
@@ -590,9 +610,12 @@ const DaftarPesanan = ({ isFirstTimer, orders, pagination }) => {
                 columns={columns}
                 data={orders}
                 loading={false}
-                onRowClick={{}}
-                onSort={{}}
-                sortConfig={{ sort: null, order: null }}
+                onRowClick={undefined}
+                onSort={handleSort}
+                sortConfig={{
+                  sort: queryParams.sort,
+                  order: queryParams.order,
+                }}
                 //   emptyComponent={renderEmptyState()}
               />
             </div>
@@ -714,6 +737,14 @@ const DaftarPesanan = ({ isFirstTimer, orders, pagination }) => {
           )} */}
         </>
       )}
+      <Pagination
+        currentPage={1}
+        totalPages={1}
+        perPage={10}
+        onPageChange={() => {}}
+        onPerPageChange={() => {}}
+        className="py-0"
+      />
     </div>
   );
 };
