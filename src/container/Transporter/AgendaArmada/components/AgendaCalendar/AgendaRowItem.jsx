@@ -12,6 +12,7 @@
  * @property {number} [position=0] - Horizontal position offset for the card (multiplied by 205px)
  */
 import { CardItem } from "./CardItem";
+import { useAgendaNavigatorStore } from "./agendaNavigatorStore";
 
 /**
  * @typedef {Object} ArmadaProps
@@ -28,11 +29,13 @@ import { CardItem } from "./CardItem";
  * @returns {JSX.Element} A card component showing delivery schedule information
  */
 
-export const AgendaRowItem = ({ armada, cellWidth }) => {
-  if (!armada) return null;
+export const AgendaRowItem = ({ data, cellWidth }) => {
+  const { viewType } = useAgendaNavigatorStore();
+
+  if (!data) return null;
 
   // Handle placeholder items for consistent grid layout
-  if (armada.isPlaceholder) {
+  if (data.isPlaceholder) {
     return (
       <div className="grid grid-cols-[202px_1fr] grid-rows-[109px] divide-x">
         <div className="px-3 py-4">{/* Empty placeholder content */}</div>
@@ -48,11 +51,50 @@ export const AgendaRowItem = ({ armada, cellWidth }) => {
     );
   }
 
+  // Handle driver view data structure
+  if (data.driverName && data.schedules) {
+    return (
+      <div className="grid grid-cols-[202px_1fr] grid-rows-[109px] divide-x">
+        <div className="border-b border-neutral-200 px-3 py-4">
+          <h5 className="mb-3 text-xs font-bold">{data.driverName}</h5>
+
+          {data.driverPhone && (
+            <p className="mb-2 text-xxs font-semibold text-neutral-900">
+              {data.driverPhone}
+            </p>
+          )}
+          {data.driverEmail && (
+            <p className="text-xxs font-medium text-neutral-900">
+              {data.driverEmail}
+            </p>
+          )}
+        </div>
+
+        <div className="relative grid grid-cols-5 overflow-hidden">
+          <div className="border-b border-r border-neutral-200" />
+          <div className="border-b border-r border-neutral-200" />
+          <div className="border-b border-r border-neutral-200" />
+          <div className="border-b border-r border-neutral-200" />
+          <div className="border-b border-neutral-200" />
+          {data.schedules.map((item, index) => (
+            <CardItem
+              key={index}
+              {...item}
+              cellWidth={cellWidth}
+              viewType={viewType}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Handle armada view data structure (original logic)
   return (
     <div className="grid grid-cols-[202px_1fr] grid-rows-[109px] divide-x">
       <div className="border-b border-neutral-200 px-3 py-4">
-        <h5 className="text-xs font-bold">{armada.plateNumber}</h5>
-        <span className="text-xxs font-semibold">{armada.truckType}</span>
+        <h5 className="text-xs font-bold">{data.plateNumber}</h5>
+        <span className="text-xxs font-semibold">{data.truckType}</span>
       </div>
 
       <div className="relative grid grid-cols-5 overflow-hidden">
@@ -61,8 +103,13 @@ export const AgendaRowItem = ({ armada, cellWidth }) => {
         <div className="border-b border-r border-neutral-200" />
         <div className="border-b border-r border-neutral-200" />
         <div className="border-b border-neutral-200" />
-        {armada.rowData.map((item, index) => (
-          <CardItem key={index} {...item} cellWidth={cellWidth} />
+        {data.rowData?.map((item, index) => (
+          <CardItem
+            key={index}
+            {...item}
+            cellWidth={cellWidth}
+            viewType={viewType}
+          />
         ))}
       </div>
     </div>

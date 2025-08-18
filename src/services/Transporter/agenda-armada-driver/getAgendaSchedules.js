@@ -1,4 +1,11 @@
-import { STATUS_CODES, locations, truckTypes } from "./getAgendaSchedules.data";
+import {
+  STATUS_CODES,
+  driverNames,
+  locations,
+  randomEmail,
+  randomPhoneNumber,
+  truckTypes,
+} from "./getAgendaSchedules.data";
 
 // Hardcoded license plates and driver names for consistent autocomplete
 export const HARDCODED_PLATES = [
@@ -27,7 +34,6 @@ const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const getRandomInt = (min, max) =>
   Math.floor(Math.random() * (max - min + 1)) + min;
 
-// Updated to use hardcoded values
 const generatePlateNumber = () => {
   return getRandomElement(HARDCODED_PLATES);
 };
@@ -36,7 +42,7 @@ const getDriverName = () => {
   return getRandomElement(HARDCODED_DRIVERS);
 };
 
-// --- Updated Data Generator ---
+// --- Data Generator for a single task ---
 const generateMockRowData = () => {
   const statusCode = getRandomElement(STATUS_CODES);
   const positionPattern = getRandomElement([
@@ -49,20 +55,16 @@ const generateMockRowData = () => {
 
   switch (positionPattern) {
     case "starts_before": {
-      // With max duration 4 (3 sched + 1 add), earliest start is pos -3.
       position = getRandomInt(-3, -1);
       const minScheduled = 1 - position - additional;
       const maxScheduledByView = 5 - position - additional;
-      // Enforce the new rule: scheduled value cannot be more than 3
       const finalMaxScheduled = Math.min(maxScheduledByView, 3);
       scheduled = getRandomInt(minScheduled, finalMaxScheduled);
       break;
     }
     case "ends_after": {
-      // With max duration 4, earliest start to guarantee ending after is pos 2.
       position = getRandomInt(2, 4);
       const minScheduled = 6 - position - additional;
-      // Enforce the new rule: scheduled value cannot be more than 3
       scheduled = getRandomInt(Math.max(1, minScheduled), 3);
       break;
     }
@@ -70,7 +72,6 @@ const generateMockRowData = () => {
     default: {
       position = getRandomInt(0, 4);
       const maxScheduledByView = Math.max(1, 5 - position - additional);
-      // Enforce the new rule: scheduled value cannot be more than 3
       const finalMaxScheduled = Math.min(maxScheduledByView, 3);
       scheduled = getRandomInt(1, finalMaxScheduled);
       break;
@@ -79,13 +80,21 @@ const generateMockRowData = () => {
 
   const isInactive = statusCode === "NON_AKTIF";
   const isFinished = statusCode === "PENGIRIMAN_SELESAI";
+  const mustHaveLocationData = statusCode === "MENUNGGU_JAM_MUAT";
+  const dataMuat =
+    isInactive && !mustHaveLocationData
+      ? null
+      : { title: "Lokasi Muat", subtitle: getRandomElement(locations) };
+  const dataBongkar =
+    isInactive && !mustHaveLocationData
+      ? null
+      : { title: "Lokasi Bongkar", subtitle: getRandomElement(locations) };
 
   return {
     statusCode,
     position,
     scheduled,
     additional,
-    driverName: getDriverName(),
     hasSosIssue: statusCode === "BERTUGAS" && Math.random() < 0.5,
     currentLocation: isInactive
       ? "Garasi Pool Kendaraan"
@@ -95,73 +104,41 @@ const generateMockRowData = () => {
         ? null
         : `est. ${getRandomInt(5, 50)}km (${getRandomInt(1, 2)}jam ${getRandomInt(10, 59)}menit)`,
     distanceRemaining: isFinished || isInactive ? 0 : getRandomInt(1, 200),
-    dataMuat: isInactive
-      ? null
-      : { title: "Lokasi Muat", subtitle: getRandomElement(locations) },
-    dataBongkar: isInactive
-      ? null
-      : { title: "Lokasi Bongkar", subtitle: getRandomElement(locations) },
+    dataMuat,
+    dataBongkar,
   };
 };
 
-// Generate different datasets for different date ranges
-const generateDatasetForDateRange = (startDate, endDate) => {
-  // Create a simple hash from the date range to ensure different but consistent data
-  const dateString = `${startDate}-${endDate}`;
-  let hash = 0;
-  for (let i = 0; i < dateString.length; i++) {
-    const char = dateString.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32-bit integer
-  }
-
-  // Use hash to determine dataset characteristics
-  const baseSize = 45;
-  const variance = (Math.abs(hash) % 20) - 10; // -10 to +9 variance
-  const datasetSize = Math.max(15, Math.min(75, baseSize + variance));
-
-  // Generate data with modified randomness based on hash
-  const dataset = [];
-  for (let i = 0; i < datasetSize; i++) {
-    // Create pseudo-random values based on hash and index
-    const localSeed = Math.abs(hash + i * 1000);
-    const pseudoRandom1 = (localSeed % 1000) / 1000;
-    const pseudoRandom2 = ((localSeed * 7) % 1000) / 1000;
-
-    // Mix real randomness with pseudo-randomness for variety
-    const mixedRandom1 = (Math.random() + pseudoRandom1) / 2;
-    const mixedRandom2 = (Math.random() + pseudoRandom2) / 2;
-
-    // Generate variations in the data
-    const statusOptions = STATUS_CODES;
-    const statusIndex = Math.floor(mixedRandom1 * statusOptions.length);
-    const locationIndex = Math.floor(mixedRandom2 * locations.length);
-
-    dataset.push({
-      plateNumber: generatePlateNumber(),
-      truckType: getRandomElement(truckTypes),
-      rowData: [
-        {
-          ...generateMockRowData(),
-          statusCode: statusOptions[statusIndex],
-          currentLocation:
-            statusOptions[statusIndex] === "NON_AKTIF"
-              ? "Garasi Pool Kendaraan"
-              : locations[locationIndex],
-          driverName: getDriverName(),
-        },
-      ],
-    });
-  }
-
-  return dataset;
-};
-
-const FULL_MOCK_DATASET = Array.from({ length: 45 }, () => ({
+// --- START: New Generator for Driver View ---
+// Generates a schedule item including plate/truck info
+const generateDriverViewScheduleItem = () => ({
   plateNumber: generatePlateNumber(),
   truckType: getRandomElement(truckTypes),
-  rowData: [generateMockRowData()],
-}));
+  ...generateMockRowData(),
+});
+
+// Generates the full dataset grouped by driver
+const generateDriverViewDataset = () => {
+  return driverNames.map((driverName) => ({
+    driverName: driverName,
+    driverEmail: getRandomElement(randomEmail),
+    driverPhone: getRandomElement(randomPhoneNumber),
+    // Each driver gets 1 to 3 tasks
+    schedules: Array.from(
+      { length: getRandomInt(1, 3) },
+      generateDriverViewScheduleItem
+    ),
+  }));
+};
+// --- END: New Generator for Driver View ---
+
+const generateArmadaViewDataset = (size) => {
+  return Array.from({ length: size }, () => ({
+    plateNumber: generatePlateNumber(),
+    truckType: getRandomElement(truckTypes),
+    rowData: [{ ...generateMockRowData(), driverName: getDriverName() }],
+  }));
+};
 
 // --- The "Backend" Logic ---
 const runMockApiLogic = (params) => {
@@ -170,57 +147,84 @@ const runMockApiLogic = (params) => {
     limit = 10,
     agenda_status,
     search,
-    schedule_date_from,
-    schedule_date_to,
+    view_type = "armada",
   } = params;
 
-  // Generate different data based on date range if provided
   let results;
-  if (schedule_date_from || schedule_date_to) {
-    const startDateKey = schedule_date_from || "default-start";
-    const endDateKey = schedule_date_to || "default-end";
-    results = [...generateDatasetForDateRange(startDateKey, endDateKey)];
+
+  // --- START: Logic to switch between view types ---
+  if (view_type === "driver") {
+    results = generateDriverViewDataset();
+    if (search) {
+      results = results.filter((driver) =>
+        driver.driverName.toLowerCase().includes(search.toLowerCase())
+      );
+    }
   } else {
-    results = [...FULL_MOCK_DATASET];
+    // Default to "armada" view
+    results = generateArmadaViewDataset(45);
+    if (search) {
+      results = results.filter(
+        (item) =>
+          item.plateNumber.toLowerCase().includes(search.toLowerCase()) ||
+          item.rowData[0].driverName
+            .toLowerCase()
+            .includes(search.toLowerCase())
+      );
+      // Ensure unique plate numbers for armada search
+      const seenPlates = new Set();
+      results = results.filter((item) => {
+        if (seenPlates.has(item.plateNumber)) return false;
+        seenPlates.add(item.plateNumber);
+        return true;
+      });
+    }
   }
-
-  if (search) {
-    results = results.filter(
-      (item) =>
-        item.plateNumber.toLowerCase().includes(search.toLowerCase()) ||
-        item.rowData[0].driverName.toLowerCase().includes(search.toLowerCase())
-    );
-
-    // Ensure unique plate numbers when searching
-    const seenPlates = new Set();
-    results = results.filter((item) => {
-      if (seenPlates.has(item.plateNumber)) {
-        return false;
-      }
-      seenPlates.add(item.plateNumber);
-      return true;
-    });
-  }
+  // --- END: Logic to switch between view types ---
 
   if (agenda_status && agenda_status.length > 0) {
-    results = results.filter((item) =>
-      agenda_status.includes(item.rowData[0].statusCode)
-    );
+    if (view_type === "driver") {
+      // Filter the nested schedules for each driver
+      results = results
+        .map((driver) => ({
+          ...driver,
+          schedules: driver.schedules.filter((task) =>
+            agenda_status.includes(task.statusCode)
+          ),
+        }))
+        .filter((driver) => driver.schedules.length > 0); // Only keep drivers that still have tasks
+    } else {
+      results = results.filter((item) =>
+        agenda_status.includes(item.rowData[0].statusCode)
+      );
+    }
   }
 
   const totalItems = results.length;
   const totalPages = Math.ceil(totalItems / limit);
   const baseSchedules = results.slice((page - 1) * limit, page * limit);
 
-  // Ensure minimum 4 rows for consistent grid layout
   const minRows = 4;
   const placeholderCount = Math.max(0, minRows - baseSchedules.length);
-  const placeholders = Array.from({ length: placeholderCount }, () => ({
-    plateNumber: null,
-    truckType: null,
-    rowData: [],
-    isPlaceholder: true, // Mark as placeholder for frontend handling
-  }));
+  const placeholderStructure =
+    view_type === "driver"
+      ? {
+          driverName: null,
+          driverEmail: null,
+          driverPhone: null,
+          schedules: [],
+          isPlaceholder: true,
+        }
+      : {
+          plateNumber: null,
+          truckType: null,
+          rowData: [],
+          isPlaceholder: true,
+        };
+  const placeholders = Array.from(
+    { length: placeholderCount },
+    () => placeholderStructure
+  );
 
   const paginatedSchedules = [...baseSchedules, ...placeholders];
 
@@ -245,7 +249,5 @@ const runMockApiLogic = (params) => {
 export const getAgendaSchedules = async (key) => {
   const [, params] = key;
   await new Promise((resolve) => setTimeout(resolve, 750));
-  // const probability = Math.random();
-  // if (probability < 0.2) throw new Error("Mock API error for testing purposes");
   return runMockApiLogic(params);
 };

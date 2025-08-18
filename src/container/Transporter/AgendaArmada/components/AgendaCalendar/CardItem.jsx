@@ -158,6 +158,8 @@ export const CardItem = (props) => {
     position = 0,
     hasSosIssue = false,
     cellWidth,
+    viewType = "armada",
+    truckType,
   } = props;
 
   const cellConfig = useMemo(() => {
@@ -178,7 +180,6 @@ export const CardItem = (props) => {
 
     return { left, right, total };
   }, [additional, scheduled]);
-  console.log("🚀 ~ CardItem ~ additional:", additional);
 
   return (
     <div
@@ -232,7 +233,7 @@ export const CardItem = (props) => {
 
           <div className="flex flex-col gap-1.5">
             <span className="text-xxs font-bold leading-none text-neutral-900">
-              {driverName}
+              {viewType === "armada" ? driverName : truckType}
             </span>
             <div className="flex items-center gap-[4.5px]">
               <IconComponent
