@@ -15,6 +15,7 @@ import { useShallowMemo } from "@/hooks/use-shallow-memo";
 import { useGetOrderDetail } from "@/services/Transporter/daftar-pesanan/detail-pesanan/getOrderDetail";
 
 import LabelLacakArmada from "./LacakArmada/components/LabelLacakArmada";
+import RiwayatPerubahan from "./RiwayatPerubahan/RiwayatPerubahan";
 
 const DetailPesanan = ({ breadcrumbData }) => {
   const params = useParams();
@@ -74,6 +75,12 @@ const DetailPesanan = ({ breadcrumbData }) => {
 
         <TabsContent className="flex flex-col gap-y-4" value="lacak-armada">
           <LacakArmada dataOrderDetail={dataOrderDetail} />
+        </TabsContent>
+        <TabsContent
+          className="flex flex-col gap-y-4"
+          value="riwayat-perubahan"
+        >
+          <RiwayatPerubahan dataOrderDetail={dataOrderDetail} />
         </TabsContent>
       </Tabs>
     </div>

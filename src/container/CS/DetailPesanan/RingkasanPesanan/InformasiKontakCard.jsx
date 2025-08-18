@@ -2,17 +2,18 @@ import React from "react";
 
 import IconComponent from "@/components/IconComponent/IconComponent";
 
-import { HubungiMuatransModal } from "./ModalHubungi";
+import { ModalPilihMetodeHubungi } from "./ModalPilihMetodeHubungi";
 
 /**
  * @param {{
+ * mode: "shipper" | "transporter";
  * logo: string;
  * companyName: string;
  * details: { text: string; icon?: string }[];
  * onContact: () => void;
  * }} props
  */
-const ContactDetail = ({ logo, companyName, details }) => (
+const ContactDetail = ({ mode, logo, companyName, details }) => (
   <div className="flex w-full items-center gap-2">
     <div className="shrink-0">
       <img
@@ -53,7 +54,7 @@ const ContactDetail = ({ logo, companyName, details }) => (
       </div>
     </div>
     <div className="shrink-0">
-      <HubungiMuatransModal />
+      <ModalPilihMetodeHubungi mode={mode} />
     </div>
   </div>
 );
@@ -80,6 +81,7 @@ export const InformasiKontakCard = () => {
           companyName="PT. Airmas International (AIRI)"
           details={shipperDetails}
           onContact={() => alert("Menghubungi Shipper...")}
+          mode="shipper"
         />
       </div>
 
@@ -92,6 +94,7 @@ export const InformasiKontakCard = () => {
           logo="https://picsum.photos/200/200?random=2"
           companyName="PT. Siba Surya"
           details={transporterDetails}
+          mode="transporter"
         />
       </div>
     </div>

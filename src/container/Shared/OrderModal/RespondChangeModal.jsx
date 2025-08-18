@@ -17,6 +17,96 @@ import {
 
 import RespondChangeFormModal from "./RespondChangeFormModal";
 
+/* -------------------------------------------
+   Timeline util: daftar lokasi dengan garis
+-------------------------------------------- */
+function LocationList({
+  title,
+  items = [],
+  variant = "pickup", // 'pickup' | 'dropoff'
+  compareWith = [],
+  showChangedBadge = false,
+  bridgeToNext = false,
+}) {
+  const dotClass =
+    variant === "pickup"
+      ? "bg-[#FFC217] text-[#461B02]"
+      : "bg-[#461B02] text-white";
+
+  // warna pita highlight (silakan ganti sesuai desain)
+  const bandClass =
+    variant === "pickup"
+      ? "bg-success-50" // kuning sangat muda
+      : "bg-[#F0E8E3]"; // coklat keabu muda
+
+  return (
+    <div className="space-y-2">
+      {title && (
+        <p className="ml-7 text-xs font-medium leading-[120%] text-[#7B7B7B]">
+          {title}
+        </p>
+      )}
+
+      <div className="relative flex flex-col gap-3">
+        {items.map((loc, idx) => {
+          const isLast = idx === items.length - 1;
+          const counterpart = compareWith?.[idx];
+          const isChanged =
+            counterpart?.fullAddress !== undefined &&
+            counterpart?.fullAddress !== loc?.fullAddress;
+
+          // panjang garis
+          const extra = isLast ? (bridgeToNext ? 32 : 12) : 12;
+          const showConnector = !isLast || bridgeToNext;
+
+          return (
+            <div key={`${variant}-${idx}`} className="relative">
+              {/* Pita highlight: extend 6px ke atas & bawah agar seamless ke item tetangga */}
+              {isChanged && (
+                <div
+                  className={`absolute -bottom-1.5 -top-1.5 left-0 right-0 rounded ${bandClass} z-[1]`}
+                />
+              )}
+
+              {/* Row content */}
+              <div className="relative z-[3] flex items-center gap-3">
+                {/* garis vertikal */}
+                {showConnector && (
+                  <div
+                    className="absolute left-[7px] top-4 z-[2] w-0 border-l-2 border-dashed border-neutral-400"
+                    style={{ height: `calc(100% + ${extra}px)` }}
+                  />
+                )}
+
+                {/* dot */}
+                <div
+                  className={`relative z-[3] flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full ${dotClass}`}
+                >
+                  <span className="text-[10px] font-bold leading-[12px]">
+                    {loc?.sequence ?? idx + 1}
+                  </span>
+                </div>
+
+                {/* alamat + badge */}
+                <div className="relative z-[3] flex flex-1 items-center gap-2">
+                  <p className="line-clamp-1 flex-1 break-all text-xs font-medium leading-[120%] text-black">
+                    {loc?.fullAddress}
+                  </p>
+                  {showChangedBadge && isChanged && (
+                    <span className="flex h-[14px] w-[54px] flex-shrink-0 items-center justify-center rounded bg-black text-[8px] font-semibold leading-[130%] text-white">
+                      Rute Diubah
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
   const [showFormModal, setShowFormModal] = useState(false);
 
@@ -66,6 +156,24 @@ const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
   };
 
   if (!orderData) return null;
+
+  // Precompute arrays untuk perbandingan lama↔baru
+  const originalPickups =
+    changeDetails?.originalData?.locations?.filter(
+      (l) => l.locationType === "PICKUP"
+    ) || [];
+  const originalDropoffs =
+    changeDetails?.originalData?.locations?.filter(
+      (l) => l.locationType === "DROPOFF"
+    ) || [];
+  const newPickups =
+    changeDetails?.requestedChanges?.locations?.filter(
+      (l) => l.locationType === "PICKUP"
+    ) || [];
+  const newDropoffs =
+    changeDetails?.requestedChanges?.locations?.filter(
+      (l) => l.locationType === "DROPOFF"
+    ) || [];
 
   return (
     <Modal open={isOpen} onOpenChange={onClose}>
@@ -127,7 +235,7 @@ const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
                     {(changeDetails.changeType === "LOCATION_AND_TIME" ||
                       changeDetails.changeType === "TIME_ONLY") && (
                       <>
-                        <div className="mb-3 flex items-center gap-2">
+                        <div className="flex items-center gap-2">
                           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muat-trans-primary-400">
                             <IconComponent
                               src="/icons/monitoring/daftar-pesanan-aktif/change-time.svg"
@@ -178,7 +286,7 @@ const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
                     {(changeDetails.changeType === "LOCATION_AND_TIME" ||
                       changeDetails.changeType === "LOCATION_ONLY") && (
                       <>
-                        <div className="mb-3 flex items-center gap-2">
+                        <div className="flex items-center gap-2">
                           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muat-trans-primary-400">
                             <IconComponent
                               src="/icons/monitoring/daftar-pesanan-aktif/change-route.svg"
@@ -203,100 +311,22 @@ const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
                                   0
                               )}
                             </p>
+
                             <div className="space-y-4">
-                              {/* Pickup Locations */}
-                              <div className="space-y-2">
-                                <p className="text-xs font-medium leading-[120%] text-[#7B7B7B]">
-                                  Lokasi Muat
-                                </p>
-                                <div className="relative flex flex-col gap-3">
-                                  {(() => {
-                                    const originalPickups =
-                                      changeDetails.originalData?.locations?.filter(
-                                        (loc) => loc.locationType === "PICKUP"
-                                      ) || [];
-                                    const newPickups =
-                                      changeDetails.requestedChanges?.locations?.filter(
-                                        (loc) => loc.locationType === "PICKUP"
-                                      ) || [];
-
-                                    return originalPickups.map(
-                                      (loc, idx, pickupArray) => {
-                                        const isChanged =
-                                          newPickups[idx]?.fullAddress !==
-                                          loc.fullAddress;
-                                        return (
-                                          <div
-                                            key={`pickup-${idx}`}
-                                            className={`relative flex items-center gap-3 ${isChanged ? "rounded bg-success-50" : ""}`}
-                                          >
-                                            {/* Dashed line connector */}
-                                            {idx < pickupArray.length - 1 && (
-                                              <div className="absolute left-2 top-[16px] z-0 h-[calc(100%+12px)] w-0 border-l-[1.5px] border-dashed border-neutral-400" />
-                                            )}
-                                            {/* Bullet with number */}
-                                            <div className="relative z-[4] flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-[#FFC217]">
-                                              <span className="text-[10px] font-bold leading-[12px] text-[#461B02]">
-                                                {idx + 1}
-                                              </span>
-                                            </div>
-                                            <p className="relative z-[4] line-clamp-1 flex-1 break-all text-xs font-medium leading-[120%] text-black">
-                                              {loc.fullAddress}
-                                            </p>
-                                          </div>
-                                        );
-                                      }
-                                    );
-                                  })()}
-                                </div>
-                              </div>
-
-                              {/* Dropoff Locations */}
-                              <div className="space-y-2">
-                                <p className="text-xs font-medium leading-[120%] text-[#7B7B7B]">
-                                  Lokasi Bongkar
-                                </p>
-                                <div className="relative flex flex-col gap-3">
-                                  {(() => {
-                                    const originalDropoffs =
-                                      changeDetails.originalData?.locations?.filter(
-                                        (loc) => loc.locationType === "DROPOFF"
-                                      ) || [];
-                                    const newDropoffs =
-                                      changeDetails.requestedChanges?.locations?.filter(
-                                        (loc) => loc.locationType === "DROPOFF"
-                                      ) || [];
-
-                                    return originalDropoffs.map(
-                                      (loc, idx, dropoffArray) => {
-                                        const isChanged =
-                                          newDropoffs[idx]?.fullAddress !==
-                                          loc.fullAddress;
-                                        return (
-                                          <div
-                                            key={`dropoff-${idx}`}
-                                            className={`relative flex items-center gap-3 ${isChanged ? "rounded bg-success-50" : ""}`}
-                                          >
-                                            {/* Dashed line connector */}
-                                            {idx < dropoffArray.length - 1 && (
-                                              <div className="absolute left-2 top-[16px] z-0 h-[calc(100%+12px)] w-0 border-l-[1.5px] border-dashed border-neutral-400" />
-                                            )}
-                                            {/* Bullet with number */}
-                                            <div className="relative z-[4] flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-[#461B02]">
-                                              <span className="text-[10px] font-bold leading-[12px] text-white">
-                                                {idx + 1}
-                                              </span>
-                                            </div>
-                                            <p className="relative z-[4] line-clamp-1 flex-1 break-all text-xs font-medium leading-[120%] text-black">
-                                              {loc.fullAddress}
-                                            </p>
-                                          </div>
-                                        );
-                                      }
-                                    );
-                                  })()}
-                                </div>
-                              </div>
+                              <LocationList
+                                title="Lokasi Muat"
+                                items={originalPickups}
+                                variant="pickup"
+                                compareWith={newPickups}
+                                bridgeToNext={originalDropoffs.length > 0}
+                              />
+                              <LocationList
+                                title="Lokasi Bongkar"
+                                items={originalDropoffs}
+                                variant="dropoff"
+                                compareWith={newDropoffs}
+                                bridgeToNext={false}
+                              />
                             </div>
                           </div>
 
@@ -309,114 +339,24 @@ const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
                                   ?.estimatedDistance || 0
                               )}
                             </p>
+
                             <div className="space-y-4">
-                              {/* Pickup Locations */}
-                              <div className="space-y-2">
-                                <p className="text-xs font-medium leading-[120%] text-[#7B7B7B]">
-                                  Lokasi Muat
-                                </p>
-                                <div className="relative flex flex-col gap-3">
-                                  {(() => {
-                                    const originalPickups =
-                                      changeDetails.originalData?.locations?.filter(
-                                        (loc) => loc.locationType === "PICKUP"
-                                      ) || [];
-                                    const newPickups =
-                                      changeDetails.requestedChanges?.locations?.filter(
-                                        (loc) => loc.locationType === "PICKUP"
-                                      ) || [];
-
-                                    return newPickups.map(
-                                      (loc, idx, pickupArray) => {
-                                        const isChanged =
-                                          originalPickups[idx]?.fullAddress !==
-                                          loc.fullAddress;
-                                        return (
-                                          <div
-                                            key={`pickup-${idx}`}
-                                            className={`relative flex items-center gap-3 ${isChanged ? "rounded bg-success-50" : ""}`}
-                                          >
-                                            {/* Dashed line connector */}
-                                            {idx < pickupArray.length - 1 && (
-                                              <div className="absolute left-2 top-[16px] z-0 h-[calc(100%+12px)] w-0 border-l-[1.5px] border-dashed border-neutral-400" />
-                                            )}
-                                            {/* Bullet with number */}
-                                            <div className="relative z-[4] flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-[#FFC217]">
-                                              <span className="text-[10px] font-bold leading-[12px] text-[#461B02]">
-                                                {idx + 1}
-                                              </span>
-                                            </div>
-                                            <div className="relative z-[4] flex flex-1 items-center gap-2">
-                                              <p className="line-clamp-1 flex-1 break-all text-xs font-medium leading-[120%] text-black">
-                                                {loc.fullAddress}
-                                              </p>
-                                              {isChanged && (
-                                                <span className="flex h-[14px] w-[54px] flex-shrink-0 items-center justify-center rounded bg-black text-[8px] font-semibold leading-[130%] text-white">
-                                                  Rute Diubah
-                                                </span>
-                                              )}
-                                            </div>
-                                          </div>
-                                        );
-                                      }
-                                    );
-                                  })()}
-                                </div>
-                              </div>
-
-                              {/* Dropoff Locations */}
-                              <div className="space-y-2">
-                                <p className="text-xs font-medium leading-[120%] text-[#7B7B7B]">
-                                  Lokasi Bongkar
-                                </p>
-                                <div className="relative flex flex-col gap-3">
-                                  {(() => {
-                                    const originalDropoffs =
-                                      changeDetails.originalData?.locations?.filter(
-                                        (loc) => loc.locationType === "DROPOFF"
-                                      ) || [];
-                                    const newDropoffs =
-                                      changeDetails.requestedChanges?.locations?.filter(
-                                        (loc) => loc.locationType === "DROPOFF"
-                                      ) || [];
-
-                                    return newDropoffs.map(
-                                      (loc, idx, dropoffArray) => {
-                                        const isChanged =
-                                          originalDropoffs[idx]?.fullAddress !==
-                                          loc.fullAddress;
-                                        return (
-                                          <div
-                                            key={`dropoff-${idx}`}
-                                            className={`relative flex items-center gap-3 ${isChanged ? "rounded bg-success-50" : ""}`}
-                                          >
-                                            {/* Dashed line connector */}
-                                            {idx < dropoffArray.length - 1 && (
-                                              <div className="absolute left-2 top-[16px] z-0 h-[calc(100%+12px)] w-0 border-l-[1.5px] border-dashed border-neutral-400" />
-                                            )}
-                                            {/* Bullet with number */}
-                                            <div className="relative z-[4] flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-[#461B02]">
-                                              <span className="text-[10px] font-bold leading-[12px] text-white">
-                                                {idx + 1}
-                                              </span>
-                                            </div>
-                                            <div className="relative z-[4] flex flex-1 items-center gap-2">
-                                              <p className="line-clamp-1 flex-1 break-all text-xs font-medium leading-[120%] text-black">
-                                                {loc.fullAddress}
-                                              </p>
-                                              {isChanged && (
-                                                <span className="flex h-[14px] w-[54px] flex-shrink-0 items-center justify-center rounded bg-black text-[8px] font-semibold leading-[130%] text-white">
-                                                  Rute Diubah
-                                                </span>
-                                              )}
-                                            </div>
-                                          </div>
-                                        );
-                                      }
-                                    );
-                                  })()}
-                                </div>
-                              </div>
+                              <LocationList
+                                title="Lokasi Muat"
+                                items={newPickups}
+                                variant="pickup"
+                                compareWith={originalPickups}
+                                showChangedBadge
+                                bridgeToNext={newDropoffs.length > 0}
+                              />
+                              <LocationList
+                                title="Lokasi Bongkar"
+                                items={newDropoffs}
+                                variant="dropoff"
+                                compareWith={originalDropoffs}
+                                showChangedBadge
+                                bridgeToNext={false}
+                              />
                             </div>
                           </div>
                         </div>
@@ -434,9 +374,9 @@ const RespondChangeModal = ({ isOpen, onClose, orderData }) => {
                       </h3>
                       <InfoTooltip side="top">
                         <p>
-                          Penyesuaian pendapatan hanya estimasi. Pendapatan yang
-                          kamu terima menyesuaikan respon perubahan yang kamu
-                          kirimkan.
+                          Penyesuaian pendapatan hanya estimasi.
+                          <br /> Pendapatan yang kamu terima menyesuaikan <br />{" "}
+                          respon perubahan yang kamu kirimkan.
                         </p>
                       </InfoTooltip>
                     </div>

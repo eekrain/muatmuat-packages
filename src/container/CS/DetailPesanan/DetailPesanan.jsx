@@ -11,7 +11,7 @@ import {
 import DetailPesananHeader from "@/container/CS/DetailPesanan/DetailPesananHeader/DetailPesananHeader";
 import RingkasanPesanan from "@/container/CS/DetailPesanan/RingkasanPesanan/RingkasanPesanan";
 import { useShallowMemo } from "@/hooks/use-shallow-memo";
-import { useGetOrderDetail } from "@/services/Transporter/daftar-pesanan/detail-pesanan/getOrderDetail";
+import { useGetOrderDetailCS } from "@/services/detail-pesanan-cs/getOrderDetailCS";
 
 import { LacakArmadaCard } from "./LacakArmada/LacakArmadaCard";
 
@@ -19,7 +19,7 @@ const DetailPesanan = ({ breadcrumbData }) => {
   const params = useParams();
   const [activeTab, setActiveTab] = useState("ringkasan-pesanan");
 
-  const { data: dataOrderDetail } = useGetOrderDetail(params.uuid);
+  const { data: dataOrderDetail } = useGetOrderDetailCS(params.orderId);
 
   const tabItems = useShallowMemo(() => {
     return [

@@ -477,7 +477,7 @@ function CardRiwayatPerubahan({ dataOrderDetail }) {
                     <div className="flex-shrink-0">
                       <p className="text-xs font-medium text-neutral-900">
                         <span className="font-bold text-muat-trans-primary-900">
-                          Rute Awal :
+                          Rute Akhir :
                         </span>{" "}
                         Estimasi 182 km
                       </p>

@@ -29,7 +29,7 @@ const apiResultActiveOrders = {
     orders: [
       // WAITING_CONFIRMATION_SHIPPER status
       {
-        id: "uuid1",
+        id: "dcdaf886-56d6-4d84-89d6-a21ec18d0bc1",
         orderCode: "MT25WAITCONF01",
         orderType: "SCHEDULED",
         loadTimeStart: formatDateForAPI(tomorrow, 8),
@@ -237,6 +237,57 @@ const apiResultActiveOrders = {
         id: "uuid5",
         orderCode: "MT25CHANGE05",
         orderType: "SCHEDULED",
+        loadTimeStart: formatDateForAPI(threeDaysLater, 7),
+        loadTimeEnd: formatDateForAPI(threeDaysLater, 11),
+        orderStatus: "NEED_CHANGE_RESPONSE",
+        pickupLocations: [
+          {
+            id: "uuid",
+            sequence: 1,
+            fullAddress: "Dukuh Pakis, Kota Surabaya",
+            city: "Kota Surabaya",
+            province: "Jawa Timur",
+          },
+        ],
+        dropoffLocations: [
+          {
+            id: "uuid",
+            sequence: 1,
+            fullAddress: "Tuban, Kab. Tuban",
+            city: "Kab. Tuban",
+            province: "Jawa Timur",
+          },
+        ],
+        truckType: { id: "uuid", name: "Trailer" },
+        carrierTruck: { id: "uuid", name: "Lowbed" },
+        truckCount: 2,
+        totalWeight: 25,
+        weightUnit: "ton",
+        assignedVehicles: [
+          {
+            id: "uuid",
+            fleetId: "uuid",
+            licensePlate: "L 4444 DD",
+            driverName: "Eko Prasetyo",
+            driverPhone: "081234567893",
+            driverStatus: "ASSIGNED",
+          },
+          {
+            id: "uuid",
+            fleetId: "uuid",
+            licensePlate: "L 4444 DD",
+            driverName: "Eko Prasetyo",
+            driverPhone: "081234567893",
+            driverStatus: "ASSIGNED",
+          },
+        ],
+        sosStatus: { hasSos: false, sosCount: 0, sosUnits: [] },
+        hasChangeRequest: true,
+      },
+      {
+        id: "uuid90",
+        orderCode: "MT25CHANGE06",
+        orderType: "INSTANT",
         loadTimeStart: formatDateForAPI(threeDaysLater, 7),
         loadTimeEnd: formatDateForAPI(threeDaysLater, 11),
         orderStatus: "NEED_CHANGE_RESPONSE",
