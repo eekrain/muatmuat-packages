@@ -216,6 +216,7 @@ export const Content = ({
 }) => {
   const navigator = useDateNavigator();
   const { currentDayIndex } = navigator;
+  console.log("🚀 ~ currentDayIndex:", currentDayIndex);
   const { width: containerWidth, ref } = useClientWidth();
 
   const SIDEBAR_WIDTH = 202;
@@ -230,7 +231,7 @@ export const Content = ({
   const dataLength = dataToRender.length;
 
   // Get search state to determine what empty state to show
-  const { search, filterAgendaStatus } = useDateNavigator();
+  const { search, filterAgendaStatus, lastInteraction } = useDateNavigator();
 
   // Check if all items are placeholders (meaning no real data found)
   const isSearching = search && search.trim().length > 0;
@@ -240,9 +241,28 @@ export const Content = ({
   const hasOnlyPlaceholders =
     dataToRender.length > 0 && dataToRender.every((item) => item.isPlaceholder);
 
-  const shouldShowSearchNotFound = isSearching && hasOnlyPlaceholders;
-  const shouldShowFilterNotFound =
-    !isSearching && isFiltering && hasOnlyPlaceholders;
+  // Determine the appropriate error message based on last interaction when both search and filter are active
+  const getErrorMessage = () => {
+    if (!hasOnlyPlaceholders) return null;
+
+    // If both search and filter are active, use last interaction to determine message
+    if (isSearching && isFiltering) {
+      if (lastInteraction === "search") {
+        return "keyword"; // User searched within filtered results
+      } else if (lastInteraction === "filter") {
+        return "filter"; // User filtered within search results
+      }
+    }
+
+    // If only one is active, show appropriate message
+    if (isSearching) return "keyword";
+    if (isFiltering) return "filter";
+
+    return null;
+  };
+
+  const errorMessageType = getErrorMessage();
+  const shouldShowNotFound = errorMessageType !== null;
 
   if (!dataLength && !isLoadingMore) {
     // Default empty state when not searching and truly no data
@@ -268,7 +288,6 @@ export const Content = ({
             <AgendaRowItem
               key={`${item.id || item.vehicle_id || index}-${item.start_date || item.date || index}`}
               data={item}
-              armada={item}
               cellWidth={cellWidth}
               mutate={mutate}
             />
@@ -289,7 +308,7 @@ export const Content = ({
           )}
         </div>
 
-        {(shouldShowSearchNotFound || shouldShowFilterNotFound) && (
+        {shouldShowNotFound && (
           <div
             className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2"
             style={{
@@ -299,7 +318,7 @@ export const Content = ({
             <DataNotFound
               type="search"
               title={
-                shouldShowSearchNotFound ? (
+                errorMessageType === "keyword" ? (
                   <span>Keyword Tidak Ditemukan</span>
                 ) : (
                   <span>
@@ -313,7 +332,7 @@ export const Content = ({
           </div>
         )}
 
-        {currentDayIndex > 0 && (
+        {currentDayIndex >= 0 && (
           <>
             <div
               className="absolute top-0 -translate-x-1/2"

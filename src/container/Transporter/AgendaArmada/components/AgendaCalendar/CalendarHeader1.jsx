@@ -112,15 +112,15 @@ const statusFiltersData = [
   },
   {
     id: "MENUNGGU_JAM_MUAT",
-    label: "Menunggu Jam Muat",
+    label: "Menunggu Jam Muat & Dijadwalkan",
     count: 2,
     color: { className: "bg-[#FF7A00]" },
   },
   {
-    id: "DIJADWALKAN",
-    label: "Dijadwalkan",
+    id: "SOS",
+    label: "Urgent Issue & SOS (1)",
     count: 2,
-    color: { className: "bg-[#FF7A00]" },
+    color: { className: "bg-error-400" },
   },
   {
     id: "PENGIRIMAN_SELESAI",
@@ -151,6 +151,7 @@ const armadaFiltersData = [
 // Memoized Search Section Component
 const SearchSection = memo(
   ({ _search, _onSearchChange, _filterAgendaStatus, onFilterChange }) => {
+    const { viewType } = useAgendaNavigatorStore();
     // Store integration
     const { filterAgendaStatus, setFilterAgendaStatus } =
       useAgendaNavigatorStore();
@@ -202,13 +203,17 @@ const SearchSection = memo(
 
       return {
         status: statusFilters,
-        armada: {
-          coltDieselEngkel: true,
-          tronton: true,
-          coltDieselEngkelEngkel: true,
-          pickup: true,
-          coltDieselDouble: true,
-        },
+        ...(viewType === "armada"
+          ? {
+              armada: {
+                coltDieselEngkel: true,
+                tronton: true,
+                coltDieselEngkelEngkel: true,
+                pickup: true,
+                coltDieselDouble: true,
+              },
+            }
+          : {}),
       };
     }, [filterAgendaStatus, statusFilterOptions]);
 
@@ -323,15 +328,17 @@ const SearchSection = memo(
               ))}
             </AgendaFilterPopover.Section>
 
-            <AgendaFilterPopover.Section title="Jenis Armada">
-              {armadaFiltersData.map((item) => (
-                <AgendaFilterPopover.CheckboxItem
-                  key={item.id}
-                  {...item}
-                  category="armada"
-                />
-              ))}
-            </AgendaFilterPopover.Section>
+            {viewType === "armada" && (
+              <AgendaFilterPopover.Section title="Jenis Armada">
+                {armadaFiltersData.map((item) => (
+                  <AgendaFilterPopover.CheckboxItem
+                    key={item.id}
+                    {...item}
+                    category="armada"
+                  />
+                ))}
+              </AgendaFilterPopover.Section>
+            )}
 
             <AgendaFilterPopover.Footer>
               <AgendaFilterPopover.ResetButton>

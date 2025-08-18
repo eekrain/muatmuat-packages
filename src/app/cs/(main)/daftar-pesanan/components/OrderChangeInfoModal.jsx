@@ -27,8 +27,11 @@ const LocationChangeRow = ({ oldLoc, newLoc, index, isLast, type }) => {
 
   return (
     <div
-      className={`grid grid-cols-2 gap-0 ${isChanged ? "-mx-2 h-[24px] rounded bg-success-50 px-2" : ""}`}
+      className={`relative grid grid-cols-2 gap-0 ${isChanged ? "-mx-2 h-[24px] rounded bg-success-50 px-2" : ""}`}
     >
+      {isChanged && (
+        <div className="absolute -left-10 h-[24px] w-[200px] rounded bg-success-50"></div>
+      )}
       <div className="relative flex items-center gap-3">
         {!isLast && (
           <div className="absolute left-2 top-[16px] z-0 h-[calc(100%+14px)] w-0 border-l-[2px] border-dashed border-neutral-400" />

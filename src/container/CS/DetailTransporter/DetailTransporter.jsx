@@ -16,13 +16,19 @@ const DetailTransporter = ({ breadcrumbData }) => {
   return (
     <div className="mx-6 max-w-[1200px] py-6">
       <BreadCrumb data={breadcrumbData} maxWidth={111} />
-      <div className="mt-4 flex gap-x-6">
-        {/* Kartu info di kiri */}
+      <div className="my-4 flex gap-x-6">
         <div className="w-[340px] min-w-[320px]">
           <DetailTransporterHeader transporter={transporter} />
         </div>
       </div>
-      <div></div>
+      <div className="flex h-[234px] w-full gap-4">
+        <div className="w-[340px] rounded-xl bg-white p-6 shadow-lg">
+          <p>pt kaltim</p>
+        </div>
+        <div className="w-full">
+          <p>/miji ni boos</p>
+        </div>
+      </div>
     </div>
   );
 };

@@ -155,7 +155,7 @@ export default function CropperWeb({
           <button
             type="button"
             onClick={handleClose}
-            className="flex h-8 min-w-[112px] items-center justify-center rounded-full border border-muat-trans-secondary-900 bg-white px-3 outline-none"
+            className="flex h-8 min-w-[112px] items-center justify-center rounded-full border border-muat-trans-secondary-900 bg-white px-3 outline-none hover:bg-muat-trans-secondary-100"
           >
             <span className="text-sm font-semibold leading-[16.8px] text-muat-trans-secondary-900">
               Batal
@@ -164,7 +164,7 @@ export default function CropperWeb({
           <button
             type="button"
             onClick={getCropData}
-            className="flex h-8 min-w-[112px] items-center justify-center rounded-full bg-muat-trans-primary-400 px-3 outline-none"
+            className="flex h-8 min-w-[112px] items-center justify-center rounded-full bg-muat-trans-primary-400 px-3 outline-none hover:bg-muat-trans-primary-500"
             autoFocus
           >
             <span className="text-sm font-semibold leading-[16.8px] text-neutral-900">

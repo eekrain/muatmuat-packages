@@ -37,7 +37,7 @@ const generateMockSuggestions = (query, _viewType = "armada", limit = 5) => {
     suggestions.push({
       type: "DRIVER_NAME",
       value: driver,
-      label: `${driver} - Driver`,
+      label: driver,
       driverID: `driver-${driver.toLowerCase().replace(/\s/g, "-")}`,
     });
   });
