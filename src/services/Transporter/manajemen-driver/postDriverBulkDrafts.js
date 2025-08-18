@@ -2,7 +2,7 @@ import useSWRMutation from "swr/mutation";
 
 import { fetcherMock, fetcherMuatrans } from "@/lib/axios";
 
-const isMockUploadFile = true;
+const isMockUploadFile = false;
 
 export const fetcherDriversBulkDraft = async (url, { arg }) => {
   if (isMockUploadFile) {

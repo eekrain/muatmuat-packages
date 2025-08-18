@@ -60,7 +60,7 @@ const Draft = ({ isDraftAvailable }) => {
   // Custom submit handler for this page
   const handleSubmit = (value) => {
     const payload = normalizePayloadTambahDriverMassal(value);
-    handlePostDriverBulkDrafts(payload)
+    handlePostDriverBulkCreate(payload)
       .then((res) => {
         // Show success message
         toast.success(
@@ -86,7 +86,6 @@ const Draft = ({ isDraftAvailable }) => {
 
   // Custom save as draft handler for this page
   const handleSaveAsDraft = (value) => {
-    console.log("value", value);
     const payload = normalizePayloadTambahDriverMassal(value);
     handlePostDriverBulkDrafts(payload)
       .then(() => {

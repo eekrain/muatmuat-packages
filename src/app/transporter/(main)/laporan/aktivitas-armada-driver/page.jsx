@@ -6,7 +6,6 @@ import { Download } from "lucide-react";
 
 import Button from "@/components/Button/Button";
 import DropdownPeriode from "@/components/DropdownPeriode/DropdownPeriode";
-import EmptyStateAktivitas from "@/components/Report/EmptyStateAktivitas";
 import LaporanAktivitasArmadaTable from "@/components/Report/LaporanAktivitasArmadaTable";
 import LaporanAktivitasDriverTable from "@/components/Report/LaporanAktivitasDriverTable";
 import {
@@ -14,6 +13,12 @@ import {
   TabsList,
   TabsTriggerWithSeparator,
 } from "@/components/Tabs/Tabs";
+import { useGetFleetActivities } from "@/services/Transporter/laporan/aktivitas/getArmadaData";
+import { useGetCountArmadaDriver } from "@/services/Transporter/laporan/aktivitas/getCountArmadaDriver";
+import { useGetDriverData } from "@/services/Transporter/laporan/aktivitas/getDriverData";
+import { useGetDriverStatusFilters } from "@/services/Transporter/laporan/aktivitas/getFilterArmadaStatus";
+import { useGetFleetTypeFilters } from "@/services/Transporter/laporan/aktivitas/getFilterArmadaType";
+import { useGetFleetStatusFilters } from "@/services/Transporter/laporan/aktivitas/getFilterDriverStatus";
 
 export default function Page() {
   const [selectedTab, setSelectedTab] = useState("armada");
@@ -24,7 +29,141 @@ export default function Page() {
   const [recentPeriodOptions, setRecentPeriodOptions] = useState([]);
   const [filters, setFilters] = useState({});
 
-  // Konfigurasi periode
+  // Get count data for fleet and driver
+  const { data: countData, isLoading: countLoading } =
+    useGetCountArmadaDriver();
+
+  // Helper function untuk mendapatkan startDate dan endDate dari periode
+  const getPeriodDates = () => {
+    if (!currentPeriodValue) return { startDate: "", endDate: "" };
+
+    // Handle custom date range (dari modal)
+    if (currentPeriodValue?.range && currentPeriodValue?.iso_start_date) {
+      // console.log("Using custom date range:", {
+      //   startDate: currentPeriodValue.iso_start_date,
+      //   endDate: currentPeriodValue.iso_end_date,
+      // });
+      return {
+        startDate: currentPeriodValue.iso_start_date,
+        endDate: currentPeriodValue.iso_end_date,
+      };
+    }
+
+    // Handle predefined options
+    if (currentPeriodValue?.startDate && currentPeriodValue?.endDate) {
+      // console.log("Using predefined date range:", {
+      //   startDate: currentPeriodValue.startDate,
+      //   endDate: currentPeriodValue.endDate,
+      // });
+      return {
+        startDate: currentPeriodValue.startDate,
+        endDate: currentPeriodValue.endDate,
+      };
+    }
+
+    // console.log("No date range selected");
+    return { startDate: "", endDate: "" };
+  };
+
+  // Helper function untuk mengkonversi filter data ke format yang sesuai dengan API
+  const getFilterParams = () => {
+    const apiFilters = {};
+
+    // Handle status filter
+    if (filters?.status) {
+      if (Array.isArray(filters.status)) {
+        // Multi-select: ambil semua id yang dipilih
+        apiFilters.status = filters.status.map((item) => item.id).join(",");
+      } else {
+        // Single-select: ambil id langsung
+        apiFilters.status = filters.status.id || "";
+      }
+    }
+
+    // Handle fleetType filter
+    if (filters?.fleetType) {
+      if (Array.isArray(filters.fleetType)) {
+        // Multi-select: ambil semua id yang dipilih
+        apiFilters.fleetType = filters.fleetType
+          .map((item) => item.id)
+          .join(",");
+      } else {
+        // Single-select: ambil id langsung
+        apiFilters.fleetType = filters.fleetType.id || "";
+      }
+    }
+
+    // Debug log untuk melihat format data
+    // console.log("Raw filters:", filters);
+    // console.log("API filter params:", apiFilters);
+
+    return apiFilters;
+  };
+
+  // Helper function untuk mengkonversi driver filter data ke format yang sesuai dengan API
+  const getDriverFilterParams = () => {
+    const apiFilters = {};
+
+    // Handle currentStatus filter (driver status)
+    if (filters?.currentStatus) {
+      if (Array.isArray(filters.currentStatus)) {
+        // Multi-select: ambil semua id yang dipilih
+        apiFilters.status = filters.currentStatus
+          .map((item) => item.id)
+          .join(",");
+      } else {
+        // Single-select: ambil id langsung
+        apiFilters.status = filters.currentStatus.id || "";
+      }
+    }
+
+    // Debug log untuk melihat format data
+    // console.log("Raw driver filters:", filters);
+    // console.log("Driver API filter params:", apiFilters);
+
+    return apiFilters;
+  };
+
+  // Get fleet activities data - only when armada tab is active
+  const { data: fleetData, isLoading: fleetLoading } = useGetFleetActivities(
+    selectedTab === "armada"
+      ? {
+          limit: perPage,
+          page: currentPage,
+          sort: "licensePlate",
+          order: "asc",
+          search: searchValue.length >= 3 ? searchValue : "",
+          ...getFilterParams(), // ✅ Gunakan helper function untuk filter params
+          ...getPeriodDates(),
+        }
+      : null
+  );
+
+  // Get driver activities data - only when driver tab is active
+  const { data: driverDataFromAPI, isLoading: driverLoading } =
+    useGetDriverData(
+      selectedTab === "driver"
+        ? {
+            limit: perPage,
+            page: currentPage,
+            sort: "name",
+            order: "desc",
+            search: searchValue.length >= 3 ? searchValue : "",
+            ...getDriverFilterParams(), // ✅ Gunakan helper function untuk driver filter params
+            ...getPeriodDates(),
+          }
+        : null
+    );
+
+  // Get filter data
+  const { data: fleetTypeFilters, isLoading: fleetTypeLoading } =
+    useGetFleetTypeFilters();
+  const { data: driverStatusFilters, isLoading: driverStatusLoading } =
+    useGetDriverStatusFilters();
+  const { data: fleetStatusFilters, isLoading: fleetStatusLoading } =
+    useGetFleetStatusFilters();
+
+  // Konfigurasi periode dengan startDate dan endDate
   const periodOptions = [
     {
       name: "Semua Periode (Default)",
@@ -35,225 +174,113 @@ export default function Page() {
       name: "Hari Ini",
       value: 0,
       format: "day",
+      startDate: new Date().toISOString().split("T")[0], // YYYY-MM-DD
+      endDate: new Date().toISOString().split("T")[0],
     },
     {
       name: "1 Minggu Terakhir",
       value: 7,
       format: "day",
+      startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
+      endDate: new Date().toISOString().split("T")[0],
     },
     {
       name: "30 Hari Terakhir",
       value: 30,
       format: "month",
+      startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
+      endDate: new Date().toISOString().split("T")[0],
     },
     {
       name: "90 Hari Terakhir",
       value: 90,
       format: "month",
+      startDate: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
+      endDate: new Date().toISOString().split("T")[0],
     },
     {
       name: "1 Tahun Terakhir",
       value: 365,
       format: "year",
+      startDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
+      endDate: new Date().toISOString().split("T")[0],
     },
   ];
 
-  // Dummy data for Armada activities
-  const armadaData = [
-    {
-      id: 1,
-      licensePlate: "B 1234 ABC",
-      vehicleType: "Medium Truk 6x2 - Tangki",
-      currentLocation: "Jakarta Pusat",
-      activeOrderCode: "ORD-001",
-      activeOrderRoute: {
-        origin: "Kab. Jombang, Kec. Wonosalam",
-        destination: "Kab. Jombang, Kec. Wonosalam",
-        estimate: "121 km",
-      },
-      status: "Bertugas",
-      statusType: "on_duty",
-      image: "/img/mock-armada/truck1.png",
-    },
-    {
-      id: 2,
-      licensePlate: "B 5678 DEF",
-      vehicleType: "Medium Truk 6x2 - Tangki",
-      currentLocation: "Bandung",
-      activeOrderCode: "ORD-002",
-      activeOrderRoute: "Belum Ada",
-      status: "Dijadwalkan",
-      statusType: "scheduled",
-      image: "/img/mock-armada/truck2.png",
-    },
-    {
-      id: 3,
-      licensePlate: "B 9012 GHI",
-      vehicleType: "Medium Truk 6x2 - Tangki",
-      currentLocation: "Surabaya",
-      activeOrderCode: "ORD-003",
-      activeOrderRoute: "Belum Ada",
-      status: "Menunggu Jam Muat",
-      statusType: "waiting",
-      image: "/img/mock-armada/truck3.png",
-    },
-    {
-      id: 4,
-      licensePlate: "B 3456 JKL",
-      vehicleType: "Medium Truk 6x2 - Tangki",
-      currentLocation: "Semarang",
-      activeOrderCode: "ORD-004",
-      activeOrderRoute: "Belum Ada",
-      status: "Pengiriman Selesai",
-      statusType: "completed",
-      image: "/img/mock-armada/truck4.png",
-    },
-    {
-      id: 5,
-      licensePlate: "B 7890 MNO",
-      vehicleType: "Medium Truk 6x2 - Tangki",
-      currentLocation: "Yogyakarta",
-      activeOrderCode: "ORD-005",
-      activeOrderRoute: "Belum Ada",
-      status: "Non - Aktif",
-      statusType: "inactive",
-      image: "/img/mock-armada/truck5.png",
-    },
-  ];
+  // Get fleet activities data from API
+  const armadaData = fleetData.activities || [];
 
-  // Dummy data for Driver activities
-  const driverData = [
-    {
-      id: 1,
-      name: "Marc Andre",
-      phoneNumber: "0821-2089-9123",
-      armada: "L 1239 CAM",
-      vehicleType: "Colt Diesel Double - Dump",
-      location: "Kab. Jombang Kota Surabaya, K...",
-      activeOrderCode: "INV/MTR/210504/001/AAA",
-      activeOrderRoute: {
-        origin: "Kab. Jombang, Kec. Wonosalam",
-        destination: "Kab. Jombang, Kec. Wonosalam",
-        estimate: "121 km",
-      },
-      status: "Dijadwalkan",
-      statusType: "scheduled",
-      image: "/img/avatar.png",
-    },
-    {
-      id: 2,
-      name: "Dek Yamal",
-      phoneNumber: "0821-2089-9123-1",
-      armada: "L 1239 CAM",
-      vehicleType: "Colt Diesel Double - Dump",
-      location: "Kab. Jombang Kota Surabaya, K...",
-      activeOrderCode: "INV/MTR/210504/001/AAA",
-      activeOrderRoute: {
-        origin: "Kab. Jombang, Kec. Wonosalam",
-        destination: "Kab. Jombang, Kec. Wonosalam",
-        estimate: "121 km",
-      },
-      status: "Menunggu Jam Muat",
-      statusType: "waiting",
-      image: "/img/avatar2.png",
-    },
-    {
-      id: 3,
-      name: "Dek Pedri",
-      phoneNumber: "0821-2089-9123-1",
-      armada: "L 1239 CAM",
-      vehicleType: "Colt Diesel Double - Dump",
-      location: "Kab. Jombang Kota Surabaya, K...",
-      activeOrderCode: "INV/MTR/210504/001/AAA",
-      activeOrderRoute: {
-        origin: "Kab. Jombang, Kec. Wonosalam",
-        destination: "Kab. Jombang, Kec. Wonosalam",
-        estimate: "121 km",
-      },
-      status: "Non - Aktif",
-      statusType: "inactive",
-      image: "/img/avatar.png",
-    },
-    {
-      id: 4,
-      name: "Cubarsi",
-      phoneNumber: "0821-2089-9123-1",
-      armada: "L 1239 CAM",
-      vehicleType: "Colt Diesel Double - Dump",
-      location: "Kab. Jombang Kota Surabaya, K...",
-      activeOrderCode: "INV/MTR/210504/001/AAA",
-      activeOrderRoute: {
-        origin: "Kab. Jombang, Kec. Wonosalam",
-        destination: "Kab. Jombang, Kec. Wonosalam",
-        estimate: "121 km",
-      },
-      status: "Non - Aktif",
-      statusType: "inactive",
-      image: "/img/avatar2.png",
-    },
-    {
-      id: 5,
-      name: "Rafi Nya",
-      phoneNumber: "0821-2089-9123-1",
-      armada: "L 1239 CAM",
-      vehicleType: "Colt Diesel Double - Dump",
-      location: "Kab. Jombang Kota Surabaya, K...",
-      activeOrderCode: "INV/MTR/210504/001/AAA",
-      activeOrderRoute: {
-        origin: "Kab. Jombang, Kec. Wonosalam",
-        destination: "Kab. Jombang, Kec. Wonosalam",
-        estimate: "121 km",
-      },
-      status: "Bertugas",
-      statusType: "on_duty",
-      image: "/img/avatar.png",
-    },
-    {
-      id: 6,
-      name: "Cak Lewi",
-      phoneNumber: "0821-2089-9123-1",
-      armada: "L 1239 CAM",
-      vehicleType: "Colt Diesel Double - Dump",
-      location: "Kab. Jombang Kota Surabaya, K...",
-      activeOrderCode: "INV/MTR/210504/001/AAA",
-      activeOrderRoute: {
-        origin: "Kab. Jombang, Kec. Wonosalam",
-        destination: "Kab. Jombang, Kec. Wonosalam",
-        estimate: "121 km",
-      },
-      status: "Pengiriman Selesai",
-      statusType: "completed",
-      image: "/img/avatar2.png",
-    },
-  ];
+  // Get driver activities data from API
+  const driverData = driverDataFromAPI.activities || [];
 
-  // Filter configuration
-  const filterConfig = {
+  // Filter configuration for Armada
+  const armadaFilterConfig = {
     categories: [
       {
         key: "status",
         label: "Status",
-        searchable: true,
+        searchable: false,
       },
       {
-        key: "vehicleType",
-        label: "Jenis Kendaraan",
-        searchable: true,
+        key: "fleetType",
+        label: "Jenis Armada",
+        searchable: false,
       },
     ],
     data: {
-      status: [
-        { id: "scheduled", label: "Dijadwalkan" },
-        { id: "waiting", label: "Menunggu Jam Muat" },
-        { id: "on_duty", label: "Bertugas" },
-        { id: "completed", label: "Pengiriman Selesai" },
-        { id: "inactive", label: "Non - Aktif" },
-      ],
-      vehicleType: [
-        { id: "truck", label: "Medium Truk 6x2 - Tangki" },
-        { id: "colt", label: "Colt Diesel Double - Bak Terbuka" },
-        { id: "dump", label: "Colt Diesel Double - Dump" },
-      ],
+      status: fleetStatusFilters.map((item) => ({
+        id: item.status,
+        label:
+          item.status === "READY_FOR_ORDER"
+            ? "Siap Menerima Order"
+            : item.status === "NOT_PAIRED"
+              ? "Belum Dipasangkan"
+              : item.status === "ON_DUTY"
+                ? "Bertugas"
+                : item.status === "WAITING_LOADING_TIME"
+                  ? "Akan Muat Hari Ini"
+                  : item.status === "INACTIVE"
+                    ? "Nonaktif"
+                    : item.status,
+      })),
+      fleetType: fleetTypeFilters.map((item) => ({
+        id: item.id,
+        label: item.name,
+      })),
+    },
+  };
+
+  // Filter configuration for Driver
+  const driverFilterConfig = {
+    categories: [
+      {
+        key: "currentStatus",
+        label: "Status",
+        searchable: false,
+      },
+    ],
+    data: {
+      currentStatus: driverStatusFilters.map((item) => ({
+        id: item.status,
+        label:
+          item.status === "READY_FOR_ORDER"
+            ? "Siap Order"
+            : item.status === "NOT_PAIRED"
+              ? "Belum Dipasangkan"
+              : item.status === "ON_DUTY"
+                ? "Sedang Bertugas"
+                : item.status === "NON_ACTIVE"
+                  ? "Non Aktif"
+                  : item.status,
+      })),
     },
   };
 
@@ -266,10 +293,13 @@ export default function Page() {
         setRecentPeriodOptions((prev) => [...prev, selectedOption]);
       }
       setCurrentPeriodValue(selectedOption);
+      setCurrentPage(1); // Reset pagination when period changes
     } else if (selectedOption?.value === "") {
       setCurrentPeriodValue(selectedOption);
+      setCurrentPage(1); // Reset pagination when period changes
     } else if (selectedOption?.value !== undefined) {
       setCurrentPeriodValue(selectedOption);
+      setCurrentPage(1); // Reset pagination when period changes
     }
   };
 
@@ -281,17 +311,31 @@ export default function Page() {
   const handleFilter = (newFilters) => {
     setFilters(newFilters);
     setCurrentPage(1);
+    // API will automatically re-fetch due to SWR dependency on filters
   };
 
   const handleSort = (_sort, _order) => {};
 
+  // Reset pagination when switching tabs
+  const handleTabChange = (newTab) => {
+    setSelectedTab(newTab);
+    setCurrentPage(1); // Reset to page 1 when switching tabs
+
+    // Reset search values, period, and filters when switching tabs
+    setSearchValue("");
+    setCurrentPeriodValue(null);
+    setFilters({});
+  };
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
+    // API will automatically re-fetch due to SWR dependency on currentPage
   };
 
   const handlePerPageChange = (perPageValue) => {
     setPerPage(perPageValue);
     setCurrentPage(1);
+    // API will automatically re-fetch due to SWR dependency on perPage
   };
 
   const handleDownload = () => {};
@@ -300,7 +344,7 @@ export default function Page() {
     return selectedTab === "armada" ? armadaData : driverData;
   };
 
-  const isCurrentEmpty = getCurrentData().length === 0;
+  const isLoading = selectedTab === "armada" ? fleetLoading : driverLoading;
 
   return (
     <div className="mx-auto mt-7 max-w-full px-0">
@@ -314,14 +358,14 @@ export default function Page() {
         <Tabs
           className="w-full"
           value={selectedTab}
-          onValueChange={setSelectedTab}
+          onValueChange={handleTabChange}
         >
           <TabsList className="w-1/2">
             <TabsTriggerWithSeparator value="armada" activeColor="primary-700">
-              Aktivitas Armada ({armadaData.length})
+              Aktivitas Armada ({countLoading ? "..." : countData.fleet || 0})
             </TabsTriggerWithSeparator>
             <TabsTriggerWithSeparator value="driver" activeColor="primary-700">
-              Aktivitas Driver ({driverData.length})
+              Aktivitas Driver ({countLoading ? "..." : countData.driver || 0})
             </TabsTriggerWithSeparator>
           </TabsList>
         </Tabs>
@@ -340,17 +384,19 @@ export default function Page() {
         </div>
       </div>
 
-      {/* Data Table or Empty */}
-      {isCurrentEmpty ? (
-        <EmptyStateAktivitas type={selectedTab} />
+      {/* Data Table - Always show table, only state UI changes */}
+      {isLoading ? (
+        <div className="flex items-center justify-center py-8">
+          <div className="text-gray-500">Loading...</div>
+        </div>
       ) : (
         <>
           {selectedTab === "armada" ? (
             <LaporanAktivitasArmadaTable
               data={getCurrentData()}
-              currentPage={currentPage}
-              totalPages={2}
-              perPage={perPage}
+              currentPage={fleetData.pagination?.page || 1}
+              totalPages={fleetData.pagination?.totalPages || 1}
+              perPage={fleetData.pagination?.limit || 10}
               onPageChange={handlePageChange}
               onPerPageChange={handlePerPageChange}
               onPeriodChange={handleSelectPeriod}
@@ -358,7 +404,7 @@ export default function Page() {
               periodOptions={periodOptions}
               currentPeriodValue={currentPeriodValue}
               recentPeriodOptions={recentPeriodOptions}
-              filterConfig={filterConfig}
+              filterConfig={armadaFilterConfig}
               onFilter={handleFilter}
               onSearch={handleSearch}
               onSort={handleSort}
@@ -367,15 +413,16 @@ export default function Page() {
               sortConfig={{ sort: null, order: null }}
               showFilter={true}
               showSearch={true}
-              searchPlaceholder="Cari Armada"
+              searchPlaceholder="Cari No. Pol atau Kode Pesanan"
               disabledByPeriod={false}
+              multiSelect={true} // ✅ Gunakan multi-select untuk filter (checkbox)
             />
           ) : (
             <LaporanAktivitasDriverTable
               data={getCurrentData()}
-              currentPage={currentPage}
-              totalPages={2}
-              perPage={perPage}
+              currentPage={driverDataFromAPI.pagination?.page || 1}
+              totalPages={driverDataFromAPI.pagination?.totalPages || 1}
+              perPage={driverDataFromAPI.pagination?.limit || 10}
               onPageChange={handlePageChange}
               onPerPageChange={handlePerPageChange}
               onPeriodChange={handleSelectPeriod}
@@ -383,7 +430,7 @@ export default function Page() {
               periodOptions={periodOptions}
               currentPeriodValue={currentPeriodValue}
               recentPeriodOptions={recentPeriodOptions}
-              filterConfig={filterConfig}
+              filterConfig={driverFilterConfig}
               onFilter={handleFilter}
               onSearch={handleSearch}
               onSort={handleSort}
@@ -392,8 +439,9 @@ export default function Page() {
               sortConfig={{ sort: null, order: null }}
               showFilter={true}
               showSearch={true}
-              searchPlaceholder="Cari Driver"
+              searchPlaceholder="Cari Nama Driver, Rute atau lainnya"
               disabledByPeriod={false}
+              multiSelect={true} // ✅ Gunakan multi-select untuk driver filter (checkbox)
             />
           )}
         </>

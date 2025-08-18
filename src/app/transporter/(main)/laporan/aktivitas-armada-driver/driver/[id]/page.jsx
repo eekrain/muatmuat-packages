@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Download, MapPin, Phone, Truck } from "lucide-react";
 
@@ -15,6 +15,7 @@ import Pagination from "@/components/Pagination/Pagination";
 import Search from "@/components/Search/Search";
 import MuatBongkarStepper from "@/components/Stepper/MuatBongkarStepper";
 import Table from "@/components/Table/Table";
+import { useGetDriverDetailData } from "@/services/Transporter/laporan/aktivitas/getDriverDetailData";
 
 export default function DetailDriverPage({ params }) {
   const router = useRouter();
@@ -25,92 +26,89 @@ export default function DetailDriverPage({ params }) {
   const [recentPeriodOptions, setRecentPeriodOptions] = useState([]);
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
 
-  // Mock data for driver detail
-  const driverData = {
-    id: params.id,
-    name: "Marc Andre",
-    phoneNumber: "0821-2089-9123",
-    vehicleType: "Colt Diesel Double - Dump",
-    currentLocation: "Kota Surabaya, Kec. Tegalsari",
-    status: "Bertugas",
-    statusType: "on_duty",
-    image: "/img/avatar.png",
-  };
+  // Get driver detail activities from API
+  const { data: detailData, isLoading: detailLoading } = useGetDriverDetailData(
+    params.id,
+    {
+      limit: perPage,
+      page: currentPage,
+      sort: sortConfig?.sort || "loadingTime",
+      order: sortConfig?.order || "asc",
+      search: searchValue,
+    }
+  );
 
-  // Mock data for activities
-  const activitiesData = [
-    {
-      id: 1,
-      orderCode: "INV/MTR/210504/001/AAA",
-      route: {
-        origin: "Kab. Jombang, Kec. Wonosal...",
-        destination: "Kab. Jombang, Kec. Wonosal...",
-        estimate: "121 km",
-      },
-      licensePlate: "L 1239 CAM",
-      vehicleType: "Colt Diesel Double-Dump",
-      loadDate: null,
-      unloadDate: null,
-      status: "Dijadwalkan",
-      statusType: "scheduled",
-    },
-    {
-      id: 2,
-      orderCode: "INV/MTR/210504/002/BBB",
-      route: {
-        origin: "Kab. Jombang, Kec. Wonosal...",
-        destination: "Kab. Jombang, Kec. Wonosal...",
-        estimate: "121 km",
-      },
-      licensePlate: "L 1239 CAM",
-      vehicleType: "Colt Diesel Double-Dump",
-      loadDate: "24 Sep 2024 12:00 WIB",
-      unloadDate: null,
-      status: "Bertugas",
-      statusType: "on_duty",
-    },
-    {
-      id: 3,
-      orderCode: "INV/MTR/210504/003/CCC",
-      route: {
-        origin: "Kab. Jombang, Kec. Wonosal...",
-        destination: "Kab. Jombang, Kec. Wonosal...",
-        estimate: "121 km",
-      },
-      licensePlate: "L 1239 CAM",
-      vehicleType: "Colt Diesel Double-Dump",
-      loadDate: "24 Sep 2024 12:00 WIB",
-      unloadDate: "24 Sep 2024 12:00 WIB",
-      status: "Pengiriman Selesai",
-      statusType: "completed",
-    },
-  ];
+  // Get driver data from sessionStorage (passed from main table)
+  const [driverData, setDriverData] = useState({
+    id: params.id,
+    name: "Loading...",
+    phoneNumber: "Loading...",
+    vehicleType: "Loading...",
+    currentLocation: "Loading...",
+    status: "Loading...",
+    image: "/img/avatar.png",
+  });
+
+  // Get driver data from sessionStorage when component mounts
+  useEffect(() => {
+    const storedDriverData = sessionStorage.getItem(`driver_${params.id}`);
+    if (storedDriverData) {
+      try {
+        const parsedData = JSON.parse(storedDriverData);
+        setDriverData({
+          id: params.id,
+          name: parsedData.name || "Loading...",
+          phoneNumber: parsedData.phoneNumber || "Loading...",
+          vehicleType:
+            `${parsedData.truckType || ""} - ${parsedData.carrierType || ""}`.trim() ||
+            "Loading...",
+          currentLocation: parsedData.currentLocation || "Loading...",
+          status: parsedData.currentStatus || "Loading...",
+          image: parsedData.profileImage || "/img/avatar.png",
+        });
+
+        // Clean up sessionStorage after reading
+        sessionStorage.removeItem(`driver_${params.id}`);
+      } catch (error) {
+        console.error("Error parsing stored driver data:", error);
+      }
+    }
+  }, [params.id]);
+
+  // Get activities from detail API
+  const activitiesData = detailData.activities || [];
 
   // Table columns for activities
   const columns = [
     {
       header: "Kode Pesanan",
-      key: "orderCode",
+      key: "orderInfo.orderCode",
       sortable: true,
       width: "200px",
       searchable: true,
+      render: (row) => {
+        if (!row.orderInfo?.orderCode || row.orderInfo.orderCode === "") {
+          return <div className="text-sm text-gray-500">Belum Ada</div>;
+        }
+        return <div className="text-sm">{row.orderInfo.orderCode}</div>;
+      },
     },
     {
       header: "Rute Pesanan",
-      key: "route",
+      key: "orderInfo",
       sortable: false,
       width: "250px",
       searchable: false,
       render: (row) => (
         <div className="space-y-2">
-          {row.route.estimate && (
+          {row.orderInfo?.estimatedDistance && (
             <div className="text-xs font-medium text-neutral-700">
-              Estimasi: {row.route.estimate}
+              Estimasi: {row.orderInfo.estimatedDistance} km
             </div>
           )}
           <MuatBongkarStepper
-            pickupLocations={[row.route.origin]}
-            dropoffLocations={[row.route.destination]}
+            pickupLocations={[row.orderInfo?.pickupLocation || ""]}
+            dropoffLocations={[row.orderInfo?.dropoffLocation || ""]}
             appearance={{
               titleClassName: "text-xs font-medium text-neutral-900",
             }}
@@ -120,42 +118,64 @@ export default function DetailDriverPage({ params }) {
     },
     {
       header: "No. Polisi",
-      key: "licensePlate",
+      key: "fleetInfo.licensePlate",
       sortable: true,
       width: "200px",
       searchable: true,
       render: (row) => (
         <div className="space-y-1">
           <div className="text-sm font-semibold text-gray-900">
-            {row.licensePlate}
+            {row.fleetInfo?.licensePlate || "Belum Ada"}
           </div>
-          <div className="text-xs text-gray-600">{row.vehicleType}</div>
+          <div className="text-xs text-gray-600">
+            {row.fleetInfo
+              ? `${row.fleetInfo.truckType} - ${row.fleetInfo.carrierType}`
+              : "Belum Ada"}
+          </div>
         </div>
       ),
     },
     {
       header: "Tanggal Muat",
-      key: "loadDate",
+      key: "orderInfo.loadTimeStart",
       sortable: true,
       width: "150px",
       searchable: true,
-      render: (row) => row.loadDate || "-",
+      render: (row) => {
+        if (!row.orderInfo?.loadTimeStart) {
+          return <div className="text-sm text-gray-500">Belum Ada</div>;
+        }
+        return (
+          <div className="text-sm">
+            {new Date(row.orderInfo.loadTimeStart).toLocaleString("id-ID")}
+          </div>
+        );
+      },
     },
     {
       header: "Tanggal Bongkar",
-      key: "unloadDate",
+      key: "orderInfo.loadTimeEnd",
       sortable: true,
       width: "150px",
       searchable: true,
-      render: (row) => row.unloadDate || "-",
+      render: (row) => {
+        if (!row.orderInfo?.loadTimeEnd) {
+          return <div className="text-sm text-gray-500">Belum Ada</div>;
+        }
+        return (
+          <div className="text-sm">
+            {new Date(row.orderInfo.loadTimeEnd).toLocaleString("id-ID")}
+          </div>
+        );
+      },
     },
     {
       header: "Status",
-      key: "status",
+      key: "orderInfo.status",
       sortable: true,
       width: "150px",
       searchable: true,
-      render: (row) => getStatusBadge(row.status, row.statusType),
+      render: (row) => getStatusBadge(row.orderInfo?.status),
     },
     {
       header: "Action",
@@ -283,26 +303,54 @@ export default function DetailDriverPage({ params }) {
     setSortConfig({ sort: newSort, order: newOrder });
   };
 
-  const getStatusBadge = (status, statusType) => {
+  const getStatusBadge = (status) => {
     let bgColor = "bg-gray-200";
     let textColor = "text-gray-600";
+    let displayStatus = status || "Unknown";
 
-    if (statusType === "scheduled") {
-      bgColor = "bg-yellow-100";
-      textColor = "text-yellow-900";
-    } else if (statusType === "on_duty") {
+    if (status === "LOADING") {
       bgColor = "bg-blue-100";
       textColor = "text-blue-900";
-    } else if (statusType === "completed") {
+      displayStatus = "Sedang Muat";
+    } else if (status === "COMPLETED") {
+      bgColor = "bg-green-100";
+      textColor = "text-green-900";
+      displayStatus = "Selesai";
+    } else if (status === "PENDING") {
+      bgColor = "bg-yellow-100";
+      textColor = "text-yellow-900";
+      displayStatus = "Menunggu";
+    } else if (status === "CANCELLED") {
+      bgColor = "bg-red-100";
+      textColor = "text-red-900";
+      displayStatus = "Dibatalkan";
+    } else if (status === "ON_DUTY") {
+      bgColor = "bg-blue-100";
+      textColor = "text-blue-900";
+      displayStatus = "Bertugas";
+    } else if (status === "READY_FOR_ORDER") {
+      bgColor = "bg-green-100";
+      textColor = "text-green-900";
+      displayStatus = "Siap Menerima Order";
+    } else if (status === "NOT_PAIRED") {
       bgColor = "bg-gray-100";
       textColor = "text-gray-600";
+      displayStatus = "Belum Dipasangkan";
+    } else if (status === "INACTIVE") {
+      bgColor = "bg-red-100";
+      textColor = "text-red-900";
+      displayStatus = "Nonaktif";
+    } else if (status === null || status === "") {
+      bgColor = "bg-gray-100";
+      textColor = "text-gray-500";
+      displayStatus = "Tidak Ada Status";
     }
 
     return (
       <span
         className={`inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-semibold ${bgColor} ${textColor}`}
       >
-        {status}
+        {displayStatus}
       </span>
     );
   };
@@ -311,10 +359,16 @@ export default function DetailDriverPage({ params }) {
     if (searchValue) {
       const searchLower = searchValue.toLowerCase();
       return (
-        row.orderCode.toLowerCase().includes(searchLower) ||
-        row.licensePlate.toLowerCase().includes(searchLower) ||
-        (row.route.origin &&
-          row.route.origin.toLowerCase().includes(searchLower))
+        (row.orderInfo?.orderCode || "").toLowerCase().includes(searchLower) ||
+        (row.fleetInfo?.licensePlate || "")
+          .toLowerCase()
+          .includes(searchLower) ||
+        (row.orderInfo?.pickupLocation || "")
+          .toLowerCase()
+          .includes(searchLower) ||
+        (row.orderInfo?.dropoffLocation || "")
+          .toLowerCase()
+          .includes(searchLower)
       );
     }
     return true;
@@ -360,7 +414,7 @@ export default function DetailDriverPage({ params }) {
               <div className="flex flex-col gap-3">
                 {/* Status Badge */}
                 <div className="flex items-center gap-3">
-                  {getStatusBadge(driverData.status, driverData.statusType)}
+                  {getStatusBadge(driverData.status)}
                 </div>
 
                 {/* Driver Name */}
