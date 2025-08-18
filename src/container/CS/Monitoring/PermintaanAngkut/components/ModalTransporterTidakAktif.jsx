@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import Button from "@/components/Button/Button";
@@ -19,6 +20,7 @@ const getStatusText = (transporter) => {
 };
 
 const ModalTransporterTidakAktif = ({ onClose }) => {
+  const router = useRouter();
   const { data, isLoading } = useGetInactiveTransporter();
   const allTransporters = data?.transporters || [];
   const [searchValue, setSearchValue] = useState("");
@@ -37,11 +39,14 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
     }
     const lower = value.toLowerCase();
     setFilteredTransporters(
-      allTransporters.filter(
-        (t) => t.transporterName.toLowerCase().includes(lower)
-        // You can add more search fields here
+      allTransporters.filter((t) =>
+        t.transporterName.toLowerCase().includes(lower)
       )
     );
+  };
+
+  const handleDetailClick = (transporterId) => {
+    router.push(`/monitoring/${transporterId}/detail-transporter`);
   };
 
   return (
@@ -119,6 +124,9 @@ const ModalTransporterTidakAktif = ({ onClose }) => {
                     <Button
                       variant="muattrans-primary"
                       className="h-8 w-[90px] rounded-full text-sm font-semibold"
+                      onClick={() =>
+                        handleDetailClick(transporter.transporterId)
+                      }
                     >
                       Detail
                     </Button>

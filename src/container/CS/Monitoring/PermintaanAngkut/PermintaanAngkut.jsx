@@ -191,13 +191,19 @@ const PermintaanAngkutCS = () => {
               Permintaan Jasa Angkut
             </h1>
             {inactiveAlertData?.alertSummary?.hasAlert && (
-              <p
+              <div
                 className="flex cursor-pointer items-center text-xs font-medium text-primary-600"
                 onClick={() => setShowModalTransporterTidakAktif(true)}
+                role="button"
+                tabIndex={0}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter")
+                    setShowModalTransporterTidakAktif(true);
+                }}
               >
                 Transporter Tidak Aktif
                 <NotificationDot size="md" color="red" className="-top-1" />
-              </p>
+              </div>
             )}
           </div>
 
