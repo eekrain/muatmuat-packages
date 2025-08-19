@@ -10,7 +10,11 @@ import DataEmpty from "@/components/DataEmpty/DataEmpty";
 import { InfoTooltip } from "@/components/Form/InfoTooltip";
 import LaporanPencairanDanaTable from "@/components/Report/LaporanPencairanDanaTable/LaporanPencairanDanaTable";
 import { useTranslation } from "@/hooks/use-translation";
+import { exportWithdrawalData } from "@/services/Transporter/laporan/pencairan-dana/exportWithdrawalData";
+import { useGetBankAccounts } from "@/services/Transporter/laporan/pencairan-dana/getBankAccountsFilter";
+import { useGetPeriodHistory } from "@/services/Transporter/laporan/pencairan-dana/getPeriodSearchHistory";
 import { useGetWithdrawalList } from "@/services/Transporter/laporan/pencairan-dana/getWithdrawalList";
+import { savePeriodSearch } from "@/services/Transporter/laporan/pencairan-dana/savePeriodSearch";
 
 export default function Page() {
   const { t } = useTranslation();
@@ -19,8 +23,14 @@ export default function Page() {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [currentPeriodValue, setCurrentPeriodValue] = useState(null);
-  const [recentPeriodOptions, setRecentPeriodOptions] = useState([]);
   const [filters, setFilters] = useState({});
+
+  // API parameters state
+  const [sortField, setSortField] = useState("createdAt");
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [selectedAccounts, setSelectedAccounts] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   // Konfigurasi periode
   const periodOptions = [
@@ -76,59 +86,58 @@ export default function Page() {
     },
   ];
 
-  const { withdrawals } = useGetWithdrawalList();
+  // Prepare API parameters
+  const apiParams = {
+    page: currentPage,
+    limit: perPage,
+    sort: sortField,
+    order: sortOrder,
+    accounts: selectedAccounts,
+    startDate: startDate,
+    endDate: endDate,
+  };
 
-  // Table data
-  const tableData = [
-    {
-      id: 1,
-      date: "06 Nov 2024 13:00 WIB",
-      amount: "Rp1.000.000",
-      account: "BRI 1234567890",
-      bankLogo: "/icons/payment/va_bri.svg",
-      bankName: "BRI",
-    },
-    {
-      id: 2,
-      date: "05 Nov 2024 13:00 WIB",
-      amount: "Rp1.000.000",
-      account: "BCA 1234567890",
-      bankLogo: "/icons/payment/va_bca.svg",
-      bankName: "BCA",
-    },
-    {
-      id: 3,
-      date: "04 Nov 2024 13:00 WIB",
-      amount: "Rp3.000.000",
-      account: "BCA 1234567890",
-      bankLogo: "/icons/payment/va_bca.svg",
-      bankName: "BCA",
-    },
-    {
-      id: 4,
-      date: "03 Nov 2024 13:00 WIB",
-      amount: "Rp500.000",
-      account: "BCA 1234567890",
-      bankLogo: "/icons/payment/va_bca.svg",
-      bankName: "BCA",
-    },
-    {
-      id: 5,
-      date: "02 Nov 2024 13:00 WIB",
-      amount: "Rp1.000.000",
-      account: "BCA 1234567890",
-      bankLogo: "/icons/payment/va_bca.svg",
-      bankName: "BCA",
-    },
-  ];
+  const { withdrawals: tableData } = useGetWithdrawalList(apiParams);
+  const { accounts } = useGetBankAccounts();
+  const { history: periodHistory } = useGetPeriodHistory();
+
+  console.log("tableData: ", tableData);
+  console.log("periodHistory: ", periodHistory);
+
+  function formatDateToWIB(isoString) {
+    const date = new Date(isoString);
+
+    const options = {
+      timeZone: "Asia/Jakarta",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    };
+
+    const formatted = new Intl.DateTimeFormat("id-ID", options).format(date);
+
+    return `${formatted.replace(".", ":")} WIB`;
+  }
+
+  function formatRupiah(angka) {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(angka);
+  }
 
   // Table columns
   const columns = [
     {
       header: t("LaporanPencairanDanaPage.tableColumnDate", {}, "Tanggal"),
-      key: "date",
+      key: "withdrawalDate",
       sortable: true,
       width: "200px",
+      render: (row) => <span>{formatDateToWIB(row.withdrawalDate)}</span>,
     },
     {
       header: t(
@@ -139,6 +148,7 @@ export default function Page() {
       key: "amount",
       sortable: true,
       width: "180px",
+      render: (row) => <span>{formatRupiah(row.amount)}</span>,
     },
     {
       header: t(
@@ -152,11 +162,11 @@ export default function Page() {
       render: (row) => (
         <div className="flex items-center gap-2">
           <img
-            src={row.bankLogo}
-            alt={row.bankName}
+            src={row.bankAccount.logoUrl}
+            alt={row.bankAccount.bankCode}
             className="h-6 w-6 object-contain"
           />
-          <span>{row.account}</span>
+          <span>{row.bankAccount.accountNumber}</span>
         </div>
       ),
     },
@@ -190,38 +200,105 @@ export default function Page() {
       },
     ],
     data: {
-      bank: [
-        { id: "bri", label: "BRI 1234567890" },
-        { id: "bca", label: "BCA 1234567890" },
-        { id: "bni", label: "BNI 1234567890" },
-      ],
+      bank: accounts.map((acc) => ({
+        id: acc.id,
+        label: (
+          <div className="flex items-center gap-2">
+            <img
+              src={acc.logoUrl}
+              alt={acc.bankName}
+              className="h-4 w-4 object-contain"
+            />
+            <span>{`${acc.bankCode} ${acc.accountNumber}`}</span>
+          </div>
+        ),
+      })),
     },
   };
 
   // Handler untuk filter periode
-  const handleSelectPeriod = (selectedOption) => {
+  const handleSelectPeriod = async (selectedOption) => {
     // For custom date range option
     if (selectedOption?.range) {
-      // Update recent selections - only add if not already in the array
-      if (
-        !recentPeriodOptions?.some((s) => s?.value === selectedOption?.value)
-      ) {
-        setRecentPeriodOptions((prev) => [...prev, selectedOption]);
-      }
       // Update the current period value
       setCurrentPeriodValue(selectedOption);
+
+      // Set start and end dates for API
+      if (selectedOption.startDate && selectedOption.endDate) {
+        setStartDate(selectedOption.startDate);
+        setEndDate(selectedOption.endDate);
+
+        // Save period search
+        try {
+          await savePeriodSearch({
+            startDate: selectedOption.startDate,
+            endDate: selectedOption.endDate,
+            displayText:
+              selectedOption.displayText ||
+              `${selectedOption.startDate} - ${selectedOption.endDate}`,
+          });
+        } catch (error) {
+          console.error("Failed to save period search:", error);
+        }
+      }
     }
     // For default "Semua Periode" option
     else if (selectedOption?.value === "") {
       // Update the current period value
       setCurrentPeriodValue(selectedOption);
+      // Clear date filters
+      setStartDate("");
+      setEndDate("");
     }
     // For predefined period options (today, last 7 days, etc.)
     else if (selectedOption?.value !== undefined) {
       // Update the current period value
       setCurrentPeriodValue(selectedOption);
+
+      // Calculate date range based on selected period
+      const today = new Date();
+      let startDate = new Date();
+
+      if (selectedOption.value === 0) {
+        // Today
+        startDate = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate()
+        );
+      } else if (selectedOption.value > 0) {
+        // Last N days
+        startDate.setDate(today.getDate() - selectedOption.value);
+      }
+
+      const startDateStr = startDate.toISOString().split("T")[0];
+      const endDateStr = today.toISOString().split("T")[0];
+
+      setStartDate(startDateStr);
+      setEndDate(endDateStr);
+
+      // Save period search for predefined periods
+      try {
+        await savePeriodSearch({
+          startDate: startDateStr,
+          endDate: endDateStr,
+          displayText: selectedOption.name,
+        });
+      } catch (error) {
+        console.error("Failed to save period search:", error);
+      }
     }
   };
+
+  // Convert period history to recent period options format
+  const recentPeriodOptionsFromHistory = periodHistory.map((item) => ({
+    name: item.displayText,
+    value: `${item.startDate}-${item.endDate}`,
+    startDate: item.startDate,
+    endDate: item.endDate,
+    displayText: item.displayText,
+    range: true,
+  }));
 
   const handleSearch = (value) => {
     setSearchValue(value);
@@ -229,12 +306,31 @@ export default function Page() {
   };
 
   const handleFilter = (newFilters) => {
-    console.log(newFilters);
+    console.log("Filters: ", newFilters);
     setFilters(newFilters);
     setCurrentPage(1);
+
+    // Update accounts filter for API
+    if (newFilters.bank && newFilters.bank.length > 0) {
+      const accountIds = newFilters.bank.map((item) => item.id).join(",");
+      setSelectedAccounts(accountIds);
+    } else {
+      setSelectedAccounts("");
+    }
   };
 
-  const handleSort = (_sort, _order) => {};
+  const handleSort = (columnKey) => {
+    const newSortField = columnKey;
+    let newSortOrder = "asc";
+
+    // If clicking the same column, toggle order
+    if (sortField === columnKey) {
+      newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+    }
+
+    setSortField(newSortField);
+    setSortOrder(newSortOrder);
+  };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -245,9 +341,60 @@ export default function Page() {
     setCurrentPage(1);
   };
 
-  const handleDownload = () => {};
+  const handleDownload = async () => {
+    try {
+      // Prepare export parameters (same as API params)
+      const exportParams = {
+        page: currentPage,
+        limit: perPage,
+        sort: sortField,
+        order: sortOrder,
+        accounts: selectedAccounts,
+        startDate: startDate,
+        endDate: endDate,
+      };
+
+      const result = await exportWithdrawalData(exportParams);
+
+      if (result.success) {
+        // Create a temporary link to download the file
+        const link = document.createElement("a");
+        link.href = result.data.Data.downloadUrl;
+        link.download = result.data.Data.fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        console.log("Download successful:", result.data.Data.fileName);
+      } else {
+        console.error("Export failed:", result.data.Message?.Text);
+        // You can add toast notification here if needed
+      }
+    } catch (error) {
+      console.error("Download error:", error);
+      // You can add toast notification here if needed
+    }
+  };
 
   const isDisbursementEmpty = !tableData || tableData.length === 0;
+
+  // Check if any filters or periods are active
+  const hasActiveFilters = Object.keys(filters).length > 0;
+  const hasActivePeriod = currentPeriodValue && currentPeriodValue.value !== "";
+  const hasActiveSearch = searchValue.length > 0;
+
+  // Show DataEmpty only when no data AND no active filters/periods/search
+  const shouldShowDataEmpty =
+    isDisbursementEmpty &&
+    !hasActiveFilters &&
+    !hasActivePeriod &&
+    !hasActiveSearch;
+
+  // Sort configuration for table
+  const sortConfig = {
+    sort: sortField,
+    order: sortOrder,
+  };
 
   return (
     <div className="mx-auto mt-7 max-w-full px-0">
@@ -282,7 +429,7 @@ export default function Page() {
       </div>
 
       {/* Data Table with Filter or Empty State */}
-      {isDisbursementEmpty ? (
+      {shouldShowDataEmpty ? (
         <DataEmpty
           title={t(
             "LaporanPencairanDanaPage.emptyStateTitle",
@@ -311,11 +458,11 @@ export default function Page() {
           onDownload={handleDownload}
           periodOptions={periodOptions}
           currentPeriodValue={currentPeriodValue}
-          recentPeriodOptions={recentPeriodOptions}
+          recentPeriodOptions={recentPeriodOptionsFromHistory}
           filterConfig={filterConfig}
           searchValue={searchValue}
           filters={filters}
-          sortConfig={{ sort: null, order: null }}
+          sortConfig={sortConfig}
         />
       )}
     </div>
