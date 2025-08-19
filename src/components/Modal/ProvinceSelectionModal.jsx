@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import Checkbox from "@/components/Form/Checkbox";
@@ -26,7 +26,6 @@ const ProvinceSelectionModal = ({
   const [selectedProvinces, setSelectedProvinces] = useState(
     initialSelectedProvinces
   );
-  const [filteredProvinces, setFilteredProvinces] = useState(provinces);
 
   // Search area bongkar API integration
   const {
@@ -45,30 +44,32 @@ const ProvinceSelectionModal = ({
     }
   );
 
-  useEffect(() => {
+  // Compute filtered provinces using useMemo to avoid infinite loops
+  const filteredProvinces = useMemo(() => {
     if (enableSearchAPI && searchFound && searchResults) {
       // Use API search results and transform to match expected format
-      const transformedResults = searchResults.map((result) => ({
+      return searchResults.map((result) => ({
         provinceId: result.provinceId,
         provinceName: result.provinceName,
         sortOrder: result.provinceName.charAt(0).toUpperCase(),
         displayText: result.displayText,
         highlightedName: result.highlightedName,
       }));
-      setFilteredProvinces(transformedResults);
     } else if (!enableSearchAPI || !searchProvince) {
       // Use local filtering when API is disabled or no search term
-      setFilteredProvinces(
-        provinces.filter((province) =>
+      if (provinces && provinces.length > 0) {
+        return provinces.filter((province) =>
           province.provinceName
-            .toLowerCase()
+            ?.toLowerCase()
             .includes(searchProvince.toLowerCase())
-        )
-      );
+        );
+      }
+      return provinces || [];
     } else if (enableSearchAPI && searchProvince && !searchFound) {
       // API returned no results
-      setFilteredProvinces([]);
+      return [];
     }
+    return provinces || [];
   }, [searchProvince, provinces, enableSearchAPI, searchFound, searchResults]);
 
   // Handle search with debounce effect
@@ -79,7 +80,8 @@ const ProvinceSelectionModal = ({
       }, 300);
       return () => clearTimeout(timeoutId);
     }
-  }, [searchProvince, onSearch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchProvince]);
 
   // Group provinces by sortOrder (alphabetical grouping)
   const groupedProvinces = filteredProvinces.reduce((acc, province) => {
