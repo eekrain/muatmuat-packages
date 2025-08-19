@@ -9,9 +9,12 @@ import * as v from "valibot";
 import Button from "@/components/Button/Button";
 import IconComponent from "@/components/IconComponent/IconComponent";
 import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
+import RadioButton from "@/components/Radio/RadioButton";
 import Search from "@/components/Search/Search";
 import SearchNotFound from "@/components/SearchNotFound/SearchNotFound";
 import { toast } from "@/lib/toast";
+
+import ImageArmada from "./components/ImageArmada";
 
 // Mock data for available armada
 const mockAvailableArmada = [
@@ -193,79 +196,78 @@ const TerimaDanUbahArmadaModal = ({
           </div>
 
           {/* Armada List */}
-          <div className="flex max-h-[400px] flex-col gap-3 overflow-y-auto px-6 pb-4">
+          <div className="mx-6 mb-4 max-h-[291px] overflow-y-auto rounded-lg border border-neutral-400">
             {filteredArmada.length === 0 ? (
               <div className="flex items-center justify-center py-8">
                 <SearchNotFound label="Armada Tidak Ditemukan" />
               </div>
             ) : (
-              filteredArmada.map((armada) => (
-                <div
-                  key={armada.id}
-                  className={`flex cursor-pointer items-center justify-between rounded-lg border p-4 transition-colors ${
-                    selectedArmada === armada.id
-                      ? "border-primary-700 bg-primary-50"
-                      : "border-neutral-300 hover:border-neutral-400"
-                  }`}
-                  onClick={() => handleArmadaSelect(armada.id)}
-                >
-                  <div className="flex items-center gap-3">
-                    {/* Truck Image */}
-                    <div className="flex h-12 w-12 items-center justify-center rounded border border-neutral-300 bg-white">
-                      <IconComponent
-                        src="/icons/monitoring/daftar-pesanan-aktif/truck.svg"
-                        className="h-8 w-8 text-gray-600"
+              filteredArmada.map((armada, index) => (
+                <div key={armada.id}>
+                  <div
+                    className="flex cursor-pointer items-center justify-between p-4 transition-colors hover:bg-neutral-50"
+                    onClick={() => handleArmadaSelect(armada.id)}
+                  >
+                    <div className="flex items-center gap-3">
+                      {/* Truck Image */}
+                      <ImageArmada
+                        src={armada.truckImage}
+                        plateNumber={armada.plateNumber}
+                        size="sm"
+                      />
+
+                      {/* Armada Info */}
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-bold text-black">
+                            {armada.plateNumber}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <IconComponent
+                            src="/icons/user.svg"
+                            className="h-3 w-3 text-neutral-600"
+                          />
+                          <span className="text-xs font-medium text-black">
+                            {armada.driverName}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <IconComponent
+                            src="/icons/truck.svg"
+                            className="h-3 w-3 text-neutral-600"
+                          />
+                          <span className="text-xs text-neutral-600">
+                            {armada.vehicleType}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Radio Button and Badge */}
+                    <div className="flex items-center gap-3">
+                      <div className="flex flex-col items-end gap-1">
+                        {getRecommendationBadge(armada)}
+                        {armada.isRecommended &&
+                          armada.recommendationReason && (
+                            <span className="text-right text-xs text-neutral-500">
+                              {armada.recommendationReason}
+                            </span>
+                          )}
+                      </div>
+                      <RadioButton
+                        name="selectedArmada"
+                        value={armada.id}
+                        checked={selectedArmada === armada.id}
+                        onChange={() => handleArmadaSelect(armada.id)}
+                        onClick={() => handleArmadaSelect(armada.id)}
+                        className="!gap-0"
                       />
                     </div>
-
-                    {/* Armada Info */}
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-black">
-                          {armada.plateNumber}
-                        </span>
-                        {getRecommendationBadge(armada)}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <IconComponent
-                          src="/icons/user.svg"
-                          className="h-3 w-3 text-neutral-600"
-                        />
-                        <span className="text-xs font-medium text-black">
-                          {armada.driverName}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <IconComponent
-                          src="/icons/truck.svg"
-                          className="h-3 w-3 text-neutral-600"
-                        />
-                        <span className="text-xs text-neutral-600">
-                          {armada.vehicleType}
-                        </span>
-                      </div>
-                      {armada.isRecommended && armada.recommendationReason && (
-                        <span className="text-xs text-neutral-500">
-                          {armada.recommendationReason}
-                        </span>
-                      )}
-                    </div>
                   </div>
-
-                  {/* Radio Button */}
-                  <div className="flex items-center">
-                    <div
-                      className={`flex h-5 w-5 items-center justify-center rounded-full border-2 ${
-                        selectedArmada === armada.id
-                          ? "border-primary-700 bg-primary-700"
-                          : "border-neutral-400"
-                      }`}
-                    >
-                      {selectedArmada === armada.id && (
-                        <div className="h-2 w-2 rounded-full bg-white" />
-                      )}
-                    </div>
-                  </div>
+                  {index < filteredArmada.length - 1 && (
+                    <div className="mx-4 border-b border-neutral-300" />
+                  )}
                 </div>
               ))
             )}

@@ -18,6 +18,8 @@ import { toast } from "@/lib/toast";
 import { getArmadaStatusBadge } from "@/lib/utils/armadaStatus";
 import { useGetAvailableVehiclesList } from "@/services/Transporter/monitoring/daftar-pesanan-active/getAvailableVehiclesList";
 
+import ImageArmada from "./components/ImageArmada";
+
 const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
   const [searchValue, setSearchValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -186,20 +188,11 @@ const AssignArmadaModal = ({ isOpen, onClose, orderData }) => {
                     <div className="flex items-center justify-between p-4">
                       <div className="flex items-center gap-4">
                         {/* Truck Image */}
-                        <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg bg-neutral-100">
-                          {vehicle.truckImage ? (
-                            <img
-                              src={vehicle.truckImage}
-                              alt={vehicle.licensePlate}
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <IconComponent
-                              src="/icons/monitoring/daftar-pesanan-aktif/truck.svg"
-                              className="h-10 w-10 text-primary-700"
-                            />
-                          )}
-                        </div>
+                        <ImageArmada
+                          src={vehicle.truckImage}
+                          plateNumber={vehicle.licensePlate}
+                          size="sm"
+                        />
 
                         {/* Armada Info */}
                         <div className="flex flex-col gap-1">

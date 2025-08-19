@@ -125,7 +125,8 @@ const ConfirmReadyModal = ({ isOpen, onClose, orderData }) => {
                                 </span>
                                 {vehicle.location.distanceFromPickup && (
                                   <span className="text-[10px] font-medium leading-[130%] text-[#7B7B7B]">
-                                    ({vehicle.location.distanceFromPickup})
+                                    ({vehicle.location.distanceFromPickup} km
+                                    dari lokasi muat)
                                   </span>
                                 )}
                               </div>

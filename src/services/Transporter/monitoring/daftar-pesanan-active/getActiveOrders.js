@@ -210,6 +210,10 @@ const apiResultActiveOrders = {
             driverName: "Noel Gallagher",
             driverPhone: "081234567890",
             driverStatus: "WAITING_LOADING_TIME",
+            location: {
+              currentLocation: "Surabaya",
+              distanceFromPickup: "2,5",
+            },
           },
           {
             id: "vehicle2",
@@ -218,6 +222,10 @@ const apiResultActiveOrders = {
             driverName: "Rizky Aditya",
             driverPhone: "081234567891",
             driverStatus: "ON_DUTY",
+            location: {
+              currentLocation: "Surabaya",
+              distanceFromPickup: "5",
+            },
           },
           {
             id: "vehicle3",
@@ -226,6 +234,10 @@ const apiResultActiveOrders = {
             driverName: "Dhani Putra",
             driverPhone: "081234567892",
             driverStatus: "READY_FOR_ORDER",
+            location: {
+              currentLocation: "Surabaya",
+              distanceFromPickup: "10",
+            },
           },
         ],
         sosStatus: { hasSos: false, sosCount: 0, sosUnits: [] },
