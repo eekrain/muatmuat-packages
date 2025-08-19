@@ -17,6 +17,7 @@ import SearchNotFound from "@/components/SearchNotFound/SearchNotFound";
 import SelectResponPerubahan from "@/components/Select/SelectResponPerubahan";
 import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
 import TerimaDanUbahArmadaModal from "@/container/Shared/OrderModal/TerimaDanUbahArmadaModal";
+import ImageArmada from "@/container/Shared/OrderModal/components/ImageArmada";
 import { toast } from "@/lib/toast";
 
 // Create validation schema for all armada responses
@@ -41,6 +42,9 @@ const ResponPerubahanPage = () => {
   const [isChangeModalOpen, setIsChangeModalOpen] = useState(false);
   const [isArmadaModalOpen, setIsArmadaModalOpen] = useState(false);
   const [currentArmadaId, setCurrentArmadaId] = useState(null);
+  const [selectedReplacementArmada, setSelectedReplacementArmada] = useState(
+    {}
+  );
 
   // Mock data for demonstration
   const armadaList = [
@@ -50,6 +54,7 @@ const ResponPerubahanPage = () => {
       driverName: "Noel Gallagher",
       status: "Armada Dijadwalkan",
       response: "",
+      truckImage: "/img/mock-armada/one.png",
     },
     {
       id: 2,
@@ -57,6 +62,7 @@ const ResponPerubahanPage = () => {
       driverName: "Yoel Gallagher",
       status: "Menuju ke Lokasi Muat",
       response: "",
+      truckImage: "/img/mock-armada/two.png",
     },
     {
       id: 3,
@@ -64,6 +70,7 @@ const ResponPerubahanPage = () => {
       driverName: "Gamma Gallagher",
       status: "Menuju ke Lokasi Muat",
       response: "",
+      truckImage: "/img/mock-armada/three.png",
     },
     {
       id: 4,
@@ -71,6 +78,7 @@ const ResponPerubahanPage = () => {
       driverName: "Sam Gallagher",
       status: "Tiba di Lokasi Muat",
       response: "",
+      truckImage: "/img/mock-armada/one.png",
     },
     {
       id: 5,
@@ -78,6 +86,7 @@ const ResponPerubahanPage = () => {
       driverName: "Muklason",
       status: "Antri di Lokasi Muat",
       response: "",
+      truckImage: "/img/mock-armada/two.png",
     },
     {
       id: 6,
@@ -85,6 +94,7 @@ const ResponPerubahanPage = () => {
       driverName: "Hadi Agus James",
       status: "Antri di Lokasi Muat",
       response: "",
+      truckImage: "/img/mock-armada/three.png",
     },
   ];
 
@@ -179,6 +189,11 @@ const ResponPerubahanPage = () => {
 
   const handleArmadaSave = (selectedArmada) => {
     console.log("Selected armada for replacement:", selectedArmada);
+    // Store the selected replacement armada
+    setSelectedReplacementArmada((prev) => ({
+      ...prev,
+      [currentArmadaId]: selectedArmada,
+    }));
     // Set the response value for the current armada
     setValue(`armada_${currentArmadaId}`, "change");
     trigger(`armada_${currentArmadaId}`);
@@ -362,31 +377,19 @@ const ResponPerubahanPage = () => {
               filteredArmada.map((armada) => (
                 <div
                   key={armada.id}
-                  className="flex items-center justify-between rounded-xl border border-neutral-400 p-4"
+                  className="flex items-center justify-between gap-6 rounded-xl border border-neutral-400 p-4"
                 >
-                  <div className="flex w-[340px] items-center gap-3">
+                  <div className="flex w-[308px] items-center gap-2">
                     {/* Truck Image */}
-                    <div className="relative flex h-[56px] w-[56px] items-center justify-center overflow-hidden rounded-[4px] border border-neutral-400 bg-white">
-                      <img
-                        src={`/img/mock-armada/${armada.id === 1 ? "one" : armada.id === 2 ? "two" : armada.id === 3 ? "three" : armada.id === 4 ? "four" : armada.id === 5 ? "five" : "six"}.png`}
-                        alt={`Truck ${armada.plateNumber}`}
-                        className="absolute inset-0 h-full w-full object-cover"
-                        onError={(e) => {
-                          e.target.style.display = "none";
-                          e.target.nextSibling.style.display = "flex";
-                        }}
-                      />
-                      <div className="hidden h-full w-full items-center justify-center">
-                        <IconComponent
-                          src="/icons/monitoring/daftar-pesanan-aktif/truck.svg"
-                          className="h-8 w-8 text-gray-600"
-                        />
-                      </div>
-                    </div>
+                    <ImageArmada
+                      src={armada.truckImage}
+                      plateNumber={armada.plateNumber}
+                      size="md"
+                    />
 
                     {/* Armada Info */}
                     <div className="flex-1">
-                      <div className="mb-3 flex items-center gap-1">
+                      <div className="mb-2.5 flex items-center gap-1">
                         <span className="text-xs font-bold text-black">
                           {armada.plateNumber}
                         </span>
@@ -408,7 +411,7 @@ const ResponPerubahanPage = () => {
                     <div className="flex flex-1 items-center gap-6">
                       <IconComponent
                         src="/icons/arrow-right.svg"
-                        className="h-4 w-4 text-success-600"
+                        className="h-6 w-6 text-success-600"
                       />
                       <span className="w-[340px] text-xs font-semibold text-success-400">
                         Tidak ada perubahan armada dan akan ada penyesuaian
@@ -417,12 +420,60 @@ const ResponPerubahanPage = () => {
                     </div>
                   )}
 
+                  {/* Selected Replacement Armada for Change Response */}
+                  {formValues[`armada_${armada.id}`] === "change" &&
+                    selectedReplacementArmada[armada.id] && (
+                      <div className="flex flex-1 items-center gap-6">
+                        <IconComponent
+                          src="/icons/arrow-right.svg"
+                          className="h-6 w-6 text-neutral-600"
+                        />
+                        <div className="flex w-full items-center gap-2">
+                          <ImageArmada
+                            src={
+                              selectedReplacementArmada[armada.id].truckImage
+                            }
+                            plateNumber={
+                              selectedReplacementArmada[armada.id].plateNumber
+                            }
+                            size="md"
+                          />
+                          <div className="flex w-[195px] flex-col">
+                            <div className="line-clamp-2 break-all text-xs">
+                              <span className="font-bold">
+                                {
+                                  selectedReplacementArmada[armada.id]
+                                    .plateNumber
+                                }
+                              </span>
+                              <span className="font-semibold">
+                                {" - "}
+                                {
+                                  selectedReplacementArmada[armada.id]
+                                    .driverName
+                                }
+                              </span>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => {
+                              setCurrentArmadaId(armada.id);
+                              setIsArmadaModalOpen(true);
+                            }}
+                            className="ml-auto text-xs font-medium text-primary-700"
+                          >
+                            Ubah Armada
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
                   {/* Info Message for Reject Response */}
                   {formValues[`armada_${armada.id}`] === "reject" && (
                     <div className="flex flex-1 items-center gap-6">
                       <IconComponent
                         src="/icons/arrow-right.svg"
-                        className="h-4 w-4 text-error-400"
+                        className="h-6 w-6 text-error-400"
                       />
                       <span className="w-[340px] text-xs font-semibold text-error-400">
                         Armada akan dibatalkan, akan ada penyesuaian pendapatan,

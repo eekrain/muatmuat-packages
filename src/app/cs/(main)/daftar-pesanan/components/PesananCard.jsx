@@ -445,12 +445,13 @@ const PesananCard = ({ order, userRole }) => {
                         {order.sosStatus.sosCount} Unit
                       </span>
                     </div>
-                    <Button
-                      variant="link"
-                      className="h-auto p-0 text-xs font-medium"
+                    <Link
+                      href="/monitoring?tab=urgent"
+                      target="_blank"
+                      className="text-xs font-medium text-primary-700 no-underline hover:text-primary-800"
                     >
                       {t("pesananCard.viewSOS", {}, "Lihat SOS")}
-                    </Button>
+                    </Link>
                   </div>
                 )}
               </div>
@@ -469,7 +470,7 @@ const PesananCard = ({ order, userRole }) => {
                     {multiStatusMemo.dominantStatusUnitCount} Unit
                   </BadgeStatusPesanan>
                   <Link
-                    href={`/daftar-pesanan/${order.id}/status`}
+                    href={`/daftar-pesanan/${order.id}/lacak-armada`}
                     target="_blank"
                   >
                     <span className="mt-1 cursor-pointer text-xs font-medium text-primary-700 hover:text-primary-800">

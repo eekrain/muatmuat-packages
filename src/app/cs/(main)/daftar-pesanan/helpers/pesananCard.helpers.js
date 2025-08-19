@@ -75,7 +75,7 @@ export const useGetActionItems = ({
         actions.push({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
-          href: `/cs/daftar-pesanan/${order.id}`,
+          href: `/daftar-pesanan/${order.id}`,
         });
         if (hasMultipleUnits) {
           actions.push({
@@ -99,7 +99,7 @@ export const useGetActionItems = ({
         actions.push({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
-          href: `/cs/daftar-pesanan/${order.id}`,
+          href: `/daftar-pesanan/${order.id}`,
         });
         if (order.orderType === "Terjadwal") {
           actions.push({
@@ -119,7 +119,7 @@ export const useGetActionItems = ({
         actions.push({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
-          href: `/cs/daftar-pesanan/${order.id}`,
+          href: `/daftar-pesanan/${order.id}`,
         });
         if (hasMultipleUnits) {
           actions.push({
@@ -142,6 +142,8 @@ export const useGetActionItems = ({
         });
         actions.push({
           label: t("pesananCard.actionTrackFleet", {}, "Lacak Armada"),
+          isLink: true,
+          href: `/daftar-pesanan/${order.id}/lacak-armada`,
         });
         actions.push({
           label: t("pesananCard.actionViewFleet", {}, "Lihat Armada"),
@@ -150,7 +152,7 @@ export const useGetActionItems = ({
         actions.push({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
-          href: `/cs/daftar-pesanan/${order.id}`,
+          href: `/daftar-pesanan/${order.id}`,
         });
         actions.push({
           label: t("pesananCard.actionCancelOrder", {}, "Batalkan Pesanan"),
@@ -167,7 +169,7 @@ export const useGetActionItems = ({
         actions.push({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
-          href: `/cs/daftar-pesanan/${order.id}`,
+          href: `/daftar-pesanan/${order.id}`,
         });
         actions.push({
           label: t("pesananCard.actionCancelFleet", {}, "Batalkan Armada"),
@@ -184,6 +186,8 @@ export const useGetActionItems = ({
       case ORDER_STATUS.PROSES_MUAT:
         actions.push({
           label: t("pesananCard.actionTrackFleet", {}, "Lacak Armada"),
+          isLink: true,
+          href: `/daftar-pesanan/${order.id}/lacak-armada`,
         });
         actions.push({
           label: t("pesananCard.actionViewFleet", {}, "Lihat Armada"),
@@ -192,7 +196,7 @@ export const useGetActionItems = ({
         actions.push({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
-          href: `/cs/daftar-pesanan/${order.id}`,
+          href: `/daftar-pesanan/${order.id}`,
         });
         actions.push({
           label: t("pesananCard.actionCancelFleet", {}, "Batalkan Armada"),
@@ -209,6 +213,8 @@ export const useGetActionItems = ({
       case ORDER_STATUS.PROSES_BONGKAR:
         actions.push({
           label: t("pesananCard.actionTrackFleet", {}, "Lacak Armada"),
+          isLink: true,
+          href: `/daftar-pesanan/${order.id}/lacak-armada`,
         });
         actions.push({
           label: t("pesananCard.actionViewFleet", {}, "Lihat Armada"),
@@ -217,7 +223,7 @@ export const useGetActionItems = ({
         actions.push({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
-          href: `/cs/daftar-pesanan/${order.id}`,
+          href: `/daftar-pesanan/${order.id}`,
         });
         break;
       case ORDER_STATUS.DOKUMEN_SEDANG_DISIAPKAN:
@@ -238,7 +244,7 @@ export const useGetActionItems = ({
         actions.push({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
-          href: `/cs/daftar-pesanan/${order.id}`,
+          href: `/daftar-pesanan/${order.id}`,
         });
         break;
       case ORDER_STATUS.PROSES_PENGIRIMAN_DOKUMEN:
@@ -259,14 +265,14 @@ export const useGetActionItems = ({
         actions.push({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
-          href: `/cs/daftar-pesanan/${order.id}`,
+          href: `/daftar-pesanan/${order.id}`,
         });
         break;
       default:
         actions.push({
           label: t("pesananCard.actionViewDetail", {}, "Detail Pesanan"),
           isLink: true,
-          href: `/cs/daftar-pesanan/${order.id}`,
+          href: `/daftar-pesanan/${order.id}`,
         });
     }
     return actions;

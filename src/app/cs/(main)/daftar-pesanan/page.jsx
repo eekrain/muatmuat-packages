@@ -110,7 +110,7 @@ const DaftarPesananPage = () => {
   };
 
   return (
-    <div className="mx-auto my-6 max-h-screen w-full max-w-[1280px] space-y-4 px-6">
+    <div className="mx-auto max-h-screen w-full max-w-[1280px] space-y-4 px-6 py-6">
       <PageTitle withBack={false}>
         {t("daftarPesanan.title", {}, "Daftar Pesanan")}
       </PageTitle>

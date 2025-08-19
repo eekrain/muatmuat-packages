@@ -294,7 +294,7 @@ const getRandomInt = (min, max) =>
   Math.floor(Math.random() * (max - min + 1)) + min;
 
 const generateScheduleEvent = ({ view_type }) => {
-  const isConflicted = Math.random() < 0.15;
+  const isConflicted = Math.random() < 0.02;
   let statusCode, position, scheduled, additional;
 
   if (isConflicted) {
