@@ -24,6 +24,7 @@ import {
   useRequestOtpStore,
 } from "@/store/Shipper/forms/requestOtpStore";
 
+import ChangeEmailModal from "./ChangeEmailModal";
 import ChangeWhatsappModal from "./ChangeWhatsappModal";
 
 // Configuration object for different OTP types
@@ -68,6 +69,42 @@ const OTP_TYPE_CONFIG = {
     buttonText: "Kirim Ulang OTP",
     buttonSize: "w-52 md:h-10",
     logoMargin: "mb-6",
+    showMeteors: true,
+  },
+  "change-email": {
+    showEmailMessage: false,
+    mainMessage:
+      "Mohon masukkan OTP yang dikirim melalui pesan Whatsapp diperangkat kamu untuk melanjutkan perubahan",
+    labelMessage: "Kode OTP dikirim ke nomor",
+    inputLabel: "Masukkan OTP",
+    imageSrc: "/img/otp-transporter/security-amico.png",
+    imageSize: { width: 120, height: 108 },
+    buttonText: "Kirim Ulang",
+    buttonSize: "w-[125px] text-sm md:h-8",
+    textColor: "text-white",
+    labelColor: "text-white",
+    otpInputClass: "!bg-white !text-black !border-white",
+    activeResendButtonClass: "bg-muat-trans-primary-400 text-blue-600",
+    resendButtonClass:
+      "bg-[#F0F0F0] text-neutral-400 hover:bg-[#F0F0F0] cursor-not-allowed",
+    showMeteors: true,
+  },
+  "change-email2": {
+    showEmailMessage: false,
+    mainMessage:
+      "Mohon cek pesan email di perangkat kamu untuk melanjutkan perubahan",
+    labelMessage: "Kode OTP dikirim ke email",
+    inputLabel: "Masukkan OTP",
+    imageSrc: "/img/otp-transporter/security-amico.png",
+    imageSize: { width: 120, height: 108 },
+    buttonText: "Kirim Ulang",
+    buttonSize: "w-[125px] text-sm md:h-8",
+    textColor: "text-white",
+    labelColor: "text-white",
+    otpInputClass: "!bg-white !text-black !border-white",
+    activeResendButtonClass: "bg-muat-trans-primary-400 text-blue-600",
+    resendButtonClass:
+      "bg-[#F0F0F0] text-neutral-400 hover:bg-[#F0F0F0] cursor-not-allowed",
     showMeteors: true,
   },
   default: {
@@ -211,7 +248,9 @@ const OtpContainer = ({
             ? "OtpContainer.textCheckWhatsappChangeNumber"
             : type === "whatsapp"
               ? "OtpContainer.textCheckWhatsappForWhatsapp" // Key baru untuk tipe whatsapp
-              : "OtpContainer.textCheckWhatsapp",
+              : type === "change-email2"
+                ? "OtpContainer.textCheckEmailChangeEmail2"
+                : "OtpContainer.textCheckWhatsapp",
           {},
           config.mainMessage
         )}
@@ -232,7 +271,9 @@ const OtpContainer = ({
             {t(
               type === "change-number"
                 ? "OtpContainer.textOtpSentToNumber"
-                : "OtpContainer.labelWhatsappNumber",
+                : type === "change-email" || type === "change-email2"
+                  ? "OtpContainer.labelEmailAddress"
+                  : "OtpContainer.labelWhatsappNumber",
               {},
               config.labelMessage
             )}
@@ -243,23 +284,31 @@ const OtpContainer = ({
               config.labelColor || "text-[#EBEBEB]"
             )}
           >
-            {number || "0893435352125"}
+            {type === "change-email"
+              ? searchParams.get("email") || "0872517235"
+              : type === "change-email2"
+                ? searchParams.get("email") ||
+                  "public.relation.mrsby@midtownight.com"
+                : number || "0893435352125"}
           </div>
-          {type !== "forgot-password" && type !== "whatsapp" && (
-            <Button
-              variant="muatparts-primary"
-              name="change"
-              onClick={() => setIsChangeNumberModalOpen(true)}
-              className={cn(
-                "ml-3 flex w-[50px] items-center !bg-[#EBEBEB] py-0 text-xxs !text-[#868686] md:h-5",
-                isCountdownFinished(countdown) &&
-                  "!bg-[#EBEBEB] !text-primary-700"
-              )}
-              disabled={!isCountdownFinished(countdown)}
-            >
-              {t("OtpContainer.buttonChange", {}, "Ganti")}
-            </Button>
-          )}
+          {type !== "forgot-password" &&
+            type !== "whatsapp" &&
+            type !== "change-email" && (
+              <Button
+                variant="muatparts-primary"
+                name="change"
+                onClick={() => setIsChangeNumberModalOpen(true)}
+                className={cn(
+                  "ml-3 flex w-[50px] items-center py-0 text-xxs md:h-5",
+                  "!bg-[#EBEBEB] !text-[#868686]",
+                  isCountdownFinished(countdown) &&
+                    "!bg-[#EBEBEB] !text-primary-700"
+                )}
+                disabled={!isCountdownFinished(countdown)}
+              >
+                {t("OtpContainer.buttonChange", {}, "Ganti")}
+              </Button>
+            )}
         </div>
       </div>
     );
@@ -276,6 +325,15 @@ const OtpContainer = ({
           return;
         }
 
+        // If the type is 'change-email' or 'change-email2', redirect to profile to open the email modal.
+        if (type === "change-email") {
+          router.push("/profil?hasVerifiedEmail=true");
+          return;
+        }
+        if (type === "change-email2") {
+          router.push("/profil");
+          return;
+        }
         if (type === "change-number") {
           setIsSuccessModalOpen(true);
         } else {
@@ -443,7 +501,8 @@ const OtpContainer = ({
                   </div>
                 </div>
 
-                {formValues?.verificationMethod === "email" && (
+                {(formValues?.verificationMethod === "email" ||
+                  type === "change-email2") && (
                   <div className="mt-6 max-w-[319px] rounded-md bg-[#FFF1A5] px-4 py-3 text-center text-xs font-medium leading-[14.4px] text-neutral-900">
                     {`${t("labelIfOtpNotFound")} `}
                     <span className="font-bold">{t("labelSpam")}</span>,{" "}
@@ -528,34 +587,67 @@ const OtpContainer = ({
         </div>
       </div>
 
-      <ChangeWhatsappModal
-        isOpen={isChangeNumberModalOpen}
-        size="big"
-        setIsOpen={setIsChangeNumberModalOpen}
-        title={{
-          text: t("OtpContainer.titleChangeWhatsapp", {}, "Ubah No. Whatsapp"),
-          className: "text-center",
-        }}
-        isChangeNumber={type === "change-number"}
-        confirm={{
-          text: "Ubah",
-          onClick: (_newWhatsappNumber) => {
-            setIsChangeNumberModalOpen(false);
-            setNotification({
-              status: "success",
-              message:
-                type === "change-number"
-                  ? "Berhasil mengubah No. Whatsapp"
-                  : t(
-                      "OtpContainer.messageChangeWhatsappSuccess",
-                      {},
-                      "Berhasil mengubah No. Whatsapp Kamu"
-                    ),
-            });
-            handleRequestOtp(formValues, true);
-          },
-        }}
-      />
+      {type === "change-email2" ? (
+        <ChangeEmailModal
+          isOpen={isChangeNumberModalOpen}
+          size="big"
+          setIsOpen={setIsChangeNumberModalOpen}
+          title={{
+            text: t("OtpContainer.titleChangeEmail", {}, "Ubah Email"),
+            className: "text-center",
+          }}
+          isChangeEmail2={true}
+          confirm={{
+            text: "Ubah",
+            onClick: (_newEmail) => {
+              setIsChangeNumberModalOpen(false);
+              setNotification({
+                status: "success",
+                message: t(
+                  "OtpContainer.messageChangeEmailSuccess",
+                  {},
+                  "Berhasil mengubah Email Kamu"
+                ),
+              });
+              handleRequestOtp(formValues, true);
+            },
+          }}
+        />
+      ) : (
+        <ChangeWhatsappModal
+          isOpen={isChangeNumberModalOpen}
+          size="big"
+          setIsOpen={setIsChangeNumberModalOpen}
+          title={{
+            text: t(
+              "OtpContainer.titleChangeWhatsapp",
+              {},
+              "Ubah No. Whatsapp"
+            ),
+            className: "text-center",
+          }}
+          isChangeNumber={type === "change-number"}
+          isChangeEmail2={type === "change-email2"}
+          confirm={{
+            text: "Ubah",
+            onClick: (_newWhatsappNumber) => {
+              setIsChangeNumberModalOpen(false);
+              setNotification({
+                status: "success",
+                message:
+                  type === "change-number"
+                    ? "Berhasil mengubah No. Whatsapp"
+                    : t(
+                        "OtpContainer.messageChangeWhatsappSuccess",
+                        {},
+                        "Berhasil mengubah No. Whatsapp Kamu"
+                      ),
+              });
+              handleRequestOtp(formValues, true);
+            },
+          }}
+        />
+      )}
 
       <Modal
         closeOnOutsideClick={false}
