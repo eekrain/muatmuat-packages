@@ -47,6 +47,7 @@ const DaftarPesananAktif = ({
   onToggleExpand,
   isExpanded,
   onViewFleetStatus,
+  onTrackFleet,
   hasShownOnboarding,
   onOnboardingShown,
 }) => {
@@ -102,8 +103,7 @@ const DaftarPesananAktif = ({
   const handleActionClick = (actionType, row) => {
     switch (actionType) {
       case ORDER_ACTIONS.TRACK_FLEET.type:
-        console.log("Lacak Armada", row);
-        // TODO: Implement fleet tracking navigation
+        onTrackFleet?.(row);
         break;
       case ORDER_ACTIONS.VIEW_FLEET.type:
         setSelectedOrderForViewFleet(row);
