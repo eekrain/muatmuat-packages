@@ -13,7 +13,7 @@ import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
 import RadioButton from "@/components/Radio/RadioButton";
 import { toast } from "@/lib/toast";
 
-import FleetSelector from "./FleetSelector";
+import FleetSelector from "./components/FleetSelector";
 
 // Valibot validation schema
 const FormSchema = v.pipe(

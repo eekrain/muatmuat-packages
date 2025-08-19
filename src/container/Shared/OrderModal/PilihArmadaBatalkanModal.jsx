@@ -195,8 +195,8 @@ const PilihArmadaBatalkan = ({
                             src="/icons/user16.svg"
                             className="h-4 w-4 text-[#461B02]"
                           />
-                          <div className="h-2 w-full">
-                            <p className="text-xs font-medium leading-[120%] text-black">
+                          <div className="w-full">
+                            <p className="text-xs font-medium text-black">
                               {fleet.driverName || "Noel Gallagher"}
                             </p>
                           </div>
