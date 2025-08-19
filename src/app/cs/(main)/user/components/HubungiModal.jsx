@@ -25,13 +25,13 @@ const HubungiModal = ({
   onClose,
   transporterData: _transporterData,
 }) => {
-  const [showDetails, setShowDetails] = useState(false);
+  const [modalView, setModalView] = useState("initial"); // 'initial', 'options', 'details'
   const [showCopySuccess, setShowCopySuccess] = useState(false);
 
   // Reset to initial view whenever modal is opened
   useEffect(() => {
     if (isOpen) {
-      setShowDetails(false);
+      setModalView("initial");
       setShowCopySuccess(false);
     }
   }, [isOpen]);
@@ -52,11 +52,22 @@ const HubungiModal = ({
     }
   };
 
-  const handleFirstModalAction = () => {
-    setShowDetails(true);
+  const handleContactTransporter = () => {
+    setModalView("options");
   };
 
-  if (showDetails) {
+  const handleContactDriver = () => {
+    // NOTE: Placeholder for driver contact functionality
+    toast.info("Fitur Hubungi Driver akan segera hadir!");
+    // onClose();
+  };
+
+  const handleShowTransporterDetails = () => {
+    setModalView("details");
+  };
+
+  // View 3: Contact Details
+  if (modalView === "details") {
     return (
       <Modal
         open={isOpen}
@@ -216,7 +227,64 @@ const HubungiModal = ({
     );
   }
 
-  // First Modal - Initial Contact Options
+  // View 2: Contact Method Options
+  if (modalView === "options") {
+    return (
+      <Modal
+        open={isOpen}
+        onOpenChange={onClose}
+        withCloseButton={true}
+        closeOnOutsideClick={true}
+      >
+        <ModalContent
+          type="muattrans"
+          size="medium"
+          className="flex flex-col items-start overflow-hidden rounded-xl p-0 shadow-[0px_4px_11px_rgba(65,65,65,0.25)]"
+        >
+          <ModalHeader className="w-full" />
+          {/* Content Frame */}
+          <div className="flex flex-col items-center justify-center gap-6 bg-white px-6 py-9">
+            {/* Text Content */}
+            <div className="flex flex-col items-center gap-2">
+              <p className="text-center text-sm font-bold leading-[17px] text-black">
+                Anda Ingin Menghubungi Via
+              </p>
+              <p className="text-center text-xs font-semibold leading-[14px] text-gray-500">
+                Anda dapat memilih menghubungi melalui pilihan berikut
+              </p>
+            </div>
+
+            {/* Action Options */}
+            <div className="flex flex-col items-start gap-4">
+              <button
+                onClick={handleShowTransporterDetails}
+                className="box-border flex flex-row items-center justify-between gap-3 rounded-md border border-gray-200 bg-white px-6 py-4 transition-colors hover:bg-gray-50"
+              >
+                <div className="h-6 w-6">
+                  <IconComponent
+                    src="/icons/call16.svg"
+                    className="text-blue-500"
+                    width={20}
+                    height={20}
+                  />
+                </div>
+                <div className="flex flex-col items-start gap-1">
+                  <div className="text-sm font-semibold leading-[17px] text-blue-600">
+                    No. Telepon / WhatsApp
+                  </div>
+                  <div className="text-xs font-medium leading-[14px] text-gray-500">
+                    Anda langsung terhubung dengan Whatsapp
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </ModalContent>
+      </Modal>
+    );
+  }
+
+  // View 1: Initial Choice (Transporter or Driver)
   return (
     <Modal
       open={isOpen}
@@ -227,43 +295,48 @@ const HubungiModal = ({
       <ModalContent
         type="muattrans"
         size="medium"
-        className="flex flex-col items-start overflow-hidden rounded-xl p-0 shadow-[0px_4px_11px_rgba(65,65,65,0.25)]"
+        className="flex flex-col items-center overflow-hidden rounded-xl p-0 shadow-lg"
       >
         <ModalHeader className="w-full" />
-        {/* Content Frame */}
-        <div className="flex flex-col items-center justify-center gap-6 bg-white px-6 py-9">
-          {/* Text Content */}
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-center text-sm font-bold leading-[17px] text-black">
-              Anda Ingin Menghubungi Via
-            </p>
-            <p className="text-center text-xs font-semibold leading-[14px] text-gray-500">
-              Anda dapat memilih menghubungi melalui pilihan berikut
-            </p>
-          </div>
-
-          {/* Action Options */}
-          <div className="flex flex-col items-start gap-4">
+        <div className="flex w-full flex-col items-center gap-6 bg-white px-6 pb-9 pt-9">
+          <h3 className="text-[14px] font-bold text-[#1B1B1B]">Hubungi</h3>
+          <div className="flex w-full flex-col items-stretch gap-4">
+            {/* Hubungi Transporter Button */}
             <button
-              onClick={handleFirstModalAction}
-              className="box-border flex flex-row items-center justify-between gap-3 rounded-md border border-gray-200 bg-white px-6 py-4 transition-colors hover:bg-gray-50"
+              onClick={handleContactTransporter}
+              className="group flex h-[72px] w-[392px] items-center gap-4 overflow-hidden rounded-lg border border-neutral-400 bg-white shadow-sm transition-colors hover:border-muat-trans-primary-400"
             >
-              <div className="h-6 w-6">
+              <div className="flex h-[72px] w-[72px] flex-shrink-0 items-center justify-center bg-neutral-100 transition-colors group-hover:bg-muat-trans-primary-400">
                 <IconComponent
-                  src="/icons/call16.svg"
-                  className="text-blue-500"
-                  width={20}
-                  height={20}
+                  src="/icons/transporter-call.svg"
+                  alt="Hubungi Transporter"
+                  width={40}
+                  height={40}
+                  className="text-primary-700"
                 />
               </div>
-              <div className="flex flex-col items-start gap-1">
-                <div className="text-sm font-semibold leading-[17px] text-blue-600">
-                  No. Telepon / WhatsApp
-                </div>
-                <div className="text-xs font-medium leading-[14px] text-gray-500">
-                  Anda langsung terhubung dengan Whatsapp
-                </div>
+              <span className="text-xs font-bold text-neutral-900">
+                Hubungi Transporter
+              </span>
+            </button>
+
+            {/* Hubungi Driver Button */}
+            <button
+              onClick={handleContactTransporter}
+              className="group flex h-[72px] w-[392px] items-center gap-4 overflow-hidden rounded-lg border border-neutral-400 bg-white shadow-sm transition-colors hover:border-muat-trans-primary-400"
+            >
+              <div className="flex h-[72px] w-[72px] flex-shrink-0 items-center justify-center bg-neutral-100 transition-colors group-hover:bg-muat-trans-primary-400">
+                <IconComponent
+                  src="/icons/driver-call.svg"
+                  alt="Hubungi Driver"
+                  width={40}
+                  height={40}
+                  className="text-primary-700"
+                />
               </div>
+              <span className="text-xs font-bold text-neutral-900">
+                Hubungi Driver
+              </span>
             </button>
           </div>
         </div>
