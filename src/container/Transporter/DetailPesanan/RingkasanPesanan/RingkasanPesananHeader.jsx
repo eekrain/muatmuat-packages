@@ -58,11 +58,11 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
                 )}
               >
                 <BadgeStatusPesanan
-                  variant={statusMeta.variant}
+                  variant={statusMeta?.variant}
                   icon={{ iconLeft: statusMeta?.icon }}
                   className="w-fit"
                 >
-                  {statusMeta.label}
+                  {statusMeta?.label}
                 </BadgeStatusPesanan>
               </div>
             </div>
