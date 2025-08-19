@@ -38,6 +38,7 @@ const NAVIGATION_MENU = [
     label: "Dashboard",
     icon: "/icons/header-transporter/dashboard.svg",
     isDropdown: true,
+    activePattern: "/dashboard",
     dropdownItems: [
       {
         id: "dashboard-analytics",
@@ -219,10 +220,18 @@ const UserDropdown = ({ dataUser, logout, isLoggedIn }) => {
 
 const NavigationMenuItem = ({ item, pathname }) => {
   if (item.isDropdown) {
+    const isActive =
+      (item.activePattern && pathname.startsWith(item.activePattern)) ||
+      (item.href && pathname.startsWith(item.href));
     return (
       <SimpleHover>
         <SimpleHoverTrigger asChild>
-          <button className="flex h-8 items-center gap-1 border-b-2 border-transparent outline-none">
+          <button
+            className={cn(
+              "flex h-8 items-center gap-1 border-b-2 outline-none",
+              isActive ? "border-muat-trans-primary-400" : "border-transparent"
+            )}
+          >
             <IconComponent src={item.icon} />
             <span>{item.label}</span>
             <ChevronDown className="h-4 w-4" />
