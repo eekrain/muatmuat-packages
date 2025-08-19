@@ -52,6 +52,10 @@ const LaporanAktivitasArmadaTable = ({
   loading = false,
   className = "border-0",
   multiSelect = true, // ✅ Default to true, bisa di-override
+  isSearchNoResults = false,
+  isSearching = false,
+  isPeriodFilterActive = false,
+  isFilterDropdownActive = false,
 }) => {
   const router = useRouter();
   const [localSearchValue, setLocalSearchValue] = useState(searchValue);
@@ -324,8 +328,29 @@ const LaporanAktivitasArmadaTable = ({
   };
 
   const renderHeader = () => {
-    // Search input should never be disabled by data availability
-    const disableSearchInput = disabledByPeriod;
+    // Check if we should disable components due to no data
+    const shouldDisableForNoData = data.length === 0 && !loading;
+
+    // Check combination of active filters
+    const hasSearchActive = searchValue && searchValue.length > 0;
+    const hasPeriodActive = isPeriodFilterActive;
+    const hasFilterActive = isFilterDropdownActive;
+
+    // Count active filters
+    const activeFilterCount = [
+      hasSearchActive,
+      hasPeriodActive,
+      hasFilterActive,
+    ].filter(Boolean).length;
+
+    // Search input disabled when no data and user is using FilterDropdown + DropdownPeriode combo
+    // OR when user is using FilterDropdown alone OR DropdownPeriode alone
+    const disableSearchInput =
+      disabledByPeriod ||
+      (shouldDisableForNoData &&
+        ((hasFilterActive && hasPeriodActive && !hasSearchActive) || // Filter + Period combo
+          (hasFilterActive && !hasSearchActive && !hasPeriodActive) || // Filter alone
+          (hasPeriodActive && !hasSearchActive && !hasFilterActive))); // Period alone
 
     // Interlock states - FilterDropdown disabled when search is active
     const isSearchActive = localSearchValue.length > 0;
@@ -333,9 +358,15 @@ const LaporanAktivitasArmadaTable = ({
       (key) => localFilters[key] && localFilters[key] !== ""
     );
 
-    // Filter dropdown can be disabled by no data or search active
+    // Filter dropdown disabled when no data and user is using InputSearch + DropdownPeriode combo
+    // OR when user is using InputSearch alone OR DropdownPeriode alone
     const disableFilterDropdown =
-      (data.length === 0 && !loading) || disabledByPeriod || isSearchActive;
+      (shouldDisableForNoData &&
+        ((hasSearchActive && hasPeriodActive && !hasFilterActive) || // Search + Period combo
+          (hasSearchActive && !hasFilterActive && !hasPeriodActive) || // Search alone
+          (hasPeriodActive && !hasFilterActive && !hasSearchActive))) || // Period alone
+      disabledByPeriod ||
+      (isSearchNoResults && !isSearching);
 
     return (
       <div className="flex items-center justify-between">
@@ -407,54 +438,13 @@ const LaporanAktivitasArmadaTable = ({
         (key) => localFilters[key] && localFilters[key] !== ""
       );
 
-    if (hasSearchOrFilter) {
+    if (hasSearchOrFilter || isSearchNoResults) {
       return (
-        <div className="flex flex-col items-center justify-center py-12">
-          <div className="mb-4 flex items-center gap-3">
-            {/* Magnifying glass with X */}
-            <div className="relative">
-              <div className="h-16 w-16 rounded-full bg-blue-100 p-3">
-                <svg
-                  className="h-full w-full text-blue-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-                <div className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white">
-                  <span className="text-xs font-bold">×</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Yellow circle with smiley */}
-            <div className="h-12 w-12 rounded-full bg-yellow-100 p-2">
-              <div className="flex h-full w-full items-center justify-center rounded-full bg-yellow-400">
-                <span className="text-lg">😊</span>
-              </div>
-            </div>
-
-            {/* Yellow square with X */}
-            <div className="h-8 w-8 rounded bg-yellow-100 p-1">
-              <div className="flex h-full w-full items-center justify-center rounded bg-yellow-400">
-                <span className="text-xs font-bold text-black">×</span>
-              </div>
-            </div>
-          </div>
-
-          <h3 className="mb-2 text-lg font-semibold text-gray-900">
-            Data tidak Ditemukan
-          </h3>
-          <p className="text-center text-gray-600">
-            Mohon coba hapus beberapa filter
-          </p>
-        </div>
+        <DataNotFound
+          className="gap-y-5"
+          title="Keyword Tidak Ditemukan"
+          description="Mohon coba hapus beberapa filter atau gunakan keyword yang berbeda"
+        />
       );
     }
 
