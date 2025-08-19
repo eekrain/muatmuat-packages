@@ -112,15 +112,15 @@ const LaporanAktivitasDriverTable = ({
     },
     {
       header: "Kode Pesanan Aktif",
-      key: "activeOrderCode",
+      key: "invoiceNumber",
       sortable: true,
       width: "150px",
       searchable: true,
       render: (row) => {
-        if (!row.activeOrderCode || row.activeOrderCode === "") {
+        if (!row.invoiceNumber || row.invoiceNumber === "") {
           return <div className="text-sm">Belum Ada</div>;
         }
-        return <div className="text-sm">{row.activeOrderCode}</div>;
+        return <div className="text-sm">{row.invoiceNumber}</div>;
       },
     },
     {
@@ -164,7 +164,7 @@ const LaporanAktivitasDriverTable = ({
     },
     {
       header: "Status",
-      key: "status",
+      key: "currentStatus",
       sortable: true,
       width: "200px",
       searchable: true,
@@ -232,25 +232,10 @@ const LaporanAktivitasDriverTable = ({
         <Button
           className="h-8 px-4 text-xs"
           onClick={() => {
-            // Store minimal driver data temporarily for detail page
-            const driverData = {
-              name: row.name,
-              phoneNumber: row.phoneNumber,
-              profileImage: row.profileImage,
-              currentStatus: row.currentStatus,
-              truckType: row.currentFleet?.truckType,
-              carrierType: row.currentFleet?.carrierType,
-              currentLocation: row.currentFleet?.currentLocation,
-            };
-
-            // Store temporarily in sessionStorage (cleared when tab closes)
-            sessionStorage.setItem(
-              `driver_${row.id}`,
-              JSON.stringify(driverData)
-            );
-
             // Navigate to detail page with only driver ID
-            router.push(`/laporan/aktivitas-armada-driver/driver/${row.id}`);
+            router.push(
+              `/laporan/aktivitas-armada-driver/driver/${row.driverId}`
+            );
           }}
         >
           Detail

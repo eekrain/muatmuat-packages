@@ -7,7 +7,9 @@ import Button from "@/components/Button/Button";
 import Card, { CardContent } from "@/components/Card/Card";
 import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
 import { useTranslation } from "@/hooks/use-translation";
+import { getStatusPesananMetadataTransporter } from "@/lib/normalizers/transporter/getStatusPesananMetadata";
 import { cn } from "@/lib/utils";
+import { ORDER_STATUS } from "@/utils/Transporter/orderStatus";
 
 const RingkasanPesananHeader = ({ dataOrderDetail }) => {
   const { t } = useTranslation();
@@ -16,6 +18,13 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
   const handleResponPerubahan = () => {
     setIsRespondModalOpen(true);
   };
+
+  const statusMeta = getStatusPesananMetadataTransporter({
+    orderStatus: dataOrderDetail?.orderStatus,
+    orderStatusUnit: dataOrderDetail?.orderStatusUnit,
+    truckCount: dataOrderDetail?.totalUnit,
+    t,
+  });
 
   return (
     <Card className="rounded-xl border-none">
@@ -48,30 +57,42 @@ const RingkasanPesananHeader = ({ dataOrderDetail }) => {
                 )}
               >
                 <BadgeStatusPesanan
-                  variant={
-                    dataOrderDetail?.orderStatus === "NEED_RESPONSE_CHANGE"
-                      ? "warning"
-                      : dataOrderDetail?.orderStatus === "CANCELLED_TRANSPORTER"
-                        ? "error"
-                        : "primary"
-                  }
-                  icon={{
-                    iconLeft:
-                      dataOrderDetail?.orderStatus === "NEED_RESPONSE_CHANGE" &&
-                      "/icons/warning-kuning.svg",
-                  }}
+                  variant={statusMeta.variant}
+                  icon={{ iconLeft: statusMeta?.icon }}
                   className="w-fit"
                 >
-                  {dataOrderDetail?.orderStatus === "NEED_RESPONSE_CHANGE" &&
-                    "Perlu Respon Perubahan"}
-                  {dataOrderDetail?.orderStatus === "CONFIRMED_ORDER" &&
-                    "Pesanan Terkonfirmasi"}
-                  {dataOrderDetail?.orderStatus === "CANCELLED_TRANSPORTER" &&
-                    "Dibatalkan Transporter"}
+                  {statusMeta.label}
                 </BadgeStatusPesanan>
               </div>
             </div>
           </div>
+
+          {/* Referensi: LDG-7 */}
+          {dataOrderDetail?.orderStatus === ORDER_STATUS.LOADING && (
+            <Button onClick={() => {}} variant="muattrans-primary">
+              Lihat Posisi Armada
+            </Button>
+          )}
+          {/* Referensi: LDN-334 */}
+          {dataOrderDetail?.orderStatus === ORDER_STATUS.NEED_ASSIGN_FLEET && (
+            <Button onClick={() => {}} variant="muattrans-primary">
+              Assign Armada
+            </Button>
+          )}
+          {/* Referensi: LDN-336 */}
+          {dataOrderDetail?.orderStatus ===
+            ORDER_STATUS.NEED_CONFIRMATION_READY && (
+            <Button onClick={() => {}} variant="muattrans-primary">
+              Konfirmasi Siap
+            </Button>
+          )}
+          {/* Referensi: LDN-337 */}
+          {dataOrderDetail?.orderStatus ===
+            ORDER_STATUS.NEED_CHANGE_RESPONSE && (
+            <Button onClick={() => {}} variant="muattrans-primary">
+              Respon Perubahan
+            </Button>
+          )}
 
           {dataOrderDetail?.orderStatus === "NEED_RESPONSE_CHANGE" && (
             <Button onClick={handleResponPerubahan}>Respon Perubahan</Button>

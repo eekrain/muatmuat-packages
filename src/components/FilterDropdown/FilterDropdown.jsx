@@ -259,7 +259,7 @@ const FilterDropdown = ({
                   side="right"
                   align="start"
                   sideOffset={4}
-                  className="z-50 w-[194px] overflow-hidden rounded-md border border-neutral-400 bg-white shadow-muat"
+                  className="z-50 w-fit overflow-hidden rounded-md border border-neutral-400 bg-white shadow-muat"
                   onMouseEnter={() => handleMouseEnter(category.key)}
                   onMouseLeave={() => handleMouseLeave(category.key)}
                   onOpenAutoFocus={(e) => e.preventDefault()}

@@ -50,9 +50,11 @@ export const getFleetDetailData = async (fleetId, params = {}) => {
   const {
     limit = 10,
     page = 1,
-    sort = "loadingTime",
-    order = "asc",
+    sort,
+    order,
     search = "",
+    startDate = "",
+    endDate = "",
   } = params;
 
   let result;
@@ -68,6 +70,8 @@ export const getFleetDetailData = async (fleetId, params = {}) => {
           sort,
           order,
           search,
+          startDate,
+          endDate,
           fleetId,
         },
       }

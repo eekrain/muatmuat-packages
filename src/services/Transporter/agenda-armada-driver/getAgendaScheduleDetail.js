@@ -1,8 +1,9 @@
 import useSWR from "swr";
 
 import { fetcherMuatrans } from "@/lib/axios";
+import { StatusArmadaTypeEnum } from "@/lib/constants/agendaArmada/agenda.enum";
 
-const useMockData = false; // Set to false to use real API
+const useMockData = true; // Set to false to use real API
 
 // Mock API result for development/testing
 export const mockAPIResult = {
@@ -14,7 +15,7 @@ export const mockAPIResult = {
     Data: {
       id: "uuid", // [dbt_mt_agenda_schedule.id]
       orderCode: "ORD-001", // [dbt_mt_order.orderCode]
-      agendaStatus: "BERTUGAS", // [dbt_mt_agenda_schedule.agendaStatus]
+      agendaStatus: StatusArmadaTypeEnum.BERTUGAS, // [dbt_mt_agenda_schedule.agendaStatus]
       fleet: {
         licensePlate: "B1234ABC", // [dbm_mt_fleet.licensePlate]
         truckTypeName: "Box Truck", // [dbt_mt_order.truckTypeName]

@@ -2,7 +2,7 @@ import useSWRMutation from "swr/mutation";
 
 import { fetcherMuatrans } from "@/lib/axios";
 
-const useMockData = true;
+const useMockData = false;
 
 const mockSaveAreaMuatResponse = {
   data: {
@@ -46,22 +46,25 @@ const mockSaveAreaMuatResponse = {
 };
 
 export const useSaveAreaMuat = () => {
-  return useSWRMutation("/v1/area-muat", async (url, { arg: payload }) => {
-    // Use mock data if the flag is enabled
-    if (useMockData) {
-      // Simulate a network delay for a more realistic loading experience
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      return mockSaveAreaMuatResponse.data.Data;
-    }
+  return useSWRMutation(
+    "/v1/transporter/settings/area-muat",
+    async (url, { arg: payload }) => {
+      // Use mock data if the flag is enabled
+      if (useMockData) {
+        // Simulate a network delay for a more realistic loading experience
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        return mockSaveAreaMuatResponse.data.Data;
+      }
 
-    // Perform the actual API call
-    try {
-      const result = await fetcherMuatrans.post(url, payload);
-      return result?.data?.Data || {};
-    } catch (error) {
-      // Log and re-throw the error to be caught by the SWR hook
-      console.error("Error saving Area Muat:", error);
-      throw error;
+      // Perform the actual API call
+      try {
+        const result = await fetcherMuatrans.post(url, payload);
+        return result?.data?.Data || {};
+      } catch (error) {
+        // Log and re-throw the error to be caught by the SWR hook
+        console.error("Error saving Area Muat:", error);
+        throw error;
+      }
     }
-  });
+  );
 };

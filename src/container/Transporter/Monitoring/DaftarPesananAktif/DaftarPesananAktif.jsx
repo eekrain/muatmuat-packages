@@ -26,7 +26,7 @@ import BatalkanArmadaModal from "@/container/Shared/OrderModal/BatalkanArmadaMod
 import BatalkanPesananModal from "@/container/Shared/OrderModal/BatalkanPesananModal";
 import ConfirmReadyModal from "@/container/Shared/OrderModal/ConfirmReadyModal";
 import LihatArmadaModal from "@/container/Shared/OrderModal/LihatArmadaModal";
-import PilihArmadaBatalkan from "@/container/Shared/OrderModal/PilihArmadaBatalkan";
+import PilihArmadaBatalkanModal from "@/container/Shared/OrderModal/PilihArmadaBatalkanModal";
 import RespondChangeModal from "@/container/Shared/OrderModal/RespondChangeModal";
 import UbahJumlahUnitModal from "@/container/Shared/OrderModal/UbahJumlahUnitModal";
 import { toast } from "@/lib/toast";
@@ -47,6 +47,7 @@ const DaftarPesananAktif = ({
   onToggleExpand,
   isExpanded,
   onViewFleetStatus,
+  onTrackFleet,
   hasShownOnboarding,
   onOnboardingShown,
 }) => {
@@ -102,8 +103,7 @@ const DaftarPesananAktif = ({
   const handleActionClick = (actionType, row) => {
     switch (actionType) {
       case ORDER_ACTIONS.TRACK_FLEET.type:
-        console.log("Lacak Armada", row);
-        // TODO: Implement fleet tracking navigation
+        onTrackFleet?.(row);
         break;
       case ORDER_ACTIONS.VIEW_FLEET.type:
         setSelectedOrderForViewFleet(row);
@@ -824,7 +824,7 @@ const DaftarPesananAktif = ({
       />
 
       {/* Pilih Armada Batalkan Modal */}
-      <PilihArmadaBatalkan
+      <PilihArmadaBatalkanModal
         isOpen={pilihArmadaBatalkanModalOpen}
         onClose={() => {
           setPilihArmadaBatalkanModalOpen(false);

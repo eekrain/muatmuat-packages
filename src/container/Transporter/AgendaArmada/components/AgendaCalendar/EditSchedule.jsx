@@ -1,60 +1,13 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import ButtonPlusMinus from "@/components/Form/ButtonPlusMinus";
 import IconComponent from "@/components/IconComponent/IconComponent";
+import { StatusArmadaTypeEnum } from "@/lib/constants/agendaArmada/agenda.enum";
 import { cn } from "@/lib/utils";
 
-// --- Helper Components (Mocks for provided CardItem) ---
-// These are simplified versions of components used by CardItem for demonstration purposes.
-
-const LocationPoint = ({ type, title, subtitle, className, style }) => (
-  <div className={cn("flex items-start gap-2", className)} style={style}>
-    <div
-      className={cn(
-        "mt-1 h-3 w-3 flex-shrink-0 rounded-full",
-        type === "muat"
-          ? "border border-yellow-600 bg-yellow-400"
-          : "box-content border-[3px] border-neutral-900 bg-white"
-      )}
-    />
-    <div>
-      <p className="text-[10px] leading-tight text-neutral-500">{title}</p>
-      <p className="text-xs font-semibold leading-tight text-neutral-900">
-        {subtitle}
-      </p>
-    </div>
-  </div>
-);
-
-const InfoPopover = ({ data }) => {
-  // In a real scenario, this would be a popover component.
-  // For this implementation, it's just an icon.
-  return (
-    <IconComponent
-      src="/icons/info-outline.svg"
-      className="size-4 text-primary-700"
-    />
-  );
-};
-
-// --- CardItem Component (Adjusted as per request) ---
-
-const statusMapping = {
-  BERTUGAS: "Bertugas",
-  PENGIRIMAN_SELESAI: "Pengiriman Selesai",
-  NON_AKTIF: "Non Aktif",
-  MENUNGGU_JAM_MUAT: "Menunggu Jam Muat",
-  DIJADWALKAN: "Dijadwalkan",
-};
-
-const TitleEnum = {
-  BERTUGAS: "Bertugas",
-  PENGIRIMAN_SELESAI: "Pengiriman Selesai",
-  NON_AKTIF: "Non Aktif",
-  MENUNGGU_JAM_MUAT: "Menunggu Jam Muat",
-  DIJADWALKAN: "Dijadwalkan",
-};
+import LocationPoint from "./LocationPoint";
+import InfoPopover from "./PopoverAgenda";
 
 const cardEstimationStyles = {
   BERTUGAS: "bg-primary-50",
@@ -92,18 +45,10 @@ const titleStyles = {
   SOS: "text-error-400",
 };
 
-const LIST_SHOW_ESTIMASI_WAKTU_BONGKAR = [
-  "BERTUGAS",
-  "MENUNGGU_JAM_MUAT",
-  "DIJADWALKAN",
-];
-
 export const CardItem = (props) => {
   const {
     statusCode = "BERTUGAS",
-    driverName = "Ahmad Maulana",
-    currentLocation = "Rest Area KM 50",
-    estimation = "est. 30km (1jam 30menit)",
+
     distanceRemaining = 121,
     dataMuat = {
       title: "Lokasi Muat",
@@ -114,11 +59,10 @@ export const CardItem = (props) => {
       subtitle: "Kab. Malang, Kec. Singosari",
     },
     scheduled = 2,
-    additional = 1,
+    additional = 0,
     position = 0,
     hasSosIssue = false,
     cellWidth,
-    showEditButton = true, // Prop to control the "Ubah" button visibility
   } = props;
 
   const cellConfig = useMemo(() => {
@@ -178,7 +122,7 @@ export const CardItem = (props) => {
                 hasSosIssue ? titleStyles.SOS : titleStyles[statusCode]
               )}
             >
-              {TitleEnum[statusCode]}
+              {StatusArmadaTypeEnum[statusCode]}
             </span>
 
             {hasSosIssue && (
@@ -186,36 +130,8 @@ export const CardItem = (props) => {
                 SOS
               </span>
             )}
+
             <InfoPopover data={props} />
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <span className="text-xxs font-bold leading-none text-neutral-900">
-              {driverName}
-            </span>
-            <div className="flex items-center gap-[4.5px]">
-              <IconComponent
-                src="/icons/marker-outline.svg"
-                className="size-3 text-muat-trans-secondary-900"
-              />
-
-              <div className="flex flex-col gap-0.5">
-                <span className="text-[8px] font-medium leading-none text-neutral-900">
-                  Lokasi Terkini
-                </span>
-
-                <div className="flex items-center gap-1">
-                  <span className="line-clamp-1 break-all text-xxs font-semibold leading-none text-neutral-900">
-                    {currentLocation}
-                  </span>
-                  {estimation && (
-                    <span className="line-clamp-1 break-all pr-2 text-xxs font-medium leading-none text-neutral-600">
-                      {estimation}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
           </div>
 
           {dataMuat && (
@@ -232,6 +148,7 @@ export const CardItem = (props) => {
                 <LocationPoint
                   type="muat"
                   title={dataMuat.title}
+                  isEdit={true}
                   subtitle={dataMuat.subtitle}
                   className="basis-1/2"
                 />
@@ -247,6 +164,7 @@ export const CardItem = (props) => {
                 <LocationPoint
                   type="bongkar"
                   title={dataBongkar.title}
+                  isEdit={true}
                   subtitle={dataBongkar.subtitle}
                   className="absolute top-1/2 -translate-y-1/2"
                   style={{
@@ -259,19 +177,17 @@ export const CardItem = (props) => {
           )}
         </div>
 
-        {LIST_SHOW_ESTIMASI_WAKTU_BONGKAR.includes(statusCode) &&
-          additional > 0 &&
-          cellConfig.right >= 1 && (
-            <div
-              className="absolute top-1/2 -translate-y-1/2 text-center text-[8px] font-medium text-neutral-500"
-              style={{
-                width: `${cellConfig.right * cellWidth - 16}px`,
-                left: `${cellConfig.left * cellWidth + 8}px`,
-              }}
-            >
-              Estimasi Waktu Bongkar
-            </div>
-          )}
+        {additional > 0 && (
+          <div
+            className="pt-1.5 text-center text-[10px] font-medium text-neutral-500"
+            style={{
+              width: `${cellConfig.right * cellWidth - 16}px`,
+              left: `${cellConfig.left * cellWidth + 8}px`,
+            }}
+          >
+            Estimasi Waktu Bongkar
+          </div>
+        )}
       </div>
     </div>
   );
@@ -279,18 +195,68 @@ export const CardItem = (props) => {
 
 // --- Main Component ---
 
-const DATES = [
-  "Jumat, 10",
-  "Sabtu, 11",
-  "Minggu, 12",
-  "Senin, 13",
-  "Selasa, 14",
-];
+const getStaticDates = (startOffset = 0) => {
+  const baseDates = [
+    { day: "Minggu", date: 17 },
+    { day: "Senin", date: 18 },
+    { day: "Selasa", date: 19 },
+    { day: "Rabu", date: 20 },
+    { day: "Kamis", date: 21 },
+    { day: "Jumat", date: 22 },
+    { day: "Sabtu", date: 23 },
+    { day: "Minggu", date: 24 },
+    { day: "Senin", date: 25 },
+    { day: "Selasa", date: 26 },
+  ];
 
-const EditSchedule = () => {
-  const [days, setDays] = useState(1);
+  // Always show 5 dates starting from startOffset
+  const selectedDates = baseDates.slice(startOffset, startOffset + 5);
+
+  return selectedDates.map((item) => `${item.day}, ${item.date}`);
+};
+
+const EditSchedule = ({ cardData, defaultEstimate = 0 }) => {
+  const [days, setDays] = useState(
+    defaultEstimate || cardData?.additional || 0
+  );
+  const [dateOffset, setDateOffset] = useState(0);
   const scheduleContainerWidth = 860;
+  const scheduledDays = cardData?.scheduled || 1;
+  const DATES = getStaticDates(dateOffset);
   const cellWidth = scheduleContainerWidth / DATES.length;
+
+  // Calculate if there's overflow
+  const totalDays = scheduledDays + days;
+  const hasOverflow = totalDays > 5;
+  const maxOffset = Math.max(0, totalDays - 5);
+  const cardPosition = 0 - dateOffset; // Shift card left when dates shift right
+
+  // Auto-follow the last estimate when days change
+  useEffect(() => {
+    if (hasOverflow) {
+      // Set dateOffset to show the last estimate date
+      setDateOffset(maxOffset);
+    } else {
+      // Reset to start when no overflow
+      setDateOffset(0);
+    }
+  }, [days, hasOverflow, maxOffset]);
+
+  // Navigation handlers
+  const canNavigateLeft = dateOffset > 0;
+  const canNavigateRight = dateOffset < maxOffset;
+
+  const handleNavigateLeft = () => {
+    if (canNavigateLeft) {
+      setDateOffset(dateOffset - 1);
+    }
+  };
+
+  const handleNavigateRight = () => {
+    if (canNavigateRight) {
+      setDateOffset(dateOffset + 1);
+    }
+  };
 
   return (
     <div className="space-y-7">
@@ -308,7 +274,7 @@ const EditSchedule = () => {
         </div>
       </div>
       <div
-        className="rounded-md border border-neutral-400"
+        className="relative overflow-hidden rounded-md border border-neutral-400"
         style={{ width: `${scheduleContainerWidth}px` }}
       >
         <div className="grid h-14 grid-cols-5 items-center border-b border-neutral-200 text-center">
@@ -323,31 +289,74 @@ const EditSchedule = () => {
             </div>
           ))}
         </div>
+        <div className="absolute top-3 flex w-full items-center justify-between gap-4 px-2">
+          <div className="flex justify-start">
+            {hasOverflow && (
+              <button
+                type="button"
+                onClick={handleNavigateLeft}
+                disabled={!canNavigateLeft}
+                className="flex size-8 items-center justify-center rounded-full bg-white shadow-md disabled:cursor-not-allowed"
+              >
+                <IconComponent
+                  src="/icons/chevron-left16-2.svg"
+                  width={16}
+                  height={16}
+                />
+              </button>
+            )}
+          </div>
+          <div className="flex justify-end">
+            {hasOverflow && (
+              <button
+                type="button"
+                onClick={handleNavigateRight}
+                disabled={!canNavigateRight}
+                className="flex size-8 items-center justify-center rounded-full bg-white shadow-md disabled:cursor-not-allowed"
+              >
+                <IconComponent
+                  src="/icons/chevron-right16-2.svg"
+                  width={16}
+                  height={16}
+                />
+              </button>
+            )}
+          </div>
+        </div>
 
-        <div className="relative h-[68px]">
+        <div className="relative h-[68px] overflow-visible">
           <CardItem
+            key={`card-${days}-${scheduledDays}`}
             cellWidth={cellWidth}
-            statusCode="BERTUGAS"
-            scheduled={1}
-            additional={1}
-            position={0}
-            distanceRemaining={121}
-            dataMuat={{
-              title: "Lokasi Muat",
-              subtitle: "Kota Surabaya, Kec. Tegalsari",
-            }}
-            dataBongkar={{
-              title: "Lokasi Bongkar",
-              subtitle: "Kab. Malang, Kec. Singosari",
-            }}
+            statusCode={cardData?.statusCode || "BERTUGAS"}
+            driverName={cardData?.driverName || "Ahmad Maulana"}
+            currentLocation={cardData?.currentLocation || "Rest Area KM 50"}
+            estimation={cardData?.estimation || "est. 30km (1jam 30menit)"}
+            scheduled={cardData?.scheduled || 1}
+            additional={days}
+            position={cardPosition}
+            distanceRemaining={cardData?.distanceRemaining || 121}
+            dataMuat={
+              cardData?.dataMuat || {
+                title: "Lokasi Muat",
+                subtitle: "Kota Surabaya, Kec. Tegalsari",
+              }
+            }
+            dataBongkar={
+              cardData?.dataBongkar || {
+                title: "Lokasi Bongkar",
+                subtitle: "Kab. Malang, Kec. Singosari",
+              }
+            }
+            hasSosIssue={cardData?.hasSosIssue || false}
+            viewType={cardData?.viewType || "armada"}
+            truckType={cardData?.truckType}
             showEditButton={false} // Hide the recursive "Ubah" button
           />
         </div>
       </div>
       <div className="flex justify-center">
-        <Button variant="warning" className="w-[120px]">
-          Simpan
-        </Button>
+        <Button className="w-[120px]">Simpan</Button>
       </div>
     </div>
   );

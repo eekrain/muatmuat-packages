@@ -7,6 +7,8 @@ import { Modal, ModalContent, ModalTitle } from "@/components/Modal/Modal";
 import Search from "@/components/Search/Search";
 import { cn } from "@/lib/utils";
 
+import ImageArmada from "./components/ImageArmada";
+
 const LihatArmadaModal = ({ isOpen, onClose, orderData }) => {
   const [searchValue, setSearchValue] = useState("");
 
@@ -95,20 +97,11 @@ const LihatArmadaModal = ({ isOpen, onClose, orderData }) => {
                   {/* Frame 1171276088 */}
                   <div className="flex h-[52px] w-full items-center gap-2 p-0">
                     {/* Image Uploader */}
-                    <div
-                      className={cn(
-                        "h-[52px] w-[52px] bg-white",
-                        "rounded-[9.18px] border-[0.76px] border-[#C4C4C4]",
-                        "relative flex items-center justify-center overflow-hidden"
-                      )}
-                    >
-                      {/* Truck Image */}
-                      <img
-                        src={dummyImages[index % dummyImages.length]}
-                        alt={`Truck ${vehicle.licensePlate}`}
-                        className="absolute inset-0 h-full w-full object-cover"
-                      />
-                    </div>
+                    <ImageArmada
+                      src={dummyImages[index % dummyImages.length]}
+                      plateNumber={vehicle.licensePlate}
+                      size="sm"
+                    />
 
                     {/* Frame 1171275764 */}
                     <div className="flex h-[44px] flex-1 flex-col items-start justify-center gap-3 py-1">

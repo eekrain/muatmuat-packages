@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Download, MapPin, Truck } from "lucide-react";
 
@@ -25,6 +25,30 @@ export default function DetailArmadaPage({ params }) {
   const [currentPeriodValue, setCurrentPeriodValue] = useState(null);
   const [recentPeriodOptions, setRecentPeriodOptions] = useState([]);
   const [sortConfig, setSortConfig] = useState({ sort: null, order: null });
+  const [hasInitialData, setHasInitialData] = useState(false);
+
+  // Helper function untuk mendapatkan startDate dan endDate dari periode
+  const getPeriodDates = () => {
+    if (!currentPeriodValue) return { startDate: "", endDate: "" };
+
+    // Handle custom date range (dari modal)
+    if (currentPeriodValue?.range && currentPeriodValue?.iso_start_date) {
+      return {
+        startDate: currentPeriodValue.iso_start_date,
+        endDate: currentPeriodValue.iso_end_date,
+      };
+    }
+
+    // Handle predefined options
+    if (currentPeriodValue?.startDate && currentPeriodValue?.endDate) {
+      return {
+        startDate: currentPeriodValue.startDate,
+        endDate: currentPeriodValue.endDate,
+      };
+    }
+
+    return { startDate: "", endDate: "" };
+  };
 
   // Get fleet detail activities
   const { data: detailData, isLoading: detailLoading } = useGetFleetDetailData(
@@ -32,9 +56,13 @@ export default function DetailArmadaPage({ params }) {
     {
       limit: perPage,
       page: currentPage,
-      sort: sortConfig?.sort || "loadingTime",
-      order: sortConfig?.order || "asc",
-      search: searchValue,
+      ...(sortConfig.sort !== null &&
+        sortConfig.order !== null && {
+          sort: sortConfig.sort,
+          order: sortConfig.order,
+        }),
+      search: searchValue.length >= 3 ? searchValue : "",
+      ...getPeriodDates(),
     }
   );
 
@@ -117,7 +145,7 @@ export default function DetailArmadaPage({ params }) {
   const columns = [
     {
       header: "Kode Pesanan",
-      key: "orderInfo.orderCode",
+      key: "invoiceNumber",
       sortable: true,
       width: "200px",
       searchable: true,
@@ -153,7 +181,7 @@ export default function DetailArmadaPage({ params }) {
     },
     {
       header: "Nama Driver",
-      key: "driverInfo.name",
+      key: "driverName",
       sortable: true,
       width: "150px",
       searchable: true,
@@ -166,7 +194,7 @@ export default function DetailArmadaPage({ params }) {
     },
     {
       header: "Tanggal Muat",
-      key: "orderInfo.loadingTime",
+      key: "loadingTime",
       sortable: true,
       width: "150px",
       searchable: true,
@@ -183,7 +211,7 @@ export default function DetailArmadaPage({ params }) {
     },
     {
       header: "Tanggal Bongkar",
-      key: "orderInfo.unloadTime",
+      key: "unloadingTime",
       sortable: true,
       width: "150px",
       searchable: true,
@@ -200,7 +228,7 @@ export default function DetailArmadaPage({ params }) {
     },
     {
       header: "Status",
-      key: "orderInfo.status",
+      key: "status",
       sortable: true,
       width: "180px",
       searchable: true,
@@ -227,7 +255,7 @@ export default function DetailArmadaPage({ params }) {
     },
   ];
 
-  // Konfigurasi periode
+  // Konfigurasi periode dengan startDate dan endDate
   const periodOptions = [
     {
       name: "Semua Periode (Default)",
@@ -238,26 +266,44 @@ export default function DetailArmadaPage({ params }) {
       name: "Hari Ini",
       value: 0,
       format: "day",
+      startDate: new Date().toISOString().split("T")[0], // YYYY-MM-DD
+      endDate: new Date().toISOString().split("T")[0],
     },
     {
       name: "1 Minggu Terakhir",
       value: 7,
       format: "day",
+      startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
+      endDate: new Date().toISOString().split("T")[0],
     },
     {
       name: "30 Hari Terakhir",
       value: 30,
       format: "month",
+      startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
+      endDate: new Date().toISOString().split("T")[0],
     },
     {
       name: "90 Hari Terakhir",
       value: 90,
       format: "month",
+      startDate: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
+      endDate: new Date().toISOString().split("T")[0],
     },
     {
       name: "1 Tahun Terakhir",
       value: 365,
       format: "year",
+      startDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
+      endDate: new Date().toISOString().split("T")[0],
     },
   ];
 
@@ -269,6 +315,8 @@ export default function DetailArmadaPage({ params }) {
   ];
 
   const handleBack = () => {
+    // Store the current tab (armada) to sessionStorage before going back
+    sessionStorage.setItem("laporan_selected_tab", "armada");
     router.back();
   };
 
@@ -285,10 +333,13 @@ export default function DetailArmadaPage({ params }) {
         setRecentPeriodOptions((prev) => [...prev, selectedOption]);
       }
       setCurrentPeriodValue(selectedOption);
+      setCurrentPage(1); // Reset pagination when period changes
     } else if (selectedOption?.value === "") {
       setCurrentPeriodValue(selectedOption);
+      setCurrentPage(1); // Reset pagination when period changes
     } else if (selectedOption?.value !== undefined) {
       setCurrentPeriodValue(selectedOption);
+      setCurrentPage(1); // Reset pagination when period changes
     }
   };
 
@@ -385,25 +436,15 @@ export default function DetailArmadaPage({ params }) {
     );
   };
 
-  const filteredData = activitiesData.filter((row) => {
-    if (searchValue) {
-      const searchLower = searchValue.toLowerCase();
-      return (
-        (row.orderInfo?.orderCode || "").toLowerCase().includes(searchLower) ||
-        (row.driverInfo?.name || "").toLowerCase().includes(searchLower) ||
-        (row.orderInfo?.pickupLocation || "")
-          .toLowerCase()
-          .includes(searchLower) ||
-        (row.orderInfo?.dropoffLocation || "")
-          .toLowerCase()
-          .includes(searchLower)
-      );
-    }
-    return true;
-  });
+  // Calculate total pages based on API data
+  const totalPages = Math.ceil(activitiesData.length / perPage);
 
-  // Calculate total pages based on filtered data
-  const totalPages = Math.ceil(filteredData.length / perPage);
+  // Set hasInitialData when data is first loaded
+  useEffect(() => {
+    if (activitiesData.length > 0 && !hasInitialData) {
+      setHasInitialData(true);
+    }
+  }, [activitiesData.length, hasInitialData]);
 
   return (
     <div className="mx-auto mt-7 max-w-full px-0">
@@ -471,36 +512,35 @@ export default function DetailArmadaPage({ params }) {
         </CardContent>
       </Card>
 
-      {/* Search and Filter Bar - only show when there's data */}
-      {filteredData.length > 0 && (
-        <Card className="border-b-none rounded-b-none border border-gray-200 bg-white">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Search
-                  placeholder="Cari Kode Pesanan, Rute atau lainnya"
-                  onSearch={handleSearch}
-                  containerClassName="w-80"
-                />
-                <DropdownPeriode
-                  options={periodOptions}
-                  onSelect={handleSelectPeriod}
-                  recentSelections={recentPeriodOptions}
-                  value={currentPeriodValue}
-                />
-              </div>
-              <div className="text-sm font-semibold text-neutral-900">
-                Total : {filteredData.length} Aktivitas
-              </div>
+      {/* Search and Filter Bar - always show */}
+      <Card className="border-b-none rounded-b-none border border-gray-200 bg-white">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Search
+                placeholder="Cari Kode Pesanan, Rute atau lainnya"
+                onSearch={handleSearch}
+                containerClassName="w-80"
+              />
+              <DropdownPeriode
+                options={periodOptions}
+                onSelect={handleSelectPeriod}
+                recentSelections={recentPeriodOptions}
+                value={currentPeriodValue}
+              />
             </div>
-          </CardContent>
-        </Card>
-      )}
+            <div className="text-sm font-semibold text-neutral-900">
+              Total : {activitiesData.length} Aktivitas
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Activities Table */}
       <Card className="border-t-none rounded-t-none border-none bg-white">
         <CardContent className="p-0">
-          {filteredData.length === 0 ? (
+          {activitiesData.length === 0 && !hasInitialData ? (
+            // Show DataNotFound only when there's no initial data at all
             <div className="flex h-64 flex-col items-center justify-center px-6 py-12">
               <DataNotFound
                 type="data"
@@ -516,14 +556,15 @@ export default function DetailArmadaPage({ params }) {
           ) : (
             <Table
               columns={columns}
-              data={filteredData}
+              data={activitiesData}
               onSort={handleSort}
               sortConfig={sortConfig}
               emptyComponent={
                 <div className="px-6 py-8">
                   <DataNotFound
                     type="search"
-                    title="Keyword Tidak Ditemukan"
+                    title="Data tidak ditemukan"
+                    description="Coba ubah kata kunci pencarian atau filter periode"
                     className="gap-y-3"
                   />
                 </div>
@@ -533,20 +574,18 @@ export default function DetailArmadaPage({ params }) {
         </CardContent>
       </Card>
 
-      {/* Pagination - only show when there's data */}
-      {filteredData.length > 0 && (
-        <div className="mt-4">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            perPage={perPage}
-            onPageChange={handlePageChange}
-            onPerPageChange={handlePerPageChange}
-            variants="muatrans"
-            className="pb-0"
-          />
-        </div>
-      )}
+      {/* Pagination - always show */}
+      <div className="mt-4">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(activitiesData.length / perPage)}
+          perPage={perPage}
+          onPageChange={handlePageChange}
+          onPerPageChange={handlePerPageChange}
+          variants="muatrans"
+          className="pb-0"
+        />
+      </div>
     </div>
   );
 }

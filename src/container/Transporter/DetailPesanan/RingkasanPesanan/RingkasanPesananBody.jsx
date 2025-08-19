@@ -12,7 +12,7 @@ import {
 import MuatBongkarStepperWithModal from "@/components/Stepper/MuatBongkarStepperWithModal";
 import { LocationTypeEnum } from "@/lib/constants/detailpesanan/detailpesanan.enum";
 import { cn } from "@/lib/utils";
-import { formatDate, formatTime } from "@/lib/utils/dateFormat";
+import { formatLoadTime } from "@/lib/utils/dateFormat";
 
 const SectionRow = ({ label, children }) => (
   <div className="flex flex-col gap-4 md:flex-row md:items-start md:gap-8">
@@ -201,15 +201,11 @@ const RingkasanPesananBody = ({ dataOrderDetail }) => {
 
         <SectionRow label="Waktu Muat">
           <p className="text-xs font-medium text-neutral-900">
-            {`${formatDate(dataOrderDetail?.loadTimeStart)} ${
-              dataOrderDetail?.loadTimeEnd
-                ? ` s/d ${
-                    isSameLoadDay
-                      ? formatTime(dataOrderDetail?.loadTimeEnd)
-                      : formatDate(dataOrderDetail?.loadTimeEnd)
-                  }`
-                : ""
-            }`}
+            {formatLoadTime(
+              dataOrderDetail?.loadTimeStart,
+              dataOrderDetail?.loadTimeEnd,
+              true
+            )}
           </p>
         </SectionRow>
 

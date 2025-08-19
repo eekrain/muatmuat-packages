@@ -63,7 +63,6 @@ const apiResultFleetList = {
           },
         },
       },
-
       {
         fleetId: "fleet-uuid-90",
         licensePlate: "B7890JKL",
@@ -465,7 +464,7 @@ const apiResultFleetList = {
       totalPages: 3,
     },
     filter: {
-      OnDuty: 15,
+      OnDuty: 9,
       ReadyForOrder: 5,
       WaitingLoadingTime: 2,
       notPaired: 3,
@@ -478,7 +477,9 @@ const apiResultFleetList = {
 };
 
 export const useGetFleetList = (params = {}) => {
-  const cacheKey = ["monitoring-fleet-list", params];
+  // FIX: Menggunakan format kunci cache yang lebih stabil dan bersih.
+  // Ini memastikan bahwa perubahan parameter filter akan memicu pengambilan data baru.
+  const cacheKey = ["monitoring-fleet-list", JSON.stringify(params)];
 
   return useSWR(cacheKey, () => fetcherFleetList(params));
 };
@@ -486,18 +487,61 @@ export const useGetFleetList = (params = {}) => {
 export const fetcherFleetList = async (params = {}) => {
   if (isMockFleetList) {
     // Simulate filtering in mock data
-    const filteredData = {
+    const { truckStatus = [], orderStatus = [] } = params;
+
+    const filteredFleets = apiResultFleetList.Data.fleets.filter((fleet) => {
+      // FIX: Logika filter sekarang menangani kondisi AND antara grup filter (Status Truk & Status Pesanan)
+      const truckStatusMatch =
+        truckStatus.length === 0 || truckStatus.includes(fleet.status);
+
+      // FIX: Menambahkan logika filter untuk `orderStatus` yang sebelumnya tidak ada.
+      // Di frontend, ID-nya adalah 'NEEDS_RESPONSE', yang sesuai dengan properti `fleet.needsResponseChange`.
+      const orderStatusMatch =
+        orderStatus.length === 0 ||
+        (orderStatus.includes("NEEDS_RESPONSE") && fleet.needsResponseChange);
+
+      return truckStatusMatch && orderStatusMatch;
+    });
+
+    // FIX: Mengembalikan data yang sudah difilter dengan struktur yang sama.
+    return {
       ...apiResultFleetList.Data,
-      fleets: apiResultFleetList.Data.fleets.filter((fleet) => {
-        if (params.truckStatus && params.truckStatus.length > 0) {
-          return params.truckStatus.includes(fleet.status);
-        }
-        return true;
-      }),
+      fleets: filteredFleets,
+      totalFleets: filteredFleets.length, // Update total count based on filtered result
     };
-    return filteredData;
   }
 
-  const result = await fetcherMuatrans.get("/v1/fleet-list", { params });
+  // --- Implementasi untuk API Sebenarnya ---
+
+  // FIX: Menyiapkan parameter untuk API sesuai dengan kontrak.
+  // Kontrak API mengharapkan satu parameter 'filter' dengan nilai string yang dipisahkan koma.
+  const apiParams = { ...params };
+  const { truckStatus = [], orderStatus = [] } = apiParams;
+
+  // Di `FilterPopoverArmada`, `orderStatus` menggunakan ID `NEEDS_RESPONSE`.
+  // Sesuai `countKeyMapping`, ini akan dipetakan ke `needResponse` untuk `filterCounts`.
+  // Kita perlu memastikan nilai yang dikirim ke API juga konsisten.
+  // Kontrak API di bagian filter menyebut 'needConfirm'  tapi di response 'needResponse'. Kita akan gunakan 'needResponse' agar konsisten dengan response.
+  const orderStatusApiValues = orderStatus.map((status) => {
+    if (status === "NEEDS_RESPONSE") return "needResponse";
+    return status;
+  });
+
+  const allFilters = [...truckStatus, ...orderStatusApiValues];
+
+  if (allFilters.length > 0) {
+    apiParams.filter = allFilters.join(",");
+  }
+
+  // Hapus parameter asli agar tidak dikirim ke API
+  delete apiParams.truckStatus;
+  delete apiParams.orderStatus;
+
+  const result = await fetcherMuatrans.get(
+    "/v1/transporter/monitoring/fleets/fleet-list",
+    {
+      params: apiParams,
+    }
+  );
   return result?.data?.Data || {};
 };

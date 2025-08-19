@@ -9,6 +9,7 @@ export const ORDER_STATUS = {
   UNLOADING: "UNLOADING",
   PREPARE_DOCUMENT: "PREPARE_DOCUMENT",
   DOCUMENT_DELIVERY: "DOCUMENT_DELIVERY",
+  COMPLETED: "COMPLETED",
 };
 
 // Order action definitions (single source of truth for actions and labels)
@@ -67,14 +68,17 @@ export const ORDER_STATUS_CONFIG = {
   [ORDER_STATUS.NEED_ASSIGN_FLEET]: {
     label: "Perlu Assign Armada",
     variant: "warning",
+    icon: "/icons/warning14.svg",
   },
   [ORDER_STATUS.NEED_CONFIRMATION_READY]: {
     label: "Perlu Konfirmasi Siap",
     variant: "error",
+    icon: "/icons/warning14.svg",
   },
   [ORDER_STATUS.NEED_CHANGE_RESPONSE]: {
     label: "Perlu Respon Perubahan",
     variant: "warning",
+    icon: "/icons/warning14.svg",
   },
   [ORDER_STATUS.SCHEDULED_FLEET]: {
     label: "Armada Dijadwalkan",
@@ -95,6 +99,10 @@ export const ORDER_STATUS_CONFIG = {
   [ORDER_STATUS.DOCUMENT_DELIVERY]: {
     label: "Proses Pengiriman Dokumen",
     variant: "primary",
+  },
+  [ORDER_STATUS.COMPLETED]: {
+    label: "Selesai",
+    variant: "success",
   },
 };
 
