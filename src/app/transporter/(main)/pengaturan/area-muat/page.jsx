@@ -22,14 +22,14 @@ import { SelectedProvinces } from "@/components/SelectedProvinces";
 import LayoutOverlayButton from "@/container/Transporter/Pengaturan/LayoutOverlayButton";
 import { toast } from "@/lib/toast";
 import {
+  useGetAreaMuatCities,
   useGetAreaMuatManage,
   useGetMasterProvinces,
 } from "@/services/Transporter/pengaturan/getDataAreaMuat";
 import { useSaveAreaMuat } from "@/services/Transporter/pengaturan/saveAreaMuatData";
 
 export default function Page() {
-  const router = useRouter();
-  const transporterId = "transporter-123"; // Using a placeholder ID
+  const router = useRouter(); // Using a placeholder ID
   const [searchCity, setSearchCity] = useState("");
   const [showSelectedOnly, setShowSelectedOnly] = useState(false);
   const [expandedProvinces, setExpandedProvinces] = useState({});
@@ -38,8 +38,11 @@ export default function Page() {
 
   // --- NEW: State for the leave confirmation modal ---
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [initialProvinces, setInitialProvinces] = useState([]);
+  const [provinceData, setProvinceData] = useState([]);
+  const [selectedProvinceIds, setSelectedProvinceIds] = useState("");
+  const [selectedCityIds, setSelectedCityIds] = useState("");
+  const [payloadData, setPayloadData] = useState([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const [alert, setAlert] = useState({
     show: false,
@@ -48,9 +51,12 @@ export default function Page() {
   });
 
   const { trigger: saveAreaMuat, isMutating } = useSaveAreaMuat();
-  const [localProvinces, setLocalProvinces] = useState([]);
 
-  const { provinces, isLoading } = useGetAreaMuatManage({
+  const {
+    transporterID: transporterId,
+    provinces,
+    isLoading,
+  } = useGetAreaMuatManage({
     search: searchCity,
     showSelected: showSelectedOnly,
   });
@@ -61,30 +67,53 @@ export default function Page() {
     searchProvinces,
   } = useGetMasterProvinces();
 
+  const { cities } = useGetAreaMuatCities({
+    page: 1,
+    limit: 99,
+    ...(selectedProvinceIds && {
+      provinceIds: selectedProvinceIds,
+      selectedProvinces: selectedProvinceIds,
+    }),
+    ...(selectedCityIds && { selectedCities: selectedCityIds }),
+  });
+
+  const stored = localStorage.getItem("areaMuatProvinces");
+
   useEffect(() => {
-    if (provinces && provinces.length > 0) {
-      const resetProvinces = provinces.map((province) => ({
-        ...province,
-        allSelected: province.allSelected || false,
-        cities: province.cities.map((city) => ({
-          ...city,
-          isSelected: city.isSelected || false,
-        })),
-      }));
-      setLocalProvinces(resetProvinces);
-      // --- NEW: Store the initial state for later comparison ---
-      setInitialProvinces(JSON.parse(JSON.stringify(resetProvinces)));
-    }
+    const stored = localStorage.getItem("areaMuatProvinces");
+    const parsed = JSON.parse(stored)?.data || [];
+    const idProvincesLocal = parsed.map((p) => p.provinceId).join(",");
+    setSelectedProvinceIds(idProvincesLocal);
+  }, []);
+
+  useEffect(() => {
+    if (provinces.length === 0) return;
+
+    const provinceIdsFromData = provinces.map((p) => p.provinceId.toString());
+    const currentProvinceIds = selectedProvinceIds
+      ? selectedProvinceIds.split(",")
+      : [];
+    const mergedProvinceIds = Array.from(
+      new Set([...currentProvinceIds, ...provinceIdsFromData])
+    );
+    setSelectedProvinceIds(mergedProvinceIds.join(","));
+
+    const cityIds = provinces
+      .flatMap((p) => p.cities.map((c) => c.cityId))
+      .join(",");
+    setSelectedCityIds(cityIds);
+
+    setIsInitialized(true);
   }, [provinces]);
 
-  // --- NEW: Effect to check for unsaved changes ---
   useEffect(() => {
-    // Use lodash's isEqual for a reliable deep comparison
-    if (initialProvinces.length > 0) {
-      const areStatesEqual = isEqual(initialProvinces, localProvinces);
-      setHasUnsavedChanges(!areStatesEqual);
-    }
-  }, [localProvinces, initialProvinces]);
+    if (cities.length === 0) return;
+    setProvinceData(cities);
+  }, [cities]);
+
+  console.log("provinces id: ", selectedProvinceIds);
+  console.log("city id: ", selectedCityIds);
+  console.log("provinces data: ", provinceData);
 
   useEffect(() => {
     if (alert.show) {
@@ -97,11 +126,8 @@ export default function Page() {
 
   // --- NEW: Handler for navigating away from the page ---
   const handleLeavePage = () => {
-    if (hasUnsavedChanges) {
-      setIsLeaveModalOpen(true);
-    } else {
-      router.back();
-    }
+    localStorage.removeItem("areaMuatProvinces");
+    router.back();
   };
 
   const BREADCRUMB = [
@@ -110,7 +136,7 @@ export default function Page() {
   ];
 
   const handleRemoveProvince = (province) => {
-    const selectedProvinces = localProvinces.filter((p) =>
+    const selectedProvinces = provinceData.filter((p) =>
       p.cities.some((c) => c.isSelected)
     );
 
@@ -124,18 +150,13 @@ export default function Page() {
       return;
     }
 
-    setLocalProvinces((prevProvinces) =>
-      prevProvinces.map((p) => {
-        if (p.id === province.id) {
-          return {
-            ...p,
-            cities: p.cities.map((c) => ({ ...c, isSelected: false })),
-            allSelected: false,
-          };
-        }
-        return p;
-      })
+    const updatedData = provinceData.map((p) =>
+      p.province === province.province
+        ? { ...p, cities: p.cities.map((c) => ({ ...c, isSelected: false })) }
+        : p
     );
+
+    setProvinceData(updatedData);
 
     setAlert({
       show: true,
@@ -148,37 +169,48 @@ export default function Page() {
     setIsProvinceModalOpen(true);
   };
 
-  const handleSaveProvinces = (_selectedProvinces) => {
+  const handleSaveProvinces = (
+    _selectedProvincesData,
+    _selectedProvinceIds
+  ) => {
+    setSelectedProvinceIds((prev) => {
+      const prevIds = prev ? prev.split(",") : [];
+      const merged = [...new Set([...prevIds, ..._selectedProvinceIds])];
+      return merged.join(",");
+    });
+
     setIsProvinceModalOpen(false);
   };
 
   const handleSelectAllProvince = (provinceId, checked) => {
-    setLocalProvinces((prevProvinces) =>
-      prevProvinces.map((province) => {
-        if (province.id === provinceId) {
-          const updatedCities = province.cities.map((city) => ({
-            ...city,
-            isSelected: checked,
-          }));
-          return { ...province, allSelected: checked, cities: updatedCities };
+    setProvinceData((prev) =>
+      prev.map((prov) => {
+        if (prov.provinceId === provinceId) {
+          return {
+            ...prov,
+            kota: prov.kota.map((p) => ({
+              ...p,
+              isSelected: checked,
+            })),
+          };
         }
-        return province;
+        return prov;
       })
     );
   };
 
   const handleCitySelect = (provinceId, cityId, checked) => {
-    setLocalProvinces((prevProvinces) =>
-      prevProvinces.map((province) => {
-        if (province.id === provinceId) {
-          const updatedCities = province.cities.map((city) =>
-            city.cityId === cityId ? { ...city, isSelected: checked } : city
-          );
-          const allSelected = updatedCities.every((city) => city.isSelected);
-          return { ...province, allSelected, cities: updatedCities };
-        }
-        return province;
-      })
+    setProvinceData((prev) =>
+      prev.map((province) =>
+        province.provinceId === provinceId
+          ? {
+              ...province,
+              kota: province.kota.map((city) =>
+                city.cityId === cityId ? { ...city, isSelected: checked } : city
+              ),
+            }
+          : province
+      )
     );
   };
 
@@ -190,7 +222,7 @@ export default function Page() {
   };
 
   const handleSave = () => {
-    const isAnyCitySelected = localProvinces.some((p) =>
+    const isAnyCitySelected = provinceData.some((p) =>
       p.cities.some((c) => c.isSelected)
     );
 
@@ -207,17 +239,16 @@ export default function Page() {
       transporterID: transporterId,
       confirmation: true,
       replaceExisting: true,
-      areas: localProvinces
-        .filter((province) => province.cities.some((city) => city.isSelected))
-        .map((province) => ({
-          areaName: province.province,
-          city: province.cities
-            .filter((city) => city.isSelected)
-            .map((city) => city.cityName)
-            .join(", "),
-          province: province.province,
-          isActive: true,
+      areas: provinceData.map((prov) => ({
+        areaName: prov.provinceName,
+        city: prov.kota.map((city) => ({
+          id: city.cityId,
+          name: city.cityName,
         })),
+        province: prov.provinceName,
+        provinceId: prov.provinceId,
+        isActive: true,
+      })),
     };
 
     console.log("Saving Area Muat with payload:", payload);
@@ -225,9 +256,8 @@ export default function Page() {
     try {
       const result = await saveAreaMuat(payload);
       setIsConfirmModalOpen(false);
-      // --- NEW: Reset unsaved changes tracking on successful save ---
-      setHasUnsavedChanges(false);
       toast.success("Berhasil menyimpan Area Muat!");
+      localStorage.removeItem("areaMuatProvinces");
       if (result?.redirectTo) {
         router.push(result.redirectTo);
       }
@@ -243,322 +273,326 @@ export default function Page() {
     }
   };
 
-  const displayProvinces =
-    localProvinces.length > 0 ? localProvinces : provinces;
-
-  const searchFilteredProvinces = displayProvinces
-    .map((province) => ({
-      ...province,
-      cities: province.cities.filter((city) =>
-        city.cityName.toLowerCase().includes(searchCity.toLowerCase())
-      ),
-    }))
-    .filter((province) => province.cities.length > 0);
-
-  const finalProvinces = searchCity
-    ? searchFilteredProvinces
-    : showSelectedOnly
-      ? searchFilteredProvinces.filter((province) =>
-          province.cities.some((city) => city.isSelected)
-        )
-      : searchFilteredProvinces;
-
-  const hasSelectedCities = displayProvinces
-    .flatMap((p) => p.cities)
-    .some((c) => c.isSelected);
-
   const alertIcons = {
     success: "/icons/success-circle.svg",
     error: "/icons/danger-circle.svg",
   };
 
-  const simpanButton = (
-    <Button
-      size="lg"
-      className="w-full md:w-auto"
-      onClick={handleSave}
-      isLoading={isMutating}
-    >
-      Simpan
-    </Button>
+  const searchFilteredProvinces = provinceData.filter((province) =>
+    province.kota.some((city) =>
+      city.cityName.toLowerCase().includes(searchCity.toLowerCase())
+    )
   );
 
-  return (
-    <>
-      <LayoutOverlayButton button={simpanButton}>
-        <div className="mx-auto py-6">
-          <BreadCrumb data={BREADCRUMB} />
-          <div className="mt-4 flex items-center gap-2">
-            {/* --- UPDATED: PageTitle now uses the leave handler --- */}
-            <PageTitle withBack={true} onClick={handleLeavePage}>
-              Atur Area Muat
-            </PageTitle>
+  const finalProvinces = showSelectedOnly
+    ? searchFilteredProvinces.filter((province) =>
+        province.kota.some((city) => city.isSelected)
+      )
+    : searchFilteredProvinces;
 
-            <InfoTooltip
-              className="w-80"
-              side="right"
-              trigger={
-                <button className="-mt-4 flex text-neutral-600 hover:text-neutral-800">
-                  <Info size={18} />
-                </button>
-              }
-            >
-              Tentukan area kerja kamu agar pekerjaanmu menjadi lebih efektif
-              dan efisien, muatrans hanya menawarkan permintaan jasa angkut
-              dengan lokasi pick up didalam area kerjamu
-            </InfoTooltip>
-          </div>
+  const hasSelectedCities = provinceData.some((province) =>
+    province.kota.some((city) => city.isSelected)
+  );
 
-          <Card className="mt-6 !border-none">
-            <CardContent className="p-6">
-              <SelectedProvinces
-                className="mb-6"
-                provinces={localProvinces.filter((province) =>
-                  province.cities.some((city) => city.isSelected)
-                )}
-                onRemove={handleRemoveProvince}
-                onAdd={handleAddProvince}
-              />
+  if (!isInitialized || isLoading || isLoadingMasterProvinces) {
+    const simpanButton = (
+      <Button
+        size="lg"
+        className="w-full md:w-auto"
+        onClick={handleSave}
+        isLoading={isMutating}
+      >
+        Simpan
+      </Button>
+    );
 
-              <div className="mb-6 flex items-center">
-                <div className="me-4">
-                  <Input
-                    placeholder="Cari Kota/Kabupaten"
-                    icon={{ left: "/icons/search.svg" }}
-                    value={searchCity}
-                    onChange={(e) => setSearchCity(e.target.value)}
-                    className="w-[262px] text-sm"
-                    clear={() => setSearchCity("")}
-                  />
-                </div>
-                <div className="flex items-center gap-3">
-                  <Checkbox
-                    checked={showSelectedOnly}
-                    onChange={(e) => setShowSelectedOnly(e.checked)}
-                    label=""
-                    className="!gap-0"
-                    disabled={
-                      !hasSelectedCities || searchFilteredProvinces.length === 0
-                    }
-                  >
-                    <span
-                      className={`ms-2 text-sm font-normal leading-[16.8px] ${
+    return (
+      <>
+        <LayoutOverlayButton button={simpanButton}>
+          <div className="mx-auto py-6">
+            <BreadCrumb data={BREADCRUMB} />
+            <div className="mt-4 flex items-center gap-2">
+              <PageTitle withBack={true} onClick={handleLeavePage}>
+                Atur Area Muat
+              </PageTitle>
+
+              <InfoTooltip
+                className="w-80"
+                side="right"
+                trigger={
+                  <button className="-mt-4 flex text-neutral-600 hover:text-neutral-800">
+                    <Info size={18} />
+                  </button>
+                }
+              >
+                Tentukan area kerja kamu agar pekerjaanmu menjadi lebih efektif
+                dan efisien, muatrans hanya menawarkan permintaan jasa angkut
+                dengan lokasi pick up didalam area kerjamu
+              </InfoTooltip>
+            </div>
+
+            <Card className="mt-6 !border-none">
+              <CardContent className="p-6">
+                <SelectedProvinces
+                  className="mb-6"
+                  provinces={provinceData.filter((province) =>
+                    province.kota.some((city) => city.isSelected)
+                  )}
+                  onRemove={handleRemoveProvince}
+                  onAdd={handleAddProvince}
+                />
+
+                <div className="mb-6 flex items-center">
+                  <div className="me-4">
+                    <Input
+                      placeholder="Cari Kota/Kabupaten"
+                      icon={{ left: "/icons/search.svg" }}
+                      value={searchCity}
+                      onChange={(e) => setSearchCity(e.target.value)}
+                      className="w-[262px] text-sm"
+                      clear={() => setSearchCity("")}
+                    />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Checkbox
+                      checked={showSelectedOnly}
+                      onChange={(e) => setShowSelectedOnly(e.checked)}
+                      label=""
+                      className="!gap-0"
+                      disabled={
                         !hasSelectedCities ||
                         searchFilteredProvinces.length === 0
-                          ? "text-neutral-500"
-                          : "text-neutral-900"
-                      }`}
+                      }
                     >
-                      Tampilkan yang terpilih saja
-                    </span>
-                  </Checkbox>
-                </div>
-              </div>
-
-              {isLoading ? (
-                <div className="flex h-[200px] items-center justify-center">
-                  <span className="text-sm font-normal leading-[16.8px] text-neutral-600">
-                    Loading...
-                  </span>
-                </div>
-              ) : finalProvinces.length === 0 ? (
-                <DataNotFound
-                  title={
-                    searchCity
-                      ? "Keyword tidak ditemukan"
-                      : "Belum ada area muat terpilih"
-                  }
-                  image={
-                    searchCity
-                      ? "/icons/data-not-found.svg"
-                      : "/img/empty-state/area-muat.png"
-                  }
-                />
-              ) : (
-                <div className="flex flex-col gap-y-[18px]">
-                  {finalProvinces.map((province) => {
-                    const isCollapsible =
-                      province.cities.length > 16 && !showSelectedOnly;
-                    const isExpanded = !!expandedProvinces[province.id];
-                    const visibleCities =
-                      isCollapsible && !isExpanded
-                        ? province.cities.slice(0, 16)
-                        : province.cities;
-
-                    const actualSelectedCount = showSelectedOnly
-                      ? visibleCities.length
-                      : visibleCities.filter((city) => city.isSelected).length;
-
-                    return (
-                      <div
-                        key={province.id}
-                        className="rounded-lg border border-neutral-200 p-6"
+                      <span
+                        className={`ms-2 text-sm font-normal leading-[16.8px] ${
+                          !hasSelectedCities ||
+                          searchFilteredProvinces.length === 0
+                            ? "text-neutral-500"
+                            : "text-neutral-900"
+                        }`}
                       >
-                        <div className="mb-4 flex items-center justify-between">
-                          <h3 className="text-base font-bold leading-[19.2px] text-neutral-900">
-                            {province.province}{" "}
-                            <span className="text-sm font-normal leading-[16.8px] text-neutral-600">
-                              ({actualSelectedCount} Terpilih)
+                        Tampilkan yang terpilih saja
+                      </span>
+                    </Checkbox>
+                  </div>
+                </div>
+
+                {isLoading ? (
+                  <div className="flex h-[200px] items-center justify-center">
+                    <span className="text-sm font-normal leading-[16.8px] text-neutral-600">
+                      Loading...
+                    </span>
+                  </div>
+                ) : finalProvinces.length === 0 ? (
+                  <DataNotFound
+                    title={
+                      searchCity
+                        ? "Keyword tidak ditemukan"
+                        : "Belum ada area muat terpilih"
+                    }
+                    image={
+                      searchCity
+                        ? "/icons/data-not-found.svg"
+                        : "/img/empty-state/area-muat.png"
+                    }
+                  />
+                ) : (
+                  <div className="flex flex-col gap-y-[18px]">
+                    {finalProvinces.map((province) => {
+                      const isCollapsible =
+                        province.kota.length > 16 && !showSelectedOnly;
+                      const isExpanded =
+                        !!expandedProvinces[province.provinceId];
+                      const visibleCities =
+                        isCollapsible && !isExpanded
+                          ? province.kota.slice(0, 16)
+                          : province.kota;
+
+                      const actualSelectedCount = showSelectedOnly
+                        ? visibleCities.length
+                        : visibleCities.filter((city) => city.isSelected)
+                            .length;
+
+                      return (
+                        <div
+                          key={province.provinceId}
+                          className="rounded-lg border border-neutral-200 p-6"
+                        >
+                          <div className="mb-4 flex items-center justify-between">
+                            <h3 className="text-base font-bold leading-[19.2px] text-neutral-900">
+                              {province.provinceName}{" "}
+                              <span className="text-sm font-normal leading-[16.8px] text-neutral-600">
+                                ({actualSelectedCount} Terpilih)
+                              </span>
+                            </h3>
+                          </div>
+
+                          <div className="mb-4 flex items-center gap-3">
+                            <Checkbox
+                              checked={
+                                visibleCities.length > 0 &&
+                                visibleCities.every((city) => city.isSelected)
+                              }
+                              onChange={(e) =>
+                                handleSelectAllProvince(
+                                  province.provinceId,
+                                  e.checked
+                                )
+                              }
+                              label=""
+                              className="!gap-0"
+                            />
+                            <span className="text-sm font-medium leading-[16.8px] text-neutral-900">
+                              Pilih Semua Kota/Kabupaten
                             </span>
-                          </h3>
-                        </div>
+                          </div>
 
-                        <div className="mb-4 flex items-center gap-3">
-                          <Checkbox
-                            checked={
-                              visibleCities.length > 0 &&
-                              visibleCities.every((city) => city.isSelected)
-                            }
-                            onChange={(e) =>
-                              handleSelectAllProvince(province.id, e.checked)
-                            }
-                            label=""
-                            className="!gap-0"
-                          />
-                          <span className="text-sm font-medium leading-[16.8px] text-neutral-900">
-                            Pilih Semua Kota/Kabupaten
-                          </span>
-                        </div>
+                          <div className="ms-5 space-y-4">
+                            {Array.from(
+                              { length: Math.ceil(visibleCities.length / 4) },
+                              (_, rowIndex) => {
+                                const startIndex = rowIndex * 4;
+                                const rowCities = visibleCities.slice(
+                                  startIndex,
+                                  startIndex + 4
+                                );
 
-                        <div className="ms-5 space-y-4">
-                          {Array.from(
-                            { length: Math.ceil(visibleCities.length / 4) },
-                            (_, rowIndex) => {
-                              const startIndex = rowIndex * 4;
-                              const rowCities = visibleCities.slice(
-                                startIndex,
-                                startIndex + 4
-                              );
-
-                              return (
-                                <div key={rowIndex}>
-                                  <div className="grid grid-cols-4 gap-4">
-                                    {rowCities.map((city) => (
-                                      <div
-                                        key={city.cityId}
-                                        className="flex items-center gap-3"
-                                      >
-                                        <Checkbox
-                                          checked={city.isSelected}
-                                          onChange={(e) =>
-                                            handleCitySelect(
-                                              province.id,
-                                              city.cityId,
-                                              e.checked
-                                            )
-                                          }
-                                          label=""
-                                          className="!gap-0"
-                                        />
-                                        <span className="text-sm font-normal leading-[16.8px] text-neutral-900">
-                                          {city.cityName}
-                                        </span>
-                                      </div>
-                                    ))}
+                                return (
+                                  <div key={rowIndex}>
+                                    <div className="grid grid-cols-4 gap-4">
+                                      {rowCities.map((city) => (
+                                        <div
+                                          key={city.cityId}
+                                          className="flex items-center gap-3"
+                                        >
+                                          <Checkbox
+                                            checked={city.isSelected}
+                                            onChange={(e) =>
+                                              handleCitySelect(
+                                                province.provinceId,
+                                                city.cityId,
+                                                e.checked
+                                              )
+                                            }
+                                            label=""
+                                            className="!gap-0"
+                                          />
+                                          <span className="text-sm font-normal leading-[16.8px] text-neutral-900">
+                                            {city.cityName}
+                                          </span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                    {rowIndex <
+                                      Math.ceil(visibleCities.length / 4) -
+                                        1 && (
+                                      <div className="mt-4 border-b border-neutral-200"></div>
+                                    )}
                                   </div>
-                                  {rowIndex <
-                                    Math.ceil(visibleCities.length / 4) - 1 && (
-                                    <div className="mt-4 border-b border-neutral-200"></div>
-                                  )}
-                                </div>
-                              );
-                            }
+                                );
+                              }
+                            )}
+                          </div>
+
+                          {isCollapsible && (
+                            <div className="mt-4 text-center">
+                              <button
+                                onClick={() =>
+                                  handleToggleExpand(province.provinceId)
+                                }
+                                className="inline-flex items-center gap-1 text-sm font-medium leading-[16.8px] text-blue-600 hover:text-blue-800"
+                              >
+                                {isExpanded
+                                  ? "Lihat Lebih Sedikit"
+                                  : "Lihat Selengkapnya"}
+                                <ChevronDown
+                                  size={16}
+                                  className={`transform transition-transform duration-200 ${
+                                    isExpanded ? "rotate-180" : ""
+                                  }`}
+                                />
+                              </button>
+                            </div>
                           )}
                         </div>
-
-                        {isCollapsible && (
-                          <div className="mt-4 text-center">
-                            <button
-                              onClick={() => handleToggleExpand(province.id)}
-                              className="inline-flex items-center gap-1 text-sm font-medium leading-[16.8px] text-blue-600 hover:text-blue-800"
-                            >
-                              {isExpanded
-                                ? "Lihat Lebih Sedikit"
-                                : "Lihat Selengkapnya"}
-                              <ChevronDown
-                                size={16}
-                                className={`transform transition-transform duration-200 ${
-                                  isExpanded ? "rotate-180" : ""
-                                }`}
-                              />
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </LayoutOverlayButton>
-
-      {alert.show && (
-        <Alert
-          variant={alert.type === "success" ? "secondary" : "error"}
-          className="fixed bottom-4 right-4 z-50"
-        >
-          <div className="flex items-center">
-            <IconComponent src={alertIcons[alert.type]} className="mr-2" />
-            {alert.message}
-            <button
-              onClick={() => setAlert({ ...alert, show: false })}
-              className="ml-4"
-            >
-              <IconComponent src="/icons/close-circle.svg" />
-            </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
-        </Alert>
-      )}
+        </LayoutOverlayButton>
 
-      <ConfirmationModal
-        isOpen={isConfirmModalOpen}
-        setIsOpen={setIsConfirmModalOpen}
-        title={{
-          text: "Apakah kamu yakin menyimpan data ini?",
-          className: "text-sm font-medium text-center",
-        }}
-        confirm={{
-          text: "Simpan",
-          onClick: confirmSave,
-          isLoading: isMutating,
-        }}
-        cancel={{
-          text: "Batal",
-          onClick: () => setIsConfirmModalOpen(false),
-        }}
-      />
+        {alert.show && (
+          <Alert
+            variant={alert.type === "success" ? "secondary" : "error"}
+            className="fixed bottom-4 right-4 z-50"
+          >
+            <div className="flex items-center">
+              <IconComponent src={alertIcons[alert.type]} className="mr-2" />
+              {alert.message}
+              <button
+                onClick={() => setAlert({ ...alert, show: false })}
+                className="ml-4"
+              >
+                <IconComponent src="/icons/close-circle.svg" />
+              </button>
+            </div>
+          </Alert>
+        )}
 
-      {/* --- NEW: Leave Confirmation Modal --- */}
-      <ConfirmationModal
-        isOpen={isLeaveModalOpen}
-        setIsOpen={setIsLeaveModalOpen}
-        title={{
-          text: "Area muat tidak akan tersimpan kalau kamu meninggalkan halaman ini",
-          className: "text-sm font-medium text-center",
-        }}
-        cancel={{
-          text: "Ya",
-          variant: "destructive", // Use a destructive variant for a better UX
-          onClick: () => router.back(), // Proceed to leave the page
-        }}
-        confirm={{
-          text: "Batal",
-          onClick: () => setIsLeaveModalOpen(false), // Stay on the page
-        }}
-      />
+        <ConfirmationModal
+          isOpen={isConfirmModalOpen}
+          setIsOpen={setIsConfirmModalOpen}
+          title={{
+            text: "Apakah kamu yakin menyimpan data ini?",
+            className: "text-sm font-medium text-center",
+          }}
+          confirm={{
+            text: "Simpan",
+            onClick: confirmSave,
+            isLoading: isMutating,
+          }}
+          cancel={{
+            text: "Batal",
+            onClick: () => setIsConfirmModalOpen(false),
+          }}
+        />
 
-      <ProvinceSelectionModal
-        isOpen={isProvinceModalOpen}
-        onClose={() => setIsProvinceModalOpen(false)}
-        onSave={handleSaveProvinces}
-        title="Tambah Provinsi"
-        provinces={masterProvinces}
-        isLoading={isLoadingMasterProvinces}
-        onSearch={searchProvinces}
-        saveContext="area-muat"
-      />
-    </>
-  );
+        <ConfirmationModal
+          isOpen={isLeaveModalOpen}
+          setIsOpen={setIsLeaveModalOpen}
+          title={{
+            text: "Area muat tidak akan tersimpan kalau kamu meninggalkan halaman ini",
+            className: "text-sm font-medium text-center",
+          }}
+          cancel={{
+            text: "Ya",
+            variant: "destructive",
+            onClick: () => {
+              localStorage.removeItem("areaMuatProvinces");
+              router.back();
+            },
+          }}
+          confirm={{
+            text: "Batal",
+            onClick: () => setIsLeaveModalOpen(false),
+          }}
+        />
+
+        <ProvinceSelectionModal
+          isOpen={isProvinceModalOpen}
+          onClose={() => setIsProvinceModalOpen(false)}
+          onSave={handleSaveProvinces}
+          title="Tambah Provinsi"
+          provinces={masterProvinces}
+          isLoading={isLoadingMasterProvinces}
+          onSearch={searchProvinces}
+          saveContext="area-muat"
+        />
+      </>
+    );
+  }
 }
