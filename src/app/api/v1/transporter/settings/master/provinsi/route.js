@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 
+import { serverErrorResponse } from "../../area-bongkar/mockData";
 import {
-  masterProvinsiNoDataResponse,
-  masterProvinsiSuccessResponse,
-  serverErrorResponse,
-} from "../../area-bongkar/mockData";
+  createMasterProvinsiNoDataResponse,
+  createMasterProvinsiSuccessResponse,
+  masterProvinsiData,
+} from "./mockData";
 
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -22,9 +23,8 @@ export async function GET(req) {
     const limit = parseInt(searchParams.get("limit")) || 10;
     const excludeSelected = searchParams.get("excludeSelected") === "true";
 
-    // Mock: Create a copy of the success response to modify
-    const mockData = { ...masterProvinsiSuccessResponse };
-    let provinsiData = [...mockData.Data.provinsi];
+    // Create a copy of the master data
+    let provinsiData = [...masterProvinsiData];
 
     // Filter by search if provided
     if (search) {
@@ -45,9 +45,8 @@ export async function GET(req) {
     const endIndex = startIndex + limit;
     const paginatedData = provinsiData.slice(startIndex, endIndex);
 
-    // Update response data
-    mockData.Data.provinsi = paginatedData;
-    mockData.Data.pagination = {
+    // Create pagination info
+    const pagination = {
       currentPage: page,
       totalPages: totalPages,
       totalItems: totalItems,
@@ -60,18 +59,29 @@ export async function GET(req) {
       const group = provinsi.alphabetGroup;
       grouping[group] = (grouping[group] || 0) + 1;
     });
-    mockData.Data.grouping = grouping;
+    // mockData.Data.grouping = grouping;
+    // Create search params string
+    const searchParamsString = `search=${search}&page=${page}&limit=${limit}&excludeSelected=${excludeSelected}`;
 
     // Return no data response if no results found
     if (paginatedData.length === 0) {
-      return NextResponse.json(masterProvinsiNoDataResponse, {
-        status: masterProvinsiNoDataResponse.Message.Code,
+      const noDataResponse = createMasterProvinsiNoDataResponse(
+        pagination,
+        searchParamsString
+      );
+      return NextResponse.json(noDataResponse, {
+        status: noDataResponse.Message.Code,
       });
     }
 
     // Return success response
-    return NextResponse.json(mockData, {
-      status: mockData.Message.Code,
+    const successResponse = createMasterProvinsiSuccessResponse(
+      paginatedData,
+      pagination,
+      searchParamsString
+    );
+    return NextResponse.json(successResponse, {
+      status: successResponse.Message.Code,
     });
   } catch (error) {
     console.error("Master Provinsi API Error:", error);

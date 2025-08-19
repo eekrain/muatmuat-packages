@@ -15,10 +15,12 @@ import {
 } from "@/components/Tabs/Tabs";
 import { useGetFleetActivities } from "@/services/Transporter/laporan/aktivitas/getArmadaData";
 import { useGetCountArmadaDriver } from "@/services/Transporter/laporan/aktivitas/getCountArmadaDriver";
+import { useGetCustomPeriods } from "@/services/Transporter/laporan/aktivitas/getCustomPeriods";
 import { useGetDriverData } from "@/services/Transporter/laporan/aktivitas/getDriverData";
 import { useGetDriverStatusFilters } from "@/services/Transporter/laporan/aktivitas/getFilterArmadaStatus";
 import { useGetFleetTypeFilters } from "@/services/Transporter/laporan/aktivitas/getFilterArmadaType";
 import { useGetFleetStatusFilters } from "@/services/Transporter/laporan/aktivitas/getFilterDriverStatus";
+import { useSaveCustomPeriod } from "@/services/Transporter/laporan/aktivitas/saveCustomPeriod";
 
 export default function Page() {
   const [selectedTab, setSelectedTab] = useState("armada");
@@ -220,6 +222,17 @@ export default function Page() {
   const { data: fleetStatusFilters, isLoading: fleetStatusLoading } =
     useGetFleetStatusFilters();
 
+  // Get custom periods from API
+  const { data: customPeriodsFromAPI, isLoading: customPeriodsLoading } =
+    useGetCustomPeriods({
+      module:
+        selectedTab === "armada" ? "fleet-activities" : "driver-activities",
+    });
+
+  // Custom period save mutation
+  const { trigger: saveCustomPeriodTrigger, isMutating: isSavingCustomPeriod } =
+    useSaveCustomPeriod();
+
   // Konfigurasi periode dengan startDate dan endDate
   const periodOptions = [
     {
@@ -349,15 +362,62 @@ export default function Page() {
       setSortConfig({ sort: null, order: null });
     }
   };
+  // Convert API custom periods to dropdown format
+  const apiPeriodsAsOptions = (customPeriodsFromAPI || []).map((period) => ({
+    name: `${new Date(period.startDate).toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    })} - ${new Date(period.endDate).toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    })}`,
+    value: period.id,
+    startDate: period.startDate,
+    endDate: period.endDate,
+    isFromAPI: true,
+  }));
 
   // Handler untuk filter periode
-  const handleSelectPeriod = (selectedOption) => {
+  const handleSelectPeriod = async (selectedOption) => {
     if (selectedOption?.range) {
-      if (
-        !recentPeriodOptions?.some((s) => s?.value === selectedOption?.value)
-      ) {
-        setRecentPeriodOptions((prev) => [...prev, selectedOption]);
+      // Check if it's a custom date range from modal
+      if (selectedOption?.iso_start_date && selectedOption?.iso_end_date) {
+        try {
+          // Save custom period to API
+          const payload = {
+            startDate: selectedOption.iso_start_date,
+            endDate: selectedOption.iso_end_date,
+            module:
+              selectedTab === "armada"
+                ? "fleet-activities"
+                : "driver-activities",
+          };
+
+          await saveCustomPeriodTrigger(payload);
+
+          // Add to recent options if not already exists
+          if (
+            !recentPeriodOptions?.some(
+              (s) => s?.value === selectedOption?.value
+            )
+          ) {
+            setRecentPeriodOptions((prev) => [...prev, selectedOption]);
+          }
+        } catch (error) {
+          console.error("Failed to save custom period:", error);
+          // Still proceed with local state update even if API fails
+        }
+      } else {
+        // Regular range selection (predefined)
+        if (
+          !recentPeriodOptions?.some((s) => s?.value === selectedOption?.value)
+        ) {
+          setRecentPeriodOptions((prev) => [...prev, selectedOption]);
+        }
       }
+
       setCurrentPeriodValue(selectedOption);
       setCurrentPage(1); // Reset pagination when period changes
       resetSorting(); // Reset sorting when period changes
@@ -464,7 +524,7 @@ export default function Page() {
           <DropdownPeriode
             options={periodOptions}
             onSelect={handleSelectPeriod}
-            recentSelections={recentPeriodOptions}
+            recentSelections={[...recentPeriodOptions, ...apiPeriodsAsOptions]}
             value={currentPeriodValue}
           />
           <Button onClick={handleDownload} iconLeft={<Download size={16} />}>
@@ -492,7 +552,10 @@ export default function Page() {
               onDownload={handleDownload}
               periodOptions={periodOptions}
               currentPeriodValue={currentPeriodValue}
-              recentPeriodOptions={recentPeriodOptions}
+              recentPeriodOptions={[
+                ...recentPeriodOptions,
+                ...apiPeriodsAsOptions,
+              ]}
               filterConfig={armadaFilterConfig}
               onFilter={handleFilter}
               onSearch={handleSearch}
@@ -518,7 +581,10 @@ export default function Page() {
               onDownload={handleDownload}
               periodOptions={periodOptions}
               currentPeriodValue={currentPeriodValue}
-              recentPeriodOptions={recentPeriodOptions}
+              recentPeriodOptions={[
+                ...recentPeriodOptions,
+                ...apiPeriodsAsOptions,
+              ]}
               filterConfig={driverFilterConfig}
               onFilter={handleFilter}
               onSearch={handleSearch}
