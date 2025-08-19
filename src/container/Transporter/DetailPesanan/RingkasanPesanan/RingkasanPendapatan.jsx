@@ -12,14 +12,14 @@ const RingkasanPendapatan = ({ dataOrderDetail }) => {
           <CardPayment.CollapsibleSection title={t("titleDetailPesanan")}>
             <CardPayment.Section title={t("titleBiayaPesanJasaAngkut")}>
               <CardPayment.LineItem
-                label={t("labelNominalPesanJasaAngkut", {
-                  unit: dataOrderDetail?.truckCount,
-                })}
-                labelClassName="max-w-[160px]"
+                // 25. 30 - Web - LB - 0253
+                label={`Nominal Pesanan Jasa Angkut (${dataOrderDetail?.truckCount} Unit)`}
+                labelClassName="max-w-[170px]"
                 value={idrFormat(dataOrderDetail?.incomeSummary.transportFee)}
               />
             </CardPayment.Section>
-            <CardPayment.Section title={t("titleBiayaLayananTambahan")}>
+            {/* 25. 30 - Web - LB - 0253 */}
+            <CardPayment.Section title="Layanan Tambahan">
               <CardPayment.LineItem
                 label={t("labelNominalBantuanTambahan")}
                 value={idrFormat(
